@@ -1,7 +1,6 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
-# Focused tests for package __init__: lazy attributes and error path
 import importlib
 from pathlib import Path
 
@@ -14,11 +13,11 @@ def test_lazy_attributes_resolve_and_are_accessible():
     # Access a few lazy attributes; just ensure they exist and are callable/class-like
     assert hasattr(ed, 'Project')
     assert hasattr(ed, 'ExperimentFactory')
-    assert hasattr(ed, 'SampleModelFactory')
+    assert hasattr(ed, 'StructureFactory')
 
     # Access utility functions from utils via lazy getattr
     assert callable(ed.show_version)
-    assert callable(ed.get_value_from_xye_header)
+    assert callable(ed.extract_metadata)
 
     # Import once to exercise __getattr__; subsequent access should be cached by Python
     _ = ed.Project

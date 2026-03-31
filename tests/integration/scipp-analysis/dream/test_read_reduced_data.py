@@ -1,5 +1,6 @@
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright (c) 2026 DMSC
+
 """Tests for reading reduced data from CIF files.
 
 These tests verify that the CIF file can be fetched, read as text,

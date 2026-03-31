@@ -1,13 +1,15 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""ASCII plotting backend.
+"""
+ASCII plotting backend.
 
-Renders compact line charts in the terminal using
-``asciichartpy``. This backend is well suited for quick feedback in
-CLI environments and keeps a consistent API with other plotters.
+Renders compact line charts in the terminal using ``asciichartpy``. This
+backend is well suited for quick feedback in CLI environments and keeps
+a consistent API with other plotters.
 """
 
 import asciichartpy
+import numpy as np
 
 from easydiffraction.display.plotters.base import DEFAULT_HEIGHT
 from easydiffraction.display.plotters.base import SERIES_CONFIG
@@ -24,16 +26,21 @@ DEFAULT_COLORS = {
 class AsciiPlotter(PlotterBase):
     """Terminal-based plotter using ASCII art."""
 
-    def _get_legend_item(self, label):
-        """Return a colored legend entry for a given series label.
+    def _get_legend_item(self, label: str) -> str:
+        """
+        Return a colored legend entry for a given series label.
 
-        The legend uses a colored line matching the series color and
-        the human-readable name from :data:`SERIES_CONFIG`.
+        The legend uses a colored line matching the series color and the
+        human-readable name from :data:`SERIES_CONFIG`.
 
-        Args:
-            label: Series identifier (e.g., ``'meas'``).
+        Parameters
+        ----------
+        label : str
+            Series identifier (e.g., ``'meas'``).
 
-        Returns:
+        Returns
+        -------
+        str
             A formatted legend string with color escapes.
         """
         color_start = DEFAULT_COLORS[label]
@@ -43,25 +50,36 @@ class AsciiPlotter(PlotterBase):
         item = f'{color_start}{line}{color_end} {name}'
         return item
 
-    def plot(
+    def plot_powder(
         self,
-        x,
-        y_series,
-        labels,
-        axes_labels,
-        title,
-        height=None,
-    ):
-        """Render a compact ASCII chart in the terminal.
+        x: object,
+        y_series: object,
+        labels: object,
+        axes_labels: object,
+        title: str,
+        height: int | None = None,
+    ) -> None:
+        """
+        Render a line plot for powder diffraction data.
 
-        Args:
-            x: 1D array-like of x values (only used for range
-                display).
-            y_series: Sequence of y arrays to plot.
-            labels: Series identifiers corresponding to y_series.
-            axes_labels: Ignored; kept for API compatibility.
-            title: Figure title printed above the chart.
-            height: Number of text rows to allocate for the chart.
+        Suitable for powder diffraction data where intensity is plotted
+        against an x-axis variable (2θ, TOF, d-spacing). Uses ASCII
+        characters for terminal display.
+
+        Parameters
+        ----------
+        x : object
+            1D array-like of x values (only used for range display).
+        y_series : object
+            Sequence of y arrays to plot.
+        labels : object
+            Series identifiers corresponding to y_series.
+        axes_labels : object
+            Ignored; kept for API compatibility.
+        title : str
+            Figure title printed above the chart.
+        height : int | None, default=None
+            Number of text rows to allocate for the chart.
         """
         # Intentionally unused; kept for a consistent display API
         del axes_labels
@@ -83,4 +101,106 @@ class AsciiPlotter(PlotterBase):
 
         padded = '\n'.join(' ' + line for line in chart.splitlines())
 
+        print(padded)
+
+    def plot_single_crystal(
+        self,
+        x_calc: object,
+        y_meas: object,
+        y_meas_su: object,
+        axes_labels: object,
+        title: str,
+        height: int | None = None,
+    ) -> None:
+        """
+        Render a scatter plot for single crystal diffraction data.
+
+        Creates an ASCII scatter plot showing measured vs calculated
+        values with a diagonal reference line.
+
+        Parameters
+        ----------
+        x_calc : object
+            1D array-like of calculated values (x-axis).
+        y_meas : object
+            1D array-like of measured values (y-axis).
+        y_meas_su : object
+            1D array-like of measurement uncertainties (ignored in ASCII
+            mode).
+        axes_labels : object
+            Pair of strings for the x and y titles.
+        title : str
+            Figure title.
+        height : int | None, default=None
+            Number of text rows for the chart (default: 15).
+        """
+        # Intentionally unused; ASCII scatter doesn't show error bars
+        del y_meas_su
+
+        if height is None:
+            height = DEFAULT_HEIGHT
+        width = 60  # TODO: Make width configurable
+
+        # Determine axis limits
+        vmin = float(min(np.min(y_meas), np.min(x_calc)))
+        vmax = float(max(np.max(y_meas), np.max(x_calc)))
+        pad = 0.05 * (vmax - vmin) if vmax > vmin else 1.0
+        vmin -= pad
+        vmax += pad
+
+        # Create empty grid
+        grid = [[' ' for _ in range(width)] for _ in range(height)]
+
+        # Draw diagonal line (calc == meas)
+        for i in range(min(width, height)):
+            row = height - 1 - int(i * height / width)
+            col = i
+            if 0 <= row < height and 0 <= col < width:
+                grid[row][col] = '·'
+
+        # Plot data points
+        for xv, yv in zip(x_calc, y_meas, strict=False):
+            col = int((xv - vmin) / (vmax - vmin) * (width - 1))
+            row = height - 1 - int((yv - vmin) / (vmax - vmin) * (height - 1))
+            if 0 <= row < height and 0 <= col < width:
+                grid[row][col] = '●'
+
+        # Build chart string with axes
+        chart_lines = []
+        for row in grid:
+            label = '│'
+            chart_lines.append(label + ''.join(row))
+
+        # X-axis
+        x_axis = '└' + '─' * width
+
+        # Print output
+        console.paragraph(f'{title}')
+        console.print(f'{axes_labels[1]}')
+        for line in chart_lines:
+            print(f'  {line}')
+        print(f'  {x_axis}')
+        console.print(f'{" " * (width - 3)}{axes_labels[0]}')
+
+    def plot_scatter(
+        self,
+        x: object,
+        y: object,
+        sy: object,
+        axes_labels: object,
+        title: str,
+        height: int | None = None,
+    ) -> None:
+        """Render a scatter plot with error bars in ASCII."""
+        _ = x, sy  # ASCII backend does not use x ticks or error bars
+
+        if height is None:
+            height = DEFAULT_HEIGHT
+
+        config = {'height': height, 'colors': [asciichartpy.blue]}
+        chart = asciichartpy.plot([list(y)], config)
+
+        console.paragraph(f'{title}')
+        console.print(f'{axes_labels[1]} vs {axes_labels[0]}')
+        padded = '\n'.join(' ' + line for line in chart.splitlines())
         print(padded)

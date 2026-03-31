@@ -1,6 +1,7 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Diagnostics helpers for logging validation messages.
+"""
+Diagnostics helpers for logging validation messages.
 
 This module centralizes human-friendly error and debug logs for
 attribute validation and configuration checks.
@@ -19,8 +20,9 @@ class Diagnostics:
     # ==============================================================
 
     @staticmethod
-    def type_override_error(cls_name: str, expected, got):
-        """Report an invalid DataTypes override.
+    def type_override_error(cls_name: str, expected: object, got: object) -> None:
+        """
+        Report an invalid DataTypes override.
 
         Used when descriptor and AttributeSpec types conflict.
         """
@@ -41,7 +43,7 @@ class Diagnostics:
     def readonly_error(
         name: str,
         key: str | None = None,
-    ):
+    ) -> None:
         """Log an attempt to change a read-only attribute."""
         Diagnostics._log_error(
             f"Cannot modify read-only attribute '{key}' of <{name}>.",
@@ -53,11 +55,9 @@ class Diagnostics:
         name: str,
         key: str,
         allowed: set[str],
-        label='Allowed',
-    ):
-        """Log access to an unknown attribute and suggest closest
-        key.
-        """
+        label: str = 'Allowed',
+    ) -> None:
+        """Log unknown attribute access and suggest closest key."""
         suggestion = Diagnostics._build_suggestion(key, allowed)
         # Use consistent (label) logic for allowed
         hint = suggestion or Diagnostics._build_allowed(allowed, label=label)
@@ -73,11 +73,11 @@ class Diagnostics:
     @staticmethod
     def type_mismatch(
         name: str,
-        value,
-        expected_type,
-        current=None,
-        default=None,
-    ):
+        value: object,
+        expected_type: object,
+        current: object = None,
+        default: object = None,
+    ) -> None:
         """Log a type mismatch and keep current or default value."""
         got_type = type(value).__name__
         msg = (
@@ -91,12 +91,12 @@ class Diagnostics:
     @staticmethod
     def range_mismatch(
         name: str,
-        value,
-        ge,
-        le,
-        current=None,
-        default=None,
-    ):
+        value: object,
+        ge: float,
+        le: float,
+        current: object = None,
+        default: object = None,
+    ) -> None:
         """Log range violation for a numeric value."""
         msg = f'Value mismatch for <{name}>. Provided {value!r} outside [{ge}, {le}].'
         Diagnostics._log_error_with_fallback(
@@ -106,11 +106,11 @@ class Diagnostics:
     @staticmethod
     def choice_mismatch(
         name: str,
-        value,
-        allowed,
-        current=None,
-        default=None,
-    ):
+        value: object,
+        allowed: object,
+        current: object = None,
+        default: object = None,
+    ) -> None:
         """Log an invalid choice against allowed values."""
         msg = f'Value mismatch for <{name}>. Provided {value!r} is unknown.'
         if allowed is not None:
@@ -122,11 +122,11 @@ class Diagnostics:
     @staticmethod
     def regex_mismatch(
         name: str,
-        value,
-        pattern,
-        current=None,
-        default=None,
-    ):
+        value: object,
+        pattern: str,
+        current: object = None,
+        default: object = None,
+    ) -> None:
         """Log a regex mismatch with the expected pattern."""
         msg = (
             f"Value mismatch for <{name}>. Provided {value!r} does not match pattern '{pattern}'."
@@ -136,24 +136,24 @@ class Diagnostics:
         )
 
     @staticmethod
-    def no_value(name, default):
+    def no_value(name: str, default: object) -> None:
         """Log that default will be used due to missing value."""
         Diagnostics._log_debug(f'No value provided for <{name}>. Using default {default!r}.')
 
     @staticmethod
-    def none_value(name):
+    def none_value(name: str) -> None:
         """Log explicit None provided by a user."""
         Diagnostics._log_debug(f'Using `None` explicitly provided for <{name}>.')
 
     @staticmethod
-    def none_value_skip_range(name):
+    def none_value_skip_range(name: str) -> None:
         """Log that range validation is skipped due to None."""
         Diagnostics._log_debug(
             f'Skipping range validation as `None` is explicitly provided for <{name}>.'
         )
 
     @staticmethod
-    def validated(name, value, stage: str | None = None):
+    def validated(name: str, value: object, stage: str | None = None) -> None:
         """Log that a value passed a validation stage."""
         stage_info = f' {stage}' if stage else ''
         Diagnostics._log_debug(f'Value {value!r} for <{name}> passed{stage_info} validation.')
@@ -163,17 +163,17 @@ class Diagnostics:
     # ==============================================================
 
     @staticmethod
-    def _log_error(msg, exc_type=Exception):
+    def _log_error(msg: str, exc_type: type[Exception] = Exception) -> None:
         """Emit an error-level message via shared logger."""
         log.error(msg, exc_type=exc_type)
 
     @staticmethod
     def _log_error_with_fallback(
-        msg,
-        current=None,
-        default=None,
-        exc_type=Exception,
-    ):
+        msg: str,
+        current: object = None,
+        default: object = None,
+        exc_type: type[Exception] = Exception,
+    ) -> None:
         """Emit an error message and mention kept or default value."""
         if current is not None:
             msg += f' Keeping current {current!r}.'
@@ -182,7 +182,7 @@ class Diagnostics:
         log.error(msg, exc_type=exc_type)
 
     @staticmethod
-    def _log_debug(msg):
+    def _log_debug(msg: str) -> None:
         """Emit a debug-level message via shared logger."""
         log.debug(msg)
 
@@ -191,7 +191,7 @@ class Diagnostics:
     # ==============================================================
 
     @staticmethod
-    def _suggest(key: str, allowed: set[str]):
+    def _suggest(key: str, allowed: set[str]) -> str | None:
         """Suggest closest allowed key using string similarity."""
         if not allowed:
             return None
@@ -200,12 +200,12 @@ class Diagnostics:
         return matches[0] if matches else None
 
     @staticmethod
-    def _build_suggestion(key: str, allowed: set[str]):
+    def _build_suggestion(key: str, allowed: set[str]) -> str:
         s = Diagnostics._suggest(key, allowed)
         return f" Did you mean '{s}'?" if s else ''
 
     @staticmethod
-    def _build_allowed(allowed, label='Allowed attributes'):
+    def _build_allowed(allowed: object, label: str = 'Allowed attributes') -> str:
         # allowed may be a set, list, or other iterable
         if allowed:
             allowed_list = list(allowed)

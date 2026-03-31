@@ -1,6 +1,7 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Project-wide logging utilities built on top of Rich.
+"""
+Project-wide logging utilities built on top of Rich.
 
 Provides a shared Rich console, a compact/verbose logger with consistent
 formatting, Jupyter traceback handling, and a small printing façade
@@ -43,9 +44,7 @@ from easydiffraction.utils.environment import in_warp
 
 
 class IconifiedRichHandler(RichHandler):
-    """RichHandler that uses icons for log levels in compact mode, Rich
-    default in verbose mode.
-    """
+    """RichHandler using icons (compact) or names (verbose)."""
 
     _icons = {
         logging.CRITICAL: '💀',
@@ -55,11 +54,24 @@ class IconifiedRichHandler(RichHandler):
         logging.INFO: 'ℹ️',
     }
 
-    def __init__(self, *args, mode: str = 'compact', **kwargs):
+    def __init__(self, *args: object, mode: str = 'compact', **kwargs: object) -> None:
         super().__init__(*args, **kwargs)
         self.mode = mode
 
     def get_level_text(self, record: logging.LogRecord) -> Text:
+        """
+        Return an icon or level name for the log record.
+
+        Parameters
+        ----------
+        record : logging.LogRecord
+            The log record being rendered.
+
+        Returns
+        -------
+        Text
+            A Rich Text object with the level indicator.
+        """
         if self.mode == 'compact':
             icon = self._icons.get(record.levelno, record.levelname)
             if in_warp() and not in_jupyter() and icon in ['⚠️', '⚙️', 'ℹ️']:
@@ -70,9 +82,21 @@ class IconifiedRichHandler(RichHandler):
             return super().get_level_text(record)
 
     def render_message(self, record: logging.LogRecord, message: str) -> Text:
-        # In compact mode, let the icon come from get_level_text and
-        # keep the message body unadorned. In verbose mode, defer to
-        # RichHandler.
+        """
+        Render the log message body as a Rich Text object.
+
+        Parameters
+        ----------
+        record : logging.LogRecord
+            The log record being rendered.
+        message : str
+            Pre-formatted log message string.
+
+        Returns
+        -------
+        Text
+            A Rich Text object with the rendered message.
+        """
         if self.mode == 'compact':
             try:
                 return Text.from_markup(message)
@@ -94,9 +118,12 @@ class ConsoleManager:
 
     @staticmethod
     def _detect_width() -> int:
-        """Detect a suitable console width for the shared Console.
+        """
+        Detect a suitable console width for the shared Console.
 
-        Returns:
+        Returns
+        -------
+        int
             The detected terminal width, clamped at
             ``_MIN_CONSOLE_WIDTH`` to avoid cramped layouts.
         """
@@ -134,13 +161,19 @@ class LoggerConfig:
         rich_tracebacks: bool,
         mode: str = 'compact',
     ) -> None:
-        """Install Rich handler and optional Jupyter traceback support.
+        """
+        Install Rich handler and optional Jupyter traceback support.
 
-        Args:
-            logger: Logger instance to attach handlers to.
-            level: Minimum log level to emit.
-            rich_tracebacks: Whether to enable Rich tracebacks.
-            mode: Output mode name ("compact" or "verbose").
+        Parameters
+        ----------
+        logger : logging.Logger
+            Logger instance to attach handlers to.
+        level : int
+            Minimum log level to emit.
+        rich_tracebacks : bool
+            Whether to enable Rich tracebacks.
+        mode : str, default='compact'
+            Output mode name ("compact" or "verbose").
         """
         logger.handlers.clear()
         logger.propagate = False
@@ -175,13 +208,19 @@ class LoggerConfig:
         level: 'Logger.Level',
         rich_tracebacks: bool,
     ) -> None:
-        """Configure the logger with RichHandler and exception hooks.
+        """
+        Configure the logger with RichHandler and exception hooks.
 
-        Args:
-            logger: Logger instance to configure.
-            mode: Output mode (compact or verbose).
-            level: Minimum log level to emit.
-            rich_tracebacks: Whether to enable Rich tracebacks.
+        Parameters
+        ----------
+        logger : logging.Logger
+            Logger instance to configure.
+        mode : 'Logger.Mode'
+            Output mode (compact or verbose).
+        level : 'Logger.Level'
+            Minimum log level to emit.
+        rich_tracebacks : bool
+            Whether to enable Rich tracebacks.
         """
         LoggerConfig.setup_handlers(
             logger,
@@ -204,10 +243,13 @@ class ExceptionHookManager:
 
     @staticmethod
     def install_verbose_hook(logger: logging.Logger) -> None:
-        """Install a verbose exception hook that prints rich tracebacks.
+        """
+        Install a verbose exception hook that prints rich tracebacks.
 
-        Args:
-            logger: Logger used to emit the exception information.
+        Parameters
+        ----------
+        logger : logging.Logger
+            Logger used to emit the exception information.
         """
         if not hasattr(Logger, '_orig_excepthook'):
             Logger._orig_excepthook = sys.excepthook  # type: ignore[attr-defined]
@@ -217,6 +259,7 @@ class ExceptionHookManager:
             exc: BaseException,
             tb: 'TracebackType | None',
         ) -> None:
+            """Log the exception with full traceback via Rich."""
             original_args = getattr(exc, 'args', tuple())
             message = str(exc)
             with suppress(Exception):
@@ -233,10 +276,13 @@ class ExceptionHookManager:
 
     @staticmethod
     def install_compact_hook(logger: logging.Logger) -> None:
-        """Install a compact exception hook that logs message-only.
+        """
+        Install a compact exception hook that logs message-only.
 
-        Args:
-            logger: Logger used to emit the error message.
+        Parameters
+        ----------
+        logger : logging.Logger
+            Logger used to emit the error message.
         """
         if not hasattr(Logger, '_orig_excepthook'):
             Logger._orig_excepthook = sys.excepthook  # type: ignore[attr-defined]
@@ -246,33 +292,39 @@ class ExceptionHookManager:
             exc: BaseException,
             _tb: 'TracebackType | None',
         ) -> None:
+            """Log the exception message and exit."""
             logger.error(str(exc))
             raise SystemExit(1)
 
         sys.excepthook = compact_excepthook  # type: ignore[assignment]
 
     @staticmethod
-    def restore_original_hook():
+    def restore_original_hook() -> None:
         """Restore the original sys.excepthook if it was overridden."""
         if hasattr(Logger, '_orig_excepthook'):
             sys.excepthook = Logger._orig_excepthook  # type: ignore[attr-defined]
 
     # Jupyter-specific traceback suppression (inlined here)
     @staticmethod
-    def _suppress_traceback(logger):
-        """Build a Jupyter custom exception callback that logs only the
-        message.
+    def _suppress_traceback(logger: object) -> object:
+        """
+        Build a Jupyter exception callback that logs the message only.
 
-        Args:
-            logger: Logger used to emit error messages.
+        Parameters
+        ----------
+        logger : object
+            Logger used to emit error messages.
 
-        Returns:
+        Returns
+        -------
+        object
             A callable suitable for IPython's set_custom_exc that
             suppresses full tracebacks and logs only the exception
             message.
         """
 
-        def suppress_jupyter_traceback(*args, **kwargs):
+        def suppress_jupyter_traceback(*args: object, **kwargs: object) -> None:
+            """Log only the exception message."""
             try:
                 _evalue = (
                     args[2] if len(args) > 2 else kwargs.get('_evalue') or kwargs.get('evalue')
@@ -286,11 +338,13 @@ class ExceptionHookManager:
 
     @staticmethod
     def install_jupyter_traceback_suppressor(logger: logging.Logger) -> None:
-        """Install a Jupyter/IPython custom exception handler that
-        suppresses tracebacks.
+        """
+        Install a Jupyter/IPython exception handler for tracebacks.
 
-        Args:
-            logger: Logger used to emit error messages.
+        Parameters
+        ----------
+        logger : logging.Logger
+            Logger used to emit error messages.
         """
         try:
             from IPython import get_ipython
@@ -311,11 +365,11 @@ class ExceptionHookManager:
 
 
 class Logger:
-    """Centralized logging with Rich formatting and two modes.
+    """
+    Centralized logging with Rich formatting and two modes.
 
-    Environment variables:
-    ED_LOG_MODE: set default mode ('verbose' or 'compact')
-    ED_LOG_LEVEL: set default level ('DEBUG', 'INFO', etc.)
+    Environment variables: ED_LOG_MODE: set default mode ('verbose' or
+    'compact') ED_LOG_LEVEL: set default level ('DEBUG', 'INFO', etc.)
     """
 
     # --- Enums ---
@@ -326,7 +380,8 @@ class Logger:
         COMPACT = 'compact'  # single line; no traceback
 
         @classmethod
-        def default(cls):
+        def default(cls) -> Logger.Mode:
+            """Return the default output mode (compact)."""
             return cls.COMPACT
 
     class Level(IntEnum):
@@ -339,7 +394,8 @@ class Logger:
         CRITICAL = logging.CRITICAL
 
         @classmethod
-        def default(cls):
+        def default(cls) -> Logger.Level:
+            """Return the default log level (WARNING)."""
             return cls.WARNING
 
     class Reaction(Enum):
@@ -349,7 +405,8 @@ class Logger:
         WARN = auto()
 
         @classmethod
-        def default(cls):
+        def default(cls) -> Logger.Reaction:
+            """Return the default error reaction (RAISE)."""
             return cls.RAISE
 
     # --- Internal state ---
@@ -369,15 +426,15 @@ class Logger:
         reaction: Reaction | None = None,
         rich_tracebacks: bool | None = None,
     ) -> None:
-        """Configure logger.
+        """
+        Configure logger.
 
-        mode: default COMPACT in Jupyter else VERBOSE
-        level: minimum log level
-        rich_tracebacks: override automatic choice
+        mode: default COMPACT in Jupyter else VERBOSE level: minimum log
+        level rich_tracebacks: override automatic choice
 
-        Environment variables:
-        ED_LOG_MODE: set default mode ('verbose' or 'compact')
-        ED_LOG_LEVEL: set default level ('DEBUG', 'INFO', etc.)
+        Environment variables: ED_LOG_MODE: set default mode ('verbose'
+        or 'compact') ED_LOG_LEVEL: set default level ('DEBUG', 'INFO',
+        etc.)
         """
         env_mode = os.getenv('ED_LOG_MODE')
         env_level = os.getenv('ED_LOG_LEVEL')
@@ -418,22 +475,44 @@ class Logger:
 
     @classmethod
     def _install_jupyter_traceback_suppressor(cls) -> None:
-        """Install traceback suppressor in Jupyter, safely and lint-
-        clean.
-        """
+        """Install the Jupyter traceback suppressor safely."""
         ExceptionHookManager.install_jupyter_traceback_suppressor(cls._logger)
 
     # ===== Helpers =====
     @classmethod
     def set_mode(cls, mode: Mode) -> None:
+        """
+        Set the output mode and reconfigure the logger.
+
+        Parameters
+        ----------
+        mode : Mode
+            The desired output mode (VERBOSE or COMPACT).
+        """
         cls.configure(mode=mode, level=cls.Level(cls._logger.level))
 
     @classmethod
     def set_level(cls, level: Level) -> None:
+        """
+        Set the minimum log level and reconfigure the logger.
+
+        Parameters
+        ----------
+        level : Level
+            The desired minimum log level.
+        """
         cls.configure(mode=cls._mode, level=level)
 
     @classmethod
     def mode(cls) -> Mode:
+        """
+        Return the currently active output mode.
+
+        Returns
+        -------
+        Mode
+            The current Logger.Mode value.
+        """
         return cls._mode
 
     @classmethod
@@ -478,22 +557,68 @@ class Logger:
 
     @classmethod
     def debug(cls, *messages: str) -> None:
+        """
+        Log one or more messages at DEBUG level.
+
+        Parameters
+        ----------
+        *messages : str
+            Message parts joined with a space before logging.
+        """
         cls.handle(*messages, level=cls.Level.DEBUG, exc_type=None)
 
     @classmethod
     def info(cls, *messages: str) -> None:
+        """
+        Log one or more messages at INFO level.
+
+        Parameters
+        ----------
+        *messages : str
+            Message parts joined with a space before logging.
+        """
         cls.handle(*messages, level=cls.Level.INFO, exc_type=None)
 
     @classmethod
     def warning(cls, *messages: str, exc_type: type[BaseException] | None = None) -> None:
+        """
+        Log one or more messages at WARNING level.
+
+        Parameters
+        ----------
+        *messages : str
+            Message parts joined with a space before logging.
+        exc_type : type[BaseException] | None, default=None
+            If provided, raise this exception type instead of logging.
+        """
         cls.handle(*messages, level=cls.Level.WARNING, exc_type=exc_type)
 
     @classmethod
     def error(cls, *messages: str, exc_type: type[BaseException] = AttributeError) -> None:
+        """
+        Log one or more messages at ERROR level.
+
+        Parameters
+        ----------
+        *messages : str
+            Message parts joined with a space before logging.
+        exc_type : type[BaseException], default=AttributeError
+            Exception type to raise in VERBOSE/COMPACT mode.
+        """
         cls.handle(*messages, level=cls.Level.ERROR, exc_type=exc_type)
 
     @classmethod
     def critical(cls, *messages: str, exc_type: type[BaseException] = RuntimeError) -> None:
+        """
+        Log one or more messages at CRITICAL level.
+
+        Parameters
+        ----------
+        *messages : str
+            Message parts joined with a space before logging.
+        exc_type : type[BaseException], default=RuntimeError
+            Exception type to raise in VERBOSE/COMPACT mode.
+        """
         cls.handle(*messages, level=cls.Level.CRITICAL, exc_type=exc_type)
 
 
@@ -503,20 +628,18 @@ class Logger:
 
 
 class ConsolePrinter:
-    """Printer utility that prints objects to the shared console with
-    left padding.
-    """
+    """Printer utility for the shared console with left padding."""
 
     _console = ConsoleManager.get()
 
     @classmethod
-    def print(cls, *objects, **kwargs):
-        """Print objects to the console with left padding.
+    def print(cls, *objects: object, **kwargs: object) -> None:
+        """
+        Print objects to the console with left padding.
 
         - Renderables (Rich types like Text, Table, Panel, etc.) are
-          kept as-is.
-        - Non-renderables (ints, floats, Path, etc.) are converted to
-          str().
+        kept as-is. - Non-renderables (ints, floats, Path, etc.) are
+        converted to   str().
         """
         safe_objects = []
         for obj in objects:
@@ -538,6 +661,15 @@ class ConsolePrinter:
 
     @classmethod
     def paragraph(cls, title: str) -> None:
+        """
+        Print a bold blue paragraph heading.
+
+        Parameters
+        ----------
+        title : str
+            Heading text; substrings enclosed in single quotes are
+            rendered without the bold-blue style.
+        """
         parts = re.split(r"('.*?')", title)
         text = Text()
         for part in parts:
@@ -552,7 +684,7 @@ class ConsolePrinter:
 
     @classmethod
     def section(cls, title: str) -> None:
-        """Formats a section header with bold green text."""
+        """Format a section header with bold green text."""
         full_title = f'{title.upper()}'
         line = '—' * len(full_title)
         formatted = f'[bold green]{line}\n{full_title}\n{line}[/bold green]'
@@ -562,9 +694,7 @@ class ConsolePrinter:
 
     @classmethod
     def chapter(cls, title: str) -> None:
-        """Formats a chapter header with bold magenta text, uppercase,
-        and padding.
-        """
+        """Format a chapter header in bold magenta, uppercase."""
         width = ConsoleManager._detect_width()
         symbol = '—'
         full_title = f' {title.upper()} '

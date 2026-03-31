@@ -1,5 +1,6 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+
 
 def test_module_import():
     import easydiffraction.analysis.calculators.cryspy as MUT
@@ -21,5 +22,5 @@ def test_cryspy_calculator_engine_flag_and_converters():
         def as_cif(self):
             return 'data_x'
 
-    # _convert_sample_model_to_cryspy_cif returns input as_cif
-    assert calc._convert_sample_model_to_cryspy_cif(DummySample()) == 'data_x'
+    # _convert_structure_to_cryspy_cif returns input as_cif
+    assert calc._convert_structure_to_cryspy_cif(DummySample()) == 'data_x'

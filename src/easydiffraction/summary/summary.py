@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from textwrap import wrap
@@ -9,17 +9,21 @@ from easydiffraction.utils.utils import render_table
 
 
 class Summary:
-    """Generates reports and exports results from the project.
+    """
+    Generates reports and exports results from the project.
 
     This class collects and presents all relevant information about the
     fitted model, experiments, and analysis results.
     """
 
-    def __init__(self, project) -> None:
-        """Initialize the summary with a reference to the project.
+    def __init__(self, project: object) -> None:
+        """
+        Initialize the summary with a reference to the project.
 
-        Args:
-            project: The Project instance this summary belongs to.
+        Parameters
+        ----------
+        project : object
+            The Project instance this summary belongs to.
         """
         self.project = project
 
@@ -28,6 +32,7 @@ class Summary:
     # ------------------------------------------
 
     def show_report(self) -> None:
+        """Print a full project report covering all sections."""
         self.show_project_info()
         self.show_crystallographic_data()
         self.show_experimental_data()
@@ -52,12 +57,10 @@ class Summary:
             print('\n'.join(desc_lines))
 
     def show_crystallographic_data(self) -> None:
-        """Print crystallographic data including phase datablocks, space
-        groups, cell parameters, and atom sites.
-        """
+        """Print crystallographic data for all phases."""
         console.section('Crystallographic data')
 
-        for model in self.project.sample_models.values():
+        for model in self.project.structures.values():
             console.paragraph('Phase datablock')
             console.print(f'🧩 {model.name}')
 
@@ -114,9 +117,7 @@ class Summary:
             )
 
     def show_experimental_data(self) -> None:
-        """Print experimental data including experiment datablocks,
-        types, instrument settings, and peak profile information.
-        """
+        """Print experimental data for all experiments."""
         console.section('Experiments')
 
         for expt in self.project.experiments.values():
@@ -174,13 +175,12 @@ class Summary:
                     )
 
     def show_fitting_details(self) -> None:
-        """Print fitting details including calculation and minimization
-        engines, and fit quality metrics.
-        """
+        """Print fitting details including engines and metrics."""
         console.section('Fitting')
 
         console.paragraph('Calculation engine')
-        console.print(self.project.analysis.current_calculator)
+        for expt in self.project.experiments.values():
+            console.print(f'  {expt.name}: {expt.calculator_type}')
 
         console.paragraph('Minimization engine')
         console.print(self.project.analysis.current_minimizer)
@@ -205,9 +205,7 @@ class Summary:
     # ------------------------------------------
 
     def as_cif(self) -> str:
-        """Export the final fitted data and analysis results as CIF
-        format.
-        """
+        """Export fitted data and analysis results as CIF."""
         from easydiffraction.io.cif.serialize import summary_to_cif
 
         return summary_to_cif(self)

@@ -1,0 +1,124 @@
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
+# SPDX-License-Identifier: BSD-3-Clause
+"""
+Simple symbolic constraint between parameters.
+
+Represents an equation of the form ``lhs_alias = rhs_expr`` stored as a
+single expression string.  The left- and right-hand sides are derived by
+splitting the expression at the ``=`` sign.
+"""
+
+from __future__ import annotations
+
+from easydiffraction.analysis.categories.constraints.factory import ConstraintsFactory
+from easydiffraction.core.category import CategoryCollection
+from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.metadata import TypeInfo
+from easydiffraction.core.singleton import ConstraintsHandler
+from easydiffraction.core.validation import AttributeSpec
+from easydiffraction.core.validation import RegexValidator
+from easydiffraction.core.variable import StringDescriptor
+from easydiffraction.io.cif.handler import CifHandler
+
+
+class Constraint(CategoryItem):
+    """Single constraint item stored as ``lhs = rhs`` expression."""
+
+    def __init__(self) -> None:
+        super().__init__()
+
+        self._expression = StringDescriptor(
+            name='expression',
+            description='Constraint equation, e.g. "occ_Ba = 1 - occ_La".',
+            value_spec=AttributeSpec(
+                default='_',  # TODO, Maybe None?
+                validator=RegexValidator(pattern=r'.*'),
+            ),
+            cif_handler=CifHandler(names=['_constraint.expression']),
+        )
+
+        self._identity.category_code = 'constraint'
+        self._identity.category_entry_name = lambda: self.lhs_alias
+
+    # ------------------------------------------------------------------
+    #  Public properties
+    # ------------------------------------------------------------------
+
+    @property
+    def expression(self) -> StringDescriptor:
+        """
+        Full constraint equation (e.g. ``'occ_Ba = 1 - occ_La'``).
+
+        Reading this property returns the underlying
+        ``StringDescriptor`` object. Assigning to it updates the value.
+        """
+        return self._expression
+
+    @expression.setter
+    def expression(self, value: str) -> None:
+        self._expression.value = value
+
+    @property
+    def lhs_alias(self) -> str:
+        """Left-hand side alias derived from the expression."""
+        return self._split_expression()[0]
+
+    @property
+    def rhs_expr(self) -> str:
+        """Right-hand side expression derived from the expression."""
+        return self._split_expression()[1]
+
+    # ------------------------------------------------------------------
+    #  Internal helpers
+    # ------------------------------------------------------------------
+
+    def _split_expression(self) -> tuple[str, str]:
+        """
+        Split the expression at the first ``=`` sign.
+
+        Returns
+        -------
+        tuple[str, str]
+            ``(lhs_alias, rhs_expr)`` with whitespace stripped.
+        """
+        raw = self._expression.value or ''
+        if '=' not in raw:
+            return (raw.strip(), '')
+        lhs, rhs = raw.split('=', 1)
+        return (lhs.strip(), rhs.strip())
+
+
+@ConstraintsFactory.register
+class Constraints(CategoryCollection):
+    """Collection of :class:`Constraint` items."""
+
+    type_info = TypeInfo(
+        tag='default',
+        description='Symbolic parameter constraints',
+    )
+
+    _update_priority = 90  # After most others, but before data categories
+
+    def __init__(self) -> None:
+        """Create an empty constraints collection."""
+        super().__init__(item_type=Constraint)
+
+    def create(self, *, expression: str) -> None:
+        """
+        Create a constraint from an expression string.
+
+        Parameters
+        ----------
+        expression : str
+            Constraint equation, e.g. ``'biso_Co2 = biso_Co1'`` or
+            ``'occ_Ba = 1 - occ_La'``.
+        """
+        item = Constraint()
+        item.expression = expression
+        self.add(item)
+
+    def _update(self, called_by_minimizer: bool = False) -> None:
+        del called_by_minimizer
+
+        constraints = ConstraintsHandler.get()
+        constraints.apply()

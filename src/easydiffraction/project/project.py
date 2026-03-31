@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 """Project facade to orchestrate models, experiments, and analysis."""
 
@@ -10,22 +10,23 @@ from varname import varname
 
 from easydiffraction.analysis.analysis import Analysis
 from easydiffraction.core.guard import GuardedBase
+from easydiffraction.datablocks.experiment.collection import Experiments
+from easydiffraction.datablocks.structure.collection import Structures
 from easydiffraction.display.plotting import Plotter
 from easydiffraction.display.tables import TableRenderer
-from easydiffraction.experiments.experiments import Experiments
 from easydiffraction.io.cif.serialize import project_to_cif
 from easydiffraction.project.project_info import ProjectInfo
-from easydiffraction.sample_models.sample_models import SampleModels
 from easydiffraction.summary.summary import Summary
+from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 
 
 class Project(GuardedBase):
-    """Central API for managing a diffraction data analysis project.
+    """
+    Central API for managing a diffraction data analysis project.
 
-    Provides access to sample models, experiments, analysis, and
-    summary.
+    Provides access to structures, experiments, analysis, and summary.
     """
 
     # ------------------------------------------------------------------
@@ -40,7 +41,7 @@ class Project(GuardedBase):
         super().__init__()
 
         self._info: ProjectInfo = ProjectInfo(name, title, description)
-        self._sample_models = SampleModels()
+        self._structures = Structures()
         self._experiments = Experiments()
         self._tabler = TableRenderer.get()
         self._plotter = Plotter()
@@ -48,6 +49,7 @@ class Project(GuardedBase):
         self._summary = Summary(self)
         self._saved = False
         self._varname = varname()
+        self._verbosity: VerbosityEnum = VerbosityEnum.FULL
 
     # ------------------------------------------------------------------
     # Dunder methods
@@ -56,11 +58,11 @@ class Project(GuardedBase):
         """Human-readable representation."""
         class_name = self.__class__.__name__
         project_name = self.name
-        sample_models_count = len(self.sample_models)
+        structures_count = len(self.structures)
         experiments_count = len(self.experiments)
         return (
             f"{class_name} '{project_name}' "
-            f'({sample_models_count} sample models, '
+            f'({structures_count} structures, '
             f'{experiments_count} experiments)'
         )
 
@@ -75,86 +77,113 @@ class Project(GuardedBase):
 
     @property
     def name(self) -> str:
-        """Convenience property to access the project's name
-        directly.
-        """
+        """Convenience property for the project name."""
         return self._info.name
 
     @property
     def full_name(self) -> str:
+        """
+        Return the full project name (alias for :attr:`name`).
+
+        Returns
+        -------
+        str
+            The project name.
+        """
         return self.name
 
     @property
-    def sample_models(self) -> SampleModels:
-        """Collection of sample models in the project."""
-        return self._sample_models
+    def structures(self) -> Structures:
+        """Collection of structures in the project."""
+        return self._structures
 
-    @sample_models.setter
+    @structures.setter
     @typechecked
-    def sample_models(self, sample_models: SampleModels) -> None:
-        self._sample_models = sample_models
+    def structures(self, structures: Structures) -> None:
+        self._structures = structures
 
     @property
-    def experiments(self):
+    def experiments(self) -> Experiments:
         """Collection of experiments in the project."""
         return self._experiments
 
     @experiments.setter
     @typechecked
-    def experiments(self, experiments: Experiments):
+    def experiments(self, experiments: Experiments) -> None:
         self._experiments = experiments
 
     @property
-    def plotter(self):
+    def plotter(self) -> Plotter:
         """Plotting facade bound to the project."""
         return self._plotter
 
     @property
-    def tabler(self):
+    def tabler(self) -> TableRenderer:
         """Tables rendering facade bound to the project."""
         return self._tabler
 
     @property
-    def analysis(self):
+    def analysis(self) -> Analysis:
         """Analysis entry-point bound to the project."""
         return self._analysis
 
     @property
-    def summary(self):
+    def summary(self) -> Summary:
         """Summary report builder bound to the project."""
         return self._summary
 
     @property
-    def parameters(self):
-        """Return parameters from all components (TBD)."""
-        # To be implemented: return all parameters in the project
-        return []
+    def parameters(self) -> list:
+        """Return parameters from all structures and experiments."""
+        return self.structures.parameters + self.experiments.parameters
 
     @property
-    def as_cif(self):
+    def as_cif(self) -> str:
         """Export whole project as CIF text."""
         # Concatenate sections using centralized CIF serializers
         return project_to_cif(self)
+
+    @property
+    def verbosity(self) -> str:
+        """
+        Project-wide console output verbosity.
+
+        Returns
+        -------
+        str
+            One of ``'full'``, ``'short'``, or ``'silent'``.
+        """
+        return self._verbosity.value
+
+    @verbosity.setter
+    def verbosity(self, value: str) -> None:
+        """
+        Set project-wide console output verbosity.
+
+        Parameters
+        ----------
+        value : str
+            ``'full'`` for multi-line output, ``'short'`` for one-line
+            status messages, or ``'silent'`` for no output.
+        """
+        self._verbosity = VerbosityEnum(value)
 
     # ------------------------------------------
     #  Project File I/O
     # ------------------------------------------
 
     def load(self, dir_path: str) -> None:
-        """Load a project from a given directory.
-
-        Loads project info, sample models, experiments, etc.
         """
-        console.paragraph('Loading project 📦 from')
-        console.print(dir_path)
-        self._info.path = dir_path
+        Load a project from a given directory.
+
+        Loads project info, structures, experiments, etc.
+        """
         # TODO: load project components from files inside dir_path
-        console.print('Loading project is not implemented yet.')
-        self._saved = True
+        raise NotImplementedError('Project.load() is not implemented yet.')
 
     def save(self) -> None:
         """Save the project into the existing project directory."""
-        if not self._info.path:
+        if self._info.path is None:
             log.error('Project path not specified. Use save_as() to define the path first.')
             return
 
@@ -169,26 +198,24 @@ class Project(GuardedBase):
             f.write(self._info.as_cif())
             console.print('├── 📄 project.cif')
 
-        # Save sample models
-        sm_dir = self._info.path / 'sample_models'
+        # Save structures
+        sm_dir = self._info.path / 'structures'
         sm_dir.mkdir(parents=True, exist_ok=True)
-        # Iterate over sample model objects (MutableMapping iter gives
-        # keys)
-        for model in self.sample_models.values():
-            file_name: str = f'{model.name}.cif'
+        console.print('├── 📁 structures/')
+        for structure in self.structures.values():
+            file_name: str = f'{structure.name}.cif'
             file_path = sm_dir / file_name
-            console.print('├── 📁 sample_models')
             with file_path.open('w') as f:
-                f.write(model.as_cif)
+                f.write(structure.as_cif)
                 console.print(f'│   └── 📄 {file_name}')
 
         # Save experiments
         expt_dir = self._info.path / 'experiments'
         expt_dir.mkdir(parents=True, exist_ok=True)
+        console.print('├── 📁 experiments/')
         for experiment in self.experiments.values():
             file_name: str = f'{experiment.name}.cif'
             file_path = expt_dir / file_name
-            console.print('├── 📁 experiments')
             with file_path.open('w') as f:
                 f.write(experiment.as_cif)
                 console.print(f'│   └── 📄 {file_name}')
@@ -222,20 +249,34 @@ class Project(GuardedBase):
     # Plotting
     # ------------------------------------------
 
-    def _update_categories(self, expt_name) -> None:
-        for sample_model in self.sample_models:
-            sample_model._update_categories()
+    def _update_categories(self, expt_name: str) -> None:
+        for structure in self.structures:
+            structure._update_categories()
         self.analysis._update_categories()
         experiment = self.experiments[expt_name]
         experiment._update_categories()
 
     def plot_meas(
         self,
-        expt_name,
-        x_min=None,
-        x_max=None,
-        d_spacing=False,
-    ):
+        expt_name: str,
+        x_min: float | None = None,
+        x_max: float | None = None,
+        x: object | None = None,
+    ) -> None:
+        """
+        Plot measured diffraction data for an experiment.
+
+        Parameters
+        ----------
+        expt_name : str
+            Name of the experiment to plot.
+        x_min : float | None, default=None
+            Lower bound for the x-axis range.
+        x_max : float | None, default=None
+            Upper bound for the x-axis range.
+        x : object | None, default=None
+            Optional explicit x-axis data to override stored values.
+        """
         self._update_categories(expt_name)
         experiment = self.experiments[expt_name]
 
@@ -245,16 +286,30 @@ class Project(GuardedBase):
             experiment.type,
             x_min=x_min,
             x_max=x_max,
-            d_spacing=d_spacing,
+            x=x,
         )
 
     def plot_calc(
         self,
-        expt_name,
-        x_min=None,
-        x_max=None,
-        d_spacing=False,
-    ):
+        expt_name: str,
+        x_min: float | None = None,
+        x_max: float | None = None,
+        x: object | None = None,
+    ) -> None:
+        """
+        Plot calculated diffraction pattern for an experiment.
+
+        Parameters
+        ----------
+        expt_name : str
+            Name of the experiment to plot.
+        x_min : float | None, default=None
+            Lower bound for the x-axis range.
+        x_max : float | None, default=None
+            Upper bound for the x-axis range.
+        x : object | None, default=None
+            Optional explicit x-axis data to override stored values.
+        """
         self._update_categories(expt_name)
         experiment = self.experiments[expt_name]
 
@@ -264,17 +319,33 @@ class Project(GuardedBase):
             experiment.type,
             x_min=x_min,
             x_max=x_max,
-            d_spacing=d_spacing,
+            x=x,
         )
 
     def plot_meas_vs_calc(
         self,
-        expt_name,
-        x_min=None,
-        x_max=None,
-        show_residual=False,
-        d_spacing=False,
-    ):
+        expt_name: str,
+        x_min: float | None = None,
+        x_max: float | None = None,
+        show_residual: bool = False,
+        x: object | None = None,
+    ) -> None:
+        """
+        Plot measured vs calculated data for an experiment.
+
+        Parameters
+        ----------
+        expt_name : str
+            Name of the experiment to plot.
+        x_min : float | None, default=None
+            Lower bound for the x-axis range.
+        x_max : float | None, default=None
+            Upper bound for the x-axis range.
+        show_residual : bool, default=False
+            When ``True``, include the residual (difference) curve.
+        x : object | None, default=None
+            Optional explicit x-axis data to override stored values.
+        """
         self._update_categories(expt_name)
         experiment = self.experiments[expt_name]
 
@@ -285,5 +356,29 @@ class Project(GuardedBase):
             x_min=x_min,
             x_max=x_max,
             show_residual=show_residual,
-            d_spacing=d_spacing,
+            x=x,
+        )
+
+    def plot_param_series(self, param: object, versus: object | None = None) -> None:
+        """
+        Plot a parameter's value across sequential fit results.
+
+        Parameters
+        ----------
+        param : object
+            Parameter descriptor whose ``unique_name`` identifies the
+            values to plot.
+        versus : object | None, default=None
+            A diffrn descriptor (e.g.
+            ``expt.diffrn.ambient_temperature``) whose value is used as
+            the x-axis for each experiment.  When ``None``, the
+            experiment sequence number is used instead.
+        """
+        unique_name = param.unique_name
+        versus_name = versus.name if versus is not None else None
+        self.plotter.plot_param_series(
+            unique_name,
+            versus_name,
+            self.experiments,
+            self.analysis._parameter_snapshots,
         )

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 import numpy as np
@@ -49,7 +49,7 @@ def test_minimizer_base_fit_flow_and_finalize():
 
         # Provide residuals implementation used by _objective_function
         def _compute_residuals(
-            self, engine_params, parameters, sample_models, experiments, calculator
+            self, engine_params, parameters, structures, experiments, calculator
         ):
             # Minimal residuals; verify engine params passed through
             assert engine_params == {'ok': True}
@@ -62,7 +62,7 @@ def test_minimizer_base_fit_flow_and_finalize():
     # Wrap minimizer's objective creator to simulate higher-level usage
     objective = minim._create_objective_function(
         parameters=params,
-        sample_models=None,
+        structures=None,
         experiments=None,
         calculator=None,
     )
@@ -94,14 +94,14 @@ def test_minimizer_base_create_objective_function_uses_compute_residuals():
             return True
 
         def _compute_residuals(
-            self, engine_params, parameters, sample_models, experiments, calculator
+            self, engine_params, parameters, structures, experiments, calculator
         ):
             # Return a deterministic vector to assert against
             return np.array([1.0, 2.0, 3.0])
 
     m = M()
     f = m._create_objective_function(
-        parameters=[], sample_models=None, experiments=None, calculator=None
+        parameters=[], structures=None, experiments=None, calculator=None
     )
     out = f({})
     assert np.allclose(out, np.array([1.0, 2.0, 3.0]))

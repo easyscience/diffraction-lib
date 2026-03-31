@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from typing import List
@@ -7,18 +7,20 @@ from typing import Union
 
 import pandas as pd
 
-from easydiffraction.analysis.calculators.factory import CalculatorFactory
-from easydiffraction.analysis.categories.aliases import Aliases
-from easydiffraction.analysis.categories.constraints import Constraints
+from easydiffraction.analysis.categories.aliases.factory import AliasesFactory
+from easydiffraction.analysis.categories.constraints.factory import ConstraintsFactory
+from easydiffraction.analysis.categories.fit_mode import FitModeEnum
+from easydiffraction.analysis.categories.fit_mode import FitModeFactory
 from easydiffraction.analysis.categories.joint_fit_experiments import JointFitExperiments
 from easydiffraction.analysis.fitting import Fitter
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
-from easydiffraction.core.parameters import NumericDescriptor
-from easydiffraction.core.parameters import Parameter
-from easydiffraction.core.parameters import StringDescriptor
-from easydiffraction.core.singletons import ConstraintsHandler
+from easydiffraction.core.singleton import ConstraintsHandler
+from easydiffraction.core.variable import NumericDescriptor
+from easydiffraction.core.variable import Parameter
+from easydiffraction.core.variable import StringDescriptor
+from easydiffraction.datablocks.experiment.collection import Experiments
 from easydiffraction.display.tables import TableRenderer
-from easydiffraction.experiments.experiments import Experiments
+from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_cif
@@ -26,53 +28,194 @@ from easydiffraction.utils.utils import render_table
 
 
 class Analysis:
-    """High-level orchestration of analysis tasks for a Project.
+    """
+    High-level orchestration of analysis tasks for a Project.
 
     This class wires calculators and minimizers, exposes a compact
     interface for parameters, constraints and results, and coordinates
-    computations across the project's sample models and experiments.
-
-    Typical usage:
-
-    - Display or filter parameters to fit.
-    - Select a calculator/minimizer implementation.
-    - Calculate patterns and run single or joint fits.
-
-    Attributes:
-    project: The parent Project object.
-        aliases: A registry of human-friendly aliases for parameters.
-        constraints: Symbolic constraints between parameters.
-    calculator: Active calculator used for computations.
-        fitter: Active fitter/minimizer driver.
+    computations across the project's structures and experiments.
     """
 
-    _calculator = CalculatorFactory.create_calculator('cryspy')
+    def __init__(self, project: object) -> None:
+        """
+        Create a new Analysis instance bound to a project.
 
-    def __init__(self, project) -> None:
-        """Create a new Analysis instance bound to a project.
-
-        Args:
-            project: The project that owns models and experiments.
+        Parameters
+        ----------
+        project : object
+            The project that owns models and experiments.
         """
         self.project = project
-        self.aliases = Aliases()
-        self.constraints = Constraints()
+        self._aliases_type: str = AliasesFactory.default_tag()
+        self.aliases = AliasesFactory.create(self._aliases_type)
+        self._constraints_type: str = ConstraintsFactory.default_tag()
+        self.constraints = ConstraintsFactory.create(self._constraints_type)
         self.constraints_handler = ConstraintsHandler.get()
-        self.calculator = Analysis._calculator  # Default calculator shared by project
-        self._calculator_key: str = 'cryspy'  # Added to track the current calculator
-        self._fit_mode: str = 'single'
-        self.fitter = Fitter('lmfit (leastsq)')
+        self._fit_mode_type: str = FitModeFactory.default_tag()
+        self._fit_mode = FitModeFactory.create(self._fit_mode_type)
+        self._joint_fit_experiments = JointFitExperiments()
+        self.fitter = Fitter('lmfit')
+        self.fit_results = None
+        self._parameter_snapshots: dict[str, dict[str, dict]] = {}
+
+    def help(self) -> None:
+        """Print a summary of analysis properties and methods."""
+        from easydiffraction.core.guard import GuardedBase
+
+        console.paragraph("Help for 'Analysis'")
+
+        cls = type(self)
+
+        # Auto-discover properties from MRO
+        seen_props: dict = {}
+        for base in cls.mro():
+            for key, attr in base.__dict__.items():
+                if key.startswith('_') or not isinstance(attr, property):
+                    continue
+                if key not in seen_props:
+                    seen_props[key] = attr
+
+        prop_rows = []
+        for i, key in enumerate(sorted(seen_props), 1):
+            prop = seen_props[key]
+            writable = '✓' if prop.fset else '✗'
+            doc = GuardedBase._first_sentence(prop.fget.__doc__ if prop.fget else None)
+            prop_rows.append([str(i), key, writable, doc])
+
+        if prop_rows:
+            console.paragraph('Properties')
+            render_table(
+                columns_headers=['#', 'Name', 'Writable', 'Description'],
+                columns_alignment=['right', 'left', 'center', 'left'],
+                columns_data=prop_rows,
+            )
+
+        # Auto-discover methods from MRO
+        seen_methods: set = set()
+        methods_list: list = []
+        for base in cls.mro():
+            for key, attr in base.__dict__.items():
+                if key.startswith('_') or key in seen_methods:
+                    continue
+                if isinstance(attr, property):
+                    continue
+                raw = attr
+                if isinstance(raw, (staticmethod, classmethod)):
+                    raw = raw.__func__
+                if callable(raw):
+                    seen_methods.add(key)
+                    methods_list.append((key, raw))
+
+        method_rows = []
+        for i, (key, method) in enumerate(sorted(methods_list), 1):
+            doc = GuardedBase._first_sentence(getattr(method, '__doc__', None))
+            method_rows.append([str(i), f'{key}()', doc])
+
+        if method_rows:
+            console.paragraph('Methods')
+            render_table(
+                columns_headers=['#', 'Name', 'Description'],
+                columns_alignment=['right', 'left', 'left'],
+                columns_data=method_rows,
+            )
+
+    # ------------------------------------------------------------------
+    #  Aliases (switchable-category pattern)
+    # ------------------------------------------------------------------
+
+    @property
+    def aliases_type(self) -> str:
+        """Tag of the active aliases collection type."""
+        return self._aliases_type
+
+    @aliases_type.setter
+    def aliases_type(self, new_type: str) -> None:
+        """
+        Switch to a different aliases collection type.
+
+        Parameters
+        ----------
+        new_type : str
+            Aliases tag (e.g. ``'default'``).
+        """
+        supported_tags = AliasesFactory.supported_tags()
+        if new_type not in supported_tags:
+            log.warning(
+                f"Unsupported aliases type '{new_type}'. "
+                f'Supported: {supported_tags}. '
+                f"For more information, use 'show_supported_aliases_types()'",
+            )
+            return
+        self.aliases = AliasesFactory.create(new_type)
+        self._aliases_type = new_type
+        console.paragraph('Aliases type changed to')
+        console.print(new_type)
+
+    def show_supported_aliases_types(self) -> None:
+        """Print a table of supported aliases collection types."""
+        AliasesFactory.show_supported()
+
+    def show_current_aliases_type(self) -> None:
+        """Print the currently used aliases collection type."""
+        console.paragraph('Current aliases type')
+        console.print(self._aliases_type)
+
+    # ------------------------------------------------------------------
+    #  Constraints (switchable-category pattern)
+    # ------------------------------------------------------------------
+
+    @property
+    def constraints_type(self) -> str:
+        """Tag of the active constraints collection type."""
+        return self._constraints_type
+
+    @constraints_type.setter
+    def constraints_type(self, new_type: str) -> None:
+        """
+        Switch to a different constraints collection type.
+
+        Parameters
+        ----------
+        new_type : str
+            Constraints tag (e.g. ``'default'``).
+        """
+        supported_tags = ConstraintsFactory.supported_tags()
+        if new_type not in supported_tags:
+            log.warning(
+                f"Unsupported constraints type '{new_type}'. "
+                f'Supported: {supported_tags}. '
+                f"For more information, use 'show_supported_constraints_types()'",
+            )
+            return
+        self.constraints = ConstraintsFactory.create(new_type)
+        self._constraints_type = new_type
+        console.paragraph('Constraints type changed to')
+        console.print(new_type)
+
+    def show_supported_constraints_types(self) -> None:
+        """Print a table of supported constraints collection types."""
+        ConstraintsFactory.show_supported()
+
+    def show_current_constraints_type(self) -> None:
+        """Print the currently used constraints collection type."""
+        console.paragraph('Current constraints type')
+        console.print(self._constraints_type)
 
     def _get_params_as_dataframe(
         self,
         params: List[Union[NumericDescriptor, Parameter]],
     ) -> pd.DataFrame:
-        """Convert a list of parameters to a DataFrame.
+        """
+        Convert a list of parameters to a DataFrame.
 
-        Args:
-            params: List of DescriptorFloat or Parameter objects.
+        Parameters
+        ----------
+        params : List[Union[NumericDescriptor, Parameter]]
+            List of DescriptorFloat or Parameter objects.
 
-        Returns:
+        Returns
+        -------
+        pd.DataFrame
             A pandas DataFrame containing parameter information.
         """
         records = []
@@ -108,13 +251,11 @@ class Analysis:
         return df
 
     def show_all_params(self) -> None:
-        """Print a table with all parameters for sample models and
-        experiments.
-        """
-        sample_models_params = self.project.sample_models.parameters
+        """Print all parameters for structures and experiments."""
+        structures_params = self.project.structures.parameters
         experiments_params = self.project.experiments.parameters
 
-        if not sample_models_params and not experiments_params:
+        if not structures_params and not experiments_params:
             log.warning('No parameters found.')
             return
 
@@ -129,8 +270,8 @@ class Analysis:
             'fittable',
         ]
 
-        console.paragraph('All parameters for all sample models (🧩 data blocks)')
-        df = self._get_params_as_dataframe(sample_models_params)
+        console.paragraph('All parameters for all structures (🧩 data blocks)')
+        df = self._get_params_as_dataframe(structures_params)
         filtered_df = df[filtered_headers]
         tabler.render(filtered_df)
 
@@ -140,13 +281,11 @@ class Analysis:
         tabler.render(filtered_df)
 
     def show_fittable_params(self) -> None:
-        """Print a table with parameters that can be included in
-        fitting.
-        """
-        sample_models_params = self.project.sample_models.fittable_parameters
+        """Print all fittable parameters."""
+        structures_params = self.project.structures.fittable_parameters
         experiments_params = self.project.experiments.fittable_parameters
 
-        if not sample_models_params and not experiments_params:
+        if not structures_params and not experiments_params:
             log.warning('No fittable parameters found.')
             return
 
@@ -163,8 +302,8 @@ class Analysis:
             'free',
         ]
 
-        console.paragraph('Fittable parameters for all sample models (🧩 data blocks)')
-        df = self._get_params_as_dataframe(sample_models_params)
+        console.paragraph('Fittable parameters for all structures (🧩 data blocks)')
+        df = self._get_params_as_dataframe(structures_params)
         filtered_df = df[filtered_headers]
         tabler.render(filtered_df)
 
@@ -174,12 +313,10 @@ class Analysis:
         tabler.render(filtered_df)
 
     def show_free_params(self) -> None:
-        """Print a table with only currently-free (varying)
-        parameters.
-        """
-        sample_models_params = self.project.sample_models.free_parameters
+        """Print only currently free (varying) parameters."""
+        structures_params = self.project.structures.free_parameters
         experiments_params = self.project.experiments.free_parameters
-        free_params = sample_models_params + experiments_params
+        free_params = structures_params + experiments_params
 
         if not free_params:
             log.warning('No free parameters found.')
@@ -200,23 +337,23 @@ class Analysis:
         ]
 
         console.paragraph(
-            'Free parameters for both sample models (🧩 data blocks) '
-            'and experiments (🔬 data blocks)'
+            'Free parameters for both structures (🧩 data blocks) and experiments (🔬 data blocks)'
         )
         df = self._get_params_as_dataframe(free_params)
         filtered_df = df[filtered_headers]
         tabler.render(filtered_df)
 
     def how_to_access_parameters(self) -> None:
-        """Show Python access paths for all parameters.
+        """
+        Show Python access paths for all parameters.
 
         The output explains how to reference specific parameters in
         code.
         """
-        sample_models_params = self.project.sample_models.parameters
+        structures_params = self.project.structures.parameters
         experiments_params = self.project.experiments.parameters
         all_params = {
-            'sample_models': sample_models_params,
+            'structures': structures_params,
             'experiments': experiments_params,
         }
 
@@ -272,15 +409,16 @@ class Analysis:
         )
 
     def show_parameter_cif_uids(self) -> None:
-        """Show CIF unique IDs for all parameters.
+        """
+        Show CIF unique IDs for all parameters.
 
         The output explains which unique identifiers are used when
         creating CIF-based constraints.
         """
-        sample_models_params = self.project.sample_models.parameters
+        structures_params = self.project.structures.parameters
         experiments_params = self.project.experiments.parameters
         all_params = {
-            'sample_models': sample_models_params,
+            'structures': structures_params,
             'experiments': experiments_params,
         }
 
@@ -328,40 +466,6 @@ class Analysis:
             columns_data=columns_data,
         )
 
-    def show_current_calculator(self) -> None:
-        """Print the name of the currently selected calculator
-        engine.
-        """
-        console.paragraph('Current calculator')
-        console.print(self.current_calculator)
-
-    @staticmethod
-    def show_supported_calculators() -> None:
-        """Print a table of available calculator backends on this
-        system.
-        """
-        CalculatorFactory.show_supported_calculators()
-
-    @property
-    def current_calculator(self) -> str:
-        """The key/name of the active calculator backend."""
-        return self._calculator_key
-
-    @current_calculator.setter
-    def current_calculator(self, calculator_name: str) -> None:
-        """Switch to a different calculator backend.
-
-        Args:
-            calculator_name: Calculator key to use (e.g. 'cryspy').
-        """
-        calculator = CalculatorFactory.create_calculator(calculator_name)
-        if calculator is None:
-            return
-        self.calculator = calculator
-        self._calculator_key = calculator_name
-        console.paragraph('Current calculator changed to')
-        console.print(self.current_calculator)
-
     def show_current_minimizer(self) -> None:
         """Print the name of the currently selected minimizer."""
         console.paragraph('Current minimizer')
@@ -369,10 +473,8 @@ class Analysis:
 
     @staticmethod
     def show_available_minimizers() -> None:
-        """Print a table of available minimizer drivers on this
-        system.
-        """
-        MinimizerFactory.show_available_minimizers()
+        """Print available minimizer drivers on this system."""
+        MinimizerFactory.show_supported()
 
     @property
     def current_minimizer(self) -> Optional[str]:
@@ -381,114 +483,92 @@ class Analysis:
 
     @current_minimizer.setter
     def current_minimizer(self, selection: str) -> None:
-        """Switch to a different minimizer implementation.
+        """
+        Switch to a different minimizer implementation.
 
-        Args:
-            selection: Minimizer selection string, e.g.
-                'lmfit (leastsq)'.
+        Parameters
+        ----------
+        selection : str
+            Minimizer selection string, e.g. 'lmfit'.
         """
         self.fitter = Fitter(selection)
         console.paragraph('Current minimizer changed to')
         console.print(self.current_minimizer)
 
+    # ------------------------------------------------------------------
+    #  Fit mode (switchable-category pattern)
+    # ------------------------------------------------------------------
+
     @property
-    def fit_mode(self) -> str:
-        """Current fitting strategy: either 'single' or 'joint'."""
+    def fit_mode(self) -> object:
+        """Fit-mode category item holding the active strategy."""
         return self._fit_mode
 
-    @fit_mode.setter
-    def fit_mode(self, strategy: str) -> None:
-        """Set the fitting strategy.
+    @property
+    def fit_mode_type(self) -> str:
+        """Tag of the active fit-mode category type."""
+        return self._fit_mode_type
 
-        When set to 'joint', all experiments get default weights and
-        are used together in a single optimization.
-
-        Args:
-                strategy: Either 'single' or 'joint'.
-
-        Raises:
-            ValueError: If an unsupported strategy value is
-                provided.
+    @fit_mode_type.setter
+    def fit_mode_type(self, new_type: str) -> None:
         """
-        if strategy not in ['single', 'joint']:
-            raise ValueError("Fit mode must be either 'single' or 'joint'")
-        self._fit_mode = strategy
-        if strategy == 'joint' and not hasattr(self, 'joint_fit_experiments'):
-            # Pre-populate all experiments with weight 0.5
-            self.joint_fit_experiments = JointFitExperiments()
-            for id in self.project.experiments.names:
-                self.joint_fit_experiments.add(id=id, weight=0.5)
-        console.paragraph('Current fit mode changed to')
-        console.print(self._fit_mode)
+        Switch to a different fit-mode category type.
 
-    def show_available_fit_modes(self) -> None:
-        """Print all supported fitting strategies and their
-        descriptions.
+        Parameters
+        ----------
+        new_type : str
+            Fit-mode tag (e.g. ``'default'``).
         """
-        strategies = [
-            {
-                'Strategy': 'single',
-                'Description': 'Independent fitting of each experiment; no shared parameters',
-            },
-            {
-                'Strategy': 'joint',
-                'Description': 'Simultaneous fitting of all experiments; '
-                'some parameters are shared',
-            },
-        ]
+        supported_tags = FitModeFactory.supported_tags()
+        if new_type not in supported_tags:
+            log.warning(
+                f"Unsupported fit-mode type '{new_type}'. "
+                f'Supported: {supported_tags}. '
+                f"For more information, use 'show_supported_fit_mode_types()'",
+            )
+            return
+        self._fit_mode = FitModeFactory.create(new_type)
+        self._fit_mode_type = new_type
+        console.paragraph('Fit-mode type changed to')
+        console.print(new_type)
 
-        columns_headers = ['Strategy', 'Description']
-        columns_alignment = ['left', 'left']
-        columns_data = []
-        for item in strategies:
-            strategy = item['Strategy']
-            description = item['Description']
-            columns_data.append([strategy, description])
+    def show_supported_fit_mode_types(self) -> None:
+        """Print a table of supported fit-mode category types."""
+        FitModeFactory.show_supported()
 
-        console.paragraph('Available fit modes')
-        render_table(
-            columns_headers=columns_headers,
-            columns_alignment=columns_alignment,
-            columns_data=columns_data,
-        )
+    def show_current_fit_mode_type(self) -> None:
+        """Print the currently used fit-mode category type."""
+        console.paragraph('Current fit-mode type')
+        console.print(self._fit_mode_type)
 
-    def show_current_fit_mode(self) -> None:
-        """Print the currently active fitting strategy."""
-        console.paragraph('Current fit mode')
-        console.print(self.fit_mode)
+    # ------------------------------------------------------------------
+    #  Joint-fit experiments (category)
+    # ------------------------------------------------------------------
+
+    @property
+    def joint_fit_experiments(self) -> object:
+        """Per-experiment weight collection for joint fitting."""
+        return self._joint_fit_experiments
 
     def show_constraints(self) -> None:
         """Print a table of all user-defined symbolic constraints."""
-        constraints_dict = dict(self.constraints)
-
         if not self.constraints._items:
             log.warning('No constraints defined.')
             return
 
         rows = []
-        for constraint in constraints_dict.values():
-            row = {
-                'lhs_alias': constraint.lhs_alias.value,
-                'rhs_expr': constraint.rhs_expr.value,
-                'full expression': f'{constraint.lhs_alias.value} = {constraint.rhs_expr.value}',
-            }
-            rows.append(row)
-
-        headers = ['lhs_alias', 'rhs_expr', 'full expression']
-        alignments = ['left', 'left', 'left']
-        rows = [[row[header] for header in headers] for row in rows]
+        for constraint in self.constraints:
+            rows.append([constraint.expression.value])
 
         console.paragraph('User defined constraints')
         render_table(
-            columns_headers=headers,
-            columns_alignment=alignments,
+            columns_headers=['expression'],
+            columns_alignment=['left'],
             columns_data=rows,
         )
 
-    def apply_constraints(self):
-        """Apply the currently defined constraints to the active
-        project.
-        """
+    def apply_constraints(self) -> None:
+        """Apply currently defined constraints to the project."""
         if not self.constraints._items:
             log.warning('No constraints defined.')
             return
@@ -497,31 +577,41 @@ class Analysis:
         self.constraints_handler.set_constraints(self.constraints)
         self.constraints_handler.apply()
 
-    def fit(self):
-        """Execute fitting using the selected mode, calculator and
-        minimizer.
+    def fit(self, verbosity: str | None = None) -> None:
+        """
+        Execute fitting for all experiments.
 
         This method performs the optimization but does not display
         results automatically. Call :meth:`show_fit_results` after
         fitting to see a summary of the fit quality and parameter
         values.
 
-        In 'single' mode, fits each experiment independently. In
-        'joint' mode, performs a simultaneous fit across experiments
-        with weights.
+        In 'single' mode, fits each experiment independently. In 'joint'
+        mode, performs a simultaneous fit across experiments with
+        weights.
 
         Sets :attr:`fit_results` on success, which can be accessed
-        programmatically
-        (e.g., ``analysis.fit_results.reduced_chi_square``).
+        programmatically (e.g.,
+        ``analysis.fit_results.reduced_chi_square``).
 
-        Example::
+        Parameters
+        ----------
+        verbosity : str | None, default=None
+            Console output verbosity: ``'full'`` for detailed per-
+            experiment progress, ``'short'`` for a
+            one-row-per-experiment summary table, or ``'silent'`` for no
+            output. When ``None``, uses ``project.verbosity``.
 
-            project.analysis.fit()
-            project.analysis.show_fit_results()  # Display results
+        Raises
+        ------
+        NotImplementedError
+            If the fit mode is not ``'single'`` or ``'joint'``.
         """
-        sample_models = self.project.sample_models
-        if not sample_models:
-            log.warning('No sample models found in the project. Cannot run fit.')
+        verb = VerbosityEnum(verbosity if verbosity is not None else self.project.verbosity)
+
+        structures = self.project.structures
+        if not structures:
+            log.warning('No structures found in the project. Cannot run fit.')
             return
 
         experiments = self.project.experiments
@@ -530,23 +620,58 @@ class Analysis:
             return
 
         # Run the fitting process
-        if self.fit_mode == 'joint':
-            console.paragraph(
-                f"Using all experiments 🔬 {experiments.names} for '{self.fit_mode}' fitting"
-            )
+        mode = FitModeEnum(self._fit_mode.mode.value)
+        if mode is FitModeEnum.JOINT:
+            # Auto-populate joint_fit_experiments if empty
+            if not len(self._joint_fit_experiments):
+                for id in experiments.names:
+                    self._joint_fit_experiments.create(id=id, weight=0.5)
+            if verb is not VerbosityEnum.SILENT:
+                console.paragraph(
+                    f"Using all experiments 🔬 {experiments.names} for '{mode.value}' fitting"
+                )
             self.fitter.fit(
-                sample_models,
+                structures,
                 experiments,
-                weights=self.joint_fit_experiments,
+                weights=self._joint_fit_experiments,
                 analysis=self,
+                verbosity=verb,
             )
-        elif self.fit_mode == 'single':
+
+            # After fitting, get the results
+            self.fit_results = self.fitter.results
+
+        elif mode is FitModeEnum.SINGLE:
+            expt_names = experiments.names
+            num_expts = len(expt_names)
+
+            # Short mode: print header and create display handle once
+            short_headers = ['experiment', 'χ²', 'iterations', 'status']
+            short_alignments = ['left', 'right', 'right', 'center']
+            short_rows: list[list[str]] = []
+            short_display_handle: object | None = None
+            if verb is VerbosityEnum.SHORT:
+                from easydiffraction.analysis.fit_helpers.tracking import _make_display_handle
+
+                first = expt_names[0]
+                last = expt_names[-1]
+                minimizer_name = self.fitter.selection
+                console.paragraph(
+                    f"Using {num_expts} experiments 🔬 from '{first}' to "
+                    f"'{last}' for '{mode.value}' fitting"
+                )
+                console.print(f"🚀 Starting fit process with '{minimizer_name}'...")
+                console.print('📈 Goodness-of-fit (reduced χ²) per experiment:')
+                short_display_handle = _make_display_handle()
+
             # TODO: Find a better way without creating dummy
             #  experiments?
-            for expt_name in experiments.names:
-                console.paragraph(
-                    f"Using experiment 🔬 '{expt_name}' for '{self.fit_mode}' fitting"
-                )
+            for _idx, expt_name in enumerate(expt_names, start=1):
+                if verb is VerbosityEnum.FULL:
+                    console.paragraph(
+                        f"Using experiment 🔬 '{expt_name}' for '{mode.value}' fitting"
+                    )
+
                 experiment = experiments[expt_name]
                 dummy_experiments = Experiments()  # TODO: Find a better name
 
@@ -555,20 +680,64 @@ class Analysis:
                 # parameters can be resolved correctly during fitting.
                 object.__setattr__(dummy_experiments, '_parent', self.project)
 
-                dummy_experiments._add(experiment)
+                dummy_experiments.add(experiment)
                 self.fitter.fit(
-                    sample_models,
+                    structures,
                     dummy_experiments,
                     analysis=self,
+                    verbosity=verb,
                 )
-        else:
-            raise NotImplementedError(f'Fit mode {self.fit_mode} not implemented yet.')
 
-        # After fitting, get the results
-        self.fit_results = self.fitter.results
+                # After fitting, snapshot parameter values before
+                # they get overwritten by the next experiment's fit
+                results = self.fitter.results
+                snapshot: dict[str, dict] = {}
+                for param in results.parameters:
+                    snapshot[param.unique_name] = {
+                        'value': param.value,
+                        'uncertainty': param.uncertainty,
+                        'units': param.units,
+                    }
+                self._parameter_snapshots[expt_name] = snapshot
+                self.fit_results = results
+
+                # Short mode: append one summary row and update in-place
+                if verb is VerbosityEnum.SHORT:
+                    chi2_str = (
+                        f'{results.reduced_chi_square:.2f}'
+                        if results.reduced_chi_square is not None
+                        else '—'
+                    )
+                    iters = str(self.fitter.minimizer.tracker.best_iteration or 0)
+                    status = '✅' if results.success else '❌'
+                    short_rows.append([expt_name, chi2_str, iters, status])
+                    render_table(
+                        columns_headers=short_headers,
+                        columns_alignment=short_alignments,
+                        columns_data=short_rows,
+                        display_handle=short_display_handle,
+                    )
+
+            # Short mode: close the display handle
+            if short_display_handle is not None and hasattr(short_display_handle, 'close'):
+                from contextlib import suppress
+
+                with suppress(Exception):
+                    short_display_handle.close()
+
+        else:
+            raise NotImplementedError(f'Fit mode {mode.value} not implemented yet.')
+
+        # After fitting, save the project
+        # TODO: Consider saving individual data during sequential
+        #  (single) fitting, instead of waiting until the end and save
+        #  only the last one
+        if self.project.info.path is not None:
+            self.project.save()
 
     def show_fit_results(self) -> None:
-        """Display a summary of the fit results.
+        """
+        Display a summary of the fit results.
 
         Renders the fit quality metrics (reduced χ², R-factors) and a
         table of fitted parameters with their starting values, final
@@ -579,26 +748,28 @@ class Analysis:
 
         Example::
 
-            project.analysis.fit()
-            project.analysis.show_fit_results()
+        project.analysis.fit() project.analysis.show_fit_results()
         """
-        if not hasattr(self, 'fit_results') or self.fit_results is None:
+        if self.fit_results is None:
             log.warning('No fit results available. Run fit() first.')
             return
 
-        sample_models = self.project.sample_models
+        structures = self.project.structures
         experiments = self.project.experiments
 
-        self.fitter._process_fit_results(sample_models, experiments)
+        self.fitter._process_fit_results(structures, experiments)
 
-    def _update_categories(self, called_by_minimizer=False) -> None:
-        """Update all categories owned by Analysis.
+    def _update_categories(self, called_by_minimizer: bool = False) -> None:
+        """
+        Update all categories owned by Analysis.
 
         This ensures aliases and constraints are up-to-date before
         serialization or after parameter changes.
 
-        Args:
-            called_by_minimizer: Whether this is called during fitting.
+        Parameters
+        ----------
+        called_by_minimizer : bool, default=False
+            Whether this is called during fitting.
         """
         # Apply constraints to sync dependent parameters
         if self.constraints._items:
@@ -610,10 +781,13 @@ class Analysis:
             if hasattr(category, '_update'):
                 category._update(called_by_minimizer=called_by_minimizer)
 
-    def as_cif(self):
-        """Serialize the analysis section to a CIF string.
+    def as_cif(self) -> str:
+        """
+        Serialize the analysis section to a CIF string.
 
-        Returns:
+        Returns
+        -------
+        str
             The analysis section represented as a CIF document string.
         """
         from easydiffraction.io.cif.serialize import analysis_to_cif
@@ -622,9 +796,7 @@ class Analysis:
         return analysis_to_cif(self)
 
     def show_as_cif(self) -> None:
-        """Render the analysis section as CIF in a formatted console
-        view.
-        """
+        """Render the analysis section as CIF in console."""
         cif_text: str = self.as_cif()
         paragraph_title: str = 'Analysis 🧮 info as cif'
         console.paragraph(paragraph_title)

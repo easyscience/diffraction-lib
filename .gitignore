@@ -1,20 +1,19 @@
 # Python
-__pycache__
-.venv
+__pycache__/
+.venv/
 .coverage
 .pyc
 
-# PyTest
-.pytest_cache
-
-# MyPy
-.mypy_cache
-
 # Pixi
-.pixi
+.pixi/
 
-# Ruff
-.ruff_cache
+# PyInstaller
+dist/
+build/
+*.spec
+
+# MkDocs
+docs/site/
 
 # Jupyter Notebooks
 .ipynb_checkpoints
@@ -24,16 +23,10 @@ node_modules/
 
 # QtCreator
 *.autosave
-
-# QtCreator Qml
 *.qmlproject.user
 *.qmlproject.user.*
-
-# QtCreator Python
 *.pyproject.user
 *.pyproject.user.*
-
-# QtCreator CMake
 CMakeLists.txt.user*
 
 # PyCharm
@@ -46,3 +39,8 @@ CMakeLists.txt.user*
 .DS_Store
 *.app
 *.dmg
+
+# Misc
+.cache/
+*.log
+*.zip

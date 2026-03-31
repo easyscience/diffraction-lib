@@ -375,22 +375,22 @@ project.save()
 #
 # #### Set Calculator
 #
-# Show supported calculation engines.
+# Show supported calculation engines for this experiment.
 
 # %%
-project.analysis.show_supported_calculators()
+project.experiments['hrpt'].show_supported_calculator_types()
 
 # %% [markdown]
-# Show current calculation engine.
+# Show current calculation engine for this experiment.
 
 # %%
-project.analysis.show_current_calculator()
+project.experiments['hrpt'].show_current_calculator_type()
 
 # %% [markdown]
 # Select the desired calculation engine.
 
 # %%
-project.analysis.current_calculator = 'cryspy'
+project.experiments['hrpt'].calculator_type = 'cryspy'
 
 # %% [markdown]
 # #### Show Calculated Data
@@ -435,23 +435,9 @@ project.analysis.how_to_access_parameters()
 
 # %% [markdown]
 # #### Set Fit Mode
-#
-# Show supported fit modes.
 
 # %%
-project.analysis.show_available_fit_modes()
-
-# %% [markdown]
-# Show current fit mode.
-
-# %%
-project.analysis.show_current_fit_mode()
-
-# %% [markdown]
-# Select desired fit mode.
-
-# %%
-project.analysis.fit_mode = 'single'
+project.analysis.fit_mode.mode = 'single'
 
 # %% [markdown]
 # #### Set Minimizer

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 import numpy as np
@@ -15,10 +15,21 @@ def test_dfols_prepare_run_and_sync(monkeypatch):
 
     class P:
         def __init__(self, v, lo=-np.inf, hi=np.inf):
-            self.value = v
+            self._value = v
             self.fit_min = lo
             self.fit_max = hi
             self.uncertainty = None
+
+        @property
+        def value(self):
+            return self._value
+
+        @value.setter
+        def value(self, v):
+            self._value = v
+
+        def _set_value_from_minimizer(self, v):
+            self._value = v
 
     class FakeRes:
         EXIT_SUCCESS = 0

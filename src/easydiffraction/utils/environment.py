@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from __future__ import annotations
@@ -9,27 +9,50 @@ from importlib.util import find_spec
 
 
 def in_pytest() -> bool:
+    """
+    Determine whether the code is running inside a pytest session.
+
+    Returns
+    -------
+    bool
+        True if pytest is loaded, False otherwise.
+    """
     return 'pytest' in sys.modules
 
 
 def in_warp() -> bool:
+    """
+    Determine whether the terminal is the Warp terminal emulator.
+
+    Returns
+    -------
+    bool
+        True if the TERM_PROGRAM environment variable equals
+        ``'WarpTerminal'``, False otherwise.
+    """
     return os.getenv('TERM_PROGRAM') == 'WarpTerminal'
 
 
 def in_pycharm() -> bool:
-    """Determines if the current environment is PyCharm.
+    """
+    Check whether the current environment is PyCharm.
 
-    Returns:
-        bool: True if running inside PyCharm, False otherwise.
+    Returns
+    -------
+    bool
+        True if running inside PyCharm, False otherwise.
     """
     return os.environ.get('PYCHARM_HOSTED') == '1'
 
 
 def in_colab() -> bool:
-    """Determines if the current environment is Google Colab.
+    """
+    Check whether the current environment is Google Colab.
 
-    Returns:
-        bool: True if running in Google Colab, False otherwise.
+    Returns
+    -------
+    bool
+        True if running in Google Colab, False otherwise.
     """
     try:
         return find_spec('google.colab') is not None
@@ -38,10 +61,13 @@ def in_colab() -> bool:
 
 
 def in_jupyter() -> bool:
-    """Return True when running inside a Jupyter Notebook.
+    """
+    Return True when running inside a Jupyter Notebook.
 
-    Returns:
-        bool: True if inside a Jupyter Notebook, False otherwise.
+    Returns
+    -------
+    bool
+        True if inside a Jupyter Notebook, False otherwise.
     """
     try:
         import IPython  # type: ignore[import-not-found]
@@ -76,11 +102,13 @@ def in_jupyter() -> bool:
 
 
 def in_github_ci() -> bool:
-    """Return True when running under GitHub Actions CI.
+    """
+    Return True when running under GitHub Actions CI.
 
-    Returns:
-        bool: True if env var ``GITHUB_ACTIONS`` is set, False
-        otherwise.
+    Returns
+    -------
+    bool
+        True if env var ``GITHUB_ACTIONS`` is set, False otherwise.
     """
     return os.environ.get('GITHUB_ACTIONS') is not None
 
@@ -91,12 +119,13 @@ def in_github_ci() -> bool:
 
 
 def is_ipython_display_handle(obj: object) -> bool:
-    """Return True if ``obj`` is an IPython DisplayHandle instance.
+    """
+    Return True if ``obj`` is an IPython DisplayHandle instance.
 
     Tries to import ``IPython.display.DisplayHandle`` and uses
-    ``isinstance`` when available. Falls back to a conservative
-    module name heuristic if IPython is missing. Any errors result
-    in ``False``.
+    ``isinstance`` when available. Falls back to a conservative module
+    name heuristic if IPython is missing. Any errors result in
+    ``False``.
     """
     try:  # Fast path when IPython is available
         from IPython.display import DisplayHandle  # type: ignore[import-not-found]
@@ -115,7 +144,8 @@ def is_ipython_display_handle(obj: object) -> bool:
 
 
 def can_update_ipython_display() -> bool:
-    """Return True if IPython HTML display utilities are available.
+    """
+    Return True if IPython HTML display utilities are available.
 
     This indicates we can safely construct ``IPython.display.HTML`` and
     update a display handle.
@@ -129,7 +159,8 @@ def can_update_ipython_display() -> bool:
 
 
 def can_use_ipython_display(handle: object) -> bool:
-    """Return True if we can update the given IPython DisplayHandle.
+    """
+    Return True if we can update the given IPython DisplayHandle.
 
     Combines type checking of the handle with availability of IPython
     HTML utilities.

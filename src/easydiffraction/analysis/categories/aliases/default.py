@@ -1,0 +1,101 @@
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
+# SPDX-License-Identifier: BSD-3-Clause
+"""
+Alias category for mapping friendly names to parameter UIDs.
+
+Defines a small record type used by analysis configuration to refer to
+parameters via readable labels instead of raw unique identifiers.
+"""
+
+from __future__ import annotations
+
+from easydiffraction.analysis.categories.aliases.factory import AliasesFactory
+from easydiffraction.core.category import CategoryCollection
+from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.metadata import TypeInfo
+from easydiffraction.core.validation import AttributeSpec
+from easydiffraction.core.validation import RegexValidator
+from easydiffraction.core.variable import StringDescriptor
+from easydiffraction.io.cif.handler import CifHandler
+
+
+class Alias(CategoryItem):
+    """
+    Single alias entry.
+
+    Maps a human-readable ``label`` to a concrete ``param_uid`` used by
+    the engine.
+    """
+
+    def __init__(self) -> None:
+        super().__init__()
+
+        self._label = StringDescriptor(
+            name='label',
+            description='...',  # TODO
+            value_spec=AttributeSpec(
+                default='_',  # TODO, Maybe None?
+                validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
+            ),
+            cif_handler=CifHandler(names=['_alias.label']),
+        )
+        self._param_uid = StringDescriptor(
+            name='param_uid',
+            description='...',  # TODO
+            value_spec=AttributeSpec(
+                default='_',
+                validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
+            ),
+            cif_handler=CifHandler(names=['_alias.param_uid']),
+        )
+
+        self._identity.category_code = 'alias'
+        self._identity.category_entry_name = lambda: str(self.label.value)
+
+    # ------------------------------------------------------------------
+    #  Public properties
+    # ------------------------------------------------------------------
+
+    @property
+    def label(self) -> StringDescriptor:
+        """
+        ...
+
+        Reading this property returns the underlying
+        ``StringDescriptor`` object. Assigning to it updates the
+        parameter value.
+        """
+        return self._label
+
+    @label.setter
+    def label(self, value: str) -> None:
+        self._label.value = value
+
+    @property
+    def param_uid(self) -> StringDescriptor:
+        """
+        ...
+
+        Reading this property returns the underlying
+        ``StringDescriptor`` object. Assigning to it updates the
+        parameter value.
+        """
+        return self._param_uid
+
+    @param_uid.setter
+    def param_uid(self, value: str) -> None:
+        self._param_uid.value = value
+
+
+@AliasesFactory.register
+class Aliases(CategoryCollection):
+    """Collection of :class:`Alias` items."""
+
+    type_info = TypeInfo(
+        tag='default',
+        description='Parameter alias mappings',
+    )
+
+    def __init__(self) -> None:
+        """Create an empty collection of aliases."""
+        super().__init__(item_type=Alias)

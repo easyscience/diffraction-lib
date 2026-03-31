@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from abc import ABC
@@ -13,17 +13,17 @@ import numpy as np
 
 from easydiffraction.analysis.fit_helpers.reporting import FitResults
 from easydiffraction.analysis.fit_helpers.tracking import FitProgressTracker
+from easydiffraction.utils.enums import VerbosityEnum
 
 
 class MinimizerBase(ABC):
-    """Abstract base for concrete minimizers.
+    """
+    Abstract base for concrete minimizers.
 
-    Contract:
-    - Subclasses must implement ``_prepare_solver_args``,
-        ``_run_solver``, ``_sync_result_to_parameters`` and
-        ``_check_success``.
-    - The ``fit`` method orchestrates the full workflow and returns
-        :class:`FitResults`.
+    Contract: - Subclasses must implement ``_prepare_solver_args``,
+    ``_run_solver``, ``_sync_result_to_parameters`` and
+    ``_check_success``. - The ``fit`` method orchestrates the full
+    workflow and returns     :class:`FitResults`.
     """
 
     def __init__(
@@ -43,13 +43,23 @@ class MinimizerBase(ABC):
         self._fitting_time: Optional[float] = None
         self.tracker: FitProgressTracker = FitProgressTracker()
 
-    def _start_tracking(self, minimizer_name: str) -> None:
-        """Initialize progress tracking and timer.
+    def _start_tracking(
+        self,
+        minimizer_name: str,
+        verbosity: VerbosityEnum = VerbosityEnum.FULL,
+    ) -> None:
+        """
+        Initialize progress tracking and timer.
 
-        Args:
-            minimizer_name: Human-readable name shown in progress.
+        Parameters
+        ----------
+        minimizer_name : str
+            Human-readable name shown in progress.
+        verbosity : VerbosityEnum, default=VerbosityEnum.FULL
+            Console output verbosity.
         """
         self.tracker.reset()
+        self.tracker._verbosity = verbosity
         self.tracker.start_tracking(minimizer_name)
         self.tracker.start_timer()
 
@@ -60,12 +70,17 @@ class MinimizerBase(ABC):
 
     @abstractmethod
     def _prepare_solver_args(self, parameters: List[Any]) -> Dict[str, Any]:
-        """Prepare keyword-arguments for the underlying solver.
+        """
+        Prepare keyword-arguments for the underlying solver.
 
-        Args:
-            parameters: List of free parameters to be fitted.
+        Parameters
+        ----------
+        parameters : List[Any]
+            List of free parameters to be fitted.
 
-        Returns:
+        Returns
+        -------
+        Dict[str, Any]
             Mapping of keyword arguments to pass into ``_run_solver``.
         """
         pass
@@ -73,36 +88,40 @@ class MinimizerBase(ABC):
     @abstractmethod
     def _run_solver(
         self,
-        objective_function: Callable[..., Any],
-        engine_parameters: Dict[str, Any],
-    ) -> Any:
+        objective_function: Callable[..., object],
+        engine_parameters: Dict[str, object],
+    ) -> object:
         """Execute the concrete solver and return its raw result."""
         pass
 
     @abstractmethod
     def _sync_result_to_parameters(
         self,
-        raw_result: Any,
-        parameters: List[Any],
+        raw_result: object,
+        parameters: List[object],
     ) -> None:
-        """Copy values from ``raw_result`` back to ``parameters`` in-
-        place.
-        """
+        """Copy raw_result values back to parameters in-place."""
         pass
 
     def _finalize_fit(
         self,
-        parameters: List[Any],
-        raw_result: Any,
+        parameters: List[object],
+        raw_result: object,
     ) -> FitResults:
-        """Build :class:`FitResults` and store it on ``self.result``.
+        """
+        Build :class:`FitResults` and store it on ``self.result``.
 
-        Args:
-            parameters: Parameters after the solver finished.
-            raw_result: Backend-specific solver output object.
+        Parameters
+        ----------
+        parameters : List[object]
+            Parameters after the solver finished.
+        raw_result : object
+            Backend-specific solver output object.
 
-        Returns:
-            FitResults: Aggregated outcome of the fit.
+        Returns
+        -------
+        FitResults
+            Aggregated outcome of the fit.
         """
         self._sync_result_to_parameters(parameters, raw_result)
         success = self._check_success(raw_result)
@@ -117,30 +136,39 @@ class MinimizerBase(ABC):
         return self.result
 
     @abstractmethod
-    def _check_success(self, raw_result: Any) -> bool:
+    def _check_success(self, raw_result: object) -> bool:
         """Determine whether the fit was successful."""
         pass
 
     def fit(
         self,
-        parameters: List[Any],
-        objective_function: Callable[..., Any],
+        parameters: List[object],
+        objective_function: Callable[..., object],
+        verbosity: VerbosityEnum = VerbosityEnum.FULL,
     ) -> FitResults:
-        """Run the full minimization workflow.
+        """
+        Run the full minimization workflow.
 
-        Args:
-            parameters: Free parameters to optimize.
-            objective_function: Callable returning residuals for a given
-                set of engine arguments.
+        Parameters
+        ----------
+        parameters : List[object]
+            Free parameters to optimize.
+        objective_function : Callable[..., object]
+            Callable returning residuals for a given set of engine
+            arguments.
+        verbosity : VerbosityEnum, default=VerbosityEnum.FULL
+            Console output verbosity.
 
-        Returns:
+        Returns
+        -------
+        FitResults
             FitResults with success flag, best chi2 and timing.
         """
         minimizer_name = self.name or 'Unnamed Minimizer'
         if self.method is not None:
             minimizer_name += f' ({self.method})'
 
-        self._start_tracking(minimizer_name)
+        self._start_tracking(minimizer_name, verbosity=verbosity)
 
         solver_args = self._prepare_solver_args(parameters)
         raw_result = self._run_solver(objective_function, **solver_args)
@@ -153,33 +181,33 @@ class MinimizerBase(ABC):
 
     def _objective_function(
         self,
-        engine_params: Dict[str, Any],
-        parameters: List[Any],
-        sample_models: Any,
-        experiments: Any,
-        calculator: Any,
+        engine_params: Dict[str, object],
+        parameters: List[object],
+        structures: object,
+        experiments: object,
+        calculator: object,
     ) -> np.ndarray:
         """Default objective helper computing residuals array."""
         return self._compute_residuals(
             engine_params,
             parameters,
-            sample_models,
+            structures,
             experiments,
             calculator,
         )
 
     def _create_objective_function(
         self,
-        parameters: List[Any],
-        sample_models: Any,
-        experiments: Any,
-        calculator: Any,
-    ) -> Callable[[Dict[str, Any]], np.ndarray]:
+        parameters: List[object],
+        structures: object,
+        experiments: object,
+        calculator: object,
+    ) -> Callable[[Dict[str, object]], np.ndarray]:
         """Return a closure capturing problem context for the solver."""
         return lambda engine_params: self._objective_function(
             engine_params,
             parameters,
-            sample_models,
+            structures,
             experiments,
             calculator,
         )

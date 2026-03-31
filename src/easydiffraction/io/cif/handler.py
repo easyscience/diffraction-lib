@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 """Minimal CIF tag handler used by descriptors/parameters."""
 
@@ -6,7 +6,8 @@ from __future__ import annotations
 
 
 class CifHandler:
-    """Canonical CIF handler used by descriptors/parameters.
+    """
+    Canonical CIF handler used by descriptors/parameters.
 
     Holds CIF tags (names) and attaches to an owning descriptor so it
     can derive a stable uid if needed.
@@ -16,7 +17,7 @@ class CifHandler:
         self._names = names
         self._owner = None  # set by attach
 
-    def attach(self, owner):
+    def attach(self, owner: object) -> None:
         """Attach to a descriptor or parameter instance."""
         self._owner = owner
 

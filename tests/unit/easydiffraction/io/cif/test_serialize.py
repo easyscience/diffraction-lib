@@ -1,5 +1,6 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+
 
 def test_module_import():
     import easydiffraction.io.cif.serialize as MUT
@@ -12,8 +13,8 @@ def test_module_import():
 def test_format_value_quotes_whitespace_strings():
     import easydiffraction.io.cif.serialize as MUT
 
-    assert MUT.format_value('a b') == '   "a b"'
-    assert MUT.format_value('ab') == '      ab'
+    assert MUT.format_value('a b') == '       "a b"'
+    assert MUT.format_value('ab') == '          ab'
 
 
 def test_param_to_cif_minimal():
@@ -26,7 +27,7 @@ def test_param_to_cif_minimal():
             self.value = 3
 
     p = P()
-    assert MUT.param_to_cif(p) == '_x.y   3.0000'
+    assert MUT.param_to_cif(p) == '_x.y   3.00000000'
 
 
 def test_category_collection_to_cif_empty_and_one_row():
@@ -73,7 +74,7 @@ def test_project_to_cif_assembles_present_sections():
     class Project:
         def __init__(self):
             self.info = Obj('I')
-            self.sample_models = None
+            self.structures = None
             self.experiments = Obj('E')
             self.analysis = None
             self.summary = None

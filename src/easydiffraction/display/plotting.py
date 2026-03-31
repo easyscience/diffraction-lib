@@ -1,6 +1,7 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Plotting facade for measured and calculated patterns.
+"""
+Plotting facade for measured and calculated patterns.
 
 Uses the common :class:`RendererBase` so plotters and tablers share a
 consistent configuration surface and engine handling.
@@ -18,6 +19,8 @@ from easydiffraction.display.plotters.base import DEFAULT_AXES_LABELS
 from easydiffraction.display.plotters.base import DEFAULT_HEIGHT
 from easydiffraction.display.plotters.base import DEFAULT_MAX
 from easydiffraction.display.plotters.base import DEFAULT_MIN
+from easydiffraction.display.plotters.base import DEFAULT_X_AXIS
+from easydiffraction.display.plotters.base import XAxisType
 from easydiffraction.display.plotters.plotly import PlotlyPlotter
 from easydiffraction.display.tables import TableRenderer
 from easydiffraction.utils.environment import in_jupyter
@@ -26,6 +29,8 @@ from easydiffraction.utils.logging import log
 
 
 class PlotterEngineEnum(str, Enum):
+    """Available plotting engine backends."""
+
     ASCII = 'asciichartpy'
     PLOTLY = 'plotly'
 
@@ -50,13 +55,21 @@ class PlotterEngineEnum(str, Enum):
 class Plotter(RendererBase):
     """User-facing plotting facade backed by concrete plotters."""
 
-    def __init__(self):
+    # ------------------------------------------------------------------
+    #  Private special methods
+    # ------------------------------------------------------------------
+
+    def __init__(self) -> None:
         super().__init__()
         # X-axis limits
         self._x_min = DEFAULT_MIN
         self._x_max = DEFAULT_MAX
         # Chart height
         self.height = DEFAULT_HEIGHT
+
+    # ------------------------------------------------------------------
+    #  Private class methods
+    # ------------------------------------------------------------------
 
     @classmethod
     def _factory(cls) -> type[RendererFactoryBase]:  # type: ignore[override]
@@ -66,7 +79,282 @@ class Plotter(RendererBase):
     def _default_engine(cls) -> str:
         return PlotterEngineEnum.default().value
 
-    def show_config(self):
+    # ------------------------------------------------------------------
+    #  Private helper methods
+    # ------------------------------------------------------------------
+
+    def _auto_x_range_for_ascii(
+        self,
+        pattern: object,
+        x_array: object,
+        x_min: object,
+        x_max: object,
+    ) -> tuple:
+        """
+        For the ASCII engine, narrow the range around the tallest peak.
+
+        Parameters
+        ----------
+        pattern : object
+            Data pattern object (needs ``intensity_meas``).
+        x_array : object
+            Full x-axis array.
+        x_min : object
+            Current minimum (may be ``None``).
+        x_max : object
+            Current maximum (may be ``None``).
+
+        Returns
+        -------
+        tuple
+            Tuple of ``(x_min, x_max)``, possibly narrowed.
+        """
+        if self._engine == 'asciichartpy' and (x_min is None or x_max is None):
+            max_intensity_pos = np.argmax(pattern.intensity_meas)
+            half_range = 50
+            start = max(0, max_intensity_pos - half_range)
+            end = min(len(x_array) - 1, max_intensity_pos + half_range)
+            x_min = x_array[start]
+            x_max = x_array[end]
+        return x_min, x_max
+
+    def _filtered_y_array(
+        self,
+        y_array: object,
+        x_array: object,
+        x_min: object,
+        x_max: object,
+    ) -> object:
+        """
+        Filter an array by the inclusive x-range limits.
+
+        Parameters
+        ----------
+        y_array : object
+            1D array-like of y values.
+        x_array : object
+            1D array-like of x values (same length as ``y_array``).
+        x_min : object
+            Minimum x limit (or ``None`` to use default).
+        x_max : object
+            Maximum x limit (or ``None`` to use default).
+
+        Returns
+        -------
+        object
+            Filtered ``y_array`` values where ``x_array`` lies within
+            ``[x_min, x_max]``.
+        """
+        if x_min is None:
+            x_min = self.x_min
+        if x_max is None:
+            x_max = self.x_max
+
+        mask = (x_array >= x_min) & (x_array <= x_max)
+        filtered_y_array = y_array[mask]
+
+        return filtered_y_array
+
+    def _get_axes_labels(
+        self,
+        sample_form: object,
+        scattering_type: object,
+        x_axis: object,
+    ) -> list:
+        """Look up axis labels for the experiment / x-axis."""
+        return DEFAULT_AXES_LABELS[(sample_form, scattering_type, x_axis)]
+
+    def _prepare_powder_data(
+        self,
+        pattern: object,
+        expt_name: str,
+        expt_type: object,
+        x_min: object,
+        x_max: object,
+        x: object,
+        need_meas: bool = False,
+        need_calc: bool = False,
+        show_residual: bool = False,
+    ) -> dict | None:
+        """
+        Validate, resolve axes, auto-range, and filter arrays.
+
+        Parameters
+        ----------
+        pattern : object
+            Data pattern object with intensity arrays.
+        expt_name : str
+            Experiment name for error messages.
+        expt_type : object
+            Experiment type with sample_form, scattering, and beam
+            enums.
+        x_min : object
+            Optional minimum x-axis limit.
+        x_max : object
+            Optional maximum x-axis limit.
+        x : object
+            Explicit x-axis type or ``None``.
+        need_meas : bool, default=False
+            Whether ``intensity_meas`` is required.
+        need_calc : bool, default=False
+            Whether ``intensity_calc`` is required.
+        show_residual : bool, default=False
+            If ``True``, compute meas − calc residual.
+
+        Returns
+        -------
+        dict | None
+            A dict with keys ``x_filtered``, ``y_series``, ``y_labels``,
+            ``axes_labels``, and ``x_axis``; or ``None`` when a required
+            array is missing.
+        """
+        x_axis, x_name, sample_form, scattering_type, _ = self._resolve_x_axis(expt_type, x)
+
+        # Get x-array from pattern
+        x_array = getattr(pattern, x_axis, None)
+        if x_array is None:
+            log.error(f'No {x_name} data available for experiment {expt_name}')
+            return None
+
+        # Validate required intensities
+        if need_meas and pattern.intensity_meas is None:
+            log.error(f'No measured data available for experiment {expt_name}')
+            return None
+        if need_calc and pattern.intensity_calc is None:
+            log.error(f'No calculated data available for experiment {expt_name}')
+            return None
+
+        # Auto-range for ASCII engine
+        x_min, x_max = self._auto_x_range_for_ascii(pattern, x_array, x_min, x_max)
+
+        # Filter x
+        x_filtered = self._filtered_y_array(x_array, x_array, x_min, x_max)
+
+        # Filter y arrays and build series / labels
+        y_series = []
+        y_labels = []
+
+        y_meas = None
+        if need_meas:
+            y_meas = self._filtered_y_array(pattern.intensity_meas, x_array, x_min, x_max)
+            y_series.append(y_meas)
+            y_labels.append('meas')
+
+        y_calc = None
+        if need_calc:
+            y_calc = self._filtered_y_array(pattern.intensity_calc, x_array, x_min, x_max)
+            y_series.append(y_calc)
+            y_labels.append('calc')
+
+        if show_residual and y_meas is not None and y_calc is not None:
+            y_resid = y_meas - y_calc
+            y_series.append(y_resid)
+            y_labels.append('resid')
+
+        axes_labels = self._get_axes_labels(sample_form, scattering_type, x_axis)
+
+        return {
+            'x_filtered': x_filtered,
+            'y_series': y_series,
+            'y_labels': y_labels,
+            'axes_labels': axes_labels,
+            'x_axis': x_axis,
+        }
+
+    def _resolve_x_axis(self, expt_type: object, x: object) -> tuple:
+        """
+        Determine the x-axis type from experiment metadata.
+
+        Parameters
+        ----------
+        expt_type : object
+            Experiment type with sample_form, scattering_type, and
+            beam_mode enums.
+        x : object
+            Explicit x-axis type or ``None`` to auto-detect.
+
+        Returns
+        -------
+        tuple
+            Tuple of ``(x_axis, x_name, sample_form, scattering_type,
+            beam_mode)``.
+        """
+        sample_form = expt_type.sample_form.value
+        scattering_type = expt_type.scattering_type.value
+        beam_mode = expt_type.beam_mode.value
+        x_axis = DEFAULT_X_AXIS[(sample_form, scattering_type, beam_mode)] if x is None else x
+        x_name = getattr(x_axis, 'value', x_axis)
+        return x_axis, x_name, sample_form, scattering_type, beam_mode
+
+    # ------------------------------------------------------------------
+    #  Public properties
+    # ------------------------------------------------------------------
+
+    @property
+    def x_min(self) -> float:
+        """Minimum x-axis limit."""
+        return self._x_min
+
+    @x_min.setter
+    def x_min(self, value: object) -> None:
+        """
+        Set the minimum x-axis limit.
+
+        Parameters
+        ----------
+        value : object
+            Minimum limit or ``None`` to reset to default.
+        """
+        if value is not None:
+            self._x_min = value
+        else:
+            self._x_min = DEFAULT_MIN
+
+    @property
+    def x_max(self) -> float:
+        """Maximum x-axis limit."""
+        return self._x_max
+
+    @x_max.setter
+    def x_max(self, value: object) -> None:
+        """
+        Set the maximum x-axis limit.
+
+        Parameters
+        ----------
+        value : object
+            Maximum limit or ``None`` to reset to default.
+        """
+        if value is not None:
+            self._x_max = value
+        else:
+            self._x_max = DEFAULT_MAX
+
+    @property
+    def height(self) -> int:
+        """Plot height (rows for ASCII, pixels for Plotly)."""
+        return self._height
+
+    @height.setter
+    def height(self, value: object) -> None:
+        """
+        Set plot height.
+
+        Parameters
+        ----------
+        value : object
+            Height value or ``None`` to reset to default.
+        """
+        if value is not None:
+            self._height = value
+        else:
+            self._height = DEFAULT_HEIGHT
+
+    # ------------------------------------------------------------------
+    #  Public methods
+    # ------------------------------------------------------------------
+
+    def show_config(self) -> None:
         """Display the current plotting configuration."""
         headers = [
             ('Parameter', 'left'),
@@ -81,346 +369,306 @@ class Plotter(RendererBase):
         console.paragraph('Current plotter configuration')
         TableRenderer.get().render(df)
 
-    @property
-    def x_min(self):
-        """Minimum x-axis limit."""
-        return self._x_min
-
-    @x_min.setter
-    def x_min(self, value):
-        """Set the minimum x-axis limit.
-
-        Args:
-            value: Minimum limit or ``None`` to reset to default.
-        """
-        if value is not None:
-            self._x_min = value
-        else:
-            self._x_min = DEFAULT_MIN
-
-    @property
-    def x_max(self):
-        """Maximum x-axis limit."""
-        return self._x_max
-
-    @x_max.setter
-    def x_max(self, value):
-        """Set the maximum x-axis limit.
-
-        Args:
-            value: Maximum limit or ``None`` to reset to default.
-        """
-        if value is not None:
-            self._x_max = value
-        else:
-            self._x_max = DEFAULT_MAX
-
-    @property
-    def height(self):
-        """Plot height (rows for ASCII, pixels for Plotly)."""
-        return self._height
-
-    @height.setter
-    def height(self, value):
-        """Set plot height.
-
-        Args:
-            value: Height value or ``None`` to reset to default.
-        """
-        if value is not None:
-            self._height = value
-        else:
-            self._height = DEFAULT_HEIGHT
-
     def plot_meas(
         self,
-        pattern,
-        expt_name,
-        expt_type,
-        x_min=None,
-        x_max=None,
-        d_spacing=False,
-    ):
-        """Plot measured pattern using the current engine.
-
-        Args:
-            pattern: Object with ``x`` and ``meas`` arrays (and
-                ``d`` when ``d_spacing`` is true).
-            expt_name: Experiment name for the title.
-            expt_type: Experiment type with scattering/beam enums.
-            x_min: Optional minimum x-axis limit.
-            x_max: Optional maximum x-axis limit.
-            d_spacing: If ``True``, plot against d-spacing values.
+        pattern: object,
+        expt_name: str,
+        expt_type: object,
+        x_min: object = None,
+        x_max: object = None,
+        x: object = None,
+    ) -> None:
         """
-        if pattern.x is None:
-            log.error(f'No data available for experiment {expt_name}')
-            return
-        if pattern.meas is None:
-            log.error(f'No measured data available for experiment {expt_name}')
-            return
+        Plot measured pattern using the current engine.
 
-        # Select x-axis data based on d-spacing or original x values
-        x_array = pattern.d if d_spacing else pattern.x
-
-        # For asciichartpy, if x_min or x_max is not provided, center
-        # around the maximum intensity peak
-        if self._engine == 'asciichartpy' and (x_min is None or x_max is None):
-            max_intensity_pos = np.argmax(pattern.meas)
-            half_range = 50
-            start = max(0, max_intensity_pos - half_range)
-            end = min(len(x_array) - 1, max_intensity_pos + half_range)
-            x_min = x_array[start]
-            x_max = x_array[end]
-
-        # Filter x, y_meas, and y_calc based on x_min and x_max
-        x = self._filtered_y_array(
-            y_array=x_array,
-            x_array=x_array,
-            x_min=x_min,
-            x_max=x_max,
+        Parameters
+        ----------
+        pattern : object
+            Object with x-axis arrays (``two_theta``,
+            ``time_of_flight``, ``d_spacing``) and ``meas`` array.
+        expt_name : str
+            Experiment name for the title.
+        expt_type : object
+            Experiment type with scattering/beam enums.
+        x_min : object, default=None
+            Optional minimum x-axis limit.
+        x_max : object, default=None
+            Optional maximum x-axis limit.
+        x : object, default=None
+            X-axis type (``'two_theta'``, ``'time_of_flight'``, or
+            ``'d_spacing'``). If ``None``, auto-detected from beam mode.
+        """
+        ctx = self._prepare_powder_data(
+            pattern,
+            expt_name,
+            expt_type,
+            x_min,
+            x_max,
+            x,
+            need_meas=True,
         )
-        y_meas = self._filtered_y_array(
-            y_array=pattern.meas,
-            x_array=x_array,
-            x_min=x_min,
-            x_max=x_max,
-        )
+        if ctx is None:
+            return
 
-        y_series = [y_meas]
-        y_labels = ['meas']
-
-        if d_spacing:
-            axes_labels = DEFAULT_AXES_LABELS[
-                (
-                    expt_type.scattering_type.value,
-                    'd-spacing',
-                )
-            ]
-        else:
-            axes_labels = DEFAULT_AXES_LABELS[
-                (
-                    expt_type.scattering_type.value,
-                    expt_type.beam_mode.value,
-                )
-            ]
-
-        # TODO: Before, it was self._plotter.plot. Check what is better.
-        self._backend.plot(
-            x=x,
-            y_series=y_series,
-            labels=y_labels,
-            axes_labels=axes_labels,
+        self._backend.plot_powder(
+            x=ctx['x_filtered'],
+            y_series=ctx['y_series'],
+            labels=ctx['y_labels'],
+            axes_labels=ctx['axes_labels'],
             title=f"Measured data for experiment 🔬 '{expt_name}'",
             height=self.height,
         )
 
     def plot_calc(
         self,
-        pattern,
-        expt_name,
-        expt_type,
-        x_min=None,
-        x_max=None,
-        d_spacing=False,
-    ):
-        """Plot calculated pattern using the current engine.
-
-        Args:
-            pattern: Object with ``x`` and ``calc`` arrays (and
-                ``d`` when ``d_spacing`` is true).
-            expt_name: Experiment name for the title.
-            expt_type: Experiment type with scattering/beam enums.
-            x_min: Optional minimum x-axis limit.
-            x_max: Optional maximum x-axis limit.
-            d_spacing: If ``True``, plot against d-spacing values.
+        pattern: object,
+        expt_name: str,
+        expt_type: object,
+        x_min: object = None,
+        x_max: object = None,
+        x: object = None,
+    ) -> None:
         """
-        if pattern.x is None:
-            log.error(f'No data available for experiment {expt_name}')
-            return
-        if pattern.calc is None:
-            log.error(f'No calculated data available for experiment {expt_name}')
-            return
+        Plot calculated pattern using the current engine.
 
-        # Select x-axis data based on d-spacing or original x values
-        x_array = pattern.d if d_spacing else pattern.x
-
-        # For asciichartpy, if x_min or x_max is not provided, center
-        # around the maximum intensity peak
-        if self._engine == 'asciichartpy' and (x_min is None or x_max is None):
-            max_intensity_pos = np.argmax(pattern.meas)
-            half_range = 50
-            start = max(0, max_intensity_pos - half_range)
-            end = min(len(x_array) - 1, max_intensity_pos + half_range)
-            x_min = x_array[start]
-            x_max = x_array[end]
-
-        # Filter x, y_meas, and y_calc based on x_min and x_max
-        x = self._filtered_y_array(
-            y_array=x_array,
-            x_array=x_array,
-            x_min=x_min,
-            x_max=x_max,
+        Parameters
+        ----------
+        pattern : object
+            Object with x-axis arrays (``two_theta``,
+            ``time_of_flight``, ``d_spacing``) and ``calc`` array.
+        expt_name : str
+            Experiment name for the title.
+        expt_type : object
+            Experiment type with scattering/beam enums.
+        x_min : object, default=None
+            Optional minimum x-axis limit.
+        x_max : object, default=None
+            Optional maximum x-axis limit.
+        x : object, default=None
+            X-axis type (``'two_theta'``, ``'time_of_flight'``, or
+            ``'d_spacing'``). If ``None``, auto-detected from beam mode.
+        """
+        ctx = self._prepare_powder_data(
+            pattern,
+            expt_name,
+            expt_type,
+            x_min,
+            x_max,
+            x,
+            need_calc=True,
         )
-        y_calc = self._filtered_y_array(
-            y_array=pattern.calc,
-            x_array=x_array,
-            x_min=x_min,
-            x_max=x_max,
-        )
+        if ctx is None:
+            return
 
-        y_series = [y_calc]
-        y_labels = ['calc']
-
-        if d_spacing:
-            axes_labels = DEFAULT_AXES_LABELS[
-                (
-                    expt_type.scattering_type.value,
-                    'd-spacing',
-                )
-            ]
-        else:
-            axes_labels = DEFAULT_AXES_LABELS[
-                (
-                    expt_type.scattering_type.value,
-                    expt_type.beam_mode.value,
-                )
-            ]
-
-        self._backend.plot(
-            x=x,
-            y_series=y_series,
-            labels=y_labels,
-            axes_labels=axes_labels,
+        self._backend.plot_powder(
+            x=ctx['x_filtered'],
+            y_series=ctx['y_series'],
+            labels=ctx['y_labels'],
+            axes_labels=ctx['axes_labels'],
             title=f"Calculated data for experiment 🔬 '{expt_name}'",
             height=self.height,
         )
 
     def plot_meas_vs_calc(
         self,
-        pattern,
-        expt_name,
-        expt_type,
-        x_min=None,
-        x_max=None,
-        show_residual=False,
-        d_spacing=False,
-    ):
-        """Plot measured and calculated series and optional residual.
-
-        Args:
-            pattern: Object with ``x``, ``meas`` and ``calc`` arrays
-                (and ``d`` when ``d_spacing`` is true).
-            expt_name: Experiment name for the title.
-            expt_type: Experiment type with scattering/beam enums.
-            x_min: Optional minimum x-axis limit.
-            x_max: Optional maximum x-axis limit.
-            show_residual: If ``True``, add residual series.
-            d_spacing: If ``True``, plot against d-spacing values.
+        pattern: object,
+        expt_name: str,
+        expt_type: object,
+        x_min: object = None,
+        x_max: object = None,
+        show_residual: bool = False,
+        x: object = None,
+    ) -> None:
         """
-        if pattern.x is None:
-            log.error(f'No data available for experiment {expt_name}')
-            return
-        if pattern.meas is None:
+        Plot measured and calculated series and optional residual.
+
+        Supports both powder and single crystal data with a unified API.
+
+        For powder diffraction: - x='two_theta', 'time_of_flight', or
+        'd_spacing' - Auto-detected from beam mode if not specified
+
+        For single crystal diffraction: - x='intensity_calc' (default):
+        scatter plot - x='d_spacing' or 'sin_theta_over_lambda': line
+        plot
+
+        Parameters
+        ----------
+        pattern : object
+            Data pattern object with meas/calc arrays.
+        expt_name : str
+            Experiment name for the title.
+        expt_type : object
+            Experiment type with sample_form, scattering, and beam
+            enums.
+        x_min : object, default=None
+            Optional minimum x-axis limit.
+        x_max : object, default=None
+            Optional maximum x-axis limit.
+        show_residual : bool, default=False
+            If ``True``, add residual series (powder only).
+        x : object, default=None
+            X-axis type. If ``None``, auto-detected from sample form and
+            beam mode.
+        """
+        x_axis, _, sample_form, scattering_type, _ = self._resolve_x_axis(expt_type, x)
+
+        # Validate required data (before x-array check, matching
+        # original behavior for plot_meas_vs_calc)
+        if pattern.intensity_meas is None:
             log.error(f'No measured data available for experiment {expt_name}')
             return
-        if pattern.calc is None:
+        if pattern.intensity_calc is None:
             log.error(f'No calculated data available for experiment {expt_name}')
             return
 
-        # Select x-axis data based on d-spacing or original x values
-        x_array = pattern.d if d_spacing else pattern.x
+        title = f"Measured vs Calculated data for experiment 🔬 '{expt_name}'"
 
-        # For asciichartpy, if x_min or x_max is not provided, center
-        # around the maximum intensity peak
-        if self._engine == 'asciichartpy' and (x_min is None or x_max is None):
-            max_intensity_pos = np.argmax(pattern.meas)
-            half_range = 50
-            start = max(0, max_intensity_pos - half_range)
-            end = min(len(x_array) - 1, max_intensity_pos + half_range)
-            x_min = x_array[start]
-            x_max = x_array[end]
+        # Single crystal scatter plot (I²calc vs I²meas)
+        if x_axis == XAxisType.INTENSITY_CALC or x_axis == 'intensity_calc':
+            axes_labels = self._get_axes_labels(sample_form, scattering_type, x_axis)
 
-        # Filter x, y_meas, and y_calc based on x_min and x_max
-        x = self._filtered_y_array(
-            y_array=x_array,
-            x_array=x_array,
-            x_min=x_min,
-            x_max=x_max,
+            if pattern.intensity_meas_su is None:
+                log.warning(f'No measurement uncertainties for experiment {expt_name}')
+                meas_su = np.zeros_like(pattern.intensity_meas)
+            else:
+                meas_su = pattern.intensity_meas_su
+
+            self._backend.plot_single_crystal(
+                x_calc=pattern.intensity_calc,
+                y_meas=pattern.intensity_meas,
+                y_meas_su=meas_su,
+                axes_labels=axes_labels,
+                title=f"Measured vs Calculated data for experiment 🔬 '{expt_name}'",
+                height=self.height,
+            )
+            return
+
+        # Line plot (PD or SC with d_spacing/sin_theta_over_lambda)
+        # TODO: Rename from _prepare_powder_data as it also supports
+        #  single crystal line plots
+        ctx = self._prepare_powder_data(
+            pattern,
+            expt_name,
+            expt_type,
+            x_min,
+            x_max,
+            x,
+            need_meas=True,
+            need_calc=True,
+            show_residual=show_residual,
         )
-        y_meas = self._filtered_y_array(
-            y_array=pattern.meas,
-            x_array=x_array,
-            x_min=x_min,
-            x_max=x_max,
-        )
-        y_calc = self._filtered_y_array(
-            y_array=pattern.calc,
-            x_array=x_array,
-            x_min=x_min,
-            x_max=x_max,
-        )
+        if ctx is None:
+            return
 
-        y_series = [y_meas, y_calc]
-        y_labels = ['meas', 'calc']
-
-        if d_spacing:
-            axes_labels = DEFAULT_AXES_LABELS[
-                (
-                    expt_type.scattering_type.value,
-                    'd-spacing',
-                )
-            ]
-        else:
-            axes_labels = DEFAULT_AXES_LABELS[
-                (
-                    expt_type.scattering_type.value,
-                    expt_type.beam_mode.value,
-                )
-            ]
-
-        if show_residual:
-            y_resid = y_meas - y_calc
-            y_series.append(y_resid)
-            y_labels.append('resid')
-
-        self._backend.plot(
-            x=x,
-            y_series=y_series,
-            labels=y_labels,
-            axes_labels=axes_labels,
-            title=f"Measured vs Calculated data for experiment 🔬 '{expt_name}'",
+        self._backend.plot_powder(
+            x=ctx['x_filtered'],
+            y_series=ctx['y_series'],
+            labels=ctx['y_labels'],
+            axes_labels=ctx['axes_labels'],
+            title=title,
             height=self.height,
         )
 
-    def _filtered_y_array(
+    def plot_param_series(
         self,
-        y_array,
-        x_array,
-        x_min,
-        x_max,
-    ):
-        """Filter an array by the inclusive x-range limits.
-
-        Args:
-            y_array: 1D array-like of y values.
-            x_array: 1D array-like of x values (same length as
-                ``y_array``).
-            x_min: Minimum x limit (or ``None`` to use default).
-            x_max: Maximum x limit (or ``None`` to use default).
-
-        Returns:
-            Filtered ``y_array`` values where ``x_array`` lies within
-            ``[x_min, x_max]``.
+        unique_name: str,
+        versus_name: str | None,
+        experiments: object,
+        parameter_snapshots: dict[str, dict[str, dict]],
+    ) -> None:
         """
-        if x_min is None:
-            x_min = self.x_min
-        if x_max is None:
-            x_max = self.x_max
+        Plot a parameter's value across sequential fit results.
 
-        mask = (x_array >= x_min) & (x_array <= x_max)
-        filtered_y_array = y_array[mask]
+        Parameters
+        ----------
+        unique_name : str
+            Unique name of the parameter to plot.
+        versus_name : str | None
+            Name of the diffrn descriptor to use as the x-axis (e.g.
+            ``'ambient_temperature'``).  When ``None``, the experiment
+            sequence index is used instead.
+        experiments : object
+            Experiments collection for accessing diffrn conditions.
+        parameter_snapshots : dict[str, dict[str, dict]]
+            Per-experiment parameter value snapshots keyed by experiment
+            name, then by parameter unique name.
+        """
+        x = []
+        y = []
+        sy = []
+        axes_labels = []
+        title = ''
 
-        return filtered_y_array
+        for idx, expt_name in enumerate(parameter_snapshots, start=1):
+            experiment = experiments[expt_name]
+            diffrn = experiment.diffrn
+
+            x_axis_param = self._resolve_diffrn_descriptor(diffrn, versus_name)
+
+            if x_axis_param is not None and x_axis_param.value is not None:
+                value = x_axis_param.value
+            else:
+                value = idx
+            x.append(value)
+
+            param_data = parameter_snapshots[expt_name][unique_name]
+            y.append(param_data['value'])
+            sy.append(param_data['uncertainty'])
+
+            if x_axis_param is not None:
+                axes_labels = [
+                    x_axis_param.description or x_axis_param.name,
+                    f'Parameter value ({param_data["units"]})',
+                ]
+            else:
+                axes_labels = [
+                    'Experiment No.',
+                    f'Parameter value ({param_data["units"]})',
+                ]
+
+            title = f"Parameter '{unique_name}' across fit results"
+
+        self._backend.plot_scatter(
+            x=x,
+            y=y,
+            sy=sy,
+            axes_labels=axes_labels,
+            title=title,
+            height=self.height,
+        )
+
+    @staticmethod
+    def _resolve_diffrn_descriptor(
+        diffrn: object,
+        name: str | None,
+    ) -> object | None:
+        """
+        Return the diffrn descriptor matching *name*, or ``None``.
+
+        Parameters
+        ----------
+        diffrn : object
+            The diffrn category of an experiment.
+        name : str | None
+            Descriptor name (e.g. ``'ambient_temperature'``).
+
+        Returns
+        -------
+        object | None
+            The matching ``NumericDescriptor``, or ``None`` when *name*
+            is ``None`` or unrecognised.
+        """
+        if name is None:
+            return None
+        if name == 'ambient_temperature':
+            return diffrn.ambient_temperature
+        if name == 'ambient_pressure':
+            return diffrn.ambient_pressure
+        if name == 'ambient_magnetic_field':
+            return diffrn.ambient_magnetic_field
+        if name == 'ambient_electric_field':
+            return diffrn.ambient_electric_field
+        return None
 
 
 class PlotterFactory(RendererFactoryBase):

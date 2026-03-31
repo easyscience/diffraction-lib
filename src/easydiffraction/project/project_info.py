@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 """Project metadata container used by Project."""
 
@@ -12,9 +12,7 @@ from easydiffraction.utils.utils import render_cif
 
 
 class ProjectInfo(GuardedBase):
-    """Stores metadata about the project, such as name, title,
-    description, and file paths.
-    """
+    """Store project metadata: name, title, description, paths."""
 
     def __init__(
         self,
@@ -27,7 +25,7 @@ class ProjectInfo(GuardedBase):
         self._name = name
         self._title = title
         self._description = description
-        self._path: pathlib.Path = pathlib.Path.cwd()
+        self._path: pathlib.Path | None = None  # pathlib.Path.cwd()
         self._created: datetime.datetime = datetime.datetime.now()
         self._last_modified: datetime.datetime = datetime.datetime.now()
 
@@ -38,6 +36,14 @@ class ProjectInfo(GuardedBase):
 
     @name.setter
     def name(self, value: str) -> None:
+        """
+        Set the project name.
+
+        Parameters
+        ----------
+        value : str
+            New project name.
+        """
         self._name = value
 
     @property
@@ -52,6 +58,14 @@ class ProjectInfo(GuardedBase):
 
     @title.setter
     def title(self, value: str) -> None:
+        """
+        Set the project title.
+
+        Parameters
+        ----------
+        value : str
+            New project title.
+        """
         self._title = value
 
     @property
@@ -61,15 +75,31 @@ class ProjectInfo(GuardedBase):
 
     @description.setter
     def description(self, value: str) -> None:
+        """
+        Set the project description (whitespace normalized).
+
+        Parameters
+        ----------
+        value : str
+            New description text.
+        """
         self._description = ' '.join(value.split())
 
     @property
-    def path(self) -> pathlib.Path:
+    def path(self) -> pathlib.Path | None:
         """Return the project path as a Path object."""
         return self._path
 
     @path.setter
-    def path(self, value) -> None:
+    def path(self, value: object) -> None:
+        """
+        Set the project directory path.
+
+        Parameters
+        ----------
+        value : object
+            New path as a :class:`str` or :class:`pathlib.Path`.
+        """
         # Accept str or Path; normalize to Path
         self._path = pathlib.Path(value)
 
@@ -87,8 +117,8 @@ class ProjectInfo(GuardedBase):
         """Update the last modified timestamp."""
         self._last_modified = datetime.datetime.now()
 
-    def parameters(self):
-        """Placeholder for parameter listing."""
+    def parameters(self) -> None:
+        """List parameters (not implemented)."""
         pass
 
     # TODO: Consider moving to io.cif.serialize

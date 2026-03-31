@@ -1,5 +1,6 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+
 
 def test_module_import():
     import easydiffraction.display.plotting as MUT
@@ -53,52 +54,60 @@ def test_plotter_factory_supported_and_unsupported():
 
 
 def test_plotter_error_paths_and_filtering(capsys):
-    from easydiffraction.experiments.experiment.enums import BeamModeEnum
-    from easydiffraction.experiments.experiment.enums import ScatteringTypeEnum
+    from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+    from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+    from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
     from easydiffraction.display.plotting import Plotter
 
     class Ptn:
-        def __init__(self, x=None, meas=None, calc=None, d=None):
-            self.x = x
-            self.meas = meas
-            self.calc = calc
-            self.d = d if d is not None else x
+        def __init__(
+            self, two_theta=None, intensity_meas=None, intensity_calc=None, d_spacing=None
+        ):
+            self.two_theta = two_theta
+            self.intensity_meas = intensity_meas
+            self.intensity_calc = intensity_calc
+            self.d_spacing = d_spacing if d_spacing is not None else two_theta
 
     class ExptType:
         def __init__(self):
+            self.sample_form = type('SF', (), {'value': SampleFormEnum.POWDER})
             self.scattering_type = type('S', (), {'value': ScatteringTypeEnum.BRAGG})
             self.beam_mode = type('B', (), {'value': BeamModeEnum.CONSTANT_WAVELENGTH})
 
     p = Plotter()
 
     # Error paths (now log errors via console; messages are printed)
-    p.plot_meas(Ptn(x=None, meas=None), 'E', ExptType())
+    p.plot_meas(Ptn(two_theta=None, intensity_meas=None), 'E', ExptType())
     out = capsys.readouterr().out
-    assert 'No data available for experiment E' in out
+    assert 'No two_theta data available for experiment E' in out
 
-    p.plot_meas(Ptn(x=[1], meas=None), 'E', ExptType())
+    p.plot_meas(Ptn(two_theta=[1], intensity_meas=None), 'E', ExptType())
     out = capsys.readouterr().out
     assert 'No measured data available for experiment E' in out
 
-    p.plot_calc(Ptn(x=None, calc=None), 'E', ExptType())
+    p.plot_calc(Ptn(two_theta=None, intensity_calc=None), 'E', ExptType())
     out = capsys.readouterr().out
-    assert 'No data available for experiment E' in out
+    assert 'No two_theta data available for experiment E' in out
 
-    p.plot_calc(Ptn(x=[1], calc=None), 'E', ExptType())
+    p.plot_calc(Ptn(two_theta=[1], intensity_calc=None), 'E', ExptType())
     out = capsys.readouterr().out
     assert 'No calculated data available for experiment E' in out
 
-    p.plot_meas_vs_calc(Ptn(x=None), 'E', ExptType())
-    out = capsys.readouterr().out
-    assert 'No data available for experiment E' in out
-    p.plot_meas_vs_calc(Ptn(x=[1], meas=None, calc=[1]), 'E', ExptType())
+    p.plot_meas_vs_calc(
+        Ptn(two_theta=None, intensity_meas=None, intensity_calc=None), 'E', ExptType()
+    )
     out = capsys.readouterr().out
     assert 'No measured data available for experiment E' in out
-    p.plot_meas_vs_calc(Ptn(x=[1], meas=[1], calc=None), 'E', ExptType())
+    p.plot_meas_vs_calc(
+        Ptn(two_theta=[1], intensity_meas=None, intensity_calc=[1]), 'E', ExptType()
+    )
+    out = capsys.readouterr().out
+    assert 'No measured data available for experiment E' in out
+    p.plot_meas_vs_calc(
+        Ptn(two_theta=[1], intensity_meas=[1], intensity_calc=None), 'E', ExptType()
+    )
     out = capsys.readouterr().out
     assert 'No calculated data available for experiment E' in out
-    # TODO: Update assertions with new logging-based error handling
-    #  in the above line and elsewhere as needed.
 
     # Filtering
     import numpy as np
@@ -113,27 +122,29 @@ def test_plotter_routes_to_ascii_plotter(monkeypatch):
     import numpy as np
 
     import easydiffraction.display.plotters.ascii as ascii_mod
-    from easydiffraction.experiments.experiment.enums import BeamModeEnum
-    from easydiffraction.experiments.experiment.enums import ScatteringTypeEnum
+    from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+    from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+    from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
     from easydiffraction.display.plotting import Plotter
 
     called = {}
 
-    def fake_plot(self, x, y_series, labels, axes_labels, title, height=None):
+    def fake_plot_powder(self, x, y_series, labels, axes_labels, title, height=None):
         called['labels'] = tuple(labels)
         called['axes'] = tuple(axes_labels)
         called['title'] = title
 
-    monkeypatch.setattr(ascii_mod.AsciiPlotter, 'plot', fake_plot)
+    monkeypatch.setattr(ascii_mod.AsciiPlotter, 'plot_powder', fake_plot_powder)
 
     class Ptn:
         def __init__(self):
-            self.x = np.array([0.0, 1.0])
-            self.meas = np.array([1.0, 2.0])
-            self.d = self.x
+            self.two_theta = np.array([0.0, 1.0])
+            self.intensity_meas = np.array([1.0, 2.0])
+            self.d_spacing = self.two_theta
 
     class ExptType:
         def __init__(self):
+            self.sample_form = type('SF', (), {'value': SampleFormEnum.POWDER})
             self.scattering_type = type('S', (), {'value': ScatteringTypeEnum.BRAGG})
             self.beam_mode = type('B', (), {'value': BeamModeEnum.CONSTANT_WAVELENGTH})
 

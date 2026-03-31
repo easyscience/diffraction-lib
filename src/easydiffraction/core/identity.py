@@ -1,6 +1,7 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Identity helpers to build CIF-like hierarchical names.
+"""
+Identity helpers to build CIF-like hierarchical names.
 
 Used by containers and items to expose datablock/category/entry names
 without tight coupling.
@@ -19,13 +20,13 @@ class Identity:
         datablock_entry: Callable | None = None,
         category_code: str | None = None,
         category_entry: Callable | None = None,
-    ):
+    ) -> None:
         self._owner = owner
         self._datablock_entry = datablock_entry
         self._category_code = category_code
         self._category_entry = category_entry
 
-    def _resolve_up(self, attr: str, visited=None):
+    def _resolve_up(self, attr: str, visited: set[int] | None = None) -> str | None:
         """Resolve attribute by walking up parent chain safely."""
         if visited is None:
             visited = set()
@@ -47,31 +48,31 @@ class Identity:
         return None
 
     @property
-    def datablock_entry_name(self):
+    def datablock_entry_name(self) -> str | None:
         """Datablock entry name or None if not set."""
         return self._resolve_up('datablock_entry')
 
     @datablock_entry_name.setter
-    def datablock_entry_name(self, func: callable):
+    def datablock_entry_name(self, func: callable) -> None:
         """Set callable returning datablock entry name."""
         self._datablock_entry = func
 
     @property
-    def category_code(self):
+    def category_code(self) -> str | None:
         """Category code like 'atom_site' or 'background'."""
         return self._resolve_up('category_code')
 
     @category_code.setter
-    def category_code(self, value: str):
+    def category_code(self, value: str) -> None:
         """Set category code value."""
         self._category_code = value
 
     @property
-    def category_entry_name(self):
+    def category_entry_name(self) -> str | None:
         """Category entry name or None if not set."""
         return self._resolve_up('category_entry')
 
     @category_entry_name.setter
-    def category_entry_name(self, func: callable):
+    def category_entry_name(self, func: callable) -> None:
         """Set callable returning category entry name."""
         self._category_entry = func

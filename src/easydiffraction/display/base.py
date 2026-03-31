@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 """Common base classes for display components and their factories."""
 
@@ -6,26 +6,26 @@ from __future__ import annotations
 
 from abc import ABC
 from abc import abstractmethod
-from typing import Any
 from typing import List
 from typing import Tuple
 
 import pandas as pd
 
-from easydiffraction.core.singletons import SingletonBase
+from easydiffraction.core.singleton import SingletonBase
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 
 
 class RendererBase(SingletonBase, ABC):
-    """Base class for display components with pluggable engines.
+    """
+    Base class for display components with pluggable engines.
 
     Subclasses provide a factory and a default engine. This class
     manages the active backend instance and exposes helpers to inspect
     supported engines in a table-friendly format.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._engine = self._default_engine()
         self._backend = self._factory().create(self._engine)
 
@@ -43,10 +43,27 @@ class RendererBase(SingletonBase, ABC):
 
     @property
     def engine(self) -> str:
+        """
+        Return the name of the currently active rendering engine.
+
+        Returns
+        -------
+        str
+            Identifier of the active engine.
+        """
         return self._engine
 
     @engine.setter
     def engine(self, new_engine: str) -> None:
+        """
+        Switch to a different rendering engine.
+
+        Parameters
+        ----------
+        new_engine : str
+            Identifier of the engine to activate.  Must be a key
+            returned by ``_factory()._registry()``.
+        """
         if new_engine == self._engine:
             log.info(f"Engine is already set to '{new_engine}'. No change made.")
             return
@@ -90,18 +107,25 @@ class RendererFactoryBase(ABC):
     """Base factory that manages discovery and creation of backends."""
 
     @classmethod
-    def create(cls, engine_name: str) -> Any:
-        """Create a backend instance for the given engine.
+    def create(cls, engine_name: str) -> object:
+        """
+        Create a backend instance for the given engine.
 
-        Args:
-            engine_name: Identifier of the engine to instantiate as
-                listed in ``_registry()``.
+        Parameters
+        ----------
+        engine_name : str
+            Identifier of the engine to instantiate as listed in
+            ``_registry()``.
 
-        Returns:
+        Returns
+        -------
+        object
             A new backend instance corresponding to ``engine_name``.
 
-        Raises:
-            ValueError: If the engine name is not supported.
+        Raises
+        ------
+        ValueError
+            If the engine name is not supported.
         """
         registry = cls._registry()
         if engine_name not in registry:
@@ -117,16 +141,15 @@ class RendererFactoryBase(ABC):
 
     @classmethod
     def descriptions(cls) -> List[Tuple[str, str]]:
-        """Return pairs of engine name and human-friendly
-        description.
-        """
+        """Return (name, description) pairs for each engine."""
         items = cls._registry().items()
         return [(name, config.get('description')) for name, config in items]
 
     @classmethod
     @abstractmethod
     def _registry(cls) -> dict:
-        """Return engine registry. Implementations must provide this.
+        """
+        Return engine registry. Implementations must provide this.
 
         The returned mapping should have keys as engine names and values
         as a config dict with 'description' and 'class'. Lazy imports

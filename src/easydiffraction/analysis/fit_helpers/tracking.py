@@ -1,9 +1,8 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 import time
 from contextlib import suppress
-from typing import Any
 from typing import List
 from typing import Optional
 
@@ -20,6 +19,7 @@ except ImportError:
     clear_output = None
 
 from easydiffraction.analysis.fit_helpers.metrics import calculate_reduced_chi_square
+from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.environment import in_jupyter
 from easydiffraction.utils.utils import render_table
 
@@ -36,31 +36,40 @@ DEFAULT_ALIGNMENTS = ['center', 'center', 'center']
 
 
 class _TerminalLiveHandle:
-    """Adapter that exposes update()/close() for terminal live updates.
+    """
+    Adapter that exposes update()/close() for terminal live updates.
 
     Wraps a rich.live.Live instance but keeps the tracker decoupled from
     the underlying UI mechanism.
     """
 
-    def __init__(self, live) -> None:
+    def __init__(self, live: object) -> None:
         self._live = live
 
-    def update(self, renderable) -> None:
+    def update(self, renderable: object) -> None:
+        """
+        Refresh the live display with a new renderable.
+
+        Parameters
+        ----------
+        renderable : object
+            A Rich-compatible renderable to display.
+        """
         self._live.update(renderable, refresh=True)
 
     def close(self) -> None:
+        """Stop the live display, suppressing any errors."""
         with suppress(Exception):
             self._live.stop()
 
 
-def _make_display_handle() -> Any | None:
-    """Create and initialize a display/update handle for the
-    environment.
+def _make_display_handle() -> object | None:
+    """
+    Create and initialize a display/update handle for the environment.
 
     - In Jupyter, returns an IPython DisplayHandle and creates a
-        placeholder.
-    - In terminal, returns a _TerminalLiveHandle backed by rich Live.
-    - If neither applies, returns None.
+    placeholder. - In terminal, returns a _TerminalLiveHandle backed by
+    rich Live. - If neither applies, returns None.
     """
     if in_jupyter() and display is not None and HTML is not None:
         h = DisplayHandle()
@@ -77,7 +86,8 @@ def _make_display_handle() -> Any | None:
 
 
 class FitProgressTracker:
-    """Track and report reduced chi-square during optimization.
+    """
+    Track and report reduced chi-square during optimization.
 
     The tracker keeps iteration counters, remembers the best observed
     reduced chi-square and when it occurred, and can display progress as
@@ -92,10 +102,11 @@ class FitProgressTracker:
         self._best_chi2: Optional[float] = None
         self._best_iteration: Optional[int] = None
         self._fitting_time: Optional[float] = None
+        self._verbosity: VerbosityEnum = VerbosityEnum.FULL
 
         self._df_rows: List[List[str]] = []
-        self._display_handle: Optional[Any] = None
-        self._live: Optional[Any] = None
+        self._display_handle: Optional[object] = None
+        self._live: Optional[object] = None
 
     def reset(self) -> None:
         """Reset internal state before a new optimization run."""
@@ -112,13 +123,19 @@ class FitProgressTracker:
         residuals: np.ndarray,
         parameters: List[float],
     ) -> np.ndarray:
-        """Update progress with current residuals and parameters.
+        """
+        Update progress with current residuals and parameters.
 
-        Args:
-            residuals: Residuals between measured and calculated data.
-            parameters: Current free parameters being fitted.
+        Parameters
+        ----------
+        residuals : np.ndarray
+            Residuals between measured and calculated data.
+        parameters : List[float]
+            Current free parameters being fitted.
 
-        Returns:
+        Returns
+        -------
+        np.ndarray
             Residuals unchanged, for optimizer consumption.
         """
         self._iteration += 1
@@ -200,11 +217,19 @@ class FitProgressTracker:
         self._fitting_time = self._end_time - self._start_time
 
     def start_tracking(self, minimizer_name: str) -> None:
-        """Initialize display and headers and announce the minimizer.
-
-        Args:
-            minimizer_name: Name of the minimizer used for the run.
         """
+        Initialize display and headers and announce the minimizer.
+
+        Parameters
+        ----------
+        minimizer_name : str
+            Name of the minimizer used for the run.
+        """
+        if self._verbosity is VerbosityEnum.SILENT:
+            return
+        if self._verbosity is VerbosityEnum.SHORT:
+            return
+
         console.print(f"🚀 Starting fit process with '{minimizer_name}'...")
         console.print('📈 Goodness-of-fit (reduced χ²) change:')
 
@@ -221,14 +246,19 @@ class FitProgressTracker:
         )
 
     def add_tracking_info(self, row: List[str]) -> None:
-        """Append a formatted row to the progress display.
-
-        Args:
-            row: Columns corresponding to DEFAULT_HEADERS.
         """
+        Append a formatted row to the progress display.
+
+        Parameters
+        ----------
+        row : List[str]
+            Columns corresponding to DEFAULT_HEADERS.
+        """
+        self._df_rows.append(row)
+        if self._verbosity is not VerbosityEnum.FULL:
+            return
         # Append and update via the active handle (Jupyter or
         # terminal live)
-        self._df_rows.append(row)
         render_table(
             columns_headers=DEFAULT_HEADERS,
             columns_alignment=DEFAULT_ALIGNMENTS,
@@ -245,6 +275,9 @@ class FitProgressTracker:
             '',
         ]
         self.add_tracking_info(row)
+
+        if self._verbosity is not VerbosityEnum.FULL:
+            return
 
         # Close terminal live if used
         if self._display_handle is not None and hasattr(self._display_handle, 'close'):

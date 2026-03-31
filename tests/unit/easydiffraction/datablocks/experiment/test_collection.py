@@ -1,0 +1,41 @@
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
+# SPDX-License-Identifier: BSD-3-Clause
+
+
+def test_module_import():
+    import easydiffraction.datablocks.experiment.collection as MUT
+
+    expected_module_name = 'easydiffraction.datablocks.experiment.collection'
+    actual_module_name = MUT.__name__
+    assert expected_module_name == actual_module_name
+
+
+def test_experiments_show_and_remove(monkeypatch, capsys):
+    from easydiffraction.datablocks.experiment.collection import Experiments
+    from easydiffraction.datablocks.experiment.item.base import ExperimentBase
+
+    class DummyType:
+        def __init__(self):
+            self.sample_form = type('E', (), {'value': 'powder'})
+            self.beam_mode = type('E', (), {'value': 'constant wavelength'})
+
+    class DummyExp(ExperimentBase):
+        def __init__(self, name='e1'):
+            super().__init__(name=name, type=DummyType())
+
+        def _load_ascii_data_to_experiment(self, data_path: str) -> int:
+            return 0
+
+    exps = Experiments()
+    exps.add(DummyExp('a'))
+    exps.add(DummyExp('b'))
+    exps.show_names()
+    out = capsys.readouterr().out
+    assert 'Defined experiments' in out
+
+    # Remove by name should not raise
+    exps.remove('a')
+    # Still can show names
+    exps.show_names()
+    out2 = capsys.readouterr().out
+    assert 'Defined experiments' in out2

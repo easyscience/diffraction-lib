@@ -1,8 +1,5 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-
-import numpy as np
-import pytest
 
 
 def test_datablock_item_to_cif_includes_item_and_collection():
@@ -112,11 +109,13 @@ def test_experiment_to_cif_with_and_without_data():
     assert '_k' in out_with and '1' in out_with
 
     out_without = MUT.experiment_to_cif(Exp(''))
-    assert out_without.startswith('data_expA') and out_without.endswith('1.0000')
+    assert out_without.startswith('data_expA') and out_without.endswith('1.00000000')
 
 
 def test_analysis_to_cif_renders_all_sections():
     import easydiffraction.io.cif.serialize as MUT
+    from easydiffraction.analysis.categories.fit_mode import FitMode
+    from easydiffraction.analysis.categories.joint_fit_experiments import JointFitExperiments
 
     class Obj:
         def __init__(self, t):
@@ -127,16 +126,14 @@ def test_analysis_to_cif_renders_all_sections():
             return self._t
 
     class A:
-        current_calculator = 'cryspy engine'
-        current_minimizer = 'lmfit (leastsq)'
-        fit_mode = 'single'
+        current_minimizer = 'lmfit'
+        fit_mode = FitMode()
+        joint_fit_experiments = JointFitExperiments()
         aliases = Obj('ALIASES')
         constraints = Obj('CONSTRAINTS')
 
     out = MUT.analysis_to_cif(A())
     lines = out.splitlines()
-    assert lines[0].startswith('_analysis.calculator_engine')
-    assert '"cryspy engine"' in lines[0]
-    assert lines[1].startswith('_analysis.fitting_engine') and '"lmfit (leastsq)"' in lines[1]
-    assert lines[2].startswith('_analysis.fit_mode') and 'single' in lines[2]
+    assert lines[0].startswith('_analysis.fitting_engine') and 'lmfit' in lines[0]
+    assert lines[1].startswith('_analysis.fit_mode') and 'single' in lines[1]
     assert 'ALIASES' in out and 'CONSTRAINTS' in out

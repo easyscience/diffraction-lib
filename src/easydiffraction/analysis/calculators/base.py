@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from abc import ABC
@@ -6,9 +6,9 @@ from abc import abstractmethod
 
 import numpy as np
 
-from easydiffraction.experiments.experiment.base import ExperimentBase
-from easydiffraction.sample_models.sample_model.base import SampleModelBase
-from easydiffraction.sample_models.sample_models import SampleModels
+from easydiffraction.datablocks.experiment.item.base import ExperimentBase
+from easydiffraction.datablocks.structure.collection import Structures
+from easydiffraction.datablocks.structure.item.base import Structure
 
 
 class CalculatorBase(ABC):
@@ -17,41 +17,48 @@ class CalculatorBase(ABC):
     @property
     @abstractmethod
     def name(self) -> str:
+        """Short identifier of the calculation engine."""
         pass
 
     @property
     @abstractmethod
     def engine_imported(self) -> bool:
+        """True if the underlying calculation library is available."""
         pass
 
     @abstractmethod
     def calculate_structure_factors(
         self,
-        sample_model: SampleModelBase,
+        structure: Structure,
         experiment: ExperimentBase,
+        called_by_minimizer: bool,
     ) -> None:
-        """Calculate structure factors for a single sample model and
-        experiment.
-        """
+        """Calculate structure factors for one experiment."""
         pass
 
     @abstractmethod
     def calculate_pattern(
         self,
-        sample_model: SampleModels,  # TODO: SampleModelBase?
+        structure: Structures,  # TODO: Structure?
         experiment: ExperimentBase,
         called_by_minimizer: bool,
     ) -> np.ndarray:
-        """Calculate the diffraction pattern for a single sample model
-        and experiment.
+        """
+        Calculate diffraction pattern for one structure-experiment pair.
 
-        Args:
-            sample_model: The sample model object.
-            experiment: The experiment object.
-            called_by_minimizer: Whether the calculation is called by a
-                minimizer.
+        Parameters
+        ----------
+        structure : Structures
+            The structure object.
+        experiment : ExperimentBase
+            The experiment object.
+        called_by_minimizer : bool
+            Whether the calculation is called by a minimizer. Default is
+            False.
 
-        Returns:
+        Returns
+        -------
+        np.ndarray
             The calculated diffraction pattern as a NumPy array.
         """
         pass

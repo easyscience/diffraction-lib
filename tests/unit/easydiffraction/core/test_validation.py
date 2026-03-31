@@ -1,5 +1,6 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+
 
 def test_module_import():
     import easydiffraction.core.validation as MUT
@@ -9,7 +10,7 @@ def test_module_import():
     assert expected_module_name == actual_module_name
 
 
-def test_type_validator_accepts_and_rejects(monkeypatch):
+def test_data_type_validator_accepts_and_rejects(monkeypatch):
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.validation import DataTypes
     from easydiffraction.utils.logging import log
@@ -17,7 +18,7 @@ def test_type_validator_accepts_and_rejects(monkeypatch):
     # So that errors do not raise in test process
     log.configure(reaction=log.Reaction.WARN)
 
-    spec = AttributeSpec(type_=DataTypes.STRING, default='abc')
+    spec = AttributeSpec(data_type=DataTypes.STRING, default='abc')
     # valid
     expected = 'xyz'
     actual = spec.validated('xyz', name='p')
@@ -36,7 +37,7 @@ def test_range_validator_bounds(monkeypatch):
 
     log.configure(reaction=log.Reaction.WARN)
     spec = AttributeSpec(
-        type_=DataTypes.NUMERIC, default=1.0, content_validator=RangeValidator(ge=0, le=2)
+        data_type=DataTypes.NUMERIC, default=1.0, validator=RangeValidator(ge=0, le=2)
     )
     # inside range
     expected = 1.5
@@ -55,11 +56,11 @@ def test_membership_and_regex_validators(monkeypatch):
     from easydiffraction.utils.logging import log
 
     log.configure(reaction=log.Reaction.WARN)
-    mspec = AttributeSpec(default='b', content_validator=MembershipValidator(['a', 'b']))
+    mspec = AttributeSpec(default='b', validator=MembershipValidator(['a', 'b']))
     assert mspec.validated('a', name='m') == 'a'
     # reject -> fallback default
     assert mspec.validated('c', name='m') == 'b'
 
-    rspec = AttributeSpec(default='a1', content_validator=RegexValidator(r'^[a-z]\d$'))
+    rspec = AttributeSpec(default='a1', validator=RegexValidator(r'^[a-z]\d$'))
     assert rspec.validated('b2', name='r') == 'b2'
     assert rspec.validated('BAD', name='r') == 'a1'

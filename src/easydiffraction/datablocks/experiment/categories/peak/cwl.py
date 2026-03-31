@@ -1,0 +1,88 @@
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
+# SPDX-License-Identifier: BSD-3-Clause
+"""Constant-wavelength peak profile classes."""
+
+from easydiffraction.core.metadata import CalculatorSupport
+from easydiffraction.core.metadata import Compatibility
+from easydiffraction.core.metadata import TypeInfo
+from easydiffraction.datablocks.experiment.categories.peak.base import PeakBase
+from easydiffraction.datablocks.experiment.categories.peak.cwl_mixins import CwlBroadeningMixin
+from easydiffraction.datablocks.experiment.categories.peak.cwl_mixins import (
+    EmpiricalAsymmetryMixin,
+)
+from easydiffraction.datablocks.experiment.categories.peak.cwl_mixins import FcjAsymmetryMixin
+from easydiffraction.datablocks.experiment.categories.peak.factory import PeakFactory
+from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
+from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
+
+
+@PeakFactory.register
+class CwlPseudoVoigt(
+    PeakBase,
+    CwlBroadeningMixin,
+):
+    """Constant-wavelength pseudo-Voigt peak shape."""
+
+    type_info = TypeInfo(
+        tag='pseudo-voigt',
+        description='Pseudo-Voigt profile',
+    )
+    compatibility = Compatibility(
+        scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
+        beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH}),
+    )
+    calculator_support = CalculatorSupport(
+        calculators=frozenset({CalculatorEnum.CRYSPY, CalculatorEnum.CRYSFML}),
+    )
+
+    def __init__(self) -> None:
+        super().__init__()
+
+
+@PeakFactory.register
+class CwlSplitPseudoVoigt(
+    PeakBase,
+    CwlBroadeningMixin,
+    EmpiricalAsymmetryMixin,
+):
+    """Split pseudo-Voigt (empirical asymmetry) for CWL mode."""
+
+    type_info = TypeInfo(
+        tag='split pseudo-voigt',
+        description='Split pseudo-Voigt with empirical asymmetry correction',
+    )
+    compatibility = Compatibility(
+        scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
+        beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH}),
+    )
+    calculator_support = CalculatorSupport(
+        calculators=frozenset({CalculatorEnum.CRYSPY, CalculatorEnum.CRYSFML}),
+    )
+
+    def __init__(self) -> None:
+        super().__init__()
+
+
+@PeakFactory.register
+class CwlThompsonCoxHastings(
+    PeakBase,
+    CwlBroadeningMixin,
+    FcjAsymmetryMixin,
+):
+    """Thompson–Cox–Hastings with FCJ asymmetry for CWL mode."""
+
+    type_info = TypeInfo(
+        tag='thompson-cox-hastings',
+        description='Thompson-Cox-Hastings with FCJ asymmetry correction',
+    )
+    compatibility = Compatibility(
+        scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
+        beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH}),
+    )
+    calculator_support = CalculatorSupport(
+        calculators=frozenset({CalculatorEnum.CRYSPY, CalculatorEnum.CRYSFML}),
+    )
+
+    def __init__(self) -> None:
+        super().__init__()

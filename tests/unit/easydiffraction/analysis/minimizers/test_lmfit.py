@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 import types
@@ -30,6 +30,9 @@ def test_lmfit_prepare_and_sync(monkeypatch):
 
         @value.setter
         def value(self, v):
+            self._value = v
+
+        def _set_value_from_minimizer(self, v):
             self._value = v
 
     # Fake lmfit.Parameters and result structure

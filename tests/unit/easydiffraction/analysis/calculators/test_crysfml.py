@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 import pytest
@@ -17,7 +17,7 @@ def test_crysfml_engine_flag_and_structure_factors_raises():
     # engine_imported is a boolean flag; it may be False in our env
     assert isinstance(calc.engine_imported, bool)
     with pytest.raises(NotImplementedError):
-        calc.calculate_structure_factors(sample_models=None, experiments=None)
+        calc.calculate_structure_factors(structures=None, experiments=None)
 
 
 def test_crysfml_adjust_pattern_length_truncates():

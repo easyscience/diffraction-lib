@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 from typing import TYPE_CHECKING
@@ -11,9 +11,10 @@ import numpy as np
 
 from easydiffraction.analysis.fit_helpers.metrics import get_reliability_inputs
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
-from easydiffraction.core.parameters import Parameter
-from easydiffraction.experiments.experiments import Experiments
-from easydiffraction.sample_models.sample_models import SampleModels
+from easydiffraction.core.variable import Parameter
+from easydiffraction.datablocks.experiment.collection import Experiments
+from easydiffraction.datablocks.structure.collection import Structures
+from easydiffraction.utils.enums import VerbosityEnum
 
 if TYPE_CHECKING:
     from easydiffraction.analysis.fit_helpers.reporting import FitResults
@@ -22,33 +23,42 @@ if TYPE_CHECKING:
 class Fitter:
     """Handles the fitting workflow using a pluggable minimizer."""
 
-    def __init__(self, selection: str = 'lmfit (leastsq)') -> None:
+    def __init__(self, selection: str = 'lmfit') -> None:
         self.selection: str = selection
-        self.engine: str = selection.split(' ')[0]  # Extracts 'lmfit' or 'dfols'
-        self.minimizer = MinimizerFactory.create_minimizer(selection)
+        self.engine: str = selection
+        self.minimizer = MinimizerFactory.create(selection)
         self.results: Optional[FitResults] = None
 
     def fit(
         self,
-        sample_models: SampleModels,
+        structures: Structures,
         experiments: Experiments,
         weights: Optional[np.array] = None,
-        analysis=None,
+        analysis: object = None,
+        verbosity: VerbosityEnum = VerbosityEnum.FULL,
     ) -> None:
-        """Run the fitting process.
+        """
+        Run the fitting process.
 
         This method performs the optimization but does not display
-        results. Use :meth:`show_fit_results` on the Analysis object
-        to display the fit results after fitting is complete.
+        results. Use :meth:`show_fit_results` on the Analysis object to
+        display the fit results after fitting is complete.
 
-        Args:
-            sample_models: Collection of sample models.
-            experiments: Collection of experiments.
-            weights: Optional weights for joint fitting.
-            analysis: Optional Analysis object to update its categories
-                during fitting.
+        Parameters
+        ----------
+        structures : Structures
+            Collection of structures.
+        experiments : Experiments
+            Collection of experiments.
+        weights : Optional[np.array], default=None
+            Optional weights for joint fitting.
+        analysis : object, default=None
+            Optional Analysis object to update its categories during
+            fitting.
+        verbosity : VerbosityEnum, default=VerbosityEnum.FULL
+            Console output verbosity.
         """
-        params = sample_models.free_parameters + experiments.free_parameters
+        params = structures.free_parameters + experiments.free_parameters
 
         if not params:
             print('⚠️ No parameters selected for fitting.')
@@ -58,36 +68,53 @@ class Fitter:
             param._fit_start_value = param.value
 
         def objective_function(engine_params: Dict[str, Any]) -> np.ndarray:
+            """
+            Evaluate the residual for the current minimizer parameters.
+
+            Parameters
+            ----------
+            engine_params : Dict[str, Any]
+                Parameter values provided by the minimizer engine.
+
+            Returns
+            -------
+            np.ndarray
+                Residual array passed back to the minimizer.
+            """
             return self._residual_function(
                 engine_params=engine_params,
                 parameters=params,
-                sample_models=sample_models,
+                structures=structures,
                 experiments=experiments,
                 weights=weights,
                 analysis=analysis,
             )
 
         # Perform fitting
-        self.results = self.minimizer.fit(params, objective_function)
+        self.results = self.minimizer.fit(params, objective_function, verbosity=verbosity)
 
     def _process_fit_results(
         self,
-        sample_models: SampleModels,
+        structures: Structures,
         experiments: Experiments,
     ) -> None:
-        """Collect reliability inputs and display fit results.
+        """
+        Collect reliability inputs and display fit results.
 
         This method is typically called by
         :meth:`Analysis.show_fit_results` rather than directly. It
-        calculates R-factors and other metrics, then renders them to
-        the console.
+        calculates R-factors and other metrics, then renders them to the
+        console.
 
-        Args:
-            sample_models: Collection of sample models.
-            experiments: Collection of experiments.
+        Parameters
+        ----------
+        structures : Structures
+            Collection of structures.
+        experiments : Experiments
+            Collection of experiments.
         """
         y_obs, y_calc, y_err = get_reliability_inputs(
-            sample_models,
+            structures,
             experiments,
         )
 
@@ -105,54 +132,71 @@ class Fitter:
 
     def _collect_free_parameters(
         self,
-        sample_models: SampleModels,
+        structures: Structures,
         experiments: Experiments,
     ) -> List[Parameter]:
-        """Collect free parameters from sample models and experiments.
+        """
+        Collect free parameters from structures and experiments.
 
-        Args:
-            sample_models: Collection of sample models.
-            experiments: Collection of experiments.
+        Parameters
+        ----------
+        structures : Structures
+            Collection of structures.
+        experiments : Experiments
+            Collection of experiments.
 
-        Returns:
+        Returns
+        -------
+        List[Parameter]
             List of free parameters.
         """
-        free_params: List[Parameter] = sample_models.free_parameters + experiments.free_parameters
+        free_params: List[Parameter] = structures.free_parameters + experiments.free_parameters
         return free_params
 
     def _residual_function(
         self,
         engine_params: Dict[str, Any],
         parameters: List[Parameter],
-        sample_models: SampleModels,
+        structures: Structures,
         experiments: Experiments,
         weights: Optional[np.array] = None,
-        analysis=None,
+        analysis: object = None,
     ) -> np.ndarray:
-        """Residual function computes the difference between measured
-        and calculated patterns. It updates the parameter values
-        according to the optimizer-provided engine_params.
+        """
+        Compute residuals between measured and calculated patterns.
 
-        Args:
-            engine_params: Engine-specific parameter dict.
-            parameters: List of parameters being optimized.
-            sample_models: Collection of sample models.
-            experiments: Collection of experiments.
-            weights: Optional weights for joint fitting.
-            analysis: Optional Analysis object to update its categories
-                during fitting.
+        It updates the parameter values according to the
+        optimizer-provided engine_params.
 
-        Returns:
+        Parameters
+        ----------
+        engine_params : Dict[str, Any]
+            Engine-specific parameter dict.
+        parameters : List[Parameter]
+            List of parameters being optimized.
+        structures : Structures
+            Collection of structures.
+        experiments : Experiments
+            Collection of experiments.
+        weights : Optional[np.array], default=None
+            Optional weights for joint fitting.
+        analysis : object, default=None
+            Optional Analysis object to update its categories during
+            fitting.
+
+        Returns
+        -------
+        np.ndarray
             Array of weighted residuals.
         """
         # Sync parameters back to objects
         self.minimizer._sync_result_to_parameters(parameters, engine_params)
 
         # Update categories to reflect new parameter values
-        # Order matters: sample models first (symmetry, structure),
+        # Order matters: structures first (symmetry, structure),
         # then analysis (constraints), then experiments (calculations)
-        for sample_model in sample_models:
-            sample_model._update_categories()
+        for structure in structures:
+            structure._update_categories()
 
         if analysis is not None:
             analysis._update_categories(called_by_minimizer=True)
@@ -182,9 +226,9 @@ class Fitter:
 
             # Calculate the difference between measured and calculated
             # patterns
-            y_calc: np.ndarray = experiment.data.calc
-            y_meas: np.ndarray = experiment.data.meas
-            y_meas_su: np.ndarray = experiment.data.meas_su
+            y_calc: np.ndarray = experiment.data.intensity_calc
+            y_meas: np.ndarray = experiment.data.intensity_meas
+            y_meas_su: np.ndarray = experiment.data.intensity_meas_su
             diff = (y_meas - y_calc) / y_meas_su
 
             # Residuals are squared before going into reduced

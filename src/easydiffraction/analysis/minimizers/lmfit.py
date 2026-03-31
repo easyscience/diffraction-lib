@@ -1,20 +1,27 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
-from typing import Any
 from typing import Dict
 from typing import List
 
 import lmfit
 
 from easydiffraction.analysis.minimizers.base import MinimizerBase
+from easydiffraction.analysis.minimizers.factory import MinimizerFactory
+from easydiffraction.core.metadata import TypeInfo
 
 DEFAULT_METHOD = 'leastsq'
 DEFAULT_MAX_ITERATIONS = 1000
 
 
+@MinimizerFactory.register
 class LmfitMinimizer(MinimizerBase):
     """Minimizer using the lmfit package."""
+
+    type_info = TypeInfo(
+        tag='lmfit',
+        description='LMFIT with Levenberg-Marquardt least squares',
+    )
 
     def __init__(
         self,
@@ -30,16 +37,21 @@ class LmfitMinimizer(MinimizerBase):
 
     def _prepare_solver_args(
         self,
-        parameters: List[Any],
-    ) -> Dict[str, Any]:
-        """Prepares the solver arguments for the lmfit minimizer.
+        parameters: List[object],
+    ) -> Dict[str, object]:
+        """
+        Prepare the solver arguments for the lmfit minimizer.
 
-        Args:
-            parameters: List of parameters to be optimized.
+        Parameters
+        ----------
+        parameters : List[object]
+            List of parameters to be optimized.
 
-        Returns:
+        Returns
+        -------
+        Dict[str, object]
             A dictionary containing the prepared lmfit. Parameters
-                object.
+            object.
         """
         engine_parameters = lmfit.Parameters()
         for param in parameters:
@@ -52,14 +64,20 @@ class LmfitMinimizer(MinimizerBase):
             )
         return {'engine_parameters': engine_parameters}
 
-    def _run_solver(self, objective_function: Any, **kwargs: Any) -> Any:
-        """Runs the lmfit solver.
+    def _run_solver(self, objective_function: object, **kwargs: object) -> object:
+        """
+        Run the lmfit solver.
 
-        Args:
-            objective_function: The objective function to minimize.
-            **kwargs: Additional arguments for the solver.
+        Parameters
+        ----------
+        objective_function : object
+            The objective function to minimize.
+        **kwargs : object
+            Additional arguments for the solver.
 
-        Returns:
+        Returns
+        -------
+        object
             The result of the lmfit minimization.
         """
         engine_parameters = kwargs.get('engine_parameters')
@@ -74,30 +92,41 @@ class LmfitMinimizer(MinimizerBase):
 
     def _sync_result_to_parameters(
         self,
-        parameters: List[Any],
-        raw_result: Any,
+        parameters: List[object],
+        raw_result: object,
     ) -> None:
-        """Synchronizes the result from the solver to the parameters.
+        """
+        Synchronize the result from the solver to the parameters.
 
-        Args:
-            parameters: List of parameters being optimized.
-            raw_result: The result object returned by the solver.
+        Parameters
+        ----------
+        parameters : List[object]
+            List of parameters being optimized.
+        raw_result : object
+            The result object returned by the solver.
         """
         param_values = raw_result.params if hasattr(raw_result, 'params') else raw_result
 
         for param in parameters:
             param_result = param_values.get(param._minimizer_uid)
             if param_result is not None:
-                param._value = param_result.value  # Bypass ranges check
+                # Bypass validation but set the dirty flag so
+                # _update_categories() knows work is needed.
+                param._set_value_from_minimizer(param_result.value)
                 param.uncertainty = getattr(param_result, 'stderr', None)
 
-    def _check_success(self, raw_result: Any) -> bool:
-        """Determines success from lmfit MinimizerResult.
+    def _check_success(self, raw_result: object) -> bool:
+        """
+        Determine success from lmfit MinimizerResult.
 
-        Args:
-            raw_result: The result object returned by the solver.
+        Parameters
+        ----------
+        raw_result : object
+            The result object returned by the solver.
 
-        Returns:
+        Returns
+        -------
+        bool
             True if the optimization was successful, False otherwise.
         """
         return getattr(raw_result, 'success', False)
@@ -106,18 +135,25 @@ class LmfitMinimizer(MinimizerBase):
         self,
         params: lmfit.Parameters,
         iter: int,
-        resid: Any,
-        *args: Any,
-        **kwargs: Any,
+        resid: object,
+        *args: object,
+        **kwargs: object,
     ) -> None:
-        """Callback function for each iteration of the minimizer.
+        """
+        Handle each iteration callback of the minimizer.
 
-        Args:
-            params: The current parameters.
-            iter: The current iteration number.
-            resid: The residuals.
-            *args: Additional positional arguments.
-            **kwargs: Additional keyword arguments.
+        Parameters
+        ----------
+        params : lmfit.Parameters
+            The current parameters.
+        iter : int
+            The current iteration number.
+        resid : object
+            The residuals.
+        *args : object
+            Additional positional arguments.
+        **kwargs : object
+            Additional keyword arguments.
         """
         # Intentionally unused, required by callback signature
         del params, resid, args, kwargs

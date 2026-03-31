@@ -1,9 +1,8 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 import numpy as np
 import pytest
-
 
 
 def test_module_import():
@@ -69,20 +68,18 @@ def test_str_to_ufloat_no_esd_defaults_nan():
     assert np.isclose(expected_value, actual_value) and np.isnan(u.std_dev)
 
 
-def test_get_value_from_xye_header(tmp_path):
-    import easydiffraction.utils.utils as MUT
+def test_extract_metadata(tmp_path):
+    import easydiffraction.io.ascii as ascii_io
 
-    text = 'DIFC = 123.45 two_theta = 67.89\nrest of file\n'
+    text = '# DIFC = 123.45 two_theta = 67.89\nrest of file\n'
     p = tmp_path / 'file.xye'
     p.write_text(text)
-    expected_difc = 123.45
-    expected_two_theta = 67.89
-    actual = np.array([
-        MUT.get_value_from_xye_header(p, 'DIFC'),
-        MUT.get_value_from_xye_header(p, 'two_theta'),
-    ])
-    expected = np.array([expected_difc, expected_two_theta])
-    assert np.allclose(expected, actual)
+    difc = ascii_io.extract_metadata(str(p), r'DIFC\s*=\s*([-+]?\d*\.?\d+(?:[eE][-+]?\d+)?)')
+    two_theta = ascii_io.extract_metadata(
+        str(p), r'two_theta\s*=\s*([-+]?\d*\.?\d+(?:[eE][-+]?\d+)?)'
+    )
+    assert np.isclose(difc, 123.45)
+    assert np.isclose(two_theta, 67.89)
 
 
 def test_validate_url_rejects_non_http_https():
@@ -129,6 +126,7 @@ def test_is_pycharm_and_is_colab(monkeypatch):
 
 def test_render_table_terminal_branch(capsys, monkeypatch):
     import easydiffraction.utils.utils as MUT
+
     # Ensure non-notebook rendering; on CI/default env it's terminal anyway.
     MUT.render_table(
         columns_data=[[1, 2], [3, 4]],
@@ -354,7 +352,6 @@ def test_download_all_tutorials_success(monkeypatch, tmp_path, capsys):
 
 
 def test_resolve_tutorial_url():
-    import easydiffraction.utils.utils as MUT
 
     # Test with a specific version
     url_template = 'https://example.com/{version}/tutorials/ed-1/ed-1.ipynb'
@@ -362,4 +359,3 @@ def test_resolve_tutorial_url():
     # So we just test that the function exists and replaces {version}
     result = url_template.replace('{version}', '0.8.0')
     assert result == 'https://example.com/0.8.0/tutorials/ed-1/ed-1.ipynb'
-

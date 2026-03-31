@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-2026 EasyDiffraction contributors <https://github.com/easyscience/diffraction>
+# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
 import numpy as np
@@ -31,9 +31,9 @@ def test_get_reliability_inputs_collects_arrays_with_default_su():
     # Minimal fakes for experiments
     class DS:
         def __init__(self):
-            self.meas = np.array([1.0, 2.0])
-            self.meas_su = None  # triggers default ones
-            self.calc = np.array([1.1, 1.9])
+            self.intensity_meas = np.array([1.0, 2.0])
+            self.intensity_meas_su = None  # triggers default ones
+            self.intensity_calc = np.array([1.1, 1.9])
 
     class Expt:
         def __init__(self):
@@ -46,9 +46,9 @@ def test_get_reliability_inputs_collects_arrays_with_default_su():
         def values(self):
             return [Expt()]
 
-    class SampleModels(dict):
+    class DummyStructures(dict):
         pass
 
-    y_obs, y_calc, y_err = M.get_reliability_inputs(SampleModels(), Expts())
+    y_obs, y_calc, y_err = M.get_reliability_inputs(DummyStructures(), Expts())
     assert y_obs.shape == (2,) and y_calc.shape == (2,) and y_err.shape == (2,)
     assert np.allclose(y_err, 1.0)

@@ -1,10 +1,11 @@
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright (c) 2026 DMSC
+
 """Tests for analyzing reduced diffraction data using easydiffraction.
 
 These tests verify the complete workflow:
 1. Define project
-2. Add sample model manually defined
+2. Add structure manually defined
 3. Modify experiment CIF file
 4. Add experiment from modified CIF file
 5. Modify default experiment configuration
@@ -56,11 +57,11 @@ def prepared_cif_path(
 def project_with_data(
     prepared_cif_path: str,
 ) -> ed.Project:
-    """Create project with sample model, experiment data, and
+    """Create project with structure, experiment data, and
     configuration.
 
     1. Define project
-    2. Add sample model manually defined
+    2. Add structure manually defined
     3. Modify experiment CIF file
     4. Add experiment from modified CIF file
     5. Modify default experiment configuration
@@ -68,16 +69,16 @@ def project_with_data(
     # Step 1: Define Project
     project = ed.Project()
 
-    # Step 2: Define Sample Model manually
-    project.sample_models.add(name='si')
-    sample_model = project.sample_models['si']
+    # Step 2: Define Structure manually
+    project.structures.create(name='si')
+    structure = project.structures['si']
 
-    sample_model.space_group.name_h_m = 'F d -3 m'
-    sample_model.space_group.it_coordinate_system_code = '1'
+    structure.space_group.name_h_m = 'F d -3 m'
+    structure.space_group.it_coordinate_system_code = '1'
 
-    sample_model.cell.length_a = 5.43146
+    structure.cell.length_a = 5.43146
 
-    sample_model.atom_sites.add(
+    structure.atom_sites.create(
         label='Si',
         type_symbol='Si',
         fract_x=0.125,
@@ -88,12 +89,12 @@ def project_with_data(
     )
 
     # Step 3: Add experiment from modified CIF file
-    project.experiments.add(cif_path=prepared_cif_path)
+    project.experiments.add_from_cif_path(prepared_cif_path)
     experiment = project.experiments['reduced_tof']
 
     # Step 4: Configure experiment
     # Link phase
-    experiment.linked_phases.add(id='si', scale=0.8)
+    experiment.linked_phases.create(id='si', scale=0.8)
 
     # Instrument setup
     experiment.instrument.setup_twotheta_bank = 90.0
@@ -109,8 +110,8 @@ def project_with_data(
     experiment.peak.asym_alpha_1 = 0.26
 
     # Excluded regions
-    experiment.excluded_regions.add(id='1', start=0, end=10000)
-    experiment.excluded_regions.add(id='2', start=70000, end=200000)
+    experiment.excluded_regions.create(id='1', start=0, end=10000)
+    experiment.excluded_regions.create(id='2', start=70000, end=200000)
 
     # Background points
     background_points = [
@@ -124,7 +125,7 @@ def project_with_data(
         ('9', 70000, 0.6),
     ]
     for id_, x, y in background_points:
-        experiment.background.add(id=id_, x=x, y=y)
+        experiment.background.create(id=id_, x=x, y=y)
 
     return project
 
@@ -139,12 +140,12 @@ def fitted_project(
     7. Do fitting
     """
     project = project_with_data
-    sample_model = project.sample_models['si']
+    structure = project.structures['si']
     experiment = project.experiments['reduced_tof']
 
     # Step 5: Select parameters to be fitted
-    # Set free parameters for sample model
-    sample_model.atom_sites['Si'].b_iso.free = True
+    # Set free parameters for structure
+    structure.atom_sites['Si'].b_iso.free = True
 
     # Set free parameters for experiment
     experiment.linked_phases['si'].scale.free = True
