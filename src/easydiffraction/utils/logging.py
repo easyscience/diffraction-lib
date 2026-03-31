@@ -259,10 +259,10 @@ class ExceptionHookManager:
             tb: 'TracebackType | None',
         ) -> None:
             """Log the exception with full traceback via Rich."""
-            original_args = getattr(exc, 'args', tuple())
+            original_args = getattr(exc, 'args', ())
             message = str(exc)
             with suppress(Exception):
-                exc.args = tuple()
+                exc.args = ()
             try:
                 logger.error(message, exc_info=(exc_type, exc, tb))
             except Exception:

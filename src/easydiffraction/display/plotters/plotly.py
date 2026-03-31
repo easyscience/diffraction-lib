@@ -103,17 +103,17 @@ class PlotlyPlotter(PlotterBase):
             x=x_calc,
             y=y_meas,
             mode='markers',
-            marker=dict(
-                symbol='circle',
-                size=10,
-                line=dict(width=0.5),
-                color=DEFAULT_COLORS['meas'],
-            ),
-            error_y=dict(
-                type='data',
-                array=y_meas_su,
-                visible=True,
-            ),
+            marker={
+                'symbol': 'circle',
+                'size': 10,
+                'line': {'width': 0.5},
+                'color': DEFAULT_COLORS['meas'],
+            },
+            error_y={
+                'type': 'data',
+                'array': y_meas_su,
+                'visible': True,
+            },
             hovertemplate='calc: %{x}<br>meas: %{y}<br><extra></extra>',
         )
 
@@ -131,17 +131,17 @@ class PlotlyPlotter(PlotterBase):
         dict
             A dict configuring a diagonal line shape.
         """
-        return dict(
-            type='line',
-            x0=0,
-            y0=0,
-            x1=1,
-            y1=1,
-            xref='paper',
-            yref='paper',
-            layer='below',
-            line=dict(width=0.5),
-        )
+        return {
+            'type': 'line',
+            'x0': 0,
+            'y0': 0,
+            'x1': 1,
+            'y1': 1,
+            'xref': 'paper',
+            'yref': 'paper',
+            'layer': 'below',
+            'line': {'width': 0.5},
+        }
 
     def _get_config(self) -> dict:
         """
@@ -152,16 +152,16 @@ class PlotlyPlotter(PlotterBase):
         dict
             A dict with display and mode bar settings.
         """
-        return dict(
-            displaylogo=False,
-            modeBarButtonsToRemove=[
+        return {
+            'displaylogo': False,
+            'modeBarButtonsToRemove': [
                 'select2d',
                 'lasso2d',
                 'zoomIn2d',
                 'zoomOut2d',
                 'autoScale2d',
             ],
-        )
+        }
 
     def _get_figure(
         self,
@@ -242,33 +242,33 @@ class PlotlyPlotter(PlotterBase):
             A configured :class:`plotly.graph_objects.Layout`.
         """
         return go.Layout(
-            margin=dict(
-                autoexpand=True,
-                r=30,
-                t=40,
-                b=45,
-            ),
-            title=dict(
-                text=title,
-            ),
-            legend=dict(
-                xanchor='right',
-                x=1.0,
-                yanchor='top',
-                y=1.0,
-            ),
-            xaxis=dict(
-                title_text=axes_labels[0],
-                showline=True,
-                mirror=True,
-                zeroline=False,
-            ),
-            yaxis=dict(
-                title_text=axes_labels[1],
-                showline=True,
-                mirror=True,
-                zeroline=False,
-            ),
+            margin={
+                'autoexpand': True,
+                'r': 30,
+                't': 40,
+                'b': 45,
+            },
+            title={
+                'text': title,
+            },
+            legend={
+                'xanchor': 'right',
+                'x': 1.0,
+                'yanchor': 'top',
+                'y': 1.0,
+            },
+            xaxis={
+                'title_text': axes_labels[0],
+                'showline': True,
+                'mirror': True,
+                'zeroline': False,
+            },
+            yaxis={
+                'title_text': axes_labels[1],
+                'showline': True,
+                'mirror': True,
+                'zeroline': False,
+            },
             **kwargs,
         )
 
@@ -386,21 +386,21 @@ class PlotlyPlotter(PlotterBase):
             x=x,
             y=y,
             mode='markers+lines',
-            marker=dict(
-                symbol='circle',
-                size=10,
-                line=dict(width=0.5),
-                color=DEFAULT_COLORS['meas'],
-            ),
-            line=dict(
-                width=1,
-                color=DEFAULT_COLORS['meas'],
-            ),
-            error_y=dict(
-                type='data',
-                array=sy,
-                visible=True,
-            ),
+            marker={
+                'symbol': 'circle',
+                'size': 10,
+                'line': {'width': 0.5},
+                'color': DEFAULT_COLORS['meas'],
+            },
+            line={
+                'width': 1,
+                'color': DEFAULT_COLORS['meas'],
+            },
+            error_y={
+                'type': 'data',
+                'array': sy,
+                'visible': True,
+            },
             hovertemplate='x: %{x}<br>y: %{y}<br><extra></extra>',
         )
 

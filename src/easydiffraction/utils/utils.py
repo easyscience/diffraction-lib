@@ -546,7 +546,7 @@ def render_cif(cif_text: str) -> None:
         The CIF text to display.
     """
     # Split into lines
-    lines: List[str] = [line for line in cif_text.splitlines()]
+    lines: List[str] = list(cif_text.splitlines())
 
     # Convert each line into a single-column format for table rendering
     columns: List[List[str]] = [[line] for line in lines]

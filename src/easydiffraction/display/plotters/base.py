@@ -135,20 +135,20 @@ DEFAULT_AXES_LABELS = {
     ],
 }
 
-SERIES_CONFIG = dict(
-    calc=dict(
-        mode='lines',
-        name='Total calculated (Icalc)',
-    ),
-    meas=dict(
-        mode='lines+markers',
-        name='Measured (Imeas)',
-    ),
-    resid=dict(
-        mode='lines',
-        name='Residual (Imeas - Icalc)',
-    ),
-)
+SERIES_CONFIG = {
+    'calc': {
+        'mode': 'lines',
+        'name': 'Total calculated (Icalc)',
+    },
+    'meas': {
+        'mode': 'lines+markers',
+        'name': 'Measured (Imeas)',
+    },
+    'resid': {
+        'mode': 'lines',
+        'name': 'Residual (Imeas - Icalc)',
+    },
+}
 
 
 class PlotterBase(ABC):
