@@ -524,7 +524,7 @@ class Plotter(RendererBase):
         title = f"Measured vs Calculated data for experiment 🔬 '{expt_name}'"
 
         # Single crystal scatter plot (I²calc vs I²meas)
-        if x_axis == XAxisType.INTENSITY_CALC or x_axis == 'intensity_calc':
+        if x_axis in {XAxisType.INTENSITY_CALC, 'intensity_calc'}:
             axes_labels = self._get_axes_labels(sample_form, scattering_type, x_axis)
 
             if pattern.intensity_meas_su is None:

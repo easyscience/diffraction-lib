@@ -43,7 +43,7 @@ def _validate_url(url: str) -> None:
         If the URL scheme is not HTTP or HTTPS.
     """
     parsed = urlparse(url)
-    if parsed.scheme not in ('http', 'https'):
+    if parsed.scheme not in {'http', 'https'}:
         msg = f"Unsafe URL scheme '{parsed.scheme}'. Only HTTP and HTTPS are allowed."
         raise ValueError(msg)
 

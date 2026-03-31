@@ -74,8 +74,8 @@ class IconifiedRichHandler(RichHandler):
         """
         if self.mode == 'compact':
             icon = self._icons.get(record.levelno, record.levelname)
-            if in_warp() and not in_jupyter() and icon in ['⚠️', '⚙️', 'ℹ️']:
-                icon = icon + ' '  # add space to align with two-char icons
+            if in_warp() and not in_jupyter() and icon in {'⚠️', '⚙️', 'ℹ️'}:
+                icon += ' '  # add space to align with two-char icons
             return Text(icon)
         # Use RichHandler's default level text for verbose mode
         return super().get_level_text(record)
@@ -331,7 +331,6 @@ class ExceptionHookManager:
                 logger.error(str(_evalue))
             except Exception as err:
                 logger.debug('Jupyter traceback suppressor failed: %r', err)
-            return
 
         return suppress_jupyter_traceback
 

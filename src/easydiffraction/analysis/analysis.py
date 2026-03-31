@@ -233,11 +233,11 @@ class Analysis:
                     ('value', 'right'): param.value,
                 }
             if isinstance(param, (NumericDescriptor, Parameter)):
-                record = record | {
+                record |= {
                     ('units', 'left'): param.units,
                 }
             if isinstance(param, Parameter):
-                record = record | {
+                record |= {
                     ('fittable', 'left'): True,
                     ('free', 'left'): param.free,
                     ('min', 'right'): param.fit_min,

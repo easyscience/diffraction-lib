@@ -27,7 +27,7 @@ try:
 
     # Silence the C++ engine output while keeping the handle open
     _pdffit_devnull: Optional[object]
-    with Path(os.devnull).open('w') as _tmp_devnull:
+    with Path(os.devnull).open('w', encoding='utf-8') as _tmp_devnull:
         # Duplicate file descriptor so the handle remains
         # valid after the context
         _pdffit_devnull = os.fdopen(os.dup(_tmp_devnull.fileno()), 'w')
