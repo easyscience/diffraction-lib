@@ -25,6 +25,7 @@ jobs:
         with:
           app-id: ${{ vars.EASYSCIENCE_APP_ID }}
           private-key: ${{ secrets.EASYSCIENCE_APP_KEY }}
+          repositories: ${{ github.event.repository.name }}
 
       - name: Check for required [scope] label
         uses: trstringer/require-label-prefix@v1
