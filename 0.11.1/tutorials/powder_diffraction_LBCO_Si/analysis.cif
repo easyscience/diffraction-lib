@@ -1,0 +1,5 @@
+_analysis.fitting_engine         lmfit
+_analysis.fit_mode       single
+
+
+
