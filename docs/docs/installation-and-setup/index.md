@@ -78,7 +78,8 @@ This section describes the simplest way to set up EasyDiffraction using
 
 #### Updating Pixi and EasyDiffraction
 
-- To update all packages in the Pixi environment, including EasyDiffraction:
+- To update all packages in the Pixi environment, including
+  EasyDiffraction:
   ```txt
   pixi update
   ```
@@ -94,9 +95,9 @@ This section describes the simplest way to set up EasyDiffraction using
 
 ## Classical Installation
 
-This section describes how to install EasyDiffraction using the traditional
-method with **pip**. It is assumed that you are familiar with Python package
-management and virtual environments.
+This section describes how to install EasyDiffraction using the
+traditional method with **pip**. It is assumed that you are familiar
+with Python package management and virtual environments.
 
 ### Environment Setup <small>optional</small> { #environment-setup data-toc-label="Environment Setup" }
 
