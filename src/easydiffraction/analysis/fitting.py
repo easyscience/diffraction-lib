@@ -30,7 +30,7 @@ class Fitter:
         self,
         structures: Structures,
         experiments: Experiments,
-        weights: np.array | None = None,
+        weights: np.ndarray | None = None,
         analysis: object = None,
         verbosity: VerbosityEnum = VerbosityEnum.FULL,
     ) -> None:
@@ -47,7 +47,7 @@ class Fitter:
             Collection of structures.
         experiments : Experiments
             Collection of experiments.
-        weights : np.array | None, default=None
+        weights : np.ndarray | None, default=None
             Optional weights for joint fitting.
         analysis : object, default=None
             Optional Analysis object to update its categories during
@@ -156,7 +156,7 @@ class Fitter:
         parameters: list[Parameter],
         structures: Structures,
         experiments: Experiments,
-        weights: np.array | None = None,
+        weights: np.ndarray | None = None,
         analysis: object = None,
     ) -> np.ndarray:
         """
@@ -175,7 +175,7 @@ class Fitter:
             Collection of structures.
         experiments : Experiments
             Collection of experiments.
-        weights : np.array | None, default=None
+        weights : np.ndarray | None, default=None
             Optional weights for joint fitting.
         analysis : object, default=None
             Optional Analysis object to update its categories during
