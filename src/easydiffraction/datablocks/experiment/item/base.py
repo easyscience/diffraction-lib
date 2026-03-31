@@ -149,7 +149,7 @@ class ExperimentBase(DatablockItem):
         NotImplementedError
             Subclasses must implement this method.
         """
-        raise NotImplementedError()
+        raise NotImplementedError
 
     # ------------------------------------------------------------------
     #  Calculator (switchable-category pattern)
