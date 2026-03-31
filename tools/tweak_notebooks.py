@@ -4,8 +4,7 @@ Usage::
         python tools/tweak_notebooks.py tutorials/ [more_paths ...]
 
 The bootstrap cell:
-- Checks if ``easydiffraction`` is importable; if not, installs it
-    with the ``visualization`` extra.
+- Checks if ``easydiffraction`` is importable; if not, installs it.
 - Adds the tag ``hide-in-docs``.
 - Idempotent: skipped if already present and identical.
 """
@@ -29,14 +28,14 @@ def _get_pip_install_specifier() -> str:
     """Get the pip install specifier for easydiffraction.
 
     Returns a version-pinned specifier for tagged releases (e.g.,
-    'easydiffraction[visualization]==0.8.0'), or an unpinned specifier
-    for development versions ('easydiffraction[visualization]').
+    'easydiffraction==0.8.0'), or an unpinned specifier for development
+    versions ('easydiffraction').
     """
     if _is_dev_version(PACKAGE_NAME):
-        return f'{PACKAGE_NAME}[visualization]'
+        return f'{PACKAGE_NAME}'
 
     version = stripped_package_version(PACKAGE_NAME)
-    return f'{PACKAGE_NAME}[visualization]=={version}'
+    return f'{PACKAGE_NAME}=={version}'
 
 
 def _get_bootstrap_source() -> str:
@@ -45,17 +44,13 @@ def _get_bootstrap_source() -> str:
     """
     pip_specifier = _get_pip_install_specifier()
     return (
-        '# Check if the easydiffraction library is installed.\n'
-        "# If not, install it with the 'visualization' extras.\n"
-        '# Needed when running remotely (e.g. Colab) where the lib is absent.\n'
-        'import builtins\n'
+        '# Check whether easydiffraction is installed; install it if needed.\n'
+        '# Required for remote environments such as Google Colab.\n'
         'import importlib.util\n'
         '\n'
-        "if (hasattr(builtins, '__IPYTHON__') and\n"
-        "    importlib.util.find_spec('easydiffraction') is None):\n"
-        f"    !pip install '{pip_specifier}'"
+        "if importlib.util.find_spec('easydiffraction') is None:\n"
+        f"    %pip install {pip_specifier}"
     )
-
 
 BOOTSTRAP_TAG = 'hide-in-docs'
 
