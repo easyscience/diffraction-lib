@@ -4,7 +4,8 @@ icon: material/cog-box
 
 # :material-cog-box: Installation & Setup
 
-## Requirements
+**EasyDiffraction** is a cross-platform Python library compatible with
+**Python 3.11** through **3.14**.
 
 EasyDiffraction is a cross-platform Python library compatible with
 **Python 3.11 through 3.13**.  
@@ -12,6 +13,92 @@ Make sure Python is installed on your system before proceeding with the
 installation.
 
 ## Environment Setup <small>optional</small> { #environment-setup data-toc-label="Environment Setup" }
+
+    - **Ease of use**: Pixi simplifies the installation process, making it
+      accessible even for users with limited experience in package management.
+    - **Python version control**: Pixi allows specifying and managing different
+      Python versions for each project, ensuring compatibility.
+    - **Isolated environments**: Pixi creates isolated environments for each
+      project, preventing conflicts between different package versions.
+    - **PyPI and Conda support**: Pixi can install packages from both PyPI and
+      Conda repositories, providing access to a wide range of libraries.
+
+An alternative installation method using the traditional **pip** package
+manager is also provided.
+
+## Installing with Pixi <small>recommended</small> { #installing-with-pixi data-toc-label="Installing with Pixi" }
+
+This section describes the simplest way to set up EasyDiffraction using
+**Pixi**.
+
+#### Installing Pixi
+
+- Install Pixi by following the instructions on the
+  [official Pixi Installation Guide](https://pixi.prefix.dev/latest/installation).
+
+#### Setting up EasyDiffraction with Pixi
+
+<!-- prettier-ignore-start -->
+
+- Choose a project location (local drive recommended).
+
+    ??? warning ":fontawesome-brands-windows: Windows + OneDrive"
+
+        We **do not recommend creating a Pixi project inside OneDrive or other
+        synced folders**.
+
+        By default, Pixi creates the virtual environment inside the project
+        directory (in `.pixi/`). On Windows, synced folders such as OneDrive
+        may cause file‑system issues (e.g., path-length limitations or
+        restricted link operations), which can lead to unexpected install
+        errors or environments being recreated.
+
+        Instead, create your project in a **local directory on your drive**
+        where you have full write permissions.
+
+<!-- prettier-ignore-end -->
+
+- Initialize a new Pixi project and navigate into it:
+  ```txt
+  pixi init easydiffraction
+  cd easydiffraction
+  ```
+- Set the Python version for the Pixi environment (e.g., 3.14):
+  ```txt
+  pixi add python=3.14
+  ```
+- Add EasyDiffraction to the Pixi environment from PyPI:
+  ```txt
+  pixi add --pypi easydiffraction
+  ```
+- Add a Pixi task to run EasyDiffraction commands easily:
+  ```txt
+  pixi task add easydiffraction "python -m easydiffraction"
+  ```
+
+#### Updating Pixi and EasyDiffraction
+
+- To update all packages in the Pixi environment, including EasyDiffraction:
+  ```txt
+  pixi update
+  ```
+- To update Pixi itself to the latest version:
+  ```txt
+  pixi self-update
+  ```
+
+#### Uninstalling Pixi
+
+- Follow the
+  [official Pixi Guide](https://pixi.prefix.dev/latest/installation/#uninstall).
+
+## Classical Installation
+
+This section describes how to install EasyDiffraction using the traditional
+method with **pip**. It is assumed that you are familiar with Python package
+management and virtual environments.
+
+### Environment Setup <small>optional</small> { #environment-setup data-toc-label="Environment Setup" }
 
 We recommend using a **virtual environment** to isolate dependencies and
 avoid conflicts with system-wide packages. If any issues arise, you can
