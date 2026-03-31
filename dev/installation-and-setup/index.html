@@ -2291,17 +2291,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#requirements" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Requirements
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#environment-setup" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2309,6 +2298,45 @@
       
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installing-with-pixi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installing with Pixi
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#classical-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Classical Installation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Classical Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#environment-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Environment Setup
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2426,12 +2454,89 @@
 
 
 <h1 id="installation-setup"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17.25 12c0 .23-.02.46-.05.68l1.48 1.16c.13.11.17.29.08.45l-1.4 2.42c-.09.15-.27.21-.43.15l-1.74-.7c-.36.28-.76.51-1.19.69l-.25 1.85c-.03.17-.18.3-.35.3h-2.8c-.17 0-.32-.13-.35-.3L10 16.85c-.44-.18-.83-.41-1.19-.69l-1.74.7c-.16.06-.34 0-.43-.15l-1.4-2.42a.35.35 0 0 1 .08-.45l1.48-1.16c-.03-.22-.05-.45-.05-.68s.02-.46.05-.68l-1.48-1.16a.35.35 0 0 1-.08-.45l1.4-2.42c.09-.16.27-.22.43-.16l1.74.71c.36-.28.75-.52 1.19-.69l.25-1.86c.03-.16.18-.29.35-.29h2.8c.17 0 .32.13.35.29L14 7.15c.43.17.83.41 1.19.69l1.74-.71c.16-.06.34 0 .43.16l1.4 2.42c.09.15.05.34-.08.45l-1.48 1.16c.03.22.05.45.05.68M19 3H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2m-7 7c-1.11 0-2 .89-2 2a2 2 0 0 0 2 2 2 2 0 0 0 2-2 2 2 0 0 0-2-2"/></svg></span> Installation &amp; Setup</h1>
-<h2 id="requirements">Requirements</h2>
+<p><strong>EasyDiffraction</strong> is a cross-platform Python library compatible with
+<strong>Python 3.11</strong> through <strong>3.14</strong>.</p>
 <p>EasyDiffraction is a cross-platform Python library compatible with
 <strong>Python 3.11 through 3.13</strong>.<br />
 Make sure Python is installed on your system before proceeding with the
 installation.</p>
 <h2 id="environment-setup">Environment Setup <small>optional</small></h2>
+<div class="language-text highlight"><pre><span></span><code>- **Ease of use**: Pixi simplifies the installation process, making it
+  accessible even for users with limited experience in package management.
+- **Python version control**: Pixi allows specifying and managing different
+  Python versions for each project, ensuring compatibility.
+- **Isolated environments**: Pixi creates isolated environments for each
+  project, preventing conflicts between different package versions.
+- **PyPI and Conda support**: Pixi can install packages from both PyPI and
+  Conda repositories, providing access to a wide range of libraries.
+</code></pre></div>
+<p>An alternative installation method using the traditional <strong><abbr title="Package installer for Python.">pip</abbr></strong> package
+manager is also provided.</p>
+<h2 id="installing-with-pixi">Installing with <abbr title="A modern package manager for Windows, macOS, and Linux.">Pixi</abbr> <small>recommended</small></h2>
+<p>This section describes the simplest way to set up EasyDiffraction using
+<strong><abbr title="A modern package manager for Windows, macOS, and Linux.">Pixi</abbr></strong>.</p>
+<h4 id="installing-pixi">Installing <abbr title="A modern package manager for Windows, macOS, and Linux.">Pixi</abbr></h4>
+<ul>
+<li>Install <abbr title="A modern package manager for Windows, macOS, and Linux.">Pixi</abbr> by following the instructions on the
+  <a href="https://pixi.prefix.dev/latest/installation">official <abbr title="A modern package manager for Windows, macOS, and Linux.">Pixi</abbr> Installation Guide</a>.</li>
+</ul>
+<h4 id="setting-up-easydiffraction-with-pixi">Setting up EasyDiffraction with <abbr title="A modern package manager for Windows, macOS, and Linux.">Pixi</abbr></h4>
+<!-- prettier-ignore-start -->
+
+<ul>
+<li>
+<p>Choose a project location (local drive recommended).</p>
+<details class="warning">
+<summary><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="m0 93.7 183.6-25.3v177.4H0zm0 324.6 183.6 25.3V268.4H0zm203.8 28L448 480V268.4H203.8zm0-380.6v180.1H448V32z"/></svg></span> Windows + OneDrive</summary>
+<p>We <strong>do not recommend creating a <abbr title="A modern package manager for Windows, macOS, and Linux.">Pixi</abbr> project inside OneDrive or other
+synced folders</strong>.</p>
+<p>By default, <abbr title="A modern package manager for Windows, macOS, and Linux.">Pixi</abbr> creates the virtual environment inside the project
+directory (in <code>.pixi/</code>). On Windows, synced folders such as OneDrive
+may cause file‑system issues (e.g., path-length limitations or
+restricted link operations), which can lead to unexpected install
+errors or environments being recreated.</p>
+<p>Instead, create your project in a <strong>local directory on your drive</strong>
+where you have full write permissions.</p>
+</details>
+</li>
+</ul>
+<!-- prettier-ignore-end -->
+
+<ul>
+<li>Initialize a new <abbr title="A modern package manager for Windows, macOS, and Linux.">Pixi</abbr> project and navigate into it:
+  <div class="language-text highlight"><pre><span></span><code>pixi init easydiffraction
+cd easydiffraction
+</code></pre></div></li>
+<li>Set the Python version for the <abbr title="A modern package manager for Windows, macOS, and Linux.">Pixi</abbr> environment (e.g., 3.14):
+  <div class="language-text highlight"><pre><span></span><code>pixi add python=3.14
+</code></pre></div></li>
+<li>Add EasyDiffraction to the <abbr title="A modern package manager for Windows, macOS, and Linux.">Pixi</abbr> environment from <abbr title="The Python Package Index is a repository of software for the Python programming language.">PyPI</abbr>:
+  <div class="language-text highlight"><pre><span></span><code>pixi add --pypi easydiffraction
+</code></pre></div></li>
+<li>Add a <abbr title="A modern package manager for Windows, macOS, and Linux.">Pixi</abbr> task to run EasyDiffraction commands easily:
+  <div class="language-text highlight"><pre><span></span><code>pixi task add easydiffraction &quot;python -m easydiffraction&quot;
+</code></pre></div></li>
+</ul>
+<h4 id="updating-pixi-and-easydiffraction">Updating <abbr title="A modern package manager for Windows, macOS, and Linux.">Pixi</abbr> and EasyDiffraction</h4>
+<ul>
+<li>To update all packages in the <abbr title="A modern package manager for Windows, macOS, and Linux.">Pixi</abbr> environment, including
+  EasyDiffraction:
+  <div class="language-text highlight"><pre><span></span><code>pixi update
+</code></pre></div></li>
+<li>To update <abbr title="A modern package manager for Windows, macOS, and Linux.">Pixi</abbr> itself to the latest version:
+  <div class="language-text highlight"><pre><span></span><code>pixi self-update
+</code></pre></div></li>
+</ul>
+<h4 id="uninstalling-pixi">Uninstalling <abbr title="A modern package manager for Windows, macOS, and Linux.">Pixi</abbr></h4>
+<ul>
+<li>Follow the
+  <a href="https://pixi.prefix.dev/latest/installation/#uninstall">official <abbr title="A modern package manager for Windows, macOS, and Linux.">Pixi</abbr> Guide</a>.</li>
+</ul>
+<h2 id="classical-installation">Classical Installation</h2>
+<p>This section describes how to install EasyDiffraction using the
+traditional method with <strong><abbr title="Package installer for Python.">pip</abbr></strong>. It is assumed that you are familiar
+with Python package management and virtual environments.</p>
+<h3 id="environment-setup">Environment Setup <small>optional</small></h3>
 <p>We recommend using a <strong>virtual environment</strong> to isolate dependencies and
 avoid conflicts with system-wide packages. If any issues arise, you can
 simply delete and recreate the environment.</p>
