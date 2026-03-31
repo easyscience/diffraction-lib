@@ -5,8 +5,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import numpy as np
-
 from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.datablocks.experiment.item.base import ScExperimentBase
@@ -70,13 +68,13 @@ class CwlScExperiment(ScExperimentBase):
             return 0
 
         # Extract Miller indices h, k, l
-        indices_h: np.ndarray = data[:, 0].astype(int)
-        indices_k: np.ndarray = data[:, 1].astype(int)
-        indices_l: np.ndarray = data[:, 2].astype(int)
+        indices_h = data[:, 0].astype(int)
+        indices_k = data[:, 1].astype(int)
+        indices_l = data[:, 2].astype(int)
 
         # Extract intensities and their standard uncertainties
-        integrated_intensities: np.ndarray = data[:, 3]
-        integrated_intensities_su: np.ndarray = data[:, 4]
+        integrated_intensities = data[:, 3]
+        integrated_intensities_su = data[:, 4]
 
         # Set the experiment data
         self.data._create_items_set_hkl_and_id(indices_h, indices_k, indices_l)
@@ -142,16 +140,16 @@ class TofScExperiment(ScExperimentBase):
             return 0
 
         # Extract Miller indices h, k, l
-        indices_h: np.ndarray = data[:, 0].astype(int)
-        indices_k: np.ndarray = data[:, 1].astype(int)
-        indices_l: np.ndarray = data[:, 2].astype(int)
+        indices_h = data[:, 0].astype(int)
+        indices_k = data[:, 1].astype(int)
+        indices_l = data[:, 2].astype(int)
 
         # Extract intensities and their standard uncertainties
-        integrated_intensities: np.ndarray = data[:, 3]
-        integrated_intensities_su: np.ndarray = data[:, 4]
+        integrated_intensities = data[:, 3]
+        integrated_intensities_su = data[:, 4]
 
         # Extract wavelength values
-        wavelength: np.ndarray = data[:, 5]
+        wavelength = data[:, 5]
 
         # Set the experiment data
         self.data._create_items_set_hkl_and_id(indices_h, indices_k, indices_l)

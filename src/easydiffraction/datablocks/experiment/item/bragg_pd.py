@@ -92,14 +92,14 @@ class BraggPdExperiment(PdExperimentBase):
             log.warning('No uncertainty (sy) column provided. Defaulting to sqrt(y).')
 
         # Extract x, y data
-        x: np.ndarray = data[:, 0]
-        y: np.ndarray = data[:, 1]
+        x = data[:, 0]
+        y = data[:, 1]
 
         # Round x to 4 decimal places
         x = np.round(x, 4)
 
         # Determine sy from column 3 if available, otherwise use sqrt(y)
-        sy: np.ndarray = data[:, 2] if data.shape[1] > 2 else np.sqrt(y)
+        sy = data[:, 2] if data.shape[1] > 2 else np.sqrt(y)
 
         # Replace values smaller than 0.0001 with 1.0
         # TODO: Not used if loading from cif file?
