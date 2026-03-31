@@ -266,7 +266,7 @@ class ExceptionHookManager:
             try:
                 logger.error(message, exc_info=(exc_type, exc, tb))
             except Exception:
-                logger.error('Unhandled exception (logging failure)')
+                logger.exception('Unhandled exception (logging failure)')
             finally:
                 with suppress(Exception):
                     exc.args = original_args

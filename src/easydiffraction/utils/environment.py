@@ -96,8 +96,9 @@ def in_jupyter() -> bool:
             return True
         if shell == 'TerminalInteractiveShell':
             return False
-        return False
     except Exception:
+        return False
+    else:
         return False
 
 
@@ -154,10 +155,10 @@ def can_update_ipython_display() -> bool:
     """
     try:
         from IPython.display import HTML  # type: ignore[import-not-found]  # noqa: F401, PLC0415
-
-        return True
     except Exception:
         return False
+    else:
+        return True
 
 
 def can_use_ipython_display(handle: object) -> bool:

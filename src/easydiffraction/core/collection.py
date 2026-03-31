@@ -110,16 +110,8 @@ class CollectionBase(GuardedBase):
         ----------
         name : str
             Identity key of the item to remove.
-
-        Raises
-        ------
-        KeyError
-            If no item with the given key exists.
         """
-        try:
-            del self[name]
-        except KeyError:
-            raise
+        del self[name]
 
     def _key_for(self, item: GuardedBase) -> str | None:
         """
