@@ -104,8 +104,8 @@
 
 - Jupyter notebooks (`docs/docs/tutorials/*.ipynb`) are **generated
   artifacts** — never edit them by hand. Edit only the corresponding
-  `*.py` script, then run `pixi run notebook-convert` followed by
-  `pixi run notebook-prepare` to regenerate the notebook.
+  `*.py` script, then run `pixi run notebook-prepare` to regenerate the
+  notebook.
 
 ## Changes
 
