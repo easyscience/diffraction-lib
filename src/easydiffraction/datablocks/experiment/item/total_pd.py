@@ -14,7 +14,6 @@ from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.datablocks.experiment.item.factory import ExperimentFactory
-from easydiffraction.utils.logging import console
 
 if TYPE_CHECKING:
     from easydiffraction.datablocks.experiment.categories.experiment_type import ExperimentType
@@ -41,11 +40,30 @@ class TotalPdExperiment(PdExperimentBase):
     ) -> None:
         super().__init__(name=name, type=type)
 
-    def _load_ascii_data_to_experiment(self, data_path: str) -> None:
+    def _load_ascii_data_to_experiment(self, data_path: str) -> int:
         """
         Load x, y, sy values from an ASCII file into the experiment.
 
         The file must be structured as:     x  y  sy
+
+        Parameters
+        ----------
+        data_path : str
+            Path to the ASCII data file.
+
+        Returns
+        -------
+        int
+            Number of loaded data points.
+
+        Raises
+        ------
+        ImportError
+            If the ``diffpy`` package is not installed.
+        IOError
+            If the data file cannot be read.
+        ValueError
+            If the data file has fewer than two columns.
         """
         try:
             from diffpy.utils.parsers.loaddata import loadData
@@ -71,5 +89,4 @@ class TotalPdExperiment(PdExperimentBase):
         self.data._set_g_r_meas(y)
         self.data._set_g_r_meas_su(sy)
 
-        console.paragraph('Data loaded successfully')
-        console.print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(x)}")
+        return len(x)

@@ -19,8 +19,8 @@ def test_pd_experiment_peak_profile_type_switch(capsys):
     from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 
     class ConcretePd(PdExperimentBase):
-        def _load_ascii_data_to_experiment(self, data_path: str) -> None:
-            pass
+        def _load_ascii_data_to_experiment(self, data_path: str) -> int:
+            return 0
 
     et = ExperimentType()
     et._set_sample_form(SampleFormEnum.POWDER.value)

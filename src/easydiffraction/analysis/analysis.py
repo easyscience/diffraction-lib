@@ -20,6 +20,7 @@ from easydiffraction.core.variable import Parameter
 from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.datablocks.experiment.collection import Experiments
 from easydiffraction.display.tables import TableRenderer
+from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_cif
@@ -576,7 +577,7 @@ class Analysis:
         self.constraints_handler.set_constraints(self.constraints)
         self.constraints_handler.apply()
 
-    def fit(self) -> None:
+    def fit(self, verbosity: str | None = None) -> None:
         """
         Execute fitting for all experiments.
 
@@ -593,11 +594,21 @@ class Analysis:
         programmatically (e.g.,
         ``analysis.fit_results.reduced_chi_square``).
 
-        Example::
+        Parameters
+        ----------
+        verbosity : str | None, default=None
+            Console output verbosity: ``'full'`` for detailed per-
+            experiment progress, ``'short'`` for a
+            one-row-per-experiment summary table, or ``'silent'`` for no
+            output. When ``None``, uses ``project.verbosity``.
 
-        project.analysis.fit() project.analysis.show_fit_results()  #
-        Display results
+        Raises
+        ------
+        NotImplementedError
+            If the fit mode is not ``'single'`` or ``'joint'``.
         """
+        verb = VerbosityEnum(verbosity if verbosity is not None else self.project.verbosity)
+
         structures = self.project.structures
         if not structures:
             log.warning('No structures found in the project. Cannot run fit.')
@@ -615,24 +626,52 @@ class Analysis:
             if not len(self._joint_fit_experiments):
                 for id in experiments.names:
                     self._joint_fit_experiments.create(id=id, weight=0.5)
-            console.paragraph(
-                f"Using all experiments 🔬 {experiments.names} for '{mode.value}' fitting"
-            )
+            if verb is not VerbosityEnum.SILENT:
+                console.paragraph(
+                    f"Using all experiments 🔬 {experiments.names} for '{mode.value}' fitting"
+                )
             self.fitter.fit(
                 structures,
                 experiments,
                 weights=self._joint_fit_experiments,
                 analysis=self,
+                verbosity=verb,
             )
 
             # After fitting, get the results
             self.fit_results = self.fitter.results
 
         elif mode is FitModeEnum.SINGLE:
+            expt_names = experiments.names
+            num_expts = len(expt_names)
+
+            # Short mode: print header and create display handle once
+            short_headers = ['experiment', 'χ²', 'iterations', 'status']
+            short_alignments = ['left', 'right', 'right', 'center']
+            short_rows: list[list[str]] = []
+            short_display_handle: object | None = None
+            if verb is VerbosityEnum.SHORT:
+                from easydiffraction.analysis.fit_helpers.tracking import _make_display_handle
+
+                first = expt_names[0]
+                last = expt_names[-1]
+                minimizer_name = self.fitter.selection
+                console.paragraph(
+                    f"Using {num_expts} experiments 🔬 from '{first}' to "
+                    f"'{last}' for '{mode.value}' fitting"
+                )
+                console.print(f"🚀 Starting fit process with '{minimizer_name}'...")
+                console.print('📈 Goodness-of-fit (reduced χ²) per experiment:')
+                short_display_handle = _make_display_handle()
+
             # TODO: Find a better way without creating dummy
             #  experiments?
-            for expt_name in experiments.names:
-                console.paragraph(f"Using experiment 🔬 '{expt_name}' for '{mode.value}' fitting")
+            for _idx, expt_name in enumerate(expt_names, start=1):
+                if verb is VerbosityEnum.FULL:
+                    console.paragraph(
+                        f"Using experiment 🔬 '{expt_name}' for '{mode.value}' fitting"
+                    )
+
                 experiment = experiments[expt_name]
                 dummy_experiments = Experiments()  # TODO: Find a better name
 
@@ -646,6 +685,7 @@ class Analysis:
                     structures,
                     dummy_experiments,
                     analysis=self,
+                    verbosity=verb,
                 )
 
                 # After fitting, snapshot parameter values before
@@ -660,6 +700,30 @@ class Analysis:
                     }
                 self._parameter_snapshots[expt_name] = snapshot
                 self.fit_results = results
+
+                # Short mode: append one summary row and update in-place
+                if verb is VerbosityEnum.SHORT:
+                    chi2_str = (
+                        f'{results.reduced_chi_square:.2f}'
+                        if results.reduced_chi_square is not None
+                        else '—'
+                    )
+                    iters = str(self.fitter.minimizer.tracker.best_iteration or 0)
+                    status = '✅' if results.success else '❌'
+                    short_rows.append([expt_name, chi2_str, iters, status])
+                    render_table(
+                        columns_headers=short_headers,
+                        columns_alignment=short_alignments,
+                        columns_data=short_rows,
+                        display_handle=short_display_handle,
+                    )
+
+            # Short mode: close the display handle
+            if short_display_handle is not None and hasattr(short_display_handle, 'close'):
+                from contextlib import suppress
+
+                with suppress(Exception):
+                    short_display_handle.close()
 
         else:
             raise NotImplementedError(f'Fit mode {mode.value} not implemented yet.')

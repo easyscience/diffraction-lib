@@ -562,7 +562,7 @@ class PdExperimentBase(ExperimentBase):
         return valid_linked_phases
 
     @abstractmethod
-    def _load_ascii_data_to_experiment(self, data_path: str) -> None:
+    def _load_ascii_data_to_experiment(self, data_path: str) -> int:
         """
         Load powder diffraction data from an ASCII file.
 
@@ -571,6 +571,11 @@ class PdExperimentBase(ExperimentBase):
         data_path : str
             Path to data file with columns compatible with the beam mode
             (e.g. 2θ/I/σ for CWL, TOF/I/σ for TOF).
+
+        Returns
+        -------
+        int
+            Number of loaded data points.
         """
         pass
 

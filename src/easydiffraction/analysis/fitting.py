@@ -14,6 +14,7 @@ from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 from easydiffraction.core.variable import Parameter
 from easydiffraction.datablocks.experiment.collection import Experiments
 from easydiffraction.datablocks.structure.collection import Structures
+from easydiffraction.utils.enums import VerbosityEnum
 
 if TYPE_CHECKING:
     from easydiffraction.analysis.fit_helpers.reporting import FitResults
@@ -34,6 +35,7 @@ class Fitter:
         experiments: Experiments,
         weights: Optional[np.array] = None,
         analysis: object = None,
+        verbosity: VerbosityEnum = VerbosityEnum.FULL,
     ) -> None:
         """
         Run the fitting process.
@@ -53,6 +55,8 @@ class Fitter:
         analysis : object, default=None
             Optional Analysis object to update its categories during
             fitting.
+        verbosity : VerbosityEnum, default=VerbosityEnum.FULL
+            Console output verbosity.
         """
         params = structures.free_parameters + experiments.free_parameters
 
@@ -87,7 +91,7 @@ class Fitter:
             )
 
         # Perform fitting
-        self.results = self.minimizer.fit(params, objective_function)
+        self.results = self.minimizer.fit(params, objective_function, verbosity=verbosity)
 
     def _process_fit_results(
         self,

@@ -15,7 +15,6 @@ from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.datablocks.experiment.item.factory import ExperimentFactory
 from easydiffraction.io.ascii import load_numeric_block
-from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 
 if TYPE_CHECKING:
@@ -44,12 +43,22 @@ class CwlScExperiment(ScExperimentBase):
     ) -> None:
         super().__init__(name=name, type=type)
 
-    def _load_ascii_data_to_experiment(self, data_path: str) -> None:
+    def _load_ascii_data_to_experiment(self, data_path: str) -> int:
         """
         Load measured data from an ASCII file into the data category.
 
         The file format is space/column separated with 5 columns: ``h k
         l Iobs sIobs``.
+
+        Parameters
+        ----------
+        data_path : str
+            Path to the ASCII data file.
+
+        Returns
+        -------
+        int
+            Number of loaded data points.
         """
         data = load_numeric_block(data_path)
 
@@ -58,7 +67,7 @@ class CwlScExperiment(ScExperimentBase):
                 'Data file must have at least 5 columns: h, k, l, Iobs, sIobs.',
                 exc_type=ValueError,
             )
-            return
+            return 0
 
         # Extract Miller indices h, k, l
         indices_h: np.ndarray = data[:, 0].astype(int)
@@ -74,8 +83,7 @@ class CwlScExperiment(ScExperimentBase):
         self.data._set_intensity_meas(integrated_intensities)
         self.data._set_intensity_meas_su(integrated_intensities_su)
 
-        console.paragraph('Data loaded successfully')
-        console.print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(indices_h)}")
+        return len(indices_h)
 
 
 @ExperimentFactory.register
@@ -100,12 +108,22 @@ class TofScExperiment(ScExperimentBase):
     ) -> None:
         super().__init__(name=name, type=type)
 
-    def _load_ascii_data_to_experiment(self, data_path: str) -> None:
+    def _load_ascii_data_to_experiment(self, data_path: str) -> int:
         """
         Load measured data from an ASCII file into the data category.
 
         The file format is space/column separated with 6 columns: ``h k
         l Iobs sIobs wavelength``.
+
+        Parameters
+        ----------
+        data_path : str
+            Path to the ASCII data file.
+
+        Returns
+        -------
+        int
+            Number of loaded data points.
         """
         try:
             data = load_numeric_block(data_path)
@@ -114,14 +132,14 @@ class TofScExperiment(ScExperimentBase):
                 f'Failed to read data from {data_path}: {e}',
                 exc_type=IOError,
             )
-            return
+            return 0
 
         if data.shape[1] < 6:
             log.error(
                 'Data file must have at least 6 columns: h, k, l, Iobs, sIobs, wavelength.',
                 exc_type=ValueError,
             )
-            return
+            return 0
 
         # Extract Miller indices h, k, l
         indices_h: np.ndarray = data[:, 0].astype(int)
@@ -141,5 +159,4 @@ class TofScExperiment(ScExperimentBase):
         self.data._set_intensity_meas_su(integrated_intensities_su)
         self.data._set_wavelength(wavelength)
 
-        console.paragraph('Data loaded successfully')
-        console.print(f"Experiment 🔬 '{self.name}'. Number of data points: {len(indices_h)}")
+        return len(indices_h)

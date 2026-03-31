@@ -13,6 +13,7 @@ import numpy as np
 
 from easydiffraction.analysis.fit_helpers.reporting import FitResults
 from easydiffraction.analysis.fit_helpers.tracking import FitProgressTracker
+from easydiffraction.utils.enums import VerbosityEnum
 
 
 class MinimizerBase(ABC):
@@ -42,7 +43,11 @@ class MinimizerBase(ABC):
         self._fitting_time: Optional[float] = None
         self.tracker: FitProgressTracker = FitProgressTracker()
 
-    def _start_tracking(self, minimizer_name: str) -> None:
+    def _start_tracking(
+        self,
+        minimizer_name: str,
+        verbosity: VerbosityEnum = VerbosityEnum.FULL,
+    ) -> None:
         """
         Initialize progress tracking and timer.
 
@@ -50,8 +55,11 @@ class MinimizerBase(ABC):
         ----------
         minimizer_name : str
             Human-readable name shown in progress.
+        verbosity : VerbosityEnum, default=VerbosityEnum.FULL
+            Console output verbosity.
         """
         self.tracker.reset()
+        self.tracker._verbosity = verbosity
         self.tracker.start_tracking(minimizer_name)
         self.tracker.start_timer()
 
@@ -136,6 +144,7 @@ class MinimizerBase(ABC):
         self,
         parameters: List[object],
         objective_function: Callable[..., object],
+        verbosity: VerbosityEnum = VerbosityEnum.FULL,
     ) -> FitResults:
         """
         Run the full minimization workflow.
@@ -147,6 +156,8 @@ class MinimizerBase(ABC):
         objective_function : Callable[..., object]
             Callable returning residuals for a given set of engine
             arguments.
+        verbosity : VerbosityEnum, default=VerbosityEnum.FULL
+            Console output verbosity.
 
         Returns
         -------
@@ -157,7 +168,7 @@ class MinimizerBase(ABC):
         if self.method is not None:
             minimizer_name += f' ({self.method})'
 
-        self._start_tracking(minimizer_name)
+        self._start_tracking(minimizer_name, verbosity=verbosity)
 
         solver_args = self._prepare_solver_args(parameters)
         raw_result = self._run_solver(objective_function, **solver_args)

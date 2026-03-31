@@ -22,9 +22,9 @@ def _mk_type_sc_bragg():
 
 
 class _ConcreteCwlSc(CwlScExperiment):
-    def _load_ascii_data_to_experiment(self, data_path: str) -> None:
+    def _load_ascii_data_to_experiment(self, data_path: str) -> int:
         # Not used in this test
-        pass
+        return 0
 
 
 def test_init_and_placeholder_no_crash(monkeypatch: pytest.MonkeyPatch):
