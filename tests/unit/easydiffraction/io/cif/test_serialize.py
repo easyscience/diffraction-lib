@@ -57,7 +57,9 @@ def test_category_collection_to_cif_empty_and_one_row():
     i = Item('n1', 5)
     coll['n1'] = i
     out = MUT.category_collection_to_cif(coll)
-    assert 'loop_' in out and '_x' in out and '5' in out
+    assert 'loop_' in out
+    assert '_x' in out
+    assert '5' in out
 
 
 def test_project_to_cif_assembles_present_sections():

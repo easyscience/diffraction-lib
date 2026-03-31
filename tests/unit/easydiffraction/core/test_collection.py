@@ -24,10 +24,12 @@ def test_collection_add_get_delete_and_names():
     b = Item('b')
     c['a'] = a
     c['b'] = b
-    assert c['a'] is a and c['b'] is b
+    assert c['a'] is a
+    assert c['b'] is b
     a2 = Item('a')
     c['a'] = a2
-    assert c['a'] is a2 and len(list(c.keys())) == 2
+    assert c['a'] is a2
+    assert len(list(c.keys())) == 2
     del c['b']
     assert list(c.names) == ['a']
 

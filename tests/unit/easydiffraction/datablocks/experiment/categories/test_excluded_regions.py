@@ -49,4 +49,6 @@ def test_excluded_regions_add_updates_datastore_and_cif():
 
     # CIF loop includes header tags
     cif = coll.as_cif
-    assert 'loop_' in cif and '_excluded_region.start' in cif and '_excluded_region.end' in cif
+    assert 'loop_' in cif
+    assert '_excluded_region.start' in cif
+    assert '_excluded_region.end' in cif

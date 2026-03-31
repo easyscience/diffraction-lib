@@ -26,7 +26,10 @@ def test_data_factory_default_and_errors():
     assert obj4.__class__.__name__ == 'TotalData'
 
     # Unsupported tag should raise ValueError
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError,
+        match=r"Unsupported type: 'nonexistent'\. Supported: .*",
+    ):
         DataFactory.create('nonexistent')
 
 

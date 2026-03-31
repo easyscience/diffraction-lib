@@ -95,4 +95,5 @@ def test_pdffit_cif_v2_to_v1_regex_behavior(monkeypatch):
     pattern = calc.calculate_pattern(
         DummyStructure(), DummyExperiment(), called_by_minimizer=False
     )
-    assert isinstance(pattern, np.ndarray) and pattern.shape[0] == 5
+    assert isinstance(pattern, np.ndarray)
+    assert pattern.shape[0] == 5

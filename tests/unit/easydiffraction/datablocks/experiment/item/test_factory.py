@@ -25,4 +25,5 @@ def test_experiment_factory_from_scratch():
         scattering_type=ScatteringTypeEnum.BRAGG.value,
     )
     # Instance should be created (BraggPdExperiment)
-    assert hasattr(ex, 'type') and ex.type.sample_form.value == SampleFormEnum.POWDER.value
+    assert hasattr(ex, 'type')
+    assert ex.type.sample_form.value == SampleFormEnum.POWDER.value

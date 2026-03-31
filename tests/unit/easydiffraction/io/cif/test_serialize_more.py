@@ -35,7 +35,9 @@ def test_datablock_item_to_cif_includes_item_and_collection():
     out = MUT.datablock_item_to_cif(DB())
     assert out.startswith('data_block1')
     assert '_aa  42.0000' in out
-    assert 'loop_' in out and '_aa' in out and '7' in out
+    assert 'loop_' in out
+    assert '_aa' in out
+    assert '7' in out
 
 
 def test_datablock_collection_to_cif_concatenates_blocks():
@@ -61,9 +63,11 @@ def test_project_info_to_cif_contains_core_fields():
     info = ProjectInfo(name='p1', title='My Title', description='Some description text')
     out = MUT.project_info_to_cif(info)
     assert '_project.id               p1' in out
-    assert '_project.title' in out and 'My Title' in out
+    assert '_project.title' in out
+    assert 'My Title' in out
     assert '_project.description' in out
-    assert '_project.created' in out and '_project.last_modified' in out
+    assert '_project.created' in out
+    assert '_project.last_modified' in out
 
 
 def test_experiment_to_cif_with_and_without_data():
@@ -106,10 +110,12 @@ def test_experiment_to_cif_with_and_without_data():
     # Datastore CIF no longer automatically included in experiment CIF output
     assert out_with.startswith('data_expA')
     # Check that item CIF is included
-    assert '_k' in out_with and '1' in out_with
+    assert '_k' in out_with
+    assert '1' in out_with
 
     out_without = MUT.experiment_to_cif(Exp(''))
-    assert out_without.startswith('data_expA') and out_without.endswith('1.00000000')
+    assert out_without.startswith('data_expA')
+    assert out_without.endswith('1.00000000')
 
 
 def test_analysis_to_cif_renders_all_sections():
@@ -134,6 +140,9 @@ def test_analysis_to_cif_renders_all_sections():
 
     out = MUT.analysis_to_cif(A())
     lines = out.splitlines()
-    assert lines[0].startswith('_analysis.fitting_engine') and 'lmfit' in lines[0]
-    assert lines[1].startswith('_analysis.fit_mode') and 'single' in lines[1]
-    assert 'ALIASES' in out and 'CONSTRAINTS' in out
+    assert lines[0].startswith('_analysis.fitting_engine')
+    assert 'lmfit' in lines[0]
+    assert lines[1].startswith('_analysis.fit_mode')
+    assert 'single' in lines[1]
+    assert 'ALIASES' in out
+    assert 'CONSTRAINTS' in out

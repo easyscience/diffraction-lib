@@ -66,4 +66,7 @@ def test_background_base_minimal_impl_and_collection_cif():
 
     # CIF of collection is loop with header tag and two rows
     cif = coll.as_cif
-    assert 'loop_' in cif and '_bkg.level' in cif and '1.0' in cif and '2.0' in cif
+    assert 'loop_' in cif
+    assert '_bkg.level' in cif
+    assert '1.0' in cif
+    assert '2.0' in cif

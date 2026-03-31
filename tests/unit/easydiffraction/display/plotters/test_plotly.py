@@ -72,7 +72,8 @@ def test_get_trace_and_plot(monkeypatch):
     y = [1, 2, 3]
     trace = plotter._get_powder_trace(x, y, label='calc')
     assert hasattr(trace, 'kwargs')
-    assert trace.kwargs['x'] == x and trace.kwargs['y'] == y
+    assert trace.kwargs['x'] == x
+    assert trace.kwargs['y'] == y
 
     # Exercise plot_powder (non-PyCharm, display path)
     plotter.plot_powder(
