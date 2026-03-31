@@ -248,14 +248,14 @@ select = [
   #'COM',   # https://docs.astral.sh/ruff/rules/#flake8-commas-com
   'DTZ', # https://docs.astral.sh/ruff/rules/#flake8-datetimez-dtz
   #'EM',    # https://docs.astral.sh/ruff/rules/#flake8-errmsg-em
-  #'FA',    # https://docs.astral.sh/ruff/rules/#flake8-future-annotations-fa
+  'FA',    # https://docs.astral.sh/ruff/rules/#flake8-future-annotations-fa
   #'FBT',   # https://docs.astral.sh/ruff/rules/#flake8-boolean-trap-fbt
   #'FIX',   # https://docs.astral.sh/ruff/rules/#flake8-fixme-fix
   'G',   # https://docs.astral.sh/ruff/rules/#flake8-logging-format-g
   'ICN', # https://docs.astral.sh/ruff/rules/#flake8-import-conventions-icn
-  #'INP',   # https://docs.astral.sh/ruff/rules/#flake8-no-pep420-inp
-  #'ISC',   # https://docs.astral.sh/ruff/rules/#flake8-implicit-str-concat-isc
-  #'LOG',   # https://docs.astral.sh/ruff/rules/#flake8-logging-log
+  'INP',   # https://docs.astral.sh/ruff/rules/#flake8-no-pep420-inp
+  'ISC',   # https://docs.astral.sh/ruff/rules/#flake8-implicit-str-concat-isc
+  'LOG',   # https://docs.astral.sh/ruff/rules/#flake8-logging-log
   #'PIE',   # https://docs.astral.sh/ruff/rules/#flake8-pie-pie
   'PT',  # https://docs.astral.sh/ruff/rules/#flake8-pytest-style-pt
   'PTH', # https://docs.astral.sh/ruff/rules/#flake8-use-pathlib-pth
