@@ -10,10 +10,13 @@ for get, set and delete, along with iteration over the items.
 
 from __future__ import annotations
 
-from typing import Generator
-from typing import Iterator
+from typing import TYPE_CHECKING
 
 from easydiffraction.core.guard import GuardedBase
+
+if TYPE_CHECKING:
+    from collections.abc import Generator
+    from collections.abc import Iterator
 
 
 class CollectionBase(GuardedBase):

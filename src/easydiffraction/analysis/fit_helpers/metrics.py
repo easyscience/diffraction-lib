@@ -1,8 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
-from typing import Optional
-from typing import Tuple
 
 import numpy as np
 
@@ -149,7 +147,7 @@ def calculate_reduced_chi_square(
 def get_reliability_inputs(
     structures: Structures,
     experiments: Experiments,
-) -> Tuple[np.ndarray, np.ndarray, Optional[np.ndarray]]:
+) -> tuple[np.ndarray, np.ndarray, np.ndarray | None]:
     """
     Collect observed and calculated data for reliability calculations.
 
@@ -166,7 +164,7 @@ def get_reliability_inputs(
         Observed values.
     np.ndarray
         Calculated values.
-    Optional[np.ndarray]
+    np.ndarray | None
         Error values, or None if not available.
     """
     y_obs_all = []

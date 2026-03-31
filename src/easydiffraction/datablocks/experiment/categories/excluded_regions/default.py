@@ -4,8 +4,6 @@
 
 from __future__ import annotations
 
-from typing import List
-
 import numpy as np
 
 from easydiffraction.core.category import CategoryCollection
@@ -164,9 +162,9 @@ class ExcludedRegions(CategoryCollection):
         # TODO: Consider moving this to the base class
         #  to avoid code duplication with implementations in Background,
         #  etc. Consider using parameter names as column headers
-        columns_headers: List[str] = ['start', 'end']
+        columns_headers: list[str] = ['start', 'end']
         columns_alignment = ['left', 'left']
-        columns_data: List[List[float]] = [[r.start.value, r.end.value] for r in self._items]
+        columns_data: list[list[float]] = [[r.start.value, r.end.value] for r in self._items]
 
         console.paragraph('Excluded regions')
         render_table(

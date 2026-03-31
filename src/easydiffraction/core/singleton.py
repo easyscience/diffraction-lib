@@ -2,10 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 from typing import Any
-from typing import Dict
-from typing import List
-from typing import Tuple
-from typing import Type
+from typing import Self
 from typing import TypeVar
 
 from asteval import Interpreter
@@ -26,7 +23,7 @@ class SingletonBase:
     _instance = None  # Class-level shared instance
 
     @classmethod
-    def get(cls: Type[T]) -> T:
+    def get(cls) -> Self:
         """Return the shared instance, creating it if needed."""
         if cls._instance is None:
             cls._instance = cls()
@@ -41,9 +38,9 @@ class UidMapHandler(SingletonBase):
 
     def __init__(self) -> None:
         # Internal map: uid (str) → Parameter instance
-        self._uid_map: Dict[str, Any] = {}
+        self._uid_map: dict[str, Any] = {}
 
-    def get_uid_map(self) -> Dict[str, Any]:
+    def get_uid_map(self) -> dict[str, Any]:
         """Return the current UID-to-Parameter map."""
         return self._uid_map
 
@@ -98,14 +95,14 @@ class ConstraintsHandler(SingletonBase):
     def __init__(self) -> None:
         # Maps alias names
         # (like 'biso_La') → ConstraintAlias(param=Parameter)
-        self._alias_to_param: Dict[str, Any] = {}
+        self._alias_to_param: dict[str, Any] = {}
 
         # Stores raw user-defined constraints indexed by lhs_alias
         # Each value should contain: lhs_alias, rhs_expr
         self._constraints = {}
 
         # Internally parsed constraints as (lhs_alias, rhs_expr) tuples
-        self._parsed_constraints: List[Tuple[str, str]] = []
+        self._parsed_constraints: list[tuple[str, str]] = []
 
     def set_aliases(self, aliases: object) -> None:
         """

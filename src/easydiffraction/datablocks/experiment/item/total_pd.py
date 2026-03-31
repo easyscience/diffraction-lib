@@ -60,7 +60,7 @@ class TotalPdExperiment(PdExperimentBase):
         ------
         ImportError
             If the ``diffpy`` package is not installed.
-        IOError
+        OSError
             If the data file cannot be read.
         ValueError
             If the data file has fewer than two columns.
@@ -74,7 +74,7 @@ class TotalPdExperiment(PdExperimentBase):
             data = loadData(data_path)
         except Exception as e:
             msg = f'Failed to read data from {data_path}: {e}'
-            raise IOError(msg) from e
+            raise OSError(msg) from e
 
         if data.shape[1] < 2:
             msg = 'Data file must have at least two columns: x and y.'

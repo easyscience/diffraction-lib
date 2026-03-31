@@ -167,7 +167,7 @@ def load_numeric_block(data_path: str | Path) -> np.ndarray:
 
     Raises
     ------
-    IOError
+    OSError
         If no contiguous numeric block can be found in the file.
     """
     data_path = Path(data_path)
@@ -181,6 +181,6 @@ def load_numeric_block(data_path: str | Path) -> np.ndarray:
             last_error = e
 
     msg = f'Failed to read numeric data from {data_path}: {last_error}'
-    raise IOError(
+    raise OSError(
         msg,
     ) from last_error

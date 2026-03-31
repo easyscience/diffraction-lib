@@ -203,8 +203,8 @@ class LoggerConfig:
     def configure(
         logger: logging.Logger,
         *,
-        mode: 'Logger.Mode',
-        level: 'Logger.Level',
+        mode: Logger.Mode,
+        level: Logger.Level,
         rich_tracebacks: bool,
     ) -> None:
         """
@@ -214,9 +214,9 @@ class LoggerConfig:
         ----------
         logger : logging.Logger
             Logger instance to configure.
-        mode : 'Logger.Mode'
+        mode : Logger.Mode
             Output mode (compact or verbose).
-        level : 'Logger.Level'
+        level : Logger.Level
             Minimum log level to emit.
         rich_tracebacks : bool
             Whether to enable Rich tracebacks.
@@ -256,7 +256,7 @@ class ExceptionHookManager:
         def aligned_excepthook(
             exc_type: type[BaseException],
             exc: BaseException,
-            tb: 'TracebackType | None',
+            tb: TracebackType | None,
         ) -> None:
             """Log the exception with full traceback via Rich."""
             original_args = getattr(exc, 'args', ())
@@ -289,7 +289,7 @@ class ExceptionHookManager:
         def compact_excepthook(
             _exc_type: type[BaseException],
             exc: BaseException,
-            _tb: 'TracebackType | None',
+            _tb: TracebackType | None,
         ) -> None:
             """Log the exception message and exit."""
             logger.error(str(exc))

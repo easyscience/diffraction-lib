@@ -125,7 +125,7 @@ class TofScExperiment(ScExperimentBase):
         """
         try:
             data = load_numeric_block(data_path)
-        except IOError as e:
+        except OSError as e:
             log.error(
                 f'Failed to read data from {data_path}: {e}',
                 exc_type=IOError,

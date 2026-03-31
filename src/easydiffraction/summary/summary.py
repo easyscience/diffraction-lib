@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 from textwrap import wrap
-from typing import List
 
 from easydiffraction.io.cif.serialize import summary_to_cif
 from easydiffraction.utils.logging import console
@@ -70,7 +69,7 @@ class Summary:
 
             console.paragraph('Cell parameters')
             columns_headers = ['Parameter', 'Value']
-            columns_alignment: List[str] = ['left', 'right']
+            columns_alignment: list[str] = ['left', 'right']
             cell_data = [
                 [p.name.replace('length_', '').replace('angle_', ''), f'{p.value:.5f}']
                 for p in model.cell.parameters

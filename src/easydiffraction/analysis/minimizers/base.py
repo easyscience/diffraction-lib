@@ -3,11 +3,8 @@
 
 from abc import ABC
 from abc import abstractmethod
+from collections.abc import Callable
 from typing import Any
-from typing import Callable
-from typing import Dict
-from typing import List
-from typing import Optional
 
 import numpy as np
 
@@ -28,19 +25,19 @@ class MinimizerBase(ABC):
 
     def __init__(
         self,
-        name: Optional[str] = None,
-        method: Optional[str] = None,
-        max_iterations: Optional[int] = None,
+        name: str | None = None,
+        method: str | None = None,
+        max_iterations: int | None = None,
     ) -> None:
-        self.name: Optional[str] = name
-        self.method: Optional[str] = method
-        self.max_iterations: Optional[int] = max_iterations
-        self.result: Optional[FitResults] = None
-        self._previous_chi2: Optional[float] = None
-        self._iteration: Optional[int] = None
-        self._best_chi2: Optional[float] = None
-        self._best_iteration: Optional[int] = None
-        self._fitting_time: Optional[float] = None
+        self.name: str | None = name
+        self.method: str | None = method
+        self.max_iterations: int | None = max_iterations
+        self.result: FitResults | None = None
+        self._previous_chi2: float | None = None
+        self._iteration: int | None = None
+        self._best_chi2: float | None = None
+        self._best_iteration: int | None = None
+        self._fitting_time: float | None = None
         self.tracker: FitProgressTracker = FitProgressTracker()
 
     def _start_tracking(
@@ -69,18 +66,18 @@ class MinimizerBase(ABC):
         self.tracker.finish_tracking()
 
     @abstractmethod
-    def _prepare_solver_args(self, parameters: List[Any]) -> Dict[str, Any]:
+    def _prepare_solver_args(self, parameters: list[Any]) -> dict[str, Any]:
         """
         Prepare keyword-arguments for the underlying solver.
 
         Parameters
         ----------
-        parameters : List[Any]
+        parameters : list[Any]
             List of free parameters to be fitted.
 
         Returns
         -------
-        Dict[str, Any]
+        dict[str, Any]
             Mapping of keyword arguments to pass into ``_run_solver``.
         """
         pass
@@ -89,7 +86,7 @@ class MinimizerBase(ABC):
     def _run_solver(
         self,
         objective_function: Callable[..., object],
-        engine_parameters: Dict[str, object],
+        engine_parameters: dict[str, object],
     ) -> object:
         """Execute the concrete solver and return its raw result."""
         pass
@@ -98,14 +95,14 @@ class MinimizerBase(ABC):
     def _sync_result_to_parameters(
         self,
         raw_result: object,
-        parameters: List[object],
+        parameters: list[object],
     ) -> None:
         """Copy raw_result values back to parameters in-place."""
         pass
 
     def _finalize_fit(
         self,
-        parameters: List[object],
+        parameters: list[object],
         raw_result: object,
     ) -> FitResults:
         """
@@ -113,7 +110,7 @@ class MinimizerBase(ABC):
 
         Parameters
         ----------
-        parameters : List[object]
+        parameters : list[object]
             Parameters after the solver finished.
         raw_result : object
             Backend-specific solver output object.
@@ -142,7 +139,7 @@ class MinimizerBase(ABC):
 
     def fit(
         self,
-        parameters: List[object],
+        parameters: list[object],
         objective_function: Callable[..., object],
         verbosity: VerbosityEnum = VerbosityEnum.FULL,
     ) -> FitResults:
@@ -151,7 +148,7 @@ class MinimizerBase(ABC):
 
         Parameters
         ----------
-        parameters : List[object]
+        parameters : list[object]
             Free parameters to optimize.
         objective_function : Callable[..., object]
             Callable returning residuals for a given set of engine
@@ -181,8 +178,8 @@ class MinimizerBase(ABC):
 
     def _objective_function(
         self,
-        engine_params: Dict[str, object],
-        parameters: List[object],
+        engine_params: dict[str, object],
+        parameters: list[object],
         structures: object,
         experiments: object,
         calculator: object,
@@ -198,11 +195,11 @@ class MinimizerBase(ABC):
 
     def _create_objective_function(
         self,
-        parameters: List[object],
+        parameters: list[object],
         structures: object,
         experiments: object,
         calculator: object,
-    ) -> Callable[[Dict[str, object]], np.ndarray]:
+    ) -> Callable[[dict[str, object]], np.ndarray]:
         """Return a closure capturing problem context for the solver."""
         return lambda engine_params: self._objective_function(
             engine_params,

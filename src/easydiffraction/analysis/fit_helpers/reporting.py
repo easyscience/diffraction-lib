@@ -1,8 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
-from typing import List
-from typing import Optional
 
 from easydiffraction.analysis.fit_helpers.metrics import calculate_r_factor
 from easydiffraction.analysis.fit_helpers.metrics import calculate_r_factor_squared
@@ -24,14 +22,14 @@ class FitResults:
     def __init__(
         self,
         success: bool = False,
-        parameters: Optional[List[object]] = None,
-        chi_square: Optional[float] = None,
-        reduced_chi_square: Optional[float] = None,
+        parameters: list[object] | None = None,
+        chi_square: float | None = None,
+        reduced_chi_square: float | None = None,
         message: str = '',
         iterations: int = 0,
-        engine_result: Optional[object] = None,
-        starting_parameters: Optional[List[object]] = None,
-        fitting_time: Optional[float] = None,
+        engine_result: object | None = None,
+        starting_parameters: list[object] | None = None,
+        fitting_time: float | None = None,
         **kwargs: object,
     ) -> None:
         """
@@ -41,21 +39,21 @@ class FitResults:
         ----------
         success : bool, default=False
             Indicates if the fit was successful.
-        parameters : Optional[List[object]], default=None
+        parameters : list[object] | None, default=None
             List of parameters used in the fit.
-        chi_square : Optional[float], default=None
+        chi_square : float | None, default=None
             Chi-square value of the fit.
-        reduced_chi_square : Optional[float], default=None
+        reduced_chi_square : float | None, default=None
             Reduced chi-square value of the fit.
         message : str, default=''
             Message related to the fit.
         iterations : int, default=0
             Number of iterations performed.
-        engine_result : Optional[object], default=None
+        engine_result : object | None, default=None
             Result from the fitting engine.
-        starting_parameters : Optional[List[object]], default=None
+        starting_parameters : list[object] | None, default=None
             Initial parameters for the fit.
-        fitting_time : Optional[float], default=None
+        fitting_time : float | None, default=None
             Time taken for the fitting process.
         **kwargs : object
             Additional engine-specific fields. If ``redchi`` is provided
@@ -63,17 +61,17 @@ class FitResults:
             reduced chi-square value.
         """
         self.success: bool = success
-        self.parameters: List[object] = parameters if parameters is not None else []
-        self.chi_square: Optional[float] = chi_square
-        self.reduced_chi_square: Optional[float] = reduced_chi_square
+        self.parameters: list[object] = parameters if parameters is not None else []
+        self.chi_square: float | None = chi_square
+        self.reduced_chi_square: float | None = reduced_chi_square
         self.message: str = message
         self.iterations: int = iterations
-        self.engine_result: Optional[object] = engine_result
-        self.result: Optional[object] = None
-        self.starting_parameters: List[object] = (
+        self.engine_result: object | None = engine_result
+        self.result: object | None = None
+        self.starting_parameters: list[object] = (
             starting_parameters if starting_parameters is not None else []
         )
-        self.fitting_time: Optional[float] = fitting_time
+        self.fitting_time: float | None = fitting_time
 
         if 'redchi' in kwargs and self.reduced_chi_square is None:
             self.reduced_chi_square = kwargs.get('redchi')
@@ -83,26 +81,26 @@ class FitResults:
 
     def display_results(
         self,
-        y_obs: Optional[List[float]] = None,
-        y_calc: Optional[List[float]] = None,
-        y_err: Optional[List[float]] = None,
-        f_obs: Optional[List[float]] = None,
-        f_calc: Optional[List[float]] = None,
+        y_obs: list[float] | None = None,
+        y_calc: list[float] | None = None,
+        y_err: list[float] | None = None,
+        f_obs: list[float] | None = None,
+        f_calc: list[float] | None = None,
     ) -> None:
         """
         Render a human-readable summary of the fit.
 
         Parameters
         ----------
-        y_obs : Optional[List[float]], default=None
+        y_obs : list[float] | None, default=None
             Observed intensities for pattern R-factor metrics.
-        y_calc : Optional[List[float]], default=None
+        y_calc : list[float] | None, default=None
             Calculated intensities for pattern R-factor metrics.
-        y_err : Optional[List[float]], default=None
+        y_err : list[float] | None, default=None
             Standard deviations of observed intensities for wR.
-        f_obs : Optional[List[float]], default=None
+        f_obs : list[float] | None, default=None
             Observed structure-factor magnitudes for Bragg R.
-        f_calc : Optional[List[float]], default=None
+        f_calc : list[float] | None, default=None
             Calculated structure-factor magnitudes for Bragg R.
         """
         status_icon = '✅' if self.success else '❌'

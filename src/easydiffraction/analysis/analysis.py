@@ -2,9 +2,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 from contextlib import suppress
-from typing import List
-from typing import Optional
-from typing import Union
 
 import pandas as pd
 
@@ -205,14 +202,14 @@ class Analysis:
 
     def _get_params_as_dataframe(
         self,
-        params: List[Union[NumericDescriptor, Parameter]],
+        params: list[NumericDescriptor | Parameter],
     ) -> pd.DataFrame:
         """
         Convert a list of parameters to a DataFrame.
 
         Parameters
         ----------
-        params : List[Union[NumericDescriptor, Parameter]]
+        params : list[NumericDescriptor | Parameter]
             List of DescriptorFloat or Parameter objects.
 
         Returns
@@ -479,7 +476,7 @@ class Analysis:
         MinimizerFactory.show_supported()
 
     @property
-    def current_minimizer(self) -> Optional[str]:
+    def current_minimizer(self) -> str | None:
         """The identifier of the active minimizer, if any."""
         return self.fitter.selection if self.fitter else None
 

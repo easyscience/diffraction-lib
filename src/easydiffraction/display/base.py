@@ -6,8 +6,6 @@ from __future__ import annotations
 
 from abc import ABC
 from abc import abstractmethod
-from typing import List
-from typing import Tuple
 
 import pandas as pd
 
@@ -136,12 +134,12 @@ class RendererFactoryBase(ABC):
         return engine_class()
 
     @classmethod
-    def supported_engines(cls) -> List[str]:
+    def supported_engines(cls) -> list[str]:
         """Return a list of supported engine identifiers."""
         return list(cls._registry().keys())
 
     @classmethod
-    def descriptions(cls) -> List[Tuple[str, str]]:
+    def descriptions(cls) -> list[tuple[str, str]]:
         """Return (name, description) pairs for each engine."""
         items = cls._registry().items()
         return [(name, config.get('description')) for name, config in items]

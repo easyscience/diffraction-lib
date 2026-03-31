@@ -10,7 +10,6 @@ silences stdio on import to avoid noisy output in notebooks and logs.
 import os
 import re
 from pathlib import Path
-from typing import Optional
 
 import numpy as np
 
@@ -26,7 +25,7 @@ try:
     from diffpy.structure.parsers.p_cif import P_cif as pdffit_cif_parser
 
     # Silence the C++ engine output while keeping the handle open
-    _pdffit_devnull: Optional[object]
+    _pdffit_devnull: object | None
     with Path(os.devnull).open('w', encoding='utf-8') as _tmp_devnull:
         # Duplicate file descriptor so the handle remains
         # valid after the context

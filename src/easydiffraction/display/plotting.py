@@ -7,7 +7,7 @@ Uses the common :class:`RendererBase` so plotters and tablers share a
 consistent configuration surface and engine handling.
 """
 
-from enum import Enum
+from enum import StrEnum
 
 import numpy as np
 import pandas as pd
@@ -28,7 +28,7 @@ from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 
 
-class PlotterEngineEnum(str, Enum):
+class PlotterEngineEnum(StrEnum):
     """Available plotting engine backends."""
 
     ASCII = 'asciichartpy'

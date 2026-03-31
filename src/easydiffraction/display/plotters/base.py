@@ -4,7 +4,7 @@
 
 from abc import ABC
 from abc import abstractmethod
-from enum import Enum
+from enum import StrEnum
 
 import numpy as np
 
@@ -17,7 +17,7 @@ DEFAULT_MIN = -np.inf
 DEFAULT_MAX = np.inf
 
 
-class XAxisType(str, Enum):
+class XAxisType(StrEnum):
     """
     X-axis types for diffraction plots.
 

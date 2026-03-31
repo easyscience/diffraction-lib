@@ -9,8 +9,6 @@ import pathlib
 import urllib.request
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version
-from typing import List
-from typing import Optional
 from urllib.parse import urlparse
 
 import numpy as np
@@ -546,10 +544,10 @@ def render_cif(cif_text: str) -> None:
         The CIF text to display.
     """
     # Split into lines
-    lines: List[str] = list(cif_text.splitlines())
+    lines: list[str] = list(cif_text.splitlines())
 
     # Convert each line into a single-column format for table rendering
-    columns: List[List[str]] = [[line] for line in lines]
+    columns: list[list[str]] = [[line] for line in lines]
 
     # Render the table using left alignment and no headers
     render_table(
@@ -702,7 +700,7 @@ def sin_theta_over_lambda_to_d_spacing(sin_theta_over_lambda: object) -> object:
     return d
 
 
-def str_to_ufloat(s: Optional[str], default: Optional[float] = None) -> UFloat:
+def str_to_ufloat(s: str | None, default: float | None = None) -> UFloat:
     """
     Parse a CIF-style numeric string into a ufloat.
 
@@ -718,9 +716,9 @@ def str_to_ufloat(s: Optional[str], default: Optional[float] = None) -> UFloat:
 
     Parameters
     ----------
-    s : Optional[str]
+    s : str | None
         Numeric string in CIF format (e.g. "3.566", "3.566(2)") or None.
-    default : Optional[float], default=None
+    default : float | None, default=None
         Default value to use if ``s`` is None or parsing fails.
 
     Returns

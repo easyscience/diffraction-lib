@@ -9,9 +9,6 @@ not importable in the current environment.
 
 from __future__ import annotations
 
-from typing import Dict
-from typing import Type
-
 from easydiffraction.core.factory import FactoryBase
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
@@ -35,6 +32,6 @@ class CalculatorFactory(FactoryBase):
     }
 
     @classmethod
-    def _supported_map(cls) -> Dict[str, Type]:
+    def _supported_map(cls) -> dict[str, type]:
         """Only include calculators whose engines are importable."""
         return {klass.type_info.tag: klass for klass in cls._registry if klass.engine_imported}

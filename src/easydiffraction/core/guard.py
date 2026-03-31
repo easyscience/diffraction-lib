@@ -5,10 +5,13 @@ from __future__ import annotations
 
 from abc import ABC
 from abc import abstractmethod
-from typing import Generator
+from typing import TYPE_CHECKING
 
 from easydiffraction.core.diagnostic import Diagnostics
 from easydiffraction.core.identity import Identity
+
+if TYPE_CHECKING:
+    from collections.abc import Generator
 
 
 class GuardedBase(ABC):

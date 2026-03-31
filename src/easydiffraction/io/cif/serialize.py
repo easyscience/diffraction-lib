@@ -5,8 +5,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 from typing import Any
-from typing import Optional
-from typing import Sequence
 
 import numpy as np
 
@@ -15,6 +13,8 @@ from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import str_to_ufloat
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     import gemmi
 
     from easydiffraction.core.category import CategoryCollection
@@ -85,7 +85,7 @@ def category_item_to_cif(item: object) -> str:
 
 def category_collection_to_cif(
     collection: object,
-    max_display: Optional[int] = 20,
+    max_display: int | None = 20,
 ) -> str:
     """
     Render a CategoryCollection-like object to CIF text.

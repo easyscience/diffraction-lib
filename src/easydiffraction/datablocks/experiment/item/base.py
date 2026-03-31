@@ -7,7 +7,6 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import TYPE_CHECKING
 from typing import Any
-from typing import List
 
 from easydiffraction.core.datablock import DatablockItem
 from easydiffraction.datablocks.experiment.categories.data.factory import DataFactory
@@ -526,7 +525,7 @@ class PdExperimentBase(ExperimentBase):
     def _get_valid_linked_phases(
         self,
         structures: Structures,
-    ) -> List[Any]:
+    ) -> list[Any]:
         """
         Get valid linked phases for this experiment.
 
@@ -537,7 +536,7 @@ class PdExperimentBase(ExperimentBase):
 
         Returns
         -------
-        List[Any]
+        list[Any]
             A list of valid linked phases.
         """
         if not self.linked_phases:

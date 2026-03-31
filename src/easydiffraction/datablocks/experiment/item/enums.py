@@ -2,10 +2,10 @@
 # SPDX-License-Identifier: BSD-3-Clause
 """Enumerations for experiment configuration (forms, modes, types)."""
 
-from enum import Enum
+from enum import StrEnum
 
 
-class SampleFormEnum(str, Enum):
+class SampleFormEnum(StrEnum):
     """Physical sample form supported by experiments."""
 
     POWDER = 'powder'
@@ -38,7 +38,7 @@ class SampleFormEnum(str, Enum):
             return 'Single crystal sample.'
 
 
-class ScatteringTypeEnum(str, Enum):
+class ScatteringTypeEnum(StrEnum):
     """Type of scattering modeled in an experiment."""
 
     BRAGG = 'bragg'
@@ -71,7 +71,7 @@ class ScatteringTypeEnum(str, Enum):
             return 'Total scattering for pair distribution function analysis (PDF).'
 
 
-class RadiationProbeEnum(str, Enum):
+class RadiationProbeEnum(StrEnum):
     """Incident radiation probe used in the experiment."""
 
     NEUTRON = 'neutron'
@@ -104,7 +104,7 @@ class RadiationProbeEnum(str, Enum):
             return 'X-ray diffraction.'
 
 
-class BeamModeEnum(str, Enum):
+class BeamModeEnum(StrEnum):
     """Beam delivery mode for the instrument."""
 
     # TODO: Rename to CWL and TOF
@@ -138,7 +138,7 @@ class BeamModeEnum(str, Enum):
             return 'Time-of-flight (TOF) diffraction.'
 
 
-class CalculatorEnum(str, Enum):
+class CalculatorEnum(StrEnum):
     """Known calculation engine identifiers."""
 
     CRYSPY = 'cryspy'
@@ -152,7 +152,7 @@ class CalculatorEnum(str, Enum):
 #  description are defined in the respective classes?
 # TODO: Can supported values be defined based on the structure of peak/?
 # TODO: Can the same be reused for other enums in this file?
-class PeakProfileTypeEnum(str, Enum):
+class PeakProfileTypeEnum(StrEnum):
     """Available peak profile types per scattering and beam mode."""
 
     PSEUDO_VOIGT = 'pseudo-voigt'
