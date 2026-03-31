@@ -162,7 +162,7 @@ class Plotter(RendererBase):
         x_axis: object,
     ) -> list:
         """Look up axis labels for the experiment / x-axis."""
-        return DEFAULT_AXES_LABELS[(sample_form, scattering_type, x_axis)]
+        return DEFAULT_AXES_LABELS[sample_form, scattering_type, x_axis]
 
     def _prepare_powder_data(
         self,
@@ -282,7 +282,7 @@ class Plotter(RendererBase):
         sample_form = expt_type.sample_form.value
         scattering_type = expt_type.scattering_type.value
         beam_mode = expt_type.beam_mode.value
-        x_axis = DEFAULT_X_AXIS[(sample_form, scattering_type, beam_mode)] if x is None else x
+        x_axis = DEFAULT_X_AXIS[sample_form, scattering_type, beam_mode] if x is None else x
         x_name = getattr(x_axis, 'value', x_axis)
         return x_axis, x_name, sample_form, scattering_type, beam_mode
 

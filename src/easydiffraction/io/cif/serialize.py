@@ -77,9 +77,7 @@ def category_item_to_cif(item: object) -> str:
     Expects ``item.parameters`` iterable of params with
     ``_cif_handler.names`` and ``value``.
     """
-    lines: list[str] = []
-    for p in item.parameters:
-        lines.append(param_to_cif(p))
+    lines: list[str] = [param_to_cif(p) for p in item.parameters]
     return '\n'.join(lines)
 
 
@@ -140,14 +138,10 @@ def datablock_item_to_cif(datablock: object) -> str:
     parts: list[str] = [header]
 
     # First categories
-    for v in vars(datablock).values():
-        if isinstance(v, CategoryItem):
-            parts.append(v.as_cif)
+    parts.extend(v.as_cif for v in vars(datablock).values() if isinstance(v, CategoryItem))
 
     # Then collections
-    for v in vars(datablock).values():
-        if isinstance(v, CategoryCollection):
-            parts.append(v.as_cif)
+    parts.extend(v.as_cif for v in vars(datablock).values() if isinstance(v, CategoryCollection))
 
     return '\n\n'.join(parts)
 

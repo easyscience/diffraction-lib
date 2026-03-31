@@ -197,7 +197,7 @@ class PeakProfileTypeEnum(StrEnum):
             ): cls.PSEUDO_VOIGT_IKEDA_CARPENTER,
             (ScatteringTypeEnum.TOTAL, BeamModeEnum.CONSTANT_WAVELENGTH): cls.GAUSSIAN_DAMPED_SINC,
             (ScatteringTypeEnum.TOTAL, BeamModeEnum.TIME_OF_FLIGHT): cls.GAUSSIAN_DAMPED_SINC,
-        }[(scattering_type, beam_mode)]
+        }[scattering_type, beam_mode]
 
     def description(self) -> str:
         """

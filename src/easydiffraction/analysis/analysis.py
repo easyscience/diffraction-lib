@@ -442,7 +442,7 @@ class Analysis:
         ]
 
         columns_data = []
-        for _, params in all_params.items():
+        for params in all_params.values():
             for param in params:
                 if isinstance(param, (StringDescriptor, NumericDescriptor, Parameter)):
                     datablock_entry_name = param._identity.datablock_entry_name
@@ -555,9 +555,7 @@ class Analysis:
             log.warning('No constraints defined.')
             return
 
-        rows = []
-        for constraint in self.constraints:
-            rows.append([constraint.expression.value])
+        rows = [[constraint.expression.value] for constraint in self.constraints]
 
         console.paragraph('User defined constraints')
         render_table(

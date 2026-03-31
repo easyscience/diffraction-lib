@@ -12,7 +12,7 @@ def test_datablock_item_to_cif_includes_item_and_collection():
         def __init__(self, val):
             super().__init__()
             self._p = type('P', (), {})()
-            self._p._cif_handler = CifHandler(names=['_aa'])  # noqa: SLF001
+            self._p._cif_handler = CifHandler(names=['_aa'])
             self._p.value = val
 
         @property
@@ -93,7 +93,7 @@ def test_experiment_to_cif_with_and_without_data():
                 def __init__(self):
                     super().__init__()
                     self._p = type('P', (), {})()
-                    self._p._cif_handler = CifHandler(names=['_k'])  # noqa: SLF001
+                    self._p._cif_handler = CifHandler(names=['_k'])
                     self._p.value = 1
 
                 @property

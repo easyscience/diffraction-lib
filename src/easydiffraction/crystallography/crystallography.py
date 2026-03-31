@@ -124,7 +124,7 @@ def apply_atom_site_symmetry_constraints(
         log.error(error_msg)  # TODO: ValueError? Diagnostics?
         return atom_site
 
-    space_group_entry = SPACE_GROUPS[(it_number, it_coordinate_system_code)]
+    space_group_entry = SPACE_GROUPS[it_number, it_coordinate_system_code]
     wyckoff_positions = space_group_entry['Wyckoff_positions'][wyckoff_letter]
     coords_xyz = wyckoff_positions['coords_xyz']
 

@@ -23,7 +23,7 @@ def test_param_to_cif_minimal():
 
     class P:
         def __init__(self):
-            self._cif_handler = CifHandler(names=['_x.y'])  # noqa: SLF001 for tests
+            self._cif_handler = CifHandler(names=['_x.y'])
             self.value = 3
 
     p = P()
@@ -41,7 +41,7 @@ def test_category_collection_to_cif_empty_and_one_row():
             super().__init__()
             self._identity.category_entry_name = name
             self._p = type('P', (), {})()
-            self._p._cif_handler = CifHandler(names=['_x'])  # noqa: SLF001
+            self._p._cif_handler = CifHandler(names=['_x'])
             self._p.value = value
 
         @property
