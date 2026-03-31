@@ -179,7 +179,8 @@ class Project(GuardedBase):
         Loads project info, structures, experiments, etc.
         """
         # TODO: load project components from files inside dir_path
-        raise NotImplementedError('Project.load() is not implemented yet.')
+        msg = 'Project.load() is not implemented yet.'
+        raise NotImplementedError(msg)
 
     def save(self) -> None:
         """Save the project into the existing project directory."""

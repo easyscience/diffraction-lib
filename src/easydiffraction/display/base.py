@@ -130,7 +130,8 @@ class RendererFactoryBase(ABC):
         registry = cls._registry()
         if engine_name not in registry:
             supported = list(registry.keys())
-            raise ValueError(f"Unsupported engine '{engine_name}'. Supported engines: {supported}")
+            msg = f"Unsupported engine '{engine_name}'. Supported engines: {supported}"
+            raise ValueError(msg)
         engine_class = registry[engine_name]['class']
         return engine_class()
 

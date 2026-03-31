@@ -64,7 +64,8 @@ class CrysfmlCalculator(CalculatorBase):
         NotImplementedError
             HKL calculation is not implemented for CrysfmlCalculator.
         """
-        raise NotImplementedError('HKL calculation is not implemented for CrysfmlCalculator.')
+        msg = 'HKL calculation is not implemented for CrysfmlCalculator.'
+        raise NotImplementedError(msg)
 
     def calculate_pattern(
         self,

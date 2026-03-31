@@ -321,7 +321,8 @@ def category_collection_from_cif(
     #  class
     # TODO: Rename to _item_cls?
     if self._item_type is None:
-        raise ValueError('Child class is not defined.')
+        msg = 'Child class is not defined.'
+        raise ValueError(msg)
 
     # Create a temporary instance to access its parameters and
     # parameter CIF names

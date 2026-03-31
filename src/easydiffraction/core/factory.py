@@ -115,10 +115,11 @@ class FactoryBase:
                 best_match_size = len(rule_key)
 
         if best_match_tag is None:
-            raise ValueError(
+            msg = (
                 f'No default rule matches conditions {dict(conditions)}. '
                 f'Available rules: {cls._default_rules}'
             )
+            raise ValueError(msg)
         return best_match_tag
 
     # ------------------------------------------------------------------
@@ -149,7 +150,8 @@ class FactoryBase:
         """
         supported = cls._supported_map()
         if tag not in supported:
-            raise ValueError(f"Unsupported type: '{tag}'. Supported: {list(supported.keys())}")
+            msg = f"Unsupported type: '{tag}'. Supported: {list(supported.keys())}"
+            raise ValueError(msg)
         return supported[tag](**kwargs)
 
     @classmethod

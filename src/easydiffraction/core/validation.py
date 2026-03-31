@@ -113,7 +113,8 @@ class TypeValidator(ValidatorBase):
             self.expected_type = expected_type
             self.expected_label = str(expected_type)
         else:
-            raise TypeError(f'TypeValidator expected a DataTypes member, got {expected_type!r}')
+            msg = f'TypeValidator expected a DataTypes member, got {expected_type!r}'
+            raise TypeError(msg)
 
     def validated(
         self,

@@ -197,7 +197,8 @@ def test_fetch_tutorials_index_returns_empty_on_error(monkeypatch):
 
     # Force urlopen to fail
     def failing_urlopen(url):
-        raise Exception('Network error')
+        msg = 'Network error'
+        raise Exception(msg)
 
     monkeypatch.setattr(MUT, '_safe_urlopen', failing_urlopen)
     # Clear cache to ensure fresh fetch

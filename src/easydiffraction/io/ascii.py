@@ -42,7 +42,8 @@ def extract_data_paths_from_zip(zip_path: str | Path) -> list[str]:
     """
     zip_path = Path(zip_path)
     if not zip_path.exists():
-        raise FileNotFoundError(f'ZIP file not found: {zip_path}')
+        msg = f'ZIP file not found: {zip_path}'
+        raise FileNotFoundError(msg)
 
     # TODO: Unify mkdir with other uses in the code
     extract_dir = Path(tempfile.mkdtemp(prefix='ed_zip_'))
@@ -57,7 +58,8 @@ def extract_data_paths_from_zip(zip_path: str | Path) -> list[str]:
     )
 
     if not paths:
-        raise ValueError(f'No data files found in ZIP archive: {zip_path}')
+        msg = f'No data files found in ZIP archive: {zip_path}'
+        raise ValueError(msg)
 
     return paths
 
@@ -93,7 +95,8 @@ def extract_data_paths_from_dir(
     """
     dir_path = Path(dir_path)
     if not dir_path.is_dir():
-        raise FileNotFoundError(f'Directory not found: {dir_path}')
+        msg = f'Directory not found: {dir_path}'
+        raise FileNotFoundError(msg)
 
     paths = sorted(
         str(p)
@@ -102,7 +105,8 @@ def extract_data_paths_from_dir(
     )
 
     if not paths:
-        raise ValueError(f"No files matching '{file_pattern}' found in directory: {dir_path}")
+        msg = f"No files matching '{file_pattern}' found in directory: {dir_path}"
+        raise ValueError(msg)
 
     return paths
 
@@ -177,6 +181,7 @@ def load_numeric_block(data_path: str | Path) -> np.ndarray:
         except Exception as e:  # noqa: BLE001
             last_error = e
 
+    msg = f'Failed to read numeric data from {data_path}: {last_error}'
     raise IOError(
-        f'Failed to read numeric data from {data_path}: {last_error}',
+        msg,
     ) from last_error

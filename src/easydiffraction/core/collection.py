@@ -60,7 +60,8 @@ class CollectionBase(GuardedBase):
             except KeyError:
                 self._rebuild_index()
                 return self._index[key]
-        raise TypeError(f'Collection indices must be str or int, not {type(key).__name__}')
+        msg = f'Collection indices must be str or int, not {type(key).__name__}'
+        raise TypeError(msg)
 
     def __setitem__(self, name: str, item: GuardedBase) -> None:
         """Insert or replace an item under the given identity key."""

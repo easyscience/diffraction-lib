@@ -68,14 +68,17 @@ class TotalPdExperiment(PdExperimentBase):
         try:
             from diffpy.utils.parsers.loaddata import loadData
         except ImportError:
-            raise ImportError('diffpy module not found.') from None
+            msg = 'diffpy module not found.'
+            raise ImportError(msg) from None
         try:
             data = loadData(data_path)
         except Exception as e:
-            raise IOError(f'Failed to read data from {data_path}: {e}') from e
+            msg = f'Failed to read data from {data_path}: {e}'
+            raise IOError(msg) from e
 
         if data.shape[1] < 2:
-            raise ValueError('Data file must have at least two columns: x and y.')
+            msg = 'Data file must have at least two columns: x and y.'
+            raise ValueError(msg)
 
         default_sy = 0.03
         if data.shape[1] < 3:

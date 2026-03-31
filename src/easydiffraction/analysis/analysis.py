@@ -726,7 +726,8 @@ class Analysis:
                     short_display_handle.close()
 
         else:
-            raise NotImplementedError(f'Fit mode {mode.value} not implemented yet.')
+            msg = f'Fit mode {mode.value} not implemented yet.'
+            raise NotImplementedError(msg)
 
         # After fitting, save the project
         # TODO: Consider saving individual data during sequential
