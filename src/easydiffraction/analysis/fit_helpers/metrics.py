@@ -143,8 +143,7 @@ def calculate_reduced_chi_square(
     dof = n_points - num_parameters
     if dof > 0:
         return chi_square / dof
-    else:
-        return np.nan
+    return np.nan
 
 
 def get_reliability_inputs(

@@ -62,7 +62,7 @@ class Fitter:
 
         if not params:
             print('⚠️ No parameters selected for fitting.')
-            return None
+            return
 
         for param in params:
             param._fit_start_value = param.value

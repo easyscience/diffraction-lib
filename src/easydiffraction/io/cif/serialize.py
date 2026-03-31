@@ -48,11 +48,10 @@ def format_value(value: object) -> str:
     if isinstance(value, float):
         return f'{value:>{width}.{precision}f}'
     # Format strings right-aligned
-    elif isinstance(value, str):
+    if isinstance(value, str):
         return f'{value:>{width}s}'
     # Everything else: fallback
-    else:
-        return str(value)
+    return str(value)
 
 
 ##################

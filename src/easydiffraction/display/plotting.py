@@ -47,7 +47,7 @@ class PlotterEngineEnum(str, Enum):
         """Human-readable description for UI listings."""
         if self is PlotterEngineEnum.ASCII:
             return 'Console ASCII line charts'
-        elif self is PlotterEngineEnum.PLOTLY:
+        if self is PlotterEngineEnum.PLOTLY:
             return 'Interactive browser-based graphing library'
         return ''
 

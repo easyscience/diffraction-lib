@@ -23,5 +23,5 @@ class BackgroundTypeEnum(str, Enum):
         """Human-friendly description for the enum value."""
         if self is BackgroundTypeEnum.LINE_SEGMENT:
             return 'Linear interpolation between points'
-        elif self is BackgroundTypeEnum.CHEBYSHEV:
+        if self is BackgroundTypeEnum.CHEBYSHEV:
             return 'Chebyshev polynomial background'

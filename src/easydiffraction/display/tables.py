@@ -47,7 +47,7 @@ class TableEngineEnum(str, Enum):
         """
         if self is TableEngineEnum.RICH:
             return 'Console rendering with Rich'
-        elif self is TableEngineEnum.PANDAS:
+        if self is TableEngineEnum.PANDAS:
             return 'Jupyter DataFrame rendering with Pandas'
         return ''
 

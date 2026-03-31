@@ -22,5 +22,5 @@ class FitModeEnum(str, Enum):
         """Return a human-readable description of this fit mode."""
         if self is FitModeEnum.SINGLE:
             return 'Independent fitting of each experiment; no shared parameters'
-        elif self is FitModeEnum.JOINT:
+        if self is FitModeEnum.JOINT:
             return 'Simultaneous fitting of all experiments; some parameters are shared'
