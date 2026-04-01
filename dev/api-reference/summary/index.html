@@ -2705,8 +2705,7 @@ fitted model, experiments, and analysis results.</p>
 <span class="normal">207</span>
 <span class="normal">208</span>
 <span class="normal">209</span>
-<span class="normal">210</span>
-<span class="normal">211</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Summary</span><span class="p">:</span>
+<span class="normal">210</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Summary</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates reports and exports results from the project.</span>
 
@@ -2767,7 +2766,7 @@ fitted model, experiments, and analysis results.</p>
 
             <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Cell parameters&#39;</span><span class="p">)</span>
             <span class="n">columns_headers</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Parameter&#39;</span><span class="p">,</span> <span class="s1">&#39;Value&#39;</span><span class="p">]</span>
-            <span class="n">columns_alignment</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;right&#39;</span><span class="p">]</span>
+            <span class="n">columns_alignment</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;right&#39;</span><span class="p">]</span>
             <span class="n">cell_data</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;length_&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;angle_&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.5f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span>
                 <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">parameters</span>
@@ -2797,9 +2796,8 @@ fitted model, experiments, and analysis results.</p>
                 <span class="s1">&#39;right&#39;</span><span class="p">,</span>
                 <span class="s1">&#39;right&#39;</span><span class="p">,</span>
             <span class="p">]</span>
-            <span class="n">atom_table</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">site</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">atom_sites</span><span class="p">:</span>
-                <span class="n">atom_table</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
+            <span class="n">atom_table</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">[</span>
                     <span class="n">site</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
                     <span class="n">site</span><span class="o">.</span><span class="n">type_symbol</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
                     <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">site</span><span class="o">.</span><span class="n">fract_x</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.5f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
@@ -2807,7 +2805,9 @@ fitted model, experiments, and analysis results.</p>
                     <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">site</span><span class="o">.</span><span class="n">fract_z</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.5f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
                     <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">site</span><span class="o">.</span><span class="n">occupancy</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.5f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
                     <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">site</span><span class="o">.</span><span class="n">b_iso</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.5f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-                <span class="p">])</span>
+                <span class="p">]</span>
+                <span class="k">for</span> <span class="n">site</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">atom_sites</span>
+            <span class="p">]</span>
             <span class="n">render_table</span><span class="p">(</span>
                 <span class="n">columns_headers</span><span class="o">=</span><span class="n">columns_headers</span><span class="p">,</span>
                 <span class="n">columns_alignment</span><span class="o">=</span><span class="n">columns_alignment</span><span class="p">,</span>
@@ -2904,8 +2904,6 @@ fitted model, experiments, and analysis results.</p>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Export fitted data and analysis results as CIF.&quot;&quot;&quot;</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction.io.cif.serialize</span><span class="w"> </span><span class="kn">import</span> <span class="n">summary_to_cif</span>
-
         <span class="k">return</span> <span class="n">summary_to_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -3022,14 +3020,10 @@ fitted model, experiments, and analysis results.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/summary/summary.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">207</span>
-<span class="normal">208</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">208</span>
 <span class="normal">209</span>
-<span class="normal">210</span>
-<span class="normal">211</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">210</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Export fitted data and analysis results as CIF.&quot;&quot;&quot;</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction.io.cif.serialize</span><span class="w"> </span><span class="kn">import</span> <span class="n">summary_to_cif</span>
-
     <span class="k">return</span> <span class="n">summary_to_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -3119,7 +3113,8 @@ fitted model, experiments, and analysis results.</p>
 <span class="normal">114</span>
 <span class="normal">115</span>
 <span class="normal">116</span>
-<span class="normal">117</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_crystallographic_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">117</span>
+<span class="normal">118</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_crystallographic_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print crystallographic data for all phases.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">section</span><span class="p">(</span><span class="s1">&#39;Crystallographic data&#39;</span><span class="p">)</span>
 
@@ -3132,7 +3127,7 @@ fitted model, experiments, and analysis results.</p>
 
         <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Cell parameters&#39;</span><span class="p">)</span>
         <span class="n">columns_headers</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Parameter&#39;</span><span class="p">,</span> <span class="s1">&#39;Value&#39;</span><span class="p">]</span>
-        <span class="n">columns_alignment</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;right&#39;</span><span class="p">]</span>
+        <span class="n">columns_alignment</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;right&#39;</span><span class="p">]</span>
         <span class="n">cell_data</span> <span class="o">=</span> <span class="p">[</span>
             <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;length_&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;angle_&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.5f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">parameters</span>
@@ -3162,9 +3157,8 @@ fitted model, experiments, and analysis results.</p>
             <span class="s1">&#39;right&#39;</span><span class="p">,</span>
             <span class="s1">&#39;right&#39;</span><span class="p">,</span>
         <span class="p">]</span>
-        <span class="n">atom_table</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">site</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">atom_sites</span><span class="p">:</span>
-            <span class="n">atom_table</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
+        <span class="n">atom_table</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">[</span>
                 <span class="n">site</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
                 <span class="n">site</span><span class="o">.</span><span class="n">type_symbol</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
                 <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">site</span><span class="o">.</span><span class="n">fract_x</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.5f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
@@ -3172,7 +3166,9 @@ fitted model, experiments, and analysis results.</p>
                 <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">site</span><span class="o">.</span><span class="n">fract_z</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.5f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
                 <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">site</span><span class="o">.</span><span class="n">occupancy</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.5f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
                 <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">site</span><span class="o">.</span><span class="n">b_iso</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s1">.5f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-            <span class="p">])</span>
+            <span class="p">]</span>
+            <span class="k">for</span> <span class="n">site</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">atom_sites</span>
+        <span class="p">]</span>
         <span class="n">render_table</span><span class="p">(</span>
             <span class="n">columns_headers</span><span class="o">=</span><span class="n">columns_headers</span><span class="p">,</span>
             <span class="n">columns_alignment</span><span class="o">=</span><span class="n">columns_alignment</span><span class="p">,</span>
@@ -3208,8 +3204,7 @@ fitted model, experiments, and analysis results.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/summary/summary.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">119</span>
-<span class="normal">120</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">120</span>
 <span class="normal">121</span>
 <span class="normal">122</span>
 <span class="normal">123</span>
@@ -3264,7 +3259,8 @@ fitted model, experiments, and analysis results.</p>
 <span class="normal">172</span>
 <span class="normal">173</span>
 <span class="normal">174</span>
-<span class="normal">175</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_experimental_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">175</span>
+<span class="normal">176</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_experimental_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print experimental data for all experiments.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">section</span><span class="p">(</span><span class="s1">&#39;Experiments&#39;</span><span class="p">)</span>
 
@@ -3351,8 +3347,7 @@ fitted model, experiments, and analysis results.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/summary/summary.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">177</span>
-<span class="normal">178</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">178</span>
 <span class="normal">179</span>
 <span class="normal">180</span>
 <span class="normal">181</span>
@@ -3375,7 +3370,8 @@ fitted model, experiments, and analysis results.</p>
 <span class="normal">198</span>
 <span class="normal">199</span>
 <span class="normal">200</span>
-<span class="normal">201</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_fitting_details</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">201</span>
+<span class="normal">202</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_fitting_details</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print fitting details including engines and metrics.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">section</span><span class="p">(</span><span class="s1">&#39;Fitting&#39;</span><span class="p">)</span>
 
@@ -3518,6 +3514,10 @@ fitted model, experiments, and analysis results.</p>
     </div>
 
 </div>
+
+
+
+
 
 
 

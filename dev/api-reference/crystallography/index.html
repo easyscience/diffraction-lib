@@ -2552,7 +2552,7 @@
                 <code>atom_site</code>
             </td>
             <td>
-                  <code><span title="typing.Dict">Dict</span>[<span title="str">str</span>, <span title="typing.Any">Any</span>]</code>
+                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="typing.Any">Any</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2638,7 +2638,7 @@
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="typing.Dict">Dict</span>[<span title="str">str</span>, <span title="typing.Any">Any</span>]</code>
+                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="typing.Any">Any</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2655,7 +2655,9 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/crystallography/crystallography.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 92</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
 <span class="normal"> 93</span>
 <span class="normal"> 94</span>
 <span class="normal"> 95</span>
@@ -2717,20 +2719,18 @@
 <span class="normal">151</span>
 <span class="normal">152</span>
 <span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">apply_atom_site_symmetry_constraints</span><span class="p">(</span>
-    <span class="n">atom_site</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+<span class="normal">154</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">apply_atom_site_symmetry_constraints</span><span class="p">(</span>
+    <span class="n">atom_site</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
     <span class="n">name_hm</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">coord_code</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">wyckoff_letter</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Apply symmetry constraints to atom site coordinates.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    atom_site : Dict[str, Any]</span>
+<span class="sd">    atom_site : dict[str, Any]</span>
 <span class="sd">        Dictionary containing atom position data.</span>
 <span class="sd">    name_hm : str</span>
 <span class="sd">        Hermann-Mauguin symbol of the space group.</span>
@@ -2741,7 +2741,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    Dict[str, Any]</span>
+<span class="sd">    dict[str, Any]</span>
 <span class="sd">        The atom_site dictionary with applied symmetry constraints.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">it_number</span> <span class="o">=</span> <span class="n">get_it_number_by_name_hm_short</span><span class="p">(</span><span class="n">name_hm</span><span class="p">)</span>
@@ -2756,19 +2756,19 @@
         <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>  <span class="c1"># TODO: ValueError? Diagnostics?</span>
         <span class="k">return</span> <span class="n">atom_site</span>
 
-    <span class="n">space_group_entry</span> <span class="o">=</span> <span class="n">SPACE_GROUPS</span><span class="p">[(</span><span class="n">it_number</span><span class="p">,</span> <span class="n">it_coordinate_system_code</span><span class="p">)]</span>
+    <span class="n">space_group_entry</span> <span class="o">=</span> <span class="n">SPACE_GROUPS</span><span class="p">[</span><span class="n">it_number</span><span class="p">,</span> <span class="n">it_coordinate_system_code</span><span class="p">]</span>
     <span class="n">wyckoff_positions</span> <span class="o">=</span> <span class="n">space_group_entry</span><span class="p">[</span><span class="s1">&#39;Wyckoff_positions&#39;</span><span class="p">][</span><span class="n">wyckoff_letter</span><span class="p">]</span>
     <span class="n">coords_xyz</span> <span class="o">=</span> <span class="n">wyckoff_positions</span><span class="p">[</span><span class="s1">&#39;coords_xyz&#39;</span><span class="p">]</span>
 
     <span class="n">first_position</span> <span class="o">=</span> <span class="n">coords_xyz</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">components</span> <span class="o">=</span> <span class="n">first_position</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;()&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
-    <span class="n">parsed_exprs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Expr</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">sympify</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">components</span><span class="p">]</span>
+    <span class="n">parsed_exprs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Expr</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">sympify</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">components</span><span class="p">]</span>
 
     <span class="n">x_val</span><span class="p">:</span> <span class="n">Expr</span> <span class="o">=</span> <span class="n">sympify</span><span class="p">(</span><span class="n">atom_site</span><span class="p">[</span><span class="s1">&#39;fract_x&#39;</span><span class="p">])</span>
     <span class="n">y_val</span><span class="p">:</span> <span class="n">Expr</span> <span class="o">=</span> <span class="n">sympify</span><span class="p">(</span><span class="n">atom_site</span><span class="p">[</span><span class="s1">&#39;fract_y&#39;</span><span class="p">])</span>
     <span class="n">z_val</span><span class="p">:</span> <span class="n">Expr</span> <span class="o">=</span> <span class="n">sympify</span><span class="p">(</span><span class="n">atom_site</span><span class="p">[</span><span class="s1">&#39;fract_z&#39;</span><span class="p">])</span>
 
-    <span class="n">substitutions</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Expr</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">x_val</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="n">y_val</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="n">z_val</span><span class="p">}</span>
+    <span class="n">substitutions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Expr</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">x_val</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="n">y_val</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="n">z_val</span><span class="p">}</span>
 
     <span class="n">axes</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">)</span>
     <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;x y z&#39;</span><span class="p">)</span>
@@ -2828,7 +2828,7 @@
                 <code>cell</code>
             </td>
             <td>
-                  <code><span title="typing.Dict">Dict</span>[<span title="str">str</span>, <span title="float">float</span>]</code>
+                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="float">float</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2876,7 +2876,7 @@
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="typing.Dict">Dict</span>[<span title="str">str</span>, <span title="float">float</span>]</code>
+                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="float">float</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2893,7 +2893,9 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/crystallography/crystallography.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">20</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
 <span class="normal">21</span>
 <span class="normal">22</span>
 <span class="normal">23</span>
@@ -2960,25 +2962,23 @@
 <span class="normal">84</span>
 <span class="normal">85</span>
 <span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">apply_cell_symmetry_constraints</span><span class="p">(</span>
-    <span class="n">cell</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+<span class="normal">87</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">apply_cell_symmetry_constraints</span><span class="p">(</span>
+    <span class="n">cell</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
     <span class="n">name_hm</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Apply symmetry constraints to unit cell parameters.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    cell : Dict[str, float]</span>
+<span class="sd">    cell : dict[str, float]</span>
 <span class="sd">        Dictionary containing lattice parameters.</span>
 <span class="sd">    name_hm : str</span>
 <span class="sd">        Hermann-Mauguin symbol of the space group.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    Dict[str, float]</span>
+<span class="sd">    dict[str, float]</span>
 <span class="sd">        The cell dictionary with applied symmetry constraints.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">it_number</span> <span class="o">=</span> <span class="n">get_it_number_by_name_hm_short</span><span class="p">(</span><span class="n">name_hm</span><span class="p">)</span>

@@ -3005,7 +3005,9 @@ supported engines in a table-friendly format.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/display/base.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 19</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 17</span>
+<span class="normal"> 18</span>
+<span class="normal"> 19</span>
 <span class="normal"> 20</span>
 <span class="normal"> 21</span>
 <span class="normal"> 22</span>
@@ -3087,9 +3089,7 @@ supported engines in a table-friendly format.</p>
 <span class="normal"> 98</span>
 <span class="normal"> 99</span>
 <span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RendererBase</span><span class="p">(</span><span class="n">SingletonBase</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
+<span class="normal">101</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RendererBase</span><span class="p">(</span><span class="n">SingletonBase</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for display components with pluggable engines.</span>
 
@@ -3166,7 +3166,7 @@ supported engines in a table-friendly format.</p>
         <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_tuples</span><span class="p">(</span><span class="n">headers</span><span class="p">))</span>
         <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Supported engines&#39;</span><span class="p">)</span>
         <span class="c1"># Delegate table rendering to the TableRenderer singleton</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction.display.tables</span><span class="w"> </span><span class="kn">import</span> <span class="n">TableRenderer</span>  <span class="c1"># local import to avoid cycles</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction.display.tables</span><span class="w"> </span><span class="kn">import</span> <span class="n">TableRenderer</span>  <span class="c1"># noqa: PLC0415</span>
 
         <span class="n">TableRenderer</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 
@@ -3267,10 +3267,10 @@ supported engines in a table-friendly format.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">show_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Display the current renderer configuration.&quot;&quot;&quot;</span>
     <span class="k">raise</span> <span class="ne">NotImplementedError</span>
@@ -3304,10 +3304,10 @@ supported engines in a table-friendly format.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Display the currently selected engine.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Current engine&#39;</span><span class="p">)</span>
     <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_engine</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
@@ -3341,7 +3341,9 @@ supported engines in a table-friendly format.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">86</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
 <span class="normal">87</span>
 <span class="normal">88</span>
 <span class="normal">89</span>
@@ -3351,9 +3353,7 @@ supported engines in a table-friendly format.</p>
 <span class="normal">93</span>
 <span class="normal">94</span>
 <span class="normal">95</span>
-<span class="normal">96</span>
-<span class="normal">97</span>
-<span class="normal">98</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_engines</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">96</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_engines</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;List supported engines with descriptions in a table.&quot;&quot;&quot;</span>
     <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">(</span><span class="s1">&#39;Engine&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">),</span>
@@ -3363,7 +3363,7 @@ supported engines in a table-friendly format.</p>
     <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_tuples</span><span class="p">(</span><span class="n">headers</span><span class="p">))</span>
     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Supported engines&#39;</span><span class="p">)</span>
     <span class="c1"># Delegate table rendering to the TableRenderer singleton</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction.display.tables</span><span class="w"> </span><span class="kn">import</span> <span class="n">TableRenderer</span>  <span class="c1"># local import to avoid cycles</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction.display.tables</span><span class="w"> </span><span class="kn">import</span> <span class="n">TableRenderer</span>  <span class="c1"># noqa: PLC0415</span>
 
     <span class="n">TableRenderer</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -3417,7 +3417,9 @@ supported engines in a table-friendly format.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/display/base.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">106</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
 <span class="normal">107</span>
 <span class="normal">108</span>
 <span class="normal">109</span>
@@ -3468,8 +3470,7 @@ supported engines in a table-friendly format.</p>
 <span class="normal">154</span>
 <span class="normal">155</span>
 <span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RendererFactoryBase</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="normal">157</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RendererFactoryBase</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base factory that manages discovery and creation of backends.&quot;&quot;&quot;</span>
 
     <span class="nd">@classmethod</span>
@@ -3496,17 +3497,18 @@ supported engines in a table-friendly format.</p>
         <span class="n">registry</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_registry</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">engine_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">registry</span><span class="p">:</span>
             <span class="n">supported</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">registry</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported engine &#39;</span><span class="si">{</span><span class="n">engine_name</span><span class="si">}</span><span class="s2">&#39;. Supported engines: </span><span class="si">{</span><span class="n">supported</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Unsupported engine &#39;</span><span class="si">{</span><span class="n">engine_name</span><span class="si">}</span><span class="s2">&#39;. Supported engines: </span><span class="si">{</span><span class="n">supported</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="n">engine_class</span> <span class="o">=</span> <span class="n">registry</span><span class="p">[</span><span class="n">engine_name</span><span class="p">][</span><span class="s1">&#39;class&#39;</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">engine_class</span><span class="p">()</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">supported_engines</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">supported_engines</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a list of supported engine identifiers.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_registry</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">descriptions</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">descriptions</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return (name, description) pairs for each engine.&quot;&quot;&quot;</span>
         <span class="n">items</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_registry</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="k">return</span> <span class="p">[(</span><span class="n">name</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;description&#39;</span><span class="p">))</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">config</span> <span class="ow">in</span> <span class="n">items</span><span class="p">]</span>
@@ -3645,7 +3647,9 @@ supported engines in a table-friendly format.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">109</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
 <span class="normal">110</span>
 <span class="normal">111</span>
 <span class="normal">112</span>
@@ -3670,8 +3674,7 @@ supported engines in a table-friendly format.</p>
 <span class="normal">131</span>
 <span class="normal">132</span>
 <span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">134</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">engine_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a backend instance for the given engine.</span>
@@ -3695,7 +3698,8 @@ supported engines in a table-friendly format.</p>
     <span class="n">registry</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_registry</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">engine_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">registry</span><span class="p">:</span>
         <span class="n">supported</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">registry</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported engine &#39;</span><span class="si">{</span><span class="n">engine_name</span><span class="si">}</span><span class="s2">&#39;. Supported engines: </span><span class="si">{</span><span class="n">supported</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Unsupported engine &#39;</span><span class="si">{</span><span class="n">engine_name</span><span class="si">}</span><span class="s2">&#39;. Supported engines: </span><span class="si">{</span><span class="n">supported</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
     <span class="n">engine_class</span> <span class="o">=</span> <span class="n">registry</span><span class="p">[</span><span class="n">engine_name</span><span class="p">][</span><span class="s1">&#39;class&#39;</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">engine_class</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
@@ -3732,12 +3736,12 @@ supported engines in a table-friendly format.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">142</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">141</span>
+<span class="normal">142</span>
 <span class="normal">143</span>
 <span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">descriptions</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+<span class="normal">145</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">descriptions</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return (name, description) pairs for each engine.&quot;&quot;&quot;</span>
     <span class="n">items</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_registry</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
     <span class="k">return</span> <span class="p">[(</span><span class="n">name</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;description&#39;</span><span class="p">))</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">config</span> <span class="ow">in</span> <span class="n">items</span><span class="p">]</span>
@@ -3775,11 +3779,11 @@ supported engines in a table-friendly format.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">137</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">136</span>
+<span class="normal">137</span>
 <span class="normal">138</span>
-<span class="normal">139</span>
-<span class="normal">140</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">supported_engines</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="normal">139</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">supported_engines</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a list of supported engine identifiers.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_registry</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 </code></pre></div></td></tr></table></div>
@@ -5983,7 +5987,7 @@ values are plotted against calculated values with error bars.</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><span title="str">str</span></code>, <code><span title="enum.Enum">Enum</span></code></p>
+              Bases: <code><span title="enum.StrEnum">StrEnum</span></code></p>
 
 
 
@@ -6018,7 +6022,7 @@ values are plotted against calculated values with error bars.</p>
 <span class="normal">32</span>
 <span class="normal">33</span>
 <span class="normal">34</span>
-<span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">XAxisType</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+<span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">XAxisType</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    X-axis types for diffraction plots.</span>
 
@@ -6586,17 +6590,17 @@ renderer may be used depending on configuration.</p>
             <span class="n">x</span><span class="o">=</span><span class="n">x_calc</span><span class="p">,</span>
             <span class="n">y</span><span class="o">=</span><span class="n">y_meas</span><span class="p">,</span>
             <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;markers&#39;</span><span class="p">,</span>
-            <span class="n">marker</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                <span class="n">symbol</span><span class="o">=</span><span class="s1">&#39;circle&#39;</span><span class="p">,</span>
-                <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-                <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mf">0.5</span><span class="p">),</span>
-                <span class="n">color</span><span class="o">=</span><span class="n">DEFAULT_COLORS</span><span class="p">[</span><span class="s1">&#39;meas&#39;</span><span class="p">],</span>
-            <span class="p">),</span>
-            <span class="n">error_y</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">,</span>
-                <span class="n">array</span><span class="o">=</span><span class="n">y_meas_su</span><span class="p">,</span>
-                <span class="n">visible</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="p">),</span>
+            <span class="n">marker</span><span class="o">=</span><span class="p">{</span>
+                <span class="s1">&#39;symbol&#39;</span><span class="p">:</span> <span class="s1">&#39;circle&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+                <span class="s1">&#39;line&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">},</span>
+                <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="n">DEFAULT_COLORS</span><span class="p">[</span><span class="s1">&#39;meas&#39;</span><span class="p">],</span>
+            <span class="p">},</span>
+            <span class="n">error_y</span><span class="o">=</span><span class="p">{</span>
+                <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;array&#39;</span><span class="p">:</span> <span class="n">y_meas_su</span><span class="p">,</span>
+                <span class="s1">&#39;visible&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="p">},</span>
             <span class="n">hovertemplate</span><span class="o">=</span><span class="s1">&#39;calc: %</span><span class="si">{x}</span><span class="s1">&lt;br&gt;meas: %</span><span class="si">{y}</span><span class="s1">&lt;br&gt;&lt;extra&gt;&lt;/extra&gt;&#39;</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -6614,17 +6618,17 @@ renderer may be used depending on configuration.</p>
 <span class="sd">        dict</span>
 <span class="sd">            A dict configuring a diagonal line shape.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
-            <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;line&#39;</span><span class="p">,</span>
-            <span class="n">x0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-            <span class="n">y0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-            <span class="n">x1</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-            <span class="n">y1</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-            <span class="n">xref</span><span class="o">=</span><span class="s1">&#39;paper&#39;</span><span class="p">,</span>
-            <span class="n">yref</span><span class="o">=</span><span class="s1">&#39;paper&#39;</span><span class="p">,</span>
-            <span class="n">layer</span><span class="o">=</span><span class="s1">&#39;below&#39;</span><span class="p">,</span>
-            <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mf">0.5</span><span class="p">),</span>
-        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;line&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;x0&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s1">&#39;y0&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s1">&#39;x1&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s1">&#39;y1&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s1">&#39;xref&#39;</span><span class="p">:</span> <span class="s1">&#39;paper&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;yref&#39;</span><span class="p">:</span> <span class="s1">&#39;paper&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;layer&#39;</span><span class="p">:</span> <span class="s1">&#39;below&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;line&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">},</span>
+        <span class="p">}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -6635,16 +6639,16 @@ renderer may be used depending on configuration.</p>
 <span class="sd">        dict</span>
 <span class="sd">            A dict with display and mode bar settings.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
-            <span class="n">displaylogo</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">modeBarButtonsToRemove</span><span class="o">=</span><span class="p">[</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;displaylogo&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s1">&#39;modeBarButtonsToRemove&#39;</span><span class="p">:</span> <span class="p">[</span>
                 <span class="s1">&#39;select2d&#39;</span><span class="p">,</span>
                 <span class="s1">&#39;lasso2d&#39;</span><span class="p">,</span>
                 <span class="s1">&#39;zoomIn2d&#39;</span><span class="p">,</span>
                 <span class="s1">&#39;zoomOut2d&#39;</span><span class="p">,</span>
                 <span class="s1">&#39;autoScale2d&#39;</span><span class="p">,</span>
             <span class="p">],</span>
-        <span class="p">)</span>
+        <span class="p">}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_figure</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -6725,33 +6729,33 @@ renderer may be used depending on configuration.</p>
 <span class="sd">            A configured :class:`plotly.graph_objects.Layout`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">go</span><span class="o">.</span><span class="n">Layout</span><span class="p">(</span>
-            <span class="n">margin</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                <span class="n">autoexpand</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">r</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
-                <span class="n">t</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span>
-                <span class="n">b</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span>
-            <span class="p">),</span>
-            <span class="n">title</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                <span class="n">text</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
-            <span class="p">),</span>
-            <span class="n">legend</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                <span class="n">xanchor</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span>
-                <span class="n">x</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
-                <span class="n">yanchor</span><span class="o">=</span><span class="s1">&#39;top&#39;</span><span class="p">,</span>
-                <span class="n">y</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
-            <span class="p">),</span>
-            <span class="n">xaxis</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                <span class="n">title_text</span><span class="o">=</span><span class="n">axes_labels</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                <span class="n">showline</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">mirror</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">zeroline</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="p">),</span>
-            <span class="n">yaxis</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                <span class="n">title_text</span><span class="o">=</span><span class="n">axes_labels</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                <span class="n">showline</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">mirror</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">zeroline</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="p">),</span>
+            <span class="n">margin</span><span class="o">=</span><span class="p">{</span>
+                <span class="s1">&#39;autoexpand&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s1">&#39;r&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+                <span class="s1">&#39;t&#39;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span>
+                <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mi">45</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="n">title</span><span class="o">=</span><span class="p">{</span>
+                <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="n">title</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="n">legend</span><span class="o">=</span><span class="p">{</span>
+                <span class="s1">&#39;xanchor&#39;</span><span class="p">:</span> <span class="s1">&#39;right&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+                <span class="s1">&#39;yanchor&#39;</span><span class="p">:</span> <span class="s1">&#39;top&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="n">xaxis</span><span class="o">=</span><span class="p">{</span>
+                <span class="s1">&#39;title_text&#39;</span><span class="p">:</span> <span class="n">axes_labels</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="s1">&#39;showline&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s1">&#39;mirror&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s1">&#39;zeroline&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="n">yaxis</span><span class="o">=</span><span class="p">{</span>
+                <span class="s1">&#39;title_text&#39;</span><span class="p">:</span> <span class="n">axes_labels</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="s1">&#39;showline&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s1">&#39;mirror&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s1">&#39;zeroline&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="p">},</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -6869,21 +6873,21 @@ renderer may be used depending on configuration.</p>
             <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
             <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span>
             <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;markers+lines&#39;</span><span class="p">,</span>
-            <span class="n">marker</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                <span class="n">symbol</span><span class="o">=</span><span class="s1">&#39;circle&#39;</span><span class="p">,</span>
-                <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-                <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mf">0.5</span><span class="p">),</span>
-                <span class="n">color</span><span class="o">=</span><span class="n">DEFAULT_COLORS</span><span class="p">[</span><span class="s1">&#39;meas&#39;</span><span class="p">],</span>
-            <span class="p">),</span>
-            <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                <span class="n">width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-                <span class="n">color</span><span class="o">=</span><span class="n">DEFAULT_COLORS</span><span class="p">[</span><span class="s1">&#39;meas&#39;</span><span class="p">],</span>
-            <span class="p">),</span>
-            <span class="n">error_y</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">,</span>
-                <span class="n">array</span><span class="o">=</span><span class="n">sy</span><span class="p">,</span>
-                <span class="n">visible</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="p">),</span>
+            <span class="n">marker</span><span class="o">=</span><span class="p">{</span>
+                <span class="s1">&#39;symbol&#39;</span><span class="p">:</span> <span class="s1">&#39;circle&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+                <span class="s1">&#39;line&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">},</span>
+                <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="n">DEFAULT_COLORS</span><span class="p">[</span><span class="s1">&#39;meas&#39;</span><span class="p">],</span>
+            <span class="p">},</span>
+            <span class="n">line</span><span class="o">=</span><span class="p">{</span>
+                <span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="n">DEFAULT_COLORS</span><span class="p">[</span><span class="s1">&#39;meas&#39;</span><span class="p">],</span>
+            <span class="p">},</span>
+            <span class="n">error_y</span><span class="o">=</span><span class="p">{</span>
+                <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;array&#39;</span><span class="p">:</span> <span class="n">sy</span><span class="p">,</span>
+                <span class="s1">&#39;visible&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="p">},</span>
             <span class="n">hovertemplate</span><span class="o">=</span><span class="s1">&#39;x: %</span><span class="si">{x}</span><span class="s1">&lt;br&gt;y: %</span><span class="si">{y}</span><span class="s1">&lt;br&gt;&lt;extra&gt;&lt;/extra&gt;&#39;</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -7234,21 +7238,21 @@ against an x-axis variable (2θ, TOF, d-spacing).</p>
         <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
         <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span>
         <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;markers+lines&#39;</span><span class="p">,</span>
-        <span class="n">marker</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">symbol</span><span class="o">=</span><span class="s1">&#39;circle&#39;</span><span class="p">,</span>
-            <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-            <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mf">0.5</span><span class="p">),</span>
-            <span class="n">color</span><span class="o">=</span><span class="n">DEFAULT_COLORS</span><span class="p">[</span><span class="s1">&#39;meas&#39;</span><span class="p">],</span>
-        <span class="p">),</span>
-        <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-            <span class="n">color</span><span class="o">=</span><span class="n">DEFAULT_COLORS</span><span class="p">[</span><span class="s1">&#39;meas&#39;</span><span class="p">],</span>
-        <span class="p">),</span>
-        <span class="n">error_y</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">,</span>
-            <span class="n">array</span><span class="o">=</span><span class="n">sy</span><span class="p">,</span>
-            <span class="n">visible</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">),</span>
+        <span class="n">marker</span><span class="o">=</span><span class="p">{</span>
+            <span class="s1">&#39;symbol&#39;</span><span class="p">:</span> <span class="s1">&#39;circle&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="s1">&#39;line&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">},</span>
+            <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="n">DEFAULT_COLORS</span><span class="p">[</span><span class="s1">&#39;meas&#39;</span><span class="p">],</span>
+        <span class="p">},</span>
+        <span class="n">line</span><span class="o">=</span><span class="p">{</span>
+            <span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="n">DEFAULT_COLORS</span><span class="p">[</span><span class="s1">&#39;meas&#39;</span><span class="p">],</span>
+        <span class="p">},</span>
+        <span class="n">error_y</span><span class="o">=</span><span class="p">{</span>
+            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;array&#39;</span><span class="p">:</span> <span class="n">sy</span><span class="p">,</span>
+            <span class="s1">&#39;visible&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="p">},</span>
         <span class="n">hovertemplate</span><span class="o">=</span><span class="s1">&#39;x: %</span><span class="si">{x}</span><span class="s1">&lt;br&gt;y: %</span><span class="si">{y}</span><span class="s1">&lt;br&gt;&lt;extra&gt;&lt;/extra&gt;&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -8367,7 +8371,7 @@ consistent configuration surface and engine handling.</p>
         <span class="n">x_axis</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Look up axis labels for the experiment / x-axis.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">DEFAULT_AXES_LABELS</span><span class="p">[(</span><span class="n">sample_form</span><span class="p">,</span> <span class="n">scattering_type</span><span class="p">,</span> <span class="n">x_axis</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">DEFAULT_AXES_LABELS</span><span class="p">[</span><span class="n">sample_form</span><span class="p">,</span> <span class="n">scattering_type</span><span class="p">,</span> <span class="n">x_axis</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_powder_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -8487,7 +8491,7 @@ consistent configuration surface and engine handling.</p>
         <span class="n">sample_form</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span>
         <span class="n">scattering_type</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span>
         <span class="n">beam_mode</span> <span class="o">=</span> <span class="n">expt_type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">x_axis</span> <span class="o">=</span> <span class="n">DEFAULT_X_AXIS</span><span class="p">[(</span><span class="n">sample_form</span><span class="p">,</span> <span class="n">scattering_type</span><span class="p">,</span> <span class="n">beam_mode</span><span class="p">)]</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x</span>
+        <span class="n">x_axis</span> <span class="o">=</span> <span class="n">DEFAULT_X_AXIS</span><span class="p">[</span><span class="n">sample_form</span><span class="p">,</span> <span class="n">scattering_type</span><span class="p">,</span> <span class="n">beam_mode</span><span class="p">]</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x</span>
         <span class="n">x_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">x_axis</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="n">x_axis</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">x_axis</span><span class="p">,</span> <span class="n">x_name</span><span class="p">,</span> <span class="n">sample_form</span><span class="p">,</span> <span class="n">scattering_type</span><span class="p">,</span> <span class="n">beam_mode</span>
 
@@ -8729,7 +8733,7 @@ consistent configuration surface and engine handling.</p>
         <span class="n">title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Measured vs Calculated data for experiment 🔬 &#39;</span><span class="si">{</span><span class="n">expt_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
 
         <span class="c1"># Single crystal scatter plot (I²calc vs I²meas)</span>
-        <span class="k">if</span> <span class="n">x_axis</span> <span class="o">==</span> <span class="n">XAxisType</span><span class="o">.</span><span class="n">INTENSITY_CALC</span> <span class="ow">or</span> <span class="n">x_axis</span> <span class="o">==</span> <span class="s1">&#39;intensity_calc&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">x_axis</span> <span class="ow">in</span> <span class="p">{</span><span class="n">XAxisType</span><span class="o">.</span><span class="n">INTENSITY_CALC</span><span class="p">,</span> <span class="s1">&#39;intensity_calc&#39;</span><span class="p">}:</span>
             <span class="n">axes_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_axes_labels</span><span class="p">(</span><span class="n">sample_form</span><span class="p">,</span> <span class="n">scattering_type</span><span class="p">,</span> <span class="n">x_axis</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">pattern</span><span class="o">.</span><span class="n">intensity_meas_su</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -9762,7 +9766,7 @@ beam mode.</p>
     <span class="n">title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Measured vs Calculated data for experiment 🔬 &#39;</span><span class="si">{</span><span class="n">expt_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
 
     <span class="c1"># Single crystal scatter plot (I²calc vs I²meas)</span>
-    <span class="k">if</span> <span class="n">x_axis</span> <span class="o">==</span> <span class="n">XAxisType</span><span class="o">.</span><span class="n">INTENSITY_CALC</span> <span class="ow">or</span> <span class="n">x_axis</span> <span class="o">==</span> <span class="s1">&#39;intensity_calc&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">x_axis</span> <span class="ow">in</span> <span class="p">{</span><span class="n">XAxisType</span><span class="o">.</span><span class="n">INTENSITY_CALC</span><span class="p">,</span> <span class="s1">&#39;intensity_calc&#39;</span><span class="p">}:</span>
         <span class="n">axes_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_axes_labels</span><span class="p">(</span><span class="n">sample_form</span><span class="p">,</span> <span class="n">scattering_type</span><span class="p">,</span> <span class="n">x_axis</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">pattern</span><span class="o">.</span><span class="n">intensity_meas_su</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -10215,7 +10219,7 @@ name, then by parameter unique name.</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><span title="str">str</span></code>, <code><span title="enum.Enum">Enum</span></code></p>
+              Bases: <code><span title="enum.StrEnum">StrEnum</span></code></p>
 
 
 
@@ -10254,7 +10258,7 @@ name, then by parameter unique name.</p>
 <span class="normal">49</span>
 <span class="normal">50</span>
 <span class="normal">51</span>
-<span class="normal">52</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PlotterEngineEnum</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+<span class="normal">52</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PlotterEngineEnum</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Available plotting engine backends.&quot;&quot;&quot;</span>
 
     <span class="n">ASCII</span> <span class="o">=</span> <span class="s1">&#39;asciichartpy&#39;</span>
@@ -10273,7 +10277,7 @@ name, then by parameter unique name.</p>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Human-readable description for UI listings.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span> <span class="ow">is</span> <span class="n">PlotterEngineEnum</span><span class="o">.</span><span class="n">ASCII</span><span class="p">:</span>
             <span class="k">return</span> <span class="s1">&#39;Console ASCII line charts&#39;</span>
-        <span class="k">elif</span> <span class="bp">self</span> <span class="ow">is</span> <span class="n">PlotterEngineEnum</span><span class="o">.</span><span class="n">PLOTLY</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span> <span class="ow">is</span> <span class="n">PlotterEngineEnum</span><span class="o">.</span><span class="n">PLOTLY</span><span class="p">:</span>
             <span class="k">return</span> <span class="s1">&#39;Interactive browser-based graphing library&#39;</span>
         <span class="k">return</span> <span class="s1">&#39;&#39;</span>
 </code></pre></div></td></tr></table></div>
@@ -10367,7 +10371,7 @@ name, then by parameter unique name.</p>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Human-readable description for UI listings.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="bp">self</span> <span class="ow">is</span> <span class="n">PlotterEngineEnum</span><span class="o">.</span><span class="n">ASCII</span><span class="p">:</span>
         <span class="k">return</span> <span class="s1">&#39;Console ASCII line charts&#39;</span>
-    <span class="k">elif</span> <span class="bp">self</span> <span class="ow">is</span> <span class="n">PlotterEngineEnum</span><span class="o">.</span><span class="n">PLOTLY</span><span class="p">:</span>
+    <span class="k">if</span> <span class="bp">self</span> <span class="ow">is</span> <span class="n">PlotterEngineEnum</span><span class="o">.</span><span class="n">PLOTLY</span><span class="p">:</span>
         <span class="k">return</span> <span class="s1">&#39;Interactive browser-based graphing library&#39;</span>
     <span class="k">return</span> <span class="s1">&#39;&#39;</span>
 </code></pre></div></td></tr></table></div>
@@ -11287,7 +11291,8 @@ updates.</p>
 <span class="normal">195</span>
 <span class="normal">196</span>
 <span class="normal">197</span>
-<span class="normal">198</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PandasTableBackend</span><span class="p">(</span><span class="n">TableBackendBase</span><span class="p">):</span>
+<span class="normal">198</span>
+<span class="normal">199</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PandasTableBackend</span><span class="p">(</span><span class="n">TableBackendBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Render tables using the pandas Styler in Jupyter environments.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_build_base_styles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
@@ -11429,9 +11434,10 @@ updates.</p>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">html</span> <span class="o">=</span> <span class="n">styler</span><span class="o">.</span><span class="n">to_html</span><span class="p">()</span>
                     <span class="n">display_handle</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="n">html</span><span class="p">))</span>
-                    <span class="k">return</span>
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
                     <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Pandas DisplayHandle update failed: </span><span class="si">{</span><span class="n">err</span><span class="si">!r}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span>
 
             <span class="c1"># This should not happen in Pandas backend</span>
             <span class="k">else</span><span class="p">:</span>
@@ -11598,8 +11604,7 @@ area in place when running in Jupyter.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/tablers/pandas.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">172</span>
-<span class="normal">173</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">173</span>
 <span class="normal">174</span>
 <span class="normal">175</span>
 <span class="normal">176</span>
@@ -11624,7 +11629,8 @@ area in place when running in Jupyter.</p>
 <span class="normal">195</span>
 <span class="normal">196</span>
 <span class="normal">197</span>
-<span class="normal">198</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span>
+<span class="normal">198</span>
+<span class="normal">199</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">alignments</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="n">df</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
@@ -11893,7 +11899,9 @@ area in place when running in Jupyter.</p>
 <span class="normal">172</span>
 <span class="normal">173</span>
 <span class="normal">174</span>
-<span class="normal">175</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RichTableBackend</span><span class="p">(</span><span class="n">TableBackendBase</span><span class="p">):</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RichTableBackend</span><span class="p">(</span><span class="n">TableBackendBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Render tables to terminal or Jupyter using the Rich library.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_to_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">:</span> <span class="n">Table</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -11988,17 +11996,19 @@ area in place when running in Jupyter.</p>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">html</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_html</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
                     <span class="n">display_handle</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="n">html</span><span class="p">))</span>
-                    <span class="k">return</span>
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
                     <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Rich to HTML DisplayHandle update failed: </span><span class="si">{</span><span class="n">err</span><span class="si">!r}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span>
 
             <span class="c1"># Assume terminal/live-like handle</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">display_handle</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
-                    <span class="k">return</span>
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
                     <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Rich live handle update failed: </span><span class="si">{</span><span class="n">err</span><span class="si">!r}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span>
 
         <span class="c1"># Normal print to console</span>
         <span class="n">console</span> <span class="o">=</span> <span class="n">ConsoleManager</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
@@ -12160,9 +12170,7 @@ area in place when running in Jupyter.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/tablers/rich.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">152</span>
 <span class="normal">153</span>
 <span class="normal">154</span>
 <span class="normal">155</span>
@@ -12185,7 +12193,9 @@ area in place when running in Jupyter.</p>
 <span class="normal">172</span>
 <span class="normal">173</span>
 <span class="normal">174</span>
-<span class="normal">175</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">alignments</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="n">df</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
@@ -12320,7 +12330,7 @@ area in place when running in Jupyter.</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><span title="str">str</span></code>, <code><span title="enum.Enum">Enum</span></code></p>
+              Bases: <code><span title="enum.StrEnum">StrEnum</span></code></p>
 
 
 
@@ -12370,14 +12380,14 @@ area in place when running in Jupyter.</p>
 <span class="normal">49</span>
 <span class="normal">50</span>
 <span class="normal">51</span>
-<span class="normal">52</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TableEngineEnum</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+<span class="normal">52</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TableEngineEnum</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Available table rendering backends.&quot;&quot;&quot;</span>
 
     <span class="n">RICH</span> <span class="o">=</span> <span class="s1">&#39;rich&#39;</span>
     <span class="n">PANDAS</span> <span class="o">=</span> <span class="s1">&#39;pandas&#39;</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">default</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;TableEngineEnum&#39;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">default</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TableEngineEnum</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Select default engine based on environment.</span>
 
@@ -12400,7 +12410,7 @@ area in place when running in Jupyter.</p>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span> <span class="ow">is</span> <span class="n">TableEngineEnum</span><span class="o">.</span><span class="n">RICH</span><span class="p">:</span>
             <span class="k">return</span> <span class="s1">&#39;Console rendering with Rich&#39;</span>
-        <span class="k">elif</span> <span class="bp">self</span> <span class="ow">is</span> <span class="n">TableEngineEnum</span><span class="o">.</span><span class="n">PANDAS</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span> <span class="ow">is</span> <span class="n">TableEngineEnum</span><span class="o">.</span><span class="n">PANDAS</span><span class="p">:</span>
             <span class="k">return</span> <span class="s1">&#39;Jupyter DataFrame rendering with Pandas&#39;</span>
         <span class="k">return</span> <span class="s1">&#39;&#39;</span>
 </code></pre></div></td></tr></table></div>
@@ -12452,7 +12462,7 @@ area in place when running in Jupyter.</p>
 <span class="normal">35</span>
 <span class="normal">36</span>
 <span class="normal">37</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">default</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;TableEngineEnum&#39;</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">default</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TableEngineEnum</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Select default engine based on environment.</span>
 
@@ -12543,7 +12553,7 @@ area in place when running in Jupyter.</p>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="bp">self</span> <span class="ow">is</span> <span class="n">TableEngineEnum</span><span class="o">.</span><span class="n">RICH</span><span class="p">:</span>
         <span class="k">return</span> <span class="s1">&#39;Console rendering with Rich&#39;</span>
-    <span class="k">elif</span> <span class="bp">self</span> <span class="ow">is</span> <span class="n">TableEngineEnum</span><span class="o">.</span><span class="n">PANDAS</span><span class="p">:</span>
+    <span class="k">if</span> <span class="bp">self</span> <span class="ow">is</span> <span class="n">TableEngineEnum</span><span class="o">.</span><span class="n">PANDAS</span><span class="p">:</span>
         <span class="k">return</span> <span class="s1">&#39;Jupyter DataFrame rendering with Pandas&#39;</span>
     <span class="k">return</span> <span class="s1">&#39;&#39;</span>
 </code></pre></div></td></tr></table></div>
