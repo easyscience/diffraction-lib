@@ -18,7 +18,8 @@ def test_calculate_r_metrics_and_chi_square():
     r2 = M.calculate_r_factor_squared(y_obs, y_calc)
     chi2 = M.calculate_reduced_chi_square(residuals, num_parameters=1)
 
-    assert 0 <= r <= 1 and np.isfinite(r)
+    assert 0 <= r <= 1
+    assert np.isfinite(r)
     assert np.isclose(r, rb)
     assert np.isfinite(rw)
     assert np.isfinite(r2)
@@ -50,5 +51,7 @@ def test_get_reliability_inputs_collects_arrays_with_default_su():
         pass
 
     y_obs, y_calc, y_err = M.get_reliability_inputs(DummyStructures(), Expts())
-    assert y_obs.shape == (2,) and y_calc.shape == (2,) and y_err.shape == (2,)
+    assert y_obs.shape == (2,)
+    assert y_calc.shape == (2,)
+    assert y_err.shape == (2,)
     assert np.allclose(y_err, 1.0)

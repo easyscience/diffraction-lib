@@ -9,8 +9,6 @@ import pathlib
 import urllib.request
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version
-from typing import List
-from typing import Optional
 from urllib.parse import urlparse
 
 import numpy as np
@@ -43,8 +41,9 @@ def _validate_url(url: str) -> None:
         If the URL scheme is not HTTP or HTTPS.
     """
     parsed = urlparse(url)
-    if parsed.scheme not in ('http', 'https'):
-        raise ValueError(f"Unsafe URL scheme '{parsed.scheme}'. Only HTTP and HTTPS are allowed.")
+    if parsed.scheme not in {'http', 'https'}:
+        msg = f"Unsafe URL scheme '{parsed.scheme}'. Only HTTP and HTTPS are allowed."
+        raise ValueError(msg)
 
 
 def _filename_for_id_from_url(data_id: int | str, url: str) -> str:
@@ -160,7 +159,8 @@ def download_data(
         available = ', '.join(
             sorted(index.keys(), key=lambda s: int(s) if s.isdigit() else s)[:20]
         )
-        raise KeyError(f'Unknown dataset id={id}. Example available ids: {available} ...')
+        msg = f'Unknown dataset id={id}. Example available ids: {available} ...'
+        raise KeyError(msg)
 
     record = index[key]
     url = record['url']
@@ -315,11 +315,13 @@ def _safe_urlopen(request_or_url: object) -> object:  # type: ignore[no-untyped-
     if isinstance(request_or_url, str):
         parsed = urllib.parse.urlparse(request_or_url)
         if parsed.scheme != 'https':  # pragma: no cover - sanity check
-            raise ValueError('Only https URLs are permitted')
+            msg = 'Only https URLs are permitted'
+            raise ValueError(msg)
     elif isinstance(request_or_url, urllib.request.Request):  # noqa: S310 - request object inspected, not opened
         parsed = urllib.parse.urlparse(request_or_url.full_url)
         if parsed.scheme != 'https':  # pragma: no cover
-            raise ValueError('Only https URLs are permitted')
+            msg = 'Only https URLs are permitted'
+            raise ValueError(msg)
     return urllib.request.urlopen(request_or_url)  # noqa: S310 - validated https only
 
 
@@ -409,7 +411,8 @@ def download_tutorial(
         available = ', '.join(
             sorted(index.keys(), key=lambda s: int(s) if s.isdigit() else s)[:20]
         )
-        raise KeyError(f'Unknown tutorial id={id}. Available ids: {available}')
+        msg = f'Unknown tutorial id={id}. Available ids: {available}'
+        raise KeyError(msg)
 
     record = index[key]
     url_template = record['url']
@@ -541,10 +544,10 @@ def render_cif(cif_text: str) -> None:
         The CIF text to display.
     """
     # Split into lines
-    lines: List[str] = [line for line in cif_text.splitlines()]
+    lines: list[str] = list(cif_text.splitlines())
 
     # Convert each line into a single-column format for table rendering
-    columns: List[List[str]] = [[line] for line in lines]
+    columns: list[list[str]] = [[line] for line in lines]
 
     # Render the table using left alignment and no headers
     render_table(
@@ -598,7 +601,8 @@ def tof_to_d(
     """
     # Type checks
     if not isinstance(tof, np.ndarray):
-        raise TypeError(f"'tof' must be a NumPy array, got {type(tof).__name__}")
+        msg = f"'tof' must be a NumPy array, got {type(tof).__name__}"
+        raise TypeError(msg)
     for name, val in (
         ('offset', offset),
         ('linear', linear),
@@ -606,7 +610,8 @@ def tof_to_d(
         ('quad_eps', quad_eps),
     ):
         if not isinstance(val, (int, float, np.integer, np.floating)):
-            raise TypeError(f"'{name}' must be a real number, got {type(val).__name__}")
+            msg = f"'{name}' must be a real number, got {type(val).__name__}"
+            raise TypeError(msg)
 
     # Output initialized to NaN
     d_out = np.full_like(tof, np.nan, dtype=float)
@@ -695,7 +700,7 @@ def sin_theta_over_lambda_to_d_spacing(sin_theta_over_lambda: object) -> object:
     return d
 
 
-def str_to_ufloat(s: Optional[str], default: Optional[float] = None) -> UFloat:
+def str_to_ufloat(s: str | None, default: float | None = None) -> UFloat:
     """
     Parse a CIF-style numeric string into a ufloat.
 
@@ -711,9 +716,9 @@ def str_to_ufloat(s: Optional[str], default: Optional[float] = None) -> UFloat:
 
     Parameters
     ----------
-    s : Optional[str]
+    s : str | None
         Numeric string in CIF format (e.g. "3.566", "3.566(2)") or None.
-    default : Optional[float], default=None
+    default : float | None, default=None
         Default value to use if ``s`` is None or parsing fails.
 
     Returns

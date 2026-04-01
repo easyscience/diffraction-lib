@@ -32,8 +32,6 @@ def test_line_segment_background_calculate_and_cif():
 
     # CIF loop has correct header and rows
     cif = bkg.as_cif
-    assert (
-        'loop_' in cif
-        and '_pd_background.line_segment_X' in cif
-        and '_pd_background.line_segment_intensity' in cif
-    )
+    assert 'loop_' in cif
+    assert '_pd_background.line_segment_X' in cif
+    assert '_pd_background.line_segment_intensity' in cif

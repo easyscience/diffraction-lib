@@ -2,9 +2,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 from typing import Any
-from typing import Dict
-from typing import List
-from typing import Union
 
 import numpy as np
 
@@ -64,14 +61,15 @@ class CrysfmlCalculator(CalculatorBase):
         NotImplementedError
             HKL calculation is not implemented for CrysfmlCalculator.
         """
-        raise NotImplementedError('HKL calculation is not implemented for CrysfmlCalculator.')
+        msg = 'HKL calculation is not implemented for CrysfmlCalculator.'
+        raise NotImplementedError(msg)
 
     def calculate_pattern(
         self,
         structure: Structures,
         experiment: ExperimentBase,
         called_by_minimizer: bool = False,
-    ) -> Union[np.ndarray, List[float]]:
+    ) -> np.ndarray | list[float]:
         """
         Calculate the diffraction pattern using Crysfml.
 
@@ -86,7 +84,7 @@ class CrysfmlCalculator(CalculatorBase):
 
         Returns
         -------
-        Union[np.ndarray, List[float]]
+        np.ndarray | list[float]
             The calculated diffraction pattern as a NumPy array or a
             list of floats.
         """
@@ -104,22 +102,22 @@ class CrysfmlCalculator(CalculatorBase):
 
     def _adjust_pattern_length(
         self,
-        pattern: List[float],
+        pattern: list[float],
         target_length: int,
-    ) -> List[float]:
+    ) -> list[float]:
         """
         Adjust the pattern length to match the target length.
 
         Parameters
         ----------
-        pattern : List[float]
+        pattern : list[float]
             The pattern to adjust.
         target_length : int
             The desired length of the pattern.
 
         Returns
         -------
-        List[float]
+        list[float]
             The adjusted pattern.
         """
         # TODO: Check the origin of this discrepancy coming from
@@ -132,7 +130,7 @@ class CrysfmlCalculator(CalculatorBase):
         self,
         structure: Structures,
         experiment: ExperimentBase,
-    ) -> Dict[str, Union[ExperimentBase, Structure]]:
+    ) -> dict[str, ExperimentBase | Structure]:
         """
         Convert structure and experiment into a Crysfml dictionary.
 
@@ -145,7 +143,7 @@ class CrysfmlCalculator(CalculatorBase):
 
         Returns
         -------
-        Dict[str, Union[ExperimentBase, Structure]]
+        dict[str, ExperimentBase | Structure]
             A dictionary representation of the structure and experiment.
         """
         structure_dict = self._convert_structure_to_dict(structure)
@@ -158,7 +156,7 @@ class CrysfmlCalculator(CalculatorBase):
     def _convert_structure_to_dict(
         self,
         structure: Structure,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Convert a structure into a dictionary format.
 
@@ -169,7 +167,7 @@ class CrysfmlCalculator(CalculatorBase):
 
         Returns
         -------
-        Dict[str, Any]
+        dict[str, Any]
             A dictionary representation of the structure.
         """
         structure_dict = {
@@ -203,7 +201,7 @@ class CrysfmlCalculator(CalculatorBase):
     def _convert_experiment_to_dict(
         self,
         experiment: ExperimentBase,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Convert an experiment into a dictionary format.
 
@@ -214,7 +212,7 @@ class CrysfmlCalculator(CalculatorBase):
 
         Returns
         -------
-        Dict[str, Any]
+        dict[str, Any]
             A dictionary representation of the experiment.
         """
         expt_type = getattr(experiment, 'type', None)

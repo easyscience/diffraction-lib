@@ -212,6 +212,5 @@ class Diagnostics:
             if len(allowed_list) <= 10:
                 s = ', '.join(map(repr, sorted(allowed_list)))
                 return f' {label}: {s}.'
-            else:
-                return f' ({len(allowed_list)} {label.lower()} not listed here).'
+            return f' ({len(allowed_list)} {label.lower()} not listed here).'
         return ''

@@ -1,9 +1,7 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
-from typing import List
-from typing import Optional
-from typing import Union
+from contextlib import suppress
 
 import pandas as pd
 
@@ -12,14 +10,17 @@ from easydiffraction.analysis.categories.constraints.factory import ConstraintsF
 from easydiffraction.analysis.categories.fit_mode import FitModeEnum
 from easydiffraction.analysis.categories.fit_mode import FitModeFactory
 from easydiffraction.analysis.categories.joint_fit_experiments import JointFitExperiments
+from easydiffraction.analysis.fit_helpers.tracking import _make_display_handle
 from easydiffraction.analysis.fitting import Fitter
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
+from easydiffraction.core.guard import GuardedBase
 from easydiffraction.core.singleton import ConstraintsHandler
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import Parameter
 from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.datablocks.experiment.collection import Experiments
 from easydiffraction.display.tables import TableRenderer
+from easydiffraction.io.cif.serialize import analysis_to_cif
 from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
@@ -60,8 +61,6 @@ class Analysis:
 
     def help(self) -> None:
         """Print a summary of analysis properties and methods."""
-        from easydiffraction.core.guard import GuardedBase
-
         console.paragraph("Help for 'Analysis'")
 
         cls = type(self)
@@ -203,14 +202,14 @@ class Analysis:
 
     def _get_params_as_dataframe(
         self,
-        params: List[Union[NumericDescriptor, Parameter]],
+        params: list[NumericDescriptor | Parameter],
     ) -> pd.DataFrame:
         """
         Convert a list of parameters to a DataFrame.
 
         Parameters
         ----------
-        params : List[Union[NumericDescriptor, Parameter]]
+        params : list[NumericDescriptor | Parameter]
             List of DescriptorFloat or Parameter objects.
 
         Returns
@@ -233,11 +232,11 @@ class Analysis:
                     ('value', 'right'): param.value,
                 }
             if isinstance(param, (NumericDescriptor, Parameter)):
-                record = record | {
+                record |= {
                     ('units', 'left'): param.units,
                 }
             if isinstance(param, Parameter):
-                record = record | {
+                record |= {
                     ('fittable', 'left'): True,
                     ('free', 'left'): param.free,
                     ('min', 'right'): param.fit_min,
@@ -443,7 +442,7 @@ class Analysis:
         ]
 
         columns_data = []
-        for _, params in all_params.items():
+        for params in all_params.values():
             for param in params:
                 if isinstance(param, (StringDescriptor, NumericDescriptor, Parameter)):
                     datablock_entry_name = param._identity.datablock_entry_name
@@ -477,7 +476,7 @@ class Analysis:
         MinimizerFactory.show_supported()
 
     @property
-    def current_minimizer(self) -> Optional[str]:
+    def current_minimizer(self) -> str | None:
         """The identifier of the active minimizer, if any."""
         return self.fitter.selection if self.fitter else None
 
@@ -556,9 +555,7 @@ class Analysis:
             log.warning('No constraints defined.')
             return
 
-        rows = []
-        for constraint in self.constraints:
-            rows.append([constraint.expression.value])
+        rows = [[constraint.expression.value] for constraint in self.constraints]
 
         console.paragraph('User defined constraints')
         render_table(
@@ -651,8 +648,6 @@ class Analysis:
             short_rows: list[list[str]] = []
             short_display_handle: object | None = None
             if verb is VerbosityEnum.SHORT:
-                from easydiffraction.analysis.fit_helpers.tracking import _make_display_handle
-
                 first = expt_names[0]
                 last = expt_names[-1]
                 minimizer_name = self.fitter.selection
@@ -678,7 +673,7 @@ class Analysis:
                 # This is a workaround to set the parent project
                 # of the dummy experiments collection, so that
                 # parameters can be resolved correctly during fitting.
-                object.__setattr__(dummy_experiments, '_parent', self.project)
+                object.__setattr__(dummy_experiments, '_parent', self.project)  # noqa: PLC2801
 
                 dummy_experiments.add(experiment)
                 self.fitter.fit(
@@ -720,13 +715,12 @@ class Analysis:
 
             # Short mode: close the display handle
             if short_display_handle is not None and hasattr(short_display_handle, 'close'):
-                from contextlib import suppress
-
                 with suppress(Exception):
                     short_display_handle.close()
 
         else:
-            raise NotImplementedError(f'Fit mode {mode.value} not implemented yet.')
+            msg = f'Fit mode {mode.value} not implemented yet.'
+            raise NotImplementedError(msg)
 
         # After fitting, save the project
         # TODO: Consider saving individual data during sequential
@@ -790,8 +784,6 @@ class Analysis:
         str
             The analysis section represented as a CIF document string.
         """
-        from easydiffraction.io.cif.serialize import analysis_to_cif
-
         self._update_categories()
         return analysis_to_cif(self)
 

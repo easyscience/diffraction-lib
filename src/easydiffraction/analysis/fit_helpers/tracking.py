@@ -3,8 +3,6 @@
 
 import time
 from contextlib import suppress
-from typing import List
-from typing import Optional
 
 import numpy as np
 
@@ -96,17 +94,17 @@ class FitProgressTracker:
 
     def __init__(self) -> None:
         self._iteration: int = 0
-        self._previous_chi2: Optional[float] = None
-        self._last_chi2: Optional[float] = None
-        self._last_iteration: Optional[int] = None
-        self._best_chi2: Optional[float] = None
-        self._best_iteration: Optional[int] = None
-        self._fitting_time: Optional[float] = None
+        self._previous_chi2: float | None = None
+        self._last_chi2: float | None = None
+        self._last_iteration: int | None = None
+        self._best_chi2: float | None = None
+        self._best_iteration: int | None = None
+        self._fitting_time: float | None = None
         self._verbosity: VerbosityEnum = VerbosityEnum.FULL
 
-        self._df_rows: List[List[str]] = []
-        self._display_handle: Optional[object] = None
-        self._live: Optional[object] = None
+        self._df_rows: list[list[str]] = []
+        self._display_handle: object | None = None
+        self._live: object | None = None
 
     def reset(self) -> None:
         """Reset internal state before a new optimization run."""
@@ -121,7 +119,7 @@ class FitProgressTracker:
     def track(
         self,
         residuals: np.ndarray,
-        parameters: List[float],
+        parameters: list[float],
     ) -> np.ndarray:
         """
         Update progress with current residuals and parameters.
@@ -130,7 +128,7 @@ class FitProgressTracker:
         ----------
         residuals : np.ndarray
             Residuals between measured and calculated data.
-        parameters : List[float]
+        parameters : list[float]
             Current free parameters being fitted.
 
         Returns
@@ -142,7 +140,7 @@ class FitProgressTracker:
 
         reduced_chi2 = calculate_reduced_chi_square(residuals, len(parameters))
 
-        row: List[str] = []
+        row: list[str] = []
 
         # First iteration, initialize tracking
         if self._previous_chi2 is None:
@@ -188,12 +186,12 @@ class FitProgressTracker:
         return residuals
 
     @property
-    def best_chi2(self) -> Optional[float]:
+    def best_chi2(self) -> float | None:
         """Best recorded reduced chi-square value or None."""
         return self._best_chi2
 
     @property
-    def best_iteration(self) -> Optional[int]:
+    def best_iteration(self) -> int | None:
         """Iteration index at which the best chi-square was observed."""
         return self._best_iteration
 
@@ -203,7 +201,7 @@ class FitProgressTracker:
         return self._iteration
 
     @property
-    def fitting_time(self) -> Optional[float]:
+    def fitting_time(self) -> float | None:
         """Elapsed time of the last run in seconds, if available."""
         return self._fitting_time
 
@@ -245,13 +243,13 @@ class FitProgressTracker:
             display_handle=self._display_handle,
         )
 
-    def add_tracking_info(self, row: List[str]) -> None:
+    def add_tracking_info(self, row: list[str]) -> None:
         """
         Append a formatted row to the progress display.
 
         Parameters
         ----------
-        row : List[str]
+        row : list[str]
             Columns corresponding to DEFAULT_HEADERS.
         """
         self._df_rows.append(row)
@@ -269,7 +267,7 @@ class FitProgressTracker:
     def finish_tracking(self) -> None:
         """Finalize progress display and print best result summary."""
         # Add last iteration as last row
-        row: List[str] = [
+        row: list[str] = [
             str(self._last_iteration),
             f'{self._last_chi2:.2f}' if self._last_chi2 is not None else '',
             '',

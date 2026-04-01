@@ -13,7 +13,6 @@ Three frozen dataclasses describe a concrete class:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import FrozenSet
 
 
 @dataclass(frozen=True)
@@ -47,10 +46,10 @@ class Compatibility:
     "compatible with any value of this axis" (i.e. no restriction).
     """
 
-    sample_form: FrozenSet = frozenset()
-    scattering_type: FrozenSet = frozenset()
-    beam_mode: FrozenSet = frozenset()
-    radiation_probe: FrozenSet = frozenset()
+    sample_form: frozenset = frozenset()
+    scattering_type: frozenset = frozenset()
+    beam_mode: frozenset = frozenset()
+    radiation_probe: frozenset = frozenset()
 
     def supports(
         self,
@@ -92,12 +91,12 @@ class CalculatorSupport:
 
     Attributes
     ----------
-    calculators : FrozenSet, default=frozenset()
+    calculators : frozenset, default=frozenset()
         Frozenset of ``CalculatorEnum`` values. Empty means "any
         calculator" (no restriction).
     """
 
-    calculators: FrozenSet = frozenset()
+    calculators: frozenset = frozenset()
 
     def supports(self, calculator: object) -> bool:
         """

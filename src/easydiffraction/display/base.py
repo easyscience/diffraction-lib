@@ -6,8 +6,6 @@ from __future__ import annotations
 
 from abc import ABC
 from abc import abstractmethod
-from typing import List
-from typing import Tuple
 
 import pandas as pd
 
@@ -93,7 +91,7 @@ class RendererBase(SingletonBase, ABC):
         df = pd.DataFrame(rows, columns=pd.MultiIndex.from_tuples(headers))
         console.paragraph('Supported engines')
         # Delegate table rendering to the TableRenderer singleton
-        from easydiffraction.display.tables import TableRenderer  # local import to avoid cycles
+        from easydiffraction.display.tables import TableRenderer  # noqa: PLC0415
 
         TableRenderer.get().render(df)
 
@@ -130,17 +128,18 @@ class RendererFactoryBase(ABC):
         registry = cls._registry()
         if engine_name not in registry:
             supported = list(registry.keys())
-            raise ValueError(f"Unsupported engine '{engine_name}'. Supported engines: {supported}")
+            msg = f"Unsupported engine '{engine_name}'. Supported engines: {supported}"
+            raise ValueError(msg)
         engine_class = registry[engine_name]['class']
         return engine_class()
 
     @classmethod
-    def supported_engines(cls) -> List[str]:
+    def supported_engines(cls) -> list[str]:
         """Return a list of supported engine identifiers."""
         return list(cls._registry().keys())
 
     @classmethod
-    def descriptions(cls) -> List[Tuple[str, str]]:
+    def descriptions(cls) -> list[tuple[str, str]]:
         """Return (name, description) pairs for each engine."""
         items = cls._registry().items()
         return [(name, config.get('description')) for name, config in items]

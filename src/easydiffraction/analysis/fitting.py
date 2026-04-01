@@ -3,9 +3,6 @@
 
 from typing import TYPE_CHECKING
 from typing import Any
-from typing import Dict
-from typing import List
-from typing import Optional
 
 import numpy as np
 
@@ -27,13 +24,13 @@ class Fitter:
         self.selection: str = selection
         self.engine: str = selection
         self.minimizer = MinimizerFactory.create(selection)
-        self.results: Optional[FitResults] = None
+        self.results: FitResults | None = None
 
     def fit(
         self,
         structures: Structures,
         experiments: Experiments,
-        weights: Optional[np.array] = None,
+        weights: np.ndarray | None = None,
         analysis: object = None,
         verbosity: VerbosityEnum = VerbosityEnum.FULL,
     ) -> None:
@@ -50,7 +47,7 @@ class Fitter:
             Collection of structures.
         experiments : Experiments
             Collection of experiments.
-        weights : Optional[np.array], default=None
+        weights : np.ndarray | None, default=None
             Optional weights for joint fitting.
         analysis : object, default=None
             Optional Analysis object to update its categories during
@@ -62,18 +59,18 @@ class Fitter:
 
         if not params:
             print('⚠️ No parameters selected for fitting.')
-            return None
+            return
 
         for param in params:
             param._fit_start_value = param.value
 
-        def objective_function(engine_params: Dict[str, Any]) -> np.ndarray:
+        def objective_function(engine_params: dict[str, Any]) -> np.ndarray:
             """
             Evaluate the residual for the current minimizer parameters.
 
             Parameters
             ----------
-            engine_params : Dict[str, Any]
+            engine_params : dict[str, Any]
                 Parameter values provided by the minimizer engine.
 
             Returns
@@ -134,7 +131,7 @@ class Fitter:
         self,
         structures: Structures,
         experiments: Experiments,
-    ) -> List[Parameter]:
+    ) -> list[Parameter]:
         """
         Collect free parameters from structures and experiments.
 
@@ -147,19 +144,19 @@ class Fitter:
 
         Returns
         -------
-        List[Parameter]
+        list[Parameter]
             List of free parameters.
         """
-        free_params: List[Parameter] = structures.free_parameters + experiments.free_parameters
+        free_params: list[Parameter] = structures.free_parameters + experiments.free_parameters
         return free_params
 
     def _residual_function(
         self,
-        engine_params: Dict[str, Any],
-        parameters: List[Parameter],
+        engine_params: dict[str, Any],
+        parameters: list[Parameter],
         structures: Structures,
         experiments: Experiments,
-        weights: Optional[np.array] = None,
+        weights: np.ndarray | None = None,
         analysis: object = None,
     ) -> np.ndarray:
         """
@@ -170,15 +167,15 @@ class Fitter:
 
         Parameters
         ----------
-        engine_params : Dict[str, Any]
+        engine_params : dict[str, Any]
             Engine-specific parameter dict.
-        parameters : List[Parameter]
+        parameters : list[Parameter]
             List of parameters being optimized.
         structures : Structures
             Collection of structures.
         experiments : Experiments
             Collection of experiments.
-        weights : Optional[np.array], default=None
+        weights : np.ndarray | None, default=None
             Optional weights for joint fitting.
         analysis : object, default=None
             Optional Analysis object to update its categories during
@@ -206,7 +203,7 @@ class Fitter:
         if weights is None:
             _weights = np.ones(num_expts)
         else:
-            _weights_list: List[float] = []
+            _weights_list: list[float] = []
             for name in experiments.names:
                 _weight = weights[name].weight.value
                 _weights_list.append(_weight)
@@ -218,7 +215,7 @@ class Fitter:
         # sum to one, then reduced chi_squared will be half as large as
         # expected.
         _weights *= num_expts / np.sum(_weights)
-        residuals: List[float] = []
+        residuals: list[float] = []
 
         for experiment, weight in zip(experiments.values(), _weights, strict=True):
             # Update experiment-specific calculations
@@ -226,9 +223,9 @@ class Fitter:
 
             # Calculate the difference between measured and calculated
             # patterns
-            y_calc: np.ndarray = experiment.data.intensity_calc
-            y_meas: np.ndarray = experiment.data.intensity_meas
-            y_meas_su: np.ndarray = experiment.data.intensity_meas_su
+            y_calc = experiment.data.intensity_calc
+            y_meas = experiment.data.intensity_meas
+            y_meas_su = experiment.data.intensity_meas_su
             diff = (y_meas - y_calc) / y_meas_su
 
             # Residuals are squared before going into reduced

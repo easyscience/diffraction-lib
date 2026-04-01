@@ -5,8 +5,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 from typing import Any
-from typing import Optional
-from typing import Sequence
 
 import numpy as np
 
@@ -15,6 +13,8 @@ from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import str_to_ufloat
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     import gemmi
 
     from easydiffraction.core.category import CategoryCollection
@@ -48,11 +48,10 @@ def format_value(value: object) -> str:
     if isinstance(value, float):
         return f'{value:>{width}.{precision}f}'
     # Format strings right-aligned
-    elif isinstance(value, str):
+    if isinstance(value, str):
         return f'{value:>{width}s}'
     # Everything else: fallback
-    else:
-        return str(value)
+    return str(value)
 
 
 ##################
@@ -78,15 +77,13 @@ def category_item_to_cif(item: object) -> str:
     Expects ``item.parameters`` iterable of params with
     ``_cif_handler.names`` and ``value``.
     """
-    lines: list[str] = []
-    for p in item.parameters:
-        lines.append(param_to_cif(p))
+    lines: list[str] = [param_to_cif(p) for p in item.parameters]
     return '\n'.join(lines)
 
 
 def category_collection_to_cif(
     collection: object,
-    max_display: Optional[int] = 20,
+    max_display: int | None = 20,
 ) -> str:
     """
     Render a CategoryCollection-like object to CIF text.
@@ -134,21 +131,17 @@ def datablock_item_to_cif(datablock: object) -> str:
     Emits a data_ header and then concatenates category CIF sections.
     """
     # Local imports to avoid import-time cycles
-    from easydiffraction.core.category import CategoryCollection
-    from easydiffraction.core.category import CategoryItem
+    from easydiffraction.core.category import CategoryCollection  # noqa: PLC0415
+    from easydiffraction.core.category import CategoryItem  # noqa: PLC0415
 
     header = f'data_{datablock._identity.datablock_entry_name}'
     parts: list[str] = [header]
 
     # First categories
-    for v in vars(datablock).values():
-        if isinstance(v, CategoryItem):
-            parts.append(v.as_cif)
+    parts.extend(v.as_cif for v in vars(datablock).values() if isinstance(v, CategoryItem))
 
     # Then collections
-    for v in vars(datablock).values():
-        if isinstance(v, CategoryCollection):
-            parts.append(v.as_cif)
+    parts.extend(v.as_cif for v in vars(datablock).values() if isinstance(v, CategoryCollection))
 
     return '\n\n'.join(parts)
 
@@ -322,7 +315,8 @@ def category_collection_from_cif(
     #  class
     # TODO: Rename to _item_cls?
     if self._item_type is None:
-        raise ValueError('Child class is not defined.')
+        msg = 'Child class is not defined.'
+        raise ValueError(msg)
 
     # Create a temporary instance to access its parameters and
     # parameter CIF names
@@ -355,7 +349,7 @@ def category_collection_from_cif(
 
     # Set parent for each item to enable identity resolution
     for item in self._items:
-        object.__setattr__(item, '_parent', self)
+        object.__setattr__(item, '_parent', self)  # noqa: PLC2801
 
     # Set those items' parameters, which are present in the loop
     for row_idx in range(num_rows):

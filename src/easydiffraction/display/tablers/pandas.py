@@ -158,9 +158,10 @@ class PandasTableBackend(TableBackendBase):
                 try:
                     html = styler.to_html()
                     display_handle.update(HTML(html))
-                    return
                 except Exception as err:
                     log.debug(f'Pandas DisplayHandle update failed: {err!r}')
+                else:
+                    return
 
             # This should not happen in Pandas backend
             else:

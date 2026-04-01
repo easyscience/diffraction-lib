@@ -1,8 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
-from typing import Dict
-from typing import List
 
 import numpy as np
 from dfols import solve
@@ -33,7 +31,7 @@ class DfolsMinimizer(MinimizerBase):
         # Intentionally unused, accepted for API compatibility
         del kwargs
 
-    def _prepare_solver_args(self, parameters: List[object]) -> Dict[str, object]:
+    def _prepare_solver_args(self, parameters: list[object]) -> dict[str, object]:
         x0 = []
         bounds_lower = []
         bounds_upper = []
@@ -51,7 +49,7 @@ class DfolsMinimizer(MinimizerBase):
 
     def _sync_result_to_parameters(
         self,
-        parameters: List[object],
+        parameters: list[object],
         raw_result: object,
     ) -> None:
         """
@@ -59,7 +57,7 @@ class DfolsMinimizer(MinimizerBase):
 
         Parameters
         ----------
-        parameters : List[object]
+        parameters : list[object]
             List of parameters being optimized.
         raw_result : object
             The result object returned by the solver.

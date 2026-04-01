@@ -119,17 +119,27 @@ def test_summary_crystallographic_and_experimental_sections(capsys):
     # Crystallographic section
     assert 'CRYSTALLOGRAPHIC DATA' in out
     assert '🧩 phaseA' in out
-    assert 'Space group' in out and 'P 1' in out
+    assert 'Space group' in out
+    assert 'P 1' in out
     # Cell parameter names are shortened by the implementation (e.g., 'length_a' -> 'a')
-    assert 'Cell parameters' in out and ' a ' in out and ' alpha ' in out
-    assert 'Atom sites' in out and 'Na1' in out and 'Na' in out
+    assert 'Cell parameters' in out
+    assert ' a ' in out
+    assert ' alpha ' in out
+    assert 'Atom sites' in out
+    assert 'Na1' in out
+    assert 'Na' in out
 
     # Experimental section
     assert 'EXPERIMENTS' in out
     assert '🔬 exp1' in out
-    assert 'powder' in out and 'neutron' in out and 'constant wavelength' in out
-    assert 'Wavelength' in out and '1.23456'[:6] in out
-    assert '2θ offset' in out and '0.12345'[:6] in out
-    assert 'Profile type' in out and 'pseudo-Voigt' in out
+    assert 'powder' in out
+    assert 'neutron' in out
+    assert 'constant wavelength' in out
+    assert 'Wavelength' in out
+    assert '1.23456'[:6] in out
+    assert '2θ offset' in out
+    assert '0.12345'[:6] in out
+    assert 'Profile type' in out
+    assert 'pseudo-Voigt' in out
     assert 'Peak broadening (Gaussian)' in out
     assert 'Peak broadening (Lorentzian)' in out

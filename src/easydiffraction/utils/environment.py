@@ -70,7 +70,7 @@ def in_jupyter() -> bool:
         True if inside a Jupyter Notebook, False otherwise.
     """
     try:
-        import IPython  # type: ignore[import-not-found]
+        import IPython  # type: ignore[import-not-found]  # noqa: PLC0415
     except ImportError:  # pragma: no cover - optional dependency
         ipython_mod = None
     else:
@@ -96,8 +96,9 @@ def in_jupyter() -> bool:
             return True
         if shell == 'TerminalInteractiveShell':
             return False
-        return False
     except Exception:
+        return False
+    else:
         return False
 
 
@@ -128,7 +129,9 @@ def is_ipython_display_handle(obj: object) -> bool:
     ``False``.
     """
     try:  # Fast path when IPython is available
-        from IPython.display import DisplayHandle  # type: ignore[import-not-found]
+        from IPython.display import (  # noqa: PLC0415
+            DisplayHandle,  # type: ignore[import-not-found]
+        )
 
         try:
             return isinstance(obj, DisplayHandle)
@@ -151,11 +154,11 @@ def can_update_ipython_display() -> bool:
     update a display handle.
     """
     try:
-        from IPython.display import HTML  # type: ignore[import-not-found]  # noqa: F401
-
-        return True
+        from IPython.display import HTML  # type: ignore[import-not-found]  # noqa: F401, PLC0415
     except Exception:
         return False
+    else:
+        return True
 
 
 def can_use_ipython_display(handle: object) -> bool:

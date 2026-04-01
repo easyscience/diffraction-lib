@@ -4,10 +4,10 @@
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 
-class VerbosityEnum(str, Enum):
+class VerbosityEnum(StrEnum):
     """
     Console output verbosity level.
 

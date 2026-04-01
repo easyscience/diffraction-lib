@@ -8,9 +8,6 @@ Provides a collection of polynomial terms and evaluation helpers.
 
 from __future__ import annotations
 
-from typing import List
-from typing import Union
-
 import numpy as np
 from numpy.polynomial.chebyshev import chebval
 
@@ -174,9 +171,9 @@ class ChebyshevPolynomialBackground(BackgroundBase):
 
     def show(self) -> None:
         """Print a table of polynomial orders and coefficients."""
-        columns_headers: List[str] = ['Order', 'Coefficient']
+        columns_headers: list[str] = ['Order', 'Coefficient']
         columns_alignment = ['left', 'left']
-        columns_data: List[List[Union[int, float]]] = [
+        columns_data: list[list[int | float]] = [
             [t.order.value, t.coef.value] for t in self._items
         ]
 

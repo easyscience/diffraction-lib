@@ -7,7 +7,7 @@ Uses the common :class:`RendererBase` so plotters and tablers share a
 consistent configuration surface and engine handling.
 """
 
-from enum import Enum
+from enum import StrEnum
 
 import numpy as np
 import pandas as pd
@@ -28,7 +28,7 @@ from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 
 
-class PlotterEngineEnum(str, Enum):
+class PlotterEngineEnum(StrEnum):
     """Available plotting engine backends."""
 
     ASCII = 'asciichartpy'
@@ -47,7 +47,7 @@ class PlotterEngineEnum(str, Enum):
         """Human-readable description for UI listings."""
         if self is PlotterEngineEnum.ASCII:
             return 'Console ASCII line charts'
-        elif self is PlotterEngineEnum.PLOTLY:
+        if self is PlotterEngineEnum.PLOTLY:
             return 'Interactive browser-based graphing library'
         return ''
 
@@ -162,7 +162,7 @@ class Plotter(RendererBase):
         x_axis: object,
     ) -> list:
         """Look up axis labels for the experiment / x-axis."""
-        return DEFAULT_AXES_LABELS[(sample_form, scattering_type, x_axis)]
+        return DEFAULT_AXES_LABELS[sample_form, scattering_type, x_axis]
 
     def _prepare_powder_data(
         self,
@@ -282,7 +282,7 @@ class Plotter(RendererBase):
         sample_form = expt_type.sample_form.value
         scattering_type = expt_type.scattering_type.value
         beam_mode = expt_type.beam_mode.value
-        x_axis = DEFAULT_X_AXIS[(sample_form, scattering_type, beam_mode)] if x is None else x
+        x_axis = DEFAULT_X_AXIS[sample_form, scattering_type, beam_mode] if x is None else x
         x_name = getattr(x_axis, 'value', x_axis)
         return x_axis, x_name, sample_form, scattering_type, beam_mode
 
@@ -524,7 +524,7 @@ class Plotter(RendererBase):
         title = f"Measured vs Calculated data for experiment 🔬 '{expt_name}'"
 
         # Single crystal scatter plot (I²calc vs I²meas)
-        if x_axis == XAxisType.INTENSITY_CALC or x_axis == 'intensity_calc':
+        if x_axis in {XAxisType.INTENSITY_CALC, 'intensity_calc'}:
             axes_labels = self._get_axes_labels(sample_form, scattering_type, x_axis)
 
             if pattern.intensity_meas_su is None:

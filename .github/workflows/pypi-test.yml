@@ -51,7 +51,9 @@ jobs:
 
       - name: Add other Conda dependencies
         working-directory: easydiffraction
-        run: pixi add gsl
+        run: |
+          pixi add gsl
+          pixi add --platform osx-arm64 libcxx
 
       - name: Add easydiffraction from PyPI
         working-directory: easydiffraction

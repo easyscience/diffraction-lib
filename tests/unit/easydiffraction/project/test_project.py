@@ -47,5 +47,5 @@ def test_project_verbosity_invalid():
     from easydiffraction.project.project import Project
 
     p = Project()
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="'verbose' is not a valid VerbosityEnum"):
         p.verbosity = 'verbose'

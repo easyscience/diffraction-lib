@@ -18,7 +18,7 @@ app = typer.Typer(add_completion=False)
 @app.callback(invoke_without_command=True)
 def main(
     ctx: typer.Context,
-    version: bool = typer.Option(  # noqa: FBT003 - boolean option is intended
+    version: bool = typer.Option(
         False,
         '--version',
         '-V',
@@ -53,7 +53,7 @@ def download_tutorial(
         help='Directory to save the tutorial into.',
     ),
     overwrite: bool = typer.Option(
-        False,  # noqa: FBT003 - boolean option is intended
+        False,
         '--overwrite',
         '-o',
         help='Overwrite existing file if present.',
@@ -72,7 +72,7 @@ def download_all_tutorials(
         help='Directory to save the tutorials into.',
     ),
     overwrite: bool = typer.Option(
-        False,  # noqa: FBT003 - boolean option is intended
+        False,
         '--overwrite',
         '-o',
         help='Overwrite existing files if present.',

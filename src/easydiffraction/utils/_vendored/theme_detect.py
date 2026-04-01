@@ -23,8 +23,6 @@ is_dark >>> if is_dark(): ...     print('Dark mode detected')
 
 from __future__ import annotations
 
-from typing import Optional
-
 # Import detection functions from vendored jupyter_dark_detect
 from easydiffraction.utils._vendored.jupyter_dark_detect.detector import (
     _check_javascript_detection,
@@ -77,13 +75,13 @@ def is_dark() -> bool:
     return system_result if system_result is not None else False
 
 
-def get_detection_result() -> dict[str, Optional[bool]]:
+def get_detection_result() -> dict[str, bool | None]:
     """
     Get results from all detection methods for debugging.
 
     Returns
     -------
-    dict[str, Optional[bool]]
+    dict[str, bool | None]
         Dictionary with detection method names as keys and their results
         (True/False/None) as values.
     """

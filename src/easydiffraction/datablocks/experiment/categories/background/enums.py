@@ -4,18 +4,18 @@
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 
 # TODO: Consider making EnumBase class with: default, description, ...
-class BackgroundTypeEnum(str, Enum):
+class BackgroundTypeEnum(StrEnum):
     """Supported background model types."""
 
     LINE_SEGMENT = 'line-segment'
     CHEBYSHEV = 'chebyshev'
 
     @classmethod
-    def default(cls) -> 'BackgroundTypeEnum':
+    def default(cls) -> BackgroundTypeEnum:
         """Return a default background type."""
         return cls.LINE_SEGMENT
 
@@ -23,5 +23,5 @@ class BackgroundTypeEnum(str, Enum):
         """Human-friendly description for the enum value."""
         if self is BackgroundTypeEnum.LINE_SEGMENT:
             return 'Linear interpolation between points'
-        elif self is BackgroundTypeEnum.CHEBYSHEV:
+        if self is BackgroundTypeEnum.CHEBYSHEV:
             return 'Chebyshev polynomial background'

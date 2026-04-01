@@ -5,9 +5,6 @@ import contextlib
 import copy
 import io
 from typing import Any
-from typing import Dict
-from typing import List
-from typing import Union
 
 import numpy as np
 
@@ -55,7 +52,7 @@ class CryspyCalculator(CalculatorBase):
 
     def __init__(self) -> None:
         super().__init__()
-        self._cryspy_dicts: Dict[str, Dict[str, Any]] = {}
+        self._cryspy_dicts: dict[str, dict[str, Any]] = {}
 
     def calculate_structure_factors(
         self,
@@ -89,7 +86,7 @@ class CryspyCalculator(CalculatorBase):
 
         self._cryspy_dicts[combined_name] = copy.deepcopy(cryspy_dict)
 
-        cryspy_in_out_dict: Dict[str, Any] = {}
+        cryspy_in_out_dict: dict[str, Any] = {}
 
         # Calculate the pattern using Cryspy
         # TODO: Redirect stderr to suppress Cryspy warnings.
@@ -121,7 +118,7 @@ class CryspyCalculator(CalculatorBase):
         structure: Structure,
         experiment: ExperimentBase,
         called_by_minimizer: bool = False,
-    ) -> Union[np.ndarray, List[float]]:
+    ) -> np.ndarray | list[float]:
         """
         Calculate the diffraction pattern using Cryspy.
 
@@ -141,7 +138,7 @@ class CryspyCalculator(CalculatorBase):
 
         Returns
         -------
-        Union[np.ndarray, List[float]]
+        np.ndarray | list[float]
             The calculated diffraction pattern as a NumPy array or a
             list of floats.
         """
@@ -159,7 +156,7 @@ class CryspyCalculator(CalculatorBase):
 
         self._cryspy_dicts[combined_name] = copy.deepcopy(cryspy_dict)
 
-        cryspy_in_out_dict: Dict[str, Any] = {}
+        cryspy_in_out_dict: dict[str, Any] = {}
 
         # Calculate the pattern using Cryspy
         # TODO: Redirect stderr to suppress Cryspy warnings.
@@ -200,7 +197,7 @@ class CryspyCalculator(CalculatorBase):
         self,
         structure: Structure,
         experiment: ExperimentBase,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Recreate the Cryspy dictionary for structure and experiment.
 
@@ -213,7 +210,7 @@ class CryspyCalculator(CalculatorBase):
 
         Returns
         -------
-        Dict[str, Any]
+        dict[str, Any]
             The updated Cryspy dictionary.
         """
         combined_name = f'{structure.name}_{experiment.name}'
@@ -557,11 +554,11 @@ class CryspyCalculator(CalculatorBase):
                 cif_lines.append('_diffrn_refln_index_l')
                 cif_lines.append('_diffrn_refln_intensity')
                 cif_lines.append('_diffrn_refln_intensity_sigma')
-                indices_h: np.ndarray = experiment.data.index_h
-                indices_k: np.ndarray = experiment.data.index_k
-                indices_l: np.ndarray = experiment.data.index_l
-                y_data: np.ndarray = experiment.data.intensity_meas
-                sy_data: np.ndarray = experiment.data.intensity_meas_su
+                indices_h = experiment.data.index_h
+                indices_k = experiment.data.index_k
+                indices_l = experiment.data.index_l
+                y_data = experiment.data.intensity_meas
+                sy_data = experiment.data.intensity_meas_su
                 for index_h, index_k, index_l, y_val, sy_val in zip(
                     indices_h, indices_k, indices_l, y_data, sy_data, strict=True
                 ):
@@ -577,12 +574,12 @@ class CryspyCalculator(CalculatorBase):
                 cif_lines.append('_diffrn_refln_intensity')
                 cif_lines.append('_diffrn_refln_intensity_sigma')
                 cif_lines.append('_diffrn_refln_wavelength')
-                indices_h: np.ndarray = experiment.data.index_h
-                indices_k: np.ndarray = experiment.data.index_k
-                indices_l: np.ndarray = experiment.data.index_l
-                y_data: np.ndarray = experiment.data.intensity_meas
-                sy_data: np.ndarray = experiment.data.intensity_meas_su
-                wl_data: np.ndarray = experiment.data.wavelength
+                indices_h = experiment.data.index_h
+                indices_k = experiment.data.index_k
+                indices_l = experiment.data.index_l
+                y_data = experiment.data.intensity_meas
+                sy_data = experiment.data.intensity_meas_su
+                wl_data = experiment.data.wavelength
                 for index_h, index_k, index_l, y_val, sy_val, wl_val in zip(
                     indices_h, indices_k, indices_l, y_data, sy_data, wl_data, strict=True
                 ):
@@ -604,8 +601,8 @@ class CryspyCalculator(CalculatorBase):
                 cif_lines.append('_tof_meas_time')
                 cif_lines.append('_tof_meas_intensity')
                 cif_lines.append('_tof_meas_intensity_sigma')
-            y_data: np.ndarray = experiment.data.intensity_meas
-            sy_data: np.ndarray = experiment.data.intensity_meas_su
+            y_data = experiment.data.intensity_meas
+            sy_data = experiment.data.intensity_meas_su
             for x_val, y_val, sy_val in zip(x_data, y_data, sy_data, strict=True):
                 cif_lines.append(f'  {x_val:.5f}   {y_val:.5f}   {sy_val:.5f}')
 

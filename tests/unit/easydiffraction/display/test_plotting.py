@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+import pytest
+
 
 def test_module_import():
     import easydiffraction.display.plotting as MUT
@@ -46,11 +48,11 @@ def test_plotter_factory_supported_and_unsupported():
     assert obj is not None
 
     # Unsupported engine should raise ValueError (unified policy)
-    try:
+    with pytest.raises(
+        ValueError,
+        match=r"Unsupported engine 'nope'\. Supported engines: .*",
+    ):
         PlotterFactory.create('nope')
-        assert False, 'Expected ValueError for unsupported engine name'
-    except ValueError:
-        pass
 
 
 def test_plotter_error_paths_and_filtering(capsys):

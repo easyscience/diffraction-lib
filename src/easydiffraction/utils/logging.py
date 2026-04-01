@@ -74,12 +74,11 @@ class IconifiedRichHandler(RichHandler):
         """
         if self.mode == 'compact':
             icon = self._icons.get(record.levelno, record.levelname)
-            if in_warp() and not in_jupyter() and icon in ['⚠️', '⚙️', 'ℹ️']:
-                icon = icon + ' '  # add space to align with two-char icons
+            if in_warp() and not in_jupyter() and icon in {'⚠️', '⚙️', 'ℹ️'}:
+                icon += ' '  # add space to align with two-char icons
             return Text(icon)
-        else:
-            # Use RichHandler's default level text for verbose mode
-            return super().get_level_text(record)
+        # Use RichHandler's default level text for verbose mode
+        return super().get_level_text(record)
 
     def render_message(self, record: logging.LogRecord, message: str) -> Text:
         """
@@ -204,8 +203,8 @@ class LoggerConfig:
     def configure(
         logger: logging.Logger,
         *,
-        mode: 'Logger.Mode',
-        level: 'Logger.Level',
+        mode: Logger.Mode,
+        level: Logger.Level,
         rich_tracebacks: bool,
     ) -> None:
         """
@@ -215,9 +214,9 @@ class LoggerConfig:
         ----------
         logger : logging.Logger
             Logger instance to configure.
-        mode : 'Logger.Mode'
+        mode : Logger.Mode
             Output mode (compact or verbose).
-        level : 'Logger.Level'
+        level : Logger.Level
             Minimum log level to emit.
         rich_tracebacks : bool
             Whether to enable Rich tracebacks.
@@ -257,17 +256,17 @@ class ExceptionHookManager:
         def aligned_excepthook(
             exc_type: type[BaseException],
             exc: BaseException,
-            tb: 'TracebackType | None',
+            tb: TracebackType | None,
         ) -> None:
             """Log the exception with full traceback via Rich."""
-            original_args = getattr(exc, 'args', tuple())
+            original_args = getattr(exc, 'args', ())
             message = str(exc)
             with suppress(Exception):
-                exc.args = tuple()
+                exc.args = ()
             try:
                 logger.error(message, exc_info=(exc_type, exc, tb))
             except Exception:
-                logger.error('Unhandled exception (logging failure)')
+                logger.exception('Unhandled exception (logging failure)')
             finally:
                 with suppress(Exception):
                     exc.args = original_args
@@ -290,7 +289,7 @@ class ExceptionHookManager:
         def compact_excepthook(
             _exc_type: type[BaseException],
             exc: BaseException,
-            _tb: 'TracebackType | None',
+            _tb: TracebackType | None,
         ) -> None:
             """Log the exception message and exit."""
             logger.error(str(exc))
@@ -332,7 +331,6 @@ class ExceptionHookManager:
                 logger.error(str(_evalue))
             except Exception as err:
                 logger.debug('Jupyter traceback suppressor failed: %r', err)
-            return None
 
         return suppress_jupyter_traceback
 
@@ -347,7 +345,7 @@ class ExceptionHookManager:
             Logger used to emit error messages.
         """
         try:
-            from IPython import get_ipython
+            from IPython import get_ipython  # noqa: PLC0415
 
             ip = get_ipython()
             if ip is not None:

@@ -65,7 +65,8 @@ def test_str_to_ufloat_no_esd_defaults_nan():
     expected_value = 1.23
     actual_value = u.nominal_value
     # uncertainty is NaN when not specified
-    assert np.isclose(expected_value, actual_value) and np.isnan(u.std_dev)
+    assert np.isclose(expected_value, actual_value)
+    assert np.isnan(u.std_dev)
 
 
 def test_extract_metadata(tmp_path):
@@ -85,7 +86,10 @@ def test_extract_metadata(tmp_path):
 def test_validate_url_rejects_non_http_https():
     import easydiffraction.utils.utils as MUT
 
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError,
+        match=r"Unsafe URL scheme 'ftp'\. Only HTTP and HTTPS are allowed\.",
+    ):
         MUT._validate_url('ftp://example.com/file')
 
 
@@ -193,7 +197,8 @@ def test_fetch_tutorials_index_returns_empty_on_error(monkeypatch):
 
     # Force urlopen to fail
     def failing_urlopen(url):
-        raise Exception('Network error')
+        msg = 'Network error'
+        raise Exception(msg)
 
     monkeypatch.setattr(MUT, '_safe_urlopen', failing_urlopen)
     # Clear cache to ensure fresh fetch

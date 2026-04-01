@@ -5,7 +5,7 @@ icon: material/cog-box
 # :material-cog-box: Installation & Setup
 
 **EasyDiffraction** is a cross-platform Python library compatible with
-**Python 3.11** through **3.14**.
+**Python 3.12** through **3.14**.
 
 EasyDiffraction is a cross-platform Python library compatible with
 **Python 3.11 through 3.13**.  

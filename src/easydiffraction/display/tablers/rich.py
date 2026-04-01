@@ -131,17 +131,19 @@ class RichTableBackend(TableBackendBase):
                 try:
                     html = self._to_html(table)
                     display_handle.update(HTML(html))
-                    return
                 except Exception as err:
                     log.debug(f'Rich to HTML DisplayHandle update failed: {err!r}')
+                else:
+                    return
 
             # Assume terminal/live-like handle
             else:
                 try:
                     display_handle.update(table)
-                    return
                 except Exception as err:
                     log.debug(f'Rich live handle update failed: {err!r}')
+                else:
+                    return
 
         # Normal print to console
         console = ConsoleManager.get()

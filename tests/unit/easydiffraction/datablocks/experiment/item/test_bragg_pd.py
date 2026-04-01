@@ -66,8 +66,8 @@ def test_load_ascii_data_rounds_and_defaults_sy(tmp_path: pytest.TempPathFactory
     expected_sy3 = np.where(sy < 1e-4, 1.0, sy)
     assert np.allclose(expt.data.intensity_meas_su, expected_sy3)
 
-    # Case 3: invalid shape -> currently triggers an exception (IndexError on shape[1])
+    # Case 3: invalid shape -> currently triggers an IndexError on shape[1]
     pinv = tmp_path / 'invalid.dat'
     np.savetxt(pinv, np.ones((5, 1)))
-    with pytest.raises(Exception):
+    with pytest.raises(IndexError, match='tuple index out of range'):
         expt._load_ascii_data_to_experiment(str(pinv))

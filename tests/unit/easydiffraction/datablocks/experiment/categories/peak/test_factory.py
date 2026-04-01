@@ -50,5 +50,8 @@ def test_peak_factory_default_and_combinations_and_errors():
     assert all(k.type_info.tag for k in cwl_profiles)
 
     # Invalid tag
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError,
+        match=r"Unsupported type: 'nonexistent-profile'\. Supported: .*",
+    ):
         PeakFactory.create('nonexistent-profile')

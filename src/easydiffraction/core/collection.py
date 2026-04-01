@@ -10,10 +10,13 @@ for get, set and delete, along with iteration over the items.
 
 from __future__ import annotations
 
-from typing import Generator
-from typing import Iterator
+from typing import TYPE_CHECKING
 
 from easydiffraction.core.guard import GuardedBase
+
+if TYPE_CHECKING:
+    from collections.abc import Generator
+    from collections.abc import Iterator
 
 
 class CollectionBase(GuardedBase):
@@ -60,7 +63,8 @@ class CollectionBase(GuardedBase):
             except KeyError:
                 self._rebuild_index()
                 return self._index[key]
-        raise TypeError(f'Collection indices must be str or int, not {type(key).__name__}')
+        msg = f'Collection indices must be str or int, not {type(key).__name__}'
+        raise TypeError(msg)
 
     def __setitem__(self, name: str, item: GuardedBase) -> None:
         """Insert or replace an item under the given identity key."""
@@ -106,16 +110,8 @@ class CollectionBase(GuardedBase):
         ----------
         name : str
             Identity key of the item to remove.
-
-        Raises
-        ------
-        KeyError
-            If no item with the given key exists.
         """
-        try:
-            del self[name]
-        except KeyError:
-            raise
+        del self[name]
 
     def _key_for(self, item: GuardedBase) -> str | None:
         """
@@ -155,8 +151,8 @@ class CollectionBase(GuardedBase):
         """Print a summary of public attributes and contained items."""
         super().help()
 
-        from easydiffraction.utils.logging import console
-        from easydiffraction.utils.utils import render_table
+        from easydiffraction.utils.logging import console  # noqa: PLC0415
+        from easydiffraction.utils.utils import render_table  # noqa: PLC0415
 
         if self._items:
             console.paragraph(f'Items ({len(self._items)})')

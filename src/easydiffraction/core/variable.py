@@ -130,7 +130,7 @@ class GenericDescriptorBase(GuardedBase):
 
     def _datablock_item(self) -> object | None:
         """Return the DatablockItem ancestor, if any."""
-        from easydiffraction.core.datablock import DatablockItem
+        from easydiffraction.core.datablock import DatablockItem  # noqa: PLC0415
 
         return self._parent_of_type(DatablockItem)
 

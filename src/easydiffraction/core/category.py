@@ -62,8 +62,8 @@ class CategoryItem(GuardedBase):
 
     def help(self) -> None:
         """Print parameters, other properties, and methods."""
-        from easydiffraction.utils.logging import console
-        from easydiffraction.utils.utils import render_table
+        from easydiffraction.utils.logging import console  # noqa: PLC0415
+        from easydiffraction.utils.utils import render_table  # noqa: PLC0415
 
         cls = type(self)
         console.paragraph(f"Help for '{cls.__name__}'")

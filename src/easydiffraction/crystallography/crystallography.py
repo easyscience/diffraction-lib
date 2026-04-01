@@ -2,8 +2,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 from typing import Any
-from typing import Dict
-from typing import List
 
 from cryspy.A_functions_base.function_2_space_group import get_crystal_system_by_it_number
 from cryspy.A_functions_base.function_2_space_group import get_it_number_by_name_hm_short
@@ -18,22 +16,22 @@ from easydiffraction.utils.logging import log
 
 
 def apply_cell_symmetry_constraints(
-    cell: Dict[str, float],
+    cell: dict[str, float],
     name_hm: str,
-) -> Dict[str, float]:
+) -> dict[str, float]:
     """
     Apply symmetry constraints to unit cell parameters.
 
     Parameters
     ----------
-    cell : Dict[str, float]
+    cell : dict[str, float]
         Dictionary containing lattice parameters.
     name_hm : str
         Hermann-Mauguin symbol of the space group.
 
     Returns
     -------
-    Dict[str, float]
+    dict[str, float]
         The cell dictionary with applied symmetry constraints.
     """
     it_number = get_it_number_by_name_hm_short(name_hm)
@@ -90,17 +88,17 @@ def apply_cell_symmetry_constraints(
 
 
 def apply_atom_site_symmetry_constraints(
-    atom_site: Dict[str, Any],
+    atom_site: dict[str, Any],
     name_hm: str,
     coord_code: int,
     wyckoff_letter: str,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Apply symmetry constraints to atom site coordinates.
 
     Parameters
     ----------
-    atom_site : Dict[str, Any]
+    atom_site : dict[str, Any]
         Dictionary containing atom position data.
     name_hm : str
         Hermann-Mauguin symbol of the space group.
@@ -111,7 +109,7 @@ def apply_atom_site_symmetry_constraints(
 
     Returns
     -------
-    Dict[str, Any]
+    dict[str, Any]
         The atom_site dictionary with applied symmetry constraints.
     """
     it_number = get_it_number_by_name_hm_short(name_hm)
@@ -126,19 +124,19 @@ def apply_atom_site_symmetry_constraints(
         log.error(error_msg)  # TODO: ValueError? Diagnostics?
         return atom_site
 
-    space_group_entry = SPACE_GROUPS[(it_number, it_coordinate_system_code)]
+    space_group_entry = SPACE_GROUPS[it_number, it_coordinate_system_code]
     wyckoff_positions = space_group_entry['Wyckoff_positions'][wyckoff_letter]
     coords_xyz = wyckoff_positions['coords_xyz']
 
     first_position = coords_xyz[0]
     components = first_position.strip('()').split(',')
-    parsed_exprs: List[Expr] = [sympify(comp.strip()) for comp in components]
+    parsed_exprs: list[Expr] = [sympify(comp.strip()) for comp in components]
 
     x_val: Expr = sympify(atom_site['fract_x'])
     y_val: Expr = sympify(atom_site['fract_y'])
     z_val: Expr = sympify(atom_site['fract_z'])
 
-    substitutions: Dict[str, Expr] = {'x': x_val, 'y': y_val, 'z': z_val}
+    substitutions: dict[str, Expr] = {'x': x_val, 'y': y_val, 'z': z_val}
 
     axes: tuple[str, ...] = ('x', 'y', 'z')
     x, y, z = symbols('x y z')

@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import re
 import tempfile
 import zipfile
 from io import StringIO
@@ -42,7 +43,8 @@ def extract_data_paths_from_zip(zip_path: str | Path) -> list[str]:
     """
     zip_path = Path(zip_path)
     if not zip_path.exists():
-        raise FileNotFoundError(f'ZIP file not found: {zip_path}')
+        msg = f'ZIP file not found: {zip_path}'
+        raise FileNotFoundError(msg)
 
     # TODO: Unify mkdir with other uses in the code
     extract_dir = Path(tempfile.mkdtemp(prefix='ed_zip_'))
@@ -57,7 +59,8 @@ def extract_data_paths_from_zip(zip_path: str | Path) -> list[str]:
     )
 
     if not paths:
-        raise ValueError(f'No data files found in ZIP archive: {zip_path}')
+        msg = f'No data files found in ZIP archive: {zip_path}'
+        raise ValueError(msg)
 
     return paths
 
@@ -93,7 +96,8 @@ def extract_data_paths_from_dir(
     """
     dir_path = Path(dir_path)
     if not dir_path.is_dir():
-        raise FileNotFoundError(f'Directory not found: {dir_path}')
+        msg = f'Directory not found: {dir_path}'
+        raise FileNotFoundError(msg)
 
     paths = sorted(
         str(p)
@@ -102,7 +106,8 @@ def extract_data_paths_from_dir(
     )
 
     if not paths:
-        raise ValueError(f"No files matching '{file_pattern}' found in directory: {dir_path}")
+        msg = f"No files matching '{file_pattern}' found in directory: {dir_path}"
+        raise ValueError(msg)
 
     return paths
 
@@ -131,8 +136,6 @@ def extract_metadata(
         The extracted value, or ``None`` if the pattern did not match or
         the captured text could not be converted to float.
     """
-    import re
-
     content = Path(file_path).read_text(encoding='utf-8', errors='ignore')
     match = re.search(pattern, content, re.MULTILINE)
     if match is None:
@@ -164,7 +167,7 @@ def load_numeric_block(data_path: str | Path) -> np.ndarray:
 
     Raises
     ------
-    IOError
+    OSError
         If no contiguous numeric block can be found in the file.
     """
     data_path = Path(data_path)
@@ -174,9 +177,10 @@ def load_numeric_block(data_path: str | Path) -> np.ndarray:
     for start in range(len(lines)):
         try:
             return np.loadtxt(StringIO('\n'.join(lines[start:])))
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             last_error = e
 
-    raise IOError(
-        f'Failed to read numeric data from {data_path}: {last_error}',
+    msg = f'Failed to read numeric data from {data_path}: {last_error}'
+    raise OSError(
+        msg,
     ) from last_error

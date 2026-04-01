@@ -8,8 +8,6 @@ Interpolate user-specified points to form a background curve.
 
 from __future__ import annotations
 
-from typing import List
-
 import numpy as np
 from scipy.interpolate import interp1d
 
@@ -177,9 +175,9 @@ class LineSegmentBackground(BackgroundBase):
 
     def show(self) -> None:
         """Print a table of control points (x, intensity)."""
-        columns_headers: List[str] = ['X', 'Intensity']
+        columns_headers: list[str] = ['X', 'Intensity']
         columns_alignment = ['left', 'left']
-        columns_data: List[List[float]] = [[p.x.value, p.y.value] for p in self._items]
+        columns_data: list[list[float]] = [[p.x.value, p.y.value] for p in self._items]
 
         console.paragraph('Line-segment background points')
         render_table(

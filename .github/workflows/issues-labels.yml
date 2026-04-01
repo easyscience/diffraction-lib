@@ -13,7 +13,13 @@ permissions:
 
 jobs:
   check-labels:
+    if: github.actor != 'easyscience[bot]'
+
     runs-on: ubuntu-latest
+
+    concurrency:
+      group: issue-labels-${{ github.event.issue.number }}
+      cancel-in-progress: true
 
     steps:
       - name: Checkout repository

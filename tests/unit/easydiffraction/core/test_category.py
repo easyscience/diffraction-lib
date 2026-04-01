@@ -60,7 +60,9 @@ def test_category_item_str_and_properties():
     it = SimpleItem()
     it.a = 'name1'
     s = str(it)
-    assert '<' in s and 'a=' in s and 'b=' in s
+    assert '<' in s
+    assert 'a=' in s
+    assert 'b=' in s
     assert it.unique_name.endswith('.simple.name1') or it.unique_name == 'simple.name1'
     assert len(it.parameters) == 2
 
@@ -70,7 +72,8 @@ def test_category_collection_str_and_cif_calls():
     c.create(a='n1')
     c.create(a='n2')
     s = str(c)
-    assert 'collection' in s and '2 items' in s
+    assert 'collection' in s
+    assert '2 items' in s
     # as_cif delegates to serializer; should be a string (possibly empty)
     assert isinstance(c.as_cif, str)
 
