@@ -81,7 +81,7 @@ the table.
 Below is a list of parameters used to describe the structure in
 EasyDiffraction.
 
-### Crystall structure parameters
+### Crystal structure parameters
 
 [pd-neut-cwl][3]{:.label-experiment}
 [pd-neut-tof][3]{:.label-experiment} [pd-xray][3]{:.label-experiment}
