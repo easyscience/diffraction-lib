@@ -3816,10 +3816,7 @@ computations across the project's structures and experiments.</p>
 <span class="normal">789</span>
 <span class="normal">790</span>
 <span class="normal">791</span>
-<span class="normal">792</span>
-<span class="normal">793</span>
-<span class="normal">794</span>
-<span class="normal">795</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Analysis</span><span class="p">:</span>
+<span class="normal">792</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Analysis</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    High-level orchestration of analysis tasks for a Project.</span>
 
@@ -4418,10 +4415,16 @@ computations across the project's structures and experiments.</p>
                 <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;Using all experiments 🔬 </span><span class="si">{</span><span class="n">experiments</span><span class="o">.</span><span class="n">names</span><span class="si">}</span><span class="s2"> for &#39;</span><span class="si">{</span><span class="n">mode</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&#39; fitting&quot;</span>
                 <span class="p">)</span>
+            <span class="c1"># Resolve weights to a plain numpy array</span>
+            <span class="n">experiments_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">experiments</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="n">weights_list</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_joint_fit_experiments</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">experiments</span><span class="o">.</span><span class="n">names</span>
+            <span class="p">]</span>
+            <span class="n">weights_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">weights_list</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
                 <span class="n">structures</span><span class="p">,</span>
-                <span class="n">experiments</span><span class="p">,</span>
-                <span class="n">weights</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_joint_fit_experiments</span><span class="p">,</span>
+                <span class="n">experiments_list</span><span class="p">,</span>
+                <span class="n">weights</span><span class="o">=</span><span class="n">weights_array</span><span class="p">,</span>
                 <span class="n">analysis</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
                 <span class="n">verbosity</span><span class="o">=</span><span class="n">verb</span><span class="p">,</span>
             <span class="p">)</span>
@@ -4450,8 +4453,6 @@ computations across the project's structures and experiments.</p>
                 <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;📈 Goodness-of-fit (reduced χ²) per experiment:&#39;</span><span class="p">)</span>
                 <span class="n">short_display_handle</span> <span class="o">=</span> <span class="n">_make_display_handle</span><span class="p">()</span>
 
-            <span class="c1"># TODO: Find a better way without creating dummy</span>
-            <span class="c1">#  experiments?</span>
             <span class="k">for</span> <span class="n">_idx</span><span class="p">,</span> <span class="n">expt_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">expt_names</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">verb</span> <span class="ow">is</span> <span class="n">VerbosityEnum</span><span class="o">.</span><span class="n">FULL</span><span class="p">:</span>
                     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span>
@@ -4459,17 +4460,10 @@ computations across the project's structures and experiments.</p>
                     <span class="p">)</span>
 
                 <span class="n">experiment</span> <span class="o">=</span> <span class="n">experiments</span><span class="p">[</span><span class="n">expt_name</span><span class="p">]</span>
-                <span class="n">dummy_experiments</span> <span class="o">=</span> <span class="n">Experiments</span><span class="p">()</span>  <span class="c1"># TODO: Find a better name</span>
-
-                <span class="c1"># This is a workaround to set the parent project</span>
-                <span class="c1"># of the dummy experiments collection, so that</span>
-                <span class="c1"># parameters can be resolved correctly during fitting.</span>
-                <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">dummy_experiments</span><span class="p">,</span> <span class="s1">&#39;_parent&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">)</span>  <span class="c1"># noqa: PLC2801</span>
-
-                <span class="n">dummy_experiments</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span>
+                <span class="n">experiments_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">experiment</span><span class="p">]</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
                     <span class="n">structures</span><span class="p">,</span>
-                    <span class="n">dummy_experiments</span><span class="p">,</span>
+                    <span class="n">experiments_list</span><span class="p">,</span>
                     <span class="n">analysis</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
                     <span class="n">verbosity</span><span class="o">=</span><span class="n">verb</span><span class="p">,</span>
                 <span class="p">)</span>
@@ -4540,7 +4534,7 @@ computations across the project's structures and experiments.</p>
             <span class="k">return</span>
 
         <span class="n">structures</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">structures</span>
-        <span class="n">experiments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">experiments</span>
+        <span class="n">experiments</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">_process_fit_results</span><span class="p">(</span><span class="n">structures</span><span class="p">,</span> <span class="n">experiments</span><span class="p">)</span>
 
@@ -4825,17 +4819,17 @@ computations across the project's structures and experiments.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/analysis.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">778</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">775</span>
+<span class="normal">776</span>
+<span class="normal">777</span>
+<span class="normal">778</span>
 <span class="normal">779</span>
 <span class="normal">780</span>
 <span class="normal">781</span>
 <span class="normal">782</span>
 <span class="normal">783</span>
 <span class="normal">784</span>
-<span class="normal">785</span>
-<span class="normal">786</span>
-<span class="normal">787</span>
-<span class="normal">788</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">785</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Serialize the analysis section to a CIF string.</span>
 
@@ -5161,10 +5155,7 @@ output. When <code>None</code>, uses <code>project.verbosity</code>.</p>
 <span class="normal">724</span>
 <span class="normal">725</span>
 <span class="normal">726</span>
-<span class="normal">727</span>
-<span class="normal">728</span>
-<span class="normal">729</span>
-<span class="normal">730</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbosity</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">727</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbosity</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Execute fitting for all experiments.</span>
 
@@ -5217,10 +5208,16 @@ output. When <code>None</code>, uses <code>project.verbosity</code>.</p>
             <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Using all experiments 🔬 </span><span class="si">{</span><span class="n">experiments</span><span class="o">.</span><span class="n">names</span><span class="si">}</span><span class="s2"> for &#39;</span><span class="si">{</span><span class="n">mode</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&#39; fitting&quot;</span>
             <span class="p">)</span>
+        <span class="c1"># Resolve weights to a plain numpy array</span>
+        <span class="n">experiments_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">experiments</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">weights_list</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_joint_fit_experiments</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">experiments</span><span class="o">.</span><span class="n">names</span>
+        <span class="p">]</span>
+        <span class="n">weights_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">weights_list</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
             <span class="n">structures</span><span class="p">,</span>
-            <span class="n">experiments</span><span class="p">,</span>
-            <span class="n">weights</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_joint_fit_experiments</span><span class="p">,</span>
+            <span class="n">experiments_list</span><span class="p">,</span>
+            <span class="n">weights</span><span class="o">=</span><span class="n">weights_array</span><span class="p">,</span>
             <span class="n">analysis</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
             <span class="n">verbosity</span><span class="o">=</span><span class="n">verb</span><span class="p">,</span>
         <span class="p">)</span>
@@ -5249,8 +5246,6 @@ output. When <code>None</code>, uses <code>project.verbosity</code>.</p>
             <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;📈 Goodness-of-fit (reduced χ²) per experiment:&#39;</span><span class="p">)</span>
             <span class="n">short_display_handle</span> <span class="o">=</span> <span class="n">_make_display_handle</span><span class="p">()</span>
 
-        <span class="c1"># TODO: Find a better way without creating dummy</span>
-        <span class="c1">#  experiments?</span>
         <span class="k">for</span> <span class="n">_idx</span><span class="p">,</span> <span class="n">expt_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">expt_names</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">verb</span> <span class="ow">is</span> <span class="n">VerbosityEnum</span><span class="o">.</span><span class="n">FULL</span><span class="p">:</span>
                 <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span>
@@ -5258,17 +5253,10 @@ output. When <code>None</code>, uses <code>project.verbosity</code>.</p>
                 <span class="p">)</span>
 
             <span class="n">experiment</span> <span class="o">=</span> <span class="n">experiments</span><span class="p">[</span><span class="n">expt_name</span><span class="p">]</span>
-            <span class="n">dummy_experiments</span> <span class="o">=</span> <span class="n">Experiments</span><span class="p">()</span>  <span class="c1"># TODO: Find a better name</span>
-
-            <span class="c1"># This is a workaround to set the parent project</span>
-            <span class="c1"># of the dummy experiments collection, so that</span>
-            <span class="c1"># parameters can be resolved correctly during fitting.</span>
-            <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">dummy_experiments</span><span class="p">,</span> <span class="s1">&#39;_parent&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">)</span>  <span class="c1"># noqa: PLC2801</span>
-
-            <span class="n">dummy_experiments</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span>
+            <span class="n">experiments_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">experiment</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
                 <span class="n">structures</span><span class="p">,</span>
-                <span class="n">dummy_experiments</span><span class="p">,</span>
+                <span class="n">experiments_list</span><span class="p">,</span>
                 <span class="n">analysis</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
                 <span class="n">verbosity</span><span class="o">=</span><span class="n">verb</span><span class="p">,</span>
             <span class="p">)</span>
@@ -5830,12 +5818,12 @@ code.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/analysis.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">790</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">787</span>
+<span class="normal">788</span>
+<span class="normal">789</span>
+<span class="normal">790</span>
 <span class="normal">791</span>
-<span class="normal">792</span>
-<span class="normal">793</span>
-<span class="normal">794</span>
-<span class="normal">795</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">792</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Render the analysis section as CIF in console.&quot;&quot;&quot;</span>
     <span class="n">cif_text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_cif</span><span class="p">()</span>
     <span class="n">paragraph_title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Analysis 🧮 info as cif&#39;</span>
@@ -6124,7 +6112,10 @@ fit has been performed yet, a warning is logged.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/analysis.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">732</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">729</span>
+<span class="normal">730</span>
+<span class="normal">731</span>
+<span class="normal">732</span>
 <span class="normal">733</span>
 <span class="normal">734</span>
 <span class="normal">735</span>
@@ -6143,10 +6134,7 @@ fit has been performed yet, a warning is logged.</p>
 <span class="normal">748</span>
 <span class="normal">749</span>
 <span class="normal">750</span>
-<span class="normal">751</span>
-<span class="normal">752</span>
-<span class="normal">753</span>
-<span class="normal">754</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_fit_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">751</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_fit_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Display a summary of the fit results.</span>
 
@@ -6166,7 +6154,7 @@ fit has been performed yet, a warning is logged.</p>
         <span class="k">return</span>
 
     <span class="n">structures</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">structures</span>
-    <span class="n">experiments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">experiments</span>
+    <span class="n">experiments</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">_process_fit_results</span><span class="p">(</span><span class="n">structures</span><span class="p">,</span> <span class="n">experiments</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -6613,10 +6601,6 @@ creating <abbr title="Crystallographic Information File.">CIF</abbr>-based const
     </div>
 
 </div>
-
-
-
-
 
 
 
@@ -13763,11 +13747,7 @@ parameter value.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/fit_helpers/metrics.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">15</span>
 <span class="normal">16</span>
 <span class="normal">17</span>
 <span class="normal">18</span>
@@ -13786,7 +13766,11 @@ parameter value.</p>
 <span class="normal">31</span>
 <span class="normal">32</span>
 <span class="normal">33</span>
-<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">calculate_r_factor</span><span class="p">(</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">calculate_r_factor</span><span class="p">(</span>
     <span class="n">y_obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">y_calc</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -13919,11 +13903,7 @@ parameter value.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/fit_helpers/metrics.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 93</span>
-<span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 97</span>
 <span class="normal"> 98</span>
 <span class="normal"> 99</span>
 <span class="normal">100</span>
@@ -13942,7 +13922,11 @@ parameter value.</p>
 <span class="normal">113</span>
 <span class="normal">114</span>
 <span class="normal">115</span>
-<span class="normal">116</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">calculate_r_factor_squared</span><span class="p">(</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">calculate_r_factor_squared</span><span class="p">(</span>
     <span class="n">y_obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">y_calc</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -14075,11 +14059,7 @@ parameter value.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/fit_helpers/metrics.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">71</span>
 <span class="normal">72</span>
 <span class="normal">73</span>
 <span class="normal">74</span>
@@ -14098,7 +14078,11 @@ parameter value.</p>
 <span class="normal">87</span>
 <span class="normal">88</span>
 <span class="normal">89</span>
-<span class="normal">90</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">calculate_rb_factor</span><span class="p">(</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">calculate_rb_factor</span><span class="p">(</span>
     <span class="n">y_obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">y_calc</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -14231,11 +14215,7 @@ parameter value.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/fit_helpers/metrics.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">123</span>
 <span class="normal">124</span>
 <span class="normal">125</span>
 <span class="normal">126</span>
@@ -14256,7 +14236,11 @@ parameter value.</p>
 <span class="normal">141</span>
 <span class="normal">142</span>
 <span class="normal">143</span>
-<span class="normal">144</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">calculate_reduced_chi_square</span><span class="p">(</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">calculate_reduced_chi_square</span><span class="p">(</span>
     <span class="n">residuals</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">num_parameters</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -14410,11 +14394,7 @@ parameter value.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/fit_helpers/metrics.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">41</span>
 <span class="normal">42</span>
 <span class="normal">43</span>
 <span class="normal">44</span>
@@ -14437,7 +14417,11 @@ parameter value.</p>
 <span class="normal">61</span>
 <span class="normal">62</span>
 <span class="normal">63</span>
-<span class="normal">64</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">calculate_weighted_r_factor</span><span class="p">(</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">calculate_weighted_r_factor</span><span class="p">(</span>
     <span class="n">y_obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">y_calc</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">weights</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
@@ -14528,11 +14512,11 @@ parameter value.</p>
                 <code>experiments</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;Experiments&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.collection.Experiments&lt;/code&gt;)" href="../datablocks/experiment/#easydiffraction.datablocks.experiment.collection.Experiments">Experiments</a></code>
+                  <code><span title="list">list</span>[<a class="autorefs autorefs-internal" title="&lt;code&gt;ExperimentBase&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.item.base.ExperimentBase&lt;/code&gt;)" href="../datablocks/experiment/#easydiffraction.datablocks.experiment.item.base.ExperimentBase">ExperimentBase</a>]</code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Collection of experiments.</p>
+                <p>List of experiments.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -14600,11 +14584,7 @@ parameter value.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/fit_helpers/metrics.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">151</span>
 <span class="normal">152</span>
 <span class="normal">153</span>
 <span class="normal">154</span>
@@ -14648,9 +14628,13 @@ parameter value.</p>
 <span class="normal">192</span>
 <span class="normal">193</span>
 <span class="normal">194</span>
-<span class="normal">195</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_reliability_inputs</span><span class="p">(</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_reliability_inputs</span><span class="p">(</span>
     <span class="n">structures</span><span class="p">:</span> <span class="n">Structures</span><span class="p">,</span>
-    <span class="n">experiments</span><span class="p">:</span> <span class="n">Experiments</span><span class="p">,</span>
+    <span class="n">experiments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ExperimentBase</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Collect observed and calculated data for reliability calculations.</span>
@@ -14659,8 +14643,8 @@ parameter value.</p>
 <span class="sd">    ----------</span>
 <span class="sd">    structures : Structures</span>
 <span class="sd">        Collection of structures.</span>
-<span class="sd">    experiments : Experiments</span>
-<span class="sd">        Collection of experiments.</span>
+<span class="sd">    experiments : list[ExperimentBase]</span>
+<span class="sd">        List of experiments.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -14674,7 +14658,7 @@ parameter value.</p>
     <span class="n">y_obs_all</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">y_calc_all</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">y_err_all</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">experiment</span> <span class="ow">in</span> <span class="n">experiments</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">experiment</span> <span class="ow">in</span> <span class="n">experiments</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">structure</span> <span class="ow">in</span> <span class="n">structures</span><span class="p">:</span>
             <span class="n">structure</span><span class="o">.</span><span class="n">_update_categories</span><span class="p">()</span>
         <span class="n">experiment</span><span class="o">.</span><span class="n">_update_categories</span><span class="p">()</span>
@@ -17293,9 +17277,7 @@ a table in notebooks or a text UI in terminals.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/analysis/fitting.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 20</span>
-<span class="normal"> 21</span>
-<span class="normal"> 22</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 22</span>
 <span class="normal"> 23</span>
 <span class="normal"> 24</span>
 <span class="normal"> 25</span>
@@ -17492,26 +17474,7 @@ a table in notebooks or a text UI in terminals.</p>
 <span class="normal">216</span>
 <span class="normal">217</span>
 <span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span>
-<span class="normal">221</span>
-<span class="normal">222</span>
-<span class="normal">223</span>
-<span class="normal">224</span>
-<span class="normal">225</span>
-<span class="normal">226</span>
-<span class="normal">227</span>
-<span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span>
-<span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Fitter</span><span class="p">:</span>
+<span class="normal">219</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Fitter</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Handles the fitting workflow using a pluggable minimizer.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selection</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;lmfit&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -17523,7 +17486,7 @@ a table in notebooks or a text UI in terminals.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">structures</span><span class="p">:</span> <span class="n">Structures</span><span class="p">,</span>
-        <span class="n">experiments</span><span class="p">:</span> <span class="n">Experiments</span><span class="p">,</span>
+        <span class="n">experiments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ExperimentBase</span><span class="p">],</span>
         <span class="n">weights</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">analysis</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">verbosity</span><span class="p">:</span> <span class="n">VerbosityEnum</span> <span class="o">=</span> <span class="n">VerbosityEnum</span><span class="o">.</span><span class="n">FULL</span><span class="p">,</span>
@@ -17539,17 +17502,25 @@ a table in notebooks or a text UI in terminals.</p>
 <span class="sd">        ----------</span>
 <span class="sd">        structures : Structures</span>
 <span class="sd">            Collection of structures.</span>
-<span class="sd">        experiments : Experiments</span>
-<span class="sd">            Collection of experiments.</span>
+<span class="sd">        experiments : list[ExperimentBase]</span>
+<span class="sd">            List of experiments to fit.</span>
 <span class="sd">        weights : np.ndarray | None, default=None</span>
-<span class="sd">            Optional weights for joint fitting.</span>
+<span class="sd">            Per-experiment weights as a 1-D array (length must match</span>
+<span class="sd">            *experiments*). When ``None``, equal weights are used.</span>
 <span class="sd">        analysis : object, default=None</span>
 <span class="sd">            Optional Analysis object to update its categories during</span>
 <span class="sd">            fitting.</span>
 <span class="sd">        verbosity : VerbosityEnum, default=VerbosityEnum.FULL</span>
 <span class="sd">            Console output verbosity.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">params</span> <span class="o">=</span> <span class="n">structures</span><span class="o">.</span><span class="n">free_parameters</span> <span class="o">+</span> <span class="n">experiments</span><span class="o">.</span><span class="n">free_parameters</span>
+        <span class="n">expt_free_params</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">expt</span> <span class="ow">in</span> <span class="n">experiments</span><span class="p">:</span>
+            <span class="n">expt_free_params</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                <span class="n">p</span>
+                <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">expt</span><span class="o">.</span><span class="n">parameters</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">constrained</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">free</span>
+            <span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">structures</span><span class="o">.</span><span class="n">free_parameters</span> <span class="o">+</span> <span class="n">expt_free_params</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">params</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;⚠️ No parameters selected for fitting.&#39;</span><span class="p">)</span>
@@ -17587,7 +17558,7 @@ a table in notebooks or a text UI in terminals.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">_process_fit_results</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">structures</span><span class="p">:</span> <span class="n">Structures</span><span class="p">,</span>
-        <span class="n">experiments</span><span class="p">:</span> <span class="n">Experiments</span><span class="p">,</span>
+        <span class="n">experiments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ExperimentBase</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Collect reliability inputs and display fit results.</span>
@@ -17601,8 +17572,8 @@ a table in notebooks or a text UI in terminals.</p>
 <span class="sd">        ----------</span>
 <span class="sd">        structures : Structures</span>
 <span class="sd">            Collection of structures.</span>
-<span class="sd">        experiments : Experiments</span>
-<span class="sd">            Collection of experiments.</span>
+<span class="sd">        experiments : list[ExperimentBase]</span>
+<span class="sd">            List of experiments.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">y_obs</span><span class="p">,</span> <span class="n">y_calc</span><span class="p">,</span> <span class="n">y_err</span> <span class="o">=</span> <span class="n">get_reliability_inputs</span><span class="p">(</span>
             <span class="n">structures</span><span class="p">,</span>
@@ -17621,35 +17592,12 @@ a table in notebooks or a text UI in terminals.</p>
                 <span class="n">f_calc</span><span class="o">=</span><span class="n">f_calc</span><span class="p">,</span>
             <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_collect_free_parameters</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">structures</span><span class="p">:</span> <span class="n">Structures</span><span class="p">,</span>
-        <span class="n">experiments</span><span class="p">:</span> <span class="n">Experiments</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Collect free parameters from structures and experiments.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        structures : Structures</span>
-<span class="sd">            Collection of structures.</span>
-<span class="sd">        experiments : Experiments</span>
-<span class="sd">            Collection of experiments.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        list[Parameter]</span>
-<span class="sd">            List of free parameters.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">free_params</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]</span> <span class="o">=</span> <span class="n">structures</span><span class="o">.</span><span class="n">free_parameters</span> <span class="o">+</span> <span class="n">experiments</span><span class="o">.</span><span class="n">free_parameters</span>
-        <span class="k">return</span> <span class="n">free_params</span>
-
     <span class="k">def</span><span class="w"> </span><span class="nf">_residual_function</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">engine_params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
         <span class="n">parameters</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Parameter</span><span class="p">],</span>
         <span class="n">structures</span><span class="p">:</span> <span class="n">Structures</span><span class="p">,</span>
-        <span class="n">experiments</span><span class="p">:</span> <span class="n">Experiments</span><span class="p">,</span>
+        <span class="n">experiments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ExperimentBase</span><span class="p">],</span>
         <span class="n">weights</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">analysis</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
@@ -17667,10 +17615,11 @@ a table in notebooks or a text UI in terminals.</p>
 <span class="sd">            List of parameters being optimized.</span>
 <span class="sd">        structures : Structures</span>
 <span class="sd">            Collection of structures.</span>
-<span class="sd">        experiments : Experiments</span>
-<span class="sd">            Collection of experiments.</span>
+<span class="sd">        experiments : list[ExperimentBase]</span>
+<span class="sd">            List of experiments.</span>
 <span class="sd">        weights : np.ndarray | None, default=None</span>
-<span class="sd">            Optional weights for joint fitting.</span>
+<span class="sd">            Per-experiment weights as a 1-D array. When ``None``, equal</span>
+<span class="sd">            weights are used.</span>
 <span class="sd">        analysis : object, default=None</span>
 <span class="sd">            Optional Analysis object to update its categories during</span>
 <span class="sd">            fitting.</span>
@@ -17693,25 +17642,18 @@ a table in notebooks or a text UI in terminals.</p>
             <span class="n">analysis</span><span class="o">.</span><span class="n">_update_categories</span><span class="p">(</span><span class="n">called_by_minimizer</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="c1"># Prepare weights for joint fitting</span>
-        <span class="n">num_expts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">experiments</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">_weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">num_expts</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">_weights_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">experiments</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
-                <span class="n">_weight</span> <span class="o">=</span> <span class="n">weights</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">value</span>
-                <span class="n">_weights_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_weight</span><span class="p">)</span>
-            <span class="n">_weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">_weights_list</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">num_expts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">experiments</span><span class="p">)</span>
+        <span class="n">_weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">num_expts</span><span class="p">)</span> <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
 
         <span class="c1"># Normalize weights so they sum to num_expts</span>
         <span class="c1"># We should obtain the same reduced chi_squared when a single</span>
         <span class="c1"># dataset is split into two parts and fit together. If weights</span>
         <span class="c1"># sum to one, then reduced chi_squared will be half as large as</span>
         <span class="c1"># expected.</span>
-        <span class="n">_weights</span> <span class="o">*=</span> <span class="n">num_expts</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">_weights</span><span class="p">)</span>
+        <span class="n">_weights</span> <span class="o">=</span> <span class="n">_weights</span> <span class="o">*</span> <span class="p">(</span><span class="n">num_expts</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">_weights</span><span class="p">))</span>
         <span class="n">residuals</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="k">for</span> <span class="n">experiment</span><span class="p">,</span> <span class="n">weight</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">experiments</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">_weights</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">experiment</span><span class="p">,</span> <span class="n">weight</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">experiments</span><span class="p">,</span> <span class="n">_weights</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
             <span class="c1"># Update experiment-specific calculations</span>
             <span class="n">experiment</span><span class="o">.</span><span class="n">_update_categories</span><span class="p">(</span><span class="n">called_by_minimizer</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -17798,11 +17740,11 @@ display the fit results after fitting is complete.</p>
                 <code>experiments</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;Experiments&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.collection.Experiments&lt;/code&gt;)" href="../datablocks/experiment/#easydiffraction.datablocks.experiment.collection.Experiments">Experiments</a></code>
+                  <code><span title="list">list</span>[<a class="autorefs autorefs-internal" title="&lt;code&gt;ExperimentBase&lt;/code&gt; (&lt;code&gt;easydiffraction.datablocks.experiment.item.base.ExperimentBase&lt;/code&gt;)" href="../datablocks/experiment/#easydiffraction.datablocks.experiment.item.base.ExperimentBase">ExperimentBase</a>]</code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Collection of experiments.</p>
+                <p>List of experiments to fit.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -17821,7 +17763,8 @@ display the fit results after fitting is complete.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Optional weights for joint fitting.</p>
+                <p>Per-experiment weights as a 1-D array (length must match
+<em>experiments</em>). When <code>None</code>, equal weights are used.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -17876,72 +17819,80 @@ fitting.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/fitting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">structures</span><span class="p">:</span> <span class="n">Structures</span><span class="p">,</span>
-    <span class="n">experiments</span><span class="p">:</span> <span class="n">Experiments</span><span class="p">,</span>
+    <span class="n">experiments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ExperimentBase</span><span class="p">],</span>
     <span class="n">weights</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">analysis</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">verbosity</span><span class="p">:</span> <span class="n">VerbosityEnum</span> <span class="o">=</span> <span class="n">VerbosityEnum</span><span class="o">.</span><span class="n">FULL</span><span class="p">,</span>
@@ -17957,17 +17908,25 @@ fitting.</p>
 <span class="sd">    ----------</span>
 <span class="sd">    structures : Structures</span>
 <span class="sd">        Collection of structures.</span>
-<span class="sd">    experiments : Experiments</span>
-<span class="sd">        Collection of experiments.</span>
+<span class="sd">    experiments : list[ExperimentBase]</span>
+<span class="sd">        List of experiments to fit.</span>
 <span class="sd">    weights : np.ndarray | None, default=None</span>
-<span class="sd">        Optional weights for joint fitting.</span>
+<span class="sd">        Per-experiment weights as a 1-D array (length must match</span>
+<span class="sd">        *experiments*). When ``None``, equal weights are used.</span>
 <span class="sd">    analysis : object, default=None</span>
 <span class="sd">        Optional Analysis object to update its categories during</span>
 <span class="sd">        fitting.</span>
 <span class="sd">    verbosity : VerbosityEnum, default=VerbosityEnum.FULL</span>
 <span class="sd">        Console output verbosity.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">params</span> <span class="o">=</span> <span class="n">structures</span><span class="o">.</span><span class="n">free_parameters</span> <span class="o">+</span> <span class="n">experiments</span><span class="o">.</span><span class="n">free_parameters</span>
+    <span class="n">expt_free_params</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">expt</span> <span class="ow">in</span> <span class="n">experiments</span><span class="p">:</span>
+        <span class="n">expt_free_params</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+            <span class="n">p</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">expt</span><span class="o">.</span><span class="n">parameters</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">constrained</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">free</span>
+        <span class="p">)</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">structures</span><span class="o">.</span><span class="n">free_parameters</span> <span class="o">+</span> <span class="n">expt_free_params</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">params</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;⚠️ No parameters selected for fitting.&#39;</span><span class="p">)</span>
