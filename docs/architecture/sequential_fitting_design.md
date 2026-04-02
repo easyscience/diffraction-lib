@@ -1,7 +1,7 @@
 # Sequential Fitting — Architecture Design
 
-**Status:** Draft — for discussion before implementation  
-**Date:** 2026-04-02
+**Status:** Draft — for discussion before implementation **Date:**
+2026-04-02
 
 ---
 
@@ -59,6 +59,20 @@ for each experiment in project.experiments:
   `{structure}_{experiment}` — pure-Python computation, does not release
   the GIL.
 
+### 2.3 UID vs unique_name
+
+Parameter UIDs are **random** (16-char `secrets.choice`) and
+non-deterministic. They do not survive CIF round-trips or cross-process
+recreation. The `unique_name` property (e.g. `cosio.cell.length_a`) is
+**deterministic** — derived from the parent chain — and is already used
+as the column key in CIF serialisation (`CifHandler.uid` returns
+`unique_name`).
+
+The alias system currently stores `param_uid` (the random UID) as a
+`StringDescriptor`. For sequential fitting to work across processes,
+constraints must reference parameters by `unique_name` instead. This is
+a prerequisite change (see § 9.1).
+
 ---
 
 ## 3. Requirements
@@ -73,12 +87,13 @@ Numbered to match the original request.
 4. **Chunk-based processing** — load N datasets, fit N independently in
    parallel, propagate, repeat.
 5. **Incremental CSV output** — one row per dataset, written after each
-   chunk; includes χ², fit status, and all fitted parameter values +
-   uncertainties.
+   chunk; includes χ², fit status, diffrn metadata, and all fitted
+   parameter values + uncertainties.
 6. **Crash recovery** — on restart, read CSV, skip already-fitted files,
    resume from the last fitted row's parameters.
 7. **Separate initial fit** — the user runs a regular `fit()` on one
-   dataset first to establish good starting values.
+   dataset first to establish good starting values. The template is a
+   complete working experiment, not just a skeleton.
 8. **Store all fitted parameters in CSV** — both structure and
    experiment params, so any dataset can be replayed later. The project
    file retains only the template structure CIF and template experiment
@@ -94,18 +109,17 @@ Numbered to match the original request.
 
 A new method `Analysis.fit_sequential()` orchestrates the batch. It does
 **not** reuse the existing `fit()` loop — the data-flow is fundamentally
-different (data paths in → CSV out, experiments are ephemeral).
+different (data directory in → CSV out, experiments are ephemeral).
 
 ```
-User sets up: 1 Structure + 1 template Experiment
+User sets up: 1 Structure + 1 template Experiment (fully configured)
          │
          ▼
   project.analysis.fit()          ← initial fit on template
          │
          ▼
   project.analysis.fit_sequential(
-      data_paths=[...],
-      output_csv='results.csv',
+      data_dir='data/',
       max_workers=4,
   )
          │
@@ -127,20 +141,52 @@ User sets up: 1 Structure + 1 template Experiment
   │     ▼      ▼           ▼     │
   │  Collect results             │
   │  Append rows to CSV          │
+  │  Report progress             │
   │  Propagate params from       │
   │  last file in chunk          │
   └──────────────────────────────┘
          │
          ▼
-  CSV with all results
-  (one row per dataset)
+  CSV in project_dir/analysis/results.csv
 ```
 
 ---
 
 ## 5. User-Facing API
 
-### 5.1 The template workflow
+### 5.1 Data path handling
+
+Data files can come from various sources: a local directory, a ZIP
+archive, or (in future) an online catalogue. The library already
+provides helpers for extracting paths:
+
+- `ed.extract_data_paths_from_zip(zip_path)` → extracts to a temp dir,
+  returns sorted file paths.
+- `ed.extract_data_paths_from_dir(dir_path)` → lists files in a
+  directory, returns sorted file paths.
+
+For sequential fitting, the user points `fit_sequential` at a
+**directory** containing the data files. If the data arrives as a ZIP,
+the user first extracts it:
+
+```python
+# From a ZIP archive — extract first, then point to directory
+ed.extract_data_paths_from_zip('scans.zip', destination='data/')
+project.analysis.fit_sequential(data_dir='data/')
+
+# From a local directory — use directly
+project.analysis.fit_sequential(data_dir='/experiment/scans/')
+```
+
+The `extract_data_paths_from_zip` function gains an optional
+`destination` parameter. When provided, it extracts to that directory
+instead of a temp dir. This gives a consistent directory-based entry
+point for all data sources (local, ZIP, future catalogue downloads).
+
+Internally, `fit_sequential` calls `extract_data_paths_from_dir` to
+discover and sort files from the given directory.
+
+### 5.2 The template workflow
 
 ```python
 import easydiffraction as ed
@@ -155,12 +201,10 @@ structure.space_group.name_h_m = 'P n m a'
 structure.cell.length_a = 10.31
 # ... atom sites ...
 
-# ── Template experiment ──────────────────────────────────
-data_paths = ed.extract_data_paths_from_zip('scans.zip')
-
+# ── Template experiment (fully configured) ───────────────
 project.experiments.add_from_data_path(
     name='template',
-    data_path=data_paths[0],
+    data_path='data/scan_001.xye',
     sample_form='powder',
     beam_mode='constant wavelength',
     radiation_probe='neutron',
@@ -182,7 +226,7 @@ for point in expt.background:
 # ── Constraints (optional) ───────────────────────────────
 project.analysis.aliases.create(
     label='biso_Co1',
-    param_uid=structure.atom_sites['Co1'].b_iso.uid,
+    param_unique_name=structure.atom_sites['Co1'].b_iso.unique_name,
 )
 project.analysis.constraints.create(expression='biso_Co2 = biso_Co1')
 project.analysis.apply_constraints()
@@ -191,71 +235,143 @@ project.analysis.apply_constraints()
 project.analysis.fit()
 project.analysis.show_fit_results()
 
-# ── Sequential fit over all files ────────────────────────
+# ── Save project (defines project path) ──────────────────
+project.save_as(dir_path='cosio_project')
+
+# ── Sequential fit over all files in data/ ───────────────
 project.analysis.fit_sequential(
-    data_paths=data_paths,
-    output_csv='results.csv',
+    data_dir='data/',
     max_workers=4,
 )
 ```
 
-### 5.2 Method signature
+### 5.3 Method signature
 
 ```python
 def fit_sequential(
     self,
-    data_paths: list[str],
-    output_csv: str,
-    max_workers: int = 1,
+    data_dir: str,
+    max_workers: int | str = 1,
     chunk_size: int | None = None,
+    file_pattern: str = '*',
+    metadata_patterns: dict[str, str] | None = None,
     verbosity: str | None = None,
 ) -> None:
 ```
 
-| Parameter     | Description                                                                           |
-| ------------- | ------------------------------------------------------------------------------------- |
-| `data_paths`  | Ordered list of data file paths to process.                                           |
-| `output_csv`  | Path to the output CSV file. Created if missing, appended if exists (crash recovery). |
-| `max_workers` | Number of parallel worker processes. `1` = sequential (no subprocess overhead).       |
-| `chunk_size`  | Files per chunk. Default `None` → uses `max_workers`.                                 |
-| `verbosity`   | `'full'`, `'short'`, `'silent'`. Default: project verbosity.                          |
+| Parameter           | Description                                                                                |
+| ------------------- | ------------------------------------------------------------------------------------------ |
+| `data_dir`          | Path to directory containing data files.                                                   |
+| `max_workers`       | Number of parallel worker processes. `1` = sequential. `'auto'` = physical CPU count.      |
+| `chunk_size`        | Files per chunk. Default `None` → uses `max_workers`.                                      |
+| `file_pattern`      | Glob pattern to filter files in `data_dir`. Default `'*'` (all non-hidden files).          |
+| `metadata_patterns` | Dict mapping diffrn field names to regex patterns for metadata extraction from data files. |
+| `verbosity`         | `'full'`, `'short'`, `'silent'`. Default: project verbosity.                               |
 
-### 5.3 Plotting results from CSV
+The CSV output path is **not** a parameter — it is determined by the
+project directory structure (see § 5.4).
 
-After `fit_sequential()`, parameter evolution is read from the CSV file
-rather than from in-memory snapshots:
+When `max_workers='auto'`, the worker count is resolved as
+`os.cpu_count()` (physical CPU count), following the `pytest-xdist`
+convention for `-n auto`.
+
+### 5.4 Project directory structure
+
+The existing project layout gains an `analysis/` directory:
+
+```
+project_dir/
+├── project.cif
+├── analysis.cif
+├── summary.cif
+├── structures/
+│   └── cosio.cif
+├── experiments/
+│   └── template.cif           ← the fully-configured template
+└── analysis/
+    └── results.csv            ← sequential fit output
+```
+
+The CSV path is always `project_dir / 'analysis' / 'results.csv'`. This
+means:
+
+- The user must call `save_as()` before `fit_sequential()` to establish
+  the project path.
+- `fit_sequential()` validates that `project.info.path` is set.
+- No need to pass `output_csv` — the location is deterministic and
+  discoverable.
+
+### 5.5 Plotting results
+
+`plot_param_series()` **always** reads from the CSV file in the
+project's `analysis/` directory. This unifies the small-N and large-N
+cases — every sequential or single-mode fit produces a CSV, making
+results persistent, portable, and usable by external tools.
 
 ```python
-project.plot_param_series_from_csv(
-    csv_path='results.csv',
+# Plot parameter evolution (reads from analysis/results.csv)
+project.plot_param_series(
     param=structure.cell.length_a,
     versus=expt.diffrn.ambient_temperature,
 )
 ```
 
-Alternatively, `plot_param_series()` could detect whether the data
-source is in-memory snapshots (small N) or a CSV file (large N) based on
-whether `output_csv` was produced. This is a UX decision to discuss.
+The method resolves `param` and `versus` to their `unique_name`
+internally, then looks up the corresponding CSV columns. The user passes
+the live descriptor object (e.g. `structure.cell.length_a`) for
+discoverability and autocomplete — they never need to type or know the
+`unique_name` string.
 
-### 5.4 Replaying a single dataset
+**Why `param` objects, not strings?** The user already has a reference
+to `structure.cell.length_a` — passing it directly is more natural and
+typo-safe than passing `'cosio.cell.length_a'`. The method extracts
+`.unique_name` itself. This matches the current API.
+
+### 5.6 Replaying a single dataset
 
 To replot or inspect one dataset from the batch:
 
 ```python
-# Load template project
-project = ed.Project.load('my_project')
+# Load project (when Project.load() is implemented)
+project = ed.Project.load('cosio_project')
 
 # Replace fitted params for dataset #500 from CSV
-project.apply_params_from_csv('results.csv', row=500)
+project.apply_params_from_csv(row=500)
 
-# Plot
+# Plot (uses the template experiment with overridden params)
 project.plot_meas_vs_calc(expt_name='template')
 ```
 
-This requires loading the dataset's data file and overriding parameter
-values from the CSV row. The exact API can be refined; the key point is
-that CSV + template CIF is sufficient to reconstruct any dataset's
-state.
+The CSV row index identifies the dataset. `apply_params_from_csv`:
+
+1. Reads the CSV row.
+2. Loads the data file from the `file_path` column into the template
+   experiment.
+3. Overrides all parameter values from the CSV columns.
+
+### 5.7 Diffrn metadata in CSV
+
+The CSV includes all descriptors from the `diffrn` category
+(temperature, pressure, magnetic field, electric field) as additional
+columns. This makes the CSV self-contained for plotting parameter
+evolution against any condition axis, e.g. temperature vs. magnetic
+field, without needing to re-read the original data files.
+
+Diffrn values are extracted per file in the worker. The extraction
+pattern is passed via the `metadata_patterns` argument:
+
+```python
+project.analysis.fit_sequential(
+    data_dir='data/',
+    max_workers=4,
+    metadata_patterns={
+        'ambient_temperature': r'^TEMP\s+([0-9.]+)',
+    },
+)
+```
+
+This follows the existing `ed.extract_metadata()` pattern already used
+in `ed-17.py`.
 
 ---
 
@@ -268,8 +384,8 @@ state.
 - Exactly 1 structure in `project.structures`.
 - Exactly 1 experiment in `project.experiments` (the template).
 - At least 1 free parameter.
-- `output_csv` path is writable.
-- `data_paths` is non-empty.
+- `project.info.path` is set (project has been saved).
+- `data_dir` exists and contains at least 1 data file.
 
 ### 6.2 Template snapshot
 
@@ -279,19 +395,21 @@ Before dispatching workers, the method captures a **template snapshot**
 ```python
 @dataclass(frozen=True)
 class SequentialFitTemplate:
-    structure_cif: str          # structure.as_cif
-    experiment_cif: str         # experiment.as_cif (template experiment)
-    experiment_axes: dict       # {sample_form, beam_mode, radiation_probe, scattering_type}
-    initial_params: dict        # {unique_name: value} for ALL free params
-    free_param_names: list[str] # unique_names of free params
-    alias_defs: list[dict]      # [{label, param_uid}, ...]
-    constraint_defs: list[str]  # [expression, ...]
-    minimizer_tag: str          # e.g. 'lmfit'
-    calculator_tag: str         # e.g. 'cryspy'
+    structure_cif: str            # structure.as_cif
+    experiment_cif: str           # experiment.as_cif (full template)
+    initial_params: dict          # {unique_name: value} for ALL free params
+    free_param_unique_names: list # unique_names of free params
+    alias_defs: list[dict]        # [{label, param_unique_name}, ...]
+    constraint_defs: list[str]    # [expression, ...]
+    minimizer_tag: str            # e.g. 'lmfit'
+    calculator_tag: str           # e.g. 'cryspy'
+    metadata_patterns: dict       # {diffrn_field: regex_pattern}
+    diffrn_field_names: list      # ['ambient_temperature', ...]
 ```
 
 This is a plain, picklable data object (no live references to
-`GuardedBase` instances).
+`GuardedBase` instances). Note: uses `unique_name` instead of random
+`uid` for parameter identification.
 
 ### 6.3 Chunk-based processing
 
@@ -315,11 +433,15 @@ for chunk in chunked(remaining_paths, chunk_size):
     # Sort results to match file order (as_completed is unordered)
     results.sort(key=lambda r: data_paths.index(r['file_path']))
 
-    _append_to_csv(output_csv, results)
+    _append_to_csv(csv_path, results)
 
-    # Propagate: use last file's params as next chunk's starting values
-    last_result = results[-1]
-    template = replace(template, initial_params=last_result['params'])
+    # Report progress (main process only, between chunks)
+    _report_chunk_progress(chunk_idx, total_chunks, results, verbosity)
+
+    # Propagate: use last successful file's params as next starting values
+    last_ok = _last_successful(results)
+    if last_ok is not None:
+        template = replace(template, initial_params=last_ok['params'])
 ```
 
 The `'spawn'` context is required because:
@@ -328,6 +450,16 @@ The `'spawn'` context is required because:
 - `fork` can deadlock with C extensions and is unreliable on macOS.
 - `spawn` creates a fresh Python interpreter per worker — singletons
   (`UidMapHandler`, `ConstraintsHandler`) are naturally isolated.
+
+**Progress reporting** happens in the main process, between chunks.
+Workers always run silently. After each chunk completes, the main
+process prints/updates progress:
+
+| Verbosity | Between-chunk output                                                  |
+| --------- | --------------------------------------------------------------------- |
+| `full`    | Per-chunk table: chunk N/M, per-file χ² and status (updated in place) |
+| `short`   | One-line per chunk: `✅ Chunk 3/500: 10 files, avg χ² = 1.45`         |
+| `silent`  | No output                                                             |
 
 ### 6.4 Worker function
 
@@ -342,101 +474,106 @@ def _fit_worker(
     """
     Fit a single dataset in an isolated process.
 
-    Creates a fresh Project, loads the template configuration,
+    Creates a fresh Project, loads the template configuration via CIF,
     replaces data from data_path, applies initial parameters, fits,
     and returns a plain dict of results.
     """
     # 1. Create fresh project (isolated singletons, no shared state)
     project = Project(name='_worker')
 
-    # 2. Load structure from CIF
+    # 2. Load structure from template CIF
     project.structures.add_from_cif_str(template.structure_cif)
 
-    # 3. Create experiment from data path (loads measured data)
-    project.experiments.add_from_data_path(
-        name='expt',
-        data_path=data_path,
-        sample_form=template.experiment_axes['sample_form'],
-        beam_mode=template.experiment_axes['beam_mode'],
-        radiation_probe=template.experiment_axes['radiation_probe'],
-        scattering_type=template.experiment_axes['scattering_type'],
-        verbosity='silent',
-    )
+    # 3. Create experiment from template CIF (full config + template data)
+    project.experiments.add_from_cif_str(template.experiment_cif)
+    expt = project.experiments[0]
 
-    # 4. Apply template experiment configuration
-    _apply_template_config(
-        experiment=project.experiments['expt'],
-        template=template,
-    )
+    # 4. Replace data from new data path
+    expt._load_ascii_data_to_experiment(data_path)
 
     # 5. Override parameter values from propagated starting values
     _apply_param_overrides(project, template.initial_params)
 
     # 6. Set free flags
-    _set_free_params(project, template.free_param_names)
+    _set_free_params(project, template.free_param_unique_names)
 
-    # 7. Apply constraints
+    # 7. Apply constraints (using unique_names, not random UIDs)
     _apply_constraints(project, template.alias_defs, template.constraint_defs)
 
     # 8. Set calculator and minimizer
-    project.experiments['expt'].calculator_type = template.calculator_tag
+    expt.calculator_type = template.calculator_tag
     project.analysis.current_minimizer = template.minimizer_tag
 
-    # 9. Fit
+    # 9. Extract diffrn metadata from data file
+    diffrn_values = _extract_metadata(data_path, template.metadata_patterns)
+
+    # 10. Fit
     project.analysis.fit(verbosity='silent')
 
-    # 10. Collect results
-    return _collect_results(project, data_path)
+    # 11. Collect results
+    return _collect_results(project, data_path, diffrn_values)
 ```
 
-#### Step 4: Applying template configuration
+#### Step 3+4: CIF round-trip then data reload (Approach A)
 
-The template experiment's CIF contains instrument, peak, background,
-excluded regions, linked phases, and their parameters. However,
-`add_from_data_path` creates an experiment with default configuration.
-The worker must then apply the template's configuration on top.
+The template experiment's CIF contains the full configuration:
+instrument, peak profile, background points, excluded regions, linked
+phases, diffrn conditions, and the template's measured data. Loading
+from CIF reconstructs all of this. Then
+`_load_ascii_data_to_experiment(data_path)` **replaces** the data
+category contents (it reassigns `self._items` to a fresh list — verified
+in `PdCwlData._create_items_set_xcoord_and_id`).
 
-**Two approaches:**
+**Prerequisite: CIF round-trip must be reliable.** The path is:
 
-| Approach                                   | Pros                                               | Cons                                                                                                      |
-| ------------------------------------------ | -------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| **A. Create from CIF, reload data**        | All config comes from CIF; no manual param copying | Requires `_load_ascii_data_to_experiment()` to work after CIF construction; CIF must round-trip perfectly |
-| **B. Create from data path, apply config** | Data loading is clean; explicit param assignment   | Requires enumerating which template settings to copy; more fragile if experiment categories change        |
+```
+experiment.as_cif → ExperimentFactory.from_cif_str() → expt_obj
+```
 
-**Recommended: Approach A** — create from template CIF, then reload
-data. This is more robust because:
+This calls `_from_gemmi_block` which:
 
-- CIF serialisation already captures the full experiment state.
-- Adding new categories or parameters requires no changes to the worker.
-- `_load_ascii_data_to_experiment()` already exists on all concrete
-  experiment classes.
+1. Reads `ExperimentType` from CIF → resolves the concrete class.
+2. Creates the experiment (with default categories).
+3. Calls `category.from_cif(block)` on each category.
+
+**Known risk:** `category_collection_to_cif` truncates output at
+`max_display=20` rows for display purposes. If the template experiment's
+background or data has >20 items, the CIF will be incomplete. **Fix:**
+serialisation used for the template snapshot must pass
+`max_display=None` to emit all rows. This is a prerequisite fix (§ 9.2).
+
+### 6.5 Parameter identification by unique_name
+
+All parameter identification in the sequential fitting system uses
+`unique_name` (e.g. `cosio.cell.length_a`), not the random `uid`.
+
+- **CSV columns** are keyed by `unique_name`.
+- **Template `initial_params`** is `{unique_name: value}`.
+- **`free_param_unique_names`** lists which params to mark as free.
+- **Alias definitions** reference `param_unique_name` instead of
+  `param_uid`.
+
+The `_apply_param_overrides` helper walks all parameters in the project,
+matches by `unique_name`, and sets values:
 
 ```python
-# Approach A sketch:
-# 3. Create experiment from template CIF (full config + template data)
-project.experiments.add_from_cif_str(template.experiment_cif)
-expt = project.experiments['template']
-expt.name = 'expt'  # rename for consistency
-
-# 4. Replace data from new data path
-expt._load_ascii_data_to_experiment(data_path)
+def _apply_param_overrides(
+    project: Project,
+    overrides: dict[str, float],
+) -> None:
+    all_params = project.structures.parameters + project.experiments.parameters
+    by_name = {p.unique_name: p for p in all_params}
+    for name, value in overrides.items():
+        if name in by_name:
+            by_name[name].value = value
 ```
 
-**Prerequisite:** `_load_ascii_data_to_experiment` must correctly
-overwrite the existing data category contents (clear old data points and
-load new ones). This needs to be verified and potentially adjusted.
-
-**Open question:** Does `experiment.as_cif` round-trip cleanly through
-`ExperimentFactory.from_cif_str()`? If not, Approach A is blocked until
-CIF round-trip is reliable (see `issues_open.md` issue #1 and #12).
-Approach B would be the fallback. See § 8 open question 2.
-
-### 6.5 Parameter propagation strategy
+### 6.6 Parameter propagation strategy
 
 After each chunk completes:
 
-1. Take the results from the **last file** in the chunk (by file sort
-   order).
+1. Take the results from the **last successful file** in the chunk (by
+   file sort order).
 2. Extract all free parameter values.
 3. Use these as `initial_params` for all workers in the next chunk.
 
@@ -446,67 +583,55 @@ next chunk. Within a chunk, all workers start from the same values, so
 parameter evolution within a chunk comes only from the fit — not from
 propagation.
 
-**Edge case — last file's fit failed:** if the last file in a chunk
-fails, fall back to the last _successful_ result in the chunk (scanning
-from the end). If no file in the chunk succeeded, keep the previous
-chunk's parameters and log a warning.
+**Edge case — all fits in a chunk failed:** keep the previous chunk's
+parameters and log a warning.
 
-**Within-chunk ordering matters for `max_workers=1`:** when running
-sequentially (`max_workers=1`), the chunk size is 1, so propagation
-happens after every file — identical to the current single-fit mode.
-This preserves backward compatibility.
+**When `max_workers=1`:** the chunk size is 1, so propagation happens
+after every file — identical to the current single-fit mode. This
+preserves backward compatibility.
 
-### 6.6 CSV output format
+### 6.7 CSV output format
 
-The CSV uses a flat header with two columns per free parameter (value +
-uncertainty) plus metadata columns:
+The CSV uses a flat header with metadata columns, diffrn columns, and
+two columns per free parameter (value + uncertainty):
 
-```
-file_path,chi_squared,reduced_chi_squared,fit_success,n_iterations,cosio.cell.length_a,cosio.cell.length_a.uncertainty,cosio.atom_sites.Co1.b_iso,cosio.atom_sites.Co1.b_iso.uncertainty,template.instrument.calib_twotheta_offset,template.instrument.calib_twotheta_offset.uncertainty,...
-/data/scan_001.xye,142.3,1.23,True,45,10.312,0.001,0.31,0.02,0.29,0.01,...
-/data/scan_002.xye,138.1,1.19,True,32,10.315,0.002,0.32,0.03,0.28,0.01,...
+```csv
+file_path,chi_squared,reduced_chi_squared,fit_success,n_iterations,diffrn.ambient_temperature,diffrn.ambient_pressure,cosio.cell.length_a,cosio.cell.length_a.uncertainty,template.instrument.calib_twotheta_offset,template.instrument.calib_twotheta_offset.uncertainty,...
+/data/scan_001.xye,142.3,1.23,True,45,300.0,,10.312,0.001,0.29,0.01,...
+/data/scan_002.xye,138.1,1.19,True,32,310.0,,10.315,0.002,0.28,0.01,...
 ```
 
-| Column                      | Type  | Description                     |
-| --------------------------- | ----- | ------------------------------- |
-| `file_path`                 | str   | Absolute path to the data file  |
-| `chi_squared`               | float | χ² of the fit                   |
-| `reduced_chi_squared`       | float | Reduced χ²                      |
-| `fit_success`               | bool  | Whether the minimizer converged |
-| `n_iterations`              | int   | Number of minimizer iterations  |
-| `{unique_name}`             | float | Fitted value of parameter       |
-| `{unique_name}.uncertainty` | float | Uncertainty of parameter        |
+| Column group                | Description                                |
+| --------------------------- | ------------------------------------------ |
+| `file_path`                 | Absolute path to the data file             |
+| `chi_squared`               | χ² of the fit                              |
+| `reduced_chi_squared`       | Reduced χ²                                 |
+| `fit_success`               | Whether the minimizer converged            |
+| `n_iterations`              | Number of minimizer iterations             |
+| `diffrn.*`                  | Diffrn metadata (temperature, pressure, …) |
+| `{unique_name}`             | Fitted value of free parameter             |
+| `{unique_name}.uncertainty` | Uncertainty of free parameter              |
 
 **Implementation:** use `csv.DictWriter` (stdlib). Header is written
 once on file creation. Rows are appended after each chunk and flushed
 immediately (no buffered writes that could be lost on crash).
 
-### 6.7 Crash recovery
+### 6.8 Crash recovery
 
-On entry, `fit_sequential()` checks for an existing CSV at `output_csv`:
+On entry, `fit_sequential()` checks for an existing CSV at the project's
+`analysis/results.csv`:
 
 1. If the file exists and is non-empty:
    - Read all rows.
    - Build a set of already-fitted `file_path` values.
-   - Extract parameter values from the last row as starting values
-     (overrides `initial_params` from the template).
+   - Extract parameter values from the last successful row as starting
+     values (overrides template's current values).
    - Log a message: `"Resuming from row N (M files already fitted)."`.
 2. If the file does not exist or is empty:
    - Create the file with the header row.
    - Use the template's current parameter values as starting values.
 
 The file path comparison uses absolute paths to avoid mismatches.
-
-### 6.8 Verbosity and progress reporting
-
-| Verbosity | Behaviour                                                           |
-| --------- | ------------------------------------------------------------------- |
-| `full`    | Per-chunk progress: chunk N/M, per-file χ² table (updated in place) |
-| `short`   | One-line per chunk: `✅ Chunk 3/500: 10 files, avg χ² = 1.45`       |
-| `silent`  | No output                                                           |
-
-Workers always run silently. Only the main process produces console
-output.
 
 ---
 
@@ -573,52 +698,124 @@ infrastructure. However, the primary value of `fit_sequential` is
 avoiding bulk preloading. Adding `max_workers` to `fit()` is a separate,
 smaller enhancement that can come later.
 
----
+### 7.6 Unified FitModel abstraction
 
-## 8. Open Questions
+Every experiment already contains a full list of structural parameters
+via `linked_phases` (powder) or `linked_crystal` (single crystal). An
+experiment + its linked structures together form a complete model for
+computing a diffraction pattern. A `FitModel` class could merge
+structure and experiment parameters into a single flat parameter set.
 
-1. **Should `max_workers='auto'` use `os.cpu_count()`?** Or a fraction
-   like `cpu_count() - 1` to leave headroom? Or
-   `min(cpu_count(), len(data_paths))`?
-
-2. **CIF round-trip reliability.** Approach A (§ 6.4) depends on
-   `experiment.as_cif → ExperimentFactory.from_cif_str()` reproducing
-   the full experiment state. Is this currently reliable, or does it
-   lose information (e.g. category type selections, calculator tag)? If
-   unreliable, Approach B (explicit config copy) is the fallback but
-   requires more maintenance.
-
-3. **Does `_load_ascii_data_to_experiment()` work on an experiment that
-   already has data?** If it appends rather than replaces, a clear/reset
-   step is needed before the call.
-
-4. **Should the worker use the project's current verbosity, or always
-   run silently?** Workers running in subprocesses cannot safely write
-   to the same terminal. Silent is safest, but progress from workers is
-   lost.
-
-5. **Constraint UIDs.** Constraints reference parameters by UID
-   (`param_uid`). When the worker creates a fresh project, UIDs are
-   regenerated. If UIDs are deterministic (derived from CIF path), this
-   is fine. If they are random, constraints will fail in the worker.
-   Need to verify UID generation strategy.
-
-6. **`plot_param_series` unification.** Should the existing
-   `plot_param_series()` learn to read from CSV, or should there be a
-   separate `plot_param_series_from_csv()` method? Unification is
-   cleaner for the user but adds complexity.
-
-7. **Metadata in CSV.** Should the CSV include per-file metadata (e.g.
-   temperature, dose) extracted from the data files? This would make the
-   CSV self-contained for plotting. But it requires knowing which
-   metadata to extract — perhaps via a user-provided extraction function
-   or regex pattern.
+**Assessment:** the current code already merges them at fit time
+(`structures.free_parameters + experiments.free_parameters`). A
+`FitModel` class would formalise this and could simplify the
+`_residual_function` signature (one model instead of structures +
+experiments + analysis). However, introducing a new abstraction now
+would be premature — the current merging works and the sequential
+fitting design does not depend on it. If the fitting internals are
+refactored later (issue #7), `FitModel` would be a natural outcome.
 
 ---
 
-## 9. Implementation Plan
+## 8. Resolved Questions
 
-Each phase is independently testable and deployable.
+These were open questions in the previous draft; decisions are recorded
+here.
+
+1. **`max_workers='auto'`** → uses `os.cpu_count()` (physical CPU
+   count), following the `pytest-xdist` convention.
+
+2. **CIF round-trip reliability** → must be verified and fixed as a
+   prerequisite. Known risk: `category_collection_to_cif` truncates at
+   20 rows — the template snapshot must bypass this. See § 9.2.
+
+3. **`_load_ascii_data_to_experiment()` on existing data** → **verified:
+   it replaces, not appends.** `_create_items_set_xcoord_and_id`
+   reassigns `self._items` to a fresh list.
+
+4. **Worker verbosity** → workers run silently. Progress is reported by
+   the main process between chunks. See § 6.3.
+
+5. **Constraint parameter identification** → switch from random `uid` to
+   deterministic `unique_name`. See § 6.5 and § 9.1.
+
+6. **`plot_param_series` unification** → always read from CSV. One
+   method, no `_from_csv` variant. See § 5.5.
+
+7. **Metadata in CSV** → include all diffrn fields (temperature,
+   pressure, magnetic field, electric field). See § 5.7.
+
+8. **CSV output path** → deterministic:
+   `project_dir/analysis/results.csv`. No argument needed. See § 5.4.
+
+9. **`data_paths` argument** → replaced with `data_dir` (path to
+   directory). Files are discovered via `extract_data_paths_from_dir`.
+   For ZIP sources, extract first. See § 5.1.
+
+---
+
+## 9. Prerequisite Changes
+
+These changes are needed before implementing `fit_sequential()` itself.
+Each is a separate, atomic change.
+
+### 9.1 Switch alias `param_uid` to `param_unique_name`
+
+The `Alias` category currently stores `param_uid` (random UID). Change
+to `param_unique_name` (deterministic `unique_name`). Update:
+
+- `Alias._param_uid` → `Alias._param_unique_name`
+- `CifHandler(names=['_alias.param_uid'])` →
+  `CifHandler(names=['_alias.param_unique_name'])`
+- `ConstraintsHandler` to resolve via `unique_name` lookup instead of
+  UID lookup.
+- `UidMapHandler` — may no longer be needed for constraint resolution
+  (but still used for other purposes).
+- Tutorial `ed-17.py` and any tests that create aliases.
+
+### 9.2 Fix `category_collection_to_cif` truncation
+
+`category_collection_to_cif` has `max_display=20` which truncates loop
+output. For CIF used in save/load/round-trip, all rows must be emitted.
+
+Options:
+
+- (a) Remove `max_display` from `category_collection_to_cif` entirely,
+  add truncation only in display methods.
+- (b) Add a `full=True` parameter and use it when serialising for
+  persistence.
+
+### 9.3 Verify CIF round-trip for experiments
+
+Write an integration test:
+
+1. Create a fully configured experiment (instrument, peak, background,
+   excluded regions, linked phases, data).
+2. Serialise to CIF (`experiment.as_cif`).
+3. Reconstruct from CIF (`ExperimentFactory.from_cif_str(cif_str)`).
+4. Compare all parameter values.
+
+Fix any parameters that don't survive the round-trip.
+
+### 9.4 Add `destination` parameter to `extract_data_paths_from_zip`
+
+Currently extracts to a temp dir. Add optional `destination` parameter
+to extract to a user-specified directory, enabling a clean two-step
+workflow (extract → fit_sequential).
+
+---
+
+## 10. Implementation Plan
+
+Each phase is independently testable and deployable. Prerequisite
+changes (§ 9) are done first.
+
+### Phase 0: Prerequisites
+
+- 9.1: Switch alias `param_uid` → `param_unique_name`
+- 9.2: Fix CIF collection truncation
+- 9.3: Verify CIF round-trip for experiments
+- 9.4: Add `destination` to `extract_data_paths_from_zip`
 
 ### Phase 1: Streaming sequential fit (max_workers=1)
 
@@ -626,15 +823,20 @@ Each phase is independently testable and deployable.
 - Implement `SequentialFitTemplate` dataclass.
 - Implement `_fit_worker()` as a plain function (called directly, no
   subprocess).
-- Implement CSV writing with `csv.DictWriter`.
+- Create `analysis/` directory in project path.
+- Implement CSV writing with `csv.DictWriter` (including diffrn metadata
+  columns).
 - Implement crash recovery (CSV reading + resumption).
-- Implement parameter propagation (simple: last result → next
+- Implement parameter propagation (last successful result → next
   iteration).
-- Unit tests for CSV writing, crash recovery, and parameter propagation.
-- Integration test: small sequential fit (5 files), verify CSV output.
+- Update `plot_param_series()` to read from CSV.
+- Unit tests for CSV writing, crash recovery, parameter propagation.
+- Integration test: small sequential fit (5 files), verify CSV output
+  and plotting.
 
-**Validates:** the core data flow, CSV format, and parameter
-propagation. No multiprocessing complexity yet.
+**Validates:** the core data flow, CSV format, parameter propagation,
+and CIF round-trip in a real fitting scenario. No multiprocessing
+complexity yet.
 
 ### Phase 2: Parallel fitting (max_workers > 1)
 
@@ -643,38 +845,36 @@ propagation. No multiprocessing complexity yet.
 - Handle worker failures (catch exceptions, mark as failed in CSV,
   continue with next chunk).
 - Implement propagation with failed-fit fallback.
+- Add `max_workers='auto'` support.
 - Integration test: parallel sequential fit (10 files, 2 workers).
 
 **Validates:** multiprocessing isolation, singleton safety, no shared
 state corruption.
 
-### Phase 3: Plotting from CSV
+### Phase 3: Dataset replay
 
-- Add `plot_param_series_from_csv()` to `Project`.
-- Read CSV with `pandas`, resolve column names to parameter
-  unique_names.
-- Reuse the existing `Plotter.plot_scatter` backend.
-- Optionally unify with `plot_param_series()`.
-
-### Phase 4: Dataset replay
-
-- Add `apply_params_from_csv()` to `Project` (or a helper method).
+- Add `apply_params_from_csv()` to `Project`.
 - Load a specific CSV row, override parameter values in the live
   project.
 - Reload data from the file path in the CSV row.
 - Allow `plot_meas_vs_calc()` to work with the replayed state.
 
+### Phase 4: CSV output for existing single-fit mode
+
+- Update the existing single-fit loop in `Analysis.fit()` to write
+  results to `analysis/results.csv` as well (same CSV format).
+- This gives backward compatibility: `ed-17.py` style workflows also get
+  persistent CSV output and can use the unified `plot_param_series()`.
+
 ### Phase 5 (optional): max_workers on existing fit()
 
 - Add `max_workers` parameter to `Analysis.fit()`.
-- When `fit_mode == 'single'` and `max_workers > 1`, serialize
+- When `fit_mode == 'single'` and `max_workers > 1`, serialise
   pre-loaded experiments and dispatch to the same worker pool.
-- Propagate between chunks, store snapshots in memory (existing
-  behaviour) or CSV if `output_csv` is provided.
 
 ---
 
-## 10. Dependencies and Risks
+## 11. Dependencies and Risks
 
 ### New dependencies
 
@@ -683,35 +883,41 @@ are all stdlib.
 
 ### Risks
 
-| Risk                                              | Mitigation                                                                      |
-| ------------------------------------------------- | ------------------------------------------------------------------------------- |
-| CIF round-trip loses information                  | Verify with a round-trip test before Phase 1; fall back to Approach B if needed |
-| UID non-determinism breaks constraints in workers | Verify UID generation; make deterministic if needed                             |
-| Worker memory leak (large N, long-running pool)   | Use `max_tasks_per_child=100` on the pool to recycle workers                    |
-| Pickling failures for SequentialFitTemplate       | Keep it a plain dataclass with only str/dict/list fields                        |
-| crysfml Fortran global state in forked processes  | Enforced `spawn` context avoids fork issues                                     |
+| Risk                                             | Mitigation                                               |
+| ------------------------------------------------ | -------------------------------------------------------- |
+| CIF round-trip loses information                 | Prerequisite § 9.3 verifies and fixes before Phase 1     |
+| CIF collection truncation at 20 rows             | Prerequisite § 9.2 fixes before Phase 1                  |
+| Worker memory leak (large N, long-running pool)  | Use `max_tasks_per_child=100` on the pool                |
+| Pickling failures for SequentialFitTemplate      | Keep it a plain dataclass with only str/dict/list fields |
+| crysfml Fortran global state in forked processes | Enforced `spawn` context avoids fork issues              |
 
 ### Related open issues
 
 - **Issue #1 (Project.load):** `fit_sequential` does not depend on
-  `load()`, but Phase 4 (dataset replay) benefits from it.
+  `load()`, but Phase 3 (dataset replay) benefits from it.
 - **Issue #7 (dummy Experiments wrapper):** `fit_sequential` bypasses
   this entirely — each worker creates its own `Experiments`.
 - **Issue #4 (constraint refresh):** the worker's fresh project applies
-  constraints from scratch — no stale state. But the main process must
-  still correctly capture alias/constraint definitions in the template.
+  constraints from scratch — no stale state. The prerequisite § 9.1
+  (unique_name-based aliases) also improves constraint robustness in the
+  main process.
 
 ---
 
-## 11. Summary
+## 12. Summary
 
-| Aspect               | Decision                                                |
-| -------------------- | ------------------------------------------------------- |
-| Parallelism backend  | `concurrent.futures.ProcessPoolExecutor` with `spawn`   |
-| Worker isolation     | Each worker creates a fresh `Project` — no shared state |
-| Data flow            | Template CIF + data path → worker → result dict → CSV   |
-| Parameter seeding    | Last successful result in chunk → next chunk            |
-| Crash recovery       | Read existing CSV, skip fitted files, resume            |
-| Configuration        | `max_workers` argument on `fit_sequential()`            |
-| New dependencies     | None (stdlib only)                                      |
-| First implementation | Phase 1 (sequential, no parallelism) to validate design |
+| Aspect              | Decision                                                       |
+| ------------------- | -------------------------------------------------------------- |
+| Parallelism backend | `concurrent.futures.ProcessPoolExecutor` with `spawn`          |
+| Worker isolation    | Each worker creates a fresh `Project` — no shared state        |
+| Data source         | `data_dir` argument; ZIP → extract first                       |
+| Data flow           | Template CIF + data path → worker → result dict → CSV          |
+| Parameter IDs       | `unique_name` (deterministic), not `uid` (random)              |
+| Parameter seeding   | Last successful result in chunk → next chunk                   |
+| CSV location        | `project_dir/analysis/results.csv` (deterministic)             |
+| CSV contents        | Fit metrics + diffrn metadata + all free param values/uncert   |
+| Crash recovery      | Read existing CSV, skip fitted files, resume                   |
+| Plotting            | Unified `plot_param_series()` always reads from CSV            |
+| Configuration       | `max_workers` + `data_dir` on `fit_sequential()`               |
+| New dependencies    | None (stdlib only)                                             |
+| First step          | Phase 0 (prerequisites) then Phase 1 (sequential, no parallel) |
