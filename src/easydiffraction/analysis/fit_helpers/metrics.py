@@ -1,11 +1,15 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 import numpy as np
 
-from easydiffraction.datablocks.experiment.collection import Experiments
-from easydiffraction.datablocks.structure.collection import Structures
+if TYPE_CHECKING:
+    from easydiffraction.datablocks.experiment.item.base import ExperimentBase
+    from easydiffraction.datablocks.structure.collection import Structures
 
 
 def calculate_r_factor(
@@ -146,7 +150,7 @@ def calculate_reduced_chi_square(
 
 def get_reliability_inputs(
     structures: Structures,
-    experiments: Experiments,
+    experiments: list[ExperimentBase],
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray | None]:
     """
     Collect observed and calculated data for reliability calculations.
@@ -155,8 +159,8 @@ def get_reliability_inputs(
     ----------
     structures : Structures
         Collection of structures.
-    experiments : Experiments
-        Collection of experiments.
+    experiments : list[ExperimentBase]
+        List of experiments.
 
     Returns
     -------
@@ -170,7 +174,7 @@ def get_reliability_inputs(
     y_obs_all = []
     y_calc_all = []
     y_err_all = []
-    for experiment in experiments.values():
+    for experiment in experiments:
         for structure in structures:
             structure._update_categories()
         experiment._update_categories()

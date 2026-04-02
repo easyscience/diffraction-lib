@@ -3,6 +3,7 @@
 
 from contextlib import suppress
 
+import numpy as np
 import pandas as pd
 
 from easydiffraction.analysis.categories.aliases.factory import AliasesFactory
@@ -18,7 +19,6 @@ from easydiffraction.core.singleton import ConstraintsHandler
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import Parameter
 from easydiffraction.core.variable import StringDescriptor
-from easydiffraction.datablocks.experiment.collection import Experiments
 from easydiffraction.display.tables import TableRenderer
 from easydiffraction.io.cif.serialize import analysis_to_cif
 from easydiffraction.utils.enums import VerbosityEnum
@@ -627,10 +627,16 @@ class Analysis:
                 console.paragraph(
                     f"Using all experiments 🔬 {experiments.names} for '{mode.value}' fitting"
                 )
+            # Resolve weights to a plain numpy array
+            experiments_list = list(experiments.values())
+            weights_list = [
+                self._joint_fit_experiments[name].weight.value for name in experiments.names
+            ]
+            weights_array = np.array(weights_list, dtype=np.float64)
             self.fitter.fit(
                 structures,
-                experiments,
-                weights=self._joint_fit_experiments,
+                experiments_list,
+                weights=weights_array,
                 analysis=self,
                 verbosity=verb,
             )
@@ -659,8 +665,6 @@ class Analysis:
                 console.print('📈 Goodness-of-fit (reduced χ²) per experiment:')
                 short_display_handle = _make_display_handle()
 
-            # TODO: Find a better way without creating dummy
-            #  experiments?
             for _idx, expt_name in enumerate(expt_names, start=1):
                 if verb is VerbosityEnum.FULL:
                     console.paragraph(
@@ -668,17 +672,10 @@ class Analysis:
                     )
 
                 experiment = experiments[expt_name]
-                dummy_experiments = Experiments()  # TODO: Find a better name
-
-                # This is a workaround to set the parent project
-                # of the dummy experiments collection, so that
-                # parameters can be resolved correctly during fitting.
-                object.__setattr__(dummy_experiments, '_parent', self.project)  # noqa: PLC2801
-
-                dummy_experiments.add(experiment)
+                experiments_list = [experiment]
                 self.fitter.fit(
                     structures,
-                    dummy_experiments,
+                    experiments_list,
                     analysis=self,
                     verbosity=verb,
                 )
@@ -749,7 +746,7 @@ class Analysis:
             return
 
         structures = self.project.structures
-        experiments = self.project.experiments
+        experiments = list(self.project.experiments.values())
 
         self.fitter._process_fit_results(structures, experiments)
 
