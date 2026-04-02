@@ -254,19 +254,19 @@ def fit_sequential(
     max_workers: int | str = 1,
     chunk_size: int | None = None,
     file_pattern: str = '*',
-    metadata_patterns: dict[str, str] | None = None,
+    extract_diffrn: Callable[[str], dict[str, float | str]] | None = None,
     verbosity: str | None = None,
 ) -> None:
 ```
 
-| Parameter           | Description                                                                                |
-| ------------------- | ------------------------------------------------------------------------------------------ |
-| `data_dir`          | Path to directory containing data files.                                                   |
-| `max_workers`       | Number of parallel worker processes. `1` = sequential. `'auto'` = physical CPU count.      |
-| `chunk_size`        | Files per chunk. Default `None` → uses `max_workers`.                                      |
-| `file_pattern`      | Glob pattern to filter files in `data_dir`. Default `'*'` (all non-hidden files).          |
-| `metadata_patterns` | Dict mapping diffrn field names to regex patterns for metadata extraction from data files. |
-| `verbosity`         | `'full'`, `'short'`, `'silent'`. Default: project verbosity.                               |
+| Parameter        | Description                                                                                        |
+| ---------------- | -------------------------------------------------------------------------------------------------- |
+| `data_dir`       | Path to directory containing data files.                                                           |
+| `max_workers`    | Number of parallel worker processes. `1` = sequential. `'auto'` = physical CPU count.              |
+| `chunk_size`     | Files per chunk. Default `None` → uses `max_workers`.                                              |
+| `file_pattern`   | Glob pattern to filter files in `data_dir`. Default `'*'` (all non-hidden files).                  |
+| `extract_diffrn` | User callback: `f(file_path) → {diffrn_field: value}`. Called per file. `None` = no diffrn metadata.|
+| `verbosity`      | `'full'`, `'short'`, `'silent'`. Default: project verbosity.                                       |
 
 The CSV output path is **not** a parameter — it is determined by the
 project directory structure (see § 5.4).
@@ -277,20 +277,44 @@ convention for `-n auto`.
 
 ### 5.4 Project directory structure
 
-The existing project layout gains an `analysis/` directory:
+The current project layout has `analysis.cif` as a top-level file next
+to directories like `structures/` and `experiments/`. Adding an
+`analysis/` directory alongside a file named `analysis.cif` at the same
+level is confusing and violates the principle of least surprise.
+
+**Decision:** move `analysis.cif` into the `analysis/` directory. All
+analysis-related artifacts live under one directory — settings *and*
+results:
 
 ```
 project_dir/
 ├── project.cif
-├── analysis.cif
 ├── summary.cif
 ├── structures/
 │   └── cosio.cif
 ├── experiments/
 │   └── template.cif           ← the fully-configured template
 └── analysis/
+    ├── analysis.cif           ← analysis settings (was at top level)
     └── results.csv            ← sequential fit output
 ```
+
+This is a clean, self-consistent layout:
+
+- Every major concept (`structures`, `experiments`, `analysis`) gets its
+  own directory.
+- `project.cif` and `summary.cif` remain at the top level because they
+  describe the project as a whole, not a single domain.
+- No name collision between a file and a directory.
+- Future analysis artifacts (e.g. per-experiment fit logs, constraint
+  snapshots) naturally live under `analysis/`.
+
+**Migration:** `Project.save()` writes `analysis.cif` to
+`project_dir/analysis/analysis.cif` instead of `project_dir/analysis.cif`.
+`Project.load()` (when implemented) reads from the new location.
+Existing saved projects with `analysis.cif` at the top level can be
+handled by a fallback in `load()` — check the new path first, then fall
+back to the old path.
 
 The CSV path is always `project_dir / 'analysis' / 'results.csv'`. This
 means:
@@ -357,21 +381,62 @@ columns. This makes the CSV self-contained for plotting parameter
 evolution against any condition axis, e.g. temperature vs. magnetic
 field, without needing to re-read the original data files.
 
-Diffrn values are extracted per file in the worker. The extraction
-pattern is passed via the `metadata_patterns` argument:
+#### Why metadata extraction stays explicit
+
+In the current `ed-17.py` tutorial, the user writes:
 
 ```python
-project.analysis.fit_sequential(
-    data_dir='data/',
-    max_workers=4,
-    metadata_patterns={
-        'ambient_temperature': r'^TEMP\s+([0-9.]+)',
-    },
+expt.diffrn.ambient_temperature = ed.extract_metadata(
+    file_path=data_path,
+    pattern=r'^TEMP\s+([0-9.]+)',
 )
 ```
 
-This follows the existing `ed.extract_metadata()` pattern already used
-in `ed-17.py`.
+This is explicit and understandable — the user sees exactly what is
+extracted and where it goes. Hiding extraction inside `fit_sequential()`
+via a `metadata_patterns` dict would be less transparent: the user would
+not see the assignment, could not inspect the value before fitting, and
+the mapping between regex capture groups and diffrn fields would be
+implicit.
+
+**Decision:** metadata extraction is a user-provided **callback**
+instead of a hidden dict-based extraction. The user defines a plain
+function that receives a file path and returns a dict of diffrn values.
+This keeps the extraction visible, testable, and flexible (e.g. the user
+can read from file headers, file names, companion JSON, or a database):
+
+```python
+def extract_diffrn(file_path: str) -> dict[str, float | str]:
+    return {
+        'ambient_temperature': ed.extract_metadata(
+            file_path=file_path,
+            pattern=r'^TEMP\s+([0-9.]+)',
+        ),
+    }
+
+project.analysis.fit_sequential(
+    data_dir='data/',
+    max_workers=4,
+    extract_diffrn=extract_diffrn,
+)
+```
+
+If `extract_diffrn` is `None` (the default), the diffrn columns in the
+CSV are left empty. The callback is called once per file in the **main
+process** after worker results are collected (not inside the worker —
+see § 6.2 for why). The returned dict keys must match `diffrn` descriptor
+names (e.g. `'ambient_temperature'`, `'ambient_pressure'`). Unrecognised
+keys are ignored with a warning.
+
+This approach:
+
+- Keeps extraction logic **visible** in the user's notebook.
+- Allows **any** extraction strategy (regex, filename parsing, external
+  lookup), not just regex on file content.
+- Is easily testable — the user can call `extract_diffrn(path)` outside
+  of fitting to verify.
+- Follows the existing pattern where users explicitly assign diffrn
+  values rather than having the library guess.
 
 ---
 
@@ -403,13 +468,27 @@ class SequentialFitTemplate:
     constraint_defs: list[str]    # [expression, ...]
     minimizer_tag: str            # e.g. 'lmfit'
     calculator_tag: str           # e.g. 'cryspy'
-    metadata_patterns: dict       # {diffrn_field: regex_pattern}
     diffrn_field_names: list      # ['ambient_temperature', ...]
 ```
 
 This is a plain, picklable data object (no live references to
-`GuardedBase` instances). Note: uses `unique_name` instead of random
-`uid` for parameter identification.
+`GuardedBase` instances, no callables). Note: uses `unique_name` instead
+of random `uid` for parameter identification.
+
+**`extract_diffrn` callback handling:** the user-provided callback is
+*not* stored in the template because arbitrary callables (lambdas,
+closures) cannot be pickled reliably for multiprocessing. Instead:
+
+- In **single-worker mode** (`max_workers=1`), the callback is called
+  directly in the main process after `_fit_worker()` returns.
+- In **multi-worker mode**, the callback is called in the main process
+  after collecting results from the worker pool. Since diffrn metadata
+  extraction is I/O-bound (reading file headers) and fast, running it in
+  the main process is not a bottleneck.
+
+This means `_fit_worker()` does not extract diffrn metadata — it only
+fits. The main process calls `extract_diffrn(data_path)` for each file
+and merges the returned dict into the result row before writing to CSV.
 
 ### 6.3 Chunk-based processing
 
@@ -432,6 +511,12 @@ for chunk in chunked(remaining_paths, chunk_size):
 
     # Sort results to match file order (as_completed is unordered)
     results.sort(key=lambda r: data_paths.index(r['file_path']))
+
+    # Extract diffrn metadata in the main process (avoids pickling callables)
+    if extract_diffrn is not None:
+        for result in results:
+            diffrn_values = extract_diffrn(result['file_path'])
+            result.update(diffrn_values)
 
     _append_to_csv(csv_path, results)
 
@@ -504,15 +589,17 @@ def _fit_worker(
     expt.calculator_type = template.calculator_tag
     project.analysis.current_minimizer = template.minimizer_tag
 
-    # 9. Extract diffrn metadata from data file
-    diffrn_values = _extract_metadata(data_path, template.metadata_patterns)
-
-    # 10. Fit
+    # 9. Fit
     project.analysis.fit(verbosity='silent')
 
-    # 11. Collect results
-    return _collect_results(project, data_path, diffrn_values)
+    # 10. Collect results (fit metrics + parameter values, no diffrn metadata)
+    return _collect_results(project, data_path)
 ```
+
+**Note:** diffrn metadata extraction (`extract_diffrn` callback) is not
+called in the worker. The main process calls the callback after
+collecting worker results and merges the metadata into each result row
+before writing to CSV. This avoids pickling issues with callables.
 
 #### Step 3+4: CIF round-trip then data reload (Approach A)
 
@@ -743,7 +830,9 @@ here.
    method, no `_from_csv` variant. See § 5.5.
 
 7. **Metadata in CSV** → include all diffrn fields (temperature,
-   pressure, magnetic field, electric field). See § 5.7.
+   pressure, magnetic field, electric field). Extraction is done via a
+   user-provided callback (`extract_diffrn`), not hidden inside
+   `fit_sequential`. See § 5.7.
 
 8. **CSV output path** → deterministic:
    `project_dir/analysis/results.csv`. No argument needed. See § 5.4.
@@ -751,6 +840,15 @@ here.
 9. **`data_paths` argument** → replaced with `data_dir` (path to
    directory). Files are discovered via `extract_data_paths_from_dir`.
    For ZIP sources, extract first. See § 5.1.
+
+10. **Project directory structure** → move `analysis.cif` into
+    `analysis/` directory. All analysis artifacts (settings + results)
+    live under one directory. See § 5.4 and § 9.6.
+
+11. **Singletons (`UidMapHandler`, `ConstraintsHandler`)** → replace
+    with instance-owned state on `Project` and `Analysis`. Fixes
+    notebook rerun issues, simplifies worker isolation, resolves
+    issue #4. See § 9.5.
 
 ---
 
@@ -803,6 +901,94 @@ Currently extracts to a temp dir. Add optional `destination` parameter
 to extract to a user-specified directory, enabling a clean two-step
 workflow (extract → fit_sequential).
 
+### 9.5 Replace singletons with instance-owned state
+
+#### Problem
+
+`UidMapHandler` and `ConstraintsHandler` are process-global singletons
+(`SingletonBase`). This causes three concrete problems:
+
+1. **Notebook reruns.** When a user re-executes cells in a Jupyter
+   notebook, the old `Project` is garbage-collected but the singleton
+   retains all aliases, constraints, and UID entries from the previous
+   run. The new `Project` inherits stale state, leading to ghost
+   constraints and spurious errors. Users must restart the kernel to get
+   a clean state — a common source of confusion.
+
+2. **Sequential fitting workers.** The `spawn` context used for
+   `ProcessPoolExecutor` creates fresh interpreters, so singletons are
+   naturally isolated per worker. This is why multiprocessing works
+   despite the singletons. However, the main process's singleton still
+   accumulates state across chunks and calls — not harmful in the current
+   design (workers don't touch the main singleton), but fragile if the
+   architecture evolves.
+
+3. **Multiple projects.** If a user creates two `Project` instances in
+   the same session (e.g. to compare fits), their constraints and UID
+   maps collide in the shared singleton.
+
+#### Proposed fix
+
+Move the state owned by singletons into `Analysis` (for constraints) and
+`Project` (for the UID map):
+
+| Current singleton       | New owner               | Lifetime                  |
+| ----------------------- | ----------------------- | ------------------------- |
+| `ConstraintsHandler`    | `Analysis._constraints_engine` | Per-`Analysis` instance |
+| `UidMapHandler`         | `Project._uid_map`      | Per-`Project` instance    |
+
+The objects are the same classes, just no longer singletons — they are
+instantiated in `__init__` and passed explicitly to the components that
+need them (e.g. `Parameter.__init__` receives a `uid_map` reference from
+its owning project, `ConstraintsHandler` is accessed via
+`self.project.analysis._constraints_engine`).
+
+#### Impact on sequential fitting
+
+- **Simplifies workers:** each worker's `Project()` naturally creates
+  its own `_uid_map` and `_constraints_engine`. No singleton isolation
+  concern at all.
+- **Simplifies crash recovery and notebook reruns:** creating a new
+  `Project` starts with a blank slate, no stale state leaks.
+- **No impact on the `fit_sequential` API** — the change is purely
+  internal.
+
+#### Scope and sequencing
+
+This is a self-contained refactor that can be done independently of
+sequential fitting. It improves correctness for existing workflows
+(notebook reruns, issue #4) and simplifies the sequential fitting
+implementation. It is listed as a prerequisite because it eliminates a
+class of bugs that would otherwise need workaround code in the worker.
+
+However, if the refactor proves too large for the initial sequential
+fitting work, the `spawn`-based multiprocessing provides natural
+isolation and the singletons can be addressed in a follow-up. The
+sequential fitting design does **not** depend on this change — it works
+either way.
+
+#### Relationship to issue #4
+
+Open issue #4 ("Refresh constraint state before auto-apply") is a
+symptom of the singleton problem. If constraints are instance-owned,
+there is no stale state to refresh — the constraint engine always
+reflects the current `Analysis` instance's aliases and constraints.
+Fixing the singleton issue resolves issue #4 as a side effect.
+
+### 9.6 Move `analysis.cif` into `analysis/` directory
+
+Currently `analysis.cif` lives at the project root alongside
+`project.cif` and `summary.cif`. Adding an `analysis/` directory for
+`results.csv` next to a file named `analysis.cif` at the same level
+creates a naming conflict and a confusing layout.
+
+**Fix:** update `Project.save()` to write `analysis.cif` to
+`project_dir/analysis/analysis.cif`. Update `Project.load()` (when
+implemented) to read from the new path, with a fallback to the old
+path for backward compatibility with existing saved projects. Update
+docs (`architecture.md`, `project.md`), tests, and the save output
+messages.
+
 ---
 
 ## 10. Implementation Plan
@@ -816,6 +1002,9 @@ changes (§ 9) are done first.
 - 9.2: Fix CIF collection truncation
 - 9.3: Verify CIF round-trip for experiments
 - 9.4: Add `destination` to `extract_data_paths_from_zip`
+- 9.5: Replace singletons with instance-owned state (recommended but not
+  blocking — `spawn` provides natural isolation)
+- 9.6: Move `analysis.cif` into `analysis/` directory
 
 ### Phase 1: Streaming sequential fit (max_workers=1)
 
@@ -916,8 +1105,11 @@ are all stdlib.
 | Parameter seeding   | Last successful result in chunk → next chunk                   |
 | CSV location        | `project_dir/analysis/results.csv` (deterministic)             |
 | CSV contents        | Fit metrics + diffrn metadata + all free param values/uncert   |
+| Metadata extraction | User-provided `extract_diffrn` callback, not hidden in lib     |
 | Crash recovery      | Read existing CSV, skip fitted files, resume                   |
 | Plotting            | Unified `plot_param_series()` always reads from CSV            |
 | Configuration       | `max_workers` + `data_dir` on `fit_sequential()`               |
+| Project layout      | `analysis.cif` moves into `analysis/` directory                |
+| Singletons          | Replace with instance-owned state (recommended prerequisite)   |
 | New dependencies    | None (stdlib only)                                             |
 | First step          | Phase 0 (prerequisites) then Phase 1 (sequential, no parallel) |
