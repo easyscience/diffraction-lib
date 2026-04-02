@@ -309,12 +309,17 @@ class GenericParameter(GenericNumericDescriptor):
         """
         Set the value from a constraint expression.
 
-        Validates against the spec, marks the parent datablock dirty,
-        and flags the parameter as constrained. Used exclusively by
-        ``ConstraintsHandler.apply()``.
+        Bypasses validation and marks the parent datablock dirty, like
+        ``_set_value_from_minimizer``, because constraints are applied
+        inside the minimizer loop where trial values may exceed
+        physical-range validators. Flags the parameter as constrained.
+        Used exclusively by ``ConstraintsHandler.apply()``.
         """
-        self.value = v
+        self._value = v
         self._constrained = True
+        parent_datablock = self._datablock_item()
+        if parent_datablock is not None:
+            parent_datablock._need_categories_update = True
 
     @property
     def free(self) -> bool:

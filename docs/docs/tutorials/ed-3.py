@@ -587,19 +587,7 @@ project.analysis.constraints.create(expression='biso_Ba = biso_La')
 project.analysis.show_constraints()
 
 # %% [markdown]
-# Show free parameters before applying constraints.
-
-# %%
-project.analysis.show_free_params()
-
-# %% [markdown]
-# Apply constraints.
-
-# %%
-project.analysis.apply_constraints()
-
-# %% [markdown]
-# Show free parameters after applying constraints.
+# Show free parameters.
 
 # %%
 project.analysis.show_free_params()
@@ -657,11 +645,6 @@ project.analysis.constraints.create(
 # %%
 project.analysis.show_constraints()
 
-# %% [markdown]
-# Apply constraints.
-
-# %%
-project.analysis.apply_constraints()
 
 # %% [markdown]
 # Set structure parameters to be refined.

@@ -54,7 +54,7 @@ class Alias(CategoryItem):
 
         # Direct reference to the Parameter object (runtime only).
         # Stored via object.__setattr__ to avoid parent-chain mutation.
-        object.__setattr__(self, '_param_ref', None)
+        object.__setattr__(self, '_param_ref', None)  # noqa: PLC2801
 
         self._identity.category_code = 'alias'
         self._identity.category_entry_name = lambda: str(self.label.value)
@@ -102,7 +102,7 @@ class Alias(CategoryItem):
         Also updates ``param_unique_name`` from the parameter's
         ``unique_name`` for CIF round-tripping.
         """
-        object.__setattr__(self, '_param_ref', param)
+        object.__setattr__(self, '_param_ref', param)  # noqa: PLC2801
         self._param_unique_name.value = param.unique_name
 
     @property
@@ -141,4 +141,3 @@ class Aliases(CategoryCollection):
         item.label = label
         item._set_param(param)
         self.add(item)
-

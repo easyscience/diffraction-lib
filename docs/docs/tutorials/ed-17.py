@@ -265,11 +265,6 @@ project.analysis.constraints.create(
     expression='biso_Co2 = biso_Co1',
 )
 
-# %% [markdown]
-# Apply constraints.
-
-# %%
-project.analysis.apply_constraints()
 
 # %% [markdown]
 # #### Set Fit Mode
