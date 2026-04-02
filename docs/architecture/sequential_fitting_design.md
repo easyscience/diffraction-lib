@@ -993,73 +993,214 @@ messages.
 
 ## 10. Implementation Plan
 
-Each phase is independently testable and deployable. Prerequisite
-changes (§ 9) are done first.
+The plan is structured as a sequence of pull requests. Each PR is
+independently mergeable and testable. Foundation issues (#7, #4, #1)
+are resolved first because they clean up the fitting internals that
+`fit_sequential` builds on top of.
 
-### Phase 0: Prerequisites
+### Foundation PRs (resolve existing issues)
 
-- 9.1: Switch alias `param_uid` → `param_unique_name`
-- 9.2: Fix CIF collection truncation
-- 9.3: Verify CIF round-trip for experiments
-- 9.4: Add `destination` to `extract_data_paths_from_zip`
-- 9.5: Replace singletons with instance-owned state (recommended but not
-  blocking — `spawn` provides natural isolation)
-- 9.6: Move `analysis.cif` into `analysis/` directory
+#### PR 1 — Eliminate dummy Experiments wrapper in single-fit mode (issue #7)
 
-### Phase 1: Streaming sequential fit (max_workers=1)
+> **Title:** `Accept single Experiment in Fitter.fit()`
+>
+> **Description:** Refactor `Fitter.fit()` and `_residual_function()` to
+> accept a plain list of `ExperimentBase` objects instead of requiring an
+> `Experiments` collection. Remove the dummy `Experiments` wrapper and the
+> `object.__setattr__` hack in `Analysis.fit()` single-mode loop. Update
+> `_residual_function` to iterate over the list directly. Update all
+> callers (single-fit, joint-fit). Update unit and integration tests.
 
-- Add `fit_sequential()` to `Analysis`.
-- Implement `SequentialFitTemplate` dataclass.
-- Implement `_fit_worker()` as a plain function (called directly, no
-  subprocess).
-- Create `analysis/` directory in project path.
-- Implement CSV writing with `csv.DictWriter` (including diffrn metadata
-  columns).
-- Implement crash recovery (CSV reading + resumption).
-- Implement parameter propagation (last successful result → next
-  iteration).
-- Update `plot_param_series()` to read from CSV.
-- Unit tests for CSV writing, crash recovery, parameter propagation.
-- Integration test: small sequential fit (5 files), verify CSV output
-  and plotting.
+**Why first:** the current dummy-wrapper pattern is the exact antipattern
+that `fit_sequential` workers would otherwise inherit. Fixing it now
+gives the worker a clean `Fitter.fit(structures, [experiment])` call
+without any collection ceremony.
 
-**Validates:** the core data flow, CSV format, parameter propagation,
-and CIF round-trip in a real fitting scenario. No multiprocessing
-complexity yet.
+#### PR 2 — Replace singletons with instance-owned state (issue #4 + § 9.5)
 
-### Phase 2: Parallel fitting (max_workers > 1)
+> **Title:** `Move ConstraintsHandler and UidMapHandler to instance scope`
+>
+> **Description:** Replace the `SingletonBase` pattern for
+> `ConstraintsHandler` and `UidMapHandler` with per-project instances.
+> `Project.__init__` creates `_uid_map`; `Analysis.__init__` creates
+> `_constraints_engine`. Thread the references through to `Parameter`
+> and constraint resolution. Remove `SingletonBase` class if no longer
+> used. Update all call sites that use `.get()`. This also fixes issue #4
+> (stale constraint state) as a side effect — the constraint engine is
+> always in sync with its owning `Analysis`.
 
-- Refactor `_fit_worker()` to be a module-level picklable function.
-- Implement `ProcessPoolExecutor` dispatch with `spawn` context.
-- Handle worker failures (catch exceptions, mark as failed in CSV,
-  continue with next chunk).
-- Implement propagation with failed-fit fallback.
-- Add `max_workers='auto'` support.
-- Integration test: parallel sequential fit (10 files, 2 workers).
+**Why second:** removes the global mutable state that makes notebook
+reruns unreliable and multi-project sessions impossible. Sequential
+fitting workers benefit from natural isolation (each `Project()` has its
+own engine), but the main benefit is correctness for existing workflows.
 
-**Validates:** multiprocessing isolation, singleton safety, no shared
-state corruption.
+This is a sub-step breakdown if the PR proves too large:
 
-### Phase 3: Dataset replay
+- **PR 2a:** `Move UidMapHandler to Project instance scope`
+- **PR 2b:** `Move ConstraintsHandler to Analysis instance scope`
+- **PR 2c:** `Remove SingletonBase if unused`
 
-- Add `apply_params_from_csv()` to `Project`.
-- Load a specific CSV row, override parameter values in the live
-  project.
-- Reload data from the file path in the CSV row.
-- Allow `plot_meas_vs_calc()` to work with the replayed state.
+#### PR 3 — Implement Project.load() (issue #1)
 
-### Phase 4: CSV output for existing single-fit mode
+> **Title:** `Implement Project.load() from CIF directory`
+>
+> **Description:** Implement `Project.load(dir_path)` that reads
+> `project.cif`, `structures/*.cif`, `experiments/*.cif`, and
+> `analysis/analysis.cif` from the project directory and reconstructs the
+> full project state. Handle the old layout (`analysis.cif` at root) as a
+> fallback. Add integration test: save → load → compare all parameter
+> values.
 
-- Update the existing single-fit loop in `Analysis.fit()` to write
-  results to `analysis/results.csv` as well (same CSV format).
-- This gives backward compatibility: `ed-17.py` style workflows also get
-  persistent CSV output and can use the unified `plot_param_series()`.
+**Why third:** the CIF round-trip reliability that `load()` proves is
+the same reliability that `fit_sequential` workers depend on (they
+reconstruct a project from CIF strings). Implementing `load()` forces
+us to fix any serialisation gaps before they become worker bugs. Phase 3
+(dataset replay) also directly uses `load()`.
 
-### Phase 5 (optional): max_workers on existing fit()
+### Sequential-fitting prerequisite PRs
 
-- Add `max_workers` parameter to `Analysis.fit()`.
-- When `fit_mode == 'single'` and `max_workers > 1`, serialise
-  pre-loaded experiments and dispatch to the same worker pool.
+#### PR 4 — Switch alias param_uid to param_unique_name (§ 9.1)
+
+> **Title:** `Use unique_name instead of random UID in aliases`
+>
+> **Description:** Rename `Alias._param_uid` to
+> `Alias._param_unique_name`. Update `CifHandler` names. Change
+> `ConstraintsHandler` to resolve parameters via `unique_name` lookup
+> instead of UID. Update `ed-17.py` tutorial and all tests that create
+> aliases.
+
+#### PR 5 — Fix CIF collection truncation (§ 9.2)
+
+> **Title:** `Remove max_display truncation from CIF serialisation`
+>
+> **Description:** Remove `max_display=20` from
+> `category_collection_to_cif`. Add truncation only in display methods
+> (`show_as_cif()`). Ensures experiments with many background/data points
+> survive CIF round-trips.
+
+#### PR 6 — Verify CIF round-trip for experiments (§ 9.3)
+
+> **Title:** `Add CIF round-trip integration test for experiments`
+>
+> **Description:** Write an integration test that creates a fully
+> configured experiment (instrument, peak, background, excluded regions,
+> linked phases, data), serialises to CIF, reconstructs from CIF, and
+> asserts all parameter values match. Fix any parameters that don't
+> survive the round-trip.
+
+#### PR 7 — Move analysis.cif into analysis/ directory (§ 9.6)
+
+> **Title:** `Move analysis.cif into analysis/ directory`
+>
+> **Description:** Update `Project.save()` to write `analysis.cif` to
+> `project_dir/analysis/analysis.cif`. Update `Project.load()` to read
+> from the new path (with fallback to old path). Update docs
+> (`architecture.md`, `project.md`), tests, and console output messages.
+
+#### PR 8 — Add destination to extract_data_paths_from_zip (§ 9.4)
+
+> **Title:** `Add destination parameter to extract_data_paths_from_zip`
+>
+> **Description:** Add optional `destination` keyword to
+> `extract_data_paths_from_zip`. When provided, extracts to the given
+> directory instead of a temp dir. Enables clean two-step workflow:
+> extract ZIP → pass directory to `fit_sequential()`.
+
+### Sequential-fitting core PRs
+
+#### PR 9 — Streaming sequential fit (max_workers=1)
+
+> **Title:** `Add fit_sequential() for streaming single-worker fitting`
+>
+> **Description:** Add `Analysis.fit_sequential(data_dir, ...)` method.
+> Implements: `SequentialFitTemplate` dataclass, `_fit_worker()` plain
+> function (called directly, no subprocess), CSV writing with
+> `csv.DictWriter`, crash recovery (read CSV + resume), parameter
+> propagation (last successful → next iteration). Include
+> `extract_diffrn` callback support for metadata columns. Unit tests for
+> CSV writing, crash recovery, parameter propagation.
+
+This is a sub-step breakdown if the PR proves too large:
+
+- **PR 9a:** `Add SequentialFitTemplate and _fit_worker function` —
+  dataclass, worker function, no CSV, no recovery.
+- **PR 9b:** `Add CSV output and crash recovery to fit_sequential` —
+  CSV writing, reading, resumption logic.
+- **PR 9c:** `Add parameter propagation and extract_diffrn callback` —
+  chunk-to-chunk seeding, diffrn metadata columns.
+
+#### PR 10 — Update plot_param_series to read from CSV
+
+> **Title:** `Unify plot_param_series to always read from CSV`
+>
+> **Description:** Refactor `plot_param_series()` to read from
+> `project_dir/analysis/results.csv` instead of in-memory
+> `_parameter_snapshots`. Works for both `fit_sequential()` (Phase 1+)
+> and existing `fit()` single-mode (Phase 4). Remove the old
+> `_parameter_snapshots` dict.
+
+#### PR 11 — Parallel fitting (max_workers > 1)
+
+> **Title:** `Add multiprocessing support to fit_sequential`
+>
+> **Description:** Refactor `_fit_worker()` to be module-level picklable.
+> Add `ProcessPoolExecutor` dispatch with `spawn` context. Handle worker
+> failures (catch exceptions, mark as failed in CSV). Add
+> `max_workers='auto'` support (`os.cpu_count()`). Integration test:
+> parallel sequential fit (10 files, 2 workers).
+
+### Post-sequential PRs
+
+#### PR 12 — Dataset replay from CSV
+
+> **Title:** `Add apply_params_from_csv() for dataset replay`
+>
+> **Description:** Add `Project.apply_params_from_csv(row_index)` that
+> loads a CSV row, overrides parameter values in the live project, and
+> reloads data from the file path in that row. Enables
+> `plot_meas_vs_calc()` for any previously fitted dataset.
+
+#### PR 13 — CSV output for existing single-fit mode
+
+> **Title:** `Write results.csv from existing single-fit mode`
+>
+> **Description:** Update the existing `Analysis.fit()` single-mode loop
+> to write results to `analysis/results.csv` (same CSV format as
+> `fit_sequential`). This gives `ed-17.py`-style workflows persistent CSV
+> output and unified `plot_param_series()`.
+
+#### PR 14 (optional) — Parallel single-fit for pre-loaded experiments
+
+> **Title:** `Add max_workers to Analysis.fit() for pre-loaded experiments`
+>
+> **Description:** Add `max_workers` parameter to `Analysis.fit()`. When
+> `fit_mode == 'single'` and `max_workers > 1`, serialise pre-loaded
+> experiments and dispatch to the same worker pool used by
+> `fit_sequential`. Reuses the same `_fit_worker` and
+> `SequentialFitTemplate` infrastructure.
+
+### Dependency graph
+
+```
+PR 1 (issue #7: eliminate dummy Experiments)
+  └─► PR 2 (issue #4: singletons → instance-owned)
+        └─► PR 3 (issue #1: Project.load)
+              └─► PR 4 (alias unique_name)
+                    └─► PR 5 (CIF truncation)
+                          └─► PR 6 (CIF round-trip test)
+                                ├─► PR 7 (analysis.cif → analysis/)
+                                │     └─► PR 9 (streaming sequential fit)
+                                │           ├─► PR 10 (plot from CSV)
+                                │           │     └─► PR 13 (CSV for existing fit)
+                                │           └─► PR 11 (parallel fitting)
+                                │                 └─► PR 14 (optional: parallel fit())
+                                └─► PR 8 (zip destination)
+                                      └─► PR 12 (dataset replay)
+```
+
+Note: PRs 4–8 are largely independent of each other and can be
+parallelised or reordered as long as PRs 1–3 are done first and PRs 4–6
+are done before PR 9.
 
 ---
 
@@ -1072,24 +1213,23 @@ are all stdlib.
 
 ### Risks
 
-| Risk                                             | Mitigation                                               |
-| ------------------------------------------------ | -------------------------------------------------------- |
-| CIF round-trip loses information                 | Prerequisite § 9.3 verifies and fixes before Phase 1     |
-| CIF collection truncation at 20 rows             | Prerequisite § 9.2 fixes before Phase 1                  |
-| Worker memory leak (large N, long-running pool)  | Use `max_tasks_per_child=100` on the pool                |
-| Pickling failures for SequentialFitTemplate      | Keep it a plain dataclass with only str/dict/list fields |
-| crysfml Fortran global state in forked processes | Enforced `spawn` context avoids fork issues              |
+| Risk                                             | Mitigation                                             |
+| ------------------------------------------------ | ------------------------------------------------------ |
+| CIF round-trip loses information                 | PR 3 (load) + PR 6 (round-trip test) verify before PR 9|
+| CIF collection truncation at 20 rows             | PR 5 fixes before PR 9                                 |
+| Worker memory leak (large N, long-running pool)  | Use `max_tasks_per_child=100` on the pool              |
+| Pickling failures for SequentialFitTemplate      | Keep it a plain dataclass with only str/dict/list fields|
+| crysfml Fortran global state in forked processes | Enforced `spawn` context avoids fork issues            |
 
-### Related open issues
+### Resolved open issues (now prerequisites)
 
-- **Issue #1 (Project.load):** `fit_sequential` does not depend on
-  `load()`, but Phase 3 (dataset replay) benefits from it.
-- **Issue #7 (dummy Experiments wrapper):** `fit_sequential` bypasses
-  this entirely — each worker creates its own `Experiments`.
-- **Issue #4 (constraint refresh):** the worker's fresh project applies
-  constraints from scratch — no stale state. The prerequisite § 9.1
-  (unique_name-based aliases) also improves constraint robustness in the
-  main process.
+- **Issue #7 (dummy Experiments wrapper):** resolved in PR 1. The worker
+  uses the clean `Fitter.fit(structures, [experiment])` API.
+- **Issue #4 (constraint refresh) + § 9.5 (singletons):** resolved in
+  PR 2. Instance-owned constraint engine eliminates stale state.
+- **Issue #1 (Project.load):** resolved in PR 3. CIF round-trip
+  reliability is proven before workers depend on it. Dataset replay
+  (PR 12) uses `load()` directly.
 
 ---
 
@@ -1112,4 +1252,4 @@ are all stdlib.
 | Project layout      | `analysis.cif` moves into `analysis/` directory                |
 | Singletons          | Replace with instance-owned state (recommended prerequisite)   |
 | New dependencies    | None (stdlib only)                                             |
-| First step          | Phase 0 (prerequisites) then Phase 1 (sequential, no parallel) |
+| First step          | PRs 1–3 (foundation issues), then PRs 4–8 (prerequisites), then PR 9+ |
