@@ -250,11 +250,11 @@ for expt in project.experiments:
 # %%
 project.analysis.aliases.create(
     label='biso_Co1',
-    param_uid=structure.atom_sites['Co1'].b_iso.uid,
+    param=structure.atom_sites['Co1'].b_iso,
 )
 project.analysis.aliases.create(
     label='biso_Co2',
-    param_uid=structure.atom_sites['Co2'].b_iso.uid,
+    param=structure.atom_sites['Co2'].b_iso,
 )
 
 # %% [markdown]

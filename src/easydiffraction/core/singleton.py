@@ -3,11 +3,8 @@
 
 from typing import Any
 from typing import Self
-from typing import TypeVar
 
 from asteval import Interpreter
-
-T = TypeVar('T', bound='SingletonBase')
 
 # ======================================================================
 
@@ -33,54 +30,6 @@ class SingletonBase:
 # ======================================================================
 
 
-class UidMapHandler(SingletonBase):
-    """Global handler to manage UID-to-Parameter object mapping."""
-
-    def __init__(self) -> None:
-        # Internal map: uid (str) → Parameter instance
-        self._uid_map: dict[str, Any] = {}
-
-    def get_uid_map(self) -> dict[str, Any]:
-        """Return the current UID-to-Parameter map."""
-        return self._uid_map
-
-    def add_to_uid_map(self, parameter: object) -> None:
-        """
-        Add a single Parameter or Descriptor object to the UID map.
-
-        Only Descriptor or Parameter instances are allowed (not
-        Components or others).
-        """
-        from easydiffraction.core.variable import GenericDescriptorBase  # noqa: PLC0415
-
-        if not isinstance(parameter, GenericDescriptorBase):
-            msg = (
-                f'Cannot add object of type {type(parameter).__name__} to UID map. '
-                'Only Descriptor or Parameter instances are allowed.'
-            )
-            raise TypeError(msg)
-        self._uid_map[parameter.uid] = parameter
-
-    def replace_uid(self, old_uid: str, new_uid: str) -> None:
-        """
-        Replace an existing UID key in the UID map with a new UID.
-
-        Moves the associated parameter from old_uid to new_uid. Raises a
-        KeyError if the old_uid doesn't exist.
-        """
-        if old_uid not in self._uid_map:
-            # Only raise if old_uid is not None and not empty
-            print('DEBUG: replace_uid failed', old_uid, 'current map:', list(self._uid_map.keys()))
-            msg = f"UID '{old_uid}' not found in the UID map."
-            raise KeyError(msg)
-        self._uid_map[new_uid] = self._uid_map.pop(old_uid)
-
-    # TODO: Implement removing from the UID map
-
-
-# ======================================================================
-
-
 # TODO: Implement changing atrr '.constrained' back to False
 #  when removing constraints
 class ConstraintsHandler(SingletonBase):
@@ -94,7 +43,7 @@ class ConstraintsHandler(SingletonBase):
 
     def __init__(self) -> None:
         # Maps alias names
-        # (like 'biso_La') → ConstraintAlias(param=Parameter)
+        # (like 'biso_La') → Alias(param=Parameter)
         self._alias_to_param: dict[str, Any] = {}
 
         # Stores raw user-defined constraints indexed by lhs_alias
@@ -106,7 +55,7 @@ class ConstraintsHandler(SingletonBase):
 
     def set_aliases(self, aliases: object) -> None:
         """
-        Set the alias map (name → parameter wrapper).
+        Set the alias map (name → alias wrapper).
 
         Called when user registers parameter aliases like:
         alias='biso_La', param=model.atom_sites['La'].b_iso
@@ -137,25 +86,21 @@ class ConstraintsHandler(SingletonBase):
 
     def apply(self) -> None:
         """
-        Evaluate constraints and applies them to dependent parameters.
+        Evaluate constraints and apply them to dependent parameters.
 
-        For each constraint: - Evaluate RHS using current values of
-        aliases - Locate the dependent parameter by alias → uid → param
+        For each constraint:
+        - Evaluate RHS using current values of aliased parameters
+        - Locate the dependent parameter via direct alias reference
         - Update its value and mark it as constrained
         """
         if not self._parsed_constraints:
             return  # Nothing to apply
 
-        # Retrieve global UID → Parameter object map
-        uid_map = UidMapHandler.get().get_uid_map()
-
         # Prepare a flat dict of {alias: value} for use in expressions
         param_values = {}
         for alias, alias_obj in self._alias_to_param.items():
-            uid = alias_obj.param_uid.value
-            param = uid_map[uid]
-            value = param.value
-            param_values[alias] = value
+            param = alias_obj.param
+            param_values[alias] = param.value
 
         # Create an asteval interpreter for safe expression evaluation
         ae = Interpreter()
@@ -167,8 +112,7 @@ class ConstraintsHandler(SingletonBase):
                 rhs_value = ae(rhs_expr)
 
                 # Get the actual parameter object we want to update
-                dependent_uid = self._alias_to_param[lhs_alias].param_uid.value
-                param = uid_map[dependent_uid]
+                param = self._alias_to_param[lhs_alias].param
 
                 # Update its value and mark it as constrained
                 param._set_value_constrained(rhs_value)

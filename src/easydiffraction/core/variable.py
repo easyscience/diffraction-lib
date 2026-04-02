@@ -3,15 +3,12 @@
 
 from __future__ import annotations
 
-import secrets
-import string
 from typing import TYPE_CHECKING
 
 import numpy as np
 
 from easydiffraction.core.diagnostic import Diagnostics
 from easydiffraction.core.guard import GuardedBase
-from easydiffraction.core.singleton import UidMapHandler
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
@@ -287,9 +284,6 @@ class GenericParameter(GenericNumericDescriptor):
         self._constrained_spec = self._BOOL_SPEC_TEMPLATE
         self._constrained = self._constrained_spec.default
 
-        self._uid: str = self._generate_uid()
-        UidMapHandler.get().add_to_uid_map(self)
-
     def __str__(self) -> str:
         """Return string representation with uncertainty and free."""
         s = GenericDescriptorBase.__str__(self)
@@ -301,21 +295,10 @@ class GenericParameter(GenericNumericDescriptor):
         s += f' (free={self.free})'
         return f'<{s}>'
 
-    @staticmethod
-    def _generate_uid(length: int = 16) -> str:
-        letters = string.ascii_lowercase
-        return ''.join(secrets.choice(letters) for _ in range(length))
-
-    @property
-    def uid(self) -> str:
-        """Stable random identifier for this descriptor."""
-        return self._uid
-
     @property
     def _minimizer_uid(self) -> str:
-        """Variant of uid that is safe for minimizer engines."""
-        # return self.unique_name.replace('.', '__')
-        return self.uid
+        """Variant of unique_name that is safe for minimizer engines."""
+        return self.unique_name.replace('.', '__')
 
     @property
     def constrained(self) -> bool:

@@ -255,11 +255,11 @@ for point in expt.background:
 # %%
 project.analysis.aliases.create(
     label='biso_Co1',
-    param_uid=project.structures['cosio'].atom_sites['Co1'].b_iso.uid,
+    param=project.structures['cosio'].atom_sites['Co1'].b_iso,
 )
 project.analysis.aliases.create(
     label='biso_Co2',
-    param_uid=project.structures['cosio'].atom_sites['Co2'].b_iso.uid,
+    param=project.structures['cosio'].atom_sites['Co2'].b_iso,
 )
 
 # %% [markdown]

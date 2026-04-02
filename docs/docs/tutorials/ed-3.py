@@ -567,11 +567,11 @@ project.save_as(dir_path='lbco_hrpt', temporary=True)
 # %%
 project.analysis.aliases.create(
     label='biso_La',
-    param_uid=project.structures['lbco'].atom_sites['La'].b_iso.uid,
+    param=project.structures['lbco'].atom_sites['La'].b_iso,
 )
 project.analysis.aliases.create(
     label='biso_Ba',
-    param_uid=project.structures['lbco'].atom_sites['Ba'].b_iso.uid,
+    param=project.structures['lbco'].atom_sites['Ba'].b_iso,
 )
 
 # %% [markdown]
@@ -636,11 +636,11 @@ project.save_as(dir_path='lbco_hrpt', temporary=True)
 # %%
 project.analysis.aliases.create(
     label='occ_La',
-    param_uid=project.structures['lbco'].atom_sites['La'].occupancy.uid,
+    param=project.structures['lbco'].atom_sites['La'].occupancy,
 )
 project.analysis.aliases.create(
     label='occ_Ba',
-    param_uid=project.structures['lbco'].atom_sites['Ba'].occupancy.uid,
+    param=project.structures['lbco'].atom_sites['Ba'].occupancy,
 )
 
 # %% [markdown]
