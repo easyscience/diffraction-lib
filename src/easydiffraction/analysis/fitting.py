@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 from typing import Any
 
@@ -9,12 +11,12 @@ import numpy as np
 from easydiffraction.analysis.fit_helpers.metrics import get_reliability_inputs
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 from easydiffraction.core.variable import Parameter
-from easydiffraction.datablocks.experiment.collection import Experiments
-from easydiffraction.datablocks.structure.collection import Structures
 from easydiffraction.utils.enums import VerbosityEnum
 
 if TYPE_CHECKING:
     from easydiffraction.analysis.fit_helpers.reporting import FitResults
+    from easydiffraction.datablocks.experiment.item.base import ExperimentBase
+    from easydiffraction.datablocks.structure.collection import Structures
 
 
 class Fitter:
@@ -29,7 +31,7 @@ class Fitter:
     def fit(
         self,
         structures: Structures,
-        experiments: Experiments,
+        experiments: list[ExperimentBase],
         weights: np.ndarray | None = None,
         analysis: object = None,
         verbosity: VerbosityEnum = VerbosityEnum.FULL,
@@ -45,17 +47,25 @@ class Fitter:
         ----------
         structures : Structures
             Collection of structures.
-        experiments : Experiments
-            Collection of experiments.
+        experiments : list[ExperimentBase]
+            List of experiments to fit.
         weights : np.ndarray | None, default=None
-            Optional weights for joint fitting.
+            Per-experiment weights as a 1-D array (length must match
+            *experiments*). When ``None``, equal weights are used.
         analysis : object, default=None
             Optional Analysis object to update its categories during
             fitting.
         verbosity : VerbosityEnum, default=VerbosityEnum.FULL
             Console output verbosity.
         """
-        params = structures.free_parameters + experiments.free_parameters
+        expt_free_params: list[Parameter] = []
+        for expt in experiments:
+            expt_free_params.extend(
+                p
+                for p in expt.parameters
+                if isinstance(p, Parameter) and not p.constrained and p.free
+            )
+        params = structures.free_parameters + expt_free_params
 
         if not params:
             print('⚠️ No parameters selected for fitting.')
@@ -93,7 +103,7 @@ class Fitter:
     def _process_fit_results(
         self,
         structures: Structures,
-        experiments: Experiments,
+        experiments: list[ExperimentBase],
     ) -> None:
         """
         Collect reliability inputs and display fit results.
@@ -107,8 +117,8 @@ class Fitter:
         ----------
         structures : Structures
             Collection of structures.
-        experiments : Experiments
-            Collection of experiments.
+        experiments : list[ExperimentBase]
+            List of experiments.
         """
         y_obs, y_calc, y_err = get_reliability_inputs(
             structures,
@@ -127,35 +137,12 @@ class Fitter:
                 f_calc=f_calc,
             )
 
-    def _collect_free_parameters(
-        self,
-        structures: Structures,
-        experiments: Experiments,
-    ) -> list[Parameter]:
-        """
-        Collect free parameters from structures and experiments.
-
-        Parameters
-        ----------
-        structures : Structures
-            Collection of structures.
-        experiments : Experiments
-            Collection of experiments.
-
-        Returns
-        -------
-        list[Parameter]
-            List of free parameters.
-        """
-        free_params: list[Parameter] = structures.free_parameters + experiments.free_parameters
-        return free_params
-
     def _residual_function(
         self,
         engine_params: dict[str, Any],
         parameters: list[Parameter],
         structures: Structures,
-        experiments: Experiments,
+        experiments: list[ExperimentBase],
         weights: np.ndarray | None = None,
         analysis: object = None,
     ) -> np.ndarray:
@@ -173,10 +160,11 @@ class Fitter:
             List of parameters being optimized.
         structures : Structures
             Collection of structures.
-        experiments : Experiments
-            Collection of experiments.
+        experiments : list[ExperimentBase]
+            List of experiments.
         weights : np.ndarray | None, default=None
-            Optional weights for joint fitting.
+            Per-experiment weights as a 1-D array. When ``None``, equal
+            weights are used.
         analysis : object, default=None
             Optional Analysis object to update its categories during
             fitting.
@@ -199,25 +187,18 @@ class Fitter:
             analysis._update_categories(called_by_minimizer=True)
 
         # Prepare weights for joint fitting
-        num_expts: int = len(experiments.names)
-        if weights is None:
-            _weights = np.ones(num_expts)
-        else:
-            _weights_list: list[float] = []
-            for name in experiments.names:
-                _weight = weights[name].weight.value
-                _weights_list.append(_weight)
-            _weights = np.array(_weights_list, dtype=np.float64)
+        num_expts: int = len(experiments)
+        _weights = np.ones(num_expts) if weights is None else np.asarray(weights, dtype=np.float64)
 
         # Normalize weights so they sum to num_expts
         # We should obtain the same reduced chi_squared when a single
         # dataset is split into two parts and fit together. If weights
         # sum to one, then reduced chi_squared will be half as large as
         # expected.
-        _weights *= num_expts / np.sum(_weights)
+        _weights = _weights * (num_expts / np.sum(_weights))
         residuals: list[float] = []
 
-        for experiment, weight in zip(experiments.values(), _weights, strict=True):
+        for experiment, weight in zip(experiments, _weights, strict=True):
             # Update experiment-specific calculations
             experiment._update_categories(called_by_minimizer=True)
 

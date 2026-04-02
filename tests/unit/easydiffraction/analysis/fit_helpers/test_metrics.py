@@ -43,14 +43,10 @@ def test_get_reliability_inputs_collects_arrays_with_default_su():
         def _update_categories(self, called_by_minimizer=False):
             pass
 
-    class Expts(dict):
-        def values(self):
-            return [Expt()]
-
     class DummyStructures(dict):
         pass
 
-    y_obs, y_calc, y_err = M.get_reliability_inputs(DummyStructures(), Expts())
+    y_obs, y_calc, y_err = M.get_reliability_inputs(DummyStructures(), [Expt()])
     assert y_obs.shape == (2,)
     assert y_calc.shape == (2,)
     assert y_err.shape == (2,)

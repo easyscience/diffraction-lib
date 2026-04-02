@@ -147,6 +147,9 @@ def test_show_fit_results_calls_process_fit_results(monkeypatch):
         class experiments_cls:
             names = []
 
+            def values(self):
+                return []
+
         experiments = experiments_cls()
 
     project = MockProject()

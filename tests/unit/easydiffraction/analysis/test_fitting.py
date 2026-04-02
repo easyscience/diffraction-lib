@@ -13,15 +13,11 @@ def test_module_import():
 def test_fitter_early_exit_when_no_params(capsys, monkeypatch):
     from easydiffraction.analysis.fitting import Fitter
 
-    class DummyCollection:
+    class DummyStructures:
         free_parameters = []
 
-        def __init__(self):
-            self._names = ['e1']
-
-        @property
-        def names(self):
-            return self._names
+    class DummyExperiment:
+        parameters = []
 
     class DummyMin:
         tracker = type('T', (), {'track': staticmethod(lambda a, b: a)})()
@@ -32,7 +28,7 @@ def test_fitter_early_exit_when_no_params(capsys, monkeypatch):
     f = Fitter()
     # Avoid creating a real minimizer
     f.minimizer = DummyMin()
-    f.fit(structures=DummyCollection(), experiments=DummyCollection())
+    f.fit(structures=DummyStructures(), experiments=[DummyExperiment()])
     out = capsys.readouterr().out
     assert 'No parameters selected for fitting' in out
 
@@ -50,15 +46,11 @@ def test_fitter_fit_does_not_call_process_fit_results(monkeypatch):
         value = 1.0
         _fit_start_value = None
 
-    class DummyCollection:
+    class DummyStructures:
         free_parameters = [DummyParam()]
 
-        def __init__(self):
-            self._names = ['e1']
-
-        @property
-        def names(self):
-            return self._names
+    class DummyExperiment:
+        parameters = []
 
     class MockFitResults:
         pass
@@ -84,7 +76,7 @@ def test_fitter_fit_does_not_call_process_fit_results(monkeypatch):
 
     monkeypatch.setattr(f, '_process_fit_results', mock_process)
 
-    f.fit(structures=DummyCollection(), experiments=DummyCollection())
+    f.fit(structures=DummyStructures(), experiments=[DummyExperiment()])
 
     assert not process_called['called'], (
         'Fitter.fit() should not call _process_fit_results automatically. '
