@@ -11,8 +11,6 @@
 # ## Import Library
 
 # %%
-import pandas as pd
-
 import easydiffraction as ed
 
 # %% [markdown]
@@ -259,9 +257,7 @@ project.analysis.aliases.create(
 # Set constraints.
 
 # %%
-project.analysis.constraints.create(
-    expression='biso_Co2 = biso_Co1',
-)
+project.analysis.constraints.create(expression='biso_Co2 = biso_Co1')
 
 # %% [markdown]
 # #### Run Single Fitting
@@ -277,6 +273,14 @@ project.analysis.fit()
 # %% [markdown]
 # #### Run Sequential Fitting
 #
+# Set output verbosity level to "short" to show only one-line status
+# messages during the analysis process.
+
+# %%
+project.verbosity = 'short'
+
+# %% [markdown]
+#
 # Define a callback that extracts the temperature from each data file.
 
 
@@ -288,13 +292,6 @@ def extract_diffrn(file_path):
     )
     return {'ambient_temperature': temperature}
 
-
-# %% [markdown]
-# Set output verbosity level to "short" to show only one-line status
-# messages during the analysis process.
-
-# %%
-project.verbosity = 'short'
 
 # %% [markdown]
 # Run the sequential fit over all data files in the scan directory.
@@ -312,9 +309,7 @@ project.analysis.fit_sequential(
 # Apply fitted parameters from the last CSV row and plot the result.
 
 # %%
-csv_path = project.info.path / 'analysis' / 'results.csv'
-n_rows = len(pd.read_csv(csv_path))
-project.apply_params_from_csv(row_index=n_rows - 1)
+project.apply_params_from_csv(row_index=-1)
 project.plot_meas_vs_calc(expt_name='d20', show_residual=True)
 
 # %% [markdown]

@@ -377,7 +377,8 @@ class Project(GuardedBase):
         Parameters
         ----------
         row_index : int
-            0-based row index in the CSV file.
+            Row index in the CSV file. Supports Python-style negative
+            indexing (e.g. ``-1`` for the last row).
 
         Raises
         ------
@@ -401,8 +402,14 @@ class Project(GuardedBase):
             raise FileNotFoundError(msg)
 
         df = pd.read_csv(csv_path)
-        if row_index < 0 or row_index >= len(df):
-            msg = f'Row index {row_index} out of range (CSV has {len(df)} rows).'
+        n_rows = len(df)
+
+        # Support Python-style negative indexing
+        if row_index < 0:
+            row_index += n_rows
+
+        if row_index < 0 or row_index >= n_rows:
+            msg = f'Row index {row_index} out of range (CSV has {n_rows} rows).'
             raise IndexError(msg)
 
         row = df.iloc[row_index]
@@ -439,6 +446,13 @@ class Project(GuardedBase):
             base_name = col_name.removesuffix('.uncertainty')
             if base_name in param_map and pd.notna(row[col_name]):
                 param_map[base_name].uncertainty = float(row[col_name])
+
+        # 4. Force recalculation: data was replaced directly (bypassing
+        #    value setters), so the dirty flag may not be set.
+        for structure in self.structures:
+            structure._need_categories_update = True
+        for experiment in self.experiments.values():
+            experiment._need_categories_update = True
 
         log.info(f'Applied parameters from CSV row {row_index} (file: {file_path}).')
 
