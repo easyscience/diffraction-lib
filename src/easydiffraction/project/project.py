@@ -299,6 +299,11 @@ class Project(GuardedBase):
         console.paragraph(f"Saving project 📦 '{self.name}' to")
         console.print(self.info.path.resolve())
 
+        # Apply constraints so dependent parameters are flagged
+        # before serialization (constrained params are written
+        # without brackets).
+        self._analysis._update_categories()
+
         # Ensure project directory exists
         self._info.path.mkdir(parents=True, exist_ok=True)
 

@@ -156,6 +156,11 @@ def category_collection_to_cif(
         When set to a positive integer, truncate the output to at most
         this many rows (half from the start, half from the end) with an
         ``...`` separator.  ``None`` emits all rows.
+
+    Returns
+    -------
+    str
+        CIF text representing the collection as a loop.
     """
     if not len(collection):
         return ''
