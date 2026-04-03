@@ -956,6 +956,8 @@
       
         
       
+        
+      
     
     
     
@@ -995,6 +997,34 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/ed-18/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LBCO quick load
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -10070,13 +10100,16 @@ a terminal Live context).</p>
 
         <p>Parse a <abbr title="Crystallographic Information File.">CIF</abbr>-style numeric string into a ufloat.</p>
 <p>Examples of supported input: - "3.566" → ufloat(3.566, nan) -
-"3.566(2)" → ufloat(3.566, 0.002) - None → ufloat(default, nan)</p>
+"3.566(2)" → ufloat(3.566, 0.002) - "3.566()" → ufloat(3.566, 0.0) -
+None → ufloat(default, nan)</p>
 <p>Behavior: - If the input string contains a value with parentheses
 (e.g. "3.566(2)"), the number in parentheses is interpreted as an
-estimated standard deviation (esd) in the last digit(s). - If the
-input string has no parentheses, an uncertainty of NaN is assigned
-to indicate "no esd provided". - If parsing fails, the function
-falls back to the given <code>default</code> value with uncertainty NaN.</p>
+estimated standard deviation (esd) in the last digit(s). - Empty
+parentheses (e.g. "3.566()") are treated as zero uncertainty. - If
+the input string has no parentheses, an uncertainty of NaN is
+assigned to indicate "no esd provided". - If parsing fails, the
+function falls back to the given <code>default</code> value with uncertainty
+NaN.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -10102,7 +10135,8 @@ falls back to the given <code>default</code> value with uncertainty NaN.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Numeric string in <abbr title="Crystallographic Information File.">CIF</abbr> format (e.g. "3.566", "3.566(2)") or None.</p>
+                <p>Numeric string in <abbr title="Crystallographic Information File.">CIF</abbr> format (e.g. "3.566", "3.566(2)",
+"3.566()") or None.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -10201,24 +10235,35 @@ parsing failed.</p>
 <span class="normal">736</span>
 <span class="normal">737</span>
 <span class="normal">738</span>
-<span class="normal">739</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">str_to_ufloat</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UFloat</span><span class="p">:</span>
+<span class="normal">739</span>
+<span class="normal">740</span>
+<span class="normal">741</span>
+<span class="normal">742</span>
+<span class="normal">743</span>
+<span class="normal">744</span>
+<span class="normal">745</span>
+<span class="normal">746</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">str_to_ufloat</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UFloat</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parse a CIF-style numeric string into a ufloat.</span>
 
 <span class="sd">    Examples of supported input: - &quot;3.566&quot; → ufloat(3.566, nan) -</span>
-<span class="sd">    &quot;3.566(2)&quot; → ufloat(3.566, 0.002) - None → ufloat(default, nan)</span>
+<span class="sd">    &quot;3.566(2)&quot; → ufloat(3.566, 0.002) - &quot;3.566()&quot; → ufloat(3.566, 0.0) -</span>
+<span class="sd">    None → ufloat(default, nan)</span>
 
 <span class="sd">    Behavior: - If the input string contains a value with parentheses</span>
 <span class="sd">    (e.g. &quot;3.566(2)&quot;), the number in parentheses is interpreted as an</span>
-<span class="sd">    estimated standard deviation (esd) in the last digit(s). - If the</span>
-<span class="sd">    input string has no parentheses, an uncertainty of NaN is assigned</span>
-<span class="sd">    to indicate &quot;no esd provided&quot;. - If parsing fails, the function</span>
-<span class="sd">    falls back to the given ``default`` value with uncertainty NaN.</span>
+<span class="sd">    estimated standard deviation (esd) in the last digit(s). - Empty</span>
+<span class="sd">    parentheses (e.g. &quot;3.566()&quot;) are treated as zero uncertainty. - If</span>
+<span class="sd">    the input string has no parentheses, an uncertainty of NaN is</span>
+<span class="sd">    assigned to indicate &quot;no esd provided&quot;. - If parsing fails, the</span>
+<span class="sd">    function falls back to the given ``default`` value with uncertainty</span>
+<span class="sd">    NaN.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    s : str | None</span>
-<span class="sd">        Numeric string in CIF format (e.g. &quot;3.566&quot;, &quot;3.566(2)&quot;) or None.</span>
+<span class="sd">        Numeric string in CIF format (e.g. &quot;3.566&quot;, &quot;3.566(2)&quot;,</span>
+<span class="sd">        &quot;3.566()&quot;) or None.</span>
 <span class="sd">    default : float | None, default=None</span>
 <span class="sd">        Default value to use if ``s`` is None or parsing fails.</span>
 
@@ -10234,6 +10279,9 @@ parsing failed.</p>
 
     <span class="k">if</span> <span class="s1">&#39;(&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">s</span> <span class="ow">and</span> <span class="s1">&#39;)&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
         <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s1">(nan)&#39;</span>
+    <span class="k">elif</span> <span class="n">s</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;()&#39;</span><span class="p">):</span>
+        <span class="c1"># Empty brackets → zero uncertainty (free parameter, no esd yet)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;(0)&#39;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">ufloat_fromstr</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>

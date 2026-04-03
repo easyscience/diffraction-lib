@@ -1,6 +1,6 @@
 data_lbco
 
-_cell.length_a   3.89125178
+_cell.length_a 3.89125178(15674)
 _cell.length_b   3.89125178
 _cell.length_c   3.89125178
 _cell.angle_alpha  90.00000000

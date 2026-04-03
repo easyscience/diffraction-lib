@@ -958,6 +958,8 @@
       
         
       
+        
+      
     
     
     
@@ -997,6 +999,34 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/ed-18/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LBCO quick load
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -7367,7 +7397,7 @@ inserting pre-built structures.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">show_as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Render the CIF text for this structure in the terminal.&quot;&quot;&quot;</span>
         <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Structure 🧩 &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; as cif&quot;</span><span class="p">)</span>
-        <span class="n">render_cif</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">as_cif</span><span class="p">)</span>
+        <span class="n">render_cif</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cif_for_display</span><span class="p">())</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -7624,7 +7654,7 @@ inserting pre-built structures.</p>
 <span class="normal">255</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Render the CIF text for this structure in the terminal.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Structure 🧩 &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; as cif&quot;</span><span class="p">)</span>
-    <span class="n">render_cif</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">as_cif</span><span class="p">)</span>
+    <span class="n">render_cif</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cif_for_display</span><span class="p">())</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
