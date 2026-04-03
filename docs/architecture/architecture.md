@@ -919,6 +919,10 @@ project.experiments['xray_pdf'].peak_profile_type = 'gaussian-damped-sinc'
 - `DatablockItem` = one CIF `data_` block, `DatablockCollection` = set
   of blocks.
 - `CategoryItem` = one CIF category, `CategoryCollection` = CIF loop.
+- **Free-flag encoding**: A parameter's free/fixed status is encoded in
+  CIF via uncertainty brackets. `3.89` = fixed, `3.89(2)` = free with
+  esd, `3.89()` = free without esd. There is no separate list of free
+  parameters; the brackets are the single source of truth.
 
 ### 9.2 Immutability of Experiment Type
 

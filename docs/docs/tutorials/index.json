@@ -117,5 +117,12 @@
     "title": "Structure Refinement: Co2SiO4, D20 (Temperature scan)",
     "description": "Sequential Rietveld refinement of Co2SiO4 using constant wavelength neutron powder diffraction data from D20 at ILL across a temperature scan",
     "level": "advanced"
+  },
+  "18": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-18/ed-18.ipynb",
+    "original_name": "",
+    "title": "Quick Start: LBCO Load Project",
+    "description": "Most minimal example: load a saved project from a directory and run Rietveld refinement of La0.5Ba0.5CoO3",
+    "level": "quick"
   }
 }

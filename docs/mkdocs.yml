@@ -191,6 +191,7 @@ nav:
   - Tutorials:
       - Tutorials: tutorials/index.md
       - Getting Started:
+          - LBCO quick load: tutorials/ed-18.ipynb
           - LBCO quick CIF: tutorials/ed-1.ipynb
           - LBCO quick code: tutorials/ed-2.ipynb
           - LBCO complete: tutorials/ed-3.ipynb

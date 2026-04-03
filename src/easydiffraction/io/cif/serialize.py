@@ -65,15 +65,67 @@ def format_value(value: object) -> str:
 ##################
 
 
+def format_param_value(param: object) -> str:
+    """
+    Format a parameter value for CIF output, encoding the free flag.
+
+    CIF convention for numeric parameters:
+
+    - Fixed or constrained parameter: plain value, e.g. ``3.89090000``
+    - Free parameter without uncertainty: value with empty brackets,
+      e.g. ``3.89090000()``
+    - Free parameter with uncertainty: value with esd in brackets,
+      e.g. ``3.89090000(200000)``
+
+    Constrained (dependent) parameters are always written without
+    brackets, even if their ``free`` flag is ``True``, because they are
+    not independently varied by the minimizer.
+
+    Non-numeric parameters and descriptors without a ``free`` attribute
+    are formatted with :func:`format_value`.
+
+    Parameters
+    ----------
+    param : object
+        A descriptor or parameter exposing ``.value`` and optionally
+        ``.free``, ``.constrained``, and ``.uncertainty``.
+
+    Returns
+    -------
+    str
+        Formatted CIF value string.
+    """
+    is_free = getattr(param, 'free', False)
+    is_constrained = getattr(param, 'constrained', False)
+    value = param.value  # type: ignore[attr-defined]
+
+    if not is_free or is_constrained or not isinstance(value, (int, float)):
+        return format_value(value)
+
+    precision = 8
+    uncertainty = getattr(param, 'uncertainty', None)
+    formatted_value = f'{float(value):.{precision}f}'
+
+    if uncertainty is not None and uncertainty > 0:
+        from uncertainties import ufloat as _ufloat  # noqa: PLC0415
+
+        u = _ufloat(float(value), float(uncertainty))
+        return f'{u:.{precision}fS}'
+
+    return f'{formatted_value}()'
+
+
 def param_to_cif(param: object) -> str:
     """
     Render a single descriptor/parameter to a CIF line.
 
     Expects ``param`` to expose ``_cif_handler.names`` and ``value``.
+    Free parameters are written with uncertainty brackets (see
+    :func:`format_param_value`).
     """
     tags: Sequence[str] = param._cif_handler.names  # type: ignore[attr-defined]
     main_key: str = tags[0]
-    return f'{main_key} {format_value(param.value)}'
+    return f'{main_key} {format_param_value(param)}'
 
 
 def category_item_to_cif(item: object) -> str:
@@ -94,8 +146,7 @@ def category_collection_to_cif(
     """
     Render a CategoryCollection-like object to CIF text.
 
-    Uses first item to build loop header, then emits rows for each
-    item.
+    Uses first item to build loop header, then emits rows for each item.
 
     Parameters
     ----------
@@ -124,17 +175,17 @@ def category_collection_to_cif(
         half_display = max_display // 2
         for i in range(half_display):
             item = list(collection.values())[i]
-            row_vals = [format_value(p.value) for p in item.parameters]
+            row_vals = [format_param_value(p) for p in item.parameters]
             lines.append(' '.join(row_vals))
         lines.append('...')
         for i in range(-half_display, 0):
             item = list(collection.values())[i]
-            row_vals = [format_value(p.value) for p in item.parameters]
+            row_vals = [format_param_value(p) for p in item.parameters]
             lines.append(' '.join(row_vals))
     # No limit
     else:
         for item in collection.values():
-            row_vals = [format_value(p.value) for p in item.parameters]
+            row_vals = [format_param_value(p) for p in item.parameters]
             lines.append(' '.join(row_vals))
 
     return '\n'.join(lines)
@@ -415,11 +466,13 @@ def param_from_cif(
 
     # If numeric, parse with uncertainty if present
     if self._value_type == DataTypes.NUMERIC:
+        has_brackets = '(' in raw
         u = str_to_ufloat(raw)
         self.value = u.n
-        if not np.isnan(u.s) and hasattr(self, 'uncertainty'):
-            self.uncertainty = u.s  # type: ignore[attr-defined]
-            self.free = True  # Mark as free if uncertainty is present
+        if has_brackets and hasattr(self, 'free'):
+            self.free = True  # type: ignore[attr-defined]
+            if not np.isnan(u.s) and hasattr(self, 'uncertainty'):
+                self.uncertainty = u.s  # type: ignore[attr-defined]
 
     # If string, strip quotes if present
     elif self._value_type == DataTypes.STRING:
@@ -520,11 +573,13 @@ def category_collection_from_cif(
 
                     # If numeric, parse with uncertainty if present
                     if param._value_type == DataTypes.NUMERIC:
+                        has_brackets = '(' in raw
                         u = str_to_ufloat(raw)
                         param.value = u.n
-                        if not np.isnan(u.s) and hasattr(param, 'uncertainty'):
-                            param.uncertainty = u.s  # type: ignore[attr-defined]
-                            param.free = True  # Mark as free if uncertainty is present
+                        if has_brackets and hasattr(param, 'free'):
+                            param.free = True  # type: ignore[attr-defined]
+                            if not np.isnan(u.s) and hasattr(param, 'uncertainty'):
+                                param.uncertainty = u.s  # type: ignore[attr-defined]
 
                     # If string, strip quotes if present
                     # TODO: Make a helper function for this

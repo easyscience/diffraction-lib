@@ -116,8 +116,12 @@ def _create_lbco_project() -> Project:
 
 
 def _collect_param_snapshot(project: Project) -> dict[str, float]:
-    """Return ``{unique_name: value}`` for all project parameters."""
-    return {p.unique_name: p.value for p in project.parameters}
+    """Return ``{unique_name: value}`` for model parameters (excluding raw data)."""
+    return {
+        p.unique_name: p.value
+        for p in project.parameters
+        if not p.unique_name.startswith('pd_data.')
+    }
 
 
 def _collect_free_flags(project: Project) -> dict[str, bool]:
@@ -139,6 +143,10 @@ def test_save_load_round_trip_preserves_parameters(tmp_path) -> None:
     Also verifies project info, free flags, aliases, and constraints.
     """
     original = _create_lbco_project()
+    # Apply symmetry constraints so snapshot matches the loaded state
+    # (load() calls _update_categories which applies symmetry).
+    for structure in original.structures:
+        structure._update_categories()
     original_params = _collect_param_snapshot(original)
     original_free = _collect_free_flags(original)
 
