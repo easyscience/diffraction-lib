@@ -1,0 +1,15 @@
+_analysis.fitting_engine         lmfit
+_analysis.fit_mode       single
+
+loop_
+_alias.label
+_alias.param_unique_name
+     biso_La lbco.atom_site.La.b_iso
+     biso_Ba lbco.atom_site.Ba.b_iso
+      occ_La lbco.atom_site.La.occupancy
+      occ_Ba lbco.atom_site.Ba.occupancy
+
+loop_
+_constraint.expression
+"biso_Ba = biso_La"
+"occ_Ba = 1 - occ_La"
