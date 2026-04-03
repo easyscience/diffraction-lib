@@ -1,7 +1,7 @@
 # Sequential Fitting — Architecture Design
 
-**Status:** Implementation in progress (PRs 1–11 complete, PRs 12–14
-remaining) **Date:** 2026-04-02 (updated 2026-04-03)
+**Status:** Implementation in progress (PRs 1–11, 13 complete; PRs 12,
+14 remaining) **Date:** 2026-04-02 (updated 2026-04-03)
 
 ---
 
@@ -1151,7 +1151,7 @@ resolves to `os.cpu_count()`. Integration test
 > reloads data from the file path in that row. Enables
 > `plot_meas_vs_calc()` for any previously fitted dataset.
 
-#### PR 13 — CSV output for existing single-fit mode
+#### PR 13 — CSV output for existing single-fit mode ✅
 
 > **Title:** `Write results.csv from existing single-fit mode`
 >
@@ -1159,6 +1159,14 @@ resolves to `os.cpu_count()`. Integration test
 > to write results to `analysis/results.csv` (same CSV format as
 > `fit_sequential`). This gives `ed-17.py`-style workflows persistent
 > CSV output and unified `plot_param_series()`.
+
+**Implemented:** `Analysis.fit()` single-mode now writes
+`analysis/results.csv` incrementally (one row per experiment) when the
+project has been saved. Reuses `_META_COLUMNS`, `_write_csv_header`, and
+`_append_to_csv` from `sequential.py`. Diffrn metadata and free
+parameter values/uncertainties are written per row. The in-memory
+`_parameter_snapshots` is kept for unsaved-project fallback.
+`plot_param_series()` now uses CSV for saved projects automatically.
 
 #### PR 14 (optional) — Parallel single-fit for pre-loaded experiments
 
@@ -1182,11 +1190,11 @@ PR 1 (issue #7: eliminate dummy Experiments) ✅
                           ├─► PR 7 (analysis.cif → analysis/) ✅
                           │     └─► PR 9 (streaming sequential fit) ✅
                           │           ├─► PR 10 (plot from CSV) ✅
-                          │           │     └─► PR 13 (CSV for existing fit) ← next
+                          │           │     └─► PR 13 (CSV for existing fit) ✅
                           │           └─► PR 11 (parallel fitting) ✅
                           │                 └─► PR 14 (optional: parallel fit())
                           └─► PR 8 (zip destination) ✅
-                                └─► PR 12 (dataset replay)
+                                └─► PR 12 (dataset replay)              ← next
 ```
 
 Note: PR 4 was absorbed into PR 2. PRs 5–8 are largely independent of
@@ -1252,4 +1260,4 @@ are all stdlib.
 | Project layout      | `analysis.cif` moves into `analysis/` directory                                    | ✅     |
 | Singletons          | `UidMapHandler` eliminated; `ConstraintsHandler` stays singleton but always synced | ✅     |
 | New dependencies    | None (stdlib only)                                                                 | ✅     |
-| First step          | PRs 1–11 done; PRs 12–14 remaining                                                 | ✅     |
+| First step          | PRs 1–11, 13 done; PRs 12, 14 remaining                                            | ✅     |

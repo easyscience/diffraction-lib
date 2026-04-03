@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 from contextlib import suppress
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -644,6 +645,44 @@ class Analysis:
             expt_names = experiments.names
             num_expts = len(expt_names)
 
+            # CSV setup: write results if the project has been saved
+            csv_path = None
+            csv_header = None
+            csv_free_names = None
+            csv_diffrn_fields = None
+            if self.project.info.path is not None:
+                from easydiffraction.analysis.sequential import _META_COLUMNS  # noqa: PLC0415
+                from easydiffraction.analysis.sequential import _append_to_csv  # noqa: PLC0415
+                from easydiffraction.analysis.sequential import _write_csv_header  # noqa: PLC0415
+
+                csv_path = Path(self.project.info.path) / 'analysis' / 'results.csv'
+                csv_path.parent.mkdir(parents=True, exist_ok=True)
+
+                all_params = (
+                    self.project.structures.parameters + self.project.experiments.parameters
+                )
+                csv_free_names = [
+                    p.unique_name
+                    for p in all_params
+                    if isinstance(p, Parameter) and not p.constrained and p.free
+                ]
+
+                first_expt = list(experiments.values())[0]
+                csv_diffrn_fields = []
+                if hasattr(first_expt, 'diffrn'):
+                    csv_diffrn_fields = [
+                        p.name
+                        for p in first_expt.diffrn.parameters
+                        if hasattr(p, 'name') and p.name not in ('type',)
+                    ]
+
+                csv_header = list(_META_COLUMNS)
+                csv_header.extend(f'diffrn.{f}' for f in csv_diffrn_fields)
+                for name in csv_free_names:
+                    csv_header.append(name)
+                    csv_header.append(f'{name}.uncertainty')
+                _write_csv_header(csv_path, csv_header)
+
             # Short mode: print header and create display handle once
             short_headers = ['experiment', 'χ²', 'iterations', 'status']
             short_alignments = ['left', 'right', 'right', 'center']
@@ -689,6 +728,25 @@ class Analysis:
                 self._parameter_snapshots[expt_name] = snapshot
                 self.fit_results = results
 
+                # Append row to CSV
+                if csv_path is not None:
+                    row = {
+                        'file_path': expt_name,
+                        'fit_success': results.success,
+                        'chi_squared': results.chi_square,
+                        'reduced_chi_squared': results.reduced_chi_square,
+                        'n_iterations': (self.fitter.minimizer.tracker.best_iteration or 0),
+                    }
+                    if hasattr(experiment, 'diffrn') and csv_diffrn_fields:
+                        for p in experiment.diffrn.parameters:
+                            if hasattr(p, 'name') and p.name not in ('type',):
+                                row[f'diffrn.{p.name}'] = p.value
+                    for uname in csv_free_names:
+                        if uname in snapshot:
+                            row[uname] = snapshot[uname]['value']
+                            row[f'{uname}.uncertainty'] = snapshot[uname]['uncertainty']
+                    _append_to_csv(csv_path, csv_header, [row])
+
                 # Short mode: append one summary row and update in-place
                 if verb is VerbosityEnum.SHORT:
                     chi2_str = (
@@ -716,9 +774,6 @@ class Analysis:
             raise NotImplementedError(msg)
 
         # After fitting, save the project
-        # TODO: Consider saving individual data during sequential
-        #  (single) fitting, instead of waiting until the end and save
-        #  only the last one
         if self.project.info.path is not None:
             self.project.save()
 
