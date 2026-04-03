@@ -335,9 +335,12 @@ class Project(GuardedBase):
                 console.print(f'│   └── 📄 {file_name}')
 
         # Save analysis
-        with (self._info.path / 'analysis.cif').open('w') as f:
+        analysis_dir = self._info.path / 'analysis'
+        analysis_dir.mkdir(parents=True, exist_ok=True)
+        with (analysis_dir / 'analysis.cif').open('w') as f:
             f.write(self.analysis.as_cif())
-            console.print('├── 📄 analysis.cif')
+            console.print('├── 📁 analysis/')
+            console.print('│   └── 📄 analysis.cif')
 
         # Save summary
         with (self._info.path / 'summary.cif').open('w') as f:

@@ -116,27 +116,27 @@ class TestLoadAnalysis:
 class TestLoadAnalysisCifFallback:
     """Load falls back from analysis/analysis.cif to analysis.cif at root."""
 
-    def test_loads_analysis_from_root(self, tmp_path):
-        """Current save layout: analysis.cif at project root."""
+    def test_loads_analysis_from_subdir(self, tmp_path):
+        """Current save layout: analysis/analysis.cif."""
         original = Project(name='fb1')
         original.save_as(str(tmp_path / 'proj'))
 
-        # Verify analysis.cif is at root (current save layout)
-        assert (tmp_path / 'proj' / 'analysis.cif').is_file()
+        # Verify analysis.cif is in analysis/ subdirectory (current save layout)
+        assert (tmp_path / 'proj' / 'analysis' / 'analysis.cif').is_file()
 
         loaded = Project.load(str(tmp_path / 'proj'))
         assert loaded.analysis.current_minimizer == 'lmfit'
 
-    def test_loads_analysis_from_subdir(self, tmp_path):
-        """Future layout: analysis/analysis.cif takes priority."""
+    def test_loads_analysis_from_root_fallback(self, tmp_path):
+        """Old layout fallback: analysis.cif at project root."""
         original = Project(name='fb2')
         original.save_as(str(tmp_path / 'proj'))
 
-        # Move analysis.cif to analysis/ subdirectory
+        # Move analysis.cif from analysis/ subdirectory to project root
         proj_dir = tmp_path / 'proj'
         analysis_dir = proj_dir / 'analysis'
-        analysis_dir.mkdir(exist_ok=True)
-        (proj_dir / 'analysis.cif').rename(analysis_dir / 'analysis.cif')
+        (analysis_dir / 'analysis.cif').rename(proj_dir / 'analysis.cif')
+        analysis_dir.rmdir()
 
         loaded = Project.load(str(proj_dir))
         assert loaded.analysis.current_minimizer == 'lmfit'

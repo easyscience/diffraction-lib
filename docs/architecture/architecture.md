@@ -714,12 +714,13 @@ Projects are saved as a directory of CIF files:
 ```shell
 project_dir/
 ├── project.cif          # ProjectInfo
-├── analysis.cif         # Analysis settings
 ├── summary.cif          # Summary report
 ├── structures/
 │   └── lbco.cif         # One file per structure
-└── experiments/
-    └── hrpt.cif         # One file per experiment
+├── experiments/
+│   └── hrpt.cif         # One file per experiment
+└── analysis/
+    └── analysis.cif     # Analysis settings
 ```
 
 ### 7.3 Verbosity
