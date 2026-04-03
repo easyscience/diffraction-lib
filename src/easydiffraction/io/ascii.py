@@ -13,21 +13,27 @@ from pathlib import Path
 import numpy as np
 
 
-def extract_data_paths_from_zip(zip_path: str | Path) -> list[str]:
+def extract_data_paths_from_zip(
+    zip_path: str | Path,
+    destination: str | Path | None = None,
+) -> list[str]:
     """
     Extract all files from a ZIP archive and return their paths.
 
-    Files are extracted into a temporary directory that persists for the
-    lifetime of the process.  The returned paths are sorted
-    lexicographically by file name so that numbered data files (e.g.
-    ``scan_001.dat``, ``scan_002.dat``) appear in natural order. Hidden
-    files and directories (names starting with ``'.'`` or ``'__'``) are
-    excluded.
+    Files are extracted into *destination* when provided, or into a
+    temporary directory that persists for the lifetime of the process.
+    The returned paths are sorted lexicographically by file name so that
+    numbered data files (e.g. ``scan_001.dat``, ``scan_002.dat``) appear
+    in natural order. Hidden files and directories (names starting with
+    ``'.'`` or ``'__'``) are excluded.
 
     Parameters
     ----------
     zip_path : str | Path
         Path to the ZIP archive.
+    destination : str | Path | None, default=None
+        Directory to extract files into.  When ``None``, a temporary
+        directory is created.
 
     Returns
     -------
@@ -46,8 +52,12 @@ def extract_data_paths_from_zip(zip_path: str | Path) -> list[str]:
         msg = f'ZIP file not found: {zip_path}'
         raise FileNotFoundError(msg)
 
-    # TODO: Unify mkdir with other uses in the code
-    extract_dir = Path(tempfile.mkdtemp(prefix='ed_zip_'))
+    if destination is not None:
+        extract_dir = Path(destination)
+        extract_dir.mkdir(parents=True, exist_ok=True)
+    else:
+        # TODO: Unify mkdir with other uses in the code
+        extract_dir = Path(tempfile.mkdtemp(prefix='ed_zip_'))
 
     with zipfile.ZipFile(zip_path, 'r') as zf:
         zf.extractall(extract_dir)
