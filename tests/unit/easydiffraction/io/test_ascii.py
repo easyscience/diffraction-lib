@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Tests for extract_data_paths_from_zip and extract_data_paths_from_dir."""
+"""Tests for extract_project_from_zip, extract_data_paths_from_zip and extract_data_paths_from_dir."""
 
 from __future__ import annotations
 
@@ -10,6 +10,60 @@ import pytest
 
 from easydiffraction.io.ascii import extract_data_paths_from_dir
 from easydiffraction.io.ascii import extract_data_paths_from_zip
+from easydiffraction.io.ascii import extract_project_from_zip
+
+
+class TestExtractProjectFromZip:
+    """Tests for extract_project_from_zip."""
+
+    def test_extracts_project_dir(self, tmp_path):
+        """Returns path to the directory containing project.cif."""
+        zip_path = tmp_path / 'proj.zip'
+        with zipfile.ZipFile(zip_path, 'w') as zf:
+            zf.writestr('my_project/project.cif', 'data_project\n')
+            zf.writestr('my_project/structures/struct.cif', 'data_struct\n')
+
+        result = extract_project_from_zip(zip_path, destination=tmp_path / 'out')
+
+        assert result.endswith('my_project')
+        assert (tmp_path / 'out' / 'my_project' / 'project.cif').is_file()
+
+    def test_extracts_to_temp_dir_by_default(self, tmp_path):
+        """Without destination, files go to a temp directory."""
+        zip_path = tmp_path / 'proj.zip'
+        with zipfile.ZipFile(zip_path, 'w') as zf:
+            zf.writestr('myproj/project.cif', 'data_project\n')
+
+        result = extract_project_from_zip(zip_path)
+
+        assert 'myproj' in result
+        assert 'project.cif' not in result  # returns parent dir, not file
+
+    def test_raises_file_not_found(self, tmp_path):
+        """Raises FileNotFoundError for missing ZIP path."""
+        with pytest.raises(FileNotFoundError):
+            extract_project_from_zip(tmp_path / 'missing.zip')
+
+    def test_raises_value_error_no_project_cif(self, tmp_path):
+        """Raises ValueError when ZIP has no project.cif."""
+        zip_path = tmp_path / 'bad.zip'
+        with zipfile.ZipFile(zip_path, 'w') as zf:
+            zf.writestr('data.dat', '1 2 3\n')
+
+        with pytest.raises(ValueError, match='No project.cif found'):
+            extract_project_from_zip(zip_path)
+
+    def test_destination_creates_directory(self, tmp_path):
+        """Destination directory is created if it does not exist."""
+        zip_path = tmp_path / 'proj.zip'
+        dest = tmp_path / 'nested' / 'output'
+        with zipfile.ZipFile(zip_path, 'w') as zf:
+            zf.writestr('proj/project.cif', 'data\n')
+
+        result = extract_project_from_zip(zip_path, destination=dest)
+
+        assert dest.is_dir()
+        assert 'proj' in result
 
 
 class TestExtractDataPathsFromZip:

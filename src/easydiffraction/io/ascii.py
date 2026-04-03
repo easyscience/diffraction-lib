@@ -13,6 +13,62 @@ from pathlib import Path
 import numpy as np
 
 
+def extract_project_from_zip(
+    zip_path: str | Path,
+    destination: str | Path | None = None,
+) -> str:
+    """
+    Extract a project directory from a ZIP archive.
+
+    The archive must contain exactly one directory with a
+    ``project.cif`` file.  Files are extracted into *destination* when
+    provided, or into a temporary directory that persists for the
+    lifetime of the process.
+
+    Parameters
+    ----------
+    zip_path : str | Path
+        Path to the ZIP archive containing the project.
+    destination : str | Path | None, default=None
+        Directory to extract into.  When ``None``, a temporary directory
+        is created.
+
+    Returns
+    -------
+    str
+        Absolute path to the extracted project directory (the directory
+        that contains ``project.cif``).
+
+    Raises
+    ------
+    FileNotFoundError
+        If *zip_path* does not exist.
+    ValueError
+        If the archive does not contain a ``project.cif`` file.
+    """
+    zip_path = Path(zip_path)
+    if not zip_path.exists():
+        msg = f'ZIP file not found: {zip_path}'
+        raise FileNotFoundError(msg)
+
+    if destination is not None:
+        extract_dir = Path(destination)
+        extract_dir.mkdir(parents=True, exist_ok=True)
+    else:
+        extract_dir = Path(tempfile.mkdtemp(prefix='ed_zip_'))
+
+    with zipfile.ZipFile(zip_path, 'r') as zf:
+        zf.extractall(extract_dir)
+
+    # Find the project directory (the one containing project.cif)
+    project_cifs = list(extract_dir.rglob('project.cif'))
+    if not project_cifs:
+        msg = f'No project.cif found in ZIP archive: {zip_path}'
+        raise ValueError(msg)
+
+    return str(project_cifs[0].parent.resolve())
+
+
 def extract_data_paths_from_zip(
     zip_path: str | Path,
     destination: str | Path | None = None,

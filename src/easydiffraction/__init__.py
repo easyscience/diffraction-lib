@@ -6,6 +6,7 @@ from easydiffraction.datablocks.structure.item.factory import StructureFactory
 from easydiffraction.io.ascii import extract_data_paths_from_dir
 from easydiffraction.io.ascii import extract_data_paths_from_zip
 from easydiffraction.io.ascii import extract_metadata
+from easydiffraction.io.ascii import extract_project_from_zip
 from easydiffraction.project.project import Project
 from easydiffraction.utils.logging import Logger
 from easydiffraction.utils.logging import console
