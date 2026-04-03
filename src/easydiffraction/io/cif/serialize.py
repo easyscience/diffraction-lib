@@ -35,9 +35,15 @@ def format_value(value: object) -> str:
 
     # Converting
 
+    # None → CIF unknown marker
+    if value is None:
+        value = '?'
     # Convert ints to floats
-    if isinstance(value, int):
+    elif isinstance(value, int):
         value = float(value)
+    # Empty strings → CIF unknown marker
+    elif isinstance(value, str) and not value.strip():
+        value = '?'
     # Strings with whitespace are quoted
     elif isinstance(value, str) and (' ' in value or '\t' in value):
         value = f'"{value}"'
@@ -83,12 +89,22 @@ def category_item_to_cif(item: object) -> str:
 
 def category_collection_to_cif(
     collection: object,
-    max_display: int | None = 20,
+    max_display: int | None = None,
 ) -> str:
     """
     Render a CategoryCollection-like object to CIF text.
 
-    Uses first item to build loop header, then emits rows for each item.
+    Uses first item to build loop header, then emits rows for each
+    item.
+
+    Parameters
+    ----------
+    collection : object
+        A ``CategoryCollection``-like object.
+    max_display : int | None, default=None
+        When set to a positive integer, truncate the output to at most
+        this many rows (half from the start, half from the end) with an
+        ``...`` separator.  ``None`` emits all rows.
     """
     if not len(collection):
         return ''
@@ -104,7 +120,7 @@ def category_collection_to_cif(
 
     # Rows
     # Limit number of displayed rows if requested
-    if len(collection) > max_display:
+    if max_display is not None and len(collection) > max_display:
         half_display = max_display // 2
         for i in range(half_display):
             item = list(collection.values())[i]
@@ -161,10 +177,12 @@ def project_info_to_cif(info: object) -> str:
 
     if len(info.description) > 60:
         description = f'\n;\n{info.description}\n;'
-    else:
+    elif info.description:
         description = f'{info.description}'
         if ' ' in description:
             description = f"'{description}'"
+    else:
+        description = '?'
 
     created = f"'{info._created.strftime('%d %b %Y %H:%M:%S')}'"
     last_modified = f"'{info._last_modified.strftime('%d %b %Y %H:%M:%S')}'"
@@ -221,6 +239,135 @@ def summary_to_cif(_summary: object) -> str:
     return 'To be added...'
 
 
+def _wrap_in_data_block(cif_text: str, block_name: str = '_') -> str:
+    """
+    Wrap bare CIF key-value pairs in a ``data_`` block header.
+
+    Parameters
+    ----------
+    cif_text : str
+        CIF text without a ``data_`` header.
+    block_name : str, default='_'
+        Name for the CIF data block.
+
+    Returns
+    -------
+    str
+        CIF text with a ``data_<block_name>`` header prepended.
+    """
+    return f'data_{block_name}\n\n{cif_text}'
+
+
+def project_info_from_cif(info: object, cif_text: str) -> None:
+    """
+    Populate a ProjectInfo instance from CIF text.
+
+    Reads ``_project.id``, ``_project.title``, and
+    ``_project.description`` from the given CIF string and sets them on
+    the *info* object.
+
+    Parameters
+    ----------
+    info : object
+        The ``ProjectInfo`` instance to populate.
+    cif_text : str
+        CIF text content of ``project.cif``.
+    """
+    import gemmi  # noqa: PLC0415
+
+    doc = gemmi.cif.read_string(_wrap_in_data_block(cif_text, 'project'))
+    block = doc.sole_block()
+
+    _read_cif_string = _make_cif_string_reader(block)
+
+    name = _read_cif_string('_project.id')
+    if name is not None:
+        info.name = name
+
+    title = _read_cif_string('_project.title')
+    if title is not None:
+        info.title = title
+
+    description = _read_cif_string('_project.description')
+    if description is not None:
+        info.description = description
+
+
+def analysis_from_cif(analysis: object, cif_text: str) -> None:
+    """
+    Populate an Analysis instance from CIF text.
+
+    Reads the fitting engine, fit mode, aliases, constraints, and
+    joint-fit experiment weights from the given CIF string.
+
+    Parameters
+    ----------
+    analysis : object
+        The ``Analysis`` instance to populate.
+    cif_text : str
+        CIF text content of ``analysis.cif``.
+    """
+    import gemmi  # noqa: PLC0415
+
+    doc = gemmi.cif.read_string(_wrap_in_data_block(cif_text, 'analysis'))
+    block = doc.sole_block()
+
+    _read_cif_string = _make_cif_string_reader(block)
+
+    # Restore minimizer selection
+    engine = _read_cif_string('_analysis.fitting_engine')
+    if engine is not None:
+        from easydiffraction.analysis.fitting import Fitter  # noqa: PLC0415
+
+        analysis.fitter = Fitter(engine)
+
+    # Restore fit mode
+    analysis.fit_mode.from_cif(block)
+
+    # Restore aliases (loop)
+    analysis.aliases.from_cif(block)
+
+    # Restore constraints (loop)
+    analysis.constraints.from_cif(block)
+    if analysis.constraints._items:
+        analysis.constraints.enable()
+
+    # Restore joint-fit experiment weights (loop)
+    analysis._joint_fit_experiments.from_cif(block)
+
+
+def _make_cif_string_reader(block: gemmi.cif.Block) -> object:
+    """
+    Return a helper that reads a single CIF tag as a stripped string.
+
+    Parameters
+    ----------
+    block : gemmi.cif.Block
+        Parsed CIF data block.
+
+    Returns
+    -------
+    object
+        A function ``(tag) -> str | None`` that returns the unquoted
+        value for *tag*, or ``None`` if not found.
+    """
+
+    def _read(tag: str) -> str | None:
+        vals = list(block.find_values(tag))
+        if not vals:
+            return None
+        raw = vals[0]
+        # CIF unknown / inapplicable markers
+        if raw in ('?', '.'):
+            return None
+        # Strip surrounding quotes
+        if len(raw) >= 2 and raw[0] == raw[-1] and raw[0] in {"'", '"'}:
+            raw = raw[1:-1]
+        return raw
+
+    return _read
+
+
 # TODO: Check the following methods:
 
 ######################
@@ -261,6 +408,10 @@ def param_from_cif(
 
     # If found, pick the one at the given index
     raw = found_values[idx]
+
+    # CIF unknown / inapplicable markers → keep default
+    if raw in ('?', '.'):
+        return
 
     # If numeric, parse with uncertainty if present
     if self._value_type == DataTypes.NUMERIC:
@@ -362,6 +513,10 @@ def category_collection_from_cif(
                     # TODO: The following is duplication of
                     #  param_from_cif
                     raw = array[row_idx][col_idx]
+
+                    # CIF unknown / inapplicable markers → keep default
+                    if raw in ('?', '.'):
+                        break
 
                     # If numeric, parse with uncertainty if present
                     if param._value_type == DataTypes.NUMERIC:

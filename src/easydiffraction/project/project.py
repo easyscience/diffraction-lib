@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 """Project facade to orchestrate models, experiments, and analysis."""
 
+from __future__ import annotations
+
 import pathlib
 import tempfile
 
@@ -32,6 +34,9 @@ class Project(GuardedBase):
     # ------------------------------------------------------------------
     # Initialization
     # ------------------------------------------------------------------
+    # Class-level sentinel: True while load() is constructing a project.
+    _loading: bool = False
+
     def __init__(
         self,
         name: str = 'untitled_project',
@@ -48,7 +53,7 @@ class Project(GuardedBase):
         self._analysis = Analysis(self)
         self._summary = Summary(self)
         self._saved = False
-        self._varname = varname()
+        self._varname = 'project' if type(self)._loading else varname()
         self._verbosity: VerbosityEnum = VerbosityEnum.FULL
 
     # ------------------------------------------------------------------
@@ -172,15 +177,118 @@ class Project(GuardedBase):
     #  Project File I/O
     # ------------------------------------------
 
-    def load(self, dir_path: str) -> None:
+    @classmethod
+    def load(cls, dir_path: str) -> Project:
         """
-        Load a project from a given directory.
+        Load a project from a saved directory.
 
-        Loads project info, structures, experiments, etc.
+        Reads ``project.cif``, ``structures/*.cif``,
+        ``experiments/*.cif``, and ``analysis.cif`` from *dir_path* and
+        reconstructs the full project state.
+
+        Parameters
+        ----------
+        dir_path : str
+            Path to the project directory previously created by
+            :meth:`save_as`.
+
+        Returns
+        -------
+        Project
+            A fully reconstructed project instance.
+
+        Raises
+        ------
+        FileNotFoundError
+            If *dir_path* does not exist.
         """
-        # TODO: load project components from files inside dir_path
-        msg = 'Project.load() is not implemented yet.'
-        raise NotImplementedError(msg)
+        from easydiffraction.io.cif.serialize import analysis_from_cif  # noqa: PLC0415
+        from easydiffraction.io.cif.serialize import project_info_from_cif  # noqa: PLC0415
+
+        project_path = pathlib.Path(dir_path)
+        if not project_path.is_dir():
+            msg = f"Project directory not found: '{dir_path}'"
+            raise FileNotFoundError(msg)
+
+        # Create a minimal project.
+        # Use _loading sentinel to skip varname() inside __init__.
+        cls._loading = True
+        try:
+            project = cls()
+        finally:
+            cls._loading = False
+        project._saved = True
+
+        # 1. Load project info
+        project_cif_path = project_path / 'project.cif'
+        if project_cif_path.is_file():
+            cif_text = project_cif_path.read_text()
+            project_info_from_cif(project._info, cif_text)
+
+        project._info.path = project_path
+
+        # 2. Load structures
+        structures_dir = project_path / 'structures'
+        if structures_dir.is_dir():
+            for cif_file in sorted(structures_dir.glob('*.cif')):
+                project._structures.add_from_cif_path(str(cif_file))
+
+        # 3. Load experiments
+        experiments_dir = project_path / 'experiments'
+        if experiments_dir.is_dir():
+            for cif_file in sorted(experiments_dir.glob('*.cif')):
+                project._experiments.add_from_cif_path(str(cif_file))
+
+        # 4. Load analysis
+        #    Check analysis/analysis.cif first (future layout), then
+        #    fall back to analysis.cif at root (current layout).
+        analysis_cif_path = project_path / 'analysis' / 'analysis.cif'
+        if not analysis_cif_path.is_file():
+            analysis_cif_path = project_path / 'analysis.cif'
+        if analysis_cif_path.is_file():
+            cif_text = analysis_cif_path.read_text()
+            analysis_from_cif(project._analysis, cif_text)
+
+        # 5. Resolve alias param references
+        project._resolve_alias_references()
+
+        # 6. Apply symmetry constraints and update categories
+        for structure in project._structures:
+            structure._update_categories()
+
+        log.info(f"Project '{project.name}' loaded from '{dir_path}'.")
+        return project
+
+    def _resolve_alias_references(self) -> None:
+        """
+        Resolve alias ``param_unique_name`` strings to live objects.
+
+        After loading structures and experiments from CIF, aliases only
+        contain the ``param_unique_name`` string.  This method builds a
+        ``{unique_name: param}`` map from all project parameters and
+        wires each alias's ``_param_ref``.
+        """
+        aliases = self._analysis.aliases
+        if not aliases._items:
+            return
+
+        # Build unique_name → parameter map
+        all_params = self._structures.parameters + self._experiments.parameters
+        param_map: dict[str, object] = {}
+        for p in all_params:
+            uname = getattr(p, 'unique_name', None)
+            if uname is not None:
+                param_map[uname] = p
+
+        for alias in aliases:
+            uname = alias.param_unique_name.value
+            if uname in param_map:
+                alias._set_param(param_map[uname])
+            else:
+                log.warning(
+                    f"Alias '{alias.label.value}' references unknown "
+                    f"parameter '{uname}'. Reference not resolved."
+                )
 
     def save(self) -> None:
         """Save the project into the existing project directory."""

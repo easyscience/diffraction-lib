@@ -188,7 +188,7 @@ GuardedBase
 └── GenericDescriptorBase               # name, value (validated via AttributeSpec), description
     ├── GenericStringDescriptor         # _value_type = DataTypes.STRING
     └── GenericNumericDescriptor        # _value_type = DataTypes.NUMERIC, + units
-        └── GenericParameter            # + free, uncertainty, fit_min, fit_max, constrained, uid
+        └── GenericParameter            # + free, uncertainty, fit_min, fit_max, constrained
 ```
 
 CIF-bound concrete classes add a `CifHandler` for serialisation:

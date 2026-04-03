@@ -845,10 +845,11 @@ here.
     `analysis/` directory. All analysis artifacts (settings + results)
     live under one directory. See § 5.4 and § 9.6.
 
-11. **Singletons (`UidMapHandler`, `ConstraintsHandler`)** → replace
-    with instance-owned state on `Project` and `Analysis`. Fixes
-    notebook rerun issues, simplifies worker isolation, resolves issue
-    #4. See § 9.5.
+11. **Singletons (`UidMapHandler`, `ConstraintsHandler`)** →
+    `UidMapHandler` eliminated (aliases use direct references +
+    `unique_name`). `ConstraintsHandler` stays singleton but is now
+    always synced before use. Fixes notebook rerun issues, resolves
+    issue #4. See § 9.5.
 
 ---
 
@@ -857,19 +858,16 @@ here.
 These changes are needed before implementing `fit_sequential()` itself.
 Each is a separate, atomic change.
 
-### 9.1 Switch alias `param_uid` to `param_unique_name`
+### 9.1 Switch alias `param_uid` to `param_unique_name` ✅
 
-The `Alias` category currently stores `param_uid` (random UID). Change
-to `param_unique_name` (deterministic `unique_name`). Update:
-
-- `Alias._param_uid` → `Alias._param_unique_name`
-- `CifHandler(names=['_alias.param_uid'])` →
-  `CifHandler(names=['_alias.param_unique_name'])`
-- `ConstraintsHandler` to resolve via `unique_name` lookup instead of
-  UID lookup.
-- `UidMapHandler` — may no longer be needed for constraint resolution
-  (but still used for other purposes).
-- Tutorial `ed-17.py` and any tests that create aliases.
+**Done.** Went further than planned: eliminated `UidMapHandler` and
+random UIDs entirely. Aliases now store a direct object reference to the
+parameter (`Alias._param_ref`, runtime) plus `Alias._param_unique_name`
+(`StringDescriptor`, CIF serialisation with tag
+`_alias.param_unique_name`). `ConstraintsHandler.apply()` uses the
+direct reference — no map lookup needed. `_minimizer_uid` returns
+`unique_name.replace('.', '__')` instead of a random string. All
+tutorials, tests, and call sites updated.
 
 ### 9.2 Fix `category_collection_to_cif` truncation
 
@@ -901,7 +899,7 @@ Currently extracts to a temp dir. Add optional `destination` parameter
 to extract to a user-specified directory, enabling a clean two-step
 workflow (extract → fit_sequential).
 
-### 9.5 Replace singletons with instance-owned state
+### 9.5 Replace singletons with instance-owned state (partially done)
 
 #### Problem
 
@@ -927,53 +925,34 @@ workflow (extract → fit_sequential).
    the same session (e.g. to compare fits), their constraints and UID
    maps collide in the shared singleton.
 
-#### Proposed fix
+#### Current status
 
-Move the state owned by singletons into `Analysis` (for constraints) and
-`Project` (for the UID map):
+**`UidMapHandler`: eliminated entirely.** Random UIDs and the global
+UID-to-Parameter map have been removed. Aliases store direct object
+references at runtime and deterministic `unique_name` strings for CIF
+serialisation. This fully resolves problems 1–3 for the UID map.
 
-| Current singleton    | New owner                      | Lifetime                |
-| -------------------- | ------------------------------ | ----------------------- |
-| `ConstraintsHandler` | `Analysis._constraints_engine` | Per-`Analysis` instance |
-| `UidMapHandler`      | `Project._uid_map`             | Per-`Project` instance  |
+**`ConstraintsHandler`: stale-state bug fixed, still a singleton.**
+`Analysis._update_categories()` now always syncs the handler from the
+current `aliases` and `constraints` before calling `apply()`. This
+resolves problem 1 (notebook reruns) and problem 2 (worker isolation is
+natural with `spawn`). Problem 3 (multiple projects) remains theoretical
+— if multi-project support becomes a real need, moving
+`ConstraintsHandler` to instance scope is a standalone follow-up.
 
-The objects are the same classes, just no longer singletons — they are
-instantiated in `__init__` and passed explicitly to the components that
-need them (e.g. `Parameter.__init__` receives a `uid_map` reference from
-its owning project, `ConstraintsHandler` is accessed via
-`self.project.analysis._constraints_engine`).
+#### Remaining work (optional)
 
-#### Impact on sequential fitting
-
-- **Simplifies workers:** each worker's `Project()` naturally creates
-  its own `_uid_map` and `_constraints_engine`. No singleton isolation
-  concern at all.
-- **Simplifies crash recovery and notebook reruns:** creating a new
-  `Project` starts with a blank slate, no stale state leaks.
-- **No impact on the `fit_sequential` API** — the change is purely
-  internal.
-
-#### Scope and sequencing
-
-This is a self-contained refactor that can be done independently of
-sequential fitting. It improves correctness for existing workflows
-(notebook reruns, issue #4) and simplifies the sequential fitting
-implementation. It is listed as a prerequisite because it eliminates a
-class of bugs that would otherwise need workaround code in the worker.
-
-However, if the refactor proves too large for the initial sequential
-fitting work, the `spawn`-based multiprocessing provides natural
-isolation and the singletons can be addressed in a follow-up. The
-sequential fitting design does **not** depend on this change — it works
-either way.
+Move `ConstraintsHandler` from singleton to per-`Analysis` instance.
+This only matters for the multiple-projects edge case. The sequential
+fitting design does **not** depend on this change.
 
 #### Relationship to issue #4
 
-Open issue #4 ("Refresh constraint state before auto-apply") is a
-symptom of the singleton problem. If constraints are instance-owned,
-there is no stale state to refresh — the constraint engine always
-reflects the current `Analysis` instance's aliases and constraints.
-Fixing the singleton issue resolves issue #4 as a side effect.
+Issue #4 ("Refresh constraint state before auto-apply") is **fully
+resolved.** `_update_categories()` syncs handler state on every call.
+Constraints auto-enable on `create()` and are applied before fitting
+starts. The manual `apply_constraints()` method has been removed. Fixing
+the singleton issue resolves issue #4 as a side effect.
 
 ### 9.6 Move `analysis.cif` into `analysis/` directory
 
@@ -1017,30 +996,28 @@ Fixing it now gives the worker a clean
 `Fitter.fit(structures, [experiment])` call without any collection
 ceremony.
 
-#### PR 2 — Replace singletons with instance-owned state (issue #4 + § 9.5)
+#### PR 2 — Replace UID map with direct references and auto-apply constraints (issue #4 + § 9.5) ✅
 
 > **Title:**
-> `Move ConstraintsHandler and UidMapHandler to instance scope`
+> `Replace UID map with direct references and auto-apply constraints`
 >
-> **Description:** Replace the `SingletonBase` pattern for
-> `ConstraintsHandler` and `UidMapHandler` with per-project instances.
-> `Project.__init__` creates `_uid_map`; `Analysis.__init__` creates
-> `_constraints_engine`. Thread the references through to `Parameter`
-> and constraint resolution. Remove `SingletonBase` class if no longer
-> used. Update all call sites that use `.get()`. This also fixes issue
-> #4 (stale constraint state) as a side effect — the constraint engine
-> is always in sync with its owning `Analysis`.
+> **Description:** Eliminated `UidMapHandler` and random UID generation
+> entirely. Aliases store direct parameter object references at runtime
+> and deterministic `unique_name` strings for CIF. Added
+> `enable()`/`disable()` on `Constraints` with auto-enable on
+> `create()`, replacing the manual `apply_constraints()` call.
+> `Analysis._update_categories()` always syncs handler state when
+> constraints are enabled. Also fixes issue #4 (stale constraint state)
+> and completes PR 4 (alias `param_unique_name`).
 
-**Why second:** removes the global mutable state that makes notebook
-reruns unreliable and multi-project sessions impossible. Sequential
-fitting workers benefit from natural isolation (each `Project()` has its
-own engine), but the main benefit is correctness for existing workflows.
+**Why second:** removes the global UID map that made constraint
+resolution opaque and fragile. The stale-state bug (issue #4) is fully
+fixed. `ConstraintsHandler` remains a singleton but is now always in
+sync — moving it to instance scope is an optional follow-up for the
+multi-project edge case.
 
-This is a sub-step breakdown if the PR proves too large:
-
-- **PR 2a:** `Move UidMapHandler to Project instance scope`
-- **PR 2b:** `Move ConstraintsHandler to Analysis instance scope`
-- **PR 2c:** `Remove SingletonBase if unused`
+This PR also absorbed PR 4 (§ 9.1) since switching from random UIDs to
+`unique_name` was a natural part of the same change.
 
 #### PR 3 — Implement Project.load() (issue #1)
 
@@ -1061,15 +1038,10 @@ to fix any serialisation gaps before they become worker bugs. Phase 3
 
 ### Sequential-fitting prerequisite PRs
 
-#### PR 4 — Switch alias param_uid to param_unique_name (§ 9.1)
+#### PR 4 — Switch alias param_uid to param_unique_name (§ 9.1) ✅
 
-> **Title:** `Use unique_name instead of random UID in aliases`
->
-> **Description:** Rename `Alias._param_uid` to
-> `Alias._param_unique_name`. Update `CifHandler` names. Change
-> `ConstraintsHandler` to resolve parameters via `unique_name` lookup
-> instead of UID. Update `ed-17.py` tutorial and all tests that create
-> aliases.
+> Absorbed into PR 2. Aliases now use `param_unique_name` with direct
+> object references. All tutorials and tests updated.
 
 #### PR 5 — Fix CIF collection truncation (§ 9.2)
 
@@ -1186,24 +1158,23 @@ This is a sub-step breakdown if the PR proves too large:
 
 ```
 PR 1 (issue #7: eliminate dummy Experiments)
-  └─► PR 2 (issue #4: singletons → instance-owned)
+  └─► PR 2 (issue #4: UID map + constraints) ✅
         └─► PR 3 (issue #1: Project.load)
-              └─► PR 4 (alias unique_name)
-                    └─► PR 5 (CIF truncation)
-                          └─► PR 6 (CIF round-trip test)
-                                ├─► PR 7 (analysis.cif → analysis/)
-                                │     └─► PR 9 (streaming sequential fit)
-                                │           ├─► PR 10 (plot from CSV)
-                                │           │     └─► PR 13 (CSV for existing fit)
-                                │           └─► PR 11 (parallel fitting)
-                                │                 └─► PR 14 (optional: parallel fit())
-                                └─► PR 8 (zip destination)
-                                      └─► PR 12 (dataset replay)
+              └─► PR 5 (CIF truncation)
+                    └─► PR 6 (CIF round-trip test)
+                          ├─► PR 7 (analysis.cif → analysis/)
+                          │     └─► PR 9 (streaming sequential fit)
+                          │           ├─► PR 10 (plot from CSV)
+                          │           │     └─► PR 13 (CSV for existing fit)
+                          │           └─► PR 11 (parallel fitting)
+                          │                 └─► PR 14 (optional: parallel fit())
+                          └─► PR 8 (zip destination)
+                                └─► PR 12 (dataset replay)
 ```
 
-Note: PRs 4–8 are largely independent of each other and can be
-parallelised or reordered as long as PRs 1–3 are done first and PRs 4–6
-are done before PR 9.
+Note: PR 4 was absorbed into PR 2. PRs 5–8 are largely independent of
+each other and can be parallelised or reordered as long as PRs 1–3 are
+done first and PRs 5–6 are done before PR 9.
 
 ---
 
@@ -1228,31 +1199,38 @@ are all stdlib.
 
 - **Issue #7 (dummy Experiments wrapper):** resolved in PR 1. The worker
   uses the clean `Fitter.fit(structures, [experiment])` API.
-- **Issue #4 (constraint refresh) + § 9.5 (singletons):** resolved in
-  PR 2. Instance-owned constraint engine eliminates stale state.
+- **Issue #4 (constraint refresh) + § 9.1 (alias unique_name) + § 9.5
+  (singletons):** resolved in PR 2. `UidMapHandler` eliminated; aliases
+  use direct object references and deterministic `unique_name` for CIF;
+  `_update_categories()` always syncs handler state; constraints
+  auto-enable on `create()`. `ConstraintsHandler` remains a singleton
+  but is always in sync — multi-project isolation is an optional
+  follow-up.
 - **Issue #1 (Project.load):** resolved in PR 3. CIF round-trip
   reliability is proven before workers depend on it. Dataset replay
-  (PR 12) uses `load()` directly.
+  (PR 12) uses `load()` directly. Note: `Project.load()` must now
+  resolve `_alias.param_unique_name` strings back to `Parameter` objects
+  by building a temporary `unique_name → Parameter` map.
 
 ---
 
 ## 12. Summary
 
-| Aspect              | Decision                                                              |
-| ------------------- | --------------------------------------------------------------------- |
-| Parallelism backend | `concurrent.futures.ProcessPoolExecutor` with `spawn`                 |
-| Worker isolation    | Each worker creates a fresh `Project` — no shared state               |
-| Data source         | `data_dir` argument; ZIP → extract first                              |
-| Data flow           | Template CIF + data path → worker → result dict → CSV                 |
-| Parameter IDs       | `unique_name` (deterministic), not `uid` (random)                     |
-| Parameter seeding   | Last successful result in chunk → next chunk                          |
-| CSV location        | `project_dir/analysis/results.csv` (deterministic)                    |
-| CSV contents        | Fit metrics + diffrn metadata + all free param values/uncert          |
-| Metadata extraction | User-provided `extract_diffrn` callback, not hidden in lib            |
-| Crash recovery      | Read existing CSV, skip fitted files, resume                          |
-| Plotting            | Unified `plot_param_series()` always reads from CSV                   |
-| Configuration       | `max_workers` + `data_dir` on `fit_sequential()`                      |
-| Project layout      | `analysis.cif` moves into `analysis/` directory                       |
-| Singletons          | Replace with instance-owned state (recommended prerequisite)          |
-| New dependencies    | None (stdlib only)                                                    |
-| First step          | PRs 1–3 (foundation issues), then PRs 4–8 (prerequisites), then PR 9+ |
+| Aspect              | Decision                                                                           |
+| ------------------- | ---------------------------------------------------------------------------------- |
+| Parallelism backend | `concurrent.futures.ProcessPoolExecutor` with `spawn`                              |
+| Worker isolation    | Each worker creates a fresh `Project` — no shared state                            |
+| Data source         | `data_dir` argument; ZIP → extract first                                           |
+| Data flow           | Template CIF + data path → worker → result dict → CSV                              |
+| Parameter IDs       | `unique_name` (deterministic), not `uid` (random)                                  |
+| Parameter seeding   | Last successful result in chunk → next chunk                                       |
+| CSV location        | `project_dir/analysis/results.csv` (deterministic)                                 |
+| CSV contents        | Fit metrics + diffrn metadata + all free param values/uncert                       |
+| Metadata extraction | User-provided `extract_diffrn` callback, not hidden in lib                         |
+| Crash recovery      | Read existing CSV, skip fitted files, resume                                       |
+| Plotting            | Unified `plot_param_series()` always reads from CSV                                |
+| Configuration       | `max_workers` + `data_dir` on `fit_sequential()`                                   |
+| Project layout      | `analysis.cif` moves into `analysis/` directory                                    |
+| Singletons          | `UidMapHandler` eliminated; `ConstraintsHandler` stays singleton but always synced |
+| New dependencies    | None (stdlib only)                                                                 |
+| First step          | PRs 1–3 (foundation issues), then PRs 4–8 (prerequisites), then PR 9+              |

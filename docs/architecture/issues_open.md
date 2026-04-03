@@ -83,31 +83,6 @@ exactly match `project.experiments.names`.
 
 ---
 
-## 4. 🔴 Refresh Constraint State Before Automatic Updates and Fitting
-
-**Type:** Correctness
-
-`ConstraintsHandler` is only synchronised from `analysis.aliases` and
-`analysis.constraints` when the user explicitly calls
-`project.analysis.apply_constraints()`. The normal fit / serialisation
-path calls `constraints_handler.apply()` directly, so newly added or
-edited aliases and constraints can be ignored until that manual sync
-step happens.
-
-**Why high:** this produces silently incorrect results. A user can
-define constraints, run a fit, and believe they were applied when the
-active singleton still contains stale state from a previous run or no
-state at all.
-
-**Fix:** before any automatic constraint application, always refresh the
-singleton from the current `Aliases` and `Constraints` collections. The
-sync should happen inside `Analysis._update_categories()` or inside the
-constraints category itself, not only in a user-facing helper method.
-
-**Depends on:** nothing.
-
----
-
 ## 5. 🟡 Make `Analysis` a `DatablockItem`
 
 **Type:** Consistency
@@ -339,21 +314,20 @@ re-derivable default.
 
 ## Summary
 
-| #   | Issue                                      | Severity | Type                    |
-| --- | ------------------------------------------ | -------- | ----------------------- |
-| 1   | Implement `Project.load()`                 | 🔴 High  | Completeness            |
-| 2   | Restore minimiser variants                 | 🟡 Med   | Feature loss            |
-| 3   | Rebuild joint-fit weights                  | 🟡 Med   | Fragility               |
-| 4   | Refresh constraint state before auto-apply | 🔴 High  | Correctness             |
-| 5   | `Analysis` as `DatablockItem`              | 🟡 Med   | Consistency             |
-| 6   | Restrict `data_type` switching             | 🔴 High  | Correctness/Data safety |
-| 7   | Eliminate dummy `Experiments`              | 🟡 Med   | Fragility               |
-| 8   | Explicit `create()` signatures             | 🟡 Med   | API safety              |
-| 9   | Future enum extensions                     | 🟢 Low   | Design                  |
-| 10  | Unify update orchestration                 | 🟢 Low   | Maintainability         |
-| 11  | Document `_update` contract                | 🟢 Low   | Maintainability         |
-| 12  | CIF round-trip integration test            | 🟢 Low   | Quality                 |
-| 13  | Suppress redundant dirty-flag sets         | 🟢 Low   | Performance             |
-| 14  | Finer-grained change tracking              | 🟢 Low   | Performance             |
-| 15  | Validate joint-fit weights                 | 🟡 Med   | Correctness             |
-| 16  | Persist per-experiment `calculator_type`   | 🟡 Med   | Completeness            |
+| #   | Issue                                    | Severity | Type                    |
+| --- | ---------------------------------------- | -------- | ----------------------- |
+| 1   | Implement `Project.load()`               | 🔴 High  | Completeness            |
+| 2   | Restore minimiser variants               | 🟡 Med   | Feature loss            |
+| 3   | Rebuild joint-fit weights                | 🟡 Med   | Fragility               |
+| 5   | `Analysis` as `DatablockItem`            | 🟡 Med   | Consistency             |
+| 6   | Restrict `data_type` switching           | 🔴 High  | Correctness/Data safety |
+| 7   | Eliminate dummy `Experiments`            | 🟡 Med   | Fragility               |
+| 8   | Explicit `create()` signatures           | 🟡 Med   | API safety              |
+| 9   | Future enum extensions                   | 🟢 Low   | Design                  |
+| 10  | Unify update orchestration               | 🟢 Low   | Maintainability         |
+| 11  | Document `_update` contract              | 🟢 Low   | Maintainability         |
+| 12  | CIF round-trip integration test          | 🟢 Low   | Quality                 |
+| 13  | Suppress redundant dirty-flag sets       | 🟢 Low   | Performance             |
+| 14  | Finer-grained change tracking            | 🟢 Low   | Performance             |
+| 15  | Validate joint-fit weights               | 🟡 Med   | Correctness             |
+| 16  | Persist per-experiment `calculator_type` | 🟡 Med   | Completeness            |
