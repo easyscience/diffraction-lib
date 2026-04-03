@@ -722,6 +722,60 @@ class Analysis:
         if self.project.info.path is not None:
             self.project.save()
 
+    def fit_sequential(
+        self,
+        data_dir: str,
+        max_workers: int | str = 1,
+        chunk_size: int | None = None,
+        file_pattern: str = '*',
+        extract_diffrn: object = None,
+        verbosity: str | None = None,
+    ) -> None:
+        """
+        Run sequential fitting over all data files in a directory.
+
+        Fits each dataset independently using the current structure and
+        experiment as a template.  Results are written incrementally to
+        ``analysis/results.csv`` in the project directory.
+
+        The project must contain exactly one structure and one
+        experiment (the template), and must have been saved
+        (``save_as()``) before calling this method.
+
+        Parameters
+        ----------
+        data_dir : str
+            Path to directory containing data files.
+        max_workers : int | str, default=1
+            Number of parallel worker processes. ``1`` = sequential.
+            ``'auto'`` = physical CPU count.
+        chunk_size : int | None, default=None
+            Files per chunk. Default ``None`` uses *max_workers*.
+        file_pattern : str, default='*'
+            Glob pattern to filter files in *data_dir*.
+        extract_diffrn : object, default=None
+            User callback ``f(file_path) → {diffrn_field: value}``.
+            Called per file after fitting. ``None`` = no diffrn
+            metadata.
+        verbosity : str | None, default=None
+            ``'full'``, ``'short'``, or ``'silent'``. Default: project
+            verbosity.
+        """
+        from easydiffraction.analysis.sequential import fit_sequential as _fit_seq  # noqa: PLC0415
+
+        # Apply constraints before building the template
+        self._update_categories()
+
+        _fit_seq(
+            analysis=self,
+            data_dir=data_dir,
+            max_workers=max_workers,
+            chunk_size=chunk_size,
+            file_pattern=file_pattern,
+            extract_diffrn=extract_diffrn,
+            verbosity=verbosity,
+        )
+
     def show_fit_results(self) -> None:
         """
         Display a summary of the fit results.

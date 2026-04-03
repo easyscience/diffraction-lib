@@ -10,24 +10,6 @@ needed.
 
 ---
 
-## 1. 🔴 Implement `Project.load()`
-
-**Type:** Completeness
-
-`save()` serialises all components to CIF files but `load()` is a stub
-that raises `NotImplementedError`. Users cannot round-trip a project.
-
-**Why first:** this is the highest-severity gap. Without it the save
-functionality is only half useful — CIF files are written but cannot be
-read back. Tutorials that demonstrate save/load are blocked.
-
-**Fix:** implement `load()` that reads CIF files from the project
-directory and reconstructs structures, experiments, and analysis
-settings.
-
-**Depends on:** nothing (standalone).
-
----
 
 ## 2. 🟡 Restore Minimiser Variant Support
 
@@ -125,23 +107,6 @@ effectively fixed after experiment creation.
 
 ---
 
-## 7. 🟡 Eliminate Dummy `Experiments` Wrapper in Single-Fit Mode
-
-**Type:** Fragility
-
-Single-fit mode creates a throw-away `Experiments` collection per
-experiment, manually forces `_parent` via `object.__setattr__`, and
-passes it to `Fitter`. This bypasses `GuardedBase` parent tracking and
-is fragile.
-
-**Fix:** make `Fitter.fit()` accept a list of experiment objects (or a
-single experiment) instead of requiring an `Experiments` collection. Or
-add a `fit_single(experiment)` method.
-
-**Depends on:** nothing, but simpler after issue 5 (Analysis refactor)
-clarifies the fitting orchestration.
-
----
 
 ## 8. 🟡 Add Explicit `create()` Signatures on Collections
 
@@ -316,12 +281,10 @@ re-derivable default.
 
 | #   | Issue                                    | Severity | Type                    |
 | --- | ---------------------------------------- | -------- | ----------------------- |
-| 1   | Implement `Project.load()`               | 🔴 High  | Completeness            |
 | 2   | Restore minimiser variants               | 🟡 Med   | Feature loss            |
 | 3   | Rebuild joint-fit weights                | 🟡 Med   | Fragility               |
 | 5   | `Analysis` as `DatablockItem`            | 🟡 Med   | Consistency             |
 | 6   | Restrict `data_type` switching           | 🔴 High  | Correctness/Data safety |
-| 7   | Eliminate dummy `Experiments`            | 🟡 Med   | Fragility               |
 | 8   | Explicit `create()` signatures           | 🟡 Med   | API safety              |
 | 9   | Future enum extensions                   | 🟢 Low   | Design                  |
 | 10  | Unify update orchestration               | 🟢 Low   | Maintainability         |

@@ -1,7 +1,7 @@
 # Sequential Fitting — Architecture Design
 
-**Status:** Draft — for discussion before implementation **Date:**
-2026-04-02
+**Status:** Implementation in progress (PRs 1–9 complete, PRs 10–14
+remaining) **Date:** 2026-04-02 (updated 2026-04-03)
 
 ---
 
@@ -869,35 +869,28 @@ direct reference — no map lookup needed. `_minimizer_uid` returns
 `unique_name.replace('.', '__')` instead of a random string. All
 tutorials, tests, and call sites updated.
 
-### 9.2 Fix `category_collection_to_cif` truncation
+### 9.2 Fix `category_collection_to_cif` truncation ✅
 
-`category_collection_to_cif` has `max_display=20` which truncates loop
-output. For CIF used in save/load/round-trip, all rows must be emitted.
+**Done.** `category_collection_to_cif` default changed to
+`max_display=None` (emit all rows). Truncation is opt-in via explicit
+`max_display` parameter, used only by display methods.
 
-Options:
+### 9.3 Verify CIF round-trip for experiments ✅
 
-- (a) Remove `max_display` from `category_collection_to_cif` entirely,
-  add truncation only in display methods.
-- (b) Add a `full=True` parameter and use it when serialising for
-  persistence.
+**Done.** Five integration tests in `test_cif_round_trip.py`:
 
-### 9.3 Verify CIF round-trip for experiments
+1. Parameter values survive `as_cif` → `from_cif_str`.
+2. Free flags survive the round-trip.
+3. Category collections (background, excluded regions, linked phases)
+   preserve item count.
+4. Data points survive (count, first/last values).
+5. Structure round-trip with symmetry constraints.
 
-Write an integration test:
+### 9.4 Add `destination` parameter to `extract_data_paths_from_zip` ✅
 
-1. Create a fully configured experiment (instrument, peak, background,
-   excluded regions, linked phases, data).
-2. Serialise to CIF (`experiment.as_cif`).
-3. Reconstruct from CIF (`ExperimentFactory.from_cif_str(cif_str)`).
-4. Compare all parameter values.
-
-Fix any parameters that don't survive the round-trip.
-
-### 9.4 Add `destination` parameter to `extract_data_paths_from_zip`
-
-Currently extracts to a temp dir. Add optional `destination` parameter
-to extract to a user-specified directory, enabling a clean two-step
-workflow (extract → fit_sequential).
+**Done.** Optional `destination` parameter added. When provided, extracts
+to the given directory. When `None`, uses a temporary directory (original
+behaviour).
 
 ### 9.5 Replace singletons with instance-owned state (partially done)
 
@@ -954,18 +947,12 @@ Constraints auto-enable on `create()` and are applied before fitting
 starts. The manual `apply_constraints()` method has been removed. Fixing
 the singleton issue resolves issue #4 as a side effect.
 
-### 9.6 Move `analysis.cif` into `analysis/` directory
+### 9.6 Move `analysis.cif` into `analysis/` directory ✅
 
-Currently `analysis.cif` lives at the project root alongside
-`project.cif` and `summary.cif`. Adding an `analysis/` directory for
-`results.csv` next to a file named `analysis.cif` at the same level
-creates a naming conflict and a confusing layout.
-
-**Fix:** update `Project.save()` to write `analysis.cif` to
-`project_dir/analysis/analysis.cif`. Update `Project.load()` (when
-implemented) to read from the new path, with a fallback to the old path
-for backward compatibility with existing saved projects. Update docs
-(`architecture.md`, `project.md`), tests, and the save output messages.
+**Done.** `Project.save()` writes to `analysis/analysis.cif`.
+`Project.load()` checks `analysis/analysis.cif` first, falls back to
+`analysis.cif` at root for backward compatibility. Unit tests verify
+both layouts.
 
 ---
 
@@ -978,7 +965,7 @@ resolved first because they clean up the fitting internals that
 
 ### Foundation PRs (resolve existing issues)
 
-#### PR 1 — Eliminate dummy Experiments wrapper in single-fit mode (issue #7)
+#### PR 1 — Eliminate dummy Experiments wrapper in single-fit mode (issue #7) ✅
 
 > **Title:** `Accept single Experiment in Fitter.fit()`
 >
@@ -990,11 +977,11 @@ resolved first because they clean up the fitting internals that
 > Update all callers (single-fit, joint-fit). Update unit and
 > integration tests.
 
-**Why first:** the current dummy-wrapper pattern is the exact
-antipattern that `fit_sequential` workers would otherwise inherit.
-Fixing it now gives the worker a clean
-`Fitter.fit(structures, [experiment])` call without any collection
-ceremony.
+**Done.** `Fitter.fit()` and `_residual_function()` now accept
+`experiments: list[ExperimentBase]`. `Analysis.fit()` passes
+`experiments_list = [experiment]` in single-fit mode and
+`list(experiments.values())` in joint-fit mode. No more dummy
+`Experiments` wrapper or `object.__setattr__` hack.
 
 #### PR 2 — Replace UID map with direct references and auto-apply constraints (issue #4 + § 9.5) ✅
 
@@ -1019,7 +1006,7 @@ multi-project edge case.
 This PR also absorbed PR 4 (§ 9.1) since switching from random UIDs to
 `unique_name` was a natural part of the same change.
 
-#### PR 3 — Implement Project.load() (issue #1)
+#### PR 3 — Implement Project.load() (issue #1) ✅
 
 > **Title:** `Implement Project.load() from CIF directory`
 >
@@ -1030,11 +1017,11 @@ This PR also absorbed PR 4 (§ 9.1) since switching from random UIDs to
 > as a fallback. Add integration test: save → load → compare all
 > parameter values.
 
-**Why third:** the CIF round-trip reliability that `load()` proves is
-the same reliability that `fit_sequential` workers depend on (they
-reconstruct a project from CIF strings). Implementing `load()` forces us
-to fix any serialisation gaps before they become worker bugs. Phase 3
-(dataset replay) also directly uses `load()`.
+**Done.** `Project.load()` reads CIF files from the project directory,
+reconstructs structures, experiments, and analysis. Resolves alias
+`param_unique_name` strings back to live `Parameter` references.
+Integration tests verify save → load → parameter comparison and
+save → load → fit → χ² comparison.
 
 ### Sequential-fitting prerequisite PRs
 
@@ -1043,7 +1030,7 @@ to fix any serialisation gaps before they become worker bugs. Phase 3
 > Absorbed into PR 2. Aliases now use `param_unique_name` with direct
 > object references. All tutorials and tests updated.
 
-#### PR 5 — Fix CIF collection truncation (§ 9.2)
+#### PR 5 — Fix CIF collection truncation (§ 9.2) ✅
 
 > **Title:** `Remove max_display truncation from CIF serialisation`
 >
@@ -1052,7 +1039,11 @@ to fix any serialisation gaps before they become worker bugs. Phase 3
 > (`show_as_cif()`). Ensures experiments with many background/data
 > points survive CIF round-trips.
 
-#### PR 6 — Verify CIF round-trip for experiments (§ 9.3)
+**Done.** `category_collection_to_cif` default changed to
+`max_display=None` (emit all rows). Truncation is now opt-in, only used
+by display methods.
+
+#### PR 6 — Verify CIF round-trip for experiments (§ 9.3) ✅
 
 > **Title:** `Add CIF round-trip integration test for experiments`
 >
@@ -1062,7 +1053,11 @@ to fix any serialisation gaps before they become worker bugs. Phase 3
 > asserts all parameter values match. Fix any parameters that don't
 > survive the round-trip.
 
-#### PR 7 — Move analysis.cif into analysis/ directory (§ 9.6)
+**Done.** Five integration tests in `test_cif_round_trip.py`: parameter
+values, free flags, categories (background/excluded regions/linked
+phases), data points, and structure round-trip.
+
+#### PR 7 — Move analysis.cif into analysis/ directory (§ 9.6) ✅
 
 > **Title:** `Move analysis.cif into analysis/ directory`
 >
@@ -1071,7 +1066,12 @@ to fix any serialisation gaps before they become worker bugs. Phase 3
 > from the new path (with fallback to old path). Update docs
 > (`architecture.md`, `project.md`), tests, and console output messages.
 
-#### PR 8 — Add destination to extract_data_paths_from_zip (§ 9.4)
+**Done.** `Project.save()` writes to `analysis/analysis.cif`.
+`Project.load()` checks `analysis/analysis.cif` first, falls back to
+`analysis.cif` at root for backward compatibility. Unit tests verify
+both layouts.
+
+#### PR 8 — Add destination to extract_data_paths_from_zip (§ 9.4) ✅
 
 > **Title:** `Add destination parameter to extract_data_paths_from_zip`
 >
@@ -1080,9 +1080,13 @@ to fix any serialisation gaps before they become worker bugs. Phase 3
 > directory instead of a temp dir. Enables clean two-step workflow:
 > extract ZIP → pass directory to `fit_sequential()`.
 
+**Done.** `extract_data_paths_from_zip` accepts `destination` parameter.
+When provided, extracts to the given directory. When `None`, uses a
+temporary directory (original behaviour).
+
 ### Sequential-fitting core PRs
 
-#### PR 9 — Streaming sequential fit (max_workers=1)
+#### PR 9 — Streaming sequential fit (max_workers=1) ✅
 
 > **Title:** `Add fit_sequential() for streaming single-worker fitting`
 >
@@ -1094,14 +1098,14 @@ to fix any serialisation gaps before they become worker bugs. Phase 3
 > `extract_diffrn` callback support for metadata columns. Unit tests for
 > CSV writing, crash recovery, parameter propagation.
 
-This is a sub-step breakdown if the PR proves too large:
-
-- **PR 9a:** `Add SequentialFitTemplate and _fit_worker function` —
-  dataclass, worker function, no CSV, no recovery.
-- **PR 9b:** `Add CSV output and crash recovery to fit_sequential` — CSV
-  writing, reading, resumption logic.
-- **PR 9c:** `Add parameter propagation and extract_diffrn callback` —
-  chunk-to-chunk seeding, diffrn metadata columns.
+**Done.** Full implementation in `analysis/sequential.py`:
+`SequentialFitTemplate` dataclass, `_fit_worker()` module-level function,
+CSV helpers (`_build_csv_header`, `_write_csv_header`, `_append_to_csv`,
+`_read_csv_for_recovery`), `_build_template()`, chunk-based processing
+with parameter propagation, `extract_diffrn` callback support, progress
+reporting. Five integration tests in `test_sequential.py`: CSV
+production, crash recovery, parameter propagation, diffrn callback,
+precondition validation.
 
 #### PR 10 — Update plot_param_series to read from CSV
 
@@ -1157,18 +1161,18 @@ This is a sub-step breakdown if the PR proves too large:
 ### Dependency graph
 
 ```
-PR 1 (issue #7: eliminate dummy Experiments)
+PR 1 (issue #7: eliminate dummy Experiments) ✅
   └─► PR 2 (issue #4: UID map + constraints) ✅
-        └─► PR 3 (issue #1: Project.load)
-              └─► PR 5 (CIF truncation)
-                    └─► PR 6 (CIF round-trip test)
-                          ├─► PR 7 (analysis.cif → analysis/)
-                          │     └─► PR 9 (streaming sequential fit)
-                          │           ├─► PR 10 (plot from CSV)
+        └─► PR 3 (issue #1: Project.load) ✅
+              └─► PR 5 (CIF truncation) ✅
+                    └─► PR 6 (CIF round-trip test) ✅
+                          ├─► PR 7 (analysis.cif → analysis/) ✅
+                          │     └─► PR 9 (streaming sequential fit) ✅
+                          │           ├─► PR 10 (plot from CSV)          ← next
                           │           │     └─► PR 13 (CSV for existing fit)
                           │           └─► PR 11 (parallel fitting)
                           │                 └─► PR 14 (optional: parallel fit())
-                          └─► PR 8 (zip destination)
+                          └─► PR 8 (zip destination) ✅
                                 └─► PR 12 (dataset replay)
 ```
 
@@ -1187,18 +1191,20 @@ are all stdlib.
 
 ### Risks
 
-| Risk                                             | Mitigation                                               |
-| ------------------------------------------------ | -------------------------------------------------------- |
-| CIF round-trip loses information                 | PR 3 (load) + PR 6 (round-trip test) verify before PR 9  |
-| CIF collection truncation at 20 rows             | PR 5 fixes before PR 9                                   |
-| Worker memory leak (large N, long-running pool)  | Use `max_tasks_per_child=100` on the pool                |
-| Pickling failures for SequentialFitTemplate      | Keep it a plain dataclass with only str/dict/list fields |
-| crysfml Fortran global state in forked processes | Enforced `spawn` context avoids fork issues              |
+| Risk                                             | Mitigation                                                    |
+| ------------------------------------------------ | ------------------------------------------------------------- |
+| CIF round-trip loses information                 | ✅ PR 3 (load) + PR 6 (round-trip test) verified              |
+| CIF collection truncation at 20 rows             | ✅ PR 5 fixed (default `max_display=None`)                    |
+| Worker memory leak (large N, long-running pool)  | Use `max_tasks_per_child=100` on the pool (PR 11)            |
+| Pickling failures for SequentialFitTemplate      | ✅ Keep it a plain dataclass with only str/dict/list fields   |
+| crysfml Fortran global state in forked processes | Enforced `spawn` context avoids fork issues (PR 11)           |
 
-### Resolved open issues (now prerequisites)
+### Resolved open issues (now prerequisites) — all done ✅
 
-- **Issue #7 (dummy Experiments wrapper):** resolved in PR 1. The worker
-  uses the clean `Fitter.fit(structures, [experiment])` API.
+- **Issue #7 (dummy Experiments wrapper):** resolved in PR 1.
+  `Fitter.fit()` and `_residual_function()` accept
+  `list[ExperimentBase]`. The worker uses the clean
+  `Fitter.fit(structures, [experiment])` API.
 - **Issue #4 (constraint refresh) + § 9.1 (alias unique_name) + § 9.5
   (singletons):** resolved in PR 2. `UidMapHandler` eliminated; aliases
   use direct object references and deterministic `unique_name` for CIF;
@@ -1206,31 +1212,31 @@ are all stdlib.
   auto-enable on `create()`. `ConstraintsHandler` remains a singleton
   but is always in sync — multi-project isolation is an optional
   follow-up.
-- **Issue #1 (Project.load):** resolved in PR 3. CIF round-trip
-  reliability is proven before workers depend on it. Dataset replay
-  (PR 12) uses `load()` directly. Note: `Project.load()` must now
-  resolve `_alias.param_unique_name` strings back to `Parameter` objects
-  by building a temporary `unique_name → Parameter` map.
+- **Issue #1 (Project.load):** resolved in PR 3. `Project.load()` reads
+  CIF files, reconstructs full project state, resolves alias
+  `param_unique_name` strings back to `Parameter` objects via
+  `_resolve_alias_references()`. Dataset replay (PR 12) uses `load()`
+  directly.
 
 ---
 
 ## 12. Summary
 
-| Aspect              | Decision                                                                           |
-| ------------------- | ---------------------------------------------------------------------------------- |
-| Parallelism backend | `concurrent.futures.ProcessPoolExecutor` with `spawn`                              |
-| Worker isolation    | Each worker creates a fresh `Project` — no shared state                            |
-| Data source         | `data_dir` argument; ZIP → extract first                                           |
-| Data flow           | Template CIF + data path → worker → result dict → CSV                              |
-| Parameter IDs       | `unique_name` (deterministic), not `uid` (random)                                  |
-| Parameter seeding   | Last successful result in chunk → next chunk                                       |
-| CSV location        | `project_dir/analysis/results.csv` (deterministic)                                 |
-| CSV contents        | Fit metrics + diffrn metadata + all free param values/uncert                       |
-| Metadata extraction | User-provided `extract_diffrn` callback, not hidden in lib                         |
-| Crash recovery      | Read existing CSV, skip fitted files, resume                                       |
-| Plotting            | Unified `plot_param_series()` always reads from CSV                                |
-| Configuration       | `max_workers` + `data_dir` on `fit_sequential()`                                   |
-| Project layout      | `analysis.cif` moves into `analysis/` directory                                    |
-| Singletons          | `UidMapHandler` eliminated; `ConstraintsHandler` stays singleton but always synced |
-| New dependencies    | None (stdlib only)                                                                 |
-| First step          | PRs 1–3 (foundation issues), then PRs 4–8 (prerequisites), then PR 9+              |
+| Aspect              | Decision                                                                           | Status |
+| ------------------- | ---------------------------------------------------------------------------------- | ------ |
+| Parallelism backend | `concurrent.futures.ProcessPoolExecutor` with `spawn`                              | PR 11  |
+| Worker isolation    | Each worker creates a fresh `Project` — no shared state                            | ✅     |
+| Data source         | `data_dir` argument; ZIP → extract first                                           | ✅     |
+| Data flow           | Template CIF + data path → worker → result dict → CSV                              | ✅     |
+| Parameter IDs       | `unique_name` (deterministic), not `uid` (random)                                  | ✅     |
+| Parameter seeding   | Last successful result in chunk → next chunk                                       | ✅     |
+| CSV location        | `project_dir/analysis/results.csv` (deterministic)                                 | ✅     |
+| CSV contents        | Fit metrics + diffrn metadata + all free param values/uncert                       | ✅     |
+| Metadata extraction | User-provided `extract_diffrn` callback, not hidden in lib                         | ✅     |
+| Crash recovery      | Read existing CSV, skip fitted files, resume                                       | ✅     |
+| Plotting            | Unified `plot_param_series()` always reads from CSV                                | PR 10  |
+| Configuration       | `max_workers` + `data_dir` on `fit_sequential()`                                   | ✅     |
+| Project layout      | `analysis.cif` moves into `analysis/` directory                                    | ✅     |
+| Singletons          | `UidMapHandler` eliminated; `ConstraintsHandler` stays singleton but always synced | ✅     |
+| New dependencies    | None (stdlib only)                                                                 | ✅     |
+| First step          | PRs 1–9 done; PRs 10–14 remaining                                                  | ✅     |

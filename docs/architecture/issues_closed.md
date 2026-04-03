@@ -4,6 +4,30 @@ Issues that have been fully resolved. Kept for historical reference.
 
 ---
 
+## Implement `Project.load()`
+
+**Resolution:** implemented `Project.load(dir_path)` as a classmethod
+that reads `project.cif`, `structures/*.cif`, `experiments/*.cif`, and
+`analysis/analysis.cif` (with fallback to `analysis.cif` at root for
+backward compatibility). Reconstructs the full project state including
+alias parameter references via `_resolve_alias_references()`. Integration
+tests verify save → load → parameter comparison and save → load → fit →
+χ² comparison. Also used by `fit_sequential` workers to reconstruct
+projects from CIF strings.
+
+---
+
+## Eliminate Dummy `Experiments` Wrapper in Single-Fit Mode
+
+**Resolution:** refactored `Fitter.fit()` and `_residual_function()` to
+accept `experiments: list[ExperimentBase]` instead of requiring an
+`Experiments` collection. `Analysis.fit()` passes
+`experiments_list = [experiment]` in single-fit mode and
+`list(experiments.values())` in joint-fit mode. Removed the
+`object.__setattr__` hack that forced `_parent` on the dummy wrapper.
+
+---
+
 ## Replace UID Map with Direct References and Auto-Apply Constraints
 
 **Resolution:** eliminated `UidMapHandler` and random UID generation
