@@ -26,7 +26,7 @@ zip_path = download_data(id=28, destination='data')
 # ## Extract Project
 
 # %%
-project_dir = extract_project_from_zip('lbco_project.zip', destination='data')
+project_dir = extract_project_from_zip(zip_path, destination='data')
 
 # %% [markdown]
 # ## Load Project
