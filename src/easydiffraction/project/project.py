@@ -480,6 +480,11 @@ class Project(GuardedBase):
         """
         Plot a parameter's value across sequential fit results.
 
+        When a ``results.csv`` file exists in the project's
+        ``analysis/`` directory, data is read from CSV.  Otherwise,
+        falls back to in-memory parameter snapshots (produced by
+        ``fit()`` in single mode).
+
         Parameters
         ----------
         param : object
@@ -492,10 +497,27 @@ class Project(GuardedBase):
             experiment sequence number is used instead.
         """
         unique_name = param.unique_name
-        versus_name = versus.name if versus is not None else None
-        self.plotter.plot_param_series(
-            unique_name,
-            versus_name,
-            self.experiments,
-            self.analysis._parameter_snapshots,
-        )
+
+        # Try CSV first (produced by fit_sequential or future fit)
+        csv_path = None
+        if self.info.path is not None:
+            candidate = pathlib.Path(self.info.path) / 'analysis' / 'results.csv'
+            if candidate.is_file():
+                csv_path = str(candidate)
+
+        if csv_path is not None:
+            self.plotter.plot_param_series(
+                csv_path=csv_path,
+                unique_name=unique_name,
+                param_descriptor=param,
+                versus_descriptor=versus,
+            )
+        else:
+            # Fallback: in-memory snapshots from fit() single mode
+            versus_name = versus.name if versus is not None else None
+            self.plotter.plot_param_series_from_snapshots(
+                unique_name,
+                versus_name,
+                self.experiments,
+                self.analysis._parameter_snapshots,
+            )

@@ -1,6 +1,6 @@
 # Sequential Fitting — Architecture Design
 
-**Status:** Implementation in progress (PRs 1–9 complete, PRs 10–14
+**Status:** Implementation in progress (PRs 1–10 complete, PRs 11–14
 remaining) **Date:** 2026-04-02 (updated 2026-04-03)
 
 ---
@@ -888,9 +888,9 @@ tutorials, tests, and call sites updated.
 
 ### 9.4 Add `destination` parameter to `extract_data_paths_from_zip` ✅
 
-**Done.** Optional `destination` parameter added. When provided, extracts
-to the given directory. When `None`, uses a temporary directory (original
-behaviour).
+**Done.** Optional `destination` parameter added. When provided,
+extracts to the given directory. When `None`, uses a temporary directory
+(original behaviour).
 
 ### 9.5 Replace singletons with instance-owned state (partially done)
 
@@ -1020,8 +1020,8 @@ This PR also absorbed PR 4 (§ 9.1) since switching from random UIDs to
 **Done.** `Project.load()` reads CIF files from the project directory,
 reconstructs structures, experiments, and analysis. Resolves alias
 `param_unique_name` strings back to live `Parameter` references.
-Integration tests verify save → load → parameter comparison and
-save → load → fit → χ² comparison.
+Integration tests verify save → load → parameter comparison and save →
+load → fit → χ² comparison.
 
 ### Sequential-fitting prerequisite PRs
 
@@ -1099,15 +1099,15 @@ temporary directory (original behaviour).
 > CSV writing, crash recovery, parameter propagation.
 
 **Done.** Full implementation in `analysis/sequential.py`:
-`SequentialFitTemplate` dataclass, `_fit_worker()` module-level function,
-CSV helpers (`_build_csv_header`, `_write_csv_header`, `_append_to_csv`,
-`_read_csv_for_recovery`), `_build_template()`, chunk-based processing
-with parameter propagation, `extract_diffrn` callback support, progress
-reporting. Five integration tests in `test_sequential.py`: CSV
-production, crash recovery, parameter propagation, diffrn callback,
-precondition validation.
+`SequentialFitTemplate` dataclass, `_fit_worker()` module-level
+function, CSV helpers (`_build_csv_header`, `_write_csv_header`,
+`_append_to_csv`, `_read_csv_for_recovery`), `_build_template()`,
+chunk-based processing with parameter propagation, `extract_diffrn`
+callback support, progress reporting. Five integration tests in
+`test_sequential.py`: CSV production, crash recovery, parameter
+propagation, diffrn callback, precondition validation.
 
-#### PR 10 — Update plot_param_series to read from CSV
+#### PR 10 — Update plot_param_series to read from CSV ✅
 
 > **Title:** `Unify plot_param_series to always read from CSV`
 >
@@ -1117,7 +1117,13 @@ precondition validation.
 > and existing `fit()` single-mode (Phase 4). Remove the old
 > `_parameter_snapshots` dict.
 
-#### PR 11 — Parallel fitting (max_workers > 1)
+**Implemented:** `Plotter.plot_param_series()` reads CSV via pandas.
+`Plotter.plot_param_series_from_snapshots()` preserves backward
+compatibility for `fit()` single-mode (no CSV yet). `Project.plot_param_series()`
+tries CSV first, falls back to snapshots. Axis labels derived from live
+descriptor objects.
+
+#### PR 11 — Parallel fitting (max_workers > 1)             ← next
 
 > **Title:** `Add multiprocessing support to fit_sequential`
 >
@@ -1168,9 +1174,9 @@ PR 1 (issue #7: eliminate dummy Experiments) ✅
                     └─► PR 6 (CIF round-trip test) ✅
                           ├─► PR 7 (analysis.cif → analysis/) ✅
                           │     └─► PR 9 (streaming sequential fit) ✅
-                          │           ├─► PR 10 (plot from CSV)          ← next
+                          │           ├─► PR 10 (plot from CSV) ✅
                           │           │     └─► PR 13 (CSV for existing fit)
-                          │           └─► PR 11 (parallel fitting)
+                          │           └─► PR 11 (parallel fitting)       ← next
                           │                 └─► PR 14 (optional: parallel fit())
                           └─► PR 8 (zip destination) ✅
                                 └─► PR 12 (dataset replay)
@@ -1191,13 +1197,13 @@ are all stdlib.
 
 ### Risks
 
-| Risk                                             | Mitigation                                                    |
-| ------------------------------------------------ | ------------------------------------------------------------- |
-| CIF round-trip loses information                 | ✅ PR 3 (load) + PR 6 (round-trip test) verified              |
-| CIF collection truncation at 20 rows             | ✅ PR 5 fixed (default `max_display=None`)                    |
-| Worker memory leak (large N, long-running pool)  | Use `max_tasks_per_child=100` on the pool (PR 11)            |
-| Pickling failures for SequentialFitTemplate      | ✅ Keep it a plain dataclass with only str/dict/list fields   |
-| crysfml Fortran global state in forked processes | Enforced `spawn` context avoids fork issues (PR 11)           |
+| Risk                                             | Mitigation                                                  |
+| ------------------------------------------------ | ----------------------------------------------------------- |
+| CIF round-trip loses information                 | ✅ PR 3 (load) + PR 6 (round-trip test) verified            |
+| CIF collection truncation at 20 rows             | ✅ PR 5 fixed (default `max_display=None`)                  |
+| Worker memory leak (large N, long-running pool)  | Use `max_tasks_per_child=100` on the pool (PR 11)           |
+| Pickling failures for SequentialFitTemplate      | ✅ Keep it a plain dataclass with only str/dict/list fields |
+| crysfml Fortran global state in forked processes | Enforced `spawn` context avoids fork issues (PR 11)         |
 
 ### Resolved open issues (now prerequisites) — all done ✅
 
@@ -1234,9 +1240,9 @@ are all stdlib.
 | CSV contents        | Fit metrics + diffrn metadata + all free param values/uncert                       | ✅     |
 | Metadata extraction | User-provided `extract_diffrn` callback, not hidden in lib                         | ✅     |
 | Crash recovery      | Read existing CSV, skip fitted files, resume                                       | ✅     |
-| Plotting            | Unified `plot_param_series()` always reads from CSV                                | PR 10  |
+| Plotting            | Unified `plot_param_series()` always reads from CSV                                | ✅     |
 | Configuration       | `max_workers` + `data_dir` on `fit_sequential()`                                   | ✅     |
 | Project layout      | `analysis.cif` moves into `analysis/` directory                                    | ✅     |
 | Singletons          | `UidMapHandler` eliminated; `ConstraintsHandler` stays singleton but always synced | ✅     |
 | New dependencies    | None (stdlib only)                                                                 | ✅     |
-| First step          | PRs 1–9 done; PRs 10–14 remaining                                                  | ✅     |
+| First step          | PRs 1–10 done; PRs 11–14 remaining                                                 | ✅     |

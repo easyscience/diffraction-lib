@@ -10,10 +10,10 @@ Issues that have been fully resolved. Kept for historical reference.
 that reads `project.cif`, `structures/*.cif`, `experiments/*.cif`, and
 `analysis/analysis.cif` (with fallback to `analysis.cif` at root for
 backward compatibility). Reconstructs the full project state including
-alias parameter references via `_resolve_alias_references()`. Integration
-tests verify save → load → parameter comparison and save → load → fit →
-χ² comparison. Also used by `fit_sequential` workers to reconstruct
-projects from CIF strings.
+alias parameter references via `_resolve_alias_references()`.
+Integration tests verify save → load → parameter comparison and save →
+load → fit → χ² comparison. Also used by `fit_sequential` workers to
+reconstruct projects from CIF strings.
 
 ---
 

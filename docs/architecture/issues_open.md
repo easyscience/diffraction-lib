@@ -10,7 +10,6 @@ needed.
 
 ---
 
-
 ## 2. 🟡 Restore Minimiser Variant Support
 
 **Type:** Feature loss + Design limitation
@@ -106,7 +105,6 @@ effectively fixed after experiment creation.
 **Depends on:** nothing.
 
 ---
-
 
 ## 8. 🟡 Add Explicit `create()` Signatures on Collections
 
