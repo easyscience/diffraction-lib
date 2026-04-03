@@ -1,7 +1,7 @@
 # Sequential Fitting — Architecture Design
 
-**Status:** Implementation in progress (PRs 1–11, 13 complete; PRs 12,
-14 remaining) **Date:** 2026-04-02 (updated 2026-04-03)
+**Status:** Implementation in progress (PRs 1–13 complete; PR 14
+optional) **Date:** 2026-04-02 (updated 2026-04-03)
 
 ---
 
@@ -1142,7 +1142,7 @@ resolves to `os.cpu_count()`. Integration test
 
 ### Post-sequential PRs
 
-#### PR 12 — Dataset replay from CSV
+#### PR 12 — Dataset replay from CSV ✅
 
 > **Title:** `Add apply_params_from_csv() for dataset replay`
 >
@@ -1150,6 +1150,11 @@ resolves to `os.cpu_count()`. Integration test
 > loads a CSV row, overrides parameter values in the live project, and
 > reloads data from the file path in that row. Enables
 > `plot_meas_vs_calc()` for any previously fitted dataset.
+
+**Implemented:** `Project.apply_params_from_csv(row_index)` reads a CSV
+row, overrides parameter values and uncertainties, and reloads measured
+data when `file_path` points to a real file (sequential-fit case). Three
+integration tests: parameter override, missing CSV, out-of-range index.
 
 #### PR 13 — CSV output for existing single-fit mode ✅
 
@@ -1194,7 +1199,7 @@ PR 1 (issue #7: eliminate dummy Experiments) ✅
                           │           └─► PR 11 (parallel fitting) ✅
                           │                 └─► PR 14 (optional: parallel fit())
                           └─► PR 8 (zip destination) ✅
-                                └─► PR 12 (dataset replay)              ← next
+                                └─► PR 12 (dataset replay) ✅
 ```
 
 Note: PR 4 was absorbed into PR 2. PRs 5–8 are largely independent of
@@ -1260,4 +1265,4 @@ are all stdlib.
 | Project layout      | `analysis.cif` moves into `analysis/` directory                                    | ✅     |
 | Singletons          | `UidMapHandler` eliminated; `ConstraintsHandler` stays singleton but always synced | ✅     |
 | New dependencies    | None (stdlib only)                                                                 | ✅     |
-| First step          | PRs 1–11, 13 done; PRs 12, 14 remaining                                            | ✅     |
+| First step          | PRs 1–13 done; PR 14 optional                                                      | ✅     |

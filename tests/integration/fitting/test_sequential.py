@@ -314,3 +314,60 @@ def test_fit_sequential_parallel(tmp_path) -> None:
     vals = [float(r['lbco.cell.length_a']) for r in rows]
     for v in vals:
         assert_almost_equal(v, vals[0], decimal=3)
+
+
+# ------------------------------------------------------------------
+#  Test 7: Dataset replay from CSV (apply_params_from_csv)
+# ------------------------------------------------------------------
+
+
+def test_apply_params_from_csv_loads_data_and_params(tmp_path) -> None:
+    """apply_params_from_csv overrides params and reloads data."""
+    project, data_dir = _create_sequential_project(tmp_path)
+
+    project.analysis.fit_sequential(
+        data_dir=data_dir,
+        verbosity='silent',
+    )
+
+    csv_path = project.info.path / 'analysis' / 'results.csv'
+    with csv_path.open() as f:
+        rows = list(csv.DictReader(f))
+
+    # Read the expected cell_length_a from CSV row 1
+    expected_a = float(rows[1]['lbco.cell.length_a'])
+
+    # Apply params from row 1
+    project.apply_params_from_csv(row_index=1)
+
+    # Verify the parameter value was overridden
+    model = list(project.structures.values())[0]
+    assert_almost_equal(model.cell.length_a.value, expected_a, decimal=5)
+
+    # Verify that the experiment has measured data loaded
+    # (from the file_path in that CSV row)
+    expt = list(project.experiments.values())[0]
+    assert expt.data.intensity_meas is not None
+
+
+def test_apply_params_from_csv_raises_on_missing_csv(tmp_path) -> None:
+    """apply_params_from_csv raises if no CSV exists."""
+    project = Project(name='no_csv')
+    project.save_as(str(tmp_path / 'proj'))
+
+    with pytest.raises(FileNotFoundError, match='Results CSV not found'):
+        project.apply_params_from_csv(row_index=0)
+
+
+def test_apply_params_from_csv_raises_on_bad_index(tmp_path) -> None:
+    """apply_params_from_csv raises on out-of-range index."""
+    project, data_dir = _create_sequential_project(tmp_path)
+
+    project.analysis.fit_sequential(
+        data_dir=data_dir,
+        verbosity='silent',
+    )
+
+    with pytest.raises(IndexError, match='out of range'):
+        project.apply_params_from_csv(row_index=99)
+

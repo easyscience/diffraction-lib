@@ -362,6 +362,86 @@ class Project(GuardedBase):
         self._info.path = dir_path
         self.save()
 
+    def apply_params_from_csv(self, row_index: int) -> None:
+        """
+        Load a single CSV row and apply its parameters to the project.
+
+        Reads the row at *row_index* from ``analysis/results.csv``,
+        overrides parameter values in the live project, and (for
+        sequential-fit results where ``file_path`` points to a real
+        file) reloads the measured data into the template experiment.
+
+        After calling this method, ``plot_meas_vs_calc()`` will show the
+        fit for that specific dataset.
+
+        Parameters
+        ----------
+        row_index : int
+            0-based row index in the CSV file.
+
+        Raises
+        ------
+        FileNotFoundError
+            If ``analysis/results.csv`` does not exist.
+        IndexError
+            If *row_index* is out of range.
+        """
+        import pandas as pd  # noqa: PLC0415
+
+        from easydiffraction.analysis.sequential import _META_COLUMNS  # noqa: PLC0415
+        from easydiffraction.core.variable import Parameter  # noqa: PLC0415
+
+        if self.info.path is None:
+            msg = 'Project has no saved path. Save the project first.'
+            raise FileNotFoundError(msg)
+
+        csv_path = pathlib.Path(self.info.path) / 'analysis' / 'results.csv'
+        if not csv_path.is_file():
+            msg = f"Results CSV not found: '{csv_path}'"
+            raise FileNotFoundError(msg)
+
+        df = pd.read_csv(csv_path)
+        if row_index < 0 or row_index >= len(df):
+            msg = f'Row index {row_index} out of range (CSV has {len(df)} rows).'
+            raise IndexError(msg)
+
+        row = df.iloc[row_index]
+
+        # 1. Reload data if file_path points to a real file
+        file_path = row.get('file_path', '')
+        if file_path and pathlib.Path(file_path).is_file():
+            experiment = list(self.experiments.values())[0]
+            experiment._load_ascii_data_to_experiment(file_path)
+
+        # 2. Override parameter values
+        all_params = self.structures.parameters + self.experiments.parameters
+        param_map = {
+            p.unique_name: p
+            for p in all_params
+            if isinstance(p, Parameter) and hasattr(p, 'unique_name')
+        }
+
+        skip_cols = set(_META_COLUMNS)
+        for col_name in df.columns:
+            if col_name in skip_cols:
+                continue
+            if col_name.startswith('diffrn.'):
+                continue
+            if col_name.endswith('.uncertainty'):
+                continue
+            if col_name in param_map and pd.notna(row[col_name]):
+                param_map[col_name].value = float(row[col_name])
+
+        # 3. Apply uncertainties
+        for col_name in df.columns:
+            if not col_name.endswith('.uncertainty'):
+                continue
+            base_name = col_name.removesuffix('.uncertainty')
+            if base_name in param_map and pd.notna(row[col_name]):
+                param_map[base_name].uncertainty = float(row[col_name])
+
+        log.info(f'Applied parameters from CSV row {row_index} (file: {file_path}).')
+
     # ------------------------------------------
     # Plotting
     # ------------------------------------------
