@@ -280,3 +280,37 @@ def test_fit_sequential_requires_one_experiment(tmp_path) -> None:
 
     with pytest.raises(ValueError, match='exactly 1 experiment'):
         project.analysis.fit_sequential(data_dir=str(tmp_path))
+
+
+# ------------------------------------------------------------------
+#  Test 6: Parallel sequential fit (max_workers=2)
+# ------------------------------------------------------------------
+
+
+def test_fit_sequential_parallel(tmp_path) -> None:
+    """fit_sequential with max_workers=2 produces correct CSV."""
+    project, data_dir = _create_sequential_project(tmp_path)
+
+    project.analysis.fit_sequential(
+        data_dir=data_dir,
+        max_workers=2,
+        verbosity='silent',
+    )
+
+    csv_path = project.info.path / 'analysis' / 'results.csv'
+    assert csv_path.is_file(), 'results.csv was not created'
+
+    with csv_path.open() as f:
+        reader = csv.DictReader(f)
+        rows = list(reader)
+
+    assert len(rows) == 3, f'Expected 3 rows, got {len(rows)}'
+
+    for row in rows:
+        assert row['fit_success'] == 'True', f'Fit failed for {row["file_path"]}'
+
+    # Parameter values should be present and reasonable
+    assert 'lbco.cell.length_a' in rows[0]
+    vals = [float(r['lbco.cell.length_a']) for r in rows]
+    for v in vals:
+        assert_almost_equal(v, vals[0], decimal=3)

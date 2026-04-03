@@ -8,6 +8,8 @@ from __future__ import annotations
 
 import contextlib
 import csv
+import multiprocessing as mp
+from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from dataclasses import replace
 from pathlib import Path
@@ -22,7 +24,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
 # ------------------------------------------------------------------
-#  Template dataclass (picklable for future multiprocessing)
+#  Template dataclass (picklable for ProcessPoolExecutor)
 # ------------------------------------------------------------------
 
 
@@ -32,7 +34,7 @@ class SequentialFitTemplate:
     Snapshot of everything a worker needs to recreate and fit a project.
 
     All fields are plain Python types (str, dict, list) so that the
-    template can be pickled for ``ProcessPoolExecutor`` in the future.
+    template can be pickled for ``ProcessPoolExecutor``.
     """
 
     structure_cif: str
@@ -544,8 +546,9 @@ def fit_sequential(
     data_dir : str
         Path to directory containing data files.
     max_workers : int | str, default=1
-        Number of parallel worker processes. ``1`` = sequential.
-        ``'auto'`` = physical CPU count (future).
+        Number of parallel worker processes. ``1`` = sequential (no
+        subprocess overhead). ``'auto'`` = physical CPU count. Uses
+        ``ProcessPoolExecutor`` with ``spawn`` context when > 1.
     chunk_size : int | None, default=None
         Files per chunk. Default ``None`` uses ``max_workers``.
     file_pattern : str, default='*'
@@ -644,36 +647,53 @@ def fit_sequential(
             f'{total_chunks} chunks (max_workers={max_workers})'
         )
 
-    for chunk_idx, chunk in enumerate(chunks, start=1):
-        # Single-worker mode: call worker directly
-        results = [_fit_worker(template, path) for path in chunk]
+    # Create a process pool for parallel dispatch, or a no-op context
+    # for single-worker mode (avoids process-spawn overhead).
+    if max_workers > 1:
+        spawn_ctx = mp.get_context('spawn')
+        pool_cm = ProcessPoolExecutor(
+            max_workers=max_workers,
+            mp_context=spawn_ctx,
+            max_tasks_per_child=100,
+        )
+    else:
+        pool_cm = contextlib.nullcontext()
 
-        # Extract diffrn metadata in the main process
-        if extract_diffrn is not None:
-            for result in results:
-                try:
-                    diffrn_values = extract_diffrn(result['file_path'])
-                    for key, val in diffrn_values.items():
-                        result[f'diffrn.{key}'] = val
-                except Exception as exc:  # noqa: BLE001
-                    log.warning(f'extract_diffrn failed for {result["file_path"]}: {exc}')
+    with pool_cm as executor:
+        for chunk_idx, chunk in enumerate(chunks, start=1):
+            # Dispatch: parallel or sequential
+            if executor is not None:
+                templates = [template] * len(chunk)
+                results = list(executor.map(_fit_worker, templates, chunk))
+            else:
+                results = [_fit_worker(template, path) for path in chunk]
 
-        # Write to CSV
-        _append_to_csv(csv_path, header, results)
+            # Extract diffrn metadata in the main process
+            if extract_diffrn is not None:
+                for result in results:
+                    try:
+                        diffrn_values = extract_diffrn(result['file_path'])
+                        for key, val in diffrn_values.items():
+                            result[f'diffrn.{key}'] = val
+                    except Exception as exc:  # noqa: BLE001
+                        log.warning(f'extract_diffrn failed for {result["file_path"]}: {exc}')
 
-        # Report progress
-        _report_chunk_progress(chunk_idx, total_chunks, results, verb)
+            # Write to CSV
+            _append_to_csv(csv_path, header, results)
 
-        # Propagate: use last successful file's
-        # params as starting values
-        last_ok = None
-        for r in reversed(results):
-            if r.get('fit_success') and r.get('params'):
-                last_ok = r
-                break
+            # Report progress
+            _report_chunk_progress(chunk_idx, total_chunks, results, verb)
 
-        if last_ok is not None:
-            template = replace(template, initial_params=last_ok['params'])
+            # Propagate: use last successful file's
+            # params as starting values
+            last_ok = None
+            for r in reversed(results):
+                if r.get('fit_success') and r.get('params'):
+                    last_ok = r
+                    break
+
+            if last_ok is not None:
+                template = replace(template, initial_params=last_ok['params'])
 
     if verb is not VerbosityEnum.SILENT:
         total_fitted = len(already_fitted) + len(remaining)

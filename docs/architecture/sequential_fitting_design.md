@@ -1,6 +1,6 @@
 # Sequential Fitting — Architecture Design
 
-**Status:** Implementation in progress (PRs 1–10 complete, PRs 11–14
+**Status:** Implementation in progress (PRs 1–11 complete, PRs 12–14
 remaining) **Date:** 2026-04-02 (updated 2026-04-03)
 
 ---
@@ -1119,11 +1119,11 @@ propagation, diffrn callback, precondition validation.
 
 **Implemented:** `Plotter.plot_param_series()` reads CSV via pandas.
 `Plotter.plot_param_series_from_snapshots()` preserves backward
-compatibility for `fit()` single-mode (no CSV yet). `Project.plot_param_series()`
-tries CSV first, falls back to snapshots. Axis labels derived from live
-descriptor objects.
+compatibility for `fit()` single-mode (no CSV yet).
+`Project.plot_param_series()` tries CSV first, falls back to snapshots.
+Axis labels derived from live descriptor objects.
 
-#### PR 11 — Parallel fitting (max_workers > 1)             ← next
+#### PR 11 — Parallel fitting (max_workers > 1) ✅
 
 > **Title:** `Add multiprocessing support to fit_sequential`
 >
@@ -1132,6 +1132,13 @@ descriptor objects.
 > Handle worker failures (catch exceptions, mark as failed in CSV). Add
 > `max_workers='auto'` support (`os.cpu_count()`). Integration test:
 > parallel sequential fit (10 files, 2 workers).
+
+**Implemented:** `ProcessPoolExecutor` with `mp.get_context('spawn')`
+and `max_tasks_per_child=100` dispatches chunks in parallel when
+`max_workers > 1`. Single-worker mode (`max_workers=1`) still calls
+`_fit_worker` directly (no subprocess overhead). `max_workers='auto'`
+resolves to `os.cpu_count()`. Integration test
+`test_fit_sequential_parallel` verifies 2-worker parallel fitting.
 
 ### Post-sequential PRs
 
@@ -1175,8 +1182,8 @@ PR 1 (issue #7: eliminate dummy Experiments) ✅
                           ├─► PR 7 (analysis.cif → analysis/) ✅
                           │     └─► PR 9 (streaming sequential fit) ✅
                           │           ├─► PR 10 (plot from CSV) ✅
-                          │           │     └─► PR 13 (CSV for existing fit)
-                          │           └─► PR 11 (parallel fitting)       ← next
+                          │           │     └─► PR 13 (CSV for existing fit) ← next
+                          │           └─► PR 11 (parallel fitting) ✅
                           │                 └─► PR 14 (optional: parallel fit())
                           └─► PR 8 (zip destination) ✅
                                 └─► PR 12 (dataset replay)
@@ -1201,9 +1208,9 @@ are all stdlib.
 | ------------------------------------------------ | ----------------------------------------------------------- |
 | CIF round-trip loses information                 | ✅ PR 3 (load) + PR 6 (round-trip test) verified            |
 | CIF collection truncation at 20 rows             | ✅ PR 5 fixed (default `max_display=None`)                  |
-| Worker memory leak (large N, long-running pool)  | Use `max_tasks_per_child=100` on the pool (PR 11)           |
+| Worker memory leak (large N, long-running pool)  | ✅ `max_tasks_per_child=100` on the pool (PR 11)            |
 | Pickling failures for SequentialFitTemplate      | ✅ Keep it a plain dataclass with only str/dict/list fields |
-| crysfml Fortran global state in forked processes | Enforced `spawn` context avoids fork issues (PR 11)         |
+| crysfml Fortran global state in forked processes | ✅ Enforced `spawn` context avoids fork issues (PR 11)      |
 
 ### Resolved open issues (now prerequisites) — all done ✅
 
@@ -1230,7 +1237,7 @@ are all stdlib.
 
 | Aspect              | Decision                                                                           | Status |
 | ------------------- | ---------------------------------------------------------------------------------- | ------ |
-| Parallelism backend | `concurrent.futures.ProcessPoolExecutor` with `spawn`                              | PR 11  |
+| Parallelism backend | `concurrent.futures.ProcessPoolExecutor` with `spawn`                              | ✅     |
 | Worker isolation    | Each worker creates a fresh `Project` — no shared state                            | ✅     |
 | Data source         | `data_dir` argument; ZIP → extract first                                           | ✅     |
 | Data flow           | Template CIF + data path → worker → result dict → CSV                              | ✅     |
@@ -1245,4 +1252,4 @@ are all stdlib.
 | Project layout      | `analysis.cif` moves into `analysis/` directory                                    | ✅     |
 | Singletons          | `UidMapHandler` eliminated; `ConstraintsHandler` stays singleton but always synced | ✅     |
 | New dependencies    | None (stdlib only)                                                                 | ✅     |
-| First step          | PRs 1–10 done; PRs 11–14 remaining                                                 | ✅     |
+| First step          | PRs 1–11 done; PRs 12–14 remaining                                                 | ✅     |

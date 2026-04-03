@@ -748,7 +748,8 @@ class Analysis:
             Path to directory containing data files.
         max_workers : int | str, default=1
             Number of parallel worker processes. ``1`` = sequential.
-            ``'auto'`` = physical CPU count.
+            ``'auto'`` = physical CPU count. Uses
+            ``ProcessPoolExecutor`` with ``spawn`` context when > 1.
         chunk_size : int | None, default=None
             Files per chunk. Default ``None`` uses *max_workers*.
         file_pattern : str, default='*'
