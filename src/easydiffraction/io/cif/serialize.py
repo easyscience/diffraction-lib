@@ -212,6 +212,11 @@ def datablock_item_to_cif(
     max_loop_display : int | None, default=None
         When set, truncate loop categories to this many rows. ``None``
         emits all rows (used for serialisation).
+
+    Returns
+    -------
+    str
+        CIF text representing the datablock as a loop.
     """
     # Local imports to avoid import-time cycles
     from easydiffraction.core.category import CategoryCollection  # noqa: PLC0415

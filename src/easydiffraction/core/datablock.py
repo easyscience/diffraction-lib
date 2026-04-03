@@ -99,6 +99,13 @@ class DatablockItem(GuardedBase):
         ----------
         max_loop_display : int, default=20
             Maximum number of rows to show per loop category.
+
+        Returns
+        -------
+        str
+            CIF representation of this object, with loop categories
+            truncated to at most *max_loop_display* rows for display
+            purposes.
         """
         from easydiffraction.io.cif.serialize import datablock_item_to_cif  # noqa: PLC0415
 
