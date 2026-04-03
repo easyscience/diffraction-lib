@@ -252,4 +252,4 @@ class Structure(DatablockItem):
     def show_as_cif(self) -> None:
         """Render the CIF text for this structure in the terminal."""
         console.paragraph(f"Structure 🧩 '{self.name}' as cif")
-        render_cif(self.as_cif)
+        render_cif(self._cif_for_display())

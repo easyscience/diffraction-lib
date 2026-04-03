@@ -196,11 +196,22 @@ def category_collection_to_cif(
     return '\n'.join(lines)
 
 
-def datablock_item_to_cif(datablock: object) -> str:
+def datablock_item_to_cif(
+    datablock: object,
+    max_loop_display: int | None = None,
+) -> str:
     """
     Render a DatablockItem-like object to CIF text.
 
     Emits a data_ header and then concatenates category CIF sections.
+
+    Parameters
+    ----------
+    datablock : object
+        A ``DatablockItem``-like object.
+    max_loop_display : int | None, default=None
+        When set, truncate loop categories to this many rows. ``None``
+        emits all rows (used for serialisation).
     """
     # Local imports to avoid import-time cycles
     from easydiffraction.core.category import CategoryCollection  # noqa: PLC0415
@@ -213,7 +224,11 @@ def datablock_item_to_cif(datablock: object) -> str:
     parts.extend(v.as_cif for v in vars(datablock).values() if isinstance(v, CategoryItem))
 
     # Then collections
-    parts.extend(v.as_cif for v in vars(datablock).values() if isinstance(v, CategoryCollection))
+    parts.extend(
+        category_collection_to_cif(v, max_display=max_loop_display)
+        for v in vars(datablock).values()
+        if isinstance(v, CategoryCollection)
+    )
 
     return '\n\n'.join(parts)
 
