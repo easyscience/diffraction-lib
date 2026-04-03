@@ -370,4 +370,3 @@ def test_apply_params_from_csv_raises_on_bad_index(tmp_path) -> None:
 
     with pytest.raises(IndexError, match='out of range'):
         project.apply_params_from_csv(row_index=99)
-

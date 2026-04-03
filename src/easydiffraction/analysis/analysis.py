@@ -688,12 +688,14 @@ class Analysis:
             short_alignments = ['left', 'right', 'right', 'center']
             short_rows: list[list[str]] = []
             short_display_handle: object | None = None
+            if verb is not VerbosityEnum.SILENT:
+                console.paragraph('Standard fitting')
             if verb is VerbosityEnum.SHORT:
                 first = expt_names[0]
                 last = expt_names[-1]
                 minimizer_name = self.fitter.selection
-                console.paragraph(
-                    f"Using {num_expts} experiments 🔬 from '{first}' to "
+                console.print(
+                    f"📋 Using {num_expts} experiments 🔬 from '{first}' to "
                     f"'{last}' for '{mode.value}' fitting"
                 )
                 console.print(f"🚀 Starting fit process with '{minimizer_name}'...")
@@ -702,8 +704,8 @@ class Analysis:
 
             for _idx, expt_name in enumerate(expt_names, start=1):
                 if verb is VerbosityEnum.FULL:
-                    console.paragraph(
-                        f"Using experiment 🔬 '{expt_name}' for '{mode.value}' fitting"
+                    console.print(
+                        f"📋 Using experiment 🔬 '{expt_name}' for '{mode.value}' fitting"
                     )
 
                 experiment = experiments[expt_name]

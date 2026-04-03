@@ -9,6 +9,7 @@ from __future__ import annotations
 import contextlib
 import csv
 import multiprocessing as mp
+import sys
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from dataclasses import replace
@@ -18,6 +19,7 @@ from typing import Any
 
 from easydiffraction.io.ascii import extract_data_paths_from_dir
 from easydiffraction.utils.enums import VerbosityEnum
+from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 
 if TYPE_CHECKING:
@@ -565,6 +567,13 @@ def fit_sequential(
         If preconditions are not met (e.g. multiple structures, missing
         project path, no free parameters).
     """
+    # Guard against re-entry in spawned child processes.  With the
+    # ``spawn`` multiprocessing context the child re-imports __main__,
+    # which re-executes the user script and would call fit_sequential
+    # again, causing infinite process spawning.
+    if mp.parent_process() is not None:
+        return
+
     project = analysis.project
     verb = VerbosityEnum(verbosity if verbosity is not None else project.verbosity)
 
@@ -642,14 +651,37 @@ def fit_sequential(
     total_chunks = len(chunks)
 
     if verb is not VerbosityEnum.SILENT:
-        print(
-            f'🚀 Sequential fitting: {len(remaining)} files in '
-            f'{total_chunks} chunks (max_workers={max_workers})'
+        minimizer_name = analysis.fitter.selection
+        console.paragraph('Sequential fitting')
+        console.print(f"🚀 Starting fit process with '{minimizer_name}'...")
+        console.print(
+            f'📋 {len(remaining)} files in {total_chunks} chunks (max_workers={max_workers})'
         )
+        console.print('📈 Goodness-of-fit (reduced χ²):')
 
     # Create a process pool for parallel dispatch, or a no-op context
     # for single-worker mode (avoids process-spawn overhead).
+    #
+    # When max_workers > 1 we use ``spawn`` context, which normally
+    # re-imports ``__main__`` in every child process.  If the user runs
+    # a script without an ``if __name__ == '__main__':`` guard the
+    # whole script would re-execute in every worker, causing infinite
+    # process spawning.  To prevent this we temporarily hide
+    # ``__main__.__file__`` and ``__main__.__spec__`` so that the spawn
+    # bootstrap has no path to re-import the script.  ``_fit_worker``
+    # lives in this module (not ``__main__``), so it is still resolved
+    # via normal pickle/import machinery.
+    _main_mod = sys.modules.get('__main__')
+    _main_file_bak = getattr(_main_mod, '__file__', None)
+    _main_spec_bak = getattr(_main_mod, '__spec__', None)
+
     if max_workers > 1:
+        # Hide __main__ origin from spawn
+        if _main_mod is not None and _main_file_bak is not None:
+            _main_mod.__file__ = None  # type: ignore[assignment]
+        if _main_mod is not None and _main_spec_bak is not None:
+            _main_mod.__spec__ = None
+
         spawn_ctx = mp.get_context('spawn')
         pool_cm = ProcessPoolExecutor(
             max_workers=max_workers,
@@ -659,41 +691,48 @@ def fit_sequential(
     else:
         pool_cm = contextlib.nullcontext()
 
-    with pool_cm as executor:
-        for chunk_idx, chunk in enumerate(chunks, start=1):
-            # Dispatch: parallel or sequential
-            if executor is not None:
-                templates = [template] * len(chunk)
-                results = list(executor.map(_fit_worker, templates, chunk))
-            else:
-                results = [_fit_worker(template, path) for path in chunk]
+    try:
+        with pool_cm as executor:
+            for chunk_idx, chunk in enumerate(chunks, start=1):
+                # Dispatch: parallel or sequential
+                if executor is not None:
+                    templates = [template] * len(chunk)
+                    results = list(executor.map(_fit_worker, templates, chunk))
+                else:
+                    results = [_fit_worker(template, path) for path in chunk]
 
-            # Extract diffrn metadata in the main process
-            if extract_diffrn is not None:
-                for result in results:
-                    try:
-                        diffrn_values = extract_diffrn(result['file_path'])
-                        for key, val in diffrn_values.items():
-                            result[f'diffrn.{key}'] = val
-                    except Exception as exc:  # noqa: BLE001
-                        log.warning(f'extract_diffrn failed for {result["file_path"]}: {exc}')
+                # Extract diffrn metadata in the main process
+                if extract_diffrn is not None:
+                    for result in results:
+                        try:
+                            diffrn_values = extract_diffrn(result['file_path'])
+                            for key, val in diffrn_values.items():
+                                result[f'diffrn.{key}'] = val
+                        except Exception as exc:  # noqa: BLE001
+                            log.warning(f'extract_diffrn failed for {result["file_path"]}: {exc}')
 
-            # Write to CSV
-            _append_to_csv(csv_path, header, results)
+                # Write to CSV
+                _append_to_csv(csv_path, header, results)
 
-            # Report progress
-            _report_chunk_progress(chunk_idx, total_chunks, results, verb)
+                # Report progress
+                _report_chunk_progress(chunk_idx, total_chunks, results, verb)
 
-            # Propagate: use last successful file's
-            # params as starting values
-            last_ok = None
-            for r in reversed(results):
-                if r.get('fit_success') and r.get('params'):
-                    last_ok = r
-                    break
+                # Propagate: use last successful file's
+                # params as starting values
+                last_ok = None
+                for r in reversed(results):
+                    if r.get('fit_success') and r.get('params'):
+                        last_ok = r
+                        break
 
-            if last_ok is not None:
-                template = replace(template, initial_params=last_ok['params'])
+                if last_ok is not None:
+                    template = replace(template, initial_params=last_ok['params'])
+    finally:
+        # Restore __main__ attributes
+        if _main_mod is not None and _main_file_bak is not None:
+            _main_mod.__file__ = _main_file_bak
+        if _main_mod is not None and _main_spec_bak is not None:
+            _main_mod.__spec__ = _main_spec_bak
 
     if verb is not VerbosityEnum.SILENT:
         total_fitted = len(already_fitted) + len(remaining)

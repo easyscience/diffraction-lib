@@ -3,14 +3,16 @@
 #
 # This example demonstrates a Rietveld refinement of the Co2SiO4 crystal
 # structure using constant-wavelength neutron powder diffraction data
-# from D20 at ILL. A sequential refinement of the same structure against
-# a temperature scan is performed to show how to manage multiple
-# experiments in a project.
+# from D20 at ILL. A sequential refinement is performed against a
+# temperature scan using `fit_sequential`, which processes each data
+# file independently without loading all datasets into memory at once.
 
 # %% [markdown]
 # ## Import Library
 
 # %%
+import pandas as pd
+
 import easydiffraction as ed
 
 # %% [markdown]
@@ -22,11 +24,11 @@ import easydiffraction as ed
 project = ed.Project()
 
 # %% [markdown]
-# Set output verbosity level to "short" to show only one-line status
-# messages during the analysis process.
+# The project must be saved before running sequential fitting, so that
+# results can be written to `analysis/results.csv`.
 
 # %%
-project.verbosity = 'short'
+project.save_as('data/cosio_project', temporary=False)
 
 # %% [markdown]
 # ## Step 2: Define Crystal Structure
@@ -115,91 +117,88 @@ structure.atom_sites.create(
 )
 
 # %% [markdown]
-# ## Step 3: Define Experiments
+# ## Step 3: Define Template Experiment
 #
-# This section shows how to add experiments, configure their parameters,
-# and link the structures defined above.
+# For sequential fitting, we create a single template experiment from
+# the first data file. This template defines the instrument, peak
+# profile, background, and linked phases that will be reused for every
+# data file in the scan.
 #
 # #### Download Measured Data
 
 # %%
-file_path = ed.download_data(id=27, destination='data')
+zip_path = ed.download_data(id=27, destination='data')
 
 # %% [markdown]
-# #### Create Experiments and Set Temperature
+# #### Extract Data Files
 
 # %%
-data_paths = ed.extract_data_paths_from_zip(file_path)
-for i, data_path in enumerate(data_paths, start=1):
-    name = f'd20_{i}'
-    project.experiments.add_from_data_path(
-        name=name,
-        data_path=data_path,
-    )
-    expt = project.experiments[name]
-    expt.diffrn.ambient_temperature = ed.extract_metadata(
-        file_path=data_path,
-        pattern=r'^TEMP\s+([0-9.]+)',
-    )
+data_dir = 'data/d20_scan'
+data_paths = ed.extract_data_paths_from_zip(zip_path, destination=data_dir)
+
+# %% [markdown]
+# #### Create Template Experiment from the First File
+
+# %%
+project.experiments.add_from_data_path(
+    name='d20',
+    data_path=data_paths[0],
+)
+expt = project.experiments['d20']
 
 # %% [markdown]
 # #### Set Instrument
 
 # %%
-for expt in project.experiments:
-    expt.instrument.setup_wavelength = 1.87
-    expt.instrument.calib_twotheta_offset = 0.29
+expt.instrument.setup_wavelength = 1.87
+expt.instrument.calib_twotheta_offset = 0.29
 
 # %% [markdown]
 # #### Set Peak Profile
 
 # %%
-for expt in project.experiments:
-    expt.peak.broad_gauss_u = 0.24
-    expt.peak.broad_gauss_v = -0.53
-    expt.peak.broad_gauss_w = 0.38
-    expt.peak.broad_lorentz_y = 0.02
+expt.peak.broad_gauss_u = 0.24
+expt.peak.broad_gauss_v = -0.53
+expt.peak.broad_gauss_w = 0.38
+expt.peak.broad_lorentz_y = 0.02
 
 # %% [markdown]
 # #### Set Excluded Regions
 
 # %%
-for expt in project.experiments:
-    expt.excluded_regions.create(id='1', start=0, end=8)
-    expt.excluded_regions.create(id='2', start=150, end=180)
+expt.excluded_regions.create(id='1', start=0, end=8)
+expt.excluded_regions.create(id='2', start=150, end=180)
 
 # %% [markdown]
 # #### Set Background
 
 # %%
-for expt in project.experiments:
-    expt.background.create(id='1', x=8, y=609)
-    expt.background.create(id='2', x=9, y=581)
-    expt.background.create(id='3', x=10, y=563)
-    expt.background.create(id='4', x=11, y=540)
-    expt.background.create(id='5', x=12, y=520)
-    expt.background.create(id='6', x=15, y=507)
-    expt.background.create(id='7', x=25, y=463)
-    expt.background.create(id='8', x=30, y=434)
-    expt.background.create(id='9', x=50, y=451)
-    expt.background.create(id='10', x=70, y=431)
-    expt.background.create(id='11', x=90, y=414)
-    expt.background.create(id='12', x=110, y=361)
-    expt.background.create(id='13', x=130, y=292)
-    expt.background.create(id='14', x=150, y=241)
+expt.background.create(id='1', x=8, y=609)
+expt.background.create(id='2', x=9, y=581)
+expt.background.create(id='3', x=10, y=563)
+expt.background.create(id='4', x=11, y=540)
+expt.background.create(id='5', x=12, y=520)
+expt.background.create(id='6', x=15, y=507)
+expt.background.create(id='7', x=25, y=463)
+expt.background.create(id='8', x=30, y=434)
+expt.background.create(id='9', x=50, y=451)
+expt.background.create(id='10', x=70, y=431)
+expt.background.create(id='11', x=90, y=414)
+expt.background.create(id='12', x=110, y=361)
+expt.background.create(id='13', x=130, y=292)
+expt.background.create(id='14', x=150, y=241)
 
 # %% [markdown]
 # #### Set Linked Phases
 
 # %%
-for expt in project.experiments:
-    expt.linked_phases.create(id='cosio', scale=1.2)
+expt.linked_phases.create(id='cosio', scale=1.2)
 
 # %% [markdown]
 # ## Step 4: Perform Analysis
 #
 # This section shows how to set free parameters, define constraints,
-# and run the refinement.
+# and run the sequential refinement.
 
 # %% [markdown]
 # #### Set Free Parameters
@@ -229,18 +228,17 @@ structure.atom_sites['O2'].b_iso.free = True
 structure.atom_sites['O3'].b_iso.free = True
 
 # %%
-for expt in project.experiments:
-    expt.linked_phases['cosio'].scale.free = True
+expt.linked_phases['cosio'].scale.free = True
 
-    expt.instrument.calib_twotheta_offset.free = True
+expt.instrument.calib_twotheta_offset.free = True
 
-    expt.peak.broad_gauss_u.free = True
-    expt.peak.broad_gauss_v.free = True
-    expt.peak.broad_gauss_w.free = True
-    expt.peak.broad_lorentz_y.free = True
+expt.peak.broad_gauss_u.free = True
+expt.peak.broad_gauss_v.free = True
+expt.peak.broad_gauss_w.free = True
+expt.peak.broad_lorentz_y.free = True
 
-    for point in expt.background:
-        point.y.free = True
+for point in expt.background:
+    point.y.free = True
 
 # %% [markdown]
 # #### Set Constraints
@@ -265,25 +263,59 @@ project.analysis.constraints.create(
     expression='biso_Co2 = biso_Co1',
 )
 
-
 # %% [markdown]
-# #### Set Fit Mode
-
-# %%
-project.analysis.fit_mode.mode = 'single'
-
-# %% [markdown]
-# #### Run Fitting
+# #### Run Single Fitting
+#
+# This is the fitting of the first dataset to optimize the initial
+# parameters for the sequential fitting. This step is optional but can
+# help with convergence and speed of the sequential fitting, especially
+# if the initial parameters are far from optimal.
 
 # %%
 project.analysis.fit()
 
 # %% [markdown]
-# #### Plot Measured vs Calculated
+# #### Run Sequential Fitting
+#
+# Define a callback that extracts the temperature from each data file.
+
 
 # %%
-last_expt_name = project.experiments.names[-1]
-project.plot_meas_vs_calc(expt_name=last_expt_name, show_residual=True)
+def extract_diffrn(file_path):
+    temperature = ed.extract_metadata(
+        file_path=file_path,
+        pattern=r'^TEMP\s+([0-9.]+)',
+    )
+    return {'ambient_temperature': temperature}
+
+
+# %% [markdown]
+# Set output verbosity level to "short" to show only one-line status
+# messages during the analysis process.
+
+# %%
+project.verbosity = 'short'
+
+# %% [markdown]
+# Run the sequential fit over all data files in the scan directory.
+
+# %%
+project.analysis.fit_sequential(
+    data_dir=data_dir,
+    extract_diffrn=extract_diffrn,
+    max_workers='auto',
+)
+
+# %% [markdown]
+# #### Replay a Dataset
+#
+# Apply fitted parameters from the last CSV row and plot the result.
+
+# %%
+csv_path = project.info.path / 'analysis' / 'results.csv'
+n_rows = len(pd.read_csv(csv_path))
+project.apply_params_from_csv(row_index=n_rows - 1)
+project.plot_meas_vs_calc(expt_name='d20', show_residual=True)
 
 # %% [markdown]
 # #### Plot Parameter Evolution
@@ -291,7 +323,7 @@ project.plot_meas_vs_calc(expt_name=last_expt_name, show_residual=True)
 # Define the quantity to use as the x-axis in the following plots.
 
 # %%
-temperature = project.experiments[0].diffrn.ambient_temperature
+temperature = expt.diffrn.ambient_temperature
 
 # %% [markdown]
 # Plot unit cell parameters vs. temperature.
