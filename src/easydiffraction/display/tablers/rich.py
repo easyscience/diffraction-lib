@@ -13,7 +13,7 @@ from rich.table import Table
 try:
     from IPython.display import HTML
     from IPython.display import display
-except Exception:
+except ImportError:
     HTML = None
     display = None
 
@@ -132,7 +132,7 @@ class RichTableBackend(TableBackendBase):
                 try:
                     html = self._to_html(table)
                     display_handle.update(HTML(html))
-                except Exception as err:
+                except (TypeError, ValueError, AttributeError, RuntimeError, OSError) as err:
                     log.debug(f'Rich to HTML DisplayHandle update failed: {err!r}')
                 else:
                     return
@@ -141,7 +141,7 @@ class RichTableBackend(TableBackendBase):
             else:
                 try:
                     display_handle.update(table)
-                except Exception as err:
+                except (TypeError, ValueError, AttributeError, RuntimeError, OSError) as err:
                     log.debug(f'Rich live handle update failed: {err!r}')
                 else:
                     return

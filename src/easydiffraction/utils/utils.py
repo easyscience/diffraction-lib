@@ -114,7 +114,7 @@ def _fetch_tutorials_index() -> dict:
         _validate_url(index_url)
         with _safe_urlopen(index_url) as response:
             return json.load(response)
-    except Exception as e:
+    except (OSError, ValueError) as e:
         log.warning(
             f'Failed to fetch tutorials index from {index_url}: {e}',
             exc_type=UserWarning,
@@ -247,7 +247,7 @@ def stripped_package_version(package_name: str) -> str | None:
     try:
         v = Version(v_str)
         return str(v.public)
-    except Exception:
+    except ValueError:
         return v_str
 
 
@@ -488,7 +488,7 @@ def download_all_tutorials(
                 overwrite=overwrite,
             )
             downloaded_paths.append(path)
-        except Exception as e:
+        except (OSError, ValueError) as e:
             log.warning(f'Failed to download tutorial #{tutorial_id}: {e}')
 
     console.print(f'✅ Downloaded {len(downloaded_paths)} tutorials to "{destination}/"')
@@ -742,5 +742,5 @@ def str_to_ufloat(s: str | None, default: float | None = None) -> UFloat:
         s = s[:-2] + '(0)'
     try:
         return ufloat_fromstr(s)
-    except Exception:
+    except ValueError:
         return ufloat(default, np.nan)

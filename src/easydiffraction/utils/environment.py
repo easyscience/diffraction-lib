@@ -91,7 +91,7 @@ def in_jupyter() -> bool:
             return True
         # Jupyter or qtconsole use ZMQInteractiveShell
         return ip.__class__.__name__ == 'ZMQInteractiveShell'  # noqa: TRY300
-    except Exception:
+    except (NameError, AttributeError):
         return False
 
 
@@ -128,14 +128,14 @@ def is_ipython_display_handle(obj: object) -> bool:
 
         try:
             return isinstance(obj, DisplayHandle)
-        except Exception:
+        except TypeError:
             return False
-    except Exception:
+    except ImportError:
         # Fallback heuristic when IPython is unavailable
         try:
             mod = getattr(getattr(obj, '__class__', None), '__module__', '')
             return isinstance(mod, str) and mod.startswith('IPython')
-        except Exception:
+        except (TypeError, AttributeError):
             return False
 
 
@@ -148,7 +148,7 @@ def can_update_ipython_display() -> bool:
     """
     try:
         pass  # type: ignore[import-not-found]
-    except Exception:
+    except ImportError:
         return False
     else:
         return True
@@ -163,5 +163,5 @@ def can_use_ipython_display(handle: object) -> bool:
     """
     try:
         return is_ipython_display_handle(handle) and can_update_ipython_display()
-    except Exception:
+    except (ImportError, TypeError, AttributeError):
         return False

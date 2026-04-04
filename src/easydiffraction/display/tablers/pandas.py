@@ -7,7 +7,7 @@ from __future__ import annotations
 try:
     from IPython.display import HTML
     from IPython.display import display
-except Exception:
+except ImportError:
     HTML = None
     display = None
 
@@ -161,7 +161,7 @@ class PandasTableBackend(TableBackendBase):
                 try:
                     html = styler.to_html()
                     display_handle.update(HTML(html))
-                except Exception as err:
+                except (TypeError, ValueError, AttributeError, RuntimeError, OSError) as err:
                     log.debug(f'Pandas DisplayHandle update failed: {err!r}')
                 else:
                     return

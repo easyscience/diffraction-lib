@@ -12,7 +12,7 @@ from easydiffraction.utils.logging import log
 try:
     from IPython.display import HTML
     from IPython.display import display
-except Exception:
+except ImportError:
     display = None
     HTML = None
 
@@ -42,5 +42,5 @@ class JupyterScrollManager:
         try:
             display(HTML(css))
             cls._applied = True
-        except Exception:
+        except (TypeError, ValueError, AttributeError, RuntimeError, OSError):
             log.debug('Failed to inject Jupyter CSS to disable scrolling.')

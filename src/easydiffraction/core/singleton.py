@@ -117,5 +117,5 @@ class ConstraintsHandler(SingletonBase):
                 # Update its value and mark it as constrained
                 param._set_value_constrained(rhs_value)
 
-            except Exception as error:
+            except (ValueError, TypeError, ArithmeticError, KeyError, AttributeError) as error:
                 print(f"Failed to apply constraint '{lhs_alias} = {rhs_expr}': {error}")

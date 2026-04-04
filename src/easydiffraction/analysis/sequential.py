@@ -135,7 +135,15 @@ def _fit_worker(
         # 10. Collect results
         result.update(_collect_results(project, template))
 
-    except Exception as exc:
+    except (
+        RuntimeError,
+        ValueError,
+        TypeError,
+        ArithmeticError,
+        KeyError,
+        IndexError,
+        OSError,
+    ) as exc:
         result['fit_success'] = False
         result['chi_squared'] = None
         result['reduced_chi_squared'] = None
@@ -560,7 +568,7 @@ def _apply_diffrn_metadata(
             diffrn_values = extract_diffrn(result['file_path'])
             for key, val in diffrn_values.items():
                 result[f'diffrn.{key}'] = val
-        except Exception as exc:
+        except (RuntimeError, ValueError, TypeError, KeyError, AttributeError, OSError) as exc:
             log.warning(f'extract_diffrn failed for {result["file_path"]}: {exc}')
 
 

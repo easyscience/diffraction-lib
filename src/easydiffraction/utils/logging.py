@@ -33,6 +33,7 @@ from rich.console import Console
 from rich.console import Group
 from rich.console import RenderableType
 from rich.logging import RichHandler
+from rich.markup import MarkupError
 from rich.text import Text
 
 from easydiffraction.utils.environment import in_jupyter
@@ -55,7 +56,12 @@ class IconifiedRichHandler(RichHandler):
         logging.INFO: 'ℹ️',  # noqa: RUF001
     }
 
-    def __init__(self, *args: object, mode: str = 'compact', **kwargs: object) -> None:
+    def __init__(
+        self,
+        *args: object,
+        mode: str = 'compact',
+        **kwargs: object,
+    ) -> None:
         super().__init__(*args, **kwargs)
         self.mode = mode
 
@@ -81,7 +87,11 @@ class IconifiedRichHandler(RichHandler):
         # Use RichHandler's default level text for verbose mode
         return super().get_level_text(record)
 
-    def render_message(self, record: logging.LogRecord, message: str) -> Text:
+    def render_message(
+        self,
+        record: logging.LogRecord,
+        message: str,
+    ) -> Text:
         """
         Render the log message body as a Rich Text object.
 
@@ -100,7 +110,7 @@ class IconifiedRichHandler(RichHandler):
         if self.mode == 'compact':
             try:
                 return Text.from_markup(message)
-            except Exception:
+            except (ValueError, KeyError, TypeError, MarkupError):
                 return Text(str(message))
         return super().render_message(record, message)
 
@@ -130,7 +140,7 @@ class ConsoleManager:
         min_width = ConsoleManager._MIN_CONSOLE_WIDTH
         try:
             width = shutil.get_terminal_size().columns
-        except Exception:
+        except (ValueError, OSError):
             width = min_width
         return max(width, min_width)
 
@@ -335,7 +345,7 @@ class ExceptionHookManager:
                     else kwargs.get('_evalue') or kwargs.get('evalue')
                 )
                 logger.error(str(evalue))
-            except Exception as err:
+            except (IndexError, TypeError, AttributeError, ValueError) as err:
                 logger.debug('Jupyter traceback suppressor failed: %r', err)
 
         return suppress_jupyter_traceback
@@ -358,7 +368,7 @@ class ExceptionHookManager:
                 ip.set_custom_exc(
                     (BaseException,), ExceptionHookManager._suppress_traceback(logger)
                 )
-        except Exception as err:
+        except (ImportError, AttributeError, TypeError) as err:
             msg = f'Failed to install Jupyter traceback suppressor: {err!r}'
             logger.debug(msg)
 

@@ -82,7 +82,7 @@ class CategoryItem(GuardedBase):
             prop = seen[key]
             try:
                 val = getattr(self, key)
-            except Exception:
+            except (AttributeError, TypeError, ValueError):
                 val = None
             if isinstance(val, GenericDescriptorBase):
                 p_idx += 1

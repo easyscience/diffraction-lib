@@ -252,12 +252,12 @@ select = [
   'ARG',   # https://docs.astral.sh/ruff/rules/#flake8-unused-arguments-arg
   'ASYNC', # https://docs.astral.sh/ruff/rules/#flake8-async-async
   'B',     # https://docs.astral.sh/ruff/rules/#flake8-bugbear-b
-  #'BLE',   # https://docs.astral.sh/ruff/rules/#flake8-blind-except-ble
-  'C4',  # https://docs.astral.sh/ruff/rules/#flake8-comprehensions-c4
-  'COM', # https://docs.astral.sh/ruff/rules/#flake8-commas-com
-  'DTZ', # https://docs.astral.sh/ruff/rules/#flake8-datetimez-dtz
-  'EM',  # https://docs.astral.sh/ruff/rules/#flake8-errmsg-em
-  'FA',  # https://docs.astral.sh/ruff/rules/#flake8-future-annotations-fa
+  'BLE',   # https://docs.astral.sh/ruff/rules/#flake8-blind-except-ble
+  'C4',    # https://docs.astral.sh/ruff/rules/#flake8-comprehensions-c4
+  'COM',   # https://docs.astral.sh/ruff/rules/#flake8-commas-com
+  'DTZ',   # https://docs.astral.sh/ruff/rules/#flake8-datetimez-dtz
+  'EM',    # https://docs.astral.sh/ruff/rules/#flake8-errmsg-em
+  'FA',    # https://docs.astral.sh/ruff/rules/#flake8-future-annotations-fa
   #'FBT',   # https://docs.astral.sh/ruff/rules/#flake8-boolean-trap-fbt
   #'FIX',   # https://docs.astral.sh/ruff/rules/#flake8-fixme-fix
   'G',   # https://docs.astral.sh/ruff/rules/#flake8-logging-format-g
