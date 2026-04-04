@@ -7,6 +7,7 @@ Uses the common :class:`RendererBase` so plotters and tablers share a
 consistent configuration surface and engine handling.
 """
 
+import pathlib
 from enum import StrEnum
 
 import numpy as np
@@ -66,10 +67,24 @@ class Plotter(RendererBase):
         self._x_max = DEFAULT_MAX
         # Chart height
         self.height = DEFAULT_HEIGHT
+        # Back-reference to the owning Project (set via _set_project)
+        self._project = None
 
     # ------------------------------------------------------------------
     #  Private class methods
     # ------------------------------------------------------------------
+
+    def _set_project(self, project: object) -> None:
+        """Wire the owning project for high-level plot methods."""
+        self._project = project
+
+    def _update_project_categories(self, expt_name: str) -> None:
+        """Update all project categories before plotting."""
+        for structure in self._project.structures:
+            structure._update_categories()
+        self._project.analysis._update_categories()
+        experiment = self._project.experiments[expt_name]
+        experiment._update_categories()
 
     @classmethod
     def _factory(cls) -> type[RendererFactoryBase]:  # type: ignore[override]
@@ -336,6 +351,155 @@ class Plotter(RendererBase):
 
     def plot_meas(
         self,
+        expt_name: str,
+        x_min: float | None = None,
+        x_max: float | None = None,
+        x: object | None = None,
+    ) -> None:
+        """
+        Plot measured diffraction data for an experiment.
+
+        Parameters
+        ----------
+        expt_name : str
+            Name of the experiment to plot.
+        x_min : float | None, default=None
+            Lower bound for the x-axis range.
+        x_max : float | None, default=None
+            Upper bound for the x-axis range.
+        x : object | None, default=None
+            Optional explicit x-axis data to override stored values.
+        """
+        self._update_project_categories(expt_name)
+        experiment = self._project.experiments[expt_name]
+        self._plot_meas_data(
+            experiment.data,
+            expt_name,
+            experiment.type,
+            x_min=x_min,
+            x_max=x_max,
+            x=x,
+        )
+
+    def plot_calc(
+        self,
+        expt_name: str,
+        x_min: float | None = None,
+        x_max: float | None = None,
+        x: object | None = None,
+    ) -> None:
+        """
+        Plot calculated diffraction pattern for an experiment.
+
+        Parameters
+        ----------
+        expt_name : str
+            Name of the experiment to plot.
+        x_min : float | None, default=None
+            Lower bound for the x-axis range.
+        x_max : float | None, default=None
+            Upper bound for the x-axis range.
+        x : object | None, default=None
+            Optional explicit x-axis data to override stored values.
+        """
+        self._update_project_categories(expt_name)
+        experiment = self._project.experiments[expt_name]
+        self._plot_calc_data(
+            experiment.data,
+            expt_name,
+            experiment.type,
+            x_min=x_min,
+            x_max=x_max,
+            x=x,
+        )
+
+    def plot_meas_vs_calc(
+        self,
+        expt_name: str,
+        x_min: float | None = None,
+        x_max: float | None = None,
+        show_residual: bool = False,
+        x: object | None = None,
+    ) -> None:
+        """
+        Plot measured vs calculated data for an experiment.
+
+        Parameters
+        ----------
+        expt_name : str
+            Name of the experiment to plot.
+        x_min : float | None, default=None
+            Lower bound for the x-axis range.
+        x_max : float | None, default=None
+            Upper bound for the x-axis range.
+        show_residual : bool, default=False
+            When ``True``, include the residual (difference) curve.
+        x : object | None, default=None
+            Optional explicit x-axis data to override stored values.
+        """
+        self._update_project_categories(expt_name)
+        experiment = self._project.experiments[expt_name]
+        self._plot_meas_vs_calc_data(
+            experiment,
+            expt_name,
+            x_min=x_min,
+            x_max=x_max,
+            show_residual=show_residual,
+            x=x,
+        )
+
+    def plot_param_series(
+        self,
+        param: object,
+        versus: object | None = None,
+    ) -> None:
+        """
+        Plot a parameter's value across sequential fit results.
+
+        When a ``results.csv`` file exists in the project's
+        ``analysis/`` directory, data is read from CSV.  Otherwise,
+        falls back to in-memory parameter snapshots (produced by
+        ``fit()`` in single mode).
+
+        Parameters
+        ----------
+        param : object
+            Parameter descriptor whose ``unique_name`` identifies the
+            values to plot.
+        versus : object | None, default=None
+            A diffrn descriptor (e.g.
+            ``expt.diffrn.ambient_temperature``) whose value is used as
+            the x-axis for each experiment.  When ``None``, the
+            experiment sequence number is used instead.
+        """
+        unique_name = param.unique_name
+
+        # Try CSV first (produced by fit_sequential or future fit)
+        csv_path = None
+        if self._project.info.path is not None:
+            candidate = pathlib.Path(self._project.info.path) / 'analysis' / 'results.csv'
+            if candidate.is_file():
+                csv_path = str(candidate)
+
+        if csv_path is not None:
+            self._plot_param_series_from_csv(
+                csv_path=csv_path,
+                unique_name=unique_name,
+                param_descriptor=param,
+                versus_descriptor=versus,
+            )
+        else:
+            # Fallback: in-memory snapshots from fit() single mode
+            versus_name = versus.name if versus is not None else None
+            self._plot_param_series_from_snapshots(
+                unique_name,
+                versus_name,
+                self._project.experiments,
+                self._project.analysis._parameter_snapshots,
+            )
+
+    def _plot_meas_data(
+        self,
         pattern: object,
         expt_name: str,
         expt_type: object,
@@ -360,8 +524,7 @@ class Plotter(RendererBase):
         x_max : object, default=None
             Optional maximum x-axis limit.
         x : object, default=None
-            X-axis type (``'two_theta'``, ``'time_of_flight'``, or
-            ``'d_spacing'``). If ``None``, auto-detected from beam mode.
+            X-axis type. If ``None``, auto-detected from beam mode.
         """
         ctx = self._prepare_powder_context(
             pattern,
@@ -390,7 +553,7 @@ class Plotter(RendererBase):
             height=self.height,
         )
 
-    def plot_calc(
+    def _plot_calc_data(
         self,
         pattern: object,
         expt_name: str,
@@ -416,8 +579,7 @@ class Plotter(RendererBase):
         x_max : object, default=None
             Optional maximum x-axis limit.
         x : object, default=None
-            X-axis type (``'two_theta'``, ``'time_of_flight'``, or
-            ``'d_spacing'``). If ``None``, auto-detected from beam mode.
+            X-axis type. If ``None``, auto-detected from beam mode.
         """
         ctx = self._prepare_powder_context(
             pattern,
@@ -446,7 +608,7 @@ class Plotter(RendererBase):
             height=self.height,
         )
 
-    def plot_meas_vs_calc(
+    def _plot_meas_vs_calc_data(
         self,
         experiment: object,
         expt_name: str,
@@ -556,7 +718,7 @@ class Plotter(RendererBase):
             height=self.height,
         )
 
-    def plot_param_series(
+    def _plot_param_series_from_csv(
         self,
         csv_path: str,
         unique_name: str,
@@ -629,7 +791,7 @@ class Plotter(RendererBase):
             height=self.height,
         )
 
-    def plot_param_series_from_snapshots(
+    def _plot_param_series_from_snapshots(
         self,
         unique_name: str,
         versus_name: str | None,

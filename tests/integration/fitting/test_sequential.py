@@ -16,7 +16,6 @@ from easydiffraction import ExperimentFactory
 from easydiffraction import Project
 from easydiffraction import StructureFactory
 from easydiffraction import download_data
-from easydiffraction.utils.enums import VerbosityEnum
 
 TEMP_DIR = tempfile.gettempdir()
 
@@ -76,7 +75,6 @@ def _create_sequential_project(tmp_path: Path) -> tuple[Project, str]:
     expt = ExperimentFactory.from_data_path(
         name='template',
         data_path=data_path,
-        verbosity=VerbosityEnum.SILENT,
     )
     expt.instrument.setup_wavelength = 1.494
     expt.instrument.calib_twotheta_offset = 0.6225
@@ -250,7 +248,6 @@ def test_fit_sequential_requires_saved_project(tmp_path) -> None:
     expt = ExperimentFactory.from_data_path(
         name='e',
         data_path=data_path,
-        verbosity=VerbosityEnum.SILENT,
     )
     expt.linked_phases.create(id='s', scale=1.0)
     expt.linked_phases['s'].scale.free = True

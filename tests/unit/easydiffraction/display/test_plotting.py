@@ -82,19 +82,19 @@ def test_plotter_error_paths_and_filtering(capsys, monkeypatch):
     p = Plotter()
 
     # Error paths (now log errors via console; messages are printed)
-    p.plot_meas(Ptn(two_theta=None, intensity_meas=None), 'E', ExptType())
+    p._plot_meas_data(Ptn(two_theta=None, intensity_meas=None), 'E', ExptType())
     out = capsys.readouterr().out
     assert 'No two_theta data available for experiment E' in out
 
-    p.plot_meas(Ptn(two_theta=[1], intensity_meas=None), 'E', ExptType())
+    p._plot_meas_data(Ptn(two_theta=[1], intensity_meas=None), 'E', ExptType())
     out = capsys.readouterr().out
     assert 'No measured data available for experiment E' in out
 
-    p.plot_calc(Ptn(two_theta=None, intensity_calc=None), 'E', ExptType())
+    p._plot_calc_data(Ptn(two_theta=None, intensity_calc=None), 'E', ExptType())
     out = capsys.readouterr().out
     assert 'No two_theta data available for experiment E' in out
 
-    p.plot_calc(Ptn(two_theta=[1], intensity_calc=None), 'E', ExptType())
+    p._plot_calc_data(Ptn(two_theta=[1], intensity_calc=None), 'E', ExptType())
     out = capsys.readouterr().out
     assert 'No calculated data available for experiment E' in out
 
@@ -103,19 +103,19 @@ def test_plotter_error_paths_and_filtering(capsys, monkeypatch):
             self.data = pattern
             self.type = expt_type
 
-    p.plot_meas_vs_calc(
+    p._plot_meas_vs_calc_data(
         Expt(Ptn(two_theta=None, intensity_meas=None, intensity_calc=None), ExptType()),
         'E',
     )
     out = capsys.readouterr().out
     assert 'No measured data available for experiment E' in out
-    p.plot_meas_vs_calc(
+    p._plot_meas_vs_calc_data(
         Expt(Ptn(two_theta=[1], intensity_meas=None, intensity_calc=[1]), ExptType()),
         'E',
     )
     out = capsys.readouterr().out
     assert 'No measured data available for experiment E' in out
-    p.plot_meas_vs_calc(
+    p._plot_meas_vs_calc_data(
         Expt(Ptn(two_theta=[1], intensity_meas=[1], intensity_calc=None), ExptType()),
         'E',
     )
@@ -163,6 +163,6 @@ def test_plotter_routes_to_ascii_plotter(monkeypatch):
 
     p = Plotter()
     p.engine = 'asciichartpy'  # ensure AsciiPlotter
-    p.plot_meas(Ptn(), 'E', ExptType())
+    p._plot_meas_data(Ptn(), 'E', ExptType())
     assert called['labels'] == ('meas',)
     assert 'Measured data' in called['title']

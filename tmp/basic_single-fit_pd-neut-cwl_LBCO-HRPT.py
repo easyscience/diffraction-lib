@@ -413,25 +413,25 @@ project.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=Tr
 # Show all parameters of the project.
 
 # %%
-project.analysis.show_all_params()
+project.analysis.display.all_params()
 
 # %% [markdown]
 # Show all fittable parameters.
 
 # %%
-project.analysis.show_fittable_params()
+project.analysis.display.fittable_params()
 
 # %% [markdown]
 # Show only free parameters.
 
 # %%
-project.analysis.show_free_params()
+project.analysis.display.free_params()
 
 # %% [markdown]
 # Show how to access parameters in the code.
 
 # %%
-project.analysis.how_to_access_parameters()
+project.analysis.display.how_to_access_parameters()
 
 # %% [markdown]
 # #### Set Fit Mode
@@ -483,7 +483,7 @@ project.experiments['hrpt'].background['165'].y.free = True
 # Show free parameters after selection.
 
 # %%
-project.analysis.show_free_params()
+project.analysis.display.free_params()
 
 # %% [markdown]
 # #### Run Fitting
@@ -523,7 +523,7 @@ project.experiments['hrpt'].peak.broad_lorentz_y.free = True
 # Show free parameters after selection.
 
 # %%
-project.analysis.show_free_params()
+project.analysis.display.free_params()
 
 # %% [markdown]
 # #### Run Fitting
@@ -561,7 +561,7 @@ project.sample_models['lbco'].atom_sites['O'].b_iso.free = True
 # Show free parameters after selection.
 
 # %%
-project.analysis.show_free_params()
+project.analysis.display.free_params()
 
 # %% [markdown]
 # #### Run Fitting
@@ -611,13 +611,13 @@ project.analysis.constraints.add_from_args(lhs_alias='biso_Ba', rhs_expr='biso_L
 # Show defined constraints.
 
 # %%
-project.analysis.show_constraints()
+project.analysis.display.constraints()
 
 # %% [markdown]
 # Show free parameters before applying constraints.
 
 # %%
-project.analysis.show_free_params()
+project.analysis.display.free_params()
 
 # %% [markdown]
 # Apply constraints.
@@ -629,7 +629,7 @@ project.analysis.apply_constraints()
 # Show free parameters after applying constraints.
 
 # %%
-project.analysis.show_free_params()
+project.analysis.display.free_params()
 
 # %% [markdown]
 # #### Run Fitting
@@ -682,7 +682,7 @@ project.analysis.constraints.add_from_args(
 # Show defined constraints.
 
 # %%
-project.analysis.show_constraints()
+project.analysis.display.constraints()
 
 # %% [markdown]
 # Apply constraints.
@@ -700,7 +700,7 @@ project.sample_models['lbco'].atom_sites['La'].occupancy.free = True
 # Show free parameters after selection.
 
 # %%
-project.analysis.show_free_params()
+project.analysis.display.free_params()
 
 # %% [markdown]
 # #### Run Fitting

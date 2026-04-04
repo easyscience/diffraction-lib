@@ -49,7 +49,7 @@ def test_how_to_access_parameters_prints_paths_and_uids(capsys, monkeypatch):
 
     monkeypatch.setattr(analysis_mod, 'render_table', fake_render_table)
     a = Analysis(Project())
-    a.how_to_access_parameters()
+    a.display.how_to_access_parameters()
 
     out = capsys.readouterr().out
     assert 'How to access parameters' in out
@@ -74,7 +74,7 @@ def test_how_to_access_parameters_prints_paths_and_uids(capsys, monkeypatch):
         captured2.update(kwargs)
 
     monkeypatch.setattr(analysis_mod, 'render_table', fake_render_table2)
-    a.show_parameter_cif_uids()
+    a.display.parameter_cif_uids()
     headers2 = captured2.get('columns_headers') or []
     data2 = captured2.get('columns_data') or []
     assert 'Unique Identifier for CIF Constraints' in headers2

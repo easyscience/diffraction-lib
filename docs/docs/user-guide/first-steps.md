@@ -125,22 +125,23 @@ project.show_available_minimizers()
 EasyDiffraction provides several methods for showing the available
 parameters grouped in different categories. For example, you can use:
 
-- `project.analysis.show_all_params()` – to display all available
+- `project.analysis.display.all_params()` – to display all available
   parameters for the analysis step.
-- `project.analysis.show_fittable_params()` – to display only the
+- `project.analysis.display.fittable_params()` – to display only the
   parameters that can be fitted during the analysis.
-- `project.analysis.show_free_params()` – to display the parameters that
-  are currently free to be adjusted during the fitting process.
+- `project.analysis.display.free_params()` – to display the parameters
+  that are currently free to be adjusted during the fitting process.
 
-Finally, you can use the `project.analysis.how_to_access_parameters()`
-method to get a brief overview of how to access and modify parameters in
-the analysis step, along with their unique identifiers in the CIF
-format. This can be particularly useful for users who are new to the
-EasyDiffraction API or those who want to quickly understand how to work
-with parameters in their projects.
+Finally, you can use the
+`project.analysis.display.how_to_access_parameters()` method to get a
+brief overview of how to access and modify parameters in the analysis
+step, along with their unique identifiers in the CIF format. This can be
+particularly useful for users who are new to the EasyDiffraction API or
+those who want to quickly understand how to work with parameters in
+their projects.
 
 An example of the output for the
-`project.analysis.how_to_access_parameters()` method is:
+`project.analysis.display.how_to_access_parameters()` method is:
 
 |     | Code variable                                       | Unique ID for CIF                |
 | --- | --------------------------------------------------- | -------------------------------- |

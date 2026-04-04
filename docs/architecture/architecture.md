@@ -857,7 +857,7 @@ project.experiments['hrpt'].calculator_type = 'cryspy'
 project.analysis.current_minimizer = 'lmfit'
 
 # Plot before fitting
-project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # Select free parameters
 project.structures['lbco'].cell.length_a.free = True
@@ -866,14 +866,14 @@ project.experiments['hrpt'].instrument.calib_twotheta_offset.free = True
 project.experiments['hrpt'].background['10'].y.free = True
 
 # Inspect free parameters
-project.analysis.show_free_params()
+project.analysis.display.free_params()
 
 # Fit and show results
 project.analysis.fit()
-project.analysis.show_fit_results()
+project.analysis.display.fit_results()
 
 # Plot after fitting
-project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # Save
 project.save()
@@ -1173,9 +1173,9 @@ def length_a(self) -> Parameter:
 ### 9.9 Lint Complexity Thresholds
 
 The Pylint-style complexity limits in `pyproject.toml` are **intentional
-code-quality guardrails**, not arbitrary numbers. A violation is a signal
-that the function or class needs refactoring — not that the threshold
-needs raising.
+code-quality guardrails**, not arbitrary numbers. A violation is a
+signal that the function or class needs refactoring — not that the
+threshold needs raising.
 
 The project uses **ruff's defaults** for all PLR thresholds, with one
 exception: `max-args` and `max-positional-args` are set to **6** instead
@@ -1183,21 +1183,21 @@ of the ruff default of 5, because ruff counts `self`/`cls` while
 traditional pylint does not. Setting 6 in ruff matches pylint's standard
 limit of 5 real parameters per function.
 
-| Threshold            | Value | Rule    |
-| -------------------- | ----- | ------- |
-| `max-args`           | 6     | PLR0913 |
-| `max-positional-args`| 6     | PLR0917 |
-| `max-branches`       | 12    | PLR0912 |
-| `max-statements`     | 50    | PLR0915 |
-| `max-locals`         | 15    | PLR0914 |
-| `max-nested-blocks`  | 5     | PLR1702 |
-| `max-returns`        | 6     | PLR0911 |
-| `max-public-methods` | 20    | PLR0904 |
+| Threshold             | Value | Rule    |
+| --------------------- | ----- | ------- |
+| `max-args`            | 6     | PLR0913 |
+| `max-positional-args` | 6     | PLR0917 |
+| `max-branches`        | 12    | PLR0912 |
+| `max-statements`      | 50    | PLR0915 |
+| `max-locals`          | 15    | PLR0914 |
+| `max-nested-blocks`   | 5     | PLR1702 |
+| `max-returns`         | 6     | PLR0911 |
+| `max-public-methods`  | 20    | PLR0904 |
 
 **Rules:**
 
-- **Do not raise thresholds.** The current values represent the project's
-  design intent for maximum acceptable complexity.
+- **Do not raise thresholds.** The current values represent the
+  project's design intent for maximum acceptable complexity.
 - **Do not add `# noqa` comments** (or any other mechanism) to silence
   complexity rules such as `PLR0912`, `PLR0913`, `PLR0914`, `PLR0915`,
   `PLR0917`, `PLR1702`.

@@ -527,6 +527,46 @@ def category_item_from_cif(
         param.from_cif(block, idx=idx)
 
 
+def _set_param_from_raw_cif_value(
+    param: GenericDescriptorBase,
+    raw: str,
+) -> None:
+    """
+    Parse a raw CIF string and set the parameter value.
+
+    Handles numeric values (with optional uncertainty in brackets),
+    quoted strings, and unknown/inapplicable CIF markers.
+
+    Parameters
+    ----------
+    param : GenericDescriptorBase
+        The parameter to update.
+    raw : str
+        The raw string from the CIF loop cell.
+    """
+    # CIF unknown / inapplicable markers → keep default
+    if raw in {'?', '.'}:
+        return
+
+    if param._value_type == DataTypes.NUMERIC:
+        has_brackets = '(' in raw
+        u = str_to_ufloat(raw)
+        param.value = u.n
+        if has_brackets and hasattr(param, 'free'):
+            param.free = True  # type: ignore[attr-defined]
+            if not np.isnan(u.s) and hasattr(param, 'uncertainty'):
+                param.uncertainty = u.s  # type: ignore[attr-defined]
+
+    # If string, strip quotes if present
+    # TODO: Make a helper function for this
+    elif param._value_type == DataTypes.STRING:
+        is_quoted = len(raw) >= _MIN_QUOTED_LEN and raw[0] == raw[-1] and raw[0] in {"'", '"'}
+        param.value = raw[1:-1] if is_quoted else raw
+
+    else:
+        log.debug(f'Unrecognized type: {param._value_type}')
+
+
 def category_collection_from_cif(
     self: CategoryCollection,
     block: gemmi.cif.Block,
@@ -593,40 +633,7 @@ def category_collection_from_cif(
             for cif_name in param._cif_handler.names:
                 if cif_name in loop.tags:
                     col_idx = loop.tags.index(cif_name)
-
                     # TODO: The following is duplication of
                     #  param_from_cif
-                    raw = array[row_idx][col_idx]
-
-                    # CIF unknown / inapplicable markers → keep default
-                    if raw in {'?', '.'}:
-                        break
-
-                    # If numeric, parse with uncertainty if present
-                    if param._value_type == DataTypes.NUMERIC:
-                        has_brackets = '(' in raw
-                        u = str_to_ufloat(raw)
-                        param.value = u.n
-                        if has_brackets and hasattr(param, 'free'):
-                            param.free = True  # type: ignore[attr-defined]
-                            if not np.isnan(u.s) and hasattr(param, 'uncertainty'):
-                                param.uncertainty = u.s  # type: ignore[attr-defined]
-
-                    # If string, strip quotes if present
-                    # TODO: Make a helper function for this
-                    elif param._value_type == DataTypes.STRING:
-                        is_quoted = (
-                            len(raw) >= _MIN_QUOTED_LEN
-                            and raw[0] == raw[-1]
-                            and raw[0] in {"'", '"'}
-                        )
-                        if is_quoted:
-                            param.value = raw[1:-1]
-                        else:
-                            param.value = raw
-
-                    # Other types are not supported
-                    else:
-                        log.debug(f'Unrecognized type: {param._value_type}')
-
+                    _set_param_from_raw_cif_value(param, array[row_idx][col_idx])
                     break

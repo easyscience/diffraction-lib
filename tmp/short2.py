@@ -220,7 +220,7 @@ exp.linked_phases['lbco'].scale.free = True
 
 
 print('----', models['lbco'].cell.length_a.free)
-proj.analysis.show_free_params()
+proj.analysis.display.free_params()
 proj.analysis.fit()
 
 # proj.plotter.engine = 'plotly'

@@ -44,13 +44,13 @@ project.analysis.fit()
 # ## Show Results
 
 # %%
-project.analysis.show_fit_results()
+project.analysis.display.fit_results()
 
 # %% [markdown]
 # ## Plot Meas vs Calc
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # %% [markdown]
 # ## Save Project

@@ -66,7 +66,7 @@ experiment.extinction.radius = 100.0
 # ## Step 4: Perform Analysis
 
 # %%
-project.plot_meas_vs_calc(expt_name='senju')
+project.plotter.plot_meas_vs_calc(expt_name='senju')
 
 # %%
 experiment.linked_crystal.scale.free = True
@@ -82,7 +82,7 @@ project.analysis.fit()
 
 # %%
 # Show fit results summary
-project.analysis.show_fit_results()
+project.analysis.display.fit_results()
 
 # %%
 # experiment.show_as_cif()
@@ -91,7 +91,7 @@ project.analysis.show_fit_results()
 project.experiments.show_names()
 
 # %%
-project.plot_meas_vs_calc(expt_name='senju')
+project.plotter.plot_meas_vs_calc(expt_name='senju')
 
 # %% [markdown]
 # ## Step 5: Show Project Summary

@@ -91,4 +91,4 @@ proj.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41)
 
 models['lbco'].cell.length_a.free = True
 print('----', models['lbco'].cell.length_a.free)
-# proj.analysis.show_free_params()
+# proj.analysis.display.free_params()

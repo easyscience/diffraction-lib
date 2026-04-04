@@ -168,7 +168,7 @@ for line_segment in hrpt.background:
     line_segment.y.free = True
 
 # %%
-project.analysis.show_free_params()
+project.analysis.display.free_params()
 
 # %%
 project.analysis.fit()

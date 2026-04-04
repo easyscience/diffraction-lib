@@ -236,8 +236,8 @@ select = [
   'PGH',  # https://docs.astral.sh/ruff/rules/#pygrep-hooks-pgh
   'PERF', # https://docs.astral.sh/ruff/rules/#perflint-perf
   'RUF',  # https://docs.astral.sh/ruff/rules/#ruff-specific-rules-ruf
-  'TRY', # https://docs.astral.sh/ruff/rules/#tryceratops-try
-  'UP',  # https://docs.astral.sh/ruff/rules/#pyupgrade-up
+  'TRY',  # https://docs.astral.sh/ruff/rules/#tryceratops-try
+  'UP',   # https://docs.astral.sh/ruff/rules/#pyupgrade-up
   # pycodestyle (E, W) rules
   'E', # https://docs.astral.sh/ruff/rules/#error-e
   'W', # https://docs.astral.sh/ruff/rules/#warning-w
@@ -374,7 +374,6 @@ convention = 'numpy'
 # Setting 6 here matches pylint's default of 5 (excluding self).
 max-args = 6
 max-positional-args = 6
-
 
 #############################
 # Configuration for pydoclint

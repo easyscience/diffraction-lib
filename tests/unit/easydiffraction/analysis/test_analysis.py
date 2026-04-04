@@ -110,11 +110,10 @@ def test_analysis_help(capsys):
     assert 'Properties' in out
     assert 'Methods' in out
     assert 'fit()' in out
-    assert 'show_fit_results()' in out
 
 
-def test_show_fit_results_warns_when_no_results(capsys):
-    """Test that show_fit_results logs a warning when fit() has not been run."""
+def test_display_fit_results_warns_when_no_results(capsys):
+    """Test that display.fit_results logs a warning when fit() has not been run."""
     from easydiffraction.analysis.analysis import Analysis
 
     a = Analysis(project=_make_project_with_names([]))
@@ -122,13 +121,13 @@ def test_show_fit_results_warns_when_no_results(capsys):
     # Ensure fit_results is not set
     assert not hasattr(a, 'fit_results') or a.fit_results is None
 
-    a.show_fit_results()
+    a.display.fit_results()
     out = capsys.readouterr().out
     assert 'No fit results available' in out
 
 
-def test_show_fit_results_calls_process_fit_results(monkeypatch):
-    """Test that show_fit_results delegates to fitter._process_fit_results."""
+def test_display_fit_results_calls_process_fit_results(monkeypatch):
+    """Test that display.fit_results delegates to fitter._process_fit_results."""
     from easydiffraction.analysis.analysis import Analysis
 
     # Track if _process_fit_results was called
@@ -158,12 +157,12 @@ def test_show_fit_results_calls_process_fit_results(monkeypatch):
 
     a = Analysis(project=project)
 
-    # Set up fit_results so show_fit_results doesn't return early
+    # Set up fit_results so display.fit_results doesn't return early
     a.fit_results = object()
 
     # Mock the fitter's _process_fit_results method
     monkeypatch.setattr(a.fitter, '_process_fit_results', mock_process_fit_results)
 
-    a.show_fit_results()
+    a.display.fit_results()
 
     assert process_called['called'], '_process_fit_results should be called'
