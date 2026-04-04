@@ -4253,15 +4253,15 @@ parameter value.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/atom_sites/factory.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">12</span>
 <span class="normal">13</span>
 <span class="normal">14</span>
-<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AtomSitesFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AtomSitesFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create atom-sites collections by tag.&quot;&quot;&quot;</span>
 
-    <span class="n">_default_rules</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">_default_rules</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
         <span class="nb">frozenset</span><span class="p">():</span> <span class="s1">&#39;default&#39;</span><span class="p">,</span>
     <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
@@ -5332,15 +5332,15 @@ object. Assigning to it updates the parameter value.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/cell/factory.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">12</span>
 <span class="normal">13</span>
 <span class="normal">14</span>
-<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CellFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CellFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create unit-cell categories by tag.&quot;&quot;&quot;</span>
 
-    <span class="n">_default_rules</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">_default_rules</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
         <span class="nb">frozenset</span><span class="p">():</span> <span class="s1">&#39;default&#39;</span><span class="p">,</span>
     <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
@@ -5717,7 +5717,7 @@ to the first allowed value for the new group.</p>
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_name_h_m_allowed_values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the list of recognised Hermann–Mauguin short symbols.</span>
+<span class="sd">        Return the list of recognised Hermann-Mauguin short symbols.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -5740,7 +5740,7 @@ to the first allowed value for the new group.</p>
         <span class="n">it_number</span> <span class="o">=</span> <span class="n">get_it_number_by_name_hm_short</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="n">codes</span> <span class="o">=</span> <span class="n">get_it_coordinate_system_codes_by_it_number</span><span class="p">(</span><span class="n">it_number</span><span class="p">)</span>
         <span class="n">codes</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">code</span><span class="p">)</span> <span class="k">for</span> <span class="n">code</span> <span class="ow">in</span> <span class="n">codes</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">codes</span> <span class="k">if</span> <span class="n">codes</span> <span class="k">else</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">codes</span> <span class="ow">or</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_it_coordinate_system_code_default_value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -6083,15 +6083,15 @@ parameter value.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/space_group/factory.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">12</span>
 <span class="normal">13</span>
 <span class="normal">14</span>
-<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SpaceGroupFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SpaceGroupFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create space-group categories by tag.&quot;&quot;&quot;</span>
 
-    <span class="n">_default_rules</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">_default_rules</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
         <span class="nb">frozenset</span><span class="p">():</span> <span class="s1">&#39;default&#39;</span><span class="p">,</span>
     <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
@@ -7258,7 +7258,7 @@ inserting pre-built structures.</p>
         <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cell type for structure &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; changed to&quot;</span><span class="p">)</span>
         <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">new_type</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">show_supported_cell_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">show_supported_cell_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: PLR6301</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Print a table of supported unit-cell types.&quot;&quot;&quot;</span>
         <span class="n">CellFactory</span><span class="o">.</span><span class="n">show_supported</span><span class="p">()</span>
 
@@ -7317,7 +7317,7 @@ inserting pre-built structures.</p>
         <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Space group type for structure &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; changed to&quot;</span><span class="p">)</span>
         <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">new_type</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">show_supported_space_group_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">show_supported_space_group_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: PLR6301</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Print a table of supported space-group types.&quot;&quot;&quot;</span>
         <span class="n">SpaceGroupFactory</span><span class="o">.</span><span class="n">show_supported</span><span class="p">()</span>
 
@@ -7376,7 +7376,7 @@ inserting pre-built structures.</p>
         <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Atom sites type for structure &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; changed to&quot;</span><span class="p">)</span>
         <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">new_type</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">show_supported_atom_sites_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">show_supported_atom_sites_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: PLR6301</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Print a table of supported atom-sites collection types.&quot;&quot;&quot;</span>
         <span class="n">AtomSitesFactory</span><span class="o">.</span><span class="n">show_supported</span><span class="p">()</span>
 
@@ -7798,7 +7798,7 @@ inserting pre-built structures.</p>
               <summary>Source code in <code>src/easydiffraction/datablocks/structure/item/base.py</code></summary>
               <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">234</span>
 <span class="normal">235</span>
-<span class="normal">236</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_atom_sites_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">236</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_atom_sites_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: PLR6301</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print a table of supported atom-sites collection types.&quot;&quot;&quot;</span>
     <span class="n">AtomSitesFactory</span><span class="o">.</span><span class="n">show_supported</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
@@ -7833,7 +7833,7 @@ inserting pre-built structures.</p>
               <summary>Source code in <code>src/easydiffraction/datablocks/structure/item/base.py</code></summary>
               <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">116</span>
 <span class="normal">117</span>
-<span class="normal">118</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_cell_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">118</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_cell_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: PLR6301</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print a table of supported unit-cell types.&quot;&quot;&quot;</span>
     <span class="n">CellFactory</span><span class="o">.</span><span class="n">show_supported</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
@@ -7868,7 +7868,7 @@ inserting pre-built structures.</p>
               <summary>Source code in <code>src/easydiffraction/datablocks/structure/item/base.py</code></summary>
               <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">175</span>
 <span class="normal">176</span>
-<span class="normal">177</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_space_group_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">177</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_space_group_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: PLR6301</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print a table of supported space-group types.&quot;&quot;&quot;</span>
     <span class="n">SpaceGroupFactory</span><span class="o">.</span><span class="n">show_supported</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>

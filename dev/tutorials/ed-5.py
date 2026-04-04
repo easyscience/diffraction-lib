@@ -202,10 +202,10 @@ project.analysis.current_minimizer = 'lmfit'
 # #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='d20', show_residual=True)
+project.plotter.plot_meas_vs_calc(expt_name='d20', show_residual=True)
 
 # %%
-project.plot_meas_vs_calc(expt_name='d20', x_min=41, x_max=54, show_residual=True)
+project.plotter.plot_meas_vs_calc(expt_name='d20', x_min=41, x_max=54, show_residual=True)
 
 # %% [markdown]
 # #### Set Free Parameters
@@ -276,16 +276,16 @@ project.analysis.constraints.create(
 
 # %%
 project.analysis.fit()
-project.analysis.show_fit_results()
+project.analysis.display.fit_results()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='d20', show_residual=True)
+project.plotter.plot_meas_vs_calc(expt_name='d20', show_residual=True)
 
 # %%
-project.plot_meas_vs_calc(expt_name='d20', x_min=41, x_max=54, show_residual=True)
+project.plotter.plot_meas_vs_calc(expt_name='d20', x_min=41, x_max=54, show_residual=True)
 
 # %% [markdown]
 # ## Summary

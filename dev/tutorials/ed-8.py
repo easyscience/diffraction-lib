@@ -344,26 +344,26 @@ expt47.peak.asym_alpha_1.free = True
 # #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='wish_5_6', show_residual=True)
+project.plotter.plot_meas_vs_calc(expt_name='wish_5_6', show_residual=True)
 
 # %%
-project.plot_meas_vs_calc(expt_name='wish_4_7', show_residual=True)
+project.plotter.plot_meas_vs_calc(expt_name='wish_4_7', show_residual=True)
 
 # %% [markdown]
 # #### Run Fitting
 
 # %%
 project.analysis.fit()
-project.analysis.show_fit_results()
+project.analysis.display.fit_results()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='wish_5_6', show_residual=True)
+project.plotter.plot_meas_vs_calc(expt_name='wish_5_6', show_residual=True)
 
 # %%
-project.plot_meas_vs_calc(expt_name='wish_4_7', show_residual=True)
+project.plotter.plot_meas_vs_calc(expt_name='wish_4_7', show_residual=True)
 
 # %% [markdown]
 # ## Summary

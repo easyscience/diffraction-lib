@@ -3049,7 +3049,7 @@ during the refinement process, select more parameters to be refined, and
 perform additional fits as needed.</p>
 <p>To plot the measured vs calculated data after the fit, you can use the
 <code>plot_meas_vs_calc</code> method of the <code>analysis</code> object:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">plot_meas_vs_calc</span><span class="p">(</span><span class="n">expt_name</span><span class="o">=</span><span class="s1">&#39;hrpt&#39;</span><span class="p">,</span> <span class="n">show_residual</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">plot_meas_vs_calc</span><span class="p">(</span><span class="n">expt_name</span><span class="o">=</span><span class="s1">&#39;hrpt&#39;</span><span class="p">,</span> <span class="n">show_residual</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="constraints">Constraints</h2>
 <p>In EasyDiffraction, you can define <strong>constraints</strong> on the model
@@ -3100,7 +3100,7 @@ for Ba will be equal to that of La during the refinement process.</p>
 <h3 id="viewing-constraints">Viewing Constraints</h3>
 <p>To view the defined constraints, you can use the <code>show_constraints</code>
 method:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">show_constraints</span><span class="p">()</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">constraints</span><span class="p">()</span>
 </code></pre></div>
 <p>The example of the output is:</p>
 <p>User defined constraints</p>

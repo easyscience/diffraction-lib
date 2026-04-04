@@ -3037,8 +3037,7 @@ compute background intensities on the experiment grid.</p>
 <span class="normal">19</span>
 <span class="normal">20</span>
 <span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BackgroundBase</span><span class="p">(</span><span class="n">CategoryCollection</span><span class="p">):</span>
+<span class="normal">22</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BackgroundBase</span><span class="p">(</span><span class="n">CategoryCollection</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract base for background subcategories in experiments.</span>
 
@@ -3050,7 +3049,6 @@ compute background intensities on the experiment grid.</p>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Print a human-readable view of background components.&quot;&quot;&quot;</span>
-        <span class="k">pass</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -3089,11 +3087,9 @@ compute background intensities on the experiment grid.</p>
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/background/base.py</code></summary>
               <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">20</span>
 <span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+<span class="normal">22</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print a human-readable view of background components.&quot;&quot;&quot;</span>
-    <span class="k">pass</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -4077,15 +4073,15 @@ parameter value.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/background/factory.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BackgroundFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BackgroundFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create background collections by tag.&quot;&quot;&quot;</span>
 
-    <span class="n">_default_rules</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">_default_rules</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
         <span class="nb">frozenset</span><span class="p">():</span> <span class="n">BackgroundTypeEnum</span><span class="o">.</span><span class="n">LINE_SEGMENT</span><span class="p">,</span>
     <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
@@ -4955,10 +4951,7 @@ object. Assigning to it updates the parameter value.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">472</span>
-<span class="normal">473</span>
-<span class="normal">474</span>
-<span class="normal">475</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">475</span>
 <span class="normal">476</span>
 <span class="normal">477</span>
 <span class="normal">478</span>
@@ -5030,7 +5023,10 @@ object. Assigning to it updates the parameter value.</p>
 <span class="normal">544</span>
 <span class="normal">545</span>
 <span class="normal">546</span>
-<span class="normal">547</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@DataFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">547</span>
+<span class="normal">548</span>
+<span class="normal">549</span>
+<span class="normal">550</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@DataFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">PdCwlData</span><span class="p">(</span><span class="n">PdDataBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Bragg powder CWL data collection.&quot;&quot;&quot;</span>
 
@@ -5249,10 +5245,7 @@ object. Assigning to it updates the parameter value.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">264</span>
-<span class="normal">265</span>
-<span class="normal">266</span>
-<span class="normal">267</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">267</span>
 <span class="normal">268</span>
 <span class="normal">269</span>
 <span class="normal">270</span>
@@ -5267,7 +5260,10 @@ object. Assigning to it updates the parameter value.</p>
 <span class="normal">279</span>
 <span class="normal">280</span>
 <span class="normal">281</span>
-<span class="normal">282</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PdCwlDataPoint</span><span class="p">(</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PdCwlDataPoint</span><span class="p">(</span>
     <span class="n">PdDataPointBaseMixin</span><span class="p">,</span>  <span class="c1"># TODO: rename to BasePdDataPointMixin???</span>
     <span class="n">PdCwlDataPointMixin</span><span class="p">,</span>  <span class="c1"># TODO: rename to CwlPdDataPointMixin???</span>
     <span class="n">CategoryItem</span><span class="p">,</span>  <span class="c1"># Must be last to ensure mixins initialized first</span>
@@ -5337,10 +5333,7 @@ object. Assigning to it updates the parameter value.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">195</span>
-<span class="normal">196</span>
-<span class="normal">197</span>
-<span class="normal">198</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">198</span>
 <span class="normal">199</span>
 <span class="normal">200</span>
 <span class="normal">201</span>
@@ -5371,7 +5364,10 @@ object. Assigning to it updates the parameter value.</p>
 <span class="normal">226</span>
 <span class="normal">227</span>
 <span class="normal">228</span>
-<span class="normal">229</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PdCwlDataPointMixin</span><span class="p">:</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PdCwlDataPointMixin</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Mixin for CWL powder diffraction data points.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -5491,10 +5487,7 @@ object. Assigning to it updates the parameter value.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">298</span>
-<span class="normal">299</span>
-<span class="normal">300</span>
-<span class="normal">301</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">301</span>
 <span class="normal">302</span>
 <span class="normal">303</span>
 <span class="normal">304</span>
@@ -5662,7 +5655,10 @@ object. Assigning to it updates the parameter value.</p>
 <span class="normal">466</span>
 <span class="normal">467</span>
 <span class="normal">468</span>
-<span class="normal">469</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PdDataBase</span><span class="p">(</span><span class="n">CategoryCollection</span><span class="p">):</span>
+<span class="normal">469</span>
+<span class="normal">470</span>
+<span class="normal">471</span>
+<span class="normal">472</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PdDataBase</span><span class="p">(</span><span class="n">CategoryCollection</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for powder diffraction data collections.&quot;&quot;&quot;</span>
 
     <span class="c1"># TODO: ???</span>
@@ -5815,8 +5811,8 @@ object. Assigning to it updates the parameter value.</p>
             <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">intensity_meas_su</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calc_items</span><span class="p">),</span>
             <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>  <span class="c1"># TODO: needed? DataTypes.NUMERIC?</span>
         <span class="p">)</span>
-        <span class="c1"># Replace values smaller than 0.0001 with 1.0</span>
-        <span class="n">modified</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">original</span> <span class="o">&lt;</span> <span class="mf">0.0001</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">original</span><span class="p">)</span>
+        <span class="c1"># Replace values smaller than _MIN_UNCERTAINTY with 1.0</span>
+        <span class="n">modified</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">original</span> <span class="o">&lt;</span> <span class="n">_MIN_UNCERTAINTY</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">original</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">modified</span>
 
     <span class="nd">@property</span>
@@ -6067,10 +6063,7 @@ fitting failures.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 29</span>
-<span class="normal"> 30</span>
-<span class="normal"> 31</span>
-<span class="normal"> 32</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 32</span>
 <span class="normal"> 33</span>
 <span class="normal"> 34</span>
 <span class="normal"> 35</span>
@@ -6230,7 +6223,10 @@ fitting failures.</p>
 <span class="normal">189</span>
 <span class="normal">190</span>
 <span class="normal">191</span>
-<span class="normal">192</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PdDataPointBaseMixin</span><span class="p">:</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PdDataPointBaseMixin</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Single base data point mixin for powder diffraction data.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -6671,10 +6667,7 @@ fitting failures.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">550</span>
-<span class="normal">551</span>
-<span class="normal">552</span>
-<span class="normal">553</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">553</span>
 <span class="normal">554</span>
 <span class="normal">555</span>
 <span class="normal">556</span>
@@ -6745,7 +6738,10 @@ fitting failures.</p>
 <span class="normal">621</span>
 <span class="normal">622</span>
 <span class="normal">623</span>
-<span class="normal">624</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@DataFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">624</span>
+<span class="normal">625</span>
+<span class="normal">626</span>
+<span class="normal">627</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@DataFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">PdTofData</span><span class="p">(</span><span class="n">PdDataBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Bragg powder TOF data collection.&quot;&quot;&quot;</span>
 
@@ -6963,17 +6959,17 @@ fitting failures.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">285</span>
-<span class="normal">286</span>
-<span class="normal">287</span>
-<span class="normal">288</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">288</span>
 <span class="normal">289</span>
 <span class="normal">290</span>
 <span class="normal">291</span>
 <span class="normal">292</span>
 <span class="normal">293</span>
 <span class="normal">294</span>
-<span class="normal">295</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PdTofDataPoint</span><span class="p">(</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PdTofDataPoint</span><span class="p">(</span>
     <span class="n">PdDataPointBaseMixin</span><span class="p">,</span>
     <span class="n">PdTofDataPointMixin</span><span class="p">,</span>
     <span class="n">CategoryItem</span><span class="p">,</span>  <span class="c1"># Must be last to ensure mixins initialized first</span>
@@ -7035,10 +7031,7 @@ fitting failures.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">235</span>
 <span class="normal">236</span>
 <span class="normal">237</span>
 <span class="normal">238</span>
@@ -7064,7 +7057,10 @@ fitting failures.</p>
 <span class="normal">258</span>
 <span class="normal">259</span>
 <span class="normal">260</span>
-<span class="normal">261</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PdTofDataPointMixin</span><span class="p">:</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PdTofDataPointMixin</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Mixin for powder diffraction data points with time-of-flight.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -7073,7 +7069,7 @@ fitting failures.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_time_of_flight</span> <span class="o">=</span> <span class="n">NumericDescriptor</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;time_of_flight&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Measured time for time-of-flight neutron measurement.&#39;</span><span class="p">,</span>
-            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;µs&#39;</span><span class="p">,</span>
+            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;μs&#39;</span><span class="p">,</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
@@ -7088,7 +7084,7 @@ fitting failures.</p>
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">time_of_flight</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NumericDescriptor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Measured time for time-of-flight neutron measurement (µs).</span>
+<span class="sd">        Measured time for time-of-flight neutron measurement (μs).</span>
 
 <span class="sd">        Reading this property returns the underlying</span>
 <span class="sd">        ``NumericDescriptor`` object.</span>
@@ -7123,7 +7119,7 @@ fitting failures.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Measured time for time-of-flight neutron measurement (µs).</p>
+        <p>Measured time for time-of-flight neutron measurement (μs).</p>
 <p>Reading this property returns the underlying
 <code>NumericDescriptor</code> object.</p>
 <!-- prettier-ignore-start -->
@@ -8868,11 +8864,7 @@ fitting failures.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/data/factory.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">15</span>
 <span class="normal">16</span>
 <span class="normal">17</span>
 <span class="normal">18</span>
@@ -8890,10 +8882,14 @@ fitting failures.</p>
 <span class="normal">30</span>
 <span class="normal">31</span>
 <span class="normal">32</span>
-<span class="normal">33</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DataFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DataFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Factory for creating diffraction data collections.&quot;&quot;&quot;</span>
 
-    <span class="n">_default_rules</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">_default_rules</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
         <span class="nb">frozenset</span><span class="p">({</span>
             <span class="p">(</span><span class="s1">&#39;sample_form&#39;</span><span class="p">,</span> <span class="n">SampleFormEnum</span><span class="o">.</span><span class="n">POWDER</span><span class="p">),</span>
             <span class="p">(</span><span class="s1">&#39;scattering_type&#39;</span><span class="p">,</span> <span class="n">ScatteringTypeEnum</span><span class="o">.</span><span class="n">BRAGG</span><span class="p">),</span>
@@ -10921,15 +10917,15 @@ original measurement was CWL or TOF.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/diffrn/factory.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">12</span>
 <span class="normal">13</span>
 <span class="normal">14</span>
-<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DiffrnFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DiffrnFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create diffraction ambient-conditions category instances.&quot;&quot;&quot;</span>
 
-    <span class="n">_default_rules</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">_default_rules</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
         <span class="nb">frozenset</span><span class="p">():</span> <span class="s1">&#39;default&#39;</span><span class="p">,</span>
     <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
@@ -11733,15 +11729,15 @@ fitting and plotting.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/excluded_regions/factory.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">14</span>
 <span class="normal">15</span>
 <span class="normal">16</span>
-<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExcludedRegionsFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExcludedRegionsFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create excluded-regions collections by tag.&quot;&quot;&quot;</span>
 
-    <span class="n">_default_rules</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">_default_rules</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
         <span class="nb">frozenset</span><span class="p">():</span> <span class="s1">&#39;default&#39;</span><span class="p">,</span>
     <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
@@ -12386,15 +12382,15 @@ experiment configuration and handles <abbr title="Crystallographic Information F
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/experiment_type/factory.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">12</span>
 <span class="normal">13</span>
 <span class="normal">14</span>
-<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExperimentTypeFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExperimentTypeFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create experiment-type descriptors by tag.&quot;&quot;&quot;</span>
 
-    <span class="n">_default_rules</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">_default_rules</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
         <span class="nb">frozenset</span><span class="p">():</span> <span class="s1">&#39;default&#39;</span><span class="p">,</span>
     <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
@@ -12539,15 +12535,15 @@ experiment configuration and handles <abbr title="Crystallographic Information F
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/extinction/factory.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">12</span>
 <span class="normal">13</span>
 <span class="normal">14</span>
-<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtinctionFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtinctionFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create extinction correction models by tag.&quot;&quot;&quot;</span>
 
-    <span class="n">_default_rules</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">_default_rules</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
         <span class="nb">frozenset</span><span class="p">():</span> <span class="s1">&#39;shelx&#39;</span><span class="p">,</span>
     <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
@@ -12790,7 +12786,7 @@ experiment configuration and handles <abbr title="Crystallographic Information F
         <span class="bp">self</span><span class="o">.</span><span class="n">_radius</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;radius&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Crystal radius for extinction correction&#39;</span><span class="p">,</span>
-            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;µm&#39;</span><span class="p">,</span>
+            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;μm&#39;</span><span class="p">,</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
@@ -12825,7 +12821,7 @@ experiment configuration and handles <abbr title="Crystallographic Information F
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">radius</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parameter</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Crystal radius for extinction correction (µm).</span>
+<span class="sd">        Crystal radius for extinction correction (μm).</span>
 
 <span class="sd">        Reading this property returns the underlying ``Parameter``</span>
 <span class="sd">        object. Assigning to it updates the parameter value.</span>
@@ -12898,7 +12894,7 @@ object. Assigning to it updates the parameter value.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Crystal radius for extinction correction (µm).</p>
+        <p>Crystal radius for extinction correction (μm).</p>
 <p>Reading this property returns the underlying <code>Parameter</code>
 object. Assigning to it updates the parameter value.</p>
 <!-- prettier-ignore-start -->
@@ -13749,11 +13745,7 @@ object. Assigning to it updates the parameter value.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/instrument/factory.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">14</span>
 <span class="normal">15</span>
 <span class="normal">16</span>
 <span class="normal">17</span>
@@ -13769,10 +13761,14 @@ object. Assigning to it updates the parameter value.</p>
 <span class="normal">27</span>
 <span class="normal">28</span>
 <span class="normal">29</span>
-<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">InstrumentFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">InstrumentFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create instrument instances for supported modes.&quot;&quot;&quot;</span>
 
-    <span class="n">_default_rules</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">_default_rules</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
         <span class="nb">frozenset</span><span class="p">({</span>
             <span class="p">(</span><span class="s1">&#39;beam_mode&#39;</span><span class="p">,</span> <span class="n">BeamModeEnum</span><span class="o">.</span><span class="n">CONSTANT_WAVELENGTH</span><span class="p">),</span>
             <span class="p">(</span><span class="s1">&#39;sample_form&#39;</span><span class="p">,</span> <span class="n">SampleFormEnum</span><span class="o">.</span><span class="n">POWDER</span><span class="p">),</span>
@@ -14105,7 +14101,7 @@ object. Assigning to it updates the parameter value.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_calib_d_to_tof_offset</span><span class="p">:</span> <span class="n">Parameter</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;d_to_tof_offset&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;TOF offset&#39;</span><span class="p">,</span>
-            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;µs&#39;</span><span class="p">,</span>
+            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;μs&#39;</span><span class="p">,</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
@@ -14115,7 +14111,7 @@ object. Assigning to it updates the parameter value.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_calib_d_to_tof_linear</span><span class="p">:</span> <span class="n">Parameter</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;d_to_tof_linear&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;TOF linear conversion&#39;</span><span class="p">,</span>
-            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;µs/Å&#39;</span><span class="p">,</span>
+            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;μs/Å&#39;</span><span class="p">,</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">10000.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
@@ -14125,7 +14121,7 @@ object. Assigning to it updates the parameter value.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_calib_d_to_tof_quad</span><span class="p">:</span> <span class="n">Parameter</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;d_to_tof_quad&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;TOF quadratic correction&#39;</span><span class="p">,</span>
-            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;µs/Å²&#39;</span><span class="p">,</span>
+            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;μs/Å²&#39;</span><span class="p">,</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=-</span><span class="mf">0.00001</span><span class="p">,</span>  <span class="c1"># TODO: Fix CrysPy to accept 0</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
@@ -14135,7 +14131,7 @@ object. Assigning to it updates the parameter value.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_calib_d_to_tof_recip</span><span class="p">:</span> <span class="n">Parameter</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;d_to_tof_recip&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;TOF reciprocal velocity correction&#39;</span><span class="p">,</span>
-            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;µs·Å&#39;</span><span class="p">,</span>
+            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;μs·Å&#39;</span><span class="p">,</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
@@ -14160,7 +14156,7 @@ object. Assigning to it updates the parameter value.</p>
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">calib_d_to_tof_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parameter</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        TOF offset (µs).</span>
+<span class="sd">        TOF offset (μs).</span>
 
 <span class="sd">        Reading this property returns the underlying ``Parameter``</span>
 <span class="sd">        object. Assigning to it updates the parameter value.</span>
@@ -14174,7 +14170,7 @@ object. Assigning to it updates the parameter value.</p>
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">calib_d_to_tof_linear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parameter</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        TOF linear conversion (µs/Å).</span>
+<span class="sd">        TOF linear conversion (μs/Å).</span>
 
 <span class="sd">        Reading this property returns the underlying ``Parameter``</span>
 <span class="sd">        object. Assigning to it updates the parameter value.</span>
@@ -14188,7 +14184,7 @@ object. Assigning to it updates the parameter value.</p>
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">calib_d_to_tof_quad</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parameter</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        TOF quadratic correction (µs/Å²).</span>
+<span class="sd">        TOF quadratic correction (μs/Å²).</span>
 
 <span class="sd">        Reading this property returns the underlying ``Parameter``</span>
 <span class="sd">        object. Assigning to it updates the parameter value.</span>
@@ -14202,7 +14198,7 @@ object. Assigning to it updates the parameter value.</p>
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">calib_d_to_tof_recip</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parameter</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        TOF reciprocal velocity correction (µs·Å).</span>
+<span class="sd">        TOF reciprocal velocity correction (μs·Å).</span>
 
 <span class="sd">        Reading this property returns the underlying ``Parameter``</span>
 <span class="sd">        object. Assigning to it updates the parameter value.</span>
@@ -14242,7 +14238,7 @@ object. Assigning to it updates the parameter value.</p>
 
     <div class="doc doc-contents ">
 
-        <p>TOF linear conversion (µs/Å).</p>
+        <p>TOF linear conversion (μs/Å).</p>
 <p>Reading this property returns the underlying <code>Parameter</code>
 object. Assigning to it updates the parameter value.</p>
 <!-- prettier-ignore-start -->
@@ -14275,7 +14271,7 @@ object. Assigning to it updates the parameter value.</p>
 
     <div class="doc doc-contents ">
 
-        <p>TOF offset (µs).</p>
+        <p>TOF offset (μs).</p>
 <p>Reading this property returns the underlying <code>Parameter</code>
 object. Assigning to it updates the parameter value.</p>
 <!-- prettier-ignore-start -->
@@ -14308,7 +14304,7 @@ object. Assigning to it updates the parameter value.</p>
 
     <div class="doc doc-contents ">
 
-        <p>TOF quadratic correction (µs/Å²).</p>
+        <p>TOF quadratic correction (μs/Å²).</p>
 <p>Reading this property returns the underlying <code>Parameter</code>
 object. Assigning to it updates the parameter value.</p>
 <!-- prettier-ignore-start -->
@@ -14341,7 +14337,7 @@ object. Assigning to it updates the parameter value.</p>
 
     <div class="doc doc-contents ">
 
-        <p>TOF reciprocal velocity correction (µs·Å).</p>
+        <p>TOF reciprocal velocity correction (μs·Å).</p>
 <p>Reading this property returns the underlying <code>Parameter</code>
 object. Assigning to it updates the parameter value.</p>
 <!-- prettier-ignore-start -->
@@ -14955,15 +14951,15 @@ object. Assigning to it updates the parameter value.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/linked_crystal/factory.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">12</span>
 <span class="normal">13</span>
 <span class="normal">14</span>
-<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">LinkedCrystalFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">LinkedCrystalFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create linked-crystal references by tag.&quot;&quot;&quot;</span>
 
-    <span class="n">_default_rules</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">_default_rules</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
         <span class="nb">frozenset</span><span class="p">():</span> <span class="s1">&#39;default&#39;</span><span class="p">,</span>
     <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
@@ -15559,15 +15555,15 @@ object. Assigning to it updates the parameter value.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/linked_phases/factory.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">12</span>
 <span class="normal">13</span>
 <span class="normal">14</span>
-<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">LinkedPhasesFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">LinkedPhasesFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create linked-phases collections by tag.&quot;&quot;&quot;</span>
 
-    <span class="n">_default_rules</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">_default_rules</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
         <span class="nb">frozenset</span><span class="p">():</span> <span class="s1">&#39;default&#39;</span><span class="p">,</span>
     <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
@@ -16039,7 +16035,7 @@ object. Assigning to it updates the parameter value.</p>
 
 
 
-        <p>Thompson–Cox–Hastings with FCJ asymmetry for CWL mode.</p>
+        <p>Thompson-Cox-Hastings with FCJ asymmetry for CWL mode.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -16080,7 +16076,7 @@ object. Assigning to it updates the parameter value.</p>
     <span class="n">CwlBroadeningMixin</span><span class="p">,</span>
     <span class="n">FcjAsymmetryMixin</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Thompson–Cox–Hastings with FCJ asymmetry for CWL mode.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Thompson-Cox-Hastings with FCJ asymmetry for CWL mode.&quot;&quot;&quot;</span>
 
     <span class="n">type_info</span> <span class="o">=</span> <span class="n">TypeInfo</span><span class="p">(</span>
         <span class="n">tag</span><span class="o">=</span><span class="s1">&#39;thompson-cox-hastings&#39;</span><span class="p">,</span>
@@ -17080,7 +17076,7 @@ object. Assigning to it updates the parameter value.</p>
 
 
 
-        <p>Finger–Cox–Jephcoat (FCJ) asymmetry parameters.</p>
+        <p>Finger-Cox-Jephcoat (FCJ) asymmetry parameters.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -17152,7 +17148,7 @@ object. Assigning to it updates the parameter value.</p>
 <span class="normal">312</span>
 <span class="normal">313</span>
 <span class="normal">314</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">FcjAsymmetryMixin</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Finger–Cox–Jephcoat (FCJ) asymmetry parameters.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Finger-Cox-Jephcoat (FCJ) asymmetry parameters.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
@@ -17387,11 +17383,7 @@ object. Assigning to it updates the parameter value.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/peak/factory.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">15</span>
 <span class="normal">16</span>
 <span class="normal">17</span>
 <span class="normal">18</span>
@@ -17402,10 +17394,14 @@ object. Assigning to it updates the parameter value.</p>
 <span class="normal">23</span>
 <span class="normal">24</span>
 <span class="normal">25</span>
-<span class="normal">26</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PeakFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PeakFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Factory for creating peak profile objects.&quot;&quot;&quot;</span>
 
-    <span class="n">_default_rules</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">_default_rules</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
         <span class="nb">frozenset</span><span class="p">({</span>
             <span class="p">(</span><span class="s1">&#39;scattering_type&#39;</span><span class="p">,</span> <span class="n">ScatteringTypeEnum</span><span class="o">.</span><span class="n">BRAGG</span><span class="p">),</span>
             <span class="p">(</span><span class="s1">&#39;beam_mode&#39;</span><span class="p">,</span> <span class="n">BeamModeEnum</span><span class="o">.</span><span class="n">CONSTANT_WAVELENGTH</span><span class="p">),</span>
@@ -17734,7 +17730,7 @@ object. Assigning to it updates the parameter value.</p>
 
 
 
-        <p>TOF pseudo-Voigt with Ikeda–Carpenter asymmetry.</p>
+        <p>TOF pseudo-Voigt with Ikeda-Carpenter asymmetry.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -17775,7 +17771,7 @@ object. Assigning to it updates the parameter value.</p>
     <span class="n">TofBroadeningMixin</span><span class="p">,</span>
     <span class="n">IkedaCarpenterAsymmetryMixin</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;TOF pseudo-Voigt with Ikeda–Carpenter asymmetry.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;TOF pseudo-Voigt with Ikeda-Carpenter asymmetry.&quot;&quot;&quot;</span>
 
     <span class="n">type_info</span> <span class="o">=</span> <span class="n">TypeInfo</span><span class="p">(</span>
         <span class="n">tag</span><span class="o">=</span><span class="s1">&#39;pseudo-voigt * ikeda-carpenter&#39;</span><span class="p">,</span>
@@ -17840,7 +17836,7 @@ object. Assigning to it updates the parameter value.</p>
 
         <p>Time-of-flight (TOF) peak-profile component classes.</p>
 <p>Defines classes that add Gaussian/Lorentz broadening, mixing, and
-Ikeda–Carpenter asymmetry parameters used by TOF peak shapes. This
+Ikeda-Carpenter asymmetry parameters used by TOF peak shapes. This
 module provides classes that add broadening and asymmetry parameters.
 They are composed into concrete peak classes elsewhere via multiple
 inheritance.</p>
@@ -17888,7 +17884,7 @@ inheritance.</p>
 
 
 
-        <p>Ikeda–Carpenter asymmetry parameters.</p>
+        <p>Ikeda-Carpenter asymmetry parameters.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -17956,7 +17952,7 @@ inheritance.</p>
 <span class="normal">274</span>
 <span class="normal">275</span>
 <span class="normal">276</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">IkedaCarpenterAsymmetryMixin</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Ikeda–Carpenter asymmetry parameters.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Ikeda-Carpenter asymmetry parameters.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
@@ -18344,7 +18340,7 @@ object. Assigning to it updates the parameter value.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_broad_gauss_sigma_0</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;gauss_sigma_0&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Gaussian broadening (instrumental resolution)&#39;</span><span class="p">,</span>
-            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;µs²&#39;</span><span class="p">,</span>
+            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;μs²&#39;</span><span class="p">,</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
@@ -18354,7 +18350,7 @@ object. Assigning to it updates the parameter value.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_broad_gauss_sigma_1</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;gauss_sigma_1&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Gaussian broadening (dependent on d-spacing)&#39;</span><span class="p">,</span>
-            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;µs/Å&#39;</span><span class="p">,</span>
+            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;μs/Å&#39;</span><span class="p">,</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
@@ -18364,7 +18360,7 @@ object. Assigning to it updates the parameter value.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_broad_gauss_sigma_2</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;gauss_sigma_2&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Gaussian broadening (instrument-dependent term)&#39;</span><span class="p">,</span>
-            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;µs²/Å²&#39;</span><span class="p">,</span>
+            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;μs²/Å²&#39;</span><span class="p">,</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
@@ -18374,7 +18370,7 @@ object. Assigning to it updates the parameter value.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_broad_lorentz_gamma_0</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;lorentz_gamma_0&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Lorentzian broadening (microstrain effects)&#39;</span><span class="p">,</span>
-            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;µs&#39;</span><span class="p">,</span>
+            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;μs&#39;</span><span class="p">,</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
@@ -18384,7 +18380,7 @@ object. Assigning to it updates the parameter value.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_broad_lorentz_gamma_1</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;lorentz_gamma_1&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Lorentzian broadening (dependent on d-spacing)&#39;</span><span class="p">,</span>
-            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;µs/Å&#39;</span><span class="p">,</span>
+            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;μs/Å&#39;</span><span class="p">,</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
@@ -18394,7 +18390,7 @@ object. Assigning to it updates the parameter value.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_broad_lorentz_gamma_2</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;lorentz_gamma_2&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Lorentzian broadening (instrument-dependent term)&#39;</span><span class="p">,</span>
-            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;µs²/Å²&#39;</span><span class="p">,</span>
+            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;μs²/Å²&#39;</span><span class="p">,</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
@@ -18429,7 +18425,7 @@ object. Assigning to it updates the parameter value.</p>
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">broad_gauss_sigma_0</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parameter</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Gaussian broadening (instrumental resolution) (µs²).</span>
+<span class="sd">        Gaussian broadening (instrumental resolution) (μs²).</span>
 
 <span class="sd">        Reading this property returns the underlying ``Parameter``</span>
 <span class="sd">        object. Assigning to it updates the parameter value.</span>
@@ -18443,7 +18439,7 @@ object. Assigning to it updates the parameter value.</p>
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">broad_gauss_sigma_1</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parameter</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Gaussian broadening (dependent on d-spacing) (µs/Å).</span>
+<span class="sd">        Gaussian broadening (dependent on d-spacing) (μs/Å).</span>
 
 <span class="sd">        Reading this property returns the underlying ``Parameter``</span>
 <span class="sd">        object. Assigning to it updates the parameter value.</span>
@@ -18457,7 +18453,7 @@ object. Assigning to it updates the parameter value.</p>
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">broad_gauss_sigma_2</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parameter</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Gaussian broadening (instrument-dependent term) (µs²/Å²).</span>
+<span class="sd">        Gaussian broadening (instrument-dependent term) (μs²/Å²).</span>
 
 <span class="sd">        Reading this property returns the underlying ``Parameter``</span>
 <span class="sd">        object. Assigning to it updates the parameter value.</span>
@@ -18471,7 +18467,7 @@ object. Assigning to it updates the parameter value.</p>
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">broad_lorentz_gamma_0</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parameter</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Lorentzian broadening (microstrain effects) (µs).</span>
+<span class="sd">        Lorentzian broadening (microstrain effects) (μs).</span>
 
 <span class="sd">        Reading this property returns the underlying ``Parameter``</span>
 <span class="sd">        object. Assigning to it updates the parameter value.</span>
@@ -18485,7 +18481,7 @@ object. Assigning to it updates the parameter value.</p>
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">broad_lorentz_gamma_1</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parameter</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Lorentzian broadening (dependent on d-spacing) (µs/Å).</span>
+<span class="sd">        Lorentzian broadening (dependent on d-spacing) (μs/Å).</span>
 
 <span class="sd">        Reading this property returns the underlying ``Parameter``</span>
 <span class="sd">        object. Assigning to it updates the parameter value.</span>
@@ -18499,7 +18495,7 @@ object. Assigning to it updates the parameter value.</p>
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">broad_lorentz_gamma_2</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parameter</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Lorentzian broadening (instrument-dependent term) (µs²/Å²).</span>
+<span class="sd">        Lorentzian broadening (instrument-dependent term) (μs²/Å²).</span>
 
 <span class="sd">        Reading this property returns the underlying ``Parameter``</span>
 <span class="sd">        object. Assigning to it updates the parameter value.</span>
@@ -18567,7 +18563,7 @@ object. Assigning to it updates the parameter value.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Gaussian broadening (instrumental resolution) (µs²).</p>
+        <p>Gaussian broadening (instrumental resolution) (μs²).</p>
 <p>Reading this property returns the underlying <code>Parameter</code>
 object. Assigning to it updates the parameter value.</p>
 <!-- prettier-ignore-start -->
@@ -18600,7 +18596,7 @@ object. Assigning to it updates the parameter value.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Gaussian broadening (dependent on d-spacing) (µs/Å).</p>
+        <p>Gaussian broadening (dependent on d-spacing) (μs/Å).</p>
 <p>Reading this property returns the underlying <code>Parameter</code>
 object. Assigning to it updates the parameter value.</p>
 <!-- prettier-ignore-start -->
@@ -18633,7 +18629,7 @@ object. Assigning to it updates the parameter value.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Gaussian broadening (instrument-dependent term) (µs²/Å²).</p>
+        <p>Gaussian broadening (instrument-dependent term) (μs²/Å²).</p>
 <p>Reading this property returns the underlying <code>Parameter</code>
 object. Assigning to it updates the parameter value.</p>
 <!-- prettier-ignore-start -->
@@ -18666,7 +18662,7 @@ object. Assigning to it updates the parameter value.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Lorentzian broadening (microstrain effects) (µs).</p>
+        <p>Lorentzian broadening (microstrain effects) (μs).</p>
 <p>Reading this property returns the underlying <code>Parameter</code>
 object. Assigning to it updates the parameter value.</p>
 <!-- prettier-ignore-start -->
@@ -18699,7 +18695,7 @@ object. Assigning to it updates the parameter value.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Lorentzian broadening (dependent on d-spacing) (µs/Å).</p>
+        <p>Lorentzian broadening (dependent on d-spacing) (μs/Å).</p>
 <p>Reading this property returns the underlying <code>Parameter</code>
 object. Assigning to it updates the parameter value.</p>
 <!-- prettier-ignore-start -->
@@ -18732,7 +18728,7 @@ object. Assigning to it updates the parameter value.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Lorentzian broadening (instrument-dependent term) (µs²/Å²).</p>
+        <p>Lorentzian broadening (instrument-dependent term) (μs²/Å²).</p>
 <p>Reading this property returns the underlying <code>Parameter</code>
 object. Assigning to it updates the parameter value.</p>
 <!-- prettier-ignore-start -->
@@ -19861,9 +19857,7 @@ helper methods for simple presentation of collection contents.</p>
 <span class="normal">152</span>
 <span class="normal">153</span>
 <span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Experiments</span><span class="p">(</span><span class="n">DatablockCollection</span><span class="p">):</span>
+<span class="normal">155</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Experiments</span><span class="p">(</span><span class="n">DatablockCollection</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Collection of Experiment data blocks.</span>
 
@@ -19958,7 +19952,6 @@ helper methods for simple presentation of collection contents.</p>
         <span class="n">beam_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">radiation_probe</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">scattering_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">verbosity</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add an experiment from a data file path.</span>
@@ -19977,23 +19970,22 @@ helper methods for simple presentation of collection contents.</p>
 <span class="sd">            Radiation probe (e.g. ``&#39;neutron&#39;``).</span>
 <span class="sd">        scattering_type : str | None, default=None</span>
 <span class="sd">            Scattering type (e.g. ``&#39;bragg&#39;``).</span>
-<span class="sd">        verbosity : str | None, default=None</span>
-<span class="sd">            Console output verbosity: ``&#39;full&#39;`` for multi-line output,</span>
-<span class="sd">            ``&#39;short&#39;`` for a one-line status message, or ``&#39;silent&#39;``</span>
-<span class="sd">            for no output. When ``None``, uses ``project.verbosity``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">verbosity</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">verbosity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">verbosity</span>
+        <span class="n">verbosity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">verbosity</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="n">verb</span> <span class="o">=</span> <span class="n">VerbosityEnum</span><span class="p">(</span><span class="n">verbosity</span><span class="p">)</span> <span class="k">if</span> <span class="n">verbosity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">VerbosityEnum</span><span class="o">.</span><span class="n">FULL</span>
-        <span class="n">experiment</span> <span class="o">=</span> <span class="n">ExperimentFactory</span><span class="o">.</span><span class="n">from_data_path</span><span class="p">(</span>
+        <span class="n">experiment</span> <span class="o">=</span> <span class="n">ExperimentFactory</span><span class="o">.</span><span class="n">from_scratch</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
-            <span class="n">data_path</span><span class="o">=</span><span class="n">data_path</span><span class="p">,</span>
             <span class="n">sample_form</span><span class="o">=</span><span class="n">sample_form</span><span class="p">,</span>
             <span class="n">beam_mode</span><span class="o">=</span><span class="n">beam_mode</span><span class="p">,</span>
             <span class="n">radiation_probe</span><span class="o">=</span><span class="n">radiation_probe</span><span class="p">,</span>
             <span class="n">scattering_type</span><span class="o">=</span><span class="n">scattering_type</span><span class="p">,</span>
-            <span class="n">verbosity</span><span class="o">=</span><span class="n">verb</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="n">num_points</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">_load_ascii_data_to_experiment</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">verb</span> <span class="ow">is</span> <span class="n">VerbosityEnum</span><span class="o">.</span><span class="n">FULL</span><span class="p">:</span>
+            <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Data loaded successfully&#39;</span><span class="p">)</span>
+            <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Experiment 🔬 &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;. Number of data points: </span><span class="si">{</span><span class="n">num_points</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">verb</span> <span class="ow">is</span> <span class="n">VerbosityEnum</span><span class="o">.</span><span class="n">SHORT</span><span class="p">:</span>
+            <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✅ Data loaded: Experiment 🔬 &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;. </span><span class="si">{</span><span class="n">num_points</span><span class="si">}</span><span class="s2"> points.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span>
 
     <span class="c1"># TODO: Move to DatablockCollection?</span>
@@ -20210,7 +20202,7 @@ helper methods for simple presentation of collection contents.</p>
 
 
 <h4 id="easydiffraction.datablocks.experiment.collection.Experiments.add_from_data_path" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">add_from_data_path</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">data_path</span><span class="p">,</span> <span class="n">sample_form</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">beam_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">radiation_probe</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scattering_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">add_from_data_path</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">data_path</span><span class="p">,</span> <span class="n">sample_form</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">beam_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">radiation_probe</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scattering_type</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h4>
 
@@ -20348,27 +20340,6 @@ helper methods for simple presentation of collection contents.</p>
                   <code>None</code>
             </td>
           </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>verbosity</code>
-            </td>
-            <td>
-                  <code><span title="str">str</span> | None</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Console output verbosity: <code>'full'</code> for multi-line output,
-<code>'short'</code> for a one-line status message, or <code>'silent'</code>
-for no output. When <code>None</code>, uses <code>project.verbosity</code>.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-              </div>
-            </td>
-            <td>
-                  <code>None</code>
-            </td>
-          </tr>
       </tbody>
     </table>
 
@@ -20419,9 +20390,7 @@ for no output. When <code>None</code>, uses <code>project.verbosity</code>.</p>
 <span class="normal">140</span>
 <span class="normal">141</span>
 <span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@typechecked</span>
+<span class="normal">143</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">add_from_data_path</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
@@ -20431,7 +20400,6 @@ for no output. When <code>None</code>, uses <code>project.verbosity</code>.</p>
     <span class="n">beam_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">radiation_probe</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">scattering_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">verbosity</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add an experiment from a data file path.</span>
@@ -20450,23 +20418,22 @@ for no output. When <code>None</code>, uses <code>project.verbosity</code>.</p>
 <span class="sd">        Radiation probe (e.g. ``&#39;neutron&#39;``).</span>
 <span class="sd">    scattering_type : str | None, default=None</span>
 <span class="sd">        Scattering type (e.g. ``&#39;bragg&#39;``).</span>
-<span class="sd">    verbosity : str | None, default=None</span>
-<span class="sd">        Console output verbosity: ``&#39;full&#39;`` for multi-line output,</span>
-<span class="sd">        ``&#39;short&#39;`` for a one-line status message, or ``&#39;silent&#39;``</span>
-<span class="sd">        for no output. When ``None``, uses ``project.verbosity``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">verbosity</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">verbosity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">verbosity</span>
+    <span class="n">verbosity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">verbosity</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
     <span class="n">verb</span> <span class="o">=</span> <span class="n">VerbosityEnum</span><span class="p">(</span><span class="n">verbosity</span><span class="p">)</span> <span class="k">if</span> <span class="n">verbosity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">VerbosityEnum</span><span class="o">.</span><span class="n">FULL</span>
-    <span class="n">experiment</span> <span class="o">=</span> <span class="n">ExperimentFactory</span><span class="o">.</span><span class="n">from_data_path</span><span class="p">(</span>
+    <span class="n">experiment</span> <span class="o">=</span> <span class="n">ExperimentFactory</span><span class="o">.</span><span class="n">from_scratch</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
-        <span class="n">data_path</span><span class="o">=</span><span class="n">data_path</span><span class="p">,</span>
         <span class="n">sample_form</span><span class="o">=</span><span class="n">sample_form</span><span class="p">,</span>
         <span class="n">beam_mode</span><span class="o">=</span><span class="n">beam_mode</span><span class="p">,</span>
         <span class="n">radiation_probe</span><span class="o">=</span><span class="n">radiation_probe</span><span class="p">,</span>
         <span class="n">scattering_type</span><span class="o">=</span><span class="n">scattering_type</span><span class="p">,</span>
-        <span class="n">verbosity</span><span class="o">=</span><span class="n">verb</span><span class="p">,</span>
     <span class="p">)</span>
+    <span class="n">num_points</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">_load_ascii_data_to_experiment</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">verb</span> <span class="ow">is</span> <span class="n">VerbosityEnum</span><span class="o">.</span><span class="n">FULL</span><span class="p">:</span>
+        <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Data loaded successfully&#39;</span><span class="p">)</span>
+        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Experiment 🔬 &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;. Number of data points: </span><span class="si">{</span><span class="n">num_points</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">verb</span> <span class="ow">is</span> <span class="n">VerbosityEnum</span><span class="o">.</span><span class="n">SHORT</span><span class="p">:</span>
+        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✅ Data loaded: Experiment 🔬 &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;. </span><span class="si">{</span><span class="n">num_points</span><span class="si">}</span><span class="s2"> points.&quot;</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -20705,10 +20672,10 @@ for no output. When <code>None</code>, uses <code>project.verbosity</code>.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/collection.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;List all experiment names in the collection.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Defined experiments&#39;</span> <span class="o">+</span> <span class="s1">&#39; 🔬&#39;</span><span class="p">)</span>
     <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
@@ -20742,10 +20709,10 @@ for no output. When <code>None</code>, uses <code>project.verbosity</code>.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/collection.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Show parameters of all experiments in the collection.&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">experiment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
         <span class="n">experiment</span><span class="o">.</span><span class="n">show_params</span><span class="p">()</span>
@@ -21215,7 +21182,7 @@ for no output. When <code>None</code>, uses <code>project.verbosity</code>.</p>
         <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Diffrn type for experiment &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; changed to&quot;</span><span class="p">)</span>
         <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">new_type</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">show_supported_diffrn_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">show_supported_diffrn_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: PLR6301</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Print a table of supported diffraction conditions types.&quot;&quot;&quot;</span>
         <span class="n">DiffrnFactory</span><span class="o">.</span><span class="n">show_supported</span><span class="p">()</span>
 
@@ -21759,7 +21726,7 @@ category <code>calculator_support</code> and
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
               <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">116</span>
 <span class="normal">117</span>
-<span class="normal">118</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_diffrn_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">118</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_diffrn_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: PLR6301</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print a table of supported diffraction conditions types.&quot;&quot;&quot;</span>
     <span class="n">DiffrnFactory</span><span class="o">.</span><span class="n">show_supported</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
@@ -21863,7 +21830,8 @@ category <code>calculator_support</code> and
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">497</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">496</span>
+<span class="normal">497</span>
 <span class="normal">498</span>
 <span class="normal">499</span>
 <span class="normal">500</span>
@@ -22130,9 +22098,7 @@ category <code>calculator_support</code> and
 <span class="normal">761</span>
 <span class="normal">762</span>
 <span class="normal">763</span>
-<span class="normal">764</span>
-<span class="normal">765</span>
-<span class="normal">766</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PdExperimentBase</span><span class="p">(</span><span class="n">ExperimentBase</span><span class="p">):</span>
+<span class="normal">764</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PdExperimentBase</span><span class="p">(</span><span class="n">ExperimentBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for all powder experiments.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -22206,14 +22172,13 @@ category <code>calculator_support</code> and
 <span class="sd">        ----------</span>
 <span class="sd">        data_path : str</span>
 <span class="sd">            Path to data file with columns compatible with the beam mode</span>
-<span class="sd">            (e.g. 2θ/I/σ for CWL, TOF/I/σ for TOF).</span>
+<span class="sd">            (e.g. 2theta/I/sigma for CWL, TOF/I/sigma for TOF).</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        int</span>
 <span class="sd">            Number of loaded data points.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">linked_phases</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
@@ -22249,7 +22214,7 @@ category <code>calculator_support</code> and
         <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Linked phases type for experiment &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; changed to&quot;</span><span class="p">)</span>
         <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">new_type</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">show_supported_linked_phases_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">show_supported_linked_phases_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: PLR6301</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Print a table of supported linked-phases collection types.&quot;&quot;&quot;</span>
         <span class="n">LinkedPhasesFactory</span><span class="o">.</span><span class="n">show_supported</span><span class="p">()</span>
 
@@ -22292,7 +22257,7 @@ category <code>calculator_support</code> and
         <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Excluded regions type for experiment &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; changed to&quot;</span><span class="p">)</span>
         <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">new_type</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">show_supported_excluded_regions_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">show_supported_excluded_regions_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: PLR6301</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Print a table of supported excluded-regions types.&quot;&quot;&quot;</span>
         <span class="n">ExcludedRegionsFactory</span><span class="o">.</span><span class="n">show_supported</span><span class="p">()</span>
 
@@ -22338,7 +22303,7 @@ category <code>calculator_support</code> and
         <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Data type for experiment &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; changed to&quot;</span><span class="p">)</span>
         <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">new_type</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">show_supported_data_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">show_supported_data_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: PLR6301</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Print a table of supported data collection types.&quot;&quot;&quot;</span>
         <span class="n">DataFactory</span><span class="o">.</span><span class="n">show_supported</span><span class="p">()</span>
 
@@ -22678,10 +22643,10 @@ category <code>calculator_support</code> and
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">707</span>
-<span class="normal">708</span>
-<span class="normal">709</span>
-<span class="normal">710</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_data_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">705</span>
+<span class="normal">706</span>
+<span class="normal">707</span>
+<span class="normal">708</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_data_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print the currently used data collection type.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Current data type&#39;</span><span class="p">)</span>
     <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_type</span><span class="p">)</span>
@@ -22715,10 +22680,10 @@ category <code>calculator_support</code> and
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">661</span>
-<span class="normal">662</span>
-<span class="normal">663</span>
-<span class="normal">664</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_excluded_regions_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">659</span>
+<span class="normal">660</span>
+<span class="normal">661</span>
+<span class="normal">662</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_excluded_regions_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print the currently used excluded-regions collection type.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Current excluded regions type&#39;</span><span class="p">)</span>
     <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">excluded_regions_type</span><span class="p">)</span>
@@ -22752,10 +22717,10 @@ category <code>calculator_support</code> and
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">618</span>
-<span class="normal">619</span>
-<span class="normal">620</span>
-<span class="normal">621</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_linked_phases_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">616</span>
+<span class="normal">617</span>
+<span class="normal">618</span>
+<span class="normal">619</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_linked_phases_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print the currently used linked-phases collection type.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Current linked phases type&#39;</span><span class="p">)</span>
     <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">linked_phases_type</span><span class="p">)</span>
@@ -22789,10 +22754,10 @@ category <code>calculator_support</code> and
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">763</span>
-<span class="normal">764</span>
-<span class="normal">765</span>
-<span class="normal">766</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_peak_profile_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">761</span>
+<span class="normal">762</span>
+<span class="normal">763</span>
+<span class="normal">764</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_peak_profile_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print the currently selected peak profile type.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Current peak profile type&#39;</span><span class="p">)</span>
     <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">peak_profile_type</span><span class="p">)</span>
@@ -22826,9 +22791,9 @@ category <code>calculator_support</code> and
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">703</span>
-<span class="normal">704</span>
-<span class="normal">705</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_data_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">701</span>
+<span class="normal">702</span>
+<span class="normal">703</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_data_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: PLR6301</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print a table of supported data collection types.&quot;&quot;&quot;</span>
     <span class="n">DataFactory</span><span class="o">.</span><span class="n">show_supported</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
@@ -22861,9 +22826,9 @@ category <code>calculator_support</code> and
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">657</span>
-<span class="normal">658</span>
-<span class="normal">659</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_excluded_regions_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">655</span>
+<span class="normal">656</span>
+<span class="normal">657</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_excluded_regions_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: PLR6301</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print a table of supported excluded-regions types.&quot;&quot;&quot;</span>
     <span class="n">ExcludedRegionsFactory</span><span class="o">.</span><span class="n">show_supported</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
@@ -22896,9 +22861,9 @@ category <code>calculator_support</code> and
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">614</span>
-<span class="normal">615</span>
-<span class="normal">616</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_linked_phases_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">612</span>
+<span class="normal">613</span>
+<span class="normal">614</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_linked_phases_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: PLR6301</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print a table of supported linked-phases collection types.&quot;&quot;&quot;</span>
     <span class="n">LinkedPhasesFactory</span><span class="o">.</span><span class="n">show_supported</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
@@ -22931,12 +22896,12 @@ category <code>calculator_support</code> and
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">756</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">754</span>
+<span class="normal">755</span>
+<span class="normal">756</span>
 <span class="normal">757</span>
 <span class="normal">758</span>
-<span class="normal">759</span>
-<span class="normal">760</span>
-<span class="normal">761</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_peak_profile_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">759</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_peak_profile_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print available peak profile types for this experiment.&quot;&quot;&quot;</span>
     <span class="n">PeakFactory</span><span class="o">.</span><span class="n">show_supported</span><span class="p">(</span>
         <span class="n">scattering_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
@@ -23230,8 +23195,7 @@ category <code>calculator_support</code> and
 <span class="normal">490</span>
 <span class="normal">491</span>
 <span class="normal">492</span>
-<span class="normal">493</span>
-<span class="normal">494</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ScExperimentBase</span><span class="p">(</span><span class="n">ExperimentBase</span><span class="p">):</span>
+<span class="normal">493</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ScExperimentBase</span><span class="p">(</span><span class="n">ExperimentBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for all single crystal experiments.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -23270,7 +23234,6 @@ category <code>calculator_support</code> and
 <span class="sd">            Path to data file with columns compatible with the beam</span>
 <span class="sd">            mode.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1">#  Extinction (switchable-category pattern)</span>
@@ -23310,7 +23273,7 @@ category <code>calculator_support</code> and
         <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Extinction type for experiment &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; changed to&quot;</span><span class="p">)</span>
         <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">new_type</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">show_supported_extinction_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">show_supported_extinction_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: PLR6301</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Print a table of supported extinction correction models.&quot;&quot;&quot;</span>
         <span class="n">ExtinctionFactory</span><span class="o">.</span><span class="n">show_supported</span><span class="p">()</span>
 
@@ -23357,7 +23320,7 @@ category <code>calculator_support</code> and
         <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Linked crystal type for experiment &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; changed to&quot;</span><span class="p">)</span>
         <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">new_type</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">show_supported_linked_crystal_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">show_supported_linked_crystal_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: PLR6301</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Print a table of supported linked-crystal reference types.&quot;&quot;&quot;</span>
         <span class="n">LinkedCrystalFactory</span><span class="o">.</span><span class="n">show_supported</span><span class="p">()</span>
 
@@ -23458,7 +23421,7 @@ category <code>calculator_support</code> and
         <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Data type for experiment &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; changed to&quot;</span><span class="p">)</span>
         <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">new_type</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">show_supported_data_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">show_supported_data_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: PLR6301</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Print a table of supported data collection types.&quot;&quot;&quot;</span>
         <span class="n">DataFactory</span><span class="o">.</span><span class="n">show_supported</span><span class="p">()</span>
 
@@ -23742,10 +23705,10 @@ category <code>calculator_support</code> and
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">491</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">490</span>
+<span class="normal">491</span>
 <span class="normal">492</span>
-<span class="normal">493</span>
-<span class="normal">494</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_data_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">493</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_data_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print the currently used data collection type.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Current data type&#39;</span><span class="p">)</span>
     <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_type</span><span class="p">)</span>
@@ -23779,10 +23742,10 @@ category <code>calculator_support</code> and
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">343</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">342</span>
+<span class="normal">343</span>
 <span class="normal">344</span>
-<span class="normal">345</span>
-<span class="normal">346</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_extinction_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">345</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_extinction_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print the currently used extinction correction model.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Current extinction type&#39;</span><span class="p">)</span>
     <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">extinction_type</span><span class="p">)</span>
@@ -23816,10 +23779,10 @@ category <code>calculator_support</code> and
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">445</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">444</span>
+<span class="normal">445</span>
 <span class="normal">446</span>
-<span class="normal">447</span>
-<span class="normal">448</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_instrument_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">447</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_instrument_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print the currently used instrument type.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Current instrument type&#39;</span><span class="p">)</span>
     <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instrument_type</span><span class="p">)</span>
@@ -23853,10 +23816,10 @@ category <code>calculator_support</code> and
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">390</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">389</span>
+<span class="normal">390</span>
 <span class="normal">391</span>
-<span class="normal">392</span>
-<span class="normal">393</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_linked_crystal_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">392</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_linked_crystal_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print the currently used linked-crystal reference type.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Current linked crystal type&#39;</span><span class="p">)</span>
     <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">linked_crystal_type</span><span class="p">)</span>
@@ -23890,9 +23853,9 @@ category <code>calculator_support</code> and
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">487</span>
-<span class="normal">488</span>
-<span class="normal">489</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_data_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">486</span>
+<span class="normal">487</span>
+<span class="normal">488</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_data_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: PLR6301</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print a table of supported data collection types.&quot;&quot;&quot;</span>
     <span class="n">DataFactory</span><span class="o">.</span><span class="n">show_supported</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
@@ -23925,9 +23888,9 @@ category <code>calculator_support</code> and
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">339</span>
-<span class="normal">340</span>
-<span class="normal">341</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_extinction_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_extinction_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: PLR6301</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print a table of supported extinction correction models.&quot;&quot;&quot;</span>
     <span class="n">ExtinctionFactory</span><span class="o">.</span><span class="n">show_supported</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
@@ -23960,13 +23923,13 @@ category <code>calculator_support</code> and
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">437</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">436</span>
+<span class="normal">437</span>
 <span class="normal">438</span>
 <span class="normal">439</span>
 <span class="normal">440</span>
 <span class="normal">441</span>
-<span class="normal">442</span>
-<span class="normal">443</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_instrument_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">442</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_instrument_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print a table of supported instrument types.&quot;&quot;&quot;</span>
     <span class="n">InstrumentFactory</span><span class="o">.</span><span class="n">show_supported</span><span class="p">(</span>
         <span class="n">scattering_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
@@ -24003,9 +23966,9 @@ category <code>calculator_support</code> and
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">386</span>
-<span class="normal">387</span>
-<span class="normal">388</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_linked_crystal_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_linked_crystal_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: PLR6301</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print a table of supported linked-crystal reference types.&quot;&quot;&quot;</span>
     <span class="n">LinkedCrystalFactory</span><span class="o">.</span><span class="n">show_supported</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
@@ -24121,14 +24084,7 @@ category <code>calculator_support</code> and
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/bragg_pd.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 27</span>
-<span class="normal"> 28</span>
-<span class="normal"> 29</span>
-<span class="normal"> 30</span>
-<span class="normal"> 31</span>
-<span class="normal"> 32</span>
-<span class="normal"> 33</span>
-<span class="normal"> 34</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 34</span>
 <span class="normal"> 35</span>
 <span class="normal"> 36</span>
 <span class="normal"> 37</span>
@@ -24313,7 +24269,14 @@ category <code>calculator_support</code> and
 <span class="normal">216</span>
 <span class="normal">217</span>
 <span class="normal">218</span>
-<span class="normal">219</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@ExperimentFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@ExperimentFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">BraggPdExperiment</span><span class="p">(</span><span class="n">PdExperimentBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Standard Bragg powder diffraction experiment.&quot;&quot;&quot;</span>
 
@@ -24370,14 +24333,14 @@ category <code>calculator_support</code> and
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">load_numeric_block</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">_MIN_COLUMNS_XY</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="s1">&#39;Data file must have at least two columns: x and y.&#39;</span><span class="p">,</span>
                 <span class="n">exc_type</span><span class="o">=</span><span class="ne">ValueError</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="mi">0</span>
 
-        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">_MIN_COLUMNS_XY_SY</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No uncertainty (sy) column provided. Defaulting to sqrt(y).&#39;</span><span class="p">)</span>
 
         <span class="c1"># Extract x, y data</span>
@@ -24388,11 +24351,11 @@ category <code>calculator_support</code> and
         <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
 
         <span class="c1"># Determine sy from column 3 if available, otherwise use sqrt(y)</span>
-        <span class="n">sy</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="n">sy</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">_MIN_COLUMNS_XY</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
 
-        <span class="c1"># Replace values smaller than 0.0001 with 1.0</span>
+        <span class="c1"># Replace values smaller than _MIN_UNCERTAINTY with 1.0</span>
         <span class="c1"># TODO: Not used if loading from cif file?</span>
-        <span class="n">sy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">sy</span> <span class="o">&lt;</span> <span class="mf">0.0001</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">sy</span><span class="p">)</span>
+        <span class="n">sy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">sy</span> <span class="o">&lt;</span> <span class="n">_MIN_UNCERTAINTY</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">sy</span><span class="p">)</span>
 
         <span class="c1"># Set the experiment data</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_create_items_set_xcoord_and_id</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -24498,7 +24461,7 @@ category <code>calculator_support</code> and
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Active background model for this experiment.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_background</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">show_supported_background_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">show_supported_background_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: PLR6301</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Print a table of supported background types.&quot;&quot;&quot;</span>
         <span class="n">BackgroundFactory</span><span class="o">.</span><span class="n">show_supported</span><span class="p">()</span>
 
@@ -24660,10 +24623,10 @@ category <code>calculator_support</code> and
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/bragg_pd.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_background_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_background_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print the currently used background type.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Current background type&#39;</span><span class="p">)</span>
     <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">background_type</span><span class="p">)</span>
@@ -24697,10 +24660,10 @@ category <code>calculator_support</code> and
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/bragg_pd.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_instrument_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_instrument_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print the currently used instrument type.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Current instrument type&#39;</span><span class="p">)</span>
     <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instrument_type</span><span class="p">)</span>
@@ -24734,9 +24697,9 @@ category <code>calculator_support</code> and
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/bragg_pd.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">212</span>
-<span class="normal">213</span>
-<span class="normal">214</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_background_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_background_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: PLR6301</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print a table of supported background types.&quot;&quot;&quot;</span>
     <span class="n">BackgroundFactory</span><span class="o">.</span><span class="n">show_supported</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
@@ -24769,13 +24732,13 @@ category <code>calculator_support</code> and
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/bragg_pd.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_instrument_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_instrument_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print a table of supported instrument types.&quot;&quot;&quot;</span>
     <span class="n">InstrumentFactory</span><span class="o">.</span><span class="n">show_supported</span><span class="p">(</span>
         <span class="n">scattering_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">scattering_type</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
@@ -24915,11 +24878,7 @@ category <code>calculator_support</code> and
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/bragg_sc.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">26</span>
 <span class="normal">27</span>
 <span class="normal">28</span>
 <span class="normal">29</span>
@@ -24977,7 +24936,11 @@ category <code>calculator_support</code> and
 <span class="normal">81</span>
 <span class="normal">82</span>
 <span class="normal">83</span>
-<span class="normal">84</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@ExperimentFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@ExperimentFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CwlScExperiment</span><span class="p">(</span><span class="n">ScExperimentBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Bragg constant-wavelength single-crystal experiment.&quot;&quot;&quot;</span>
 
@@ -25018,7 +24981,7 @@ category <code>calculator_support</code> and
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">load_numeric_block</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">_MIN_COLUMNS_CWL_SC</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="s1">&#39;Data file must have at least 5 columns: h, k, l, Iobs, sIobs.&#39;</span><span class="p">,</span>
                 <span class="n">exc_type</span><span class="o">=</span><span class="ne">ValueError</span><span class="p">,</span>
@@ -25113,11 +25076,7 @@ category <code>calculator_support</code> and
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/bragg_sc.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 87</span>
-<span class="normal"> 88</span>
-<span class="normal"> 89</span>
-<span class="normal"> 90</span>
-<span class="normal"> 91</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 91</span>
 <span class="normal"> 92</span>
 <span class="normal"> 93</span>
 <span class="normal"> 94</span>
@@ -25186,7 +25145,11 @@ category <code>calculator_support</code> and
 <span class="normal">157</span>
 <span class="normal">158</span>
 <span class="normal">159</span>
-<span class="normal">160</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@ExperimentFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@ExperimentFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">TofScExperiment</span><span class="p">(</span><span class="n">ScExperimentBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Bragg time-of-flight single-crystal experiment.&quot;&quot;&quot;</span>
 
@@ -25234,7 +25197,7 @@ category <code>calculator_support</code> and
             <span class="p">)</span>
             <span class="k">return</span> <span class="mi">0</span>
 
-        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">6</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">_MIN_COLUMNS_TOF_SC</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="s1">&#39;Data file must have at least 6 columns: h, k, l, Iobs, sIobs, wavelength.&#39;</span><span class="p">,</span>
                 <span class="n">exc_type</span><span class="o">=</span><span class="ne">ValueError</span><span class="p">,</span>
@@ -27059,7 +27022,8 @@ category <code>calculator_support</code> and
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/factory.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 36</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 35</span>
+<span class="normal"> 36</span>
 <span class="normal"> 37</span>
 <span class="normal"> 38</span>
 <span class="normal"> 39</span>
@@ -27290,20 +27254,10 @@ category <code>calculator_support</code> and
 <span class="normal">264</span>
 <span class="normal">265</span>
 <span class="normal">266</span>
-<span class="normal">267</span>
-<span class="normal">268</span>
-<span class="normal">269</span>
-<span class="normal">270</span>
-<span class="normal">271</span>
-<span class="normal">272</span>
-<span class="normal">273</span>
-<span class="normal">274</span>
-<span class="normal">275</span>
-<span class="normal">276</span>
-<span class="normal">277</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExperimentFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
+<span class="normal">267</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExperimentFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates Experiment instances with only relevant attributes.&quot;&quot;&quot;</span>
 
-    <span class="n">_default_rules</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">_default_rules</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
         <span class="nb">frozenset</span><span class="p">({</span>
             <span class="p">(</span><span class="s1">&#39;scattering_type&#39;</span><span class="p">,</span> <span class="n">ScatteringTypeEnum</span><span class="o">.</span><span class="n">BRAGG</span><span class="p">),</span>
             <span class="p">(</span><span class="s1">&#39;sample_form&#39;</span><span class="p">,</span> <span class="n">SampleFormEnum</span><span class="o">.</span><span class="n">POWDER</span><span class="p">),</span>
@@ -27498,7 +27452,6 @@ category <code>calculator_support</code> and
         <span class="n">beam_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">radiation_probe</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">scattering_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">verbosity</span><span class="p">:</span> <span class="n">VerbosityEnum</span> <span class="o">=</span> <span class="n">VerbosityEnum</span><span class="o">.</span><span class="n">FULL</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExperimentBase</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create an experiment from a raw data ASCII file.</span>
@@ -27517,8 +27470,6 @@ category <code>calculator_support</code> and
 <span class="sd">            Radiation probe (e.g. ``&#39;neutron&#39;``).</span>
 <span class="sd">        scattering_type : str | None, default=None</span>
 <span class="sd">            Scattering type (e.g. ``&#39;bragg&#39;``).</span>
-<span class="sd">        verbosity : VerbosityEnum, default=VerbosityEnum.FULL</span>
-<span class="sd">            Console output verbosity.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -27533,13 +27484,7 @@ category <code>calculator_support</code> and
             <span class="n">scattering_type</span><span class="o">=</span><span class="n">scattering_type</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="n">num_points</span> <span class="o">=</span> <span class="n">expt_obj</span><span class="o">.</span><span class="n">_load_ascii_data_to_experiment</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">verbosity</span> <span class="ow">is</span> <span class="n">VerbosityEnum</span><span class="o">.</span><span class="n">FULL</span><span class="p">:</span>
-            <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Data loaded successfully&#39;</span><span class="p">)</span>
-            <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Experiment 🔬 &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;. Number of data points: </span><span class="si">{</span><span class="n">num_points</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">verbosity</span> <span class="ow">is</span> <span class="n">VerbosityEnum</span><span class="o">.</span><span class="n">SHORT</span><span class="p">:</span>
-            <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✅ Data loaded: Experiment 🔬 &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;. </span><span class="si">{</span><span class="n">num_points</span><span class="si">}</span><span class="s2"> points.&quot;</span><span class="p">)</span>
+        <span class="n">expt_obj</span><span class="o">.</span><span class="n">_load_ascii_data_to_experiment</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">expt_obj</span>
 </code></pre></div></td></tr></table></div>
@@ -27638,7 +27583,8 @@ category <code>calculator_support</code> and
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/factory.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">200</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">199</span>
+<span class="normal">200</span>
 <span class="normal">201</span>
 <span class="normal">202</span>
 <span class="normal">203</span>
@@ -27658,8 +27604,7 @@ category <code>calculator_support</code> and
 <span class="normal">217</span>
 <span class="normal">218</span>
 <span class="normal">219</span>
-<span class="normal">220</span>
-<span class="normal">221</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">220</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">from_cif_path</span><span class="p">(</span>
     <span class="bp">cls</span><span class="p">,</span>
@@ -27775,7 +27720,8 @@ category <code>calculator_support</code> and
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/factory.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">176</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">175</span>
+<span class="normal">176</span>
 <span class="normal">177</span>
 <span class="normal">178</span>
 <span class="normal">179</span>
@@ -27795,8 +27741,7 @@ category <code>calculator_support</code> and
 <span class="normal">193</span>
 <span class="normal">194</span>
 <span class="normal">195</span>
-<span class="normal">196</span>
-<span class="normal">197</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">196</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">from_cif_str</span><span class="p">(</span>
     <span class="bp">cls</span><span class="p">,</span>
@@ -27833,7 +27778,7 @@ category <code>calculator_support</code> and
 
 
 <h5 id="easydiffraction.datablocks.experiment.item.factory.ExperimentFactory.from_data_path" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">from_data_path</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">data_path</span><span class="p">,</span> <span class="n">sample_form</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">beam_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">radiation_probe</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scattering_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="n">VerbosityEnum</span><span class="o">.</span><span class="n">FULL</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">from_data_path</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">data_path</span><span class="p">,</span> <span class="n">sample_form</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">beam_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">radiation_probe</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scattering_type</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
@@ -27975,25 +27920,6 @@ category <code>calculator_support</code> and
                   <code>None</code>
             </td>
           </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>verbosity</code>
-            </td>
-            <td>
-                  <code><a class="autorefs autorefs-internal" title="&lt;code&gt;VerbosityEnum&lt;/code&gt; (&lt;code&gt;easydiffraction.utils.enums.VerbosityEnum&lt;/code&gt;)" href="../../utils/#easydiffraction.utils.enums.VerbosityEnum">VerbosityEnum</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Console output verbosity.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-              </div>
-            </td>
-            <td>
-                  <code>VerbosityEnum.FULL</code>
-            </td>
-          </tr>
       </tbody>
     </table>
 
@@ -28026,7 +27952,8 @@ category <code>calculator_support</code> and
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/factory.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">223</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">222</span>
+<span class="normal">223</span>
 <span class="normal">224</span>
 <span class="normal">225</span>
 <span class="normal">226</span>
@@ -28070,17 +27997,7 @@ category <code>calculator_support</code> and
 <span class="normal">264</span>
 <span class="normal">265</span>
 <span class="normal">266</span>
-<span class="normal">267</span>
-<span class="normal">268</span>
-<span class="normal">269</span>
-<span class="normal">270</span>
-<span class="normal">271</span>
-<span class="normal">272</span>
-<span class="normal">273</span>
-<span class="normal">274</span>
-<span class="normal">275</span>
-<span class="normal">276</span>
-<span class="normal">277</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">267</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">from_data_path</span><span class="p">(</span>
     <span class="bp">cls</span><span class="p">,</span>
@@ -28091,7 +28008,6 @@ category <code>calculator_support</code> and
     <span class="n">beam_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">radiation_probe</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">scattering_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">verbosity</span><span class="p">:</span> <span class="n">VerbosityEnum</span> <span class="o">=</span> <span class="n">VerbosityEnum</span><span class="o">.</span><span class="n">FULL</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExperimentBase</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create an experiment from a raw data ASCII file.</span>
@@ -28110,8 +28026,6 @@ category <code>calculator_support</code> and
 <span class="sd">        Radiation probe (e.g. ``&#39;neutron&#39;``).</span>
 <span class="sd">    scattering_type : str | None, default=None</span>
 <span class="sd">        Scattering type (e.g. ``&#39;bragg&#39;``).</span>
-<span class="sd">    verbosity : VerbosityEnum, default=VerbosityEnum.FULL</span>
-<span class="sd">        Console output verbosity.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -28126,13 +28040,7 @@ category <code>calculator_support</code> and
         <span class="n">scattering_type</span><span class="o">=</span><span class="n">scattering_type</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="n">num_points</span> <span class="o">=</span> <span class="n">expt_obj</span><span class="o">.</span><span class="n">_load_ascii_data_to_experiment</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">verbosity</span> <span class="ow">is</span> <span class="n">VerbosityEnum</span><span class="o">.</span><span class="n">FULL</span><span class="p">:</span>
-        <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Data loaded successfully&#39;</span><span class="p">)</span>
-        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Experiment 🔬 &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;. Number of data points: </span><span class="si">{</span><span class="n">num_points</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">verbosity</span> <span class="ow">is</span> <span class="n">VerbosityEnum</span><span class="o">.</span><span class="n">SHORT</span><span class="p">:</span>
-        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✅ Data loaded: Experiment 🔬 &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;. </span><span class="si">{</span><span class="n">num_points</span><span class="si">}</span><span class="s2"> points.&quot;</span><span class="p">)</span>
+    <span class="n">expt_obj</span><span class="o">.</span><span class="n">_load_ascii_data_to_experiment</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">expt_obj</span>
 </code></pre></div></td></tr></table></div>
@@ -28305,7 +28213,8 @@ category <code>calculator_support</code> and
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/factory.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">133</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">132</span>
+<span class="normal">133</span>
 <span class="normal">134</span>
 <span class="normal">135</span>
 <span class="normal">136</span>
@@ -28344,8 +28253,7 @@ category <code>calculator_support</code> and
 <span class="normal">169</span>
 <span class="normal">170</span>
 <span class="normal">171</span>
-<span class="normal">172</span>
-<span class="normal">173</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">172</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">from_scratch</span><span class="p">(</span>
     <span class="bp">cls</span><span class="p">,</span>
@@ -28400,10 +28308,6 @@ category <code>calculator_support</code> and
     </div>
 
 </div>
-
-
-
-
 
 
 
@@ -28539,80 +28443,84 @@ category <code>calculator_support</code> and
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/total_pd.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span>
-<span class="normal">93</span>
-<span class="normal">94</span>
-<span class="normal">95</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@ExperimentFactory</span><span class="o">.</span><span class="n">register</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@ExperimentFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">TotalPdExperiment</span><span class="p">(</span><span class="n">PdExperimentBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;PDF experiment class with specific attributes.&quot;&quot;&quot;</span>
 
@@ -28659,27 +28567,31 @@ category <code>calculator_support</code> and
 <span class="sd">            If the data file has fewer than two columns.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="kn">from</span><span class="w"> </span><span class="nn">diffpy.utils.parsers.loaddata</span><span class="w"> </span><span class="kn">import</span> <span class="n">loadData</span>  <span class="c1"># noqa: PLC0415</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">diffpy.utils.parsers</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_data</span>  <span class="c1"># noqa: PLC0415</span>
         <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;diffpy module not found.&#39;</span>
             <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">loadData</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Failed to read data from </span><span class="si">{</span><span class="n">data_path</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span>
             <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 
-        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">_MIN_COLUMNS_XY</span><span class="p">:</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Data file must have at least two columns: x and y.&#39;</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="n">default_sy</span> <span class="o">=</span> <span class="mf">0.03</span>
-        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">_MIN_COLUMNS_XY_SY</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Warning: No uncertainty (sy) column provided. Defaulting to </span><span class="si">{</span><span class="n">default_sy</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
 
         <span class="n">x</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
         <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
-        <span class="n">sy</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">default_sy</span><span class="p">)</span>
+        <span class="n">sy</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">data</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">_MIN_COLUMNS_XY</span>
+            <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">default_sy</span><span class="p">)</span>
+        <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_create_items_set_xcoord_and_id</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">_set_g_r_meas</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>

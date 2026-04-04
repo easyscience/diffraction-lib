@@ -62,13 +62,13 @@ project.analysis.fit()
 
 # %%
 # Show fit results summary
-project.analysis.show_fit_results()
+project.analysis.display.fit_results()
 
 # %%
 project.experiments.show_names()
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # %% [markdown]
 # ## Step 5: Show Project Summary
