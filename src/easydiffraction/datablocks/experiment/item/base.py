@@ -296,7 +296,6 @@ class ScExperimentBase(ExperimentBase):
             Path to data file with columns compatible with the beam
             mode.
         """
-        pass
 
     # ------------------------------------------------------------------
     #  Extinction (switchable-category pattern)
@@ -575,7 +574,6 @@ class PdExperimentBase(ExperimentBase):
         int
             Number of loaded data points.
         """
-        pass
 
     @property
     def linked_phases(self) -> object:

@@ -125,4 +125,3 @@ class TableBackendBase(ABC):
         object
             Backend-defined return value (commonly ``None``).
         """
-        pass

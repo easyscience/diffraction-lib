@@ -32,7 +32,6 @@ class CategoryItem(GuardedBase):
     # TODO: Common for all categories
     def _update(self, called_by_minimizer: bool = False) -> None:  # noqa: PLR6301
         del called_by_minimizer
-        pass
 
     @property
     def unique_name(self) -> str:
@@ -196,7 +195,6 @@ class CategoryCollection(CollectionBase):
     # TODO: Common for all categories
     def _update(self, called_by_minimizer: bool = False) -> None:  # noqa: PLR6301
         del called_by_minimizer
-        pass
 
     @property
     def unique_name(self) -> str | None:

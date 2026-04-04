@@ -212,7 +212,7 @@ def test_fetch_tutorials_index_returns_empty_on_error(monkeypatch):
 def test_list_tutorials_empty_index(monkeypatch, capsys):
     import easydiffraction.utils.utils as MUT
 
-    monkeypatch.setattr(MUT, '_fetch_tutorials_index', lambda: {})
+    monkeypatch.setattr(MUT, '_fetch_tutorials_index', dict)
     MUT.list_tutorials()
     out = capsys.readouterr().out
     assert 'No tutorials available' in out
@@ -315,7 +315,7 @@ def test_show_version_prints(capsys, monkeypatch):
 def test_download_all_tutorials_empty_index(monkeypatch, capsys):
     import easydiffraction.utils.utils as MUT
 
-    monkeypatch.setattr(MUT, '_fetch_tutorials_index', lambda: {})
+    monkeypatch.setattr(MUT, '_fetch_tutorials_index', dict)
     result = MUT.download_all_tutorials()
     assert result == []
     out = capsys.readouterr().out

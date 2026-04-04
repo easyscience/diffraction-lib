@@ -140,7 +140,6 @@ def test_display_fit_results_calls_process_fit_results(monkeypatch):
     # Create a mock project with structures and experiments
     class MockProject:
         structures = object()
-        experiments = object()
         _varname = 'proj'
 
         class experiments_cls:

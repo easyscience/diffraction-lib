@@ -119,7 +119,6 @@ class ProjectInfo(GuardedBase):
 
     def parameters(self) -> None:
         """List parameters (not implemented)."""
-        pass
 
     # TODO: Consider moving to io.cif.serialize
     def as_cif(self) -> str:

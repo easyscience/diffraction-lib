@@ -151,7 +151,7 @@ default-tag = 'v999.0.0'
 # https://interrogate.readthedocs.io/en/latest/
 
 [tool.interrogate]
-fail-under = 35 # Minimum docstring coverage percentage to pass
+fail-under = 75 # Minimum docstring coverage percentage to pass
 verbose = 1
 #exclude = ['src/**/__init__.py']
 
@@ -169,7 +169,7 @@ source = ['src'] # Limit coverage to the source code directory
 [tool.coverage.report]
 show_missing = true  # Show missing lines
 skip_covered = false # Skip files with 100% coverage in the report
-fail_under = 70      # Minimum coverage percentage to pass
+fail_under = 75      # Minimum coverage percentage to pass
 
 ##########################
 # Configuration for pytest
@@ -265,7 +265,7 @@ select = [
   'INP', # https://docs.astral.sh/ruff/rules/#flake8-no-pep420-inp
   'ISC', # https://docs.astral.sh/ruff/rules/#flake8-implicit-str-concat-isc
   'LOG', # https://docs.astral.sh/ruff/rules/#flake8-logging-log
-  #'PIE',   # https://docs.astral.sh/ruff/rules/#flake8-pie-pie
+  'PIE', # https://docs.astral.sh/ruff/rules/#flake8-pie-pie
   'PT',  # https://docs.astral.sh/ruff/rules/#flake8-pytest-style-pt
   'PTH', # https://docs.astral.sh/ruff/rules/#flake8-use-pathlib-pth
   'PYI', # https://docs.astral.sh/ruff/rules/#flake8-pyi-pyi
