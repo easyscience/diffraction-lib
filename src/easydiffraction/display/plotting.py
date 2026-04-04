@@ -164,7 +164,7 @@ class Plotter(RendererBase):
         """Look up axis labels for the experiment / x-axis."""
         return DEFAULT_AXES_LABELS[sample_form, scattering_type, x_axis]
 
-    def _prepare_powder_data(
+    def _prepare_powder_context(
         self,
         pattern: object,
         expt_name: str,
@@ -172,12 +172,9 @@ class Plotter(RendererBase):
         x_min: object,
         x_max: object,
         x: object,
-        need_meas: bool = False,
-        need_calc: bool = False,
-        show_residual: bool = False,
     ) -> dict | None:
         """
-        Validate, resolve axes, auto-range, and filter arrays.
+        Resolve axes, auto-range, and filter x-array.
 
         Parameters
         ----------
@@ -194,35 +191,23 @@ class Plotter(RendererBase):
             Optional maximum x-axis limit.
         x : object
             Explicit x-axis type or ``None``.
-        need_meas : bool, default=False
-            Whether ``intensity_meas`` is required.
-        need_calc : bool, default=False
-            Whether ``intensity_calc`` is required.
-        show_residual : bool, default=False
-            If ``True``, compute meas - calc residual.
 
         Returns
         -------
         dict | None
-            A dict with keys ``x_filtered``, ``y_series``, ``y_labels``,
-            ``axes_labels``, and ``x_axis``; or ``None`` when a required
-            array is missing.
+            A dict with keys ``x_filtered``, ``x_array``, ``x_min``,
+            ``x_max``, and ``axes_labels``; or ``None`` when the x-array
+            is missing.
         """
         x_axis, x_name, sample_form, scattering_type, _ = self._resolve_x_axis(expt_type, x)
 
         # Get x-array from pattern
-        x_array = getattr(pattern, x_axis, None)
-        if x_array is None:
+        x_raw = getattr(pattern, x_axis, None)
+        if x_raw is None:
             log.error(f'No {x_name} data available for experiment {expt_name}')
             return None
 
-        # Validate required intensities
-        if need_meas and pattern.intensity_meas is None:
-            log.error(f'No measured data available for experiment {expt_name}')
-            return None
-        if need_calc and pattern.intensity_calc is None:
-            log.error(f'No calculated data available for experiment {expt_name}')
-            return None
+        x_array = np.asarray(x_raw)
 
         # Auto-range for ASCII engine
         x_min, x_max = self._auto_x_range_for_ascii(pattern, x_array, x_min, x_max)
@@ -230,35 +215,14 @@ class Plotter(RendererBase):
         # Filter x
         x_filtered = self._filtered_y_array(x_array, x_array, x_min, x_max)
 
-        # Filter y arrays and build series / labels
-        y_series = []
-        y_labels = []
-
-        y_meas = None
-        if need_meas:
-            y_meas = self._filtered_y_array(pattern.intensity_meas, x_array, x_min, x_max)
-            y_series.append(y_meas)
-            y_labels.append('meas')
-
-        y_calc = None
-        if need_calc:
-            y_calc = self._filtered_y_array(pattern.intensity_calc, x_array, x_min, x_max)
-            y_series.append(y_calc)
-            y_labels.append('calc')
-
-        if show_residual and y_meas is not None and y_calc is not None:
-            y_resid = y_meas - y_calc
-            y_series.append(y_resid)
-            y_labels.append('resid')
-
         axes_labels = self._get_axes_labels(sample_form, scattering_type, x_axis)
 
         return {
             'x_filtered': x_filtered,
-            'y_series': y_series,
-            'y_labels': y_labels,
+            'x_array': x_array,
+            'x_min': x_min,
+            'x_max': x_max,
             'axes_labels': axes_labels,
-            'x_axis': x_axis,
         }
 
     @staticmethod
@@ -399,22 +363,28 @@ class Plotter(RendererBase):
             X-axis type (``'two_theta'``, ``'time_of_flight'``, or
             ``'d_spacing'``). If ``None``, auto-detected from beam mode.
         """
-        ctx = self._prepare_powder_data(
+        ctx = self._prepare_powder_context(
             pattern,
             expt_name,
             expt_type,
             x_min,
             x_max,
             x,
-            need_meas=True,
         )
         if ctx is None:
             return
 
+        if pattern.intensity_meas is None:
+            log.error(f'No measured data available for experiment {expt_name}')
+            return
+        y_meas = self._filtered_y_array(
+            pattern.intensity_meas, ctx['x_array'], ctx['x_min'], ctx['x_max']
+        )
+
         self._backend.plot_powder(
             x=ctx['x_filtered'],
-            y_series=ctx['y_series'],
-            labels=ctx['y_labels'],
+            y_series=[y_meas],
+            labels=['meas'],
             axes_labels=ctx['axes_labels'],
             title=f"Measured data for experiment 🔬 '{expt_name}'",
             height=self.height,
@@ -449,22 +419,28 @@ class Plotter(RendererBase):
             X-axis type (``'two_theta'``, ``'time_of_flight'``, or
             ``'d_spacing'``). If ``None``, auto-detected from beam mode.
         """
-        ctx = self._prepare_powder_data(
+        ctx = self._prepare_powder_context(
             pattern,
             expt_name,
             expt_type,
             x_min,
             x_max,
             x,
-            need_calc=True,
         )
         if ctx is None:
             return
 
+        if pattern.intensity_calc is None:
+            log.error(f'No calculated data available for experiment {expt_name}')
+            return
+        y_calc = self._filtered_y_array(
+            pattern.intensity_calc, ctx['x_array'], ctx['x_min'], ctx['x_max']
+        )
+
         self._backend.plot_powder(
             x=ctx['x_filtered'],
-            y_series=ctx['y_series'],
-            labels=ctx['y_labels'],
+            y_series=[y_calc],
+            labels=['calc'],
             axes_labels=ctx['axes_labels'],
             title=f"Calculated data for experiment 🔬 '{expt_name}'",
             height=self.height,
@@ -472,9 +448,8 @@ class Plotter(RendererBase):
 
     def plot_meas_vs_calc(
         self,
-        pattern: object,
+        experiment: object,
         expt_name: str,
-        expt_type: object,
         x_min: object = None,
         x_max: object = None,
         show_residual: bool = False,
@@ -494,13 +469,10 @@ class Plotter(RendererBase):
 
         Parameters
         ----------
-        pattern : object
-            Data pattern object with meas/calc arrays.
+        experiment : object
+            Experiment instance with ``.data`` and ``.type`` attributes.
         expt_name : str
             Experiment name for the title.
-        expt_type : object
-            Experiment type with sample_form, scattering, and beam
-            enums.
         x_min : object, default=None
             Optional minimum x-axis limit.
         x_max : object, default=None
@@ -511,6 +483,9 @@ class Plotter(RendererBase):
             X-axis type. If ``None``, auto-detected from sample form and
             beam mode.
         """
+        pattern = experiment.data
+        expt_type = experiment.type
+
         x_axis, _, sample_form, scattering_type, _ = self._resolve_x_axis(expt_type, x)
 
         # Validate required data (before x-array check, matching
@@ -545,26 +520,37 @@ class Plotter(RendererBase):
             return
 
         # Line plot (PD or SC with d_spacing/sin_theta_over_lambda)
-        # TODO: Rename from _prepare_powder_data as it also supports
-        #  single crystal line plots
-        ctx = self._prepare_powder_data(
+        ctx = self._prepare_powder_context(
             pattern,
             expt_name,
             expt_type,
             x_min,
             x_max,
             x,
-            need_meas=True,
-            need_calc=True,
-            show_residual=show_residual,
         )
         if ctx is None:
             return
 
+        y_series = []
+        y_labels = []
+        y_meas = self._filtered_y_array(
+            pattern.intensity_meas, ctx['x_array'], ctx['x_min'], ctx['x_max']
+        )
+        y_series.append(y_meas)
+        y_labels.append('meas')
+        y_calc = self._filtered_y_array(
+            pattern.intensity_calc, ctx['x_array'], ctx['x_min'], ctx['x_max']
+        )
+        y_series.append(y_calc)
+        y_labels.append('calc')
+        if show_residual:
+            y_series.append(y_meas - y_calc)
+            y_labels.append('resid')
+
         self._backend.plot_powder(
             x=ctx['x_filtered'],
-            y_series=ctx['y_series'],
-            labels=ctx['y_labels'],
+            y_series=y_series,
+            labels=y_labels,
             axes_labels=ctx['axes_labels'],
             title=title,
             height=self.height,

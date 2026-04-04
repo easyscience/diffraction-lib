@@ -561,9 +561,8 @@ class Project(GuardedBase):
         experiment = self.experiments[expt_name]
 
         self.plotter.plot_meas_vs_calc(
-            experiment.data,
+            experiment,
             expt_name,
-            experiment.type,
             x_min=x_min,
             x_max=x_max,
             show_residual=show_residual,

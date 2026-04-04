@@ -55,11 +55,14 @@ def test_plotter_factory_supported_and_unsupported():
         PlotterFactory.create('nope')
 
 
-def test_plotter_error_paths_and_filtering(capsys):
+def test_plotter_error_paths_and_filtering(capsys, monkeypatch):
     from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
     from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
     from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
     from easydiffraction.display.plotting import Plotter
+    from easydiffraction.utils.logging import Logger
+
+    monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.WARN, raising=True)
 
     class Ptn:
         def __init__(
@@ -95,18 +98,26 @@ def test_plotter_error_paths_and_filtering(capsys):
     out = capsys.readouterr().out
     assert 'No calculated data available for experiment E' in out
 
+    class Expt:
+        def __init__(self, pattern, expt_type):
+            self.data = pattern
+            self.type = expt_type
+
     p.plot_meas_vs_calc(
-        Ptn(two_theta=None, intensity_meas=None, intensity_calc=None), 'E', ExptType()
+        Expt(Ptn(two_theta=None, intensity_meas=None, intensity_calc=None), ExptType()),
+        'E',
     )
     out = capsys.readouterr().out
     assert 'No measured data available for experiment E' in out
     p.plot_meas_vs_calc(
-        Ptn(two_theta=[1], intensity_meas=None, intensity_calc=[1]), 'E', ExptType()
+        Expt(Ptn(two_theta=[1], intensity_meas=None, intensity_calc=[1]), ExptType()),
+        'E',
     )
     out = capsys.readouterr().out
     assert 'No measured data available for experiment E' in out
     p.plot_meas_vs_calc(
-        Ptn(two_theta=[1], intensity_meas=[1], intensity_calc=None), 'E', ExptType()
+        Expt(Ptn(two_theta=[1], intensity_meas=[1], intensity_calc=None), ExptType()),
+        'E',
     )
     out = capsys.readouterr().out
     assert 'No calculated data available for experiment E' in out
