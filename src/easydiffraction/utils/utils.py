@@ -322,6 +322,9 @@ def _safe_urlopen(request_or_url: object) -> object:  # type: ignore[no-untyped-
         if parsed.scheme != 'https':  # pragma: no cover
             msg = 'Only https URLs are permitted'
             raise ValueError(msg)
+    else:
+        msg = f'Expected str or Request, got {type(request_or_url).__name__}'
+        raise TypeError(msg)
     return urllib.request.urlopen(request_or_url)  # noqa: S310
 
 
