@@ -101,7 +101,7 @@ def _fit_worker(
         # 3. Load experiment from template CIF
         #    (full config + template data)
         project.experiments.add_from_cif_str(template.experiment_cif)
-        expt = list(project.experiments.values())[0]
+        expt = next(iter(project.experiments.values()))
 
         # 4. Replace data from the new data path
         expt._load_ascii_data_to_experiment(data_path)
@@ -135,7 +135,7 @@ def _fit_worker(
         # 10. Collect results
         result.update(_collect_results(project, template))
 
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         result['fit_success'] = False
         result['chi_squared'] = None
         result['reduced_chi_squared'] = None
@@ -423,8 +423,8 @@ def _build_template(project: object) -> SequentialFitTemplate:
     """
     from easydiffraction.core.variable import Parameter  # noqa: PLC0415
 
-    structure = list(project.structures.values())[0]
-    experiment = list(project.experiments.values())[0]
+    structure = next(iter(project.structures.values()))
+    experiment = next(iter(project.experiments.values()))
 
     # Collect free parameter unique_names and initial values
     all_params = project.structures.parameters + project.experiments.parameters
@@ -671,16 +671,16 @@ def fit_sequential(
     # bootstrap has no path to re-import the script.  ``_fit_worker``
     # lives in this module (not ``__main__``), so it is still resolved
     # via normal pickle/import machinery.
-    _main_mod = sys.modules.get('__main__')
-    _main_file_bak = getattr(_main_mod, '__file__', None)
-    _main_spec_bak = getattr(_main_mod, '__spec__', None)
+    main_mod = sys.modules.get('__main__')
+    main_file_bak = getattr(main_mod, '__file__', None)
+    main_spec_bak = getattr(main_mod, '__spec__', None)
 
     if max_workers > 1:
         # Hide __main__ origin from spawn
-        if _main_mod is not None and _main_file_bak is not None:
-            _main_mod.__file__ = None  # type: ignore[assignment]
-        if _main_mod is not None and _main_spec_bak is not None:
-            _main_mod.__spec__ = None
+        if main_mod is not None and main_file_bak is not None:
+            main_mod.__file__ = None  # type: ignore[assignment]
+        if main_mod is not None and main_spec_bak is not None:
+            main_mod.__spec__ = None
 
         spawn_ctx = mp.get_context('spawn')
         pool_cm = ProcessPoolExecutor(
@@ -708,7 +708,7 @@ def fit_sequential(
                             diffrn_values = extract_diffrn(result['file_path'])
                             for key, val in diffrn_values.items():
                                 result[f'diffrn.{key}'] = val
-                        except Exception as exc:  # noqa: BLE001
+                        except Exception as exc:
                             log.warning(f'extract_diffrn failed for {result["file_path"]}: {exc}')
 
                 # Write to CSV
@@ -729,10 +729,10 @@ def fit_sequential(
                     template = replace(template, initial_params=last_ok['params'])
     finally:
         # Restore __main__ attributes
-        if _main_mod is not None and _main_file_bak is not None:
-            _main_mod.__file__ = _main_file_bak
-        if _main_mod is not None and _main_spec_bak is not None:
-            _main_mod.__spec__ = _main_spec_bak
+        if main_mod is not None and main_file_bak is not None:
+            main_mod.__file__ = main_file_bak
+        if main_mod is not None and main_spec_bak is not None:
+            main_mod.__spec__ = main_spec_bak
 
     if verb is not VerbosityEnum.SILENT:
         total_fitted = len(already_fitted) + len(remaining)

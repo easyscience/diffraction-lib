@@ -4,7 +4,7 @@
 Time-of-flight (TOF) peak-profile component classes.
 
 Defines classes that add Gaussian/Lorentz broadening, mixing, and
-Ikeda–Carpenter asymmetry parameters used by TOF peak shapes. This
+Ikeda-Carpenter asymmetry parameters used by TOF peak shapes. This
 module provides classes that add broadening and asymmetry parameters.
 They are composed into concrete peak classes elsewhere via multiple
 inheritance.
@@ -25,7 +25,7 @@ class TofBroadeningMixin:
         self._broad_gauss_sigma_0 = Parameter(
             name='gauss_sigma_0',
             description='Gaussian broadening (instrumental resolution)',
-            units='µs²',
+            units='μs²',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -35,7 +35,7 @@ class TofBroadeningMixin:
         self._broad_gauss_sigma_1 = Parameter(
             name='gauss_sigma_1',
             description='Gaussian broadening (dependent on d-spacing)',
-            units='µs/Å',
+            units='μs/Å',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -45,7 +45,7 @@ class TofBroadeningMixin:
         self._broad_gauss_sigma_2 = Parameter(
             name='gauss_sigma_2',
             description='Gaussian broadening (instrument-dependent term)',
-            units='µs²/Å²',
+            units='μs²/Å²',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -55,7 +55,7 @@ class TofBroadeningMixin:
         self._broad_lorentz_gamma_0 = Parameter(
             name='lorentz_gamma_0',
             description='Lorentzian broadening (microstrain effects)',
-            units='µs',
+            units='μs',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -65,7 +65,7 @@ class TofBroadeningMixin:
         self._broad_lorentz_gamma_1 = Parameter(
             name='lorentz_gamma_1',
             description='Lorentzian broadening (dependent on d-spacing)',
-            units='µs/Å',
+            units='μs/Å',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -75,7 +75,7 @@ class TofBroadeningMixin:
         self._broad_lorentz_gamma_2 = Parameter(
             name='lorentz_gamma_2',
             description='Lorentzian broadening (instrument-dependent term)',
-            units='µs²/Å²',
+            units='μs²/Å²',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -110,7 +110,7 @@ class TofBroadeningMixin:
     @property
     def broad_gauss_sigma_0(self) -> Parameter:
         """
-        Gaussian broadening (instrumental resolution) (µs²).
+        Gaussian broadening (instrumental resolution) (μs²).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -124,7 +124,7 @@ class TofBroadeningMixin:
     @property
     def broad_gauss_sigma_1(self) -> Parameter:
         """
-        Gaussian broadening (dependent on d-spacing) (µs/Å).
+        Gaussian broadening (dependent on d-spacing) (μs/Å).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -138,7 +138,7 @@ class TofBroadeningMixin:
     @property
     def broad_gauss_sigma_2(self) -> Parameter:
         """
-        Gaussian broadening (instrument-dependent term) (µs²/Å²).
+        Gaussian broadening (instrument-dependent term) (μs²/Å²).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -152,7 +152,7 @@ class TofBroadeningMixin:
     @property
     def broad_lorentz_gamma_0(self) -> Parameter:
         """
-        Lorentzian broadening (microstrain effects) (µs).
+        Lorentzian broadening (microstrain effects) (μs).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -166,7 +166,7 @@ class TofBroadeningMixin:
     @property
     def broad_lorentz_gamma_1(self) -> Parameter:
         """
-        Lorentzian broadening (dependent on d-spacing) (µs/Å).
+        Lorentzian broadening (dependent on d-spacing) (μs/Å).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -180,7 +180,7 @@ class TofBroadeningMixin:
     @property
     def broad_lorentz_gamma_2(self) -> Parameter:
         """
-        Lorentzian broadening (instrument-dependent term) (µs²/Å²).
+        Lorentzian broadening (instrument-dependent term) (μs²/Å²).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -221,7 +221,7 @@ class TofBroadeningMixin:
 
 
 class IkedaCarpenterAsymmetryMixin:
-    """Ikeda–Carpenter asymmetry parameters."""
+    """Ikeda-Carpenter asymmetry parameters."""
 
     def __init__(self) -> None:
         super().__init__()

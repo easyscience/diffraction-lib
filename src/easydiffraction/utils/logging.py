@@ -19,6 +19,7 @@ from enum import Enum
 from enum import IntEnum
 from enum import auto
 from typing import TYPE_CHECKING
+from typing import ClassVar
 
 if TYPE_CHECKING:  # pragma: no cover
     from types import TracebackType
@@ -46,12 +47,12 @@ from easydiffraction.utils.environment import in_warp
 class IconifiedRichHandler(RichHandler):
     """RichHandler using icons (compact) or names (verbose)."""
 
-    _icons = {
+    _icons: ClassVar[dict] = {
         logging.CRITICAL: '💀',
         logging.ERROR: '❌',
         logging.WARNING: '⚠️',
         logging.DEBUG: '⚙️',
-        logging.INFO: 'ℹ️',
+        logging.INFO: 'ℹ️',  # noqa: RUF001
     }
 
     def __init__(self, *args: object, mode: str = 'compact', **kwargs: object) -> None:
@@ -74,7 +75,7 @@ class IconifiedRichHandler(RichHandler):
         """
         if self.mode == 'compact':
             icon = self._icons.get(record.levelno, record.levelname)
-            if in_warp() and not in_jupyter() and icon in {'⚠️', '⚙️', 'ℹ️'}:
+            if in_warp() and not in_jupyter() and icon in {'⚠️', '⚙️', 'ℹ️'}:  # noqa: RUF001
                 icon += ' '  # add space to align with two-char icons
             return Text(icon)
         # Use RichHandler's default level text for verbose mode
@@ -325,10 +326,10 @@ class ExceptionHookManager:
         def suppress_jupyter_traceback(*args: object, **kwargs: object) -> None:
             """Log only the exception message."""
             try:
-                _evalue = (
+                evalue = (
                     args[2] if len(args) > 2 else kwargs.get('_evalue') or kwargs.get('evalue')
                 )
-                logger.error(str(_evalue))
+                logger.error(str(evalue))
             except Exception as err:
                 logger.debug('Jupyter traceback suppressor failed: %r', err)
 

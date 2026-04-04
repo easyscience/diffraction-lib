@@ -168,7 +168,7 @@ def category_collection_to_cif(
     lines: list[str] = []
 
     # Header
-    first_item = list(collection.values())[0]
+    first_item = next(iter(collection.values()))
     lines.append('loop_')
     for p in first_item.parameters:
         tags = p._cif_handler.names  # type: ignore[attr-defined]
@@ -354,17 +354,17 @@ def project_info_from_cif(info: object, cif_text: str) -> None:
     doc = gemmi.cif.read_string(_wrap_in_data_block(cif_text, 'project'))
     block = doc.sole_block()
 
-    _read_cif_string = _make_cif_string_reader(block)
+    read_cif_string = _make_cif_string_reader(block)
 
-    name = _read_cif_string('_project.id')
+    name = read_cif_string('_project.id')
     if name is not None:
         info.name = name
 
-    title = _read_cif_string('_project.title')
+    title = read_cif_string('_project.title')
     if title is not None:
         info.title = title
 
-    description = _read_cif_string('_project.description')
+    description = read_cif_string('_project.description')
     if description is not None:
         info.description = description
 
@@ -388,10 +388,10 @@ def analysis_from_cif(analysis: object, cif_text: str) -> None:
     doc = gemmi.cif.read_string(_wrap_in_data_block(cif_text, 'analysis'))
     block = doc.sole_block()
 
-    _read_cif_string = _make_cif_string_reader(block)
+    read_cif_string = _make_cif_string_reader(block)
 
     # Restore minimizer selection
-    engine = _read_cif_string('_analysis.fitting_engine')
+    engine = read_cif_string('_analysis.fitting_engine')
     if engine is not None:
         from easydiffraction.analysis.fitting import Fitter  # noqa: PLC0415
 

@@ -8,7 +8,7 @@ from typing import ClassVar
 from easydiffraction.utils.environment import in_jupyter
 from easydiffraction.utils.logging import log
 
-# Optional import – safe even if IPython is not installed
+# Optional import - safe even if IPython is not installed
 try:
     from IPython.display import HTML
     from IPython.display import display

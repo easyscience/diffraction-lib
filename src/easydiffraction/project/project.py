@@ -417,7 +417,7 @@ class Project(GuardedBase):
         # 1. Reload data if file_path points to a real file
         file_path = row.get('file_path', '')
         if file_path and pathlib.Path(file_path).is_file():
-            experiment = list(self.experiments.values())[0]
+            experiment = next(iter(self.experiments.values()))
             experiment._load_ascii_data_to_experiment(file_path)
 
         # 2. Override parameter values

@@ -45,7 +45,7 @@ class TofPseudoVoigtIkedaCarpenter(
     TofBroadeningMixin,
     IkedaCarpenterAsymmetryMixin,
 ):
-    """TOF pseudo-Voigt with Ikeda–Carpenter asymmetry."""
+    """TOF pseudo-Voigt with Ikeda-Carpenter asymmetry."""
 
     type_info = TypeInfo(
         tag='pseudo-voigt * ikeda-carpenter',

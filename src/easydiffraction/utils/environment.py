@@ -154,7 +154,7 @@ def can_update_ipython_display() -> bool:
     update a display handle.
     """
     try:
-        from IPython.display import HTML  # type: ignore[import-not-found]  # noqa: F401, PLC0415
+        pass  # type: ignore[import-not-found]
     except Exception:
         return False
     else:

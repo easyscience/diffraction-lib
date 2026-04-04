@@ -50,7 +50,7 @@ class TestExtractProjectFromZip:
         with zipfile.ZipFile(zip_path, 'w') as zf:
             zf.writestr('data.dat', '1 2 3\n')
 
-        with pytest.raises(ValueError, match='No project.cif found'):
+        with pytest.raises(ValueError, match=r'No project\.cif found'):
             extract_project_from_zip(zip_path)
 
     def test_destination_creates_directory(self, tmp_path):

@@ -10,6 +10,7 @@ Concrete factories inherit from ``FactoryBase`` and only need to define
 from __future__ import annotations
 
 from typing import Any
+from typing import ClassVar
 
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.utils import render_table
@@ -28,8 +29,8 @@ class FactoryBase:
     independent ``_registry`` list.
     """
 
-    _registry: list[type] = []
-    _default_rules: dict[frozenset[tuple[str, Any]], str] = {}
+    _registry: ClassVar[list[type]] = []
+    _default_rules: ClassVar[dict[frozenset[tuple[str, Any]], str]] = {}
 
     def __init_subclass__(cls, **kwargs: object) -> None:
         """Give each subclass its own independent registry and rules."""

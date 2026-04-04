@@ -199,7 +199,7 @@ class Plotter(RendererBase):
         need_calc : bool, default=False
             Whether ``intensity_calc`` is required.
         show_residual : bool, default=False
-            If ``True``, compute meas − calc residual.
+            If ``True``, compute meas - calc residual.
 
         Returns
         -------

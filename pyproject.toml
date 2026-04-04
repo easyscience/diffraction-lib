@@ -235,7 +235,7 @@ select = [
   'NPY',  # https://docs.astral.sh/ruff/rules/#numpy-specific-rules-npy
   'PGH',  # https://docs.astral.sh/ruff/rules/#pygrep-hooks-pgh
   'PERF', # https://docs.astral.sh/ruff/rules/#perflint-perf
-  #'RUF',  # https://docs.astral.sh/ruff/rules/#ruff-specific-rules-ruf
+  'RUF',  # https://docs.astral.sh/ruff/rules/#ruff-specific-rules-ruf
   'TRY', # https://docs.astral.sh/ruff/rules/#tryceratops-try
   'UP',  # https://docs.astral.sh/ruff/rules/#pyupgrade-up
   # pycodestyle (E, W) rules
@@ -306,6 +306,8 @@ ignore = [
   'D',      # https://docs.astral.sh/ruff/rules/#pydocstyle-d
   'DOC',    # https://docs.astral.sh/ruff/rules/#pydoclint-doc
   'INP001', # https://docs.astral.sh/ruff/rules/implicit-namespace-package/
+  'RUF012', # https://docs.astral.sh/ruff/rules/mutable-class-default/ (test stubs use mutable defaults)
+  'RUF069', # https://docs.astral.sh/ruff/rules/unreliable-float-equality/ (exact comparisons in assertions)
   'S101',   # https://docs.astral.sh/ruff/rules/assert/
   # Temporary:
   'ARG001',
@@ -332,6 +334,9 @@ ignore = [
 ]
 'docs/**' = [
   'INP001', # https://docs.astral.sh/ruff/rules/implicit-namespace-package/
+  'RUF001', # https://docs.astral.sh/ruff/rules/ambiguous-unicode-character-string/ (scientific symbols)
+  'RUF002', # https://docs.astral.sh/ruff/rules/ambiguous-unicode-character-docstring/ (scientific symbols)
+  'RUF003', # https://docs.astral.sh/ruff/rules/ambiguous-unicode-character-comment/ (en-dashes in headings)
   'T201',   # https://docs.astral.sh/ruff/rules/print/
   # Temporary:
   'ANN',

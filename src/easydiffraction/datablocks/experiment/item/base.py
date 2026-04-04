@@ -568,7 +568,7 @@ class PdExperimentBase(ExperimentBase):
         ----------
         data_path : str
             Path to data file with columns compatible with the beam mode
-            (e.g. 2θ/I/σ for CWL, TOF/I/σ for TOF).
+            (e.g. 2theta/I/sigma for CWL, TOF/I/sigma for TOF).
 
         Returns
         -------

@@ -88,7 +88,7 @@ DEFAULT_AXES_LABELS = {
         ScatteringTypeEnum.BRAGG,
         XAxisType.TIME_OF_FLIGHT,
     ): [
-        'TOF (µs)',
+        'TOF (μs)',
         'Intensity (arb. units)',
     ],
     (

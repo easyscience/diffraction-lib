@@ -9,7 +9,7 @@ involved.
 """
 
 import gzip
-import pickle  # noqa: S403 - trusted internal pickle file (package data only)
+import pickle  # noqa: S403
 from pathlib import Path
 
 
@@ -20,7 +20,7 @@ def _restricted_pickle_load(file_obj: object) -> object:
     The archive lives in the package; no user-controlled input enters
     this function. If distribution process changes, revisit.
     """
-    data = pickle.load(file_obj)  # noqa: S301 - trusted internal pickle (see docstring)
+    data = pickle.load(file_obj)  # noqa: S301
     return data
 
 

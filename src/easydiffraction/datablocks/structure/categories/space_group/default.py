@@ -90,7 +90,7 @@ class SpaceGroup(CategoryItem):
     @property
     def _name_h_m_allowed_values(self) -> list[str]:
         """
-        Return the list of recognised Hermann–Mauguin short symbols.
+        Return the list of recognised Hermann-Mauguin short symbols.
 
         Returns
         -------

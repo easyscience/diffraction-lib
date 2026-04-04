@@ -126,7 +126,7 @@ def _collect_param_snapshot(project: Project) -> dict[str, float]:
 
 def _collect_free_flags(project: Project) -> dict[str, bool]:
     """Return ``{unique_name: free}`` for fittable parameters."""
-    from easydiffraction.core.variable import Parameter  # noqa: PLC0415
+    from easydiffraction.core.variable import Parameter
 
     return {p.unique_name: p.free for p in project.parameters if isinstance(p, Parameter)}
 

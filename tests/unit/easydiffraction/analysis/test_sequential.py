@@ -157,7 +157,7 @@ class TestReadCsvForRecovery:
 
     def test_returns_fitted_file_paths(self, tmp_path):
         csv_path = tmp_path / 'results.csv'
-        header = list(_META_COLUMNS) + ['cell.a', 'cell.a.uncertainty']
+        header = [*_META_COLUMNS, 'cell.a', 'cell.a.uncertainty']
         _write_csv_header(csv_path, header)
         _append_to_csv(
             csv_path,
@@ -184,12 +184,12 @@ class TestReadCsvForRecovery:
             ],
         )
 
-        fitted, params = _read_csv_for_recovery(csv_path)
+        fitted, _params = _read_csv_for_recovery(csv_path)
         assert fitted == {'/data/a.dat', '/data/b.dat'}
 
     def test_returns_last_successful_params(self, tmp_path):
         csv_path = tmp_path / 'results.csv'
-        header = list(_META_COLUMNS) + ['cell.a', 'cell.a.uncertainty']
+        header = [*_META_COLUMNS, 'cell.a', 'cell.a.uncertainty']
         _write_csv_header(csv_path, header)
         _append_to_csv(
             csv_path,
@@ -223,7 +223,8 @@ class TestReadCsvForRecovery:
 
     def test_skips_meta_columns_and_diffrn_and_uncertainty(self, tmp_path):
         csv_path = tmp_path / 'results.csv'
-        header = list(_META_COLUMNS) + [
+        header = [
+            *_META_COLUMNS,
             'diffrn.temp',
             'cell.a',
             'cell.a.uncertainty',
@@ -257,7 +258,7 @@ class TestReadCsvForRecovery:
 
     def test_returns_none_params_when_no_successful_rows(self, tmp_path):
         csv_path = tmp_path / 'results.csv'
-        header = list(_META_COLUMNS) + ['cell.a', 'cell.a.uncertainty']
+        header = [*_META_COLUMNS, 'cell.a', 'cell.a.uncertainty']
         _write_csv_header(csv_path, header)
         _append_to_csv(
             csv_path,

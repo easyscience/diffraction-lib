@@ -238,7 +238,7 @@ class PdTofDataPointMixin:
         self._time_of_flight = NumericDescriptor(
             name='time_of_flight',
             description='Measured time for time-of-flight neutron measurement.',
-            units='µs',
+            units='μs',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
@@ -253,7 +253,7 @@ class PdTofDataPointMixin:
     @property
     def time_of_flight(self) -> NumericDescriptor:
         """
-        Measured time for time-of-flight neutron measurement (µs).
+        Measured time for time-of-flight neutron measurement (μs).
 
         Reading this property returns the underlying
         ``NumericDescriptor`` object.

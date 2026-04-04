@@ -28,6 +28,6 @@ def test_diagnostics_error_and_debug_monkeypatch(monkeypatch: pytest.MonkeyPatch
     assert dummy.last[0] == 'debug'
 
     Diagnostics.type_mismatch('x', value=3, expected_type=int)
-    kind, msg, exc = dummy.last
+    kind, _msg, exc = dummy.last
     assert kind == 'error'
     assert issubclass(exc, TypeError)

@@ -14,7 +14,7 @@ TEMP_DIR = tempfile.gettempdir()
 @pytest.fixture
 def project(tmp_path):
     """Create a minimal unsaved Project for functional tests."""
-    from easydiffraction import Project  # noqa: PLC0415
+    from easydiffraction import Project
 
     return Project(name='func_test')
 
@@ -22,7 +22,7 @@ def project(tmp_path):
 @pytest.fixture
 def saved_project(tmp_path):
     """Create a minimal Project saved to a temp directory."""
-    from easydiffraction import Project  # noqa: PLC0415
+    from easydiffraction import Project
 
     project = Project(name='func_test')
     project.save_as(str(tmp_path / 'func_project'))

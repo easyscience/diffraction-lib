@@ -11,6 +11,7 @@ Provides individual class methods for each creation pathway:
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from typing import ClassVar
 
 from typeguard import typechecked
 
@@ -36,7 +37,7 @@ if TYPE_CHECKING:
 class ExperimentFactory(FactoryBase):
     """Creates Experiment instances with only relevant attributes."""
 
-    _default_rules = {
+    _default_rules: ClassVar[dict] = {
         frozenset({
             ('scattering_type', ScatteringTypeEnum.BRAGG),
             ('sample_form', SampleFormEnum.POWDER),
