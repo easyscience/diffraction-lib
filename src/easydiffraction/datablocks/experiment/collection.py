@@ -127,15 +127,19 @@ class Experiments(DatablockCollection):
         """
         verbosity = self._parent.verbosity if self._parent is not None else None
         verb = VerbosityEnum(verbosity) if verbosity is not None else VerbosityEnum.FULL
-        experiment = ExperimentFactory.from_data_path(
+        experiment = ExperimentFactory.from_scratch(
             name=name,
-            data_path=data_path,
             sample_form=sample_form,
             beam_mode=beam_mode,
             radiation_probe=radiation_probe,
             scattering_type=scattering_type,
-            verbosity=verb,
         )
+        num_points = experiment._load_ascii_data_to_experiment(data_path)
+        if verb is VerbosityEnum.FULL:
+            console.paragraph('Data loaded successfully')
+            console.print(f"Experiment 🔬 '{name}'. Number of data points: {num_points}.")
+        elif verb is VerbosityEnum.SHORT:
+            console.print(f"✅ Data loaded: Experiment 🔬 '{name}'. {num_points} points.")
         self.add(experiment)
 
     # TODO: Move to DatablockCollection?
