@@ -16,16 +16,36 @@
 │   │   └── 📄 pdffit.py
 │   │       └── 🏷️ class PdffitCalculator
 │   ├── 📁 categories
-│   │   ├── 📄 __init__.py
-│   │   ├── 📄 aliases.py
-│   │   │   ├── 🏷️ class Alias
-│   │   │   └── 🏷️ class Aliases
-│   │   ├── 📄 constraints.py
-│   │   │   ├── 🏷️ class Constraint
-│   │   │   └── 🏷️ class Constraints
-│   │   └── 📄 joint_fit_experiments.py
-│   │       ├── 🏷️ class JointFitExperiment
-│   │       └── 🏷️ class JointFitExperiments
+│   │   ├── 📁 aliases
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   ├── 🏷️ class Alias
+│   │   │   │   └── 🏷️ class Aliases
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class AliasesFactory
+│   │   ├── 📁 constraints
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   ├── 🏷️ class Constraint
+│   │   │   │   └── 🏷️ class Constraints
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class ConstraintsFactory
+│   │   ├── 📁 fit_mode
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 enums.py
+│   │   │   │   └── 🏷️ class FitModeEnum
+│   │   │   ├── 📄 factory.py
+│   │   │   │   └── 🏷️ class FitModeFactory
+│   │   │   └── 📄 fit_mode.py
+│   │   │       └── 🏷️ class FitMode
+│   │   ├── 📁 joint_fit_experiments
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   ├── 🏷️ class JointFitExperiment
+│   │   │   │   └── 🏷️ class JointFitExperiments
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class JointFitExperimentsFactory
+│   │   └── 📄 __init__.py
 │   ├── 📁 fit_helpers
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 metrics.py
@@ -46,9 +66,12 @@
 │   │       └── 🏷️ class LmfitMinimizer
 │   ├── 📄 __init__.py
 │   ├── 📄 analysis.py
+│   │   ├── 🏷️ class AnalysisDisplay
 │   │   └── 🏷️ class Analysis
-│   └── 📄 fitting.py
-│       └── 🏷️ class Fitter
+│   ├── 📄 fitting.py
+│   │   └── 🏷️ class Fitter
+│   └── 📄 sequential.py
+│       └── 🏷️ class SequentialFitTemplate
 ├── 📁 core
 │   ├── 📄 __init__.py
 │   ├── 📄 category.py
@@ -73,7 +96,6 @@
 │   │   └── 🏷️ class CalculatorSupport
 │   ├── 📄 singleton.py
 │   │   ├── 🏷️ class SingletonBase
-│   │   ├── 🏷️ class UidMapHandler
 │   │   └── 🏷️ class ConstraintsHandler
 │   ├── 📄 validation.py
 │   │   ├── 🏷️ class DataTypeHints
@@ -134,6 +156,31 @@
 │   │   │   │       ├── 🏷️ class TotalDataPoint
 │   │   │   │       ├── 🏷️ class TotalDataBase
 │   │   │   │       └── 🏷️ class TotalData
+│   │   │   ├── 📁 diffrn
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   │   └── 🏷️ class DefaultDiffrn
+│   │   │   │   └── 📄 factory.py
+│   │   │   │       └── 🏷️ class DiffrnFactory
+│   │   │   ├── 📁 excluded_regions
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   │   ├── 🏷️ class ExcludedRegion
+│   │   │   │   │   └── 🏷️ class ExcludedRegions
+│   │   │   │   └── 📄 factory.py
+│   │   │   │       └── 🏷️ class ExcludedRegionsFactory
+│   │   │   ├── 📁 experiment_type
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   │   └── 🏷️ class ExperimentType
+│   │   │   │   └── 📄 factory.py
+│   │   │   │       └── 🏷️ class ExperimentTypeFactory
+│   │   │   ├── 📁 extinction
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 factory.py
+│   │   │   │   │   └── 🏷️ class ExtinctionFactory
+│   │   │   │   └── 📄 shelx.py
+│   │   │   │       └── 🏷️ class ShelxExtinction
 │   │   │   ├── 📁 instrument
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 base.py
@@ -147,6 +194,19 @@
 │   │   │   │   └── 📄 tof.py
 │   │   │   │       ├── 🏷️ class TofScInstrument
 │   │   │   │       └── 🏷️ class TofPdInstrument
+│   │   │   ├── 📁 linked_crystal
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   │   └── 🏷️ class LinkedCrystal
+│   │   │   │   └── 📄 factory.py
+│   │   │   │       └── 🏷️ class LinkedCrystalFactory
+│   │   │   ├── 📁 linked_phases
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   │   ├── 🏷️ class LinkedPhase
+│   │   │   │   │   └── 🏷️ class LinkedPhases
+│   │   │   │   └── 📄 factory.py
+│   │   │   │       └── 🏷️ class LinkedPhasesFactory
 │   │   │   ├── 📁 peak
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 base.py
@@ -172,19 +232,7 @@
 │   │   │   │   │   └── 🏷️ class TotalGaussianDampedSinc
 │   │   │   │   └── 📄 total_mixins.py
 │   │   │   │       └── 🏷️ class TotalBroadeningMixin
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 excluded_regions.py
-│   │   │   │   ├── 🏷️ class ExcludedRegion
-│   │   │   │   └── 🏷️ class ExcludedRegions
-│   │   │   ├── 📄 experiment_type.py
-│   │   │   │   └── 🏷️ class ExperimentType
-│   │   │   ├── 📄 extinction.py
-│   │   │   │   └── 🏷️ class Extinction
-│   │   │   ├── 📄 linked_crystal.py
-│   │   │   │   └── 🏷️ class LinkedCrystal
-│   │   │   └── 📄 linked_phases.py
-│   │   │       ├── 🏷️ class LinkedPhase
-│   │   │       └── 🏷️ class LinkedPhases
+│   │   │   └── 📄 __init__.py
 │   │   ├── 📁 item
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 base.py
@@ -212,14 +260,26 @@
 │   │       └── 🏷️ class Experiments
 │   ├── 📁 structure
 │   │   ├── 📁 categories
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 atom_sites.py
-│   │   │   │   ├── 🏷️ class AtomSite
-│   │   │   │   └── 🏷️ class AtomSites
-│   │   │   ├── 📄 cell.py
-│   │   │   │   └── 🏷️ class Cell
-│   │   │   └── 📄 space_group.py
-│   │   │       └── 🏷️ class SpaceGroup
+│   │   │   ├── 📁 atom_sites
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   │   ├── 🏷️ class AtomSite
+│   │   │   │   │   └── 🏷️ class AtomSites
+│   │   │   │   └── 📄 factory.py
+│   │   │   │       └── 🏷️ class AtomSitesFactory
+│   │   │   ├── 📁 cell
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   │   └── 🏷️ class Cell
+│   │   │   │   └── 📄 factory.py
+│   │   │   │       └── 🏷️ class CellFactory
+│   │   │   ├── 📁 space_group
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   │   └── 🏷️ class SpaceGroup
+│   │   │   │   └── 📄 factory.py
+│   │   │   │       └── 🏷️ class SpaceGroupFactory
+│   │   │   └── 📄 __init__.py
 │   │   ├── 📁 item
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 base.py
@@ -269,7 +329,8 @@
 │   │   │   └── 🏷️ class CifHandler
 │   │   ├── 📄 parse.py
 │   │   └── 📄 serialize.py
-│   └── 📄 __init__.py
+│   ├── 📄 __init__.py
+│   └── 📄 ascii.py
 ├── 📁 project
 │   ├── 📄 __init__.py
 │   ├── 📄 project.py
@@ -288,6 +349,8 @@
 │   │   ├── 📄 __init__.py
 │   │   └── 📄 theme_detect.py
 │   ├── 📄 __init__.py
+│   ├── 📄 enums.py
+│   │   └── 🏷️ class VerbosityEnum
 │   ├── 📄 environment.py
 │   ├── 📄 logging.py
 │   │   ├── 🏷️ class IconifiedRichHandler
