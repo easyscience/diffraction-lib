@@ -51,7 +51,8 @@ class TableBackendBase(ABC):
         """
         return self._float_fmt(value) if isinstance(value, float) else str(value)
 
-    def _is_dark_theme(self) -> bool:
+    @staticmethod
+    def _is_dark_theme() -> bool:
         """
         Return True when a dark theme is detected in Jupyter.
 
@@ -68,7 +69,8 @@ class TableBackendBase(ABC):
 
         return is_dark()
 
-    def _rich_to_hex(self, color: str) -> str:
+    @staticmethod
+    def _rich_to_hex(color: str) -> str:
         """
         Convert a Rich color name to a CSS-style hex string.
 

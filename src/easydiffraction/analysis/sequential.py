@@ -455,7 +455,7 @@ def _build_template(project: object) -> SequentialFitTemplate:
         diffrn_field_names.extend(
             p.name
             for p in experiment.diffrn.parameters
-            if hasattr(p, 'name') and p.name not in ('type',)
+            if hasattr(p, 'name') and p.name not in {'type'}
         )
 
     return SequentialFitTemplate(

@@ -21,6 +21,12 @@ if TYPE_CHECKING:
     from easydiffraction.core.category import CategoryItem
     from easydiffraction.core.variable import GenericDescriptorBase
 
+# Maximum CIF description length before using semicolon-delimited block
+_CIF_DESCRIPTION_WRAP_LEN = 60
+
+# Minimum string length to check for surrounding quotes
+_MIN_QUOTED_LEN = 2
+
 
 def format_value(value: object) -> str:
     """
@@ -251,7 +257,7 @@ def project_info_to_cif(info: object) -> str:
     if ' ' in title:
         title = f"'{title}'"
 
-    if len(info.description) > 60:
+    if len(info.description) > _CIF_DESCRIPTION_WRAP_LEN:
         description = f'\n;\n{info.description}\n;'
     elif info.description:
         description = f'{info.description}'
@@ -434,10 +440,10 @@ def _make_cif_string_reader(block: gemmi.cif.Block) -> object:
             return None
         raw = vals[0]
         # CIF unknown / inapplicable markers
-        if raw in ('?', '.'):
+        if raw in {'?', '.'}:
             return None
         # Strip surrounding quotes
-        if len(raw) >= 2 and raw[0] == raw[-1] and raw[0] in {"'", '"'}:
+        if len(raw) >= _MIN_QUOTED_LEN and raw[0] == raw[-1] and raw[0] in {"'", '"'}:
             raw = raw[1:-1]
         return raw
 
@@ -486,7 +492,7 @@ def param_from_cif(
     raw = found_values[idx]
 
     # CIF unknown / inapplicable markers → keep default
-    if raw in ('?', '.'):
+    if raw in {'?', '.'}:
         return
 
     # If numeric, parse with uncertainty if present
@@ -501,7 +507,7 @@ def param_from_cif(
 
     # If string, strip quotes if present
     elif self._value_type == DataTypes.STRING:
-        if len(raw) >= 2 and raw[0] == raw[-1] and raw[0] in {"'", '"'}:
+        if len(raw) >= _MIN_QUOTED_LEN and raw[0] == raw[-1] and raw[0] in {"'", '"'}:
             self.value = raw[1:-1]
         else:
             self.value = raw
@@ -593,7 +599,7 @@ def category_collection_from_cif(
                     raw = array[row_idx][col_idx]
 
                     # CIF unknown / inapplicable markers → keep default
-                    if raw in ('?', '.'):
+                    if raw in {'?', '.'}:
                         break
 
                     # If numeric, parse with uncertainty if present
@@ -609,7 +615,12 @@ def category_collection_from_cif(
                     # If string, strip quotes if present
                     # TODO: Make a helper function for this
                     elif param._value_type == DataTypes.STRING:
-                        if len(raw) >= 2 and raw[0] == raw[-1] and raw[0] in {"'", '"'}:
+                        is_quoted = (
+                            len(raw) >= _MIN_QUOTED_LEN
+                            and raw[0] == raw[-1]
+                            and raw[0] in {"'", '"'}
+                        )
+                        if is_quoted:
                             param.value = raw[1:-1]
                         else:
                             param.value = raw

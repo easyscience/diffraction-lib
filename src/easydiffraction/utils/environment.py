@@ -75,9 +75,7 @@ def in_jupyter() -> bool:
         ipython_mod = None
     else:
         ipython_mod = IPython
-    if ipython_mod is None:
-        return False
-    if in_pycharm():
+    if ipython_mod is None or in_pycharm():
         return False
     if in_colab():
         return True
@@ -91,14 +89,9 @@ def in_jupyter() -> bool:
         has_cfg = hasattr(ip, 'config') and isinstance(ip.config, dict)
         if has_cfg and 'IPKernelApp' in ip.config:  # type: ignore[index]
             return True
-        shell = ip.__class__.__name__
-        if shell == 'ZMQInteractiveShell':  # Jupyter or qtconsole
-            return True
-        if shell == 'TerminalInteractiveShell':
-            return False
+        # Jupyter or qtconsole use ZMQInteractiveShell
+        return ip.__class__.__name__ == 'ZMQInteractiveShell'  # noqa: TRY300
     except Exception:
-        return False
-    else:
         return False
 
 

@@ -1170,6 +1170,26 @@ def length_a(self) -> Parameter:
 - The CI tool `pixi run param-consistency-check` validates compliance;
   `pixi run param-consistency-fix` auto-fixes violations.
 
+### 9.9 Lint Complexity Thresholds
+
+The Pylint-style complexity limits configured in `pyproject.toml`
+(`max-args`, `max-branches`, `max-statements`, `max-locals`,
+`max-nested-blocks`, etc.) are **intentional code-quality guardrails**,
+not arbitrary numbers. A violation is a signal that the function or class
+needs refactoring — not that the threshold needs raising.
+
+**Rules:**
+
+- **Do not raise thresholds.** The current values represent the project's
+  design intent for maximum acceptable complexity.
+- **Do not add `# noqa` comments** (or any other mechanism) to silence
+  complexity rules such as `PLR0912`, `PLR0913`, `PLR0914`, `PLR0915`,
+  `PLR0917`, `PLR1702`.
+- **Refactor the code instead:** extract helper functions, introduce
+  parameter objects, flatten nesting, use early returns, etc.
+- **For complex refactors** that touch many lines or change public API,
+  propose a refactoring plan and wait for approval before proceeding.
+
 ---
 
 ## 10. Test Strategy

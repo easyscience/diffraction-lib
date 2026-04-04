@@ -25,6 +25,9 @@ from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.utils.utils import tof_to_d
 from easydiffraction.utils.utils import twotheta_to_d
 
+# Uncertainty values below this threshold are replaced with 1.0
+_MIN_UNCERTAINTY = 0.0001
+
 
 class PdDataPointBaseMixin:
     """Single base data point mixin for powder diffraction data."""
@@ -448,8 +451,8 @@ class PdDataBase(CategoryCollection):
             (p.intensity_meas_su.value for p in self._calc_items),
             dtype=float,  # TODO: needed? DataTypes.NUMERIC?
         )
-        # Replace values smaller than 0.0001 with 1.0
-        modified = np.where(original < 0.0001, 1.0, original)
+        # Replace values smaller than _MIN_UNCERTAINTY with 1.0
+        modified = np.where(original < _MIN_UNCERTAINTY, 1.0, original)
         return modified
 
     @property

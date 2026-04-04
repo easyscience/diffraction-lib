@@ -39,7 +39,8 @@ RICH_TABLE_BOX: Box = Box(CUSTOM_BOX, ascii=False)
 class RichTableBackend(TableBackendBase):
     """Render tables to terminal or Jupyter using the Rich library."""
 
-    def _to_html(self, table: Table) -> str:
+    @staticmethod
+    def _to_html(table: Table) -> str:
         """
         Render a Rich table to HTML using an off-screen console.
 

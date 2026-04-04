@@ -58,7 +58,7 @@ class PdffitCalculator(CalculatorBase):
         """Short identifier of this calculator engine."""
         return 'pdffit'
 
-    def calculate_structure_factors(
+    def calculate_structure_factors(  # noqa: PLR6301
         self,
         structures: object,
         experiments: object,
@@ -84,7 +84,7 @@ class PdffitCalculator(CalculatorBase):
         print('[pdffit] Calculating HKLs (not applicable)...')
         return []
 
-    def calculate_pattern(
+    def calculate_pattern(  # noqa: PLR6301
         self,
         structure: Structure,
         experiment: ExperimentBase,

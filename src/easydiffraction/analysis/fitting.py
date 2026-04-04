@@ -197,7 +197,7 @@ class Fitter:
         # dataset is split into two parts and fit together. If weights
         # sum to one, then reduced chi_squared will be half as large as
         # expected.
-        norm_weights = norm_weights * (num_expts / np.sum(norm_weights))
+        norm_weights *= num_expts / np.sum(norm_weights)
         residuals: list[float] = []
 
         for experiment, weight in zip(experiments, norm_weights, strict=True):

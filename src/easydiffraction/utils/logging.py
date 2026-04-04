@@ -325,9 +325,14 @@ class ExceptionHookManager:
 
         def suppress_jupyter_traceback(*args: object, **kwargs: object) -> None:
             """Log only the exception message."""
+            # IPython's custom_exc handler passes
+            # (shell, etype, evalue, tb, tb_offset)
+            evalue_arg_index = 2
             try:
                 evalue = (
-                    args[2] if len(args) > 2 else kwargs.get('_evalue') or kwargs.get('evalue')
+                    args[evalue_arg_index]
+                    if len(args) > evalue_arg_index
+                    else kwargs.get('_evalue') or kwargs.get('evalue')
                 )
                 logger.error(str(evalue))
             except Exception as err:

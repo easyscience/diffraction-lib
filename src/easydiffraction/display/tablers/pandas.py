@@ -19,7 +19,8 @@ from easydiffraction.utils.logging import log
 class PandasTableBackend(TableBackendBase):
     """Render tables using the pandas Styler in Jupyter environments."""
 
-    def _build_base_styles(self, color: str) -> list[dict]:
+    @staticmethod
+    def _build_base_styles(color: str) -> list[dict]:
         """
         Return base CSS table styles for a given border color.
 
@@ -79,7 +80,8 @@ class PandasTableBackend(TableBackendBase):
             },
         ]
 
-    def _build_header_alignment_styles(self, df: object, alignments: object) -> list[dict]:
+    @staticmethod
+    def _build_header_alignment_styles(df: object, alignments: object) -> list[dict]:
         """
         Generate header cell alignment styles per column.
 
@@ -136,7 +138,8 @@ class PandasTableBackend(TableBackendBase):
             )
         return styler
 
-    def _update_display(self, styler: object, display_handle: object) -> None:
+    @staticmethod
+    def _update_display(styler: object, display_handle: object) -> None:
         """
         Single, consistent update path for Jupyter.
 

@@ -113,7 +113,7 @@ class CollectionBase(GuardedBase):
         """
         del self[name]
 
-    def _key_for(self, item: GuardedBase) -> str | None:
+    def _key_for(self, item: GuardedBase) -> str | None:  # noqa: PLR6301
         """
         Return the identity key for *item*.
 

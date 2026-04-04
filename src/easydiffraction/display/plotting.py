@@ -155,8 +155,8 @@ class Plotter(RendererBase):
 
         return filtered_y_array
 
+    @staticmethod
     def _get_axes_labels(
-        self,
         sample_form: object,
         scattering_type: object,
         x_axis: object,
@@ -261,7 +261,8 @@ class Plotter(RendererBase):
             'x_axis': x_axis,
         }
 
-    def _resolve_x_axis(self, expt_type: object, x: object) -> tuple:
+    @staticmethod
+    def _resolve_x_axis(expt_type: object, x: object) -> tuple:
         """
         Determine the x-axis type from experiment metadata.
 

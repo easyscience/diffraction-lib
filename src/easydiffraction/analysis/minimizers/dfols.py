@@ -31,7 +31,7 @@ class DfolsMinimizer(MinimizerBase):
         # Intentionally unused, accepted for API compatibility
         del kwargs
 
-    def _prepare_solver_args(self, parameters: list[object]) -> dict[str, object]:
+    def _prepare_solver_args(self, parameters: list[object]) -> dict[str, object]:  # noqa: PLR6301
         x0 = []
         bounds_lower = []
         bounds_upper = []
@@ -47,7 +47,7 @@ class DfolsMinimizer(MinimizerBase):
         bounds = kwargs.get('bounds')
         return solve(objective_function, x0=x0, bounds=bounds, maxfun=self.max_iterations)
 
-    def _sync_result_to_parameters(
+    def _sync_result_to_parameters(  # noqa: PLR6301
         self,
         parameters: list[object],
         raw_result: object,
@@ -73,7 +73,7 @@ class DfolsMinimizer(MinimizerBase):
             # calculate later if needed
             param.uncertainty = None
 
-    def _check_success(self, raw_result: object) -> bool:
+    def _check_success(self, raw_result: object) -> bool:  # noqa: PLR6301
         """
         Determine success from DFO-LS result dictionary.
 

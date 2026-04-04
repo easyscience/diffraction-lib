@@ -244,7 +244,7 @@ select = [
   # Pylint (PL) rules
   'PLC', # https://docs.astral.sh/ruff/rules/#convention-plc
   'PLE', # https://docs.astral.sh/ruff/rules/#error-ple
-  #'PLR', # https://docs.astral.sh/ruff/rules/#refactor-plr
+  'PLR', # https://docs.astral.sh/ruff/rules/#refactor-plr
   'PLW', # https://docs.astral.sh/ruff/rules/#warning-plw
   # flake8 rules
   #'A',     # https://docs.astral.sh/ruff/rules/#flake8-builtins-a
@@ -368,6 +368,24 @@ max-doc-length = 72
 
 [tool.ruff.lint.pydocstyle]
 convention = 'numpy'
+
+[tool.ruff.lint.pylint]
+# Maximum number of arguments for function/method definitions
+max-args = 8
+# Maximum number of positional arguments for function/method definitions
+max-positional-args = 8
+# Maximum number of public methods for a class
+max-public-methods = 30
+# Maximum number of return statements in a function/method body
+max-returns = 8
+# Maximum number of branches in a function/method body
+max-branches = 16
+# Maximum number of statements in a function/method body
+max-statements = 60
+# Maximum number of local variables in a function/method body
+max-locals = 20
+# Maximum number of nested blocks in a function/method body
+max-nested-blocks = 6
 
 #############################
 # Configuration for pydoclint

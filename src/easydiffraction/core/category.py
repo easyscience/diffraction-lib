@@ -30,7 +30,7 @@ class CategoryItem(GuardedBase):
         return f'<{name} ({params})>'
 
     # TODO: Common for all categories
-    def _update(self, called_by_minimizer: bool = False) -> None:
+    def _update(self, called_by_minimizer: bool = False) -> None:  # noqa: PLR6301
         del called_by_minimizer
         pass
 
@@ -171,7 +171,7 @@ class CategoryCollection(CollectionBase):
     # TODO: Common for all categories
     _update_priority = 10  # Default. Lower values run first.
 
-    def _key_for(self, item: object) -> str | None:
+    def _key_for(self, item: object) -> str | None:  # noqa: PLR6301
         """Return the category-level identity key for *item*."""
         return item._identity.category_entry_name
 
@@ -194,7 +194,7 @@ class CategoryCollection(CollectionBase):
         return f'<{name} collection ({size} items)>'
 
     # TODO: Common for all categories
-    def _update(self, called_by_minimizer: bool = False) -> None:
+    def _update(self, called_by_minimizer: bool = False) -> None:  # noqa: PLR6301
         del called_by_minimizer
         pass
 

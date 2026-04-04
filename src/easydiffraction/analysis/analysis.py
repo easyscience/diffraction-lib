@@ -150,7 +150,7 @@ class Analysis:
         console.paragraph('Aliases type changed to')
         console.print(new_type)
 
-    def show_supported_aliases_types(self) -> None:
+    def show_supported_aliases_types(self) -> None:  # noqa: PLR6301
         """Print a table of supported aliases collection types."""
         AliasesFactory.show_supported()
 
@@ -191,7 +191,7 @@ class Analysis:
         console.paragraph('Constraints type changed to')
         console.print(new_type)
 
-    def show_supported_constraints_types(self) -> None:
+    def show_supported_constraints_types(self) -> None:  # noqa: PLR6301
         """Print a table of supported constraints collection types."""
         ConstraintsFactory.show_supported()
 
@@ -200,8 +200,8 @@ class Analysis:
         console.paragraph('Current constraints type')
         console.print(self._constraints_type)
 
+    @staticmethod
     def _get_params_as_dataframe(
-        self,
         params: list[NumericDescriptor | Parameter],
     ) -> pd.DataFrame:
         """
@@ -531,7 +531,7 @@ class Analysis:
         console.paragraph('Fit-mode type changed to')
         console.print(new_type)
 
-    def show_supported_fit_mode_types(self) -> None:
+    def show_supported_fit_mode_types(self) -> None:  # noqa: PLR6301
         """Print a table of supported fit-mode category types."""
         FitModeFactory.show_supported()
 

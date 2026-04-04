@@ -80,7 +80,7 @@ def ensure_package_dirs(dir_path: Path) -> None:
     # but we still want to ensure __init__.py at TESTS_ROOT
     for part in dir_path.relative_to(TESTS_ROOT).parts:
         (current / '__init__.py').touch(exist_ok=True)
-        current = current / part
+        current /= part
     # Ensure the final directory also has __init__.py
     (current / '__init__.py').touch(exist_ok=True)
 

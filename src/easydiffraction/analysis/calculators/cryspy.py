@@ -349,7 +349,7 @@ class CryspyCalculator(CalculatorBase):
 
         return cryspy_obj
 
-    def _convert_structure_to_cryspy_cif(
+    def _convert_structure_to_cryspy_cif(  # noqa: PLR6301
         self,
         structure: Structure,
     ) -> str:
@@ -368,7 +368,7 @@ class CryspyCalculator(CalculatorBase):
         """
         return structure.as_cif
 
-    def _convert_experiment_to_cryspy_cif(
+    def _convert_experiment_to_cryspy_cif(  # noqa: PLR6301
         self,
         experiment: ExperimentBase,
         linked_structure: object,

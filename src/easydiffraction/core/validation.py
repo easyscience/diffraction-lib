@@ -93,8 +93,8 @@ class ValidatorBase(ABC):
         """
         raise NotImplementedError
 
+    @staticmethod
     def _fallback(
-        self,
         current: object = None,
         default: object = None,
     ) -> object:

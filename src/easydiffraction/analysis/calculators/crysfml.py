@@ -100,7 +100,7 @@ class CrysfmlCalculator(CalculatorBase):
             y = []
         return y
 
-    def _adjust_pattern_length(
+    def _adjust_pattern_length(  # noqa: PLR6301
         self,
         pattern: list[float],
         target_length: int,
@@ -153,7 +153,7 @@ class CrysfmlCalculator(CalculatorBase):
             'experiments': [experiment_dict],
         }
 
-    def _convert_structure_to_dict(
+    def _convert_structure_to_dict(  # noqa: PLR6301
         self,
         structure: Structure,
     ) -> dict[str, Any]:
@@ -198,7 +198,7 @@ class CrysfmlCalculator(CalculatorBase):
 
         return structure_dict
 
-    def _convert_experiment_to_dict(
+    def _convert_experiment_to_dict(  # noqa: PLR6301
         self,
         experiment: ExperimentBase,
     ) -> dict[str, Any]:
