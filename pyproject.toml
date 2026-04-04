@@ -182,6 +182,16 @@ fail_under = 70      # Minimum coverage percentage to pass
 addopts = '--import-mode=importlib'
 markers = ['fast: mark test as fast (should be run on every push)']
 testpaths = ['tests']
+filterwarnings = [
+  # TEMPRORARY: Suppress some warnings
+  # uncertainties 3.x warns on UFloat(value, 0); our CIF parser
+  # intentionally creates zero-uncertainty values for free parameters.
+  'ignore:Using UFloat objects with std_dev==0:UserWarning:uncertainties',
+  # diffpy internals call their own deprecated APIs; nothing we can fix.
+  "ignore:'diffpy\\.structure\\.GetSpaceGroup':DeprecationWarning",
+  "ignore:'diffpy\\.structure\\.expandPosition':DeprecationWarning",
+  "ignore:'diffpy\\.structure\\.Structure\\.writeStr':DeprecationWarning",
+]
 
 ########################
 # Configuration for ruff
