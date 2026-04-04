@@ -23,7 +23,6 @@ class FitResults:
         self,
         success: bool = False,
         parameters: list[object] | None = None,
-        chi_square: float | None = None,
         reduced_chi_square: float | None = None,
         message: str = '',
         iterations: int = 0,
@@ -41,8 +40,6 @@ class FitResults:
             Indicates if the fit was successful.
         parameters : list[object] | None, default=None
             List of parameters used in the fit.
-        chi_square : float | None, default=None
-            Chi-square value of the fit.
         reduced_chi_square : float | None, default=None
             Reduced chi-square value of the fit.
         message : str, default=''
@@ -62,7 +59,7 @@ class FitResults:
         """
         self.success: bool = success
         self.parameters: list[object] = parameters if parameters is not None else []
-        self.chi_square: float | None = chi_square
+        self.chi_square: float | None = None
         self.reduced_chi_square: float | None = reduced_chi_square
         self.message: str = message
         self.iterations: int = iterations

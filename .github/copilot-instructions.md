@@ -63,13 +63,15 @@
 - Lint complexity thresholds (`max-args`, `max-branches`,
   `max-statements`, `max-locals`, `max-nested-blocks`, etc. in
   `pyproject.toml`) are intentional code-quality guardrails. They are not
-  arbitrary numbers. When code violates a threshold, it is a signal that
-  the function or class needs refactoring — not that the threshold needs
-  raising. Do not raise thresholds, add `# noqa` comments, or use any
-  other mechanism to silence complexity violations. Instead, refactor the
-  code (extract helpers, introduce parameter objects, flatten nesting,
-  etc.). For complex refactors that touch many lines or change public
-  API, propose a refactoring plan and wait for approval before
+  arbitrary numbers — the project uses ruff's defaults (with `max-args`
+  and `max-positional-args` set to 6 instead of 5 to account for ruff
+  counting `self`/`cls`). When code violates a threshold, it is a signal
+  that the function or class needs refactoring — not that the threshold
+  needs raising. Do not raise thresholds, add `# noqa` comments, or use
+  any other mechanism to silence complexity violations. Instead, refactor
+  the code (extract helpers, introduce parameter objects, flatten
+  nesting, etc.). For complex refactors that touch many lines or change
+  public API, propose a refactoring plan and wait for approval before
   proceeding.
 
 ## Architecture

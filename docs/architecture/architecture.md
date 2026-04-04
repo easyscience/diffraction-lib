@@ -1172,11 +1172,27 @@ def length_a(self) -> Parameter:
 
 ### 9.9 Lint Complexity Thresholds
 
-The Pylint-style complexity limits configured in `pyproject.toml`
-(`max-args`, `max-branches`, `max-statements`, `max-locals`,
-`max-nested-blocks`, etc.) are **intentional code-quality guardrails**,
-not arbitrary numbers. A violation is a signal that the function or class
-needs refactoring — not that the threshold needs raising.
+The Pylint-style complexity limits in `pyproject.toml` are **intentional
+code-quality guardrails**, not arbitrary numbers. A violation is a signal
+that the function or class needs refactoring — not that the threshold
+needs raising.
+
+The project uses **ruff's defaults** for all PLR thresholds, with one
+exception: `max-args` and `max-positional-args` are set to **6** instead
+of the ruff default of 5, because ruff counts `self`/`cls` while
+traditional pylint does not. Setting 6 in ruff matches pylint's standard
+limit of 5 real parameters per function.
+
+| Threshold            | Value | Rule    |
+| -------------------- | ----- | ------- |
+| `max-args`           | 6     | PLR0913 |
+| `max-positional-args`| 6     | PLR0917 |
+| `max-branches`       | 12    | PLR0912 |
+| `max-statements`     | 50    | PLR0915 |
+| `max-locals`         | 15    | PLR0914 |
+| `max-nested-blocks`  | 5     | PLR1702 |
+| `max-returns`        | 6     | PLR0911 |
+| `max-public-methods` | 20    | PLR0904 |
 
 **Rules:**
 
