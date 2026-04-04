@@ -470,8 +470,7 @@ def _cif_instrument_section(
             }
         elif expt_type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL:
             instrument_mapping = {'setup_wavelength': '_setup_wavelength'}
-            cif_lines.append('')
-            cif_lines.append('_setup_field 0.0')
+            cif_lines.extend(('', '_setup_field 0.0'))
     elif expt_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
         if expt_type.sample_form.value == SampleFormEnum.POWDER:
             instrument_mapping = {
@@ -482,8 +481,7 @@ def _cif_instrument_section(
             }
         elif expt_type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL:
             instrument_mapping = {}  # TODO: Check this mapping!
-            cif_lines.append('')
-            cif_lines.append('_setup_field 0.0')
+            cif_lines.extend(('', '_setup_field 0.0'))
 
     cif_lines.append('')
     for local_attr_name, engine_key_name in instrument_mapping.items():
@@ -541,8 +539,7 @@ def _cif_extinction_section(
         'mosaicity': '_extinction_mosaicity',
         'radius': '_extinction_radius',
     }
-    cif_lines.append('')
-    cif_lines.append('_extinction_model gauss')
+    cif_lines.extend(('', '_extinction_model gauss'))
     for local_attr_name, engine_key_name in extinction_mapping.items():
         attr_obj = getattr(extinction, local_attr_name)
         if attr_obj is not None:
@@ -579,11 +576,15 @@ def _cif_range_section(
     twotheta_max = f'{np.round(x_data.max(), 5):.5f}'
     cif_lines.append('')
     if expt_type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
-        cif_lines.append(f'_range_2theta_min {twotheta_min}')
-        cif_lines.append(f'_range_2theta_max {twotheta_max}')
+        cif_lines.extend((
+            f'_range_2theta_min {twotheta_min}',
+            f'_range_2theta_max {twotheta_max}',
+        ))
     elif expt_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
-        cif_lines.append(f'_range_time_min {twotheta_min}')
-        cif_lines.append(f'_range_time_max {twotheta_max}')
+        cif_lines.extend((
+            f'_range_time_min {twotheta_min}',
+            f'_range_time_max {twotheta_max}',
+        ))
     return twotheta_min, twotheta_max
 
 
@@ -594,8 +595,7 @@ def _cif_orient_matrix_section(
     """Append hardcoded orientation matrix for single crystal."""
     if expt_type.sample_form.value != SampleFormEnum.SINGLE_CRYSTAL:
         return
-    cif_lines.append('')
-    cif_lines.append('_diffrn_orient_matrix_type CCSL')
+    cif_lines.extend(('', '_diffrn_orient_matrix_type CCSL'))
     for tag, val in [
         ('ub_11', '-0.088033'),
         ('ub_12', '-0.088004'),
@@ -618,13 +618,17 @@ def _cif_phase_section(
     """Append phase label/scale to CIF."""
     cif_lines.append('')
     if expt_type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL:
-        cif_lines.append(f'_phase_label {linked_structure.name}')
-        cif_lines.append('_phase_scale 1.0')
+        cif_lines.extend((
+            f'_phase_label {linked_structure.name}',
+            '_phase_scale 1.0',
+        ))
     elif expt_type.sample_form.value == SampleFormEnum.POWDER:
-        cif_lines.append('loop_')
-        cif_lines.append('_phase_label')
-        cif_lines.append('_phase_scale')
-        cif_lines.append(f'{linked_structure.name} 1.0')
+        cif_lines.extend((
+            'loop_',
+            '_phase_label',
+            '_phase_scale',
+            f'{linked_structure.name} 1.0',
+        ))
 
 
 def _cif_background_section(
@@ -636,16 +640,21 @@ def _cif_background_section(
     """Append background loop for powder data."""
     if expt_type.sample_form.value != SampleFormEnum.POWDER:
         return
-    cif_lines.append('')
-    cif_lines.append('loop_')
+    cif_lines.extend(('', 'loop_'))
     if expt_type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
-        cif_lines.append('_pd_background_2theta')
-        cif_lines.append('_pd_background_intensity')
+        cif_lines.extend((
+            '_pd_background_2theta',
+            '_pd_background_intensity',
+        ))
     elif expt_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
-        cif_lines.append('_tof_backgroundpoint_time')  # TODO: !!!!????
-        cif_lines.append('_tof_backgroundpoint_intensity')  # TODO: !!!!????
-    cif_lines.append(f'{twotheta_min} 0.0')  # TODO: !!!!????
-    cif_lines.append(f'{twotheta_max} 0.0')  # TODO: !!!!????
+        cif_lines.extend((
+            '_tof_backgroundpoint_time',  # TODO: !!!!????
+            '_tof_backgroundpoint_intensity',  # TODO: !!!!????
+        ))
+    cif_lines.extend((
+        f'{twotheta_min} 0.0',  # TODO: !!!!????
+        f'{twotheta_max} 0.0',  # TODO: !!!!????
+    ))
 
 
 def _cif_measured_data_section(
@@ -667,13 +676,15 @@ def _cif_measured_data_sc(
 ) -> None:
     """Append single crystal measured data loop."""
     data = experiment.data
-    cif_lines.append('')
-    cif_lines.append('loop_')
-    cif_lines.append('_diffrn_refln_index_h')
-    cif_lines.append('_diffrn_refln_index_k')
-    cif_lines.append('_diffrn_refln_index_l')
-    cif_lines.append('_diffrn_refln_intensity')
-    cif_lines.append('_diffrn_refln_intensity_sigma')
+    cif_lines.extend((
+        '',
+        'loop_',
+        '_diffrn_refln_index_h',
+        '_diffrn_refln_index_k',
+        '_diffrn_refln_index_l',
+        '_diffrn_refln_intensity',
+        '_diffrn_refln_intensity_sigma',
+    ))
 
     is_tof = expt_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT
     if is_tof:
@@ -695,16 +706,19 @@ def _cif_measured_data_pd(
     experiment: ExperimentBase,
 ) -> None:
     """Append powder measured data loop."""
-    cif_lines.append('')
-    cif_lines.append('loop_')
+    cif_lines.extend(('', 'loop_'))
     if expt_type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
-        cif_lines.append('_pd_meas_2theta')
-        cif_lines.append('_pd_meas_intensity')
-        cif_lines.append('_pd_meas_intensity_sigma')
+        cif_lines.extend((
+            '_pd_meas_2theta',
+            '_pd_meas_intensity',
+            '_pd_meas_intensity_sigma',
+        ))
     elif expt_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
-        cif_lines.append('_tof_meas_time')
-        cif_lines.append('_tof_meas_intensity')
-        cif_lines.append('_tof_meas_intensity_sigma')
+        cif_lines.extend((
+            '_tof_meas_time',
+            '_tof_meas_intensity',
+            '_tof_meas_intensity_sigma',
+        ))
 
     x_data = experiment.data.x
     y_data = experiment.data.intensity_meas

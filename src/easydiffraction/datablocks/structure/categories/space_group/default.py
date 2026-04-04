@@ -113,7 +113,7 @@ class SpaceGroup(CategoryItem):
         it_number = get_it_number_by_name_hm_short(name)
         codes = get_it_coordinate_system_codes_by_it_number(it_number)
         codes = [str(code) for code in codes]
-        return codes if codes else ['']
+        return codes or ['']
 
     @property
     def _it_coordinate_system_code_default_value(self) -> str:

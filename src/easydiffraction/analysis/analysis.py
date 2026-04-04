@@ -778,7 +778,7 @@ class Analysis:
         short_display_handle = self._fit_single_print_header(verb, expt_names, mode)
         short_rows: list[list[str]] = []
 
-        for _idx, expt_name in enumerate(expt_names, start=1):
+        for expt_name in expt_names:
             if verb is VerbosityEnum.FULL:
                 console.print(f"📋 Using experiment 🔬 '{expt_name}' for '{mode.value}' fitting")
 

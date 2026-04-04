@@ -306,8 +306,7 @@ def _build_csv_header(
     header = list(_META_COLUMNS)
     header.extend(f'diffrn.{field}' for field in template.diffrn_field_names)
     for name in template.free_param_unique_names:
-        header.append(name)
-        header.append(f'{name}.uncertainty')
+        header.extend((name, f'{name}.uncertainty'))
     return header
 
 
@@ -469,9 +468,7 @@ def _build_template(project: object) -> SequentialFitTemplate:
     diffrn_field_names: list[str] = []
     if hasattr(experiment, 'diffrn'):
         diffrn_field_names.extend(
-            p.name
-            for p in experiment.diffrn.parameters
-            if hasattr(p, 'name') and p.name not in {'type'}
+            p.name for p in experiment.diffrn.parameters if hasattr(p, 'name') and p.name != 'type'
         )
 
     return SequentialFitTemplate(

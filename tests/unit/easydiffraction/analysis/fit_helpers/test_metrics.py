@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+import collections
+
 import numpy as np
 
 
@@ -43,7 +45,7 @@ def test_get_reliability_inputs_collects_arrays_with_default_su():
         def _update_categories(self, called_by_minimizer=False):
             pass
 
-    class DummyStructures(dict):
+    class DummyStructures(collections.UserDict):
         pass
 
     y_obs, y_calc, y_err = M.get_reliability_inputs(DummyStructures(), [Expt()])

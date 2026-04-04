@@ -303,16 +303,17 @@ def analysis_to_cif(analysis: object) -> str:
     """Render analysis metadata, aliases, and constraints to CIF."""
     cur_min = format_value(analysis.current_minimizer)
     lines: list[str] = []
-    lines.append(f'_analysis.fitting_engine  {cur_min}')
-    lines.append(analysis.fit_mode.as_cif)
-    lines.append('')
-    lines.append(analysis.aliases.as_cif)
-    lines.append('')
-    lines.append(analysis.constraints.as_cif)
+    lines.extend((
+        f'_analysis.fitting_engine  {cur_min}',
+        analysis.fit_mode.as_cif,
+        '',
+        analysis.aliases.as_cif,
+        '',
+        analysis.constraints.as_cif,
+    ))
     jfe_cif = analysis.joint_fit_experiments.as_cif
     if jfe_cif:
-        lines.append('')
-        lines.append(jfe_cif)
+        lines.extend(('', jfe_cif))
     return '\n'.join(lines)
 
 

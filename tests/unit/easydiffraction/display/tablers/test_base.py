@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 """Tests for display/tablers/base.py (TableBackendBase)."""
 
+import math
+
 
 class TestTableBackendBase:
     def test_float_precision_constant(self):
@@ -13,7 +15,7 @@ class TestTableBackendBase:
         from easydiffraction.display.tablers.rich import RichTableBackend
 
         backend = RichTableBackend()
-        result = backend._format_value(3.14159265)
+        result = backend._format_value(math.pi)
         assert result == '3.14159'
 
     def test_format_value_nonf_float(self):

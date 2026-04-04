@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+import collections
+
 import numpy as np
 
 
@@ -41,7 +43,7 @@ class _DummyPeak:
         self.broad_q = _DummyParam(0.0)
 
 
-class _DummyLinkedPhases(dict):
+class _DummyLinkedPhases(collections.UserDict):
     def __getitem__(self, k):
         return type('LP', (), {'scale': _DummyParam(1.0)})()
 
