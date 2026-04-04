@@ -112,6 +112,7 @@ py-lint-check = 'ruff check src/ tests/ docs/docs/tutorials/'
 py-format-check = 'ruff format --check src/ tests/ docs/docs/tutorials/'
 nonpy-format-check = 'npx prettier --list-different --config=prettierrc.toml --ignore-unknown .'
 nonpy-format-check-modified = 'python tools/nonpy_prettier_modified.py'
+test-structure-check = 'python tools/test_structure_check.py'
 
 check = 'pre-commit run --hook-stage manual --all-files'
 

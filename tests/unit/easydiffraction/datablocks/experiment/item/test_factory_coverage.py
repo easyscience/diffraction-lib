@@ -9,6 +9,7 @@ from easydiffraction.datablocks.experiment.item.enums import RadiationProbeEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.datablocks.experiment.item.factory import ExperimentFactory
+from easydiffraction.utils.logging import Logger
 
 
 class TestExperimentFactoryFromScratch:
@@ -75,7 +76,8 @@ class TestExperimentFactoryFromScratch:
 
 
 class TestExperimentFactoryInstantiationBlocked:
-    def test_direct_instantiation_raises(self):
+    def test_direct_instantiation_raises(self, monkeypatch):
+        monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.RAISE, raising=True)
         with pytest.raises(AttributeError, match='class methods'):
             ExperimentFactory()
 

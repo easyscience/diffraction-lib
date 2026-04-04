@@ -3,6 +3,7 @@
 """Tests for Structure switchable-category wiring."""
 
 import pytest
+from typeguard import TypeCheckError
 
 from easydiffraction.datablocks.structure.categories.atom_sites import AtomSites
 from easydiffraction.datablocks.structure.categories.atom_sites.factory import AtomSitesFactory
@@ -37,7 +38,7 @@ class TestStructureName:
         assert structure.name == 'renamed'
 
     def test_setter_type_check(self, structure):
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             structure.name = 123
 
 

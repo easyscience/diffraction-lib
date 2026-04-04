@@ -108,6 +108,26 @@
   `*.py` script, then run `pixi run notebook-prepare` to regenerate the
   notebook.
 
+## Testing
+
+- Every new module, class, or bug fix must ship with tests. See
+  `docs/architecture/architecture.md` §10 for the full test strategy.
+- **Unit tests mirror the source tree:**
+  `src/easydiffraction/<pkg>/<mod>.py` →
+  `tests/unit/easydiffraction/<pkg>/test_<mod>.py`. Run
+  `pixi run test-structure-check` to verify.
+- Category packages with only `default.py`/`factory.py` may use a single
+  parent-level `test_<package>.py` instead of per-file tests.
+- Supplementary test files use the pattern `test_<mod>_coverage.py`.
+- Tests that expect `log.error()` to raise must `monkeypatch` Logger to
+  RAISE mode (another test may have leaked WARN mode).
+- `@typechecked` setters raise `typeguard.TypeCheckError`, not
+  `TypeError`.
+- No test-ordering dependence, no network, no sleeping, no real
+  calculation engines in unit tests.
+- After adding or modifying tests, run `pixi run unit-tests` and confirm
+  all tests pass.
+
 ## Changes
 
 - Before implementing any structural or design change (new categories,
