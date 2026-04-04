@@ -53,9 +53,23 @@ repos:
         pass_filenames: false
         stages: [manual]
 
+      - id: pixi-test-structure-check
+        name: pixi run test-structure-check
+        entry: pixi run test-structure-check
+        language: system
+        pass_filenames: false
+        stages: [manual]
+
       - id: pixi-unit-tests
         name: pixi run unit-tests
         entry: pixi run unit-tests
+        language: system
+        pass_filenames: false
+        stages: [manual]
+
+      - id: pixi-functional-tests
+        name: pixi run functional-tests
+        entry: pixi run functional-tests
         language: system
         pass_filenames: false
         stages: [manual]
