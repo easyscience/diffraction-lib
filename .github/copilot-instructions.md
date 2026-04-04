@@ -42,7 +42,8 @@
   and UPPER_SNAKE_CASE for constants.
 - Use `from __future__ import annotations` in every module.
 - Type-annotate all public function signatures.
-- Docstrings on all public classes and methods (numpy style).
+- Docstrings on all public classes and methods (numpy style). These must
+  include sections Parameters, Returns and Raises, where applicable.
 - Prefer flat over nested, explicit over clever.
 - Write straightforward code; do not add defensive checks for unlikely
   edge cases.
@@ -147,6 +148,8 @@
   `docs/architecture/architecture.md`.
 - After changes, run linting and formatting fixes with `pixi run fix`.
   Do not check what was auto-fixed, just accept the fixes and move on.
+  Then, run linting and formatting checks with `pixi run check` and
+  address any remaining issues until the code is clean.
 - After changes, run unit tests with `pixi run unit-tests`.
 - After changes, run integration tests with
   `pixi run integration-tests`.

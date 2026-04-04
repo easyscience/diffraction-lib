@@ -73,7 +73,7 @@ def _fetch_data_index() -> dict:
     _validate_url(index_url)
 
     # macOS: sha256sum index.json
-    index_hash = 'sha256:f421aab32ec532782dc62f4440a97320e5cec23b9e64f5ae3f8a3e818d013430'
+    index_hash = 'sha256:dfde966a084579c2103b0d35ed3e8688ddc6941335e251d3e1735a792ca06144'
     destination_dirname = 'easydiffraction'
     destination_fname = 'data-index.json'
     cache_dir = pooch.os_cache(destination_dirname)
@@ -705,19 +705,23 @@ def str_to_ufloat(s: str | None, default: float | None = None) -> UFloat:
     Parse a CIF-style numeric string into a ufloat.
 
     Examples of supported input: - "3.566" → ufloat(3.566, nan) -
-    "3.566(2)" → ufloat(3.566, 0.002) - None → ufloat(default, nan)
+    "3.566(2)" → ufloat(3.566, 0.002) - "3.566()" → ufloat(3.566, 0.0) -
+    None → ufloat(default, nan)
 
     Behavior: - If the input string contains a value with parentheses
     (e.g. "3.566(2)"), the number in parentheses is interpreted as an
-    estimated standard deviation (esd) in the last digit(s). - If the
-    input string has no parentheses, an uncertainty of NaN is assigned
-    to indicate "no esd provided". - If parsing fails, the function
-    falls back to the given ``default`` value with uncertainty NaN.
+    estimated standard deviation (esd) in the last digit(s). - Empty
+    parentheses (e.g. "3.566()") are treated as zero uncertainty. - If
+    the input string has no parentheses, an uncertainty of NaN is
+    assigned to indicate "no esd provided". - If parsing fails, the
+    function falls back to the given ``default`` value with uncertainty
+    NaN.
 
     Parameters
     ----------
     s : str | None
-        Numeric string in CIF format (e.g. "3.566", "3.566(2)") or None.
+        Numeric string in CIF format (e.g. "3.566", "3.566(2)",
+        "3.566()") or None.
     default : float | None, default=None
         Default value to use if ``s`` is None or parsing fails.
 
@@ -733,6 +737,9 @@ def str_to_ufloat(s: str | None, default: float | None = None) -> UFloat:
 
     if '(' not in s and ')' not in s:
         s = f'{s}(nan)'
+    elif s.endswith('()'):
+        # Empty brackets → zero uncertainty (free parameter, no esd yet)
+        s = s[:-2] + '(0)'
     try:
         return ufloat_fromstr(s)
     except Exception:

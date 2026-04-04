@@ -17,6 +17,10 @@ The tutorials are organized into the following categories.
 
 ## Getting Started
 
+- [LBCO `quick` `load`](ed-18.ipynb) – The most minimal example showing
+  how to load a previously saved project from a directory and run
+  refinement. Useful when a project has already been set up and saved in
+  a prior session.
 - [LBCO `quick` CIF](ed-1.ipynb) – A minimal example intended as a quick
   reference for users already familiar with the EasyDiffraction API or
   who want to see how Rietveld refinement of the La0.5Ba0.5CoO3 crystal

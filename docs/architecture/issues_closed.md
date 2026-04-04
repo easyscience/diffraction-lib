@@ -4,6 +4,56 @@ Issues that have been fully resolved. Kept for historical reference.
 
 ---
 
+## Implement `Project.load()`
+
+**Resolution:** implemented `Project.load(dir_path)` as a classmethod
+that reads `project.cif`, `structures/*.cif`, `experiments/*.cif`, and
+`analysis/analysis.cif` (with fallback to `analysis.cif` at root for
+backward compatibility). Reconstructs the full project state including
+alias parameter references via `_resolve_alias_references()`.
+Integration tests verify save → load → parameter comparison and save →
+load → fit → χ² comparison. Also used by `fit_sequential` workers to
+reconstruct projects from CIF strings.
+
+---
+
+## Eliminate Dummy `Experiments` Wrapper in Single-Fit Mode
+
+**Resolution:** refactored `Fitter.fit()` and `_residual_function()` to
+accept `experiments: list[ExperimentBase]` instead of requiring an
+`Experiments` collection. `Analysis.fit()` passes
+`experiments_list = [experiment]` in single-fit mode and
+`list(experiments.values())` in joint-fit mode. Removed the
+`object.__setattr__` hack that forced `_parent` on the dummy wrapper.
+
+---
+
+## Replace UID Map with Direct References and Auto-Apply Constraints
+
+**Resolution:** eliminated `UidMapHandler` and random UID generation
+from parameters entirely. Aliases now store a direct object reference to
+the parameter (`Alias._param_ref`) instead of a random UID string.
+`ConstraintsHandler.apply()` uses the direct reference — no map lookup.
+For CIF serialisation, `Alias._param_unique_name` stores the parameter's
+deterministic `unique_name`. `_minimizer_uid` now returns
+`unique_name.replace('.', '__')` instead of a random string.
+
+Also added `enable()`/`disable()` on `Constraints` with auto-enable on
+`create()`, replacing the manual `apply_constraints()` call.
+`Analysis._update_categories()` now always syncs handler state from the
+current aliases and constraints when `constraints.enabled` is `True`,
+eliminating stale-state bugs (former issue #4). `_set_value_constrained`
+bypasses validation like `_set_value_from_minimizer` since constraints
+run inside the minimiser loop. `Analysis.fit()` calls
+`_update_categories()` before collecting free parameters so that
+constrained parameters are correctly excluded.
+
+API change: `aliases.create(label=..., param_uid=...uid)` →
+`aliases.create(label=..., param=...)`. `apply_constraints()` removed;
+`constraints.create()` auto-enables.
+
+---
+
 ## Dirty-Flag Guard Was Disabled
 
 **Resolution:** added `_set_value_from_minimizer()` on

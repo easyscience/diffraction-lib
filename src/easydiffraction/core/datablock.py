@@ -91,6 +91,27 @@ class DatablockItem(GuardedBase):
         self._update_categories()
         return datablock_item_to_cif(self)
 
+    def _cif_for_display(self, max_loop_display: int = 20) -> str:
+        """
+        Return CIF text with loop categories truncated for display.
+
+        Parameters
+        ----------
+        max_loop_display : int, default=20
+            Maximum number of rows to show per loop category.
+
+        Returns
+        -------
+        str
+            CIF representation of this object, with loop categories
+            truncated to at most *max_loop_display* rows for display
+            purposes.
+        """
+        from easydiffraction.io.cif.serialize import datablock_item_to_cif  # noqa: PLC0415
+
+        self._update_categories()
+        return datablock_item_to_cif(self, max_loop_display=max_loop_display)
+
     def help(self) -> None:
         """Print a summary of public attributes and categories."""
         super().help()

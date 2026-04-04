@@ -129,10 +129,9 @@ class ExperimentBase(DatablockItem):
 
     def show_as_cif(self) -> None:
         """Pretty-print the experiment as CIF text."""
-        experiment_cif = super().as_cif
         paragraph_title: str = f"Experiment 🔬 '{self.name}' as cif"
         console.paragraph(paragraph_title)
-        render_cif(experiment_cif)
+        render_cif(self._cif_for_display())
 
     @abstractmethod
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:

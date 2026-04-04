@@ -35,9 +35,15 @@ def format_value(value: object) -> str:
 
     # Converting
 
+    # None → CIF unknown marker
+    if value is None:
+        value = '?'
     # Convert ints to floats
-    if isinstance(value, int):
+    elif isinstance(value, int):
         value = float(value)
+    # Empty strings → CIF unknown marker
+    elif isinstance(value, str) and not value.strip():
+        value = '?'
     # Strings with whitespace are quoted
     elif isinstance(value, str) and (' ' in value or '\t' in value):
         value = f'"{value}"'
@@ -59,15 +65,67 @@ def format_value(value: object) -> str:
 ##################
 
 
+def format_param_value(param: object) -> str:
+    """
+    Format a parameter value for CIF output, encoding the free flag.
+
+    CIF convention for numeric parameters:
+
+    - Fixed or constrained parameter: plain value, e.g. ``3.89090000``
+    - Free parameter without uncertainty: value with empty brackets,
+      e.g. ``3.89090000()``
+    - Free parameter with uncertainty: value with esd in brackets,
+      e.g. ``3.89090000(200000)``
+
+    Constrained (dependent) parameters are always written without
+    brackets, even if their ``free`` flag is ``True``, because they are
+    not independently varied by the minimizer.
+
+    Non-numeric parameters and descriptors without a ``free`` attribute
+    are formatted with :func:`format_value`.
+
+    Parameters
+    ----------
+    param : object
+        A descriptor or parameter exposing ``.value`` and optionally
+        ``.free``, ``.constrained``, and ``.uncertainty``.
+
+    Returns
+    -------
+    str
+        Formatted CIF value string.
+    """
+    is_free = getattr(param, 'free', False)
+    is_constrained = getattr(param, 'constrained', False)
+    value = param.value  # type: ignore[attr-defined]
+
+    if not is_free or is_constrained or not isinstance(value, (int, float)):
+        return format_value(value)
+
+    precision = 8
+    uncertainty = getattr(param, 'uncertainty', None)
+    formatted_value = f'{float(value):.{precision}f}'
+
+    if uncertainty is not None and uncertainty > 0:
+        from uncertainties import ufloat as _ufloat  # noqa: PLC0415
+
+        u = _ufloat(float(value), float(uncertainty))
+        return f'{u:.{precision}fS}'
+
+    return f'{formatted_value}()'
+
+
 def param_to_cif(param: object) -> str:
     """
     Render a single descriptor/parameter to a CIF line.
 
     Expects ``param`` to expose ``_cif_handler.names`` and ``value``.
+    Free parameters are written with uncertainty brackets (see
+    :func:`format_param_value`).
     """
     tags: Sequence[str] = param._cif_handler.names  # type: ignore[attr-defined]
     main_key: str = tags[0]
-    return f'{main_key} {format_value(param.value)}'
+    return f'{main_key} {format_param_value(param)}'
 
 
 def category_item_to_cif(item: object) -> str:
@@ -83,12 +141,26 @@ def category_item_to_cif(item: object) -> str:
 
 def category_collection_to_cif(
     collection: object,
-    max_display: int | None = 20,
+    max_display: int | None = None,
 ) -> str:
     """
     Render a CategoryCollection-like object to CIF text.
 
     Uses first item to build loop header, then emits rows for each item.
+
+    Parameters
+    ----------
+    collection : object
+        A ``CategoryCollection``-like object.
+    max_display : int | None, default=None
+        When set to a positive integer, truncate the output to at most
+        this many rows (half from the start, half from the end) with an
+        ``...`` separator.  ``None`` emits all rows.
+
+    Returns
+    -------
+    str
+        CIF text representing the collection as a loop.
     """
     if not len(collection):
         return ''
@@ -104,31 +176,47 @@ def category_collection_to_cif(
 
     # Rows
     # Limit number of displayed rows if requested
-    if len(collection) > max_display:
+    if max_display is not None and len(collection) > max_display:
         half_display = max_display // 2
         for i in range(half_display):
             item = list(collection.values())[i]
-            row_vals = [format_value(p.value) for p in item.parameters]
+            row_vals = [format_param_value(p) for p in item.parameters]
             lines.append(' '.join(row_vals))
         lines.append('...')
         for i in range(-half_display, 0):
             item = list(collection.values())[i]
-            row_vals = [format_value(p.value) for p in item.parameters]
+            row_vals = [format_param_value(p) for p in item.parameters]
             lines.append(' '.join(row_vals))
     # No limit
     else:
         for item in collection.values():
-            row_vals = [format_value(p.value) for p in item.parameters]
+            row_vals = [format_param_value(p) for p in item.parameters]
             lines.append(' '.join(row_vals))
 
     return '\n'.join(lines)
 
 
-def datablock_item_to_cif(datablock: object) -> str:
+def datablock_item_to_cif(
+    datablock: object,
+    max_loop_display: int | None = None,
+) -> str:
     """
     Render a DatablockItem-like object to CIF text.
 
     Emits a data_ header and then concatenates category CIF sections.
+
+    Parameters
+    ----------
+    datablock : object
+        A ``DatablockItem``-like object.
+    max_loop_display : int | None, default=None
+        When set, truncate loop categories to this many rows. ``None``
+        emits all rows (used for serialisation).
+
+    Returns
+    -------
+    str
+        CIF text representing the datablock as a loop.
     """
     # Local imports to avoid import-time cycles
     from easydiffraction.core.category import CategoryCollection  # noqa: PLC0415
@@ -141,7 +229,11 @@ def datablock_item_to_cif(datablock: object) -> str:
     parts.extend(v.as_cif for v in vars(datablock).values() if isinstance(v, CategoryItem))
 
     # Then collections
-    parts.extend(v.as_cif for v in vars(datablock).values() if isinstance(v, CategoryCollection))
+    parts.extend(
+        category_collection_to_cif(v, max_display=max_loop_display)
+        for v in vars(datablock).values()
+        if isinstance(v, CategoryCollection)
+    )
 
     return '\n\n'.join(parts)
 
@@ -161,10 +253,12 @@ def project_info_to_cif(info: object) -> str:
 
     if len(info.description) > 60:
         description = f'\n;\n{info.description}\n;'
-    else:
+    elif info.description:
         description = f'{info.description}'
         if ' ' in description:
             description = f"'{description}'"
+    else:
+        description = '?'
 
     created = f"'{info._created.strftime('%d %b %Y %H:%M:%S')}'"
     last_modified = f"'{info._last_modified.strftime('%d %b %Y %H:%M:%S')}'"
@@ -221,6 +315,135 @@ def summary_to_cif(_summary: object) -> str:
     return 'To be added...'
 
 
+def _wrap_in_data_block(cif_text: str, block_name: str = '_') -> str:
+    """
+    Wrap bare CIF key-value pairs in a ``data_`` block header.
+
+    Parameters
+    ----------
+    cif_text : str
+        CIF text without a ``data_`` header.
+    block_name : str, default='_'
+        Name for the CIF data block.
+
+    Returns
+    -------
+    str
+        CIF text with a ``data_<block_name>`` header prepended.
+    """
+    return f'data_{block_name}\n\n{cif_text}'
+
+
+def project_info_from_cif(info: object, cif_text: str) -> None:
+    """
+    Populate a ProjectInfo instance from CIF text.
+
+    Reads ``_project.id``, ``_project.title``, and
+    ``_project.description`` from the given CIF string and sets them on
+    the *info* object.
+
+    Parameters
+    ----------
+    info : object
+        The ``ProjectInfo`` instance to populate.
+    cif_text : str
+        CIF text content of ``project.cif``.
+    """
+    import gemmi  # noqa: PLC0415
+
+    doc = gemmi.cif.read_string(_wrap_in_data_block(cif_text, 'project'))
+    block = doc.sole_block()
+
+    _read_cif_string = _make_cif_string_reader(block)
+
+    name = _read_cif_string('_project.id')
+    if name is not None:
+        info.name = name
+
+    title = _read_cif_string('_project.title')
+    if title is not None:
+        info.title = title
+
+    description = _read_cif_string('_project.description')
+    if description is not None:
+        info.description = description
+
+
+def analysis_from_cif(analysis: object, cif_text: str) -> None:
+    """
+    Populate an Analysis instance from CIF text.
+
+    Reads the fitting engine, fit mode, aliases, constraints, and
+    joint-fit experiment weights from the given CIF string.
+
+    Parameters
+    ----------
+    analysis : object
+        The ``Analysis`` instance to populate.
+    cif_text : str
+        CIF text content of ``analysis.cif``.
+    """
+    import gemmi  # noqa: PLC0415
+
+    doc = gemmi.cif.read_string(_wrap_in_data_block(cif_text, 'analysis'))
+    block = doc.sole_block()
+
+    _read_cif_string = _make_cif_string_reader(block)
+
+    # Restore minimizer selection
+    engine = _read_cif_string('_analysis.fitting_engine')
+    if engine is not None:
+        from easydiffraction.analysis.fitting import Fitter  # noqa: PLC0415
+
+        analysis.fitter = Fitter(engine)
+
+    # Restore fit mode
+    analysis.fit_mode.from_cif(block)
+
+    # Restore aliases (loop)
+    analysis.aliases.from_cif(block)
+
+    # Restore constraints (loop)
+    analysis.constraints.from_cif(block)
+    if analysis.constraints._items:
+        analysis.constraints.enable()
+
+    # Restore joint-fit experiment weights (loop)
+    analysis._joint_fit_experiments.from_cif(block)
+
+
+def _make_cif_string_reader(block: gemmi.cif.Block) -> object:
+    """
+    Return a helper that reads a single CIF tag as a stripped string.
+
+    Parameters
+    ----------
+    block : gemmi.cif.Block
+        Parsed CIF data block.
+
+    Returns
+    -------
+    object
+        A function ``(tag) -> str | None`` that returns the unquoted
+        value for *tag*, or ``None`` if not found.
+    """
+
+    def _read(tag: str) -> str | None:
+        vals = list(block.find_values(tag))
+        if not vals:
+            return None
+        raw = vals[0]
+        # CIF unknown / inapplicable markers
+        if raw in ('?', '.'):
+            return None
+        # Strip surrounding quotes
+        if len(raw) >= 2 and raw[0] == raw[-1] and raw[0] in {"'", '"'}:
+            raw = raw[1:-1]
+        return raw
+
+    return _read
+
+
 # TODO: Check the following methods:
 
 ######################
@@ -262,13 +485,19 @@ def param_from_cif(
     # If found, pick the one at the given index
     raw = found_values[idx]
 
+    # CIF unknown / inapplicable markers → keep default
+    if raw in ('?', '.'):
+        return
+
     # If numeric, parse with uncertainty if present
     if self._value_type == DataTypes.NUMERIC:
+        has_brackets = '(' in raw
         u = str_to_ufloat(raw)
         self.value = u.n
-        if not np.isnan(u.s) and hasattr(self, 'uncertainty'):
-            self.uncertainty = u.s  # type: ignore[attr-defined]
-            self.free = True  # Mark as free if uncertainty is present
+        if has_brackets and hasattr(self, 'free'):
+            self.free = True  # type: ignore[attr-defined]
+            if not np.isnan(u.s) and hasattr(self, 'uncertainty'):
+                self.uncertainty = u.s  # type: ignore[attr-defined]
 
     # If string, strip quotes if present
     elif self._value_type == DataTypes.STRING:
@@ -363,13 +592,19 @@ def category_collection_from_cif(
                     #  param_from_cif
                     raw = array[row_idx][col_idx]
 
+                    # CIF unknown / inapplicable markers → keep default
+                    if raw in ('?', '.'):
+                        break
+
                     # If numeric, parse with uncertainty if present
                     if param._value_type == DataTypes.NUMERIC:
+                        has_brackets = '(' in raw
                         u = str_to_ufloat(raw)
                         param.value = u.n
-                        if not np.isnan(u.s) and hasattr(param, 'uncertainty'):
-                            param.uncertainty = u.s  # type: ignore[attr-defined]
-                            param.free = True  # Mark as free if uncertainty is present
+                        if has_brackets and hasattr(param, 'free'):
+                            param.free = True  # type: ignore[attr-defined]
+                            if not np.isnan(u.s) and hasattr(param, 'uncertainty'):
+                                param.uncertainty = u.s  # type: ignore[attr-defined]
 
                     # If string, strip quotes if present
                     # TODO: Make a helper function for this

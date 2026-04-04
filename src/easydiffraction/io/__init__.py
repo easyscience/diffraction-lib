@@ -4,4 +4,5 @@
 from easydiffraction.io.ascii import extract_data_paths_from_dir
 from easydiffraction.io.ascii import extract_data_paths_from_zip
 from easydiffraction.io.ascii import extract_metadata
+from easydiffraction.io.ascii import extract_project_from_zip
 from easydiffraction.io.ascii import load_numeric_block

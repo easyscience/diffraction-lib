@@ -563,16 +563,7 @@ class Analysis:
             columns_alignment=['left'],
             columns_data=rows,
         )
-
-    def apply_constraints(self) -> None:
-        """Apply currently defined constraints to the project."""
-        if not self.constraints._items:
-            log.warning('No constraints defined.')
-            return
-
-        self.constraints_handler.set_aliases(self.aliases)
-        self.constraints_handler.set_constraints(self.constraints)
-        self.constraints_handler.apply()
+        console.print(f'Constraints enabled: {self.constraints.enabled}')
 
     def fit(self, verbosity: str | None = None) -> None:
         """
@@ -616,6 +607,11 @@ class Analysis:
             log.warning('No experiments found in the project. Cannot run fit.')
             return
 
+        # Apply constraints before fitting so that constrained
+        # parameters are marked and excluded from the free parameter
+        # list built by the fitter.
+        self._update_categories()
+
         # Run the fitting process
         mode = FitModeEnum(self._fit_mode.mode.value)
         if mode is FitModeEnum.JOINT:
@@ -653,12 +649,14 @@ class Analysis:
             short_alignments = ['left', 'right', 'right', 'center']
             short_rows: list[list[str]] = []
             short_display_handle: object | None = None
+            if verb is not VerbosityEnum.SILENT:
+                console.paragraph('Standard fitting')
             if verb is VerbosityEnum.SHORT:
                 first = expt_names[0]
                 last = expt_names[-1]
                 minimizer_name = self.fitter.selection
-                console.paragraph(
-                    f"Using {num_expts} experiments 🔬 from '{first}' to "
+                console.print(
+                    f"📋 Using {num_expts} experiments 🔬 from '{first}' to "
                     f"'{last}' for '{mode.value}' fitting"
                 )
                 console.print(f"🚀 Starting fit process with '{minimizer_name}'...")
@@ -667,8 +665,8 @@ class Analysis:
 
             for _idx, expt_name in enumerate(expt_names, start=1):
                 if verb is VerbosityEnum.FULL:
-                    console.paragraph(
-                        f"Using experiment 🔬 '{expt_name}' for '{mode.value}' fitting"
+                    console.print(
+                        f"📋 Using experiment 🔬 '{expt_name}' for '{mode.value}' fitting"
                     )
 
                 experiment = experiments[expt_name]
@@ -720,11 +718,63 @@ class Analysis:
             raise NotImplementedError(msg)
 
         # After fitting, save the project
-        # TODO: Consider saving individual data during sequential
-        #  (single) fitting, instead of waiting until the end and save
-        #  only the last one
         if self.project.info.path is not None:
             self.project.save()
+
+    def fit_sequential(
+        self,
+        data_dir: str,
+        max_workers: int | str = 1,
+        chunk_size: int | None = None,
+        file_pattern: str = '*',
+        extract_diffrn: object = None,
+        verbosity: str | None = None,
+    ) -> None:
+        """
+        Run sequential fitting over all data files in a directory.
+
+        Fits each dataset independently using the current structure and
+        experiment as a template.  Results are written incrementally to
+        ``analysis/results.csv`` in the project directory.
+
+        The project must contain exactly one structure and one
+        experiment (the template), and must have been saved
+        (``save_as()``) before calling this method.
+
+        Parameters
+        ----------
+        data_dir : str
+            Path to directory containing data files.
+        max_workers : int | str, default=1
+            Number of parallel worker processes. ``1`` = sequential.
+            ``'auto'`` = physical CPU count. Uses
+            ``ProcessPoolExecutor`` with ``spawn`` context when > 1.
+        chunk_size : int | None, default=None
+            Files per chunk. Default ``None`` uses *max_workers*.
+        file_pattern : str, default='*'
+            Glob pattern to filter files in *data_dir*.
+        extract_diffrn : object, default=None
+            User callback ``f(file_path) → {diffrn_field: value}``.
+            Called per file after fitting. ``None`` = no diffrn
+            metadata.
+        verbosity : str | None, default=None
+            ``'full'``, ``'short'``, or ``'silent'``. Default: project
+            verbosity.
+        """
+        from easydiffraction.analysis.sequential import fit_sequential as _fit_seq  # noqa: PLC0415
+
+        # Apply constraints before building the template
+        self._update_categories()
+
+        _fit_seq(
+            analysis=self,
+            data_dir=data_dir,
+            max_workers=max_workers,
+            chunk_size=chunk_size,
+            file_pattern=file_pattern,
+            extract_diffrn=extract_diffrn,
+            verbosity=verbosity,
+        )
 
     def show_fit_results(self) -> None:
         """
@@ -762,15 +812,13 @@ class Analysis:
         called_by_minimizer : bool, default=False
             Whether this is called during fitting.
         """
-        # Apply constraints to sync dependent parameters
-        if self.constraints._items:
-            self.constraints_handler.apply()
+        del called_by_minimizer
 
-        # Update category-specific logic
-        # TODO: Need self.categories as in the case of datablock.py
-        for category in [self.aliases, self.constraints]:
-            if hasattr(category, '_update'):
-                category._update(called_by_minimizer=called_by_minimizer)
+        # Apply constraints to sync dependent parameters
+        if self.constraints.enabled and self.constraints._items:
+            self.constraints_handler.set_aliases(self.aliases)
+            self.constraints_handler.set_constraints(self.constraints)
+            self.constraints_handler.apply()
 
     def as_cif(self) -> str:
         """

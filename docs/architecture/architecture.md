@@ -188,7 +188,7 @@ GuardedBase
 └── GenericDescriptorBase               # name, value (validated via AttributeSpec), description
     ├── GenericStringDescriptor         # _value_type = DataTypes.STRING
     └── GenericNumericDescriptor        # _value_type = DataTypes.NUMERIC, + units
-        └── GenericParameter            # + free, uncertainty, fit_min, fit_max, constrained, uid
+        └── GenericParameter            # + free, uncertainty, fit_min, fit_max, constrained
 ```
 
 CIF-bound concrete classes add a `CifHandler` for serialisation:
@@ -714,12 +714,13 @@ Projects are saved as a directory of CIF files:
 ```shell
 project_dir/
 ├── project.cif          # ProjectInfo
-├── analysis.cif         # Analysis settings
 ├── summary.cif          # Summary report
 ├── structures/
 │   └── lbco.cif         # One file per structure
-└── experiments/
-    └── hrpt.cif         # One file per experiment
+├── experiments/
+│   └── hrpt.cif         # One file per experiment
+└── analysis/
+    └── analysis.cif     # Analysis settings
 ```
 
 ### 7.3 Verbosity
@@ -919,6 +920,10 @@ project.experiments['xray_pdf'].peak_profile_type = 'gaussian-damped-sinc'
 - `DatablockItem` = one CIF `data_` block, `DatablockCollection` = set
   of blocks.
 - `CategoryItem` = one CIF category, `CategoryCollection` = CIF loop.
+- **Free-flag encoding**: A parameter's free/fixed status is encoded in
+  CIF via uncertainty brackets. `3.89` = fixed, `3.89(2)` = free with
+  esd, `3.89()` = free without esd. There is no separate list of free
+  parameters; the brackets are the single source of truth.
 
 ### 9.2 Immutability of Experiment Type
 

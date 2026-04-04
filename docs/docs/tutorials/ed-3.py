@@ -567,11 +567,11 @@ project.save_as(dir_path='lbco_hrpt', temporary=True)
 # %%
 project.analysis.aliases.create(
     label='biso_La',
-    param_uid=project.structures['lbco'].atom_sites['La'].b_iso.uid,
+    param=project.structures['lbco'].atom_sites['La'].b_iso,
 )
 project.analysis.aliases.create(
     label='biso_Ba',
-    param_uid=project.structures['lbco'].atom_sites['Ba'].b_iso.uid,
+    param=project.structures['lbco'].atom_sites['Ba'].b_iso,
 )
 
 # %% [markdown]
@@ -587,19 +587,7 @@ project.analysis.constraints.create(expression='biso_Ba = biso_La')
 project.analysis.show_constraints()
 
 # %% [markdown]
-# Show free parameters before applying constraints.
-
-# %%
-project.analysis.show_free_params()
-
-# %% [markdown]
-# Apply constraints.
-
-# %%
-project.analysis.apply_constraints()
-
-# %% [markdown]
-# Show free parameters after applying constraints.
+# Show free parameters.
 
 # %%
 project.analysis.show_free_params()
@@ -636,11 +624,11 @@ project.save_as(dir_path='lbco_hrpt', temporary=True)
 # %%
 project.analysis.aliases.create(
     label='occ_La',
-    param_uid=project.structures['lbco'].atom_sites['La'].occupancy.uid,
+    param=project.structures['lbco'].atom_sites['La'].occupancy,
 )
 project.analysis.aliases.create(
     label='occ_Ba',
-    param_uid=project.structures['lbco'].atom_sites['Ba'].occupancy.uid,
+    param=project.structures['lbco'].atom_sites['Ba'].occupancy,
 )
 
 # %% [markdown]
@@ -657,11 +645,6 @@ project.analysis.constraints.create(
 # %%
 project.analysis.show_constraints()
 
-# %% [markdown]
-# Apply constraints.
-
-# %%
-project.analysis.apply_constraints()
 
 # %% [markdown]
 # Set structure parameters to be refined.

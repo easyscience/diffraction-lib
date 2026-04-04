@@ -277,27 +277,24 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     # Set aliases for parameters
     project.analysis.aliases.create(
         label='biso_La',
-        param_uid=atom_sites['La'].b_iso.uid,
+        param=atom_sites['La'].b_iso,
     )
     project.analysis.aliases.create(
         label='biso_Ba',
-        param_uid=atom_sites['Ba'].b_iso.uid,
+        param=atom_sites['Ba'].b_iso,
     )
     project.analysis.aliases.create(
         label='occ_La',
-        param_uid=atom_sites['La'].occupancy.uid,
+        param=atom_sites['La'].occupancy,
     )
     project.analysis.aliases.create(
         label='occ_Ba',
-        param_uid=atom_sites['Ba'].occupancy.uid,
+        param=atom_sites['Ba'].occupancy,
     )
 
     # Set constraints
     project.analysis.constraints.create(expression='biso_Ba = biso_La')
     project.analysis.constraints.create(expression='occ_Ba = 1 - occ_La')
-
-    # Apply constraints
-    project.analysis.apply_constraints()
 
     # Perform fit
     project.analysis.fit()
@@ -478,6 +475,56 @@ def test_fit_neutron_pd_cwl_hs() -> None:
     assert_almost_equal(
         project.analysis.fit_results.reduced_chi_square,
         desired=2.11,
+        decimal=1,
+    )
+
+
+def test_single_fit_neutron_pd_cwl_lbco_with_constraints_from_project() -> None:
+    import easydiffraction as ed
+
+    # Create a project from CIF files
+    project = ed.Project()
+    project.structures.add_from_cif_path(ed.download_data(id=1, destination='data'))
+    project.experiments.add_from_cif_path(ed.download_data(id=2, destination='data'))
+
+    # Set constraints
+    project.analysis.aliases.create(
+        label='biso_La',
+        param=project.structures['lbco'].atom_sites['La'].b_iso,
+    )
+    project.analysis.aliases.create(
+        label='biso_Ba',
+        param=project.structures['lbco'].atom_sites['Ba'].b_iso,
+    )
+
+    project.analysis.aliases.create(
+        label='occ_La',
+        param=project.structures['lbco'].atom_sites['La'].occupancy,
+    )
+    project.analysis.aliases.create(
+        label='occ_Ba',
+        param=project.structures['lbco'].atom_sites['Ba'].occupancy,
+    )
+
+    project.analysis.constraints.create(expression='biso_Ba = biso_La')
+    project.analysis.constraints.create(expression='occ_Ba = 1 - occ_La')
+
+    # More fit patams
+    project.structures['lbco'].atom_sites['La'].occupancy.free = True
+
+    # Save to a directory
+    project.save_as('lbco_project')
+
+    # Load Project from Directory
+    project = ed.Project.load('lbco_project')
+
+    # Perform Analysis
+    project.analysis.fit()
+
+    # Compare fit quality
+    assert_almost_equal(
+        project.analysis.fit_results.reduced_chi_square,
+        desired=1.28,
         decimal=1,
     )
 
