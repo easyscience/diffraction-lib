@@ -24,8 +24,6 @@ class FitResults:
         success: bool = False,
         parameters: list[object] | None = None,
         reduced_chi_square: float | None = None,
-        message: str = '',
-        iterations: int = 0,
         engine_result: object | None = None,
         starting_parameters: list[object] | None = None,
         fitting_time: float | None = None,
@@ -42,10 +40,6 @@ class FitResults:
             List of parameters used in the fit.
         reduced_chi_square : float | None, default=None
             Reduced chi-square value of the fit.
-        message : str, default=''
-            Message related to the fit.
-        iterations : int, default=0
-            Number of iterations performed.
         engine_result : object | None, default=None
             Result from the fitting engine.
         starting_parameters : list[object] | None, default=None
@@ -61,8 +55,8 @@ class FitResults:
         self.parameters: list[object] = parameters if parameters is not None else []
         self.chi_square: float | None = None
         self.reduced_chi_square: float | None = reduced_chi_square
-        self.message: str = message
-        self.iterations: int = iterations
+        self.message: str = ''
+        self.iterations: int = 0
         self.engine_result: object | None = engine_result
         self.result: object | None = None
         self.starting_parameters: list[object] = (
@@ -147,46 +141,64 @@ class FitResults:
             'right',
         ]
 
-        rows = []
-        for param in self.parameters:
-            datablock_entry_name = (
-                param._identity.datablock_entry_name
-            )  # getattr(param, 'datablock_name', 'N/A')
-            category_code = param._identity.category_code  # getattr(param, 'category_key', 'N/A')
-            category_entry_name = (
-                param._identity.category_entry_name or ''
-            )  # getattr(param, 'category_entry_name', 'N/A')
-            name = getattr(param, 'name', 'N/A')
-            start = (
-                f'{getattr(param, "_fit_start_value", "N/A"):.4f}'
-                if param._fit_start_value is not None
-                else 'N/A'
-            )
-            fitted = f'{param.value:.4f}' if param.value is not None else 'N/A'
-            uncertainty = f'{param.uncertainty:.4f}' if param.uncertainty is not None else 'N/A'
-            units = getattr(param, 'units', 'N/A')
-
-            if param._fit_start_value and param.value:
-                change = ((param.value - param._fit_start_value) / param._fit_start_value) * 100
-                arrow = '↑' if change > 0 else '↓'
-                relative_change = f'{abs(change):.2f} % {arrow}'
-            else:
-                relative_change = 'N/A'
-
-            rows.append([
-                datablock_entry_name,
-                category_code,
-                category_entry_name,
-                name,
-                start,
-                fitted,
-                uncertainty,
-                units,
-                relative_change,
-            ])
+        rows = [_build_parameter_row(p) for p in self.parameters]
 
         render_table(
             columns_headers=headers,
             columns_alignment=alignments,
             columns_data=rows,
         )
+
+
+def _build_parameter_row(param: object) -> list[str]:
+    """
+    Build a single table row for a fitted parameter.
+
+    Parameters
+    ----------
+    param : object
+        Fitted parameter descriptor.
+
+    Returns
+    -------
+    list[str]
+        Column values for the parameter row.
+    """
+    name = getattr(param, 'name', 'N/A')
+    start = f'{param._fit_start_value:.4f}' if param._fit_start_value is not None else 'N/A'
+    fitted = f'{param.value:.4f}' if param.value is not None else 'N/A'
+    uncertainty = f'{param.uncertainty:.4f}' if param.uncertainty is not None else 'N/A'
+    units = getattr(param, 'units', 'N/A')
+    relative_change = _compute_relative_change(param)
+    return [
+        param._identity.datablock_entry_name,
+        param._identity.category_code,
+        param._identity.category_entry_name or '',
+        name,
+        start,
+        fitted,
+        uncertainty,
+        units,
+        relative_change,
+    ]
+
+
+def _compute_relative_change(param: object) -> str:
+    """
+    Compute percentage change between start and fitted values.
+
+    Parameters
+    ----------
+    param : object
+        Fitted parameter descriptor.
+
+    Returns
+    -------
+    str
+        Formatted change string or ``'N/A'``.
+    """
+    if not param._fit_start_value or not param.value:
+        return 'N/A'
+    change = ((param.value - param._fit_start_value) / param._fit_start_value) * 100
+    arrow = '↑' if change > 0 else '↓'
+    return f'{abs(change):.2f} % {arrow}'

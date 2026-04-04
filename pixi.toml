@@ -98,7 +98,10 @@ integration-tests = 'python -m pytest tests/integration/ --color=yes -n auto -v'
 script-tests = 'python -m pytest tools/test_scripts.py --color=yes -n auto -v'
 notebook-tests = 'python -m pytest --nbmake docs/docs/tutorials/ --nbmake-timeout=1200 --color=yes -n auto -v'
 
-test = { depends-on = ['unit-tests'] }
+test = { depends-on = [
+  'unit-tests',
+  'functional-tests',
+] }
 
 ###########
 # ✔️ Checks
@@ -155,12 +158,14 @@ raw-metrics-json = 'radon raw -s -j src/'
 #############
 
 unit-tests-coverage = 'pixi run unit-tests --cov=src/easydiffraction --cov-report=term-missing'
+functional-tests-coverage = 'pixi run functional-tests --cov=src/easydiffraction --cov-report=term-missing'
 integration-tests-coverage = 'pixi run integration-tests --cov=src/easydiffraction --cov-report=term-missing'
 docstring-coverage = 'interrogate -c pyproject.toml src/easydiffraction'
 
 cov = { depends-on = [
   'docstring-coverage',
   'unit-tests-coverage',
+  'functional-tests-coverage',
   'integration-tests-coverage',
 ] }
 
