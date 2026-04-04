@@ -58,15 +58,18 @@ def extract_project_from_zip(
         extract_dir = Path(tempfile.mkdtemp(prefix='ed_zip_'))
 
     with zipfile.ZipFile(zip_path, 'r') as zf:
+        # Determine the project directory from the archive contents
+        # *before* extraction, so we are not confused by unrelated
+        # project.cif files already present in the destination.
+        project_cif_entries = [name for name in zf.namelist() if name.endswith('project.cif')]
+        if not project_cif_entries:
+            msg = f'No project.cif found in ZIP archive: {zip_path}'
+            raise ValueError(msg)
+
         zf.extractall(extract_dir)
 
-    # Find the project directory (the one containing project.cif)
-    project_cifs = list(extract_dir.rglob('project.cif'))
-    if not project_cifs:
-        msg = f'No project.cif found in ZIP archive: {zip_path}'
-        raise ValueError(msg)
-
-    return str(project_cifs[0].parent.resolve())
+    project_cif_path = extract_dir / project_cif_entries[0]
+    return str(project_cif_path.parent.resolve())
 
 
 def extract_data_paths_from_zip(

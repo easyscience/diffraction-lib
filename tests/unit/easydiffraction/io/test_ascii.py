@@ -65,6 +65,23 @@ class TestExtractProjectFromZip:
         assert dest.is_dir()
         assert 'proj' in result
 
+    def test_ignores_other_project_cif_in_destination(self, tmp_path):
+        """Only finds project.cif from the zip, not pre-existing ones."""
+        dest = tmp_path / 'data'
+        # Pre-create another project directory in the destination
+        other_project = dest / 'aaa_other' / 'project.cif'
+        other_project.parent.mkdir(parents=True)
+        other_project.write_text('other\n')
+
+        zip_path = tmp_path / 'proj.zip'
+        with zipfile.ZipFile(zip_path, 'w') as zf:
+            zf.writestr('target_project/project.cif', 'correct\n')
+
+        result = extract_project_from_zip(zip_path, destination=dest)
+
+        assert 'target_project' in result
+        assert 'aaa_other' not in result
+
 
 class TestExtractDataPathsFromZip:
     """Tests for extract_data_paths_from_zip."""
