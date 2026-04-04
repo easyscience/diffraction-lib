@@ -99,6 +99,12 @@ script-tests = 'python -m pytest tools/test_scripts.py --color=yes -n auto -v'
 notebook-tests = 'python -m pytest --nbmake docs/docs/tutorials/ --nbmake-timeout=1200 --color=yes -n auto -v'
 
 test = { depends-on = ['unit-tests', 'functional-tests'] }
+test-all = { depends-on = [
+  'unit-tests',
+  'functional-tests',
+  'integration-tests',
+  'script-tests',
+] }
 
 ###########
 # ✔️ Checks

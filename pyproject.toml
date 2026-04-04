@@ -329,6 +329,7 @@ ignore = [
   'PLR',
   'PLW',
   'SIM117',
+  'SLF',
   'TRY',
   'W505',
 ]
