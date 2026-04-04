@@ -66,12 +66,12 @@ class TotalPdExperiment(PdExperimentBase):
             If the data file has fewer than two columns.
         """
         try:
-            from diffpy.utils.parsers.loaddata import loadData  # noqa: PLC0415
+            from diffpy.utils.parsers import load_data  # noqa: PLC0415
         except ImportError:
             msg = 'diffpy module not found.'
             raise ImportError(msg) from None
         try:
-            data = loadData(data_path)
+            data = load_data(data_path)
         except Exception as e:
             msg = f'Failed to read data from {data_path}: {e}'
             raise OSError(msg) from e
