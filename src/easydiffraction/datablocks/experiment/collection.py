@@ -106,7 +106,6 @@ class Experiments(DatablockCollection):
         beam_mode: str | None = None,
         radiation_probe: str | None = None,
         scattering_type: str | None = None,
-        verbosity: str | None = None,
     ) -> None:
         """
         Add an experiment from a data file path.
@@ -125,13 +124,8 @@ class Experiments(DatablockCollection):
             Radiation probe (e.g. ``'neutron'``).
         scattering_type : str | None, default=None
             Scattering type (e.g. ``'bragg'``).
-        verbosity : str | None, default=None
-            Console output verbosity: ``'full'`` for multi-line output,
-            ``'short'`` for a one-line status message, or ``'silent'``
-            for no output. When ``None``, uses ``project.verbosity``.
         """
-        if verbosity is None and self._parent is not None:
-            verbosity = self._parent.verbosity
+        verbosity = self._parent.verbosity if self._parent is not None else None
         verb = VerbosityEnum(verbosity) if verbosity is not None else VerbosityEnum.FULL
         experiment = ExperimentFactory.from_data_path(
             name=name,
