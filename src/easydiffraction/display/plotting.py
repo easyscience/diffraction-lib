@@ -793,6 +793,79 @@ class Plotter(RendererBase):
 
     def _plot_param_series_from_snapshots(
         self,
+        csv_path: str,
+        unique_name: str,
+        param_descriptor: object,
+        versus_descriptor: object | None = None,
+    ) -> None:
+        """
+        Plot a parameter's value across sequential fit results.
+
+        Reads data from the CSV file at *csv_path*.  The y-axis values
+        come from the column named *unique_name*, uncertainties from
+        ``{unique_name}.uncertainty``.  When *versus_descriptor* is
+        provided, the x-axis uses the corresponding ``diffrn.{name}``
+        column; otherwise the row index is used.
+
+        Axis labels are derived from the live descriptor objects
+        (*param_descriptor* and *versus_descriptor*), which carry
+        ``.description`` and ``.units`` attributes.
+
+        Parameters
+        ----------
+        csv_path : str
+            Path to the ``results.csv`` file.
+        unique_name : str
+            Unique name of the parameter to plot (CSV column key).
+        param_descriptor : object
+            The live parameter descriptor (for axis label / units).
+        versus_descriptor : object | None, default=None
+            A diffrn descriptor whose ``.name`` maps to a
+            ``diffrn.{name}`` CSV column.  ``None`` → use row index.
+        """
+        df = pd.read_csv(csv_path)
+
+        if unique_name not in df.columns:
+            log.warning(
+                f"Parameter '{unique_name}' not found in CSV columns. "
+                f'Available: {list(df.columns)}'
+            )
+            return
+
+        y = df[unique_name].astype(float).tolist()
+        uncert_col = f'{unique_name}.uncertainty'
+        sy = df[uncert_col].astype(float).tolist() if uncert_col in df.columns else [0.0] * len(y)
+
+        # X-axis: diffrn column or row index
+        versus_name = versus_descriptor.name if versus_descriptor is not None else None
+        diffrn_col = f'diffrn.{versus_name}' if versus_name else None
+
+        if diffrn_col and diffrn_col in df.columns:
+            x = pd.to_numeric(df[diffrn_col], errors='coerce').tolist()
+            x_label = getattr(versus_descriptor, 'description', None) or versus_name
+            if hasattr(versus_descriptor, 'units') and versus_descriptor.units:
+                x_label = f'{x_label} ({versus_descriptor.units})'
+        else:
+            x = list(range(1, len(y) + 1))
+            x_label = 'Experiment No.'
+
+        # Y-axis label from descriptor
+        param_units = getattr(param_descriptor, 'units', '')
+        y_label = f'Parameter value ({param_units})' if param_units else 'Parameter value'
+
+        title = f"Parameter '{unique_name}' across fit results"
+
+        self._backend.plot_scatter(
+            x=x,
+            y=y,
+            sy=sy,
+            axes_labels=[x_label, y_label],
+            title=title,
+            height=self.height,
+        )
+
+    def plot_param_series_from_snapshots(
+        self,
         unique_name: str,
         versus_name: str | None,
         experiments: object,
