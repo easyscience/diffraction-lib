@@ -567,6 +567,33 @@ def _set_param_from_raw_cif_value(
         log.debug(f'Unrecognized type: {param._value_type}')
 
 
+def _find_loop_for_category(
+    block: object,
+    category_item: object,
+) -> object | None:
+    """
+    Find the first CIF loop that matches a category item's parameters.
+
+    Parameters
+    ----------
+    block : object
+        Parsed CIF block to search.
+    category_item : object
+        Category item whose parameters provide CIF names.
+
+    Returns
+    -------
+    object | None
+        The matching loop, or ``None`` if not found.
+    """
+    for param in category_item.parameters:
+        for name in param._cif_handler.names:
+            loop = block.find_loop(name).get_loop()
+            if loop is not None:
+                return loop
+    return None
+
+
 def category_collection_from_cif(
     self: CategoryCollection,
     block: gemmi.cif.Block,
@@ -599,15 +626,7 @@ def category_collection_from_cif(
 
     # Iterate over category parameters and their possible CIF names
     # trying to find the whole loop it belongs to inside the CIF block
-    def _get_loop(block: object, category_item: object) -> object | None:
-        for param in category_item.parameters:
-            for name in param._cif_handler.names:
-                loop = block.find_loop(name).get_loop()
-                if loop is not None:
-                    return loop
-        return None
-
-    loop = _get_loop(block, category_item)
+    loop = _find_loop_for_category(block, category_item)
 
     # If no loop found
     if loop is None:
