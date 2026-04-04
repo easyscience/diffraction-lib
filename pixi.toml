@@ -168,7 +168,6 @@ docstring-coverage = 'interrogate -c pyproject.toml src/easydiffraction'
 cov = { depends-on = [
   'docstring-coverage',
   'unit-tests-coverage',
-  'functional-tests-coverage',
   'integration-tests-coverage',
 ] }
 
