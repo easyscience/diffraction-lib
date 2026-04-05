@@ -88,7 +88,7 @@ DEFAULT_AXES_LABELS = {
         ScatteringTypeEnum.BRAGG,
         XAxisType.TIME_OF_FLIGHT,
     ): [
-        'TOF (µs)',
+        'TOF (μs)',
         'Intensity (arb. units)',
     ],
     (
@@ -195,7 +195,6 @@ class PlotterBase(ABC):
         height : int | None
             Backend-specific height (text rows or pixels).
         """
-        pass
 
     @abstractmethod
     def plot_single_crystal(
@@ -228,7 +227,6 @@ class PlotterBase(ABC):
         height : int | None
             Backend-specific height (text rows or pixels).
         """
-        pass
 
     @abstractmethod
     def plot_scatter(
@@ -258,4 +256,3 @@ class PlotterBase(ABC):
         height : int | None
             Backend-specific height (text rows or pixels).
         """
-        pass

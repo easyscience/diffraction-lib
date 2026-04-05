@@ -114,7 +114,7 @@ def _fetch_tutorials_index() -> dict:
         _validate_url(index_url)
         with _safe_urlopen(index_url) as response:
             return json.load(response)
-    except Exception as e:
+    except (OSError, ValueError) as e:
         log.warning(
             f'Failed to fetch tutorials index from {index_url}: {e}',
             exc_type=UserWarning,
@@ -247,7 +247,7 @@ def stripped_package_version(package_name: str) -> str | None:
     try:
         v = Version(v_str)
         return str(v.public)
-    except Exception:
+    except ValueError:
         return v_str
 
 
@@ -317,12 +317,15 @@ def _safe_urlopen(request_or_url: object) -> object:  # type: ignore[no-untyped-
         if parsed.scheme != 'https':  # pragma: no cover - sanity check
             msg = 'Only https URLs are permitted'
             raise ValueError(msg)
-    elif isinstance(request_or_url, urllib.request.Request):  # noqa: S310 - request object inspected, not opened
+    elif isinstance(request_or_url, urllib.request.Request):  # noqa: S310
         parsed = urllib.parse.urlparse(request_or_url.full_url)
         if parsed.scheme != 'https':  # pragma: no cover
             msg = 'Only https URLs are permitted'
             raise ValueError(msg)
-    return urllib.request.urlopen(request_or_url)  # noqa: S310 - validated https only
+    else:
+        msg = f'Expected str or Request, got {type(request_or_url).__name__}'
+        raise TypeError(msg)
+    return urllib.request.urlopen(request_or_url)  # noqa: S310
 
 
 def _resolve_tutorial_url(url_template: str) -> str:
@@ -488,7 +491,7 @@ def download_all_tutorials(
                 overwrite=overwrite,
             )
             downloaded_paths.append(path)
-        except Exception as e:
+        except (OSError, ValueError) as e:
             log.warning(f'Failed to download tutorial #{tutorial_id}: {e}')
 
     console.print(f'✅ Downloaded {len(downloaded_paths)} tutorials to "{destination}/"')
@@ -578,13 +581,13 @@ def tof_to_d(
     Parameters
     ----------
     tof : np.ndarray
-        Time-of-flight values (µs). Must be a NumPy array.
+        Time-of-flight values (μs). Must be a NumPy array.
     offset : float
-        Calibration offset (µs).
+        Calibration offset (μs).
     linear : float
-        Linear calibration coefficient (µs/Å).
+        Linear calibration coefficient (μs/Å).
     quad : float
-        Quadratic calibration coefficient (µs/Å²).
+        Quadratic calibration coefficient (μs/Å²).
     quad_eps : float, default=1e-20
         Threshold to treat ``quad`` as zero.
 
@@ -620,7 +623,7 @@ def tof_to_d(
     #    TOF ≈ offset + linear * d =>
     #    d ≈ (tof - offset) / linear
     if abs(quad) < quad_eps:
-        if linear != 0.0:
+        if abs(linear) > quad_eps:
             d = (tof - offset) / linear
             # Keep only positive, finite results
             valid = np.isfinite(d) & (d > 0)
@@ -742,5 +745,5 @@ def str_to_ufloat(s: str | None, default: float | None = None) -> UFloat:
         s = s[:-2] + '(0)'
     try:
         return ufloat_fromstr(s)
-    except Exception:
+    except ValueError:
         return ufloat(default, np.nan)

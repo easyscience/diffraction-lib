@@ -188,17 +188,19 @@ class Fitter:
 
         # Prepare weights for joint fitting
         num_expts: int = len(experiments)
-        _weights = np.ones(num_expts) if weights is None else np.asarray(weights, dtype=np.float64)
+        norm_weights = (
+            np.ones(num_expts) if weights is None else np.asarray(weights, dtype=np.float64)
+        )
 
         # Normalize weights so they sum to num_expts
         # We should obtain the same reduced chi_squared when a single
         # dataset is split into two parts and fit together. If weights
         # sum to one, then reduced chi_squared will be half as large as
         # expected.
-        _weights = _weights * (num_expts / np.sum(_weights))
+        norm_weights *= num_expts / np.sum(norm_weights)
         residuals: list[float] = []
 
-        for experiment, weight in zip(experiments, _weights, strict=True):
+        for experiment, weight in zip(experiments, norm_weights, strict=True):
             # Update experiment-specific calculations
             experiment._update_categories(called_by_minimizer=True)
 

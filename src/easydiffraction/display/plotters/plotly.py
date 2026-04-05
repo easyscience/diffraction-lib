@@ -37,8 +37,8 @@ class PlotlyPlotter(PlotterBase):
     if in_pycharm():
         pio.renderers.default = 'browser'
 
+    @staticmethod
     def _get_powder_trace(
-        self,
         x: object,
         y: object,
         label: str,
@@ -75,8 +75,8 @@ class PlotlyPlotter(PlotterBase):
 
         return trace
 
+    @staticmethod
     def _get_single_crystal_trace(
-        self,
         x_calc: object,
         y_meas: object,
         y_meas_su: object,
@@ -119,7 +119,8 @@ class PlotlyPlotter(PlotterBase):
 
         return trace
 
-    def _get_diagonal_shape(self) -> dict:
+    @staticmethod
+    def _get_diagonal_shape() -> dict:
         """
         Create a diagonal reference line shape.
 
@@ -143,7 +144,8 @@ class PlotlyPlotter(PlotterBase):
             'line': {'width': 0.5},
         }
 
-    def _get_config(self) -> dict:
+    @staticmethod
+    def _get_config() -> dict:
         """
         Return the Plotly figure configuration.
 
@@ -163,8 +165,8 @@ class PlotlyPlotter(PlotterBase):
             ],
         }
 
+    @staticmethod
     def _get_figure(
-        self,
         data: object,
         layout: object,
     ) -> object:
@@ -218,8 +220,8 @@ class PlotlyPlotter(PlotterBase):
             )
             display(HTML(html_fig))
 
+    @staticmethod
     def _get_layout(
-        self,
         title: str,
         axes_labels: object,
         **kwargs: object,

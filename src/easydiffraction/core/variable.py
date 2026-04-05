@@ -43,7 +43,7 @@ class GenericDescriptorBase(GuardedBase):
         *,
         value_spec: AttributeSpec,
         name: str,
-        description: str = None,
+        description: str | None = None,
     ) -> None:
         """
         Initialize the descriptor with validation and identity.
@@ -54,7 +54,7 @@ class GenericDescriptorBase(GuardedBase):
             Validation specification for the value.
         name : str
             Local name of the descriptor within its category.
-        description : str, default=None
+        description : str | None, default=None
             Optional human-readable description.
         """
         super().__init__()

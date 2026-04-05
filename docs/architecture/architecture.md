@@ -857,7 +857,7 @@ project.experiments['hrpt'].calculator_type = 'cryspy'
 project.analysis.current_minimizer = 'lmfit'
 
 # Plot before fitting
-project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # Select free parameters
 project.structures['lbco'].cell.length_a.free = True
@@ -866,14 +866,14 @@ project.experiments['hrpt'].instrument.calib_twotheta_offset.free = True
 project.experiments['hrpt'].background['10'].y.free = True
 
 # Inspect free parameters
-project.analysis.show_free_params()
+project.analysis.display.free_params()
 
 # Fit and show results
 project.analysis.fit()
-project.analysis.show_fit_results()
+project.analysis.display.fit_results()
 
 # Plot after fitting
-project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # Save
 project.save()
@@ -1170,9 +1170,130 @@ def length_a(self) -> Parameter:
 - The CI tool `pixi run param-consistency-check` validates compliance;
   `pixi run param-consistency-fix` auto-fixes violations.
 
+### 9.9 Lint Complexity Thresholds
+
+The Pylint-style complexity limits in `pyproject.toml` are **intentional
+code-quality guardrails**, not arbitrary numbers. A violation is a
+signal that the function or class needs refactoring — not that the
+threshold needs raising.
+
+The project uses **ruff's defaults** for all PLR thresholds, with one
+exception: `max-args` and `max-positional-args` are set to **6** instead
+of the ruff default of 5, because ruff counts `self`/`cls` while
+traditional pylint does not. Setting 6 in ruff matches pylint's standard
+limit of 5 real parameters per function.
+
+| Threshold             | Value | Rule    |
+| --------------------- | ----- | ------- |
+| `max-args`            | 6     | PLR0913 |
+| `max-positional-args` | 6     | PLR0917 |
+| `max-branches`        | 12    | PLR0912 |
+| `max-statements`      | 50    | PLR0915 |
+| `max-locals`          | 15    | PLR0914 |
+| `max-nested-blocks`   | 5     | PLR1702 |
+| `max-returns`         | 6     | PLR0911 |
+| `max-public-methods`  | 20    | PLR0904 |
+
+**Rules:**
+
+- **Do not raise thresholds.** The current values represent the
+  project's design intent for maximum acceptable complexity.
+- **Do not add `# noqa` comments** (or any other mechanism) to silence
+  complexity rules such as `PLR0912`, `PLR0913`, `PLR0914`, `PLR0915`,
+  `PLR0917`, `PLR1702`.
+- **Refactor the code instead:** extract helper functions, introduce
+  parameter objects, flatten nesting, use early returns, etc.
+- **For complex refactors** that touch many lines or change public API,
+  propose a refactoring plan and wait for approval before proceeding.
+
 ---
 
-## 10. Issues
+## 10. Test Strategy
+
+Every new feature, category, factory, or bug fix must ship with tests.
+The project enforces a multi-layered testing approach that catches
+regressions at different levels of abstraction.
+
+### 10.1 Test Layers
+
+| Layer                 | Location                | Runner command               | Scope                                                                                                                |
+| --------------------- | ----------------------- | ---------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **Unit**              | `tests/unit/`           | `pixi run unit-tests`        | Single class or function in isolation. Fast, no I/O, no external engines.                                            |
+| **Functional**        | `tests/functional/`     | `pixi run functional-tests`  | Multi-component workflows (e.g. create experiment → load data → fit). No external data files beyond tiny test stubs. |
+| **Integration**       | `tests/integration/`    | `pixi run integration-tests` | End-to-end pipelines using real calculation engines (cryspy, crysfml, pdffit2) and real data files from `data/`.     |
+| **Script (tutorial)** | `tools/test_scripts.py` | `pixi run script-tests`      | Runs each tutorial `*.py` script under `docs/docs/tutorials/` as a subprocess and checks for a zero exit code.       |
+| **Notebook**          | `docs/docs/tutorials/`  | `pixi run notebook-tests`    | Executes every Jupyter notebook end-to-end via `nbmake`.                                                             |
+
+### 10.2 Directory Structure Convention
+
+The unit-test tree **mirrors** the source tree:
+
+```
+src/easydiffraction/<pkg>/<module>.py
+    → tests/unit/easydiffraction/<pkg>/test_<module>.py
+```
+
+Two additional patterns are recognised:
+
+1. **Supplementary coverage files** — `test_<module>_coverage.py`,
+   `test_<module>_more.py`, etc. sit beside the main test file and add
+   extra scenarios.
+2. **Parent-level roll-up** — for category packages that contain only
+   `default.py` and `factory.py`, a single `test_<package_name>.py` one
+   directory up covers the whole package (e.g.
+   `categories/test_experiment_type.py` covers
+   `categories/experiment_type/default.py` and
+   `categories/experiment_type/factory.py`).
+
+The CI tool `pixi run test-structure-check` validates that every source
+module has a corresponding test file and reports any gaps. Explicit name
+aliases (e.g. `variable.py` tested by `test_parameters.py`) are declared
+in `KNOWN_ALIASES` inside the tool script.
+
+### 10.3 What to Test per Source Module Type
+
+| Source module type               | Required tests                                                                                                                                             |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Core base class** (`core/`)    | Instantiation, public properties, validation edge cases, identity wiring.                                                                                  |
+| **Factory** (`factory.py`)       | Registration check, `supported_tags()`, `default_tag()`, `create()` for each tag, `show_supported()` output, invalid-tag handling.                         |
+| **Category** (`default.py`)      | Instantiation, all public properties (read + write where applicable), CIF round-trip (`as_cif` → `from_cif`), parameter enumeration.                       |
+| **Enum** (`enums.py`)            | Membership of all members, `default()` method, `description()` for every member, `StrEnum` string equality.                                                |
+| **Datablock item** (`base.py`)   | Construction, switchable-category full API (`<cat>`, `<cat>_type` get/set, `show_supported_<cat>_types`, `show_current_<cat>_type`), `show`/`show_as_cif`. |
+| **Collection** (`collection.py`) | `create`, `add`, `remove`, `names`, `show_names`, `show_params`, iteration, duplicate-name handling.                                                       |
+| **Calculator / Minimizer**       | `can_handle()` with compatible and incompatible experiment types, `_compute()` stub or mock.                                                               |
+| **Display / IO**                 | Input → output for representative cases; file-not-found and malformed-input error paths.                                                                   |
+
+### 10.4 Test Conventions
+
+- **No test-ordering dependence.** Each test must be self-contained. Use
+  `monkeypatch` to set `Logger._reaction` when the test expects a raised
+  exception (another test may have leaked WARN mode via the global
+  `Logger` singleton).
+- **Error paths are tested explicitly.** Use `pytest.raises()` (with
+  `monkeypatch` for Logger RAISE mode) for `log.error()` calls that
+  specify `exc_type`.
+- **`@typechecked` setters raise `typeguard.TypeCheckError`**, not
+  `TypeError`. Tests must catch the correct exception.
+- **Use `capsys` / `capfd`** for asserting console output from `show_*`
+  methods.
+- **Prefer `tmp_path`** (pytest fixture) for file-system tests.
+- **No sleeping, no network calls, no real calculation engines** in unit
+  tests.
+- Test files carry the SPDX license header and a module-level docstring.
+  They are exempt from most lint rules (ANN, D, DOC, INP001, S101, etc.)
+  per `pyproject.toml`.
+
+### 10.5 Coverage Threshold
+
+The minimum line-coverage threshold is **70 %** (`fail_under = 70` in
+`pyproject.toml`). The project aspires to test every code path; the
+threshold is a safety net, not a target.
+
+Run `pixi run unit-tests-coverage` for a per-module report.
+
+---
+
+## 11. Issues
 
 - **Open:** [`issues_open.md`](issues_open.md) — prioritised backlog.
 - **Closed:** [`issues_closed.md`](issues_closed.md) — resolved items

@@ -151,7 +151,7 @@ default-tag = 'v999.0.0'
 # https://interrogate.readthedocs.io/en/latest/
 
 [tool.interrogate]
-fail-under = 35 # Minimum docstring coverage percentage to pass
+fail-under = 75 # Minimum docstring coverage percentage to pass
 verbose = 1
 #exclude = ['src/**/__init__.py']
 
@@ -169,7 +169,7 @@ source = ['src'] # Limit coverage to the source code directory
 [tool.coverage.report]
 show_missing = true  # Show missing lines
 skip_covered = false # Skip files with 100% coverage in the report
-fail_under = 60      # Minimum coverage percentage to pass
+fail_under = 75      # Minimum coverage percentage to pass
 
 ##########################
 # Configuration for pytest
@@ -182,6 +182,16 @@ fail_under = 60      # Minimum coverage percentage to pass
 addopts = '--import-mode=importlib'
 markers = ['fast: mark test as fast (should be run on every push)']
 testpaths = ['tests']
+filterwarnings = [
+  # TEMPRORARY: Suppress some warnings
+  # uncertainties 3.x warns on UFloat(value, 0); our CIF parser
+  # intentionally creates zero-uncertainty values for free parameters.
+  'ignore:Using UFloat objects with std_dev==0:UserWarning:uncertainties',
+  # diffpy internals call their own deprecated APIs; nothing we can fix.
+  "ignore:'diffpy\\.structure\\.GetSpaceGroup':DeprecationWarning",
+  "ignore:'diffpy\\.structure\\.expandPosition':DeprecationWarning",
+  "ignore:'diffpy\\.structure\\.Structure\\.writeStr':DeprecationWarning",
+]
 
 ########################
 # Configuration for ruff
@@ -215,26 +225,26 @@ quote-style = 'single'          # But double quotes in docstrings (PEP 8, PEP 25
 [tool.ruff.lint]
 select = [
   # Various rules
-  #'C90',  # https://docs.astral.sh/ruff/rules/#mccabe-c90
-  'D',   # https://docs.astral.sh/ruff/rules/#pydocstyle-d
-  'F',   # https://docs.astral.sh/ruff/rules/#pyflakes-f
-  'FLY', # https://docs.astral.sh/ruff/rules/#flynt-fly
-  #'FURB', # https://docs.astral.sh/ruff/rules/#refurb-furb
+  'C90',  # https://docs.astral.sh/ruff/rules/#mccabe-c90
+  'D',    # https://docs.astral.sh/ruff/rules/#pydocstyle-d
+  'F',    # https://docs.astral.sh/ruff/rules/#pyflakes-f
+  'FLY',  # https://docs.astral.sh/ruff/rules/#flynt-fly
+  'FURB', # https://docs.astral.sh/ruff/rules/#refurb-furb
   'I',    # https://docs.astral.sh/ruff/rules/#isort-i
   'N',    # https://docs.astral.sh/ruff/rules/#pep8-naming-n
   'NPY',  # https://docs.astral.sh/ruff/rules/#numpy-specific-rules-npy
   'PGH',  # https://docs.astral.sh/ruff/rules/#pygrep-hooks-pgh
   'PERF', # https://docs.astral.sh/ruff/rules/#perflint-perf
-  #'RUF',  # https://docs.astral.sh/ruff/rules/#ruff-specific-rules-ruf
-  'TRY', # https://docs.astral.sh/ruff/rules/#tryceratops-try
-  'UP',  # https://docs.astral.sh/ruff/rules/#pyupgrade-up
+  'RUF',  # https://docs.astral.sh/ruff/rules/#ruff-specific-rules-ruf
+  'TRY',  # https://docs.astral.sh/ruff/rules/#tryceratops-try
+  'UP',   # https://docs.astral.sh/ruff/rules/#pyupgrade-up
   # pycodestyle (E, W) rules
   'E', # https://docs.astral.sh/ruff/rules/#error-e
   'W', # https://docs.astral.sh/ruff/rules/#warning-w
   # Pylint (PL) rules
   'PLC', # https://docs.astral.sh/ruff/rules/#convention-plc
   'PLE', # https://docs.astral.sh/ruff/rules/#error-ple
-  #'PLR', # https://docs.astral.sh/ruff/rules/#refactor-plr
+  'PLR', # https://docs.astral.sh/ruff/rules/#refactor-plr
   'PLW', # https://docs.astral.sh/ruff/rules/#warning-plw
   # flake8 rules
   #'A',     # https://docs.astral.sh/ruff/rules/#flake8-builtins-a
@@ -242,12 +252,12 @@ select = [
   'ARG',   # https://docs.astral.sh/ruff/rules/#flake8-unused-arguments-arg
   'ASYNC', # https://docs.astral.sh/ruff/rules/#flake8-async-async
   'B',     # https://docs.astral.sh/ruff/rules/#flake8-bugbear-b
-  #'BLE',   # https://docs.astral.sh/ruff/rules/#flake8-blind-except-ble
-  'C4',  # https://docs.astral.sh/ruff/rules/#flake8-comprehensions-c4
-  'COM', # https://docs.astral.sh/ruff/rules/#flake8-commas-com
-  'DTZ', # https://docs.astral.sh/ruff/rules/#flake8-datetimez-dtz
-  'EM',  # https://docs.astral.sh/ruff/rules/#flake8-errmsg-em
-  'FA',  # https://docs.astral.sh/ruff/rules/#flake8-future-annotations-fa
+  'BLE',   # https://docs.astral.sh/ruff/rules/#flake8-blind-except-ble
+  'C4',    # https://docs.astral.sh/ruff/rules/#flake8-comprehensions-c4
+  'COM',   # https://docs.astral.sh/ruff/rules/#flake8-commas-com
+  'DTZ',   # https://docs.astral.sh/ruff/rules/#flake8-datetimez-dtz
+  'EM',    # https://docs.astral.sh/ruff/rules/#flake8-errmsg-em
+  'FA',    # https://docs.astral.sh/ruff/rules/#flake8-future-annotations-fa
   #'FBT',   # https://docs.astral.sh/ruff/rules/#flake8-boolean-trap-fbt
   #'FIX',   # https://docs.astral.sh/ruff/rules/#flake8-fixme-fix
   'G',   # https://docs.astral.sh/ruff/rules/#flake8-logging-format-g
@@ -255,7 +265,7 @@ select = [
   'INP', # https://docs.astral.sh/ruff/rules/#flake8-no-pep420-inp
   'ISC', # https://docs.astral.sh/ruff/rules/#flake8-implicit-str-concat-isc
   'LOG', # https://docs.astral.sh/ruff/rules/#flake8-logging-log
-  #'PIE',   # https://docs.astral.sh/ruff/rules/#flake8-pie-pie
+  'PIE', # https://docs.astral.sh/ruff/rules/#flake8-pie-pie
   'PT',  # https://docs.astral.sh/ruff/rules/#flake8-pytest-style-pt
   'PTH', # https://docs.astral.sh/ruff/rules/#flake8-use-pathlib-pth
   'PYI', # https://docs.astral.sh/ruff/rules/#flake8-pyi-pyi
@@ -296,6 +306,8 @@ ignore = [
   'D',      # https://docs.astral.sh/ruff/rules/#pydocstyle-d
   'DOC',    # https://docs.astral.sh/ruff/rules/#pydoclint-doc
   'INP001', # https://docs.astral.sh/ruff/rules/implicit-namespace-package/
+  'RUF012', # https://docs.astral.sh/ruff/rules/mutable-class-default/ (test stubs use mutable defaults)
+  'RUF069', # https://docs.astral.sh/ruff/rules/unreliable-float-equality/ (exact comparisons in assertions)
   'S101',   # https://docs.astral.sh/ruff/rules/assert/
   # Temporary:
   'ARG001',
@@ -317,11 +329,15 @@ ignore = [
   'PLR',
   'PLW',
   'SIM117',
+  'SLF',
   'TRY',
   'W505',
 ]
 'docs/**' = [
   'INP001', # https://docs.astral.sh/ruff/rules/implicit-namespace-package/
+  'RUF001', # https://docs.astral.sh/ruff/rules/ambiguous-unicode-character-string/ (scientific symbols)
+  'RUF002', # https://docs.astral.sh/ruff/rules/ambiguous-unicode-character-docstring/ (scientific symbols)
+  'RUF003', # https://docs.astral.sh/ruff/rules/ambiguous-unicode-character-comment/ (en-dashes in headings)
   'T201',   # https://docs.astral.sh/ruff/rules/print/
   # Temporary:
   'ANN',
@@ -353,6 +369,12 @@ max-doc-length = 72
 
 [tool.ruff.lint.pydocstyle]
 convention = 'numpy'
+
+[tool.ruff.lint.pylint]
+# Ruff counts `self`/`cls` in max-args; traditional pylint does not.
+# Setting 6 here matches pylint's default of 5 (excluding self).
+max-args = 6
+max-positional-args = 6
 
 #############################
 # Configuration for pydoclint

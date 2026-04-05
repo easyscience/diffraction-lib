@@ -9,6 +9,8 @@ not importable in the current environment.
 
 from __future__ import annotations
 
+from typing import ClassVar
+
 from easydiffraction.core.factory import FactoryBase
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
@@ -22,7 +24,7 @@ class CalculatorFactory(FactoryBase):
     available for creation.
     """
 
-    _default_rules = {
+    _default_rules: ClassVar[dict] = {
         frozenset({
             ('scattering_type', ScatteringTypeEnum.BRAGG),
         }): CalculatorEnum.CRYSPY,

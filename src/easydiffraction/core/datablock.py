@@ -149,7 +149,7 @@ class DatablockCollection(CollectionBase):
     :meth:`add` with the resulting item.
     """
 
-    def _key_for(self, item: object) -> str | None:
+    def _key_for(self, item: object) -> str | None:  # noqa: PLR6301
         """Return the datablock-level identity key for *item*."""
         return item._identity.datablock_entry_name
 

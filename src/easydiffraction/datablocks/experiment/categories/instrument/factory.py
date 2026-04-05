@@ -2,6 +2,10 @@
 # SPDX-License-Identifier: BSD-3-Clause
 """Instrument factory — delegates to ``FactoryBase``."""
 
+from __future__ import annotations
+
+from typing import ClassVar
+
 from easydiffraction.core.factory import FactoryBase
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
@@ -10,7 +14,7 @@ from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 class InstrumentFactory(FactoryBase):
     """Create instrument instances for supported modes."""
 
-    _default_rules = {
+    _default_rules: ClassVar[dict] = {
         frozenset({
             ('beam_mode', BeamModeEnum.CONSTANT_WAVELENGTH),
             ('sample_form', SampleFormEnum.POWDER),

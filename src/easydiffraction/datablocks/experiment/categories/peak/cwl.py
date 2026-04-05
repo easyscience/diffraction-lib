@@ -70,7 +70,7 @@ class CwlThompsonCoxHastings(
     CwlBroadeningMixin,
     FcjAsymmetryMixin,
 ):
-    """Thompson–Cox–Hastings with FCJ asymmetry for CWL mode."""
+    """Thompson-Cox-Hastings with FCJ asymmetry for CWL mode."""
 
     type_info = TypeInfo(
         tag='thompson-cox-hastings',

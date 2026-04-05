@@ -255,7 +255,7 @@ class EmpiricalAsymmetryMixin:
 
 
 class FcjAsymmetryMixin:
-    """Finger–Cox–Jephcoat (FCJ) asymmetry parameters."""
+    """Finger-Cox-Jephcoat (FCJ) asymmetry parameters."""
 
     def __init__(self) -> None:
         super().__init__()

@@ -36,7 +36,7 @@ def test_load_ascii_data_pdf(tmp_path: pytest.TempPathFactory):
     # Try to import loadData; if diffpy isn't installed, expect ImportError
     try:
         has_diffpy = True
-    except Exception:
+    except ImportError:
         has_diffpy = False
 
     if not has_diffpy:

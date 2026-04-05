@@ -113,7 +113,7 @@ class ExperimentBase(DatablockItem):
         console.paragraph(f"Diffrn type for experiment '{self.name}' changed to")
         console.print(new_type)
 
-    def show_supported_diffrn_types(self) -> None:
+    def show_supported_diffrn_types(self) -> None:  # noqa: PLR6301
         """Print a table of supported diffraction conditions types."""
         DiffrnFactory.show_supported()
 
@@ -296,7 +296,6 @@ class ScExperimentBase(ExperimentBase):
             Path to data file with columns compatible with the beam
             mode.
         """
-        pass
 
     # ------------------------------------------------------------------
     #  Extinction (switchable-category pattern)
@@ -336,7 +335,7 @@ class ScExperimentBase(ExperimentBase):
         console.paragraph(f"Extinction type for experiment '{self.name}' changed to")
         console.print(new_type)
 
-    def show_supported_extinction_types(self) -> None:
+    def show_supported_extinction_types(self) -> None:  # noqa: PLR6301
         """Print a table of supported extinction correction models."""
         ExtinctionFactory.show_supported()
 
@@ -383,7 +382,7 @@ class ScExperimentBase(ExperimentBase):
         console.paragraph(f"Linked crystal type for experiment '{self.name}' changed to")
         console.print(new_type)
 
-    def show_supported_linked_crystal_types(self) -> None:
+    def show_supported_linked_crystal_types(self) -> None:  # noqa: PLR6301
         """Print a table of supported linked-crystal reference types."""
         LinkedCrystalFactory.show_supported()
 
@@ -484,7 +483,7 @@ class ScExperimentBase(ExperimentBase):
         console.paragraph(f"Data type for experiment '{self.name}' changed to")
         console.print(new_type)
 
-    def show_supported_data_types(self) -> None:
+    def show_supported_data_types(self) -> None:  # noqa: PLR6301
         """Print a table of supported data collection types."""
         DataFactory.show_supported()
 
@@ -568,14 +567,13 @@ class PdExperimentBase(ExperimentBase):
         ----------
         data_path : str
             Path to data file with columns compatible with the beam mode
-            (e.g. 2θ/I/σ for CWL, TOF/I/σ for TOF).
+            (e.g. 2theta/I/sigma for CWL, TOF/I/sigma for TOF).
 
         Returns
         -------
         int
             Number of loaded data points.
         """
-        pass
 
     @property
     def linked_phases(self) -> object:
@@ -611,7 +609,7 @@ class PdExperimentBase(ExperimentBase):
         console.paragraph(f"Linked phases type for experiment '{self.name}' changed to")
         console.print(new_type)
 
-    def show_supported_linked_phases_types(self) -> None:
+    def show_supported_linked_phases_types(self) -> None:  # noqa: PLR6301
         """Print a table of supported linked-phases collection types."""
         LinkedPhasesFactory.show_supported()
 
@@ -654,7 +652,7 @@ class PdExperimentBase(ExperimentBase):
         console.paragraph(f"Excluded regions type for experiment '{self.name}' changed to")
         console.print(new_type)
 
-    def show_supported_excluded_regions_types(self) -> None:
+    def show_supported_excluded_regions_types(self) -> None:  # noqa: PLR6301
         """Print a table of supported excluded-regions types."""
         ExcludedRegionsFactory.show_supported()
 
@@ -700,7 +698,7 @@ class PdExperimentBase(ExperimentBase):
         console.paragraph(f"Data type for experiment '{self.name}' changed to")
         console.print(new_type)
 
-    def show_supported_data_types(self) -> None:
+    def show_supported_data_types(self) -> None:  # noqa: PLR6301
         """Print a table of supported data collection types."""
         DataFactory.show_supported()
 

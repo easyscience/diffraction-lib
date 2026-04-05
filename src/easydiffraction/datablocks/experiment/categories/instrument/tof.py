@@ -70,7 +70,7 @@ class TofPdInstrument(InstrumentBase):
         self._calib_d_to_tof_offset: Parameter = Parameter(
             name='d_to_tof_offset',
             description='TOF offset',
-            units='µs',
+            units='μs',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -80,7 +80,7 @@ class TofPdInstrument(InstrumentBase):
         self._calib_d_to_tof_linear: Parameter = Parameter(
             name='d_to_tof_linear',
             description='TOF linear conversion',
-            units='µs/Å',
+            units='μs/Å',
             value_spec=AttributeSpec(
                 default=10000.0,
                 validator=RangeValidator(),
@@ -90,7 +90,7 @@ class TofPdInstrument(InstrumentBase):
         self._calib_d_to_tof_quad: Parameter = Parameter(
             name='d_to_tof_quad',
             description='TOF quadratic correction',
-            units='µs/Å²',
+            units='μs/Å²',
             value_spec=AttributeSpec(
                 default=-0.00001,  # TODO: Fix CrysPy to accept 0
                 validator=RangeValidator(),
@@ -100,7 +100,7 @@ class TofPdInstrument(InstrumentBase):
         self._calib_d_to_tof_recip: Parameter = Parameter(
             name='d_to_tof_recip',
             description='TOF reciprocal velocity correction',
-            units='µs·Å',
+            units='μs·Å',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -125,7 +125,7 @@ class TofPdInstrument(InstrumentBase):
     @property
     def calib_d_to_tof_offset(self) -> Parameter:
         """
-        TOF offset (µs).
+        TOF offset (μs).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -139,7 +139,7 @@ class TofPdInstrument(InstrumentBase):
     @property
     def calib_d_to_tof_linear(self) -> Parameter:
         """
-        TOF linear conversion (µs/Å).
+        TOF linear conversion (μs/Å).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -153,7 +153,7 @@ class TofPdInstrument(InstrumentBase):
     @property
     def calib_d_to_tof_quad(self) -> Parameter:
         """
-        TOF quadratic correction (µs/Å²).
+        TOF quadratic correction (μs/Å²).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
@@ -167,7 +167,7 @@ class TofPdInstrument(InstrumentBase):
     @property
     def calib_d_to_tof_recip(self) -> Parameter:
         """
-        TOF reciprocal velocity correction (µs·Å).
+        TOF reciprocal velocity correction (μs·Å).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.

@@ -16,7 +16,6 @@ from easydiffraction import ExperimentFactory
 from easydiffraction import Project
 from easydiffraction import StructureFactory
 from easydiffraction import download_data
-from easydiffraction.utils.enums import VerbosityEnum
 
 TEMP_DIR = tempfile.gettempdir()
 
@@ -76,7 +75,6 @@ def _create_sequential_project(tmp_path: Path) -> tuple[Project, str]:
     expt = ExperimentFactory.from_data_path(
         name='template',
         data_path=data_path,
-        verbosity=VerbosityEnum.SILENT,
     )
     expt.instrument.setup_wavelength = 1.494
     expt.instrument.calib_twotheta_offset = 0.6225
@@ -250,7 +248,6 @@ def test_fit_sequential_requires_saved_project(tmp_path) -> None:
     expt = ExperimentFactory.from_data_path(
         name='e',
         data_path=data_path,
-        verbosity=VerbosityEnum.SILENT,
     )
     expt.linked_phases.create(id='s', scale=1.0)
     expt.linked_phases['s'].scale.free = True
@@ -341,12 +338,12 @@ def test_apply_params_from_csv_loads_data_and_params(tmp_path) -> None:
     project.apply_params_from_csv(row_index=1)
 
     # Verify the parameter value was overridden
-    model = list(project.structures.values())[0]
+    model = next(iter(project.structures.values()))
     assert_almost_equal(model.cell.length_a.value, expected_a, decimal=5)
 
     # Verify that the experiment has measured data loaded
     # (from the file_path in that CSV row)
-    expt = list(project.experiments.values())[0]
+    expt = next(iter(project.experiments.values()))
     assert expt.data.intensity_meas is not None
 
 

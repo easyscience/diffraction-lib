@@ -33,7 +33,7 @@ class LmfitMinimizer(MinimizerBase):
             max_iterations=max_iterations,
         )
 
-    def _prepare_solver_args(
+    def _prepare_solver_args(  # noqa: PLR6301
         self,
         parameters: list[object],
     ) -> dict[str, object]:
@@ -88,7 +88,7 @@ class LmfitMinimizer(MinimizerBase):
             max_nfev=self.max_iterations,
         )
 
-    def _sync_result_to_parameters(
+    def _sync_result_to_parameters(  # noqa: PLR6301
         self,
         parameters: list[object],
         raw_result: object,
@@ -113,7 +113,7 @@ class LmfitMinimizer(MinimizerBase):
                 param._set_value_from_minimizer(param_result.value)
                 param.uncertainty = getattr(param_result, 'stderr', None)
 
-    def _check_success(self, raw_result: object) -> bool:
+    def _check_success(self, raw_result: object) -> bool:  # noqa: PLR6301
         """
         Determine success from lmfit MinimizerResult.
 

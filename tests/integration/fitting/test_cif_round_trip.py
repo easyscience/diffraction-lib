@@ -219,8 +219,8 @@ def test_experiment_cif_round_trip_preserves_data() -> None:
     )
 
     # First and last data point two_theta and intensity_meas
-    orig_first = list(original.data.values())[0]
-    loaded_first = list(loaded.data.values())[0]
+    orig_first = next(iter(original.data.values()))
+    loaded_first = next(iter(loaded.data.values()))
     orig_last = list(original.data.values())[-1]
     loaded_last = list(loaded.data.values())[-1]
 

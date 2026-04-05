@@ -60,6 +60,19 @@
   with both getter and setter) or **read-only** (property with getter
   only). If internal code needs to mutate a read-only property, add a
   private `_set_<name>` method instead of exposing a public setter.
+- Lint complexity thresholds (`max-args`, `max-branches`,
+  `max-statements`, `max-locals`, `max-nested-blocks`, etc. in
+  `pyproject.toml`) are intentional code-quality guardrails. They are
+  not arbitrary numbers — the project uses ruff's defaults (with
+  `max-args` and `max-positional-args` set to 6 instead of 5 to account
+  for ruff counting `self`/`cls`). When code violates a threshold, it is
+  a signal that the function or class needs refactoring — not that the
+  threshold needs raising. Do not raise thresholds, add `# noqa`
+  comments, or use any other mechanism to silence complexity violations.
+  Instead, refactor the code (extract helpers, introduce parameter
+  objects, flatten nesting, etc.). For complex refactors that touch many
+  lines or change public API, propose a refactoring plan and wait for
+  approval before proceeding.
 
 ## Architecture
 
@@ -107,6 +120,26 @@
   artifacts** — never edit them by hand. Edit only the corresponding
   `*.py` script, then run `pixi run notebook-prepare` to regenerate the
   notebook.
+
+## Testing
+
+- Every new module, class, or bug fix must ship with tests. See
+  `docs/architecture/architecture.md` §10 for the full test strategy.
+- **Unit tests mirror the source tree:**
+  `src/easydiffraction/<pkg>/<mod>.py` →
+  `tests/unit/easydiffraction/<pkg>/test_<mod>.py`. Run
+  `pixi run test-structure-check` to verify.
+- Category packages with only `default.py`/`factory.py` may use a single
+  parent-level `test_<package>.py` instead of per-file tests.
+- Supplementary test files use the pattern `test_<mod>_coverage.py`.
+- Tests that expect `log.error()` to raise must `monkeypatch` Logger to
+  RAISE mode (another test may have leaked WARN mode).
+- `@typechecked` setters raise `typeguard.TypeCheckError`, not
+  `TypeError`.
+- No test-ordering dependence, no network, no sleeping, no real
+  calculation engines in unit tests.
+- After adding or modifying tests, run `pixi run unit-tests` and confirm
+  all tests pass.
 
 ## Changes
 

@@ -233,7 +233,7 @@ project.analysis.apply_constraints()
 
 # ── Initial fit on the template ──────────────────────────
 project.analysis.fit()
-project.analysis.show_fit_results()
+project.analysis.display.fit_results()
 
 # ── Save project (defines project path) ──────────────────
 project.save_as(dir_path='cosio_project')
@@ -334,7 +334,7 @@ results persistent, portable, and usable by external tools.
 
 ```python
 # Plot parameter evolution (reads from analysis/results.csv)
-project.plot_param_series(
+project.plotter.plot_param_series(
     param=structure.cell.length_a,
     versus=expt.diffrn.ambient_temperature,
 )
@@ -363,7 +363,7 @@ project = ed.Project.load('cosio_project')
 project.apply_params_from_csv(row=500)
 
 # Plot (uses the template experiment with overridden params)
-project.plot_meas_vs_calc(expt_name='template')
+project.plotter.plot_meas_vs_calc(expt_name='template')
 ```
 
 The CSV row index identifies the dataset. `apply_params_from_csv`:
@@ -1117,11 +1117,12 @@ propagation, diffrn callback, precondition validation.
 > and existing `fit()` single-mode (Phase 4). Remove the old
 > `_parameter_snapshots` dict.
 
-**Implemented:** `Plotter.plot_param_series()` reads CSV via pandas.
-`Plotter.plot_param_series_from_snapshots()` preserves backward
-compatibility for `fit()` single-mode (no CSV yet).
-`Project.plot_param_series()` tries CSV first, falls back to snapshots.
-Axis labels derived from live descriptor objects.
+**Implemented:** `Plotter.plot_param_series()` resolves CSV vs snapshots
+automatically via the project reference.
+`Plotter._plot_param_series_from_csv()` reads CSV via pandas.
+`Plotter._plot_param_series_from_snapshots()` preserves backward
+compatibility for `fit()` single-mode (no CSV yet). Axis labels derived
+from live descriptor objects.
 
 #### PR 11 — Parallel fitting (max_workers > 1) ✅
 

@@ -149,8 +149,8 @@ project.analysis.current_minimizer = 'lmfit'
 # #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='sepd', show_residual=True)
-project.plot_meas_vs_calc(expt_name='sepd', x_min=23200, x_max=23700, show_residual=True)
+project.plotter.plot_meas_vs_calc(expt_name='sepd', show_residual=True)
+project.plotter.plot_meas_vs_calc(expt_name='sepd', x_min=23200, x_max=23700, show_residual=True)
 
 # %% [markdown]
 # ### Perform Fit 1/5
@@ -167,23 +167,23 @@ expt.instrument.calib_d_to_tof_offset.free = True
 # Show free parameters after selection.
 
 # %%
-project.analysis.show_free_params()
+project.analysis.display.free_params()
 
 # %% [markdown]
 # #### Run Fitting
 
 # %%
 project.analysis.fit()
-project.analysis.show_fit_results()
+project.analysis.display.fit_results()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='sepd', show_residual=True)
+project.plotter.plot_meas_vs_calc(expt_name='sepd', show_residual=True)
 
 # %%
-project.plot_meas_vs_calc(expt_name='sepd', x_min=23200, x_max=23700, show_residual=True)
+project.plotter.plot_meas_vs_calc(expt_name='sepd', x_min=23200, x_max=23700, show_residual=True)
 
 # %% [markdown]
 # ### Perform Fit 2/5
@@ -198,23 +198,23 @@ for point in expt.background:
 # Show free parameters after selection.
 
 # %%
-project.analysis.show_free_params()
+project.analysis.display.free_params()
 
 # %% [markdown]
 # #### Run Fitting
 
 # %%
 project.analysis.fit()
-project.analysis.show_fit_results()
+project.analysis.display.fit_results()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='sepd', show_residual=True)
+project.plotter.plot_meas_vs_calc(expt_name='sepd', show_residual=True)
 
 # %%
-project.plot_meas_vs_calc(expt_name='sepd', x_min=23200, x_max=23700, show_residual=True)
+project.plotter.plot_meas_vs_calc(expt_name='sepd', x_min=23200, x_max=23700, show_residual=True)
 
 # %% [markdown]
 # ### Perform Fit 3/5
@@ -237,23 +237,23 @@ expt.peak.broad_gauss_sigma_2.free = True
 # Show free parameters after selection.
 
 # %%
-project.analysis.show_free_params()
+project.analysis.display.free_params()
 
 # %% [markdown]
 # #### Run Fitting
 
 # %%
 project.analysis.fit()
-project.analysis.show_fit_results()
+project.analysis.display.fit_results()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='sepd', show_residual=True)
+project.plotter.plot_meas_vs_calc(expt_name='sepd', show_residual=True)
 
 # %%
-project.plot_meas_vs_calc(expt_name='sepd', x_min=23200, x_max=23700, show_residual=True)
+project.plotter.plot_meas_vs_calc(expt_name='sepd', x_min=23200, x_max=23700, show_residual=True)
 
 # %% [markdown]
 # ### Perform Fit 4/5
@@ -267,20 +267,20 @@ structure.atom_sites['Si'].b_iso.free = True
 # Show free parameters after selection.
 
 # %%
-project.analysis.show_free_params()
+project.analysis.display.free_params()
 
 # %% [markdown]
 # #### Run Fitting
 
 # %%
 project.analysis.fit()
-project.analysis.show_fit_results()
+project.analysis.display.fit_results()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='sepd', show_residual=True)
+project.plotter.plot_meas_vs_calc(expt_name='sepd', show_residual=True)
 
 # %%
-project.plot_meas_vs_calc(expt_name='sepd', x_min=23200, x_max=23700, show_residual=True)
+project.plotter.plot_meas_vs_calc(expt_name='sepd', x_min=23200, x_max=23700, show_residual=True)

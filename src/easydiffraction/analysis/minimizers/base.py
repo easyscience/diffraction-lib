@@ -80,7 +80,6 @@ class MinimizerBase(ABC):
         dict[str, Any]
             Mapping of keyword arguments to pass into ``_run_solver``.
         """
-        pass
 
     @abstractmethod
     def _run_solver(
@@ -89,7 +88,6 @@ class MinimizerBase(ABC):
         engine_parameters: dict[str, object],
     ) -> object:
         """Execute the concrete solver and return its raw result."""
-        pass
 
     @abstractmethod
     def _sync_result_to_parameters(
@@ -98,7 +96,6 @@ class MinimizerBase(ABC):
         parameters: list[object],
     ) -> None:
         """Copy raw_result values back to parameters in-place."""
-        pass
 
     def _finalize_fit(
         self,
@@ -135,7 +132,6 @@ class MinimizerBase(ABC):
     @abstractmethod
     def _check_success(self, raw_result: object) -> bool:
         """Determine whether the fit was successful."""
-        pass
 
     def fit(
         self,

@@ -47,7 +47,7 @@ class ShelxExtinction(CategoryItem):
         self._radius = Parameter(
             name='radius',
             description='Crystal radius for extinction correction',
-            units='µm',
+            units='μm',
             value_spec=AttributeSpec(
                 default=1.0,
                 validator=RangeValidator(),
@@ -82,7 +82,7 @@ class ShelxExtinction(CategoryItem):
     @property
     def radius(self) -> Parameter:
         """
-        Crystal radius for extinction correction (µm).
+        Crystal radius for extinction correction (μm).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.

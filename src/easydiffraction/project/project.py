@@ -24,6 +24,39 @@ from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 
 
+def _apply_csv_row_to_params(
+    row: object,
+    columns: object,
+    param_map: dict[str, object],
+    meta_columns: set[str],
+) -> None:
+    """
+    Override parameter values and uncertainties from a CSV row.
+
+    Parameters
+    ----------
+    row : object
+        A pandas Series representing one CSV row.
+    columns : object
+        The DataFrame column index.
+    param_map : dict[str, object]
+        Map of ``unique_name`` → live Parameter objects.
+    meta_columns : set[str]
+        Column names to skip (non-parameter metadata).
+    """
+    import pandas as pd  # noqa: PLC0415
+
+    for col_name in columns:
+        if col_name in meta_columns or col_name.startswith('diffrn.'):
+            continue
+        if col_name.endswith('.uncertainty'):
+            base_name = col_name.removesuffix('.uncertainty')
+            if base_name in param_map and pd.notna(row[col_name]):
+                param_map[base_name].uncertainty = float(row[col_name])
+        elif col_name in param_map and pd.notna(row[col_name]):
+            param_map[col_name].value = float(row[col_name])
+
+
 class Project(GuardedBase):
     """
     Central API for managing a diffraction data analysis project.
@@ -50,6 +83,7 @@ class Project(GuardedBase):
         self._experiments = Experiments()
         self._tabler = TableRenderer.get()
         self._plotter = Plotter()
+        self._plotter._set_project(self)
         self._analysis = Analysis(self)
         self._summary = Summary(self)
         self._saved = False
@@ -371,7 +405,7 @@ class Project(GuardedBase):
         sequential-fit results where ``file_path`` points to a real
         file) reloads the measured data into the template experiment.
 
-        After calling this method, ``plot_meas_vs_calc()`` will show the
+        After calling this method, ``plotter.plot_meas_vs_calc()`` will
         fit for that specific dataset.
 
         Parameters
@@ -417,35 +451,17 @@ class Project(GuardedBase):
         # 1. Reload data if file_path points to a real file
         file_path = row.get('file_path', '')
         if file_path and pathlib.Path(file_path).is_file():
-            experiment = list(self.experiments.values())[0]
+            experiment = next(iter(self.experiments.values()))
             experiment._load_ascii_data_to_experiment(file_path)
 
-        # 2. Override parameter values
+        # 2. Override parameter values and uncertainties
         all_params = self.structures.parameters + self.experiments.parameters
         param_map = {
             p.unique_name: p
             for p in all_params
             if isinstance(p, Parameter) and hasattr(p, 'unique_name')
         }
-
-        skip_cols = set(_META_COLUMNS)
-        for col_name in df.columns:
-            if col_name in skip_cols:
-                continue
-            if col_name.startswith('diffrn.'):
-                continue
-            if col_name.endswith('.uncertainty'):
-                continue
-            if col_name in param_map and pd.notna(row[col_name]):
-                param_map[col_name].value = float(row[col_name])
-
-        # 3. Apply uncertainties
-        for col_name in df.columns:
-            if not col_name.endswith('.uncertainty'):
-                continue
-            base_name = col_name.removesuffix('.uncertainty')
-            if base_name in param_map and pd.notna(row[col_name]):
-                param_map[base_name].uncertainty = float(row[col_name])
+        _apply_csv_row_to_params(row, df.columns, param_map, set(_META_COLUMNS))
 
         # 4. Force recalculation: data was replaced directly (bypassing
         #    value setters), so the dirty flag may not be set.
@@ -455,163 +471,3 @@ class Project(GuardedBase):
             experiment._need_categories_update = True
 
         log.info(f'Applied parameters from CSV row {row_index} (file: {file_path}).')
-
-    # ------------------------------------------
-    # Plotting
-    # ------------------------------------------
-
-    def _update_categories(self, expt_name: str) -> None:
-        for structure in self.structures:
-            structure._update_categories()
-        self.analysis._update_categories()
-        experiment = self.experiments[expt_name]
-        experiment._update_categories()
-
-    def plot_meas(
-        self,
-        expt_name: str,
-        x_min: float | None = None,
-        x_max: float | None = None,
-        x: object | None = None,
-    ) -> None:
-        """
-        Plot measured diffraction data for an experiment.
-
-        Parameters
-        ----------
-        expt_name : str
-            Name of the experiment to plot.
-        x_min : float | None, default=None
-            Lower bound for the x-axis range.
-        x_max : float | None, default=None
-            Upper bound for the x-axis range.
-        x : object | None, default=None
-            Optional explicit x-axis data to override stored values.
-        """
-        self._update_categories(expt_name)
-        experiment = self.experiments[expt_name]
-
-        self.plotter.plot_meas(
-            experiment.data,
-            expt_name,
-            experiment.type,
-            x_min=x_min,
-            x_max=x_max,
-            x=x,
-        )
-
-    def plot_calc(
-        self,
-        expt_name: str,
-        x_min: float | None = None,
-        x_max: float | None = None,
-        x: object | None = None,
-    ) -> None:
-        """
-        Plot calculated diffraction pattern for an experiment.
-
-        Parameters
-        ----------
-        expt_name : str
-            Name of the experiment to plot.
-        x_min : float | None, default=None
-            Lower bound for the x-axis range.
-        x_max : float | None, default=None
-            Upper bound for the x-axis range.
-        x : object | None, default=None
-            Optional explicit x-axis data to override stored values.
-        """
-        self._update_categories(expt_name)
-        experiment = self.experiments[expt_name]
-
-        self.plotter.plot_calc(
-            experiment.data,
-            expt_name,
-            experiment.type,
-            x_min=x_min,
-            x_max=x_max,
-            x=x,
-        )
-
-    def plot_meas_vs_calc(
-        self,
-        expt_name: str,
-        x_min: float | None = None,
-        x_max: float | None = None,
-        show_residual: bool = False,
-        x: object | None = None,
-    ) -> None:
-        """
-        Plot measured vs calculated data for an experiment.
-
-        Parameters
-        ----------
-        expt_name : str
-            Name of the experiment to plot.
-        x_min : float | None, default=None
-            Lower bound for the x-axis range.
-        x_max : float | None, default=None
-            Upper bound for the x-axis range.
-        show_residual : bool, default=False
-            When ``True``, include the residual (difference) curve.
-        x : object | None, default=None
-            Optional explicit x-axis data to override stored values.
-        """
-        self._update_categories(expt_name)
-        experiment = self.experiments[expt_name]
-
-        self.plotter.plot_meas_vs_calc(
-            experiment.data,
-            expt_name,
-            experiment.type,
-            x_min=x_min,
-            x_max=x_max,
-            show_residual=show_residual,
-            x=x,
-        )
-
-    def plot_param_series(self, param: object, versus: object | None = None) -> None:
-        """
-        Plot a parameter's value across sequential fit results.
-
-        When a ``results.csv`` file exists in the project's
-        ``analysis/`` directory, data is read from CSV.  Otherwise,
-        falls back to in-memory parameter snapshots (produced by
-        ``fit()`` in single mode).
-
-        Parameters
-        ----------
-        param : object
-            Parameter descriptor whose ``unique_name`` identifies the
-            values to plot.
-        versus : object | None, default=None
-            A diffrn descriptor (e.g.
-            ``expt.diffrn.ambient_temperature``) whose value is used as
-            the x-axis for each experiment.  When ``None``, the
-            experiment sequence number is used instead.
-        """
-        unique_name = param.unique_name
-
-        # Try CSV first (produced by fit_sequential or future fit)
-        csv_path = None
-        if self.info.path is not None:
-            candidate = pathlib.Path(self.info.path) / 'analysis' / 'results.csv'
-            if candidate.is_file():
-                csv_path = str(candidate)
-
-        if csv_path is not None:
-            self.plotter.plot_param_series(
-                csv_path=csv_path,
-                unique_name=unique_name,
-                param_descriptor=param,
-                versus_descriptor=versus,
-            )
-        else:
-            # Fallback: in-memory snapshots from fit() single mode
-            versus_name = versus.name if versus is not None else None
-            self.plotter.plot_param_series_from_snapshots(
-                unique_name,
-                versus_name,
-                self.experiments,
-                self.analysis._parameter_snapshots,
-            )

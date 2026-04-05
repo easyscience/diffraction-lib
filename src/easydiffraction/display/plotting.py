@@ -7,6 +7,7 @@ Uses the common :class:`RendererBase` so plotters and tablers share a
 consistent configuration surface and engine handling.
 """
 
+import pathlib
 from enum import StrEnum
 
 import numpy as np
@@ -66,10 +67,24 @@ class Plotter(RendererBase):
         self._x_max = DEFAULT_MAX
         # Chart height
         self.height = DEFAULT_HEIGHT
+        # Back-reference to the owning Project (set via _set_project)
+        self._project = None
 
     # ------------------------------------------------------------------
     #  Private class methods
     # ------------------------------------------------------------------
+
+    def _set_project(self, project: object) -> None:
+        """Wire the owning project for high-level plot methods."""
+        self._project = project
+
+    def _update_project_categories(self, expt_name: str) -> None:
+        """Update all project categories before plotting."""
+        for structure in self._project.structures:
+            structure._update_categories()
+        self._project.analysis._update_categories()
+        experiment = self._project.experiments[expt_name]
+        experiment._update_categories()
 
     @classmethod
     def _factory(cls) -> type[RendererFactoryBase]:  # type: ignore[override]
@@ -155,8 +170,8 @@ class Plotter(RendererBase):
 
         return filtered_y_array
 
+    @staticmethod
     def _get_axes_labels(
-        self,
         sample_form: object,
         scattering_type: object,
         x_axis: object,
@@ -164,7 +179,7 @@ class Plotter(RendererBase):
         """Look up axis labels for the experiment / x-axis."""
         return DEFAULT_AXES_LABELS[sample_form, scattering_type, x_axis]
 
-    def _prepare_powder_data(
+    def _prepare_powder_context(
         self,
         pattern: object,
         expt_name: str,
@@ -172,12 +187,9 @@ class Plotter(RendererBase):
         x_min: object,
         x_max: object,
         x: object,
-        need_meas: bool = False,
-        need_calc: bool = False,
-        show_residual: bool = False,
     ) -> dict | None:
         """
-        Validate, resolve axes, auto-range, and filter arrays.
+        Resolve axes, auto-range, and filter x-array.
 
         Parameters
         ----------
@@ -194,35 +206,23 @@ class Plotter(RendererBase):
             Optional maximum x-axis limit.
         x : object
             Explicit x-axis type or ``None``.
-        need_meas : bool, default=False
-            Whether ``intensity_meas`` is required.
-        need_calc : bool, default=False
-            Whether ``intensity_calc`` is required.
-        show_residual : bool, default=False
-            If ``True``, compute meas − calc residual.
 
         Returns
         -------
         dict | None
-            A dict with keys ``x_filtered``, ``y_series``, ``y_labels``,
-            ``axes_labels``, and ``x_axis``; or ``None`` when a required
-            array is missing.
+            A dict with keys ``x_filtered``, ``x_array``, ``x_min``,
+            ``x_max``, and ``axes_labels``; or ``None`` when the x-array
+            is missing.
         """
         x_axis, x_name, sample_form, scattering_type, _ = self._resolve_x_axis(expt_type, x)
 
         # Get x-array from pattern
-        x_array = getattr(pattern, x_axis, None)
-        if x_array is None:
+        x_raw = getattr(pattern, x_axis, None)
+        if x_raw is None:
             log.error(f'No {x_name} data available for experiment {expt_name}')
             return None
 
-        # Validate required intensities
-        if need_meas and pattern.intensity_meas is None:
-            log.error(f'No measured data available for experiment {expt_name}')
-            return None
-        if need_calc and pattern.intensity_calc is None:
-            log.error(f'No calculated data available for experiment {expt_name}')
-            return None
+        x_array = np.asarray(x_raw)
 
         # Auto-range for ASCII engine
         x_min, x_max = self._auto_x_range_for_ascii(pattern, x_array, x_min, x_max)
@@ -230,38 +230,18 @@ class Plotter(RendererBase):
         # Filter x
         x_filtered = self._filtered_y_array(x_array, x_array, x_min, x_max)
 
-        # Filter y arrays and build series / labels
-        y_series = []
-        y_labels = []
-
-        y_meas = None
-        if need_meas:
-            y_meas = self._filtered_y_array(pattern.intensity_meas, x_array, x_min, x_max)
-            y_series.append(y_meas)
-            y_labels.append('meas')
-
-        y_calc = None
-        if need_calc:
-            y_calc = self._filtered_y_array(pattern.intensity_calc, x_array, x_min, x_max)
-            y_series.append(y_calc)
-            y_labels.append('calc')
-
-        if show_residual and y_meas is not None and y_calc is not None:
-            y_resid = y_meas - y_calc
-            y_series.append(y_resid)
-            y_labels.append('resid')
-
         axes_labels = self._get_axes_labels(sample_form, scattering_type, x_axis)
 
         return {
             'x_filtered': x_filtered,
-            'y_series': y_series,
-            'y_labels': y_labels,
+            'x_array': x_array,
+            'x_min': x_min,
+            'x_max': x_max,
             'axes_labels': axes_labels,
-            'x_axis': x_axis,
         }
 
-    def _resolve_x_axis(self, expt_type: object, x: object) -> tuple:
+    @staticmethod
+    def _resolve_x_axis(expt_type: object, x: object) -> tuple:
         """
         Determine the x-axis type from experiment metadata.
 
@@ -371,6 +351,155 @@ class Plotter(RendererBase):
 
     def plot_meas(
         self,
+        expt_name: str,
+        x_min: float | None = None,
+        x_max: float | None = None,
+        x: object | None = None,
+    ) -> None:
+        """
+        Plot measured diffraction data for an experiment.
+
+        Parameters
+        ----------
+        expt_name : str
+            Name of the experiment to plot.
+        x_min : float | None, default=None
+            Lower bound for the x-axis range.
+        x_max : float | None, default=None
+            Upper bound for the x-axis range.
+        x : object | None, default=None
+            Optional explicit x-axis data to override stored values.
+        """
+        self._update_project_categories(expt_name)
+        experiment = self._project.experiments[expt_name]
+        self._plot_meas_data(
+            experiment.data,
+            expt_name,
+            experiment.type,
+            x_min=x_min,
+            x_max=x_max,
+            x=x,
+        )
+
+    def plot_calc(
+        self,
+        expt_name: str,
+        x_min: float | None = None,
+        x_max: float | None = None,
+        x: object | None = None,
+    ) -> None:
+        """
+        Plot calculated diffraction pattern for an experiment.
+
+        Parameters
+        ----------
+        expt_name : str
+            Name of the experiment to plot.
+        x_min : float | None, default=None
+            Lower bound for the x-axis range.
+        x_max : float | None, default=None
+            Upper bound for the x-axis range.
+        x : object | None, default=None
+            Optional explicit x-axis data to override stored values.
+        """
+        self._update_project_categories(expt_name)
+        experiment = self._project.experiments[expt_name]
+        self._plot_calc_data(
+            experiment.data,
+            expt_name,
+            experiment.type,
+            x_min=x_min,
+            x_max=x_max,
+            x=x,
+        )
+
+    def plot_meas_vs_calc(
+        self,
+        expt_name: str,
+        x_min: float | None = None,
+        x_max: float | None = None,
+        show_residual: bool = False,
+        x: object | None = None,
+    ) -> None:
+        """
+        Plot measured vs calculated data for an experiment.
+
+        Parameters
+        ----------
+        expt_name : str
+            Name of the experiment to plot.
+        x_min : float | None, default=None
+            Lower bound for the x-axis range.
+        x_max : float | None, default=None
+            Upper bound for the x-axis range.
+        show_residual : bool, default=False
+            When ``True``, include the residual (difference) curve.
+        x : object | None, default=None
+            Optional explicit x-axis data to override stored values.
+        """
+        self._update_project_categories(expt_name)
+        experiment = self._project.experiments[expt_name]
+        self._plot_meas_vs_calc_data(
+            experiment,
+            expt_name,
+            x_min=x_min,
+            x_max=x_max,
+            show_residual=show_residual,
+            x=x,
+        )
+
+    def plot_param_series(
+        self,
+        param: object,
+        versus: object | None = None,
+    ) -> None:
+        """
+        Plot a parameter's value across sequential fit results.
+
+        When a ``results.csv`` file exists in the project's
+        ``analysis/`` directory, data is read from CSV.  Otherwise,
+        falls back to in-memory parameter snapshots (produced by
+        ``fit()`` in single mode).
+
+        Parameters
+        ----------
+        param : object
+            Parameter descriptor whose ``unique_name`` identifies the
+            values to plot.
+        versus : object | None, default=None
+            A diffrn descriptor (e.g.
+            ``expt.diffrn.ambient_temperature``) whose value is used as
+            the x-axis for each experiment.  When ``None``, the
+            experiment sequence number is used instead.
+        """
+        unique_name = param.unique_name
+
+        # Try CSV first (produced by fit_sequential or future fit)
+        csv_path = None
+        if self._project.info.path is not None:
+            candidate = pathlib.Path(self._project.info.path) / 'analysis' / 'results.csv'
+            if candidate.is_file():
+                csv_path = str(candidate)
+
+        if csv_path is not None:
+            self._plot_param_series_from_csv(
+                csv_path=csv_path,
+                unique_name=unique_name,
+                param_descriptor=param,
+                versus_descriptor=versus,
+            )
+        else:
+            # Fallback: in-memory snapshots from fit() single mode
+            versus_name = versus.name if versus is not None else None
+            self._plot_param_series_from_snapshots(
+                unique_name,
+                versus_name,
+                self._project.experiments,
+                self._project.analysis._parameter_snapshots,
+            )
+
+    def _plot_meas_data(
+        self,
         pattern: object,
         expt_name: str,
         expt_type: object,
@@ -395,31 +524,36 @@ class Plotter(RendererBase):
         x_max : object, default=None
             Optional maximum x-axis limit.
         x : object, default=None
-            X-axis type (``'two_theta'``, ``'time_of_flight'``, or
-            ``'d_spacing'``). If ``None``, auto-detected from beam mode.
+            X-axis type. If ``None``, auto-detected from beam mode.
         """
-        ctx = self._prepare_powder_data(
+        ctx = self._prepare_powder_context(
             pattern,
             expt_name,
             expt_type,
             x_min,
             x_max,
             x,
-            need_meas=True,
         )
         if ctx is None:
             return
 
+        if pattern.intensity_meas is None:
+            log.error(f'No measured data available for experiment {expt_name}')
+            return
+        y_meas = self._filtered_y_array(
+            pattern.intensity_meas, ctx['x_array'], ctx['x_min'], ctx['x_max']
+        )
+
         self._backend.plot_powder(
             x=ctx['x_filtered'],
-            y_series=ctx['y_series'],
-            labels=ctx['y_labels'],
+            y_series=[y_meas],
+            labels=['meas'],
             axes_labels=ctx['axes_labels'],
             title=f"Measured data for experiment 🔬 '{expt_name}'",
             height=self.height,
         )
 
-    def plot_calc(
+    def _plot_calc_data(
         self,
         pattern: object,
         expt_name: str,
@@ -445,35 +579,39 @@ class Plotter(RendererBase):
         x_max : object, default=None
             Optional maximum x-axis limit.
         x : object, default=None
-            X-axis type (``'two_theta'``, ``'time_of_flight'``, or
-            ``'d_spacing'``). If ``None``, auto-detected from beam mode.
+            X-axis type. If ``None``, auto-detected from beam mode.
         """
-        ctx = self._prepare_powder_data(
+        ctx = self._prepare_powder_context(
             pattern,
             expt_name,
             expt_type,
             x_min,
             x_max,
             x,
-            need_calc=True,
         )
         if ctx is None:
             return
 
+        if pattern.intensity_calc is None:
+            log.error(f'No calculated data available for experiment {expt_name}')
+            return
+        y_calc = self._filtered_y_array(
+            pattern.intensity_calc, ctx['x_array'], ctx['x_min'], ctx['x_max']
+        )
+
         self._backend.plot_powder(
             x=ctx['x_filtered'],
-            y_series=ctx['y_series'],
-            labels=ctx['y_labels'],
+            y_series=[y_calc],
+            labels=['calc'],
             axes_labels=ctx['axes_labels'],
             title=f"Calculated data for experiment 🔬 '{expt_name}'",
             height=self.height,
         )
 
-    def plot_meas_vs_calc(
+    def _plot_meas_vs_calc_data(
         self,
-        pattern: object,
+        experiment: object,
         expt_name: str,
-        expt_type: object,
         x_min: object = None,
         x_max: object = None,
         show_residual: bool = False,
@@ -493,13 +631,10 @@ class Plotter(RendererBase):
 
         Parameters
         ----------
-        pattern : object
-            Data pattern object with meas/calc arrays.
+        experiment : object
+            Experiment instance with ``.data`` and ``.type`` attributes.
         expt_name : str
             Experiment name for the title.
-        expt_type : object
-            Experiment type with sample_form, scattering, and beam
-            enums.
         x_min : object, default=None
             Optional minimum x-axis limit.
         x_max : object, default=None
@@ -510,6 +645,9 @@ class Plotter(RendererBase):
             X-axis type. If ``None``, auto-detected from sample form and
             beam mode.
         """
+        pattern = experiment.data
+        expt_type = experiment.type
+
         x_axis, _, sample_form, scattering_type, _ = self._resolve_x_axis(expt_type, x)
 
         # Validate required data (before x-array check, matching
@@ -544,32 +682,116 @@ class Plotter(RendererBase):
             return
 
         # Line plot (PD or SC with d_spacing/sin_theta_over_lambda)
-        # TODO: Rename from _prepare_powder_data as it also supports
-        #  single crystal line plots
-        ctx = self._prepare_powder_data(
+        ctx = self._prepare_powder_context(
             pattern,
             expt_name,
             expt_type,
             x_min,
             x_max,
             x,
-            need_meas=True,
-            need_calc=True,
-            show_residual=show_residual,
         )
         if ctx is None:
             return
 
+        y_series = []
+        y_labels = []
+        y_meas = self._filtered_y_array(
+            pattern.intensity_meas, ctx['x_array'], ctx['x_min'], ctx['x_max']
+        )
+        y_series.append(y_meas)
+        y_labels.append('meas')
+        y_calc = self._filtered_y_array(
+            pattern.intensity_calc, ctx['x_array'], ctx['x_min'], ctx['x_max']
+        )
+        y_series.append(y_calc)
+        y_labels.append('calc')
+        if show_residual:
+            y_series.append(y_meas - y_calc)
+            y_labels.append('resid')
+
         self._backend.plot_powder(
             x=ctx['x_filtered'],
-            y_series=ctx['y_series'],
-            labels=ctx['y_labels'],
+            y_series=y_series,
+            labels=y_labels,
             axes_labels=ctx['axes_labels'],
             title=title,
             height=self.height,
         )
 
-    def plot_param_series(
+    def _plot_param_series_from_csv(
+        self,
+        csv_path: str,
+        unique_name: str,
+        param_descriptor: object,
+        versus_descriptor: object | None = None,
+    ) -> None:
+        """
+        Plot a parameter's value across sequential fit results.
+
+        Reads data from the CSV file at *csv_path*.  The y-axis values
+        come from the column named *unique_name*, uncertainties from
+        ``{unique_name}.uncertainty``.  When *versus_descriptor* is
+        provided, the x-axis uses the corresponding ``diffrn.{name}``
+        column; otherwise the row index is used.
+
+        Axis labels are derived from the live descriptor objects
+        (*param_descriptor* and *versus_descriptor*), which carry
+        ``.description`` and ``.units`` attributes.
+
+        Parameters
+        ----------
+        csv_path : str
+            Path to the ``results.csv`` file.
+        unique_name : str
+            Unique name of the parameter to plot (CSV column key).
+        param_descriptor : object
+            The live parameter descriptor (for axis label / units).
+        versus_descriptor : object | None, default=None
+            A diffrn descriptor whose ``.name`` maps to a
+            ``diffrn.{name}`` CSV column.  ``None`` → use row index.
+        """
+        df = pd.read_csv(csv_path)
+
+        if unique_name not in df.columns:
+            log.warning(
+                f"Parameter '{unique_name}' not found in CSV columns. "
+                f'Available: {list(df.columns)}'
+            )
+            return
+
+        y = df[unique_name].astype(float).tolist()
+        uncert_col = f'{unique_name}.uncertainty'
+        sy = df[uncert_col].astype(float).tolist() if uncert_col in df.columns else [0.0] * len(y)
+
+        # X-axis: diffrn column or row index
+        versus_name = versus_descriptor.name if versus_descriptor is not None else None
+        diffrn_col = f'diffrn.{versus_name}' if versus_name else None
+
+        if diffrn_col and diffrn_col in df.columns:
+            x = pd.to_numeric(df[diffrn_col], errors='coerce').tolist()
+            x_label = getattr(versus_descriptor, 'description', None) or versus_name
+            if hasattr(versus_descriptor, 'units') and versus_descriptor.units:
+                x_label = f'{x_label} ({versus_descriptor.units})'
+        else:
+            x = list(range(1, len(y) + 1))
+            x_label = 'Experiment No.'
+
+        # Y-axis label from descriptor
+        param_units = getattr(param_descriptor, 'units', '')
+        y_label = f'Parameter value ({param_units})' if param_units else 'Parameter value'
+
+        title = f"Parameter '{unique_name}' across fit results"
+
+        self._backend.plot_scatter(
+            x=x,
+            y=y,
+            sy=sy,
+            axes_labels=[x_label, y_label],
+            title=title,
+            height=self.height,
+        )
+
+    def _plot_param_series_from_snapshots(
         self,
         csv_path: str,
         unique_name: str,

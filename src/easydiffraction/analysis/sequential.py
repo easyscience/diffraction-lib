@@ -101,7 +101,7 @@ def _fit_worker(
         # 3. Load experiment from template CIF
         #    (full config + template data)
         project.experiments.add_from_cif_str(template.experiment_cif)
-        expt = list(project.experiments.values())[0]
+        expt = next(iter(project.experiments.values()))
 
         # 4. Replace data from the new data path
         expt._load_ascii_data_to_experiment(data_path)
@@ -135,7 +135,15 @@ def _fit_worker(
         # 10. Collect results
         result.update(_collect_results(project, template))
 
-    except Exception as exc:  # noqa: BLE001
+    except (
+        RuntimeError,
+        ValueError,
+        TypeError,
+        ArithmeticError,
+        KeyError,
+        IndexError,
+        OSError,
+    ) as exc:
         result['fit_success'] = False
         result['chi_squared'] = None
         result['reduced_chi_squared'] = None
@@ -306,8 +314,7 @@ def _build_csv_header(
     header = list(_META_COLUMNS)
     header.extend(f'diffrn.{field}' for field in template.diffrn_field_names)
     for name in template.free_param_unique_names:
-        header.append(name)
-        header.append(f'{name}.uncertainty')
+        header.extend((name, f'{name}.uncertainty'))
     return header
 
 
@@ -353,6 +360,33 @@ def _append_to_csv(
             writer.writerow(result)
 
 
+def _extract_params_from_row(row: dict[str, str]) -> dict[str, float]:
+    """
+    Extract parameter values from a single CSV row.
+
+    Skips meta columns, diffrn columns, uncertainty columns, and empty
+    values. Non-numeric values are silently ignored.
+
+    Parameters
+    ----------
+    row : dict[str, str]
+        A single CSV row as a dict.
+
+    Returns
+    -------
+    dict[str, float]
+        Parameter name → float value mapping.
+    """
+    params: dict[str, float] = {}
+    for key, val in row.items():
+        if key in _META_COLUMNS or key.startswith('diffrn.') or key.endswith('.uncertainty'):
+            continue
+        if val:
+            with contextlib.suppress(ValueError, TypeError):
+                params[key] = float(val)
+    return params
+
+
 def _read_csv_for_recovery(
     csv_path: Path,
 ) -> tuple[set[str], dict[str, float] | None]:
@@ -383,18 +417,7 @@ def _read_csv_for_recovery(
             if file_path:
                 fitted.add(file_path)
             if row.get('fit_success', '').lower() == 'true':
-                # Extract parameter values from this row
-                params: dict[str, float] = {}
-                for key, val in row.items():
-                    if key in _META_COLUMNS:
-                        continue
-                    if key.startswith('diffrn.'):
-                        continue
-                    if key.endswith('.uncertainty'):
-                        continue
-                    if val:
-                        with contextlib.suppress(ValueError, TypeError):
-                            params[key] = float(val)
+                params = _extract_params_from_row(row)
                 if params:
                     last_params = params
 
@@ -423,8 +446,8 @@ def _build_template(project: object) -> SequentialFitTemplate:
     """
     from easydiffraction.core.variable import Parameter  # noqa: PLC0415
 
-    structure = list(project.structures.values())[0]
-    experiment = list(project.experiments.values())[0]
+    structure = next(iter(project.structures.values()))
+    experiment = next(iter(project.experiments.values()))
 
     # Collect free parameter unique_names and initial values
     all_params = project.structures.parameters + project.experiments.parameters
@@ -453,9 +476,7 @@ def _build_template(project: object) -> SequentialFitTemplate:
     diffrn_field_names: list[str] = []
     if hasattr(experiment, 'diffrn'):
         diffrn_field_names.extend(
-            p.name
-            for p in experiment.diffrn.parameters
-            if hasattr(p, 'name') and p.name not in ('type',)
+            p.name for p in experiment.diffrn.parameters if hasattr(p, 'name') and p.name != 'type'
         )
 
     return SequentialFitTemplate(
@@ -524,9 +545,263 @@ def _report_chunk_progress(
             print(f'  {status} {Path(r["file_path"]).name}: χ² = {rchi2_str}')
 
 
+def _apply_diffrn_metadata(
+    results: list[dict[str, Any]],
+    extract_diffrn: Callable,
+) -> None:
+    """
+    Enrich result dicts with diffrn metadata from a user callback.
+
+    Calls *extract_diffrn* for each result and merges the returned
+    key/value pairs into the result dict under ``diffrn.<key>`` keys.
+    Failures are logged as warnings and do not interrupt processing.
+
+    Parameters
+    ----------
+    results : list[dict[str, Any]]
+        Worker result dicts (mutated in place).
+    extract_diffrn : Callable
+        User callback: ``f(file_path) → {field: value}``.
+    """
+    for result in results:
+        try:
+            diffrn_values = extract_diffrn(result['file_path'])
+            for key, val in diffrn_values.items():
+                result[f'diffrn.{key}'] = val
+        except (RuntimeError, ValueError, TypeError, KeyError, AttributeError, OSError) as exc:
+            log.warning(f'extract_diffrn failed for {result["file_path"]}: {exc}')
+
+
 # ------------------------------------------------------------------
 #  Main orchestration
 # ------------------------------------------------------------------
+
+
+def _check_seq_preconditions(project: object) -> list[str]:
+    """
+    Validate sequential fitting preconditions.
+
+    Parameters
+    ----------
+    project : object
+        The project to validate.
+
+    Returns
+    -------
+    list[str]
+        Data file paths from the template experiment.
+
+    Raises
+    ------
+    ValueError
+        If preconditions are not met.
+    """
+    if len(project.structures) != 1:
+        msg = f'Sequential fitting requires exactly 1 structure, found {len(project.structures)}.'
+        raise ValueError(msg)
+
+    if len(project.experiments) != 1:
+        msg = (
+            f'Sequential fitting requires exactly 1 experiment (the template), '
+            f'found {len(project.experiments)}.'
+        )
+        raise ValueError(msg)
+
+    if project.info.path is None:
+        msg = 'Project must be saved before sequential fitting. Call save_as() first.'
+        raise ValueError(msg)
+
+    from easydiffraction.core.variable import Parameter  # noqa: PLC0415
+
+    free_params = [
+        p for p in project.parameters if isinstance(p, Parameter) and not p.constrained and p.free
+    ]
+    if not free_params:
+        msg = 'No free parameters found. Mark at least one parameter as free.'
+        raise ValueError(msg)
+
+
+def _setup_csv_and_recovery(
+    project: object,
+    template: SequentialFitTemplate,
+    verb: VerbosityEnum,
+) -> tuple[Path, list[str], set[str], SequentialFitTemplate]:
+    """
+    Set up CSV and perform crash recovery.
+
+    Parameters
+    ----------
+    project : object
+        The project instance.
+    template : SequentialFitTemplate
+        The fit template.
+    verb : VerbosityEnum
+        Output verbosity.
+
+    Returns
+    -------
+    tuple[Path, list[str], set[str], SequentialFitTemplate]
+        CSV path, header, already-fitted set, and updated template.
+    """
+    csv_path = project.info.path / 'analysis' / 'results.csv'
+    csv_path.parent.mkdir(parents=True, exist_ok=True)
+    header = _build_csv_header(template)
+
+    already_fitted, recovered_params = _read_csv_for_recovery(csv_path)
+
+    if already_fitted:
+        num_skipped = len(already_fitted)
+        log.info(f'Resuming: {num_skipped} files already fitted, skipping.')
+        if verb is not VerbosityEnum.SILENT:
+            print(f'📂 Resuming from CSV: {num_skipped} files already fitted.')
+        if recovered_params is not None:
+            template = replace(template, initial_params=recovered_params)
+    else:
+        _write_csv_header(csv_path, header)
+
+    return csv_path, header, already_fitted, template
+
+
+def _resolve_workers(
+    max_workers: int | str,
+    chunk_size: int | None,
+) -> tuple[int, int]:
+    """
+    Resolve worker count and chunk size.
+
+    Parameters
+    ----------
+    max_workers : int | str
+        Worker count or ``'auto'``.
+    chunk_size : int | None
+        Explicit chunk size or ``None``.
+
+    Returns
+    -------
+    tuple[int, int]
+        Resolved (max_workers, chunk_size).
+
+    Raises
+    ------
+    ValueError
+        If max_workers is invalid.
+    """
+    if isinstance(max_workers, str) and max_workers == 'auto':
+        import os  # noqa: PLC0415
+
+        max_workers = os.cpu_count() or 1
+
+    if not isinstance(max_workers, int) or max_workers < 1:
+        msg = f"max_workers must be a positive integer or 'auto', got {max_workers!r}"
+        raise ValueError(msg)
+
+    if chunk_size is None:
+        chunk_size = max_workers
+
+    return max_workers, chunk_size
+
+
+def _create_pool_context(max_workers: int) -> tuple[object, object, object, object]:
+    """
+    Create a process pool context manager and back up __main__ state.
+
+    Parameters
+    ----------
+    max_workers : int
+        Number of workers. ``1`` → nullcontext.
+
+    Returns
+    -------
+    tuple[object, object, object, object]
+        ``(pool_cm, main_mod, main_file_bak, main_spec_bak)``.
+    """
+    main_mod = sys.modules.get('__main__')
+    main_file_bak = getattr(main_mod, '__file__', None)
+    main_spec_bak = getattr(main_mod, '__spec__', None)
+
+    if max_workers > 1:
+        if main_mod is not None and main_file_bak is not None:
+            main_mod.__file__ = None  # type: ignore[assignment]
+        if main_mod is not None and main_spec_bak is not None:
+            main_mod.__spec__ = None
+        spawn_ctx = mp.get_context('spawn')
+        pool_cm = ProcessPoolExecutor(
+            max_workers=max_workers,
+            mp_context=spawn_ctx,
+            max_tasks_per_child=100,
+        )
+    else:
+        pool_cm = contextlib.nullcontext()
+
+    return pool_cm, main_mod, main_file_bak, main_spec_bak
+
+
+def _restore_main_state(
+    main_mod: object,
+    main_file_bak: object,
+    main_spec_bak: object,
+) -> None:
+    """Restore ``__main__`` attributes after pool execution."""
+    if main_mod is not None and main_file_bak is not None:
+        main_mod.__file__ = main_file_bak
+    if main_mod is not None and main_spec_bak is not None:
+        main_mod.__spec__ = main_spec_bak
+
+
+def _run_fit_loop(
+    pool_cm: object,
+    chunks: list[list[str]],
+    template: SequentialFitTemplate,
+    csv_info: tuple[Path, list[str]],
+    extract_diffrn: Callable | None,
+    verb: VerbosityEnum,
+) -> None:
+    """
+    Execute the chunk-based fitting loop.
+
+    Parameters
+    ----------
+    pool_cm : object
+        Pool context manager (ProcessPoolExecutor or nullcontext).
+    chunks : list[list[str]]
+        Chunked file paths.
+    template : SequentialFitTemplate
+        Starting template (updated via propagation).
+    csv_info : tuple[Path, list[str]]
+        Tuple of ``(csv_path, header)``.
+    extract_diffrn : Callable | None
+        User callback for diffrn metadata.
+    verb : VerbosityEnum
+        Output verbosity.
+    """
+    csv_path, header = csv_info
+    total_chunks = len(chunks)
+    with pool_cm as executor:
+        for chunk_idx, chunk in enumerate(chunks, start=1):
+            if executor is not None:
+                templates = [template] * len(chunk)
+                results = list(executor.map(_fit_worker, templates, chunk))
+            else:
+                results = [_fit_worker(template, path) for path in chunk]
+
+            if extract_diffrn is not None:
+                _apply_diffrn_metadata(results, extract_diffrn)
+
+            _append_to_csv(csv_path, header, results)
+            _report_chunk_progress(chunk_idx, total_chunks, results, verb)
+
+            # Propagate last successful params
+            last_ok = _find_last_successful(results)
+            if last_ok is not None:
+                template = replace(template, initial_params=last_ok['params'])
+
+
+def _find_last_successful(results: list[dict[str, Any]]) -> dict[str, Any] | None:
+    """Return the last successful result dict, or None."""
+    for r in reversed(results):
+        if r.get('fit_success') and r.get('params'):
+            return r
+    return None
 
 
 def fit_sequential(
@@ -536,7 +811,6 @@ def fit_sequential(
     chunk_size: int | None = None,
     file_pattern: str = '*',
     extract_diffrn: Callable | None = None,
-    verbosity: str | None = None,
 ) -> None:
     """
     Run sequential fitting over all data files in a directory.
@@ -557,184 +831,50 @@ def fit_sequential(
         Glob pattern to filter files in *data_dir*.
     extract_diffrn : Callable | None, default=None
         User callback: ``f(file_path) → {diffrn_field: value}``.
-    verbosity : str | None, default=None
-        ``'full'``, ``'short'``, ``'silent'``. Default: project
-        verbosity.
-
-    Raises
-    ------
-    ValueError
-        If preconditions are not met (e.g. multiple structures, missing
-        project path, no free parameters).
     """
-    # Guard against re-entry in spawned child processes.  With the
-    # ``spawn`` multiprocessing context the child re-imports __main__,
-    # which re-executes the user script and would call fit_sequential
-    # again, causing infinite process spawning.
     if mp.parent_process() is not None:
         return
 
     project = analysis.project
-    verb = VerbosityEnum(verbosity if verbosity is not None else project.verbosity)
+    verb = VerbosityEnum(project.verbosity)
 
-    # ── Preconditions ────────────────────────────────────────────
-    if len(project.structures) != 1:
-        msg = f'Sequential fitting requires exactly 1 structure, found {len(project.structures)}.'
-        raise ValueError(msg)
+    _check_seq_preconditions(project)
 
-    if len(project.experiments) != 1:
-        msg = (
-            f'Sequential fitting requires exactly 1 experiment (the template), '
-            f'found {len(project.experiments)}.'
-        )
-        raise ValueError(msg)
-
-    if project.info.path is None:
-        msg = 'Project must be saved before sequential fitting. Call save_as() first.'
-        raise ValueError(msg)
-
-    # Discover data files
     data_paths = extract_data_paths_from_dir(data_dir, file_pattern=file_pattern)
-
-    from easydiffraction.core.variable import Parameter  # noqa: PLC0415
-
-    free_params = [
-        p for p in project.parameters if isinstance(p, Parameter) and not p.constrained and p.free
-    ]
-    if not free_params:
-        msg = 'No free parameters found. Mark at least one parameter as free.'
-        raise ValueError(msg)
-
-    # ── Build template ───────────────────────────────────────────
     template = _build_template(project)
 
-    # ── CSV setup and crash recovery ─────────────────────────────
-    csv_path = project.info.path / 'analysis' / 'results.csv'
-    csv_path.parent.mkdir(parents=True, exist_ok=True)
-    header = _build_csv_header(template)
+    csv_path, header, already_fitted, template = _setup_csv_and_recovery(
+        project,
+        template,
+        verb,
+    )
 
-    already_fitted, recovered_params = _read_csv_for_recovery(csv_path)
-
-    if already_fitted:
-        num_skipped = len(already_fitted)
-        log.info(f'Resuming: {num_skipped} files already fitted, skipping.')
-        if verb is not VerbosityEnum.SILENT:
-            print(f'📂 Resuming from CSV: {num_skipped} files already fitted.')
-        # Seed from recovered params if available
-        if recovered_params is not None:
-            template = replace(template, initial_params=recovered_params)
-    else:
-        _write_csv_header(csv_path, header)
-
-    # Filter out already-fitted files
     remaining = [p for p in data_paths if p not in already_fitted]
     if not remaining:
         if verb is not VerbosityEnum.SILENT:
             print('✅ All files already fitted. Nothing to do.')
         return
 
-    # ── Resolve workers and chunk size ───────────────────────────
-    if isinstance(max_workers, str) and max_workers == 'auto':
-        import os  # noqa: PLC0415
-
-        max_workers = os.cpu_count() or 1
-
-    if not isinstance(max_workers, int) or max_workers < 1:
-        msg = f"max_workers must be a positive integer or 'auto', got {max_workers!r}"
-        raise ValueError(msg)
-
-    if chunk_size is None:
-        chunk_size = max_workers
-
-    # ── Chunk and fit ────────────────────────────────────────────
+    max_workers, chunk_size = _resolve_workers(max_workers, chunk_size)
     chunks = [remaining[i : i + chunk_size] for i in range(0, len(remaining), chunk_size)]
-    total_chunks = len(chunks)
 
     if verb is not VerbosityEnum.SILENT:
-        minimizer_name = analysis.fitter.selection
         console.paragraph('Sequential fitting')
-        console.print(f"🚀 Starting fit process with '{minimizer_name}'...")
+        console.print(f"🚀 Starting fit process with '{analysis.fitter.selection}'...")
         console.print(
-            f'📋 {len(remaining)} files in {total_chunks} chunks (max_workers={max_workers})'
+            f'📋 {len(remaining)} files in {len(chunks)} chunks (max_workers={max_workers})'
         )
         console.print('📈 Goodness-of-fit (reduced χ²):')
 
-    # Create a process pool for parallel dispatch, or a no-op context
-    # for single-worker mode (avoids process-spawn overhead).
-    #
-    # When max_workers > 1 we use ``spawn`` context, which normally
-    # re-imports ``__main__`` in every child process.  If the user runs
-    # a script without an ``if __name__ == '__main__':`` guard the
-    # whole script would re-execute in every worker, causing infinite
-    # process spawning.  To prevent this we temporarily hide
-    # ``__main__.__file__`` and ``__main__.__spec__`` so that the spawn
-    # bootstrap has no path to re-import the script.  ``_fit_worker``
-    # lives in this module (not ``__main__``), so it is still resolved
-    # via normal pickle/import machinery.
-    _main_mod = sys.modules.get('__main__')
-    _main_file_bak = getattr(_main_mod, '__file__', None)
-    _main_spec_bak = getattr(_main_mod, '__spec__', None)
-
-    if max_workers > 1:
-        # Hide __main__ origin from spawn
-        if _main_mod is not None and _main_file_bak is not None:
-            _main_mod.__file__ = None  # type: ignore[assignment]
-        if _main_mod is not None and _main_spec_bak is not None:
-            _main_mod.__spec__ = None
-
-        spawn_ctx = mp.get_context('spawn')
-        pool_cm = ProcessPoolExecutor(
-            max_workers=max_workers,
-            mp_context=spawn_ctx,
-            max_tasks_per_child=100,
-        )
-    else:
-        pool_cm = contextlib.nullcontext()
-
+    pool_cm, main_mod, main_file_bak, main_spec_bak = _create_pool_context(max_workers)
     try:
-        with pool_cm as executor:
-            for chunk_idx, chunk in enumerate(chunks, start=1):
-                # Dispatch: parallel or sequential
-                if executor is not None:
-                    templates = [template] * len(chunk)
-                    results = list(executor.map(_fit_worker, templates, chunk))
-                else:
-                    results = [_fit_worker(template, path) for path in chunk]
-
-                # Extract diffrn metadata in the main process
-                if extract_diffrn is not None:
-                    for result in results:
-                        try:
-                            diffrn_values = extract_diffrn(result['file_path'])
-                            for key, val in diffrn_values.items():
-                                result[f'diffrn.{key}'] = val
-                        except Exception as exc:  # noqa: BLE001
-                            log.warning(f'extract_diffrn failed for {result["file_path"]}: {exc}')
-
-                # Write to CSV
-                _append_to_csv(csv_path, header, results)
-
-                # Report progress
-                _report_chunk_progress(chunk_idx, total_chunks, results, verb)
-
-                # Propagate: use last successful file's
-                # params as starting values
-                last_ok = None
-                for r in reversed(results):
-                    if r.get('fit_success') and r.get('params'):
-                        last_ok = r
-                        break
-
-                if last_ok is not None:
-                    template = replace(template, initial_params=last_ok['params'])
+        _run_fit_loop(pool_cm, chunks, template, (csv_path, header), extract_diffrn, verb)
     finally:
-        # Restore __main__ attributes
-        if _main_mod is not None and _main_file_bak is not None:
-            _main_mod.__file__ = _main_file_bak
-        if _main_mod is not None and _main_spec_bak is not None:
-            _main_mod.__spec__ = _main_spec_bak
+        _restore_main_state(main_mod, main_file_bak, main_spec_bak)
 
     if verb is not VerbosityEnum.SILENT:
-        total_fitted = len(already_fitted) + len(remaining)
-        print(f'✅ Sequential fitting complete: {total_fitted} files processed.')
+        print(
+            f'✅ Sequential fitting complete: '
+            f'{len(already_fitted) + len(remaining)} files processed.'
+        )
         print(f'📄 Results saved to: {csv_path}')

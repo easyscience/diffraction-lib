@@ -246,7 +246,7 @@ def load_numeric_block(data_path: str | Path) -> np.ndarray:
     for start in range(len(lines)):
         try:
             return np.loadtxt(StringIO('\n'.join(lines[start:])))
-        except Exception as e:
+        except ValueError as e:
             last_error = e
 
     msg = f'Failed to read numeric data from {data_path}: {last_error}'

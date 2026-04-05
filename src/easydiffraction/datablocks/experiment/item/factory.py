@@ -11,6 +11,7 @@ Provides individual class methods for each creation pathway:
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from typing import ClassVar
 
 from typeguard import typechecked
 
@@ -23,8 +24,6 @@ from easydiffraction.io.cif.parse import document_from_path
 from easydiffraction.io.cif.parse import document_from_string
 from easydiffraction.io.cif.parse import name_from_block
 from easydiffraction.io.cif.parse import pick_sole_block
-from easydiffraction.utils.enums import VerbosityEnum
-from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 
 if TYPE_CHECKING:
@@ -36,7 +35,7 @@ if TYPE_CHECKING:
 class ExperimentFactory(FactoryBase):
     """Creates Experiment instances with only relevant attributes."""
 
-    _default_rules = {
+    _default_rules: ClassVar[dict] = {
         frozenset({
             ('scattering_type', ScatteringTypeEnum.BRAGG),
             ('sample_form', SampleFormEnum.POWDER),
@@ -231,7 +230,6 @@ class ExperimentFactory(FactoryBase):
         beam_mode: str | None = None,
         radiation_probe: str | None = None,
         scattering_type: str | None = None,
-        verbosity: VerbosityEnum = VerbosityEnum.FULL,
     ) -> ExperimentBase:
         """
         Create an experiment from a raw data ASCII file.
@@ -250,8 +248,6 @@ class ExperimentFactory(FactoryBase):
             Radiation probe (e.g. ``'neutron'``).
         scattering_type : str | None, default=None
             Scattering type (e.g. ``'bragg'``).
-        verbosity : VerbosityEnum, default=VerbosityEnum.FULL
-            Console output verbosity.
 
         Returns
         -------
@@ -266,12 +262,6 @@ class ExperimentFactory(FactoryBase):
             scattering_type=scattering_type,
         )
 
-        num_points = expt_obj._load_ascii_data_to_experiment(data_path)
-
-        if verbosity is VerbosityEnum.FULL:
-            console.paragraph('Data loaded successfully')
-            console.print(f"Experiment 🔬 '{name}'. Number of data points: {num_points}.")
-        elif verbosity is VerbosityEnum.SHORT:
-            console.print(f"✅ Data loaded: Experiment 🔬 '{name}'. {num_points} points.")
+        expt_obj._load_ascii_data_to_experiment(data_path)
 
         return expt_obj

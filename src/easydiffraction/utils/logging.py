@@ -19,6 +19,7 @@ from enum import Enum
 from enum import IntEnum
 from enum import auto
 from typing import TYPE_CHECKING
+from typing import ClassVar
 
 if TYPE_CHECKING:  # pragma: no cover
     from types import TracebackType
@@ -32,6 +33,7 @@ from rich.console import Console
 from rich.console import Group
 from rich.console import RenderableType
 from rich.logging import RichHandler
+from rich.markup import MarkupError
 from rich.text import Text
 
 from easydiffraction.utils.environment import in_jupyter
@@ -46,15 +48,20 @@ from easydiffraction.utils.environment import in_warp
 class IconifiedRichHandler(RichHandler):
     """RichHandler using icons (compact) or names (verbose)."""
 
-    _icons = {
+    _icons: ClassVar[dict] = {
         logging.CRITICAL: '💀',
         logging.ERROR: '❌',
         logging.WARNING: '⚠️',
         logging.DEBUG: '⚙️',
-        logging.INFO: 'ℹ️',
+        logging.INFO: 'ℹ️',  # noqa: RUF001
     }
 
-    def __init__(self, *args: object, mode: str = 'compact', **kwargs: object) -> None:
+    def __init__(
+        self,
+        *args: object,
+        mode: str = 'compact',
+        **kwargs: object,
+    ) -> None:
         super().__init__(*args, **kwargs)
         self.mode = mode
 
@@ -74,13 +81,17 @@ class IconifiedRichHandler(RichHandler):
         """
         if self.mode == 'compact':
             icon = self._icons.get(record.levelno, record.levelname)
-            if in_warp() and not in_jupyter() and icon in {'⚠️', '⚙️', 'ℹ️'}:
+            if in_warp() and not in_jupyter() and icon in {'⚠️', '⚙️', 'ℹ️'}:  # noqa: RUF001
                 icon += ' '  # add space to align with two-char icons
             return Text(icon)
         # Use RichHandler's default level text for verbose mode
         return super().get_level_text(record)
 
-    def render_message(self, record: logging.LogRecord, message: str) -> Text:
+    def render_message(
+        self,
+        record: logging.LogRecord,
+        message: str,
+    ) -> Text:
         """
         Render the log message body as a Rich Text object.
 
@@ -99,7 +110,7 @@ class IconifiedRichHandler(RichHandler):
         if self.mode == 'compact':
             try:
                 return Text.from_markup(message)
-            except Exception:
+            except (ValueError, KeyError, TypeError, MarkupError):
                 return Text(str(message))
         return super().render_message(record, message)
 
@@ -129,7 +140,7 @@ class ConsoleManager:
         min_width = ConsoleManager._MIN_CONSOLE_WIDTH
         try:
             width = shutil.get_terminal_size().columns
-        except Exception:
+        except (ValueError, OSError):
             width = min_width
         return max(width, min_width)
 
@@ -324,12 +335,17 @@ class ExceptionHookManager:
 
         def suppress_jupyter_traceback(*args: object, **kwargs: object) -> None:
             """Log only the exception message."""
+            # IPython's custom_exc handler passes
+            # (shell, etype, evalue, tb, tb_offset)
+            evalue_arg_index = 2
             try:
-                _evalue = (
-                    args[2] if len(args) > 2 else kwargs.get('_evalue') or kwargs.get('evalue')
+                evalue = (
+                    args[evalue_arg_index]
+                    if len(args) > evalue_arg_index
+                    else kwargs.get('_evalue') or kwargs.get('evalue')
                 )
-                logger.error(str(_evalue))
-            except Exception as err:
+                logger.error(str(evalue))
+            except (IndexError, TypeError, AttributeError, ValueError) as err:
                 logger.debug('Jupyter traceback suppressor failed: %r', err)
 
         return suppress_jupyter_traceback
@@ -352,7 +368,7 @@ class ExceptionHookManager:
                 ip.set_custom_exc(
                     (BaseException,), ExceptionHookManager._suppress_traceback(logger)
                 )
-        except Exception as err:
+        except (ImportError, AttributeError, TypeError) as err:
             msg = f'Failed to install Jupyter traceback suppressor: {err!r}'
             logger.debug(msg)
 

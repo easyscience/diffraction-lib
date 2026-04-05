@@ -75,9 +75,7 @@ def in_jupyter() -> bool:
         ipython_mod = None
     else:
         ipython_mod = IPython
-    if ipython_mod is None:
-        return False
-    if in_pycharm():
+    if ipython_mod is None or in_pycharm():
         return False
     if in_colab():
         return True
@@ -91,14 +89,9 @@ def in_jupyter() -> bool:
         has_cfg = hasattr(ip, 'config') and isinstance(ip.config, dict)
         if has_cfg and 'IPKernelApp' in ip.config:  # type: ignore[index]
             return True
-        shell = ip.__class__.__name__
-        if shell == 'ZMQInteractiveShell':  # Jupyter or qtconsole
-            return True
-        if shell == 'TerminalInteractiveShell':
-            return False
-    except Exception:
-        return False
-    else:
+        # Jupyter or qtconsole use ZMQInteractiveShell
+        return ip.__class__.__name__ == 'ZMQInteractiveShell'  # noqa: TRY300
+    except (NameError, AttributeError):
         return False
 
 
@@ -135,14 +128,14 @@ def is_ipython_display_handle(obj: object) -> bool:
 
         try:
             return isinstance(obj, DisplayHandle)
-        except Exception:
+        except TypeError:
             return False
-    except Exception:
+    except ImportError:
         # Fallback heuristic when IPython is unavailable
         try:
             mod = getattr(getattr(obj, '__class__', None), '__module__', '')
             return isinstance(mod, str) and mod.startswith('IPython')
-        except Exception:
+        except (TypeError, AttributeError):
             return False
 
 
@@ -154,8 +147,8 @@ def can_update_ipython_display() -> bool:
     update a display handle.
     """
     try:
-        from IPython.display import HTML  # type: ignore[import-not-found]  # noqa: F401, PLC0415
-    except Exception:
+        pass  # type: ignore[import-not-found]
+    except ImportError:
         return False
     else:
         return True
@@ -170,5 +163,5 @@ def can_use_ipython_display(handle: object) -> bool:
     """
     try:
         return is_ipython_display_handle(handle) and can_update_ipython_display()
-    except Exception:
+    except (ImportError, TypeError, AttributeError):
         return False

@@ -11,10 +11,24 @@
 │   │   ├── 📄 factory.py
 │   │   └── 📄 pdffit.py
 │   ├── 📁 categories
-│   │   ├── 📄 __init__.py
-│   │   ├── 📄 aliases.py
-│   │   ├── 📄 constraints.py
-│   │   └── 📄 joint_fit_experiments.py
+│   │   ├── 📁 aliases
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   └── 📄 factory.py
+│   │   ├── 📁 constraints
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   └── 📄 factory.py
+│   │   ├── 📁 fit_mode
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 enums.py
+│   │   │   ├── 📄 factory.py
+│   │   │   └── 📄 fit_mode.py
+│   │   ├── 📁 joint_fit_experiments
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   └── 📄 factory.py
+│   │   └── 📄 __init__.py
 │   ├── 📁 fit_helpers
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 metrics.py
@@ -28,7 +42,8 @@
 │   │   └── 📄 lmfit.py
 │   ├── 📄 __init__.py
 │   ├── 📄 analysis.py
-│   └── 📄 fitting.py
+│   ├── 📄 fitting.py
+│   └── 📄 sequential.py
 ├── 📁 core
 │   ├── 📄 __init__.py
 │   ├── 📄 category.py
@@ -62,12 +77,36 @@
 │   │   │   │   ├── 📄 bragg_sc.py
 │   │   │   │   ├── 📄 factory.py
 │   │   │   │   └── 📄 total_pd.py
+│   │   │   ├── 📁 diffrn
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   └── 📄 factory.py
+│   │   │   ├── 📁 excluded_regions
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   └── 📄 factory.py
+│   │   │   ├── 📁 experiment_type
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   └── 📄 factory.py
+│   │   │   ├── 📁 extinction
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 factory.py
+│   │   │   │   └── 📄 shelx.py
 │   │   │   ├── 📁 instrument
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 base.py
 │   │   │   │   ├── 📄 cwl.py
 │   │   │   │   ├── 📄 factory.py
 │   │   │   │   └── 📄 tof.py
+│   │   │   ├── 📁 linked_crystal
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   └── 📄 factory.py
+│   │   │   ├── 📁 linked_phases
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   └── 📄 factory.py
 │   │   │   ├── 📁 peak
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 base.py
@@ -78,12 +117,7 @@
 │   │   │   │   ├── 📄 tof_mixins.py
 │   │   │   │   ├── 📄 total.py
 │   │   │   │   └── 📄 total_mixins.py
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 excluded_regions.py
-│   │   │   ├── 📄 experiment_type.py
-│   │   │   ├── 📄 extinction.py
-│   │   │   ├── 📄 linked_crystal.py
-│   │   │   └── 📄 linked_phases.py
+│   │   │   └── 📄 __init__.py
 │   │   ├── 📁 item
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 base.py
@@ -96,10 +130,19 @@
 │   │   └── 📄 collection.py
 │   ├── 📁 structure
 │   │   ├── 📁 categories
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 atom_sites.py
-│   │   │   ├── 📄 cell.py
-│   │   │   └── 📄 space_group.py
+│   │   │   ├── 📁 atom_sites
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   └── 📄 factory.py
+│   │   │   ├── 📁 cell
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   └── 📄 factory.py
+│   │   │   ├── 📁 space_group
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   └── 📄 factory.py
+│   │   │   └── 📄 __init__.py
 │   │   ├── 📁 item
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 base.py
@@ -129,7 +172,8 @@
 │   │   ├── 📄 handler.py
 │   │   ├── 📄 parse.py
 │   │   └── 📄 serialize.py
-│   └── 📄 __init__.py
+│   ├── 📄 __init__.py
+│   └── 📄 ascii.py
 ├── 📁 project
 │   ├── 📄 __init__.py
 │   ├── 📄 project.py
@@ -145,6 +189,7 @@
 │   │   ├── 📄 __init__.py
 │   │   └── 📄 theme_detect.py
 │   ├── 📄 __init__.py
+│   ├── 📄 enums.py
 │   ├── 📄 environment.py
 │   ├── 📄 logging.py
 │   └── 📄 utils.py

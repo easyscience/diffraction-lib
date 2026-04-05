@@ -310,7 +310,7 @@ project.analysis.fit_sequential(
 
 # %%
 project.apply_params_from_csv(row_index=-1)
-project.plot_meas_vs_calc(expt_name='d20', show_residual=True)
+project.plotter.plot_meas_vs_calc(expt_name='d20', show_residual=True)
 
 # %% [markdown]
 # #### Plot Parameter Evolution
@@ -324,26 +324,26 @@ temperature = expt.diffrn.ambient_temperature
 # Plot unit cell parameters vs. temperature.
 
 # %%
-project.plot_param_series(structure.cell.length_a, versus=temperature)
-project.plot_param_series(structure.cell.length_b, versus=temperature)
-project.plot_param_series(structure.cell.length_c, versus=temperature)
+project.plotter.plot_param_series(structure.cell.length_a, versus=temperature)
+project.plotter.plot_param_series(structure.cell.length_b, versus=temperature)
+project.plotter.plot_param_series(structure.cell.length_c, versus=temperature)
 
 # %% [markdown]
 # Plot isotropic displacement parameters vs. temperature.
 
 # %%
-project.plot_param_series(structure.atom_sites['Co1'].b_iso, versus=temperature)
-project.plot_param_series(structure.atom_sites['Si'].b_iso, versus=temperature)
-project.plot_param_series(structure.atom_sites['O1'].b_iso, versus=temperature)
-project.plot_param_series(structure.atom_sites['O2'].b_iso, versus=temperature)
-project.plot_param_series(structure.atom_sites['O3'].b_iso, versus=temperature)
+project.plotter.plot_param_series(structure.atom_sites['Co1'].b_iso, versus=temperature)
+project.plotter.plot_param_series(structure.atom_sites['Si'].b_iso, versus=temperature)
+project.plotter.plot_param_series(structure.atom_sites['O1'].b_iso, versus=temperature)
+project.plotter.plot_param_series(structure.atom_sites['O2'].b_iso, versus=temperature)
+project.plotter.plot_param_series(structure.atom_sites['O3'].b_iso, versus=temperature)
 
 # %% [markdown]
 # Plot selected fractional coordinates vs. temperature.
 
 # %%
-project.plot_param_series(structure.atom_sites['Co2'].fract_x, versus=temperature)
-project.plot_param_series(structure.atom_sites['Co2'].fract_z, versus=temperature)
-project.plot_param_series(structure.atom_sites['O1'].fract_z, versus=temperature)
-project.plot_param_series(structure.atom_sites['O2'].fract_z, versus=temperature)
-project.plot_param_series(structure.atom_sites['O3'].fract_z, versus=temperature)
+project.plotter.plot_param_series(structure.atom_sites['Co2'].fract_x, versus=temperature)
+project.plotter.plot_param_series(structure.atom_sites['Co2'].fract_z, versus=temperature)
+project.plotter.plot_param_series(structure.atom_sites['O1'].fract_z, versus=temperature)
+project.plotter.plot_param_series(structure.atom_sites['O2'].fract_z, versus=temperature)
+project.plotter.plot_param_series(structure.atom_sites['O3'].fract_z, versus=temperature)

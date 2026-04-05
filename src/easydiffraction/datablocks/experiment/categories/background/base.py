@@ -20,4 +20,3 @@ class BackgroundBase(CategoryCollection):
     @abstractmethod
     def show(self) -> None:
         """Print a human-readable view of background components."""
-        pass

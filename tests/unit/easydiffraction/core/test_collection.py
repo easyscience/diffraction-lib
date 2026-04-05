@@ -126,7 +126,7 @@ def test_collection_getitem_by_int_index():
 
     # Invalid key type
     with pytest.raises(TypeError):
-        c[3.14]
+        c[1.5]
 
 
 def test_collection_datablock_keyed_items():

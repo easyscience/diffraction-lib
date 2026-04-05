@@ -23,7 +23,7 @@ from easydiffraction.utils.utils import render_table
 
 try:
     from rich.live import Live
-except Exception:  # pragma: no cover - rich always available in app env
+except ImportError:  # pragma: no cover - rich always available in app env
     Live = None  # type: ignore[assignment]
 
 from easydiffraction.utils.logging import ConsoleManager

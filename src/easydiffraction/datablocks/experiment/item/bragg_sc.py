@@ -18,6 +18,10 @@ from easydiffraction.utils.logging import log
 if TYPE_CHECKING:
     from easydiffraction.datablocks.experiment.categories.experiment_type import ExperimentType
 
+# Minimum number of columns required in CWL and TOF single-crystal files
+_MIN_COLUMNS_CWL_SC = 5
+_MIN_COLUMNS_TOF_SC = 6
+
 
 @ExperimentFactory.register
 class CwlScExperiment(ScExperimentBase):
@@ -60,7 +64,7 @@ class CwlScExperiment(ScExperimentBase):
         """
         data = load_numeric_block(data_path)
 
-        if data.shape[1] < 5:
+        if data.shape[1] < _MIN_COLUMNS_CWL_SC:
             log.error(
                 'Data file must have at least 5 columns: h, k, l, Iobs, sIobs.',
                 exc_type=ValueError,
@@ -132,7 +136,7 @@ class TofScExperiment(ScExperimentBase):
             )
             return 0
 
-        if data.shape[1] < 6:
+        if data.shape[1] < _MIN_COLUMNS_TOF_SC:
             log.error(
                 'Data file must have at least 6 columns: h, k, l, Iobs, sIobs, wavelength.',
                 exc_type=ValueError,
