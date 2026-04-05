@@ -479,7 +479,7 @@ def test_fit_neutron_pd_cwl_hs() -> None:
     )
 
 
-def test_single_fit_neutron_pd_cwl_lbco_with_constraints_from_project() -> None:
+def test_single_fit_neutron_pd_cwl_lbco_with_constraints_from_project(tmp_path) -> None:
     import easydiffraction as ed
 
     # Create a project from CIF files
@@ -513,10 +513,11 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints_from_project() -> None:
     project.structures['lbco'].atom_sites['La'].occupancy.free = True
 
     # Save to a directory
-    project.save_as('lbco_project')
+    proj_dir = str(tmp_path / 'lbco_project')
+    project.save_as(proj_dir)
 
     # Load Project from Directory
-    project = ed.Project.load('lbco_project')
+    project = ed.Project.load(proj_dir)
 
     # Perform Analysis
     project.analysis.fit()
