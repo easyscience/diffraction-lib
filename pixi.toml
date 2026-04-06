@@ -29,7 +29,7 @@ PYTHONPATH = "${PIXI_PROJECT_ROOT}/src;%PYTHONPATH%"
 [workspace]
 
 # Supported platforms for the lock file (pixi.lock)
-platforms = ['win-64', 'linux-64', 'osx-64', 'osx-arm64']
+platforms = ['win-64', 'linux-64', 'osx-arm64']
 
 # Channels for fetching packages
 channels = ['conda-forge']
@@ -56,8 +56,14 @@ macos = '14.0'
 nodejs = '*' # Required for Prettier (non-Python formatting)
 gsl = '*'    # GNU Scientific Library; required for diffpy.pdffit2
 
+#[pypi-options]
+#index-url = 'https://pypi.org/simple'
+#extra-index-urls = ['https://easyscience.github.io/pypi/']
+#find-links = [{ url = 'https://easyscience.github.io/pypi/pycrysfml/' }]
+
 [pypi-dependencies] # == [feature.default.pypi-dependencies]
 #pip = '*' # Native package installer
+pycrysfml = { version = '>=0.2.0', index = 'https://easyscience.github.io/pypi' }
 easydiffraction = { path = '.', editable = true, extras = ['dev'] }
 
 # Specific features: Set specific Python versions

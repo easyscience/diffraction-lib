@@ -40,6 +40,7 @@ project = ed.Project()
 structure_path = ed.download_data(id=1, destination='data')
 
 # %%
+# Add structure from downloaded CIF
 project.structures.add_from_cif_path(structure_path)
 
 # %% [markdown]
@@ -50,10 +51,11 @@ project.structures.add_from_cif_path(structure_path)
 expt_path = ed.download_data(id=2, destination='data')
 
 # %%
+# Add experiment from downloaded CIF
 project.experiments.add_from_cif_path(expt_path)
 
 # %% [markdown]
-# ## Step 4: Perform Analysis
+# ## Step 4: Perform Analysis (cryspy)
 
 # %%
 # Start refinement. All parameters, which have standard uncertainties
@@ -65,13 +67,29 @@ project.analysis.fit()
 project.analysis.display.fit_results()
 
 # %%
+# Show defined experiment names
 project.experiments.show_names()
 
 # %%
+# Plot measured vs. calculated diffraction patterns
 project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # %% [markdown]
-# ## Step 5: Show Project Summary
+# ## Step 5: Perform Analysis (crysfml)
 
 # %%
-project.summary.show_report()
+# Change calculation engine from 'cryspy' to 'crysfml'
+project.experiments['hrpt'].show_supported_calculator_types()
+project.experiments['hrpt'].calculator_type = 'crysfml'
+
+# %%
+# Start refinement
+project.analysis.fit()
+
+# %%
+# Show fit results summary
+project.analysis.display.fit_results()
+
+# %%
+# Plot measured vs. calculated diffraction patterns
+project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
