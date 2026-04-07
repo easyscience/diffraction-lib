@@ -204,6 +204,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/33/6b/e0547afaf41bf2c42e52430072fa5658766e3d65bd4b03a563d1b6336f57/distlib-0.4.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ba/5a/18ad964b0086c6e62e2e7500f7edc89e3faa45033c71c1893d34eed2b2de/dnspython-2.8.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/bf/50/98b146aea0f1cd7531d25f12bea69fa9ce8d1662124f93fb30dc4511b65e/docstring_parser_fork-0.0.14-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/85/d7/9b6ac05350ab7f7d3a730ff143ff3e2cada54514117c37be37e26dc91242/docstripy-0.7.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/fa/bc/8b8ec5a4bfc5b9cf3ce27a118339e994f88410be5677c96493e0ea28e76d/dunamai-1.26.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/de/15/545e2b6cf2e3be84bc1ed85613edd75b8aea69807a71c26f4ca6a9258e82/email_validator-2.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/55/cd/d729a1bb63fa95387228cc508552dea4685ea0116e484e73238db10f9521/essdiffraction-26.4.0-py3-none-any.whl
@@ -536,6 +537,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/33/6b/e0547afaf41bf2c42e52430072fa5658766e3d65bd4b03a563d1b6336f57/distlib-0.4.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ba/5a/18ad964b0086c6e62e2e7500f7edc89e3faa45033c71c1893d34eed2b2de/dnspython-2.8.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/bf/50/98b146aea0f1cd7531d25f12bea69fa9ce8d1662124f93fb30dc4511b65e/docstring_parser_fork-0.0.14-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/85/d7/9b6ac05350ab7f7d3a730ff143ff3e2cada54514117c37be37e26dc91242/docstripy-0.7.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/fa/bc/8b8ec5a4bfc5b9cf3ce27a118339e994f88410be5677c96493e0ea28e76d/dunamai-1.26.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/de/15/545e2b6cf2e3be84bc1ed85613edd75b8aea69807a71c26f4ca6a9258e82/email_validator-2.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/55/cd/d729a1bb63fa95387228cc508552dea4685ea0116e484e73238db10f9521/essdiffraction-26.4.0-py3-none-any.whl
@@ -859,6 +861,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/33/6b/e0547afaf41bf2c42e52430072fa5658766e3d65bd4b03a563d1b6336f57/distlib-0.4.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ba/5a/18ad964b0086c6e62e2e7500f7edc89e3faa45033c71c1893d34eed2b2de/dnspython-2.8.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/bf/50/98b146aea0f1cd7531d25f12bea69fa9ce8d1662124f93fb30dc4511b65e/docstring_parser_fork-0.0.14-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/85/d7/9b6ac05350ab7f7d3a730ff143ff3e2cada54514117c37be37e26dc91242/docstripy-0.7.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/fa/bc/8b8ec5a4bfc5b9cf3ce27a118339e994f88410be5677c96493e0ea28e76d/dunamai-1.26.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/de/15/545e2b6cf2e3be84bc1ed85613edd75b8aea69807a71c26f4ca6a9258e82/email_validator-2.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/55/cd/d729a1bb63fa95387228cc508552dea4685ea0116e484e73238db10f9521/essdiffraction-26.4.0-py3-none-any.whl
@@ -1201,6 +1204,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/33/6b/e0547afaf41bf2c42e52430072fa5658766e3d65bd4b03a563d1b6336f57/distlib-0.4.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ba/5a/18ad964b0086c6e62e2e7500f7edc89e3faa45033c71c1893d34eed2b2de/dnspython-2.8.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/bf/50/98b146aea0f1cd7531d25f12bea69fa9ce8d1662124f93fb30dc4511b65e/docstring_parser_fork-0.0.14-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/85/d7/9b6ac05350ab7f7d3a730ff143ff3e2cada54514117c37be37e26dc91242/docstripy-0.7.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/fa/bc/8b8ec5a4bfc5b9cf3ce27a118339e994f88410be5677c96493e0ea28e76d/dunamai-1.26.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/de/15/545e2b6cf2e3be84bc1ed85613edd75b8aea69807a71c26f4ca6a9258e82/email_validator-2.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/55/cd/d729a1bb63fa95387228cc508552dea4685ea0116e484e73238db10f9521/essdiffraction-26.4.0-py3-none-any.whl
@@ -1532,6 +1536,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/33/6b/e0547afaf41bf2c42e52430072fa5658766e3d65bd4b03a563d1b6336f57/distlib-0.4.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ba/5a/18ad964b0086c6e62e2e7500f7edc89e3faa45033c71c1893d34eed2b2de/dnspython-2.8.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/bf/50/98b146aea0f1cd7531d25f12bea69fa9ce8d1662124f93fb30dc4511b65e/docstring_parser_fork-0.0.14-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/85/d7/9b6ac05350ab7f7d3a730ff143ff3e2cada54514117c37be37e26dc91242/docstripy-0.7.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/fa/bc/8b8ec5a4bfc5b9cf3ce27a118339e994f88410be5677c96493e0ea28e76d/dunamai-1.26.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/de/15/545e2b6cf2e3be84bc1ed85613edd75b8aea69807a71c26f4ca6a9258e82/email_validator-2.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/55/cd/d729a1bb63fa95387228cc508552dea4685ea0116e484e73238db10f9521/essdiffraction-26.4.0-py3-none-any.whl
@@ -1854,6 +1859,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/33/6b/e0547afaf41bf2c42e52430072fa5658766e3d65bd4b03a563d1b6336f57/distlib-0.4.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ba/5a/18ad964b0086c6e62e2e7500f7edc89e3faa45033c71c1893d34eed2b2de/dnspython-2.8.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/bf/50/98b146aea0f1cd7531d25f12bea69fa9ce8d1662124f93fb30dc4511b65e/docstring_parser_fork-0.0.14-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/85/d7/9b6ac05350ab7f7d3a730ff143ff3e2cada54514117c37be37e26dc91242/docstripy-0.7.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/fa/bc/8b8ec5a4bfc5b9cf3ce27a118339e994f88410be5677c96493e0ea28e76d/dunamai-1.26.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/de/15/545e2b6cf2e3be84bc1ed85613edd75b8aea69807a71c26f4ca6a9258e82/email_validator-2.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/55/cd/d729a1bb63fa95387228cc508552dea4685ea0116e484e73238db10f9521/essdiffraction-26.4.0-py3-none-any.whl
@@ -2195,6 +2201,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/33/6b/e0547afaf41bf2c42e52430072fa5658766e3d65bd4b03a563d1b6336f57/distlib-0.4.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ba/5a/18ad964b0086c6e62e2e7500f7edc89e3faa45033c71c1893d34eed2b2de/dnspython-2.8.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/bf/50/98b146aea0f1cd7531d25f12bea69fa9ce8d1662124f93fb30dc4511b65e/docstring_parser_fork-0.0.14-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/85/d7/9b6ac05350ab7f7d3a730ff143ff3e2cada54514117c37be37e26dc91242/docstripy-0.7.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/fa/bc/8b8ec5a4bfc5b9cf3ce27a118339e994f88410be5677c96493e0ea28e76d/dunamai-1.26.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/de/15/545e2b6cf2e3be84bc1ed85613edd75b8aea69807a71c26f4ca6a9258e82/email_validator-2.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/55/cd/d729a1bb63fa95387228cc508552dea4685ea0116e484e73238db10f9521/essdiffraction-26.4.0-py3-none-any.whl
@@ -2527,6 +2534,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/33/6b/e0547afaf41bf2c42e52430072fa5658766e3d65bd4b03a563d1b6336f57/distlib-0.4.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ba/5a/18ad964b0086c6e62e2e7500f7edc89e3faa45033c71c1893d34eed2b2de/dnspython-2.8.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/bf/50/98b146aea0f1cd7531d25f12bea69fa9ce8d1662124f93fb30dc4511b65e/docstring_parser_fork-0.0.14-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/85/d7/9b6ac05350ab7f7d3a730ff143ff3e2cada54514117c37be37e26dc91242/docstripy-0.7.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/fa/bc/8b8ec5a4bfc5b9cf3ce27a118339e994f88410be5677c96493e0ea28e76d/dunamai-1.26.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/de/15/545e2b6cf2e3be84bc1ed85613edd75b8aea69807a71c26f4ca6a9258e82/email_validator-2.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/55/cd/d729a1bb63fa95387228cc508552dea4685ea0116e484e73238db10f9521/essdiffraction-26.4.0-py3-none-any.whl
@@ -2850,6 +2858,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/33/6b/e0547afaf41bf2c42e52430072fa5658766e3d65bd4b03a563d1b6336f57/distlib-0.4.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ba/5a/18ad964b0086c6e62e2e7500f7edc89e3faa45033c71c1893d34eed2b2de/dnspython-2.8.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/bf/50/98b146aea0f1cd7531d25f12bea69fa9ce8d1662124f93fb30dc4511b65e/docstring_parser_fork-0.0.14-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/85/d7/9b6ac05350ab7f7d3a730ff143ff3e2cada54514117c37be37e26dc91242/docstripy-0.7.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/fa/bc/8b8ec5a4bfc5b9cf3ce27a118339e994f88410be5677c96493e0ea28e76d/dunamai-1.26.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/de/15/545e2b6cf2e3be84bc1ed85613edd75b8aea69807a71c26f4ca6a9258e82/email_validator-2.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/55/cd/d729a1bb63fa95387228cc508552dea4685ea0116e484e73238db10f9521/essdiffraction-26.4.0-py3-none-any.whl
@@ -4485,6 +4494,13 @@ packages:
   - pydoctor>=25.4.0 ; extra == 'docs'
   - pytest ; extra == 'test'
   requires_python: '>=3.8'
+- pypi: https://files.pythonhosted.org/packages/85/d7/9b6ac05350ab7f7d3a730ff143ff3e2cada54514117c37be37e26dc91242/docstripy-0.7.2-py3-none-any.whl
+  name: docstripy
+  version: 0.7.2
+  sha256: c4ba35de6c1b1c51f7afad4a46d8953aad55dce1a490d198f7e98c8c63efefda
+  requires_dist:
+  - nbformat
+  requires_python: '>=3.7'
 - pypi: https://files.pythonhosted.org/packages/fa/bc/8b8ec5a4bfc5b9cf3ce27a118339e994f88410be5677c96493e0ea28e76d/dunamai-1.26.1-py3-none-any.whl
   name: dunamai
   version: 1.26.1
@@ -4495,8 +4511,8 @@ packages:
   requires_python: '>=3.5'
 - pypi: ./
   name: easydiffraction
-  version: 0.11.1+devdirty15
-  sha256: a1ee11946205a2c69d29a4fddca1121e844260d7565187c7d56ea7d619388d20
+  version: 0.11.1+devdirty20
+  sha256: 5d5266779ec99568ef0b4ec7a4b1bf640534d058bf7fe1db0b62876882fdacd3
   requires_dist:
   - asciichartpy
   - asteval
@@ -4525,6 +4541,7 @@ packages:
   - varname
   - build ; extra == 'dev'
   - copier ; extra == 'dev'
+  - docstripy ; extra == 'dev'
   - format-docstring ; extra == 'dev'
   - gitpython ; extra == 'dev'
   - interrogate ; extra == 'dev'
