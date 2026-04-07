@@ -215,6 +215,9 @@ jobs:
             echo "Adding libc++ for macOS (required by diffpy.pdffit2)"
             pixi add --platform osx-arm64 libcxx
 
+            # Doing this in a hacky way, as pixi does not support adding 
+            # dependencies from a custom PyPI index with a CLI command without
+            # specifying full wheel name.
             echo "Adding pycrysfml from custom PyPI index"
             echo '' >> pixi.toml
             echo '[pypi-dependencies]' >> pixi.toml
