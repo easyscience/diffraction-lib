@@ -811,6 +811,7 @@ def fit_sequential(
     chunk_size: int | None = None,
     file_pattern: str = '*',
     extract_diffrn: Callable | None = None,
+    reverse: bool = False,
 ) -> None:
     """
     Run sequential fitting over all data files in a directory.
@@ -831,6 +832,10 @@ def fit_sequential(
         Glob pattern to filter files in *data_dir*.
     extract_diffrn : Callable | None, default=None
         User callback: ``f(file_path) → {diffrn_field: value}``.
+    reverse : bool, default=False
+        When ``True``, process data files in reverse order.  Useful when
+        starting values are better matched to the last file (e.g.
+        highest-temperature dataset in a cooling scan).
     """
     if mp.parent_process() is not None:
         return
@@ -850,6 +855,8 @@ def fit_sequential(
     )
 
     remaining = [p for p in data_paths if p not in already_fitted]
+    if reverse:
+        remaining.reverse()
     if not remaining:
         if verb is not VerbosityEnum.SILENT:
             print('✅ All files already fitted. Nothing to do.')

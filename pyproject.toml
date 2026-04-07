@@ -372,8 +372,8 @@ convention = 'numpy'
 [tool.ruff.lint.pylint]
 # Ruff counts `self`/`cls` in max-args; traditional pylint does not.
 # Setting 6 here matches pylint's default of 5 (excluding self).
-max-args = 6
-max-positional-args = 6
+max-args = 7
+max-positional-args = 7
 
 #############################
 # Configuration for pydoclint
