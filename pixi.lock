@@ -233,7 +233,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/78/3c/2a612b95ddbb9a6bdcb47b7a93c4884f74c6ff22356b2f7b213b16e65c35/pycifstar-0.3.0.tar.gz
       - pypi: https://files.pythonhosted.org/packages/d7/27/a58ddaf8c588a3ef080db9d0b7e0b97215cee3a45df74f3a94dbbf5c893a/pycodestyle-2.14.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/0c/c3/44f3fbbfa403ea2a7c779186dc20772604442dde72947e7d01069cbe98e3/pycparser-3.0-py3-none-any.whl
-      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.0/pycrysfml-0.2.0-py314-none-linux_x86_64.whl
+      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.1/pycrysfml-0.2.1-py314-none-linux_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/5a/87/b70ad306ebb6f9b585f114d0ac2137d792b48be34d732d60e597c2f8465a/pydantic-2.12.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/4c/d2/ef2074dc020dd6e109611a8be4449b98cd25e1b9b8a303c2f0fca2f2bcf7/pydantic_core-2.41.5-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/87/6f/cc2b231dc78d8c3aaa674a676db190b8f8071c50134af8f8cf39b9b8e8df/pydoclint-0.8.3-py3-none-any.whl
@@ -537,7 +537,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/78/3c/2a612b95ddbb9a6bdcb47b7a93c4884f74c6ff22356b2f7b213b16e65c35/pycifstar-0.3.0.tar.gz
       - pypi: https://files.pythonhosted.org/packages/d7/27/a58ddaf8c588a3ef080db9d0b7e0b97215cee3a45df74f3a94dbbf5c893a/pycodestyle-2.14.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/0c/c3/44f3fbbfa403ea2a7c779186dc20772604442dde72947e7d01069cbe98e3/pycparser-3.0-py3-none-any.whl
-      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.0/pycrysfml-0.2.0-py314-none-macosx_14_0_arm64.whl
+      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.1/pycrysfml-0.2.1-py314-none-macosx_14_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/5a/87/b70ad306ebb6f9b585f114d0ac2137d792b48be34d732d60e597c2f8465a/pydantic-2.12.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/74/1a/145646e5687e8d9a1e8d09acb278c8535ebe9e972e1f162ed338a622f193/pydantic_core-2.41.5-cp314-cp314-macosx_11_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/87/6f/cc2b231dc78d8c3aaa674a676db190b8f8071c50134af8f8cf39b9b8e8df/pydoclint-0.8.3-py3-none-any.whl
@@ -833,7 +833,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/78/3c/2a612b95ddbb9a6bdcb47b7a93c4884f74c6ff22356b2f7b213b16e65c35/pycifstar-0.3.0.tar.gz
       - pypi: https://files.pythonhosted.org/packages/d7/27/a58ddaf8c588a3ef080db9d0b7e0b97215cee3a45df74f3a94dbbf5c893a/pycodestyle-2.14.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/0c/c3/44f3fbbfa403ea2a7c779186dc20772604442dde72947e7d01069cbe98e3/pycparser-3.0-py3-none-any.whl
-      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.0/pycrysfml-0.2.0-py314-none-win_amd64.whl
+      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.1/pycrysfml-0.2.1-py314-none-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/5a/87/b70ad306ebb6f9b585f114d0ac2137d792b48be34d732d60e597c2f8465a/pydantic-2.12.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/48/5d/56ba7b24e9557f99c9237e29f5c09913c81eeb2f3217e40e922353668092/pydantic_core-2.41.5-cp314-cp314-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/87/6f/cc2b231dc78d8c3aaa674a676db190b8f8071c50134af8f8cf39b9b8e8df/pydoclint-0.8.3-py3-none-any.whl
@@ -1150,7 +1150,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/78/3c/2a612b95ddbb9a6bdcb47b7a93c4884f74c6ff22356b2f7b213b16e65c35/pycifstar-0.3.0.tar.gz
       - pypi: https://files.pythonhosted.org/packages/d7/27/a58ddaf8c588a3ef080db9d0b7e0b97215cee3a45df74f3a94dbbf5c893a/pycodestyle-2.14.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/0c/c3/44f3fbbfa403ea2a7c779186dc20772604442dde72947e7d01069cbe98e3/pycparser-3.0-py3-none-any.whl
-      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.0/pycrysfml-0.2.0-py312-none-linux_x86_64.whl
+      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.1/pycrysfml-0.2.1-py312-none-linux_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/5a/87/b70ad306ebb6f9b585f114d0ac2137d792b48be34d732d60e597c2f8465a/pydantic-2.12.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/0d/76/941cc9f73529988688a665a5c0ecff1112b3d95ab48f81db5f7606f522d3/pydantic_core-2.41.5-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/87/6f/cc2b231dc78d8c3aaa674a676db190b8f8071c50134af8f8cf39b9b8e8df/pydoclint-0.8.3-py3-none-any.whl
@@ -1452,7 +1452,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/78/3c/2a612b95ddbb9a6bdcb47b7a93c4884f74c6ff22356b2f7b213b16e65c35/pycifstar-0.3.0.tar.gz
       - pypi: https://files.pythonhosted.org/packages/d7/27/a58ddaf8c588a3ef080db9d0b7e0b97215cee3a45df74f3a94dbbf5c893a/pycodestyle-2.14.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/0c/c3/44f3fbbfa403ea2a7c779186dc20772604442dde72947e7d01069cbe98e3/pycparser-3.0-py3-none-any.whl
-      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.0/pycrysfml-0.2.0-py312-none-macosx_14_0_arm64.whl
+      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.1/pycrysfml-0.2.1-py312-none-macosx_14_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/5a/87/b70ad306ebb6f9b585f114d0ac2137d792b48be34d732d60e597c2f8465a/pydantic-2.12.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/aa/32/9c2e8ccb57c01111e0fd091f236c7b371c1bccea0fa85247ac55b1e2b6b6/pydantic_core-2.41.5-cp312-cp312-macosx_11_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/87/6f/cc2b231dc78d8c3aaa674a676db190b8f8071c50134af8f8cf39b9b8e8df/pydoclint-0.8.3-py3-none-any.whl
@@ -1745,7 +1745,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/78/3c/2a612b95ddbb9a6bdcb47b7a93c4884f74c6ff22356b2f7b213b16e65c35/pycifstar-0.3.0.tar.gz
       - pypi: https://files.pythonhosted.org/packages/d7/27/a58ddaf8c588a3ef080db9d0b7e0b97215cee3a45df74f3a94dbbf5c893a/pycodestyle-2.14.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/0c/c3/44f3fbbfa403ea2a7c779186dc20772604442dde72947e7d01069cbe98e3/pycparser-3.0-py3-none-any.whl
-      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.0/pycrysfml-0.2.0-py312-none-win_amd64.whl
+      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.1/pycrysfml-0.2.1-py312-none-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/5a/87/b70ad306ebb6f9b585f114d0ac2137d792b48be34d732d60e597c2f8465a/pydantic-2.12.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/86/45/00173a033c801cacf67c190fef088789394feaf88a98a7035b0e40d53dc9/pydantic_core-2.41.5-cp312-cp312-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/87/6f/cc2b231dc78d8c3aaa674a676db190b8f8071c50134af8f8cf39b9b8e8df/pydoclint-0.8.3-py3-none-any.whl
@@ -2062,7 +2062,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/78/3c/2a612b95ddbb9a6bdcb47b7a93c4884f74c6ff22356b2f7b213b16e65c35/pycifstar-0.3.0.tar.gz
       - pypi: https://files.pythonhosted.org/packages/d7/27/a58ddaf8c588a3ef080db9d0b7e0b97215cee3a45df74f3a94dbbf5c893a/pycodestyle-2.14.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/0c/c3/44f3fbbfa403ea2a7c779186dc20772604442dde72947e7d01069cbe98e3/pycparser-3.0-py3-none-any.whl
-      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.0/pycrysfml-0.2.0-py314-none-linux_x86_64.whl
+      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.1/pycrysfml-0.2.1-py314-none-linux_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/5a/87/b70ad306ebb6f9b585f114d0ac2137d792b48be34d732d60e597c2f8465a/pydantic-2.12.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/4c/d2/ef2074dc020dd6e109611a8be4449b98cd25e1b9b8a303c2f0fca2f2bcf7/pydantic_core-2.41.5-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/87/6f/cc2b231dc78d8c3aaa674a676db190b8f8071c50134af8f8cf39b9b8e8df/pydoclint-0.8.3-py3-none-any.whl
@@ -2366,7 +2366,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/78/3c/2a612b95ddbb9a6bdcb47b7a93c4884f74c6ff22356b2f7b213b16e65c35/pycifstar-0.3.0.tar.gz
       - pypi: https://files.pythonhosted.org/packages/d7/27/a58ddaf8c588a3ef080db9d0b7e0b97215cee3a45df74f3a94dbbf5c893a/pycodestyle-2.14.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/0c/c3/44f3fbbfa403ea2a7c779186dc20772604442dde72947e7d01069cbe98e3/pycparser-3.0-py3-none-any.whl
-      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.0/pycrysfml-0.2.0-py314-none-macosx_14_0_arm64.whl
+      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.1/pycrysfml-0.2.1-py314-none-macosx_14_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/5a/87/b70ad306ebb6f9b585f114d0ac2137d792b48be34d732d60e597c2f8465a/pydantic-2.12.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/74/1a/145646e5687e8d9a1e8d09acb278c8535ebe9e972e1f162ed338a622f193/pydantic_core-2.41.5-cp314-cp314-macosx_11_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/87/6f/cc2b231dc78d8c3aaa674a676db190b8f8071c50134af8f8cf39b9b8e8df/pydoclint-0.8.3-py3-none-any.whl
@@ -2662,7 +2662,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/78/3c/2a612b95ddbb9a6bdcb47b7a93c4884f74c6ff22356b2f7b213b16e65c35/pycifstar-0.3.0.tar.gz
       - pypi: https://files.pythonhosted.org/packages/d7/27/a58ddaf8c588a3ef080db9d0b7e0b97215cee3a45df74f3a94dbbf5c893a/pycodestyle-2.14.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/0c/c3/44f3fbbfa403ea2a7c779186dc20772604442dde72947e7d01069cbe98e3/pycparser-3.0-py3-none-any.whl
-      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.0/pycrysfml-0.2.0-py314-none-win_amd64.whl
+      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.1/pycrysfml-0.2.1-py314-none-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/5a/87/b70ad306ebb6f9b585f114d0ac2137d792b48be34d732d60e597c2f8465a/pydantic-2.12.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/48/5d/56ba7b24e9557f99c9237e29f5c09913c81eeb2f3217e40e922353668092/pydantic_core-2.41.5-cp314-cp314-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/87/6f/cc2b231dc78d8c3aaa674a676db190b8f8071c50134af8f8cf39b9b8e8df/pydoclint-0.8.3-py3-none-any.whl
@@ -3787,7 +3787,7 @@ packages:
   requires_python: '>=3.5'
 - pypi: ./
   name: easydiffraction
-  version: 0.11.1+devdirty7
+  version: 0.11.1+devdirty11
   sha256: 1059823770118b360c15b30769760b0241b4683b54a446a6fb3d42a2677943b6
   requires_dist:
   - asciichartpy
@@ -8273,9 +8273,9 @@ packages:
   version: '3.0'
   sha256: b727414169a36b7d524c1c3e31839a521725078d7b2ff038656844266160a992
   requires_python: '>=3.10'
-- pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.0/pycrysfml-0.2.0-py312-none-linux_x86_64.whl
+- pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.1/pycrysfml-0.2.1-py312-none-linux_x86_64.whl
   name: pycrysfml
-  version: 0.2.0
+  version: 0.2.1
   requires_dist:
   - numpy
   - abi3audit ; extra == 'ci'
@@ -8291,9 +8291,9 @@ packages:
   - pytest-benchmark ; extra == 'test'
   - pytest>=5.2 ; extra == 'test'
   requires_python: '>=3.11,<3.15'
-- pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.0/pycrysfml-0.2.0-py312-none-macosx_14_0_arm64.whl
+- pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.1/pycrysfml-0.2.1-py312-none-macosx_14_0_arm64.whl
   name: pycrysfml
-  version: 0.2.0
+  version: 0.2.1
   requires_dist:
   - numpy
   - abi3audit ; extra == 'ci'
@@ -8309,9 +8309,9 @@ packages:
   - pytest-benchmark ; extra == 'test'
   - pytest>=5.2 ; extra == 'test'
   requires_python: '>=3.11,<3.15'
-- pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.0/pycrysfml-0.2.0-py312-none-win_amd64.whl
+- pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.1/pycrysfml-0.2.1-py312-none-win_amd64.whl
   name: pycrysfml
-  version: 0.2.0
+  version: 0.2.1
   requires_dist:
   - numpy
   - abi3audit ; extra == 'ci'
@@ -8327,9 +8327,9 @@ packages:
   - pytest-benchmark ; extra == 'test'
   - pytest>=5.2 ; extra == 'test'
   requires_python: '>=3.11,<3.15'
-- pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.0/pycrysfml-0.2.0-py314-none-linux_x86_64.whl
+- pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.1/pycrysfml-0.2.1-py314-none-linux_x86_64.whl
   name: pycrysfml
-  version: 0.2.0
+  version: 0.2.1
   requires_dist:
   - numpy
   - abi3audit ; extra == 'ci'
@@ -8345,9 +8345,9 @@ packages:
   - pytest-benchmark ; extra == 'test'
   - pytest>=5.2 ; extra == 'test'
   requires_python: '>=3.11,<3.15'
-- pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.0/pycrysfml-0.2.0-py314-none-macosx_14_0_arm64.whl
+- pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.1/pycrysfml-0.2.1-py314-none-macosx_14_0_arm64.whl
   name: pycrysfml
-  version: 0.2.0
+  version: 0.2.1
   requires_dist:
   - numpy
   - abi3audit ; extra == 'ci'
@@ -8363,9 +8363,9 @@ packages:
   - pytest-benchmark ; extra == 'test'
   - pytest>=5.2 ; extra == 'test'
   requires_python: '>=3.11,<3.15'
-- pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.0/pycrysfml-0.2.0-py314-none-win_amd64.whl
+- pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.1/pycrysfml-0.2.1-py314-none-win_amd64.whl
   name: pycrysfml
-  version: 0.2.0
+  version: 0.2.1
   requires_dist:
   - numpy
   - abi3audit ; extra == 'ci'
