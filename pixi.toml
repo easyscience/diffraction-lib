@@ -56,14 +56,13 @@ macos = '14.0'
 nodejs = '*' # Required for Prettier (non-Python formatting)
 gsl = '*'    # GNU Scientific Library; required for diffpy.pdffit2
 
-#[pypi-options]
-#index-url = 'https://pypi.org/simple'
-#extra-index-urls = ['https://easyscience.github.io/pypi/']
-#find-links = [{ url = 'https://easyscience.github.io/pypi/pycrysfml/' }]
+[pypi-options]
+index-url = "https://easyscience.github.io/pypi/"
+extra-index-urls = ["https://pypi.org/simple"]
 
 [pypi-dependencies] # == [feature.default.pypi-dependencies]
 #pip = '*' # Native package installer
-pycrysfml = { version = '>=0.2.1', index = 'https://easyscience.github.io/pypi' }
+pycrysfml = { version = ">=0.2.1", index = "https://easyscience.github.io/pypi/" }
 easydiffraction = { path = '.', editable = true, extras = ['dev'] }
 
 # Specific features: Set specific Python versions
@@ -81,12 +80,12 @@ python = '3.14.*'
 
 # The `default` feature is always included in all environments.
 # Additional features can be specified per environment.
-py-312-env = { features = ['default', 'py-min'] }
-py-314-env = { features = ['default', 'py-max'] }
+py-312-env = { features = ['py-min'] }
+py-314-env = { features = ['py-max'] }
 
 # The `default` environment is always created and includes the `default` feature.
 # It does not need to be specified explicitly unless non-default features are included.
-default = { features = ['default', 'py-max'] }
+default = { features = ['py-max'] }
 
 #######
 # TASKS

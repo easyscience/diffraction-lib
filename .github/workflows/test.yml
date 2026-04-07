@@ -216,6 +216,11 @@ jobs:
             pixi add --platform osx-arm64 libcxx
             pixi add --platform osx-64 libcxx
 
+            echo "Adding pycrysfml from custom PyPI index"
+            echo '' >> pixi.toml
+            echo '[pypi-dependencies]' >> pixi.toml
+            echo 'pycrysfml = { version = ">=0.2.1", index = "https://easyscience.github.io/pypi/" }' >> pixi.toml
+
             echo "Looking for wheel in ../dist/py$py_ver/"
             ls -l "../dist/py$py_ver/"
 
