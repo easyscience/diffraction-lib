@@ -48,8 +48,6 @@ dependencies = [
   'pandas',         # Displaying tables in Jupyter notebooks
   'plotly',         # Interactive plots
   'py3Dmol',        # Visualisation of crystal structures
-  'jupyterlab',     # Jupyter notebooks
-  'pixi-kernel',    # Pixi Jupyter kernel
 ]
 
 [project.optional-dependencies]

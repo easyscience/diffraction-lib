@@ -53,12 +53,10 @@ macos = '14.0'
 # Default feature configuration
 
 [dependencies]
-nodejs = '*' # Required for Prettier (non-Python formatting)
-gsl = '*'    # GNU Scientific Library; required for diffpy.pdffit2
-
-[pypi-options]
-index-url = "https://easyscience.github.io/pypi/"
-extra-index-urls = ["https://pypi.org/simple"]
+nodejs = '*'      # Required for Prettier (non-Python formatting)
+jupyterlab = '*'  # Jupyter notebooks
+pixi-kernel = '*' # Pixi Jupyter kernel
+gsl = '*'         # GNU Scientific Library; required for diffpy.pdffit2
 
 [pypi-dependencies] # == [feature.default.pypi-dependencies]
 #pip = '*' # Native package installer
