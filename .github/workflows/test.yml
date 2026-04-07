@@ -214,7 +214,6 @@ jobs:
             # platform-specific deps so this is a no-op on Linux/Windows.
             echo "Adding libc++ for macOS (required by diffpy.pdffit2)"
             pixi add --platform osx-arm64 libcxx
-            pixi add --platform osx-64 libcxx
 
             echo "Adding pycrysfml from custom PyPI index"
             echo '' >> pixi.toml
