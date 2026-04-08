@@ -94,3 +94,67 @@ def test_pd_experiment_set_peak_profile_type_invalid_keeps_default(capsys):
 
     # Profile type unchanged
     assert ex.peak_profile_type == original_type
+
+
+def test_pd_experiment_restore_switchable_types_switches_peak():
+    """_restore_switchable_types reads _peak.profile_type from a CIF block."""
+    import gemmi
+
+    from easydiffraction.datablocks.experiment.categories.experiment_type import ExperimentType
+    from easydiffraction.datablocks.experiment.item.base import PdExperimentBase
+    from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+    from easydiffraction.datablocks.experiment.item.enums import RadiationProbeEnum
+    from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+    from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
+
+    class ConcretePd(PdExperimentBase):
+        def _load_ascii_data_to_experiment(self, data_path: str) -> int:
+            return 0
+
+    et = ExperimentType()
+    et._set_sample_form(SampleFormEnum.POWDER.value)
+    et._set_beam_mode(BeamModeEnum.CONSTANT_WAVELENGTH.value)
+    et._set_radiation_probe(RadiationProbeEnum.NEUTRON.value)
+    et._set_scattering_type(ScatteringTypeEnum.BRAGG.value)
+
+    ex = ConcretePd(name='ex1', type=et)
+
+    cif = 'data_ex1\n_peak.profile_type "split pseudo-voigt"\n'
+    doc = gemmi.cif.read_string(cif)
+    block = doc.sole_block()
+
+    ex._restore_switchable_types(block)
+
+    assert ex.peak_profile_type == 'split pseudo-voigt'
+    assert ex.peak.__class__.__name__ == 'CwlSplitPseudoVoigt'
+
+
+def test_base_experiment_restore_switchable_types_is_noop():
+    """ExperimentBase._restore_switchable_types is a safe no-op."""
+    import gemmi
+
+    from easydiffraction.datablocks.experiment.categories.experiment_type import ExperimentType
+    from easydiffraction.datablocks.experiment.item.base import ExperimentBase
+    from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+    from easydiffraction.datablocks.experiment.item.enums import RadiationProbeEnum
+    from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+    from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
+
+    class ConcreteBase(ExperimentBase):
+        def _load_ascii_data_to_experiment(self, data_path: str) -> None:
+            pass
+
+    et = ExperimentType()
+    et._set_sample_form(SampleFormEnum.POWDER.value)
+    et._set_beam_mode(BeamModeEnum.CONSTANT_WAVELENGTH.value)
+    et._set_radiation_probe(RadiationProbeEnum.NEUTRON.value)
+    et._set_scattering_type(ScatteringTypeEnum.BRAGG.value)
+
+    ex = ConcreteBase(name='ex1', type=et)
+
+    cif = 'data_ex1\n_peak.profile_type "split pseudo-voigt"\n'
+    doc = gemmi.cif.read_string(cif)
+    block = doc.sole_block()
+
+    # Must not raise
+    ex._restore_switchable_types(block)

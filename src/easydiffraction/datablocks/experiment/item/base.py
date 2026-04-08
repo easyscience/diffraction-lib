@@ -23,6 +23,7 @@ from easydiffraction.datablocks.experiment.categories.linked_phases.factory impo
     LinkedPhasesFactory,
 )
 from easydiffraction.datablocks.experiment.categories.peak.factory import PeakFactory
+from easydiffraction.io.cif.parse import read_cif_str
 from easydiffraction.io.cif.serialize import experiment_to_cif
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
@@ -121,6 +122,22 @@ class ExperimentBase(DatablockItem):
         """Print the currently used diffraction conditions type."""
         console.paragraph('Current diffrn type')
         console.print(self.diffrn_type)
+
+    def _restore_switchable_types(self, block: object) -> None:
+        """
+        Restore switchable category types from a parsed CIF block.
+
+        Called by the factory immediately after the experiment object is
+        created and before any category parameters are loaded from CIF.
+        Subclasses with switchable categories must override this method
+        and call their ``_set_<type>`` private setter for each category
+        whose active implementation is identified by a CIF type tag.
+
+        Parameters
+        ----------
+        block : object
+            Parsed ``gemmi.cif.Block`` to read type tags from.
+        """
 
     @property
     def as_cif(self) -> str:
@@ -789,3 +806,20 @@ class PdExperimentBase(ExperimentBase):
             return
         self._peak = PeakFactory.create(new_type)
         self._peak_profile_type = new_type
+
+    def _restore_switchable_types(self, block: object) -> None:
+        """
+        Restore switchable category types for powder experiments.
+
+        Reads ``_peak.profile_type`` from the CIF block and switches
+        to the matching peak implementation before category parameters
+        are loaded, ensuring profile-specific descriptors are present.
+
+        Parameters
+        ----------
+        block : object
+            Parsed ``gemmi.cif.Block`` to read type tags from.
+        """
+        peak_type = read_cif_str(block, '_peak.profile_type')
+        if peak_type is not None:
+            self._set_peak_profile_type(peak_type)
