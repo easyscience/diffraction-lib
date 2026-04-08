@@ -693,7 +693,7 @@ project_1.plotter.plot_meas_vs_calc(expt_name='sim_si', x='d_spacing')
 # directory specified by the `dir_path` attribute of the project object.
 
 # %%
-project_1.save_as(dir_path='powder_diffraction_Si')
+project_1.save_as(dir_path='data/powder_diffraction_Si')
 
 # %% [markdown]
 # ## 💪 Exercise: Complex Fit – LBCO
@@ -1460,7 +1460,7 @@ project_2.summary.show_report()
 # the analysis.
 
 # %%
-project_2.save_as(dir_path='powder_diffraction_LBCO_Si')
+project_2.save_as(dir_path='data/powder_diffraction_LBCO_Si')
 
 # %% [markdown]
 # #### Final Remarks

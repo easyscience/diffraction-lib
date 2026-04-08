@@ -905,6 +905,7 @@ class Analysis:
         file_pattern: str = '*',
         extract_diffrn: object = None,
         verbosity: str | None = None,
+        reverse: bool = False,
     ) -> None:
         """
         Run sequential fitting over all data files in a directory.
@@ -936,6 +937,10 @@ class Analysis:
         verbosity : str | None, default=None
             ``'full'``, ``'short'``, or ``'silent'``. Default: project
             verbosity.
+        reverse : bool, default=False
+            When ``True``, process data files in reverse order.  Useful
+            when starting values are better matched to the last file
+            (e.g. highest-temperature dataset in a cooling scan).
         """
         from easydiffraction.analysis.sequential import fit_sequential as _fit_seq  # noqa: PLC0415
 
@@ -955,6 +960,7 @@ class Analysis:
                 chunk_size=chunk_size,
                 file_pattern=file_pattern,
                 extract_diffrn=extract_diffrn,
+                reverse=reverse,
             )
         finally:
             if original_verbosity is not None:

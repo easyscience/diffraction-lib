@@ -486,7 +486,7 @@ class PdCwlData(PdDataBase):
         beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH, BeamModeEnum.TIME_OF_FLIGHT}),
     )
     calculator_support = CalculatorSupport(
-        calculators=frozenset({CalculatorEnum.CRYSPY}),
+        calculators=frozenset({CalculatorEnum.CRYSPY, CalculatorEnum.CRYSFML}),
     )
 
     def __init__(self) -> None:

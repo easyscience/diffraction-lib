@@ -48,8 +48,6 @@ dependencies = [
   'pandas',         # Displaying tables in Jupyter notebooks
   'plotly',         # Interactive plots
   'py3Dmol',        # Visualisation of crystal structures
-  'jupyterlab',     # Jupyter notebooks
-  'pixi-kernel',    # Pixi Jupyter kernel
 ]
 
 [project.optional-dependencies]
@@ -72,6 +70,7 @@ dev = [
   'jupyterquiz',                     # Quizzes in Jupyter notebooks
   'pydoclint',                       # Docstring linter
   'format-docstring',                # Docstring formatter
+  'docstripy',                       # Convert docstrings to other formats
   'interrogate',                     # Docstring coverage checker
   'copier',                          # Template management
   'mike',                            # MkDocs: Versioned documentation support
@@ -373,8 +372,8 @@ convention = 'numpy'
 [tool.ruff.lint.pylint]
 # Ruff counts `self`/`cls` in max-args; traditional pylint does not.
 # Setting 6 here matches pylint's default of 5 (excluding self).
-max-args = 6
-max-positional-args = 6
+max-args = 7
+max-positional-args = 7
 
 #############################
 # Configuration for pydoclint

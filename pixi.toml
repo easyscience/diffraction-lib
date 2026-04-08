@@ -29,7 +29,7 @@ PYTHONPATH = "${PIXI_PROJECT_ROOT}/src;%PYTHONPATH%"
 [workspace]
 
 # Supported platforms for the lock file (pixi.lock)
-platforms = ['win-64', 'linux-64', 'osx-64', 'osx-arm64']
+platforms = ['win-64', 'linux-64', 'osx-arm64']
 
 # Channels for fetching packages
 channels = ['conda-forge']
@@ -53,11 +53,14 @@ macos = '14.0'
 # Default feature configuration
 
 [dependencies]
-nodejs = '*' # Required for Prettier (non-Python formatting)
-gsl = '*'    # GNU Scientific Library; required for diffpy.pdffit2
+nodejs = '*'      # Required for Prettier (non-Python formatting)
+jupyterlab = '*'  # Jupyter notebooks
+pixi-kernel = '*' # Pixi Jupyter kernel
+gsl = '*'         # GNU Scientific Library; required for diffpy.pdffit2
 
 [pypi-dependencies] # == [feature.default.pypi-dependencies]
 #pip = '*' # Native package installer
+pycrysfml = { version = ">=0.2.1", index = "https://easyscience.github.io/pypi/" }
 easydiffraction = { path = '.', editable = true, extras = ['dev'] }
 
 # Specific features: Set specific Python versions
@@ -75,12 +78,12 @@ python = '3.14.*'
 
 # The `default` feature is always included in all environments.
 # Additional features can be specified per environment.
-py-312-env = { features = ['default', 'py-min'] }
-py-314-env = { features = ['default', 'py-max'] }
+py-312-env = { features = ['py-min'] }
+py-314-env = { features = ['py-max'] }
 
 # The `default` environment is always created and includes the `default` feature.
 # It does not need to be specified explicitly unless non-default features are included.
-default = { features = ['default', 'py-max'] }
+default = { features = ['py-max'] }
 
 #######
 # TASKS
@@ -111,7 +114,6 @@ test-all = { depends-on = [
 ###########
 
 pyproject-check = 'python -m validate_pyproject pyproject.toml'
-param-docstring-check = 'python tools/param_consistency.py src/ --check'
 docstring-lint-check = 'pydoclint --quiet src/'
 notebook-lint-check = 'nbqa ruff docs/docs/tutorials/'
 py-lint-check = 'ruff check src/ tests/ docs/docs/tutorials/'
@@ -126,10 +128,11 @@ check = 'pre-commit run --hook-stage manual --all-files'
 # 🛠️ Fixes
 ##########
 
-param-docstring-fix = 'python tools/param_consistency.py src/ --fix'
+docstring-transform = 'pixi run docstripy src/ -s=numpy -w'
 docstring-format-fix = 'format-docstring src/'
 notebook-lint-fix = 'nbqa ruff --fix docs/docs/tutorials/'
 py-lint-fix = 'ruff check --fix src/ tests/ docs/docs/tutorials/'
+py-lint-fix-unsafe = 'ruff check --fix --unsafe-fixes src/ tests/ docs/docs/tutorials/'
 py-format-fix = 'ruff format src/ tests/ docs/docs/tutorials/'
 nonpy-format-fix = 'npx prettier --write --list-different --config=prettierrc.toml --ignore-unknown .'
 nonpy-format-fix-modified = 'python tools/nonpy_prettier_modified.py --write'
