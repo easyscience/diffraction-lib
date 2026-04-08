@@ -11917,11 +11917,7 @@ expression(rhs_aliases).</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/core/singleton.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 35</span>
-<span class="normal"> 36</span>
-<span class="normal"> 37</span>
-<span class="normal"> 38</span>
-<span class="normal"> 39</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 39</span>
 <span class="normal"> 40</span>
 <span class="normal"> 41</span>
 <span class="normal"> 42</span>
@@ -12003,7 +11999,25 @@ expression(rhs_aliases).</p>
 <span class="normal">118</span>
 <span class="normal">119</span>
 <span class="normal">120</span>
-<span class="normal">121</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ConstraintsHandler</span><span class="p">(</span><span class="n">SingletonBase</span><span class="p">):</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ConstraintsHandler</span><span class="p">(</span><span class="n">SingletonBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Manage parameter constraints using aliases and expressions.</span>
 
@@ -12082,6 +12096,20 @@ expression(rhs_aliases).</p>
                 <span class="c1"># Evaluate the RHS expression using the current values</span>
                 <span class="n">rhs_value</span> <span class="o">=</span> <span class="n">ae</span><span class="p">(</span><span class="n">rhs_expr</span><span class="p">)</span>
 
+                <span class="c1"># asteval silently returns None for undefined names</span>
+                <span class="c1"># instead of raising an exception; errors are stored in</span>
+                <span class="c1"># ae.error.</span>
+                <span class="k">if</span> <span class="n">ae</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
+                    <span class="n">error_msgs</span> <span class="o">=</span> <span class="s1">&#39;; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">get_error</span><span class="p">())</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">ae</span><span class="o">.</span><span class="n">error</span><span class="p">)</span>
+                    <span class="n">ae</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Constraint &#39;</span><span class="si">{</span><span class="n">lhs_alias</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">rhs_expr</span><span class="si">}</span><span class="s2">&#39; could not be &quot;</span>
+                        <span class="sa">f</span><span class="s1">&#39;evaluated: </span><span class="si">{</span><span class="n">error_msgs</span><span class="si">}</span><span class="s1">. &#39;</span>
+                        <span class="sa">f</span><span class="s1">&#39;Make sure every name in the expression is registered &#39;</span>
+                        <span class="sa">f</span><span class="s1">&#39;as an alias via analysis.aliases.create().&#39;</span><span class="p">,</span>
+                        <span class="n">exc_type</span><span class="o">=</span><span class="ne">ValueError</span><span class="p">,</span>
+                    <span class="p">)</span>
+
                 <span class="c1"># Get the actual parameter object we want to update</span>
                 <span class="n">param</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alias_to_param</span><span class="p">[</span><span class="n">lhs_alias</span><span class="p">]</span><span class="o">.</span><span class="n">param</span>
 
@@ -12126,11 +12154,7 @@ expression(rhs_aliases).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/singleton.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 87</span>
-<span class="normal"> 88</span>
-<span class="normal"> 89</span>
-<span class="normal"> 90</span>
-<span class="normal"> 91</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 91</span>
 <span class="normal"> 92</span>
 <span class="normal"> 93</span>
 <span class="normal"> 94</span>
@@ -12160,7 +12184,25 @@ expression(rhs_aliases).</p>
 <span class="normal">118</span>
 <span class="normal">119</span>
 <span class="normal">120</span>
-<span class="normal">121</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Evaluate constraints and apply them to dependent parameters.</span>
 
@@ -12186,6 +12228,20 @@ expression(rhs_aliases).</p>
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># Evaluate the RHS expression using the current values</span>
             <span class="n">rhs_value</span> <span class="o">=</span> <span class="n">ae</span><span class="p">(</span><span class="n">rhs_expr</span><span class="p">)</span>
+
+            <span class="c1"># asteval silently returns None for undefined names</span>
+            <span class="c1"># instead of raising an exception; errors are stored in</span>
+            <span class="c1"># ae.error.</span>
+            <span class="k">if</span> <span class="n">ae</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
+                <span class="n">error_msgs</span> <span class="o">=</span> <span class="s1">&#39;; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">get_error</span><span class="p">())</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">ae</span><span class="o">.</span><span class="n">error</span><span class="p">)</span>
+                <span class="n">ae</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Constraint &#39;</span><span class="si">{</span><span class="n">lhs_alias</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">rhs_expr</span><span class="si">}</span><span class="s2">&#39; could not be &quot;</span>
+                    <span class="sa">f</span><span class="s1">&#39;evaluated: </span><span class="si">{</span><span class="n">error_msgs</span><span class="si">}</span><span class="s1">. &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;Make sure every name in the expression is registered &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;as an alias via analysis.aliases.create().&#39;</span><span class="p">,</span>
+                    <span class="n">exc_type</span><span class="o">=</span><span class="ne">ValueError</span><span class="p">,</span>
+                <span class="p">)</span>
 
             <span class="c1"># Get the actual parameter object we want to update</span>
             <span class="n">param</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alias_to_param</span><span class="p">[</span><span class="n">lhs_alias</span><span class="p">]</span><span class="o">.</span><span class="n">param</span>
@@ -12227,14 +12283,14 @@ alias='biso_La', param=model.atom_sites['La'].b_iso</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/singleton.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">60</span>
 <span class="normal">61</span>
 <span class="normal">62</span>
-<span class="normal">63</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">set_aliases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aliases</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">set_aliases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aliases</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Set the alias map (name → alias wrapper).</span>
 
@@ -12274,15 +12330,15 @@ rhs_expr='1 - occ_La'</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/singleton.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">69</span>
 <span class="normal">70</span>
 <span class="normal">71</span>
 <span class="normal">72</span>
-<span class="normal">73</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">set_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constraints</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">set_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constraints</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Set the constraints and triggers parsing into internal format.</span>
 
@@ -12342,11 +12398,7 @@ for managing shared state across the library.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/core/singleton.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">16</span>
 <span class="normal">17</span>
 <span class="normal">18</span>
 <span class="normal">19</span>
@@ -12357,7 +12409,11 @@ for managing shared state across the library.</p>
 <span class="normal">24</span>
 <span class="normal">25</span>
 <span class="normal">26</span>
-<span class="normal">27</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SingletonBase</span><span class="p">:</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SingletonBase</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class to implement Singleton pattern.</span>
 
@@ -12409,12 +12465,12 @@ for managing shared state across the library.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/singleton.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the shared instance, creating it if needed.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

@@ -271,6 +271,12 @@ project.analysis.constraints.create(expression='biso_Co2 = biso_Co1')
 project.analysis.fit()
 
 # %% [markdown]
+# #### Compare measured and calculated patterns for the first fit.
+
+# %%
+project.plotter.plot_meas_vs_calc(expt_name='d20', show_residual=True)
+
+# %% [markdown]
 # #### Run Sequential Fitting
 #
 # Set output verbosity level to "short" to show only one-line status
@@ -301,10 +307,19 @@ project.analysis.fit_sequential(
     data_dir=data_dir,
     extract_diffrn=extract_diffrn,
     max_workers='auto',
+    reverse=True,
 )
 
 # %% [markdown]
 # #### Replay a Dataset
+#
+# Apply fitted parameters from the first CSV row and plot the result.
+
+# %%
+project.apply_params_from_csv(row_index=0)
+project.plotter.plot_meas_vs_calc(expt_name='d20', show_residual=True)
+
+# %% [markdown]
 #
 # Apply fitted parameters from the last CSV row and plot the result.
 

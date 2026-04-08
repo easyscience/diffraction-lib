@@ -9156,7 +9156,14 @@ patterns.</p>
 <span class="normal">435</span>
 <span class="normal">436</span>
 <span class="normal">437</span>
-<span class="normal">438</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@CalculatorFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">438</span>
+<span class="normal">439</span>
+<span class="normal">440</span>
+<span class="normal">441</span>
+<span class="normal">442</span>
+<span class="normal">443</span>
+<span class="normal">444</span>
+<span class="normal">445</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@CalculatorFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CryspyCalculator</span><span class="p">(</span><span class="n">CalculatorBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cryspy-based diffraction calculator.</span>
@@ -9422,6 +9429,13 @@ patterns.</p>
                 <span class="n">cryspy_resolution</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">peak</span><span class="o">.</span><span class="n">broad_gauss_w</span><span class="o">.</span><span class="n">value</span>
                 <span class="n">cryspy_resolution</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">peak</span><span class="o">.</span><span class="n">broad_lorentz_x</span><span class="o">.</span><span class="n">value</span>
                 <span class="n">cryspy_resolution</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">peak</span><span class="o">.</span><span class="n">broad_lorentz_y</span><span class="o">.</span><span class="n">value</span>
+
+                <span class="k">if</span> <span class="s1">&#39;asymmetry_parameters&#39;</span> <span class="ow">in</span> <span class="n">cryspy_expt_dict</span><span class="p">:</span>
+                    <span class="n">cryspy_asymmetry</span> <span class="o">=</span> <span class="n">cryspy_expt_dict</span><span class="p">[</span><span class="s1">&#39;asymmetry_parameters&#39;</span><span class="p">]</span>
+                    <span class="n">cryspy_asymmetry</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">peak</span><span class="o">.</span><span class="n">asym_empir_1</span><span class="o">.</span><span class="n">value</span>
+                    <span class="n">cryspy_asymmetry</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">peak</span><span class="o">.</span><span class="n">asym_empir_2</span><span class="o">.</span><span class="n">value</span>
+                    <span class="n">cryspy_asymmetry</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">peak</span><span class="o">.</span><span class="n">asym_empir_3</span><span class="o">.</span><span class="n">value</span>
+                    <span class="n">cryspy_asymmetry</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">peak</span><span class="o">.</span><span class="n">asym_empir_4</span><span class="o">.</span><span class="n">value</span>
 
             <span class="k">elif</span> <span class="n">experiment</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">BeamModeEnum</span><span class="o">.</span><span class="n">TIME_OF_FLIGHT</span><span class="p">:</span>
                 <span class="n">cryspy_expt_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;tof_</span><span class="si">{</span><span class="n">experiment</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>

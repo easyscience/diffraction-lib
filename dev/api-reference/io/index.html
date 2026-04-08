@@ -4179,9 +4179,9 @@ can derive a stable uid if needed.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/io/cif/parse.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">7</span>
-<span class="normal">8</span>
-<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">document_from_path</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gemmi</span><span class="o">.</span><span class="n">cif</span><span class="o">.</span><span class="n">Document</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">document_from_path</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gemmi</span><span class="o">.</span><span class="n">cif</span><span class="o">.</span><span class="n">Document</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Read a CIF document from a file path.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">gemmi</span><span class="o">.</span><span class="n">cif</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -4214,9 +4214,9 @@ can derive a stable uid if needed.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/io/cif/parse.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">document_from_string</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gemmi</span><span class="o">.</span><span class="n">cif</span><span class="o">.</span><span class="n">Document</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">document_from_string</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gemmi</span><span class="o">.</span><span class="n">cif</span><span class="o">.</span><span class="n">Document</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Read a CIF document from a raw text string.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">gemmi</span><span class="o">.</span><span class="n">cif</span><span class="o">.</span><span class="n">read_string</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -4249,10 +4249,10 @@ can derive a stable uid if needed.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/io/cif/parse.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">name_from_block</span><span class="p">(</span><span class="n">block</span><span class="p">:</span> <span class="n">gemmi</span><span class="o">.</span><span class="n">cif</span><span class="o">.</span><span class="n">Block</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">name_from_block</span><span class="p">(</span><span class="n">block</span><span class="p">:</span> <span class="n">gemmi</span><span class="o">.</span><span class="n">cif</span><span class="o">.</span><span class="n">Block</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract a model name from the CIF block name.&quot;&quot;&quot;</span>
     <span class="c1"># TODO: Need validator or normalization?</span>
     <span class="k">return</span> <span class="n">block</span><span class="o">.</span><span class="n">name</span>
@@ -4286,11 +4286,180 @@ can derive a stable uid if needed.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/io/cif/parse.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">pick_sole_block</span><span class="p">(</span><span class="n">doc</span><span class="p">:</span> <span class="n">gemmi</span><span class="o">.</span><span class="n">cif</span><span class="o">.</span><span class="n">Document</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gemmi</span><span class="o">.</span><span class="n">cif</span><span class="o">.</span><span class="n">Block</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">pick_sole_block</span><span class="p">(</span><span class="n">doc</span><span class="p">:</span> <span class="n">gemmi</span><span class="o">.</span><span class="n">cif</span><span class="o">.</span><span class="n">Document</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gemmi</span><span class="o">.</span><span class="n">cif</span><span class="o">.</span><span class="n">Block</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Pick the sole data block from a CIF document.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">doc</span><span class="o">.</span><span class="n">sole_block</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="easydiffraction.io.cif.parse.read_cif_str" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">read_cif_str</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">tag</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Read a single string value from a <abbr title="Crystallographic Information File.">CIF</abbr> block by tag.</p>
+<p>Strips surrounding single or double quotes when present, and returns
+<code>None</code> for absent tags or <abbr title="Crystallographic Information File.">CIF</abbr> unknown/inapplicable markers (<code>?</code>
+/ <code>.</code>).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>block</code>
+            </td>
+            <td>
+                  <code><span title="gemmi.cif.Block">Block</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Parsed <abbr title="Crystallographic Information File.">CIF</abbr> data block to read from.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>tag</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> tag to look up (e.g. <code>'_peak.profile_type'</code>).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Unquoted string value, or <code>None</code> if not found.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/io/cif/parse.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">read_cif_str</span><span class="p">(</span><span class="n">block</span><span class="p">:</span> <span class="n">gemmi</span><span class="o">.</span><span class="n">cif</span><span class="o">.</span><span class="n">Block</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read a single string value from a CIF block by tag.</span>
+
+<span class="sd">    Strips surrounding single or double quotes when present, and returns</span>
+<span class="sd">    ``None`` for absent tags or CIF unknown/inapplicable markers (``?``</span>
+<span class="sd">    / ``.``).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    block : gemmi.cif.Block</span>
+<span class="sd">        Parsed CIF data block to read from.</span>
+<span class="sd">    tag : str</span>
+<span class="sd">        CIF tag to look up (e.g. ``&#39;_peak.profile_type&#39;``).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str | None</span>
+<span class="sd">        Unquoted string value, or ``None`` if not found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">vals</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">block</span><span class="o">.</span><span class="n">find_values</span><span class="p">(</span><span class="n">tag</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">vals</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">raw</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">raw</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;?&#39;</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">}:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">_MIN_QUOTED_LEN</span> <span class="ow">and</span> <span class="n">raw</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">raw</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">raw</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;&#39;&quot;</span><span class="p">,</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">}:</span>
+        <span class="k">return</span> <span class="n">raw</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">raw</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>

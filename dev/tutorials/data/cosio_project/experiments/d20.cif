@@ -15,6 +15,7 @@ _peak.broad_gauss_v -0.52992487(1469831)
 _peak.broad_gauss_w 0.38501653(917990)
 _peak.broad_lorentz_x   0.00000000
 _peak.broad_lorentz_y 0.01858315(450234)
+_peak.profile_type pseudo-voigt
 
 _instr.wavelength   1.87000000
 _instr.2theta_offset 0.28823077(201368)
