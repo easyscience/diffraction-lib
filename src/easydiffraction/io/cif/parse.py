@@ -35,8 +35,8 @@ def read_cif_str(block: gemmi.cif.Block, tag: str) -> str | None:
     Read a single string value from a CIF block by tag.
 
     Strips surrounding single or double quotes when present, and returns
-    ``None`` for absent tags or CIF unknown/inapplicable markers
-    (``?`` / ``.``).
+    ``None`` for absent tags or CIF unknown/inapplicable markers (``?``
+    / ``.``).
 
     Parameters
     ----------

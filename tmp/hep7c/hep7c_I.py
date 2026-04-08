@@ -356,7 +356,7 @@ experiment.excluded_regions.create(id='2', start=14.97, end=180)
 experiment.show_as_cif()
 
 # %% [markdown]
-# ## Step 5: Set free parameters
+# ## Step 4: Set free parameters
 #
 # Now, set free parameters for the structure. In this example,
 # cell parameters, the fractional coordinates of atoms, as well as
@@ -402,7 +402,7 @@ for point in experiment.background:
 project.analysis.display.free_params()
 
 # %% [markdown]
-# ## Step 6: Define constraints
+# ## Step 5: Define constraints
 #
 # Create aliases for those parameters that we want to reference in
 # constraint expressions. In this example, we want to constrain the Biso
@@ -471,7 +471,7 @@ project.analysis.constraints.create(expression='biso_O2 = biso_O1')
 project.analysis.display.constraints()
 
 # %% [markdown]
-# ## Step 7: Perform Analysis
+# ## Step 6: Perform Analysis
 
 # %% [markdown]
 # Before performing the fit, we can plot the measured data and compare
@@ -507,4 +507,8 @@ project.plotter.plot_meas_vs_calc(expt_name='pd_xray_1', x_min=6.00, x_max=6.25)
 # %%
 experiment.instrument.help()
 
+# %% [markdown]
+# ## Step 7: Show Project Summary
+
 # %%
+project.summary.show_report()

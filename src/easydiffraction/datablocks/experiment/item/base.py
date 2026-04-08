@@ -811,9 +811,9 @@ class PdExperimentBase(ExperimentBase):
         """
         Restore switchable category types for powder experiments.
 
-        Reads ``_peak.profile_type`` from the CIF block and switches
-        to the matching peak implementation before category parameters
-        are loaded, ensuring profile-specific descriptors are present.
+        Reads ``_peak.profile_type`` from the CIF block and switches to
+        the matching peak implementation before category parameters are
+        loaded, ensuring profile-specific descriptors are present.
 
         Parameters
         ----------

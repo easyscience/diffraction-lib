@@ -115,8 +115,9 @@ class ConstraintsHandler(SingletonBase):
                 # Evaluate the RHS expression using the current values
                 rhs_value = ae(rhs_expr)
 
-                # asteval silently returns None for undefined names instead
-                # of raising an exception; errors are stored in ae.error.
+                # asteval silently returns None for undefined names
+                # instead of raising an exception; errors are stored in
+                # ae.error.
                 if ae.error:
                     error_msgs = '; '.join(str(e.get_error()) for e in ae.error)
                     ae.error.clear()
