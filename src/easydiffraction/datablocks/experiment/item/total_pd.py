@@ -87,6 +87,7 @@ class TotalPdExperiment(PdExperimentBase):
         default_sy = 0.03
         if data.shape[1] < _MIN_COLUMNS_XY_SY:
             print(f'Warning: No uncertainty (sy) column provided. Defaulting to {default_sy}.')
+            log.warning('No uncertainty (sy) column provided. Defaulting to sqrt(y).')
 
         x = data[:, 0]
         y = data[:, 1]

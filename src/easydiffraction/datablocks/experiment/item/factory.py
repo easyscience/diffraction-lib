@@ -26,6 +26,40 @@ from easydiffraction.io.cif.parse import name_from_block
 from easydiffraction.io.cif.parse import pick_sole_block
 from easydiffraction.utils.logging import log
 
+# Minimum raw-string length for CIF surrounding-quote detection
+_MIN_QUOTED_LEN = 2
+
+
+def _read_cif_str(block: object, tag: str) -> str | None:
+    """
+    Read a single string value from a CIF block by tag.
+
+    Returns the unquoted string, or ``None`` if the tag is absent or
+    carries a CIF unknown/inapplicable marker (``?`` / ``.``).
+
+    Parameters
+    ----------
+    block : object
+        A parsed ``gemmi.cif.Block``.
+    tag : str
+        CIF tag to look up (e.g. ``'_peak.profile_type'``).
+
+    Returns
+    -------
+    str | None
+        Stripped string value, or ``None``.
+    """
+    vals = list(block.find_values(tag))
+    if not vals:
+        return None
+    raw: str = vals[0]
+    if raw in {'?', '.'}:
+        return None
+    if len(raw) >= _MIN_QUOTED_LEN and raw[0] == raw[-1] and raw[0] in {"'", '"'}:
+        return raw[1:-1]
+    return raw
+
+
 if TYPE_CHECKING:
     import gemmi
 
@@ -119,6 +153,14 @@ class ExperimentFactory(FactoryBase):
 
         expt_class = cls._resolve_class(expt_type)
         expt_obj = expt_class(name=name, type=expt_type)
+
+        # Restore peak profile type before loading category parameters.
+        # Profile-specific descriptors (e.g. asymmetry parameters for
+        # 'split pseudo-voigt') must exist when from_cif runs on peak.
+        if hasattr(expt_obj, '_set_peak_profile_type'):
+            peak_type = _read_cif_str(block, '_peak.profile_type')
+            if peak_type is not None:
+                expt_obj._set_peak_profile_type(peak_type)
 
         for category in expt_obj.categories:
             category.from_cif(block)

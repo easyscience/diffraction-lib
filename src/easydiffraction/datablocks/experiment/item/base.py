@@ -762,3 +762,30 @@ class PdExperimentBase(ExperimentBase):
         """Print the currently selected peak profile type."""
         console.paragraph('Current peak profile type')
         console.print(self.peak_profile_type)
+
+    def _set_peak_profile_type(self, new_type: str) -> None:
+        """
+        Switch the peak profile type without console output.
+
+        Used internally by the factory when restoring state from CIF so
+        that no user-facing warnings or progress messages are emitted.
+        Invalid type tags are logged as warnings and ignored.
+
+        Parameters
+        ----------
+        new_type : str
+            Peak profile type tag (e.g. ``'split pseudo-voigt'``).
+        """
+        supported = PeakFactory.supported_for(
+            scattering_type=self.type.scattering_type.value,
+            beam_mode=self.type.beam_mode.value,
+        )
+        supported_tags = [k.type_info.tag for k in supported]
+        if new_type not in supported_tags:
+            log.warning(
+                f"Unsupported peak profile '{new_type}' in CIF. "
+                f'Supported: {supported_tags}. Keeping default.',
+            )
+            return
+        self._peak = PeakFactory.create(new_type)
+        self._peak_profile_type = new_type

@@ -122,9 +122,9 @@ class ConstraintsHandler(SingletonBase):
                     ae.error.clear()
                     log.error(
                         f"Constraint '{lhs_alias} = {rhs_expr}' could not be "
-                        f"evaluated: {error_msgs}. "
-                        f"Make sure every name in the expression is registered "
-                        f"as an alias via analysis.aliases.create().",
+                        f'evaluated: {error_msgs}. '
+                        f'Make sure every name in the expression is registered '
+                        f'as an alias via analysis.aliases.create().',
                         exc_type=ValueError,
                     )
 

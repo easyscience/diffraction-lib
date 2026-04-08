@@ -1,0 +1,32 @@
+data_lam7o3
+
+_cell.length_a 5.46244976(15012)
+_cell.length_b 7.73193479(21592)
+_cell.length_c 5.49077209(14524)
+_cell.angle_alpha  90.00000000
+_cell.angle_beta  90.00000000
+_cell.angle_gamma  90.00000000
+
+_space_group.name_H-M_alt    "P n m a"
+_space_group.IT_coordinate_system_code          abc
+
+loop_
+_atom_site.label
+_atom_site.type_symbol
+_atom_site.fract_x
+_atom_site.fract_y
+_atom_site.fract_z
+_atom_site.Wyckoff_letter
+_atom_site.occupancy
+_atom_site.B_iso_or_equiv
+_atom_site.adp_type
+          La           La 0.47687584(13032)   0.25000000 0.00390614(50016)            c   1.00000000 0.66425135(1504726)         Biso
+          Ti           Ti   0.00000000   0.00000000   0.00000000            a   0.14286000 0.35782173(2127177)         Biso
+          Cr           Cr   0.00000000   0.00000000   0.00000000            a   0.14286000   0.35782173         Biso
+          Mn           Mn   0.00000000   0.00000000   0.00000000            a   0.14286000   0.35782173         Biso
+          Fe           Fe   0.00000000   0.00000000   0.00000000            a   0.14286000   0.35782173         Biso
+          Co           Co   0.00000000   0.00000000   0.00000000            a   0.14286000   0.35782173         Biso
+          Ni           Ni   0.00000000   0.00000000   0.00000000            a   0.14286000   0.35782173         Biso
+          Cu           Cu   0.00000000   0.00000000   0.00000000            a   0.14286000   0.35782173         Biso
+          O1            O 0.50877795(168659)   0.25000000 0.57892669(250643)            c   1.00000000 0.34005008(11051446)         Biso
+          O2            O 0.22146928(229776) 0.03248427(141670) 0.27164018(230048)            d   1.00000000   0.34005008         Biso
