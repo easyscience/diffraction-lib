@@ -82,5 +82,26 @@ def download_all_tutorials(
     ed.download_all_tutorials(destination=destination, overwrite=overwrite)
 
 
+@app.command('fit')
+def fit(
+    project_dir: str = typer.Argument(
+        ...,
+        help='Path to the project directory (must contain project.cif).',
+    ),
+    dry: bool = typer.Option(
+        False,
+        '--dry',
+        help='Run fitting without saving results back to the project directory.',
+    ),
+) -> None:
+    """Fit a saved project: easydiffraction fit PROJECT_DIR [--dry]."""
+    project = ed.Project.load(project_dir)
+    if dry:
+        project.info._path = None
+    project.analysis.fit()
+    project.analysis.display.fit_results()
+    project.summary.show_report()
+
+
 if __name__ == '__main__':
     app()
