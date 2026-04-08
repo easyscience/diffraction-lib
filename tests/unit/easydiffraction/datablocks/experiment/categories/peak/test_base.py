@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 from easydiffraction.datablocks.experiment.categories.peak.base import PeakBase
+from easydiffraction.core.metadata import TypeInfo
+from easydiffraction.core.variable import StringDescriptor
 
 
 def test_peak_base_identity_code():
@@ -11,3 +13,36 @@ def test_peak_base_identity_code():
 
     p = DummyPeak()
     assert p._identity.category_code == 'peak'
+
+
+def test_peak_base_profile_type_defaults_to_empty_without_type_info():
+    class DummyPeak(PeakBase):
+        def __init__(self):
+            super().__init__()
+
+    p = DummyPeak()
+    assert isinstance(p.profile_type, StringDescriptor)
+    assert p.profile_type.value == ''
+
+
+def test_peak_base_profile_type_reflects_type_info_tag():
+    class TaggedPeak(PeakBase):
+        type_info = TypeInfo(tag='my-profile', description='test profile')
+
+        def __init__(self):
+            super().__init__()
+
+    p = TaggedPeak()
+    assert p.profile_type.value == 'my-profile'
+
+
+def test_peak_base_profile_type_in_parameters():
+    class TaggedPeak(PeakBase):
+        type_info = TypeInfo(tag='my-profile', description='test profile')
+
+        def __init__(self):
+            super().__init__()
+
+    p = TaggedPeak()
+    param_names = {param.name for param in p.parameters}
+    assert 'profile_type' in param_names

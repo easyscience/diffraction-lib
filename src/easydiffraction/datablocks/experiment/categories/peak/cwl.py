@@ -57,7 +57,7 @@ class CwlSplitPseudoVoigt(
         beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH}),
     )
     calculator_support = CalculatorSupport(
-        calculators=frozenset({CalculatorEnum.CRYSPY, CalculatorEnum.CRYSFML}),
+        calculators=frozenset({CalculatorEnum.CRYSPY}),
     )
 
     def __init__(self) -> None:
@@ -81,7 +81,7 @@ class CwlThompsonCoxHastings(
         beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH}),
     )
     calculator_support = CalculatorSupport(
-        calculators=frozenset({CalculatorEnum.CRYSPY, CalculatorEnum.CRYSFML}),
+        calculators=frozenset({CalculatorEnum.CRYSFML}),
     )
 
     def __init__(self) -> None:

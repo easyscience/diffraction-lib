@@ -1,10 +1,14 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from __future__ import annotations
+
 from typing import Any
 from typing import Self
 
 from asteval import Interpreter
+
+from easydiffraction.utils.logging import log
 
 # ======================================================================
 
@@ -110,6 +114,20 @@ class ConstraintsHandler(SingletonBase):
             try:
                 # Evaluate the RHS expression using the current values
                 rhs_value = ae(rhs_expr)
+
+                # asteval silently returns None for undefined names
+                # instead of raising an exception; errors are stored in
+                # ae.error.
+                if ae.error:
+                    error_msgs = '; '.join(str(e.get_error()) for e in ae.error)
+                    ae.error.clear()
+                    log.error(
+                        f"Constraint '{lhs_alias} = {rhs_expr}' could not be "
+                        f'evaluated: {error_msgs}. '
+                        f'Make sure every name in the expression is registered '
+                        f'as an alias via analysis.aliases.create().',
+                        exc_type=ValueError,
+                    )
 
                 # Get the actual parameter object we want to update
                 param = self._alias_to_param[lhs_alias].param

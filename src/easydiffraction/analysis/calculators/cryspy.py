@@ -297,6 +297,13 @@ class CryspyCalculator(CalculatorBase):
                 cryspy_resolution[3] = experiment.peak.broad_lorentz_x.value
                 cryspy_resolution[4] = experiment.peak.broad_lorentz_y.value
 
+                if 'asymmetry_parameters' in cryspy_expt_dict:
+                    cryspy_asymmetry = cryspy_expt_dict['asymmetry_parameters']
+                    cryspy_asymmetry[0] = experiment.peak.asym_empir_1.value
+                    cryspy_asymmetry[1] = experiment.peak.asym_empir_2.value
+                    cryspy_asymmetry[2] = experiment.peak.asym_empir_3.value
+                    cryspy_asymmetry[3] = experiment.peak.asym_empir_4.value
+
             elif experiment.type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
                 cryspy_expt_name = f'tof_{experiment.name}'
                 cryspy_expt_dict = cryspy_dict[cryspy_expt_name]
@@ -507,6 +514,10 @@ def _cif_peak_section(
             'broad_gauss_w': '_pd_instr_resolution_W',
             'broad_lorentz_x': '_pd_instr_resolution_X',
             'broad_lorentz_y': '_pd_instr_resolution_Y',
+            'asym_empir_1': '_pd_instr_reflex_asymmetry_p1',
+            'asym_empir_2': '_pd_instr_reflex_asymmetry_p2',
+            'asym_empir_3': '_pd_instr_reflex_asymmetry_p3',
+            'asym_empir_4': '_pd_instr_reflex_asymmetry_p4',
         }
     elif expt_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
         peak_mapping = {
@@ -522,7 +533,7 @@ def _cif_peak_section(
 
     cif_lines.append('')
     for local_attr_name, engine_key_name in peak_mapping.items():
-        attr_obj = getattr(peak, local_attr_name)
+        attr_obj = getattr(peak, local_attr_name, None)
         if attr_obj is not None:
             cif_lines.append(f'{engine_key_name} {attr_obj.value}')
 

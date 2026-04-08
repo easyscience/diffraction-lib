@@ -120,6 +120,10 @@ class ExperimentFactory(FactoryBase):
         expt_class = cls._resolve_class(expt_type)
         expt_obj = expt_class(name=name, type=expt_type)
 
+        # Restore switchable category types before loading parameters
+        # so implementation-specific descriptors exist for from_cif.
+        expt_obj._restore_switchable_types(block)
+
         for category in expt_obj.categories:
             category.from_cif(block)
 
