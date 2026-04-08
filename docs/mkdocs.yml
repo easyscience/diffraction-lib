@@ -228,3 +228,5 @@ nav:
       - project: api-reference/project.md
       - summary: api-reference/summary.md
       - utils: api-reference/utils.md
+  - Command-Line Interface:
+      - Command-Line Interface: cli/index.md

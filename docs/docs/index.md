@@ -1,11 +1,11 @@
 ![](assets/images/logo_dark.svg#gh-dark-mode-only)![](assets/images/logo_light.svg#gh-light-mode-only)
 
-# Diffraction data analysis library
+# Diffraction data analysis
 
 Here is a brief overview of the main documentation sections:
 
 - [:material-information-slab-circle: Introduction](introduction/index.md)
-  – Provides an overview of EasyDiffraction, including its purpose,
+  – Provides a description of EasyDiffraction, including its purpose,
   licensing, latest release details, and contact information.
 - [:material-cog-box: Installation & Setup](installation-and-setup/index.md)
   – Guides users through system requirements, environment configuration,
@@ -19,3 +19,6 @@ Here is a brief overview of the main documentation sections:
 - [:material-code-braces-box: API Reference](api-reference/index.md) –
   An auto-generated reference detailing the available functions and
   modules in EasyDiffraction.
+- [:material-console: Command-Line Interface](cli/index.md) – Describes
+  how to use EasyDiffraction from the terminal for batch fitting and
+  other tasks.

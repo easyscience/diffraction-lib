@@ -98,7 +98,7 @@ class CrysfmlCalculator(CalculatorBase):
         except KeyError:
             print('[CrysfmlCalculator] Error: No calculated data')
             y = []
-        return y
+        return np.asarray(y)
 
     def _adjust_pattern_length(  # noqa: PLR6301
         self,
@@ -122,8 +122,14 @@ class CrysfmlCalculator(CalculatorBase):
         """
         # TODO: Check the origin of this discrepancy coming from
         #  PyCrysFML
+        # Safety guard: with the correct step formula (max-min)/(N-1+ε),
+        # pycrysfml should return exactly target_length points. Truncate
+        # if over-length; pad with the last value if under-length.
         if len(pattern) > target_length:
             return pattern[:target_length]
+        if len(pattern) < target_length:
+            pad = target_length - len(pattern)
+            return list(pattern) + [pattern[-1]] * pad
         return pattern
 
     def _crysfml_dict(
@@ -243,7 +249,13 @@ class CrysfmlCalculator(CalculatorBase):
                 else 0.0,
                 '_pd_meas_2theta_range_min': twotheta_min,
                 '_pd_meas_2theta_range_max': twotheta_max,
-                '_pd_meas_2theta_range_inc': (twotheta_max - twotheta_min) / len(x_data),
+                # TODO: Check the origin of this discrepancy coming from
+                #  PyCrysFML
+                # Divide by (N-1+ε) instead of (N-1) so that pycrysfml's
+                # internal floor((max-min)/step) is robustly N-1 despite
+                # floating-point rounding, producing exactly N points.
+                '_pd_meas_2theta_range_inc': (twotheta_max - twotheta_min)
+                / (len(x_data) - 1 + 1e-9),
             }
         }
 

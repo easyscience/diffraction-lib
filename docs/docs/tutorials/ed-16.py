@@ -254,6 +254,3 @@ project.plotter.plot_meas_vs_calc(expt_name='sepd', show_residual=False)
 
 # %%
 project.plotter.plot_meas_vs_calc(expt_name='nomad', show_residual=False)
-
-
-# %%

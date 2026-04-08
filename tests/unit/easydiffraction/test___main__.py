@@ -64,3 +64,90 @@ def test_cli_subcommands_call_utils(monkeypatch):
     assert res2.exit_code == 0
     assert res3.exit_code == 0
     assert logs == ['LIST', 'DOWNLOAD_ALL', 'DOWNLOAD_1']
+
+
+def test_cli_fit_loads_and_fits(monkeypatch, tmp_path):
+    import easydiffraction.__main__ as main_mod
+    from easydiffraction.project.project import Project
+
+    calls = []
+
+    class FakeInfo:
+        _path = '/some/path'
+
+    class FakeProject:
+        info = FakeInfo()
+
+        class _analysis:
+            @staticmethod
+            def fit():
+                calls.append('FIT')
+
+            class display:
+                @staticmethod
+                def fit_results():
+                    calls.append('DISPLAY')
+
+        analysis = _analysis()
+
+        class _summary:
+            @staticmethod
+            def show_report():
+                calls.append('SUMMARY')
+
+        summary = _summary()
+
+    fake_project = FakeProject()
+
+    # Create a minimal project directory so load doesn't fail on path check
+    proj_dir = tmp_path / 'proj'
+    proj_dir.mkdir()
+    (proj_dir / 'project.cif').write_text('_project.id test\n')
+
+    monkeypatch.setattr(Project, 'load', staticmethod(lambda dir_path: fake_project))
+
+    result = runner.invoke(main_mod.app, ['fit', str(proj_dir)])
+    assert result.exit_code == 0
+    assert calls == ['FIT', 'DISPLAY', 'SUMMARY']
+
+
+def test_cli_fit_dry_clears_path(monkeypatch, tmp_path):
+    import easydiffraction.__main__ as main_mod
+    from easydiffraction.project.project import Project
+
+    class FakeInfo:
+        _path = '/some/path'
+
+    class FakeProject:
+        info = FakeInfo()
+
+        class _analysis:
+            @staticmethod
+            def fit():
+                pass
+
+            class display:
+                @staticmethod
+                def fit_results():
+                    pass
+
+        analysis = _analysis()
+
+        class _summary:
+            @staticmethod
+            def show_report():
+                pass
+
+        summary = _summary()
+
+    fake_project = FakeProject()
+
+    proj_dir = tmp_path / 'proj'
+    proj_dir.mkdir()
+    (proj_dir / 'project.cif').write_text('_project.id test\n')
+
+    monkeypatch.setattr(Project, 'load', staticmethod(lambda dir_path: fake_project))
+
+    result = runner.invoke(main_mod.app, ['fit', '--dry', str(proj_dir)])
+    assert result.exit_code == 0
+    assert fake_project.info._path is None

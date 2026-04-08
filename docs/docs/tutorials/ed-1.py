@@ -58,6 +58,20 @@ project.experiments.add_from_cif_path(expt_path)
 # ## Step 4: Perform Analysis (cryspy)
 
 # %%
+# Define aliases and constraints for refinement. This is necessary to
+# properly refine the isotropic displacement parameters of La and Ba,
+# which are correlated due to their shared Wyckoff position.
+project.analysis.aliases.create(
+    label='biso_La',
+    param=project.structures['lbco'].atom_sites['La'].b_iso,
+)
+project.analysis.aliases.create(
+    label='biso_Ba',
+    param=project.structures['lbco'].atom_sites['Ba'].b_iso,
+)
+project.analysis.constraints.create(expression='biso_Ba = biso_La')
+
+# %%
 # Start refinement. All parameters, which have standard uncertainties
 # in the input CIF files, are refined by default.
 project.analysis.fit()
