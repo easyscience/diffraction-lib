@@ -6,7 +6,6 @@ import tempfile
 import pytest
 from numpy.testing import assert_almost_equal
 
-
 TEMP_DIR = tempfile.gettempdir()
 
 
