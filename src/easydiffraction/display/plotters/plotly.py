@@ -9,6 +9,7 @@ renderer may be used depending on configuration.
 """
 
 import darkdetect
+import numpy as np
 import plotly.graph_objects as go
 import plotly.io as pio
 
@@ -21,6 +22,8 @@ except ImportError:
 
 from easydiffraction.display.plotters.base import SERIES_CONFIG
 from easydiffraction.display.plotters.base import PlotterBase
+from easydiffraction.utils._vendored.theme_detect import is_dark
+from easydiffraction.utils.environment import in_jupyter
 from easydiffraction.utils.environment import in_pycharm
 
 DEFAULT_COLORS = {
@@ -33,9 +36,198 @@ DEFAULT_COLORS = {
 class PlotlyPlotter(PlotterBase):
     """Interactive plotter using Plotly for notebooks and browsers."""
 
-    pio.templates.default = 'plotly_dark' if darkdetect.isDark() else 'plotly_white'
-    if in_pycharm():
-        pio.renderers.default = 'browser'
+    def __init__(self) -> None:
+        if hasattr(pio, 'templates'):
+            pio.templates.default = self._default_template_name()
+        if in_pycharm():
+            pio.renderers.default = 'browser'
+
+    @staticmethod
+    def _is_dark_mode() -> bool:
+        """
+        Return whether the active plotting context should use dark mode.
+
+        In Jupyter, prefer notebook dark-mode detection. Outside
+        Jupyter, fall back to the system theme via ``darkdetect``.
+
+        Returns
+        -------
+        bool
+            ``True`` for dark mode, otherwise ``False``.
+        """
+        return is_dark() if in_jupyter() else darkdetect.isDark()
+
+    @classmethod
+    def _default_template_name(cls) -> str:
+        """
+        Return the Plotly template matching the active theme.
+
+        In Jupyter, prefer notebook dark-mode detection. Outside
+        Jupyter, fall back to the system theme via ``darkdetect``.
+
+        Returns
+        -------
+        str
+            Either ``'plotly_dark'`` or ``'plotly_white'``.
+        """
+        return 'plotly_dark' if cls._is_dark_mode() else 'plotly_white'
+
+    @classmethod
+    def _correlation_colorscale(cls) -> list[tuple[float, str]]:
+        """
+        Return a diverging colorscale for correlation heatmaps.
+
+        Dark mode uses black at zero correlation for lower visual
+        prominence. Light mode uses white at zero correlation.
+
+        Returns
+        -------
+        list[tuple[float, str]]
+            Plotly-compatible colorscale definition.
+        """
+        if cls._is_dark_mode():
+            return [
+                (0.0, '#d73027'),
+                (0.5, '#000000'),
+                (1.0, '#4575b4'),
+            ]
+        return [
+            (0.0, '#d73027'),
+            (0.5, '#f7f7f7'),
+            (1.0, '#4575b4'),
+        ]
+
+    @classmethod
+    def _correlation_grid_color(cls) -> str:
+        """
+        Return the boundary-line color for correlation heatmaps.
+
+        Returns
+        -------
+        str
+            RGBA color string tuned for the active theme.
+        """
+        if cls._is_dark_mode():
+            return 'rgba(110, 145, 190, 0.35)'
+        return 'rgba(120, 140, 160, 0.28)'
+
+    def plot_correlation_heatmap(
+        self,
+        corr_df: object,
+        title: str,
+    ) -> None:
+        """
+        Render a Plotly heatmap for a correlation matrix.
+
+        Parameters
+        ----------
+        corr_df : object
+            Square correlation DataFrame.
+        title : str
+            Figure title.
+        """
+        num_rows, num_cols = corr_df.shape
+        x_edges = np.arange(num_cols + 1, dtype=float)
+        y_edges = np.arange(num_rows + 1, dtype=float)
+        x_centers = np.arange(num_cols, dtype=float) + 0.5
+        y_centers = np.arange(num_rows, dtype=float) + 0.5
+        grid_color = self._correlation_grid_color()
+
+        heatmap = go.Heatmap(
+            z=corr_df.to_numpy(),
+            x=x_edges,
+            y=y_edges,
+            zmin=-1.0,
+            zmax=1.0,
+            zmid=0.0,
+            colorscale=self._correlation_colorscale(),
+            colorbar={
+                'title': {'text': ''},
+                'lenmode': 'fraction',
+                'len': 1.0,
+                'y': 0.5,
+                'yanchor': 'middle',
+            },
+            hoverongaps=False,
+            hovertemplate='x: %{x}<br>y: %{y}<br>corr: %{z:.3f}<extra></extra>',
+        )
+
+        shapes = [
+            {
+                'type': 'line',
+                'x0': float(x_pos),
+                'x1': float(x_pos),
+                'y0': 0.0,
+                'y1': float(num_rows),
+                'xref': 'x',
+                'yref': 'y',
+                'layer': 'above',
+                'line': {'color': grid_color, 'width': 1},
+            }
+            for x_pos in x_edges[1:-1]
+        ]
+        shapes.extend(
+            {
+                'type': 'line',
+                'x0': 0.0,
+                'x1': float(num_cols),
+                'y0': float(y_pos),
+                'y1': float(y_pos),
+                'xref': 'x',
+                'yref': 'y',
+                'layer': 'above',
+                'line': {'color': grid_color, 'width': 1},
+            }
+            for y_pos in y_edges[1:-1]
+        )
+        shapes.append({
+            'type': 'rect',
+            'x0': 0.0,
+            'x1': 1.0,
+            'y0': 0.0,
+            'y1': 1.0,
+            'xref': 'paper',
+            'yref': 'paper',
+            'layer': 'above',
+            'line': {'color': grid_color, 'width': 1},
+            'fillcolor': 'rgba(0, 0, 0, 0)',
+        })
+
+        layout = self._get_layout(
+            title,
+            ['Parameter', 'Parameter'],
+            shapes=shapes,
+        )
+        fig = self._get_figure([heatmap], layout)
+        fig.update_xaxes(
+            side='bottom',
+            tickangle=-45,
+            automargin=True,
+            tickmode='array',
+            tickvals=x_centers.tolist(),
+            ticktext=corr_df.columns.tolist(),
+            range=[0.0, float(num_cols)],
+            showgrid=False,
+            showline=False,
+            mirror=False,
+            ticks='',
+            layer='above traces',
+        )
+        fig.update_yaxes(
+            autorange='reversed',
+            automargin=True,
+            tickmode='array',
+            tickvals=y_centers.tolist(),
+            ticktext=corr_df.index.tolist(),
+            ticklabelstandoff=8,
+            range=[float(num_rows), 0.0],
+            showgrid=False,
+            showline=False,
+            mirror=False,
+            ticks='',
+            layer='above traces',
+        )
+        self._show_figure(fig)
 
     @staticmethod
     def _get_powder_trace(

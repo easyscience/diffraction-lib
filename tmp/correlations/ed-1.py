@@ -55,12 +55,32 @@ expt_path = ed.download_data(id=2, destination='data')
 project.experiments.add_from_cif_path(expt_path)
 
 # %% [markdown]
-# ## Step 4: Perform Analysis (cryspy)
+# ## Step 4: Perform Analysis (no constraints)
 
 # %%
-# Define aliases and constraints for refinement. This is necessary to
-# properly refine the isotropic displacement parameters of La and Ba,
-# which are correlated due to their shared Wyckoff position.
+# Start refinement. All parameters, which have standard uncertainties
+# in the input CIF files, are refined by default.
+project.analysis.fit()
+
+# %%
+# Show fit results summary
+project.analysis.display.fit_results()
+
+# %%
+# Show parameter correlations
+project.plotter.plot_param_correlations()
+
+# %% [markdown]
+# ## Step 5: Perform Analysis (with constraints)
+
+# %%
+# As can be seen from the parameter-correlation plot, the isotropic
+# displacement parameters of La and Ba are highly correlated. Because
+# La and Ba share the same mixed-occupancy site, their contributions to
+# the neutron diffraction pattern are difficult to separate, especially
+# since their coherent scattering lengths are not very different.
+# Therefore, it is necessary to constrain them to be equal. First we
+# define aliases and then use them to create a constraint.
 project.analysis.aliases.create(
     label='biso_La',
     param=project.structures['lbco'].atom_sites['La'].b_iso,
@@ -79,6 +99,10 @@ project.analysis.fit()
 # %%
 # Show fit results summary
 project.analysis.display.fit_results()
+
+# %%
+# Show parameter correlations
+project.plotter.plot_param_correlations()
 
 # %%
 # Show defined experiment names
