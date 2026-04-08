@@ -2302,6 +2302,8 @@
     
       
         
+          
+        
       
     
     
@@ -2314,9 +2316,12 @@
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
-            
+          <div class="md-nav__link md-nav__container">
+            <a href="../cli/" class="md-nav__link ">
+              
   
+  
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 19V7H4v12zm0-16a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm-7 14v-2h5v2zm-3.42-4L5.57 9H8.4l3.3 3.3c.39.39.39 1.03 0 1.42L8.42 17H5.59z"/></svg>
   
   <span class="md-ellipsis">
     
@@ -2329,8 +2334,9 @@
   
   
 
-            <span class="md-nav__icon md-icon"></span>
-          </label>
+            </a>
+            
+          </div>
         
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6">
@@ -2343,32 +2349,6 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../cli/index.md" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Command-Line Interface
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
               
             
           </ul>
@@ -2409,17 +2389,6 @@
     <span class="md-ellipsis">
       
         Description
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#easyscience" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        EasyScience
       
     </span>
   </a>
@@ -2507,54 +2476,53 @@
 
 <h1 id="introduction"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 22c5.5 0 10-4.5 10-10S17.5 2 12 2 2 6.5 2 12s4.5 10 10 10M11 7h2v2h-2zm3 10h-4v-2h1v-2h-1v-2h3v4h1z"/></svg></span> Introduction</h1>
 <h2 id="description">Description</h2>
-<p><strong>EasyDiffraction</strong> is scientific software for calculating diffraction
-patterns<br />
-based on structural models and refining model parameters against
-experimental data.</p>
-<p>It is available as both a cross-platform desktop application and a
-Python library.</p>
-<p>This documentation covers the usage of the EasyDiffraction Python
-library.<br />
-For the graphical user interface (GUI) version, refer to the
-<a href="https://docs.easydiffraction.org/app">GUI documentation</a>.</p>
-<h2 id="easyscience">EasyScience</h2>
-<p>EasyDiffraction is developed using the
-<a href="https://easyscience.software">EasyScience framework</a>, which provides
-tools for<br />
-building modular and flexible scientific libraries and applications.</p>
+<p><strong>EasyDiffraction</strong> is a software for calculating neutron powder
+diffraction patterns based on a structural model and refining its
+parameters against experimental data.</p>
+<p><strong>EasyDiffraction</strong> is developed both as a Python library and as a
+cross-platform desktop application.</p>
+<p>Here, we focus on the Python library. For the graphical user interface
+(GUI), please see the corresponding
+<a href="https://easyscience.github.io/diffraction-app">GUI resources</a>.</p>
+<!--
+**EasyDiffraction** is developed using the
+[EasyScience framework](https://easyscience.org).
+-->
+
 <h2 id="license">License</h2>
-<p>EasyDiffraction is released under the
+<p><strong>EasyDiffraction</strong> library is released under the
 <a href="https://raw.githubusercontent.com/easyscience/diffraction-lib/master/LICENSE">BSD 3-Clause License</a>.</p>
 <h2 id="releases">Releases</h2>
-<p>The latest version of the EasyDiffraction Python library is
+<p>The latest version of the <strong>EasyDiffraction</strong> library is
 <a href="https://github.com/easyscience/diffraction-lib/releases/latest">fit-cli</a>.</p>
 <p>For a complete list of new features, bug fixes, and improvements, see
 the
 <a href="https://github.com/easyscience/diffraction-lib/releases"><abbr title="A web-based platform for version control and collaboration.">GitHub</abbr> Releases page</a>.</p>
 <h2 id="citation">Citation</h2>
-<p>If you use EasyDiffraction in your work, please cite the specific
-version you used.</p>
-<p>All official releases of the EasyDiffraction library are archived on<br />
+<p>If you use <strong>EasyDiffraction</strong> library in your work, please cite the
+specific version you used.</p>
+<p>All official releases of the <strong>EasyDiffraction</strong> library are archived on
 Zenodo, each with a version-specific Digital Object Identifier (DOI).</p>
 <p>Citation details in various styles (e.g., APA, MLA) and formats (e.g.,
 BibTeX, JSON)<br />
 are available on the
 <a href="https://doi.org/10.5281/zenodo.16806521">Zenodo archive page</a>.</p>
 <h2 id="contributing">Contributing</h2>
-<p>We welcome contributions from the community! EasyDiffraction is intended
-to be a community-driven, open-source project supported by a diverse
-group of contributors.</p>
+<p>We welcome contributions of any kind!</p>
+<p><strong>EasyDiffraction</strong> is intended to be a community-driven, open-source
+project supported by a diverse group of contributors.</p>
 <p>The project is maintained by the
 <a href="https://ess.eu">European Spallation Source (ESS)</a>.</p>
-<p>To contribute, see our
-<a href="https://github.com/easyscience/diffraction-lib/blob/master/CONTRIBUTING.md"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15 14c-2.67 0-8 1.33-8 4v2h16v-2c0-2.67-5.33-4-8-4m-9-4V7H4v3H1v2h3v3h2v-3h3v-2m6 2a4 4 0 0 0 4-4 4 4 0 0 0-4-4 4 4 0 0 0-4 4 4 4 0 0 0 4 4"/></svg></span> Contributing Guidelines</a>
-on <abbr title="A web-based platform for version control and collaboration.">GitHub</abbr>.</p>
-<h2 id="get-in-touch">Get in Touch</h2>
-<p>For general questions or feedback, contact us at
-<a href="mailto:support@easydiffraction.org">support@easydiffraction.org</a>.</p>
-<p>To report bugs or request features, please use the
+<p>If you would like to report a bug or request a new feature, please use
+the
 <a href="https://github.com/easyscience/diffraction-lib/issues"><abbr title="A web-based platform for version control and collaboration.">GitHub</abbr> Issue Tracker</a>
-(free registration required).</p>
+(A free <abbr title="A web-based platform for version control and collaboration.">GitHub</abbr> account is required.)</p>
+<p>To contribute code, documentation, or tests, please see our
+<a href="https://github.com/easyscience/diffraction-lib/blob/master/CONTRIBUTING.md"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15 14c-2.67 0-8 1.33-8 4v2h16v-2c0-2.67-5.33-4-8-4m-9-4V7H4v3H1v2h3v3h2v-3h3v-2m6 2a4 4 0 0 0 4-4 4 4 0 0 0-4-4 4 4 0 0 0-4 4 4 4 0 0 0 4 4"/></svg></span> Contributing Guidelines</a>
+for detailed development instructions.</p>
+<h2 id="get-in-touch">Get in Touch</h2>
+<p>For general questions or feedback, please contact us at
+<a href="mailto:support@easydiffraction.org">support@easydiffraction.org</a>.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
