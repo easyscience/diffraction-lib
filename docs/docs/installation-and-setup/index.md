@@ -62,9 +62,21 @@ This section describes the simplest way to set up EasyDiffraction using
   pixi init easydiffraction
   cd easydiffraction
   ```
+- If you are on macOS, set the minimum system requirements:
+  ```txt
+  pixi project system-requirements add macos 14.0
+  ```
 - Set the Python version for the Pixi environment (e.g., 3.14):
   ```txt
   pixi add python=3.14
+  ```
+- Add GNU Scientific Library (required for PDF calculations):
+  ```txt
+  pixi add gsl
+  ```
+- If you are on macOS, add libc++ (required for PDF calculations):
+  ```txt
+  pixi add --platform osx-arm64 libcxx
   ```
 - Add EasyDiffraction to the Pixi environment from PyPI:
   ```txt
