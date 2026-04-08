@@ -19,3 +19,6 @@ Here is a brief overview of the main documentation sections:
 - [:material-code-braces-box: API Reference](api-reference/index.md) –
   An auto-generated reference detailing the available functions and
   modules in EasyDiffraction.
+- [:material-console: Command-Line Interface](cli/index.md) – Describes
+  how to use EasyDiffraction from the terminal for batch fitting and
+  other tasks.

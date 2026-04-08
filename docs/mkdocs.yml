@@ -181,7 +181,6 @@ nav:
       - Data Format: user-guide/data-format.md
       - Parameters: user-guide/parameters.md
       - First Steps: user-guide/first-steps.md
-      - Command-Line Interface: user-guide/cli.md
       - Analysis Workflow:
           - Analysis Workflow: user-guide/analysis-workflow/index.md
           - Project: user-guide/analysis-workflow/project.md
@@ -229,3 +228,5 @@ nav:
       - project: api-reference/project.md
       - summary: api-reference/summary.md
       - utils: api-reference/utils.md
+  - Command-Line Interface:
+      - Command-Line Interface: cli/index.md

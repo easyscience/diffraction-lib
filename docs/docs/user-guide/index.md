@@ -20,7 +20,5 @@ Here is a brief overview of the User Guide sections:
   named, and accessed within the EasyDiffraction library.
 - [First Steps](first-steps.md) – Shows how to begin using
   EasyDiffraction in Python or Jupyter notebooks.
-- [Command-Line Interface](cli.md) – Describes how to use
-  EasyDiffraction from the terminal for batch fitting and other tasks.
 - [Analysis Workflow](analysis-workflow/index.md) – Breaks down the data
   analysis pipeline into practical, sequential steps.
