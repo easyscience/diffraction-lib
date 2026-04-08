@@ -51,9 +51,3 @@ project.analysis.display.fit_results()
 
 # %%
 project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
-
-# %% [markdown]
-# ## Save Project
-
-# %%
-project.save()
