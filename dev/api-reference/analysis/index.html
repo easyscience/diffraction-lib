@@ -2691,6 +2691,92 @@
   
 
     
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command-Line Interface
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Command-Line Interface
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cli/index.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command-Line Interface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
@@ -8024,7 +8110,19 @@ False.</p>
 <span class="normal">247</span>
 <span class="normal">248</span>
 <span class="normal">249</span>
-<span class="normal">250</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@CalculatorFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@CalculatorFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CrysfmlCalculator</span><span class="p">(</span><span class="n">CalculatorBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for Crysfml library.&quot;&quot;&quot;</span>
 
@@ -8096,7 +8194,7 @@ False.</p>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;[CrysfmlCalculator] Error: No calculated data&#39;</span><span class="p">)</span>
             <span class="n">y</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">return</span> <span class="n">y</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_adjust_pattern_length</span><span class="p">(</span>  <span class="c1"># noqa: PLR6301</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -8120,8 +8218,14 @@ False.</p>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># TODO: Check the origin of this discrepancy coming from</span>
         <span class="c1">#  PyCrysFML</span>
+        <span class="c1"># Safety guard: with the correct step formula (max-min)/(N-1+ε),</span>
+        <span class="c1"># pycrysfml should return exactly target_length points. Truncate</span>
+        <span class="c1"># if over-length; pad with the last value if under-length.</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">target_length</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">pattern</span><span class="p">[:</span><span class="n">target_length</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">target_length</span><span class="p">:</span>
+            <span class="n">pad</span> <span class="o">=</span> <span class="n">target_length</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="n">pattern</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">*</span> <span class="n">pad</span>
         <span class="k">return</span> <span class="n">pattern</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_crysfml_dict</span><span class="p">(</span>
@@ -8241,7 +8345,13 @@ False.</p>
                 <span class="k">else</span> <span class="mf">0.0</span><span class="p">,</span>
                 <span class="s1">&#39;_pd_meas_2theta_range_min&#39;</span><span class="p">:</span> <span class="n">twotheta_min</span><span class="p">,</span>
                 <span class="s1">&#39;_pd_meas_2theta_range_max&#39;</span><span class="p">:</span> <span class="n">twotheta_max</span><span class="p">,</span>
-                <span class="s1">&#39;_pd_meas_2theta_range_inc&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">twotheta_max</span> <span class="o">-</span> <span class="n">twotheta_min</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">x_data</span><span class="p">),</span>
+                <span class="c1"># TODO: Check the origin of this discrepancy coming from</span>
+                <span class="c1">#  PyCrysFML</span>
+                <span class="c1"># Divide by (N-1+ε) instead of (N-1) so that pycrysfml&#39;s</span>
+                <span class="c1"># internal floor((max-min)/step) is robustly N-1 despite</span>
+                <span class="c1"># floating-point rounding, producing exactly N points.</span>
+                <span class="s1">&#39;_pd_meas_2theta_range_inc&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">twotheta_max</span> <span class="o">-</span> <span class="n">twotheta_min</span><span class="p">)</span>
+                <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x_data</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">+</span> <span class="mf">1e-9</span><span class="p">),</span>
             <span class="p">}</span>
         <span class="p">}</span>
 
@@ -8445,7 +8555,7 @@ list of floats.</p>
     <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;[CrysfmlCalculator] Error: No calculated data&#39;</span><span class="p">)</span>
         <span class="n">y</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">return</span> <span class="n">y</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
