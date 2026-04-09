@@ -36,6 +36,8 @@ DEFAULT_COLORS = {
 class PlotlyPlotter(PlotterBase):
     """Interactive plotter using Plotly for notebooks and browsers."""
 
+    _supports_graphical_heatmap: bool = True
+
     def __init__(self) -> None:
         if hasattr(pio, 'templates'):
             pio.templates.default = self._default_template_name()

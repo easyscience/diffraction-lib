@@ -505,8 +505,6 @@ class Plotter(RendererBase):
     def plot_param_correlations(
         self,
         threshold: float | None = DEFAULT_CORRELATION_THRESHOLD,
-        show_diagonal: bool = False,
-        triangle: str = 'lower',
         precision: int = 2,
     ) -> None:
         """
@@ -516,6 +514,9 @@ class Plotter(RendererBase):
         the active engine is Plotly, an interactive heatmap is shown.
         Otherwise, a rounded correlation table is rendered.
 
+        Only the lower triangle is shown (without the diagonal), since
+        the matrix is symmetric and diagonal values are always ``1``.
+
         Parameters
         ----------
         threshold : float | None, default=DEFAULT_CORRELATION_THRESHOLD
@@ -524,13 +525,6 @@ class Plotter(RendererBase):
             participate in at least one pair with ``abs(correlation) >=
             threshold``. Set to ``None`` or ``0`` to show the full
             matrix.
-        show_diagonal : bool, default=False
-            Whether to show self-correlations on the diagonal. The
-            default hides them because they are always ``1`` and do not
-            add information.
-        triangle : str, default='lower'
-            Which half of the symmetric matrix to show. Supported values
-            are ``'lower'``, ``'upper'``, and ``'full'``.
         precision : int, default=2
             Number of decimal places to show in the table fallback.
         """
@@ -542,26 +536,18 @@ class Plotter(RendererBase):
         if corr_df is None:
             return
 
-        corr_df = self._mask_correlation_triangle(
-            corr_df,
-            triangle=triangle,
-            show_diagonal=show_diagonal,
-        )
+        corr_df = self._mask_correlation_lower_triangle(corr_df)
         title = 'Refined parameter correlation matrix'
         if threshold is not None and threshold > 0:
             title += f' with |correlation| >= {threshold:.2f}'
 
-        is_plotly = self._engine == PlotterEngineEnum.PLOTLY.value and isinstance(
-            self._backend, PlotlyPlotter
-        )
+        is_graphical = self._backend._supports_graphical_heatmap
         display_corr_df, row_numbers, col_numbers = self._trim_correlation_display_dataframe(
             corr_df,
-            triangle=triangle,
-            show_diagonal=show_diagonal,
-            preserve_all_rows=not is_plotly,
+            preserve_all_rows=not is_graphical,
         )
 
-        if is_plotly:
+        if is_graphical:
             self._plot_correlation_heatmap(
                 display_corr_df,
                 title,
@@ -626,71 +612,45 @@ class Plotter(RendererBase):
         return corr_df.loc[labels, labels]
 
     @staticmethod
-    def _mask_correlation_triangle(
+    def _mask_correlation_lower_triangle(
         corr_df: pd.DataFrame,
-        triangle: str,
-        show_diagonal: bool,
     ) -> pd.DataFrame:
         """
-        Mask the unused half of the symmetric correlation matrix.
+        Mask the upper triangle and diagonal of a correlation matrix.
+
+        Only the lower triangle is kept, since the matrix is symmetric
+        and diagonal values are always ``1``.
 
         Parameters
         ----------
         corr_df : pd.DataFrame
             Square correlation matrix.
-        triangle : str
-            Which part of the matrix to keep: ``'lower'``, ``'upper'``,
-            or ``'full'``.
-        show_diagonal : bool
-            Whether to keep the diagonal values visible.
 
         Returns
         -------
         pd.DataFrame
-            Correlation matrix with unused cells masked.
-
-        Raises
-        ------
-        ValueError
-            If *triangle* is unsupported.
+            Correlation matrix with upper triangle and diagonal masked.
         """
-        if triangle not in {'lower', 'upper', 'full'}:
-            msg = "Correlation triangle must be 'lower', 'upper', or 'full'."
-            raise ValueError(msg)
-
         masked_values = corr_df.to_numpy(copy=True)
-        k = 1 if show_diagonal else 0
-
-        if triangle == 'lower':
-            mask = np.triu(np.ones_like(masked_values, dtype=bool), k=k)
-            masked_values[mask] = np.nan
-        elif triangle == 'upper':
-            mask = np.tril(np.ones_like(masked_values, dtype=bool), k=-k)
-            masked_values[mask] = np.nan
-        elif not show_diagonal:
-            diag_idx = np.diag_indices_from(masked_values)
-            masked_values[diag_idx] = np.nan
-
+        mask = np.triu(np.ones_like(masked_values, dtype=bool), k=0)
+        masked_values[mask] = np.nan
         return pd.DataFrame(masked_values, index=corr_df.index, columns=corr_df.columns)
 
     @staticmethod
     def _trim_correlation_display_dataframe(
         corr_df: pd.DataFrame,
-        triangle: str,
-        show_diagonal: bool,
         preserve_all_rows: bool,
     ) -> tuple[pd.DataFrame, list[int], list[int]]:
         """
-        Trim empty outer rows/columns from triangle views.
+        Trim empty outer rows/columns from the lower-triangle view.
+
+        For the lower triangle without diagonal, the last column and
+        first row are always empty and can be trimmed.
 
         Parameters
         ----------
         corr_df : pd.DataFrame
             Masked correlation matrix.
-        triangle : str
-            Which triangle is shown.
-        show_diagonal : bool
-            Whether diagonal values are visible.
         preserve_all_rows : bool
             Whether to keep the full row list so row labels continue to
             identify all numeric column headers in tabular output.
@@ -705,19 +665,12 @@ class Plotter(RendererBase):
         row_numbers = list(range(1, num_rows + 1))
         col_numbers = list(range(1, num_cols + 1))
 
-        if show_diagonal or triangle == 'full' or min(num_rows, num_cols) <= 1:
+        if min(num_rows, num_cols) <= 1:
             return corr_df, row_numbers, col_numbers
 
-        if triangle == 'lower':
-            if preserve_all_rows:
-                return corr_df.iloc[:, :-1], row_numbers, col_numbers[:-1]
-            return corr_df.iloc[1:, :-1], row_numbers[1:], col_numbers[:-1]
-        if triangle == 'upper':
-            if preserve_all_rows:
-                return corr_df.iloc[:, 1:], row_numbers, col_numbers[1:]
-            return corr_df.iloc[:-1, 1:], row_numbers[:-1], col_numbers[1:]
-
-        return corr_df, row_numbers, col_numbers
+        if preserve_all_rows:
+            return corr_df.iloc[:, :-1], row_numbers, col_numbers[:-1]
+        return corr_df.iloc[1:, :-1], row_numbers[1:], col_numbers[:-1]
 
     def _get_param_correlation_dataframe(self) -> pd.DataFrame | None:
         """
@@ -915,7 +868,7 @@ class Plotter(RendererBase):
         precision: int,
     ) -> None:
         """
-        Delegate correlation heatmap rendering to the Plotly backend.
+        Delegate correlation heatmap rendering to the backend.
 
         Parameters
         ----------
