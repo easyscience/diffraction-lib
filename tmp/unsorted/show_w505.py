@@ -3,7 +3,7 @@ files_lines = [
     ('src/easydiffraction/datablocks/experiment/categories/data/bragg_sc.py', [29,298,422]),
     ('src/easydiffraction/datablocks/experiment/categories/data/total_pd.py', [207]),
     ('src/easydiffraction/datablocks/experiment/categories/experiment_type/default.py', [30]),
-    ('src/easydiffraction/datablocks/experiment/categories/extinction/shelx.py', [20]),
+    ('src/easydiffraction/datablocks/experiment/categories/extinction/becker_coppens.py', [20]),
     ('src/easydiffraction/datablocks/experiment/item/base.py', [71,604]),
     ('src/easydiffraction/datablocks/experiment/item/factory.py', [78]),
     ('src/easydiffraction/datablocks/structure/item/base.py', [248]),

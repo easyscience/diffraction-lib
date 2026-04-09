@@ -92,8 +92,8 @@ pattern. Each former single-file category is now a package with
 class with `@register` + `type_info`), and `__init__.py` (re-exports
 preserving import compatibility).
 
-Experiment categories: `Extinction` → `ShelxExtinction` /
-`ExtinctionFactory` (tag `shelx`), `LinkedCrystal` /
+Experiment categories: `Extinction` → `BeckerCoppensExtinction` /
+`ExtinctionFactory` (tag `becker-coppens`), `LinkedCrystal` /
 `LinkedCrystalFactory` (tag `default`), `ExcludedRegions` /
 `ExcludedRegionsFactory`, `LinkedPhases` / `LinkedPhasesFactory`,
 `ExperimentType` / `ExperimentTypeFactory`.
@@ -105,7 +105,7 @@ Analysis categories: `Aliases` / `AliasesFactory`, `Constraints` /
 `ConstraintsFactory`, `JointFitExperiments` /
 `JointFitExperimentsFactory`.
 
-`ShelxExtinction` and `LinkedCrystal` get the full switchable-category
+`BeckerCoppensExtinction` and `LinkedCrystal` get the full switchable-category
 API on `ScExperimentBase` (`extinction_type`, `linked_crystal_type`
 getter+setter, `show_supported_*_types()`, `show_current_*_type()`).
 `ExcludedRegions` and `LinkedPhases` get the same API on

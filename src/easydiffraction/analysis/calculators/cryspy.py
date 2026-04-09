@@ -552,7 +552,7 @@ def _cif_extinction_section(
         'mosaicity': '_extinction_mosaicity',
         'radius': '_extinction_radius',
     }
-    cif_lines.extend(('', '_extinction_model gauss'))
+    cif_lines.extend(('', f'_extinction_model {extinction.model.value}'))
     for local_attr_name, engine_key_name in extinction_mapping.items():
         attr_obj = getattr(extinction, local_attr_name)
         if attr_obj is not None:

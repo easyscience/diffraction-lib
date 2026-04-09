@@ -336,7 +336,7 @@ class ScExperimentBase(ExperimentBase):
         Parameters
         ----------
         new_type : str
-            Extinction tag (e.g. ``'shelx'``).
+            Extinction tag (e.g. ``'becker-coppens'``).
         """
         supported_tags = ExtinctionFactory.supported_tags()
         if new_type not in supported_tags:

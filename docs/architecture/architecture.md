@@ -269,7 +269,7 @@ experiment.data  # CategoryCollection
 # Type-switchable — recreates the underlying object
 experiment.background_type = 'chebyshev'  # triggers BackgroundFactory.create(...)
 experiment.peak_profile_type = 'thompson-cox-hastings'  # triggers PeakFactory.create(...)
-experiment.extinction_type = 'shelx'  # triggers ExtinctionFactory.create(...)
+experiment.extinction_type = 'becker-coppens'  # triggers ExtinctionFactory.create(...)
 experiment.linked_crystal_type = 'default'  # triggers LinkedCrystalFactory.create(...)
 experiment.excluded_regions_type = 'default'  # triggers ExcludedRegionsFactory.create(...)
 experiment.linked_phases_type = 'default'  # triggers LinkedPhasesFactory.create(...)
@@ -395,7 +395,7 @@ from .line_segment import LineSegmentBackground
 | `PeakFactory`                | Peak profiles          | `CwlPseudoVoigt`, `TofPseudoVoigtIkedaCarpenter`, …         |
 | `InstrumentFactory`          | Instruments            | `CwlPdInstrument`, `TofPdInstrument`, …                     |
 | `DataFactory`                | Data collections       | `PdCwlData`, `PdTofData`, `ReflnData`, `TotalData`          |
-| `ExtinctionFactory`          | Extinction models      | `ShelxExtinction`                                           |
+| `ExtinctionFactory`          | Extinction models      | `BeckerCoppensExtinction`                                   |
 | `LinkedCrystalFactory`       | Linked-crystal refs    | `LinkedCrystal`                                             |
 | `ExcludedRegionsFactory`     | Excluded regions       | `ExcludedRegions`                                           |
 | `LinkedPhasesFactory`        | Linked phases          | `LinkedPhases`                                              |
@@ -480,9 +480,9 @@ Tags are the user-facing identifiers for selecting types. They must be:
 
 **Extinction tags**
 
-| Tag     | Class             |
-| ------- | ----------------- |
-| `shelx` | `ShelxExtinction` |
+| Tag              | Class                     |
+| ---------------- | ------------------------- |
+| `becker-coppens` | `BeckerCoppensExtinction` |
 
 **Linked-crystal tags**
 
@@ -555,7 +555,7 @@ line-segment points.
 | `TofPseudoVoigtIkedaCarpenter` | `PeakFactory`           |
 | `TofPseudoVoigtBackToBack`     | `PeakFactory`           |
 | `TotalGaussianDampedSinc`      | `PeakFactory`           |
-| `ShelxExtinction`              | `ExtinctionFactory`     |
+| `BeckerCoppensExtinction`      | `ExtinctionFactory`     |
 | `LinkedCrystal`                | `LinkedCrystalFactory`  |
 | `Cell`                         | `CellFactory`           |
 | `SpaceGroup`                   | `SpaceGroupFactory`     |
