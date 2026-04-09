@@ -225,3 +225,37 @@ class PeakProfileTypeEnum(StrEnum):
         if self is PeakProfileTypeEnum.GAUSSIAN_DAMPED_SINC:
             return 'Gaussian-damped sinc profile for pair distribution function (PDF) analysis.'
         return None
+
+
+class ExtinctionModelEnum(StrEnum):
+    """Mosaicity distribution model for Becker-Coppens extinction."""
+
+    GAUSS = 'gauss'
+    LORENTZ = 'lorentz'
+
+    @classmethod
+    def default(cls) -> 'ExtinctionModelEnum':
+        """
+        Return the default extinction model (GAUSS).
+
+        Returns
+        -------
+        'ExtinctionModelEnum'
+            The default enum member.
+        """
+        return cls.GAUSS
+
+    def description(self) -> str:
+        """
+        Return a human-readable description of this extinction model.
+
+        Returns
+        -------
+        str
+            Description string for the current enum member.
+        """
+        if self is ExtinctionModelEnum.GAUSS:
+            return 'Gaussian mosaicity distribution for extinction correction.'
+        if self is ExtinctionModelEnum.LORENTZ:
+            return 'Lorentzian mosaicity distribution for extinction correction.'
+        return None

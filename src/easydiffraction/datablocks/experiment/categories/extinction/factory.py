@@ -13,5 +13,5 @@ class ExtinctionFactory(FactoryBase):
     """Create extinction correction models by tag."""
 
     _default_rules: ClassVar[dict] = {
-        frozenset(): 'shelx',
+        frozenset(): 'becker-coppens',
     }

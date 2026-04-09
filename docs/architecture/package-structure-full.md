@@ -179,8 +179,8 @@
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 factory.py
 │   │   │   │   │   └── 🏷️ class ExtinctionFactory
-│   │   │   │   └── 📄 shelx.py
-│   │   │   │       └── 🏷️ class ShelxExtinction
+│   │   │   │   └── 📄 becker_coppens.py
+│   │   │   │       └── 🏷️ class BeckerCoppensExtinction
 │   │   │   ├── 📁 instrument
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 base.py

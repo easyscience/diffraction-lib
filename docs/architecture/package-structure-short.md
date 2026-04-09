@@ -92,7 +92,7 @@
 │   │   │   ├── 📁 extinction
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 factory.py
-│   │   │   │   └── 📄 shelx.py
+│   │   │   │   └── 📄 becker_coppens.py
 │   │   │   ├── 📁 instrument
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 base.py
