@@ -1120,7 +1120,7 @@ propagation, diffrn callback, precondition validation.
 **Implemented:** `Plotter.plot_param_series()` resolves CSV vs snapshots
 automatically via the project reference.
 `Plotter._plot_param_series_from_csv()` reads CSV via pandas.
-`Plotter._plot_param_series_from_snapshots()` preserves backward
+`Plotter.plot_param_series_from_snapshots()` preserves backward
 compatibility for `fit()` single-mode (no CSV yet). Axis labels derived
 from live descriptor objects.
 

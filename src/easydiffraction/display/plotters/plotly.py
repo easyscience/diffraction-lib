@@ -8,6 +8,8 @@ notebooks, figures are displayed inline; in other environments a browser
 renderer may be used depending on configuration.
 """
 
+from __future__ import annotations
+
 import darkdetect
 import numpy as np
 import plotly.graph_objects as go
@@ -506,7 +508,7 @@ class PlotlyPlotter(PlotterBase):
     def _get_layout(
         title: str,
         axes_labels: object,
-        **kwargs: object,
+        shapes: list | None = None,
     ) -> object:
         """
         Create a Plotly layout configuration.
@@ -517,8 +519,8 @@ class PlotlyPlotter(PlotterBase):
             Figure title.
         axes_labels : object
             Pair of strings for the x and y titles.
-        **kwargs : object
-            Additional layout parameters (e.g., shapes).
+        shapes : list | None, default=None
+            Optional list of shape dicts to overlay on the plot.
 
         Returns
         -------
@@ -553,7 +555,7 @@ class PlotlyPlotter(PlotterBase):
                 'mirror': True,
                 'zeroline': False,
             },
-            **kwargs,
+            shapes=shapes,
         )
 
     def plot_powder(

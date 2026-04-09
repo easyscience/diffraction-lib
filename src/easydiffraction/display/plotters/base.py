@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 """Abstract base and shared constants for plotting backends."""
 
+from __future__ import annotations
+
 from abc import ABC
 from abc import abstractmethod
 from enum import StrEnum
