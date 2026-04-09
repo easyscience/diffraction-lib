@@ -33,6 +33,7 @@ class DatablockItem(GuardedBase):
 
     def _update_categories(
         self,
+        *,
         called_by_minimizer: bool = False,
     ) -> None:
         # TODO: Make abstract method and implement in subclasses.

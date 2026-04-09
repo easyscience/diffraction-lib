@@ -25,3 +25,4 @@ class BackgroundTypeEnum(StrEnum):
             return 'Linear interpolation between points'
         if self is BackgroundTypeEnum.CHEBYSHEV:
             return 'Chebyshev polynomial background'
+        return None

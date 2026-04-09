@@ -172,8 +172,7 @@ class ExperimentFactory(FactoryBase):
             scattering_type=scattering_type,
         )
         expt_class = cls._resolve_class(expt_type)
-        expt_obj = expt_class(name=name, type=expt_type)
-        return expt_obj
+        return expt_class(name=name, type=expt_type)
 
     # TODO: add minimal default configuration for missing parameters
     @classmethod

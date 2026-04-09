@@ -168,9 +168,7 @@ class MinimizerBase(ABC):
 
         self._stop_tracking()
 
-        result = self._finalize_fit(parameters, raw_result)
-
-        return result
+        return self._finalize_fit(parameters, raw_result)
 
     def _objective_function(
         self,

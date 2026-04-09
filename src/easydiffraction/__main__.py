@@ -18,8 +18,8 @@ app = typer.Typer(add_completion=False)
 @app.callback(invoke_without_command=True)
 def main(
     ctx: typer.Context,
-    version: bool = typer.Option(
-        False,
+    version: bool = typer.Option(  # noqa: FBT001
+        False,  # noqa: FBT003
         '--version',
         '-V',
         help='Show easydiffraction version and exit.',
@@ -52,8 +52,8 @@ def download_tutorial(
         '-d',
         help='Directory to save the tutorial into.',
     ),
-    overwrite: bool = typer.Option(
-        False,
+    overwrite: bool = typer.Option(  # noqa: FBT001
+        False,  # noqa: FBT003
         '--overwrite',
         '-o',
         help='Overwrite existing file if present.',
@@ -71,8 +71,8 @@ def download_all_tutorials(
         '-d',
         help='Directory to save the tutorials into.',
     ),
-    overwrite: bool = typer.Option(
-        False,
+    overwrite: bool = typer.Option(  # noqa: FBT001
+        False,  # noqa: FBT003
         '--overwrite',
         '-o',
         help='Overwrite existing files if present.',
@@ -88,8 +88,8 @@ def fit(
         ...,
         help='Path to the project directory (must contain project.cif).',
     ),
-    dry: bool = typer.Option(
-        False,
+    dry: bool = typer.Option(  # noqa: FBT001
+        False,  # noqa: FBT003
         '--dry',
         help='Run fitting without saving results back to the project directory.',
     ),

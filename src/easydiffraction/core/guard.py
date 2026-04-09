@@ -113,7 +113,11 @@ class GuardedBase(ABC):
         """Public properties with a setter."""
         return {key for key, prop in cls._iter_properties() if prop.fset is not None}
 
-    def _allowed_attrs(self, writable_only: bool = False) -> set[str]:
+    def _allowed_attrs(
+        self,
+        *,
+        writable_only: bool = False,
+    ) -> set[str]:
         cls = type(self)
         if writable_only:
             return cls._public_writable_attrs()

@@ -21,6 +21,7 @@ class FitResults:
 
     def __init__(
         self,
+        *,
         success: bool = False,
         parameters: list[object] | None = None,
         reduced_chi_square: float | None = None,

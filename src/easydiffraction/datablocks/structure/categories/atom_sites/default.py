@@ -364,6 +364,7 @@ class AtomSites(CategoryCollection):
 
     def _update(
         self,
+        *,
         called_by_minimizer: bool = False,
     ) -> None:
         """

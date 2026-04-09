@@ -135,7 +135,11 @@ class ExcludedRegions(CategoryCollection):
     def __init__(self) -> None:
         super().__init__(item_type=ExcludedRegion)
 
-    def _update(self, called_by_minimizer: bool = False) -> None:
+    def _update(
+        self,
+        *,
+        called_by_minimizer: bool = False,
+    ) -> None:
         del called_by_minimizer
 
         data = self._parent.data

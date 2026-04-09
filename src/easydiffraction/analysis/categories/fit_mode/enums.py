@@ -24,3 +24,4 @@ class FitModeEnum(StrEnum):
             return 'Independent fitting of each experiment; no shared parameters'
         if self is FitModeEnum.JOINT:
             return 'Simultaneous fitting of all experiments; some parameters are shared'
+        return None

@@ -122,6 +122,7 @@ class TypeValidator(ValidatorBase):
         name: str,
         default: object = None,
         current: object = None,
+        *,
         allow_none: bool = False,
     ) -> object:
         """

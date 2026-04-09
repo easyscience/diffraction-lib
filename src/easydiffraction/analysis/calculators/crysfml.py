@@ -68,6 +68,7 @@ class CrysfmlCalculator(CalculatorBase):
         self,
         structure: Structures,
         experiment: ExperimentBase,
+        *,
         called_by_minimizer: bool = False,
     ) -> np.ndarray | list[float]:
         """
@@ -231,7 +232,7 @@ class CrysfmlCalculator(CalculatorBase):
 
         # TODO: Process default values on the experiment creation
         #  instead of here
-        exp_dict = {
+        return {
             'NPD': {
                 '_diffrn_radiation_probe': expt_type.radiation_probe.value
                 if expt_type
@@ -258,5 +259,3 @@ class CrysfmlCalculator(CalculatorBase):
                 / (len(x_data) - 1 + 1e-9),
             }
         }
-
-        return exp_dict

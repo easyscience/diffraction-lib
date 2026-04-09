@@ -131,6 +131,7 @@ class Cell(CategoryItem):
 
     def _update(
         self,
+        *,
         called_by_minimizer: bool = False,
     ) -> None:
         """
