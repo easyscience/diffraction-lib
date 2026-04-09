@@ -61,11 +61,10 @@ class RichTableBackend(TableBackendBase):
         tmp.print(table)
         html = tmp.export_html(inline_styles=True)
         # Remove margins inside pre blocks and adjust font size
-        html = html.replace(
+        return html.replace(
             '<pre ',
             "<pre style='margin:0; font-size: 0.9em !important; ' ",
         )
-        return html
 
     def _build_table(self, df: object, alignments: object, color: str) -> Table:
         """

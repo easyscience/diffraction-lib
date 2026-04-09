@@ -86,8 +86,7 @@ class TableBackendBase(ABC):
         """
         c = Color.parse(color)
         rgb = c.get_truecolor()
-        hex_value = '#{:02x}{:02x}{:02x}'.format(*rgb)
-        return hex_value
+        return '#{:02x}{:02x}{:02x}'.format(*rgb)
 
     @property
     def _rich_border_color(self) -> str:

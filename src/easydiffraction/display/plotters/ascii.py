@@ -50,8 +50,7 @@ class AsciiPlotter(PlotterBase):
         color_end = asciichartpy.reset
         line = '────'
         name = SERIES_CONFIG[label]['name']
-        item = f'{color_start}{line}{color_end} {name}'
-        return item
+        return f'{color_start}{line}{color_end} {name}'
 
     def plot_powder(
         self,

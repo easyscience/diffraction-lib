@@ -36,6 +36,7 @@ class SampleFormEnum(StrEnum):
             return 'Powdered or polycrystalline sample.'
         if self is SampleFormEnum.SINGLE_CRYSTAL:
             return 'Single crystal sample.'
+        return None
 
 
 class ScatteringTypeEnum(StrEnum):
@@ -69,6 +70,7 @@ class ScatteringTypeEnum(StrEnum):
             return 'Bragg diffraction for conventional structure refinement.'
         if self is ScatteringTypeEnum.TOTAL:
             return 'Total scattering for pair distribution function analysis (PDF).'
+        return None
 
 
 class RadiationProbeEnum(StrEnum):
@@ -102,6 +104,7 @@ class RadiationProbeEnum(StrEnum):
             return 'Neutron diffraction.'
         if self is RadiationProbeEnum.XRAY:
             return 'X-ray diffraction.'
+        return None
 
 
 class BeamModeEnum(StrEnum):
@@ -136,6 +139,7 @@ class BeamModeEnum(StrEnum):
             return 'Constant wavelength (CW) diffraction.'
         if self is BeamModeEnum.TIME_OF_FLIGHT:
             return 'Time-of-flight (TOF) diffraction.'
+        return None
 
 
 class CalculatorEnum(StrEnum):
@@ -199,7 +203,7 @@ class PeakProfileTypeEnum(StrEnum):
             (ScatteringTypeEnum.TOTAL, BeamModeEnum.TIME_OF_FLIGHT): cls.GAUSSIAN_DAMPED_SINC,
         }[scattering_type, beam_mode]
 
-    def description(self) -> str:
+    def description(self) -> str:  # noqa: PLR0911
         """
         Return a human-readable description of this peak profile type.
 
@@ -220,3 +224,4 @@ class PeakProfileTypeEnum(StrEnum):
             return 'Pseudo-Voigt profile with Back-to-Back Exponential asymmetry correction.'
         if self is PeakProfileTypeEnum.GAUSSIAN_DAMPED_SINC:
             return 'Gaussian-damped sinc profile for pair distribution function (PDF) analysis.'
+        return None

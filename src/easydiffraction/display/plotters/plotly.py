@@ -349,15 +349,13 @@ class PlotlyPlotter(PlotterBase):
         color = DEFAULT_COLORS[label]
         line = {'color': color}
 
-        trace = go.Scatter(
+        return go.Scatter(
             x=x,
             y=y,
             line=line,
             mode=mode,
             name=name,
         )
-
-        return trace
 
     @staticmethod
     def _get_single_crystal_trace(
@@ -383,7 +381,7 @@ class PlotlyPlotter(PlotterBase):
             A configured :class:`plotly.graph_objects.Scatter` trace
             with markers and error bars.
         """
-        trace = go.Scatter(
+        return go.Scatter(
             x=x_calc,
             y=y_meas,
             mode='markers',
@@ -400,8 +398,6 @@ class PlotlyPlotter(PlotterBase):
             },
             hovertemplate='calc: %{x}<br>meas: %{y}<br><extra></extra>',
         )
-
-        return trace
 
     @staticmethod
     def _get_diagonal_shape() -> dict:

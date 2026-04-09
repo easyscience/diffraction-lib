@@ -172,9 +172,7 @@ class Plotter(RendererBase):
             x_max = self.x_max
 
         mask = (x_array >= x_min) & (x_array <= x_max)
-        filtered_y_array = y_array[mask]
-
-        return filtered_y_array
+        return y_array[mask]
 
     @staticmethod
     def _get_axes_labels(

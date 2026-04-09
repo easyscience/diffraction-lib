@@ -165,6 +165,4 @@ class PdffitCalculator(CalculatorBase):
 
         # Get the calculated PDF pattern
         pattern = calculator.getpdf_fit()
-        pattern = np.array(pattern)
-
-        return pattern
+        return np.array(pattern)

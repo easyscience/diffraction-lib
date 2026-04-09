@@ -676,9 +676,7 @@ def twotheta_to_d(twotheta: object, wavelength: float) -> object:
     theta_rad = np.radians(twotheta / 2)
 
     # Calculate d-spacing using Bragg's law
-    d = wavelength / (2 * np.sin(theta_rad))
-
-    return d
+    return wavelength / (2 * np.sin(theta_rad))
 
 
 def sin_theta_over_lambda_to_d_spacing(sin_theta_over_lambda: object) -> object:
@@ -699,8 +697,7 @@ def sin_theta_over_lambda_to_d_spacing(sin_theta_over_lambda: object) -> object:
     with np.errstate(divide='ignore', invalid='ignore'):
         d = 1 / (2 * sin_theta_over_lambda)
         # Set non-positive inputs to NaN
-        d = np.where(sin_theta_over_lambda > 0, d, np.nan)
-    return d
+        return np.where(sin_theta_over_lambda > 0, d, np.nan)
 
 
 def str_to_ufloat(s: str | None, default: float | None = None) -> UFloat:

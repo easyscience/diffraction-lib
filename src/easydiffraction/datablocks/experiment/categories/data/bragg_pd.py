@@ -452,8 +452,7 @@ class PdDataBase(CategoryCollection):
             dtype=float,  # TODO: needed? DataTypes.NUMERIC?
         )
         # Replace values smaller than _MIN_UNCERTAINTY with 1.0
-        modified = np.where(original < _MIN_UNCERTAINTY, 1.0, original)
-        return modified
+        return np.where(original < _MIN_UNCERTAINTY, 1.0, original)
 
     @property
     def intensity_calc(self) -> np.ndarray:
