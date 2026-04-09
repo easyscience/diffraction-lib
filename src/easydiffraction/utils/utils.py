@@ -125,6 +125,7 @@ def _fetch_tutorials_index() -> dict:
 def download_data(
     id: int | str,
     destination: str = 'data',
+    *,
     overwrite: bool = False,
 ) -> str:
     """
@@ -381,6 +382,7 @@ def list_tutorials() -> None:
 def download_tutorial(
     id: int | str,
     destination: str = 'tutorials',
+    *,
     overwrite: bool = False,
 ) -> str:
     """
@@ -455,6 +457,7 @@ def download_tutorial(
 
 def download_all_tutorials(
     destination: str = 'tutorials',
+    *,
     overwrite: bool = False,
 ) -> list[str]:
     """

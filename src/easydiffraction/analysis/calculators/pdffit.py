@@ -88,6 +88,7 @@ class PdffitCalculator(CalculatorBase):
         self,
         structure: Structure,
         experiment: ExperimentBase,
+        *,
         called_by_minimizer: bool = False,
     ) -> None:
         """

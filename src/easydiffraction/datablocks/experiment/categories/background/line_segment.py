@@ -148,7 +148,11 @@ class LineSegmentBackground(BackgroundBase):
     def __init__(self) -> None:
         super().__init__(item_type=LineSegment)
 
-    def _update(self, called_by_minimizer: bool = False) -> None:
+    def _update(
+        self,
+        *,
+        called_by_minimizer: bool = False,
+    ) -> None:
         """Interpolate background points over x data."""
         del called_by_minimizer
 

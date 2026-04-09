@@ -387,6 +387,7 @@ class Project(GuardedBase):
     def save_as(
         self,
         dir_path: str,
+        *,
         temporary: bool = False,
     ) -> None:
         """Save the project into a new directory."""

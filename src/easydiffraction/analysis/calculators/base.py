@@ -29,6 +29,7 @@ class CalculatorBase(ABC):
         self,
         structure: Structure,
         experiment: ExperimentBase,
+        *,
         called_by_minimizer: bool,
     ) -> None:
         """Calculate structure factors for one experiment."""
@@ -38,6 +39,7 @@ class CalculatorBase(ABC):
         self,
         structure: Structures,  # TODO: Structure?
         experiment: ExperimentBase,
+        *,
         called_by_minimizer: bool,
     ) -> np.ndarray:
         """

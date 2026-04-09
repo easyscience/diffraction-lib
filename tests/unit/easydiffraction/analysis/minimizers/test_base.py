@@ -18,7 +18,7 @@ def test_minimizer_base_fit_flow_and_finalize():
             self.value = v
 
     class DummyResult:
-        def __init__(self, success=True):
+        def __init__(self, *, success=True):
             self.success = success
 
     class DummyMinimizer(MinimizerBase):

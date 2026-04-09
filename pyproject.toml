@@ -257,7 +257,7 @@ select = [
   'DTZ',   # https://docs.astral.sh/ruff/rules/#flake8-datetimez-dtz
   'EM',    # https://docs.astral.sh/ruff/rules/#flake8-errmsg-em
   'FA',    # https://docs.astral.sh/ruff/rules/#flake8-future-annotations-fa
-  #'FBT',   # https://docs.astral.sh/ruff/rules/#flake8-boolean-trap-fbt
+  'FBT',   # https://docs.astral.sh/ruff/rules/#flake8-boolean-trap-fbt
   #'FIX',   # https://docs.astral.sh/ruff/rules/#flake8-fixme-fix
   'G',   # https://docs.astral.sh/ruff/rules/#flake8-logging-format-g
   'ICN', # https://docs.astral.sh/ruff/rules/#flake8-import-conventions-icn

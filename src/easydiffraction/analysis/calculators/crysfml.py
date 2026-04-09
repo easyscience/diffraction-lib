@@ -68,6 +68,7 @@ class CrysfmlCalculator(CalculatorBase):
         self,
         structure: Structures,
         experiment: ExperimentBase,
+        *,
         called_by_minimizer: bool = False,
     ) -> np.ndarray | list[float]:
         """

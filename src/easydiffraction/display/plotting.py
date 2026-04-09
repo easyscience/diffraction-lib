@@ -422,6 +422,7 @@ class Plotter(RendererBase):
         expt_name: str,
         x_min: float | None = None,
         x_max: float | None = None,
+        *,
         show_residual: bool = False,
         x: object | None = None,
     ) -> None:
@@ -639,6 +640,7 @@ class Plotter(RendererBase):
     @staticmethod
     def _trim_correlation_display_dataframe(
         corr_df: pd.DataFrame,
+        *,
         preserve_all_rows: bool,
     ) -> tuple[pd.DataFrame, list[int], list[int]]:
         """
@@ -1063,6 +1065,7 @@ class Plotter(RendererBase):
         expt_name: str,
         x_min: object = None,
         x_max: object = None,
+        *,
         show_residual: bool = False,
         x: object = None,
     ) -> None:

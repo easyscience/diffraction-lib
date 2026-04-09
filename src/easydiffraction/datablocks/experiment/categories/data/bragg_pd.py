@@ -369,7 +369,11 @@ class PdDataBase(CategoryCollection):
 
     # Misc
 
-    def _update(self, called_by_minimizer: bool = False) -> None:
+    def _update(
+        self,
+        *,
+        called_by_minimizer: bool = False,
+    ) -> None:
         experiment = self._parent
         experiments = experiment._parent
         project = experiments._parent
@@ -513,8 +517,12 @@ class PdCwlData(PdDataBase):
 
     # Misc
 
-    def _update(self, called_by_minimizer: bool = False) -> None:
-        super()._update(called_by_minimizer)
+    def _update(
+        self,
+        *,
+        called_by_minimizer: bool = False,
+    ) -> None:
+        super()._update(called_by_minimizer=called_by_minimizer)
 
         experiment = self._parent
         d_spacing = twotheta_to_d(
@@ -588,8 +596,12 @@ class PdTofData(PdDataBase):
 
     # Misc
 
-    def _update(self, called_by_minimizer: bool = False) -> None:
-        super()._update(called_by_minimizer)
+    def _update(
+        self,
+        *,
+        called_by_minimizer: bool = False,
+    ) -> None:
+        super()._update(called_by_minimizer=called_by_minimizer)
 
         experiment = self._parent
         d_spacing = tof_to_d(

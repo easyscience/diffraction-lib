@@ -905,6 +905,7 @@ class Analysis:
         file_pattern: str = '*',
         extract_diffrn: object = None,
         verbosity: str | None = None,
+        *,
         reverse: bool = False,
     ) -> None:
         """
@@ -966,7 +967,11 @@ class Analysis:
             if original_verbosity is not None:
                 self.project.verbosity = original_verbosity
 
-    def _update_categories(self, called_by_minimizer: bool = False) -> None:
+    def _update_categories(
+        self,
+        *,
+        called_by_minimizer: bool = False,
+    ) -> None:
         """
         Update all categories owned by Analysis.
 

@@ -58,6 +58,7 @@ class CryspyCalculator(CalculatorBase):
         self,
         structure: Structure,
         experiment: ExperimentBase,
+        *,
         called_by_minimizer: bool = False,
     ) -> None:
         """
@@ -117,6 +118,7 @@ class CryspyCalculator(CalculatorBase):
         self,
         structure: Structure,
         experiment: ExperimentBase,
+        *,
         called_by_minimizer: bool = False,
     ) -> np.ndarray | list[float]:
         """
