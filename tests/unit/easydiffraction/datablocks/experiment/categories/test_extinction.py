@@ -5,7 +5,9 @@
 def test_module_import():
     import easydiffraction.datablocks.experiment.categories.extinction.becker_coppens as MUT
 
-    expected_module_name = 'easydiffraction.datablocks.experiment.categories.extinction.becker_coppens'
+    expected_module_name = (
+        'easydiffraction.datablocks.experiment.categories.extinction.becker_coppens'
+    )
     actual_module_name = MUT.__name__
     assert expected_module_name == actual_module_name
 

@@ -40,7 +40,7 @@ Legend:
 ### Atom Sites
 
 | Feature                                        | LIB | APP |
-|------------------------------------------------| --- | --- |
+| ---------------------------------------------- | --- | --- |
 | Neutron scattering lengths (tabulated, CrysPy) | ✅  | ✅  |
 | X-ray scattering factors (tabulated, CrysPy)   | ✅  | ✅  |
 | Custom neutron scattering length               | 🗓  | 🗓  |
@@ -107,12 +107,12 @@ Legend:
 
 ### Instrument — Constant Wavelength
 
-| Feature                                       | LIB | APP |
-| --------------------------------------------- | --- | --- |
-| Wavelength                                    | ✅  | ✅  |
-| Second wavelength                             | 🚧  | 🗓  |
-| 2θ offset                                     | ✅  | ✅  |
-| Sample displacement correction _SyCos, SySin_ | 🚧  | 🗓  |
+| Feature                                                  | LIB | APP |
+| -------------------------------------------------------- | --- | --- |
+| Wavelength                                               | ✅  | ✅  |
+| Second wavelength                                        | 🚧  | 🗓  |
+| 2θ offset                                                | ✅  | ✅  |
+| Sample displacement correction (FullProf _SyCos, SySin_) | 🚧  | 🗓  |
 
 ### Instrument — Time-of-Flight
 
@@ -123,32 +123,35 @@ Legend:
 
 ### Peak Profile — Constant Wavelength
 
-CrysPy: Pseudo-Voigt from FullProf.
-Empirical asymmetry, 4 params (p1, p2, p3, p4) from FullProf.
+CrysPy: Pseudo-Voigt from FullProf. Empirical asymmetry, 4 params (p1,
+p2, p3, p4) from FullProf.
 
-| Feature                                                                                                                                                                            | LIB  | APP |
-|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------| --- |
+| Feature                                                                                                                                                                            | LIB   | APP |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | --- |
 | Pseudo-Voigt + Empirical asymmetry<br>_Gaussian broadening U, V, W. Lorentzian broadening X, Y<br>Empirical asymmetry p1, p2, p3, p4_<br>(CrysPy)                                  | ✅    | ✅  |
 | Thompson-Cox-Hastings Pseudo-Voigt + Finger-Cox-Jephcoat asymmetry<br>_Gaussian broadening U, V, W. Lorentzian broadening X, Y<br>Finger-Cox-Jephcoat asymmetry 1, 2_<br>(CrysFML) | ✅/🗓 | 🗓  |
 
 ### Peak Profile — Time-of-Flight
 
 CrysPy peak_shape options:
+
 - "Gauss": Jorgensen (back-to-back exponentials ⊗ Gaussian)
-- "pseudo-Voigt": Jorgensen-Von Dreele (back-to-back exponentials ⊗ pseudo-Voigt)
-- "type0m": Double back-to-back exponentials ⊗ pseudo-Voigt (Z-Rietveld type 0m)
+- "pseudo-Voigt": Jorgensen-Von Dreele (back-to-back exponentials ⊗
+  pseudo-Voigt)
+- "type0m": Double back-to-back exponentials ⊗ pseudo-Voigt (Z-Rietveld
+  type 0m)
 
 | Feature                                                                                                                                                                                                                            | LIB | APP |
-|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| - | -- |
-| Jorgensen (back-to-back exponentials ⊗ Gaussian)<br>_Gaussian broadening σ₀, σ₁, σ₂<br>Back-to-back exponential rise α₀, α₁. Back-to-back exponential decay β₀, β₁_<br>(CrysPy)                                                    | ✅ | ✅ |
-| Jorgensen-Von Dreele (back-to-back exponentials ⊗ pseudo-Voigt)<br>_Gaussian broadening σ₀, σ₁, σ₂. Lorentzian broadening γ₀, γ₁, γ₂<br>Back-to-back exponential rise α₀, α₁. Back-to-back exponential decay β₀, β₁_<br>(CrysPy)   | 🗓 | ✅ |
-| Double back-to-back exponentials ⊗ pseudo-Voigt [Z-Rietveld type0m]<br>_Gaussian broadening σ₀, σ₁, σ₂. Lorentzian broadening γ₀, γ₁, γ₂<br>Rise α₁, α₂. Fast decay β₀₀, β₀₁. Slow decay β₁₀. Switching r₀₁, r₀₂, r₀₃_<br>(CrysPy) | 🗓 | 🗓  |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | --- |
+| Jorgensen (back-to-back exponentials ⊗ Gaussian)<br>_Gaussian broadening σ₀, σ₁, σ₂<br>Back-to-back exponential rise α₀, α₁. Back-to-back exponential decay β₀, β₁_<br>(CrysPy)                                                    | ✅  | ✅  |
+| Jorgensen-Von Dreele (back-to-back exponentials ⊗ pseudo-Voigt)<br>_Gaussian broadening σ₀, σ₁, σ₂. Lorentzian broadening γ₀, γ₁, γ₂<br>Back-to-back exponential rise α₀, α₁. Back-to-back exponential decay β₀, β₁_<br>(CrysPy)   | 🗓  | ✅  |
+| Double back-to-back exponentials ⊗ pseudo-Voigt [Z-Rietveld type0m]<br>_Gaussian broadening σ₀, σ₁, σ₂. Lorentzian broadening γ₀, γ₁, γ₂<br>Rise α₁, α₂. Fast decay β₀₀, β₀₁. Slow decay β₁₀. Switching r₀₁, r₀₂, r₀₃_<br>(CrysPy) | 🗓  | 🗓  |
 
-| TOF profile                                                          | TOF source                                                        | Performance |
-| -------------------------------------------------------------------- |-------------------------------------------------------------------| ---------- |
-| Jorgensen (back-to-back exponentials ⊗ Gaussian)                     | Simpler TOF profile, including reactor-source TOF implementations | Fast       |
-| Jorgensen-Von Dreele (back-to-back exponentials ⊗ pseudo-Voigt)      | Spallation-source TOF                                             | Slower       |
-| Double back-to-back exponentials ⊗ pseudo-Voigt (Z-Rietveld type0m)  | Spallation-source TOF; more elaborate asymmetric profile          | Slowest           |
+| TOF profile                                                         | TOF source                                                        | Performance |
+| ------------------------------------------------------------------- | ----------------------------------------------------------------- | ----------- |
+| Jorgensen (back-to-back exponentials ⊗ Gaussian)                    | Simpler TOF profile, including reactor-source TOF implementations | Fast        |
+| Jorgensen-Von Dreele (back-to-back exponentials ⊗ pseudo-Voigt)     | Spallation-source TOF                                             | Slower      |
+| Double back-to-back exponentials ⊗ pseudo-Voigt (Z-Rietveld type0m) | Spallation-source TOF; more elaborate asymmetric profile          | Slowest     |
 
 ---
 
@@ -166,13 +169,15 @@ CrysPy peak_shape options:
 
 ### Extinction
 
-CrysPy's extinction is NOT Shelx-style. It's an analytical Becker-Coppens spherical model with 
-Gauss or Lorentz mosaicity distribution
+CrysPy's extinction is NOT Shelx-style. It's an analytical
+Becker-Coppens spherical model with Gauss or Lorentz mosaicity
+distribution
 
-| Feature                               | LIB | APP |
-| ------------------------------------- | --- | --- |
-| Gaussian model: _radius, mosaicity_   | ✅  | ✅  |
-| Lorentzian model: _radius, mosaicity_ | ✅  | ✅  |
+| Feature                                               | LIB | APP |
+| ----------------------------------------------------- | --- | --- |
+| Becker-Coppens, Gaussian model: _radius, mosaicity_   | ✅  | ✅  |
+| Becker-Coppens, Lorentzian model: _radius, mosaicity_ | ✅  | ✅  |
+| Anisotropic extinction correction                     | 🗓  | 🗓  |
 
 ### Domains / Twinning
 
@@ -275,8 +280,8 @@ Gauss or Lorentz mosaicity distribution
 
 | Feature                | LIB | APP | CLI |
 | ---------------------- | --- | --- | --- |
-| Load project from disk | 🚧  | ✅  | 🗓  |
-| Save project to disk   | ✅  | ✅  | 🗓  |
+| Load project from disk | ✅  | ✅  | ✅  |
+| Save project to disk   | ✅  | ✅  | ✅  |
 
 ### SciCat Integration
 
@@ -301,13 +306,15 @@ Gauss or Lorentz mosaicity distribution
 ### Crystal Structure
 
 | Feature                                  | LIB | APP |
-| ---------------------------------------- | --- |-----|
-| Visualize unit cell                      | 🗓  | ✅/🗓  |
+| ---------------------------------------- | --- | --- |
+| Visualize unit cell                      | 🗓  | ✅  |
 | Visualize multiple unit cells            | 🗓  | 🗓  |
-| Visualize atom sites as spheres          | 🗓  | ✅   |
+| Visualize atom sites as spheres          | 🗓  | ✅  |
 | Visualize atoms occupied same position   | 🗓  | 🗓  |
-| Interactive mode<br>3D rotation, zooming | 🗓  | ✅   |
-| Orthogonal unit cell                     | 🗓  | ✅   |
+| Visualize bonds                          | 🗓  | 🗓  |
+| Visualize polyhedra                      | 🗓  | 🗓  |
+| Interactive mode<br>3D rotation, zooming | 🗓  | ✅  |
+| Orthogonal unit cell                     | 🗓  | ✅  |
 | Non-orthogonal unit cell                 | 🗓  | 🗓  |
 
 ### Magnetic Structure
@@ -337,11 +344,11 @@ Gauss or Lorentz mosaicity distribution
 
 ## 8.3. Analysis
 
-| Feature                                              | LIB | APP | CLI |
-| ---------------------------------------------------- |-----| --- | --- |
-| Live update of plots on parameter change with slider | —   | ✅  | —   |
-| Live update of plots during refinement               | —   | ✅  | —   |
-| Parameter evolution (sequential refinement)          | ✅/🗓  | 🗓  | —   |
+| Feature                                              | LIB   | APP | CLI |
+| ---------------------------------------------------- | ----- | --- | --- |
+| Live update of plots on parameter change with slider | —     | ✅  | —   |
+| Live update of plots during refinement               | —     | ✅  | —   |
+| Parameter evolution (sequential refinement)          | ✅/🗓 | 🗓  | —   |
 
 ### Fitting
 
@@ -349,7 +356,7 @@ Gauss or Lorentz mosaicity distribution
 | ----------------------------------------- | --- | --- | --- |
 | Live update of plots                      | —   | ✅  | —   |
 | Live update of fit quality (change in χ²) | ✅  | ✅  | ✅  |
-| Plot correlation between parameters       | ✅  | 🗓  | —   |
+| Plot correlation between parameters       | ✅  | 🗓  | ✅  |
 
 ---
 
@@ -368,8 +375,8 @@ Gauss or Lorentz mosaicity distribution
 
 # 10. Future Topics
 
-Here, we list features that are not sorted into the above categories, but are
-still on our radar for future development.
+Here, we list features that are not sorted into the above categories,
+but are still on our radar for future development.
 
 - Restrains (soft constraints, e.g. bond lengths, angles)
 - Global optimization algorithms (e.g. simulated annealing)
