@@ -1,23 +1,20 @@
 # %% [markdown]
 # # Structure Refinement: LBCO, HRPT
 #
-# This minimalistic example is designed to show how Rietveld refinement
-# can be performed when both the crystal structure and experiment
-# parameters are defined using CIF files.
+# This basic example is designed to show how Rietveld refinement can be
+# performed when both the crystal structure and experiment parameters
+# are defined using CIF files.
 #
 # For this example, constant-wavelength neutron powder diffraction data
 # for La0.5Ba0.5CoO3 from HRPT at PSI is used.
 #
-# It does not contain any advanced features or options, and includes no
-# comments or explanations—these can be found in the other tutorials.
-# Default values are used for all parameters if not specified. Only
-# essential and self-explanatory code is provided.
-#
 # The example is intended for users who are already familiar with the
-# EasyDiffraction library and want to quickly get started with a simple
-# refinement. It is also useful for those who want to see what a
-# refinement might look like in code. For a more detailed explanation of
-# the code, please refer to the other tutorials.
+# EasyDiffraction library and want to quickly get started with a basic
+# refinement.
+#
+# It is also useful for those who want to see how constraints can be
+# applied to highly correlated parameters. For a more detailed
+# explanation of the code, please refer to the other tutorials.
 
 # %% [markdown]
 # ## Import Library
@@ -55,12 +52,32 @@ expt_path = ed.download_data(id=2, destination='data')
 project.experiments.add_from_cif_path(expt_path)
 
 # %% [markdown]
-# ## Step 4: Perform Analysis (cryspy)
+# ## Step 4: Perform Analysis (no constraints)
 
 # %%
-# Define aliases and constraints for refinement. This is necessary to
-# properly refine the isotropic displacement parameters of La and Ba,
-# which are correlated due to their shared Wyckoff position.
+# Start refinement. All parameters, which have standard uncertainties
+# in the input CIF files, are refined by default.
+project.analysis.fit()
+
+# %%
+# Show fit results summary
+project.analysis.display.fit_results()
+
+# %%
+# Show parameter correlations
+project.plotter.plot_param_correlations()
+
+# %% [markdown]
+# ## Step 5: Perform Analysis (with constraints)
+
+# %%
+# As can be seen from the parameter-correlation plot, the isotropic
+# displacement parameters of La and Ba are highly correlated. Because
+# La and Ba share the same mixed-occupancy site, their contributions to
+# the neutron diffraction pattern are difficult to separate, especially
+# since their coherent scattering lengths are not very different.
+# Therefore, it is necessary to constrain them to be equal. First we
+# define aliases and then use them to create a constraint.
 project.analysis.aliases.create(
     label='biso_La',
     param=project.structures['lbco'].atom_sites['La'].b_iso,
@@ -81,28 +98,12 @@ project.analysis.fit()
 project.analysis.display.fit_results()
 
 # %%
+# Show parameter correlations
+project.plotter.plot_param_correlations()
+
+# %%
 # Show defined experiment names
 project.experiments.show_names()
-
-# %%
-# Plot measured vs. calculated diffraction patterns
-project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
-
-# %% [markdown]
-# ## Step 5: Perform Analysis (crysfml)
-
-# %%
-# Change calculation engine from 'cryspy' to 'crysfml'
-project.experiments['hrpt'].show_supported_calculator_types()
-project.experiments['hrpt'].calculator_type = 'crysfml'
-
-# %%
-# Start refinement
-project.analysis.fit()
-
-# %%
-# Show fit results summary
-project.analysis.display.fit_results()
 
 # %%
 # Plot measured vs. calculated diffraction patterns
