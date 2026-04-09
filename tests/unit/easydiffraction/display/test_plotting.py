@@ -263,6 +263,7 @@ def test_plot_param_correlations_renders_plotly_heatmap(monkeypatch):
     p.plot_param_correlations(threshold=0.1)
 
     fig = captured['fig']
+    assert len(fig.data) == 2
     assert fig.data[0].type == 'heatmap'
     assert list(fig.data[0].x) == [0.0, 1.0]
     assert list(fig.data[0].y) == [0.0, 1.0]
@@ -271,9 +272,17 @@ def test_plot_param_correlations_renders_plotly_heatmap(monkeypatch):
     assert fig.data[0].colorbar.lenmode == 'fraction'
     assert fig.data[0].colorbar.len == 1.0
     assert fig.data[0].colorbar.title.text == ''
+    assert fig.data[0].hovertemplate == 'x: %{x}<br>y: %{y}<br>corr: %{z:.2f}<extra></extra>'
     assert pytest.approx(fig.data[0].z[0][0], rel=1e-9) == -0.5
+    assert fig.data[1].type == 'scatter'
+    assert fig.data[1].mode == 'text'
+    assert list(fig.data[1].x) == [0.5]
+    assert list(fig.data[1].y) == [0.5]
+    assert list(fig.data[1].text) == ['-0.50']
+    assert fig.data[1].textposition == 'middle center'
+    assert fig.data[1].hoverinfo == 'skip'
     assert fig.layout.xaxis.side == 'bottom'
-    assert fig.layout.xaxis.tickangle == -45
+    assert fig.layout.xaxis.tickangle < 0
     assert list(fig.layout.xaxis.tickvals) == [0.5]
     assert list(fig.layout.xaxis.ticktext) == ['phase.scale']
     assert fig.layout.xaxis.showline is False
@@ -289,6 +298,67 @@ def test_plot_param_correlations_renders_plotly_heatmap(monkeypatch):
     assert fig.layout.shapes[-1].type == 'rect'
     assert fig.layout.shapes[-1].xref == 'paper'
     assert fig.layout.shapes[-1].yref == 'paper'
+
+
+def test_plot_param_correlations_plotly_labels_respect_threshold(monkeypatch):
+    import easydiffraction.display.plotters.plotly as plotly_mod
+    from easydiffraction.display.plotting import Plotter
+
+    captured = {}
+
+    def fake_show_figure(self, fig):
+        captured['fig'] = fig
+
+    monkeypatch.setattr(plotly_mod.PlotlyPlotter, '_show_figure', fake_show_figure)
+
+    class Param:
+        def __init__(self, uid, unique_name):
+            self._minimizer_uid = uid
+            self.unique_name = unique_name
+
+    class RawResult:
+        covar = None
+        var_names = ['p1', 'p2', 'p3', 'p4', 'p5']
+
+        class ParamResult:
+            def __init__(self, correl):
+                self.correl = correl
+
+        params = {
+            'p1': ParamResult({'p4': 0.02, 'p5': 0.82}),
+            'p2': ParamResult({'p3': -0.91, 'p4': 0.83, 'p5': 0.02}),
+            'p3': ParamResult({'p2': -0.91, 'p4': -0.89, 'p5': -0.01}),
+            'p4': ParamResult({'p1': 0.02, 'p2': 0.83, 'p3': -0.89, 'p5': 0.01}),
+            'p5': ParamResult({'p1': 0.82, 'p2': 0.02, 'p3': -0.01, 'p4': 0.01}),
+        }
+
+    class FitResults:
+        engine_result = RawResult()
+        parameters = [
+            Param('p1', 'lbco.cell.length_a'),
+            Param('p2', 'hrpt.peak.broad_gauss_u'),
+            Param('p3', 'hrpt.peak.broad_gauss_v'),
+            Param('p4', 'hrpt.peak.broad_gauss_w'),
+            Param('p5', 'hrpt.instrument.twotheta_offset'),
+        ]
+
+    class Analysis:
+        fit_results = FitResults()
+
+    class Project:
+        analysis = Analysis()
+
+    p = Plotter()
+    p.engine = 'plotly'
+    p._set_project(Project())
+    p.plot_param_correlations()
+
+    fig = captured['fig']
+    assert len(fig.data) == 2
+    assert fig.data[0].type == 'heatmap'
+    assert fig.data[1].type == 'scatter'
+    assert fig.data[1].mode == 'text'
+    assert list(fig.data[1].text) == ['-0.91', '0.83', '-0.89', '0.82']
 
 
 def test_plot_param_correlations_can_show_diagonal(monkeypatch):

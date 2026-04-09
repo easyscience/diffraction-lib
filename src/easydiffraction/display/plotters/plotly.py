@@ -115,6 +115,8 @@ class PlotlyPlotter(PlotterBase):
         self,
         corr_df: object,
         title: str,
+        threshold: float | None,
+        precision: int,
     ) -> None:
         """
         Render a Plotly heatmap for a correlation matrix.
@@ -125,6 +127,10 @@ class PlotlyPlotter(PlotterBase):
             Square correlation DataFrame.
         title : str
             Figure title.
+        threshold : float | None
+            Absolute-correlation cutoff used for value labels.
+        precision : int
+            Number of decimals to show in labels and hover text.
         """
         num_rows, num_cols = corr_df.shape
         x_edges = np.arange(num_cols + 1, dtype=float)
@@ -149,7 +155,15 @@ class PlotlyPlotter(PlotterBase):
                 'yanchor': 'middle',
             },
             hoverongaps=False,
-            hovertemplate='x: %{x}<br>y: %{y}<br>corr: %{z:.3f}<extra></extra>',
+            hovertemplate=f'x: %{{x}}<br>y: %{{y}}<br>correlation: %{{z:'
+            f'.{precision}f}}<extra></extra>',
+        )
+        label_trace = self._get_correlation_label_trace(
+            corr_df,
+            x_centers=x_centers,
+            y_centers=y_centers,
+            threshold=threshold,
+            precision=precision,
         )
 
         shapes = [
@@ -198,10 +212,13 @@ class PlotlyPlotter(PlotterBase):
             ['Parameter', 'Parameter'],
             shapes=shapes,
         )
-        fig = self._get_figure([heatmap], layout)
+        traces = [heatmap]
+        if label_trace is not None:
+            traces.append(label_trace)
+        fig = self._get_figure(traces, layout)
         fig.update_xaxes(
             side='bottom',
-            tickangle=-45,
+            tickangle=-10,
             automargin=True,
             tickmode='array',
             tickvals=x_centers.tolist(),
@@ -228,6 +245,78 @@ class PlotlyPlotter(PlotterBase):
             layer='above traces',
         )
         self._show_figure(fig)
+
+    @classmethod
+    def _correlation_label_color(cls) -> str:
+        """
+        Return the text color used for in-cell correlation labels.
+
+        Returns
+        -------
+        str
+            Hex color string.
+        """
+        return '#f5f5f5'
+
+    @classmethod
+    def _get_correlation_label_trace(
+        cls,
+        corr_df: object,
+        x_centers: np.ndarray,
+        y_centers: np.ndarray,
+        threshold: float | None,
+        precision: int,
+    ) -> object | None:
+        """
+        Build a text trace for visible correlation values.
+
+        Parameters
+        ----------
+        corr_df : object
+            Correlation DataFrame to annotate.
+        x_centers : np.ndarray
+            Cell center x coordinates.
+        y_centers : np.ndarray
+            Cell center y coordinates.
+        threshold : float | None
+            Minimum absolute correlation required for a label.
+        precision : int
+            Number of decimals for rendered labels.
+
+        Returns
+        -------
+        object | None
+            Plotly text trace, or ``None`` when no labels should be
+            shown.
+        """
+        values = corr_df.to_numpy()
+        label_x = []
+        label_y = []
+        label_text = []
+
+        for row_idx, row in enumerate(values):
+            for col_idx, value in enumerate(row):
+                if np.isnan(value):
+                    continue
+                if threshold is not None and threshold > 0 and abs(float(value)) < threshold:
+                    continue
+                label_x.append(float(x_centers[col_idx]))
+                label_y.append(float(y_centers[row_idx]))
+                label_text.append(f'{float(value):.{precision}f}')
+
+        if not label_text:
+            return None
+
+        return go.Scatter(
+            x=label_x,
+            y=label_y,
+            mode='text',
+            text=label_text,
+            textposition='middle center',
+            textfont={'color': cls._correlation_label_color()},
+            hoverinfo='skip',
+            showlegend=False,
+        )
 
     @staticmethod
     def _get_powder_trace(

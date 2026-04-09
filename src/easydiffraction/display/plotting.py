@@ -562,7 +562,12 @@ class Plotter(RendererBase):
         )
 
         if is_plotly:
-            self._plot_correlation_heatmap(display_corr_df, title)
+            self._plot_correlation_heatmap(
+                display_corr_df,
+                title,
+                threshold=threshold,
+                precision=precision,
+            )
             return
 
         console.paragraph(title)
@@ -906,6 +911,8 @@ class Plotter(RendererBase):
         self,
         corr_df: pd.DataFrame,
         title: str,
+        threshold: float | None,
+        precision: int,
     ) -> None:
         """
         Delegate correlation heatmap rendering to the Plotly backend.
@@ -916,8 +923,17 @@ class Plotter(RendererBase):
             Square correlation matrix.
         title : str
             Figure title.
+        threshold : float | None
+            Absolute-correlation cutoff used for value labels.
+        precision : int
+            Number of decimals to show in plot labels and hover text.
         """
-        self._backend.plot_correlation_heatmap(corr_df, title)
+        self._backend.plot_correlation_heatmap(
+            corr_df,
+            title,
+            threshold=threshold,
+            precision=precision,
+        )
 
     @staticmethod
     def _format_correlation_table_dataframe(
