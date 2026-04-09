@@ -1037,14 +1037,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../ed-1/" class="md-nav__link">
+      <a href="../ed-2/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    LBCO quick CIF
+    LBCO quick code
   
 
     
@@ -1065,14 +1065,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../ed-2/" class="md-nav__link">
+      <a href="../ed-1/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    LBCO quick code
+    LBCO basic load
   
 
     
@@ -3347,7 +3347,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <!-- End of mermaid configuration --><div class="jupyter-wrapper">
 <div class="jp-Notebook" data-jp-theme-light="true" data-jp-theme-name="JupyterLab Light">
 <div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs celltag_hide-in-docs">
-<div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs celltag_hide-in-docs" id="cell-id=56a6bae8">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs celltag_hide-in-docs" id="cell-id=b4e60a11">
 </div>
 </div>
 <div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=0">
@@ -3410,8 +3410,8 @@ diffraction data from HEiDi at FRM II.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
-<div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=4">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=4">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -3434,6 +3434,75 @@ diffraction data from HEiDi at FRM II.</p>
 </pre></div>
 <div class="clipboard-copy-txt" id="cell-2"># Create minimal project without name and description
 project = ed.Project()</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="3533c454-668f-41b2-aaf3-a4cff03b5d82" tabindex="0">
+<script type="text/javascript">
+var element = document.getElementById('3533c454-668f-41b2-aaf3-a4cff03b5d82');
+
+                (function() {
+                    var isDark = false;
+
+                    // Check JupyterLab theme
+                    if (document.body.classList.contains('jp-mod-dark') || 
+                        document.body.classList.contains('theme-dark') ||
+                        document.body.classList.contains('vscode-dark')) {
+                        isDark = true;
+                    }
+
+                    // Check theme attribute
+                    var themeAttr = document.body.getAttribute('data-jp-theme-name');
+                    if (themeAttr && themeAttr.includes('dark')) {
+                        isDark = true;
+                    }
+
+                    // Check computed background color
+                    var notebookEl = document.querySelector('.jp-Notebook') || 
+                                   document.querySelector('.notebook_app') ||
+                                   document.body;
+                    if (notebookEl) {
+                        var bgColor = window.getComputedStyle(notebookEl).backgroundColor;
+                        var rgb = bgColor.match(/\d+/g);
+                        if (rgb && rgb.length >= 3) {
+                            var brightness = (parseInt(rgb[0]) + parseInt(rgb[1]) + parseInt(rgb[2])) / 3;
+                            if (brightness < 128) {
+                                isDark = true;
+                            }
+                        }
+                    }
+
+                    // Store result
+                    if (typeof IPython !== 'undefined' && IPython.notebook && IPython.notebook.kernel) {
+                        IPython.notebook.kernel.execute('_jupyter_dark_detect_result = ' + isDark);
+                    }
+                })();
+            
+</script>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="dca793ae-9b34-4899-a310-92bea5a9f435" tabindex="0">
+<script type="text/javascript">
+var element = document.getElementById('dca793ae-9b34-4899-a310-92bea5a9f435');
+
+            if (typeof IPython !== 'undefined' && IPython.notebook) {
+                IPython.notebook.kernel.execute("_jupyter_dark_detect_result = " + 
+                    (document.body.classList.contains('theme-dark') || 
+                     document.body.classList.contains('jp-mod-dark') ||
+                     (document.body.getAttribute('data-jp-theme-name') && 
+                      document.body.getAttribute('data-jp-theme-name').includes('dark'))));
+            }
+        
+</script>
 </div>
 </div>
 </div>
@@ -3679,9 +3748,9 @@ structure.atom_sites['O2'].b_iso = 0.0</div>
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="5e60ea94-53dd-47a2-8f78-374d5c690b9e" tabindex="0">
+<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="6fed8d7e-81ba-448d-9c45-dd959eb59f1a" tabindex="0">
 <script type="text/javascript">
-var element = document.getElementById('5e60ea94-53dd-47a2-8f78-374d5c690b9e');
+var element = document.getElementById('6fed8d7e-81ba-448d-9c45-dd959eb59f1a');
 
                 (function() {
                     var isDark = false;
@@ -3725,9 +3794,9 @@ var element = document.getElementById('5e60ea94-53dd-47a2-8f78-374d5c690b9e');
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="1a07eb35-fd92-4ce1-b6c6-956c7cfac0da" tabindex="0">
+<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="1976e589-89d2-4f86-97a8-f5c57eafb710" tabindex="0">
 <script type="text/javascript">
-var element = document.getElementById('1a07eb35-fd92-4ce1-b6c6-956c7cfac0da');
+var element = document.getElementById('1976e589-89d2-4f86-97a8-f5c57eafb710');
 
             if (typeof IPython !== 'undefined' && IPython.notebook) {
                 IPython.notebook.kernel.execute("_jupyter_dark_detect_result = " + 
@@ -3744,155 +3813,155 @@ var element = document.getElementById('1a07eb35-fd92-4ce1-b6c6-956c7cfac0da');
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
 <style type="text/css">
-#T_9a932   {
+#T_4a6cf   {
   border: 1px solid #dadada;
   border-collapse: collapse;
   margin-top: 0.5em;
   margin-left: 0.5em;
 }
-#T_9a932 thead {
+#T_4a6cf thead {
   border-bottom: 1px solid #dadada;
 }
-#T_9a932 th {
+#T_4a6cf th {
   border: none;
   padding-top: 0.25em;
   padding-bottom: 0.25em;
   line-height: 1.15em;
 }
-#T_9a932  td {
+#T_4a6cf  td {
   border: none;
   padding-top: 0.25em;
   padding-bottom: 0.25em;
   line-height: 1.15em;
 }
-#T_9a932 th.row_heading {
+#T_4a6cf th.row_heading {
   color: #dadada;
   font-weight: normal;
 }
-#T_9a932 tbody tr:nth-child(odd) {
+#T_4a6cf tbody tr:nth-child(odd) {
   background-color: transparent;
 }
-#T_9a932  tbody tr:nth-child(even) {
+#T_4a6cf  tbody tr:nth-child(even) {
   background-color: transparent;
 }
-#T_9a932 th.col0 {
+#T_4a6cf th.col0 {
   text-align: left;
 }
-#T_9a932_row0_col0, #T_9a932_row1_col0, #T_9a932_row2_col0, #T_9a932_row3_col0, #T_9a932_row4_col0, #T_9a932_row5_col0, #T_9a932_row6_col0, #T_9a932_row7_col0, #T_9a932_row8_col0, #T_9a932_row9_col0, #T_9a932_row10_col0, #T_9a932_row11_col0, #T_9a932_row12_col0, #T_9a932_row13_col0, #T_9a932_row14_col0, #T_9a932_row15_col0, #T_9a932_row16_col0, #T_9a932_row17_col0, #T_9a932_row18_col0, #T_9a932_row19_col0, #T_9a932_row20_col0, #T_9a932_row21_col0, #T_9a932_row22_col0, #T_9a932_row23_col0, #T_9a932_row24_col0, #T_9a932_row25_col0 {
+#T_4a6cf_row0_col0, #T_4a6cf_row1_col0, #T_4a6cf_row2_col0, #T_4a6cf_row3_col0, #T_4a6cf_row4_col0, #T_4a6cf_row5_col0, #T_4a6cf_row6_col0, #T_4a6cf_row7_col0, #T_4a6cf_row8_col0, #T_4a6cf_row9_col0, #T_4a6cf_row10_col0, #T_4a6cf_row11_col0, #T_4a6cf_row12_col0, #T_4a6cf_row13_col0, #T_4a6cf_row14_col0, #T_4a6cf_row15_col0, #T_4a6cf_row16_col0, #T_4a6cf_row17_col0, #T_4a6cf_row18_col0, #T_4a6cf_row19_col0, #T_4a6cf_row20_col0, #T_4a6cf_row21_col0, #T_4a6cf_row22_col0, #T_4a6cf_row23_col0, #T_4a6cf_row24_col0, #T_4a6cf_row25_col0 {
   text-align: left;
 }
 </style>
-<table class="dataframe" id="T_9a932">
+<table class="dataframe" id="T_4a6cf">
 <thead>
 <tr>
 <th class="blank level0"> </th>
-<th class="col_heading level0 col0" id="T_9a932_level0_col0">CIF</th>
+<th class="col_heading level0 col0" id="T_4a6cf_level0_col0">CIF</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th class="row_heading level0 row0" id="T_9a932_level0_row0">1</th>
-<td class="data row0 col0" id="T_9a932_row0_col0">data_tbti</td>
+<th class="row_heading level0 row0" id="T_4a6cf_level0_row0">1</th>
+<td class="data row0 col0" id="T_4a6cf_row0_col0">data_tbti</td>
 </tr>
 <tr>
-<th class="row_heading level0 row1" id="T_9a932_level0_row1">2</th>
-<td class="data row1 col0" id="T_9a932_row1_col0"></td>
+<th class="row_heading level0 row1" id="T_4a6cf_level0_row1">2</th>
+<td class="data row1 col0" id="T_4a6cf_row1_col0"></td>
 </tr>
 <tr>
-<th class="row_heading level0 row2" id="T_9a932_level0_row2">3</th>
-<td class="data row2 col0" id="T_9a932_row2_col0">_cell.length_a  10.13000000</td>
+<th class="row_heading level0 row2" id="T_4a6cf_level0_row2">3</th>
+<td class="data row2 col0" id="T_4a6cf_row2_col0">_cell.length_a  10.13000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row3" id="T_9a932_level0_row3">4</th>
-<td class="data row3 col0" id="T_9a932_row3_col0">_cell.length_b  10.13000000</td>
+<th class="row_heading level0 row3" id="T_4a6cf_level0_row3">4</th>
+<td class="data row3 col0" id="T_4a6cf_row3_col0">_cell.length_b  10.13000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row4" id="T_9a932_level0_row4">5</th>
-<td class="data row4 col0" id="T_9a932_row4_col0">_cell.length_c  10.13000000</td>
+<th class="row_heading level0 row4" id="T_4a6cf_level0_row4">5</th>
+<td class="data row4 col0" id="T_4a6cf_row4_col0">_cell.length_c  10.13000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row5" id="T_9a932_level0_row5">6</th>
-<td class="data row5 col0" id="T_9a932_row5_col0">_cell.angle_alpha  90.00000000</td>
+<th class="row_heading level0 row5" id="T_4a6cf_level0_row5">6</th>
+<td class="data row5 col0" id="T_4a6cf_row5_col0">_cell.angle_alpha  90.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row6" id="T_9a932_level0_row6">7</th>
-<td class="data row6 col0" id="T_9a932_row6_col0">_cell.angle_beta  90.00000000</td>
+<th class="row_heading level0 row6" id="T_4a6cf_level0_row6">7</th>
+<td class="data row6 col0" id="T_4a6cf_row6_col0">_cell.angle_beta  90.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row7" id="T_9a932_level0_row7">8</th>
-<td class="data row7 col0" id="T_9a932_row7_col0">_cell.angle_gamma  90.00000000</td>
+<th class="row_heading level0 row7" id="T_4a6cf_level0_row7">8</th>
+<td class="data row7 col0" id="T_4a6cf_row7_col0">_cell.angle_gamma  90.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row8" id="T_9a932_level0_row8">9</th>
-<td class="data row8 col0" id="T_9a932_row8_col0"></td>
+<th class="row_heading level0 row8" id="T_4a6cf_level0_row8">9</th>
+<td class="data row8 col0" id="T_4a6cf_row8_col0"></td>
 </tr>
 <tr>
-<th class="row_heading level0 row9" id="T_9a932_level0_row9">10</th>
-<td class="data row9 col0" id="T_9a932_row9_col0">_space_group.name_H-M_alt   "F d -3 m"</td>
+<th class="row_heading level0 row9" id="T_4a6cf_level0_row9">10</th>
+<td class="data row9 col0" id="T_4a6cf_row9_col0">_space_group.name_H-M_alt   "F d -3 m"</td>
 </tr>
 <tr>
-<th class="row_heading level0 row10" id="T_9a932_level0_row10">11</th>
-<td class="data row10 col0" id="T_9a932_row10_col0">_space_group.IT_coordinate_system_code            2</td>
+<th class="row_heading level0 row10" id="T_4a6cf_level0_row10">11</th>
+<td class="data row10 col0" id="T_4a6cf_row10_col0">_space_group.IT_coordinate_system_code            2</td>
 </tr>
 <tr>
-<th class="row_heading level0 row11" id="T_9a932_level0_row11">12</th>
-<td class="data row11 col0" id="T_9a932_row11_col0"></td>
+<th class="row_heading level0 row11" id="T_4a6cf_level0_row11">12</th>
+<td class="data row11 col0" id="T_4a6cf_row11_col0"></td>
 </tr>
 <tr>
-<th class="row_heading level0 row12" id="T_9a932_level0_row12">13</th>
-<td class="data row12 col0" id="T_9a932_row12_col0">loop_</td>
+<th class="row_heading level0 row12" id="T_4a6cf_level0_row12">13</th>
+<td class="data row12 col0" id="T_4a6cf_row12_col0">loop_</td>
 </tr>
 <tr>
-<th class="row_heading level0 row13" id="T_9a932_level0_row13">14</th>
-<td class="data row13 col0" id="T_9a932_row13_col0">_atom_site.label</td>
+<th class="row_heading level0 row13" id="T_4a6cf_level0_row13">14</th>
+<td class="data row13 col0" id="T_4a6cf_row13_col0">_atom_site.label</td>
 </tr>
 <tr>
-<th class="row_heading level0 row14" id="T_9a932_level0_row14">15</th>
-<td class="data row14 col0" id="T_9a932_row14_col0">_atom_site.type_symbol</td>
+<th class="row_heading level0 row14" id="T_4a6cf_level0_row14">15</th>
+<td class="data row14 col0" id="T_4a6cf_row14_col0">_atom_site.type_symbol</td>
 </tr>
 <tr>
-<th class="row_heading level0 row15" id="T_9a932_level0_row15">16</th>
-<td class="data row15 col0" id="T_9a932_row15_col0">_atom_site.fract_x</td>
+<th class="row_heading level0 row15" id="T_4a6cf_level0_row15">16</th>
+<td class="data row15 col0" id="T_4a6cf_row15_col0">_atom_site.fract_x</td>
 </tr>
 <tr>
-<th class="row_heading level0 row16" id="T_9a932_level0_row16">17</th>
-<td class="data row16 col0" id="T_9a932_row16_col0">_atom_site.fract_y</td>
+<th class="row_heading level0 row16" id="T_4a6cf_level0_row16">17</th>
+<td class="data row16 col0" id="T_4a6cf_row16_col0">_atom_site.fract_y</td>
 </tr>
 <tr>
-<th class="row_heading level0 row17" id="T_9a932_level0_row17">18</th>
-<td class="data row17 col0" id="T_9a932_row17_col0">_atom_site.fract_z</td>
+<th class="row_heading level0 row17" id="T_4a6cf_level0_row17">18</th>
+<td class="data row17 col0" id="T_4a6cf_row17_col0">_atom_site.fract_z</td>
 </tr>
 <tr>
-<th class="row_heading level0 row18" id="T_9a932_level0_row18">19</th>
-<td class="data row18 col0" id="T_9a932_row18_col0">_atom_site.Wyckoff_letter</td>
+<th class="row_heading level0 row18" id="T_4a6cf_level0_row18">19</th>
+<td class="data row18 col0" id="T_4a6cf_row18_col0">_atom_site.Wyckoff_letter</td>
 </tr>
 <tr>
-<th class="row_heading level0 row19" id="T_9a932_level0_row19">20</th>
-<td class="data row19 col0" id="T_9a932_row19_col0">_atom_site.occupancy</td>
+<th class="row_heading level0 row19" id="T_4a6cf_level0_row19">20</th>
+<td class="data row19 col0" id="T_4a6cf_row19_col0">_atom_site.occupancy</td>
 </tr>
 <tr>
-<th class="row_heading level0 row20" id="T_9a932_level0_row20">21</th>
-<td class="data row20 col0" id="T_9a932_row20_col0">_atom_site.B_iso_or_equiv</td>
+<th class="row_heading level0 row20" id="T_4a6cf_level0_row20">21</th>
+<td class="data row20 col0" id="T_4a6cf_row20_col0">_atom_site.B_iso_or_equiv</td>
 </tr>
 <tr>
-<th class="row_heading level0 row21" id="T_9a932_level0_row21">22</th>
-<td class="data row21 col0" id="T_9a932_row21_col0">_atom_site.adp_type</td>
+<th class="row_heading level0 row21" id="T_4a6cf_level0_row21">22</th>
+<td class="data row21 col0" id="T_4a6cf_row21_col0">_atom_site.adp_type</td>
 </tr>
 <tr>
-<th class="row_heading level0 row22" id="T_9a932_level0_row22">23</th>
-<td class="data row22 col0" id="T_9a932_row22_col0">          Tb           Tb   0.50000000   0.50000000   0.50000000            d   1.00000000 0.00000000(2000000)         Biso</td>
+<th class="row_heading level0 row22" id="T_4a6cf_level0_row22">23</th>
+<td class="data row22 col0" id="T_4a6cf_row22_col0">          Tb           Tb   0.50000000   0.50000000   0.50000000            d   1.00000000 0.00000000(2000000)         Biso</td>
 </tr>
 <tr>
-<th class="row_heading level0 row23" id="T_9a932_level0_row23">24</th>
-<td class="data row23 col0" id="T_9a932_row23_col0">          Ti           Ti   0.00000000   0.00000000   0.00000000            c   1.00000000 0.00000000(3000000)         Biso</td>
+<th class="row_heading level0 row23" id="T_4a6cf_level0_row23">24</th>
+<td class="data row23 col0" id="T_4a6cf_row23_col0">          Ti           Ti   0.00000000   0.00000000   0.00000000            c   1.00000000 0.00000000(3000000)         Biso</td>
 </tr>
 <tr>
-<th class="row_heading level0 row24" id="T_9a932_level0_row24">25</th>
-<td class="data row24 col0" id="T_9a932_row24_col0">          O1            O 0.32804000(9000)   0.12500000   0.12500000            f 1.00000000(1000000) 0.00000000(2000000)         Biso</td>
+<th class="row_heading level0 row24" id="T_4a6cf_level0_row24">25</th>
+<td class="data row24 col0" id="T_4a6cf_row24_col0">          O1            O 0.32804000(9000)   0.12500000   0.12500000            f 1.00000000(1000000) 0.00000000(2000000)         Biso</td>
 </tr>
 <tr>
-<th class="row_heading level0 row25" id="T_9a932_level0_row25">26</th>
-<td class="data row25 col0" id="T_9a932_row25_col0">          O2            O   0.37500000   0.37500000   0.37500000            b 0.97000000(2000000) 0.00000000(4000000)         Biso</td>
+<th class="row_heading level0 row25" id="T_4a6cf_level0_row25">26</th>
+<td class="data row25 col0" id="T_4a6cf_row25_col0">          O2            O   0.37500000   0.37500000   0.37500000            b 0.97000000(2000000) 0.00000000(4000000)         Biso</td>
 </tr>
 </tbody>
 </table>
@@ -4182,7 +4251,7 @@ experiment.extinction.radius = 30</div>
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
 <div> <script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
-<script charset="utf-8" crossorigin="anonymous" integrity="sha256-KEmPoupLpFyGMyGAiOsiNDbKDKAvxXAn/W+oQa0ZAfk=" src="https://cdn.plot.ly/plotly-3.4.0.min.js"></script> <div class="plotly-graph-div" id="a36da6b1-486e-4c72-ac81-1207176154a4" style="height:100%; width:100%;"></div> <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("a36da6b1-486e-4c72-ac81-1207176154a4")) {                    Plotly.newPlot(                        "a36da6b1-486e-4c72-ac81-1207176154a4",                        [{"error_y":{"array":{"dtype":"f8","bdata":"Qxzr4jaaAkB+jLlrCfnxP+XQItv5fgRA3GgAb4EECkCk374OnBM\u002fQOwvuycPazhAjSjtDb7wEEDdJAaBlTMzQL7BFyZTBR1A+1xtxf76QkDpSC7\u002fIb0YQGgibHh6JQdATRWMSurEFEAAkX77OnADQHqlLEMcKxBAI0p7gy\u002fMGUDrc7UV+yslQPYoXI\u002fCNRdArkfhehSu+z91ApoIG14jQBiV1AloohZAArwFEhTvQUBB8WPMXdNIQF5LyAc9GwhA93XgnBHFLkCyne+nxgssQPkP6bevwxtAMLsnDwsVM0AkufyH9BsUQLmNBvAWyBBAZ9XnaiuWLUBKe4MvTMYjQHe+nxovfSVAufyH9NsXE0CjkjoBTYQeQBZqTfOOMzJAirDh6ZXyLUBWn6ut2P8oQCQofoy5ayNA0NVW7C97IkAj2\u002fl+ahwlQEATYcPTSy5Aat5xio5kF0AFxY8xd+0aQBTQRNjwtBhAKH6MuWvJHEAQWDm0yPYeQEw3iUFg5RZAKH6MuWuJGEAYldQJaIInQKMBvAUSlCRA+THmriXEIkBIUPwYcwdAQDJ3LSEfdA9AXI\u002fC9SjcD0DhC5OpghEZQGFUUiegCR9AWDm0yHZ+IkBdbcX+shs\u002fQIts5\u002fupcS1Ab4EExY\u002fBMkAydy0hH\u002fQyQLhAguLHWB5AFYxK6gR0G0Ba9bnair0wQEmdgCbCBghAPQrXo3C9EkCcxCCwcmgTQFioNc07DhNA1xLyQc\u002fmMUA+eVioNU0mQIofY+5aYiZA2qz6XG2FKEA2PL1SlqEUQLhAguLHWBBAoWez6nPVNUBMN4lBYIUtQBkEVg4twjlAz2bV52orFUAyVTAqqdMfQIXrUbgeBSBAyJi7lpCPMkCamZmZmXkgQACRfvs6UCBARPrt68DJMEBmiGNd3AYZQGiz6nO1tUNAXI\u002fC9Sg8MECamZmZmVkwQCo6kst\u002fiBlA4JwRpb2hJkAbL90kBsEWQJHtfD81HhRAo5I6AU3EFkC\u002ffR04Z+QoQBrAWyBBcSZAzczMzMzMGkAJG55eKetCQLdif9k9uTFAklz+Q\u002fptMUBMN4lBYCUrQFUwKqkTcCFAw\u002fUoXI\u002fCIkAkl\u002f+QfnsZQJm7lpAPEkBA\u002fKnx0k2yMEB6xyk6kssxQEJg5dAi2xtAAAAAAABAHEAUrkfhehQwQLsnDwu1ZhtAxyk6kss\u002fF0Dl8h\u002fSbx8TQKVOQBNhEzBAMlUwKqkzLEAzMzMzM\u002fMxQJVliGNd3CdAcRsN4C3QGUBg5dAi2zkkQOwvuycPSxlAmbuWkA+qNEBI4XoUricnQI2XbhKDwBJAqRPQRNjwDUBzaJHtfP9HQM\u002f3U+OlyzNAswxxrIs7LEAfhetRuB4cQNk9eViolTRA2ht8YTIVIEAUrkfhenQhQM07TtGRfCVAGlHaG3wRMkCLbOf7qbEXQJvmHafoaChAH4XrUbieHUCPwvUoXI8aQGB2Tx4W6hhAFK5H4XoUGEAyVTAqqdMXQM6qz9VWLBhAKcsQx7rYJUAoDwu1plknQG\u002fwhclUATxALSEf9GwWJEAi\u002ffZ14DwoQKvP1VbsbyhAodY07zilNECk374OnFMhQEhQ\u002fBhzFz5AdLUV+8uuM0BSuB6F69EiQKTfvg6cUyFA0SLb+X4qIEB1kxgEVo4hQJ7vp8ZLNyBA54wo7Q0+FECkcD0K16MWQNiBc0aUtixA0NVW7C9Yd0Df4AuTqZIyQLhAguLHeCRArkfhehQuIEDmriXkg04xQBNhw9MrxS1ApN++DpzzLkBnRGlv8MUVQNJvXwfO8UhAp+hILv+BLkBfKcsQx9ozQF66SQwCqyNAgy9MpgomIUAzMzMzM3MfQLgehetROCJAhetRuB6FH0CGyVTBqKQkQBZqTfOO92NA07zjFB3pLkB6xyk6kksdQKhXyjLEcSdAsVBrmnccIEDHuriNBshJQO5aQj7omS5AIGPuWkJOMUBKe4MvTNYwQAAAAAAAgCFAj8L1KFzPI0A5RUdy+c80QJqZmZmZuSJA5BQdyeWfK0AeFmpN824mQHnpJjEIDC5ApN++DpxTIEC4HoXrUTggQJAxdy0hvyJAyAc9m1X\u002fIECamZmZmRkiQHsUrkfhWilAnl4pyxDnI0D0\u002fdR46eYZQAAAAAAAgCVArkfhehRuJkA3iUFg5VAkQDMzMzMzsxpAGCZTBaNyLEBm9+RhobYlQGuad5yiAydAj8L1KFyPJkAyVTAqqdMaQEdy+Q\u002fpFyVAKe0NvjA5IkAK16NwPWoiQI9TdCSXXyJAkKD4MebuHkCsrdhfdk8pQBKDwMohp4NAumsJ+aDpeUBdbcX+sms0QOF6FK5HISBAw\u002fUoXI\u002fCJkA="},"type":"data","visible":true},"hovertemplate":"calc: %{x}\u003cbr\u003emeas: %{y}\u003cbr\u003e\u003cextra\u003e\u003c\u002fextra\u003e","marker":{"color":"rgb(31, 119, 180)","line":{"width":0.5},"size":10,"symbol":"circle"},"mode":"markers","x":{"dtype":"f8","bdata":"sxGe9hOtUUAufUpQbHcVQEkPkB2LSkFASHSxlNzlUkBG13cD4m+AQH8PCMPEYoBAg5A7PCCeWUBDPwISnul3QOKvFKQ3bWVAToOm5QyYh0D0e3Ill5RgQLIWbM4Mavs5QJIBNsI7XUA0WMs+jwsbQEg2d+OcClNASuvfy+HSYUACh9HTI55zQBYWE92RhjNAza7skd6iIkDYGKpGC+NyQBrMXZt16zdA7KEBbbCAhEBC2I7hT6WJQCLtVpw1R+Q5RnZDkmfLfEBrLUjv9Kt8QE0Mcw4I715AHLchvgMth0BdHpPF9xZTQHsuH5HLKUNA093MDASTeUDCABaf9OtHQKUXIHK4Bm5AQWHf2WvyS0CUV1oVdiNsQM9pIJ8+ToBAox2PNoVug0BTmJkLKD1EQClzo9hMTHdAKQgtecvHXUCb5jMUkqdrQJDifzAayntA48AL1IAdU0DWwAvUgB1TQME5YiGIZVlAo2RpcDNvZEANOO6BLZZmQD3uIOOOwdk\u002fIubyU3fFVkC9+5NuC0Z1QCqbmjsVNnFANLK4Lr4lQkD2MWC6gZqHQLSgM+ZgeCVALeA\u002fr4KsP0DS\u002fPqjkiFTQCUab5UJll9ANhl0lIoEbUBLU2H6apCMQBzCf3ZaNS1AivkZkdQ4gUDB4u9pLJmAQKXmA7D75GNA69fJVnlbW0CN0yf\u002fsTN3QN\u002feySnxZzxA2u1WnDVHBDouhTW5EQvDOcgdVbROWe4\u002f+BHNx3TygEC4se8ksj9JQDWCTCvValRALIYP9ti8JEASU7+5TyRTQL4MRsckajVA3TfSLpNlgkD3dMaE5fOAQDf5djhEjYRAzaBX4D8okzkphHIpzHdmQEw\u002f0+4AW2JAsMx10bknf0CcPWHPo6ZiQKtzWPgETVtA0Cz8ANl2aECC8ofXY\u002fUsOo5E5jQyCZBAMwgY2tBBYkDM+LTZ2dZrQN3UipRHdi1AHzDxf72ja0AvhZP+NyZTQDmFk\u002f43JlNAgtjsFSzPW0DBxoJIypJyQNIjAm9+PG1A0EFNNGzDNzoZg7XiF\u002fSJQBK4m3JvmtE\u002fRogmLS2aTECNnIIlvnV1QLwdEemGaExAv5Ba0UPZKkDC3f9EzKL0P5ZBtMUgwopAmXiABz2rF0CixxAC2UcTQO0rllTMeNE5CLg4czc3yDn6plwoeA2DQLAgvNL4PWFAVddHbIwnU0BK10dsjCdTQG0zhbat3ndA5rKLv\u002fshYUCbXKzbmvR4QK7R1lADpCtAnxdX1vUJ8Dlv\u002foJIKhp3QA+KTU906StAalbdpA1pgkCaxOj3Gc1SQAu0APJ2fRhAjJ4oTXVoN0AlfG9ZEd6NQJB4Eo9LIX9Av2s5b8RwQEBao1fgPyjzOSe9D+pkHXpAwjzmBgarRUABOqxAL3BqQNwxuuYlBmhAFePCfQAYc0AS6mKTcChTQDDzcunYiWtAoID32c9oZEBDI8fYaONaQCo\u002fq7Su61NAXzKGz6FVzTlf7SRHRhDgOYBk92BFy1ZAVKEkHvV\u002fcEA\u002fGksnplf6Pw6WzVlF7n5A9njCqh2rMUCu+kx\u002f9UtzQGDWxOVTb3pAqMoD4QhhdUApAmPaFXxDOuR0ETDAZIxAldtMYBalCkBXzZb2wAJHQMh\u002fqkKulhBAagjjJikDP0Apo0samxFxQGTY3e+TaDNADYHqGfgoU0AvgeoZ+ChTQGALXUHJLHhAAjw0tVu\u002fjEC5nhL\u002f5mbkP6J+T2UQ5h46zWpzF4xvEDpr7JvA2jKFQIPHL0+42WBAEg8gzVHOZUBj84iRprVbQElzd6OJonNABh0J\u002fzmvfECFrZ+jZYB7QOc9So4KElpA4cKRtNQZ3Tmc\u002ft+E7rc8Onr3T8qC60k6nHG9Y\u002foGYECzUAKbM5\u002f2Pxw91Tz9DIRANYyiR8ILWkD1BxCxLClTQNsHELEsKVNAJ20VeWxjRkCBvni45tuEQIs+\u002fQWRukhA2GR7p6K+g0DEms2J\u002f\u002fl\u002fQEmjJWzPT1VACAEgvZyNR0DyrK592yF1QNA\u002fBG\u002ftPV5AvvmfXLUWbkD2iKjvg5V1QB64zcqw9XFAlKEBuymVZkDaNOvWJ\u002flfQBWhdmcQOCA6GDGGz6FV7TlqkmLcR43FOeZPB4TIInBA\u002f0PbwAuBaEBUE+UiSE9RQDuHxngFmmc\u002fiInFu\u002f0yc0DeIHmnHq05QAKuZQYrzFpAU+Q1nxApU0B5yMMg6q5qQFD7XJUph3JALwpcZCGFcED8a7o1OGwWQKvoXawbpSk6UfYT6+klRUCa8lTFfI8wQK0JVz2PheU\u002f0LGQxF1WL0Do0rpOiP8kQNVRNTOAno5AwnU1k9EpikA8i5jCcYzwPyxIR4ZXguY\u002fgKWyKCzxAjo="},"y":{"dtype":"f8","bdata":"Dr4wmSpSaECoV8oyxKE2QJEPejar0lhA5WGh1jRpa0AJ+aBn81qVQNXnaiv2lJVAWDm0yHYHcUAhsHJoEfyOQLraiv1liX9AMnctIV\u002fvoEBsCfmgZxh3QOwvuycPCxlArfpcbcU1dUBa9bnaij00QMzuycNCy2pAB1+YTBV6d0Drc7UV+zOKQKyL22gAj0tAtoR80LOJQECMuWsJeeeHQCJseHqleFJAVHQkl7\u002fZnUCsrdhfdreiQGUZ4lgXtyNAqRPQRJjfkkAGgZVDywSTQApoImx4RnRALv8h\u002ffacn0AYJlMFo5hlQMl2vp8a711Az2bV5+rrkEC5jQbwFtheQLWmeccphoRAlIeFWtNKYECCc0aU9tKBQCS5\u002fIc02pVAJLn8h7RWmkAdOGdEaf9aQMrDQq3pkIxAHHxhMlUhcED1udqK\u002fWaCQF8HzhnRxI9A1lbsL7vpakAjSnuDL7JkQLN78rBQdHBAxLEubqPyeEAZBFYOLWt5QPRsVn2uFiJAqRPQRNgKbUAXSFD8mHiJQFwgQfHjL4RA6Ugu\u002fyFhWkDgvg6cE6OgQPhT46Wb1DhANjy9Upb9W0Cz6nO1FUFmQPMf0m9fP3ZAlkOLbOcxfECjkjoBjdKiQNV46SYxeEJADAIrhxbOk0CHp1fKMjOTQHL5D+m3kXRAyeU\u002fpN8YbECzDHGsi5iLQGWqYFRSV05Avp8aL92kKUCWIY51cVsUQDC7Jw8LdS9AQYLix5gTlEDWVuwvu\u002fNWQClcj8L1qFxAtvP91HjJJkB0RpT2BstaQMP1KFyP4jlAi2zn+6mwlkBfB84ZUXSTQG8Sg8BKn5dArkfhehSuDUDwp8ZLN5F0QBPyQc9m3XFAFD\u002fG3LUHj0DTvOMUHQRyQBBYObTIWmhAN4lBYOXjeUBE+u3rwPkcQLdif9l9NaVAxLEubqN8dUBrmnecooF9QIPAyqFFpjZAT6+UZYg5fUD+ZffkYfFgQAK8BRIU01tA9bnaiv3xYUCFfNCzWYODQDMzMzMzqYBAX5hMFYzqJECyLm6jwdegQCh+jLlryR5AS1mGONZFWkCitDf4Ql2CQBkEVg4tCGNALSEf9GxGMUAQWDm0yHYGQI51cRuta6BACyQofox5NUB\u002f2T15WPgwQJvmHafoSA9AB1+YTBVMGUDDZKpglPeTQHo2qz5XuWVA63O1FfuPYkBWn6ut2CtYQOY\u002fpN8+OYdAYqHWNO+gb0DKVMGoJAuJQLx0kxgEliJAnYAmwoYnF0CX\u002f5B+e\u002f6IQFwgQfFjnDBA4QuTqQKxkkCoV8oyxGlTQG1Wfa62Yr8\u002fyAc9m1UfQkDZzvdTo9KhQEku\u002fyF9pY9AqvHSTWJEUkBVMCqpExATQNejcD2KJ4ZAcvkP6bePUEDbiv1l9zx2QJm7lpAPIHVARwN4CyTAfEAXt9EA3sJhQDcawFsgQH5Aa5p3nKKFckCHFtnO9+dgQLx0kxgEylBAO99PjZdu2j9t5\u002fup8dLjP4V80LNZk2NABOeMKO1qeUBlGeJYFxckQDAqqRPQyotALUMc6+I+SEC6awn5IBuAQM3MzMzM5YBAtaZ5xykegUBPHhZqTUM6QIY41sVNFqFAI9v5fmr8HkCXkA96NhNQQHS1FfvLTidASOF6FK4XSUCWQ4ts52R3QCNKe4MvrD5AkDF3LSFrW0C4HoXrUTBZQKrx0k1ih39ANIC3QEJSnECvlGWIY90EQL8OnDOiFCtAw9MrZRmiE0DUK2UZIj6SQLWmeccpWGtAb4EExY+wcEBbQj7o2URfQEku\u002fyH9d31Adk8eFupchECeXinLENuFQCNKe4MvmmhAxY8xdy2RMUCBlUOLbKciQG\u002fwhclUQRtAU5YhjnUZaUDbiv1l9zQ4QCNKe4OvLJBAF7fRAN6iXUC\u002fDpwzokxRQAaBlUOLhFFAEOm3rwMXQUAnMQisXFORQLRZ9bna2kNAKe0NvjB3k0BApN++jrWIQDXvOEVHTl5AtaZ5xylKR0AxmSoYFceDQPd14JwRhW9AU5YhjnUedEAtQxzr4kN1QIv9ZffkjXlANe84RUfSbEBxrIvbaGxqQDvfT42Xbu4\u002fO99PjZfuCUBy+Q\u002fpt+8mQOcdp+hI631AINJvXwcveECDUUmdgBZYQBfZzvdTQyNAhA1Pr5SHd0AgY+5aQv4kQG40gLdABlxAidLe4AtPVUC62or9ZRZzQCqpE9BEd3ZAtMh2vp+4ekDecYqO5LIQQEYldQKayBVA2qz6XG3VTUCaCBueXrFFQCBB8WPMzTdA07zjFB1hSEDKw0KtaU49QG+BBMUPBplA4zYawFtgkkCXkA96NqvqP36MuWsJ+SVA48eYu5bQLEA="},"type":"scatter"}],                        {"legend":{"x":1.0,"xanchor":"right","y":1.0,"yanchor":"top"},"margin":{"autoexpand":true,"b":45,"r":30,"t":40},"shapes":[{"layer":"below","line":{"width":0.5},"type":"line","x0":0,"x1":1,"xref":"paper","y0":0,"y1":1,"yref":"paper"}],"title":{"text":"Measured vs Calculated data for experiment \ud83d\udd2c 'heidi'"},"xaxis":{"mirror":true,"showline":true,"title":{"text":"I\u00b2calc"},"zeroline":false,"tickformat":",.6~g","separatethousands":true},"yaxis":{"mirror":true,"showline":true,"title":{"text":"I\u00b2meas"},"zeroline":false,"tickformat":",.6~g","separatethousands":true},"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"bgcolor":"white","angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"ternary":{"bgcolor":"white","aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8","gridwidth":2},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8","gridwidth":2},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"white","subunitcolor":"#C8D4E3","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}}},                        {"displaylogo": false, "modeBarButtonsToRemove": ["select2d", "lasso2d", "zoomIn2d", "zoomOut2d", "autoScale2d"], "responsive": true}                    )                };            </script> </div>
+<script charset="utf-8" crossorigin="anonymous" integrity="sha256-KEmPoupLpFyGMyGAiOsiNDbKDKAvxXAn/W+oQa0ZAfk=" src="https://cdn.plot.ly/plotly-3.4.0.min.js"></script> <div class="plotly-graph-div" id="c6fe9229-8915-49e9-9e71-3a8c14865692" style="height:100%; width:100%;"></div> <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("c6fe9229-8915-49e9-9e71-3a8c14865692")) {                    Plotly.newPlot(                        "c6fe9229-8915-49e9-9e71-3a8c14865692",                        [{"error_y":{"array":{"dtype":"f8","bdata":"Qxzr4jaaAkB+jLlrCfnxP+XQItv5fgRA3GgAb4EECkCk374OnBM\u002fQOwvuycPazhAjSjtDb7wEEDdJAaBlTMzQL7BFyZTBR1A+1xtxf76QkDpSC7\u002fIb0YQGgibHh6JQdATRWMSurEFEAAkX77OnADQHqlLEMcKxBAI0p7gy\u002fMGUDrc7UV+yslQPYoXI\u002fCNRdArkfhehSu+z91ApoIG14jQBiV1AloohZAArwFEhTvQUBB8WPMXdNIQF5LyAc9GwhA93XgnBHFLkCyne+nxgssQPkP6bevwxtAMLsnDwsVM0AkufyH9BsUQLmNBvAWyBBAZ9XnaiuWLUBKe4MvTMYjQHe+nxovfSVAufyH9NsXE0CjkjoBTYQeQBZqTfOOMzJAirDh6ZXyLUBWn6ut2P8oQCQofoy5ayNA0NVW7C97IkAj2\u002fl+ahwlQEATYcPTSy5Aat5xio5kF0AFxY8xd+0aQBTQRNjwtBhAKH6MuWvJHEAQWDm0yPYeQEw3iUFg5RZAKH6MuWuJGEAYldQJaIInQKMBvAUSlCRA+THmriXEIkBIUPwYcwdAQDJ3LSEfdA9AXI\u002fC9SjcD0DhC5OpghEZQGFUUiegCR9AWDm0yHZ+IkBdbcX+shs\u002fQIts5\u002fupcS1Ab4EExY\u002fBMkAydy0hH\u002fQyQLhAguLHWB5AFYxK6gR0G0Ba9bnair0wQEmdgCbCBghAPQrXo3C9EkCcxCCwcmgTQFioNc07DhNA1xLyQc\u002fmMUA+eVioNU0mQIofY+5aYiZA2qz6XG2FKEA2PL1SlqEUQLhAguLHWBBAoWez6nPVNUBMN4lBYIUtQBkEVg4twjlAz2bV52orFUAyVTAqqdMfQIXrUbgeBSBAyJi7lpCPMkCamZmZmXkgQACRfvs6UCBARPrt68DJMEBmiGNd3AYZQGiz6nO1tUNAXI\u002fC9Sg8MECamZmZmVkwQCo6kst\u002fiBlA4JwRpb2hJkAbL90kBsEWQJHtfD81HhRAo5I6AU3EFkC\u002ffR04Z+QoQBrAWyBBcSZAzczMzMzMGkAJG55eKetCQLdif9k9uTFAklz+Q\u002fptMUBMN4lBYCUrQFUwKqkTcCFAw\u002fUoXI\u002fCIkAkl\u002f+QfnsZQJm7lpAPEkBA\u002fKnx0k2yMEB6xyk6kssxQEJg5dAi2xtAAAAAAABAHEAUrkfhehQwQLsnDwu1ZhtAxyk6kss\u002fF0Dl8h\u002fSbx8TQKVOQBNhEzBAMlUwKqkzLEAzMzMzM\u002fMxQJVliGNd3CdAcRsN4C3QGUBg5dAi2zkkQOwvuycPSxlAmbuWkA+qNEBI4XoUricnQI2XbhKDwBJAqRPQRNjwDUBzaJHtfP9HQM\u002f3U+OlyzNAswxxrIs7LEAfhetRuB4cQNk9eViolTRA2ht8YTIVIEAUrkfhenQhQM07TtGRfCVAGlHaG3wRMkCLbOf7qbEXQJvmHafoaChAH4XrUbieHUCPwvUoXI8aQGB2Tx4W6hhAFK5H4XoUGEAyVTAqqdMXQM6qz9VWLBhAKcsQx7rYJUAoDwu1plknQG\u002fwhclUATxALSEf9GwWJEAi\u002ffZ14DwoQKvP1VbsbyhAodY07zilNECk374OnFMhQEhQ\u002fBhzFz5AdLUV+8uuM0BSuB6F69EiQKTfvg6cUyFA0SLb+X4qIEB1kxgEVo4hQJ7vp8ZLNyBA54wo7Q0+FECkcD0K16MWQNiBc0aUtixA0NVW7C9Yd0Df4AuTqZIyQLhAguLHeCRArkfhehQuIEDmriXkg04xQBNhw9MrxS1ApN++DpzzLkBnRGlv8MUVQNJvXwfO8UhAp+hILv+BLkBfKcsQx9ozQF66SQwCqyNAgy9MpgomIUAzMzMzM3MfQLgehetROCJAhetRuB6FH0CGyVTBqKQkQBZqTfOO92NA07zjFB3pLkB6xyk6kksdQKhXyjLEcSdAsVBrmnccIEDHuriNBshJQO5aQj7omS5AIGPuWkJOMUBKe4MvTNYwQAAAAAAAgCFAj8L1KFzPI0A5RUdy+c80QJqZmZmZuSJA5BQdyeWfK0AeFmpN824mQHnpJjEIDC5ApN++DpxTIEC4HoXrUTggQJAxdy0hvyJAyAc9m1X\u002fIECamZmZmRkiQHsUrkfhWilAnl4pyxDnI0D0\u002fdR46eYZQAAAAAAAgCVArkfhehRuJkA3iUFg5VAkQDMzMzMzsxpAGCZTBaNyLEBm9+RhobYlQGuad5yiAydAj8L1KFyPJkAyVTAqqdMaQEdy+Q\u002fpFyVAKe0NvjA5IkAK16NwPWoiQI9TdCSXXyJAkKD4MebuHkCsrdhfdk8pQBKDwMohp4NAumsJ+aDpeUBdbcX+sms0QOF6FK5HISBAw\u002fUoXI\u002fCJkA="},"type":"data","visible":true},"hovertemplate":"calc: %{x}\u003cbr\u003emeas: %{y}\u003cbr\u003e\u003cextra\u003e\u003c\u002fextra\u003e","marker":{"color":"rgb(31, 119, 180)","line":{"width":0.5},"size":10,"symbol":"circle"},"mode":"markers","x":{"dtype":"f8","bdata":"sxGe9hOtUUAufUpQbHcVQEkPkB2LSkFASHSxlNzlUkBG13cD4m+AQH8PCMPEYoBAg5A7PCCeWUBDPwISnul3QOKvFKQ3bWVAToOm5QyYh0D0e3Ill5RgQLIWbM4Mavs5QJIBNsI7XUA0WMs+jwsbQEg2d+OcClNASuvfy+HSYUACh9HTI55zQBYWE92RhjNAza7skd6iIkDYGKpGC+NyQBrMXZt16zdA7KEBbbCAhEBC2I7hT6WJQCLtVpw1R+Q5RnZDkmfLfEBrLUjv9Kt8QE0Mcw4I715AHLchvgMth0BdHpPF9xZTQHsuH5HLKUNA093MDASTeUDCABaf9OtHQKUXIHK4Bm5AQWHf2WvyS0CUV1oVdiNsQM9pIJ8+ToBAox2PNoVug0BTmJkLKD1EQClzo9hMTHdAKQgtecvHXUCb5jMUkqdrQJDifzAayntA48AL1IAdU0DWwAvUgB1TQME5YiGIZVlAo2RpcDNvZEANOO6BLZZmQD3uIOOOwdk\u002fIubyU3fFVkC9+5NuC0Z1QCqbmjsVNnFANLK4Lr4lQkD2MWC6gZqHQLSgM+ZgeCVALeA\u002fr4KsP0DS\u002fPqjkiFTQCUab5UJll9ANhl0lIoEbUBLU2H6apCMQBzCf3ZaNS1AivkZkdQ4gUDB4u9pLJmAQKXmA7D75GNA69fJVnlbW0CN0yf\u002fsTN3QN\u002feySnxZzxA2u1WnDVHBDouhTW5EQvDOcgdVbROWe4\u002f+BHNx3TygEC4se8ksj9JQDWCTCvValRALIYP9ti8JEASU7+5TyRTQL4MRsckajVA3TfSLpNlgkD3dMaE5fOAQDf5djhEjYRAzaBX4D8okzkphHIpzHdmQEw\u002f0+4AW2JAsMx10bknf0CcPWHPo6ZiQKtzWPgETVtA0Cz8ANl2aECC8ofXY\u002fUsOo5E5jQyCZBAMwgY2tBBYkDM+LTZ2dZrQN3UipRHdi1AHzDxf72ja0AvhZP+NyZTQDmFk\u002f43JlNAgtjsFSzPW0DBxoJIypJyQNIjAm9+PG1A0EFNNGzDNzoZg7XiF\u002fSJQBK4m3JvmtE\u002fRogmLS2aTECNnIIlvnV1QLwdEemGaExAv5Ba0UPZKkDC3f9EzKL0P5ZBtMUgwopAmXiABz2rF0CixxAC2UcTQO0rllTMeNE5CLg4czc3yDn6plwoeA2DQLAgvNL4PWFAVddHbIwnU0BK10dsjCdTQG0zhbat3ndA5rKLv\u002fshYUCbXKzbmvR4QK7R1lADpCtAnxdX1vUJ8Dlv\u002foJIKhp3QA+KTU906StAalbdpA1pgkCaxOj3Gc1SQAu0APJ2fRhAjJ4oTXVoN0AlfG9ZEd6NQJB4Eo9LIX9Av2s5b8RwQEBao1fgPyjzOSe9D+pkHXpAwjzmBgarRUABOqxAL3BqQNwxuuYlBmhAFePCfQAYc0AS6mKTcChTQDDzcunYiWtAoID32c9oZEBDI8fYaONaQCo\u002fq7Su61NAXzKGz6FVzTlf7SRHRhDgOYBk92BFy1ZAVKEkHvV\u002fcEA\u002fGksnplf6Pw6WzVlF7n5A9njCqh2rMUCu+kx\u002f9UtzQGDWxOVTb3pAqMoD4QhhdUApAmPaFXxDOuR0ETDAZIxAldtMYBalCkBXzZb2wAJHQMh\u002fqkKulhBAagjjJikDP0Apo0samxFxQGTY3e+TaDNADYHqGfgoU0AvgeoZ+ChTQGALXUHJLHhAAjw0tVu\u002fjEC5nhL\u002f5mbkP6J+T2UQ5h46zWpzF4xvEDpr7JvA2jKFQIPHL0+42WBAEg8gzVHOZUBj84iRprVbQElzd6OJonNABh0J\u002fzmvfECFrZ+jZYB7QOc9So4KElpA4cKRtNQZ3Tmc\u002ft+E7rc8Onr3T8qC60k6nHG9Y\u002foGYECzUAKbM5\u002f2Pxw91Tz9DIRANYyiR8ILWkD1BxCxLClTQNsHELEsKVNAJ20VeWxjRkCBvni45tuEQIs+\u002fQWRukhA2GR7p6K+g0DEms2J\u002f\u002fl\u002fQEmjJWzPT1VACAEgvZyNR0DyrK592yF1QNA\u002fBG\u002ftPV5AvvmfXLUWbkD2iKjvg5V1QB64zcqw9XFAlKEBuymVZkDaNOvWJ\u002flfQBWhdmcQOCA6GDGGz6FV7TlqkmLcR43FOeZPB4TIInBA\u002f0PbwAuBaEBUE+UiSE9RQDuHxngFmmc\u002fiInFu\u002f0yc0DeIHmnHq05QAKuZQYrzFpAU+Q1nxApU0B5yMMg6q5qQFD7XJUph3JALwpcZCGFcED8a7o1OGwWQKvoXawbpSk6UfYT6+klRUCa8lTFfI8wQK0JVz2PheU\u002f0LGQxF1WL0Do0rpOiP8kQNVRNTOAno5AwnU1k9EpikA8i5jCcYzwPyxIR4ZXguY\u002fgKWyKCzxAjo="},"y":{"dtype":"f8","bdata":"Dr4wmSpSaECoV8oyxKE2QJEPejar0lhA5WGh1jRpa0AJ+aBn81qVQNXnaiv2lJVAWDm0yHYHcUAhsHJoEfyOQLraiv1liX9AMnctIV\u002fvoEBsCfmgZxh3QOwvuycPCxlArfpcbcU1dUBa9bnaij00QMzuycNCy2pAB1+YTBV6d0Drc7UV+zOKQKyL22gAj0tAtoR80LOJQECMuWsJeeeHQCJseHqleFJAVHQkl7\u002fZnUCsrdhfdreiQGUZ4lgXtyNAqRPQRJjfkkAGgZVDywSTQApoImx4RnRALv8h\u002ffacn0AYJlMFo5hlQMl2vp8a711Az2bV5+rrkEC5jQbwFtheQLWmeccphoRAlIeFWtNKYECCc0aU9tKBQCS5\u002fIc02pVAJLn8h7RWmkAdOGdEaf9aQMrDQq3pkIxAHHxhMlUhcED1udqK\u002fWaCQF8HzhnRxI9A1lbsL7vpakAjSnuDL7JkQLN78rBQdHBAxLEubqPyeEAZBFYOLWt5QPRsVn2uFiJAqRPQRNgKbUAXSFD8mHiJQFwgQfHjL4RA6Ugu\u002fyFhWkDgvg6cE6OgQPhT46Wb1DhANjy9Upb9W0Cz6nO1FUFmQPMf0m9fP3ZAlkOLbOcxfECjkjoBjdKiQNV46SYxeEJADAIrhxbOk0CHp1fKMjOTQHL5D+m3kXRAyeU\u002fpN8YbECzDHGsi5iLQGWqYFRSV05Avp8aL92kKUCWIY51cVsUQDC7Jw8LdS9AQYLix5gTlEDWVuwvu\u002fNWQClcj8L1qFxAtvP91HjJJkB0RpT2BstaQMP1KFyP4jlAi2zn+6mwlkBfB84ZUXSTQG8Sg8BKn5dArkfhehSuDUDwp8ZLN5F0QBPyQc9m3XFAFD\u002fG3LUHj0DTvOMUHQRyQBBYObTIWmhAN4lBYOXjeUBE+u3rwPkcQLdif9l9NaVAxLEubqN8dUBrmnecooF9QIPAyqFFpjZAT6+UZYg5fUD+ZffkYfFgQAK8BRIU01tA9bnaiv3xYUCFfNCzWYODQDMzMzMzqYBAX5hMFYzqJECyLm6jwdegQCh+jLlryR5AS1mGONZFWkCitDf4Ql2CQBkEVg4tCGNALSEf9GxGMUAQWDm0yHYGQI51cRuta6BACyQofox5NUB\u002f2T15WPgwQJvmHafoSA9AB1+YTBVMGUDDZKpglPeTQHo2qz5XuWVA63O1FfuPYkBWn6ut2CtYQOY\u002fpN8+OYdAYqHWNO+gb0DKVMGoJAuJQLx0kxgEliJAnYAmwoYnF0CX\u002f5B+e\u002f6IQFwgQfFjnDBA4QuTqQKxkkCoV8oyxGlTQG1Wfa62Yr8\u002fyAc9m1UfQkDZzvdTo9KhQEku\u002fyF9pY9AqvHSTWJEUkBVMCqpExATQNejcD2KJ4ZAcvkP6bePUEDbiv1l9zx2QJm7lpAPIHVARwN4CyTAfEAXt9EA3sJhQDcawFsgQH5Aa5p3nKKFckCHFtnO9+dgQLx0kxgEylBAO99PjZdu2j9t5\u002fup8dLjP4V80LNZk2NABOeMKO1qeUBlGeJYFxckQDAqqRPQyotALUMc6+I+SEC6awn5IBuAQM3MzMzM5YBAtaZ5xykegUBPHhZqTUM6QIY41sVNFqFAI9v5fmr8HkCXkA96NhNQQHS1FfvLTidASOF6FK4XSUCWQ4ts52R3QCNKe4MvrD5AkDF3LSFrW0C4HoXrUTBZQKrx0k1ih39ANIC3QEJSnECvlGWIY90EQL8OnDOiFCtAw9MrZRmiE0DUK2UZIj6SQLWmeccpWGtAb4EExY+wcEBbQj7o2URfQEku\u002fyH9d31Adk8eFupchECeXinLENuFQCNKe4MvmmhAxY8xdy2RMUCBlUOLbKciQG\u002fwhclUQRtAU5YhjnUZaUDbiv1l9zQ4QCNKe4OvLJBAF7fRAN6iXUC\u002fDpwzokxRQAaBlUOLhFFAEOm3rwMXQUAnMQisXFORQLRZ9bna2kNAKe0NvjB3k0BApN++jrWIQDXvOEVHTl5AtaZ5xylKR0AxmSoYFceDQPd14JwRhW9AU5YhjnUedEAtQxzr4kN1QIv9ZffkjXlANe84RUfSbEBxrIvbaGxqQDvfT42Xbu4\u002fO99PjZfuCUBy+Q\u002fpt+8mQOcdp+hI631AINJvXwcveECDUUmdgBZYQBfZzvdTQyNAhA1Pr5SHd0AgY+5aQv4kQG40gLdABlxAidLe4AtPVUC62or9ZRZzQCqpE9BEd3ZAtMh2vp+4ekDecYqO5LIQQEYldQKayBVA2qz6XG3VTUCaCBueXrFFQCBB8WPMzTdA07zjFB1hSEDKw0KtaU49QG+BBMUPBplA4zYawFtgkkCXkA96NqvqP36MuWsJ+SVA48eYu5bQLEA="},"type":"scatter"}],                        {"legend":{"x":1.0,"xanchor":"right","y":1.0,"yanchor":"top"},"margin":{"autoexpand":true,"b":45,"r":30,"t":40},"shapes":[{"layer":"below","line":{"width":0.5},"type":"line","x0":0,"x1":1,"xref":"paper","y0":0,"y1":1,"yref":"paper"}],"title":{"text":"Measured vs Calculated data for experiment \ud83d\udd2c 'heidi'"},"xaxis":{"mirror":true,"showline":true,"title":{"text":"I\u00b2calc"},"zeroline":false,"tickformat":",.6~g","separatethousands":true},"yaxis":{"mirror":true,"showline":true,"title":{"text":"I\u00b2meas"},"zeroline":false,"tickformat":",.6~g","separatethousands":true},"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"bgcolor":"white","angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"ternary":{"bgcolor":"white","aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8","gridwidth":2},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8","gridwidth":2},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"white","subunitcolor":"#C8D4E3","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}}},                        {"displaylogo": false, "modeBarButtonsToRemove": ["select2d", "lasso2d", "zoomIn2d", "zoomOut2d", "autoScale2d"], "responsive": true}                    )                };            </script> </div>
 </div>
 </div>
 </div>
@@ -4256,9 +4325,9 @@ experiment.extinction.radius.free = True</div>
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="17e63257-0925-4303-a86e-23578783cd28" tabindex="0">
+<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="21eb19ba-c174-4b38-a6a1-3d125b4b1ffc" tabindex="0">
 <script type="text/javascript">
-var element = document.getElementById('17e63257-0925-4303-a86e-23578783cd28');
+var element = document.getElementById('21eb19ba-c174-4b38-a6a1-3d125b4b1ffc');
 
                 (function() {
                     var isDark = false;
@@ -4302,9 +4371,9 @@ var element = document.getElementById('17e63257-0925-4303-a86e-23578783cd28');
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="060b3f05-34da-41a7-8de8-4ad87e0fd95f" tabindex="0">
+<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="d1d58f01-bd62-4084-b89e-487954cea0a7" tabindex="0">
 <script type="text/javascript">
-var element = document.getElementById('060b3f05-34da-41a7-8de8-4ad87e0fd95f');
+var element = document.getElementById('d1d58f01-bd62-4084-b89e-487954cea0a7');
 
             if (typeof IPython !== 'undefined' && IPython.notebook) {
                 IPython.notebook.kernel.execute("_jupyter_dark_detect_result = " + 
@@ -4321,259 +4390,259 @@ var element = document.getElementById('060b3f05-34da-41a7-8de8-4ad87e0fd95f');
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
 <style type="text/css">
-#T_8a8d7   {
+#T_3af4c   {
   border: 1px solid #dadada;
   border-collapse: collapse;
   margin-top: 0.5em;
   margin-left: 0.5em;
 }
-#T_8a8d7 thead {
+#T_3af4c thead {
   border-bottom: 1px solid #dadada;
 }
-#T_8a8d7 th {
+#T_3af4c th {
   border: none;
   padding-top: 0.25em;
   padding-bottom: 0.25em;
   line-height: 1.15em;
 }
-#T_8a8d7  td {
+#T_3af4c  td {
   border: none;
   padding-top: 0.25em;
   padding-bottom: 0.25em;
   line-height: 1.15em;
 }
-#T_8a8d7 th.row_heading {
+#T_3af4c th.row_heading {
   color: #dadada;
   font-weight: normal;
 }
-#T_8a8d7 tbody tr:nth-child(odd) {
+#T_3af4c tbody tr:nth-child(odd) {
   background-color: transparent;
 }
-#T_8a8d7  tbody tr:nth-child(even) {
+#T_3af4c  tbody tr:nth-child(even) {
   background-color: transparent;
 }
-#T_8a8d7 th.col0 {
+#T_3af4c th.col0 {
   text-align: left;
 }
-#T_8a8d7_row0_col0, #T_8a8d7_row1_col0, #T_8a8d7_row2_col0, #T_8a8d7_row3_col0, #T_8a8d7_row4_col0, #T_8a8d7_row5_col0, #T_8a8d7_row6_col0, #T_8a8d7_row7_col0, #T_8a8d7_row8_col0, #T_8a8d7_row9_col0, #T_8a8d7_row10_col0, #T_8a8d7_row11_col0, #T_8a8d7_row12_col0, #T_8a8d7_row13_col0, #T_8a8d7_row14_col0, #T_8a8d7_row15_col0, #T_8a8d7_row16_col0, #T_8a8d7_row17_col0, #T_8a8d7_row18_col0, #T_8a8d7_row19_col0, #T_8a8d7_row20_col0, #T_8a8d7_row21_col0, #T_8a8d7_row22_col0, #T_8a8d7_row23_col0, #T_8a8d7_row24_col0, #T_8a8d7_row25_col0, #T_8a8d7_row26_col0, #T_8a8d7_row27_col0, #T_8a8d7_row28_col0, #T_8a8d7_row29_col0, #T_8a8d7_row30_col0, #T_8a8d7_row31_col0, #T_8a8d7_row32_col0, #T_8a8d7_row33_col0, #T_8a8d7_row34_col0, #T_8a8d7_row35_col0, #T_8a8d7_row36_col0, #T_8a8d7_row37_col0, #T_8a8d7_row38_col0, #T_8a8d7_row39_col0, #T_8a8d7_row40_col0, #T_8a8d7_row41_col0, #T_8a8d7_row42_col0, #T_8a8d7_row43_col0, #T_8a8d7_row44_col0, #T_8a8d7_row45_col0, #T_8a8d7_row46_col0, #T_8a8d7_row47_col0, #T_8a8d7_row48_col0, #T_8a8d7_row49_col0, #T_8a8d7_row50_col0, #T_8a8d7_row51_col0 {
+#T_3af4c_row0_col0, #T_3af4c_row1_col0, #T_3af4c_row2_col0, #T_3af4c_row3_col0, #T_3af4c_row4_col0, #T_3af4c_row5_col0, #T_3af4c_row6_col0, #T_3af4c_row7_col0, #T_3af4c_row8_col0, #T_3af4c_row9_col0, #T_3af4c_row10_col0, #T_3af4c_row11_col0, #T_3af4c_row12_col0, #T_3af4c_row13_col0, #T_3af4c_row14_col0, #T_3af4c_row15_col0, #T_3af4c_row16_col0, #T_3af4c_row17_col0, #T_3af4c_row18_col0, #T_3af4c_row19_col0, #T_3af4c_row20_col0, #T_3af4c_row21_col0, #T_3af4c_row22_col0, #T_3af4c_row23_col0, #T_3af4c_row24_col0, #T_3af4c_row25_col0, #T_3af4c_row26_col0, #T_3af4c_row27_col0, #T_3af4c_row28_col0, #T_3af4c_row29_col0, #T_3af4c_row30_col0, #T_3af4c_row31_col0, #T_3af4c_row32_col0, #T_3af4c_row33_col0, #T_3af4c_row34_col0, #T_3af4c_row35_col0, #T_3af4c_row36_col0, #T_3af4c_row37_col0, #T_3af4c_row38_col0, #T_3af4c_row39_col0, #T_3af4c_row40_col0, #T_3af4c_row41_col0, #T_3af4c_row42_col0, #T_3af4c_row43_col0, #T_3af4c_row44_col0, #T_3af4c_row45_col0, #T_3af4c_row46_col0, #T_3af4c_row47_col0, #T_3af4c_row48_col0, #T_3af4c_row49_col0, #T_3af4c_row50_col0, #T_3af4c_row51_col0 {
   text-align: left;
 }
 </style>
-<table class="dataframe" id="T_8a8d7">
+<table class="dataframe" id="T_3af4c">
 <thead>
 <tr>
 <th class="blank level0"> </th>
-<th class="col_heading level0 col0" id="T_8a8d7_level0_col0">CIF</th>
+<th class="col_heading level0 col0" id="T_3af4c_level0_col0">CIF</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th class="row_heading level0 row0" id="T_8a8d7_level0_row0">1</th>
-<td class="data row0 col0" id="T_8a8d7_row0_col0">data_heidi</td>
+<th class="row_heading level0 row0" id="T_3af4c_level0_row0">1</th>
+<td class="data row0 col0" id="T_3af4c_row0_col0">data_heidi</td>
 </tr>
 <tr>
-<th class="row_heading level0 row1" id="T_8a8d7_level0_row1">2</th>
-<td class="data row1 col0" id="T_8a8d7_row1_col0"></td>
+<th class="row_heading level0 row1" id="T_3af4c_level0_row1">2</th>
+<td class="data row1 col0" id="T_3af4c_row1_col0"></td>
 </tr>
 <tr>
-<th class="row_heading level0 row2" id="T_8a8d7_level0_row2">3</th>
-<td class="data row2 col0" id="T_8a8d7_row2_col0">_expt_type.sample_form "single crystal"</td>
+<th class="row_heading level0 row2" id="T_3af4c_level0_row2">3</th>
+<td class="data row2 col0" id="T_3af4c_row2_col0">_expt_type.sample_form "single crystal"</td>
 </tr>
 <tr>
-<th class="row_heading level0 row3" id="T_8a8d7_level0_row3">4</th>
-<td class="data row3 col0" id="T_8a8d7_row3_col0">_expt_type.beam_mode "constant wavelength"</td>
+<th class="row_heading level0 row3" id="T_3af4c_level0_row3">4</th>
+<td class="data row3 col0" id="T_3af4c_row3_col0">_expt_type.beam_mode "constant wavelength"</td>
 </tr>
 <tr>
-<th class="row_heading level0 row4" id="T_8a8d7_level0_row4">5</th>
-<td class="data row4 col0" id="T_8a8d7_row4_col0">_expt_type.radiation_probe      neutron</td>
+<th class="row_heading level0 row4" id="T_3af4c_level0_row4">5</th>
+<td class="data row4 col0" id="T_3af4c_row4_col0">_expt_type.radiation_probe      neutron</td>
 </tr>
 <tr>
-<th class="row_heading level0 row5" id="T_8a8d7_level0_row5">6</th>
-<td class="data row5 col0" id="T_8a8d7_row5_col0">_expt_type.scattering_type        bragg</td>
+<th class="row_heading level0 row5" id="T_3af4c_level0_row5">6</th>
+<td class="data row5 col0" id="T_3af4c_row5_col0">_expt_type.scattering_type        bragg</td>
 </tr>
 <tr>
-<th class="row_heading level0 row6" id="T_8a8d7_level0_row6">7</th>
-<td class="data row6 col0" id="T_8a8d7_row6_col0"></td>
+<th class="row_heading level0 row6" id="T_3af4c_level0_row6">7</th>
+<td class="data row6 col0" id="T_3af4c_row6_col0"></td>
 </tr>
 <tr>
-<th class="row_heading level0 row7" id="T_8a8d7_level0_row7">8</th>
-<td class="data row7 col0" id="T_8a8d7_row7_col0">_diffrn.ambient_temperature            ?</td>
+<th class="row_heading level0 row7" id="T_3af4c_level0_row7">8</th>
+<td class="data row7 col0" id="T_3af4c_row7_col0">_diffrn.ambient_temperature            ?</td>
 </tr>
 <tr>
-<th class="row_heading level0 row8" id="T_8a8d7_level0_row8">9</th>
-<td class="data row8 col0" id="T_8a8d7_row8_col0">_diffrn.ambient_pressure            ?</td>
+<th class="row_heading level0 row8" id="T_3af4c_level0_row8">9</th>
+<td class="data row8 col0" id="T_3af4c_row8_col0">_diffrn.ambient_pressure            ?</td>
 </tr>
 <tr>
-<th class="row_heading level0 row9" id="T_8a8d7_level0_row9">10</th>
-<td class="data row9 col0" id="T_8a8d7_row9_col0">_diffrn.ambient_magnetic_field            ?</td>
+<th class="row_heading level0 row9" id="T_3af4c_level0_row9">10</th>
+<td class="data row9 col0" id="T_3af4c_row9_col0">_diffrn.ambient_magnetic_field            ?</td>
 </tr>
 <tr>
-<th class="row_heading level0 row10" id="T_8a8d7_level0_row10">11</th>
-<td class="data row10 col0" id="T_8a8d7_row10_col0">_diffrn.ambient_electric_field            ?</td>
+<th class="row_heading level0 row10" id="T_3af4c_level0_row10">11</th>
+<td class="data row10 col0" id="T_3af4c_row10_col0">_diffrn.ambient_electric_field            ?</td>
 </tr>
 <tr>
-<th class="row_heading level0 row11" id="T_8a8d7_level0_row11">12</th>
-<td class="data row11 col0" id="T_8a8d7_row11_col0"></td>
+<th class="row_heading level0 row11" id="T_3af4c_level0_row11">12</th>
+<td class="data row11 col0" id="T_3af4c_row11_col0"></td>
 </tr>
 <tr>
-<th class="row_heading level0 row12" id="T_8a8d7_level0_row12">13</th>
-<td class="data row12 col0" id="T_8a8d7_row12_col0">_extinction.mosaicity 29820.00000000</td>
+<th class="row_heading level0 row12" id="T_3af4c_level0_row12">13</th>
+<td class="data row12 col0" id="T_3af4c_row12_col0">_extinction.mosaicity 29820.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row13" id="T_8a8d7_level0_row13">14</th>
-<td class="data row13 col0" id="T_8a8d7_row13_col0">_extinction.radius 30.00000000()</td>
+<th class="row_heading level0 row13" id="T_3af4c_level0_row13">14</th>
+<td class="data row13 col0" id="T_3af4c_row13_col0">_extinction.radius 30.00000000()</td>
 </tr>
 <tr>
-<th class="row_heading level0 row14" id="T_8a8d7_level0_row14">15</th>
-<td class="data row14 col0" id="T_8a8d7_row14_col0"></td>
+<th class="row_heading level0 row14" id="T_3af4c_level0_row14">15</th>
+<td class="data row14 col0" id="T_3af4c_row14_col0"></td>
 </tr>
 <tr>
-<th class="row_heading level0 row15" id="T_8a8d7_level0_row15">16</th>
-<td class="data row15 col0" id="T_8a8d7_row15_col0">_sc_crystal_block.id         tbti</td>
+<th class="row_heading level0 row15" id="T_3af4c_level0_row15">16</th>
+<td class="data row15 col0" id="T_3af4c_row15_col0">_sc_crystal_block.id         tbti</td>
 </tr>
 <tr>
-<th class="row_heading level0 row16" id="T_8a8d7_level0_row16">17</th>
-<td class="data row16 col0" id="T_8a8d7_row16_col0">_sc_crystal_block.scale 1.00000000()</td>
+<th class="row_heading level0 row16" id="T_3af4c_level0_row16">17</th>
+<td class="data row16 col0" id="T_3af4c_row16_col0">_sc_crystal_block.scale 1.00000000()</td>
 </tr>
 <tr>
-<th class="row_heading level0 row17" id="T_8a8d7_level0_row17">18</th>
-<td class="data row17 col0" id="T_8a8d7_row17_col0"></td>
+<th class="row_heading level0 row17" id="T_3af4c_level0_row17">18</th>
+<td class="data row17 col0" id="T_3af4c_row17_col0"></td>
 </tr>
 <tr>
-<th class="row_heading level0 row18" id="T_8a8d7_level0_row18">19</th>
-<td class="data row18 col0" id="T_8a8d7_row18_col0">_instr.wavelength   0.79300000</td>
+<th class="row_heading level0 row18" id="T_3af4c_level0_row18">19</th>
+<td class="data row18 col0" id="T_3af4c_row18_col0">_instr.wavelength   0.79300000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row19" id="T_8a8d7_level0_row19">20</th>
-<td class="data row19 col0" id="T_8a8d7_row19_col0"></td>
+<th class="row_heading level0 row19" id="T_3af4c_level0_row19">20</th>
+<td class="data row19 col0" id="T_3af4c_row19_col0"></td>
 </tr>
 <tr>
-<th class="row_heading level0 row20" id="T_8a8d7_level0_row20">21</th>
-<td class="data row20 col0" id="T_8a8d7_row20_col0">loop_</td>
+<th class="row_heading level0 row20" id="T_3af4c_level0_row20">21</th>
+<td class="data row20 col0" id="T_3af4c_row20_col0">loop_</td>
 </tr>
 <tr>
-<th class="row_heading level0 row21" id="T_8a8d7_level0_row21">22</th>
-<td class="data row21 col0" id="T_8a8d7_row21_col0">_refln.id</td>
+<th class="row_heading level0 row21" id="T_3af4c_level0_row21">22</th>
+<td class="data row21 col0" id="T_3af4c_row21_col0">_refln.id</td>
 </tr>
 <tr>
-<th class="row_heading level0 row22" id="T_8a8d7_level0_row22">23</th>
-<td class="data row22 col0" id="T_8a8d7_row22_col0">_refln.d_spacing</td>
+<th class="row_heading level0 row22" id="T_3af4c_level0_row22">23</th>
+<td class="data row22 col0" id="T_3af4c_row22_col0">_refln.d_spacing</td>
 </tr>
 <tr>
-<th class="row_heading level0 row23" id="T_8a8d7_level0_row23">24</th>
-<td class="data row23 col0" id="T_8a8d7_row23_col0">_refln.sin_theta_over_lambda</td>
+<th class="row_heading level0 row23" id="T_3af4c_level0_row23">24</th>
+<td class="data row23 col0" id="T_3af4c_row23_col0">_refln.sin_theta_over_lambda</td>
 </tr>
 <tr>
-<th class="row_heading level0 row24" id="T_8a8d7_level0_row24">25</th>
-<td class="data row24 col0" id="T_8a8d7_row24_col0">_refln.index_h</td>
+<th class="row_heading level0 row24" id="T_3af4c_level0_row24">25</th>
+<td class="data row24 col0" id="T_3af4c_row24_col0">_refln.index_h</td>
 </tr>
 <tr>
-<th class="row_heading level0 row25" id="T_8a8d7_level0_row25">26</th>
-<td class="data row25 col0" id="T_8a8d7_row25_col0">_refln.index_k</td>
+<th class="row_heading level0 row25" id="T_3af4c_level0_row25">26</th>
+<td class="data row25 col0" id="T_3af4c_row25_col0">_refln.index_k</td>
 </tr>
 <tr>
-<th class="row_heading level0 row26" id="T_8a8d7_level0_row26">27</th>
-<td class="data row26 col0" id="T_8a8d7_row26_col0">_refln.index_l</td>
+<th class="row_heading level0 row26" id="T_3af4c_level0_row26">27</th>
+<td class="data row26 col0" id="T_3af4c_row26_col0">_refln.index_l</td>
 </tr>
 <tr>
-<th class="row_heading level0 row27" id="T_8a8d7_level0_row27">28</th>
-<td class="data row27 col0" id="T_8a8d7_row27_col0">_refln.intensity_meas</td>
+<th class="row_heading level0 row27" id="T_3af4c_level0_row27">28</th>
+<td class="data row27 col0" id="T_3af4c_row27_col0">_refln.intensity_meas</td>
 </tr>
 <tr>
-<th class="row_heading level0 row28" id="T_8a8d7_level0_row28">29</th>
-<td class="data row28 col0" id="T_8a8d7_row28_col0">_refln.intensity_meas_su</td>
+<th class="row_heading level0 row28" id="T_3af4c_level0_row28">29</th>
+<td class="data row28 col0" id="T_3af4c_row28_col0">_refln.intensity_meas_su</td>
 </tr>
 <tr>
-<th class="row_heading level0 row29" id="T_8a8d7_level0_row29">30</th>
-<td class="data row29 col0" id="T_8a8d7_row29_col0">_refln.intensity_calc</td>
+<th class="row_heading level0 row29" id="T_3af4c_level0_row29">30</th>
+<td class="data row29 col0" id="T_3af4c_row29_col0">_refln.intensity_calc</td>
 </tr>
 <tr>
-<th class="row_heading level0 row30" id="T_8a8d7_level0_row30">31</th>
-<td class="data row30 col0" id="T_8a8d7_row30_col0">_refln.wavelength</td>
+<th class="row_heading level0 row30" id="T_3af4c_level0_row30">31</th>
+<td class="data row30 col0" id="T_3af4c_row30_col0">_refln.wavelength</td>
 </tr>
 <tr>
-<th class="row_heading level0 row31" id="T_8a8d7_level0_row31">32</th>
-<td class="data row31 col0" id="T_8a8d7_row31_col0">           1   5.84855823   0.08549116 1 1 1 194.56770000   2.32530000  70.70434347   0.00000000</td>
+<th class="row_heading level0 row31" id="T_3af4c_level0_row31">32</th>
+<td class="data row31 col0" id="T_3af4c_row31_col0">           1   5.84855823   0.08549116 1 1 1 194.56770000   2.32530000  70.70434347   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row32" id="T_8a8d7_level0_row32">33</th>
-<td class="data row32 col0" id="T_8a8d7_row32_col0">           2   3.58149585   0.13960647 2 2 0  22.63190000   1.12330000   5.36662412   0.00000000</td>
+<th class="row_heading level0 row32" id="T_3af4c_level0_row32">33</th>
+<td class="data row32 col0" id="T_3af4c_row32_col0">           2   3.58149585   0.13960647 2 2 0  22.63190000   1.12330000   5.36662412   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row33" id="T_8a8d7_level0_row33">34</th>
-<td class="data row33 col0" id="T_8a8d7_row33_col0">           3   3.05430992   0.16370310 3 1 1  99.29170000   2.56200000  34.58237047   0.00000000</td>
+<th class="row_heading level0 row33" id="T_3af4c_level0_row33">34</th>
+<td class="data row33 col0" id="T_3af4c_row33_col0">           3   3.05430992   0.16370310 3 1 1  99.29170000   2.56200000  34.58237047   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row34" id="T_8a8d7_level0_row34">35</th>
-<td class="data row34 col0" id="T_8a8d7_row34_col0">           4   2.92427911   0.17098231 2 2 2 219.28770000   3.25220000  75.59158819   0.00000000</td>
+<th class="row_heading level0 row34" id="T_3af4c_level0_row34">35</th>
+<td class="data row34 col0" id="T_3af4c_row34_col0">           4   2.92427911   0.17098231 2 2 2 219.28770000   3.25220000  75.59158819   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row35" id="T_8a8d7_level0_row35">36</th>
-<td class="data row35 col0" id="T_8a8d7_row35_col0">           5   2.53250000   0.19743337 4 0 0 1366.73770000  31.07660000 525.98535818   0.00000000</td>
+<th class="row_heading level0 row35" id="T_3af4c_level0_row35">36</th>
+<td class="data row35 col0" id="T_3af4c_row35_col0">           5   2.53250000   0.19743337 4 0 0 1366.73770000  31.07660000 525.98535818   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row36" id="T_8a8d7_level0_row36">37</th>
-<td class="data row36 col0" id="T_8a8d7_row36_col0">           6   2.32398138   0.21514802 3 3 1 1381.24040000  24.41820000 524.34607512   0.00000000</td>
+<th class="row_heading level0 row36" id="T_3af4c_level0_row36">37</th>
+<td class="data row36 col0" id="T_3af4c_row36_col0">           6   2.32398138   0.21514802 3 3 1 1381.24040000  24.41820000 524.34607512   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row37" id="T_8a8d7_level0_row37">38</th>
-<td class="data row37 col0" id="T_8a8d7_row37_col0">           7   2.06777759   0.24180550 4 2 2 272.46650000   4.23510000 102.47071749   0.00000000</td>
+<th class="row_heading level0 row37" id="T_3af4c_level0_row37">38</th>
+<td class="data row37 col0" id="T_3af4c_row37_col0">           7   2.06777759   0.24180550 4 2 2 272.46650000   4.23510000 102.47071749   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row38" id="T_8a8d7_level0_row38">39</th>
-<td class="data row38 col0" id="T_8a8d7_row38_col0">           8   1.94951941   0.25647347 5 1 1 991.50850000  19.20150000 382.60109139   0.00000000</td>
+<th class="row_heading level0 row38" id="T_3af4c_level0_row38">39</th>
+<td class="data row38 col0" id="T_3af4c_row38_col0">           8   1.94951941   0.25647347 5 1 1 991.50850000  19.20150000 382.60109139   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row39" id="T_8a8d7_level0_row39">40</th>
-<td class="data row39 col0" id="T_8a8d7_row39_col0">           9   1.94951941   0.25647347 3 3 3 504.58740000   7.25520000 171.41304211   0.00000000</td>
+<th class="row_heading level0 row39" id="T_3af4c_level0_row39">40</th>
+<td class="data row39 col0" id="T_3af4c_row39_col0">           9   1.94951941   0.25647347 3 3 3 504.58740000   7.25520000 171.41304211   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row40" id="T_8a8d7_level0_row40">41</th>
-<td class="data row40 col0" id="T_8a8d7_row40_col0">          10   1.79074792   0.27921294 4 4 0 2167.68580000  37.96090000 755.00629740   0.00000000</td>
+<th class="row_heading level0 row40" id="T_3af4c_level0_row40">41</th>
+<td class="data row40 col0" id="T_3af4c_row40_col0">          10   1.79074792   0.27921294 4 4 0 2167.68580000  37.96090000 755.00629740   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row41" id="T_8a8d7_level0_row41">42</th>
-<td class="data row41 col0" id="T_8a8d7_row41_col0">...</td>
+<th class="row_heading level0 row41" id="T_3af4c_level0_row41">42</th>
+<td class="data row41 col0" id="T_3af4c_row41_col0">...</td>
 </tr>
 <tr>
-<th class="row_heading level0 row42" id="T_8a8d7_level0_row42">43</th>
-<td class="data row42 col0" id="T_8a8d7_row42_col0">         211   0.52241486   0.95709375 18 6 4  59.66740000   9.11170000  42.29620112   0.00000000</td>
+<th class="row_heading level0 row42" id="T_3af4c_level0_row42">43</th>
+<td class="data row42 col0" id="T_3af4c_row42_col0">         211   0.52241486   0.95709375 18 6 4  59.66740000   9.11170000  42.29620112   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row43" id="T_8a8d7_level0_row43">44</th>
-<td class="data row43 col0" id="T_8a8d7_row43_col0">         212   0.52241486   0.95709375 14 12 6  43.38570000   9.20750000  16.56049760   0.00000000</td>
+<th class="row_heading level0 row43" id="T_3af4c_level0_row43">44</th>
+<td class="data row43 col0" id="T_3af4c_row43_col0">         212   0.52241486   0.95709375 14 12 6  43.38570000   9.20750000  16.56049760   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row44" id="T_8a8d7_level0_row44">45</th>
-<td class="data row44 col0" id="T_8a8d7_row44_col0">         213   0.52034315   0.96090436 19 3 3  23.80390000   9.18670000   0.67255365   0.00000000</td>
+<th class="row_heading level0 row44" id="T_3af4c_level0_row44">45</th>
+<td class="data row44 col0" id="T_3af4c_row44_col0">         213   0.52034315   0.96090436 19 3 3  23.80390000   9.18670000   0.67255365   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row45" id="T_8a8d7_level0_row45">46</th>
-<td class="data row45 col0" id="T_8a8d7_row45_col0">         214   0.52034315   0.96090436 17 9 3  48.75870000   7.73330000  15.66868414   0.00000000</td>
+<th class="row_heading level0 row45" id="T_3af4c_level0_row45">46</th>
+<td class="data row45 col0" id="T_3af4c_row45_col0">         214   0.52034315   0.96090436 17 9 3  48.75870000   7.73330000  15.66868414   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row46" id="T_8a8d7_level0_row46">47</th>
-<td class="data row46 col0" id="T_8a8d7_row46_col0">         215   0.51694440   0.96722201 16 8 8  29.30630000  12.65520000  10.49908682   0.00000000</td>
+<th class="row_heading level0 row46" id="T_3af4c_level0_row46">47</th>
+<td class="data row46 col0" id="T_3af4c_row46_col0">         215   0.51694440   0.96722201 16 8 8  29.30630000  12.65520000  10.49908682   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row47" id="T_8a8d7_level0_row47">48</th>
-<td class="data row47 col0" id="T_8a8d7_row47_col0">         216   0.51493684   0.97099287 17 7 7 1601.51540000 628.89150000 979.81259767   0.00000000</td>
+<th class="row_heading level0 row47" id="T_3af4c_level0_row47">48</th>
+<td class="data row47 col0" id="T_3af4c_row47_col0">         216   0.51493684   0.97099287 17 7 7 1601.51540000 628.89150000 979.81259767   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row48" id="T_8a8d7_level0_row48">49</th>
-<td class="data row48 col0" id="T_8a8d7_row48_col0">         217   0.51493684   0.97099287 13 13 7 1176.08960000 414.60180000 837.22733156   0.00000000</td>
+<th class="row_heading level0 row48" id="T_3af4c_level0_row48">49</th>
+<td class="data row48 col0" id="T_3af4c_row48_col0">         217   0.51493684   0.97099287 13 13 7 1176.08960000 414.60180000 837.22733156   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row49" id="T_8a8d7_level0_row49">50</th>
-<td class="data row49 col0" id="T_8a8d7_row49_col0">         218   0.51493684   0.97099287 19 5 1   0.83340000  20.42070000   1.03428818   0.00000000</td>
+<th class="row_heading level0 row49" id="T_3af4c_level0_row49">50</th>
+<td class="data row49 col0" id="T_3af4c_row49_col0">         218   0.51493684   0.97099287 19 5 1   0.83340000  20.42070000   1.03428818   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row50" id="T_8a8d7_level0_row50">51</th>
-<td class="data row50 col0" id="T_8a8d7_row50_col0">         219   0.51493684   0.97099287 15 9 9  10.98640000   8.06500000   0.70341088   0.00000000</td>
+<th class="row_heading level0 row50" id="T_3af4c_level0_row50">51</th>
+<td class="data row50 col0" id="T_3af4c_row50_col0">         219   0.51493684   0.97099287 15 9 9  10.98640000   8.06500000   0.70341088   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row51" id="T_8a8d7_level0_row51">52</th>
-<td class="data row51 col0" id="T_8a8d7_row51_col0">         220   0.51427283   0.97224657 12 12 10  14.40740000  11.38000000   0.00000000   0.00000000</td>
+<th class="row_heading level0 row51" id="T_3af4c_level0_row51">52</th>
+<td class="data row51 col0" id="T_3af4c_row51_col0">         220   0.51427283   0.97224657 12 12 10  14.40740000  11.38000000   0.00000000   0.00000000</td>
 </tr>
 </tbody>
 </table>
@@ -4648,95 +4717,95 @@ project.analysis.fit()</div>
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
 <style type="text/css">
-#T_9e145   {
+#T_522d9   {
   border: 1px solid #dadada;
   border-collapse: collapse;
   margin-top: 0.5em;
   margin-left: 0.5em;
 }
-#T_9e145 thead {
+#T_522d9 thead {
   border-bottom: 1px solid #dadada;
 }
-#T_9e145 th {
+#T_522d9 th {
   border: none;
   padding-top: 0.25em;
   padding-bottom: 0.25em;
   line-height: 1.15em;
 }
-#T_9e145  td {
+#T_522d9  td {
   border: none;
   padding-top: 0.25em;
   padding-bottom: 0.25em;
   line-height: 1.15em;
 }
-#T_9e145 th.row_heading {
+#T_522d9 th.row_heading {
   color: #dadada;
   font-weight: normal;
 }
-#T_9e145 tbody tr:nth-child(odd) {
+#T_522d9 tbody tr:nth-child(odd) {
   background-color: transparent;
 }
-#T_9e145  tbody tr:nth-child(even) {
+#T_522d9  tbody tr:nth-child(even) {
   background-color: transparent;
 }
-#T_9e145 th.col0 {
+#T_522d9 th.col0 {
   text-align: center;
 }
-#T_9e145 th.col1 {
+#T_522d9 th.col1 {
   text-align: center;
 }
-#T_9e145 th.col2 {
+#T_522d9 th.col2 {
   text-align: center;
 }
-#T_9e145_row0_col0, #T_9e145_row0_col1, #T_9e145_row0_col2, #T_9e145_row1_col0, #T_9e145_row1_col1, #T_9e145_row1_col2, #T_9e145_row2_col0, #T_9e145_row2_col1, #T_9e145_row2_col2, #T_9e145_row3_col0, #T_9e145_row3_col1, #T_9e145_row3_col2, #T_9e145_row4_col0, #T_9e145_row4_col1, #T_9e145_row4_col2, #T_9e145_row5_col0, #T_9e145_row5_col1, #T_9e145_row5_col2 {
+#T_522d9_row0_col0, #T_522d9_row0_col1, #T_522d9_row0_col2, #T_522d9_row1_col0, #T_522d9_row1_col1, #T_522d9_row1_col2, #T_522d9_row2_col0, #T_522d9_row2_col1, #T_522d9_row2_col2, #T_522d9_row3_col0, #T_522d9_row3_col1, #T_522d9_row3_col2, #T_522d9_row4_col0, #T_522d9_row4_col1, #T_522d9_row4_col2, #T_522d9_row5_col0, #T_522d9_row5_col1, #T_522d9_row5_col2 {
   text-align: center;
 }
 </style>
-<table class="dataframe" id="T_9e145">
+<table class="dataframe" id="T_522d9">
 <thead>
 <tr>
 <th class="blank level0"> </th>
-<th class="col_heading level0 col0" id="T_9e145_level0_col0">iteration</th>
-<th class="col_heading level0 col1" id="T_9e145_level0_col1">χ²</th>
-<th class="col_heading level0 col2" id="T_9e145_level0_col2">improvement [%]</th>
+<th class="col_heading level0 col0" id="T_522d9_level0_col0">iteration</th>
+<th class="col_heading level0 col1" id="T_522d9_level0_col1">χ²</th>
+<th class="col_heading level0 col2" id="T_522d9_level0_col2">improvement [%]</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th class="row_heading level0 row0" id="T_9e145_level0_row0">1</th>
-<td class="data row0 col0" id="T_9e145_row0_col0">1</td>
-<td class="data row0 col1" id="T_9e145_row0_col1">512.08</td>
-<td class="data row0 col2" id="T_9e145_row0_col2"></td>
+<th class="row_heading level0 row0" id="T_522d9_level0_row0">1</th>
+<td class="data row0 col0" id="T_522d9_row0_col0">1</td>
+<td class="data row0 col1" id="T_522d9_row0_col1">512.08</td>
+<td class="data row0 col2" id="T_522d9_row0_col2"></td>
 </tr>
 <tr>
-<th class="row_heading level0 row1" id="T_9e145_level0_row1">2</th>
-<td class="data row1 col0" id="T_9e145_row1_col0">13</td>
-<td class="data row1 col1" id="T_9e145_row1_col1">187.71</td>
-<td class="data row1 col2" id="T_9e145_row1_col2">63.3% ↓</td>
+<th class="row_heading level0 row1" id="T_522d9_level0_row1">2</th>
+<td class="data row1 col0" id="T_522d9_row1_col0">13</td>
+<td class="data row1 col1" id="T_522d9_row1_col1">187.71</td>
+<td class="data row1 col2" id="T_522d9_row1_col2">63.3% ↓</td>
 </tr>
 <tr>
-<th class="row_heading level0 row2" id="T_9e145_level0_row2">3</th>
-<td class="data row2 col0" id="T_9e145_row2_col0">23</td>
-<td class="data row2 col1" id="T_9e145_row2_col1">66.70</td>
-<td class="data row2 col2" id="T_9e145_row2_col2">64.5% ↓</td>
+<th class="row_heading level0 row2" id="T_522d9_level0_row2">3</th>
+<td class="data row2 col0" id="T_522d9_row2_col0">23</td>
+<td class="data row2 col1" id="T_522d9_row2_col1">66.70</td>
+<td class="data row2 col2" id="T_522d9_row2_col2">64.5% ↓</td>
 </tr>
 <tr>
-<th class="row_heading level0 row3" id="T_9e145_level0_row3">4</th>
-<td class="data row3 col0" id="T_9e145_row3_col0">33</td>
-<td class="data row3 col1" id="T_9e145_row3_col1">13.20</td>
-<td class="data row3 col2" id="T_9e145_row3_col2">80.2% ↓</td>
+<th class="row_heading level0 row3" id="T_522d9_level0_row3">4</th>
+<td class="data row3 col0" id="T_522d9_row3_col0">33</td>
+<td class="data row3 col1" id="T_522d9_row3_col1">13.20</td>
+<td class="data row3 col2" id="T_522d9_row3_col2">80.2% ↓</td>
 </tr>
 <tr>
-<th class="row_heading level0 row4" id="T_9e145_level0_row4">5</th>
-<td class="data row4 col0" id="T_9e145_row4_col0">43</td>
-<td class="data row4 col1" id="T_9e145_row4_col1">12.84</td>
-<td class="data row4 col2" id="T_9e145_row4_col2">2.8% ↓</td>
+<th class="row_heading level0 row4" id="T_522d9_level0_row4">5</th>
+<td class="data row4 col0" id="T_522d9_row4_col0">43</td>
+<td class="data row4 col1" id="T_522d9_row4_col1">12.84</td>
+<td class="data row4 col2" id="T_522d9_row4_col2">2.8% ↓</td>
 </tr>
 <tr>
-<th class="row_heading level0 row5" id="T_9e145_level0_row5">6</th>
-<td class="data row5 col0" id="T_9e145_row5_col0">74</td>
-<td class="data row5 col1" id="T_9e145_row5_col1">12.84</td>
-<td class="data row5 col2" id="T_9e145_row5_col2"></td>
+<th class="row_heading level0 row5" id="T_522d9_level0_row5">6</th>
+<td class="data row5 col0" id="T_522d9_row5_col0">74</td>
+<td class="data row5 col1" id="T_522d9_row5_col1">12.84</td>
+<td class="data row5 col2" id="T_522d9_row5_col2"></td>
 </tr>
 </tbody>
 </table>
@@ -4744,9 +4813,9 @@ project.analysis.fit()</div>
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="5582e0db-56e6-41e5-8821-0c83dc832068" tabindex="0">
+<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="983ca0c7-7708-4928-8058-db6be33732dd" tabindex="0">
 <script type="text/javascript">
-var element = document.getElementById('5582e0db-56e6-41e5-8821-0c83dc832068');
+var element = document.getElementById('983ca0c7-7708-4928-8058-db6be33732dd');
 
                 (function() {
                     var isDark = false;
@@ -4790,9 +4859,9 @@ var element = document.getElementById('5582e0db-56e6-41e5-8821-0c83dc832068');
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="f6b46c5a-370a-4620-b401-1a9d65369f9e" tabindex="0">
+<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="587e537d-6e4b-42b5-9fbe-3a51eb05f212" tabindex="0">
 <script type="text/javascript">
-var element = document.getElementById('f6b46c5a-370a-4620-b401-1a9d65369f9e');
+var element = document.getElementById('587e537d-6e4b-42b5-9fbe-3a51eb05f212');
 
             if (typeof IPython !== 'undefined' && IPython.notebook) {
                 IPython.notebook.kernel.execute("_jupyter_dark_detect_result = " + 
@@ -4807,9 +4876,9 @@ var element = document.getElementById('f6b46c5a-370a-4620-b401-1a9d65369f9e');
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="9d9ccf66-b795-4155-9603-6844bd301f00" tabindex="0">
+<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="9c77f1b4-9731-4ed3-9216-2573ab3f25d1" tabindex="0">
 <script type="text/javascript">
-var element = document.getElementById('9d9ccf66-b795-4155-9603-6844bd301f00');
+var element = document.getElementById('9c77f1b4-9731-4ed3-9216-2573ab3f25d1');
 
                 (function() {
                     var isDark = false;
@@ -4853,9 +4922,9 @@ var element = document.getElementById('9d9ccf66-b795-4155-9603-6844bd301f00');
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="8792872b-8fd9-401d-a743-737498197f8b" tabindex="0">
+<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="7ae020c0-ad9a-4f46-8324-df352ea4d3b1" tabindex="0">
 <script type="text/javascript">
-var element = document.getElementById('8792872b-8fd9-401d-a743-737498197f8b');
+var element = document.getElementById('7ae020c0-ad9a-4f46-8324-df352ea4d3b1');
 
             if (typeof IPython !== 'undefined' && IPython.notebook) {
                 IPython.notebook.kernel.execute("_jupyter_dark_detect_result = " + 
@@ -4870,9 +4939,9 @@ var element = document.getElementById('8792872b-8fd9-401d-a743-737498197f8b');
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="377702e7-6057-434b-98cf-6091c28eeb9a" tabindex="0">
+<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="ba203c85-99c1-4786-8fd8-b1d5a7570e41" tabindex="0">
 <script type="text/javascript">
-var element = document.getElementById('377702e7-6057-434b-98cf-6091c28eeb9a');
+var element = document.getElementById('ba203c85-99c1-4786-8fd8-b1d5a7570e41');
 
                 (function() {
                     var isDark = false;
@@ -4916,9 +4985,9 @@ var element = document.getElementById('377702e7-6057-434b-98cf-6091c28eeb9a');
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="52e74355-ee8a-40ae-bc88-a1b1d58215a4" tabindex="0">
+<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="e254dba5-fc90-428f-ab5b-9a054b6dc88e" tabindex="0">
 <script type="text/javascript">
-var element = document.getElementById('52e74355-ee8a-40ae-bc88-a1b1d58215a4');
+var element = document.getElementById('e254dba5-fc90-428f-ab5b-9a054b6dc88e');
 
             if (typeof IPython !== 'undefined' && IPython.notebook) {
                 IPython.notebook.kernel.execute("_jupyter_dark_detect_result = " + 
@@ -4933,9 +5002,9 @@ var element = document.getElementById('52e74355-ee8a-40ae-bc88-a1b1d58215a4');
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="790e1a0b-6f1d-4a0d-a89e-3a61c45f5514" tabindex="0">
+<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="785e8511-637f-47a6-a5b4-7fd51d6076bc" tabindex="0">
 <script type="text/javascript">
-var element = document.getElementById('790e1a0b-6f1d-4a0d-a89e-3a61c45f5514');
+var element = document.getElementById('785e8511-637f-47a6-a5b4-7fd51d6076bc');
 
                 (function() {
                     var isDark = false;
@@ -4979,9 +5048,9 @@ var element = document.getElementById('790e1a0b-6f1d-4a0d-a89e-3a61c45f5514');
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="2555fd53-cda7-4837-9249-fbbb55fc5273" tabindex="0">
+<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="fd3a1dc3-df37-4d96-a237-fc9ac44a9c24" tabindex="0">
 <script type="text/javascript">
-var element = document.getElementById('2555fd53-cda7-4837-9249-fbbb55fc5273');
+var element = document.getElementById('fd3a1dc3-df37-4d96-a237-fc9ac44a9c24');
 
             if (typeof IPython !== 'undefined' && IPython.notebook) {
                 IPython.notebook.kernel.execute("_jupyter_dark_detect_result = " + 
@@ -4996,9 +5065,9 @@ var element = document.getElementById('2555fd53-cda7-4837-9249-fbbb55fc5273');
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="4d966fa3-fd77-44cb-b142-64bf31ec446c" tabindex="0">
+<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="29967379-0e55-4d18-b60a-bd87554e3c9a" tabindex="0">
 <script type="text/javascript">
-var element = document.getElementById('4d966fa3-fd77-44cb-b142-64bf31ec446c');
+var element = document.getElementById('29967379-0e55-4d18-b60a-bd87554e3c9a');
 
                 (function() {
                     var isDark = false;
@@ -5042,9 +5111,9 @@ var element = document.getElementById('4d966fa3-fd77-44cb-b142-64bf31ec446c');
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="6fbb1a63-eab8-448b-91fc-b3ba806955de" tabindex="0">
+<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="26ac8a70-51db-4620-877f-c8d86a5ef0aa" tabindex="0">
 <script type="text/javascript">
-var element = document.getElementById('6fbb1a63-eab8-448b-91fc-b3ba806955de');
+var element = document.getElementById('26ac8a70-51db-4620-877f-c8d86a5ef0aa');
 
             if (typeof IPython !== 'undefined' && IPython.notebook) {
                 IPython.notebook.kernel.execute("_jupyter_dark_detect_result = " + 
@@ -5059,9 +5128,9 @@ var element = document.getElementById('6fbb1a63-eab8-448b-91fc-b3ba806955de');
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="815efa8b-655f-490a-a116-18936eea73ad" tabindex="0">
+<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="c9f1de30-8d6d-451f-8f6b-865b4619dc58" tabindex="0">
 <script type="text/javascript">
-var element = document.getElementById('815efa8b-655f-490a-a116-18936eea73ad');
+var element = document.getElementById('c9f1de30-8d6d-451f-8f6b-865b4619dc58');
 
                 (function() {
                     var isDark = false;
@@ -5105,9 +5174,9 @@ var element = document.getElementById('815efa8b-655f-490a-a116-18936eea73ad');
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="23c9ebc7-ebfe-4294-9e2a-32fc1a2c2829" tabindex="0">
+<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="577a56a8-fb0d-4a93-8c8b-6b9226e63615" tabindex="0">
 <script type="text/javascript">
-var element = document.getElementById('23c9ebc7-ebfe-4294-9e2a-32fc1a2c2829');
+var element = document.getElementById('577a56a8-fb0d-4a93-8c8b-6b9226e63615');
 
             if (typeof IPython !== 'undefined' && IPython.notebook) {
                 IPython.notebook.kernel.execute("_jupyter_dark_detect_result = " + 
@@ -5122,9 +5191,9 @@ var element = document.getElementById('23c9ebc7-ebfe-4294-9e2a-32fc1a2c2829');
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="694cee68-25a7-46f2-90c4-b81041ef8411" tabindex="0">
+<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="8294d7e4-fd90-4815-93b5-0f9737e72c3c" tabindex="0">
 <script type="text/javascript">
-var element = document.getElementById('694cee68-25a7-46f2-90c4-b81041ef8411');
+var element = document.getElementById('8294d7e4-fd90-4815-93b5-0f9737e72c3c');
 
                 (function() {
                     var isDark = false;
@@ -5168,9 +5237,9 @@ var element = document.getElementById('694cee68-25a7-46f2-90c4-b81041ef8411');
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="0d81cac5-dfef-4648-8f17-00d52ab3f087" tabindex="0">
+<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="5245b09b-0d77-4df9-ac10-10dc80c3b053" tabindex="0">
 <script type="text/javascript">
-var element = document.getElementById('0d81cac5-dfef-4648-8f17-00d52ab3f087');
+var element = document.getElementById('5245b09b-0d77-4df9-ac10-10dc80c3b053');
 
             if (typeof IPython !== 'undefined' && IPython.notebook) {
                 IPython.notebook.kernel.execute("_jupyter_dark_detect_result = " + 
@@ -5249,7 +5318,7 @@ project.analysis.display.fit_results()</div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>⏱️ Fitting time: <span class="ansi-cyan-intense-fg ansi-bold">1.84</span> seconds
+<pre>⏱️ Fitting time: <span class="ansi-cyan-intense-fg ansi-bold">1.85</span> seconds
 </pre>
 </div>
 </div>
@@ -5290,9 +5359,9 @@ project.analysis.display.fit_results()</div>
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="b4ab4e84-f312-4687-98f2-86059823d0ec" tabindex="0">
+<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="18937bd4-02f8-4620-9c45-4636168a2da9" tabindex="0">
 <script type="text/javascript">
-var element = document.getElementById('b4ab4e84-f312-4687-98f2-86059823d0ec');
+var element = document.getElementById('18937bd4-02f8-4620-9c45-4636168a2da9');
 
                 (function() {
                     var isDark = false;
@@ -5336,9 +5405,9 @@ var element = document.getElementById('b4ab4e84-f312-4687-98f2-86059823d0ec');
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="84392997-af4c-4a5a-849b-845bd09096b1" tabindex="0">
+<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="52247585-68c7-4a2c-b830-c73e58ff44bf" tabindex="0">
 <script type="text/javascript">
-var element = document.getElementById('84392997-af4c-4a5a-849b-845bd09096b1');
+var element = document.getElementById('52247585-68c7-4a2c-b830-c73e58ff44bf');
 
             if (typeof IPython !== 'undefined' && IPython.notebook) {
                 IPython.notebook.kernel.execute("_jupyter_dark_detect_result = " + 
@@ -5355,194 +5424,194 @@ var element = document.getElementById('84392997-af4c-4a5a-849b-845bd09096b1');
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
 <style type="text/css">
-#T_1b309   {
+#T_baf4b   {
   border: 1px solid #dadada;
   border-collapse: collapse;
   margin-top: 0.5em;
   margin-left: 0.5em;
 }
-#T_1b309 thead {
+#T_baf4b thead {
   border-bottom: 1px solid #dadada;
 }
-#T_1b309 th {
+#T_baf4b th {
   border: none;
   padding-top: 0.25em;
   padding-bottom: 0.25em;
   line-height: 1.15em;
 }
-#T_1b309  td {
+#T_baf4b  td {
   border: none;
   padding-top: 0.25em;
   padding-bottom: 0.25em;
   line-height: 1.15em;
 }
-#T_1b309 th.row_heading {
+#T_baf4b th.row_heading {
   color: #dadada;
   font-weight: normal;
 }
-#T_1b309 tbody tr:nth-child(odd) {
+#T_baf4b tbody tr:nth-child(odd) {
   background-color: transparent;
 }
-#T_1b309  tbody tr:nth-child(even) {
+#T_baf4b  tbody tr:nth-child(even) {
   background-color: transparent;
 }
-#T_1b309 th.col0 {
+#T_baf4b th.col0 {
   text-align: left;
 }
-#T_1b309 th.col1 {
+#T_baf4b th.col1 {
   text-align: left;
 }
-#T_1b309 th.col2 {
+#T_baf4b th.col2 {
   text-align: left;
 }
-#T_1b309 th.col3 {
+#T_baf4b th.col3 {
   text-align: left;
 }
-#T_1b309 th.col4 {
+#T_baf4b th.col4 {
   text-align: right;
 }
-#T_1b309 th.col5 {
+#T_baf4b th.col5 {
   text-align: right;
 }
-#T_1b309 th.col6 {
+#T_baf4b th.col6 {
   text-align: right;
 }
-#T_1b309 th.col7 {
+#T_baf4b th.col7 {
   text-align: left;
 }
-#T_1b309 th.col8 {
+#T_baf4b th.col8 {
   text-align: right;
 }
-#T_1b309_row0_col0, #T_1b309_row0_col1, #T_1b309_row0_col2, #T_1b309_row0_col3, #T_1b309_row0_col7, #T_1b309_row1_col0, #T_1b309_row1_col1, #T_1b309_row1_col2, #T_1b309_row1_col3, #T_1b309_row1_col7, #T_1b309_row2_col0, #T_1b309_row2_col1, #T_1b309_row2_col2, #T_1b309_row2_col3, #T_1b309_row2_col7, #T_1b309_row3_col0, #T_1b309_row3_col1, #T_1b309_row3_col2, #T_1b309_row3_col3, #T_1b309_row3_col7, #T_1b309_row4_col0, #T_1b309_row4_col1, #T_1b309_row4_col2, #T_1b309_row4_col3, #T_1b309_row4_col7, #T_1b309_row5_col0, #T_1b309_row5_col1, #T_1b309_row5_col2, #T_1b309_row5_col3, #T_1b309_row5_col7, #T_1b309_row6_col0, #T_1b309_row6_col1, #T_1b309_row6_col2, #T_1b309_row6_col3, #T_1b309_row6_col7, #T_1b309_row7_col0, #T_1b309_row7_col1, #T_1b309_row7_col2, #T_1b309_row7_col3, #T_1b309_row7_col7, #T_1b309_row8_col0, #T_1b309_row8_col1, #T_1b309_row8_col2, #T_1b309_row8_col3, #T_1b309_row8_col7 {
+#T_baf4b_row0_col0, #T_baf4b_row0_col1, #T_baf4b_row0_col2, #T_baf4b_row0_col3, #T_baf4b_row0_col7, #T_baf4b_row1_col0, #T_baf4b_row1_col1, #T_baf4b_row1_col2, #T_baf4b_row1_col3, #T_baf4b_row1_col7, #T_baf4b_row2_col0, #T_baf4b_row2_col1, #T_baf4b_row2_col2, #T_baf4b_row2_col3, #T_baf4b_row2_col7, #T_baf4b_row3_col0, #T_baf4b_row3_col1, #T_baf4b_row3_col2, #T_baf4b_row3_col3, #T_baf4b_row3_col7, #T_baf4b_row4_col0, #T_baf4b_row4_col1, #T_baf4b_row4_col2, #T_baf4b_row4_col3, #T_baf4b_row4_col7, #T_baf4b_row5_col0, #T_baf4b_row5_col1, #T_baf4b_row5_col2, #T_baf4b_row5_col3, #T_baf4b_row5_col7, #T_baf4b_row6_col0, #T_baf4b_row6_col1, #T_baf4b_row6_col2, #T_baf4b_row6_col3, #T_baf4b_row6_col7, #T_baf4b_row7_col0, #T_baf4b_row7_col1, #T_baf4b_row7_col2, #T_baf4b_row7_col3, #T_baf4b_row7_col7, #T_baf4b_row8_col0, #T_baf4b_row8_col1, #T_baf4b_row8_col2, #T_baf4b_row8_col3, #T_baf4b_row8_col7 {
   text-align: left;
 }
-#T_1b309_row0_col4, #T_1b309_row0_col5, #T_1b309_row0_col6, #T_1b309_row0_col8, #T_1b309_row1_col4, #T_1b309_row1_col5, #T_1b309_row1_col6, #T_1b309_row1_col8, #T_1b309_row2_col4, #T_1b309_row2_col5, #T_1b309_row2_col6, #T_1b309_row2_col8, #T_1b309_row3_col4, #T_1b309_row3_col5, #T_1b309_row3_col6, #T_1b309_row3_col8, #T_1b309_row4_col4, #T_1b309_row4_col5, #T_1b309_row4_col6, #T_1b309_row4_col8, #T_1b309_row5_col4, #T_1b309_row5_col5, #T_1b309_row5_col6, #T_1b309_row5_col8, #T_1b309_row6_col4, #T_1b309_row6_col5, #T_1b309_row6_col6, #T_1b309_row6_col8, #T_1b309_row7_col4, #T_1b309_row7_col5, #T_1b309_row7_col6, #T_1b309_row7_col8, #T_1b309_row8_col4, #T_1b309_row8_col5, #T_1b309_row8_col6, #T_1b309_row8_col8 {
+#T_baf4b_row0_col4, #T_baf4b_row0_col5, #T_baf4b_row0_col6, #T_baf4b_row0_col8, #T_baf4b_row1_col4, #T_baf4b_row1_col5, #T_baf4b_row1_col6, #T_baf4b_row1_col8, #T_baf4b_row2_col4, #T_baf4b_row2_col5, #T_baf4b_row2_col6, #T_baf4b_row2_col8, #T_baf4b_row3_col4, #T_baf4b_row3_col5, #T_baf4b_row3_col6, #T_baf4b_row3_col8, #T_baf4b_row4_col4, #T_baf4b_row4_col5, #T_baf4b_row4_col6, #T_baf4b_row4_col8, #T_baf4b_row5_col4, #T_baf4b_row5_col5, #T_baf4b_row5_col6, #T_baf4b_row5_col8, #T_baf4b_row6_col4, #T_baf4b_row6_col5, #T_baf4b_row6_col6, #T_baf4b_row6_col8, #T_baf4b_row7_col4, #T_baf4b_row7_col5, #T_baf4b_row7_col6, #T_baf4b_row7_col8, #T_baf4b_row8_col4, #T_baf4b_row8_col5, #T_baf4b_row8_col6, #T_baf4b_row8_col8 {
   text-align: right;
 }
 </style>
-<table class="dataframe" id="T_1b309">
+<table class="dataframe" id="T_baf4b">
 <thead>
 <tr>
 <th class="blank level0"> </th>
-<th class="col_heading level0 col0" id="T_1b309_level0_col0">datablock</th>
-<th class="col_heading level0 col1" id="T_1b309_level0_col1">category</th>
-<th class="col_heading level0 col2" id="T_1b309_level0_col2">entry</th>
-<th class="col_heading level0 col3" id="T_1b309_level0_col3">parameter</th>
-<th class="col_heading level0 col4" id="T_1b309_level0_col4">start</th>
-<th class="col_heading level0 col5" id="T_1b309_level0_col5">fitted</th>
-<th class="col_heading level0 col6" id="T_1b309_level0_col6">uncertainty</th>
-<th class="col_heading level0 col7" id="T_1b309_level0_col7">units</th>
-<th class="col_heading level0 col8" id="T_1b309_level0_col8">change</th>
+<th class="col_heading level0 col0" id="T_baf4b_level0_col0">datablock</th>
+<th class="col_heading level0 col1" id="T_baf4b_level0_col1">category</th>
+<th class="col_heading level0 col2" id="T_baf4b_level0_col2">entry</th>
+<th class="col_heading level0 col3" id="T_baf4b_level0_col3">parameter</th>
+<th class="col_heading level0 col4" id="T_baf4b_level0_col4">start</th>
+<th class="col_heading level0 col5" id="T_baf4b_level0_col5">fitted</th>
+<th class="col_heading level0 col6" id="T_baf4b_level0_col6">uncertainty</th>
+<th class="col_heading level0 col7" id="T_baf4b_level0_col7">units</th>
+<th class="col_heading level0 col8" id="T_baf4b_level0_col8">change</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th class="row_heading level0 row0" id="T_1b309_level0_row0">1</th>
-<td class="data row0 col0" id="T_1b309_row0_col0">tbti</td>
-<td class="data row0 col1" id="T_1b309_row0_col1">atom_site</td>
-<td class="data row0 col2" id="T_1b309_row0_col2">Tb</td>
-<td class="data row0 col3" id="T_1b309_row0_col3">b_iso</td>
-<td class="data row0 col4" id="T_1b309_row0_col4">0.0000</td>
-<td class="data row0 col5" id="T_1b309_row0_col5">0.5303</td>
-<td class="data row0 col6" id="T_1b309_row0_col6">0.0222</td>
-<td class="data row0 col7" id="T_1b309_row0_col7">Å²</td>
-<td class="data row0 col8" id="T_1b309_row0_col8">N/A</td>
+<th class="row_heading level0 row0" id="T_baf4b_level0_row0">1</th>
+<td class="data row0 col0" id="T_baf4b_row0_col0">tbti</td>
+<td class="data row0 col1" id="T_baf4b_row0_col1">atom_site</td>
+<td class="data row0 col2" id="T_baf4b_row0_col2">Tb</td>
+<td class="data row0 col3" id="T_baf4b_row0_col3">b_iso</td>
+<td class="data row0 col4" id="T_baf4b_row0_col4">0.0000</td>
+<td class="data row0 col5" id="T_baf4b_row0_col5">0.5303</td>
+<td class="data row0 col6" id="T_baf4b_row0_col6">0.0222</td>
+<td class="data row0 col7" id="T_baf4b_row0_col7">Å²</td>
+<td class="data row0 col8" id="T_baf4b_row0_col8">N/A</td>
 </tr>
 <tr>
-<th class="row_heading level0 row1" id="T_1b309_level0_row1">2</th>
-<td class="data row1 col0" id="T_1b309_row1_col0">tbti</td>
-<td class="data row1 col1" id="T_1b309_row1_col1">atom_site</td>
-<td class="data row1 col2" id="T_1b309_row1_col2">Ti</td>
-<td class="data row1 col3" id="T_1b309_row1_col3">b_iso</td>
-<td class="data row1 col4" id="T_1b309_row1_col4">0.0000</td>
-<td class="data row1 col5" id="T_1b309_row1_col5">0.4760</td>
-<td class="data row1 col6" id="T_1b309_row1_col6">0.0327</td>
-<td class="data row1 col7" id="T_1b309_row1_col7">Å²</td>
-<td class="data row1 col8" id="T_1b309_row1_col8">N/A</td>
+<th class="row_heading level0 row1" id="T_baf4b_level0_row1">2</th>
+<td class="data row1 col0" id="T_baf4b_row1_col0">tbti</td>
+<td class="data row1 col1" id="T_baf4b_row1_col1">atom_site</td>
+<td class="data row1 col2" id="T_baf4b_row1_col2">Ti</td>
+<td class="data row1 col3" id="T_baf4b_row1_col3">b_iso</td>
+<td class="data row1 col4" id="T_baf4b_row1_col4">0.0000</td>
+<td class="data row1 col5" id="T_baf4b_row1_col5">0.4760</td>
+<td class="data row1 col6" id="T_baf4b_row1_col6">0.0327</td>
+<td class="data row1 col7" id="T_baf4b_row1_col7">Å²</td>
+<td class="data row1 col8" id="T_baf4b_row1_col8">N/A</td>
 </tr>
 <tr>
-<th class="row_heading level0 row2" id="T_1b309_level0_row2">3</th>
-<td class="data row2 col0" id="T_1b309_row2_col0">tbti</td>
-<td class="data row2 col1" id="T_1b309_row2_col1">atom_site</td>
-<td class="data row2 col2" id="T_1b309_row2_col2">O1</td>
-<td class="data row2 col3" id="T_1b309_row2_col3">fract_x</td>
-<td class="data row2 col4" id="T_1b309_row2_col4">0.3280</td>
-<td class="data row2 col5" id="T_1b309_row2_col5">0.3280</td>
-<td class="data row2 col6" id="T_1b309_row2_col6">0.0001</td>
-<td class="data row2 col7" id="T_1b309_row2_col7"></td>
-<td class="data row2 col8" id="T_1b309_row2_col8">0.00 % ↓</td>
+<th class="row_heading level0 row2" id="T_baf4b_level0_row2">3</th>
+<td class="data row2 col0" id="T_baf4b_row2_col0">tbti</td>
+<td class="data row2 col1" id="T_baf4b_row2_col1">atom_site</td>
+<td class="data row2 col2" id="T_baf4b_row2_col2">O1</td>
+<td class="data row2 col3" id="T_baf4b_row2_col3">fract_x</td>
+<td class="data row2 col4" id="T_baf4b_row2_col4">0.3280</td>
+<td class="data row2 col5" id="T_baf4b_row2_col5">0.3280</td>
+<td class="data row2 col6" id="T_baf4b_row2_col6">0.0001</td>
+<td class="data row2 col7" id="T_baf4b_row2_col7"></td>
+<td class="data row2 col8" id="T_baf4b_row2_col8">0.00 % ↓</td>
 </tr>
 <tr>
-<th class="row_heading level0 row3" id="T_1b309_level0_row3">4</th>
-<td class="data row3 col0" id="T_1b309_row3_col0">tbti</td>
-<td class="data row3 col1" id="T_1b309_row3_col1">atom_site</td>
-<td class="data row3 col2" id="T_1b309_row3_col2">O1</td>
-<td class="data row3 col3" id="T_1b309_row3_col3">occupancy</td>
-<td class="data row3 col4" id="T_1b309_row3_col4">1.0000</td>
-<td class="data row3 col5" id="T_1b309_row3_col5">1.0015</td>
-<td class="data row3 col6" id="T_1b309_row3_col6">0.0103</td>
-<td class="data row3 col7" id="T_1b309_row3_col7"></td>
-<td class="data row3 col8" id="T_1b309_row3_col8">0.15 % ↑</td>
+<th class="row_heading level0 row3" id="T_baf4b_level0_row3">4</th>
+<td class="data row3 col0" id="T_baf4b_row3_col0">tbti</td>
+<td class="data row3 col1" id="T_baf4b_row3_col1">atom_site</td>
+<td class="data row3 col2" id="T_baf4b_row3_col2">O1</td>
+<td class="data row3 col3" id="T_baf4b_row3_col3">occupancy</td>
+<td class="data row3 col4" id="T_baf4b_row3_col4">1.0000</td>
+<td class="data row3 col5" id="T_baf4b_row3_col5">1.0015</td>
+<td class="data row3 col6" id="T_baf4b_row3_col6">0.0103</td>
+<td class="data row3 col7" id="T_baf4b_row3_col7"></td>
+<td class="data row3 col8" id="T_baf4b_row3_col8">0.15 % ↑</td>
 </tr>
 <tr>
-<th class="row_heading level0 row4" id="T_1b309_level0_row4">5</th>
-<td class="data row4 col0" id="T_1b309_row4_col0">tbti</td>
-<td class="data row4 col1" id="T_1b309_row4_col1">atom_site</td>
-<td class="data row4 col2" id="T_1b309_row4_col2">O1</td>
-<td class="data row4 col3" id="T_1b309_row4_col3">b_iso</td>
-<td class="data row4 col4" id="T_1b309_row4_col4">0.0000</td>
-<td class="data row4 col5" id="T_1b309_row4_col5">0.4516</td>
-<td class="data row4 col6" id="T_1b309_row4_col6">0.0196</td>
-<td class="data row4 col7" id="T_1b309_row4_col7">Å²</td>
-<td class="data row4 col8" id="T_1b309_row4_col8">N/A</td>
+<th class="row_heading level0 row4" id="T_baf4b_level0_row4">5</th>
+<td class="data row4 col0" id="T_baf4b_row4_col0">tbti</td>
+<td class="data row4 col1" id="T_baf4b_row4_col1">atom_site</td>
+<td class="data row4 col2" id="T_baf4b_row4_col2">O1</td>
+<td class="data row4 col3" id="T_baf4b_row4_col3">b_iso</td>
+<td class="data row4 col4" id="T_baf4b_row4_col4">0.0000</td>
+<td class="data row4 col5" id="T_baf4b_row4_col5">0.4516</td>
+<td class="data row4 col6" id="T_baf4b_row4_col6">0.0196</td>
+<td class="data row4 col7" id="T_baf4b_row4_col7">Å²</td>
+<td class="data row4 col8" id="T_baf4b_row4_col8">N/A</td>
 </tr>
 <tr>
-<th class="row_heading level0 row5" id="T_1b309_level0_row5">6</th>
-<td class="data row5 col0" id="T_1b309_row5_col0">tbti</td>
-<td class="data row5 col1" id="T_1b309_row5_col1">atom_site</td>
-<td class="data row5 col2" id="T_1b309_row5_col2">O2</td>
-<td class="data row5 col3" id="T_1b309_row5_col3">occupancy</td>
-<td class="data row5 col4" id="T_1b309_row5_col4">0.9700</td>
-<td class="data row5 col5" id="T_1b309_row5_col5">0.9687</td>
-<td class="data row5 col6" id="T_1b309_row5_col6">0.0183</td>
-<td class="data row5 col7" id="T_1b309_row5_col7"></td>
-<td class="data row5 col8" id="T_1b309_row5_col8">0.13 % ↓</td>
+<th class="row_heading level0 row5" id="T_baf4b_level0_row5">6</th>
+<td class="data row5 col0" id="T_baf4b_row5_col0">tbti</td>
+<td class="data row5 col1" id="T_baf4b_row5_col1">atom_site</td>
+<td class="data row5 col2" id="T_baf4b_row5_col2">O2</td>
+<td class="data row5 col3" id="T_baf4b_row5_col3">occupancy</td>
+<td class="data row5 col4" id="T_baf4b_row5_col4">0.9700</td>
+<td class="data row5 col5" id="T_baf4b_row5_col5">0.9687</td>
+<td class="data row5 col6" id="T_baf4b_row5_col6">0.0183</td>
+<td class="data row5 col7" id="T_baf4b_row5_col7"></td>
+<td class="data row5 col8" id="T_baf4b_row5_col8">0.13 % ↓</td>
 </tr>
 <tr>
-<th class="row_heading level0 row6" id="T_1b309_level0_row6">7</th>
-<td class="data row6 col0" id="T_1b309_row6_col0">tbti</td>
-<td class="data row6 col1" id="T_1b309_row6_col1">atom_site</td>
-<td class="data row6 col2" id="T_1b309_row6_col2">O2</td>
-<td class="data row6 col3" id="T_1b309_row6_col3">b_iso</td>
-<td class="data row6 col4" id="T_1b309_row6_col4">0.0000</td>
-<td class="data row6 col5" id="T_1b309_row6_col5">0.2333</td>
-<td class="data row6 col6" id="T_1b309_row6_col6">0.0381</td>
-<td class="data row6 col7" id="T_1b309_row6_col7">Å²</td>
-<td class="data row6 col8" id="T_1b309_row6_col8">N/A</td>
+<th class="row_heading level0 row6" id="T_baf4b_level0_row6">7</th>
+<td class="data row6 col0" id="T_baf4b_row6_col0">tbti</td>
+<td class="data row6 col1" id="T_baf4b_row6_col1">atom_site</td>
+<td class="data row6 col2" id="T_baf4b_row6_col2">O2</td>
+<td class="data row6 col3" id="T_baf4b_row6_col3">b_iso</td>
+<td class="data row6 col4" id="T_baf4b_row6_col4">0.0000</td>
+<td class="data row6 col5" id="T_baf4b_row6_col5">0.2333</td>
+<td class="data row6 col6" id="T_baf4b_row6_col6">0.0381</td>
+<td class="data row6 col7" id="T_baf4b_row6_col7">Å²</td>
+<td class="data row6 col8" id="T_baf4b_row6_col8">N/A</td>
 </tr>
 <tr>
-<th class="row_heading level0 row7" id="T_1b309_level0_row7">8</th>
-<td class="data row7 col0" id="T_1b309_row7_col0">heidi</td>
-<td class="data row7 col1" id="T_1b309_row7_col1">extinction</td>
-<td class="data row7 col2" id="T_1b309_row7_col2"></td>
-<td class="data row7 col3" id="T_1b309_row7_col3">radius</td>
-<td class="data row7 col4" id="T_1b309_row7_col4">30.0000</td>
-<td class="data row7 col5" id="T_1b309_row7_col5">27.1471</td>
-<td class="data row7 col6" id="T_1b309_row7_col6">1.0427</td>
-<td class="data row7 col7" id="T_1b309_row7_col7">μm</td>
-<td class="data row7 col8" id="T_1b309_row7_col8">9.51 % ↓</td>
+<th class="row_heading level0 row7" id="T_baf4b_level0_row7">8</th>
+<td class="data row7 col0" id="T_baf4b_row7_col0">heidi</td>
+<td class="data row7 col1" id="T_baf4b_row7_col1">extinction</td>
+<td class="data row7 col2" id="T_baf4b_row7_col2"></td>
+<td class="data row7 col3" id="T_baf4b_row7_col3">radius</td>
+<td class="data row7 col4" id="T_baf4b_row7_col4">30.0000</td>
+<td class="data row7 col5" id="T_baf4b_row7_col5">27.1471</td>
+<td class="data row7 col6" id="T_baf4b_row7_col6">1.0427</td>
+<td class="data row7 col7" id="T_baf4b_row7_col7">μm</td>
+<td class="data row7 col8" id="T_baf4b_row7_col8">9.51 % ↓</td>
 </tr>
 <tr>
-<th class="row_heading level0 row8" id="T_1b309_level0_row8">9</th>
-<td class="data row8 col0" id="T_1b309_row8_col0">heidi</td>
-<td class="data row8 col1" id="T_1b309_row8_col1">linked_crystal</td>
-<td class="data row8 col2" id="T_1b309_row8_col2"></td>
-<td class="data row8 col3" id="T_1b309_row8_col3">scale</td>
-<td class="data row8 col4" id="T_1b309_row8_col4">1.0000</td>
-<td class="data row8 col5" id="T_1b309_row8_col5">2.9210</td>
-<td class="data row8 col6" id="T_1b309_row8_col6">0.0583</td>
-<td class="data row8 col7" id="T_1b309_row8_col7"></td>
-<td class="data row8 col8" id="T_1b309_row8_col8">192.10 % ↑</td>
+<th class="row_heading level0 row8" id="T_baf4b_level0_row8">9</th>
+<td class="data row8 col0" id="T_baf4b_row8_col0">heidi</td>
+<td class="data row8 col1" id="T_baf4b_row8_col1">linked_crystal</td>
+<td class="data row8 col2" id="T_baf4b_row8_col2"></td>
+<td class="data row8 col3" id="T_baf4b_row8_col3">scale</td>
+<td class="data row8 col4" id="T_baf4b_row8_col4">1.0000</td>
+<td class="data row8 col5" id="T_baf4b_row8_col5">2.9210</td>
+<td class="data row8 col6" id="T_baf4b_row8_col6">0.0583</td>
+<td class="data row8 col7" id="T_baf4b_row8_col7"></td>
+<td class="data row8 col8" id="T_baf4b_row8_col8">192.10 % ↑</td>
 </tr>
 </tbody>
 </table>
@@ -5590,9 +5659,9 @@ var element = document.getElementById('84392997-af4c-4a5a-849b-845bd09096b1');
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="6207e3af-0409-4bf7-b3cf-f8e8049eba9a" tabindex="0">
+<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="db467f95-fa0b-44b7-8321-bc2485ebafbc" tabindex="0">
 <script type="text/javascript">
-var element = document.getElementById('6207e3af-0409-4bf7-b3cf-f8e8049eba9a');
+var element = document.getElementById('db467f95-fa0b-44b7-8321-bc2485ebafbc');
 
                 (function() {
                     var isDark = false;
@@ -5636,9 +5705,9 @@ var element = document.getElementById('6207e3af-0409-4bf7-b3cf-f8e8049eba9a');
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="f7e48176-24e3-4a90-8432-b718a5f9cac2" tabindex="0">
+<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="d15994c2-8a3a-4303-b84c-93cf96610779" tabindex="0">
 <script type="text/javascript">
-var element = document.getElementById('f7e48176-24e3-4a90-8432-b718a5f9cac2');
+var element = document.getElementById('d15994c2-8a3a-4303-b84c-93cf96610779');
 
             if (typeof IPython !== 'undefined' && IPython.notebook) {
                 IPython.notebook.kernel.execute("_jupyter_dark_detect_result = " + 
@@ -5655,259 +5724,259 @@ var element = document.getElementById('f7e48176-24e3-4a90-8432-b718a5f9cac2');
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
 <style type="text/css">
-#T_bd4f5   {
+#T_1a25d   {
   border: 1px solid #dadada;
   border-collapse: collapse;
   margin-top: 0.5em;
   margin-left: 0.5em;
 }
-#T_bd4f5 thead {
+#T_1a25d thead {
   border-bottom: 1px solid #dadada;
 }
-#T_bd4f5 th {
+#T_1a25d th {
   border: none;
   padding-top: 0.25em;
   padding-bottom: 0.25em;
   line-height: 1.15em;
 }
-#T_bd4f5  td {
+#T_1a25d  td {
   border: none;
   padding-top: 0.25em;
   padding-bottom: 0.25em;
   line-height: 1.15em;
 }
-#T_bd4f5 th.row_heading {
+#T_1a25d th.row_heading {
   color: #dadada;
   font-weight: normal;
 }
-#T_bd4f5 tbody tr:nth-child(odd) {
+#T_1a25d tbody tr:nth-child(odd) {
   background-color: transparent;
 }
-#T_bd4f5  tbody tr:nth-child(even) {
+#T_1a25d  tbody tr:nth-child(even) {
   background-color: transparent;
 }
-#T_bd4f5 th.col0 {
+#T_1a25d th.col0 {
   text-align: left;
 }
-#T_bd4f5_row0_col0, #T_bd4f5_row1_col0, #T_bd4f5_row2_col0, #T_bd4f5_row3_col0, #T_bd4f5_row4_col0, #T_bd4f5_row5_col0, #T_bd4f5_row6_col0, #T_bd4f5_row7_col0, #T_bd4f5_row8_col0, #T_bd4f5_row9_col0, #T_bd4f5_row10_col0, #T_bd4f5_row11_col0, #T_bd4f5_row12_col0, #T_bd4f5_row13_col0, #T_bd4f5_row14_col0, #T_bd4f5_row15_col0, #T_bd4f5_row16_col0, #T_bd4f5_row17_col0, #T_bd4f5_row18_col0, #T_bd4f5_row19_col0, #T_bd4f5_row20_col0, #T_bd4f5_row21_col0, #T_bd4f5_row22_col0, #T_bd4f5_row23_col0, #T_bd4f5_row24_col0, #T_bd4f5_row25_col0, #T_bd4f5_row26_col0, #T_bd4f5_row27_col0, #T_bd4f5_row28_col0, #T_bd4f5_row29_col0, #T_bd4f5_row30_col0, #T_bd4f5_row31_col0, #T_bd4f5_row32_col0, #T_bd4f5_row33_col0, #T_bd4f5_row34_col0, #T_bd4f5_row35_col0, #T_bd4f5_row36_col0, #T_bd4f5_row37_col0, #T_bd4f5_row38_col0, #T_bd4f5_row39_col0, #T_bd4f5_row40_col0, #T_bd4f5_row41_col0, #T_bd4f5_row42_col0, #T_bd4f5_row43_col0, #T_bd4f5_row44_col0, #T_bd4f5_row45_col0, #T_bd4f5_row46_col0, #T_bd4f5_row47_col0, #T_bd4f5_row48_col0, #T_bd4f5_row49_col0, #T_bd4f5_row50_col0, #T_bd4f5_row51_col0 {
+#T_1a25d_row0_col0, #T_1a25d_row1_col0, #T_1a25d_row2_col0, #T_1a25d_row3_col0, #T_1a25d_row4_col0, #T_1a25d_row5_col0, #T_1a25d_row6_col0, #T_1a25d_row7_col0, #T_1a25d_row8_col0, #T_1a25d_row9_col0, #T_1a25d_row10_col0, #T_1a25d_row11_col0, #T_1a25d_row12_col0, #T_1a25d_row13_col0, #T_1a25d_row14_col0, #T_1a25d_row15_col0, #T_1a25d_row16_col0, #T_1a25d_row17_col0, #T_1a25d_row18_col0, #T_1a25d_row19_col0, #T_1a25d_row20_col0, #T_1a25d_row21_col0, #T_1a25d_row22_col0, #T_1a25d_row23_col0, #T_1a25d_row24_col0, #T_1a25d_row25_col0, #T_1a25d_row26_col0, #T_1a25d_row27_col0, #T_1a25d_row28_col0, #T_1a25d_row29_col0, #T_1a25d_row30_col0, #T_1a25d_row31_col0, #T_1a25d_row32_col0, #T_1a25d_row33_col0, #T_1a25d_row34_col0, #T_1a25d_row35_col0, #T_1a25d_row36_col0, #T_1a25d_row37_col0, #T_1a25d_row38_col0, #T_1a25d_row39_col0, #T_1a25d_row40_col0, #T_1a25d_row41_col0, #T_1a25d_row42_col0, #T_1a25d_row43_col0, #T_1a25d_row44_col0, #T_1a25d_row45_col0, #T_1a25d_row46_col0, #T_1a25d_row47_col0, #T_1a25d_row48_col0, #T_1a25d_row49_col0, #T_1a25d_row50_col0, #T_1a25d_row51_col0 {
   text-align: left;
 }
 </style>
-<table class="dataframe" id="T_bd4f5">
+<table class="dataframe" id="T_1a25d">
 <thead>
 <tr>
 <th class="blank level0"> </th>
-<th class="col_heading level0 col0" id="T_bd4f5_level0_col0">CIF</th>
+<th class="col_heading level0 col0" id="T_1a25d_level0_col0">CIF</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th class="row_heading level0 row0" id="T_bd4f5_level0_row0">1</th>
-<td class="data row0 col0" id="T_bd4f5_row0_col0">data_heidi</td>
+<th class="row_heading level0 row0" id="T_1a25d_level0_row0">1</th>
+<td class="data row0 col0" id="T_1a25d_row0_col0">data_heidi</td>
 </tr>
 <tr>
-<th class="row_heading level0 row1" id="T_bd4f5_level0_row1">2</th>
-<td class="data row1 col0" id="T_bd4f5_row1_col0"></td>
+<th class="row_heading level0 row1" id="T_1a25d_level0_row1">2</th>
+<td class="data row1 col0" id="T_1a25d_row1_col0"></td>
 </tr>
 <tr>
-<th class="row_heading level0 row2" id="T_bd4f5_level0_row2">3</th>
-<td class="data row2 col0" id="T_bd4f5_row2_col0">_expt_type.sample_form "single crystal"</td>
+<th class="row_heading level0 row2" id="T_1a25d_level0_row2">3</th>
+<td class="data row2 col0" id="T_1a25d_row2_col0">_expt_type.sample_form "single crystal"</td>
 </tr>
 <tr>
-<th class="row_heading level0 row3" id="T_bd4f5_level0_row3">4</th>
-<td class="data row3 col0" id="T_bd4f5_row3_col0">_expt_type.beam_mode "constant wavelength"</td>
+<th class="row_heading level0 row3" id="T_1a25d_level0_row3">4</th>
+<td class="data row3 col0" id="T_1a25d_row3_col0">_expt_type.beam_mode "constant wavelength"</td>
 </tr>
 <tr>
-<th class="row_heading level0 row4" id="T_bd4f5_level0_row4">5</th>
-<td class="data row4 col0" id="T_bd4f5_row4_col0">_expt_type.radiation_probe      neutron</td>
+<th class="row_heading level0 row4" id="T_1a25d_level0_row4">5</th>
+<td class="data row4 col0" id="T_1a25d_row4_col0">_expt_type.radiation_probe      neutron</td>
 </tr>
 <tr>
-<th class="row_heading level0 row5" id="T_bd4f5_level0_row5">6</th>
-<td class="data row5 col0" id="T_bd4f5_row5_col0">_expt_type.scattering_type        bragg</td>
+<th class="row_heading level0 row5" id="T_1a25d_level0_row5">6</th>
+<td class="data row5 col0" id="T_1a25d_row5_col0">_expt_type.scattering_type        bragg</td>
 </tr>
 <tr>
-<th class="row_heading level0 row6" id="T_bd4f5_level0_row6">7</th>
-<td class="data row6 col0" id="T_bd4f5_row6_col0"></td>
+<th class="row_heading level0 row6" id="T_1a25d_level0_row6">7</th>
+<td class="data row6 col0" id="T_1a25d_row6_col0"></td>
 </tr>
 <tr>
-<th class="row_heading level0 row7" id="T_bd4f5_level0_row7">8</th>
-<td class="data row7 col0" id="T_bd4f5_row7_col0">_diffrn.ambient_temperature            ?</td>
+<th class="row_heading level0 row7" id="T_1a25d_level0_row7">8</th>
+<td class="data row7 col0" id="T_1a25d_row7_col0">_diffrn.ambient_temperature            ?</td>
 </tr>
 <tr>
-<th class="row_heading level0 row8" id="T_bd4f5_level0_row8">9</th>
-<td class="data row8 col0" id="T_bd4f5_row8_col0">_diffrn.ambient_pressure            ?</td>
+<th class="row_heading level0 row8" id="T_1a25d_level0_row8">9</th>
+<td class="data row8 col0" id="T_1a25d_row8_col0">_diffrn.ambient_pressure            ?</td>
 </tr>
 <tr>
-<th class="row_heading level0 row9" id="T_bd4f5_level0_row9">10</th>
-<td class="data row9 col0" id="T_bd4f5_row9_col0">_diffrn.ambient_magnetic_field            ?</td>
+<th class="row_heading level0 row9" id="T_1a25d_level0_row9">10</th>
+<td class="data row9 col0" id="T_1a25d_row9_col0">_diffrn.ambient_magnetic_field            ?</td>
 </tr>
 <tr>
-<th class="row_heading level0 row10" id="T_bd4f5_level0_row10">11</th>
-<td class="data row10 col0" id="T_bd4f5_row10_col0">_diffrn.ambient_electric_field            ?</td>
+<th class="row_heading level0 row10" id="T_1a25d_level0_row10">11</th>
+<td class="data row10 col0" id="T_1a25d_row10_col0">_diffrn.ambient_electric_field            ?</td>
 </tr>
 <tr>
-<th class="row_heading level0 row11" id="T_bd4f5_level0_row11">12</th>
-<td class="data row11 col0" id="T_bd4f5_row11_col0"></td>
+<th class="row_heading level0 row11" id="T_1a25d_level0_row11">12</th>
+<td class="data row11 col0" id="T_1a25d_row11_col0"></td>
 </tr>
 <tr>
-<th class="row_heading level0 row12" id="T_bd4f5_level0_row12">13</th>
-<td class="data row12 col0" id="T_bd4f5_row12_col0">_extinction.mosaicity 29820.00000000</td>
+<th class="row_heading level0 row12" id="T_1a25d_level0_row12">13</th>
+<td class="data row12 col0" id="T_1a25d_row12_col0">_extinction.mosaicity 29820.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row13" id="T_bd4f5_level0_row13">14</th>
-<td class="data row13 col0" id="T_bd4f5_row13_col0">_extinction.radius 27.14714199(1.04266814)</td>
+<th class="row_heading level0 row13" id="T_1a25d_level0_row13">14</th>
+<td class="data row13 col0" id="T_1a25d_row13_col0">_extinction.radius 27.14714199(1.04266814)</td>
 </tr>
 <tr>
-<th class="row_heading level0 row14" id="T_bd4f5_level0_row14">15</th>
-<td class="data row14 col0" id="T_bd4f5_row14_col0"></td>
+<th class="row_heading level0 row14" id="T_1a25d_level0_row14">15</th>
+<td class="data row14 col0" id="T_1a25d_row14_col0"></td>
 </tr>
 <tr>
-<th class="row_heading level0 row15" id="T_bd4f5_level0_row15">16</th>
-<td class="data row15 col0" id="T_bd4f5_row15_col0">_sc_crystal_block.id         tbti</td>
+<th class="row_heading level0 row15" id="T_1a25d_level0_row15">16</th>
+<td class="data row15 col0" id="T_1a25d_row15_col0">_sc_crystal_block.id         tbti</td>
 </tr>
 <tr>
-<th class="row_heading level0 row16" id="T_bd4f5_level0_row16">17</th>
-<td class="data row16 col0" id="T_bd4f5_row16_col0">_sc_crystal_block.scale 2.92102835(5827067)</td>
+<th class="row_heading level0 row16" id="T_1a25d_level0_row16">17</th>
+<td class="data row16 col0" id="T_1a25d_row16_col0">_sc_crystal_block.scale 2.92102835(5827067)</td>
 </tr>
 <tr>
-<th class="row_heading level0 row17" id="T_bd4f5_level0_row17">18</th>
-<td class="data row17 col0" id="T_bd4f5_row17_col0"></td>
+<th class="row_heading level0 row17" id="T_1a25d_level0_row17">18</th>
+<td class="data row17 col0" id="T_1a25d_row17_col0"></td>
 </tr>
 <tr>
-<th class="row_heading level0 row18" id="T_bd4f5_level0_row18">19</th>
-<td class="data row18 col0" id="T_bd4f5_row18_col0">_instr.wavelength   0.79300000</td>
+<th class="row_heading level0 row18" id="T_1a25d_level0_row18">19</th>
+<td class="data row18 col0" id="T_1a25d_row18_col0">_instr.wavelength   0.79300000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row19" id="T_bd4f5_level0_row19">20</th>
-<td class="data row19 col0" id="T_bd4f5_row19_col0"></td>
+<th class="row_heading level0 row19" id="T_1a25d_level0_row19">20</th>
+<td class="data row19 col0" id="T_1a25d_row19_col0"></td>
 </tr>
 <tr>
-<th class="row_heading level0 row20" id="T_bd4f5_level0_row20">21</th>
-<td class="data row20 col0" id="T_bd4f5_row20_col0">loop_</td>
+<th class="row_heading level0 row20" id="T_1a25d_level0_row20">21</th>
+<td class="data row20 col0" id="T_1a25d_row20_col0">loop_</td>
 </tr>
 <tr>
-<th class="row_heading level0 row21" id="T_bd4f5_level0_row21">22</th>
-<td class="data row21 col0" id="T_bd4f5_row21_col0">_refln.id</td>
+<th class="row_heading level0 row21" id="T_1a25d_level0_row21">22</th>
+<td class="data row21 col0" id="T_1a25d_row21_col0">_refln.id</td>
 </tr>
 <tr>
-<th class="row_heading level0 row22" id="T_bd4f5_level0_row22">23</th>
-<td class="data row22 col0" id="T_bd4f5_row22_col0">_refln.d_spacing</td>
+<th class="row_heading level0 row22" id="T_1a25d_level0_row22">23</th>
+<td class="data row22 col0" id="T_1a25d_row22_col0">_refln.d_spacing</td>
 </tr>
 <tr>
-<th class="row_heading level0 row23" id="T_bd4f5_level0_row23">24</th>
-<td class="data row23 col0" id="T_bd4f5_row23_col0">_refln.sin_theta_over_lambda</td>
+<th class="row_heading level0 row23" id="T_1a25d_level0_row23">24</th>
+<td class="data row23 col0" id="T_1a25d_row23_col0">_refln.sin_theta_over_lambda</td>
 </tr>
 <tr>
-<th class="row_heading level0 row24" id="T_bd4f5_level0_row24">25</th>
-<td class="data row24 col0" id="T_bd4f5_row24_col0">_refln.index_h</td>
+<th class="row_heading level0 row24" id="T_1a25d_level0_row24">25</th>
+<td class="data row24 col0" id="T_1a25d_row24_col0">_refln.index_h</td>
 </tr>
 <tr>
-<th class="row_heading level0 row25" id="T_bd4f5_level0_row25">26</th>
-<td class="data row25 col0" id="T_bd4f5_row25_col0">_refln.index_k</td>
+<th class="row_heading level0 row25" id="T_1a25d_level0_row25">26</th>
+<td class="data row25 col0" id="T_1a25d_row25_col0">_refln.index_k</td>
 </tr>
 <tr>
-<th class="row_heading level0 row26" id="T_bd4f5_level0_row26">27</th>
-<td class="data row26 col0" id="T_bd4f5_row26_col0">_refln.index_l</td>
+<th class="row_heading level0 row26" id="T_1a25d_level0_row26">27</th>
+<td class="data row26 col0" id="T_1a25d_row26_col0">_refln.index_l</td>
 </tr>
 <tr>
-<th class="row_heading level0 row27" id="T_bd4f5_level0_row27">28</th>
-<td class="data row27 col0" id="T_bd4f5_row27_col0">_refln.intensity_meas</td>
+<th class="row_heading level0 row27" id="T_1a25d_level0_row27">28</th>
+<td class="data row27 col0" id="T_1a25d_row27_col0">_refln.intensity_meas</td>
 </tr>
 <tr>
-<th class="row_heading level0 row28" id="T_bd4f5_level0_row28">29</th>
-<td class="data row28 col0" id="T_bd4f5_row28_col0">_refln.intensity_meas_su</td>
+<th class="row_heading level0 row28" id="T_1a25d_level0_row28">29</th>
+<td class="data row28 col0" id="T_1a25d_row28_col0">_refln.intensity_meas_su</td>
 </tr>
 <tr>
-<th class="row_heading level0 row29" id="T_bd4f5_level0_row29">30</th>
-<td class="data row29 col0" id="T_bd4f5_row29_col0">_refln.intensity_calc</td>
+<th class="row_heading level0 row29" id="T_1a25d_level0_row29">30</th>
+<td class="data row29 col0" id="T_1a25d_row29_col0">_refln.intensity_calc</td>
 </tr>
 <tr>
-<th class="row_heading level0 row30" id="T_bd4f5_level0_row30">31</th>
-<td class="data row30 col0" id="T_bd4f5_row30_col0">_refln.wavelength</td>
+<th class="row_heading level0 row30" id="T_1a25d_level0_row30">31</th>
+<td class="data row30 col0" id="T_1a25d_row30_col0">_refln.wavelength</td>
 </tr>
 <tr>
-<th class="row_heading level0 row31" id="T_bd4f5_level0_row31">32</th>
-<td class="data row31 col0" id="T_bd4f5_row31_col0">           1   5.84855823   0.08549116 1 1 1 194.56770000   2.32530000 206.33175509   0.00000000</td>
+<th class="row_heading level0 row31" id="T_1a25d_level0_row31">32</th>
+<td class="data row31 col0" id="T_1a25d_row31_col0">           1   5.84855823   0.08549116 1 1 1 194.56770000   2.32530000 206.33175510   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row32" id="T_bd4f5_level0_row32">33</th>
-<td class="data row32 col0" id="T_bd4f5_row32_col0">           2   3.58149585   0.13960647 2 2 0  22.63190000   1.12330000  15.33289341   0.00000000</td>
+<th class="row_heading level0 row32" id="T_1a25d_level0_row32">33</th>
+<td class="data row32 col0" id="T_1a25d_row32_col0">           2   3.58149585   0.13960647 2 2 0  22.63190000   1.12330000  15.33289341   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row33" id="T_bd4f5_level0_row33">34</th>
-<td class="data row33 col0" id="T_bd4f5_row33_col0">           3   3.05430992   0.16370310 3 1 1  99.29170000   2.56200000  97.60574185   0.00000000</td>
+<th class="row_heading level0 row33" id="T_1a25d_level0_row33">34</th>
+<td class="data row33 col0" id="T_1a25d_row33_col0">           3   3.05430992   0.16370310 3 1 1  99.29170000   2.56200000  97.60574185   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row34" id="T_bd4f5_level0_row34">35</th>
-<td class="data row34 col0" id="T_bd4f5_row34_col0">           4   2.92427911   0.17098231 2 2 2 219.28770000   3.25220000 215.52043827   0.00000000</td>
+<th class="row_heading level0 row34" id="T_1a25d_level0_row34">35</th>
+<td class="data row34 col0" id="T_1a25d_row34_col0">           4   2.92427911   0.17098231 2 2 2 219.28770000   3.25220000 215.52043827   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row35" id="T_bd4f5_level0_row35">36</th>
-<td class="data row35 col0" id="T_bd4f5_row35_col0">           5   2.53250000   0.19743337 4 0 0 1366.73770000  31.07660000 1608.99981288   0.00000000</td>
+<th class="row_heading level0 row35" id="T_1a25d_level0_row35">36</th>
+<td class="data row35 col0" id="T_1a25d_row35_col0">           5   2.53250000   0.19743337 4 0 0 1366.73770000  31.07660000 1608.99981288   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row36" id="T_bd4f5_level0_row36">37</th>
-<td class="data row36 col0" id="T_bd4f5_row36_col0">           6   2.32398138   0.21514802 3 3 1 1381.24040000  24.41820000 1583.81250618   0.00000000</td>
+<th class="row_heading level0 row36" id="T_1a25d_level0_row36">37</th>
+<td class="data row36 col0" id="T_1a25d_row36_col0">           6   2.32398138   0.21514802 3 3 1 1381.24040000  24.41820000 1583.81250618   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row37" id="T_bd4f5_level0_row37">38</th>
-<td class="data row37 col0" id="T_bd4f5_row37_col0">           7   2.06777759   0.24180550 4 2 2 272.46650000   4.23510000 285.13547112   0.00000000</td>
+<th class="row_heading level0 row37" id="T_1a25d_level0_row37">38</th>
+<td class="data row37 col0" id="T_1a25d_row37_col0">           7   2.06777759   0.24180550 4 2 2 272.46650000   4.23510000 285.13547112   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row38" id="T_bd4f5_level0_row38">39</th>
-<td class="data row38 col0" id="T_bd4f5_row38_col0">           8   1.94951941   0.25647347 5 1 1 991.50850000  19.20150000 1102.20798047   0.00000000</td>
+<th class="row_heading level0 row38" id="T_1a25d_level0_row38">39</th>
+<td class="data row38 col0" id="T_1a25d_row38_col0">           8   1.94951941   0.25647347 5 1 1 991.50850000  19.20150000 1102.20798047   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row39" id="T_bd4f5_level0_row39">40</th>
-<td class="data row39 col0" id="T_bd4f5_row39_col0">           9   1.94951941   0.25647347 3 3 3 504.58740000   7.25520000 491.44427625   0.00000000</td>
+<th class="row_heading level0 row39" id="T_1a25d_level0_row39">40</th>
+<td class="data row39 col0" id="T_1a25d_row39_col0">           9   1.94951941   0.25647347 3 3 3 504.58740000   7.25520000 491.44427626   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row40" id="T_bd4f5_level0_row40">41</th>
-<td class="data row40 col0" id="T_bd4f5_row40_col0">          10   1.79074792   0.27921294 4 4 0 2167.68580000  37.96090000 2318.98900611   0.00000000</td>
+<th class="row_heading level0 row40" id="T_1a25d_level0_row40">41</th>
+<td class="data row40 col0" id="T_1a25d_row40_col0">          10   1.79074792   0.27921294 4 4 0 2167.68580000  37.96090000 2318.98900610   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row41" id="T_bd4f5_level0_row41">42</th>
-<td class="data row41 col0" id="T_bd4f5_row41_col0">...</td>
+<th class="row_heading level0 row41" id="T_1a25d_level0_row41">42</th>
+<td class="data row41 col0" id="T_1a25d_row41_col0">...</td>
 </tr>
 <tr>
-<th class="row_heading level0 row42" id="T_bd4f5_level0_row42">43</th>
-<td class="data row42 col0" id="T_bd4f5_row42_col0">         211   0.52241486   0.95709375 18 6 4  59.66740000   9.11170000  80.13302726   0.00000000</td>
+<th class="row_heading level0 row42" id="T_1a25d_level0_row42">43</th>
+<td class="data row42 col0" id="T_1a25d_row42_col0">         211   0.52241486   0.95709375 18 6 4  59.66740000   9.11170000  80.13302726   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row43" id="T_bd4f5_level0_row43">44</th>
-<td class="data row43 col0" id="T_bd4f5_row43_col0">         212   0.52241486   0.95709375 14 12 6  43.38570000   9.20750000  38.16401987   0.00000000</td>
+<th class="row_heading level0 row43" id="T_1a25d_level0_row43">44</th>
+<td class="data row43 col0" id="T_1a25d_row43_col0">         212   0.52241486   0.95709375 14 12 6  43.38570000   9.20750000  38.16401987   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row44" id="T_bd4f5_level0_row44">45</th>
-<td class="data row44 col0" id="T_bd4f5_row44_col0">         213   0.52034315   0.96090436 19 3 3  23.80390000   9.18670000   7.97474738   0.00000000</td>
+<th class="row_heading level0 row44" id="T_1a25d_level0_row44">45</th>
+<td class="data row44 col0" id="T_1a25d_row44_col0">         213   0.52034315   0.96090436 19 3 3  23.80390000   9.18670000   7.97474738   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row45" id="T_bd4f5_level0_row45">46</th>
-<td class="data row45 col0" id="T_bd4f5_row45_col0">         214   0.52034315   0.96090436 17 9 3  48.75870000   7.73330000  40.45604773   0.00000000</td>
+<th class="row_heading level0 row45" id="T_1a25d_level0_row45">46</th>
+<td class="data row45 col0" id="T_1a25d_row45_col0">         214   0.52034315   0.96090436 17 9 3  48.75870000   7.73330000  40.45604773   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row46" id="T_bd4f5_level0_row46">47</th>
-<td class="data row46 col0" id="T_bd4f5_row46_col0">         215   0.51694440   0.96722201 16 8 8  29.30630000  12.65520000  10.19565915   0.00000000</td>
+<th class="row_heading level0 row46" id="T_1a25d_level0_row46">47</th>
+<td class="data row46 col0" id="T_1a25d_row46_col0">         215   0.51694440   0.96722201 16 8 8  29.30630000  12.65520000  10.19565915   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row47" id="T_bd4f5_level0_row47">48</th>
-<td class="data row47 col0" id="T_bd4f5_row47_col0">         216   0.51493684   0.97099287 17 7 7 1601.51540000 628.89150000 1719.43846072   0.00000000</td>
+<th class="row_heading level0 row47" id="T_1a25d_level0_row47">48</th>
+<td class="data row47 col0" id="T_1a25d_row47_col0">         216   0.51493684   0.97099287 17 7 7 1601.51540000 628.89150000 1719.43846073   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row48" id="T_bd4f5_level0_row48">49</th>
-<td class="data row48 col0" id="T_bd4f5_row48_col0">         217   0.51493684   0.97099287 13 13 7 1176.08960000 414.60180000 1398.33865452   0.00000000</td>
+<th class="row_heading level0 row48" id="T_1a25d_level0_row48">49</th>
+<td class="data row48 col0" id="T_1a25d_row48_col0">         217   0.51493684   0.97099287 13 13 7 1176.08960000 414.60180000 1398.33865452   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row49" id="T_bd4f5_level0_row49">50</th>
-<td class="data row49 col0" id="T_bd4f5_row49_col0">         218   0.51493684   0.97099287 19 5 1   0.83340000  20.42070000   0.61943652   0.00000000</td>
+<th class="row_heading level0 row49" id="T_1a25d_level0_row49">50</th>
+<td class="data row49 col0" id="T_1a25d_row49_col0">         218   0.51493684   0.97099287 19 5 1   0.83340000  20.42070000   0.61943652   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row50" id="T_bd4f5_level0_row50">51</th>
-<td class="data row50 col0" id="T_bd4f5_row50_col0">         219   0.51493684   0.97099287 15 9 9  10.98640000   8.06500000   0.34582844   0.00000000</td>
+<th class="row_heading level0 row50" id="T_1a25d_level0_row50">51</th>
+<td class="data row50 col0" id="T_1a25d_row50_col0">         219   0.51493684   0.97099287 15 9 9  10.98640000   8.06500000   0.34582844   0.00000000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row51" id="T_bd4f5_level0_row51">52</th>
-<td class="data row51 col0" id="T_bd4f5_row51_col0">         220   0.51427283   0.97224657 12 12 10  14.40740000  11.38000000   0.00000000   0.00000000</td>
+<th class="row_heading level0 row51" id="T_1a25d_level0_row51">52</th>
+<td class="data row51 col0" id="T_1a25d_row51_col0">         220   0.51427283   0.97224657 12 12 10  14.40740000  11.38000000   0.00000000   0.00000000</td>
 </tr>
 </tbody>
 </table>
@@ -5997,7 +6066,7 @@ var element = document.getElementById('f7e48176-24e3-4a90-8432-b718a5f9cac2');
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
 <div> <script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
-<script charset="utf-8" crossorigin="anonymous" integrity="sha256-KEmPoupLpFyGMyGAiOsiNDbKDKAvxXAn/W+oQa0ZAfk=" src="https://cdn.plot.ly/plotly-3.4.0.min.js"></script> <div class="plotly-graph-div" id="2f381190-342d-4a32-93d5-793133f1378f" style="height:100%; width:100%;"></div> <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("2f381190-342d-4a32-93d5-793133f1378f")) {                    Plotly.newPlot(                        "2f381190-342d-4a32-93d5-793133f1378f",                        [{"error_y":{"array":{"dtype":"f8","bdata":"Qxzr4jaaAkB+jLlrCfnxP+XQItv5fgRA3GgAb4EECkCk374OnBM\u002fQOwvuycPazhAjSjtDb7wEEDdJAaBlTMzQL7BFyZTBR1A+1xtxf76QkDpSC7\u002fIb0YQGgibHh6JQdATRWMSurEFEAAkX77OnADQHqlLEMcKxBAI0p7gy\u002fMGUDrc7UV+yslQPYoXI\u002fCNRdArkfhehSu+z91ApoIG14jQBiV1AloohZAArwFEhTvQUBB8WPMXdNIQF5LyAc9GwhA93XgnBHFLkCyne+nxgssQPkP6bevwxtAMLsnDwsVM0AkufyH9BsUQLmNBvAWyBBAZ9XnaiuWLUBKe4MvTMYjQHe+nxovfSVAufyH9NsXE0CjkjoBTYQeQBZqTfOOMzJAirDh6ZXyLUBWn6ut2P8oQCQofoy5ayNA0NVW7C97IkAj2\u002fl+ahwlQEATYcPTSy5Aat5xio5kF0AFxY8xd+0aQBTQRNjwtBhAKH6MuWvJHEAQWDm0yPYeQEw3iUFg5RZAKH6MuWuJGEAYldQJaIInQKMBvAUSlCRA+THmriXEIkBIUPwYcwdAQDJ3LSEfdA9AXI\u002fC9SjcD0DhC5OpghEZQGFUUiegCR9AWDm0yHZ+IkBdbcX+shs\u002fQIts5\u002fupcS1Ab4EExY\u002fBMkAydy0hH\u002fQyQLhAguLHWB5AFYxK6gR0G0Ba9bnair0wQEmdgCbCBghAPQrXo3C9EkCcxCCwcmgTQFioNc07DhNA1xLyQc\u002fmMUA+eVioNU0mQIofY+5aYiZA2qz6XG2FKEA2PL1SlqEUQLhAguLHWBBAoWez6nPVNUBMN4lBYIUtQBkEVg4twjlAz2bV52orFUAyVTAqqdMfQIXrUbgeBSBAyJi7lpCPMkCamZmZmXkgQACRfvs6UCBARPrt68DJMEBmiGNd3AYZQGiz6nO1tUNAXI\u002fC9Sg8MECamZmZmVkwQCo6kst\u002fiBlA4JwRpb2hJkAbL90kBsEWQJHtfD81HhRAo5I6AU3EFkC\u002ffR04Z+QoQBrAWyBBcSZAzczMzMzMGkAJG55eKetCQLdif9k9uTFAklz+Q\u002fptMUBMN4lBYCUrQFUwKqkTcCFAw\u002fUoXI\u002fCIkAkl\u002f+QfnsZQJm7lpAPEkBA\u002fKnx0k2yMEB6xyk6kssxQEJg5dAi2xtAAAAAAABAHEAUrkfhehQwQLsnDwu1ZhtAxyk6kss\u002fF0Dl8h\u002fSbx8TQKVOQBNhEzBAMlUwKqkzLEAzMzMzM\u002fMxQJVliGNd3CdAcRsN4C3QGUBg5dAi2zkkQOwvuycPSxlAmbuWkA+qNEBI4XoUricnQI2XbhKDwBJAqRPQRNjwDUBzaJHtfP9HQM\u002f3U+OlyzNAswxxrIs7LEAfhetRuB4cQNk9eViolTRA2ht8YTIVIEAUrkfhenQhQM07TtGRfCVAGlHaG3wRMkCLbOf7qbEXQJvmHafoaChAH4XrUbieHUCPwvUoXI8aQGB2Tx4W6hhAFK5H4XoUGEAyVTAqqdMXQM6qz9VWLBhAKcsQx7rYJUAoDwu1plknQG\u002fwhclUATxALSEf9GwWJEAi\u002ffZ14DwoQKvP1VbsbyhAodY07zilNECk374OnFMhQEhQ\u002fBhzFz5AdLUV+8uuM0BSuB6F69EiQKTfvg6cUyFA0SLb+X4qIEB1kxgEVo4hQJ7vp8ZLNyBA54wo7Q0+FECkcD0K16MWQNiBc0aUtixA0NVW7C9Yd0Df4AuTqZIyQLhAguLHeCRArkfhehQuIEDmriXkg04xQBNhw9MrxS1ApN++DpzzLkBnRGlv8MUVQNJvXwfO8UhAp+hILv+BLkBfKcsQx9ozQF66SQwCqyNAgy9MpgomIUAzMzMzM3MfQLgehetROCJAhetRuB6FH0CGyVTBqKQkQBZqTfOO92NA07zjFB3pLkB6xyk6kksdQKhXyjLEcSdAsVBrmnccIEDHuriNBshJQO5aQj7omS5AIGPuWkJOMUBKe4MvTNYwQAAAAAAAgCFAj8L1KFzPI0A5RUdy+c80QJqZmZmZuSJA5BQdyeWfK0AeFmpN824mQHnpJjEIDC5ApN++DpxTIEC4HoXrUTggQJAxdy0hvyJAyAc9m1X\u002fIECamZmZmRkiQHsUrkfhWilAnl4pyxDnI0D0\u002fdR46eYZQAAAAAAAgCVArkfhehRuJkA3iUFg5VAkQDMzMzMzsxpAGCZTBaNyLEBm9+RhobYlQGuad5yiAydAj8L1KFyPJkAyVTAqqdMaQEdy+Q\u002fpFyVAKe0NvjA5IkAK16NwPWoiQI9TdCSXXyJAkKD4MebuHkCsrdhfdk8pQBKDwMohp4NAumsJ+aDpeUBdbcX+sms0QOF6FK5HISBAw\u002fUoXI\u002fCJkA="},"type":"data","visible":true},"hovertemplate":"calc: %{x}\u003cbr\u003emeas: %{y}\u003cbr\u003e\u003cextra\u003e\u003c\u002fextra\u003e","marker":{"color":"rgb(31, 119, 180)","line":{"width":0.5},"size":10,"symbol":"circle"},"mode":"markers","x":{"dtype":"f8","bdata":"1SvcvJ3KaUA5sVUBcaouQGjneHnEZlhAw6UmbqfwakCVqvLO\u002fyOZQBABnwFAv5hAmUbD4yrScUCOytT41DiRQOHAasEbt35AfTECX\u002fodokDfK0n4l9Z2QFSpcwFuU+A500N3Zp5SdEBC7lLMtgovQEwxxSr312hApS5kmBQAeUCIFgYJEd2KQLHmJvlhqElAqn2ssYb\u002fOkBvMsOnstCIQHgVzIbREVFA7IGZh4gNnUAxjDZKN7OiQGEJW7jhMCQ6+gSL9E4Yk0CYqmlqS5aTQM4CMO4Xi3JA3b6OvgwsoEA6t0RU9c1mQNlS2caFb1tATSD1BEu5kECuui9kT5hdQNUAJswKdINA6Fs+0fZwXkD5YXiwtWeBQPouBPn2IZVAkWIDRYOtmUA8jVidJztYQLQlcX+Ez41A4TsWPYOwcEA4QDDyLoyBQOntA4\u002ft35BAHP2Q04nnZEAR\u002fZDTiedkQNYapwepqm1Ay3KUaMkKeUCSYo1xjUl4QPeSqhs\u002f25g\u002fC5DOV6bvaUCnJkCdew+JQLaHLmlmCYRA3\u002fFMe2WxU0Dn8khqApSeQDVgJ8KNPUBAmEPaBxD5VEBXH+6pLCZjQCrhxnUl53NAeeDV\u002fNs2fUAh3Qn8DpaiQMiF1EP6DEBA9xvABVyok0COvbswCxOUQGSiCEGtXHNAX1tdxGm5aUCVNCtY2w+KQHL54MZSKk5ARqr8O6unIzo\u002fK8LJCLoCOls\u002fnKvat9Q\u002fXc3jqlRZkkDdeIIrRrBUQPzfi4JftWFAn8jysN7oKEA1+1wnbIhhQCSTIrKmJjlAoCSeXMbglECqxoflUAmTQBuivt3OtJdA6OmDmqm0EToiA3nyEed0QLQJLWuawXRA0lHmta4IkECClr5QJydyQDSUE+h\u002fOGtAYZCRYFi3eEDzmUyuHp8DOvAihJr8CqRAZv\u002fxN9S+c0CiTTqPlfB9QPO4PncmdDBAD7CNLRpzeEDZVqL3HQxgQNxWovcdDGBAi\u002ftP2b6lZEDFsA6FE5GCQDjbvkTg2nxAe+V1euWWJTp2CtM\u002fcQ6eQKW2nc01Ero\u002fnpfwJXG3X0CLYWfyflCDQGAf9Ia7ZWBABNrQVCtNQ0AvYEIy1qT6P6MVhr074J1Ai48h30B6J0B9dqhLz1kjQHZdtAeh\u002fTE6Pdbfcg6\u002f1zkSCHXY13WUQKS7qIcKRmpAZyVRd9tdXUBfJVF3211dQMfnIVIR3IZAFHo3520kb0CKNOpVxv6HQM0c6teU3TlAFvTYtZJdLzpWI3laOC+HQA8Zwk2T4itA5Ip7EZf1kEBof0efWd1YQOTwAXD08AlAfC2obl3nN0DxEyjHmFygQNf\u002fRvigw41A7yMo\u002f7MSTUDH4JoISLozOtGJeUpOrolAp1JYaZmdSkBPEpbM3kZ0QGHJtyLm0ndA1wOkj5XwfUB9aMcVGt1aQJZRNpwCknxAkF3bMCF\u002fcUA8KSXV8mNlQAyTWg\u002fq8GBAyli617n6qzkGYmZ6HaQtOldT0klDYWZANY9B9Qw3eEAQ8hS2pMRpPxdIeC+wEoxATzY1040RP0CWR37GlYmAQPZ\u002fKJh7TIdAml4TReF3gkBSTgqzNgs8OsSUoNnndZ1AsV1KAG++6z\u002f0OG\u002f40qRXQC4dQpz9CjFAtDkqeQ0AUkDM9RYjuip4QMby+OVl0khAKSsm7IuRWEDXKibsi5FYQHbrCqIHE4FA12IS4P5vnEDDse4W9Kv4P0TVO7y8ixc6VJKjhZjD8DnguVaLEzWUQIhk+LIbMGRAwEfHZCdXa0CNE8KIdgNgQF8dWEwLCIBATwUPoNICiECWvhhT4OeGQPlInZFiLGRAwuZd+btE+zkXP6BGPA0oOsrvX7wz8SU6eeYrE9uibED17jnZFg8gQA7WJCJ\u002fkY9A+2KgEPM6XEDg7kezBHdWQN3uR7MEd1ZAaPW14T31PUCPiUxe0P6RQIF8cevlq1JALReJe2XakEBu6+6Dj1yKQMmUAhVaqlZAalevyrEhRkAOqXPai\u002fuBQDIEEWbKaWtArFiCBlwcekAhRNmWaz18QIoIq81cfnlA1vX8s5SVcECcJp9pHk5nQLBH1PmNbPo5mZ+xEhF63zlqVrrXufoLOpZhHfyRoXpAhKlGwYdWdEDOkLNGoEFfQMgqFSQx7wxAfh4qrFSCd0Ar2hT\u002fFwAwQO\u002fqXBAWflpA\u002frPcspyJVEC0lgNi9SFzQOR5QgwHFHtAp+qL+yD1d0AJnm14fX4WQBIH7vliwjU6NNvEhIMIVED+kWGa\u002fhRDQM72SC0k5h9AaqubxV86REB6VH5vLWQkQGEe2fvA3ZpAuQVAyFrZlUAqf4uJbNLjP3gi7Z4NItY\u002fur2v51bhRjo="},"y":{"dtype":"f8","bdata":"Dr4wmSpSaECoV8oyxKE2QJEPejar0lhA5WGh1jRpa0AJ+aBn81qVQNXnaiv2lJVAWDm0yHYHcUAhsHJoEfyOQLraiv1liX9AMnctIV\u002fvoEBsCfmgZxh3QOwvuycPCxlArfpcbcU1dUBa9bnaij00QMzuycNCy2pAB1+YTBV6d0Drc7UV+zOKQKyL22gAj0tAtoR80LOJQECMuWsJeeeHQCJseHqleFJAVHQkl7\u002fZnUCsrdhfdreiQGUZ4lgXtyNAqRPQRJjfkkAGgZVDywSTQApoImx4RnRALv8h\u002ffacn0AYJlMFo5hlQMl2vp8a711Az2bV5+rrkEC5jQbwFtheQLWmeccphoRAlIeFWtNKYECCc0aU9tKBQCS5\u002fIc02pVAJLn8h7RWmkAdOGdEaf9aQMrDQq3pkIxAHHxhMlUhcED1udqK\u002fWaCQF8HzhnRxI9A1lbsL7vpakAjSnuDL7JkQLN78rBQdHBAxLEubqPyeEAZBFYOLWt5QPRsVn2uFiJAqRPQRNgKbUAXSFD8mHiJQFwgQfHjL4RA6Ugu\u002fyFhWkDgvg6cE6OgQPhT46Wb1DhANjy9Upb9W0Cz6nO1FUFmQPMf0m9fP3ZAlkOLbOcxfECjkjoBjdKiQNV46SYxeEJADAIrhxbOk0CHp1fKMjOTQHL5D+m3kXRAyeU\u002fpN8YbECzDHGsi5iLQGWqYFRSV05Avp8aL92kKUCWIY51cVsUQDC7Jw8LdS9AQYLix5gTlEDWVuwvu\u002fNWQClcj8L1qFxAtvP91HjJJkB0RpT2BstaQMP1KFyP4jlAi2zn+6mwlkBfB84ZUXSTQG8Sg8BKn5dArkfhehSuDUDwp8ZLN5F0QBPyQc9m3XFAFD\u002fG3LUHj0DTvOMUHQRyQBBYObTIWmhAN4lBYOXjeUBE+u3rwPkcQLdif9l9NaVAxLEubqN8dUBrmnecooF9QIPAyqFFpjZAT6+UZYg5fUD+ZffkYfFgQAK8BRIU01tA9bnaiv3xYUCFfNCzWYODQDMzMzMzqYBAX5hMFYzqJECyLm6jwdegQCh+jLlryR5AS1mGONZFWkCitDf4Ql2CQBkEVg4tCGNALSEf9GxGMUAQWDm0yHYGQI51cRuta6BACyQofox5NUB\u002f2T15WPgwQJvmHafoSA9AB1+YTBVMGUDDZKpglPeTQHo2qz5XuWVA63O1FfuPYkBWn6ut2CtYQOY\u002fpN8+OYdAYqHWNO+gb0DKVMGoJAuJQLx0kxgEliJAnYAmwoYnF0CX\u002f5B+e\u002f6IQFwgQfFjnDBA4QuTqQKxkkCoV8oyxGlTQG1Wfa62Yr8\u002fyAc9m1UfQkDZzvdTo9KhQEku\u002fyF9pY9AqvHSTWJEUkBVMCqpExATQNejcD2KJ4ZAcvkP6bePUEDbiv1l9zx2QJm7lpAPIHVARwN4CyTAfEAXt9EA3sJhQDcawFsgQH5Aa5p3nKKFckCHFtnO9+dgQLx0kxgEylBAO99PjZdu2j9t5\u002fup8dLjP4V80LNZk2NABOeMKO1qeUBlGeJYFxckQDAqqRPQyotALUMc6+I+SEC6awn5IBuAQM3MzMzM5YBAtaZ5xykegUBPHhZqTUM6QIY41sVNFqFAI9v5fmr8HkCXkA96NhNQQHS1FfvLTidASOF6FK4XSUCWQ4ts52R3QCNKe4MvrD5AkDF3LSFrW0C4HoXrUTBZQKrx0k1ih39ANIC3QEJSnECvlGWIY90EQL8OnDOiFCtAw9MrZRmiE0DUK2UZIj6SQLWmeccpWGtAb4EExY+wcEBbQj7o2URfQEku\u002fyH9d31Adk8eFupchECeXinLENuFQCNKe4MvmmhAxY8xdy2RMUCBlUOLbKciQG\u002fwhclUQRtAU5YhjnUZaUDbiv1l9zQ4QCNKe4OvLJBAF7fRAN6iXUC\u002fDpwzokxRQAaBlUOLhFFAEOm3rwMXQUAnMQisXFORQLRZ9bna2kNAKe0NvjB3k0BApN++jrWIQDXvOEVHTl5AtaZ5xylKR0AxmSoYFceDQPd14JwRhW9AU5YhjnUedEAtQxzr4kN1QIv9ZffkjXlANe84RUfSbEBxrIvbaGxqQDvfT42Xbu4\u002fO99PjZfuCUBy+Q\u002fpt+8mQOcdp+hI631AINJvXwcveECDUUmdgBZYQBfZzvdTQyNAhA1Pr5SHd0AgY+5aQv4kQG40gLdABlxAidLe4AtPVUC62or9ZRZzQCqpE9BEd3ZAtMh2vp+4ekDecYqO5LIQQEYldQKayBVA2qz6XG3VTUCaCBueXrFFQCBB8WPMzTdA07zjFB1hSEDKw0KtaU49QG+BBMUPBplA4zYawFtgkkCXkA96NqvqP36MuWsJ+SVA48eYu5bQLEA="},"type":"scatter"}],                        {"legend":{"x":1.0,"xanchor":"right","y":1.0,"yanchor":"top"},"margin":{"autoexpand":true,"b":45,"r":30,"t":40},"shapes":[{"layer":"below","line":{"width":0.5},"type":"line","x0":0,"x1":1,"xref":"paper","y0":0,"y1":1,"yref":"paper"}],"title":{"text":"Measured vs Calculated data for experiment \ud83d\udd2c 'heidi'"},"xaxis":{"mirror":true,"showline":true,"title":{"text":"I\u00b2calc"},"zeroline":false,"tickformat":",.6~g","separatethousands":true},"yaxis":{"mirror":true,"showline":true,"title":{"text":"I\u00b2meas"},"zeroline":false,"tickformat":",.6~g","separatethousands":true},"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"bgcolor":"white","angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"ternary":{"bgcolor":"white","aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8","gridwidth":2},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8","gridwidth":2},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"white","subunitcolor":"#C8D4E3","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}}},                        {"displaylogo": false, "modeBarButtonsToRemove": ["select2d", "lasso2d", "zoomIn2d", "zoomOut2d", "autoScale2d"], "responsive": true}                    )                };            </script> </div>
+<script charset="utf-8" crossorigin="anonymous" integrity="sha256-KEmPoupLpFyGMyGAiOsiNDbKDKAvxXAn/W+oQa0ZAfk=" src="https://cdn.plot.ly/plotly-3.4.0.min.js"></script> <div class="plotly-graph-div" id="5a10a494-2bab-4340-8b09-df545f69835a" style="height:100%; width:100%;"></div> <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("5a10a494-2bab-4340-8b09-df545f69835a")) {                    Plotly.newPlot(                        "5a10a494-2bab-4340-8b09-df545f69835a",                        [{"error_y":{"array":{"dtype":"f8","bdata":"Qxzr4jaaAkB+jLlrCfnxP+XQItv5fgRA3GgAb4EECkCk374OnBM\u002fQOwvuycPazhAjSjtDb7wEEDdJAaBlTMzQL7BFyZTBR1A+1xtxf76QkDpSC7\u002fIb0YQGgibHh6JQdATRWMSurEFEAAkX77OnADQHqlLEMcKxBAI0p7gy\u002fMGUDrc7UV+yslQPYoXI\u002fCNRdArkfhehSu+z91ApoIG14jQBiV1AloohZAArwFEhTvQUBB8WPMXdNIQF5LyAc9GwhA93XgnBHFLkCyne+nxgssQPkP6bevwxtAMLsnDwsVM0AkufyH9BsUQLmNBvAWyBBAZ9XnaiuWLUBKe4MvTMYjQHe+nxovfSVAufyH9NsXE0CjkjoBTYQeQBZqTfOOMzJAirDh6ZXyLUBWn6ut2P8oQCQofoy5ayNA0NVW7C97IkAj2\u002fl+ahwlQEATYcPTSy5Aat5xio5kF0AFxY8xd+0aQBTQRNjwtBhAKH6MuWvJHEAQWDm0yPYeQEw3iUFg5RZAKH6MuWuJGEAYldQJaIInQKMBvAUSlCRA+THmriXEIkBIUPwYcwdAQDJ3LSEfdA9AXI\u002fC9SjcD0DhC5OpghEZQGFUUiegCR9AWDm0yHZ+IkBdbcX+shs\u002fQIts5\u002fupcS1Ab4EExY\u002fBMkAydy0hH\u002fQyQLhAguLHWB5AFYxK6gR0G0Ba9bnair0wQEmdgCbCBghAPQrXo3C9EkCcxCCwcmgTQFioNc07DhNA1xLyQc\u002fmMUA+eVioNU0mQIofY+5aYiZA2qz6XG2FKEA2PL1SlqEUQLhAguLHWBBAoWez6nPVNUBMN4lBYIUtQBkEVg4twjlAz2bV52orFUAyVTAqqdMfQIXrUbgeBSBAyJi7lpCPMkCamZmZmXkgQACRfvs6UCBARPrt68DJMEBmiGNd3AYZQGiz6nO1tUNAXI\u002fC9Sg8MECamZmZmVkwQCo6kst\u002fiBlA4JwRpb2hJkAbL90kBsEWQJHtfD81HhRAo5I6AU3EFkC\u002ffR04Z+QoQBrAWyBBcSZAzczMzMzMGkAJG55eKetCQLdif9k9uTFAklz+Q\u002fptMUBMN4lBYCUrQFUwKqkTcCFAw\u002fUoXI\u002fCIkAkl\u002f+QfnsZQJm7lpAPEkBA\u002fKnx0k2yMEB6xyk6kssxQEJg5dAi2xtAAAAAAABAHEAUrkfhehQwQLsnDwu1ZhtAxyk6kss\u002fF0Dl8h\u002fSbx8TQKVOQBNhEzBAMlUwKqkzLEAzMzMzM\u002fMxQJVliGNd3CdAcRsN4C3QGUBg5dAi2zkkQOwvuycPSxlAmbuWkA+qNEBI4XoUricnQI2XbhKDwBJAqRPQRNjwDUBzaJHtfP9HQM\u002f3U+OlyzNAswxxrIs7LEAfhetRuB4cQNk9eViolTRA2ht8YTIVIEAUrkfhenQhQM07TtGRfCVAGlHaG3wRMkCLbOf7qbEXQJvmHafoaChAH4XrUbieHUCPwvUoXI8aQGB2Tx4W6hhAFK5H4XoUGEAyVTAqqdMXQM6qz9VWLBhAKcsQx7rYJUAoDwu1plknQG\u002fwhclUATxALSEf9GwWJEAi\u002ffZ14DwoQKvP1VbsbyhAodY07zilNECk374OnFMhQEhQ\u002fBhzFz5AdLUV+8uuM0BSuB6F69EiQKTfvg6cUyFA0SLb+X4qIEB1kxgEVo4hQJ7vp8ZLNyBA54wo7Q0+FECkcD0K16MWQNiBc0aUtixA0NVW7C9Yd0Df4AuTqZIyQLhAguLHeCRArkfhehQuIEDmriXkg04xQBNhw9MrxS1ApN++DpzzLkBnRGlv8MUVQNJvXwfO8UhAp+hILv+BLkBfKcsQx9ozQF66SQwCqyNAgy9MpgomIUAzMzMzM3MfQLgehetROCJAhetRuB6FH0CGyVTBqKQkQBZqTfOO92NA07zjFB3pLkB6xyk6kksdQKhXyjLEcSdAsVBrmnccIEDHuriNBshJQO5aQj7omS5AIGPuWkJOMUBKe4MvTNYwQAAAAAAAgCFAj8L1KFzPI0A5RUdy+c80QJqZmZmZuSJA5BQdyeWfK0AeFmpN824mQHnpJjEIDC5ApN++DpxTIEC4HoXrUTggQJAxdy0hvyJAyAc9m1X\u002fIECamZmZmRkiQHsUrkfhWilAnl4pyxDnI0D0\u002fdR46eYZQAAAAAAAgCVArkfhehRuJkA3iUFg5VAkQDMzMzMzsxpAGCZTBaNyLEBm9+RhobYlQGuad5yiAydAj8L1KFyPJkAyVTAqqdMaQEdy+Q\u002fpFyVAKe0NvjA5IkAK16NwPWoiQI9TdCSXXyJAkKD4MebuHkCsrdhfdk8pQBKDwMohp4NAumsJ+aDpeUBdbcX+sms0QOF6FK5HISBAw\u002fUoXI\u002fCJkA="},"type":"data","visible":true},"hovertemplate":"calc: %{x}\u003cbr\u003emeas: %{y}\u003cbr\u003e\u003cextra\u003e\u003c\u002fextra\u003e","marker":{"color":"rgb(31, 119, 180)","line":{"width":0.5},"size":10,"symbol":"circle"},"mode":"markers","x":{"dtype":"f8","bdata":"J5fcvJ3KaUCHR1YBcaouQKRYeXnEZlhAuxgnbqfwakAvnfLO\u002fyOZQPH6ngFAv5hAPZDD4yrScUCt59T41DiRQN0ta8Ebt35A1wUCX\u002fodokAWhkn4l9Z2QEpJ\u002fzZVG+M5qZZ3Zp5SdEC2hlPMtgovQDmfxSr312hABJBkmBQAeUAUXgYJEd2KQFZiJ\u002flhqElAeQGtsYb\u002fOkDjecOnstCIQANnzIbREVFA54CZh4gNnUBTbjZKN7OiQF1tW7jhMCQ6XyeL9E4Yk0A6zGlqS5aTQMVQMO4Xi3JAmraOvgwsoECzHUVU9c1mQCzT2caFb1tA50X1BEu5kECARDBkT5hdQPtCJswKdINAfOk+0fZwXkA0oHiwtWeBQINQBPn2IZVAKngDRYOtmUBy\u002f1idJztYQE5zcX+Ez41AmoMWPYOwcED8fjDyLoyBQK0UBI\u002ft35BAFlyR04nnZEALXJHTiedkQJ6cpwepqm1Ac9aUaMkKeUACxI1xjUl4QA4Oqxs\u002f25g\u002feAPPV6bvaUBWckCdew+JQPnLLmlmCYRApU9Ne2WxU0Dz+UhqApSeQFevJ8KNPUBAMafaBxD5VEAcd+6pLCZjQIg0x3Ul53NAc1DW\u002fNs2fUAYzwn8DpaiQAfU1EP6DEBAkELABVyok0C047swCxOUQPTzCEGtXHNAG85dxGm5aUAkgitY2w+KQHqK4cZSKk5Amgv9O6unIzr7h8LJCLoCOvClnKvat9Q\u002fk\u002fXjqlRZkkA724IrRrBUQLUxjIJftWFAO0PzsN7oKEAsTF0nbIhhQC8OI7KmJjlAzEqeXMbglECo7oflUAmTQIbDvt3OtJdAlkGEmqm0ETohWnnyEed0QDZgLWuawXRAyHrmta4IkED3475QJydyQAMNFOh\u002fOGtAyPORYFi3eEAd+0yuHp8DOicQhJr8CqRAf1LyN9S+c0A9wDqPlfB9QMkJP3cmdDBAqhKOLRpzeEBzoaL3HQxgQHahovcdDGBAuVlQ2b6lZED58g6FE5GCQO5Kv0Tg2nxAZFB2euWWJTp0G9M\u002fcQ6eQL43ns01Ero\u002fNSvxJXG3X0BnpWfyflCDQINr9Ia7ZWBA1jfRVCtNQ0AF5EIy1qT6Pwcohr074J1AJwMi30B6J0Df1ahLz1kjQI22tAeh\u002fTE61Evgcg6\u002f1zkpMHXY13WUQM0wqYcKRmpAu65Rd9tdXUCxrlF3211dQGQyIlIR3IZAKwI4520kb0DjgOpVxv6HQE6b6teU3TlAaY\u002fZtZJdLzqDbnlaOC+HQD2iwk2T4itA27R7EZf1kEC69EefWd1YQCpxAnD08AlAhKKobl3nN0CDGCjHmFygQG9SR\u002figw41A8K8o\u002f7MSTUB7\u002fokw4ds1OqDYeUpOrolAINNYaZmdSkBrZ5bM3kZ0QEkquCLm0ndA6nakj5XwfUDD5scVGt1aQNrANpwCknxAzqjbMCF\u002fcUCciiXV8mNlQJXhWg\u002fq8GBAV+O617n6qznO9GZ6HaQtOtG40klDYWZAZfFB9Qw3eECpcRW2pMRpP7iZeC+wEoxA5M01040RP0BUhX7GlYmAQKDLKJh7TIdA+6ATReF3gkAy2QqzNgs8OhGsoNnndZ1ABudKAG++6z\u002fOqG\u002f40qRXQOVwQpz9CjFAzo8qeQ0AUkDcVxcjuip4QNZq+eVl0khAL58m7IuRWEDdnibsi5FYQJQqC6IHE4FAo30S4P5vnEDWK+8W9Kv4P91JPLy8ixc6WOWjhZjD8DmA41aLEzWUQOfA+LIbMGRAPMHHZCdXa0APXsKIdgNgQN5ZWEwLCIBAP1IPoNICiEDJCRlT4OeGQEqlnZFiLGRAym1e+btE+zkxtqBGPA0oOnNcYLwz8SU6C2UsE9uibEAvPjrZFg8gQJYqJSJ\u002fkY9AVuegEPM6XEBoWUizBHdWQGVZSLMEd1ZAqoe24T31PUBQtExe0P6RQLPVcevlq1JA3EGJe2XakECjO++Dj1yKQDoAAxVaqlZAtsKvyrEhRkBv6nPai\u002fuBQPt9EWbKaWtA2MCCBlwcekCistmWaz18QNRuq81cfnlAwj39s5SVcEDoj59pHk5nQIrK1PmNbPo5eDuyEhF63zn44LrXufoLOlvLHfyRoXpA7P5GwYdWdEB4IrRGoEFfQNK5FSQx7wxAhX4qrFSCd0DNKBX\u002fFwAwQI5nXRAWflpAwBXdspyJVEDm5wNi9SFzQP\u002fkQgwHFHtAHkyM+yD1d0AhDW54fX4WQNJy7vliwjU6pjrFhIMIVEDH7mGa\u002fhRDQCuUSS0k5h9AqQ2cxV86RED2uH5vLWQkQA0\u002f2fvA3ZpApy5AyFrZlUBp4YuJbNLjPzuQ7Z4NItY\u002fBy+w51bhRjo="},"y":{"dtype":"f8","bdata":"Dr4wmSpSaECoV8oyxKE2QJEPejar0lhA5WGh1jRpa0AJ+aBn81qVQNXnaiv2lJVAWDm0yHYHcUAhsHJoEfyOQLraiv1liX9AMnctIV\u002fvoEBsCfmgZxh3QOwvuycPCxlArfpcbcU1dUBa9bnaij00QMzuycNCy2pAB1+YTBV6d0Drc7UV+zOKQKyL22gAj0tAtoR80LOJQECMuWsJeeeHQCJseHqleFJAVHQkl7\u002fZnUCsrdhfdreiQGUZ4lgXtyNAqRPQRJjfkkAGgZVDywSTQApoImx4RnRALv8h\u002ffacn0AYJlMFo5hlQMl2vp8a711Az2bV5+rrkEC5jQbwFtheQLWmeccphoRAlIeFWtNKYECCc0aU9tKBQCS5\u002fIc02pVAJLn8h7RWmkAdOGdEaf9aQMrDQq3pkIxAHHxhMlUhcED1udqK\u002fWaCQF8HzhnRxI9A1lbsL7vpakAjSnuDL7JkQLN78rBQdHBAxLEubqPyeEAZBFYOLWt5QPRsVn2uFiJAqRPQRNgKbUAXSFD8mHiJQFwgQfHjL4RA6Ugu\u002fyFhWkDgvg6cE6OgQPhT46Wb1DhANjy9Upb9W0Cz6nO1FUFmQPMf0m9fP3ZAlkOLbOcxfECjkjoBjdKiQNV46SYxeEJADAIrhxbOk0CHp1fKMjOTQHL5D+m3kXRAyeU\u002fpN8YbECzDHGsi5iLQGWqYFRSV05Avp8aL92kKUCWIY51cVsUQDC7Jw8LdS9AQYLix5gTlEDWVuwvu\u002fNWQClcj8L1qFxAtvP91HjJJkB0RpT2BstaQMP1KFyP4jlAi2zn+6mwlkBfB84ZUXSTQG8Sg8BKn5dArkfhehSuDUDwp8ZLN5F0QBPyQc9m3XFAFD\u002fG3LUHj0DTvOMUHQRyQBBYObTIWmhAN4lBYOXjeUBE+u3rwPkcQLdif9l9NaVAxLEubqN8dUBrmnecooF9QIPAyqFFpjZAT6+UZYg5fUD+ZffkYfFgQAK8BRIU01tA9bnaiv3xYUCFfNCzWYODQDMzMzMzqYBAX5hMFYzqJECyLm6jwdegQCh+jLlryR5AS1mGONZFWkCitDf4Ql2CQBkEVg4tCGNALSEf9GxGMUAQWDm0yHYGQI51cRuta6BACyQofox5NUB\u002f2T15WPgwQJvmHafoSA9AB1+YTBVMGUDDZKpglPeTQHo2qz5XuWVA63O1FfuPYkBWn6ut2CtYQOY\u002fpN8+OYdAYqHWNO+gb0DKVMGoJAuJQLx0kxgEliJAnYAmwoYnF0CX\u002f5B+e\u002f6IQFwgQfFjnDBA4QuTqQKxkkCoV8oyxGlTQG1Wfa62Yr8\u002fyAc9m1UfQkDZzvdTo9KhQEku\u002fyF9pY9AqvHSTWJEUkBVMCqpExATQNejcD2KJ4ZAcvkP6bePUEDbiv1l9zx2QJm7lpAPIHVARwN4CyTAfEAXt9EA3sJhQDcawFsgQH5Aa5p3nKKFckCHFtnO9+dgQLx0kxgEylBAO99PjZdu2j9t5\u002fup8dLjP4V80LNZk2NABOeMKO1qeUBlGeJYFxckQDAqqRPQyotALUMc6+I+SEC6awn5IBuAQM3MzMzM5YBAtaZ5xykegUBPHhZqTUM6QIY41sVNFqFAI9v5fmr8HkCXkA96NhNQQHS1FfvLTidASOF6FK4XSUCWQ4ts52R3QCNKe4MvrD5AkDF3LSFrW0C4HoXrUTBZQKrx0k1ih39ANIC3QEJSnECvlGWIY90EQL8OnDOiFCtAw9MrZRmiE0DUK2UZIj6SQLWmeccpWGtAb4EExY+wcEBbQj7o2URfQEku\u002fyH9d31Adk8eFupchECeXinLENuFQCNKe4MvmmhAxY8xdy2RMUCBlUOLbKciQG\u002fwhclUQRtAU5YhjnUZaUDbiv1l9zQ4QCNKe4OvLJBAF7fRAN6iXUC\u002fDpwzokxRQAaBlUOLhFFAEOm3rwMXQUAnMQisXFORQLRZ9bna2kNAKe0NvjB3k0BApN++jrWIQDXvOEVHTl5AtaZ5xylKR0AxmSoYFceDQPd14JwRhW9AU5YhjnUedEAtQxzr4kN1QIv9ZffkjXlANe84RUfSbEBxrIvbaGxqQDvfT42Xbu4\u002fO99PjZfuCUBy+Q\u002fpt+8mQOcdp+hI631AINJvXwcveECDUUmdgBZYQBfZzvdTQyNAhA1Pr5SHd0AgY+5aQv4kQG40gLdABlxAidLe4AtPVUC62or9ZRZzQCqpE9BEd3ZAtMh2vp+4ekDecYqO5LIQQEYldQKayBVA2qz6XG3VTUCaCBueXrFFQCBB8WPMzTdA07zjFB1hSEDKw0KtaU49QG+BBMUPBplA4zYawFtgkkCXkA96NqvqP36MuWsJ+SVA48eYu5bQLEA="},"type":"scatter"}],                        {"legend":{"x":1.0,"xanchor":"right","y":1.0,"yanchor":"top"},"margin":{"autoexpand":true,"b":45,"r":30,"t":40},"shapes":[{"layer":"below","line":{"width":0.5},"type":"line","x0":0,"x1":1,"xref":"paper","y0":0,"y1":1,"yref":"paper"}],"title":{"text":"Measured vs Calculated data for experiment \ud83d\udd2c 'heidi'"},"xaxis":{"mirror":true,"showline":true,"title":{"text":"I\u00b2calc"},"zeroline":false,"tickformat":",.6~g","separatethousands":true},"yaxis":{"mirror":true,"showline":true,"title":{"text":"I\u00b2meas"},"zeroline":false,"tickformat":",.6~g","separatethousands":true},"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"bgcolor":"white","angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"ternary":{"bgcolor":"white","aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8","gridwidth":2},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8","gridwidth":2},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"white","subunitcolor":"#C8D4E3","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}}},                        {"displaylogo": false, "modeBarButtonsToRemove": ["select2d", "lasso2d", "zoomIn2d", "zoomOut2d", "autoScale2d"], "responsive": true}                    )                };            </script> </div>
 </div>
 </div>
 </div>
@@ -6113,9 +6182,9 @@ var element = document.getElementById('f7e48176-24e3-4a90-8432-b718a5f9cac2');
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="628749f5-e281-42e5-98aa-233e3e435b02" tabindex="0">
+<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="a965e73b-04a7-4f85-acb5-f00f03bd6950" tabindex="0">
 <script type="text/javascript">
-var element = document.getElementById('628749f5-e281-42e5-98aa-233e3e435b02');
+var element = document.getElementById('a965e73b-04a7-4f85-acb5-f00f03bd6950');
 
                 (function() {
                     var isDark = false;
@@ -6159,9 +6228,9 @@ var element = document.getElementById('628749f5-e281-42e5-98aa-233e3e435b02');
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="433547d7-d0a7-43c0-ab46-72d954963ce4" tabindex="0">
+<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="95ee705b-a52a-4672-ba8a-759b4ca6090f" tabindex="0">
 <script type="text/javascript">
-var element = document.getElementById('433547d7-d0a7-43c0-ab46-72d954963ce4');
+var element = document.getElementById('95ee705b-a52a-4672-ba8a-759b4ca6090f');
 
             if (typeof IPython !== 'undefined' && IPython.notebook) {
                 IPython.notebook.kernel.execute("_jupyter_dark_detect_result = " + 
@@ -6178,88 +6247,88 @@ var element = document.getElementById('433547d7-d0a7-43c0-ab46-72d954963ce4');
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
 <style type="text/css">
-#T_9b0f5   {
+#T_384b2   {
   border: 1px solid #dadada;
   border-collapse: collapse;
   margin-top: 0.5em;
   margin-left: 0.5em;
 }
-#T_9b0f5 thead {
+#T_384b2 thead {
   border-bottom: 1px solid #dadada;
 }
-#T_9b0f5 th {
+#T_384b2 th {
   border: none;
   padding-top: 0.25em;
   padding-bottom: 0.25em;
   line-height: 1.15em;
 }
-#T_9b0f5  td {
+#T_384b2  td {
   border: none;
   padding-top: 0.25em;
   padding-bottom: 0.25em;
   line-height: 1.15em;
 }
-#T_9b0f5 th.row_heading {
+#T_384b2 th.row_heading {
   color: #dadada;
   font-weight: normal;
 }
-#T_9b0f5 tbody tr:nth-child(odd) {
+#T_384b2 tbody tr:nth-child(odd) {
   background-color: transparent;
 }
-#T_9b0f5  tbody tr:nth-child(even) {
+#T_384b2  tbody tr:nth-child(even) {
   background-color: transparent;
 }
-#T_9b0f5 th.col0 {
+#T_384b2 th.col0 {
   text-align: left;
 }
-#T_9b0f5 th.col1 {
+#T_384b2 th.col1 {
   text-align: right;
 }
-#T_9b0f5_row0_col0, #T_9b0f5_row1_col0, #T_9b0f5_row2_col0, #T_9b0f5_row3_col0, #T_9b0f5_row4_col0, #T_9b0f5_row5_col0 {
+#T_384b2_row0_col0, #T_384b2_row1_col0, #T_384b2_row2_col0, #T_384b2_row3_col0, #T_384b2_row4_col0, #T_384b2_row5_col0 {
   text-align: left;
 }
-#T_9b0f5_row0_col1, #T_9b0f5_row1_col1, #T_9b0f5_row2_col1, #T_9b0f5_row3_col1, #T_9b0f5_row4_col1, #T_9b0f5_row5_col1 {
+#T_384b2_row0_col1, #T_384b2_row1_col1, #T_384b2_row2_col1, #T_384b2_row3_col1, #T_384b2_row4_col1, #T_384b2_row5_col1 {
   text-align: right;
 }
 </style>
-<table class="dataframe" id="T_9b0f5">
+<table class="dataframe" id="T_384b2">
 <thead>
 <tr>
 <th class="blank level0"> </th>
-<th class="col_heading level0 col0" id="T_9b0f5_level0_col0">Parameter</th>
-<th class="col_heading level0 col1" id="T_9b0f5_level0_col1">Value</th>
+<th class="col_heading level0 col0" id="T_384b2_level0_col0">Parameter</th>
+<th class="col_heading level0 col1" id="T_384b2_level0_col1">Value</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th class="row_heading level0 row0" id="T_9b0f5_level0_row0">1</th>
-<td class="data row0 col0" id="T_9b0f5_row0_col0">a</td>
-<td class="data row0 col1" id="T_9b0f5_row0_col1">10.13000</td>
+<th class="row_heading level0 row0" id="T_384b2_level0_row0">1</th>
+<td class="data row0 col0" id="T_384b2_row0_col0">a</td>
+<td class="data row0 col1" id="T_384b2_row0_col1">10.13000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row1" id="T_9b0f5_level0_row1">2</th>
-<td class="data row1 col0" id="T_9b0f5_row1_col0">b</td>
-<td class="data row1 col1" id="T_9b0f5_row1_col1">10.13000</td>
+<th class="row_heading level0 row1" id="T_384b2_level0_row1">2</th>
+<td class="data row1 col0" id="T_384b2_row1_col0">b</td>
+<td class="data row1 col1" id="T_384b2_row1_col1">10.13000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row2" id="T_9b0f5_level0_row2">3</th>
-<td class="data row2 col0" id="T_9b0f5_row2_col0">c</td>
-<td class="data row2 col1" id="T_9b0f5_row2_col1">10.13000</td>
+<th class="row_heading level0 row2" id="T_384b2_level0_row2">3</th>
+<td class="data row2 col0" id="T_384b2_row2_col0">c</td>
+<td class="data row2 col1" id="T_384b2_row2_col1">10.13000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row3" id="T_9b0f5_level0_row3">4</th>
-<td class="data row3 col0" id="T_9b0f5_row3_col0">alpha</td>
-<td class="data row3 col1" id="T_9b0f5_row3_col1">90.00000</td>
+<th class="row_heading level0 row3" id="T_384b2_level0_row3">4</th>
+<td class="data row3 col0" id="T_384b2_row3_col0">alpha</td>
+<td class="data row3 col1" id="T_384b2_row3_col1">90.00000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row4" id="T_9b0f5_level0_row4">5</th>
-<td class="data row4 col0" id="T_9b0f5_row4_col0">beta</td>
-<td class="data row4 col1" id="T_9b0f5_row4_col1">90.00000</td>
+<th class="row_heading level0 row4" id="T_384b2_level0_row4">5</th>
+<td class="data row4 col0" id="T_384b2_row4_col0">beta</td>
+<td class="data row4 col1" id="T_384b2_row4_col1">90.00000</td>
 </tr>
 <tr>
-<th class="row_heading level0 row5" id="T_9b0f5_level0_row5">6</th>
-<td class="data row5 col0" id="T_9b0f5_row5_col0">gamma</td>
-<td class="data row5 col1" id="T_9b0f5_row5_col1">90.00000</td>
+<th class="row_heading level0 row5" id="T_384b2_level0_row5">6</th>
+<td class="data row5 col0" id="T_384b2_row5_col0">gamma</td>
+<td class="data row5 col1" id="T_384b2_row5_col1">90.00000</td>
 </tr>
 </tbody>
 </table>
@@ -6274,9 +6343,9 @@ var element = document.getElementById('433547d7-d0a7-43c0-ab46-72d954963ce4');
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="c5d0e322-b5ce-4672-a604-80e44c75c73b" tabindex="0">
+<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="f23a92a2-8526-48d4-854f-96c4204b366f" tabindex="0">
 <script type="text/javascript">
-var element = document.getElementById('c5d0e322-b5ce-4672-a604-80e44c75c73b');
+var element = document.getElementById('f23a92a2-8526-48d4-854f-96c4204b366f');
 
                 (function() {
                     var isDark = false;
@@ -6320,9 +6389,9 @@ var element = document.getElementById('c5d0e322-b5ce-4672-a604-80e44c75c73b');
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="463f7eea-fd88-4bbe-841f-b15ab2d3b783" tabindex="0">
+<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="00d0524e-3c00-492c-b1f2-5270b0c12437" tabindex="0">
 <script type="text/javascript">
-var element = document.getElementById('463f7eea-fd88-4bbe-841f-b15ab2d3b783');
+var element = document.getElementById('00d0524e-3c00-492c-b1f2-5270b0c12437');
 
             if (typeof IPython !== 'undefined' && IPython.notebook) {
                 IPython.notebook.kernel.execute("_jupyter_dark_detect_result = " + 
@@ -6339,118 +6408,118 @@ var element = document.getElementById('463f7eea-fd88-4bbe-841f-b15ab2d3b783');
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
 <style type="text/css">
-#T_d6405   {
+#T_842db   {
   border: 1px solid #dadada;
   border-collapse: collapse;
   margin-top: 0.5em;
   margin-left: 0.5em;
 }
-#T_d6405 thead {
+#T_842db thead {
   border-bottom: 1px solid #dadada;
 }
-#T_d6405 th {
+#T_842db th {
   border: none;
   padding-top: 0.25em;
   padding-bottom: 0.25em;
   line-height: 1.15em;
 }
-#T_d6405  td {
+#T_842db  td {
   border: none;
   padding-top: 0.25em;
   padding-bottom: 0.25em;
   line-height: 1.15em;
 }
-#T_d6405 th.row_heading {
+#T_842db th.row_heading {
   color: #dadada;
   font-weight: normal;
 }
-#T_d6405 tbody tr:nth-child(odd) {
+#T_842db tbody tr:nth-child(odd) {
   background-color: transparent;
 }
-#T_d6405  tbody tr:nth-child(even) {
+#T_842db  tbody tr:nth-child(even) {
   background-color: transparent;
 }
-#T_d6405 th.col0 {
+#T_842db th.col0 {
   text-align: left;
 }
-#T_d6405 th.col1 {
+#T_842db th.col1 {
   text-align: left;
 }
-#T_d6405 th.col2 {
+#T_842db th.col2 {
   text-align: right;
 }
-#T_d6405 th.col3 {
+#T_842db th.col3 {
   text-align: right;
 }
-#T_d6405 th.col4 {
+#T_842db th.col4 {
   text-align: right;
 }
-#T_d6405 th.col5 {
+#T_842db th.col5 {
   text-align: right;
 }
-#T_d6405 th.col6 {
+#T_842db th.col6 {
   text-align: right;
 }
-#T_d6405_row0_col0, #T_d6405_row0_col1, #T_d6405_row1_col0, #T_d6405_row1_col1, #T_d6405_row2_col0, #T_d6405_row2_col1, #T_d6405_row3_col0, #T_d6405_row3_col1 {
+#T_842db_row0_col0, #T_842db_row0_col1, #T_842db_row1_col0, #T_842db_row1_col1, #T_842db_row2_col0, #T_842db_row2_col1, #T_842db_row3_col0, #T_842db_row3_col1 {
   text-align: left;
 }
-#T_d6405_row0_col2, #T_d6405_row0_col3, #T_d6405_row0_col4, #T_d6405_row0_col5, #T_d6405_row0_col6, #T_d6405_row1_col2, #T_d6405_row1_col3, #T_d6405_row1_col4, #T_d6405_row1_col5, #T_d6405_row1_col6, #T_d6405_row2_col2, #T_d6405_row2_col3, #T_d6405_row2_col4, #T_d6405_row2_col5, #T_d6405_row2_col6, #T_d6405_row3_col2, #T_d6405_row3_col3, #T_d6405_row3_col4, #T_d6405_row3_col5, #T_d6405_row3_col6 {
+#T_842db_row0_col2, #T_842db_row0_col3, #T_842db_row0_col4, #T_842db_row0_col5, #T_842db_row0_col6, #T_842db_row1_col2, #T_842db_row1_col3, #T_842db_row1_col4, #T_842db_row1_col5, #T_842db_row1_col6, #T_842db_row2_col2, #T_842db_row2_col3, #T_842db_row2_col4, #T_842db_row2_col5, #T_842db_row2_col6, #T_842db_row3_col2, #T_842db_row3_col3, #T_842db_row3_col4, #T_842db_row3_col5, #T_842db_row3_col6 {
   text-align: right;
 }
 </style>
-<table class="dataframe" id="T_d6405">
+<table class="dataframe" id="T_842db">
 <thead>
 <tr>
 <th class="blank level0"> </th>
-<th class="col_heading level0 col0" id="T_d6405_level0_col0">label</th>
-<th class="col_heading level0 col1" id="T_d6405_level0_col1">type</th>
-<th class="col_heading level0 col2" id="T_d6405_level0_col2">x</th>
-<th class="col_heading level0 col3" id="T_d6405_level0_col3">y</th>
-<th class="col_heading level0 col4" id="T_d6405_level0_col4">z</th>
-<th class="col_heading level0 col5" id="T_d6405_level0_col5">occ</th>
-<th class="col_heading level0 col6" id="T_d6405_level0_col6">Biso</th>
+<th class="col_heading level0 col0" id="T_842db_level0_col0">label</th>
+<th class="col_heading level0 col1" id="T_842db_level0_col1">type</th>
+<th class="col_heading level0 col2" id="T_842db_level0_col2">x</th>
+<th class="col_heading level0 col3" id="T_842db_level0_col3">y</th>
+<th class="col_heading level0 col4" id="T_842db_level0_col4">z</th>
+<th class="col_heading level0 col5" id="T_842db_level0_col5">occ</th>
+<th class="col_heading level0 col6" id="T_842db_level0_col6">Biso</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th class="row_heading level0 row0" id="T_d6405_level0_row0">1</th>
-<td class="data row0 col0" id="T_d6405_row0_col0">Tb</td>
-<td class="data row0 col1" id="T_d6405_row0_col1">Tb</td>
-<td class="data row0 col2" id="T_d6405_row0_col2">0.50000</td>
-<td class="data row0 col3" id="T_d6405_row0_col3">0.50000</td>
-<td class="data row0 col4" id="T_d6405_row0_col4">0.50000</td>
-<td class="data row0 col5" id="T_d6405_row0_col5">1.00000</td>
-<td class="data row0 col6" id="T_d6405_row0_col6">0.53035</td>
+<th class="row_heading level0 row0" id="T_842db_level0_row0">1</th>
+<td class="data row0 col0" id="T_842db_row0_col0">Tb</td>
+<td class="data row0 col1" id="T_842db_row0_col1">Tb</td>
+<td class="data row0 col2" id="T_842db_row0_col2">0.50000</td>
+<td class="data row0 col3" id="T_842db_row0_col3">0.50000</td>
+<td class="data row0 col4" id="T_842db_row0_col4">0.50000</td>
+<td class="data row0 col5" id="T_842db_row0_col5">1.00000</td>
+<td class="data row0 col6" id="T_842db_row0_col6">0.53035</td>
 </tr>
 <tr>
-<th class="row_heading level0 row1" id="T_d6405_level0_row1">2</th>
-<td class="data row1 col0" id="T_d6405_row1_col0">Ti</td>
-<td class="data row1 col1" id="T_d6405_row1_col1">Ti</td>
-<td class="data row1 col2" id="T_d6405_row1_col2">0.00000</td>
-<td class="data row1 col3" id="T_d6405_row1_col3">0.00000</td>
-<td class="data row1 col4" id="T_d6405_row1_col4">0.00000</td>
-<td class="data row1 col5" id="T_d6405_row1_col5">1.00000</td>
-<td class="data row1 col6" id="T_d6405_row1_col6">0.47604</td>
+<th class="row_heading level0 row1" id="T_842db_level0_row1">2</th>
+<td class="data row1 col0" id="T_842db_row1_col0">Ti</td>
+<td class="data row1 col1" id="T_842db_row1_col1">Ti</td>
+<td class="data row1 col2" id="T_842db_row1_col2">0.00000</td>
+<td class="data row1 col3" id="T_842db_row1_col3">0.00000</td>
+<td class="data row1 col4" id="T_842db_row1_col4">0.00000</td>
+<td class="data row1 col5" id="T_842db_row1_col5">1.00000</td>
+<td class="data row1 col6" id="T_842db_row1_col6">0.47604</td>
 </tr>
 <tr>
-<th class="row_heading level0 row2" id="T_d6405_level0_row2">3</th>
-<td class="data row2 col0" id="T_d6405_row2_col0">O1</td>
-<td class="data row2 col1" id="T_d6405_row2_col1">O</td>
-<td class="data row2 col2" id="T_d6405_row2_col2">0.32804</td>
-<td class="data row2 col3" id="T_d6405_row2_col3">0.12500</td>
-<td class="data row2 col4" id="T_d6405_row2_col4">0.12500</td>
-<td class="data row2 col5" id="T_d6405_row2_col5">1.00155</td>
-<td class="data row2 col6" id="T_d6405_row2_col6">0.45165</td>
+<th class="row_heading level0 row2" id="T_842db_level0_row2">3</th>
+<td class="data row2 col0" id="T_842db_row2_col0">O1</td>
+<td class="data row2 col1" id="T_842db_row2_col1">O</td>
+<td class="data row2 col2" id="T_842db_row2_col2">0.32804</td>
+<td class="data row2 col3" id="T_842db_row2_col3">0.12500</td>
+<td class="data row2 col4" id="T_842db_row2_col4">0.12500</td>
+<td class="data row2 col5" id="T_842db_row2_col5">1.00155</td>
+<td class="data row2 col6" id="T_842db_row2_col6">0.45165</td>
 </tr>
 <tr>
-<th class="row_heading level0 row3" id="T_d6405_level0_row3">4</th>
-<td class="data row3 col0" id="T_d6405_row3_col0">O2</td>
-<td class="data row3 col1" id="T_d6405_row3_col1">O</td>
-<td class="data row3 col2" id="T_d6405_row3_col2">0.37500</td>
-<td class="data row3 col3" id="T_d6405_row3_col3">0.37500</td>
-<td class="data row3 col4" id="T_d6405_row3_col4">0.37500</td>
-<td class="data row3 col5" id="T_d6405_row3_col5">0.96871</td>
-<td class="data row3 col6" id="T_d6405_row3_col6">0.23334</td>
+<th class="row_heading level0 row3" id="T_842db_level0_row3">4</th>
+<td class="data row3 col0" id="T_842db_row3_col0">O2</td>
+<td class="data row3 col1" id="T_842db_row3_col1">O</td>
+<td class="data row3 col2" id="T_842db_row3_col2">0.37500</td>
+<td class="data row3 col3" id="T_842db_row3_col3">0.37500</td>
+<td class="data row3 col4" id="T_842db_row3_col4">0.37500</td>
+<td class="data row3 col5" id="T_842db_row3_col5">0.96871</td>
+<td class="data row3 col6" id="T_842db_row3_col6">0.23334</td>
 </tr>
 </tbody>
 </table>
@@ -6553,9 +6622,9 @@ var element = document.getElementById('463f7eea-fd88-4bbe-841f-b15ab2d3b783');
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="3c63fada-092d-49d3-9b63-620255c3ef0a" tabindex="0">
+<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="51433d3c-e903-46d5-a788-b313edd2dfb0" tabindex="0">
 <script type="text/javascript">
-var element = document.getElementById('3c63fada-092d-49d3-9b63-620255c3ef0a');
+var element = document.getElementById('51433d3c-e903-46d5-a788-b313edd2dfb0');
 
                 (function() {
                     var isDark = false;
@@ -6599,9 +6668,9 @@ var element = document.getElementById('3c63fada-092d-49d3-9b63-620255c3ef0a');
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="3a11e066-3df2-4c23-84e3-0cfaf262389f" tabindex="0">
+<div class="jp-RenderedJavaScript jp-OutputArea-output" data-mime-type="application/javascript" id="95bdac96-10b6-4f0c-8f09-4a0e410af7d1" tabindex="0">
 <script type="text/javascript">
-var element = document.getElementById('3a11e066-3df2-4c23-84e3-0cfaf262389f');
+var element = document.getElementById('95bdac96-10b6-4f0c-8f09-4a0e410af7d1');
 
             if (typeof IPython !== 'undefined' && IPython.notebook) {
                 IPython.notebook.kernel.execute("_jupyter_dark_detect_result = " + 
@@ -6618,63 +6687,63 @@ var element = document.getElementById('3a11e066-3df2-4c23-84e3-0cfaf262389f');
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
 <style type="text/css">
-#T_e46ac   {
+#T_1b43b   {
   border: 1px solid #dadada;
   border-collapse: collapse;
   margin-top: 0.5em;
   margin-left: 0.5em;
 }
-#T_e46ac thead {
+#T_1b43b thead {
   border-bottom: 1px solid #dadada;
 }
-#T_e46ac th {
+#T_1b43b th {
   border: none;
   padding-top: 0.25em;
   padding-bottom: 0.25em;
   line-height: 1.15em;
 }
-#T_e46ac  td {
+#T_1b43b  td {
   border: none;
   padding-top: 0.25em;
   padding-bottom: 0.25em;
   line-height: 1.15em;
 }
-#T_e46ac th.row_heading {
+#T_1b43b th.row_heading {
   color: #dadada;
   font-weight: normal;
 }
-#T_e46ac tbody tr:nth-child(odd) {
+#T_1b43b tbody tr:nth-child(odd) {
   background-color: transparent;
 }
-#T_e46ac  tbody tr:nth-child(even) {
+#T_1b43b  tbody tr:nth-child(even) {
   background-color: transparent;
 }
-#T_e46ac th.col0 {
+#T_1b43b th.col0 {
   text-align: left;
 }
-#T_e46ac th.col1 {
+#T_1b43b th.col1 {
   text-align: right;
 }
-#T_e46ac_row0_col0 {
+#T_1b43b_row0_col0 {
   text-align: left;
 }
-#T_e46ac_row0_col1 {
+#T_1b43b_row0_col1 {
   text-align: right;
 }
 </style>
-<table class="dataframe" id="T_e46ac">
+<table class="dataframe" id="T_1b43b">
 <thead>
 <tr>
 <th class="blank level0"> </th>
-<th class="col_heading level0 col0" id="T_e46ac_level0_col0">metric</th>
-<th class="col_heading level0 col1" id="T_e46ac_level0_col1">value</th>
+<th class="col_heading level0 col0" id="T_1b43b_level0_col0">metric</th>
+<th class="col_heading level0 col1" id="T_1b43b_level0_col1">value</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th class="row_heading level0 row0" id="T_e46ac_level0_row0">1</th>
-<td class="data row0 col0" id="T_e46ac_row0_col0">Goodness-of-fit (reduced χ²)</td>
-<td class="data row0 col1" id="T_e46ac_row0_col1">12.84</td>
+<th class="row_heading level0 row0" id="T_1b43b_level0_row0">1</th>
+<td class="data row0 col0" id="T_1b43b_row0_col0">Goodness-of-fit (reduced χ²)</td>
+<td class="data row0 col1" id="T_1b43b_row0_col1">12.84</td>
 </tr>
 </tbody>
 </table>
