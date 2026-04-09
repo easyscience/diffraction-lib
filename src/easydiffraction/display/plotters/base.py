@@ -285,4 +285,7 @@ class PlotterBase(ABC):
         precision : int
             Number of decimals to show in labels and hover text.
         """
-        return
+        # Intentionally unused; accepted for API compatibility with
+        # graphical backends that override this method.
+        _ = self._supports_graphical_heatmap
+        del corr_df, title, threshold, precision
