@@ -19,7 +19,7 @@ def test_verbosity_enum_from_string():
 
 
 def test_verbosity_enum_invalid_string():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="'verbose' is not a valid VerbosityEnum"):
         VerbosityEnum('verbose')
 
 

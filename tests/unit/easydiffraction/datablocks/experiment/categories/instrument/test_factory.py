@@ -33,5 +33,8 @@ def test_instrument_factory_default_and_errors():
     assert tag == 'tof-pd'
 
     # Invalid tag
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError,
+        match=r"Unsupported type: 'nonexistent'\. Supported: .*",
+    ):
         InstrumentFactory.create('nonexistent')

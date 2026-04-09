@@ -7,7 +7,10 @@ Uses the common :class:`RendererBase` so plotters and tablers share a
 consistent configuration surface and engine handling.
 """
 
-from enum import Enum
+from __future__ import annotations
+
+import pathlib
+from enum import StrEnum
 
 import numpy as np
 import pandas as pd
@@ -28,14 +31,14 @@ from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 
 
-class PlotterEngineEnum(str, Enum):
+class PlotterEngineEnum(StrEnum):
     """Available plotting engine backends."""
 
     ASCII = 'asciichartpy'
     PLOTLY = 'plotly'
 
     @classmethod
-    def default(cls) -> 'PlotterEngineEnum':
+    def default(cls) -> PlotterEngineEnum:
         """Select default engine based on environment."""
         if in_jupyter():
             log.debug('Setting default plotting engine to Plotly for Jupyter')
@@ -47,9 +50,13 @@ class PlotterEngineEnum(str, Enum):
         """Human-readable description for UI listings."""
         if self is PlotterEngineEnum.ASCII:
             return 'Console ASCII line charts'
-        elif self is PlotterEngineEnum.PLOTLY:
+        if self is PlotterEngineEnum.PLOTLY:
             return 'Interactive browser-based graphing library'
         return ''
+
+
+DEFAULT_CORRELATION_THRESHOLD = 0.7
+EXPECTED_COVAR_NDIM = 2
 
 
 class Plotter(RendererBase):
@@ -66,10 +73,24 @@ class Plotter(RendererBase):
         self._x_max = DEFAULT_MAX
         # Chart height
         self.height = DEFAULT_HEIGHT
+        # Back-reference to the owning Project (set via _set_project)
+        self._project = None
 
     # ------------------------------------------------------------------
     #  Private class methods
     # ------------------------------------------------------------------
+
+    def _set_project(self, project: object) -> None:
+        """Wire the owning project for high-level plot methods."""
+        self._project = project
+
+    def _update_project_categories(self, expt_name: str) -> None:
+        """Update all project categories before plotting."""
+        for structure in self._project.structures:
+            structure._update_categories()
+        self._project.analysis._update_categories()
+        experiment = self._project.experiments[expt_name]
+        experiment._update_categories()
 
     @classmethod
     def _factory(cls) -> type[RendererFactoryBase]:  # type: ignore[override]
@@ -155,16 +176,16 @@ class Plotter(RendererBase):
 
         return filtered_y_array
 
+    @staticmethod
     def _get_axes_labels(
-        self,
         sample_form: object,
         scattering_type: object,
         x_axis: object,
     ) -> list:
         """Look up axis labels for the experiment / x-axis."""
-        return DEFAULT_AXES_LABELS[(sample_form, scattering_type, x_axis)]
+        return DEFAULT_AXES_LABELS[sample_form, scattering_type, x_axis]
 
-    def _prepare_powder_data(
+    def _prepare_powder_context(
         self,
         pattern: object,
         expt_name: str,
@@ -172,12 +193,9 @@ class Plotter(RendererBase):
         x_min: object,
         x_max: object,
         x: object,
-        need_meas: bool = False,
-        need_calc: bool = False,
-        show_residual: bool = False,
     ) -> dict | None:
         """
-        Validate, resolve axes, auto-range, and filter arrays.
+        Resolve axes, auto-range, and filter x-array.
 
         Parameters
         ----------
@@ -194,35 +212,23 @@ class Plotter(RendererBase):
             Optional maximum x-axis limit.
         x : object
             Explicit x-axis type or ``None``.
-        need_meas : bool, default=False
-            Whether ``intensity_meas`` is required.
-        need_calc : bool, default=False
-            Whether ``intensity_calc`` is required.
-        show_residual : bool, default=False
-            If ``True``, compute meas − calc residual.
 
         Returns
         -------
         dict | None
-            A dict with keys ``x_filtered``, ``y_series``, ``y_labels``,
-            ``axes_labels``, and ``x_axis``; or ``None`` when a required
-            array is missing.
+            A dict with keys ``x_filtered``, ``x_array``, ``x_min``,
+            ``x_max``, and ``axes_labels``; or ``None`` when the x-array
+            is missing.
         """
         x_axis, x_name, sample_form, scattering_type, _ = self._resolve_x_axis(expt_type, x)
 
         # Get x-array from pattern
-        x_array = getattr(pattern, x_axis, None)
-        if x_array is None:
+        x_raw = getattr(pattern, x_axis, None)
+        if x_raw is None:
             log.error(f'No {x_name} data available for experiment {expt_name}')
             return None
 
-        # Validate required intensities
-        if need_meas and pattern.intensity_meas is None:
-            log.error(f'No measured data available for experiment {expt_name}')
-            return None
-        if need_calc and pattern.intensity_calc is None:
-            log.error(f'No calculated data available for experiment {expt_name}')
-            return None
+        x_array = np.asarray(x_raw)
 
         # Auto-range for ASCII engine
         x_min, x_max = self._auto_x_range_for_ascii(pattern, x_array, x_min, x_max)
@@ -230,38 +236,18 @@ class Plotter(RendererBase):
         # Filter x
         x_filtered = self._filtered_y_array(x_array, x_array, x_min, x_max)
 
-        # Filter y arrays and build series / labels
-        y_series = []
-        y_labels = []
-
-        y_meas = None
-        if need_meas:
-            y_meas = self._filtered_y_array(pattern.intensity_meas, x_array, x_min, x_max)
-            y_series.append(y_meas)
-            y_labels.append('meas')
-
-        y_calc = None
-        if need_calc:
-            y_calc = self._filtered_y_array(pattern.intensity_calc, x_array, x_min, x_max)
-            y_series.append(y_calc)
-            y_labels.append('calc')
-
-        if show_residual and y_meas is not None and y_calc is not None:
-            y_resid = y_meas - y_calc
-            y_series.append(y_resid)
-            y_labels.append('resid')
-
         axes_labels = self._get_axes_labels(sample_form, scattering_type, x_axis)
 
         return {
             'x_filtered': x_filtered,
-            'y_series': y_series,
-            'y_labels': y_labels,
+            'x_array': x_array,
+            'x_min': x_min,
+            'x_max': x_max,
             'axes_labels': axes_labels,
-            'x_axis': x_axis,
         }
 
-    def _resolve_x_axis(self, expt_type: object, x: object) -> tuple:
+    @staticmethod
+    def _resolve_x_axis(expt_type: object, x: object) -> tuple:
         """
         Determine the x-axis type from experiment metadata.
 
@@ -282,7 +268,7 @@ class Plotter(RendererBase):
         sample_form = expt_type.sample_form.value
         scattering_type = expt_type.scattering_type.value
         beam_mode = expt_type.beam_mode.value
-        x_axis = DEFAULT_X_AXIS[(sample_form, scattering_type, beam_mode)] if x is None else x
+        x_axis = DEFAULT_X_AXIS[sample_form, scattering_type, beam_mode] if x is None else x
         x_name = getattr(x_axis, 'value', x_axis)
         return x_axis, x_name, sample_form, scattering_type, beam_mode
 
@@ -371,6 +357,600 @@ class Plotter(RendererBase):
 
     def plot_meas(
         self,
+        expt_name: str,
+        x_min: float | None = None,
+        x_max: float | None = None,
+        x: object | None = None,
+    ) -> None:
+        """
+        Plot measured diffraction data for an experiment.
+
+        Parameters
+        ----------
+        expt_name : str
+            Name of the experiment to plot.
+        x_min : float | None, default=None
+            Lower bound for the x-axis range.
+        x_max : float | None, default=None
+            Upper bound for the x-axis range.
+        x : object | None, default=None
+            Optional explicit x-axis data to override stored values.
+        """
+        self._update_project_categories(expt_name)
+        experiment = self._project.experiments[expt_name]
+        self._plot_meas_data(
+            experiment.data,
+            expt_name,
+            experiment.type,
+            x_min=x_min,
+            x_max=x_max,
+            x=x,
+        )
+
+    def plot_calc(
+        self,
+        expt_name: str,
+        x_min: float | None = None,
+        x_max: float | None = None,
+        x: object | None = None,
+    ) -> None:
+        """
+        Plot calculated diffraction pattern for an experiment.
+
+        Parameters
+        ----------
+        expt_name : str
+            Name of the experiment to plot.
+        x_min : float | None, default=None
+            Lower bound for the x-axis range.
+        x_max : float | None, default=None
+            Upper bound for the x-axis range.
+        x : object | None, default=None
+            Optional explicit x-axis data to override stored values.
+        """
+        self._update_project_categories(expt_name)
+        experiment = self._project.experiments[expt_name]
+        self._plot_calc_data(
+            experiment.data,
+            expt_name,
+            experiment.type,
+            x_min=x_min,
+            x_max=x_max,
+            x=x,
+        )
+
+    def plot_meas_vs_calc(
+        self,
+        expt_name: str,
+        x_min: float | None = None,
+        x_max: float | None = None,
+        show_residual: bool = False,
+        x: object | None = None,
+    ) -> None:
+        """
+        Plot measured vs calculated data for an experiment.
+
+        Parameters
+        ----------
+        expt_name : str
+            Name of the experiment to plot.
+        x_min : float | None, default=None
+            Lower bound for the x-axis range.
+        x_max : float | None, default=None
+            Upper bound for the x-axis range.
+        show_residual : bool, default=False
+            When ``True``, include the residual (difference) curve.
+        x : object | None, default=None
+            Optional explicit x-axis data to override stored values.
+        """
+        self._update_project_categories(expt_name)
+        experiment = self._project.experiments[expt_name]
+        self._plot_meas_vs_calc_data(
+            experiment,
+            expt_name,
+            x_min=x_min,
+            x_max=x_max,
+            show_residual=show_residual,
+            x=x,
+        )
+
+    def plot_param_series(
+        self,
+        param: object,
+        versus: object | None = None,
+    ) -> None:
+        """
+        Plot a parameter's value across sequential fit results.
+
+        When a ``results.csv`` file exists in the project's
+        ``analysis/`` directory, data is read from CSV.  Otherwise,
+        falls back to in-memory parameter snapshots (produced by
+        ``fit()`` in single mode).
+
+        Parameters
+        ----------
+        param : object
+            Parameter descriptor whose ``unique_name`` identifies the
+            values to plot.
+        versus : object | None, default=None
+            A diffrn descriptor (e.g.
+            ``expt.diffrn.ambient_temperature``) whose value is used as
+            the x-axis for each experiment.  When ``None``, the
+            experiment sequence number is used instead.
+        """
+        unique_name = param.unique_name
+
+        # Try CSV first (produced by fit_sequential or future fit)
+        csv_path = None
+        if self._project.info.path is not None:
+            candidate = pathlib.Path(self._project.info.path) / 'analysis' / 'results.csv'
+            if candidate.is_file():
+                csv_path = str(candidate)
+
+        if csv_path is not None:
+            self._plot_param_series_from_csv(
+                csv_path=csv_path,
+                unique_name=unique_name,
+                param_descriptor=param,
+                versus_descriptor=versus,
+            )
+        else:
+            # Fallback: in-memory snapshots from fit() single mode
+            versus_name = versus.name if versus is not None else None
+            self.plot_param_series_from_snapshots(
+                unique_name,
+                versus_name,
+                self._project.experiments,
+                self._project.analysis._parameter_snapshots,
+            )
+
+    def plot_param_correlations(
+        self,
+        threshold: float | None = DEFAULT_CORRELATION_THRESHOLD,
+        precision: int = 2,
+    ) -> None:
+        """
+        Plot the parameter correlation matrix from the latest fit.
+
+        The matrix is taken from ``project.analysis.fit_results``. When
+        the active engine is Plotly, an interactive heatmap is shown.
+        Otherwise, a rounded correlation table is rendered.
+
+        Only the lower triangle is shown (without the diagonal), since
+        the matrix is symmetric and diagonal values are always ``1``.
+
+        Parameters
+        ----------
+        threshold : float | None, default=DEFAULT_CORRELATION_THRESHOLD
+            Minimum absolute off-diagonal correlation required for a
+            parameter to be shown. Parameters are kept only if they
+            participate in at least one pair with ``abs(correlation) >=
+            threshold``. Set to ``None`` or ``0`` to show the full
+            matrix.
+        precision : int, default=2
+            Number of decimal places to show in the table fallback.
+        """
+        corr_df = self._get_param_correlation_dataframe()
+        if corr_df is None:
+            return
+
+        corr_df = self._filter_correlation_dataframe(corr_df, threshold=threshold)
+        if corr_df is None:
+            return
+
+        corr_df = self._mask_correlation_lower_triangle(corr_df)
+        title = 'Refined parameter correlation matrix'
+        if threshold is not None and threshold > 0:
+            title += f' with |correlation| >= {threshold:.2f}'
+
+        is_graphical = self._backend._supports_graphical_heatmap
+        display_corr_df, row_numbers, col_numbers = self._trim_correlation_display_dataframe(
+            corr_df,
+            preserve_all_rows=not is_graphical,
+        )
+
+        if is_graphical:
+            self._plot_correlation_heatmap(
+                display_corr_df,
+                title,
+                threshold=threshold,
+                precision=precision,
+            )
+            return
+
+        console.paragraph(title)
+        TableRenderer.get().render(
+            self._format_correlation_table_dataframe(
+                display_corr_df,
+                row_numbers=row_numbers,
+                col_numbers=col_numbers,
+                threshold=threshold,
+                precision=precision,
+            )
+        )
+
+    @staticmethod
+    def _filter_correlation_dataframe(
+        corr_df: pd.DataFrame,
+        threshold: float | None,
+    ) -> pd.DataFrame | None:
+        """
+        Filter a correlation matrix to only strongly correlated params.
+
+        Parameters
+        ----------
+        corr_df : pd.DataFrame
+            Square correlation matrix.
+        threshold : float | None
+            Absolute-correlation cutoff. ``None`` or ``0`` keeps all
+            parameters.
+
+        Returns
+        -------
+        pd.DataFrame | None
+            Filtered square matrix, or ``None`` if no off-diagonal
+            correlations meet the cutoff.
+
+        Raises
+        ------
+        ValueError
+            If *threshold* is outside ``[0, 1]``.
+        """
+        if threshold is None or threshold <= 0:
+            return corr_df
+        if threshold > 1:
+            msg = 'Correlation threshold must be between 0 and 1.'
+            raise ValueError(msg)
+
+        abs_corr = np.abs(corr_df.to_numpy(copy=True))
+        np.fill_diagonal(abs_corr, 0.0)
+        keep_mask = (abs_corr >= threshold).any(axis=0)
+
+        if not keep_mask.any():
+            log.warning(f'No parameter pairs with |correlation| >= {threshold:.2f} were found.')
+            return None
+
+        labels = corr_df.index[keep_mask]
+        return corr_df.loc[labels, labels]
+
+    @staticmethod
+    def _mask_correlation_lower_triangle(
+        corr_df: pd.DataFrame,
+    ) -> pd.DataFrame:
+        """
+        Mask the upper triangle and diagonal of a correlation matrix.
+
+        Only the lower triangle is kept, since the matrix is symmetric
+        and diagonal values are always ``1``.
+
+        Parameters
+        ----------
+        corr_df : pd.DataFrame
+            Square correlation matrix.
+
+        Returns
+        -------
+        pd.DataFrame
+            Correlation matrix with upper triangle and diagonal masked.
+        """
+        masked_values = corr_df.to_numpy(copy=True)
+        mask = np.triu(np.ones_like(masked_values, dtype=bool), k=0)
+        masked_values[mask] = np.nan
+        return pd.DataFrame(masked_values, index=corr_df.index, columns=corr_df.columns)
+
+    @staticmethod
+    def _trim_correlation_display_dataframe(
+        corr_df: pd.DataFrame,
+        preserve_all_rows: bool,
+    ) -> tuple[pd.DataFrame, list[int], list[int]]:
+        """
+        Trim empty outer rows/columns from the lower-triangle view.
+
+        For the lower triangle without diagonal, the last column and
+        first row are always empty and can be trimmed.
+
+        Parameters
+        ----------
+        corr_df : pd.DataFrame
+            Masked correlation matrix.
+        preserve_all_rows : bool
+            Whether to keep the full row list so row labels continue to
+            identify all numeric column headers in tabular output.
+
+        Returns
+        -------
+        tuple[pd.DataFrame, list[int], list[int]]
+            Display matrix plus 1-based parameter numbers for the kept
+            rows and columns.
+        """
+        num_rows, num_cols = corr_df.shape
+        row_numbers = list(range(1, num_rows + 1))
+        col_numbers = list(range(1, num_cols + 1))
+
+        if min(num_rows, num_cols) <= 1:
+            return corr_df, row_numbers, col_numbers
+
+        if preserve_all_rows:
+            return corr_df.iloc[:, :-1], row_numbers, col_numbers[:-1]
+        return corr_df.iloc[1:, :-1], row_numbers[1:], col_numbers[:-1]
+
+    def _get_param_correlation_dataframe(self) -> pd.DataFrame | None:
+        """
+        Return the correlation matrix for the latest fit.
+
+        Returns
+        -------
+        pd.DataFrame | None
+            Square correlation matrix labeled by parameter unique names,
+            or ``None`` if unavailable.
+        """
+        result = self._get_fit_result_for_correlation()
+        if result is None:
+            return None
+        raw_result, var_names, fit_results = result
+
+        covar = getattr(raw_result, 'covar', None)
+        if covar is not None:
+            return self._correlation_from_covariance(covar, var_names, fit_results.parameters)
+
+        corr_df = self._get_param_correlation_dataframe_from_engine_params(
+            raw_result=raw_result,
+            parameters=fit_results.parameters,
+        )
+        if corr_df is not None:
+            return corr_df
+
+        log.warning(
+            'Correlation matrix is unavailable for this fit. '
+            'Use the lmfit minimizer and ensure covariance estimation succeeds.'
+        )
+        return None
+
+    def _get_fit_result_for_correlation(
+        self,
+    ) -> tuple[object, list[str], object] | None:
+        """
+        Validate and return the raw fit result for correlation.
+
+        Returns
+        -------
+        tuple[object, list[str], object] | None
+            A tuple of ``(raw_result, var_names, fit_results)`` when all
+            required data is present, or ``None`` otherwise.
+        """
+        if self._project is None:
+            log.warning('Plotter is not attached to a project.')
+            return None
+
+        fit_results = getattr(self._project.analysis, 'fit_results', None)
+        if fit_results is None:
+            log.warning('No fit results available. Run fit() first.')
+            return None
+
+        raw_result = getattr(fit_results, 'engine_result', None)
+        if raw_result is None:
+            log.warning('No raw fit result available. Correlation matrix cannot be plotted.')
+            return None
+
+        var_names = getattr(raw_result, 'var_names', None)
+        if not var_names:
+            log.warning('Fit result does not expose variable names for a correlation matrix.')
+            return None
+
+        return raw_result, var_names, fit_results
+
+    @staticmethod
+    def _correlation_from_covariance(
+        covar: object,
+        var_names: list[str],
+        parameters: list[object],
+    ) -> pd.DataFrame | None:
+        """
+        Convert a covariance matrix to a correlation DataFrame.
+
+        Parameters
+        ----------
+        covar : object
+            Raw covariance matrix from the fit result.
+        var_names : list[str]
+            Minimizer variable names.
+        parameters : list[object]
+            Fitted parameter descriptors.
+
+        Returns
+        -------
+        pd.DataFrame | None
+            Correlation matrix, or ``None`` if the covariance is
+            invalid.
+        """
+        covar_array = np.asarray(covar, dtype=float)
+        if covar_array.ndim != EXPECTED_COVAR_NDIM or covar_array.shape[0] != covar_array.shape[1]:
+            log.warning('Fit result returned an invalid covariance matrix.')
+            return None
+        if covar_array.shape[0] != len(var_names):
+            log.warning('Covariance matrix size does not match the fitted parameter list.')
+            return None
+
+        sigma = np.sqrt(np.diag(covar_array))
+        with np.errstate(divide='ignore', invalid='ignore'):
+            corr = covar_array / np.outer(sigma, sigma)
+        corr = np.nan_to_num(corr, nan=0.0, posinf=0.0, neginf=0.0)
+        np.fill_diagonal(corr, 1.0)
+
+        labels = Plotter._get_correlation_labels(parameters, var_names)
+        return pd.DataFrame(corr, index=labels, columns=labels)
+
+    @staticmethod
+    def _get_correlation_labels(
+        parameters: list[object],
+        var_names: list[str],
+    ) -> list[str]:
+        """
+        Map minimizer variable names to readable parameter labels.
+
+        Parameters
+        ----------
+        parameters : list[object]
+            Fitted parameter descriptors.
+        var_names : list[str]
+            Minimizer variable names from the engine result.
+
+        Returns
+        -------
+        list[str]
+            Labels for the correlation matrix axes.
+        """
+        labels_by_uid = {
+            getattr(param, '_minimizer_uid', ''): getattr(
+                param, 'unique_name', getattr(param, 'name', '')
+            )
+            for param in parameters
+        }
+        return [labels_by_uid.get(name, name) for name in var_names]
+
+    def _get_param_correlation_dataframe_from_engine_params(
+        self,
+        raw_result: object,
+        parameters: list[object],
+    ) -> pd.DataFrame | None:
+        """
+        Reconstruct a correlation matrix from engine parameter metadata.
+
+        This is a fallback for backends that populate per-parameter
+        correlation coefficients but do not expose a covariance matrix.
+
+        Parameters
+        ----------
+        raw_result : object
+            Backend-specific fit result.
+        parameters : list[object]
+            Fitted parameter descriptors.
+
+        Returns
+        -------
+        pd.DataFrame | None
+            Correlation matrix labeled by readable parameter names, or
+            ``None`` if no correlation coefficients are available.
+        """
+        engine_params = getattr(raw_result, 'params', None)
+        var_names = getattr(raw_result, 'var_names', None)
+        if engine_params is None or not var_names:
+            return None
+
+        corr = np.eye(len(var_names), dtype=float)
+        indices = {name: idx for idx, name in enumerate(var_names)}
+        found_corr = False
+
+        for name, idx in indices.items():
+            engine_param = engine_params.get(name)
+            param_corr = getattr(engine_param, 'correl', None)
+            if not param_corr:
+                continue
+
+            for other_name, value in param_corr.items():
+                other_idx = indices.get(other_name)
+                if other_idx is None:
+                    continue
+                corr_value = float(value)
+                corr[idx, other_idx] = corr_value
+                corr[other_idx, idx] = corr_value
+                found_corr = True
+
+        if not found_corr:
+            return None
+
+        labels = self._get_correlation_labels(parameters, var_names)
+        return pd.DataFrame(corr, index=labels, columns=labels)
+
+    def _plot_correlation_heatmap(
+        self,
+        corr_df: pd.DataFrame,
+        title: str,
+        threshold: float | None,
+        precision: int,
+    ) -> None:
+        """
+        Delegate correlation heatmap rendering to the backend.
+
+        Parameters
+        ----------
+        corr_df : pd.DataFrame
+            Square correlation matrix.
+        title : str
+            Figure title.
+        threshold : float | None
+            Absolute-correlation cutoff used for value labels.
+        precision : int
+            Number of decimals to show in plot labels and hover text.
+        """
+        self._backend.plot_correlation_heatmap(
+            corr_df,
+            title,
+            threshold=threshold,
+            precision=precision,
+        )
+
+    @staticmethod
+    def _format_correlation_table_dataframe(
+        corr_df: pd.DataFrame,
+        row_numbers: list[int],
+        col_numbers: list[int],
+        threshold: float | None,
+        precision: int,
+    ) -> pd.DataFrame:
+        """
+        Format a correlation matrix for TableRenderer.
+
+        Parameters
+        ----------
+        corr_df : pd.DataFrame
+            Correlation matrix labeled by parameter name.
+        row_numbers : list[int]
+            1-based parameter numbers for displayed rows.
+        col_numbers : list[int]
+            1-based parameter numbers for displayed columns.
+        threshold : float | None
+            Absolute-correlation cutoff used to blank low-magnitude
+            cells in the rendered table. ``None`` or ``0`` keeps all
+            non-masked values.
+        precision : int
+            Number of decimals to show in the rendered values.
+
+        Returns
+        -------
+        pd.DataFrame
+            DataFrame with MultiIndex columns and default numeric index,
+            suitable for :class:`TableRenderer`. Correlation columns use
+            1-based numeric headers so they line up with the numbered
+            parameter rows in terminal output.
+        """
+        rounded = corr_df.round(precision)
+        cell_width = max(
+            len(str(max(col_numbers, default=0))),
+            len(f'{-1.0:.{precision}f}'),
+        )
+        headers = [('parameter', 'left')]
+        headers.extend((str(index).rjust(cell_width), 'right') for index in col_numbers)
+
+        rows = []
+        for label, values in rounded.iterrows():
+            row_values = []
+            for value in values.tolist():
+                should_blank = pd.isna(value) or (
+                    threshold is not None and threshold > 0 and abs(float(value)) < threshold
+                )
+                if should_blank:
+                    row_values.append('')
+                else:
+                    row_values.append(f'{float(value):>{cell_width}.{precision}f}')
+            rows.append([label, *row_values])
+
+        df = pd.DataFrame(rows, columns=pd.MultiIndex.from_tuples(headers))
+        df.index = pd.Index([row_number - 1 for row_number in row_numbers])
+        return df
+
+    def _plot_meas_data(
+        self,
         pattern: object,
         expt_name: str,
         expt_type: object,
@@ -395,31 +975,36 @@ class Plotter(RendererBase):
         x_max : object, default=None
             Optional maximum x-axis limit.
         x : object, default=None
-            X-axis type (``'two_theta'``, ``'time_of_flight'``, or
-            ``'d_spacing'``). If ``None``, auto-detected from beam mode.
+            X-axis type. If ``None``, auto-detected from beam mode.
         """
-        ctx = self._prepare_powder_data(
+        ctx = self._prepare_powder_context(
             pattern,
             expt_name,
             expt_type,
             x_min,
             x_max,
             x,
-            need_meas=True,
         )
         if ctx is None:
             return
 
+        if pattern.intensity_meas is None:
+            log.error(f'No measured data available for experiment {expt_name}')
+            return
+        y_meas = self._filtered_y_array(
+            pattern.intensity_meas, ctx['x_array'], ctx['x_min'], ctx['x_max']
+        )
+
         self._backend.plot_powder(
             x=ctx['x_filtered'],
-            y_series=ctx['y_series'],
-            labels=ctx['y_labels'],
+            y_series=[y_meas],
+            labels=['meas'],
             axes_labels=ctx['axes_labels'],
             title=f"Measured data for experiment 🔬 '{expt_name}'",
             height=self.height,
         )
 
-    def plot_calc(
+    def _plot_calc_data(
         self,
         pattern: object,
         expt_name: str,
@@ -445,35 +1030,39 @@ class Plotter(RendererBase):
         x_max : object, default=None
             Optional maximum x-axis limit.
         x : object, default=None
-            X-axis type (``'two_theta'``, ``'time_of_flight'``, or
-            ``'d_spacing'``). If ``None``, auto-detected from beam mode.
+            X-axis type. If ``None``, auto-detected from beam mode.
         """
-        ctx = self._prepare_powder_data(
+        ctx = self._prepare_powder_context(
             pattern,
             expt_name,
             expt_type,
             x_min,
             x_max,
             x,
-            need_calc=True,
         )
         if ctx is None:
             return
 
+        if pattern.intensity_calc is None:
+            log.error(f'No calculated data available for experiment {expt_name}')
+            return
+        y_calc = self._filtered_y_array(
+            pattern.intensity_calc, ctx['x_array'], ctx['x_min'], ctx['x_max']
+        )
+
         self._backend.plot_powder(
             x=ctx['x_filtered'],
-            y_series=ctx['y_series'],
-            labels=ctx['y_labels'],
+            y_series=[y_calc],
+            labels=['calc'],
             axes_labels=ctx['axes_labels'],
             title=f"Calculated data for experiment 🔬 '{expt_name}'",
             height=self.height,
         )
 
-    def plot_meas_vs_calc(
+    def _plot_meas_vs_calc_data(
         self,
-        pattern: object,
+        experiment: object,
         expt_name: str,
-        expt_type: object,
         x_min: object = None,
         x_max: object = None,
         show_residual: bool = False,
@@ -493,13 +1082,10 @@ class Plotter(RendererBase):
 
         Parameters
         ----------
-        pattern : object
-            Data pattern object with meas/calc arrays.
+        experiment : object
+            Experiment instance with ``.data`` and ``.type`` attributes.
         expt_name : str
             Experiment name for the title.
-        expt_type : object
-            Experiment type with sample_form, scattering, and beam
-            enums.
         x_min : object, default=None
             Optional minimum x-axis limit.
         x_max : object, default=None
@@ -510,6 +1096,9 @@ class Plotter(RendererBase):
             X-axis type. If ``None``, auto-detected from sample form and
             beam mode.
         """
+        pattern = experiment.data
+        expt_type = experiment.type
+
         x_axis, _, sample_form, scattering_type, _ = self._resolve_x_axis(expt_type, x)
 
         # Validate required data (before x-array check, matching
@@ -524,7 +1113,7 @@ class Plotter(RendererBase):
         title = f"Measured vs Calculated data for experiment 🔬 '{expt_name}'"
 
         # Single crystal scatter plot (I²calc vs I²meas)
-        if x_axis == XAxisType.INTENSITY_CALC or x_axis == 'intensity_calc':
+        if x_axis in {XAxisType.INTENSITY_CALC, 'intensity_calc'}:
             axes_labels = self._get_axes_labels(sample_form, scattering_type, x_axis)
 
             if pattern.intensity_meas_su is None:
@@ -544,32 +1133,116 @@ class Plotter(RendererBase):
             return
 
         # Line plot (PD or SC with d_spacing/sin_theta_over_lambda)
-        # TODO: Rename from _prepare_powder_data as it also supports
-        #  single crystal line plots
-        ctx = self._prepare_powder_data(
+        ctx = self._prepare_powder_context(
             pattern,
             expt_name,
             expt_type,
             x_min,
             x_max,
             x,
-            need_meas=True,
-            need_calc=True,
-            show_residual=show_residual,
         )
         if ctx is None:
             return
 
+        y_series = []
+        y_labels = []
+        y_meas = self._filtered_y_array(
+            pattern.intensity_meas, ctx['x_array'], ctx['x_min'], ctx['x_max']
+        )
+        y_series.append(y_meas)
+        y_labels.append('meas')
+        y_calc = self._filtered_y_array(
+            pattern.intensity_calc, ctx['x_array'], ctx['x_min'], ctx['x_max']
+        )
+        y_series.append(y_calc)
+        y_labels.append('calc')
+        if show_residual:
+            y_series.append(y_meas - y_calc)
+            y_labels.append('resid')
+
         self._backend.plot_powder(
             x=ctx['x_filtered'],
-            y_series=ctx['y_series'],
-            labels=ctx['y_labels'],
+            y_series=y_series,
+            labels=y_labels,
             axes_labels=ctx['axes_labels'],
             title=title,
             height=self.height,
         )
 
-    def plot_param_series(
+    def _plot_param_series_from_csv(
+        self,
+        csv_path: str,
+        unique_name: str,
+        param_descriptor: object,
+        versus_descriptor: object | None = None,
+    ) -> None:
+        """
+        Plot a parameter's value across sequential fit results.
+
+        Reads data from the CSV file at *csv_path*.  The y-axis values
+        come from the column named *unique_name*, uncertainties from
+        ``{unique_name}.uncertainty``.  When *versus_descriptor* is
+        provided, the x-axis uses the corresponding ``diffrn.{name}``
+        column; otherwise the row index is used.
+
+        Axis labels are derived from the live descriptor objects
+        (*param_descriptor* and *versus_descriptor*), which carry
+        ``.description`` and ``.units`` attributes.
+
+        Parameters
+        ----------
+        csv_path : str
+            Path to the ``results.csv`` file.
+        unique_name : str
+            Unique name of the parameter to plot (CSV column key).
+        param_descriptor : object
+            The live parameter descriptor (for axis label / units).
+        versus_descriptor : object | None, default=None
+            A diffrn descriptor whose ``.name`` maps to a
+            ``diffrn.{name}`` CSV column.  ``None`` → use row index.
+        """
+        df = pd.read_csv(csv_path)
+
+        if unique_name not in df.columns:
+            log.warning(
+                f"Parameter '{unique_name}' not found in CSV columns. "
+                f'Available: {list(df.columns)}'
+            )
+            return
+
+        y = df[unique_name].astype(float).tolist()
+        uncert_col = f'{unique_name}.uncertainty'
+        sy = df[uncert_col].astype(float).tolist() if uncert_col in df.columns else [0.0] * len(y)
+
+        # X-axis: diffrn column or row index
+        versus_name = versus_descriptor.name if versus_descriptor is not None else None
+        diffrn_col = f'diffrn.{versus_name}' if versus_name else None
+
+        if diffrn_col and diffrn_col in df.columns:
+            x = pd.to_numeric(df[diffrn_col], errors='coerce').tolist()
+            x_label = getattr(versus_descriptor, 'description', None) or versus_name
+            if hasattr(versus_descriptor, 'units') and versus_descriptor.units:
+                x_label = f'{x_label} ({versus_descriptor.units})'
+        else:
+            x = list(range(1, len(y) + 1))
+            x_label = 'Experiment No.'
+
+        # Y-axis label from descriptor
+        param_units = getattr(param_descriptor, 'units', '')
+        y_label = f'Parameter value ({param_units})' if param_units else 'Parameter value'
+
+        title = f"Parameter '{unique_name}' across fit results"
+
+        self._backend.plot_scatter(
+            x=x,
+            y=y,
+            sy=sy,
+            axes_labels=[x_label, y_label],
+            title=title,
+            height=self.height,
+        )
+
+    def plot_param_series_from_snapshots(
         self,
         unique_name: str,
         versus_name: str | None,
@@ -577,21 +1250,22 @@ class Plotter(RendererBase):
         parameter_snapshots: dict[str, dict[str, dict]],
     ) -> None:
         """
-        Plot a parameter's value across sequential fit results.
+        Plot a parameter's value from in-memory snapshots.
+
+        This is a backward-compatibility method used when no CSV file is
+        available (e.g. after ``fit()`` in single mode, before PR 13
+        adds CSV output to the existing fit loop).
 
         Parameters
         ----------
         unique_name : str
             Unique name of the parameter to plot.
         versus_name : str | None
-            Name of the diffrn descriptor to use as the x-axis (e.g.
-            ``'ambient_temperature'``).  When ``None``, the experiment
-            sequence index is used instead.
+            Name of the diffrn descriptor for the x-axis.
         experiments : object
             Experiments collection for accessing diffrn conditions.
         parameter_snapshots : dict[str, dict[str, dict]]
-            Per-experiment parameter value snapshots keyed by experiment
-            name, then by parameter unique name.
+            Per-experiment parameter value snapshots.
         """
         x = []
         y = []

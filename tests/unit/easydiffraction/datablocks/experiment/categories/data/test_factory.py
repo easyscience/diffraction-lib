@@ -6,9 +6,6 @@ import pytest
 
 def test_data_factory_default_and_errors():
     # Ensure concrete classes are registered
-    from easydiffraction.datablocks.experiment.categories.data import bragg_pd  # noqa: F401
-    from easydiffraction.datablocks.experiment.categories.data import bragg_sc  # noqa: F401
-    from easydiffraction.datablocks.experiment.categories.data import total_pd  # noqa: F401
     from easydiffraction.datablocks.experiment.categories.data.factory import DataFactory
 
     # Explicit type by tag
@@ -26,15 +23,15 @@ def test_data_factory_default_and_errors():
     assert obj4.__class__.__name__ == 'TotalData'
 
     # Unsupported tag should raise ValueError
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError,
+        match=r"Unsupported type: 'nonexistent'\. Supported: .*",
+    ):
         DataFactory.create('nonexistent')
 
 
 def test_data_factory_default_tag_resolution():
     # Ensure concrete classes are registered
-    from easydiffraction.datablocks.experiment.categories.data import bragg_pd  # noqa: F401
-    from easydiffraction.datablocks.experiment.categories.data import bragg_sc  # noqa: F401
-    from easydiffraction.datablocks.experiment.categories.data import total_pd  # noqa: F401
     from easydiffraction.datablocks.experiment.categories.data.factory import DataFactory
     from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
     from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
@@ -73,9 +70,6 @@ def test_data_factory_default_tag_resolution():
 
 def test_data_factory_supported_tags():
     # Ensure concrete classes are registered
-    from easydiffraction.datablocks.experiment.categories.data import bragg_pd  # noqa: F401
-    from easydiffraction.datablocks.experiment.categories.data import bragg_sc  # noqa: F401
-    from easydiffraction.datablocks.experiment.categories.data import total_pd  # noqa: F401
     from easydiffraction.datablocks.experiment.categories.data.factory import DataFactory
 
     tags = DataFactory.supported_tags()

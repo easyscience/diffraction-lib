@@ -223,9 +223,8 @@ class TotalDataBase(CategoryCollection):
             elif not v:
                 p.calc_status._value = 'excl'
             else:
-                raise ValueError(
-                    f'Invalid calculation status value: {v}. Expected boolean True/False.'
-                )
+                msg = f'Invalid calculation status value: {v}. Expected boolean True/False.'
+                raise ValueError(msg)
 
     @property
     def _calc_mask(self) -> np.ndarray:

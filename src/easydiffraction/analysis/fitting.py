@@ -1,23 +1,22 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 from typing import Any
-from typing import Dict
-from typing import List
-from typing import Optional
 
 import numpy as np
 
 from easydiffraction.analysis.fit_helpers.metrics import get_reliability_inputs
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 from easydiffraction.core.variable import Parameter
-from easydiffraction.datablocks.experiment.collection import Experiments
-from easydiffraction.datablocks.structure.collection import Structures
 from easydiffraction.utils.enums import VerbosityEnum
 
 if TYPE_CHECKING:
     from easydiffraction.analysis.fit_helpers.reporting import FitResults
+    from easydiffraction.datablocks.experiment.item.base import ExperimentBase
+    from easydiffraction.datablocks.structure.collection import Structures
 
 
 class Fitter:
@@ -27,13 +26,13 @@ class Fitter:
         self.selection: str = selection
         self.engine: str = selection
         self.minimizer = MinimizerFactory.create(selection)
-        self.results: Optional[FitResults] = None
+        self.results: FitResults | None = None
 
     def fit(
         self,
         structures: Structures,
-        experiments: Experiments,
-        weights: Optional[np.array] = None,
+        experiments: list[ExperimentBase],
+        weights: np.ndarray | None = None,
         analysis: object = None,
         verbosity: VerbosityEnum = VerbosityEnum.FULL,
     ) -> None:
@@ -48,32 +47,40 @@ class Fitter:
         ----------
         structures : Structures
             Collection of structures.
-        experiments : Experiments
-            Collection of experiments.
-        weights : Optional[np.array], default=None
-            Optional weights for joint fitting.
+        experiments : list[ExperimentBase]
+            List of experiments to fit.
+        weights : np.ndarray | None, default=None
+            Per-experiment weights as a 1-D array (length must match
+            *experiments*). When ``None``, equal weights are used.
         analysis : object, default=None
             Optional Analysis object to update its categories during
             fitting.
         verbosity : VerbosityEnum, default=VerbosityEnum.FULL
             Console output verbosity.
         """
-        params = structures.free_parameters + experiments.free_parameters
+        expt_free_params: list[Parameter] = []
+        for expt in experiments:
+            expt_free_params.extend(
+                p
+                for p in expt.parameters
+                if isinstance(p, Parameter) and not p.constrained and p.free
+            )
+        params = structures.free_parameters + expt_free_params
 
         if not params:
             print('⚠️ No parameters selected for fitting.')
-            return None
+            return
 
         for param in params:
             param._fit_start_value = param.value
 
-        def objective_function(engine_params: Dict[str, Any]) -> np.ndarray:
+        def objective_function(engine_params: dict[str, Any]) -> np.ndarray:
             """
             Evaluate the residual for the current minimizer parameters.
 
             Parameters
             ----------
-            engine_params : Dict[str, Any]
+            engine_params : dict[str, Any]
                 Parameter values provided by the minimizer engine.
 
             Returns
@@ -96,7 +103,7 @@ class Fitter:
     def _process_fit_results(
         self,
         structures: Structures,
-        experiments: Experiments,
+        experiments: list[ExperimentBase],
     ) -> None:
         """
         Collect reliability inputs and display fit results.
@@ -110,8 +117,8 @@ class Fitter:
         ----------
         structures : Structures
             Collection of structures.
-        experiments : Experiments
-            Collection of experiments.
+        experiments : list[ExperimentBase]
+            List of experiments.
         """
         y_obs, y_calc, y_err = get_reliability_inputs(
             structures,
@@ -130,36 +137,13 @@ class Fitter:
                 f_calc=f_calc,
             )
 
-    def _collect_free_parameters(
-        self,
-        structures: Structures,
-        experiments: Experiments,
-    ) -> List[Parameter]:
-        """
-        Collect free parameters from structures and experiments.
-
-        Parameters
-        ----------
-        structures : Structures
-            Collection of structures.
-        experiments : Experiments
-            Collection of experiments.
-
-        Returns
-        -------
-        List[Parameter]
-            List of free parameters.
-        """
-        free_params: List[Parameter] = structures.free_parameters + experiments.free_parameters
-        return free_params
-
     def _residual_function(
         self,
-        engine_params: Dict[str, Any],
-        parameters: List[Parameter],
+        engine_params: dict[str, Any],
+        parameters: list[Parameter],
         structures: Structures,
-        experiments: Experiments,
-        weights: Optional[np.array] = None,
+        experiments: list[ExperimentBase],
+        weights: np.ndarray | None = None,
         analysis: object = None,
     ) -> np.ndarray:
         """
@@ -170,16 +154,17 @@ class Fitter:
 
         Parameters
         ----------
-        engine_params : Dict[str, Any]
+        engine_params : dict[str, Any]
             Engine-specific parameter dict.
-        parameters : List[Parameter]
+        parameters : list[Parameter]
             List of parameters being optimized.
         structures : Structures
             Collection of structures.
-        experiments : Experiments
-            Collection of experiments.
-        weights : Optional[np.array], default=None
-            Optional weights for joint fitting.
+        experiments : list[ExperimentBase]
+            List of experiments.
+        weights : np.ndarray | None, default=None
+            Per-experiment weights as a 1-D array. When ``None``, equal
+            weights are used.
         analysis : object, default=None
             Optional Analysis object to update its categories during
             fitting.
@@ -202,33 +187,28 @@ class Fitter:
             analysis._update_categories(called_by_minimizer=True)
 
         # Prepare weights for joint fitting
-        num_expts: int = len(experiments.names)
-        if weights is None:
-            _weights = np.ones(num_expts)
-        else:
-            _weights_list: List[float] = []
-            for name in experiments.names:
-                _weight = weights[name].weight.value
-                _weights_list.append(_weight)
-            _weights = np.array(_weights_list, dtype=np.float64)
+        num_expts: int = len(experiments)
+        norm_weights = (
+            np.ones(num_expts) if weights is None else np.asarray(weights, dtype=np.float64)
+        )
 
         # Normalize weights so they sum to num_expts
         # We should obtain the same reduced chi_squared when a single
         # dataset is split into two parts and fit together. If weights
         # sum to one, then reduced chi_squared will be half as large as
         # expected.
-        _weights *= num_expts / np.sum(_weights)
-        residuals: List[float] = []
+        norm_weights *= num_expts / np.sum(norm_weights)
+        residuals: list[float] = []
 
-        for experiment, weight in zip(experiments.values(), _weights, strict=True):
+        for experiment, weight in zip(experiments, norm_weights, strict=True):
             # Update experiment-specific calculations
             experiment._update_categories(called_by_minimizer=True)
 
             # Calculate the difference between measured and calculated
             # patterns
-            y_calc: np.ndarray = experiment.data.intensity_calc
-            y_meas: np.ndarray = experiment.data.intensity_meas
-            y_meas_su: np.ndarray = experiment.data.intensity_meas_su
+            y_calc = experiment.data.intensity_calc
+            y_meas = experiment.data.intensity_meas
+            y_meas_su = experiment.data.intensity_meas_su
             diff = (y_meas - y_calc) / y_meas_su
 
             # Residuals are squared before going into reduced

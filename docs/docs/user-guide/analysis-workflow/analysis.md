@@ -251,7 +251,7 @@ To plot the measured vs calculated data after the fit, you can use the
 `plot_meas_vs_calc` method of the `analysis` object:
 
 ```python
-project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 ```
 
 ## Constraints
@@ -319,7 +319,7 @@ To view the defined constraints, you can use the `show_constraints`
 method:
 
 ```python
-project.analysis.show_constraints()
+project.analysis.display.constraints()
 ```
 
 The example of the output is:

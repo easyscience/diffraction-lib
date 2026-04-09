@@ -25,6 +25,9 @@ from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.utils.utils import tof_to_d
 from easydiffraction.utils.utils import twotheta_to_d
 
+# Uncertainty values below this threshold are replaced with 1.0
+_MIN_UNCERTAINTY = 0.0001
+
 
 class PdDataPointBaseMixin:
     """Single base data point mixin for powder diffraction data."""
@@ -238,7 +241,7 @@ class PdTofDataPointMixin:
         self._time_of_flight = NumericDescriptor(
             name='time_of_flight',
             description='Measured time for time-of-flight neutron measurement.',
-            units='µs',
+            units='μs',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
@@ -253,7 +256,7 @@ class PdTofDataPointMixin:
     @property
     def time_of_flight(self) -> NumericDescriptor:
         """
-        Measured time for time-of-flight neutron measurement (µs).
+        Measured time for time-of-flight neutron measurement (μs).
 
         Reading this property returns the underlying
         ``NumericDescriptor`` object.
@@ -352,9 +355,8 @@ class PdDataBase(CategoryCollection):
             elif not v:
                 p.calc_status._value = 'excl'
             else:
-                raise ValueError(
-                    f'Invalid refinement status value: {v}. Expected boolean True/False.'
-                )
+                msg = f'Invalid refinement status value: {v}. Expected boolean True/False.'
+                raise ValueError(msg)
 
     @property
     def _calc_mask(self) -> np.ndarray:
@@ -449,8 +451,8 @@ class PdDataBase(CategoryCollection):
             (p.intensity_meas_su.value for p in self._calc_items),
             dtype=float,  # TODO: needed? DataTypes.NUMERIC?
         )
-        # Replace values smaller than 0.0001 with 1.0
-        modified = np.where(original < 0.0001, 1.0, original)
+        # Replace values smaller than _MIN_UNCERTAINTY with 1.0
+        modified = np.where(original < _MIN_UNCERTAINTY, 1.0, original)
         return modified
 
     @property
@@ -484,7 +486,7 @@ class PdCwlData(PdDataBase):
         beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH, BeamModeEnum.TIME_OF_FLIGHT}),
     )
     calculator_support = CalculatorSupport(
-        calculators=frozenset({CalculatorEnum.CRYSPY}),
+        calculators=frozenset({CalculatorEnum.CRYSPY, CalculatorEnum.CRYSFML}),
     )
 
     def __init__(self) -> None:

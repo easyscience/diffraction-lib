@@ -10,7 +10,7 @@
 # for La0.5Ba0.5CoO3 from HRPT at PSI is used.
 #
 # It does not contain any advanced features or options, and includes no
-# comments or explanations—these can be found in the other tutorials.
+# comments or explanations — these can be found in the other tutorials.
 # Default values are used for all parameters if not specified. Only
 # essential and self-explanatory code is provided.
 #
@@ -160,7 +160,7 @@ experiment.linked_phases['lbco'].scale.free = True
 
 # %%
 project.analysis.fit()
-project.analysis.show_fit_results()
+project.analysis.display.fit_results()
 
 # %%
-project.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)

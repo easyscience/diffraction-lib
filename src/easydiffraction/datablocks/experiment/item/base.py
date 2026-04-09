@@ -7,7 +7,6 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import TYPE_CHECKING
 from typing import Any
-from typing import List
 
 from easydiffraction.core.datablock import DatablockItem
 from easydiffraction.datablocks.experiment.categories.data.factory import DataFactory
@@ -24,10 +23,12 @@ from easydiffraction.datablocks.experiment.categories.linked_phases.factory impo
     LinkedPhasesFactory,
 )
 from easydiffraction.datablocks.experiment.categories.peak.factory import PeakFactory
+from easydiffraction.io.cif.parse import read_cif_str
 from easydiffraction.io.cif.serialize import experiment_to_cif
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_cif
+from easydiffraction.utils.utils import render_table
 
 if TYPE_CHECKING:
     from easydiffraction.datablocks.experiment.categories.experiment_type import ExperimentType
@@ -113,7 +114,7 @@ class ExperimentBase(DatablockItem):
         console.paragraph(f"Diffrn type for experiment '{self.name}' changed to")
         console.print(new_type)
 
-    def show_supported_diffrn_types(self) -> None:
+    def show_supported_diffrn_types(self) -> None:  # noqa: PLR6301
         """Print a table of supported diffraction conditions types."""
         DiffrnFactory.show_supported()
 
@@ -122,6 +123,22 @@ class ExperimentBase(DatablockItem):
         console.paragraph('Current diffrn type')
         console.print(self.diffrn_type)
 
+    def _restore_switchable_types(self, block: object) -> None:
+        """
+        Restore switchable category types from a parsed CIF block.
+
+        Called by the factory immediately after the experiment object is
+        created and before any category parameters are loaded from CIF.
+        Subclasses with switchable categories must override this method
+        and call their ``_set_<type>`` private setter for each category
+        whose active implementation is identified by a CIF type tag.
+
+        Parameters
+        ----------
+        block : object
+            Parsed ``gemmi.cif.Block`` to read type tags from.
+        """
+
     @property
     def as_cif(self) -> str:
         """Serialize this experiment to a CIF fragment."""
@@ -129,10 +146,9 @@ class ExperimentBase(DatablockItem):
 
     def show_as_cif(self) -> None:
         """Pretty-print the experiment as CIF text."""
-        experiment_cif = super().as_cif
         paragraph_title: str = f"Experiment 🔬 '{self.name}' as cif"
         console.paragraph(paragraph_title)
-        render_cif(experiment_cif)
+        render_cif(self._cif_for_display())
 
     @abstractmethod
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
@@ -149,7 +165,7 @@ class ExperimentBase(DatablockItem):
         NotImplementedError
             Subclasses must implement this method.
         """
-        raise NotImplementedError()
+        raise NotImplementedError
 
     # ------------------------------------------------------------------
     #  Calculator (switchable-category pattern)
@@ -186,7 +202,7 @@ class ExperimentBase(DatablockItem):
             Calculator tag (e.g. ``'cryspy'``, ``'crysfml'``,
             ``'pdffit'``).
         """
-        from easydiffraction.analysis.calculators.factory import CalculatorFactory
+        from easydiffraction.analysis.calculators.factory import CalculatorFactory  # noqa: PLC0415
 
         supported = self._supported_calculator_tags()
         if tag not in supported:
@@ -203,7 +219,7 @@ class ExperimentBase(DatablockItem):
 
     def show_supported_calculator_types(self) -> None:
         """Print a table of supported calculator backends."""
-        from easydiffraction.analysis.calculators.factory import CalculatorFactory
+        from easydiffraction.analysis.calculators.factory import CalculatorFactory  # noqa: PLC0415
 
         supported_tags = self._supported_calculator_tags()
         all_classes = CalculatorFactory._supported_map()
@@ -214,7 +230,6 @@ class ExperimentBase(DatablockItem):
             for tag, cls in all_classes.items()
             if tag in supported_tags
         ]
-        from easydiffraction.utils.utils import render_table
 
         console.paragraph('Supported calculator types')
         render_table(
@@ -230,7 +245,7 @@ class ExperimentBase(DatablockItem):
 
     def _resolve_calculator(self) -> None:
         """Auto-resolve the default calculator from data category."""
-        from easydiffraction.analysis.calculators.factory import CalculatorFactory
+        from easydiffraction.analysis.calculators.factory import CalculatorFactory  # noqa: PLC0415
 
         tag = CalculatorFactory.default_tag(
             scattering_type=self.type.scattering_type.value,
@@ -248,7 +263,7 @@ class ExperimentBase(DatablockItem):
         Intersects the data category's ``calculator_support`` with
         calculators whose engines are importable.
         """
-        from easydiffraction.analysis.calculators.factory import CalculatorFactory
+        from easydiffraction.analysis.calculators.factory import CalculatorFactory  # noqa: PLC0415
 
         available = CalculatorFactory.supported_tags()
         data = getattr(self, '_data', None)
@@ -298,7 +313,6 @@ class ScExperimentBase(ExperimentBase):
             Path to data file with columns compatible with the beam
             mode.
         """
-        pass
 
     # ------------------------------------------------------------------
     #  Extinction (switchable-category pattern)
@@ -338,7 +352,7 @@ class ScExperimentBase(ExperimentBase):
         console.paragraph(f"Extinction type for experiment '{self.name}' changed to")
         console.print(new_type)
 
-    def show_supported_extinction_types(self) -> None:
+    def show_supported_extinction_types(self) -> None:  # noqa: PLR6301
         """Print a table of supported extinction correction models."""
         ExtinctionFactory.show_supported()
 
@@ -385,7 +399,7 @@ class ScExperimentBase(ExperimentBase):
         console.paragraph(f"Linked crystal type for experiment '{self.name}' changed to")
         console.print(new_type)
 
-    def show_supported_linked_crystal_types(self) -> None:
+    def show_supported_linked_crystal_types(self) -> None:  # noqa: PLR6301
         """Print a table of supported linked-crystal reference types."""
         LinkedCrystalFactory.show_supported()
 
@@ -486,7 +500,7 @@ class ScExperimentBase(ExperimentBase):
         console.paragraph(f"Data type for experiment '{self.name}' changed to")
         console.print(new_type)
 
-    def show_supported_data_types(self) -> None:
+    def show_supported_data_types(self) -> None:  # noqa: PLR6301
         """Print a table of supported data collection types."""
         DataFactory.show_supported()
 
@@ -526,7 +540,7 @@ class PdExperimentBase(ExperimentBase):
     def _get_valid_linked_phases(
         self,
         structures: Structures,
-    ) -> List[Any]:
+    ) -> list[Any]:
         """
         Get valid linked phases for this experiment.
 
@@ -537,7 +551,7 @@ class PdExperimentBase(ExperimentBase):
 
         Returns
         -------
-        List[Any]
+        list[Any]
             A list of valid linked phases.
         """
         if not self.linked_phases:
@@ -570,14 +584,13 @@ class PdExperimentBase(ExperimentBase):
         ----------
         data_path : str
             Path to data file with columns compatible with the beam mode
-            (e.g. 2θ/I/σ for CWL, TOF/I/σ for TOF).
+            (e.g. 2theta/I/sigma for CWL, TOF/I/sigma for TOF).
 
         Returns
         -------
         int
             Number of loaded data points.
         """
-        pass
 
     @property
     def linked_phases(self) -> object:
@@ -613,7 +626,7 @@ class PdExperimentBase(ExperimentBase):
         console.paragraph(f"Linked phases type for experiment '{self.name}' changed to")
         console.print(new_type)
 
-    def show_supported_linked_phases_types(self) -> None:
+    def show_supported_linked_phases_types(self) -> None:  # noqa: PLR6301
         """Print a table of supported linked-phases collection types."""
         LinkedPhasesFactory.show_supported()
 
@@ -656,7 +669,7 @@ class PdExperimentBase(ExperimentBase):
         console.paragraph(f"Excluded regions type for experiment '{self.name}' changed to")
         console.print(new_type)
 
-    def show_supported_excluded_regions_types(self) -> None:
+    def show_supported_excluded_regions_types(self) -> None:  # noqa: PLR6301
         """Print a table of supported excluded-regions types."""
         ExcludedRegionsFactory.show_supported()
 
@@ -702,7 +715,7 @@ class PdExperimentBase(ExperimentBase):
         console.paragraph(f"Data type for experiment '{self.name}' changed to")
         console.print(new_type)
 
-    def show_supported_data_types(self) -> None:
+    def show_supported_data_types(self) -> None:  # noqa: PLR6301
         """Print a table of supported data collection types."""
         DataFactory.show_supported()
 
@@ -766,3 +779,47 @@ class PdExperimentBase(ExperimentBase):
         """Print the currently selected peak profile type."""
         console.paragraph('Current peak profile type')
         console.print(self.peak_profile_type)
+
+    def _set_peak_profile_type(self, new_type: str) -> None:
+        """
+        Switch the peak profile type without console output.
+
+        Used internally by the factory when restoring state from CIF so
+        that no user-facing warnings or progress messages are emitted.
+        Invalid type tags are logged as warnings and ignored.
+
+        Parameters
+        ----------
+        new_type : str
+            Peak profile type tag (e.g. ``'split pseudo-voigt'``).
+        """
+        supported = PeakFactory.supported_for(
+            scattering_type=self.type.scattering_type.value,
+            beam_mode=self.type.beam_mode.value,
+        )
+        supported_tags = [k.type_info.tag for k in supported]
+        if new_type not in supported_tags:
+            log.warning(
+                f"Unsupported peak profile '{new_type}' in CIF. "
+                f'Supported: {supported_tags}. Keeping default.',
+            )
+            return
+        self._peak = PeakFactory.create(new_type)
+        self._peak_profile_type = new_type
+
+    def _restore_switchable_types(self, block: object) -> None:
+        """
+        Restore switchable category types for powder experiments.
+
+        Reads ``_peak.profile_type`` from the CIF block and switches to
+        the matching peak implementation before category parameters are
+        loaded, ensuring profile-specific descriptors are present.
+
+        Parameters
+        ----------
+        block : object
+            Parsed ``gemmi.cif.Block`` to read type tags from.
+        """
+        peak_type = read_cif_str(block, '_peak.profile_type')
+        if peak_type is not None:
+            self._set_peak_profile_type(peak_type)

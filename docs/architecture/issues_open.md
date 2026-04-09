@@ -10,25 +10,6 @@ needed.
 
 ---
 
-## 1. 🔴 Implement `Project.load()`
-
-**Type:** Completeness
-
-`save()` serialises all components to CIF files but `load()` is a stub
-that raises `NotImplementedError`. Users cannot round-trip a project.
-
-**Why first:** this is the highest-severity gap. Without it the save
-functionality is only half useful — CIF files are written but cannot be
-read back. Tutorials that demonstrate save/load are blocked.
-
-**Fix:** implement `load()` that reads CIF files from the project
-directory and reconstructs structures, experiments, and analysis
-settings.
-
-**Depends on:** nothing (standalone).
-
----
-
 ## 2. 🟡 Restore Minimiser Variant Support
 
 **Type:** Feature loss + Design limitation
@@ -83,31 +64,6 @@ exactly match `project.experiments.names`.
 
 ---
 
-## 4. 🔴 Refresh Constraint State Before Automatic Updates and Fitting
-
-**Type:** Correctness
-
-`ConstraintsHandler` is only synchronised from `analysis.aliases` and
-`analysis.constraints` when the user explicitly calls
-`project.analysis.apply_constraints()`. The normal fit / serialisation
-path calls `constraints_handler.apply()` directly, so newly added or
-edited aliases and constraints can be ignored until that manual sync
-step happens.
-
-**Why high:** this produces silently incorrect results. A user can
-define constraints, run a fit, and believe they were applied when the
-active singleton still contains stale state from a previous run or no
-state at all.
-
-**Fix:** before any automatic constraint application, always refresh the
-singleton from the current `Aliases` and `Constraints` collections. The
-sync should happen inside `Analysis._update_categories()` or inside the
-constraints category itself, not only in a user-facing helper method.
-
-**Depends on:** nothing.
-
----
-
 ## 5. 🟡 Make `Analysis` a `DatablockItem`
 
 **Type:** Consistency
@@ -147,24 +103,6 @@ data-type switching is not a real user need, consider making `data`
 effectively fixed after experiment creation.
 
 **Depends on:** nothing.
-
----
-
-## 7. 🟡 Eliminate Dummy `Experiments` Wrapper in Single-Fit Mode
-
-**Type:** Fragility
-
-Single-fit mode creates a throw-away `Experiments` collection per
-experiment, manually forces `_parent` via `object.__setattr__`, and
-passes it to `Fitter`. This bypasses `GuardedBase` parent tracking and
-is fragile.
-
-**Fix:** make `Fitter.fit()` accept a list of experiment objects (or a
-single experiment) instead of requiring an `Experiments` collection. Or
-add a `fit_single(experiment)` method.
-
-**Depends on:** nothing, but simpler after issue 5 (Analysis refactor)
-clarifies the fitting orchestration.
 
 ---
 
@@ -339,21 +277,18 @@ re-derivable default.
 
 ## Summary
 
-| #   | Issue                                      | Severity | Type                    |
-| --- | ------------------------------------------ | -------- | ----------------------- |
-| 1   | Implement `Project.load()`                 | 🔴 High  | Completeness            |
-| 2   | Restore minimiser variants                 | 🟡 Med   | Feature loss            |
-| 3   | Rebuild joint-fit weights                  | 🟡 Med   | Fragility               |
-| 4   | Refresh constraint state before auto-apply | 🔴 High  | Correctness             |
-| 5   | `Analysis` as `DatablockItem`              | 🟡 Med   | Consistency             |
-| 6   | Restrict `data_type` switching             | 🔴 High  | Correctness/Data safety |
-| 7   | Eliminate dummy `Experiments`              | 🟡 Med   | Fragility               |
-| 8   | Explicit `create()` signatures             | 🟡 Med   | API safety              |
-| 9   | Future enum extensions                     | 🟢 Low   | Design                  |
-| 10  | Unify update orchestration                 | 🟢 Low   | Maintainability         |
-| 11  | Document `_update` contract                | 🟢 Low   | Maintainability         |
-| 12  | CIF round-trip integration test            | 🟢 Low   | Quality                 |
-| 13  | Suppress redundant dirty-flag sets         | 🟢 Low   | Performance             |
-| 14  | Finer-grained change tracking              | 🟢 Low   | Performance             |
-| 15  | Validate joint-fit weights                 | 🟡 Med   | Correctness             |
-| 16  | Persist per-experiment `calculator_type`   | 🟡 Med   | Completeness            |
+| #   | Issue                                    | Severity | Type                    |
+| --- | ---------------------------------------- | -------- | ----------------------- |
+| 2   | Restore minimiser variants               | 🟡 Med   | Feature loss            |
+| 3   | Rebuild joint-fit weights                | 🟡 Med   | Fragility               |
+| 5   | `Analysis` as `DatablockItem`            | 🟡 Med   | Consistency             |
+| 6   | Restrict `data_type` switching           | 🔴 High  | Correctness/Data safety |
+| 8   | Explicit `create()` signatures           | 🟡 Med   | API safety              |
+| 9   | Future enum extensions                   | 🟢 Low   | Design                  |
+| 10  | Unify update orchestration               | 🟢 Low   | Maintainability         |
+| 11  | Document `_update` contract              | 🟢 Low   | Maintainability         |
+| 12  | CIF round-trip integration test          | 🟢 Low   | Quality                 |
+| 13  | Suppress redundant dirty-flag sets       | 🟢 Low   | Performance             |
+| 14  | Finer-grained change tracking            | 🟢 Low   | Performance             |
+| 15  | Validate joint-fit weights               | 🟡 Med   | Correctness             |
+| 16  | Persist per-experiment `calculator_type` | 🟡 Med   | Completeness            |

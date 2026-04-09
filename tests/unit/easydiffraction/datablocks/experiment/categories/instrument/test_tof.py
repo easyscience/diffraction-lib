@@ -41,4 +41,5 @@ def test_tof_instrument_defaults_and_setters_and_parameters_and_cif():
 
     # CIF representation of the item should include tags in separate lines
     cif = inst.as_cif
-    assert '_instr.2theta_bank' in cif and '_instr.d_to_tof_linear' in cif
+    assert '_instr.2theta_bank' in cif
+    assert '_instr.d_to_tof_linear' in cif

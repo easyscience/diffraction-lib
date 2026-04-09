@@ -2,13 +2,10 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 from typing import Any
-from typing import Dict
-from typing import List
 
 from cryspy.A_functions_base.function_2_space_group import get_crystal_system_by_it_number
 from cryspy.A_functions_base.function_2_space_group import get_it_number_by_name_hm_short
 from sympy import Expr
-from sympy import Symbol
 from sympy import simplify
 from sympy import symbols
 from sympy import sympify
@@ -18,22 +15,22 @@ from easydiffraction.utils.logging import log
 
 
 def apply_cell_symmetry_constraints(
-    cell: Dict[str, float],
+    cell: dict[str, float],
     name_hm: str,
-) -> Dict[str, float]:
+) -> dict[str, float]:
     """
     Apply symmetry constraints to unit cell parameters.
 
     Parameters
     ----------
-    cell : Dict[str, float]
+    cell : dict[str, float]
         Dictionary containing lattice parameters.
     name_hm : str
         Hermann-Mauguin symbol of the space group.
 
     Returns
     -------
-    Dict[str, float]
+    dict[str, float]
         The cell dictionary with applied symmetry constraints.
     """
     it_number = get_it_number_by_name_hm_short(name_hm)
@@ -89,18 +86,90 @@ def apply_cell_symmetry_constraints(
     return cell
 
 
-def apply_atom_site_symmetry_constraints(
-    atom_site: Dict[str, Any],
+def _get_wyckoff_exprs(
     name_hm: str,
     coord_code: int,
     wyckoff_letter: str,
-) -> Dict[str, Any]:
+) -> list[Expr] | None:
+    """
+    Look up the first Wyckoff position and parse it into sympy Exprs.
+
+    Parameters
+    ----------
+    name_hm : str
+        Hermann-Mauguin symbol of the space group.
+    coord_code : int
+        Coordinate system code.
+    wyckoff_letter : str
+        Wyckoff position letter.
+
+    Returns
+    -------
+    list[Expr] | None
+        Three sympy expressions for x, y, z components, or ``None`` on
+        failure.
+    """
+    it_number = get_it_number_by_name_hm_short(name_hm)
+    if it_number is None:
+        log.error(f"Failed to get IT_number for name_H-M '{name_hm}'")
+        return None
+
+    if coord_code is None:
+        log.error('IT_coordinate_system_code is not set')
+        return None
+
+    entry = SPACE_GROUPS[it_number, coord_code]
+    first_position = entry['Wyckoff_positions'][wyckoff_letter]['coords_xyz'][0]
+    components = first_position.strip('()').split(',')
+    return [sympify(comp.strip()) for comp in components]
+
+
+def _apply_fract_constraints(
+    atom_site: dict[str, Any],
+    parsed_exprs: list[Expr],
+) -> None:
+    """
+    Evaluate and apply fractional coordinate constraints in place.
+
+    For each axis (x, y, z), if the coordinate is fully determined by
+    symmetry (the symbol does not appear in any expression as a free
+    symbol), substitutes the numeric values and overwrites the entry.
+
+    Parameters
+    ----------
+    atom_site : dict[str, Any]
+        Dictionary containing atom position data (mutated in place).
+    parsed_exprs : list[Expr]
+        Three sympy expressions from the Wyckoff position.
+    """
+    x, y, z = symbols('x y z')
+    symbols_xyz = (x, y, z)
+    axes = ('x', 'y', 'z')
+    substitutions = {
+        'x': sympify(atom_site['fract_x']),
+        'y': sympify(atom_site['fract_y']),
+        'z': sympify(atom_site['fract_z']),
+    }
+
+    for i, axis in enumerate(axes):
+        is_free = any(symbols_xyz[i] in expr.free_symbols for expr in parsed_exprs)
+        if not is_free:
+            evaluated = simplify(parsed_exprs[i].subs(substitutions))
+            atom_site[f'fract_{axis}'] = float(evaluated)
+
+
+def apply_atom_site_symmetry_constraints(
+    atom_site: dict[str, Any],
+    name_hm: str,
+    coord_code: int,
+    wyckoff_letter: str,
+) -> dict[str, Any]:
     """
     Apply symmetry constraints to atom site coordinates.
 
     Parameters
     ----------
-    atom_site : Dict[str, Any]
+    atom_site : dict[str, Any]
         Dictionary containing atom position data.
     name_hm : str
         Hermann-Mauguin symbol of the space group.
@@ -111,46 +180,12 @@ def apply_atom_site_symmetry_constraints(
 
     Returns
     -------
-    Dict[str, Any]
+    dict[str, Any]
         The atom_site dictionary with applied symmetry constraints.
     """
-    it_number = get_it_number_by_name_hm_short(name_hm)
-    if it_number is None:
-        error_msg = f"Failed to get IT_number for name_H-M '{name_hm}'"
-        log.error(error_msg)  # TODO: ValueError? Diagnostics?
+    parsed_exprs = _get_wyckoff_exprs(name_hm, coord_code, wyckoff_letter)
+    if parsed_exprs is None:
         return atom_site
 
-    it_coordinate_system_code = coord_code
-    if it_coordinate_system_code is None:
-        error_msg = 'IT_coordinate_system_code is not set'
-        log.error(error_msg)  # TODO: ValueError? Diagnostics?
-        return atom_site
-
-    space_group_entry = SPACE_GROUPS[(it_number, it_coordinate_system_code)]
-    wyckoff_positions = space_group_entry['Wyckoff_positions'][wyckoff_letter]
-    coords_xyz = wyckoff_positions['coords_xyz']
-
-    first_position = coords_xyz[0]
-    components = first_position.strip('()').split(',')
-    parsed_exprs: List[Expr] = [sympify(comp.strip()) for comp in components]
-
-    x_val: Expr = sympify(atom_site['fract_x'])
-    y_val: Expr = sympify(atom_site['fract_y'])
-    z_val: Expr = sympify(atom_site['fract_z'])
-
-    substitutions: Dict[str, Expr] = {'x': x_val, 'y': y_val, 'z': z_val}
-
-    axes: tuple[str, ...] = ('x', 'y', 'z')
-    x, y, z = symbols('x y z')
-    symbols_xyz: tuple[Symbol, ...] = (x, y, z)
-
-    for i, axis in enumerate(axes):
-        symbol = symbols_xyz[i]
-        is_free = any(symbol in expr.free_symbols for expr in parsed_exprs)
-
-        if not is_free:
-            evaluated = parsed_exprs[i].subs(substitutions)
-            simplified = simplify(evaluated)
-            atom_site[f'fract_{axis}'] = float(simplified)
-
+    _apply_fract_constraints(atom_site, parsed_exprs)
     return atom_site

@@ -196,10 +196,10 @@ project.analysis.current_minimizer = 'lmfit'
 # #### Plot Measured vs Calculated (Before Fit)
 
 # %%
-project.plot_meas_vs_calc(expt_name='sepd', show_residual=False)
+project.plotter.plot_meas_vs_calc(expt_name='sepd', show_residual=False)
 
 # %%
-project.plot_meas_vs_calc(expt_name='nomad', show_residual=False)
+project.plotter.plot_meas_vs_calc(expt_name='nomad', show_residual=False)
 
 # %% [markdown]
 # #### Set Fitting Parameters
@@ -237,23 +237,20 @@ pdf_expt.peak.sharp_delta_2.free = True
 # #### Show Free Parameters
 
 # %%
-project.analysis.show_free_params()
+project.analysis.display.free_params()
 
 # %% [markdown]
 # #### Run Fitting
 
 # %%
 project.analysis.fit()
-project.analysis.show_fit_results()
+project.analysis.display.fit_results()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated (After Fit)
 
 # %%
-project.plot_meas_vs_calc(expt_name='sepd', show_residual=False)
+project.plotter.plot_meas_vs_calc(expt_name='sepd', show_residual=False)
 
 # %%
-project.plot_meas_vs_calc(expt_name='nomad', show_residual=False)
-
-
-# %%
+project.plotter.plot_meas_vs_calc(expt_name='nomad', show_residual=False)

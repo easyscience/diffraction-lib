@@ -7,7 +7,7 @@ Used by containers and items to expose datablock/category/entry names
 without tight coupling.
 """
 
-from typing import Callable
+from collections.abc import Callable
 
 
 class Identity:

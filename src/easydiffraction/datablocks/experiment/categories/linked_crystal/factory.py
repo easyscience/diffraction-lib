@@ -4,12 +4,14 @@
 
 from __future__ import annotations
 
+from typing import ClassVar
+
 from easydiffraction.core.factory import FactoryBase
 
 
 class LinkedCrystalFactory(FactoryBase):
     """Create linked-crystal references by tag."""
 
-    _default_rules = {
+    _default_rules: ClassVar[dict] = {
         frozenset(): 'default',
     }

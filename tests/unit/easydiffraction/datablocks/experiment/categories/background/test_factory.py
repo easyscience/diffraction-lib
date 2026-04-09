@@ -18,5 +18,8 @@ def test_background_factory_default_and_errors():
     assert obj2.__class__.__name__.endswith('ChebyshevPolynomialBackground')
 
     # Unsupported tag should raise ValueError
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError,
+        match=r"Unsupported type: 'nonexistent'\. Supported: .*",
+    ):
         BackgroundFactory.create('nonexistent')

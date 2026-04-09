@@ -23,6 +23,13 @@ from easydiffraction.utils.logging import log
 if TYPE_CHECKING:
     from easydiffraction.datablocks.experiment.categories.experiment_type import ExperimentType
 
+# Minimum number of columns required in an ASCII data file
+_MIN_COLUMNS_XY = 2
+_MIN_COLUMNS_XY_SY = 3
+
+# Uncertainty values below this threshold are replaced with 1.0
+_MIN_UNCERTAINTY = 0.0001
+
 
 @ExperimentFactory.register
 class BraggPdExperiment(PdExperimentBase):
@@ -81,29 +88,29 @@ class BraggPdExperiment(PdExperimentBase):
         """
         data = load_numeric_block(data_path)
 
-        if data.shape[1] < 2:
+        if data.shape[1] < _MIN_COLUMNS_XY:
             log.error(
                 'Data file must have at least two columns: x and y.',
                 exc_type=ValueError,
             )
             return 0
 
-        if data.shape[1] < 3:
+        if data.shape[1] < _MIN_COLUMNS_XY_SY:
             log.warning('No uncertainty (sy) column provided. Defaulting to sqrt(y).')
 
         # Extract x, y data
-        x: np.ndarray = data[:, 0]
-        y: np.ndarray = data[:, 1]
+        x = data[:, 0]
+        y = data[:, 1]
 
         # Round x to 4 decimal places
         x = np.round(x, 4)
 
         # Determine sy from column 3 if available, otherwise use sqrt(y)
-        sy: np.ndarray = data[:, 2] if data.shape[1] > 2 else np.sqrt(y)
+        sy = data[:, 2] if data.shape[1] > _MIN_COLUMNS_XY else np.sqrt(y)
 
-        # Replace values smaller than 0.0001 with 1.0
+        # Replace values smaller than _MIN_UNCERTAINTY with 1.0
         # TODO: Not used if loading from cif file?
-        sy = np.where(sy < 0.0001, 1.0, sy)
+        sy = np.where(sy < _MIN_UNCERTAINTY, 1.0, sy)
 
         # Set the experiment data
         self.data._create_items_set_xcoord_and_id(x)
@@ -209,7 +216,7 @@ class BraggPdExperiment(PdExperimentBase):
         """Active background model for this experiment."""
         return self._background
 
-    def show_supported_background_types(self) -> None:
+    def show_supported_background_types(self) -> None:  # noqa: PLR6301
         """Print a table of supported background types."""
         BackgroundFactory.show_supported()
 

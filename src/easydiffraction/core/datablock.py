@@ -86,17 +86,38 @@ class DatablockItem(GuardedBase):
     @property
     def as_cif(self) -> str:
         """Return CIF representation of this object."""
-        from easydiffraction.io.cif.serialize import datablock_item_to_cif
+        from easydiffraction.io.cif.serialize import datablock_item_to_cif  # noqa: PLC0415
 
         self._update_categories()
         return datablock_item_to_cif(self)
+
+    def _cif_for_display(self, max_loop_display: int = 20) -> str:
+        """
+        Return CIF text with loop categories truncated for display.
+
+        Parameters
+        ----------
+        max_loop_display : int, default=20
+            Maximum number of rows to show per loop category.
+
+        Returns
+        -------
+        str
+            CIF representation of this object, with loop categories
+            truncated to at most *max_loop_display* rows for display
+            purposes.
+        """
+        from easydiffraction.io.cif.serialize import datablock_item_to_cif  # noqa: PLC0415
+
+        self._update_categories()
+        return datablock_item_to_cif(self, max_loop_display=max_loop_display)
 
     def help(self) -> None:
         """Print a summary of public attributes and categories."""
         super().help()
 
-        from easydiffraction.utils.logging import console
-        from easydiffraction.utils.utils import render_table
+        from easydiffraction.utils.logging import console  # noqa: PLC0415
+        from easydiffraction.utils.utils import render_table  # noqa: PLC0415
 
         cats = self.categories
         if cats:
@@ -128,7 +149,7 @@ class DatablockCollection(CollectionBase):
     :meth:`add` with the resulting item.
     """
 
-    def _key_for(self, item: object) -> str | None:
+    def _key_for(self, item: object) -> str | None:  # noqa: PLR6301
         """Return the datablock-level identity key for *item*."""
         return item._identity.datablock_entry_name
 
@@ -176,6 +197,6 @@ class DatablockCollection(CollectionBase):
     @property
     def as_cif(self) -> str:
         """Return CIF representation of this object."""
-        from easydiffraction.io.cif.serialize import datablock_collection_to_cif
+        from easydiffraction.io.cif.serialize import datablock_collection_to_cif  # noqa: PLC0415
 
         return datablock_collection_to_cif(self)

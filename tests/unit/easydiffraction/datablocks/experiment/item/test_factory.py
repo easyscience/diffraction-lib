@@ -25,4 +25,35 @@ def test_experiment_factory_from_scratch():
         scattering_type=ScatteringTypeEnum.BRAGG.value,
     )
     # Instance should be created (BraggPdExperiment)
-    assert hasattr(ex, 'type') and ex.type.sample_form.value == SampleFormEnum.POWDER.value
+    assert hasattr(ex, 'type')
+    assert ex.type.sample_form.value == SampleFormEnum.POWDER.value
+
+
+def test_from_cif_str_restores_non_default_peak_profile_type():
+    """
+    Loading a CIF with a non-default peak profile type must reconstruct
+    the correct profile (including profile-specific parameters).
+    """
+    from easydiffraction.datablocks.experiment.item.factory import ExperimentFactory
+
+    expt = ExperimentFactory.from_scratch(
+        name='test',
+        sample_form='powder',
+        beam_mode='constant wavelength',
+        radiation_probe='x-ray',
+        scattering_type='bragg',
+    )
+    expt.peak_profile_type = 'split pseudo-voigt'
+    expt.peak.asym_empir_1 = -0.005
+    expt.peak.asym_empir_2 = 0.067
+    expt.peak.broad_gauss_u = 0.039
+
+    cif_str = expt.as_cif
+
+    loaded = ExperimentFactory.from_cif_str(cif_str)
+
+    assert loaded.peak_profile_type == 'split pseudo-voigt'
+    assert loaded.peak.__class__.__name__ == 'CwlSplitPseudoVoigt'
+    assert abs(loaded.peak.asym_empir_1.value - (-0.005)) < 1e-6
+    assert abs(loaded.peak.asym_empir_2.value - 0.067) < 1e-6
+    assert abs(loaded.peak.broad_gauss_u.value - 0.039) < 1e-6

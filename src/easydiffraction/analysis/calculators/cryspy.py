@@ -5,9 +5,6 @@ import contextlib
 import copy
 import io
 from typing import Any
-from typing import Dict
-from typing import List
-from typing import Union
 
 import numpy as np
 
@@ -55,7 +52,7 @@ class CryspyCalculator(CalculatorBase):
 
     def __init__(self) -> None:
         super().__init__()
-        self._cryspy_dicts: Dict[str, Dict[str, Any]] = {}
+        self._cryspy_dicts: dict[str, dict[str, Any]] = {}
 
     def calculate_structure_factors(
         self,
@@ -89,7 +86,7 @@ class CryspyCalculator(CalculatorBase):
 
         self._cryspy_dicts[combined_name] = copy.deepcopy(cryspy_dict)
 
-        cryspy_in_out_dict: Dict[str, Any] = {}
+        cryspy_in_out_dict: dict[str, Any] = {}
 
         # Calculate the pattern using Cryspy
         # TODO: Redirect stderr to suppress Cryspy warnings.
@@ -121,7 +118,7 @@ class CryspyCalculator(CalculatorBase):
         structure: Structure,
         experiment: ExperimentBase,
         called_by_minimizer: bool = False,
-    ) -> Union[np.ndarray, List[float]]:
+    ) -> np.ndarray | list[float]:
         """
         Calculate the diffraction pattern using Cryspy.
 
@@ -141,7 +138,7 @@ class CryspyCalculator(CalculatorBase):
 
         Returns
         -------
-        Union[np.ndarray, List[float]]
+        np.ndarray | list[float]
             The calculated diffraction pattern as a NumPy array or a
             list of floats.
         """
@@ -159,7 +156,7 @@ class CryspyCalculator(CalculatorBase):
 
         self._cryspy_dicts[combined_name] = copy.deepcopy(cryspy_dict)
 
-        cryspy_in_out_dict: Dict[str, Any] = {}
+        cryspy_in_out_dict: dict[str, Any] = {}
 
         # Calculate the pattern using Cryspy
         # TODO: Redirect stderr to suppress Cryspy warnings.
@@ -200,7 +197,7 @@ class CryspyCalculator(CalculatorBase):
         self,
         structure: Structure,
         experiment: ExperimentBase,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Recreate the Cryspy dictionary for structure and experiment.
 
@@ -213,19 +210,33 @@ class CryspyCalculator(CalculatorBase):
 
         Returns
         -------
-        Dict[str, Any]
+        dict[str, Any]
             The updated Cryspy dictionary.
         """
         combined_name = f'{structure.name}_{experiment.name}'
         cryspy_dict = copy.deepcopy(self._cryspy_dicts[combined_name])
 
         cryspy_model_id = f'crystal_{structure.name}'
-        cryspy_model_dict = cryspy_dict[cryspy_model_id]
+        self._update_structure_in_cryspy_dict(cryspy_dict[cryspy_model_id], structure)
+        self._update_experiment_in_cryspy_dict(cryspy_dict, experiment)
 
-        ################################
-        # Update structure parameters
-        ################################
+        return cryspy_dict
 
+    @staticmethod
+    def _update_structure_in_cryspy_dict(
+        cryspy_model_dict: dict[str, Any],
+        structure: Structure,
+    ) -> None:
+        """
+        Update structure parameters in the Cryspy model dictionary.
+
+        Parameters
+        ----------
+        cryspy_model_dict : dict[str, Any]
+            The ``crystal_<name>`` sub-dict.
+        structure : Structure
+            The source structure.
+        """
         # Cell
         cryspy_cell = cryspy_model_dict['unit_cell_parameters']
         cryspy_cell[0] = structure.cell.length_a.value
@@ -252,10 +263,21 @@ class CryspyCalculator(CalculatorBase):
         for idx, atom_site in enumerate(structure.atom_sites):
             cryspy_biso[idx] = atom_site.b_iso.value
 
-        ##############################
-        # Update experiment parameters
-        ##############################
+    @staticmethod
+    def _update_experiment_in_cryspy_dict(
+        cryspy_dict: dict[str, Any],
+        experiment: ExperimentBase,
+    ) -> None:
+        """
+        Update experiment parameters in the Cryspy dictionary.
 
+        Parameters
+        ----------
+        cryspy_dict : dict[str, Any]
+            The full Cryspy dictionary.
+        experiment : ExperimentBase
+            The source experiment.
+        """
         if experiment.type.sample_form.value == SampleFormEnum.POWDER:
             if experiment.type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
                 cryspy_expt_name = f'pd_{experiment.name}'
@@ -274,6 +296,13 @@ class CryspyCalculator(CalculatorBase):
                 cryspy_resolution[2] = experiment.peak.broad_gauss_w.value
                 cryspy_resolution[3] = experiment.peak.broad_lorentz_x.value
                 cryspy_resolution[4] = experiment.peak.broad_lorentz_y.value
+
+                if 'asymmetry_parameters' in cryspy_expt_dict:
+                    cryspy_asymmetry = cryspy_expt_dict['asymmetry_parameters']
+                    cryspy_asymmetry[0] = experiment.peak.asym_empir_1.value
+                    cryspy_asymmetry[1] = experiment.peak.asym_empir_2.value
+                    cryspy_asymmetry[2] = experiment.peak.asym_empir_3.value
+                    cryspy_asymmetry[3] = experiment.peak.asym_empir_4.value
 
             elif experiment.type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
                 cryspy_expt_name = f'tof_{experiment.name}'
@@ -313,8 +342,6 @@ class CryspyCalculator(CalculatorBase):
             cryspy_expt_dict['extinction_radius'][0] = experiment.extinction.radius.value
             cryspy_expt_dict['extinction_mosaicity'][0] = experiment.extinction.mosaicity.value
 
-        return cryspy_dict
-
     def _recreate_cryspy_obj(
         self,
         structure: Structure,
@@ -352,7 +379,7 @@ class CryspyCalculator(CalculatorBase):
 
         return cryspy_obj
 
-    def _convert_structure_to_cryspy_cif(
+    def _convert_structure_to_cryspy_cif(  # noqa: PLR6301
         self,
         structure: Structure,
     ) -> str:
@@ -371,7 +398,7 @@ class CryspyCalculator(CalculatorBase):
         """
         return structure.as_cif
 
-    def _convert_experiment_to_cryspy_cif(
+    def _convert_experiment_to_cryspy_cif(  # noqa: PLR6301
         self,
         experiment: ExperimentBase,
         linked_structure: object,
@@ -391,225 +418,321 @@ class CryspyCalculator(CalculatorBase):
         str
             The Cryspy CIF string representation of the experiment.
         """
-        # Try to get experiment attributes
         expt_type = getattr(experiment, 'type', None)
         instrument = getattr(experiment, 'instrument', None)
         peak = getattr(experiment, 'peak', None)
         extinction = getattr(experiment, 'extinction', None)
 
-        # Add experiment datablock name
         cif_lines = [f'data_{experiment.name}']
 
-        # Add experiment type attribute dat
-        if expt_type is not None:
-            cif_lines.append('')
-            radiation_probe = expt_type.radiation_probe.value
-            radiation_probe = radiation_probe.replace('neutron', 'neutrons')
-            radiation_probe = radiation_probe.replace('xray', 'X-rays')
-            cif_lines.append(f'_setup_radiation {radiation_probe}')
+        # Experiment metadata sections
+        _cif_radiation_probe(cif_lines, expt_type)
+        _cif_instrument_section(cif_lines, expt_type, instrument)
+        _cif_peak_section(cif_lines, expt_type, peak)
+        _cif_extinction_section(cif_lines, expt_type, extinction)
 
-        # Add instrument attribute data
-        if instrument:
-            # Restrict to only attributes relevant for the beam mode to
-            # avoid probing non-existent guarded attributes (which
-            # triggers diagnostics).
-            if expt_type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
-                if expt_type.sample_form.value == SampleFormEnum.POWDER:
-                    instrument_mapping = {
-                        'setup_wavelength': '_setup_wavelength',
-                        'calib_twotheta_offset': '_setup_offset_2theta',
-                    }
-                elif expt_type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL:
-                    instrument_mapping = {
-                        'setup_wavelength': '_setup_wavelength',
-                    }
-                    # Add dummy 0.0 value for _setup_field required by
-                    # Cryspy
-                    cif_lines.append('')
-                    cif_lines.append('_setup_field 0.0')
-            elif expt_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
-                if expt_type.sample_form.value == SampleFormEnum.POWDER:
-                    instrument_mapping = {
-                        'setup_twotheta_bank': '_tof_parameters_2theta_bank',
-                        'calib_d_to_tof_offset': '_tof_parameters_Zero',
-                        'calib_d_to_tof_linear': '_tof_parameters_Dtt1',
-                        'calib_d_to_tof_quad': '_tof_parameters_dtt2',
-                    }
-                elif expt_type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL:
-                    instrument_mapping = {}  # TODO: Check this mapping!
-                    # Add dummy 0.0 value for _setup_field required by
-                    # Cryspy
-                    cif_lines.append('')
-                    cif_lines.append('_setup_field 0.0')
-            cif_lines.append('')
-            for local_attr_name, engine_key_name in instrument_mapping.items():
-                # attr_obj = instrument.__dict__.get(local_attr_name)
-                attr_obj = getattr(instrument, local_attr_name)
-                if attr_obj is not None:
-                    cif_lines.append(f'{engine_key_name} {attr_obj.value}')
+        # Powder range data (also returns min/max for background)
+        twotheta_min, twotheta_max = _cif_range_section(cif_lines, expt_type, experiment)
 
-        # Add peak attribute data
-        if peak:
-            if expt_type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
-                peak_mapping = {
-                    'broad_gauss_u': '_pd_instr_resolution_U',
-                    'broad_gauss_v': '_pd_instr_resolution_V',
-                    'broad_gauss_w': '_pd_instr_resolution_W',
-                    'broad_lorentz_x': '_pd_instr_resolution_X',
-                    'broad_lorentz_y': '_pd_instr_resolution_Y',
-                }
-            elif expt_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
-                peak_mapping = {
-                    'broad_gauss_sigma_0': '_tof_profile_sigma0',
-                    'broad_gauss_sigma_1': '_tof_profile_sigma1',
-                    'broad_gauss_sigma_2': '_tof_profile_sigma2',
-                    'broad_mix_beta_0': '_tof_profile_beta0',
-                    'broad_mix_beta_1': '_tof_profile_beta1',
-                    'asym_alpha_0': '_tof_profile_alpha0',
-                    'asym_alpha_1': '_tof_profile_alpha1',
-                }
-                cif_lines.append('_tof_profile_peak_shape Gauss')
-            cif_lines.append('')
-            for local_attr_name, engine_key_name in peak_mapping.items():
-                # attr_obj = peak.__dict__.get(local_attr_name)
-                attr_obj = getattr(peak, local_attr_name)
-                if attr_obj is not None:
-                    cif_lines.append(f'{engine_key_name} {attr_obj.value}')
+        # Structure sections
+        _cif_orient_matrix_section(cif_lines, expt_type)
+        _cif_phase_section(cif_lines, expt_type, linked_structure)
+        _cif_background_section(cif_lines, expt_type, twotheta_min, twotheta_max)
 
-        # Add extinction attribute data
-        if extinction and expt_type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL:
-            extinction_mapping = {
-                'mosaicity': '_extinction_mosaicity',
-                'radius': '_extinction_radius',
+        # Measured data
+        _cif_measured_data_section(cif_lines, expt_type, experiment)
+
+        return '\n'.join(cif_lines)
+
+
+def _cif_radiation_probe(
+    cif_lines: list[str],
+    expt_type: object | None,
+) -> None:
+    """Append radiation probe line to CIF."""
+    if expt_type is None:
+        return
+    cif_lines.append('')
+    radiation_probe = expt_type.radiation_probe.value
+    radiation_probe = radiation_probe.replace('neutron', 'neutrons')
+    radiation_probe = radiation_probe.replace('xray', 'X-rays')
+    cif_lines.append(f'_setup_radiation {radiation_probe}')
+
+
+def _cif_instrument_section(
+    cif_lines: list[str],
+    expt_type: object | None,
+    instrument: object | None,
+) -> None:
+    """Append instrument attribute lines to CIF."""
+    if not instrument:
+        return
+
+    instrument_mapping: dict[str, str] = {}
+    if expt_type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
+        if expt_type.sample_form.value == SampleFormEnum.POWDER:
+            instrument_mapping = {
+                'setup_wavelength': '_setup_wavelength',
+                'calib_twotheta_offset': '_setup_offset_2theta',
             }
-            cif_lines.append('')
-            cif_lines.append('_extinction_model gauss')
-            for local_attr_name, engine_key_name in extinction_mapping.items():
-                attr_obj = getattr(extinction, local_attr_name)
-                if attr_obj is not None:
-                    cif_lines.append(f'{engine_key_name} {attr_obj.value}')
-
-        # Add range data
+        elif expt_type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL:
+            instrument_mapping = {'setup_wavelength': '_setup_wavelength'}
+            cif_lines.extend(('', '_setup_field 0.0'))
+    elif expt_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
         if expt_type.sample_form.value == SampleFormEnum.POWDER:
-            x_data = experiment.data.x
-            twotheta_min = f'{np.round(x_data.min(), 5):.5f}'  # float(x_data.min())
-            twotheta_max = f'{np.round(x_data.max(), 5):.5f}'  # float(x_data.max())
-            cif_lines.append('')
-            if expt_type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
-                cif_lines.append(f'_range_2theta_min {twotheta_min}')
-                cif_lines.append(f'_range_2theta_max {twotheta_max}')
-            elif expt_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
-                cif_lines.append(f'_range_time_min {twotheta_min}')
-                cif_lines.append(f'_range_time_max {twotheta_max}')
+            instrument_mapping = {
+                'setup_twotheta_bank': '_tof_parameters_2theta_bank',
+                'calib_d_to_tof_offset': '_tof_parameters_Zero',
+                'calib_d_to_tof_linear': '_tof_parameters_Dtt1',
+                'calib_d_to_tof_quad': '_tof_parameters_dtt2',
+            }
+        elif expt_type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL:
+            instrument_mapping = {}  # TODO: Check this mapping!
+            cif_lines.extend(('', '_setup_field 0.0'))
 
-        # Add orientation matrix data
-        # Hardcoded example values for now, as we don't use them yet,
-        # but Cryspy requires them for single crystal data.
-        if expt_type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL:
-            cif_lines.append('')
-            cif_lines.append('_diffrn_orient_matrix_type CCSL')
-            cif_lines.append('_diffrn_orient_matrix_ub_11 -0.088033')
-            cif_lines.append('_diffrn_orient_matrix_ub_12 -0.088004')
-            cif_lines.append('_diffrn_orient_matrix_ub_13  0.069970')
-            cif_lines.append('_diffrn_orient_matrix_ub_21  0.034058')
-            cif_lines.append('_diffrn_orient_matrix_ub_22 -0.188170')
-            cif_lines.append('_diffrn_orient_matrix_ub_23 -0.013039')
-            cif_lines.append('_diffrn_orient_matrix_ub_31  0.223600')
-            cif_lines.append('_diffrn_orient_matrix_ub_32  0.125751')
-            cif_lines.append('_diffrn_orient_matrix_ub_33  0.029490')
+    cif_lines.append('')
+    for local_attr_name, engine_key_name in instrument_mapping.items():
+        attr_obj = getattr(instrument, local_attr_name)
+        if attr_obj is not None:
+            cif_lines.append(f'{engine_key_name} {attr_obj.value}')
 
-        # Add phase data
-        if expt_type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL:
-            cif_lines.append('')
-            cif_lines.append(f'_phase_label {linked_structure.name}')
-            cif_lines.append('_phase_scale 1.0')
-        elif expt_type.sample_form.value == SampleFormEnum.POWDER:
-            cif_lines.append('')
-            cif_lines.append('loop_')
-            cif_lines.append('_phase_label')
-            cif_lines.append('_phase_scale')
-            cif_lines.append(f'{linked_structure.name} 1.0')
 
-        # Add background data
-        if expt_type.sample_form.value == SampleFormEnum.POWDER:
-            if expt_type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
-                cif_lines.append('')
-                cif_lines.append('loop_')
-                cif_lines.append('_pd_background_2theta')
-                cif_lines.append('_pd_background_intensity')
-                cif_lines.append(f'{twotheta_min} 0.0')
-                cif_lines.append(f'{twotheta_max} 0.0')
-            elif expt_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
-                cif_lines.append('')
-                cif_lines.append('loop_')
-                cif_lines.append('_tof_backgroundpoint_time')  # TODO: !!!!????
-                cif_lines.append('_tof_backgroundpoint_intensity')  # TODO: !!!!????
-                cif_lines.append(f'{twotheta_min} 0.0')  # TODO: !!!!????
-                cif_lines.append(f'{twotheta_max} 0.0')  # TODO: !!!!????
+def _cif_peak_section(
+    cif_lines: list[str],
+    expt_type: object | None,
+    peak: object | None,
+) -> None:
+    """Append peak profile lines to CIF."""
+    if not peak:
+        return
 
-        # Add measured data: Single crystal
-        if expt_type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL:
-            if expt_type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
-                cif_lines.append('')
-                cif_lines.append('loop_')
-                cif_lines.append('_diffrn_refln_index_h')
-                cif_lines.append('_diffrn_refln_index_k')
-                cif_lines.append('_diffrn_refln_index_l')
-                cif_lines.append('_diffrn_refln_intensity')
-                cif_lines.append('_diffrn_refln_intensity_sigma')
-                indices_h: np.ndarray = experiment.data.index_h
-                indices_k: np.ndarray = experiment.data.index_k
-                indices_l: np.ndarray = experiment.data.index_l
-                y_data: np.ndarray = experiment.data.intensity_meas
-                sy_data: np.ndarray = experiment.data.intensity_meas_su
-                for index_h, index_k, index_l, y_val, sy_val in zip(
-                    indices_h, indices_k, indices_l, y_data, sy_data, strict=True
-                ):
-                    cif_lines.append(
-                        f'{index_h:4.0f}{index_k:4.0f}{index_l:4.0f}   {y_val:.5f}   {sy_val:.5f}'
-                    )
-            elif expt_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
-                cif_lines.append('')
-                cif_lines.append('loop_')
-                cif_lines.append('_diffrn_refln_index_h')
-                cif_lines.append('_diffrn_refln_index_k')
-                cif_lines.append('_diffrn_refln_index_l')
-                cif_lines.append('_diffrn_refln_intensity')
-                cif_lines.append('_diffrn_refln_intensity_sigma')
-                cif_lines.append('_diffrn_refln_wavelength')
-                indices_h: np.ndarray = experiment.data.index_h
-                indices_k: np.ndarray = experiment.data.index_k
-                indices_l: np.ndarray = experiment.data.index_l
-                y_data: np.ndarray = experiment.data.intensity_meas
-                sy_data: np.ndarray = experiment.data.intensity_meas_su
-                wl_data: np.ndarray = experiment.data.wavelength
-                for index_h, index_k, index_l, y_val, sy_val, wl_val in zip(
-                    indices_h, indices_k, indices_l, y_data, sy_data, wl_data, strict=True
-                ):
-                    cif_lines.append(
-                        f'{index_h:4.0f}{index_k:4.0f}{index_l:4.0f}   {y_val:.5f}   '
-                        f'{sy_val:.5f}   {wl_val:.5f}'
-                    )
-        # Add measured data: Powder
-        elif expt_type.sample_form.value == SampleFormEnum.POWDER:
-            if expt_type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
-                cif_lines.append('')
-                cif_lines.append('loop_')
-                cif_lines.append('_pd_meas_2theta')
-                cif_lines.append('_pd_meas_intensity')
-                cif_lines.append('_pd_meas_intensity_sigma')
-            elif expt_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
-                cif_lines.append('')
-                cif_lines.append('loop_')
-                cif_lines.append('_tof_meas_time')
-                cif_lines.append('_tof_meas_intensity')
-                cif_lines.append('_tof_meas_intensity_sigma')
-            y_data: np.ndarray = experiment.data.intensity_meas
-            sy_data: np.ndarray = experiment.data.intensity_meas_su
-            for x_val, y_val, sy_val in zip(x_data, y_data, sy_data, strict=True):
-                cif_lines.append(f'  {x_val:.5f}   {y_val:.5f}   {sy_val:.5f}')
+    peak_mapping: dict[str, str] = {}
+    if expt_type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
+        peak_mapping = {
+            'broad_gauss_u': '_pd_instr_resolution_U',
+            'broad_gauss_v': '_pd_instr_resolution_V',
+            'broad_gauss_w': '_pd_instr_resolution_W',
+            'broad_lorentz_x': '_pd_instr_resolution_X',
+            'broad_lorentz_y': '_pd_instr_resolution_Y',
+            'asym_empir_1': '_pd_instr_reflex_asymmetry_p1',
+            'asym_empir_2': '_pd_instr_reflex_asymmetry_p2',
+            'asym_empir_3': '_pd_instr_reflex_asymmetry_p3',
+            'asym_empir_4': '_pd_instr_reflex_asymmetry_p4',
+        }
+    elif expt_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
+        peak_mapping = {
+            'broad_gauss_sigma_0': '_tof_profile_sigma0',
+            'broad_gauss_sigma_1': '_tof_profile_sigma1',
+            'broad_gauss_sigma_2': '_tof_profile_sigma2',
+            'broad_mix_beta_0': '_tof_profile_beta0',
+            'broad_mix_beta_1': '_tof_profile_beta1',
+            'asym_alpha_0': '_tof_profile_alpha0',
+            'asym_alpha_1': '_tof_profile_alpha1',
+        }
+        cif_lines.append('_tof_profile_peak_shape Gauss')
 
-        # Combine all lines into a single CIF string
-        cryspy_experiment_cif = '\n'.join(cif_lines)
+    cif_lines.append('')
+    for local_attr_name, engine_key_name in peak_mapping.items():
+        attr_obj = getattr(peak, local_attr_name, None)
+        if attr_obj is not None:
+            cif_lines.append(f'{engine_key_name} {attr_obj.value}')
 
-        return cryspy_experiment_cif
+
+def _cif_extinction_section(
+    cif_lines: list[str],
+    expt_type: object | None,
+    extinction: object | None,
+) -> None:
+    """Append extinction lines to CIF (single crystal only)."""
+    if not extinction or expt_type.sample_form.value != SampleFormEnum.SINGLE_CRYSTAL:
+        return
+    extinction_mapping = {
+        'mosaicity': '_extinction_mosaicity',
+        'radius': '_extinction_radius',
+    }
+    cif_lines.extend(('', '_extinction_model gauss'))
+    for local_attr_name, engine_key_name in extinction_mapping.items():
+        attr_obj = getattr(extinction, local_attr_name)
+        if attr_obj is not None:
+            cif_lines.append(f'{engine_key_name} {attr_obj.value}')
+
+
+def _cif_range_section(
+    cif_lines: list[str],
+    expt_type: object | None,
+    experiment: ExperimentBase,
+) -> tuple[str, str]:
+    """
+    Append range lines to CIF and return (min, max) strings.
+
+    Parameters
+    ----------
+    cif_lines : list[str]
+        Accumulator list of CIF lines (mutated in place).
+    expt_type : object | None
+        Experiment type metadata with ``sample_form`` and ``beam_mode``.
+    experiment : ExperimentBase
+        Experiment whose data range is queried.
+
+    Returns
+    -------
+    tuple[str, str]
+        Formatted min and max strings (empty if not powder).
+    """
+    if expt_type.sample_form.value != SampleFormEnum.POWDER:
+        return '', ''
+
+    x_data = experiment.data.x
+    twotheta_min = f'{np.round(x_data.min(), 5):.5f}'
+    twotheta_max = f'{np.round(x_data.max(), 5):.5f}'
+    cif_lines.append('')
+    if expt_type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
+        cif_lines.extend((
+            f'_range_2theta_min {twotheta_min}',
+            f'_range_2theta_max {twotheta_max}',
+        ))
+    elif expt_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
+        cif_lines.extend((
+            f'_range_time_min {twotheta_min}',
+            f'_range_time_max {twotheta_max}',
+        ))
+    return twotheta_min, twotheta_max
+
+
+def _cif_orient_matrix_section(
+    cif_lines: list[str],
+    expt_type: object | None,
+) -> None:
+    """Append hardcoded orientation matrix for single crystal."""
+    if expt_type.sample_form.value != SampleFormEnum.SINGLE_CRYSTAL:
+        return
+    cif_lines.extend(('', '_diffrn_orient_matrix_type CCSL'))
+    for tag, val in [
+        ('ub_11', '-0.088033'),
+        ('ub_12', '-0.088004'),
+        ('ub_13', ' 0.069970'),
+        ('ub_21', ' 0.034058'),
+        ('ub_22', '-0.188170'),
+        ('ub_23', '-0.013039'),
+        ('ub_31', ' 0.223600'),
+        ('ub_32', ' 0.125751'),
+        ('ub_33', ' 0.029490'),
+    ]:
+        cif_lines.append(f'_diffrn_orient_matrix_{tag} {val}')
+
+
+def _cif_phase_section(
+    cif_lines: list[str],
+    expt_type: object | None,
+    linked_structure: object,
+) -> None:
+    """Append phase label/scale to CIF."""
+    cif_lines.append('')
+    if expt_type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL:
+        cif_lines.extend((
+            f'_phase_label {linked_structure.name}',
+            '_phase_scale 1.0',
+        ))
+    elif expt_type.sample_form.value == SampleFormEnum.POWDER:
+        cif_lines.extend((
+            'loop_',
+            '_phase_label',
+            '_phase_scale',
+            f'{linked_structure.name} 1.0',
+        ))
+
+
+def _cif_background_section(
+    cif_lines: list[str],
+    expt_type: object | None,
+    twotheta_min: str,
+    twotheta_max: str,
+) -> None:
+    """Append background loop for powder data."""
+    if expt_type.sample_form.value != SampleFormEnum.POWDER:
+        return
+    cif_lines.extend(('', 'loop_'))
+    if expt_type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
+        cif_lines.extend((
+            '_pd_background_2theta',
+            '_pd_background_intensity',
+        ))
+    elif expt_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
+        cif_lines.extend((
+            '_tof_backgroundpoint_time',  # TODO: !!!!????
+            '_tof_backgroundpoint_intensity',  # TODO: !!!!????
+        ))
+    cif_lines.extend((
+        f'{twotheta_min} 0.0',  # TODO: !!!!????
+        f'{twotheta_max} 0.0',  # TODO: !!!!????
+    ))
+
+
+def _cif_measured_data_section(
+    cif_lines: list[str],
+    expt_type: object | None,
+    experiment: ExperimentBase,
+) -> None:
+    """Append measured data loop to CIF."""
+    if expt_type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL:
+        _cif_measured_data_sc(cif_lines, expt_type, experiment)
+    elif expt_type.sample_form.value == SampleFormEnum.POWDER:
+        _cif_measured_data_pd(cif_lines, expt_type, experiment)
+
+
+def _cif_measured_data_sc(
+    cif_lines: list[str],
+    expt_type: object | None,
+    experiment: ExperimentBase,
+) -> None:
+    """Append single crystal measured data loop."""
+    data = experiment.data
+    cif_lines.extend((
+        '',
+        'loop_',
+        '_diffrn_refln_index_h',
+        '_diffrn_refln_index_k',
+        '_diffrn_refln_index_l',
+        '_diffrn_refln_intensity',
+        '_diffrn_refln_intensity_sigma',
+    ))
+
+    is_tof = expt_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT
+    if is_tof:
+        cif_lines.append('_diffrn_refln_wavelength')
+
+    for i in range(len(data.index_h)):
+        line = (
+            f'{data.index_h[i]:4.0f}{data.index_k[i]:4.0f}{data.index_l[i]:4.0f}'
+            f'   {data.intensity_meas[i]:.5f}   {data.intensity_meas_su[i]:.5f}'
+        )
+        if is_tof:
+            line += f'   {data.wavelength[i]:.5f}'
+        cif_lines.append(line)
+
+
+def _cif_measured_data_pd(
+    cif_lines: list[str],
+    expt_type: object | None,
+    experiment: ExperimentBase,
+) -> None:
+    """Append powder measured data loop."""
+    cif_lines.extend(('', 'loop_'))
+    if expt_type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
+        cif_lines.extend((
+            '_pd_meas_2theta',
+            '_pd_meas_intensity',
+            '_pd_meas_intensity_sigma',
+        ))
+    elif expt_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
+        cif_lines.extend((
+            '_tof_meas_time',
+            '_tof_meas_intensity',
+            '_tof_meas_intensity_sigma',
+        ))
+
+    x_data = experiment.data.x
+    y_data = experiment.data.intensity_meas
+    sy_data = experiment.data.intensity_meas_su
+    for x_val, y_val, sy_val in zip(x_data, y_data, sy_data, strict=True):
+        cif_lines.append(f'  {x_val:.5f}   {y_val:.5f}   {sy_val:.5f}')

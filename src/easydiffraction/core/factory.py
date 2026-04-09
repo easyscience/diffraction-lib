@@ -10,11 +10,7 @@ Concrete factories inherit from ``FactoryBase`` and only need to define
 from __future__ import annotations
 
 from typing import Any
-from typing import Dict
-from typing import FrozenSet
-from typing import List
-from typing import Tuple
-from typing import Type
+from typing import ClassVar
 
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.utils import render_table
@@ -33,8 +29,8 @@ class FactoryBase:
     independent ``_registry`` list.
     """
 
-    _registry: List[Type] = []
-    _default_rules: Dict[FrozenSet[Tuple[str, Any]], str] = {}
+    _registry: ClassVar[list[type]] = []
+    _default_rules: ClassVar[dict[frozenset[tuple[str, Any]], str]] = {}
 
     def __init_subclass__(cls, **kwargs: object) -> None:
         """Give each subclass its own independent registry and rules."""
@@ -67,12 +63,12 @@ class FactoryBase:
     # ------------------------------------------------------------------
 
     @classmethod
-    def _supported_map(cls) -> Dict[str, Type]:
+    def _supported_map(cls) -> dict[str, type]:
         """Build ``{tag: class}`` from all registered classes."""
         return {klass.type_info.tag: klass for klass in cls._registry}
 
     @classmethod
-    def supported_tags(cls) -> List[str]:
+    def supported_tags(cls) -> list[str]:
         """Return list of all supported tags."""
         return list(cls._supported_map().keys())
 
@@ -115,10 +111,11 @@ class FactoryBase:
                 best_match_size = len(rule_key)
 
         if best_match_tag is None:
-            raise ValueError(
+            msg = (
                 f'No default rule matches conditions {dict(conditions)}. '
                 f'Available rules: {cls._default_rules}'
             )
+            raise ValueError(msg)
         return best_match_tag
 
     # ------------------------------------------------------------------
@@ -149,7 +146,8 @@ class FactoryBase:
         """
         supported = cls._supported_map()
         if tag not in supported:
-            raise ValueError(f"Unsupported type: '{tag}'. Supported: {list(supported.keys())}")
+            msg = f"Unsupported type: '{tag}'. Supported: {list(supported.keys())}"
+            raise ValueError(msg)
         return supported[tag](**kwargs)
 
     @classmethod
@@ -185,7 +183,7 @@ class FactoryBase:
         scattering_type: object = None,
         beam_mode: object = None,
         radiation_probe: object = None,
-    ) -> List[Type]:
+    ) -> list[type]:
         """
         Return classes matching conditions and/or calculator.
 
@@ -204,7 +202,7 @@ class FactoryBase:
 
         Returns
         -------
-        List[Type]
+        list[type]
             Classes matching the given conditions.
         """
         result = []

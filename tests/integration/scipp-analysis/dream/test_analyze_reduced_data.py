@@ -37,8 +37,7 @@ def prepared_cif_path(
     """Prepare CIF file with experiment type tags for
     easydiffraction.
     """
-    with Path(cif_path).open() as f:
-        content = f.read()
+    content = Path(cif_path).read_text()
 
     # Add experiment type tags if missing
     for tag, value in EXPT_TYPE_TAGS.items():
@@ -70,17 +69,17 @@ def project_with_data(
     project = ed.Project()
 
     # Step 2: Define Structure manually
-    project.structures.create(name='si')
-    structure = project.structures['si']
+    project.structures.create(name='diamond')
+    structure = project.structures['diamond']
 
     structure.space_group.name_h_m = 'F d -3 m'
     structure.space_group.it_coordinate_system_code = '1'
 
-    structure.cell.length_a = 5.43146
+    structure.cell.length_a = 3.567
 
     structure.atom_sites.create(
-        label='Si',
-        type_symbol='Si',
+        label='C',
+        type_symbol='C',
         fract_x=0.125,
         fract_y=0.125,
         fract_z=0.125,
@@ -94,11 +93,11 @@ def project_with_data(
 
     # Step 4: Configure experiment
     # Link phase
-    experiment.linked_phases.create(id='si', scale=0.8)
+    experiment.linked_phases.create(id='diamond', scale=0.8)
 
     # Instrument setup
     experiment.instrument.setup_twotheta_bank = 90.0
-    experiment.instrument.calib_d_to_tof_linear = 18630.0
+    experiment.instrument.calib_d_to_tof_linear = 28385.0
 
     # Peak profile parameters
     experiment.peak.broad_gauss_sigma_0 = 48500.0
@@ -140,15 +139,15 @@ def fitted_project(
     7. Do fitting
     """
     project = project_with_data
-    structure = project.structures['si']
+    structure = project.structures['diamond']
     experiment = project.experiments['reduced_tof']
 
     # Step 5: Select parameters to be fitted
     # Set free parameters for structure
-    structure.atom_sites['Si'].b_iso.free = True
+    structure.atom_sites['C'].b_iso.free = True
 
     # Set free parameters for experiment
-    experiment.linked_phases['si'].scale.free = True
+    experiment.linked_phases['diamond'].scale.free = True
     experiment.instrument.calib_d_to_tof_linear.free = True
 
     experiment.peak.broad_gauss_sigma_0.free = True
@@ -192,7 +191,7 @@ def test_analyze_reduced_data__phase_linked(
 ) -> None:
     """Verify phase is correctly linked to experiment."""
     experiment = project_with_data.experiments['reduced_tof']
-    assert 'si' in experiment.linked_phases.names
+    assert 'diamond' in experiment.linked_phases.names
 
 
 def test_analyze_reduced_data__background_set(
@@ -211,4 +210,4 @@ def test_analyze_reduced_data__fit_quality(
 ) -> None:
     """Verify fit quality is reasonable (chi-square value)."""
     chi_square = fitted_project.analysis.fit_results.reduced_chi_square
-    assert chi_square == pytest.approx(16.0, abs=0.1)
+    assert chi_square == pytest.approx(16.8, abs=0.1)

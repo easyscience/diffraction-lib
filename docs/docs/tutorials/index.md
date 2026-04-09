@@ -7,28 +7,32 @@ icon: material/school
 This section presents a collection of **Jupyter Notebook** tutorials
 that demonstrate how to use EasyDiffraction for various tasks. These
 tutorials serve as self-contained, step-by-step **guides** to help users
-grasp the workflow of diffraction data analysis using EasyDiffraction.
+grasp the workflow of data analysis using EasyDiffraction.
 
 Instructions on how to run the tutorials are provided in the
 [:material-cog-box: Installation & Setup](../installation-and-setup/index.md#how-to-run-tutorials)
 section of the documentation.
 
-The tutorials are organized into the following categories.
+The tutorials are organized into the following categories:
 
 ## Getting Started
 
-- [LBCO `quick` CIF](ed-1.ipynb) – A minimal example intended as a quick
-  reference for users already familiar with the EasyDiffraction API or
-  who want to see how Rietveld refinement of the La0.5Ba0.5CoO3 crystal
-  structure can be performed when both the structure and experiment are
-  loaded from CIF files. Data collected from constant wavelength neutron
-  powder diffraction at HRPT at PSI.
+- [LBCO `quick` `load`](ed-18.ipynb) – The most minimal example showing
+  how to load a previously saved project from a directory and run
+  refinement. Useful when a project has already been set up and saved in
+  a prior session.
 - [LBCO `quick` `code`](ed-2.ipynb) – A minimal example intended as a
   quick reference for users already familiar with the EasyDiffraction
   API or who want to see an example refinement when both the structure
   and experiment are defined directly in code. This tutorial covers a
   Rietveld refinement of the La0.5Ba0.5CoO3 crystal structure using
   constant wavelength neutron powder diffraction data from HRPT at PSI.
+- [LBCO `basic` `load`](ed-1.ipynb) – A basic example intended as a
+  quick reference for users already familiar with the EasyDiffraction
+  API or who want to see how Rietveld refinement of the La0.5Ba0.5CoO3
+  crystal structure can be performed when both the structure and
+  experiment are loaded from CIF files. Data collected from constant
+  wavelength neutron powder diffraction at HRPT at PSI.
 - [LBCO `complete`](ed-3.ipynb) – Demonstrates the use of the
   EasyDiffraction API in a simplified, user-friendly manner that closely
   follows the GUI workflow for a Rietveld refinement of the

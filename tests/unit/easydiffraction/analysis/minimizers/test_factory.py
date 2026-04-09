@@ -1,12 +1,15 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+import pytest
+
 
 def test_minimizer_factory_list_and_show(capsys):
     from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 
     lst = MinimizerFactory.supported_tags()
-    assert isinstance(lst, list) and len(lst) >= 1
+    assert isinstance(lst, list)
+    assert len(lst) >= 1
     MinimizerFactory.show_supported()
     out = capsys.readouterr().out
     assert 'Supported types' in out
@@ -15,12 +18,11 @@ def test_minimizer_factory_list_and_show(capsys):
 def test_minimizer_factory_unknown_raises():
     from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 
-    try:
+    with pytest.raises(
+        ValueError,
+        match=r"Unsupported type: '___unknown___'\. Supported: .*",
+    ):
         MinimizerFactory.create('___unknown___')
-    except ValueError as e:
-        assert 'Unsupported type' in str(e)
-    else:
-        assert False, 'Expected ValueError'
 
 
 def test_minimizer_factory_create_known_and_register():

@@ -10,6 +10,42 @@ def test_module_import():
     assert expected_module_name == actual_module_name
 
 
+def test_default_template_name_prefers_jupyter_theme(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    monkeypatch.setattr(pp, 'in_jupyter', lambda: True)
+    monkeypatch.setattr(pp, 'is_dark', lambda: True)
+    monkeypatch.setattr(pp.darkdetect, 'isDark', lambda: False)
+
+    assert pp.PlotlyPlotter._default_template_name() == 'plotly_dark'
+
+
+def test_correlation_colorscale_uses_black_center_in_dark_mode(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    monkeypatch.setattr(pp.PlotlyPlotter, '_is_dark_mode', staticmethod(lambda: True))
+
+    assert pp.PlotlyPlotter._correlation_colorscale()[1] == (0.5, '#000000')
+
+
+def test_default_template_name_uses_system_theme_outside_jupyter(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    monkeypatch.setattr(pp, 'in_jupyter', lambda: False)
+    monkeypatch.setattr(pp, 'is_dark', lambda: False)
+    monkeypatch.setattr(pp.darkdetect, 'isDark', lambda: False)
+
+    assert pp.PlotlyPlotter._default_template_name() == 'plotly_white'
+
+
+def test_correlation_colorscale_uses_white_center_in_light_mode(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    monkeypatch.setattr(pp.PlotlyPlotter, '_is_dark_mode', staticmethod(lambda: False))
+
+    assert pp.PlotlyPlotter._correlation_colorscale()[1] == (0.5, '#f7f7f7')
+
+
 def test_get_trace_and_plot(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
 
@@ -72,7 +108,8 @@ def test_get_trace_and_plot(monkeypatch):
     y = [1, 2, 3]
     trace = plotter._get_powder_trace(x, y, label='calc')
     assert hasattr(trace, 'kwargs')
-    assert trace.kwargs['x'] == x and trace.kwargs['y'] == y
+    assert trace.kwargs['x'] == x
+    assert trace.kwargs['y'] == y
 
     # Exercise plot_powder (non-PyCharm, display path)
     plotter.plot_powder(

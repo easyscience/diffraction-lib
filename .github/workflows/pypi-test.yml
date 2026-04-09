@@ -20,6 +20,9 @@ permissions:
 env:
   CI_BRANCH: ${{ github.head_ref || github.ref_name }}
   DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+  # Opt into Node.js 24 for all JavaScript actions.
+  # Remove once all referenced actions natively target Node 24.
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   # Job 1: Test installation from PyPI on multiple OS
@@ -45,29 +48,37 @@ jobs:
       - name: Init pixi project
         run: pixi init easydiffraction
 
+      - name: Set the minimum system requirements
+        run: pixi project system-requirements add macos 14.0
+
       - name: Add Python 3.14 from Conda
         working-directory: easydiffraction
         run: pixi add "python=3.14"
 
       - name: Add other Conda dependencies
         working-directory: easydiffraction
-        run: pixi add gsl
+        run: |
+          pixi add gsl
+          pixi add --platform osx-arm64 libcxx
 
-      - name: Add easydiffraction from PyPI
+      - name: Add pycrysfml calculator from custom PyPI index
         working-directory: easydiffraction
-        run: pixi add --pypi "easydiffraction"
+        run: |
+          echo '' >> pixi.toml
+          echo '[pypi-dependencies]' >> pixi.toml
+          echo 'pycrysfml = { version = ">=0.2.1", index = "https://easyscience.github.io/pypi/" }' >> pixi.toml
 
-      - name: Add dev dependencies from PyPI
+      - name: Add easydiffraction (with dev dependencies) from PyPI
         working-directory: easydiffraction
-        run: pixi add --pypi pytest pytest-xdist
-
-      - name: Add Pixi task as a shortcut
-        working-directory: easydiffraction
-        run: pixi task add easydiffraction "python -m easydiffraction"
+        run: pixi add --pypi "easydiffraction[dev]"
 
       - name: Run unit tests to verify the installation
         working-directory: easydiffraction
         run: pixi run python -m pytest ../tests/unit/ --color=yes -v
+
+      - name: Run functional tests to verify the installation
+        working-directory: easydiffraction
+        run: pixi run python -m pytest ../tests/functional/ --color=yes -v
 
       - name: Run integration tests to verify the installation
         working-directory: easydiffraction

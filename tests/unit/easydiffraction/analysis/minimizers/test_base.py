@@ -72,9 +72,11 @@ def test_minimizer_base_fit_flow_and_finalize():
     # Assertions: finalize populated, sync occurred, tracker captured time
     assert result.success is True
     assert minim.synced is True
-    assert isinstance(result.parameters, list) and result.parameters[0].value == 42
+    assert isinstance(result.parameters, list)
+    assert result.parameters[0].value == 42
     # Fitting time should be a positive float
-    assert minim.tracker.fitting_time is not None and minim.tracker.fitting_time >= 0.0
+    assert minim.tracker.fitting_time is not None
+    assert minim.tracker.fitting_time >= 0.0
 
 
 def test_minimizer_base_create_objective_function_uses_compute_residuals():

@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 import pandas as pd
 
@@ -17,14 +17,14 @@ from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 
 
-class TableEngineEnum(str, Enum):
+class TableEngineEnum(StrEnum):
     """Available table rendering backends."""
 
     RICH = 'rich'
     PANDAS = 'pandas'
 
     @classmethod
-    def default(cls) -> 'TableEngineEnum':
+    def default(cls) -> TableEngineEnum:
         """
         Select default engine based on environment.
 
@@ -47,7 +47,7 @@ class TableEngineEnum(str, Enum):
         """
         if self is TableEngineEnum.RICH:
             return 'Console rendering with Rich'
-        elif self is TableEngineEnum.PANDAS:
+        if self is TableEngineEnum.PANDAS:
             return 'Jupyter DataFrame rendering with Pandas'
         return ''
 

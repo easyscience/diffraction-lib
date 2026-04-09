@@ -202,10 +202,10 @@ project.analysis.current_minimizer = 'lmfit'
 # #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='d20', show_residual=True)
+project.plotter.plot_meas_vs_calc(expt_name='d20', show_residual=True)
 
 # %%
-project.plot_meas_vs_calc(expt_name='d20', x_min=41, x_max=54, show_residual=True)
+project.plotter.plot_meas_vs_calc(expt_name='d20', x_min=41, x_max=54, show_residual=True)
 
 # %% [markdown]
 # #### Set Free Parameters
@@ -255,11 +255,11 @@ for point in expt.background:
 # %%
 project.analysis.aliases.create(
     label='biso_Co1',
-    param_uid=project.structures['cosio'].atom_sites['Co1'].b_iso.uid,
+    param=project.structures['cosio'].atom_sites['Co1'].b_iso,
 )
 project.analysis.aliases.create(
     label='biso_Co2',
-    param_uid=project.structures['cosio'].atom_sites['Co2'].b_iso.uid,
+    param=project.structures['cosio'].atom_sites['Co2'].b_iso,
 )
 
 # %% [markdown]
@@ -270,27 +270,22 @@ project.analysis.constraints.create(
     expression='biso_Co2 = biso_Co1',
 )
 
-# %% [markdown]
-# Apply constraints.
-
-# %%
-project.analysis.apply_constraints()
 
 # %% [markdown]
 # #### Run Fitting
 
 # %%
 project.analysis.fit()
-project.analysis.show_fit_results()
+project.analysis.display.fit_results()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='d20', show_residual=True)
+project.plotter.plot_meas_vs_calc(expt_name='d20', show_residual=True)
 
 # %%
-project.plot_meas_vs_calc(expt_name='d20', x_min=41, x_max=54, show_residual=True)
+project.plotter.plot_meas_vs_calc(expt_name='d20', x_min=41, x_max=54, show_residual=True)
 
 # %% [markdown]
 # ## Summary

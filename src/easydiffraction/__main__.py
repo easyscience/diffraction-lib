@@ -18,7 +18,7 @@ app = typer.Typer(add_completion=False)
 @app.callback(invoke_without_command=True)
 def main(
     ctx: typer.Context,
-    version: bool = typer.Option(  # noqa: FBT003 - boolean option is intended
+    version: bool = typer.Option(
         False,
         '--version',
         '-V',
@@ -53,7 +53,7 @@ def download_tutorial(
         help='Directory to save the tutorial into.',
     ),
     overwrite: bool = typer.Option(
-        False,  # noqa: FBT003 - boolean option is intended
+        False,
         '--overwrite',
         '-o',
         help='Overwrite existing file if present.',
@@ -72,7 +72,7 @@ def download_all_tutorials(
         help='Directory to save the tutorials into.',
     ),
     overwrite: bool = typer.Option(
-        False,  # noqa: FBT003 - boolean option is intended
+        False,
         '--overwrite',
         '-o',
         help='Overwrite existing files if present.',
@@ -80,6 +80,27 @@ def download_all_tutorials(
 ) -> None:
     """Download all available tutorial notebooks."""
     ed.download_all_tutorials(destination=destination, overwrite=overwrite)
+
+
+@app.command('fit')
+def fit(
+    project_dir: str = typer.Argument(
+        ...,
+        help='Path to the project directory (must contain project.cif).',
+    ),
+    dry: bool = typer.Option(
+        False,
+        '--dry',
+        help='Run fitting without saving results back to the project directory.',
+    ),
+) -> None:
+    """Fit a saved project: easydiffraction fit PROJECT_DIR [--dry]."""
+    project = ed.Project.load(project_dir)
+    if dry:
+        project.info._path = None
+    project.analysis.fit()
+    project.analysis.display.fit_results()
+    project.summary.show_report()
 
 
 if __name__ == '__main__':

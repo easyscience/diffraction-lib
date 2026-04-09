@@ -2,10 +2,10 @@
 # SPDX-License-Identifier: BSD-3-Clause
 """Enumerations for experiment configuration (forms, modes, types)."""
 
-from enum import Enum
+from enum import StrEnum
 
 
-class SampleFormEnum(str, Enum):
+class SampleFormEnum(StrEnum):
     """Physical sample form supported by experiments."""
 
     POWDER = 'powder'
@@ -34,11 +34,11 @@ class SampleFormEnum(str, Enum):
         """
         if self is SampleFormEnum.POWDER:
             return 'Powdered or polycrystalline sample.'
-        elif self is SampleFormEnum.SINGLE_CRYSTAL:
+        if self is SampleFormEnum.SINGLE_CRYSTAL:
             return 'Single crystal sample.'
 
 
-class ScatteringTypeEnum(str, Enum):
+class ScatteringTypeEnum(StrEnum):
     """Type of scattering modeled in an experiment."""
 
     BRAGG = 'bragg'
@@ -67,11 +67,11 @@ class ScatteringTypeEnum(str, Enum):
         """
         if self is ScatteringTypeEnum.BRAGG:
             return 'Bragg diffraction for conventional structure refinement.'
-        elif self is ScatteringTypeEnum.TOTAL:
+        if self is ScatteringTypeEnum.TOTAL:
             return 'Total scattering for pair distribution function analysis (PDF).'
 
 
-class RadiationProbeEnum(str, Enum):
+class RadiationProbeEnum(StrEnum):
     """Incident radiation probe used in the experiment."""
 
     NEUTRON = 'neutron'
@@ -100,11 +100,11 @@ class RadiationProbeEnum(str, Enum):
         """
         if self is RadiationProbeEnum.NEUTRON:
             return 'Neutron diffraction.'
-        elif self is RadiationProbeEnum.XRAY:
+        if self is RadiationProbeEnum.XRAY:
             return 'X-ray diffraction.'
 
 
-class BeamModeEnum(str, Enum):
+class BeamModeEnum(StrEnum):
     """Beam delivery mode for the instrument."""
 
     # TODO: Rename to CWL and TOF
@@ -134,11 +134,11 @@ class BeamModeEnum(str, Enum):
         """
         if self is BeamModeEnum.CONSTANT_WAVELENGTH:
             return 'Constant wavelength (CW) diffraction.'
-        elif self is BeamModeEnum.TIME_OF_FLIGHT:
+        if self is BeamModeEnum.TIME_OF_FLIGHT:
             return 'Time-of-flight (TOF) diffraction.'
 
 
-class CalculatorEnum(str, Enum):
+class CalculatorEnum(StrEnum):
     """Known calculation engine identifiers."""
 
     CRYSPY = 'cryspy'
@@ -152,7 +152,7 @@ class CalculatorEnum(str, Enum):
 #  description are defined in the respective classes?
 # TODO: Can supported values be defined based on the structure of peak/?
 # TODO: Can the same be reused for other enums in this file?
-class PeakProfileTypeEnum(str, Enum):
+class PeakProfileTypeEnum(StrEnum):
     """Available peak profile types per scattering and beam mode."""
 
     PSEUDO_VOIGT = 'pseudo-voigt'
@@ -197,7 +197,7 @@ class PeakProfileTypeEnum(str, Enum):
             ): cls.PSEUDO_VOIGT_IKEDA_CARPENTER,
             (ScatteringTypeEnum.TOTAL, BeamModeEnum.CONSTANT_WAVELENGTH): cls.GAUSSIAN_DAMPED_SINC,
             (ScatteringTypeEnum.TOTAL, BeamModeEnum.TIME_OF_FLIGHT): cls.GAUSSIAN_DAMPED_SINC,
-        }[(scattering_type, beam_mode)]
+        }[scattering_type, beam_mode]
 
     def description(self) -> str:
         """
@@ -210,13 +210,13 @@ class PeakProfileTypeEnum(str, Enum):
         """
         if self is PeakProfileTypeEnum.PSEUDO_VOIGT:
             return 'Pseudo-Voigt profile'
-        elif self is PeakProfileTypeEnum.SPLIT_PSEUDO_VOIGT:
+        if self is PeakProfileTypeEnum.SPLIT_PSEUDO_VOIGT:
             return 'Split pseudo-Voigt profile with empirical asymmetry correction.'
-        elif self is PeakProfileTypeEnum.THOMPSON_COX_HASTINGS:
+        if self is PeakProfileTypeEnum.THOMPSON_COX_HASTINGS:
             return 'Thompson-Cox-Hastings profile with FCJ asymmetry correction.'
-        elif self is PeakProfileTypeEnum.PSEUDO_VOIGT_IKEDA_CARPENTER:
+        if self is PeakProfileTypeEnum.PSEUDO_VOIGT_IKEDA_CARPENTER:
             return 'Pseudo-Voigt profile with Ikeda-Carpenter asymmetry correction.'
-        elif self is PeakProfileTypeEnum.PSEUDO_VOIGT_BACK_TO_BACK:
+        if self is PeakProfileTypeEnum.PSEUDO_VOIGT_BACK_TO_BACK:
             return 'Pseudo-Voigt profile with Back-to-Back Exponential asymmetry correction.'
-        elif self is PeakProfileTypeEnum.GAUSSIAN_DAMPED_SINC:
+        if self is PeakProfileTypeEnum.GAUSSIAN_DAMPED_SINC:
             return 'Gaussian-damped sinc profile for pair distribution function (PDF) analysis.'

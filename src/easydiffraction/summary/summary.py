@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 from textwrap import wrap
-from typing import List
 
+from easydiffraction.io.cif.serialize import summary_to_cif
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.utils import render_table
 
@@ -69,7 +69,7 @@ class Summary:
 
             console.paragraph('Cell parameters')
             columns_headers = ['Parameter', 'Value']
-            columns_alignment: List[str] = ['left', 'right']
+            columns_alignment: list[str] = ['left', 'right']
             cell_data = [
                 [p.name.replace('length_', '').replace('angle_', ''), f'{p.value:.5f}']
                 for p in model.cell.parameters
@@ -99,9 +99,8 @@ class Summary:
                 'right',
                 'right',
             ]
-            atom_table = []
-            for site in model.atom_sites:
-                atom_table.append([
+            atom_table = [
+                [
                     site.label.value,
                     site.type_symbol.value,
                     f'{site.fract_x.value:.5f}',
@@ -109,7 +108,9 @@ class Summary:
                     f'{site.fract_z.value:.5f}',
                     f'{site.occupancy.value:.5f}',
                     f'{site.b_iso.value:.5f}',
-                ])
+                ]
+                for site in model.atom_sites
+            ]
             render_table(
                 columns_headers=columns_headers,
                 columns_alignment=columns_alignment,
@@ -206,6 +207,4 @@ class Summary:
 
     def as_cif(self) -> str:
         """Export fitted data and analysis results as CIF."""
-        from easydiffraction.io.cif.serialize import summary_to_cif
-
         return summary_to_cif(self)

@@ -113,7 +113,7 @@ class Structure(DatablockItem):
         console.paragraph(f"Cell type for structure '{self.name}' changed to")
         console.print(new_type)
 
-    def show_supported_cell_types(self) -> None:
+    def show_supported_cell_types(self) -> None:  # noqa: PLR6301
         """Print a table of supported unit-cell types."""
         CellFactory.show_supported()
 
@@ -172,7 +172,7 @@ class Structure(DatablockItem):
         console.paragraph(f"Space group type for structure '{self.name}' changed to")
         console.print(new_type)
 
-    def show_supported_space_group_types(self) -> None:
+    def show_supported_space_group_types(self) -> None:  # noqa: PLR6301
         """Print a table of supported space-group types."""
         SpaceGroupFactory.show_supported()
 
@@ -231,7 +231,7 @@ class Structure(DatablockItem):
         console.paragraph(f"Atom sites type for structure '{self.name}' changed to")
         console.print(new_type)
 
-    def show_supported_atom_sites_types(self) -> None:
+    def show_supported_atom_sites_types(self) -> None:  # noqa: PLR6301
         """Print a table of supported atom-sites collection types."""
         AtomSitesFactory.show_supported()
 
@@ -252,4 +252,4 @@ class Structure(DatablockItem):
     def show_as_cif(self) -> None:
         """Render the CIF text for this structure in the terminal."""
         console.paragraph(f"Structure 🧩 '{self.name}' as cif")
-        render_cif(self.as_cif)
+        render_cif(self._cif_for_display())

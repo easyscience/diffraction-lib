@@ -57,7 +57,7 @@ class CwlSplitPseudoVoigt(
         beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH}),
     )
     calculator_support = CalculatorSupport(
-        calculators=frozenset({CalculatorEnum.CRYSPY, CalculatorEnum.CRYSFML}),
+        calculators=frozenset({CalculatorEnum.CRYSPY}),
     )
 
     def __init__(self) -> None:
@@ -70,7 +70,7 @@ class CwlThompsonCoxHastings(
     CwlBroadeningMixin,
     FcjAsymmetryMixin,
 ):
-    """Thompson–Cox–Hastings with FCJ asymmetry for CWL mode."""
+    """Thompson-Cox-Hastings with FCJ asymmetry for CWL mode."""
 
     type_info = TypeInfo(
         tag='thompson-cox-hastings',
@@ -81,7 +81,7 @@ class CwlThompsonCoxHastings(
         beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH}),
     )
     calculator_support = CalculatorSupport(
-        calculators=frozenset({CalculatorEnum.CRYSPY, CalculatorEnum.CRYSFML}),
+        calculators=frozenset({CalculatorEnum.CRYSFML}),
     )
 
     def __init__(self) -> None:

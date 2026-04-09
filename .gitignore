@@ -44,3 +44,8 @@ CMakeLists.txt.user*
 .cache/
 *.log
 *.zip
+
+# ED
+# Used to fetch tutorials data during their runtime. Need to have '/' at
+# the beginning to avoid ignoring 'data' module in the src/.
+/data/

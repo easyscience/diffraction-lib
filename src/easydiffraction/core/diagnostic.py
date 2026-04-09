@@ -11,6 +11,9 @@ import difflib
 
 from easydiffraction.utils.logging import log
 
+# Maximum number of allowed attributes to list explicitly in messages
+_MAX_LISTED_ALLOWED = 10
+
 
 class Diagnostics:
     """Centralized logger for attribute errors and validation hints."""
@@ -209,9 +212,8 @@ class Diagnostics:
         # allowed may be a set, list, or other iterable
         if allowed:
             allowed_list = list(allowed)
-            if len(allowed_list) <= 10:
+            if len(allowed_list) <= _MAX_LISTED_ALLOWED:
                 s = ', '.join(map(repr, sorted(allowed_list)))
                 return f' {label}: {s}.'
-            else:
-                return f' ({len(allowed_list)} {label.lower()} not listed here).'
+            return f' ({len(allowed_list)} {label.lower()} not listed here).'
         return ''

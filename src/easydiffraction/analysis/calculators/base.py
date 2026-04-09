@@ -18,13 +18,11 @@ class CalculatorBase(ABC):
     @abstractmethod
     def name(self) -> str:
         """Short identifier of the calculation engine."""
-        pass
 
     @property
     @abstractmethod
     def engine_imported(self) -> bool:
         """True if the underlying calculation library is available."""
-        pass
 
     @abstractmethod
     def calculate_structure_factors(
@@ -34,7 +32,6 @@ class CalculatorBase(ABC):
         called_by_minimizer: bool,
     ) -> None:
         """Calculate structure factors for one experiment."""
-        pass
 
     @abstractmethod
     def calculate_pattern(
@@ -61,4 +58,3 @@ class CalculatorBase(ABC):
         np.ndarray
             The calculated diffraction pattern as a NumPy array.
         """
-        pass

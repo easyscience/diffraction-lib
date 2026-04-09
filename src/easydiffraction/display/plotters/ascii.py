@@ -8,6 +8,8 @@ backend is well suited for quick feedback in CLI environments and keeps
 a consistent API with other plotters.
 """
 
+from __future__ import annotations
+
 import asciichartpy
 import numpy as np
 
@@ -26,7 +28,8 @@ DEFAULT_COLORS = {
 class AsciiPlotter(PlotterBase):
     """Terminal-based plotter using ASCII art."""
 
-    def _get_legend_item(self, label: str) -> str:
+    @staticmethod
+    def _get_legend_item(label: str) -> str:
         """
         Return a colored legend entry for a given series label.
 
@@ -103,8 +106,8 @@ class AsciiPlotter(PlotterBase):
 
         print(padded)
 
+    @staticmethod
     def plot_single_crystal(
-        self,
         x_calc: object,
         y_meas: object,
         y_meas_su: object,
@@ -182,8 +185,8 @@ class AsciiPlotter(PlotterBase):
         print(f'  {x_axis}')
         console.print(f'{" " * (width - 3)}{axes_labels[0]}')
 
+    @staticmethod
     def plot_scatter(
-        self,
         x: object,
         y: object,
         sy: object,

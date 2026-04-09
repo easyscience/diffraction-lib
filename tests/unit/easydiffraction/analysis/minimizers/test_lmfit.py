@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+import collections
 import types
 
 import numpy as np
@@ -41,7 +42,7 @@ def test_lmfit_prepare_and_sync(monkeypatch):
             self.value = value
             self.stderr = stderr
 
-    class FakeParams(dict):
+    class FakeParams(collections.UserDict):
         def add(self, name, value, vary, min, max):
             self[name] = types.SimpleNamespace(value=value, vary=vary, min=min, max=max)
 
@@ -71,6 +72,8 @@ def test_lmfit_prepare_and_sync(monkeypatch):
 
     # Sync back updates parameter values and uncertainties
     minim._sync_result_to_parameters(params, res)
-    assert params[0].value == 10.0 and params[0].uncertainty == 0.5
-    assert params[1].value == 20.0 and params[1].uncertainty == 1.0
+    assert params[0].value == 10.0
+    assert params[0].uncertainty == 0.5
+    assert params[1].value == 20.0
+    assert params[1].uncertainty == 1.0
     assert minim._check_success(res) is True

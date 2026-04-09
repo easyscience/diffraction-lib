@@ -25,12 +25,12 @@ def test_show_params_empty_branches(capsys):
 
     a = Analysis(project=P())
 
-    # show_all_params -> warning path
-    a.show_all_params()
-    # show_fittable_params -> warning path
-    a.show_fittable_params()
-    # show_free_params -> warning path
-    a.show_free_params()
+    # display.all_params -> warning path
+    a.display.all_params()
+    # display.fittable_params -> warning path
+    a.display.fittable_params()
+    # display.free_params -> warning path
+    a.display.free_params()
 
     out = capsys.readouterr().out
     assert (

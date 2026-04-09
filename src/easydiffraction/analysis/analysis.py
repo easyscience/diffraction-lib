@@ -1,10 +1,9 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
-from typing import List
-from typing import Optional
-from typing import Union
+from contextlib import suppress
 
+import numpy as np
 import pandas as pd
 
 from easydiffraction.analysis.categories.aliases.factory import AliasesFactory
@@ -12,19 +11,366 @@ from easydiffraction.analysis.categories.constraints.factory import ConstraintsF
 from easydiffraction.analysis.categories.fit_mode import FitModeEnum
 from easydiffraction.analysis.categories.fit_mode import FitModeFactory
 from easydiffraction.analysis.categories.joint_fit_experiments import JointFitExperiments
+from easydiffraction.analysis.fit_helpers.tracking import _make_display_handle
 from easydiffraction.analysis.fitting import Fitter
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
+from easydiffraction.core.guard import GuardedBase
 from easydiffraction.core.singleton import ConstraintsHandler
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import Parameter
 from easydiffraction.core.variable import StringDescriptor
-from easydiffraction.datablocks.experiment.collection import Experiments
 from easydiffraction.display.tables import TableRenderer
+from easydiffraction.io.cif.serialize import analysis_to_cif
 from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_cif
 from easydiffraction.utils.utils import render_table
+
+
+def _discover_property_rows(cls: type) -> list[list[str]]:
+    """
+    Discover public properties from the class MRO.
+
+    Parameters
+    ----------
+    cls : type
+        The class to inspect.
+
+    Returns
+    -------
+    list[list[str]]
+        Table rows with ``[index, name, writable, description]``.
+    """
+    seen: dict = {}
+    for base in cls.mro():
+        for key, attr in base.__dict__.items():
+            if key.startswith('_') or not isinstance(attr, property):
+                continue
+            if key not in seen:
+                seen[key] = attr
+
+    rows = []
+    for i, key in enumerate(sorted(seen), 1):
+        prop = seen[key]
+        writable = '✓' if prop.fset else '✗'
+        doc = GuardedBase._first_sentence(prop.fget.__doc__ if prop.fget else None)
+        rows.append([str(i), key, writable, doc])
+    return rows
+
+
+def _discover_method_rows(cls: type) -> list[list[str]]:
+    """
+    Discover public methods from the class MRO.
+
+    Parameters
+    ----------
+    cls : type
+        The class to inspect.
+
+    Returns
+    -------
+    list[list[str]]
+        Table rows with ``[index, name(), description]``.
+    """
+    seen_methods: set = set()
+    methods_list: list = []
+    for base in cls.mro():
+        for key, attr in base.__dict__.items():
+            if key.startswith('_') or key in seen_methods:
+                continue
+            if isinstance(attr, property):
+                continue
+            raw = attr
+            if isinstance(raw, (staticmethod, classmethod)):
+                raw = raw.__func__
+            if callable(raw):
+                seen_methods.add(key)
+                methods_list.append((key, raw))
+
+    rows = []
+    for i, (key, method) in enumerate(sorted(methods_list), 1):
+        doc = GuardedBase._first_sentence(getattr(method, '__doc__', None))
+        rows.append([str(i), f'{key}()', doc])
+    return rows
+
+
+class AnalysisDisplay:
+    """
+    Display helper - parameter tables, CIF, and fit results.
+
+    Accessed via ``analysis.display``.
+    """
+
+    def __init__(self, analysis: 'Analysis') -> None:
+        self._analysis = analysis
+
+    def all_params(self) -> None:
+        """Print all parameters for structures and experiments."""
+        project = self._analysis.project
+        structures_params = project.structures.parameters
+        experiments_params = project.experiments.parameters
+
+        if not structures_params and not experiments_params:
+            log.warning('No parameters found.')
+            return
+
+        tabler = TableRenderer.get()
+
+        filtered_headers = [
+            'datablock',
+            'category',
+            'entry',
+            'parameter',
+            'value',
+            'fittable',
+        ]
+
+        console.paragraph('All parameters for all structures (🧩 data blocks)')
+        df = Analysis._get_params_as_dataframe(structures_params)
+        filtered_df = df[filtered_headers]
+        tabler.render(filtered_df)
+
+        console.paragraph('All parameters for all experiments (🔬 data blocks)')
+        df = Analysis._get_params_as_dataframe(experiments_params)
+        filtered_df = df[filtered_headers]
+        tabler.render(filtered_df)
+
+    def fittable_params(self) -> None:
+        """Print all fittable parameters."""
+        project = self._analysis.project
+        structures_params = project.structures.fittable_parameters
+        experiments_params = project.experiments.fittable_parameters
+
+        if not structures_params and not experiments_params:
+            log.warning('No fittable parameters found.')
+            return
+
+        tabler = TableRenderer.get()
+
+        filtered_headers = [
+            'datablock',
+            'category',
+            'entry',
+            'parameter',
+            'value',
+            'uncertainty',
+            'units',
+            'free',
+        ]
+
+        console.paragraph('Fittable parameters for all structures (🧩 data blocks)')
+        df = Analysis._get_params_as_dataframe(structures_params)
+        filtered_df = df[filtered_headers]
+        tabler.render(filtered_df)
+
+        console.paragraph('Fittable parameters for all experiments (🔬 data blocks)')
+        df = Analysis._get_params_as_dataframe(experiments_params)
+        filtered_df = df[filtered_headers]
+        tabler.render(filtered_df)
+
+    def free_params(self) -> None:
+        """Print only currently free (varying) parameters."""
+        project = self._analysis.project
+        structures_params = project.structures.free_parameters
+        experiments_params = project.experiments.free_parameters
+        free_params = structures_params + experiments_params
+
+        if not free_params:
+            log.warning('No free parameters found.')
+            return
+
+        tabler = TableRenderer.get()
+
+        filtered_headers = [
+            'datablock',
+            'category',
+            'entry',
+            'parameter',
+            'value',
+            'uncertainty',
+            'min',
+            'max',
+            'units',
+        ]
+
+        console.paragraph(
+            'Free parameters for both structures (🧩 data blocks) and experiments (🔬 data blocks)'
+        )
+        df = Analysis._get_params_as_dataframe(free_params)
+        filtered_df = df[filtered_headers]
+        tabler.render(filtered_df)
+
+    def how_to_access_parameters(self) -> None:
+        """
+        Show Python access paths for all parameters.
+
+        The output explains how to reference specific parameters in
+        code.
+        """
+        project = self._analysis.project
+        structures_params = project.structures.parameters
+        experiments_params = project.experiments.parameters
+        all_params = {
+            'structures': structures_params,
+            'experiments': experiments_params,
+        }
+
+        if not all_params:
+            log.warning('No parameters found.')
+            return
+
+        columns_headers = [
+            'datablock',
+            'category',
+            'entry',
+            'parameter',
+            'How to Access in Python Code',
+        ]
+
+        columns_alignment = [
+            'left',
+            'left',
+            'left',
+            'left',
+            'left',
+        ]
+
+        columns_data = []
+        project_varname = project._varname
+        for datablock_code, params in all_params.items():
+            for param in params:
+                if isinstance(param, (StringDescriptor, NumericDescriptor, Parameter)):
+                    datablock_entry_name = param._identity.datablock_entry_name
+                    category_code = param._identity.category_code
+                    category_entry_name = param._identity.category_entry_name or ''
+                    param_key = param.name
+                    code_variable = (
+                        f'{project_varname}.{datablock_code}'
+                        f"['{datablock_entry_name}'].{category_code}"
+                    )
+                    if category_entry_name:
+                        code_variable += f"['{category_entry_name}']"
+                    code_variable += f'.{param_key}'
+                    columns_data.append([
+                        datablock_entry_name,
+                        category_code,
+                        category_entry_name,
+                        param_key,
+                        code_variable,
+                    ])
+
+        console.paragraph('How to access parameters')
+        render_table(
+            columns_headers=columns_headers,
+            columns_alignment=columns_alignment,
+            columns_data=columns_data,
+        )
+
+    def parameter_cif_uids(self) -> None:
+        """
+        Show CIF unique IDs for all parameters.
+
+        The output explains which unique identifiers are used when
+        creating CIF-based constraints.
+        """
+        project = self._analysis.project
+        structures_params = project.structures.parameters
+        experiments_params = project.experiments.parameters
+        all_params = {
+            'structures': structures_params,
+            'experiments': experiments_params,
+        }
+
+        if not all_params:
+            log.warning('No parameters found.')
+            return
+
+        columns_headers = [
+            'datablock',
+            'category',
+            'entry',
+            'parameter',
+            'Unique Identifier for CIF Constraints',
+        ]
+
+        columns_alignment = [
+            'left',
+            'left',
+            'left',
+            'left',
+            'left',
+        ]
+
+        columns_data = []
+        for params in all_params.values():
+            for param in params:
+                if isinstance(param, (StringDescriptor, NumericDescriptor, Parameter)):
+                    datablock_entry_name = param._identity.datablock_entry_name
+                    category_code = param._identity.category_code
+                    category_entry_name = param._identity.category_entry_name or ''
+                    param_key = param.name
+                    cif_uid = param._cif_handler.uid
+                    columns_data.append([
+                        datablock_entry_name,
+                        category_code,
+                        category_entry_name,
+                        param_key,
+                        cif_uid,
+                    ])
+
+        console.paragraph('Show parameter CIF unique identifiers')
+        render_table(
+            columns_headers=columns_headers,
+            columns_alignment=columns_alignment,
+            columns_data=columns_data,
+        )
+
+    def constraints(self) -> None:
+        """Print a table of all user-defined symbolic constraints."""
+        analysis = self._analysis
+        if not analysis.constraints._items:
+            log.warning('No constraints defined.')
+            return
+
+        rows = [[constraint.expression.value] for constraint in analysis.constraints]
+
+        console.paragraph('User defined constraints')
+        render_table(
+            columns_headers=['expression'],
+            columns_alignment=['left'],
+            columns_data=rows,
+        )
+        console.print(f'Constraints enabled: {analysis.constraints.enabled}')
+
+    def fit_results(self) -> None:
+        """
+        Display a summary of the fit results.
+
+        Renders the fit quality metrics (reduced χ², R-factors) and a
+        table of fitted parameters with their starting values, final
+        values, and uncertainties.
+
+        This method should be called after :meth:`Analysis.fit`
+        completes. If no fit has been performed yet, a warning is
+        logged.
+        """
+        analysis = self._analysis
+        if analysis.fit_results is None:
+            log.warning('No fit results available. Run fit() first.')
+            return
+
+        structures = analysis.project.structures
+        experiments = list(analysis.project.experiments.values())
+
+        analysis.fitter._process_fit_results(structures, experiments)
+
+    def as_cif(self) -> None:
+        """Render the analysis section as CIF in console."""
+        cif_text: str = self._analysis.as_cif()
+        paragraph_title: str = 'Analysis 🧮 info as cif'
+        console.paragraph(paragraph_title)
+        render_cif(cif_text)
 
 
 class Analysis:
@@ -57,31 +403,20 @@ class Analysis:
         self.fitter = Fitter('lmfit')
         self.fit_results = None
         self._parameter_snapshots: dict[str, dict[str, dict]] = {}
+        self._display = AnalysisDisplay(self)
+
+    @property
+    def display(self) -> AnalysisDisplay:
+        """Display helper for parameter tables, CIF, and fit results."""
+        return self._display
 
     def help(self) -> None:
         """Print a summary of analysis properties and methods."""
-        from easydiffraction.core.guard import GuardedBase
-
         console.paragraph("Help for 'Analysis'")
 
         cls = type(self)
 
-        # Auto-discover properties from MRO
-        seen_props: dict = {}
-        for base in cls.mro():
-            for key, attr in base.__dict__.items():
-                if key.startswith('_') or not isinstance(attr, property):
-                    continue
-                if key not in seen_props:
-                    seen_props[key] = attr
-
-        prop_rows = []
-        for i, key in enumerate(sorted(seen_props), 1):
-            prop = seen_props[key]
-            writable = '✓' if prop.fset else '✗'
-            doc = GuardedBase._first_sentence(prop.fget.__doc__ if prop.fget else None)
-            prop_rows.append([str(i), key, writable, doc])
-
+        prop_rows = _discover_property_rows(cls)
         if prop_rows:
             console.paragraph('Properties')
             render_table(
@@ -90,27 +425,7 @@ class Analysis:
                 columns_data=prop_rows,
             )
 
-        # Auto-discover methods from MRO
-        seen_methods: set = set()
-        methods_list: list = []
-        for base in cls.mro():
-            for key, attr in base.__dict__.items():
-                if key.startswith('_') or key in seen_methods:
-                    continue
-                if isinstance(attr, property):
-                    continue
-                raw = attr
-                if isinstance(raw, (staticmethod, classmethod)):
-                    raw = raw.__func__
-                if callable(raw):
-                    seen_methods.add(key)
-                    methods_list.append((key, raw))
-
-        method_rows = []
-        for i, (key, method) in enumerate(sorted(methods_list), 1):
-            doc = GuardedBase._first_sentence(getattr(method, '__doc__', None))
-            method_rows.append([str(i), f'{key}()', doc])
-
+        method_rows = _discover_method_rows(cls)
         if method_rows:
             console.paragraph('Methods')
             render_table(
@@ -151,7 +466,7 @@ class Analysis:
         console.paragraph('Aliases type changed to')
         console.print(new_type)
 
-    def show_supported_aliases_types(self) -> None:
+    def show_supported_aliases_types(self) -> None:  # noqa: PLR6301
         """Print a table of supported aliases collection types."""
         AliasesFactory.show_supported()
 
@@ -192,7 +507,7 @@ class Analysis:
         console.paragraph('Constraints type changed to')
         console.print(new_type)
 
-    def show_supported_constraints_types(self) -> None:
+    def show_supported_constraints_types(self) -> None:  # noqa: PLR6301
         """Print a table of supported constraints collection types."""
         ConstraintsFactory.show_supported()
 
@@ -201,16 +516,16 @@ class Analysis:
         console.paragraph('Current constraints type')
         console.print(self._constraints_type)
 
+    @staticmethod
     def _get_params_as_dataframe(
-        self,
-        params: List[Union[NumericDescriptor, Parameter]],
+        params: list[NumericDescriptor | Parameter],
     ) -> pd.DataFrame:
         """
         Convert a list of parameters to a DataFrame.
 
         Parameters
         ----------
-        params : List[Union[NumericDescriptor, Parameter]]
+        params : list[NumericDescriptor | Parameter]
             List of DescriptorFloat or Parameter objects.
 
         Returns
@@ -233,11 +548,11 @@ class Analysis:
                     ('value', 'right'): param.value,
                 }
             if isinstance(param, (NumericDescriptor, Parameter)):
-                record = record | {
+                record |= {
                     ('units', 'left'): param.units,
                 }
             if isinstance(param, Parameter):
-                record = record | {
+                record |= {
                     ('fittable', 'left'): True,
                     ('free', 'left'): param.free,
                     ('min', 'right'): param.fit_min,
@@ -250,222 +565,6 @@ class Analysis:
         df.columns = pd.MultiIndex.from_tuples(df.columns)
         return df
 
-    def show_all_params(self) -> None:
-        """Print all parameters for structures and experiments."""
-        structures_params = self.project.structures.parameters
-        experiments_params = self.project.experiments.parameters
-
-        if not structures_params and not experiments_params:
-            log.warning('No parameters found.')
-            return
-
-        tabler = TableRenderer.get()
-
-        filtered_headers = [
-            'datablock',
-            'category',
-            'entry',
-            'parameter',
-            'value',
-            'fittable',
-        ]
-
-        console.paragraph('All parameters for all structures (🧩 data blocks)')
-        df = self._get_params_as_dataframe(structures_params)
-        filtered_df = df[filtered_headers]
-        tabler.render(filtered_df)
-
-        console.paragraph('All parameters for all experiments (🔬 data blocks)')
-        df = self._get_params_as_dataframe(experiments_params)
-        filtered_df = df[filtered_headers]
-        tabler.render(filtered_df)
-
-    def show_fittable_params(self) -> None:
-        """Print all fittable parameters."""
-        structures_params = self.project.structures.fittable_parameters
-        experiments_params = self.project.experiments.fittable_parameters
-
-        if not structures_params and not experiments_params:
-            log.warning('No fittable parameters found.')
-            return
-
-        tabler = TableRenderer.get()
-
-        filtered_headers = [
-            'datablock',
-            'category',
-            'entry',
-            'parameter',
-            'value',
-            'uncertainty',
-            'units',
-            'free',
-        ]
-
-        console.paragraph('Fittable parameters for all structures (🧩 data blocks)')
-        df = self._get_params_as_dataframe(structures_params)
-        filtered_df = df[filtered_headers]
-        tabler.render(filtered_df)
-
-        console.paragraph('Fittable parameters for all experiments (🔬 data blocks)')
-        df = self._get_params_as_dataframe(experiments_params)
-        filtered_df = df[filtered_headers]
-        tabler.render(filtered_df)
-
-    def show_free_params(self) -> None:
-        """Print only currently free (varying) parameters."""
-        structures_params = self.project.structures.free_parameters
-        experiments_params = self.project.experiments.free_parameters
-        free_params = structures_params + experiments_params
-
-        if not free_params:
-            log.warning('No free parameters found.')
-            return
-
-        tabler = TableRenderer.get()
-
-        filtered_headers = [
-            'datablock',
-            'category',
-            'entry',
-            'parameter',
-            'value',
-            'uncertainty',
-            'min',
-            'max',
-            'units',
-        ]
-
-        console.paragraph(
-            'Free parameters for both structures (🧩 data blocks) and experiments (🔬 data blocks)'
-        )
-        df = self._get_params_as_dataframe(free_params)
-        filtered_df = df[filtered_headers]
-        tabler.render(filtered_df)
-
-    def how_to_access_parameters(self) -> None:
-        """
-        Show Python access paths for all parameters.
-
-        The output explains how to reference specific parameters in
-        code.
-        """
-        structures_params = self.project.structures.parameters
-        experiments_params = self.project.experiments.parameters
-        all_params = {
-            'structures': structures_params,
-            'experiments': experiments_params,
-        }
-
-        if not all_params:
-            log.warning('No parameters found.')
-            return
-
-        columns_headers = [
-            'datablock',
-            'category',
-            'entry',
-            'parameter',
-            'How to Access in Python Code',
-        ]
-
-        columns_alignment = [
-            'left',
-            'left',
-            'left',
-            'left',
-            'left',
-        ]
-
-        columns_data = []
-        project_varname = self.project._varname
-        for datablock_code, params in all_params.items():
-            for param in params:
-                if isinstance(param, (StringDescriptor, NumericDescriptor, Parameter)):
-                    datablock_entry_name = param._identity.datablock_entry_name
-                    category_code = param._identity.category_code
-                    category_entry_name = param._identity.category_entry_name or ''
-                    param_key = param.name
-                    code_variable = (
-                        f'{project_varname}.{datablock_code}'
-                        f"['{datablock_entry_name}'].{category_code}"
-                    )
-                    if category_entry_name:
-                        code_variable += f"['{category_entry_name}']"
-                    code_variable += f'.{param_key}'
-                    columns_data.append([
-                        datablock_entry_name,
-                        category_code,
-                        category_entry_name,
-                        param_key,
-                        code_variable,
-                    ])
-
-        console.paragraph('How to access parameters')
-        render_table(
-            columns_headers=columns_headers,
-            columns_alignment=columns_alignment,
-            columns_data=columns_data,
-        )
-
-    def show_parameter_cif_uids(self) -> None:
-        """
-        Show CIF unique IDs for all parameters.
-
-        The output explains which unique identifiers are used when
-        creating CIF-based constraints.
-        """
-        structures_params = self.project.structures.parameters
-        experiments_params = self.project.experiments.parameters
-        all_params = {
-            'structures': structures_params,
-            'experiments': experiments_params,
-        }
-
-        if not all_params:
-            log.warning('No parameters found.')
-            return
-
-        columns_headers = [
-            'datablock',
-            'category',
-            'entry',
-            'parameter',
-            'Unique Identifier for CIF Constraints',
-        ]
-
-        columns_alignment = [
-            'left',
-            'left',
-            'left',
-            'left',
-            'left',
-        ]
-
-        columns_data = []
-        for _, params in all_params.items():
-            for param in params:
-                if isinstance(param, (StringDescriptor, NumericDescriptor, Parameter)):
-                    datablock_entry_name = param._identity.datablock_entry_name
-                    category_code = param._identity.category_code
-                    category_entry_name = param._identity.category_entry_name or ''
-                    param_key = param.name
-                    cif_uid = param._cif_handler.uid
-                    columns_data.append([
-                        datablock_entry_name,
-                        category_code,
-                        category_entry_name,
-                        param_key,
-                        cif_uid,
-                    ])
-
-        console.paragraph('Show parameter CIF unique identifiers')
-        render_table(
-            columns_headers=columns_headers,
-            columns_alignment=columns_alignment,
-            columns_data=columns_data,
-        )
-
     def show_current_minimizer(self) -> None:
         """Print the name of the currently selected minimizer."""
         console.paragraph('Current minimizer')
@@ -477,7 +576,7 @@ class Analysis:
         MinimizerFactory.show_supported()
 
     @property
-    def current_minimizer(self) -> Optional[str]:
+    def current_minimizer(self) -> str | None:
         """The identifier of the active minimizer, if any."""
         return self.fitter.selection if self.fitter else None
 
@@ -532,7 +631,7 @@ class Analysis:
         console.paragraph('Fit-mode type changed to')
         console.print(new_type)
 
-    def show_supported_fit_mode_types(self) -> None:
+    def show_supported_fit_mode_types(self) -> None:  # noqa: PLR6301
         """Print a table of supported fit-mode category types."""
         FitModeFactory.show_supported()
 
@@ -550,39 +649,12 @@ class Analysis:
         """Per-experiment weight collection for joint fitting."""
         return self._joint_fit_experiments
 
-    def show_constraints(self) -> None:
-        """Print a table of all user-defined symbolic constraints."""
-        if not self.constraints._items:
-            log.warning('No constraints defined.')
-            return
-
-        rows = []
-        for constraint in self.constraints:
-            rows.append([constraint.expression.value])
-
-        console.paragraph('User defined constraints')
-        render_table(
-            columns_headers=['expression'],
-            columns_alignment=['left'],
-            columns_data=rows,
-        )
-
-    def apply_constraints(self) -> None:
-        """Apply currently defined constraints to the project."""
-        if not self.constraints._items:
-            log.warning('No constraints defined.')
-            return
-
-        self.constraints_handler.set_aliases(self.aliases)
-        self.constraints_handler.set_constraints(self.constraints)
-        self.constraints_handler.apply()
-
     def fit(self, verbosity: str | None = None) -> None:
         """
         Execute fitting for all experiments.
 
         This method performs the optimization but does not display
-        results automatically. Call :meth:`show_fit_results` after
+        results automatically. Call :meth:`display.fit_results` after
         fitting to see a summary of the fit quality and parameter
         values.
 
@@ -619,145 +691,280 @@ class Analysis:
             log.warning('No experiments found in the project. Cannot run fit.')
             return
 
+        # Apply constraints before fitting so that constrained
+        # parameters are marked and excluded from the free parameter
+        # list built by the fitter.
+        self._update_categories()
+
         # Run the fitting process
         mode = FitModeEnum(self._fit_mode.mode.value)
         if mode is FitModeEnum.JOINT:
-            # Auto-populate joint_fit_experiments if empty
-            if not len(self._joint_fit_experiments):
-                for id in experiments.names:
-                    self._joint_fit_experiments.create(id=id, weight=0.5)
-            if verb is not VerbosityEnum.SILENT:
-                console.paragraph(
-                    f"Using all experiments 🔬 {experiments.names} for '{mode.value}' fitting"
-                )
+            self._fit_joint(verb, structures, experiments)
+        elif mode is FitModeEnum.SINGLE:
+            self._fit_single(verb, structures, experiments)
+        else:
+            msg = f'Fit mode {mode.value} not implemented yet.'
+            raise NotImplementedError(msg)
+
+        # After fitting, save the project
+        if self.project.info.path is not None:
+            self.project.save()
+
+    def _fit_joint(
+        self,
+        verb: VerbosityEnum,
+        structures: object,
+        experiments: object,
+    ) -> None:
+        """
+        Run joint fitting across all experiments with weights.
+
+        Parameters
+        ----------
+        verb : VerbosityEnum
+            Output verbosity.
+        structures : object
+            Project structures collection.
+        experiments : object
+            Project experiments collection.
+        """
+        mode = FitModeEnum.JOINT
+        # Auto-populate joint_fit_experiments if empty
+        if not len(self._joint_fit_experiments):
+            for id in experiments.names:
+                self._joint_fit_experiments.create(id=id, weight=0.5)
+        if verb is not VerbosityEnum.SILENT:
+            console.paragraph(
+                f"Using all experiments 🔬 {experiments.names} for '{mode.value}' fitting"
+            )
+        # Resolve weights to a plain numpy array
+        experiments_list = list(experiments.values())
+        weights_list = [
+            self._joint_fit_experiments[name].weight.value for name in experiments.names
+        ]
+        weights_array = np.array(weights_list, dtype=np.float64)
+        self.fitter.fit(
+            structures,
+            experiments_list,
+            weights=weights_array,
+            analysis=self,
+            verbosity=verb,
+        )
+
+        # After fitting, get the results
+        self.fit_results = self.fitter.results
+
+    def _fit_single(
+        self,
+        verb: VerbosityEnum,
+        structures: object,
+        experiments: object,
+    ) -> None:
+        """
+        Run single-mode fitting for each experiment independently.
+
+        Parameters
+        ----------
+        verb : VerbosityEnum
+            Output verbosity.
+        structures : object
+            Project structures collection.
+        experiments : object
+            Project experiments collection.
+        """
+        mode = FitModeEnum.SINGLE
+        expt_names = experiments.names
+
+        short_display_handle = self._fit_single_print_header(verb, expt_names, mode)
+        short_rows: list[list[str]] = []
+
+        for expt_name in expt_names:
+            if verb is VerbosityEnum.FULL:
+                console.print(f"📋 Using experiment 🔬 '{expt_name}' for '{mode.value}' fitting")
+
+            experiment = experiments[expt_name]
             self.fitter.fit(
                 structures,
-                experiments,
-                weights=self._joint_fit_experiments,
+                [experiment],
                 analysis=self,
                 verbosity=verb,
             )
 
-            # After fitting, get the results
-            self.fit_results = self.fitter.results
+            # After fitting, snapshot parameter values before
+            # they get overwritten by the next experiment's fit
+            results = self.fitter.results
+            self._snapshot_params(expt_name, results)
+            self.fit_results = results
 
-        elif mode is FitModeEnum.SINGLE:
-            expt_names = experiments.names
-            num_expts = len(expt_names)
-
-            # Short mode: print header and create display handle once
-            short_headers = ['experiment', 'χ²', 'iterations', 'status']
-            short_alignments = ['left', 'right', 'right', 'center']
-            short_rows: list[list[str]] = []
-            short_display_handle: object | None = None
+            # Short mode: append one summary row and update in-place
             if verb is VerbosityEnum.SHORT:
-                from easydiffraction.analysis.fit_helpers.tracking import _make_display_handle
-
-                first = expt_names[0]
-                last = expt_names[-1]
-                minimizer_name = self.fitter.selection
-                console.paragraph(
-                    f"Using {num_expts} experiments 🔬 from '{first}' to "
-                    f"'{last}' for '{mode.value}' fitting"
-                )
-                console.print(f"🚀 Starting fit process with '{minimizer_name}'...")
-                console.print('📈 Goodness-of-fit (reduced χ²) per experiment:')
-                short_display_handle = _make_display_handle()
-
-            # TODO: Find a better way without creating dummy
-            #  experiments?
-            for _idx, expt_name in enumerate(expt_names, start=1):
-                if verb is VerbosityEnum.FULL:
-                    console.paragraph(
-                        f"Using experiment 🔬 '{expt_name}' for '{mode.value}' fitting"
-                    )
-
-                experiment = experiments[expt_name]
-                dummy_experiments = Experiments()  # TODO: Find a better name
-
-                # This is a workaround to set the parent project
-                # of the dummy experiments collection, so that
-                # parameters can be resolved correctly during fitting.
-                object.__setattr__(dummy_experiments, '_parent', self.project)
-
-                dummy_experiments.add(experiment)
-                self.fitter.fit(
-                    structures,
-                    dummy_experiments,
-                    analysis=self,
-                    verbosity=verb,
+                self._fit_single_update_short_table(
+                    short_rows, expt_name, results, short_display_handle
                 )
 
-                # After fitting, snapshot parameter values before
-                # they get overwritten by the next experiment's fit
-                results = self.fitter.results
-                snapshot: dict[str, dict] = {}
-                for param in results.parameters:
-                    snapshot[param.unique_name] = {
-                        'value': param.value,
-                        'uncertainty': param.uncertainty,
-                        'units': param.units,
-                    }
-                self._parameter_snapshots[expt_name] = snapshot
-                self.fit_results = results
+        # Short mode: close the display handle
+        if short_display_handle is not None and hasattr(short_display_handle, 'close'):
+            with suppress(Exception):
+                short_display_handle.close()
 
-                # Short mode: append one summary row and update in-place
-                if verb is VerbosityEnum.SHORT:
-                    chi2_str = (
-                        f'{results.reduced_chi_square:.2f}'
-                        if results.reduced_chi_square is not None
-                        else '—'
-                    )
-                    iters = str(self.fitter.minimizer.tracker.best_iteration or 0)
-                    status = '✅' if results.success else '❌'
-                    short_rows.append([expt_name, chi2_str, iters, status])
-                    render_table(
-                        columns_headers=short_headers,
-                        columns_alignment=short_alignments,
-                        columns_data=short_rows,
-                        display_handle=short_display_handle,
-                    )
-
-            # Short mode: close the display handle
-            if short_display_handle is not None and hasattr(short_display_handle, 'close'):
-                from contextlib import suppress
-
-                with suppress(Exception):
-                    short_display_handle.close()
-
-        else:
-            raise NotImplementedError(f'Fit mode {mode.value} not implemented yet.')
-
-        # After fitting, save the project
-        # TODO: Consider saving individual data during sequential
-        #  (single) fitting, instead of waiting until the end and save
-        #  only the last one
-        if self.project.info.path is not None:
-            self.project.save()
-
-    def show_fit_results(self) -> None:
+    @staticmethod
+    def _fit_single_print_header(
+        verb: VerbosityEnum,
+        expt_names: list[str],
+        mode: FitModeEnum,
+    ) -> object | None:
         """
-        Display a summary of the fit results.
+        Print the header for single-mode fitting.
 
-        Renders the fit quality metrics (reduced χ², R-factors) and a
-        table of fitted parameters with their starting values, final
-        values, and uncertainties.
+        Parameters
+        ----------
+        verb : VerbosityEnum
+            Output verbosity.
+        expt_names : list[str]
+            Experiment names.
+        mode : FitModeEnum
+            The fit mode enum.
 
-        This method should be called after :meth:`fit` completes. If no
-        fit has been performed yet, a warning is logged.
-
-        Example::
-
-        project.analysis.fit() project.analysis.show_fit_results()
+        Returns
+        -------
+        object | None
+            Display handle for short mode, or ``None``.
         """
-        if self.fit_results is None:
-            log.warning('No fit results available. Run fit() first.')
-            return
+        if verb is not VerbosityEnum.SILENT:
+            console.paragraph('Standard fitting')
+        if verb is not VerbosityEnum.SHORT:
+            return None
+        num_expts = len(expt_names)
+        console.print(
+            f"📋 Using {num_expts} experiments 🔬 from '{expt_names[0]}' to "
+            f"'{expt_names[-1]}' for '{mode.value}' fitting"
+        )
+        console.print("🚀 Starting fit process with 'lmfit'...")
+        console.print('📈 Goodness-of-fit (reduced χ²) per experiment:')
+        return _make_display_handle()
 
-        structures = self.project.structures
-        experiments = self.project.experiments
+    def _snapshot_params(self, expt_name: str, results: object) -> None:
+        """
+        Snapshot parameter values for a single experiment.
 
-        self.fitter._process_fit_results(structures, experiments)
+        Parameters
+        ----------
+        expt_name : str
+            Experiment name key for the snapshot dict.
+        results : object
+            Fit results with ``.parameters`` list.
+        """
+        snapshot: dict[str, dict] = {}
+        for param in results.parameters:
+            snapshot[param.unique_name] = {
+                'value': param.value,
+                'uncertainty': param.uncertainty,
+                'units': param.units,
+            }
+        self._parameter_snapshots[expt_name] = snapshot
+
+    def _fit_single_update_short_table(
+        self,
+        short_rows: list[list[str]],
+        expt_name: str,
+        results: object,
+        display_handle: object | None,
+    ) -> None:
+        """
+        Append a summary row for short-mode display.
+
+        Parameters
+        ----------
+        short_rows : list[list[str]]
+            Accumulated rows (mutated in place).
+        expt_name : str
+            Experiment name.
+        results : object
+            Fit results.
+        display_handle : object | None
+            Display handle for in-place table update.
+        """
+        chi2_str = (
+            f'{results.reduced_chi_square:.2f}' if results.reduced_chi_square is not None else '—'
+        )
+        iters = str(self.fitter.minimizer.tracker.best_iteration or 0)
+        status = '✅' if results.success else '❌'
+        short_rows.append([expt_name, chi2_str, iters, status])
+        render_table(
+            columns_headers=['experiment', 'χ²', 'iterations', 'status'],
+            columns_alignment=['left', 'right', 'right', 'center'],
+            columns_data=short_rows,
+            display_handle=display_handle,
+        )
+
+    def fit_sequential(
+        self,
+        data_dir: str,
+        max_workers: int | str = 1,
+        chunk_size: int | None = None,
+        file_pattern: str = '*',
+        extract_diffrn: object = None,
+        verbosity: str | None = None,
+        reverse: bool = False,
+    ) -> None:
+        """
+        Run sequential fitting over all data files in a directory.
+
+        Fits each dataset independently using the current structure and
+        experiment as a template.  Results are written incrementally to
+        ``analysis/results.csv`` in the project directory.
+
+        The project must contain exactly one structure and one
+        experiment (the template), and must have been saved
+        (``save_as()``) before calling this method.
+
+        Parameters
+        ----------
+        data_dir : str
+            Path to directory containing data files.
+        max_workers : int | str, default=1
+            Number of parallel worker processes. ``1`` = sequential.
+            ``'auto'`` = physical CPU count. Uses
+            ``ProcessPoolExecutor`` with ``spawn`` context when > 1.
+        chunk_size : int | None, default=None
+            Files per chunk. Default ``None`` uses *max_workers*.
+        file_pattern : str, default='*'
+            Glob pattern to filter files in *data_dir*.
+        extract_diffrn : object, default=None
+            User callback ``f(file_path) → {diffrn_field: value}``.
+            Called per file after fitting. ``None`` = no diffrn
+            metadata.
+        verbosity : str | None, default=None
+            ``'full'``, ``'short'``, or ``'silent'``. Default: project
+            verbosity.
+        reverse : bool, default=False
+            When ``True``, process data files in reverse order.  Useful
+            when starting values are better matched to the last file
+            (e.g. highest-temperature dataset in a cooling scan).
+        """
+        from easydiffraction.analysis.sequential import fit_sequential as _fit_seq  # noqa: PLC0415
+
+        # Apply constraints before building the template
+        self._update_categories()
+
+        # Temporarily override project verbosity if caller provided one
+        original_verbosity = None
+        if verbosity is not None:
+            original_verbosity = self.project.verbosity
+            self.project.verbosity = verbosity
+        try:
+            _fit_seq(
+                analysis=self,
+                data_dir=data_dir,
+                max_workers=max_workers,
+                chunk_size=chunk_size,
+                file_pattern=file_pattern,
+                extract_diffrn=extract_diffrn,
+                reverse=reverse,
+            )
+        finally:
+            if original_verbosity is not None:
+                self.project.verbosity = original_verbosity
 
     def _update_categories(self, called_by_minimizer: bool = False) -> None:
         """
@@ -771,15 +978,13 @@ class Analysis:
         called_by_minimizer : bool, default=False
             Whether this is called during fitting.
         """
-        # Apply constraints to sync dependent parameters
-        if self.constraints._items:
-            self.constraints_handler.apply()
+        del called_by_minimizer
 
-        # Update category-specific logic
-        # TODO: Need self.categories as in the case of datablock.py
-        for category in [self.aliases, self.constraints]:
-            if hasattr(category, '_update'):
-                category._update(called_by_minimizer=called_by_minimizer)
+        # Apply constraints to sync dependent parameters
+        if self.constraints.enabled and self.constraints._items:
+            self.constraints_handler.set_aliases(self.aliases)
+            self.constraints_handler.set_constraints(self.constraints)
+            self.constraints_handler.apply()
 
     def as_cif(self) -> str:
         """
@@ -790,14 +995,5 @@ class Analysis:
         str
             The analysis section represented as a CIF document string.
         """
-        from easydiffraction.io.cif.serialize import analysis_to_cif
-
         self._update_categories()
         return analysis_to_cif(self)
-
-    def show_as_cif(self) -> None:
-        """Render the analysis section as CIF in console."""
-        cif_text: str = self.as_cif()
-        paragraph_title: str = 'Analysis 🧮 info as cif'
-        console.paragraph(paragraph_title)
-        render_cif(cif_text)

@@ -5,14 +5,13 @@ icon: material/cog-box
 # :material-cog-box: Installation & Setup
 
 **EasyDiffraction** is a cross-platform Python library compatible with
-**Python 3.11** through **3.14**.
+**Python 3.12** through **3.14**.
 
-EasyDiffraction is a cross-platform Python library compatible with
-**Python 3.11 through 3.13**.  
-Make sure Python is installed on your system before proceeding with the
-installation.
+To install and set up EasyDiffraction, we recommend using
+[**Pixi**](https://pixi.prefix.dev), a modern package manager for
+Windows, macOS, and Linux.
 
-## Environment Setup <small>optional</small> { #environment-setup data-toc-label="Environment Setup" }
+??? note "Main benefits of using Pixi"
 
     - **Ease of use**: Pixi simplifies the installation process, making it
       accessible even for users with limited experience in package management.
@@ -63,9 +62,21 @@ This section describes the simplest way to set up EasyDiffraction using
   pixi init easydiffraction
   cd easydiffraction
   ```
+- If you are on macOS, set the minimum system requirements:
+  ```txt
+  pixi project system-requirements add macos 14.0
+  ```
 - Set the Python version for the Pixi environment (e.g., 3.14):
   ```txt
   pixi add python=3.14
+  ```
+- Add GNU Scientific Library (required for PDF calculations):
+  ```txt
+  pixi add gsl
+  ```
+- If you are on macOS, add libc++ (required for PDF calculations):
+  ```txt
+  pixi add --platform osx-arm64 libcxx
   ```
 - Add EasyDiffraction to the Pixi environment from PyPI:
   ```txt
@@ -110,21 +121,21 @@ simply delete and recreate the environment.
 <!-- prettier-ignore-start -->
 
 - Create a new virtual environment:
-  ```bash
+  ```txt
   python3 -m venv venv
   ```
 - Activate the environment:
 
     === ":material-apple: macOS"
-        ```bash
+        ```txt
         . venv/bin/activate
         ```
     === ":material-linux: Linux"
-        ```bash
+        ```txt
         . venv/bin/activate
         ```
     === ":fontawesome-brands-windows: Windows"
-        ```bash
+        ```txt
         . venv/Scripts/activate      # Windows with Unix-like shells
         .\venv\Scripts\activate.bat  # Windows with CMD
         .\venv\Scripts\activate.ps1  # Windows with PowerShell
@@ -140,134 +151,135 @@ simply delete and recreate the environment.
 <!-- prettier-ignore-start -->
 
 - Exit the environment:
-  ```bash
+  ```txt
   deactivate
   ```
 - If this environment is no longer needed, delete it:
 
     === ":material-apple: macOS"
-        ```bash
+        ```txt
         rm -rf venv
         ```
     === ":material-linux: Linux"
-        ```bash
+        ```txt
         rm -rf venv
         ```
     === ":fontawesome-brands-windows: Windows"
-        ```bash
+        ```txt
         rmdir /s /q venv
         ```
 
 <!-- prettier-ignore-end -->
 
-## Installation Guide
-
-### Installing from PyPI <small>recommended</small> { #from-pypi data-toc-label="Installing from PyPI" }
+### Installing from PyPI { #from-pypi }
 
 EasyDiffraction is available on **PyPI (Python Package Index)** and can
-be installed using `pip`. We strongly recommend installing it within a
-virtual environment, as described in the
-[Environment Setup](#environment-setup) section.
+be installed using `pip`. To do so, use the following command:
 
-We recommend installing the latest release of EasyDiffraction with the
-`visualization` extras, which include optional dependencies used for
-simplified visualization of charts and tables. This can be especially
-useful for running the Jupyter Notebook examples. To do so, use the
-following command:
-
-```bash
-pip install 'easydiffraction[visualization]'
-```
-
-If only the core functionality is needed, the library can be installed
-simply with:
-
-```bash
+```txt
 pip install easydiffraction
 ```
 
 To install a specific version of EasyDiffraction, e.g., 1.0.3:
 
-```bash
+```txt
 pip install 'easydiffraction==1.0.3'
 ```
 
 To upgrade to the latest version:
 
-```bash
+```txt
+pip install --upgrade easydiffraction
+```
+
+To upgrade to the latest version and force reinstallation of all
+dependencies (useful if files are corrupted):
+
+```txt
 pip install --upgrade --force-reinstall easydiffraction
 ```
 
 To check the installed version:
 
-```bash
+```txt
 pip show easydiffraction
 ```
 
-### Installing from GitHub
+### Installing from GitHub <small>alternative</small> { #from-github data-toc-label="Installing from GitHub" }
 
 Installing unreleased versions is generally not recommended but may be
 useful for testing.
 
-To install EasyDiffraction from, e.g., the `develop` branch of GitHub:
+To install EasyDiffraction from the `develop` branch of GitHub, for
+example:
 
-```bash
+```txt
 pip install git+https://github.com/easyscience/diffraction-lib@develop
 ```
 
-To include extra dependencies (e.g., visualization):
+To include extra dependencies (e.g., dev):
 
-```bash
-pip install 'easydiffraction[visualization] @ git+https://github.com/easyscience/diffraction-lib@develop'
+```txt
+pip install 'easydiffraction[dev] @ git+https://github.com/easyscience/diffraction-lib@develop'
 ```
 
 ## How to Run Tutorials
 
 EasyDiffraction includes a collection of **Jupyter Notebook examples**
 that demonstrate key functionality. These tutorials serve as
-**step-by-step guides** to help users understand the diffraction data
-analysis workflow.
+**step-by-step guides** to help users understand the data analysis
+workflow. They are available as **static HTML pages** in the
+[:material-school: Tutorials](../tutorials/index.md) section.
 
-They are available as **static HTML pages** in the
-[:material-school: Tutorials](../tutorials/index.md) section. You can
-also run them interactively in two ways:
+In the next sections, we explain how to set up Jupyter and run the
+tutorials interactively in two different ways: locally or online via
+Google Colab.
 
-- **Run Locally** – Download the notebook via the :material-download:
-  **Download** button and run it on your computer.
-- **Run Online** – Use the :google-colab: **Open in Google Colab**
-  button to run the tutorial directly in your browser (no setup
-  required).
+If you decide to run the tutorials locally, you need to download them
+first. This can be done individually via the :material-download:
+**Download Notebook** button available on each tutorial page, or all at
+once using the command line, as shown below.
 
-!!! note
+### Run Tutorials Locally with Pixi <small>recommended</small> { #running-with-pixi data-toc-label="Run Tutorials Locally with Pixi" }
 
-    You can also download all Jupyter notebooks at once as a zip archive from the
-    [EasyDiffraction Releases](https://github.com/easyscience/diffraction-lib/releases/latest).
+- Navigate to your existing Pixi project, created as described in the
+  [Installing with Pixi](#installing-with-pixi) section.
+- Add JupyterLab and the Pixi kernel for Jupyter:
+  ```txt
+  pixi add --pypi jupyterlab pixi-kernel
+  ```
+- Download all the EasyDiffraction tutorials to the `tutorials/`
+  directory:
+  ```txt
+  pixi run easydiffraction download-all-tutorials
+  ```
+- Start JupyterLab in the `tutorials/` directory to access the
+  notebooks:
+  ```txt
+  pixi run jupyter lab tutorials/
+  ```
+- Your web browser should open automatically. Click on one of the
+  `*.ipynb` files and select the `Python (Pixi)` kernel to get started.
 
-### Run Tutorials Locally
-
-To run tutorials locally, install **Jupyter Notebook** or
-**JupyterLab**. Here are the steps to follow in the case of **Jupyter
-Notebook**:
+### Classical Run Tutorials Locally
 
 - Install Jupyter Notebook and IPython kernel:
-  ```bash
+  ```txt
   pip install notebook ipykernel
   ```
-- Add the virtual environment as a Jupyter kernel
-  ```bash
+- Add the virtual environment as a Jupyter kernel:
+  ```txt
   python -m ipykernel install --user --name=venv --display-name "EasyDiffraction Python kernel"
   ```
-- Download the EasyDiffraction tutorials from GitHub Releases:
-  ```bash
-  python -m easydiffraction fetch-tutorials
+- Download all the EasyDiffraction tutorials to the `tutorials/`
+  directory:
+  ```txt
+  python -m easydiffraction download-all-tutorials
   ```
-- Launch the Jupyter Notebook server in the `examples/` directory:
-  ```bash
+- Launch the Jupyter Notebook server (opens browser automatically at
+  `http://localhost:8888/`):
+  ```txt
   jupyter notebook tutorials/
-  ```
-- In your web browser, go to:
-  ```bash
-  http://localhost:8888/
   ```
 - Open one of the `*.ipynb` files and select the
   `EasyDiffraction Python kernel` to get started.
@@ -275,63 +287,11 @@ Notebook**:
 ### Run Tutorials via Google Colab
 
 **Google Colab** lets you run Jupyter Notebooks in the cloud without any
-local installation.
-
-To use Google Colab:
+local installation. This is the fastest way to start experimenting with
+EasyDiffraction.
 
 - Ensure you have a **Google account**.
 - Go to the **[:material-school: Tutorials](../tutorials/index.md)**
   section.
 - Click the :google-colab: **Open in Google Colab** button on any
   tutorial.
-
-This is the fastest way to start experimenting with EasyDiffraction,
-without setting up Python on your system.
-
-## Installing with Pixi <small>alternative</small> { #installing-with-pixi data-toc-label="Installing with Pixi" }
-
-[Pixi](https://pixi.sh) is a modern package and environment manager for
-Python and Conda-compatible packages. It simplifies dependency
-management, environment isolation, and reproducibility.
-
-The following simple steps provide an alternative setup method for
-EasyDiffraction using Pixi, replacing the traditional virtual
-environment approach.
-
-<!-- prettier-ignore-start -->
-
-- Install Pixi by following the instructions on the
-  [official Pixi Installation Guide](https://pixi.sh/latest/installation).
-- Create a dedicated directory for the EasyDiffraction and navigate into it:
-  ```bash
-  mkdir easydiffraction
-  cd easydiffraction
-  ```
-- Download the pixi configuration file for EasyDiffraction:
-    
-    === "curl"
-        ```bash
-        curl -LO https://raw.githubusercontent.com/easyscience/diffraction-lib/master/pixi.toml
-        ```
-    === "wget"
-        ```bash
-        wget https://raw.githubusercontent.com/easyscience/diffraction-lib/master/pixi.toml
-        ```
-
-- Create the environment defined in `pixi.toml` and install all necessary
-  dependencies:
-  ```bash
-  pixi install
-  ```
-- Fetch the EasyDiffraction tutorials to the `tutorials/` directory:
-  ```bash
-  pixi run easydiffraction fetch-tutorials
-  ```
-- Start JupyterLab in the `tutorials/` directory to access the notebooks:
-  ```bash
-  pixi run jupyter lab tutorials/
-  ```
-- Your web browser should open automatically. Click on one of the `*.ipynb`
-  files and select the `Python (Pixi)` kernel to get started.
-
-<!-- prettier-ignore-end -->

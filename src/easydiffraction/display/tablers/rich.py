@@ -13,7 +13,7 @@ from rich.table import Table
 try:
     from IPython.display import HTML
     from IPython.display import display
-except Exception:
+except ImportError:
     HTML = None
     display = None
 
@@ -39,7 +39,8 @@ RICH_TABLE_BOX: Box = Box(CUSTOM_BOX, ascii=False)
 class RichTableBackend(TableBackendBase):
     """Render tables to terminal or Jupyter using the Rich library."""
 
-    def _to_html(self, table: Table) -> str:
+    @staticmethod
+    def _to_html(table: Table) -> str:
         """
         Render a Rich table to HTML using an off-screen console.
 
@@ -131,17 +132,19 @@ class RichTableBackend(TableBackendBase):
                 try:
                     html = self._to_html(table)
                     display_handle.update(HTML(html))
-                    return
-                except Exception as err:
+                except (TypeError, ValueError, AttributeError, RuntimeError, OSError) as err:
                     log.debug(f'Rich to HTML DisplayHandle update failed: {err!r}')
+                else:
+                    return
 
             # Assume terminal/live-like handle
             else:
                 try:
                     display_handle.update(table)
-                    return
-                except Exception as err:
+                except (TypeError, ValueError, AttributeError, RuntimeError, OSError) as err:
                     log.debug(f'Rich live handle update failed: {err!r}')
+                else:
+                    return
 
         # Normal print to console
         console = ConsoleManager.get()

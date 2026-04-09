@@ -39,7 +39,10 @@ def test_numeric_descriptor_str_includes_units():
         cif_handler=CifHandler(names=['_x.w']),
     )
     s = str(d)
-    assert s.startswith('<') and s.endswith('>') and 'deg' in s and 'w' in s
+    assert s.startswith('<')
+    assert s.endswith('>')
+    assert 'deg' in s
+    assert 'w' in s
 
 
 def test_parameter_string_repr_and_as_cif_and_flags():
@@ -59,10 +62,12 @@ def test_parameter_string_repr_and_as_cif_and_flags():
     p.free = True
 
     s = str(p)
-    assert '± 0.1' in s and 'A' in s and '(free=True)' in s
+    assert '± 0.1' in s
+    assert 'A' in s
+    assert '(free=True)' in s
 
-    # CIF line is `<tag> <value>`
-    assert p.as_cif == '_param.a   2.50000000'
+    # CIF line: free param with uncertainty uses esd brackets
+    assert p.as_cif == '_param.a 2.50000000(10000000)'
 
     # CifHandler uid is owner's unique_name (parameter name here)
     assert p._cif_handler.uid == p.unique_name == 'a'
@@ -94,4 +99,5 @@ def test_parameter_fit_bounds_assign_and_read():
     )
     p.fit_min = -1.0
     p.fit_max = 10.0
-    assert np.isclose(p.fit_min, -1.0) and np.isclose(p.fit_max, 10.0)
+    assert np.isclose(p.fit_min, -1.0)
+    assert np.isclose(p.fit_max, 10.0)

@@ -14,7 +14,6 @@ from easydiffraction.analysis.categories.constraints.factory import ConstraintsF
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.metadata import TypeInfo
-from easydiffraction.core.singleton import ConstraintsHandler
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RegexValidator
 from easydiffraction.core.variable import StringDescriptor
@@ -102,10 +101,26 @@ class Constraints(CategoryCollection):
     def __init__(self) -> None:
         """Create an empty constraints collection."""
         super().__init__(item_type=Constraint)
+        self._enabled: bool = False
+
+    @property
+    def enabled(self) -> bool:
+        """Whether constraints are currently active."""
+        return self._enabled
+
+    def enable(self) -> None:
+        """Activate constraints so they are applied during fitting."""
+        self._enabled = True
+
+    def disable(self) -> None:
+        """Deactivate constraints without deleting them."""
+        self._enabled = False
 
     def create(self, *, expression: str) -> None:
         """
         Create a constraint from an expression string.
+
+        Automatically enables constraints on the first call.
 
         Parameters
         ----------
@@ -116,9 +131,4 @@ class Constraints(CategoryCollection):
         item = Constraint()
         item.expression = expression
         self.add(item)
-
-    def _update(self, called_by_minimizer: bool = False) -> None:
-        del called_by_minimizer
-
-        constraints = ConstraintsHandler.get()
-        constraints.apply()
+        self._enabled = True

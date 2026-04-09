@@ -106,7 +106,6 @@ class Experiments(DatablockCollection):
         beam_mode: str | None = None,
         radiation_probe: str | None = None,
         scattering_type: str | None = None,
-        verbosity: str | None = None,
     ) -> None:
         """
         Add an experiment from a data file path.
@@ -125,23 +124,22 @@ class Experiments(DatablockCollection):
             Radiation probe (e.g. ``'neutron'``).
         scattering_type : str | None, default=None
             Scattering type (e.g. ``'bragg'``).
-        verbosity : str | None, default=None
-            Console output verbosity: ``'full'`` for multi-line output,
-            ``'short'`` for a one-line status message, or ``'silent'``
-            for no output. When ``None``, uses ``project.verbosity``.
         """
-        if verbosity is None and self._parent is not None:
-            verbosity = self._parent.verbosity
+        verbosity = self._parent.verbosity if self._parent is not None else None
         verb = VerbosityEnum(verbosity) if verbosity is not None else VerbosityEnum.FULL
-        experiment = ExperimentFactory.from_data_path(
+        experiment = ExperimentFactory.from_scratch(
             name=name,
-            data_path=data_path,
             sample_form=sample_form,
             beam_mode=beam_mode,
             radiation_probe=radiation_probe,
             scattering_type=scattering_type,
-            verbosity=verb,
         )
+        num_points = experiment._load_ascii_data_to_experiment(data_path)
+        if verb is VerbosityEnum.FULL:
+            console.paragraph('Data loaded successfully')
+            console.print(f"Experiment 🔬 '{name}'. Number of data points: {num_points}.")
+        elif verb is VerbosityEnum.SHORT:
+            console.print(f"✅ Data loaded: Experiment 🔬 '{name}'. {num_points} points.")
         self.add(experiment)
 
     # TODO: Move to DatablockCollection?

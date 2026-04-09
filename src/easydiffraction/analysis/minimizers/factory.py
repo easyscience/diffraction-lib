@@ -4,12 +4,14 @@
 
 from __future__ import annotations
 
+from typing import ClassVar
+
 from easydiffraction.core.factory import FactoryBase
 
 
 class MinimizerFactory(FactoryBase):
     """Factory for creating minimizer instances."""
 
-    _default_rules = {
+    _default_rules: ClassVar[dict] = {
         frozenset(): 'lmfit',
     }

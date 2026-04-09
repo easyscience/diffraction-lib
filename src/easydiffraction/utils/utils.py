@@ -9,8 +9,6 @@ import pathlib
 import urllib.request
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version
-from typing import List
-from typing import Optional
 from urllib.parse import urlparse
 
 import numpy as np
@@ -43,8 +41,9 @@ def _validate_url(url: str) -> None:
         If the URL scheme is not HTTP or HTTPS.
     """
     parsed = urlparse(url)
-    if parsed.scheme not in ('http', 'https'):
-        raise ValueError(f"Unsafe URL scheme '{parsed.scheme}'. Only HTTP and HTTPS are allowed.")
+    if parsed.scheme not in {'http', 'https'}:
+        msg = f"Unsafe URL scheme '{parsed.scheme}'. Only HTTP and HTTPS are allowed."
+        raise ValueError(msg)
 
 
 def _filename_for_id_from_url(data_id: int | str, url: str) -> str:
@@ -74,7 +73,7 @@ def _fetch_data_index() -> dict:
     _validate_url(index_url)
 
     # macOS: sha256sum index.json
-    index_hash = 'sha256:f421aab32ec532782dc62f4440a97320e5cec23b9e64f5ae3f8a3e818d013430'
+    index_hash = 'sha256:af64483b9e0941af56d582b9d50285b8404e3d10a103d8696cddf3850ee2b660'
     destination_dirname = 'easydiffraction'
     destination_fname = 'data-index.json'
     cache_dir = pooch.os_cache(destination_dirname)
@@ -115,7 +114,7 @@ def _fetch_tutorials_index() -> dict:
         _validate_url(index_url)
         with _safe_urlopen(index_url) as response:
             return json.load(response)
-    except Exception as e:
+    except (OSError, ValueError) as e:
         log.warning(
             f'Failed to fetch tutorials index from {index_url}: {e}',
             exc_type=UserWarning,
@@ -160,7 +159,8 @@ def download_data(
         available = ', '.join(
             sorted(index.keys(), key=lambda s: int(s) if s.isdigit() else s)[:20]
         )
-        raise KeyError(f'Unknown dataset id={id}. Example available ids: {available} ...')
+        msg = f'Unknown dataset id={id}. Example available ids: {available} ...'
+        raise KeyError(msg)
 
     record = index[key]
     url = record['url']
@@ -247,7 +247,7 @@ def stripped_package_version(package_name: str) -> str | None:
     try:
         v = Version(v_str)
         return str(v.public)
-    except Exception:
+    except ValueError:
         return v_str
 
 
@@ -315,12 +315,17 @@ def _safe_urlopen(request_or_url: object) -> object:  # type: ignore[no-untyped-
     if isinstance(request_or_url, str):
         parsed = urllib.parse.urlparse(request_or_url)
         if parsed.scheme != 'https':  # pragma: no cover - sanity check
-            raise ValueError('Only https URLs are permitted')
-    elif isinstance(request_or_url, urllib.request.Request):  # noqa: S310 - request object inspected, not opened
+            msg = 'Only https URLs are permitted'
+            raise ValueError(msg)
+    elif isinstance(request_or_url, urllib.request.Request):  # noqa: S310
         parsed = urllib.parse.urlparse(request_or_url.full_url)
         if parsed.scheme != 'https':  # pragma: no cover
-            raise ValueError('Only https URLs are permitted')
-    return urllib.request.urlopen(request_or_url)  # noqa: S310 - validated https only
+            msg = 'Only https URLs are permitted'
+            raise ValueError(msg)
+    else:
+        msg = f'Expected str or Request, got {type(request_or_url).__name__}'
+        raise TypeError(msg)
+    return urllib.request.urlopen(request_or_url)  # noqa: S310
 
 
 def _resolve_tutorial_url(url_template: str) -> str:
@@ -409,7 +414,8 @@ def download_tutorial(
         available = ', '.join(
             sorted(index.keys(), key=lambda s: int(s) if s.isdigit() else s)[:20]
         )
-        raise KeyError(f'Unknown tutorial id={id}. Available ids: {available}')
+        msg = f'Unknown tutorial id={id}. Available ids: {available}'
+        raise KeyError(msg)
 
     record = index[key]
     url_template = record['url']
@@ -485,7 +491,7 @@ def download_all_tutorials(
                 overwrite=overwrite,
             )
             downloaded_paths.append(path)
-        except Exception as e:
+        except (OSError, ValueError) as e:
             log.warning(f'Failed to download tutorial #{tutorial_id}: {e}')
 
     console.print(f'✅ Downloaded {len(downloaded_paths)} tutorials to "{destination}/"')
@@ -541,10 +547,10 @@ def render_cif(cif_text: str) -> None:
         The CIF text to display.
     """
     # Split into lines
-    lines: List[str] = [line for line in cif_text.splitlines()]
+    lines: list[str] = list(cif_text.splitlines())
 
     # Convert each line into a single-column format for table rendering
-    columns: List[List[str]] = [[line] for line in lines]
+    columns: list[list[str]] = [[line] for line in lines]
 
     # Render the table using left alignment and no headers
     render_table(
@@ -575,13 +581,13 @@ def tof_to_d(
     Parameters
     ----------
     tof : np.ndarray
-        Time-of-flight values (µs). Must be a NumPy array.
+        Time-of-flight values (μs). Must be a NumPy array.
     offset : float
-        Calibration offset (µs).
+        Calibration offset (μs).
     linear : float
-        Linear calibration coefficient (µs/Å).
+        Linear calibration coefficient (μs/Å).
     quad : float
-        Quadratic calibration coefficient (µs/Å²).
+        Quadratic calibration coefficient (μs/Å²).
     quad_eps : float, default=1e-20
         Threshold to treat ``quad`` as zero.
 
@@ -598,7 +604,8 @@ def tof_to_d(
     """
     # Type checks
     if not isinstance(tof, np.ndarray):
-        raise TypeError(f"'tof' must be a NumPy array, got {type(tof).__name__}")
+        msg = f"'tof' must be a NumPy array, got {type(tof).__name__}"
+        raise TypeError(msg)
     for name, val in (
         ('offset', offset),
         ('linear', linear),
@@ -606,7 +613,8 @@ def tof_to_d(
         ('quad_eps', quad_eps),
     ):
         if not isinstance(val, (int, float, np.integer, np.floating)):
-            raise TypeError(f"'{name}' must be a real number, got {type(val).__name__}")
+            msg = f"'{name}' must be a real number, got {type(val).__name__}"
+            raise TypeError(msg)
 
     # Output initialized to NaN
     d_out = np.full_like(tof, np.nan, dtype=float)
@@ -615,7 +623,7 @@ def tof_to_d(
     #    TOF ≈ offset + linear * d =>
     #    d ≈ (tof - offset) / linear
     if abs(quad) < quad_eps:
-        if linear != 0.0:
+        if abs(linear) > quad_eps:
             d = (tof - offset) / linear
             # Keep only positive, finite results
             valid = np.isfinite(d) & (d > 0)
@@ -695,25 +703,29 @@ def sin_theta_over_lambda_to_d_spacing(sin_theta_over_lambda: object) -> object:
     return d
 
 
-def str_to_ufloat(s: Optional[str], default: Optional[float] = None) -> UFloat:
+def str_to_ufloat(s: str | None, default: float | None = None) -> UFloat:
     """
     Parse a CIF-style numeric string into a ufloat.
 
     Examples of supported input: - "3.566" → ufloat(3.566, nan) -
-    "3.566(2)" → ufloat(3.566, 0.002) - None → ufloat(default, nan)
+    "3.566(2)" → ufloat(3.566, 0.002) - "3.566()" → ufloat(3.566, 0.0) -
+    None → ufloat(default, nan)
 
     Behavior: - If the input string contains a value with parentheses
     (e.g. "3.566(2)"), the number in parentheses is interpreted as an
-    estimated standard deviation (esd) in the last digit(s). - If the
-    input string has no parentheses, an uncertainty of NaN is assigned
-    to indicate "no esd provided". - If parsing fails, the function
-    falls back to the given ``default`` value with uncertainty NaN.
+    estimated standard deviation (esd) in the last digit(s). - Empty
+    parentheses (e.g. "3.566()") are treated as zero uncertainty. - If
+    the input string has no parentheses, an uncertainty of NaN is
+    assigned to indicate "no esd provided". - If parsing fails, the
+    function falls back to the given ``default`` value with uncertainty
+    NaN.
 
     Parameters
     ----------
-    s : Optional[str]
-        Numeric string in CIF format (e.g. "3.566", "3.566(2)") or None.
-    default : Optional[float], default=None
+    s : str | None
+        Numeric string in CIF format (e.g. "3.566", "3.566(2)",
+        "3.566()") or None.
+    default : float | None, default=None
         Default value to use if ``s`` is None or parsing fails.
 
     Returns
@@ -728,7 +740,10 @@ def str_to_ufloat(s: Optional[str], default: Optional[float] = None) -> UFloat:
 
     if '(' not in s and ')' not in s:
         s = f'{s}(nan)'
+    elif s.endswith('()'):
+        # Empty brackets → zero uncertainty (free parameter, no esd yet)
+        s = s[:-2] + '(0)'
     try:
         return ufloat_fromstr(s)
-    except Exception:
+    except ValueError:
         return ufloat(default, np.nan)

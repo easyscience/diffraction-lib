@@ -230,7 +230,7 @@ project.experiments.add(experiment)
 # Show measured data as loaded from the file.
 
 # %%
-project.plot_meas(expt_name='mcstas')
+project.plotter.plot_meas(expt_name='mcstas')
 
 # %% [markdown]
 # Add excluded regions.
@@ -249,7 +249,7 @@ experiment.excluded_regions.show()
 # Show measured data after adding excluded regions.
 
 # %%
-project.plot_meas(expt_name='mcstas')
+project.plotter.plot_meas(expt_name='mcstas')
 
 # %% [markdown]
 # Show experiment as CIF.
@@ -303,12 +303,12 @@ for point in experiment.background:
 
 # %%
 project.analysis.fit()
-project.analysis.show_fit_results()
+project.analysis.display.fit_results()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
-project.plot_meas_vs_calc(expt_name='mcstas')
+project.plotter.plot_meas_vs_calc(expt_name='mcstas')
 
 # %%

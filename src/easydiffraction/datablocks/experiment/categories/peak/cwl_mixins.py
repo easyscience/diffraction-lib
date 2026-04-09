@@ -157,7 +157,7 @@ class EmpiricalAsymmetryMixin:
             description='Empirical asymmetry coefficient p1',
             units='',
             value_spec=AttributeSpec(
-                default=0.1,
+                default=0.0,
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(names=['_peak.asym_empir_1']),
@@ -167,7 +167,7 @@ class EmpiricalAsymmetryMixin:
             description='Empirical asymmetry coefficient p2',
             units='',
             value_spec=AttributeSpec(
-                default=0.2,
+                default=0.0,
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(names=['_peak.asym_empir_2']),
@@ -177,7 +177,7 @@ class EmpiricalAsymmetryMixin:
             description='Empirical asymmetry coefficient p3',
             units='',
             value_spec=AttributeSpec(
-                default=0.3,
+                default=0.0,
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(names=['_peak.asym_empir_3']),
@@ -187,7 +187,7 @@ class EmpiricalAsymmetryMixin:
             description='Empirical asymmetry coefficient p4',
             units='',
             value_spec=AttributeSpec(
-                default=0.4,
+                default=0.0,
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(names=['_peak.asym_empir_4']),
@@ -255,7 +255,7 @@ class EmpiricalAsymmetryMixin:
 
 
 class FcjAsymmetryMixin:
-    """Finger–Cox–Jephcoat (FCJ) asymmetry parameters."""
+    """Finger-Cox-Jephcoat (FCJ) asymmetry parameters."""
 
     def __init__(self) -> None:
         super().__init__()

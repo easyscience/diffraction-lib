@@ -2,9 +2,11 @@
 # SPDX-License-Identifier: BSD-3-Clause
 """Abstract base and shared constants for plotting backends."""
 
+from __future__ import annotations
+
 from abc import ABC
 from abc import abstractmethod
-from enum import Enum
+from enum import StrEnum
 
 import numpy as np
 
@@ -17,7 +19,7 @@ DEFAULT_MIN = -np.inf
 DEFAULT_MAX = np.inf
 
 
-class XAxisType(str, Enum):
+class XAxisType(StrEnum):
     """
     X-axis types for diffraction plots.
 
@@ -88,7 +90,7 @@ DEFAULT_AXES_LABELS = {
         ScatteringTypeEnum.BRAGG,
         XAxisType.TIME_OF_FLIGHT,
     ): [
-        'TOF (µs)',
+        'TOF (μs)',
         'Intensity (arb. units)',
     ],
     (
@@ -135,20 +137,20 @@ DEFAULT_AXES_LABELS = {
     ],
 }
 
-SERIES_CONFIG = dict(
-    calc=dict(
-        mode='lines',
-        name='Total calculated (Icalc)',
-    ),
-    meas=dict(
-        mode='lines+markers',
-        name='Measured (Imeas)',
-    ),
-    resid=dict(
-        mode='lines',
-        name='Residual (Imeas - Icalc)',
-    ),
-)
+SERIES_CONFIG = {
+    'calc': {
+        'mode': 'lines',
+        'name': 'Total calculated (Icalc)',
+    },
+    'meas': {
+        'mode': 'lines+markers',
+        'name': 'Measured (Imeas)',
+    },
+    'resid': {
+        'mode': 'lines',
+        'name': 'Residual (Imeas - Icalc)',
+    },
+}
 
 
 class PlotterBase(ABC):
@@ -163,6 +165,8 @@ class PlotterBase(ABC):
     ``plot_single_crystal``: Scatter plots comparing measured vs.
     calculated values (e.g., F²meas vs F²calc for single crystal).
     """
+
+    _supports_graphical_heatmap: bool = False
 
     @abstractmethod
     def plot_powder(
@@ -195,7 +199,6 @@ class PlotterBase(ABC):
         height : int | None
             Backend-specific height (text rows or pixels).
         """
-        pass
 
     @abstractmethod
     def plot_single_crystal(
@@ -228,7 +231,6 @@ class PlotterBase(ABC):
         height : int | None
             Backend-specific height (text rows or pixels).
         """
-        pass
 
     @abstractmethod
     def plot_scatter(
@@ -258,4 +260,34 @@ class PlotterBase(ABC):
         height : int | None
             Backend-specific height (text rows or pixels).
         """
-        pass
+
+    def plot_correlation_heatmap(
+        self,
+        corr_df: object,
+        title: str,
+        threshold: float | None,
+        precision: int,
+    ) -> None:
+        """
+        Render a graphical heatmap for a correlation matrix.
+
+        The default implementation does nothing. Graphical backends
+        (e.g. Plotly) override this method and set
+        ``_supports_graphical_heatmap = True`` so the facade knows a
+        heatmap was rendered.
+
+        Parameters
+        ----------
+        corr_df : object
+            Square correlation DataFrame.
+        title : str
+            Figure title.
+        threshold : float | None
+            Absolute-correlation cutoff used for value labels.
+        precision : int
+            Number of decimals to show in labels and hover text.
+        """
+        # Intentionally unused; accepted for API compatibility with
+        # graphical backends that override this method.
+        _ = self._supports_graphical_heatmap
+        del corr_df, title, threshold, precision

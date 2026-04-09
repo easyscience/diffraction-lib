@@ -14,9 +14,14 @@ from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.datablocks.experiment.item.factory import ExperimentFactory
+from easydiffraction.utils.logging import log
 
 if TYPE_CHECKING:
     from easydiffraction.datablocks.experiment.categories.experiment_type import ExperimentType
+
+# Minimum number of columns required in an ASCII data file
+_MIN_COLUMNS_XY = 2
+_MIN_COLUMNS_XY_SY = 3
 
 
 @ExperimentFactory.register
@@ -60,30 +65,37 @@ class TotalPdExperiment(PdExperimentBase):
         ------
         ImportError
             If the ``diffpy`` package is not installed.
-        IOError
+        OSError
             If the data file cannot be read.
         ValueError
             If the data file has fewer than two columns.
         """
         try:
-            from diffpy.utils.parsers.loaddata import loadData
+            from diffpy.utils.parsers import load_data  # noqa: PLC0415
         except ImportError:
-            raise ImportError('diffpy module not found.') from None
+            msg = 'diffpy module not found.'
+            raise ImportError(msg) from None
         try:
-            data = loadData(data_path)
+            data = load_data(data_path)
         except Exception as e:
-            raise IOError(f'Failed to read data from {data_path}: {e}') from e
+            msg = f'Failed to read data from {data_path}: {e}'
+            raise OSError(msg) from e
 
-        if data.shape[1] < 2:
-            raise ValueError('Data file must have at least two columns: x and y.')
+        if data.shape[1] < _MIN_COLUMNS_XY:
+            msg = 'Data file must have at least two columns: x and y.'
+            raise ValueError(msg)
 
         default_sy = 0.03
-        if data.shape[1] < 3:
-            print(f'Warning: No uncertainty (sy) column provided. Defaulting to {default_sy}.')
+        if data.shape[1] < _MIN_COLUMNS_XY_SY:
+            log.warning(f'No uncertainty (sy) column provided. Defaulting to {default_sy}.')
 
         x = data[:, 0]
         y = data[:, 1]
-        sy = data[:, 2] if data.shape[1] > 2 else np.full_like(y, fill_value=default_sy)
+        sy = (
+            data[:, 2]
+            if data.shape[1] > _MIN_COLUMNS_XY
+            else np.full_like(y, fill_value=default_sy)
+        )
 
         self.data._create_items_set_xcoord_and_id(x)
         self.data._set_g_r_meas(y)

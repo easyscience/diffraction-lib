@@ -8,20 +8,84 @@ information. The file is part of the distribution; user input is not
 involved.
 """
 
+import builtins
 import gzip
-import pickle  # noqa: S403 - trusted internal pickle file (package data only)
+import io
+import pickle  # noqa: S403
 from pathlib import Path
+from typing import override
+
+_SAFE_BUILTINS = frozenset({
+    'dict',
+    'frozenset',
+    'list',
+    'set',
+    'tuple',
+})
 
 
-def _restricted_pickle_load(file_obj: object) -> object:
+class _RestrictedUnpickler(pickle.Unpickler):  # noqa: S301
     """
-    Load pickle data from an internal gz file (trusted boundary).
+    Unpickler that only allows safe built-in types.
 
-    The archive lives in the package; no user-controlled input enters
-    this function. If distribution process changes, revisit.
+    Rejects any ``GLOBAL`` opcode that references modules or classes
+    outside of ``builtins``, limiting deserialisation to plain Python
+    data structures (dicts, lists, tuples, sets, frozensets) plus
+    primitive scalars (str, int, float, bool, None) which the pickle
+    protocol handles without ``GLOBAL``.
     """
-    data = pickle.load(file_obj)  # noqa: S301 - trusted internal pickle (see docstring)
-    return data
+
+    @override
+    def find_class(
+        self,
+        module: str,
+        name: str,
+    ) -> type:
+        """
+        Allow only safe built-in types.
+
+        Parameters
+        ----------
+        module : str
+            The module name from the pickle stream.
+        name : str
+            The class/function name from the pickle stream.
+
+        Returns
+        -------
+        type
+            The resolved built-in type.
+
+        Raises
+        ------
+        pickle.UnpicklingError
+            If the requested type is not in the safe set.
+        """
+        if module == 'builtins' and name in _SAFE_BUILTINS:
+            return getattr(builtins, name)
+        msg = f'Restricted unpickler refused {module}.{name}'
+        raise pickle.UnpicklingError(msg)
+
+
+def _restricted_pickle_load(file_obj: io.BufferedIOBase) -> object:
+    """
+    Load pickle data using a restricted unpickler.
+
+    Only safe built-in types (dict, list, tuple, set, frozenset, and
+    primitive scalars) are permitted. The archive lives in the package;
+    no user-controlled input enters this function.
+
+    Parameters
+    ----------
+    file_obj : io.BufferedIOBase
+        Binary file object to read pickle data from.
+
+    Returns
+    -------
+    object
+        The deserialised Python data structure.
+    """
+    return _RestrictedUnpickler(file_obj).load()
 
 
 def _load() -> object:

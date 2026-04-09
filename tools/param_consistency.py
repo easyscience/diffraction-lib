@@ -90,6 +90,9 @@ _SETTER_ANN: dict[str, str] = {
     'StringDescriptor': 'str',
 }
 
+# Minimum number of setter args to have a value parameter (self + value)
+_MIN_SETTER_ARGS = 2
+
 
 # ---------------------------------------------------------
 # Data structures
@@ -485,14 +488,14 @@ def _analyze_property(
     setter_args = prop.setter.args.args
     setter_param = (
         setter_args[1].arg
-        if len(setter_args) >= 2
+        if len(setter_args) >= _MIN_SETTER_ARGS
         else 'value'
     )
     expected_ann = _SETTER_ANN[desc.type_name]
 
     actual_val_ann = None
     if (
-        len(setter_args) >= 2
+        len(setter_args) >= _MIN_SETTER_ARGS
         and setter_args[1].annotation
     ):
         actual_val_ann = _ann_str(

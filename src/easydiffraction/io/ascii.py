@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import re
 import tempfile
 import zipfile
 from io import StringIO
@@ -12,21 +13,86 @@ from pathlib import Path
 import numpy as np
 
 
-def extract_data_paths_from_zip(zip_path: str | Path) -> list[str]:
+def extract_project_from_zip(
+    zip_path: str | Path,
+    destination: str | Path | None = None,
+) -> str:
+    """
+    Extract a project directory from a ZIP archive.
+
+    The archive must contain exactly one directory with a
+    ``project.cif`` file.  Files are extracted into *destination* when
+    provided, or into a temporary directory that persists for the
+    lifetime of the process.
+
+    Parameters
+    ----------
+    zip_path : str | Path
+        Path to the ZIP archive containing the project.
+    destination : str | Path | None, default=None
+        Directory to extract into.  When ``None``, a temporary directory
+        is created.
+
+    Returns
+    -------
+    str
+        Absolute path to the extracted project directory (the directory
+        that contains ``project.cif``).
+
+    Raises
+    ------
+    FileNotFoundError
+        If *zip_path* does not exist.
+    ValueError
+        If the archive does not contain a ``project.cif`` file.
+    """
+    zip_path = Path(zip_path)
+    if not zip_path.exists():
+        msg = f'ZIP file not found: {zip_path}'
+        raise FileNotFoundError(msg)
+
+    if destination is not None:
+        extract_dir = Path(destination)
+        extract_dir.mkdir(parents=True, exist_ok=True)
+    else:
+        extract_dir = Path(tempfile.mkdtemp(prefix='ed_zip_'))
+
+    with zipfile.ZipFile(zip_path, 'r') as zf:
+        # Determine the project directory from the archive contents
+        # *before* extraction, so we are not confused by unrelated
+        # project.cif files already present in the destination.
+        project_cif_entries = [name for name in zf.namelist() if name.endswith('project.cif')]
+        if not project_cif_entries:
+            msg = f'No project.cif found in ZIP archive: {zip_path}'
+            raise ValueError(msg)
+
+        zf.extractall(extract_dir)
+
+    project_cif_path = extract_dir / project_cif_entries[0]
+    return str(project_cif_path.parent.resolve())
+
+
+def extract_data_paths_from_zip(
+    zip_path: str | Path,
+    destination: str | Path | None = None,
+) -> list[str]:
     """
     Extract all files from a ZIP archive and return their paths.
 
-    Files are extracted into a temporary directory that persists for the
-    lifetime of the process.  The returned paths are sorted
-    lexicographically by file name so that numbered data files (e.g.
-    ``scan_001.dat``, ``scan_002.dat``) appear in natural order. Hidden
-    files and directories (names starting with ``'.'`` or ``'__'``) are
-    excluded.
+    Files are extracted into *destination* when provided, or into a
+    temporary directory that persists for the lifetime of the process.
+    The returned paths are sorted lexicographically by file name so that
+    numbered data files (e.g. ``scan_001.dat``, ``scan_002.dat``) appear
+    in natural order. Hidden files and directories (names starting with
+    ``'.'`` or ``'__'``) are excluded.
 
     Parameters
     ----------
     zip_path : str | Path
         Path to the ZIP archive.
+    destination : str | Path | None, default=None
+        Directory to extract files into.  When ``None``, a temporary
+        directory is created.
 
     Returns
     -------
@@ -42,10 +108,15 @@ def extract_data_paths_from_zip(zip_path: str | Path) -> list[str]:
     """
     zip_path = Path(zip_path)
     if not zip_path.exists():
-        raise FileNotFoundError(f'ZIP file not found: {zip_path}')
+        msg = f'ZIP file not found: {zip_path}'
+        raise FileNotFoundError(msg)
 
-    # TODO: Unify mkdir with other uses in the code
-    extract_dir = Path(tempfile.mkdtemp(prefix='ed_zip_'))
+    if destination is not None:
+        extract_dir = Path(destination)
+        extract_dir.mkdir(parents=True, exist_ok=True)
+    else:
+        # TODO: Unify mkdir with other uses in the code
+        extract_dir = Path(tempfile.mkdtemp(prefix='ed_zip_'))
 
     with zipfile.ZipFile(zip_path, 'r') as zf:
         zf.extractall(extract_dir)
@@ -57,7 +128,8 @@ def extract_data_paths_from_zip(zip_path: str | Path) -> list[str]:
     )
 
     if not paths:
-        raise ValueError(f'No data files found in ZIP archive: {zip_path}')
+        msg = f'No data files found in ZIP archive: {zip_path}'
+        raise ValueError(msg)
 
     return paths
 
@@ -93,7 +165,8 @@ def extract_data_paths_from_dir(
     """
     dir_path = Path(dir_path)
     if not dir_path.is_dir():
-        raise FileNotFoundError(f'Directory not found: {dir_path}')
+        msg = f'Directory not found: {dir_path}'
+        raise FileNotFoundError(msg)
 
     paths = sorted(
         str(p)
@@ -102,7 +175,8 @@ def extract_data_paths_from_dir(
     )
 
     if not paths:
-        raise ValueError(f"No files matching '{file_pattern}' found in directory: {dir_path}")
+        msg = f"No files matching '{file_pattern}' found in directory: {dir_path}"
+        raise ValueError(msg)
 
     return paths
 
@@ -131,8 +205,6 @@ def extract_metadata(
         The extracted value, or ``None`` if the pattern did not match or
         the captured text could not be converted to float.
     """
-    import re
-
     content = Path(file_path).read_text(encoding='utf-8', errors='ignore')
     match = re.search(pattern, content, re.MULTILINE)
     if match is None:
@@ -164,7 +236,7 @@ def load_numeric_block(data_path: str | Path) -> np.ndarray:
 
     Raises
     ------
-    IOError
+    OSError
         If no contiguous numeric block can be found in the file.
     """
     data_path = Path(data_path)
@@ -174,9 +246,10 @@ def load_numeric_block(data_path: str | Path) -> np.ndarray:
     for start in range(len(lines)):
         try:
             return np.loadtxt(StringIO('\n'.join(lines[start:])))
-        except Exception as e:  # noqa: BLE001
+        except ValueError as e:
             last_error = e
 
-    raise IOError(
-        f'Failed to read numeric data from {data_path}: {last_error}',
+    msg = f'Failed to read numeric data from {data_path}: {last_error}'
+    raise OSError(
+        msg,
     ) from last_error

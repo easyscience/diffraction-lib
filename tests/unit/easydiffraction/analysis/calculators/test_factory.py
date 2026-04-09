@@ -18,5 +18,8 @@ def test_supported_tags_and_show_supported(capsys):
 def test_create_unknown_raises():
     from easydiffraction.analysis.calculators.factory import CalculatorFactory
 
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError,
+        match=r"Unsupported type: 'this_is_unknown'\. Supported: .*",
+    ):
         CalculatorFactory.create('this_is_unknown')
