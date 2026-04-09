@@ -1,20 +1,23 @@
 # %% [markdown]
 # # Structure Refinement: LBCO, HRPT
 #
-# This basic example is designed to show how Rietveld refinement can be
-# performed when both the crystal structure and experiment parameters
-# are defined using CIF files.
+# This minimalistic example is designed to show how Rietveld refinement
+# can be performed when both the crystal structure and experiment
+# parameters are defined using CIF files.
 #
 # For this example, constant-wavelength neutron powder diffraction data
 # for La0.5Ba0.5CoO3 from HRPT at PSI is used.
 #
-# The example is intended for users who are already familiar with the
-# EasyDiffraction library and want to quickly get started with a basic
-# refinement.
+# It does not contain any advanced features or options, and includes no
+# comments or explanations—these can be found in the other tutorials.
+# Default values are used for all parameters if not specified. Only
+# essential and self-explanatory code is provided.
 #
-# It is also useful for those who want to see how constraints can be
-# applied to highly correlated parameters. For a more detailed
-# explanation of the code, please refer to the other tutorials.
+# The example is intended for users who are already familiar with the
+# EasyDiffraction library and want to quickly get started with a simple
+# refinement. It is also useful for those who want to see what a
+# refinement might look like in code. For a more detailed explanation of
+# the code, please refer to the other tutorials.
 
 # %% [markdown]
 # ## Import Library

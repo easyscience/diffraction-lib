@@ -8,6 +8,8 @@ backend is well suited for quick feedback in CLI environments and keeps
 a consistent API with other plotters.
 """
 
+from __future__ import annotations
+
 import asciichartpy
 import numpy as np
 

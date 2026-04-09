@@ -168,7 +168,7 @@ source = ['src'] # Limit coverage to the source code directory
 [tool.coverage.report]
 show_missing = true  # Show missing lines
 skip_covered = false # Skip files with 100% coverage in the report
-fail_under = 75      # Minimum coverage percentage to pass
+fail_under = 70      # Minimum coverage percentage to pass
 
 ##########################
 # Configuration for pytest

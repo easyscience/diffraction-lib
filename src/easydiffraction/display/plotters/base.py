@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 """Abstract base and shared constants for plotting backends."""
 
+from __future__ import annotations
+
 from abc import ABC
 from abc import abstractmethod
 from enum import StrEnum
@@ -164,6 +166,8 @@ class PlotterBase(ABC):
     calculated values (e.g., F²meas vs F²calc for single crystal).
     """
 
+    _supports_graphical_heatmap: bool = False
+
     @abstractmethod
     def plot_powder(
         self,
@@ -256,3 +260,34 @@ class PlotterBase(ABC):
         height : int | None
             Backend-specific height (text rows or pixels).
         """
+
+    def plot_correlation_heatmap(
+        self,
+        corr_df: object,
+        title: str,
+        threshold: float | None,
+        precision: int,
+    ) -> None:
+        """
+        Render a graphical heatmap for a correlation matrix.
+
+        The default implementation does nothing. Graphical backends
+        (e.g. Plotly) override this method and set
+        ``_supports_graphical_heatmap = True`` so the facade knows a
+        heatmap was rendered.
+
+        Parameters
+        ----------
+        corr_df : object
+            Square correlation DataFrame.
+        title : str
+            Figure title.
+        threshold : float | None
+            Absolute-correlation cutoff used for value labels.
+        precision : int
+            Number of decimals to show in labels and hover text.
+        """
+        # Intentionally unused; accepted for API compatibility with
+        # graphical backends that override this method.
+        _ = self._supports_graphical_heatmap
+        del corr_df, title, threshold, precision

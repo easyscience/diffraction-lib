@@ -10,7 +10,7 @@
 # for La0.5Ba0.5CoO3 from HRPT at PSI is used.
 #
 # It does not contain any advanced features or options, and includes no
-# comments or explanations—these can be found in the other tutorials.
+# comments or explanations — these can be found in the other tutorials.
 # Default values are used for all parameters if not specified. Only
 # essential and self-explanatory code is provided.
 #
