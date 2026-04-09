@@ -1,0 +1,8 @@
+_project.id               lbco@hrpt
+_project.title            'Quick Start: LBCO Load Project'
+_project.description      
+;
+Most minimal example: load a saved project from a directory and run Rietveld refinement of La0.5Ba0.5CoO3
+;
+_project.created          '09 Apr 2026 11:07:38'
+_project.last_modified    '09 Apr 2026 11:07:38'
