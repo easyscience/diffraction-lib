@@ -155,8 +155,7 @@ class PlotlyPlotter(PlotterBase):
                 'yanchor': 'middle',
             },
             hoverongaps=False,
-            hovertemplate=f'x: %{{x}}<br>y: %{{y}}<br>correlation: %{{z:'
-            f'.{precision}f}}<extra></extra>',
+            hovertemplate=f'x: %{{x}}<br>y: %{{y}}<br>corr: %{{z:.{precision}f}}<extra></extra>',
         )
         label_trace = self._get_correlation_label_trace(
             corr_df,
