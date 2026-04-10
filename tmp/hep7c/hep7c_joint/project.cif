@@ -1,5 +1,0 @@
-_project.id               hep7c_joint
-_project.title            'Untitled Project'
-_project.description      'LaM7O3 structure refinement using X-ray data.'
-_project.created          '08 Apr 2026 12:59:28'
-_project.last_modified    '08 Apr 2026 12:59:28'
