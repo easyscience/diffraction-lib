@@ -151,14 +151,14 @@ experiment.instrument.calib_d_to_tof_quad = -0.00001
 # #### Set Peak Profile
 
 # %%
-# experiment.peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
+# experiment.peak_profile_type = 'jorgensen'
 experiment.peak.broad_gauss_sigma_0 = 45137
 experiment.peak.broad_gauss_sigma_1 = -52394
 experiment.peak.broad_gauss_sigma_2 = 22998
-experiment.peak.broad_mix_beta_0 = 0.0055
-experiment.peak.broad_mix_beta_1 = 0.0041
-experiment.peak.asym_alpha_0 = 0
-experiment.peak.asym_alpha_1 = 0.0097
+experiment.peak.exp_decay_beta_0 = 0.0055
+experiment.peak.exp_decay_beta_1 = 0.0041
+experiment.peak.exp_rise_alpha_0 = 0
+experiment.peak.exp_rise_alpha_1 = 0.0097
 
 # %% [markdown]
 # #### Set Background
@@ -291,9 +291,9 @@ experiment.peak.broad_gauss_sigma_0.free = True
 experiment.peak.broad_gauss_sigma_1.free = True
 experiment.peak.broad_gauss_sigma_2.free = True
 
-experiment.peak.asym_alpha_1.free = True
-experiment.peak.broad_mix_beta_0.free = True
-experiment.peak.broad_mix_beta_1.free = True
+experiment.peak.exp_rise_alpha_1.free = True
+experiment.peak.exp_decay_beta_0.free = True
+experiment.peak.exp_decay_beta_1.free = True
 
 for point in experiment.background:
     point.y.free = True

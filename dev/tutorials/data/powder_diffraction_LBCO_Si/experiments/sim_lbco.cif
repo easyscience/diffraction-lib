@@ -10,17 +10,14 @@ _diffrn.ambient_pressure            ?
 _diffrn.ambient_magnetic_field            ?
 _diffrn.ambient_electric_field            ?
 
-_peak.asym_alpha_0 -0.00711764(99279)
-_peak.asym_alpha_1 0.01733511(141741)
+_peak.rise_alpha_0 -0.00711764(99279)
+_peak.rise_alpha_1 0.01733511(141741)
+_peak.decay_beta_0 0.00154237(30366)
+_peak.decay_beta_1 0.01537959(124628)
 _peak.gauss_sigma_0 89477.67336207(9441.88470529)
 _peak.gauss_sigma_1 -73469.31786995(11867.01726860)
 _peak.gauss_sigma_2 18331.87050060(3625.21001281)
-_peak.lorentz_gamma_0   0.00000000
-_peak.lorentz_gamma_1   0.00000000
-_peak.lorentz_gamma_2   0.00000000
-_peak.mix_beta_0 0.00154237(30366)
-_peak.mix_beta_1 0.01537959(124628)
-_peak.profile_type "pseudo-voigt * ikeda-carpenter"
+_peak.profile_type    jorgensen
 
 _instr.2theta_bank  94.94884671
 _instr.d_to_tof_offset   0.00000000

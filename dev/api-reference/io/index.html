@@ -3731,11 +3731,10 @@ that contains <code>project.cif</code>).</p>
 
     <div class="doc doc-contents ">
 
-        <p>Load a numeric block from an ASCII file, skipping header lines.</p>
-<p>Read the file and try <code>numpy.loadtxt</code> starting from the first
-line, then the second, etc., until the load succeeds.  This allows
-files with an arbitrary number of non-numeric header lines to be
-parsed without prior knowledge of the format.</p>
+        <p>Load a numeric block from an ASCII file, skipping non-numeric lines.</p>
+<p>Each line is tested individually: lines whose whitespace-separated
+tokens are all valid floats are kept; everything else (headers,
+footers, comment lines) is silently discarded.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -3816,7 +3815,7 @@ parsed without prior knowledge of the format.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>If no contiguous numeric block can be found in the file.</p>
+                <p>If no numeric lines can be found in the file.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -3866,14 +3865,18 @@ parsed without prior knowledge of the format.</p>
 <span class="normal">252</span>
 <span class="normal">253</span>
 <span class="normal">254</span>
-<span class="normal">255</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_numeric_block</span><span class="p">(</span><span class="n">data_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_numeric_block</span><span class="p">(</span><span class="n">data_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Load a numeric block from an ASCII file, skipping header lines.</span>
+<span class="sd">    Load a numeric block from an ASCII file, skipping non-numeric lines.</span>
 
-<span class="sd">    Read the file and try ``numpy.loadtxt`` starting from the first</span>
-<span class="sd">    line, then the second, etc., until the load succeeds.  This allows</span>
-<span class="sd">    files with an arbitrary number of non-numeric header lines to be</span>
-<span class="sd">    parsed without prior knowledge of the format.</span>
+<span class="sd">    Each line is tested individually: lines whose whitespace-separated</span>
+<span class="sd">    tokens are all valid floats are kept; everything else (headers,</span>
+<span class="sd">    footers, comment lines) is silently discarded.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -3888,22 +3891,28 @@ parsed without prior knowledge of the format.</p>
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    OSError</span>
-<span class="sd">        If no contiguous numeric block can be found in the file.</span>
+<span class="sd">        If no numeric lines can be found in the file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">data_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
     <span class="n">lines</span> <span class="o">=</span> <span class="n">data_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
 
-    <span class="n">last_error</span><span class="p">:</span> <span class="ne">Exception</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">for</span> <span class="n">start</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)):</span>
+    <span class="n">numeric_lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+        <span class="n">tokens</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">tokens</span><span class="p">:</span>
+            <span class="k">continue</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">StringIO</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="n">start</span><span class="p">:])))</span>
-        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">last_error</span> <span class="o">=</span> <span class="n">e</span>
+            <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">:</span>
+                <span class="nb">float</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">numeric_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
-    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Failed to read numeric data from </span><span class="si">{</span><span class="n">data_path</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">last_error</span><span class="si">}</span><span class="s1">&#39;</span>
-    <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span>
-        <span class="n">msg</span><span class="p">,</span>
-    <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">last_error</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">numeric_lines</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Failed to read numeric data from </span><span class="si">{</span><span class="n">data_path</span><span class="si">}</span><span class="s1">: no numeric lines found&#39;</span>
+        <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">StringIO</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">numeric_lines</span><span class="p">)))</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
