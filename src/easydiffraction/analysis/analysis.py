@@ -435,86 +435,8 @@ class Analysis:
             )
 
     # ------------------------------------------------------------------
-    #  Aliases (switchable-category pattern)
+    #  Parameter helpers
     # ------------------------------------------------------------------
-
-    @property
-    def aliases_type(self) -> str:
-        """Tag of the active aliases collection type."""
-        return self._aliases_type
-
-    @aliases_type.setter
-    def aliases_type(self, new_type: str) -> None:
-        """
-        Switch to a different aliases collection type.
-
-        Parameters
-        ----------
-        new_type : str
-            Aliases tag (e.g. ``'default'``).
-        """
-        supported_tags = AliasesFactory.supported_tags()
-        if new_type not in supported_tags:
-            log.warning(
-                f"Unsupported aliases type '{new_type}'. "
-                f'Supported: {supported_tags}. '
-                f"For more information, use 'show_supported_aliases_types()'",
-            )
-            return
-        self.aliases = AliasesFactory.create(new_type)
-        self._aliases_type = new_type
-        console.paragraph('Aliases type changed to')
-        console.print(new_type)
-
-    def show_supported_aliases_types(self) -> None:  # noqa: PLR6301
-        """Print a table of supported aliases collection types."""
-        AliasesFactory.show_supported()
-
-    def show_current_aliases_type(self) -> None:
-        """Print the currently used aliases collection type."""
-        console.paragraph('Current aliases type')
-        console.print(self._aliases_type)
-
-    # ------------------------------------------------------------------
-    #  Constraints (switchable-category pattern)
-    # ------------------------------------------------------------------
-
-    @property
-    def constraints_type(self) -> str:
-        """Tag of the active constraints collection type."""
-        return self._constraints_type
-
-    @constraints_type.setter
-    def constraints_type(self, new_type: str) -> None:
-        """
-        Switch to a different constraints collection type.
-
-        Parameters
-        ----------
-        new_type : str
-            Constraints tag (e.g. ``'default'``).
-        """
-        supported_tags = ConstraintsFactory.supported_tags()
-        if new_type not in supported_tags:
-            log.warning(
-                f"Unsupported constraints type '{new_type}'. "
-                f'Supported: {supported_tags}. '
-                f"For more information, use 'show_supported_constraints_types()'",
-            )
-            return
-        self.constraints = ConstraintsFactory.create(new_type)
-        self._constraints_type = new_type
-        console.paragraph('Constraints type changed to')
-        console.print(new_type)
-
-    def show_supported_constraints_types(self) -> None:  # noqa: PLR6301
-        """Print a table of supported constraints collection types."""
-        ConstraintsFactory.show_supported()
-
-    def show_current_constraints_type(self) -> None:
-        """Print the currently used constraints collection type."""
-        console.paragraph('Current constraints type')
-        console.print(self._constraints_type)
 
     @staticmethod
     def _get_params_as_dataframe(
@@ -595,50 +517,13 @@ class Analysis:
         console.print(self.current_minimizer)
 
     # ------------------------------------------------------------------
-    #  Fit mode (switchable-category pattern)
+    #  Fit mode (read-only, single type)
     # ------------------------------------------------------------------
 
     @property
     def fit_mode(self) -> object:
         """Fit-mode category item holding the active strategy."""
         return self._fit_mode
-
-    @property
-    def fit_mode_type(self) -> str:
-        """Tag of the active fit-mode category type."""
-        return self._fit_mode_type
-
-    @fit_mode_type.setter
-    def fit_mode_type(self, new_type: str) -> None:
-        """
-        Switch to a different fit-mode category type.
-
-        Parameters
-        ----------
-        new_type : str
-            Fit-mode tag (e.g. ``'default'``).
-        """
-        supported_tags = FitModeFactory.supported_tags()
-        if new_type not in supported_tags:
-            log.warning(
-                f"Unsupported fit-mode type '{new_type}'. "
-                f'Supported: {supported_tags}. '
-                f"For more information, use 'show_supported_fit_mode_types()'",
-            )
-            return
-        self._fit_mode = FitModeFactory.create(new_type)
-        self._fit_mode_type = new_type
-        console.paragraph('Fit-mode type changed to')
-        console.print(new_type)
-
-    def show_supported_fit_mode_types(self) -> None:  # noqa: PLR6301
-        """Print a table of supported fit-mode category types."""
-        FitModeFactory.show_supported()
-
-    def show_current_fit_mode_type(self) -> None:
-        """Print the currently used fit-mode category type."""
-        console.paragraph('Current fit-mode type')
-        console.print(self._fit_mode_type)
 
     # ------------------------------------------------------------------
     #  Joint-fit experiments (category)

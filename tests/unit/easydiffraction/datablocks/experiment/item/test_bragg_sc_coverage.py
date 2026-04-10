@@ -72,25 +72,16 @@ class TestCwlScExperiment:
         assert isinstance(ex.extinction_type, str)
         # linked crystal
         assert ex.linked_crystal is not None
-        assert isinstance(ex.linked_crystal_type, str)
         # instrument
         assert ex.instrument is not None
-        assert isinstance(ex.instrument_type, str)
         # data
         assert ex.data is not None
-        assert isinstance(ex.data_type, str)
 
     def test_extinction_type_invalid(self):
         ex = CwlScExperiment(name='cwl_sc', type=_mk_type_sc_cwl())
         old = ex.extinction_type
         ex.extinction_type = 'bogus'
         assert ex.extinction_type == old
-
-    def test_linked_crystal_type_invalid(self):
-        ex = CwlScExperiment(name='cwl_sc', type=_mk_type_sc_cwl())
-        old = ex.linked_crystal_type
-        ex.linked_crystal_type = 'bogus'
-        assert ex.linked_crystal_type == old
 
     def test_show_supported_extinction_types(self, capsys):
         ex = CwlScExperiment(name='cwl_sc', type=_mk_type_sc_cwl())
@@ -103,30 +94,6 @@ class TestCwlScExperiment:
         ex.show_current_extinction_type()
         out = capsys.readouterr().out
         assert ex.extinction_type in out
-
-    def test_show_supported_linked_crystal_types(self, capsys):
-        ex = CwlScExperiment(name='cwl_sc', type=_mk_type_sc_cwl())
-        ex.show_supported_linked_crystal_types()
-        out = capsys.readouterr().out
-        assert len(out) > 0
-
-    def test_show_current_linked_crystal_type(self, capsys):
-        ex = CwlScExperiment(name='cwl_sc', type=_mk_type_sc_cwl())
-        ex.show_current_linked_crystal_type()
-        out = capsys.readouterr().out
-        assert ex.linked_crystal_type in out
-
-    def test_show_supported_instrument_types(self, capsys):
-        ex = CwlScExperiment(name='cwl_sc', type=_mk_type_sc_cwl())
-        ex.show_supported_instrument_types()
-        out = capsys.readouterr().out
-        assert len(out) > 0
-
-    def test_show_current_instrument_type(self, capsys):
-        ex = CwlScExperiment(name='cwl_sc', type=_mk_type_sc_cwl())
-        ex.show_current_instrument_type()
-        out = capsys.readouterr().out
-        assert ex.instrument_type in out
 
 
 class TestTofScExperiment:

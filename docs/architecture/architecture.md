@@ -270,9 +270,6 @@ experiment.data  # CategoryCollection
 experiment.background_type = 'chebyshev'  # triggers BackgroundFactory.create(...)
 experiment.peak_profile_type = 'thompson-cox-hastings'  # triggers PeakFactory.create(...)
 experiment.extinction_type = 'becker-coppens'  # triggers ExtinctionFactory.create(...)
-experiment.linked_crystal_type = 'default'  # triggers LinkedCrystalFactory.create(...)
-experiment.excluded_regions_type = 'default'  # triggers ExcludedRegionsFactory.create(...)
-experiment.linked_phases_type = 'default'  # triggers LinkedPhasesFactory.create(...)
 ```
 
 **Type switching pattern:** `expt.background_type = 'chebyshev'` rather
@@ -664,8 +661,8 @@ workflow:
 - Parameter tables: `show_all_params()`, `show_fittable_params()`,
   `show_free_params()`, `how_to_access_parameters()`
 - Fitting: `fit()`, `show_fit_results()`
-- Aliases and constraints (switchable categories with `aliases_type`,
-  `constraints_type`, `fit_mode_type`, `joint_fit_experiments_type`)
+- Aliases and constraints (single-type categories; no public `_type`
+  getter or setter)
 
 ---
 
@@ -955,8 +952,11 @@ and simplifies maintenance.
 Categories whose concrete implementation can be swapped at runtime
 (background, peak profile, etc.) are called **switchable categories**.
 **Every category must be factory-based** — even if only one
-implementation exists today. This ensures a uniform API, consistent
-discoverability, and makes adding a second implementation trivial.
+implementation exists today. This ensures uniform construction,
+consistent metadata, and makes adding a second implementation trivial.
+
+For categories with **multiple implementations** (multi-type), the owner
+exposes the full switchable API:
 
 | Facet           | Naming pattern                               | Example                                          |
 | --------------- | -------------------------------------------- | ------------------------------------------------ |
@@ -965,16 +965,28 @@ discoverability, and makes adding a second implementation trivial.
 | Show supported  | `show_supported_<category>_types()`          | `expt.show_supported_background_types()`         |
 | Show current    | `show_current_<category>_type()`             | `expt.show_current_peak_profile_type()`          |
 
-The convention applies universally:
+Multi-type categories:
 
 - **Experiment:** `calculator_type`, `background_type`,
-  `peak_profile_type`, `extinction_type`, `linked_crystal_type`,
-  `excluded_regions_type`, `linked_phases_type`, `instrument_type`.
-  Note: `data_type` is **read-only** (fixed at creation, like experiment
-  type).
-- **Structure:** `cell_type`, `space_group_type`, `atom_sites_type`.
-- **Analysis:** `aliases_type`, `constraints_type`, `fit_mode_type`,
-  `joint_fit_experiments_type`.
+  `peak_profile_type`, `extinction_type`.
+
+Categories that are **fixed at creation** (determined by the experiment
+type and never changed) expose only a read-only `<category>` property
+with no `_type` getter, setter, or show methods:
+
+- **Experiment:** `instrument`, `data`.
+
+For categories with **only one implementation** (single-type), the
+`_type` getter, setter, and show methods are omitted from the public API
+to avoid clutter. The factory and `_type` attribute still exist
+internally for consistency and future extensibility.
+
+Single-type categories (no public `_type` property):
+
+- **Experiment:** `diffrn`, `linked_crystal`, `excluded_regions`,
+  `linked_phases`.
+- **Structure:** `cell`, `space_group`, `atom_sites`.
+- **Analysis:** `aliases`, `constraints`, `fit_mode`.
 
 **Design decisions:**
 
@@ -999,17 +1011,6 @@ expt.show_supported_peak_profile_types()
 expt.show_supported_background_types()
 expt.show_supported_calculator_types()
 expt.show_supported_extinction_types()
-expt.show_supported_linked_crystal_types()
-expt.show_supported_excluded_regions_types()
-expt.show_supported_linked_phases_types()
-expt.show_supported_instrument_types()
-struct.show_supported_cell_types()
-struct.show_supported_space_group_types()
-struct.show_supported_atom_sites_types()
-project.analysis.show_supported_aliases_types()
-project.analysis.show_supported_constraints_types()
-project.analysis.show_supported_fit_mode_types()
-project.analysis.show_supported_joint_fit_experiments_types()
 project.analysis.show_available_minimizers()
 ```
 
