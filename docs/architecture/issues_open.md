@@ -77,7 +77,7 @@ CIF serialisation.
 **Fix:** make `Analysis` extend `DatablockItem`, or extract a shared
 `_update_categories()` protocol.
 
-**Depends on:** benefits from issue 1 (load/save) being designed first.
+**Depends on:** nothing.
 
 ---
 
@@ -162,8 +162,7 @@ with joint-fit workflows.
 at minimum document the required update order. For joint fitting, all
 experiments should be updateable in a single call.
 
-**Depends on:** benefits from issue 5 (Analysis as DatablockItem) and
-issue 7 (fitter refactor).
+**Depends on:** benefits from issue 5 (Analysis as DatablockItem).
 
 ---
 
@@ -185,19 +184,6 @@ documentation (and possibly via a naming convention or flag) would
 reduce confusion for new contributors.
 
 **Depends on:** nothing.
-
----
-
-## 12. 🟢 Add CIF Round-Trip Integration Test
-
-**Type:** Quality
-
-Ensuring every parameter survives a `save()` → `load()` cycle is
-critical for reproducibility. A systematic integration test that creates
-a project, populates all categories, saves, reloads, and compares all
-parameter values would strengthen confidence in the serialisation layer.
-
-**Depends on:** issue 1 (`Project.load()` implementation).
 
 ---
 
@@ -271,7 +257,7 @@ analysis state, and make sure `load()` restores it. The saved project
 should represent the exact active calculator configuration, not just a
 re-derivable default.
 
-**Depends on:** issue 1 (`Project.load()` implementation).
+**Depends on:** nothing.
 
 ---
 
@@ -287,7 +273,6 @@ re-derivable default.
 | 9   | Future enum extensions                   | 🟢 Low   | Design                  |
 | 10  | Unify update orchestration               | 🟢 Low   | Maintainability         |
 | 11  | Document `_update` contract              | 🟢 Low   | Maintainability         |
-| 12  | CIF round-trip integration test          | 🟢 Low   | Quality                 |
 | 13  | Suppress redundant dirty-flag sets       | 🟢 Low   | Performance             |
 | 14  | Finer-grained change tracking            | 🟢 Low   | Performance             |
 | 15  | Validate joint-fit weights               | 🟡 Med   | Correctness             |

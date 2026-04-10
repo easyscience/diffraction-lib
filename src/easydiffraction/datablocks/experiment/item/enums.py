@@ -160,10 +160,11 @@ class PeakProfileTypeEnum(StrEnum):
     """Available peak profile types per scattering and beam mode."""
 
     PSEUDO_VOIGT = 'pseudo-voigt'
-    SPLIT_PSEUDO_VOIGT = 'split pseudo-voigt'
+    PSEUDO_VOIGT_EMPIRICAL_ASYMMETRY = 'pseudo-voigt + empirical asymmetry'
     THOMPSON_COX_HASTINGS = 'thompson-cox-hastings'
-    PSEUDO_VOIGT_IKEDA_CARPENTER = 'pseudo-voigt * ikeda-carpenter'
-    PSEUDO_VOIGT_BACK_TO_BACK = 'pseudo-voigt * back-to-back'
+    JORGENSEN = 'jorgensen'
+    JORGENSEN_VON_DREELE = 'jorgensen-von-dreele'
+    DOUBLE_JORGENSEN_VON_DREELE = 'double-jorgensen-von-dreele'
     GAUSSIAN_DAMPED_SINC = 'gaussian-damped-sinc'
 
     @classmethod
@@ -198,7 +199,7 @@ class PeakProfileTypeEnum(StrEnum):
             (
                 ScatteringTypeEnum.BRAGG,
                 BeamModeEnum.TIME_OF_FLIGHT,
-            ): cls.PSEUDO_VOIGT_IKEDA_CARPENTER,
+            ): cls.JORGENSEN,
             (ScatteringTypeEnum.TOTAL, BeamModeEnum.CONSTANT_WAVELENGTH): cls.GAUSSIAN_DAMPED_SINC,
             (ScatteringTypeEnum.TOTAL, BeamModeEnum.TIME_OF_FLIGHT): cls.GAUSSIAN_DAMPED_SINC,
         }[scattering_type, beam_mode]
@@ -214,14 +215,18 @@ class PeakProfileTypeEnum(StrEnum):
         """
         if self is PeakProfileTypeEnum.PSEUDO_VOIGT:
             return 'Pseudo-Voigt profile'
-        if self is PeakProfileTypeEnum.SPLIT_PSEUDO_VOIGT:
-            return 'Split pseudo-Voigt profile with empirical asymmetry correction.'
+        if self is PeakProfileTypeEnum.PSEUDO_VOIGT_EMPIRICAL_ASYMMETRY:
+            return 'Pseudo-Voigt profile with empirical asymmetry correction.'
         if self is PeakProfileTypeEnum.THOMPSON_COX_HASTINGS:
             return 'Thompson-Cox-Hastings profile with FCJ asymmetry correction.'
-        if self is PeakProfileTypeEnum.PSEUDO_VOIGT_IKEDA_CARPENTER:
-            return 'Pseudo-Voigt profile with Ikeda-Carpenter asymmetry correction.'
-        if self is PeakProfileTypeEnum.PSEUDO_VOIGT_BACK_TO_BACK:
-            return 'Pseudo-Voigt profile with Back-to-Back Exponential asymmetry correction.'
+        if self is PeakProfileTypeEnum.JORGENSEN:
+            return 'Jorgensen back-to-back exponentials convolved with Gaussian.'
+        if self is PeakProfileTypeEnum.JORGENSEN_VON_DREELE:
+            return 'Jorgensen-Von Dreele back-to-back exponentials convolved with pseudo-Voigt.'
+        if self is PeakProfileTypeEnum.DOUBLE_JORGENSEN_VON_DREELE:
+            return (
+                'Double back-to-back exponentials convolved with pseudo-Voigt (Z-Rietveld type0m).'
+            )
         if self is PeakProfileTypeEnum.GAUSSIAN_DAMPED_SINC:
             return 'Gaussian-damped sinc profile for pair distribution function (PDF) analysis.'
         return None

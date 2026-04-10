@@ -791,7 +791,8 @@ class PdExperimentBase(ExperimentBase):
         Parameters
         ----------
         new_type : str
-            Peak profile type tag (e.g. ``'split pseudo-voigt'``).
+            Peak profile type tag (e.g. ``'pseudo-voigt + empirical
+            asymmetry'``).
         """
         supported = PeakFactory.supported_for(
             scattering_type=self.type.scattering_type.value,

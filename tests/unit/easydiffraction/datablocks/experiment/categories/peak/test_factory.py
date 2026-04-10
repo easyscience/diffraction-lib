@@ -17,8 +17,8 @@ def test_peak_factory_default_and_combinations_and_errors():
     p1 = PeakFactory.create('pseudo-voigt')
     assert p1.__class__.__name__ == 'CwlPseudoVoigt'
 
-    p2 = PeakFactory.create('pseudo-voigt * ikeda-carpenter')
-    assert p2.__class__.__name__ == 'TofPseudoVoigtIkedaCarpenter'
+    p2 = PeakFactory.create('jorgensen')
+    assert p2.__class__.__name__ == 'TofJorgensen'
 
     p3 = PeakFactory.create('gaussian-damped-sinc')
     assert p3.__class__.__name__ == 'TotalGaussianDampedSinc'
@@ -34,7 +34,7 @@ def test_peak_factory_default_and_combinations_and_errors():
         scattering_type=ScatteringTypeEnum.BRAGG,
         beam_mode=BeamModeEnum.TIME_OF_FLIGHT,
     )
-    assert tag_bragg_tof == 'pseudo-voigt * ikeda-carpenter'
+    assert tag_bragg_tof == 'jorgensen'
 
     tag_total = PeakFactory.default_tag(
         scattering_type=ScatteringTypeEnum.TOTAL,

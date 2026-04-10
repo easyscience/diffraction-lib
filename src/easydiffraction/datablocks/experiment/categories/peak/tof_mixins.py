@@ -1,13 +1,18 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 """
-Time-of-flight (TOF) peak-profile component classes.
+Time-of-flight (TOF) peak-profile mixin classes.
 
-Defines classes that add Gaussian/Lorentz broadening, mixing, and
-Ikeda-Carpenter asymmetry parameters used by TOF peak shapes. This
-module provides classes that add broadening and asymmetry parameters.
-They are composed into concrete peak classes elsewhere via multiple
-inheritance.
+Defines parameter mixins for TOF peak shapes based on the Jorgensen
+back-to-back exponential (BBE) formalism:
+
+- ``TofGaussianBroadeningMixin`` — σ₀, σ₁, σ₂
+- ``TofLorentzianBroadeningMixin`` — γ₀, γ₁, γ₂
+- ``TofBackToBackExponentialMixin`` — α₀, α₁ (rise), β₀, β₁ (decay)
+- ``TofDoubleExponentialMixin`` — α₁, α₂ (rise), β₀₀, β₀₁, β₁₀ (decay),
+  r₀₁, r₀₂, r₀₃ (switching function) for double-BBE (Z-Rietveld type0m)
+
+These are composed into concrete peak classes in ``tof.py``.
 """
 
 from easydiffraction.core.validation import AttributeSpec
@@ -16,8 +21,8 @@ from easydiffraction.core.variable import Parameter
 from easydiffraction.io.cif.handler import CifHandler
 
 
-class TofBroadeningMixin:
-    """TOF Gaussian/Lorentz broadening and mixing parameters."""
+class TofGaussianBroadeningMixin:
+    """TOF Gaussian broadening parameters σ₀, σ₁, σ₂."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -52,60 +57,6 @@ class TofBroadeningMixin:
             ),
             cif_handler=CifHandler(names=['_peak.gauss_sigma_2']),
         )
-        self._broad_lorentz_gamma_0 = Parameter(
-            name='lorentz_gamma_0',
-            description='Lorentzian broadening (microstrain effects)',
-            units='μs',
-            value_spec=AttributeSpec(
-                default=0.0,
-                validator=RangeValidator(),
-            ),
-            cif_handler=CifHandler(names=['_peak.lorentz_gamma_0']),
-        )
-        self._broad_lorentz_gamma_1 = Parameter(
-            name='lorentz_gamma_1',
-            description='Lorentzian broadening (dependent on d-spacing)',
-            units='μs/Å',
-            value_spec=AttributeSpec(
-                default=0.0,
-                validator=RangeValidator(),
-            ),
-            cif_handler=CifHandler(names=['_peak.lorentz_gamma_1']),
-        )
-        self._broad_lorentz_gamma_2 = Parameter(
-            name='lorentz_gamma_2',
-            description='Lorentzian broadening (instrument-dependent term)',
-            units='μs²/Å²',
-            value_spec=AttributeSpec(
-                default=0.0,
-                validator=RangeValidator(),
-            ),
-            cif_handler=CifHandler(names=['_peak.lorentz_gamma_2']),
-        )
-        self._broad_mix_beta_0 = Parameter(
-            name='mix_beta_0',
-            description='Ratio of Gaussian to Lorentzian contributions',
-            units='deg',
-            value_spec=AttributeSpec(
-                default=0.0,
-                validator=RangeValidator(),
-            ),
-            cif_handler=CifHandler(names=['_peak.mix_beta_0']),
-        )
-        self._broad_mix_beta_1 = Parameter(
-            name='mix_beta_1',
-            description='Ratio of Gaussian to Lorentzian contributions',
-            units='deg',
-            value_spec=AttributeSpec(
-                default=0.0,
-                validator=RangeValidator(),
-            ),
-            cif_handler=CifHandler(names=['_peak.mix_beta_1']),
-        )
-
-    # ------------------------------------------------------------------
-    #  Public properties
-    # ------------------------------------------------------------------
 
     @property
     def broad_gauss_sigma_0(self) -> Parameter:
@@ -149,6 +100,44 @@ class TofBroadeningMixin:
     def broad_gauss_sigma_2(self, value: float) -> None:
         self._broad_gauss_sigma_2.value = value
 
+
+class TofLorentzianBroadeningMixin:
+    """TOF Lorentzian broadening parameters γ₀, γ₁, γ₂."""
+
+    def __init__(self) -> None:
+        super().__init__()
+
+        self._broad_lorentz_gamma_0 = Parameter(
+            name='lorentz_gamma_0',
+            description='Lorentzian broadening (microstrain effects)',
+            units='μs',
+            value_spec=AttributeSpec(
+                default=0.0,
+                validator=RangeValidator(),
+            ),
+            cif_handler=CifHandler(names=['_peak.lorentz_gamma_0']),
+        )
+        self._broad_lorentz_gamma_1 = Parameter(
+            name='lorentz_gamma_1',
+            description='Lorentzian broadening (dependent on d-spacing)',
+            units='μs/Å',
+            value_spec=AttributeSpec(
+                default=0.0,
+                validator=RangeValidator(),
+            ),
+            cif_handler=CifHandler(names=['_peak.lorentz_gamma_1']),
+        )
+        self._broad_lorentz_gamma_2 = Parameter(
+            name='lorentz_gamma_2',
+            description='Lorentzian broadening (instrument-dependent term)',
+            units='μs²/Å²',
+            value_spec=AttributeSpec(
+                default=0.0,
+                validator=RangeValidator(),
+            ),
+            cif_handler=CifHandler(names=['_peak.lorentz_gamma_2']),
+        )
+
     @property
     def broad_lorentz_gamma_0(self) -> Parameter:
         """
@@ -191,86 +180,317 @@ class TofBroadeningMixin:
     def broad_lorentz_gamma_2(self, value: float) -> None:
         self._broad_lorentz_gamma_2.value = value
 
-    @property
-    def broad_mix_beta_0(self) -> Parameter:
-        """
-        Ratio of Gaussian to Lorentzian contributions (deg).
 
-        Reading this property returns the underlying ``Parameter``
-        object. Assigning to it updates the parameter value.
-        """
-        return self._broad_mix_beta_0
+class TofBackToBackExponentialMixin:
+    """
+    Back-to-back exponential (BBE) rise and decay parameters.
 
-    @broad_mix_beta_0.setter
-    def broad_mix_beta_0(self, value: float) -> None:
-        self._broad_mix_beta_0.value = value
-
-    @property
-    def broad_mix_beta_1(self) -> Parameter:
-        """
-        Ratio of Gaussian to Lorentzian contributions (deg).
-
-        Reading this property returns the underlying ``Parameter``
-        object. Assigning to it updates the parameter value.
-        """
-        return self._broad_mix_beta_1
-
-    @broad_mix_beta_1.setter
-    def broad_mix_beta_1(self, value: float) -> None:
-        self._broad_mix_beta_1.value = value
-
-
-class IkedaCarpenterAsymmetryMixin:
-    """Ikeda-Carpenter asymmetry parameters."""
+    Rise parameters α₀, α₁ and decay parameters β₀, β₁ follow Von
+    Dreele, Jorgensen & Windsor, J. Appl. Cryst. 15, 581 (1982).
+    """
 
     def __init__(self) -> None:
         super().__init__()
 
-        self._asym_alpha_0 = Parameter(
-            name='asym_alpha_0',
-            description='Ikeda-Carpenter asymmetry parameter α₀',
-            units='',  # TODO
+        self._exp_rise_alpha_0 = Parameter(
+            name='rise_alpha_0',
+            description='Back-to-back exponential rise α₀',
+            units='μs',
             value_spec=AttributeSpec(
                 default=0.01,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.asym_alpha_0']),
+            cif_handler=CifHandler(names=['_peak.rise_alpha_0']),
         )
-        self._asym_alpha_1 = Parameter(
-            name='asym_alpha_1',
-            description='Ikeda-Carpenter asymmetry parameter α₁',
-            units='',  # TODO
+        self._exp_rise_alpha_1 = Parameter(
+            name='rise_alpha_1',
+            description='Back-to-back exponential rise α₁',
+            units='μs/Å',
             value_spec=AttributeSpec(
                 default=0.02,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.asym_alpha_1']),
+            cif_handler=CifHandler(names=['_peak.rise_alpha_1']),
+        )
+        self._exp_decay_beta_0 = Parameter(
+            name='decay_beta_0',
+            description='Back-to-back exponential decay β₀',
+            units='μs',
+            value_spec=AttributeSpec(
+                default=0.0,
+                validator=RangeValidator(),
+            ),
+            cif_handler=CifHandler(names=['_peak.decay_beta_0']),
+        )
+        self._exp_decay_beta_1 = Parameter(
+            name='decay_beta_1',
+            description='Back-to-back exponential decay β₁',
+            units='μs/Å',
+            value_spec=AttributeSpec(
+                default=0.0,
+                validator=RangeValidator(),
+            ),
+            cif_handler=CifHandler(names=['_peak.decay_beta_1']),
         )
 
     @property
-    def asym_alpha_0(self) -> Parameter:
+    def exp_rise_alpha_0(self) -> Parameter:
         """
-        Ikeda-Carpenter asymmetry parameter α₀.
+        Back-to-back exponential rise α₀ (μs).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
         """
-        return self._asym_alpha_0
+        return self._exp_rise_alpha_0
 
-    @asym_alpha_0.setter
-    def asym_alpha_0(self, value: float) -> None:
-        self._asym_alpha_0.value = value
+    @exp_rise_alpha_0.setter
+    def exp_rise_alpha_0(self, value: float) -> None:
+        self._exp_rise_alpha_0.value = value
 
     @property
-    def asym_alpha_1(self) -> Parameter:
+    def exp_rise_alpha_1(self) -> Parameter:
         """
-        Ikeda-Carpenter asymmetry parameter α₁.
+        Back-to-back exponential rise α₁ (μs/Å).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
         """
-        return self._asym_alpha_1
+        return self._exp_rise_alpha_1
 
-    @asym_alpha_1.setter
-    def asym_alpha_1(self, value: float) -> None:
-        self._asym_alpha_1.value = value
+    @exp_rise_alpha_1.setter
+    def exp_rise_alpha_1(self, value: float) -> None:
+        self._exp_rise_alpha_1.value = value
+
+    @property
+    def exp_decay_beta_0(self) -> Parameter:
+        """
+        Back-to-back exponential decay β₀ (μs).
+
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
+        """
+        return self._exp_decay_beta_0
+
+    @exp_decay_beta_0.setter
+    def exp_decay_beta_0(self, value: float) -> None:
+        self._exp_decay_beta_0.value = value
+
+    @property
+    def exp_decay_beta_1(self) -> Parameter:
+        """
+        Back-to-back exponential decay β₁ (μs/Å).
+
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
+        """
+        return self._exp_decay_beta_1
+
+    @exp_decay_beta_1.setter
+    def exp_decay_beta_1(self, value: float) -> None:
+        self._exp_decay_beta_1.value = value
+
+
+class TofDoubleExponentialMixin:
+    """
+    Double back-to-back exponential parameters for Z-Rietveld type0m.
+
+    Rise parameters α₁, α₂, decay parameters β₀₀, β₀₁, β₁₀ for two
+    exponential regimes, and switching-function parameters r₀₁, r₀₂,
+    r₀₃.
+    """
+
+    def __init__(self) -> None:
+        super().__init__()
+
+        self._dexp_rise_alpha_1 = Parameter(
+            name='dexp_rise_alpha_1',
+            description='Double-exp rise parameter α₁',
+            units='μs',
+            value_spec=AttributeSpec(
+                default=0.0,
+                validator=RangeValidator(),
+            ),
+            cif_handler=CifHandler(names=['_peak.dexp_rise_alpha_1']),
+        )
+        self._dexp_rise_alpha_2 = Parameter(
+            name='dexp_rise_alpha_2',
+            description='Double-exp rise parameter α₂',
+            units='μs/Å',
+            value_spec=AttributeSpec(
+                default=0.0,
+                validator=RangeValidator(),
+            ),
+            cif_handler=CifHandler(names=['_peak.dexp_rise_alpha_2']),
+        )
+        self._dexp_decay_beta_00 = Parameter(
+            name='dexp_decay_beta_00',
+            description='Double-exp first-regime decay β₀₀',
+            units='μs',
+            value_spec=AttributeSpec(
+                default=0.0,
+                validator=RangeValidator(),
+            ),
+            cif_handler=CifHandler(names=['_peak.dexp_decay_beta_00']),
+        )
+        self._dexp_decay_beta_01 = Parameter(
+            name='dexp_decay_beta_01',
+            description='Double-exp first-regime decay β₀₁',
+            units='μs/Å',
+            value_spec=AttributeSpec(
+                default=0.0,
+                validator=RangeValidator(),
+            ),
+            cif_handler=CifHandler(names=['_peak.dexp_decay_beta_01']),
+        )
+        self._dexp_decay_beta_10 = Parameter(
+            name='dexp_decay_beta_10',
+            description='Double-exp second-regime decay β₁₀',
+            units='μs',
+            value_spec=AttributeSpec(
+                default=0.0,
+                validator=RangeValidator(),
+            ),
+            cif_handler=CifHandler(names=['_peak.dexp_decay_beta_10']),
+        )
+        self._dexp_switch_r_01 = Parameter(
+            name='dexp_switch_r_01',
+            description='Double-exp switching function r₀₁',
+            units='',
+            value_spec=AttributeSpec(
+                default=0.0,
+                validator=RangeValidator(),
+            ),
+            cif_handler=CifHandler(names=['_peak.dexp_switch_r_01']),
+        )
+        self._dexp_switch_r_02 = Parameter(
+            name='dexp_switch_r_02',
+            description='Double-exp switching function r₀₂',
+            units='',
+            value_spec=AttributeSpec(
+                default=0.0,
+                validator=RangeValidator(),
+            ),
+            cif_handler=CifHandler(names=['_peak.dexp_switch_r_02']),
+        )
+        self._dexp_switch_r_03 = Parameter(
+            name='dexp_switch_r_03',
+            description='Double-exp switching function r₀₃',
+            units='',
+            value_spec=AttributeSpec(
+                default=0.0,
+                validator=RangeValidator(),
+            ),
+            cif_handler=CifHandler(names=['_peak.dexp_switch_r_03']),
+        )
+
+    @property
+    def dexp_rise_alpha_1(self) -> Parameter:
+        """
+        Double-exp rise parameter α₁ (μs).
+
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
+        """
+        return self._dexp_rise_alpha_1
+
+    @dexp_rise_alpha_1.setter
+    def dexp_rise_alpha_1(self, value: float) -> None:
+        self._dexp_rise_alpha_1.value = value
+
+    @property
+    def dexp_rise_alpha_2(self) -> Parameter:
+        """
+        Double-exp rise parameter α₂ (μs/Å).
+
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
+        """
+        return self._dexp_rise_alpha_2
+
+    @dexp_rise_alpha_2.setter
+    def dexp_rise_alpha_2(self, value: float) -> None:
+        self._dexp_rise_alpha_2.value = value
+
+    @property
+    def dexp_decay_beta_00(self) -> Parameter:
+        """
+        Double-exp first-regime decay β₀₀ (μs).
+
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
+        """
+        return self._dexp_decay_beta_00
+
+    @dexp_decay_beta_00.setter
+    def dexp_decay_beta_00(self, value: float) -> None:
+        self._dexp_decay_beta_00.value = value
+
+    @property
+    def dexp_decay_beta_01(self) -> Parameter:
+        """
+        Double-exp first-regime decay β₀₁ (μs/Å).
+
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
+        """
+        return self._dexp_decay_beta_01
+
+    @dexp_decay_beta_01.setter
+    def dexp_decay_beta_01(self, value: float) -> None:
+        self._dexp_decay_beta_01.value = value
+
+    @property
+    def dexp_decay_beta_10(self) -> Parameter:
+        """
+        Double-exp second-regime decay β₁₀ (μs).
+
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
+        """
+        return self._dexp_decay_beta_10
+
+    @dexp_decay_beta_10.setter
+    def dexp_decay_beta_10(self, value: float) -> None:
+        self._dexp_decay_beta_10.value = value
+
+    @property
+    def dexp_switch_r_01(self) -> Parameter:
+        """
+        Double-exp switching function r₀₁.
+
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
+        """
+        return self._dexp_switch_r_01
+
+    @dexp_switch_r_01.setter
+    def dexp_switch_r_01(self, value: float) -> None:
+        self._dexp_switch_r_01.value = value
+
+    @property
+    def dexp_switch_r_02(self) -> Parameter:
+        """
+        Double-exp switching function r₀₂.
+
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
+        """
+        return self._dexp_switch_r_02
+
+    @dexp_switch_r_02.setter
+    def dexp_switch_r_02(self, value: float) -> None:
+        self._dexp_switch_r_02.value = value
+
+    @property
+    def dexp_switch_r_03(self) -> Parameter:
+        """
+        Double-exp switching function r₀₃.
+
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
+        """
+        return self._dexp_switch_r_03
+
+    @dexp_switch_r_03.setter
+    def dexp_switch_r_03(self, value: float) -> None:
+        self._dexp_switch_r_03.value = value

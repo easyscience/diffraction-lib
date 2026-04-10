@@ -41,16 +41,16 @@ class CwlPseudoVoigt(
 
 
 @PeakFactory.register
-class CwlSplitPseudoVoigt(
+class CwlPseudoVoigtEmpiricalAsymmetry(
     PeakBase,
     CwlBroadeningMixin,
     EmpiricalAsymmetryMixin,
 ):
-    """Split pseudo-Voigt (empirical asymmetry) for CWL mode."""
+    """Pseudo-Voigt with empirical asymmetry correction for CWL mode."""
 
     type_info = TypeInfo(
-        tag='split pseudo-voigt',
-        description='Split pseudo-Voigt with empirical asymmetry correction',
+        tag='pseudo-voigt + empirical asymmetry',
+        description='Pseudo-Voigt with empirical asymmetry correction',
     )
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),

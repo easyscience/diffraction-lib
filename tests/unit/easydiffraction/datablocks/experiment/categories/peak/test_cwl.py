@@ -4,11 +4,13 @@
 
 def test_cwl_peak_classes_expose_expected_parameters_and_category():
     from easydiffraction.datablocks.experiment.categories.peak.cwl import CwlPseudoVoigt
-    from easydiffraction.datablocks.experiment.categories.peak.cwl import CwlSplitPseudoVoigt
+    from easydiffraction.datablocks.experiment.categories.peak.cwl import (
+        CwlPseudoVoigtEmpiricalAsymmetry,
+    )
     from easydiffraction.datablocks.experiment.categories.peak.cwl import CwlThompsonCoxHastings
 
     pv = CwlPseudoVoigt()
-    spv = CwlSplitPseudoVoigt()
+    spv = CwlPseudoVoigtEmpiricalAsymmetry()
     tch = CwlThompsonCoxHastings()
 
     # Category code set by PeakBase

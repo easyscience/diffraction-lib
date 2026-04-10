@@ -50,12 +50,12 @@ Legend:
 
 ### Atomic Displacement Parameters (ADP)
 
-| Feature                                         | LIB         | APP |
-| ----------------------------------------------- | ----------- | --- |
-| Isotropic Biso                                  | ✅          | 🗓  |
-| Isotropic Uiso                                  | 🗓          | ✅  |
-| Anisotropic Bani _B11, B22, B33, B12, B13, B23_ | 🗓`highest` | 🗓  |
-| Anisotropic Uani _U11, U22, U33, U12, U13, U23_ | 🗓          | 🗓  |
+| Feature                                         | LIB | APP |
+| ----------------------------------------------- | --- | --- |
+| Isotropic Biso                                  | ✅  | 🗓  |
+| Isotropic Uiso                                  | 🚧  | ✅  |
+| Anisotropic Bani _B11, B22, B33, B12, B13, B23_ | 🚧  | 🗓  |
+| Anisotropic Uani _U11, U22, U33, U12, U13, U23_ | 🚧  | 🗓  |
 
 ---
 
@@ -110,9 +110,9 @@ Legend:
 | Feature                                                  | LIB | APP |
 | -------------------------------------------------------- | --- | --- |
 | Wavelength                                               | ✅  | ✅  |
-| Second wavelength                                        | 🚧  | 🗓  |
+| Second wavelength                                        | 🗓  | 🗓  |
 | 2θ offset                                                | ✅  | ✅  |
-| Sample displacement correction (FullProf _SyCos, SySin_) | 🚧  | 🗓  |
+| Sample displacement correction (FullProf _SyCos, SySin_) | 🗓  | 🗓  |
 
 ### Instrument — Time-of-Flight
 
@@ -122,9 +122,6 @@ Legend:
 | d → TOF conversion<br>_reciprocal, offset, linear, quadratic_ | ✅  | ✅  |
 
 ### Peak Profile — Constant Wavelength
-
-CrysPy: Pseudo-Voigt from FullProf. Empirical asymmetry, 4 params (p1,
-p2, p3, p4) from FullProf.
 
 | Feature                                                                                                                                                                            | LIB   | APP |
 | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | --- |
@@ -144,14 +141,16 @@ CrysPy peak_shape options:
 | Feature                                                                                                                                                                                                                            | LIB | APP |
 | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | --- |
 | Jorgensen (back-to-back exponentials ⊗ Gaussian)<br>_Gaussian broadening σ₀, σ₁, σ₂<br>Back-to-back exponential rise α₀, α₁. Back-to-back exponential decay β₀, β₁_<br>(CrysPy)                                                    | ✅  | ✅  |
-| Jorgensen-Von Dreele (back-to-back exponentials ⊗ pseudo-Voigt)<br>_Gaussian broadening σ₀, σ₁, σ₂. Lorentzian broadening γ₀, γ₁, γ₂<br>Back-to-back exponential rise α₀, α₁. Back-to-back exponential decay β₀, β₁_<br>(CrysPy)   | 🗓  | ✅  |
-| Double back-to-back exponentials ⊗ pseudo-Voigt [Z-Rietveld type0m]<br>_Gaussian broadening σ₀, σ₁, σ₂. Lorentzian broadening γ₀, γ₁, γ₂<br>Rise α₁, α₂. Fast decay β₀₀, β₀₁. Slow decay β₁₀. Switching r₀₁, r₀₂, r₀₃_<br>(CrysPy) | 🗓  | 🗓  |
+| Jorgensen-Von Dreele (back-to-back exponentials ⊗ pseudo-Voigt)<br>_Gaussian broadening σ₀, σ₁, σ₂. Lorentzian broadening γ₀, γ₁, γ₂<br>Back-to-back exponential rise α₀, α₁. Back-to-back exponential decay β₀, β₁_<br>(CrysPy)   | ✅  | ✅  |
+| Double back-to-back exponentials ⊗ pseudo-Voigt [Z-Rietveld type0m]<br>_Gaussian broadening σ₀, σ₁, σ₂. Lorentzian broadening γ₀, γ₁, γ₂<br>Rise α₁, α₂. Fast decay β₀₀, β₀₁. Slow decay β₁₀. Switching r₀₁, r₀₂, r₀₃_<br>(CrysPy) | ✅  | 🗓  |
+| Ikeda-Carpenter ⊗ pseudo-Voigt<br>_Moderator pulse α₀, α₁, β₀, κ<br>Gaussian broadening σ². Lorentzian broadening γ_<br>(CrysFML)                                                                                                  | 🗓  | 🗓  |
 
 | TOF profile                                                         | TOF source                                                        | Performance |
 | ------------------------------------------------------------------- | ----------------------------------------------------------------- | ----------- |
 | Jorgensen (back-to-back exponentials ⊗ Gaussian)                    | Simpler TOF profile, including reactor-source TOF implementations | Fast        |
 | Jorgensen-Von Dreele (back-to-back exponentials ⊗ pseudo-Voigt)     | Spallation-source TOF                                             | Slower      |
 | Double back-to-back exponentials ⊗ pseudo-Voigt (Z-Rietveld type0m) | Spallation-source TOF; more elaborate asymmetric profile          | Slowest     |
+| Ikeda-Carpenter ⊗ pseudo-Voigt                                      | Spallation-source TOF; moderator pulse shape model                | Moderate    |
 
 ---
 
@@ -169,9 +168,8 @@ CrysPy peak_shape options:
 
 ### Extinction
 
-CrysPy's extinction is NOT Shelx-style. It's an analytical
-Becker-Coppens spherical model with Gauss or Lorentz mosaicity
-distribution
+CrysPy's extinction is an analytical Becker-Coppens spherical model with
+Gauss or Lorentz mosaicity distribution
 
 | Feature                                               | LIB | APP |
 | ----------------------------------------------------- | --- | --- |

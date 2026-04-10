@@ -217,12 +217,11 @@ def extract_metadata(
 
 def load_numeric_block(data_path: str | Path) -> np.ndarray:
     """
-    Load a numeric block from an ASCII file, skipping header lines.
+    Load a numeric block from an ASCII file, skipping non-numeric lines.
 
-    Read the file and try ``numpy.loadtxt`` starting from the first
-    line, then the second, etc., until the load succeeds.  This allows
-    files with an arbitrary number of non-numeric header lines to be
-    parsed without prior knowledge of the format.
+    Each line is tested individually: lines whose whitespace-separated
+    tokens are all valid floats are kept; everything else (headers,
+    footers, comment lines) is silently discarded.
 
     Parameters
     ----------
@@ -237,19 +236,25 @@ def load_numeric_block(data_path: str | Path) -> np.ndarray:
     Raises
     ------
     OSError
-        If no contiguous numeric block can be found in the file.
+        If no numeric lines can be found in the file.
     """
     data_path = Path(data_path)
     lines = data_path.read_text().splitlines()
 
-    last_error: Exception | None = None
-    for start in range(len(lines)):
+    numeric_lines: list[str] = []
+    for line in lines:
+        tokens = line.split()
+        if not tokens:
+            continue
         try:
-            return np.loadtxt(StringIO('\n'.join(lines[start:])))
-        except ValueError as e:
-            last_error = e
+            for token in tokens:
+                float(token)
+        except ValueError:
+            continue
+        numeric_lines.append(line)
 
-    msg = f'Failed to read numeric data from {data_path}: {last_error}'
-    raise OSError(
-        msg,
-    ) from last_error
+    if not numeric_lines:
+        msg = f'Failed to read numeric data from {data_path}: no numeric lines found'
+        raise OSError(msg)
+
+    return np.loadtxt(StringIO('\n'.join(numeric_lines)))

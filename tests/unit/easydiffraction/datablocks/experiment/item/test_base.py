@@ -58,11 +58,11 @@ def test_pd_experiment_set_peak_profile_type_silent(capsys):
     et._set_scattering_type(ScatteringTypeEnum.BRAGG.value)
 
     ex = ConcretePd(name='ex1', type=et)
-    ex._set_peak_profile_type('split pseudo-voigt')
+    ex._set_peak_profile_type('pseudo-voigt + empirical asymmetry')
 
     # Profile type was switched
-    assert ex.peak_profile_type == 'split pseudo-voigt'
-    assert ex.peak.__class__.__name__ == 'CwlSplitPseudoVoigt'
+    assert ex.peak_profile_type == 'pseudo-voigt + empirical asymmetry'
+    assert ex.peak.__class__.__name__ == 'CwlPseudoVoigtEmpiricalAsymmetry'
 
     # No console output was emitted
     captured = capsys.readouterr().out
@@ -119,14 +119,14 @@ def test_pd_experiment_restore_switchable_types_switches_peak():
 
     ex = ConcretePd(name='ex1', type=et)
 
-    cif = 'data_ex1\n_peak.profile_type "split pseudo-voigt"\n'
+    cif = 'data_ex1\n_peak.profile_type "pseudo-voigt + empirical asymmetry"\n'
     doc = gemmi.cif.read_string(cif)
     block = doc.sole_block()
 
     ex._restore_switchable_types(block)
 
-    assert ex.peak_profile_type == 'split pseudo-voigt'
-    assert ex.peak.__class__.__name__ == 'CwlSplitPseudoVoigt'
+    assert ex.peak_profile_type == 'pseudo-voigt + empirical asymmetry'
+    assert ex.peak.__class__.__name__ == 'CwlPseudoVoigtEmpiricalAsymmetry'
 
 
 def test_base_experiment_restore_switchable_types_is_noop():
@@ -152,7 +152,7 @@ def test_base_experiment_restore_switchable_types_is_noop():
 
     ex = ConcreteBase(name='ex1', type=et)
 
-    cif = 'data_ex1\n_peak.profile_type "split pseudo-voigt"\n'
+    cif = 'data_ex1\n_peak.profile_type "pseudo-voigt + empirical asymmetry"\n'
     doc = gemmi.cif.read_string(cif)
     block = doc.sole_block()
 
