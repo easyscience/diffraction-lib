@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from easydiffraction.datablocks.experiment.categories.peak.tof import TofDoubleJorgensenVonDreele
 from easydiffraction.datablocks.experiment.categories.peak.tof import TofJorgensen
 from easydiffraction.datablocks.experiment.categories.peak.tof import TofJorgensenVonDreele
 
@@ -24,3 +25,16 @@ def test_tof_jorgensen_von_dreele_has_lorentzian_broadening():
 def test_tof_jorgensen_von_dreele_has_bbe_decay():
     peak = TofJorgensenVonDreele()
     assert peak.exp_decay_beta_0.name == 'decay_beta_0'
+
+
+def test_tof_double_jorgensen_von_dreele_has_double_bbe_params():
+    peak = TofDoubleJorgensenVonDreele()
+    # Gaussian + Lorentzian broadening
+    assert peak.broad_gauss_sigma_0.name == 'gauss_sigma_0'
+    assert peak.broad_lorentz_gamma_0.name == 'lorentz_gamma_0'
+    # Double-exp parameters
+    assert peak.dexp_rise_alpha_1.name == 'dexp_rise_alpha_1'
+    assert peak.dexp_decay_beta_00.name == 'dexp_decay_beta_00'
+    assert peak.dexp_switch_r_01.name == 'dexp_switch_r_01'
+    peak.dexp_decay_beta_10 = 0.33
+    assert peak.dexp_decay_beta_10.value == 0.33

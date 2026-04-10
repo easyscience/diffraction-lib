@@ -1,0 +1,108 @@
+[File format version] 1
+[Crystal model format version] 1
+[Phase]
+	[Label] a
+	
+	[Mass ratio] 1.000000
+	[Mass ratio error] 0.000000
+	[Mass ratio ID] V
+	
+	[Space group] 225_1
+	
+	#Lattice constant a, b, c (A), alpha, beta, gamma(deg.0)
+	[Lattice constant] 5.411974 5.411974 5.411974 90.000000 90.000000 90.000000 
+	[Lattice constant error] 0.000016 0.000016 0.000016 0.000000 0.000000 0.000000 
+	[Lattice constant ID] DDVFFF
+	
+	#Temperature factor unit B:B, U:U
+	[Temperature factor unit] B
+	[Atom]
+		[Label] 1
+		[Symbol] Ce
+		
+		[Occupancy] 1.000000
+		[Occupancy error] 0.000000
+		[Occupancy ID] F
+		
+		[Position] 0.000000 0.000000 0.000000 
+		[Position error] 0.000000 0.000000 0.000000 
+		[Position ID] FFF
+		
+		#I: Isotropic, A: Anisotropic
+		[Temperature factor isotropic type] A
+		[Temperature factor] 0.265558 0.265558 0.265558 0.000000 0.000000 0.000000 
+		[Temperature factor error] 0.002864 0.002864 0.002864 0.000000 0.000000 0.000000 
+		[Temperature factor ID] DDVFFF
+		
+	[Atom]
+		[Label] 2
+		[Symbol] O
+		
+		[Occupancy] 1.000000
+		[Occupancy error] 0.000000
+		[Occupancy ID] F
+		
+		[Position] 0.250000 0.250000 0.250000 
+		[Position error] 0.000000 0.000000 0.000000 
+		[Position ID] FFF
+		
+		#I: Isotropic, A: Anisotropic
+		[Temperature factor isotropic type] A
+		[Temperature factor] 0.432624 0.432624 0.432624 0.000000 0.000000 0.000000 
+		[Temperature factor error] 0.002446 0.002446 0.002446 0.000000 0.000000 0.000000 
+		[Temperature factor ID] DDVFFF
+		
+	[End]
+[End]
+
+[Constraint]
+* dM : Mass_ratio
+* dA, dB, dC, dD, dE, dF : Lattice constants
+* dO : atom occupancy
+* dX, dY, dZ : Fractional coordinates of an atom
+* dbeta : Isotropic displacement parameter of an atom
+* dbeta11, dbeta22, dbeta33, dbeta12, dbeta13, dbeta14 : Anisotropic displacement parameters of an atom
+* ex) dM(1) = 0.35 * dM(2) ; '1', '2' are the characters indicating the phase.
+* ex) dA(1) = 0.5 * dF(1)
+* ex) dX(1:O2) = dY(1:O2) ; '1' is the character indicating the phase. Input a label of an atom in the place of "O2".
+
+** Constraints on the Mass-ratios.
+
+** Constraints on the Structure.
+*
+* Phase a
+*
+* Lattice Constants.
+dA(a) = dC(a)
+dB(a) = dC(a)
+
+* Occupancies.
+
+* Positions.
+
+* Debye-Waller factors.
+dbeta11(a:1) = dbeta33(a:1)
+dbeta22(a:1) = dbeta33(a:1)
+dbeta11(a:2) = dbeta33(a:2)
+dbeta22(a:2) = dbeta33(a:2)
+
+END
+
+**
+** Inequality constraints
+**
+* ex) O(a:O1) + 0.5 * O(a:O2) <= 0.5
+* ex) Dist(a:O1:(-x,x-y,2/3*z+1/2), a:O2:(x,y,0.3*z+0.5)) >= 1.0
+* ex) Angle(a:O1:(x,y,z), a:O2:(x,y,z), a:O3:(x,y,z)) >= 45.0
+* ex) TorAngle(a:O1:(x,y,z), a:O2:(x,y,z), a:O3:(x,y,z), a:O4:(x,y,z)) >= 45.0
+
+* on Occupancy
+
+* on Distance
+
+* on Angle
+
+* on Torsion angle
+
+END
+[End]

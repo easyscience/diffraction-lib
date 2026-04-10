@@ -54,6 +54,23 @@ class CryspyCalculator(CalculatorBase):
     def __init__(self) -> None:
         super().__init__()
         self._cryspy_dicts: dict[str, dict[str, Any]] = {}
+        self._cached_peak_types: dict[str, str] = {}
+
+    def _invalidate_stale_cache(
+        self,
+        combined_name: str,
+        experiment: ExperimentBase,
+    ) -> None:
+        """
+        Drop cached dict when experiment peak profile type changed.
+        """
+        peak = getattr(experiment, 'peak', None)
+        if peak is None:
+            return
+        current_type = peak.type_info.tag
+        if self._cached_peak_types.get(combined_name) != current_type:
+            self._cryspy_dicts.pop(combined_name, None)
+        self._cached_peak_types[combined_name] = current_type
 
     def calculate_structure_factors(
         self,
@@ -75,6 +92,7 @@ class CryspyCalculator(CalculatorBase):
             Whether the calculation is called by a minimizer.
         """
         combined_name = f'{structure.name}_{experiment.name}'
+        self._invalidate_stale_cache(combined_name, experiment)
 
         if called_by_minimizer:
             if self._cryspy_dicts and combined_name in self._cryspy_dicts:
@@ -146,6 +164,7 @@ class CryspyCalculator(CalculatorBase):
             list of floats.
         """
         combined_name = f'{structure.name}_{experiment.name}'
+        self._invalidate_stale_cache(combined_name, experiment)
 
         if called_by_minimizer:
             if self._cryspy_dicts and combined_name in self._cryspy_dicts:
@@ -319,19 +338,13 @@ class CryspyCalculator(CalculatorBase):
                     experiment.instrument.setup_twotheta_bank.value
                 )
 
-                # Peak
+                # Peak - sigma (common to all TOF profiles)
                 cryspy_sigma = cryspy_expt_dict['profile_sigmas']
                 cryspy_sigma[0] = experiment.peak.broad_gauss_sigma_0.value
                 cryspy_sigma[1] = experiment.peak.broad_gauss_sigma_1.value
                 cryspy_sigma[2] = experiment.peak.broad_gauss_sigma_2.value
 
-                cryspy_beta = cryspy_expt_dict['profile_betas']
-                cryspy_beta[0] = experiment.peak.exp_decay_beta_0.value
-                cryspy_beta[1] = experiment.peak.exp_decay_beta_1.value
-
-                cryspy_alpha = cryspy_expt_dict['profile_alphas']
-                cryspy_alpha[0] = experiment.peak.exp_rise_alpha_0.value
-                cryspy_alpha[1] = experiment.peak.exp_rise_alpha_1.value
+                _update_tof_peak_in_cryspy_dict(cryspy_expt_dict, experiment.peak)
 
         if experiment.type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL:
             cryspy_expt_name = f'diffrn_{experiment.name}'
@@ -500,6 +513,40 @@ def _cif_instrument_section(
             cif_lines.append(f'{engine_key_name} {attr_obj.value}')
 
 
+def _update_tof_peak_in_cryspy_dict(
+    cryspy_expt_dict: dict[str, Any],
+    peak: object,
+) -> None:
+    """Update TOF peak profile-specific arrays in the cached dict."""
+    peak_tag = peak.type_info.tag
+    if peak_tag == PeakProfileTypeEnum.DOUBLE_JORGENSEN_VON_DREELE:
+        cryspy_expt_dict['profile_alphas'][0] = peak.dexp_rise_alpha_1.value
+        cryspy_expt_dict['profile_alphas'][1] = peak.dexp_rise_alpha_2.value
+
+        cryspy_expt_dict['profile_betas'][0] = peak.dexp_decay_beta_00.value
+        cryspy_expt_dict['profile_betas'][1] = peak.dexp_decay_beta_01.value
+        cryspy_expt_dict['profile_betas'][2] = peak.dexp_decay_beta_10.value
+
+        cryspy_expt_dict['profile_rs'][0] = peak.dexp_switch_r_01.value
+        cryspy_expt_dict['profile_rs'][1] = peak.dexp_switch_r_02.value
+        cryspy_expt_dict['profile_rs'][2] = peak.dexp_switch_r_03.value
+
+        cryspy_expt_dict['profile_gammas'][0] = peak.broad_lorentz_gamma_0.value
+        cryspy_expt_dict['profile_gammas'][1] = peak.broad_lorentz_gamma_1.value
+        cryspy_expt_dict['profile_gammas'][2] = peak.broad_lorentz_gamma_2.value
+    else:
+        cryspy_expt_dict['profile_betas'][0] = peak.exp_decay_beta_0.value
+        cryspy_expt_dict['profile_betas'][1] = peak.exp_decay_beta_1.value
+
+        cryspy_expt_dict['profile_alphas'][0] = peak.exp_rise_alpha_0.value
+        cryspy_expt_dict['profile_alphas'][1] = peak.exp_rise_alpha_1.value
+
+        if peak_tag == PeakProfileTypeEnum.JORGENSEN_VON_DREELE:
+            cryspy_expt_dict['profile_gammas'][0] = peak.broad_lorentz_gamma_0.value
+            cryspy_expt_dict['profile_gammas'][1] = peak.broad_lorentz_gamma_1.value
+            cryspy_expt_dict['profile_gammas'][2] = peak.broad_lorentz_gamma_2.value
+
+
 def _cif_peak_section(
     cif_lines: list[str],
     expt_type: object | None,
@@ -527,19 +574,34 @@ def _cif_peak_section(
             'broad_gauss_sigma_0': '_tof_profile_sigma0',
             'broad_gauss_sigma_1': '_tof_profile_sigma1',
             'broad_gauss_sigma_2': '_tof_profile_sigma2',
-            'exp_decay_beta_0': '_tof_profile_beta0',
-            'exp_decay_beta_1': '_tof_profile_beta1',
-            'exp_rise_alpha_0': '_tof_profile_alpha0',
-            'exp_rise_alpha_1': '_tof_profile_alpha1',
             'broad_lorentz_gamma_0': '_tof_profile_gamma0',
             'broad_lorentz_gamma_1': '_tof_profile_gamma1',
             'broad_lorentz_gamma_2': '_tof_profile_gamma2',
         }
 
-        if peak.type_info.tag == PeakProfileTypeEnum.JORGENSEN_VON_DREELE:
-            cif_lines.append('_tof_profile_peak_shape pseudo-Voigt')
+        if peak.type_info.tag == PeakProfileTypeEnum.DOUBLE_JORGENSEN_VON_DREELE:
+            cif_lines.append('_tof_profile_peak_shape type0m')
+            peak_mapping.update({
+                'dexp_rise_alpha_1': '_tof_profile_alpha1',
+                'dexp_rise_alpha_2': '_tof_profile_alpha2',
+                'dexp_decay_beta_00': '_tof_profile_beta00',
+                'dexp_decay_beta_01': '_tof_profile_beta01',
+                'dexp_decay_beta_10': '_tof_profile_beta10',
+                'dexp_switch_r_01': '_tof_profile_r01',
+                'dexp_switch_r_02': '_tof_profile_r02',
+                'dexp_switch_r_03': '_tof_profile_r03',
+            })
         else:
-            cif_lines.append('_tof_profile_peak_shape Gauss')
+            peak_mapping.update({
+                'exp_decay_beta_0': '_tof_profile_beta0',
+                'exp_decay_beta_1': '_tof_profile_beta1',
+                'exp_rise_alpha_0': '_tof_profile_alpha0',
+                'exp_rise_alpha_1': '_tof_profile_alpha1',
+            })
+            if peak.type_info.tag == PeakProfileTypeEnum.JORGENSEN_VON_DREELE:
+                cif_lines.append('_tof_profile_peak_shape pseudo-Voigt')
+            else:
+                cif_lines.append('_tof_profile_peak_shape Gauss')
 
     cif_lines.append('')
     for local_attr_name, engine_key_name in peak_mapping.items():

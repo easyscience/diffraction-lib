@@ -5,6 +5,8 @@ Time-of-flight peak profile classes.
 
 Jorgensen: BBE ⊗ Gaussian (CrysPy ``peak_shape="Gauss"``). Jorgensen-Von
 Dreele: BBE ⊗ pseudo-Voigt (CrysPy ``peak_shape="pseudo-Voigt"``).
+Double-Jorgensen-Von Dreele: double BBE ⊗ pseudo-Voigt (CrysPy
+``peak_shape="type0m"``, Z-Rietveld).
 """
 
 from easydiffraction.core.metadata import CalculatorSupport
@@ -14,6 +16,9 @@ from easydiffraction.datablocks.experiment.categories.peak.base import PeakBase
 from easydiffraction.datablocks.experiment.categories.peak.factory import PeakFactory
 from easydiffraction.datablocks.experiment.categories.peak.tof_mixins import (
     TofBackToBackExponentialMixin,
+)
+from easydiffraction.datablocks.experiment.categories.peak.tof_mixins import (
+    TofDoubleExponentialMixin,
 )
 from easydiffraction.datablocks.experiment.categories.peak.tof_mixins import (
     TofGaussianBroadeningMixin,
@@ -69,6 +74,31 @@ class TofJorgensenVonDreele(
     )
     calculator_support = CalculatorSupport(
         calculators=frozenset({CalculatorEnum.CRYSPY, CalculatorEnum.CRYSFML}),
+    )
+
+    def __init__(self) -> None:
+        super().__init__()
+
+
+@PeakFactory.register
+class TofDoubleJorgensenVonDreele(
+    PeakBase,
+    TofGaussianBroadeningMixin,
+    TofLorentzianBroadeningMixin,
+    TofDoubleExponentialMixin,
+):
+    """Double-Jorgensen-Von Dreele TOF profile: double BBE ⊗ pV."""
+
+    type_info = TypeInfo(
+        tag='double-jorgensen-von-dreele',
+        description='Double-exp ⊗ pseudo-Voigt profile (Z-Rietveld type0m)',
+    )
+    compatibility = Compatibility(
+        scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
+        beam_mode=frozenset({BeamModeEnum.TIME_OF_FLIGHT}),
+    )
+    calculator_support = CalculatorSupport(
+        calculators=frozenset({CalculatorEnum.CRYSPY}),
     )
 
     def __init__(self) -> None:

@@ -172,6 +172,11 @@ class TestPeakProfileTypeEnum:
         assert isinstance(desc, str)
         assert 'Jorgensen' in desc
 
+    def test_description_double_jorgensen_von_dreele(self):
+        desc = PeakProfileTypeEnum.DOUBLE_JORGENSEN_VON_DREELE.description()
+        assert isinstance(desc, str)
+        assert 'type0m' in desc
+
     def test_description_gaussian_damped_sinc(self):
         desc = PeakProfileTypeEnum.GAUSSIAN_DAMPED_SINC.description()
         assert isinstance(desc, str)

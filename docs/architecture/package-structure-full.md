@@ -223,11 +223,13 @@
 │   │   │   │   │   └── 🏷️ class PeakFactory
 │   │   │   │   ├── 📄 tof.py
 │   │   │   │   │   ├── 🏷️ class TofJorgensen
-│   │   │   │   │   └── 🏷️ class TofJorgensenVonDreele
+│   │   │   │   │   ├── 🏷️ class TofJorgensenVonDreele
+│   │   │   │   │   └── 🏷️ class TofDoubleJorgensenVonDreele
 │   │   │   │   ├── 📄 tof_mixins.py
 │   │   │   │   │   ├── 🏷️ class TofGaussianBroadeningMixin
 │   │   │   │   │   ├── 🏷️ class TofLorentzianBroadeningMixin
-│   │   │   │   │   └── 🏷️ class TofBackToBackExponentialMixin
+│   │   │   │   │   ├── 🏷️ class TofBackToBackExponentialMixin
+│   │   │   │   │   └── 🏷️ class TofDoubleExponentialMixin
 │   │   │   │   ├── 📄 total.py
 │   │   │   │   │   └── 🏷️ class TotalGaussianDampedSinc
 │   │   │   │   └── 📄 total_mixins.py

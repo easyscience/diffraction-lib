@@ -9,6 +9,8 @@ back-to-back exponential (BBE) formalism:
 - ``TofGaussianBroadeningMixin`` — σ₀, σ₁, σ₂
 - ``TofLorentzianBroadeningMixin`` — γ₀, γ₁, γ₂
 - ``TofBackToBackExponentialMixin`` — α₀, α₁ (rise), β₀, β₁ (decay)
+- ``TofDoubleExponentialMixin`` — α₁, α₂ (rise), β₀₀, β₀₁, β₁₀ (decay),
+  r₀₁, r₀₂, r₀₃ (switching function) for double-BBE (Z-Rietveld type0m)
 
 These are composed into concrete peak classes in ``tof.py``.
 """
@@ -286,3 +288,209 @@ class TofBackToBackExponentialMixin:
     @exp_decay_beta_1.setter
     def exp_decay_beta_1(self, value: float) -> None:
         self._exp_decay_beta_1.value = value
+
+
+class TofDoubleExponentialMixin:
+    """
+    Double back-to-back exponential parameters for Z-Rietveld type0m.
+
+    Rise parameters α₁, α₂, decay parameters β₀₀, β₀₁, β₁₀ for two
+    exponential regimes, and switching-function parameters r₀₁, r₀₂,
+    r₀₃.
+    """
+
+    def __init__(self) -> None:
+        super().__init__()
+
+        self._dexp_rise_alpha_1 = Parameter(
+            name='dexp_rise_alpha_1',
+            description='Double-exp rise parameter α₁',
+            units='μs',
+            value_spec=AttributeSpec(
+                default=0.0,
+                validator=RangeValidator(),
+            ),
+            cif_handler=CifHandler(names=['_peak.dexp_rise_alpha_1']),
+        )
+        self._dexp_rise_alpha_2 = Parameter(
+            name='dexp_rise_alpha_2',
+            description='Double-exp rise parameter α₂',
+            units='μs/Å',
+            value_spec=AttributeSpec(
+                default=0.0,
+                validator=RangeValidator(),
+            ),
+            cif_handler=CifHandler(names=['_peak.dexp_rise_alpha_2']),
+        )
+        self._dexp_decay_beta_00 = Parameter(
+            name='dexp_decay_beta_00',
+            description='Double-exp first-regime decay β₀₀',
+            units='μs',
+            value_spec=AttributeSpec(
+                default=0.0,
+                validator=RangeValidator(),
+            ),
+            cif_handler=CifHandler(names=['_peak.dexp_decay_beta_00']),
+        )
+        self._dexp_decay_beta_01 = Parameter(
+            name='dexp_decay_beta_01',
+            description='Double-exp first-regime decay β₀₁',
+            units='μs/Å',
+            value_spec=AttributeSpec(
+                default=0.0,
+                validator=RangeValidator(),
+            ),
+            cif_handler=CifHandler(names=['_peak.dexp_decay_beta_01']),
+        )
+        self._dexp_decay_beta_10 = Parameter(
+            name='dexp_decay_beta_10',
+            description='Double-exp second-regime decay β₁₀',
+            units='μs',
+            value_spec=AttributeSpec(
+                default=0.0,
+                validator=RangeValidator(),
+            ),
+            cif_handler=CifHandler(names=['_peak.dexp_decay_beta_10']),
+        )
+        self._dexp_switch_r_01 = Parameter(
+            name='dexp_switch_r_01',
+            description='Double-exp switching function r₀₁',
+            units='',
+            value_spec=AttributeSpec(
+                default=0.0,
+                validator=RangeValidator(),
+            ),
+            cif_handler=CifHandler(names=['_peak.dexp_switch_r_01']),
+        )
+        self._dexp_switch_r_02 = Parameter(
+            name='dexp_switch_r_02',
+            description='Double-exp switching function r₀₂',
+            units='',
+            value_spec=AttributeSpec(
+                default=0.0,
+                validator=RangeValidator(),
+            ),
+            cif_handler=CifHandler(names=['_peak.dexp_switch_r_02']),
+        )
+        self._dexp_switch_r_03 = Parameter(
+            name='dexp_switch_r_03',
+            description='Double-exp switching function r₀₃',
+            units='',
+            value_spec=AttributeSpec(
+                default=0.0,
+                validator=RangeValidator(),
+            ),
+            cif_handler=CifHandler(names=['_peak.dexp_switch_r_03']),
+        )
+
+    @property
+    def dexp_rise_alpha_1(self) -> Parameter:
+        """
+        Double-exp rise parameter α₁ (μs).
+
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
+        """
+        return self._dexp_rise_alpha_1
+
+    @dexp_rise_alpha_1.setter
+    def dexp_rise_alpha_1(self, value: float) -> None:
+        self._dexp_rise_alpha_1.value = value
+
+    @property
+    def dexp_rise_alpha_2(self) -> Parameter:
+        """
+        Double-exp rise parameter α₂ (μs/Å).
+
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
+        """
+        return self._dexp_rise_alpha_2
+
+    @dexp_rise_alpha_2.setter
+    def dexp_rise_alpha_2(self, value: float) -> None:
+        self._dexp_rise_alpha_2.value = value
+
+    @property
+    def dexp_decay_beta_00(self) -> Parameter:
+        """
+        Double-exp first-regime decay β₀₀ (μs).
+
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
+        """
+        return self._dexp_decay_beta_00
+
+    @dexp_decay_beta_00.setter
+    def dexp_decay_beta_00(self, value: float) -> None:
+        self._dexp_decay_beta_00.value = value
+
+    @property
+    def dexp_decay_beta_01(self) -> Parameter:
+        """
+        Double-exp first-regime decay β₀₁ (μs/Å).
+
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
+        """
+        return self._dexp_decay_beta_01
+
+    @dexp_decay_beta_01.setter
+    def dexp_decay_beta_01(self, value: float) -> None:
+        self._dexp_decay_beta_01.value = value
+
+    @property
+    def dexp_decay_beta_10(self) -> Parameter:
+        """
+        Double-exp second-regime decay β₁₀ (μs).
+
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
+        """
+        return self._dexp_decay_beta_10
+
+    @dexp_decay_beta_10.setter
+    def dexp_decay_beta_10(self, value: float) -> None:
+        self._dexp_decay_beta_10.value = value
+
+    @property
+    def dexp_switch_r_01(self) -> Parameter:
+        """
+        Double-exp switching function r₀₁.
+
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
+        """
+        return self._dexp_switch_r_01
+
+    @dexp_switch_r_01.setter
+    def dexp_switch_r_01(self, value: float) -> None:
+        self._dexp_switch_r_01.value = value
+
+    @property
+    def dexp_switch_r_02(self) -> Parameter:
+        """
+        Double-exp switching function r₀₂.
+
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
+        """
+        return self._dexp_switch_r_02
+
+    @dexp_switch_r_02.setter
+    def dexp_switch_r_02(self, value: float) -> None:
+        self._dexp_switch_r_02.value = value
+
+    @property
+    def dexp_switch_r_03(self) -> Parameter:
+        """
+        Double-exp switching function r₀₃.
+
+        Reading this property returns the underlying ``Parameter``
+        object. Assigning to it updates the parameter value.
+        """
+        return self._dexp_switch_r_03
+
+    @dexp_switch_r_03.setter
+    def dexp_switch_r_03(self, value: float) -> None:
+        self._dexp_switch_r_03.value = value

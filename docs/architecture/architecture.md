@@ -553,6 +553,7 @@ line-segment points.
 | `CwlThompsonCoxHastings`           | `PeakFactory`           |
 | `TofJorgensen`                     | `PeakFactory`           |
 | `TofJorgensenVonDreele`            | `PeakFactory`           |
+| `TofDoubleJorgensenVonDreele`      | `PeakFactory`           |
 | `TotalGaussianDampedSinc`          | `PeakFactory`           |
 | `BeckerCoppensExtinction`          | `ExtinctionFactory`     |
 | `LinkedCrystal`                    | `LinkedCrystalFactory`  |

@@ -164,6 +164,7 @@ class PeakProfileTypeEnum(StrEnum):
     THOMPSON_COX_HASTINGS = 'thompson-cox-hastings'
     JORGENSEN = 'jorgensen'
     JORGENSEN_VON_DREELE = 'jorgensen-von-dreele'
+    DOUBLE_JORGENSEN_VON_DREELE = 'double-jorgensen-von-dreele'
     GAUSSIAN_DAMPED_SINC = 'gaussian-damped-sinc'
 
     @classmethod
@@ -222,6 +223,10 @@ class PeakProfileTypeEnum(StrEnum):
             return 'Jorgensen back-to-back exponentials convolved with Gaussian.'
         if self is PeakProfileTypeEnum.JORGENSEN_VON_DREELE:
             return 'Jorgensen-Von Dreele back-to-back exponentials convolved with pseudo-Voigt.'
+        if self is PeakProfileTypeEnum.DOUBLE_JORGENSEN_VON_DREELE:
+            return (
+                'Double back-to-back exponentials convolved with pseudo-Voigt (Z-Rietveld type0m).'
+            )
         if self is PeakProfileTypeEnum.GAUSSIAN_DAMPED_SINC:
             return 'Gaussian-damped sinc profile for pair distribution function (PDF) analysis.'
         return None
