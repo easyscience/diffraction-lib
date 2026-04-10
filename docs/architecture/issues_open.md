@@ -10,43 +10,6 @@ needed.
 
 ---
 
-## 2. 🟡 Restore Minimiser Variant Support
-
-**Type:** Feature loss + Design limitation
-
-After the `FactoryBase` migration only `'lmfit'` and `'dfols'` remain as
-registered tags. The ability to select a specific lmfit algorithm (e.g.
-`'lmfit (leastsq)'`, `'lmfit (least_squares)'`) raises a `ValueError`.
-
-The root cause is that `FactoryBase` assumes one class ↔ one tag;
-registering the same class twice with different constructor arguments is
-not supported.
-
-**Fix:** decide on an approach (thin subclasses, extended registry, or
-two-level selection) and implement. Thin subclasses is the quickest.
-
-**Planned tags:**
-
-| Tag                     | Description                                                              |
-| ----------------------- | ------------------------------------------------------------------------ |
-| `lmfit`                 | LMFIT library using the default Levenberg-Marquardt least squares method |
-| `lmfit (leastsq)`       | LMFIT library with Levenberg-Marquardt least squares method              |
-| `lmfit (least_squares)` | LMFIT library with SciPy's trust region reflective algorithm             |
-| `dfols`                 | DFO-LS library for derivative-free least-squares optimization            |
-
-**Trade-offs:**
-
-| Approach                                                 | Pros                                                                   | Cons                                                                                                  |
-| -------------------------------------------------------- | ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| **A. Thin subclasses** (one per variant)                 | Works today; each variant gets full metadata; no `FactoryBase` changes | Class proliferation; boilerplate                                                                      |
-| **B. Extend registry to store `(class, kwargs)` tuples** | No extra classes; factory handles variants natively                    | `_supported_map` changes shape; `TypeInfo` moves from class attribute to registration-time data       |
-| **C. Two-level selection** (`engine` + `algorithm`)      | Clean separation; engine maps to class, algorithm is a constructor arg | More complex API (`current_minimizer = ('lmfit', 'least_squares')`); needs new `FactoryBase` protocol |
-
-**Depends on:** nothing (standalone, but should be decided before more
-factories adopt variants).
-
----
-
 ## 3. 🟡 Rebuild Joint-Fit Weights on Every Fit
 
 **Type:** Fragility

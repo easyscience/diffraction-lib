@@ -38,8 +38,11 @@
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 base.py
 │   │   ├── 📄 dfols.py
+│   │   ├── 📄 enums.py
 │   │   ├── 📄 factory.py
-│   │   └── 📄 lmfit.py
+│   │   ├── 📄 lmfit.py
+│   │   ├── 📄 lmfit_least_squares.py
+│   │   └── 📄 lmfit_leastsq.py
 │   ├── 📄 __init__.py
 │   ├── 📄 analysis.py
 │   ├── 📄 fitting.py
@@ -91,8 +94,8 @@
 │   │   │   │   └── 📄 factory.py
 │   │   │   ├── 📁 extinction
 │   │   │   │   ├── 📄 __init__.py
-│   │   │   │   ├── 📄 factory.py
-│   │   │   │   └── 📄 becker_coppens.py
+│   │   │   │   ├── 📄 becker_coppens.py
+│   │   │   │   └── 📄 factory.py
 │   │   │   ├── 📁 instrument
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 base.py

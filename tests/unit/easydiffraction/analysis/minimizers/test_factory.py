@@ -9,7 +9,11 @@ def test_minimizer_factory_list_and_show(capsys):
 
     lst = MinimizerFactory.supported_tags()
     assert isinstance(lst, list)
-    assert len(lst) >= 1
+    assert len(lst) >= 4
+    assert 'lmfit' in lst
+    assert 'lmfit (leastsq)' in lst
+    assert 'lmfit (least_squares)' in lst
+    assert 'dfols' in lst
     MinimizerFactory.show_supported()
     out = capsys.readouterr().out
     assert 'Supported types' in out
@@ -53,3 +57,21 @@ def test_minimizer_factory_create_known_and_register():
 
     created = MinimizerFactory.create('custom-test')
     assert isinstance(created, Custom)
+
+
+def test_minimizer_factory_create_lmfit_leastsq():
+    from easydiffraction.analysis.minimizers.factory import MinimizerFactory
+    from easydiffraction.analysis.minimizers.lmfit_leastsq import LmfitLeastsqMinimizer
+
+    m = MinimizerFactory.create('lmfit (leastsq)')
+    assert isinstance(m, LmfitLeastsqMinimizer)
+    assert m.method == 'leastsq'
+
+
+def test_minimizer_factory_create_lmfit_least_squares():
+    from easydiffraction.analysis.minimizers.factory import MinimizerFactory
+    from easydiffraction.analysis.minimizers.lmfit_least_squares import LmfitLeastSquaresMinimizer
+
+    m = MinimizerFactory.create('lmfit (least_squares)')
+    assert isinstance(m, LmfitLeastSquaresMinimizer)
+    assert m.method == 'least_squares'

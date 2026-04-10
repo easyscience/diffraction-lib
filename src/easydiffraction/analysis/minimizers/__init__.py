@@ -3,3 +3,5 @@
 
 from easydiffraction.analysis.minimizers.dfols import DfolsMinimizer
 from easydiffraction.analysis.minimizers.lmfit import LmfitMinimizer
+from easydiffraction.analysis.minimizers.lmfit_least_squares import LmfitLeastSquaresMinimizer
+from easydiffraction.analysis.minimizers.lmfit_leastsq import LmfitLeastsqMinimizer

@@ -9,6 +9,7 @@ from typing import Any
 import numpy as np
 
 from easydiffraction.analysis.fit_helpers.metrics import get_reliability_inputs
+from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 from easydiffraction.core.variable import Parameter
 from easydiffraction.utils.enums import VerbosityEnum
@@ -22,7 +23,7 @@ if TYPE_CHECKING:
 class Fitter:
     """Handles the fitting workflow using a pluggable minimizer."""
 
-    def __init__(self, selection: str = 'lmfit') -> None:
+    def __init__(self, selection: str = MinimizerTypeEnum.LMFIT) -> None:
         self.selection: str = selection
         self.engine: str = selection
         self.minimizer = MinimizerFactory.create(selection)

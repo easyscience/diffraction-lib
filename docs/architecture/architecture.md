@@ -386,26 +386,26 @@ from .line_segment import LineSegmentBackground
 
 ### 5.5 All Factories
 
-| Factory                      | Domain                 | Tags resolve to                                              |
-| ---------------------------- | ---------------------- | ------------------------------------------------------------ |
-| `BackgroundFactory`          | Background categories  | `LineSegmentBackground`, `ChebyshevPolynomialBackground`     |
-| `PeakFactory`                | Peak profiles          | `CwlPseudoVoigt`, `TofJorgensen`, `TofJorgensenVonDreele`, … |
-| `InstrumentFactory`          | Instruments            | `CwlPdInstrument`, `TofPdInstrument`, …                      |
-| `DataFactory`                | Data collections       | `PdCwlData`, `PdTofData`, `ReflnData`, `TotalData`           |
-| `ExtinctionFactory`          | Extinction models      | `BeckerCoppensExtinction`                                    |
-| `LinkedCrystalFactory`       | Linked-crystal refs    | `LinkedCrystal`                                              |
-| `ExcludedRegionsFactory`     | Excluded regions       | `ExcludedRegions`                                            |
-| `LinkedPhasesFactory`        | Linked phases          | `LinkedPhases`                                               |
-| `ExperimentTypeFactory`      | Experiment descriptors | `ExperimentType`                                             |
-| `CellFactory`                | Unit cells             | `Cell`                                                       |
-| `SpaceGroupFactory`          | Space groups           | `SpaceGroup`                                                 |
-| `AtomSitesFactory`           | Atom sites             | `AtomSites`                                                  |
-| `AliasesFactory`             | Parameter aliases      | `Aliases`                                                    |
-| `ConstraintsFactory`         | Parameter constraints  | `Constraints`                                                |
-| `FitModeFactory`             | Fit-mode category      | `FitMode`                                                    |
-| `JointFitExperimentsFactory` | Joint-fit weights      | `JointFitExperiments`                                        |
-| `CalculatorFactory`          | Calculation engines    | `CryspyCalculator`, `CrysfmlCalculator`, `PdffitCalculator`  |
-| `MinimizerFactory`           | Minimisers             | `LmfitMinimizer`, `DfolsMinimizer`, …                        |
+| Factory                      | Domain                 | Tags resolve to                                                                           |
+| ---------------------------- | ---------------------- | ----------------------------------------------------------------------------------------- |
+| `BackgroundFactory`          | Background categories  | `LineSegmentBackground`, `ChebyshevPolynomialBackground`                                  |
+| `PeakFactory`                | Peak profiles          | `CwlPseudoVoigt`, `TofJorgensen`, `TofJorgensenVonDreele`, …                              |
+| `InstrumentFactory`          | Instruments            | `CwlPdInstrument`, `TofPdInstrument`, …                                                   |
+| `DataFactory`                | Data collections       | `PdCwlData`, `PdTofData`, `ReflnData`, `TotalData`                                        |
+| `ExtinctionFactory`          | Extinction models      | `BeckerCoppensExtinction`                                                                 |
+| `LinkedCrystalFactory`       | Linked-crystal refs    | `LinkedCrystal`                                                                           |
+| `ExcludedRegionsFactory`     | Excluded regions       | `ExcludedRegions`                                                                         |
+| `LinkedPhasesFactory`        | Linked phases          | `LinkedPhases`                                                                            |
+| `ExperimentTypeFactory`      | Experiment descriptors | `ExperimentType`                                                                          |
+| `CellFactory`                | Unit cells             | `Cell`                                                                                    |
+| `SpaceGroupFactory`          | Space groups           | `SpaceGroup`                                                                              |
+| `AtomSitesFactory`           | Atom sites             | `AtomSites`                                                                               |
+| `AliasesFactory`             | Parameter aliases      | `Aliases`                                                                                 |
+| `ConstraintsFactory`         | Parameter constraints  | `Constraints`                                                                             |
+| `FitModeFactory`             | Fit-mode category      | `FitMode`                                                                                 |
+| `JointFitExperimentsFactory` | Joint-fit weights      | `JointFitExperiments`                                                                     |
+| `CalculatorFactory`          | Calculation engines    | `CryspyCalculator`, `CrysfmlCalculator`, `PdffitCalculator`                               |
+| `MinimizerFactory`           | Minimisers             | `LmfitMinimizer`, `LmfitLeastsqMinimizer`, `LmfitLeastSquaresMinimizer`, `DfolsMinimizer` |
 
 > **Note:** `ExperimentFactory` and `StructureFactory` are _builder_
 > factories with `from_cif_path`, `from_cif_str`, `from_data_path`, and
@@ -506,16 +506,12 @@ Tags are the user-facing identifiers for selecting types. They must be:
 
 **Minimizer tags**
 
-| Tag                     | Class                                     |
-| ----------------------- | ----------------------------------------- |
-| `lmfit`                 | `LmfitMinimizer`                          |
-| `lmfit (leastsq)`       | `LmfitMinimizer` (method=`leastsq`)       |
-| `lmfit (least_squares)` | `LmfitMinimizer` (method=`least_squares`) |
-| `dfols`                 | `DfolsMinimizer`                          |
-
-> **Note:** minimizer variant tags (`lmfit (leastsq)`,
-> `lmfit (least_squares)`) are planned but not yet re-implemented after
-> the `FactoryBase` migration. See `issues_open.md` for details.
+| Tag                     | Class                        |
+| ----------------------- | ---------------------------- |
+| `lmfit`                 | `LmfitMinimizer`             |
+| `lmfit (leastsq)`       | `LmfitLeastsqMinimizer`      |
+| `lmfit (least_squares)` | `LmfitLeastSquaresMinimizer` |
+| `dfols`                 | `DfolsMinimizer`             |
 
 ### 5.7 Metadata Classification — Which Classes Get What
 

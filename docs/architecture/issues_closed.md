@@ -4,6 +4,16 @@ Issues that have been fully resolved. Kept for historical reference.
 
 ---
 
+## Restore Minimiser Variant Support
+
+Used thin subclasses (approach A) to restore lmfit algorithm variants.
+`LmfitLeastsqMinimizer` and `LmfitLeastSquaresMinimizer` extend
+`LmfitMinimizer`, each with its own `TypeInfo` tag. Added
+`MinimizerTypeEnum` for all minimizer tags. No `FactoryBase` changes
+needed — one class per tag.
+
+---
+
 ## Implement `Project.load()`
 
 `Project.load(dir_path)` classmethod reads `project.cif`,
