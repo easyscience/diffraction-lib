@@ -49,6 +49,7 @@ jobs:
         run: pixi init easydiffraction
 
       - name: Set the minimum system requirements
+        working-directory: easydiffraction
         run: pixi project system-requirements add macos 14.0
 
       - name: Add Python 3.14 from Conda
