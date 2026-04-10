@@ -43,7 +43,7 @@ def test_from_cif_str_restores_non_default_peak_profile_type():
         radiation_probe='x-ray',
         scattering_type='bragg',
     )
-    expt.peak_profile_type = 'split pseudo-voigt'
+    expt.peak_profile_type = 'pseudo-voigt + empirical asymmetry'
     expt.peak.asym_empir_1 = -0.005
     expt.peak.asym_empir_2 = 0.067
     expt.peak.broad_gauss_u = 0.039
@@ -52,8 +52,8 @@ def test_from_cif_str_restores_non_default_peak_profile_type():
 
     loaded = ExperimentFactory.from_cif_str(cif_str)
 
-    assert loaded.peak_profile_type == 'split pseudo-voigt'
-    assert loaded.peak.__class__.__name__ == 'CwlSplitPseudoVoigt'
+    assert loaded.peak_profile_type == 'pseudo-voigt + empirical asymmetry'
+    assert loaded.peak.__class__.__name__ == 'CwlPseudoVoigtEmpiricalAsymmetry'
     assert abs(loaded.peak.asym_empir_1.value - (-0.005)) < 1e-6
     assert abs(loaded.peak.asym_empir_2.value - 0.067) < 1e-6
     assert abs(loaded.peak.broad_gauss_u.value - 0.039) < 1e-6

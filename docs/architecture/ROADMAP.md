@@ -146,12 +146,14 @@ CrysPy peak_shape options:
 | Jorgensen (back-to-back exponentials ⊗ Gaussian)<br>_Gaussian broadening σ₀, σ₁, σ₂<br>Back-to-back exponential rise α₀, α₁. Back-to-back exponential decay β₀, β₁_<br>(CrysPy)                                                    | ✅  | ✅  |
 | Jorgensen-Von Dreele (back-to-back exponentials ⊗ pseudo-Voigt)<br>_Gaussian broadening σ₀, σ₁, σ₂. Lorentzian broadening γ₀, γ₁, γ₂<br>Back-to-back exponential rise α₀, α₁. Back-to-back exponential decay β₀, β₁_<br>(CrysPy)   | 🗓  | ✅  |
 | Double back-to-back exponentials ⊗ pseudo-Voigt [Z-Rietveld type0m]<br>_Gaussian broadening σ₀, σ₁, σ₂. Lorentzian broadening γ₀, γ₁, γ₂<br>Rise α₁, α₂. Fast decay β₀₀, β₀₁. Slow decay β₁₀. Switching r₀₁, r₀₂, r₀₃_<br>(CrysPy) | 🗓  | 🗓  |
+| Ikeda-Carpenter ⊗ pseudo-Voigt<br>_Moderator pulse α₀, α₁, β₀, κ<br>Gaussian broadening σ². Lorentzian broadening γ_<br>(CrysFML)                                                                                                  | 🗓  | 🗓  |
 
 | TOF profile                                                         | TOF source                                                        | Performance |
 | ------------------------------------------------------------------- | ----------------------------------------------------------------- | ----------- |
 | Jorgensen (back-to-back exponentials ⊗ Gaussian)                    | Simpler TOF profile, including reactor-source TOF implementations | Fast        |
 | Jorgensen-Von Dreele (back-to-back exponentials ⊗ pseudo-Voigt)     | Spallation-source TOF                                             | Slower      |
 | Double back-to-back exponentials ⊗ pseudo-Voigt (Z-Rietveld type0m) | Spallation-source TOF; more elaborate asymmetric profile          | Slowest     |
+| Ikeda-Carpenter ⊗ pseudo-Voigt                                      | Spallation-source TOF; moderator pulse shape model                | Moderate    |
 
 ---
 

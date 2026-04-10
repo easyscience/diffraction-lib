@@ -227,10 +227,10 @@ EasyDiffraction.
     | :material-shape: [peak][peak]                  | :material-arrow-expand-horizontal: [broad_gauss_sigma_0][peak] | peak.broad_gauss_sigma_0         |
     |                                                | :material-arrow-expand-horizontal: [broad_gauss_sigma_1][peak] | peak.broad_gauss_sigma_1         |
     |                                                | :material-arrow-expand-horizontal: [broad_gauss_sigma_2][peak] | peak.broad_gauss_sigma_2         |
-    |                                                | :material-arrow-expand-horizontal: [broad_mix_beta_0][peak]    | peak.broad_mix_beta_0            |
-    |                                                | :material-arrow-expand-horizontal: [broad_mix_beta_1][peak]    | peak.broad_mix_beta_1            |
-    |                                                | :material-scale-unbalanced: [asym_alpha_0][peak]               | peak.asym_alpha_0                |
-    |                                                | :material-scale-unbalanced: [asym_alpha_1][peak]               | peak.asym_alpha_1                |
+    |                                                | :material-arrow-expand-horizontal: [exp_decay_beta_0][peak]    | peak.exp_decay_beta_0            |
+    |                                                | :material-arrow-expand-horizontal: [exp_decay_beta_1][peak]    | peak.exp_decay_beta_1            |
+    |                                                | :material-scale-unbalanced: [exp_rise_alpha_0][peak]           | peak.exp_rise_alpha_0            |
+    |                                                | :material-scale-unbalanced: [exp_rise_alpha_1][peak]           | peak.exp_rise_alpha_1            |
 
 === "CIF name for serialization"
 
@@ -244,10 +244,10 @@ EasyDiffraction.
     | :material-shape: [peak][peak]                  | :material-arrow-expand-horizontal: [broad_gauss_sigma_0][peak] | \_peak.broad_gauss_sigma_0         | [easydiffractionCIF][0]{:.label-cif} |
     |                                                | :material-arrow-expand-horizontal: [broad_gauss_sigma_1][peak] | \_peak.broad_gauss_sigma_1         | [easydiffractionCIF][0]{:.label-cif} |
     |                                                | :material-arrow-expand-horizontal: [broad_gauss_sigma_2][peak] | \_peak.broad_gauss_sigma_2         | [easydiffractionCIF][0]{:.label-cif} |
-    |                                                | :material-arrow-expand-horizontal: [broad_mix_beta_0][peak]    | \_peak.broad_mix_beta_0            | [easydiffractionCIF][0]{:.label-cif} |
-    |                                                | :material-arrow-expand-horizontal: [broad_mix_beta_1][peak]    | \_peak.broad_mix_beta_1            | [easydiffractionCIF][0]{:.label-cif} |
-    |                                                | :material-scale-unbalanced: [asym_alpha_0][peak]               | \_peak.asym_alpha_0                | [easydiffractionCIF][0]{:.label-cif} |
-    |                                                | :material-scale-unbalanced: [asym_alpha_1][peak]               | \_peak.asym_alpha_1                | [easydiffractionCIF][0]{:.label-cif} |
+    |                                                | :material-arrow-expand-horizontal: [exp_decay_beta_0][peak]    | \_peak.exp_decay_beta_0            | [easydiffractionCIF][0]{:.label-cif} |
+    |                                                | :material-arrow-expand-horizontal: [exp_decay_beta_1][peak]    | \_peak.exp_decay_beta_1            | [easydiffractionCIF][0]{:.label-cif} |
+    |                                                | :material-scale-unbalanced: [exp_rise_alpha_0][peak]           | \_peak.exp_rise_alpha_0            | [easydiffractionCIF][0]{:.label-cif} |
+    |                                                | :material-scale-unbalanced: [exp_rise_alpha_1][peak]           | \_peak.exp_rise_alpha_1            | [easydiffractionCIF][0]{:.label-cif} |
 
 ### Total scattering
 

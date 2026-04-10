@@ -78,14 +78,14 @@ experiment.instrument.calib_d_to_tof_linear = 26935.57560870018
 experiment.instrument.calib_d_to_tof_quad = -0.00001  # -1.54 # -1.0
 
 # %%
-experiment.peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
+experiment.peak_profile_type = 'jorgensen'
 experiment.peak.broad_gauss_sigma_0 = 3.0
 experiment.peak.broad_gauss_sigma_1 = 40.0
 experiment.peak.broad_gauss_sigma_2 = 0.0
-experiment.peak.broad_mix_beta_0 = 0.024  # 0.04221
-experiment.peak.broad_mix_beta_1 = 0  # 0.00946
-experiment.peak.asym_alpha_0 = 0.14
-experiment.peak.asym_alpha_1 = 0.0  # 0.5971
+experiment.peak.exp_decay_beta_0 = 0.024  # 0.04221
+experiment.peak.exp_decay_beta_1 = 0  # 0.00946
+experiment.peak.exp_rise_alpha_0 = 0.14
+experiment.peak.exp_rise_alpha_1 = 0.0  # 0.5971
 
 # %%
 experiment.background_type = 'line-segment'
@@ -113,10 +113,10 @@ experiment.linked_phases['si'].scale.free = True
 experiment.peak.broad_gauss_sigma_0.free = True
 experiment.peak.broad_gauss_sigma_1.free = True
 # experiment.peak.broad_gauss_sigma_2.free = True
-experiment.peak.broad_mix_beta_0.free = True
-# experiment.peak.broad_mix_beta_1.free = True
-experiment.peak.asym_alpha_0.free = True
-# experiment.peak.asym_alpha_1.free = True
+experiment.peak.exp_decay_beta_0.free = True
+# experiment.peak.exp_decay_beta_1.free = True
+experiment.peak.exp_rise_alpha_0.free = True
+# experiment.peak.exp_rise_alpha_1.free = True
 
 
 project.analysis.fit()

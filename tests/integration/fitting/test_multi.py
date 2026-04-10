@@ -84,14 +84,14 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     expt.instrument.calib_d_to_tof_offset = 0.0
     expt.instrument.calib_d_to_tof_linear = 58724.76869981215
     expt.instrument.calib_d_to_tof_quad = -0.00001
-    expt.peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
+    expt.peak_profile_type = 'jorgensen'
     expt.peak.broad_gauss_sigma_0 = 45137
     expt.peak.broad_gauss_sigma_1 = -52394
     expt.peak.broad_gauss_sigma_2 = 22998
-    expt.peak.broad_mix_beta_0 = 0.0055
-    expt.peak.broad_mix_beta_1 = 0.0041
-    expt.peak.asym_alpha_0 = 0.0
-    expt.peak.asym_alpha_1 = 0.0097
+    expt.peak.exp_decay_beta_0 = 0.0055
+    expt.peak.exp_decay_beta_1 = 0.0041
+    expt.peak.exp_rise_alpha_0 = 0.0
+    expt.peak.exp_rise_alpha_1 = 0.0097
     expt.linked_phases.create(id='lbco', scale=4.0)
     expt.linked_phases.create(id='si', scale=0.2)
     for x in range(45000, 115000, 5000):
@@ -122,9 +122,9 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     expt.peak.broad_gauss_sigma_0.free = True
     expt.peak.broad_gauss_sigma_1.free = True
     expt.peak.broad_gauss_sigma_2.free = True
-    expt.peak.asym_alpha_1.free = True
-    expt.peak.broad_mix_beta_0.free = True
-    expt.peak.broad_mix_beta_1.free = True
+    expt.peak.exp_rise_alpha_1.free = True
+    expt.peak.exp_decay_beta_0.free = True
+    expt.peak.exp_decay_beta_1.free = True
     for point in expt.background:
         point.y.free = True
 
@@ -165,14 +165,14 @@ def _test_joint_fit_bragg_pdf_neutron_pd_tof_si() -> None:
     bragg_expt.instrument.calib_d_to_tof_offset = 0.0
     bragg_expt.instrument.calib_d_to_tof_linear = 7476.91
     bragg_expt.instrument.calib_d_to_tof_quad = -1.54
-    bragg_expt.peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
+    bragg_expt.peak_profile_type = 'jorgensen'
     bragg_expt.peak.broad_gauss_sigma_0 = 3.0
     bragg_expt.peak.broad_gauss_sigma_1 = 40.0
     bragg_expt.peak.broad_gauss_sigma_2 = 2.0
-    bragg_expt.peak.broad_mix_beta_0 = 0.04221
-    bragg_expt.peak.broad_mix_beta_1 = 0.00946
-    bragg_expt.peak.asym_alpha_0 = 0.0
-    bragg_expt.peak.asym_alpha_1 = 0.5971
+    bragg_expt.peak.exp_decay_beta_0 = 0.04221
+    bragg_expt.peak.exp_decay_beta_1 = 0.00946
+    bragg_expt.peak.exp_rise_alpha_0 = 0.0
+    bragg_expt.peak.exp_rise_alpha_1 = 0.5971
     bragg_expt.linked_phases.create(id='si', scale=10.0)
     for x in range(0, 35000, 5000):
         bragg_expt.background.create(id=str(x), x=x, y=200)

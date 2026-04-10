@@ -213,7 +213,7 @@
 │   │   │   │   │   └── 🏷️ class PeakBase
 │   │   │   │   ├── 📄 cwl.py
 │   │   │   │   │   ├── 🏷️ class CwlPseudoVoigt
-│   │   │   │   │   ├── 🏷️ class CwlSplitPseudoVoigt
+│   │   │   │   │   ├── 🏷️ class CwlPseudoVoigtEmpiricalAsymmetry
 │   │   │   │   │   └── 🏷️ class CwlThompsonCoxHastings
 │   │   │   │   ├── 📄 cwl_mixins.py
 │   │   │   │   │   ├── 🏷️ class CwlBroadeningMixin
@@ -222,12 +222,12 @@
 │   │   │   │   ├── 📄 factory.py
 │   │   │   │   │   └── 🏷️ class PeakFactory
 │   │   │   │   ├── 📄 tof.py
-│   │   │   │   │   ├── 🏷️ class TofPseudoVoigt
-│   │   │   │   │   ├── 🏷️ class TofPseudoVoigtIkedaCarpenter
-│   │   │   │   │   └── 🏷️ class TofPseudoVoigtBackToBack
+│   │   │   │   │   ├── 🏷️ class TofJorgensen
+│   │   │   │   │   └── 🏷️ class TofJorgensenVonDreele
 │   │   │   │   ├── 📄 tof_mixins.py
-│   │   │   │   │   ├── 🏷️ class TofBroadeningMixin
-│   │   │   │   │   └── 🏷️ class IkedaCarpenterAsymmetryMixin
+│   │   │   │   │   ├── 🏷️ class TofGaussianBroadeningMixin
+│   │   │   │   │   ├── 🏷️ class TofLorentzianBroadeningMixin
+│   │   │   │   │   └── 🏷️ class TofBackToBackExponentialMixin
 │   │   │   │   ├── 📄 total.py
 │   │   │   │   │   └── 🏷️ class TotalGaussianDampedSinc
 │   │   │   │   └── 📄 total_mixins.py

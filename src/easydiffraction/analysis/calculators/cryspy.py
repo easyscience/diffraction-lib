@@ -13,6 +13,7 @@ from easydiffraction.analysis.calculators.factory import CalculatorFactory
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.datablocks.experiment.item.base import ExperimentBase
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+from easydiffraction.datablocks.experiment.item.enums import PeakProfileTypeEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.structure.item.base import Structure
 
@@ -325,12 +326,12 @@ class CryspyCalculator(CalculatorBase):
                 cryspy_sigma[2] = experiment.peak.broad_gauss_sigma_2.value
 
                 cryspy_beta = cryspy_expt_dict['profile_betas']
-                cryspy_beta[0] = experiment.peak.broad_mix_beta_0.value
-                cryspy_beta[1] = experiment.peak.broad_mix_beta_1.value
+                cryspy_beta[0] = experiment.peak.exp_decay_beta_0.value
+                cryspy_beta[1] = experiment.peak.exp_decay_beta_1.value
 
                 cryspy_alpha = cryspy_expt_dict['profile_alphas']
-                cryspy_alpha[0] = experiment.peak.asym_alpha_0.value
-                cryspy_alpha[1] = experiment.peak.asym_alpha_1.value
+                cryspy_alpha[0] = experiment.peak.exp_rise_alpha_0.value
+                cryspy_alpha[1] = experiment.peak.exp_rise_alpha_1.value
 
         if experiment.type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL:
             cryspy_expt_name = f'diffrn_{experiment.name}'
@@ -526,12 +527,19 @@ def _cif_peak_section(
             'broad_gauss_sigma_0': '_tof_profile_sigma0',
             'broad_gauss_sigma_1': '_tof_profile_sigma1',
             'broad_gauss_sigma_2': '_tof_profile_sigma2',
-            'broad_mix_beta_0': '_tof_profile_beta0',
-            'broad_mix_beta_1': '_tof_profile_beta1',
-            'asym_alpha_0': '_tof_profile_alpha0',
-            'asym_alpha_1': '_tof_profile_alpha1',
+            'exp_decay_beta_0': '_tof_profile_beta0',
+            'exp_decay_beta_1': '_tof_profile_beta1',
+            'exp_rise_alpha_0': '_tof_profile_alpha0',
+            'exp_rise_alpha_1': '_tof_profile_alpha1',
+            'broad_lorentz_gamma_0': '_tof_profile_gamma0',
+            'broad_lorentz_gamma_1': '_tof_profile_gamma1',
+            'broad_lorentz_gamma_2': '_tof_profile_gamma2',
         }
-        cif_lines.append('_tof_profile_peak_shape Gauss')
+
+        if peak.type_info.tag == PeakProfileTypeEnum.JORGENSEN_VON_DREELE:
+            cif_lines.append('_tof_profile_peak_shape pseudo-Voigt')
+        else:
+            cif_lines.append('_tof_profile_peak_shape Gauss')
 
     cif_lines.append('')
     for local_attr_name, engine_key_name in peak_mapping.items():

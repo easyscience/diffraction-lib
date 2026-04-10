@@ -83,19 +83,14 @@ expt.instrument.calib_d_to_tof_quad = -1.54
 # #### Set Peak Profile
 
 # %%
-expt.peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
+expt.peak_profile_type = 'jorgensen'
 expt.peak.broad_gauss_sigma_0 = 3.0
 expt.peak.broad_gauss_sigma_1 = 40.0
 expt.peak.broad_gauss_sigma_2 = 2.0
-expt.peak.broad_mix_beta_0 = 0.04221
-expt.peak.broad_mix_beta_1 = 0.00946
-
-# %% [markdown]
-# #### Set Peak Asymmetry
-
-# %%
-expt.peak.asym_alpha_0 = 0.0
-expt.peak.asym_alpha_1 = 0.5971
+expt.peak.exp_decay_beta_0 = 0.04221
+expt.peak.exp_decay_beta_1 = 0.00946
+expt.peak.exp_rise_alpha_0 = 0.0
+expt.peak.exp_rise_alpha_1 = 0.5971
 
 # %% [markdown]
 # #### Set Background
@@ -263,6 +258,10 @@ project.plotter.plot_meas_vs_calc(expt_name='sepd', x_min=23200, x_max=23700, sh
 # %%
 structure.atom_sites['Si'].b_iso.free = True
 
+expt.peak.exp_decay_beta_0.free = True
+expt.peak.exp_decay_beta_1.free = True
+expt.peak.exp_rise_alpha_1.free = True
+
 # %% [markdown]
 # Show free parameters after selection.
 
@@ -277,6 +276,12 @@ project.analysis.fit()
 project.analysis.display.fit_results()
 
 # %% [markdown]
+# #### Show parameter correlations
+
+# %%
+project.plotter.plot_param_correlations()
+
+# %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
@@ -284,3 +289,6 @@ project.plotter.plot_meas_vs_calc(expt_name='sepd', show_residual=True)
 
 # %%
 project.plotter.plot_meas_vs_calc(expt_name='sepd', x_min=23200, x_max=23700, show_residual=True)
+
+# %%
+project.plotter.plot_meas_vs_calc(expt_name='sepd', x='d_spacing', show_residual=True)

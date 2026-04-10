@@ -19,7 +19,7 @@ _peak.broad_gauss_v -0.03363917(114780)
 _peak.broad_gauss_w 0.01331151(24045)
 _peak.broad_lorentz_x 0.13416718(56102)
 _peak.broad_lorentz_y   0.00325970
-_peak.profile_type "split pseudo-voigt"
+_peak.profile_type "pseudo-voigt + empirical asymmetry"
 
 _instr.wavelength   1.54056000
 _instr.2theta_offset 0.04656059(118272)

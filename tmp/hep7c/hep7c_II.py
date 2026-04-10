@@ -272,7 +272,7 @@ experiment.show_supported_peak_profile_types()
 experiment.peak.help()
 
 # %%
-experiment.peak_profile_type = 'split pseudo-voigt'
+experiment.peak_profile_type = 'pseudo-voigt + empirical asymmetry'
 
 # %%
 experiment.peak.help()

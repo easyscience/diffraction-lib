@@ -337,7 +337,7 @@ class PeakFactory(FactoryBase):
         frozenset({
             ('scattering_type', ScatteringTypeEnum.BRAGG),
             ('beam_mode', BeamModeEnum.TIME_OF_FLIGHT),
-        }): PeakProfileTypeEnum.PSEUDO_VOIGT_IKEDA_CARPENTER,
+        }): PeakProfileTypeEnum.JORGENSEN,
         frozenset({
             ('scattering_type', ScatteringTypeEnum.TOTAL),
         }): PeakProfileTypeEnum.GAUSSIAN_DAMPED_SINC,
@@ -389,26 +389,26 @@ from .line_segment import LineSegmentBackground
 
 ### 5.5 All Factories
 
-| Factory                      | Domain                 | Tags resolve to                                             |
-| ---------------------------- | ---------------------- | ----------------------------------------------------------- |
-| `BackgroundFactory`          | Background categories  | `LineSegmentBackground`, `ChebyshevPolynomialBackground`    |
-| `PeakFactory`                | Peak profiles          | `CwlPseudoVoigt`, `TofPseudoVoigtIkedaCarpenter`, …         |
-| `InstrumentFactory`          | Instruments            | `CwlPdInstrument`, `TofPdInstrument`, …                     |
-| `DataFactory`                | Data collections       | `PdCwlData`, `PdTofData`, `ReflnData`, `TotalData`          |
-| `ExtinctionFactory`          | Extinction models      | `BeckerCoppensExtinction`                                   |
-| `LinkedCrystalFactory`       | Linked-crystal refs    | `LinkedCrystal`                                             |
-| `ExcludedRegionsFactory`     | Excluded regions       | `ExcludedRegions`                                           |
-| `LinkedPhasesFactory`        | Linked phases          | `LinkedPhases`                                              |
-| `ExperimentTypeFactory`      | Experiment descriptors | `ExperimentType`                                            |
-| `CellFactory`                | Unit cells             | `Cell`                                                      |
-| `SpaceGroupFactory`          | Space groups           | `SpaceGroup`                                                |
-| `AtomSitesFactory`           | Atom sites             | `AtomSites`                                                 |
-| `AliasesFactory`             | Parameter aliases      | `Aliases`                                                   |
-| `ConstraintsFactory`         | Parameter constraints  | `Constraints`                                               |
-| `FitModeFactory`             | Fit-mode category      | `FitMode`                                                   |
-| `JointFitExperimentsFactory` | Joint-fit weights      | `JointFitExperiments`                                       |
-| `CalculatorFactory`          | Calculation engines    | `CryspyCalculator`, `CrysfmlCalculator`, `PdffitCalculator` |
-| `MinimizerFactory`           | Minimisers             | `LmfitMinimizer`, `DfolsMinimizer`, …                       |
+| Factory                      | Domain                 | Tags resolve to                                              |
+| ---------------------------- | ---------------------- | ------------------------------------------------------------ |
+| `BackgroundFactory`          | Background categories  | `LineSegmentBackground`, `ChebyshevPolynomialBackground`     |
+| `PeakFactory`                | Peak profiles          | `CwlPseudoVoigt`, `TofJorgensen`, `TofJorgensenVonDreele`, … |
+| `InstrumentFactory`          | Instruments            | `CwlPdInstrument`, `TofPdInstrument`, …                      |
+| `DataFactory`                | Data collections       | `PdCwlData`, `PdTofData`, `ReflnData`, `TotalData`           |
+| `ExtinctionFactory`          | Extinction models      | `BeckerCoppensExtinction`                                    |
+| `LinkedCrystalFactory`       | Linked-crystal refs    | `LinkedCrystal`                                              |
+| `ExcludedRegionsFactory`     | Excluded regions       | `ExcludedRegions`                                            |
+| `LinkedPhasesFactory`        | Linked phases          | `LinkedPhases`                                               |
+| `ExperimentTypeFactory`      | Experiment descriptors | `ExperimentType`                                             |
+| `CellFactory`                | Unit cells             | `Cell`                                                       |
+| `SpaceGroupFactory`          | Space groups           | `SpaceGroup`                                                 |
+| `AtomSitesFactory`           | Atom sites             | `AtomSites`                                                  |
+| `AliasesFactory`             | Parameter aliases      | `Aliases`                                                    |
+| `ConstraintsFactory`         | Parameter constraints  | `Constraints`                                                |
+| `FitModeFactory`             | Fit-mode category      | `FitMode`                                                    |
+| `JointFitExperimentsFactory` | Joint-fit weights      | `JointFitExperiments`                                        |
+| `CalculatorFactory`          | Calculation engines    | `CryspyCalculator`, `CrysfmlCalculator`, `PdffitCalculator`  |
+| `MinimizerFactory`           | Minimisers             | `LmfitMinimizer`, `DfolsMinimizer`, …                        |
 
 > **Note:** `ExperimentFactory` and `StructureFactory` are _builder_
 > factories with `from_cif_path`, `from_cif_str`, `from_data_path`, and
@@ -450,15 +450,15 @@ Tags are the user-facing identifiers for selecting types. They must be:
 
 **Peak tags**
 
-| Tag                                | Class                          |
-| ---------------------------------- | ------------------------------ |
-| `pseudo-voigt`                     | `CwlPseudoVoigt`               |
-| `split-pseudo-voigt`               | `CwlSplitPseudoVoigt`          |
-| `thompson-cox-hastings`            | `CwlThompsonCoxHastings`       |
-| `tof-pseudo-voigt`                 | `TofPseudoVoigt`               |
-| `tof-pseudo-voigt-ikeda-carpenter` | `TofPseudoVoigtIkedaCarpenter` |
-| `tof-pseudo-voigt-back-to-back`    | `TofPseudoVoigtBackToBack`     |
-| `gaussian-damped-sinc`             | `TotalGaussianDampedSinc`      |
+| Tag                                  | Class                              |
+| ------------------------------------ | ---------------------------------- |
+| `pseudo-voigt`                       | `CwlPseudoVoigt`                   |
+| `pseudo-voigt + empirical asymmetry` | `CwlPseudoVoigtEmpiricalAsymmetry` |
+| `thompson-cox-hastings`              | `CwlThompsonCoxHastings`           |
+| `jorgensen`                          | `TofJorgensen`                     |
+| `jorgensen-von-dreele`               | `TofJorgensenVonDreele`            |
+| `double-jorgensen-von-dreele`        | `TofDoubleJorgensenVonDreele`      |
+| `gaussian-damped-sinc`               | `TotalGaussianDampedSinc`          |
 
 **Instrument tags**
 
@@ -542,25 +542,24 @@ line-segment points.
 
 #### Singleton CategoryItems — factory-created (get all three)
 
-| Class                          | Factory                 |
-| ------------------------------ | ----------------------- |
-| `CwlPdInstrument`              | `InstrumentFactory`     |
-| `CwlScInstrument`              | `InstrumentFactory`     |
-| `TofPdInstrument`              | `InstrumentFactory`     |
-| `TofScInstrument`              | `InstrumentFactory`     |
-| `CwlPseudoVoigt`               | `PeakFactory`           |
-| `CwlSplitPseudoVoigt`          | `PeakFactory`           |
-| `CwlThompsonCoxHastings`       | `PeakFactory`           |
-| `TofPseudoVoigt`               | `PeakFactory`           |
-| `TofPseudoVoigtIkedaCarpenter` | `PeakFactory`           |
-| `TofPseudoVoigtBackToBack`     | `PeakFactory`           |
-| `TotalGaussianDampedSinc`      | `PeakFactory`           |
-| `BeckerCoppensExtinction`      | `ExtinctionFactory`     |
-| `LinkedCrystal`                | `LinkedCrystalFactory`  |
-| `Cell`                         | `CellFactory`           |
-| `SpaceGroup`                   | `SpaceGroupFactory`     |
-| `ExperimentType`               | `ExperimentTypeFactory` |
-| `FitMode`                      | `FitModeFactory`        |
+| Class                              | Factory                 |
+| ---------------------------------- | ----------------------- |
+| `CwlPdInstrument`                  | `InstrumentFactory`     |
+| `CwlScInstrument`                  | `InstrumentFactory`     |
+| `TofPdInstrument`                  | `InstrumentFactory`     |
+| `TofScInstrument`                  | `InstrumentFactory`     |
+| `CwlPseudoVoigt`                   | `PeakFactory`           |
+| `CwlPseudoVoigtEmpiricalAsymmetry` | `PeakFactory`           |
+| `CwlThompsonCoxHastings`           | `PeakFactory`           |
+| `TofJorgensen`                     | `PeakFactory`           |
+| `TofJorgensenVonDreele`            | `PeakFactory`           |
+| `TotalGaussianDampedSinc`          | `PeakFactory`           |
+| `BeckerCoppensExtinction`          | `ExtinctionFactory`     |
+| `LinkedCrystal`                    | `LinkedCrystalFactory`  |
+| `Cell`                             | `CellFactory`           |
+| `SpaceGroup`                       | `SpaceGroupFactory`     |
+| `ExperimentType`                   | `ExperimentTypeFactory` |
+| `FitMode`                          | `FitModeFactory`        |
 
 #### CategoryCollections — factory-created (get all three)
 
@@ -889,7 +888,7 @@ expt = ExperimentFactory.from_data_path(
 )
 expt.instrument.calib_d_to_tof_offset = 0.0
 expt.instrument.calib_d_to_tof_linear = 7476.91
-expt.peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
+expt.peak_profile_type = 'jorgensen'
 expt.peak.broad_gauss_sigma_0 = 3.0
 ```
 
