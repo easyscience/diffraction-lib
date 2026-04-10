@@ -128,18 +128,6 @@ class TestCwlScExperiment:
         out = capsys.readouterr().out
         assert ex.instrument_type in out
 
-    def test_show_supported_data_types(self, capsys):
-        ex = CwlScExperiment(name='cwl_sc', type=_mk_type_sc_cwl())
-        ex.show_supported_data_types()
-        out = capsys.readouterr().out
-        assert len(out) > 0
-
-    def test_show_current_data_type(self, capsys):
-        ex = CwlScExperiment(name='cwl_sc', type=_mk_type_sc_cwl())
-        ex.show_current_data_type()
-        out = capsys.readouterr().out
-        assert ex.data_type in out
-
 
 class TestTofScExperiment:
     def test_init(self):

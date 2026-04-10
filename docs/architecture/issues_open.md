@@ -81,31 +81,6 @@ CIF serialisation.
 
 ---
 
-## 6. 🔴 Restrict `data_type` Switching to Compatible Types and Preserve Data Safety
-
-**Type:** Correctness + Data safety
-
-`Experiment.data_type` currently validates against all registered data
-tags rather than only those compatible with the experiment's
-`sample_form` / `scattering_type` / `beam_mode`. This allows users to
-switch an experiment to an incompatible data collection class. The
-setter also replaces the existing data object with a fresh empty
-instance, discarding loaded data without warning.
-
-**Why high:** the current API can create internally inconsistent
-experiments and silently lose measured data, which is especially
-dangerous for notebook and tutorial workflows.
-
-**Fix:** filter supported data types through
-`DataFactory.supported_for(...)` using the current experiment context,
-and warn or block when a switch would discard existing data. If runtime
-data-type switching is not a real user need, consider making `data`
-effectively fixed after experiment creation.
-
-**Depends on:** nothing.
-
----
-
 ## 8. 🟡 Add Explicit `create()` Signatures on Collections
 
 **Type:** API safety
@@ -263,17 +238,16 @@ re-derivable default.
 
 ## Summary
 
-| #   | Issue                                    | Severity | Type                    |
-| --- | ---------------------------------------- | -------- | ----------------------- |
-| 2   | Restore minimiser variants               | 🟡 Med   | Feature loss            |
-| 3   | Rebuild joint-fit weights                | 🟡 Med   | Fragility               |
-| 5   | `Analysis` as `DatablockItem`            | 🟡 Med   | Consistency             |
-| 6   | Restrict `data_type` switching           | 🔴 High  | Correctness/Data safety |
-| 8   | Explicit `create()` signatures           | 🟡 Med   | API safety              |
-| 9   | Future enum extensions                   | 🟢 Low   | Design                  |
-| 10  | Unify update orchestration               | 🟢 Low   | Maintainability         |
-| 11  | Document `_update` contract              | 🟢 Low   | Maintainability         |
-| 13  | Suppress redundant dirty-flag sets       | 🟢 Low   | Performance             |
-| 14  | Finer-grained change tracking            | 🟢 Low   | Performance             |
-| 15  | Validate joint-fit weights               | 🟡 Med   | Correctness             |
-| 16  | Persist per-experiment `calculator_type` | 🟡 Med   | Completeness            |
+| #   | Issue                                    | Severity | Type            |
+| --- | ---------------------------------------- | -------- | --------------- |
+| 2   | Restore minimiser variants               | 🟡 Med   | Feature loss    |
+| 3   | Rebuild joint-fit weights                | 🟡 Med   | Fragility       |
+| 5   | `Analysis` as `DatablockItem`            | 🟡 Med   | Consistency     |
+| 8   | Explicit `create()` signatures           | 🟡 Med   | API safety      |
+| 9   | Future enum extensions                   | 🟢 Low   | Design          |
+| 10  | Unify update orchestration               | 🟢 Low   | Maintainability |
+| 11  | Document `_update` contract              | 🟢 Low   | Maintainability |
+| 13  | Suppress redundant dirty-flag sets       | 🟢 Low   | Performance     |
+| 14  | Finer-grained change tracking            | 🟢 Low   | Performance     |
+| 15  | Validate joint-fit weights               | 🟡 Med   | Correctness     |
+| 16  | Persist per-experiment `calculator_type` | 🟡 Med   | Completeness    |

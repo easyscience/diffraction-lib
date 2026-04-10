@@ -89,3 +89,14 @@ output. Unified `plot_param_series()` to read from CSV. Added
 also writes CSV. Prerequisites included: CIF truncation fix, CIF
 round-trip verification, `analysis.cif` moved into `analysis/`
 directory, `extract_data_paths_from_zip` destination parameter.
+
+---
+
+## Make `data_type` Read-Only on Experiments
+
+Removed the `data_type` setter, `show_supported_data_types()`, and
+`show_current_data_type()` from both `ScExperimentBase` and
+`PdExperimentBase`. The data collection type is now fixed at experiment
+creation (resolved from `DataFactory.default_tag(...)` using the
+experiment's axes), like experiment type itself. This prevents switching
+to an incompatible data class and silently discarding loaded data.

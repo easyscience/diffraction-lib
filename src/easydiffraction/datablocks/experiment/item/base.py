@@ -464,7 +464,7 @@ class ScExperimentBase(ExperimentBase):
         console.print(self.instrument_type)
 
     # ------------------------------------------------------------------
-    #  Data (switchable-category pattern)
+    #  Data (read-only, fixed at creation)
     # ------------------------------------------------------------------
 
     @property
@@ -476,38 +476,6 @@ class ScExperimentBase(ExperimentBase):
     def data_type(self) -> str:
         """Tag of the active data collection type."""
         return self._data_type
-
-    @data_type.setter
-    def data_type(self, new_type: str) -> None:
-        """
-        Switch to a different data collection type.
-
-        Parameters
-        ----------
-        new_type : str
-            Data tag (e.g. ``'bragg-sc'``).
-        """
-        supported_tags = DataFactory.supported_tags()
-        if new_type not in supported_tags:
-            log.warning(
-                f"Unsupported data type '{new_type}'. "
-                f'Supported: {supported_tags}. '
-                f"For more information, use 'show_supported_data_types()'",
-            )
-            return
-        self._data = DataFactory.create(new_type)
-        self._data_type = new_type
-        console.paragraph(f"Data type for experiment '{self.name}' changed to")
-        console.print(new_type)
-
-    def show_supported_data_types(self) -> None:  # noqa: PLR6301
-        """Print a table of supported data collection types."""
-        DataFactory.show_supported()
-
-    def show_current_data_type(self) -> None:
-        """Print the currently used data collection type."""
-        console.paragraph('Current data type')
-        console.print(self.data_type)
 
 
 class PdExperimentBase(ExperimentBase):
@@ -679,7 +647,7 @@ class PdExperimentBase(ExperimentBase):
         console.print(self.excluded_regions_type)
 
     # ------------------------------------------------------------------
-    #  Data (switchable-category pattern)
+    #  Data (read-only, fixed at creation)
     # ------------------------------------------------------------------
 
     @property
@@ -691,38 +659,6 @@ class PdExperimentBase(ExperimentBase):
     def data_type(self) -> str:
         """Tag of the active data collection type."""
         return self._data_type
-
-    @data_type.setter
-    def data_type(self, new_type: str) -> None:
-        """
-        Switch to a different data collection type.
-
-        Parameters
-        ----------
-        new_type : str
-            Data tag (e.g. ``'bragg-pd-cwl'``).
-        """
-        supported_tags = DataFactory.supported_tags()
-        if new_type not in supported_tags:
-            log.warning(
-                f"Unsupported data type '{new_type}'. "
-                f'Supported: {supported_tags}. '
-                f"For more information, use 'show_supported_data_types()'",
-            )
-            return
-        self._data = DataFactory.create(new_type)
-        self._data_type = new_type
-        console.paragraph(f"Data type for experiment '{self.name}' changed to")
-        console.print(new_type)
-
-    def show_supported_data_types(self) -> None:  # noqa: PLR6301
-        """Print a table of supported data collection types."""
-        DataFactory.show_supported()
-
-    def show_current_data_type(self) -> None:
-        """Print the currently used data collection type."""
-        console.paragraph('Current data type')
-        console.print(self.data_type)
 
     @property
     def peak(self) -> object:

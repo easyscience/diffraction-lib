@@ -187,24 +187,6 @@ class TestPdExperimentData:
         assert ex.data is not None
         assert isinstance(ex.data_type, str)
 
-    def test_data_type_invalid(self):
-        ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
-        old_type = ex.data_type
-        ex.data_type = 'nonexistent'
-        assert ex.data_type == old_type
-
-    def test_show_supported_data_types(self, capsys):
-        ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
-        ex.show_supported_data_types()
-        out = capsys.readouterr().out
-        assert len(out) > 0
-
-    def test_show_current_data_type(self, capsys):
-        ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
-        ex.show_current_data_type()
-        out = capsys.readouterr().out
-        assert ex.data_type in out
-
 
 class TestPdExperimentPeak:
     def test_peak_defaults(self):

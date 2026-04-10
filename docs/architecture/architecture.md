@@ -969,8 +969,9 @@ The convention applies universally:
 
 - **Experiment:** `calculator_type`, `background_type`,
   `peak_profile_type`, `extinction_type`, `linked_crystal_type`,
-  `excluded_regions_type`, `linked_phases_type`, `instrument_type`,
-  `data_type`.
+  `excluded_regions_type`, `linked_phases_type`, `instrument_type`.
+  Note: `data_type` is **read-only** (fixed at creation, like experiment
+  type).
 - **Structure:** `cell_type`, `space_group_type`, `atom_sites_type`.
 - **Analysis:** `aliases_type`, `constraints_type`, `fit_mode_type`,
   `joint_fit_experiments_type`.
@@ -1002,7 +1003,6 @@ expt.show_supported_linked_crystal_types()
 expt.show_supported_excluded_regions_types()
 expt.show_supported_linked_phases_types()
 expt.show_supported_instrument_types()
-expt.show_supported_data_types()
 struct.show_supported_cell_types()
 struct.show_supported_space_group_types()
 struct.show_supported_atom_sites_types()
