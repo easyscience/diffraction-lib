@@ -50,12 +50,12 @@ Legend:
 
 ### Atomic Displacement Parameters (ADP)
 
-| Feature                                         | LIB         | APP |
-| ----------------------------------------------- | ----------- | --- |
-| Isotropic Biso                                  | ✅          | 🗓  |
-| Isotropic Uiso                                  | 🚧          | ✅  |
-| Anisotropic Bani _B11, B22, B33, B12, B13, B23_ | 🚧 | 🗓  |
-| Anisotropic Uani _U11, U22, U33, U12, U13, U23_ | 🚧          | 🗓  |
+| Feature                                         | LIB | APP |
+| ----------------------------------------------- | --- | --- |
+| Isotropic Biso                                  | ✅  | 🗓  |
+| Isotropic Uiso                                  | 🚧  | ✅  |
+| Anisotropic Bani _B11, B22, B33, B12, B13, B23_ | 🚧  | 🗓  |
+| Anisotropic Uani _U11, U22, U33, U12, U13, U23_ | 🚧  | 🗓  |
 
 ---
 
@@ -123,8 +123,6 @@ Legend:
 
 ### Peak Profile — Constant Wavelength
 
-
-
 | Feature                                                                                                                                                                            | LIB   | APP |
 | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | --- |
 | Pseudo-Voigt + Empirical asymmetry<br>_Gaussian broadening U, V, W. Lorentzian broadening X, Y<br>Empirical asymmetry p1, p2, p3, p4_<br>(CrysPy)                                  | ✅    | ✅  |
@@ -170,9 +168,8 @@ CrysPy peak_shape options:
 
 ### Extinction
 
-CrysPy's extinction is an analytical
-Becker-Coppens spherical model with Gauss or Lorentz mosaicity
-distribution
+CrysPy's extinction is an analytical Becker-Coppens spherical model with
+Gauss or Lorentz mosaicity distribution
 
 | Feature                                               | LIB | APP |
 | ----------------------------------------------------- | --- | --- |
