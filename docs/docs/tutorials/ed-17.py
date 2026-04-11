@@ -260,6 +260,12 @@ project.analysis.aliases.create(
 project.analysis.constraints.create(expression='biso_Co2 = biso_Co1')
 
 # %% [markdown]
+# #### Set Minimizer
+
+# %%
+project.analysis.current_minimizer = 'bumps (lm)'
+
+# %% [markdown]
 # #### Run Single Fitting
 #
 # This is the fitting of the first dataset to optimize the initial

@@ -158,7 +158,7 @@ class MinimizerBase(ABC):
             FitResults with success flag, best chi2 and timing.
         """
         minimizer_name = self.name or 'Unnamed Minimizer'
-        if self.method is not None:
+        if self.method is not None and f'({self.method})' not in minimizer_name:
             minimizer_name += f' ({self.method})'
 
         self._start_tracking(minimizer_name, verbosity=verbosity)

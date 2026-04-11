@@ -405,7 +405,7 @@ from .line_segment import LineSegmentBackground
 | `FitModeFactory`             | Fit-mode category      | `FitMode`                                                                                 |
 | `JointFitExperimentsFactory` | Joint-fit weights      | `JointFitExperiments`                                                                     |
 | `CalculatorFactory`          | Calculation engines    | `CryspyCalculator`, `CrysfmlCalculator`, `PdffitCalculator`                               |
-| `MinimizerFactory`           | Minimisers             | `LmfitMinimizer`, `LmfitLeastsqMinimizer`, `LmfitLeastSquaresMinimizer`, `DfolsMinimizer` |
+| `MinimizerFactory`           | Minimisers             | `LmfitMinimizer`, `LmfitLeastsqMinimizer`, `LmfitLeastSquaresMinimizer`, `DfolsMinimizer`, `BumpsMinimizer`, `BumpsLmMinimizer`, `BumpsAmoebaMinimizer`, `BumpsDEMinimizer` |
 
 > **Note:** `ExperimentFactory` and `StructureFactory` are _builder_
 > factories with `from_cif_path`, `from_cif_str`, `from_data_path`, and
@@ -512,6 +512,10 @@ Tags are the user-facing identifiers for selecting types. They must be:
 | `lmfit (leastsq)`       | `LmfitLeastsqMinimizer`      |
 | `lmfit (least_squares)` | `LmfitLeastSquaresMinimizer` |
 | `dfols`                 | `DfolsMinimizer`             |
+| `bumps`                 | `BumpsMinimizer`             |
+| `bumps (lm)`            | `BumpsLmMinimizer`           |
+| `bumps (amoeba)`        | `BumpsAmoebaMinimizer`       |
+| `bumps (de)`            | `BumpsDEMinimizer`           |
 
 ### 5.7 Metadata Classification — Which Classes Get What
 
@@ -598,6 +602,7 @@ line-segment points.
 | `PdffitCalculator`  | `CalculatorFactory` | (same)                                                   |
 | `LmfitMinimizer`    | `MinimizerFactory`  | `type_info` only                                         |
 | `DfolsMinimizer`    | `MinimizerFactory`  | (same)                                                   |
+| `BumpsMinimizer`    | `MinimizerFactory`  | (same)                                                   |
 | `BraggPdExperiment` | `ExperimentFactory` | `type_info` + `compatibility` (no `calculator_support`)  |
 | `TotalPdExperiment` | `ExperimentFactory` | (same)                                                   |
 | `CwlScExperiment`   | `ExperimentFactory` | (same)                                                   |
@@ -629,7 +634,7 @@ The experiment exposes the standard switchable-category API:
 ### 6.2 Minimiser
 
 The minimiser drives the optimisation loop. `MinimizerFactory` creates
-instances by tag (e.g. `'lmfit'`, `'dfols'`).
+instances by tag (e.g. `'lmfit'`, `'dfols'`, `'bumps'`).
 
 ### 6.3 Fitter
 
