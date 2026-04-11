@@ -190,11 +190,11 @@
   `docs/architecture/architecture.md`.
 - After changes, run linting and formatting fixes with `pixi run fix`.
   This also regenerates `docs/architecture/package-structure-full.md`
-  and `docs/architecture/package-structure-short.md` automatically —
-  do not edit those files by hand.
-  Do not check what was auto-fixed, just accept the fixes and move on.
-  Then, run linting and formatting checks with `pixi run check` and
-  address any remaining issues until the code is clean.
+  and `docs/architecture/package-structure-short.md` automatically — do
+  not edit those files by hand. Do not check what was auto-fixed, just
+  accept the fixes and move on. Then, run linting and formatting checks
+  with `pixi run check` and address any remaining issues until the code
+  is clean.
 - After changes, run unit tests with `pixi run unit-tests`.
 - After changes, run integration tests with
   `pixi run integration-tests`.

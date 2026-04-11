@@ -58,6 +58,15 @@
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 base.py
 │   │   │   └── 🏷️ class MinimizerBase
+│   │   ├── 📄 bumps.py
+│   │   │   ├── 🏷️ class _EasyDiffractionFitness
+│   │   │   └── 🏷️ class BumpsMinimizer
+│   │   ├── 📄 bumps_amoeba.py
+│   │   │   └── 🏷️ class BumpsAmoebaMinimizer
+│   │   ├── 📄 bumps_de.py
+│   │   │   └── 🏷️ class BumpsDEMinimizer
+│   │   ├── 📄 bumps_lm.py
+│   │   │   └── 🏷️ class BumpsLmMinimizer
 │   │   ├── 📄 dfols.py
 │   │   │   └── 🏷️ class DfolsMinimizer
 │   │   ├── 📄 enums.py

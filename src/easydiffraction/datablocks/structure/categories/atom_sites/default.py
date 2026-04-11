@@ -106,7 +106,7 @@ class AtomSite(CategoryItem):
             'fraction of the site occupied by the atom type.',
             value_spec=AttributeSpec(
                 default=1.0,
-                validator=RangeValidator(),
+                validator=RangeValidator(ge=0.0, le=1.0),
             ),
             cif_handler=CifHandler(names=['_atom_site.occupancy']),
         )
@@ -116,7 +116,7 @@ class AtomSite(CategoryItem):
             units='Å²',
             value_spec=AttributeSpec(
                 default=0.0,
-                validator=RangeValidator(ge=0.0),
+                validator=RangeValidator(ge=0.0, le=100.0),
             ),
             cif_handler=CifHandler(names=['_atom_site.B_iso_or_equiv']),
         )

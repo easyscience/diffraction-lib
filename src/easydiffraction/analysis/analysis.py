@@ -534,7 +534,7 @@ class Analysis:
         """Per-experiment weight collection for joint fitting."""
         return self._joint_fit_experiments
 
-    def fit(self, verbosity: str | None = None) -> None:
+    def fit(self, verbosity: str | None = None, *, use_physical_limits: bool = False) -> None:
         """
         Execute fitting for all experiments.
 
@@ -558,6 +558,10 @@ class Analysis:
             experiment progress, ``'short'`` for a
             one-row-per-experiment summary table, or ``'silent'`` for no
             output. When ``None``, uses ``project.verbosity``.
+        use_physical_limits : bool, default=False
+            When ``True``, fall back to physical limits from the value
+            spec for parameters whose ``fit_min``/``fit_max`` are
+            unbounded.
 
         Raises
         ------
@@ -584,9 +588,11 @@ class Analysis:
         # Run the fitting process
         mode = FitModeEnum(self._fit_mode.mode.value)
         if mode is FitModeEnum.JOINT:
-            self._fit_joint(verb, structures, experiments)
+            self._fit_joint(verb, structures, experiments, use_physical_limits=use_physical_limits)
         elif mode is FitModeEnum.SINGLE:
-            self._fit_single(verb, structures, experiments)
+            self._fit_single(
+                verb, structures, experiments, use_physical_limits=use_physical_limits
+            )
         else:
             msg = f'Fit mode {mode.value} not implemented yet.'
             raise NotImplementedError(msg)
@@ -600,6 +606,8 @@ class Analysis:
         verb: VerbosityEnum,
         structures: object,
         experiments: object,
+        *,
+        use_physical_limits: bool,
     ) -> None:
         """
         Run joint fitting across all experiments with weights.
@@ -612,6 +620,8 @@ class Analysis:
             Project structures collection.
         experiments : object
             Project experiments collection.
+        use_physical_limits : bool
+            Whether to use physical limits as fit bounds.
         """
         mode = FitModeEnum.JOINT
         # Auto-populate joint_fit_experiments if empty
@@ -634,6 +644,7 @@ class Analysis:
             weights=weights_array,
             analysis=self,
             verbosity=verb,
+            use_physical_limits=use_physical_limits,
         )
 
         # After fitting, get the results
@@ -644,6 +655,8 @@ class Analysis:
         verb: VerbosityEnum,
         structures: object,
         experiments: object,
+        *,
+        use_physical_limits: bool,
     ) -> None:
         """
         Run single-mode fitting for each experiment independently.
@@ -656,6 +669,8 @@ class Analysis:
             Project structures collection.
         experiments : object
             Project experiments collection.
+        use_physical_limits : bool
+            Whether to use physical limits as fit bounds.
         """
         mode = FitModeEnum.SINGLE
         expt_names = experiments.names
@@ -673,6 +688,7 @@ class Analysis:
                 [experiment],
                 analysis=self,
                 verbosity=verb,
+                use_physical_limits=use_physical_limits,
             )
 
             # After fitting, snapshot parameter values before

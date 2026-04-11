@@ -22,26 +22,30 @@ class MinimizerTypeEnum(StrEnum):
     @classmethod
     def default(cls) -> MinimizerTypeEnum:
         """Return the default minimizer type."""
-        return cls.LMFIT
+        return cls.BUMPS_LM
 
     def description(self) -> str:
         """
         Return a human-readable description of this minimizer type.
         """
-        if self is MinimizerTypeEnum.LMFIT:
-            return 'LMFIT library using the default Levenberg-Marquardt least squares method'
-        if self is MinimizerTypeEnum.LMFIT_LEASTSQ:
-            return 'LMFIT library with Levenberg-Marquardt least squares method'
-        if self is MinimizerTypeEnum.LMFIT_LEAST_SQUARES:
-            return "LMFIT library with SciPy's trust region reflective algorithm"
-        if self is MinimizerTypeEnum.DFOLS:
-            return 'DFO-LS library for derivative-free least-squares optimization'
-        if self is MinimizerTypeEnum.BUMPS:
-            return 'BUMPS library using the default Levenberg-Marquardt method'
-        if self is MinimizerTypeEnum.BUMPS_LM:
-            return 'BUMPS library with Levenberg-Marquardt method'
-        if self is MinimizerTypeEnum.BUMPS_AMOEBA:
-            return 'BUMPS library with Nelder-Mead simplex method'
-        if self is MinimizerTypeEnum.BUMPS_DE:
-            return 'BUMPS library with differential evolution method'
-        return ''
+        descriptions = {
+            MinimizerTypeEnum.LMFIT: (
+                'LMFIT library using the default Levenberg-Marquardt least squares method'
+            ),
+            MinimizerTypeEnum.LMFIT_LEASTSQ: (
+                'LMFIT library with Levenberg-Marquardt least squares method'
+            ),
+            MinimizerTypeEnum.LMFIT_LEAST_SQUARES: (
+                "LMFIT library with SciPy's trust region reflective algorithm"
+            ),
+            MinimizerTypeEnum.DFOLS: (
+                'DFO-LS library for derivative-free least-squares optimization'
+            ),
+            MinimizerTypeEnum.BUMPS: (
+                'BUMPS library using the default Levenberg-Marquardt method'
+            ),
+            MinimizerTypeEnum.BUMPS_LM: ('BUMPS library with Levenberg-Marquardt method'),
+            MinimizerTypeEnum.BUMPS_AMOEBA: ('BUMPS library with Nelder-Mead simplex method'),
+            MinimizerTypeEnum.BUMPS_DE: ('BUMPS library with differential evolution method'),
+        }
+        return descriptions.get(self, '')

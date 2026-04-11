@@ -36,6 +36,8 @@ class Fitter:
         weights: np.ndarray | None = None,
         analysis: object = None,
         verbosity: VerbosityEnum = VerbosityEnum.FULL,
+        *,
+        use_physical_limits: bool = False,
     ) -> None:
         """
         Run the fitting process.
@@ -58,6 +60,10 @@ class Fitter:
             fitting.
         verbosity : VerbosityEnum, default=VerbosityEnum.FULL
             Console output verbosity.
+        use_physical_limits : bool, default=False
+            When ``True``, fall back to physical limits from the value
+            spec for parameters whose ``fit_min``/``fit_max`` are
+            unbounded.
         """
         expt_free_params: list[Parameter] = []
         for expt in experiments:
@@ -99,7 +105,12 @@ class Fitter:
             )
 
         # Perform fitting
-        self.results = self.minimizer.fit(params, objective_function, verbosity=verbosity)
+        self.results = self.minimizer.fit(
+            params,
+            objective_function,
+            verbosity=verbosity,
+            use_physical_limits=use_physical_limits,
+        )
 
     def _process_fit_results(
         self,

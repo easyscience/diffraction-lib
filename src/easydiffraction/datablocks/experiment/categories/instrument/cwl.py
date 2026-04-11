@@ -28,7 +28,7 @@ class CwlInstrumentBase(InstrumentBase):
             units='Å',
             value_spec=AttributeSpec(
                 default=1.5406,
-                validator=RangeValidator(),
+                validator=RangeValidator(ge=0.0),
             ),
             cif_handler=CifHandler(
                 names=[

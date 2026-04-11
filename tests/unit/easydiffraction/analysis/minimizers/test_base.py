@@ -16,6 +16,9 @@ def test_minimizer_base_fit_flow_and_finalize():
     class DummyParam:
         def __init__(self, v):
             self.value = v
+            self.fit_min = -np.inf
+            self.fit_max = np.inf
+            self.unique_name = f'param_{v}'
 
     class DummyResult:
         def __init__(self, *, success=True):

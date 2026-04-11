@@ -37,6 +37,10 @@
 │   ├── 📁 minimizers
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 base.py
+│   │   ├── 📄 bumps.py
+│   │   ├── 📄 bumps_amoeba.py
+│   │   ├── 📄 bumps_de.py
+│   │   ├── 📄 bumps_lm.py
 │   │   ├── 📄 dfols.py
 │   │   ├── 📄 enums.py
 │   │   ├── 📄 factory.py

@@ -104,7 +104,9 @@ class BumpsMinimizer(MinimizerBase):
                 value=param.value,
                 name=param._minimizer_uid,
             )
-            bp.range(param.fit_min, param.fit_max)
+            lo = param.fit_min
+            hi = param.fit_max
+            bp.range(lo, hi)
             bumps_params.append(bp)
         return {'bumps_params': bumps_params}
 
@@ -211,10 +213,11 @@ class BumpsMinimizer(MinimizerBase):
         chi2_reduced = np.sum(r0**2) / (n_points - n_params)
         try:
             cov = np.linalg.inv(jacobian.T @ jacobian) * chi2_reduced
-            stderr = np.sqrt(np.abs(np.diag(cov)))
-            return cov, stderr
         except np.linalg.LinAlgError:
             return None, None
+
+        stderr = np.sqrt(np.abs(np.diag(cov)))
+        return cov, stderr
 
     def _sync_result_to_parameters(  # noqa: PLR6301
         self,

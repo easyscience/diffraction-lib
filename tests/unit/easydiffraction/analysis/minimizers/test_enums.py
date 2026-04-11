@@ -20,7 +20,7 @@ def test_enum_members():
 def test_enum_default():
     from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 
-    assert MinimizerTypeEnum.default() is MinimizerTypeEnum.LMFIT
+    assert MinimizerTypeEnum.default() is MinimizerTypeEnum.BUMPS_LM
 
 
 def test_enum_descriptions():
