@@ -4,6 +4,22 @@
 import numpy as np
 
 
+class _DummyParam:
+    """Minimal stand-in for an EasyDiffraction parameter."""
+
+    def __init__(self, v):
+        self.value = v
+        self.fit_min = -np.inf
+        self.fit_max = np.inf
+        self.unique_name = f'param_{v}'
+
+    def _physical_lower_bound(self):
+        return -np.inf
+
+    def _physical_upper_bound(self):
+        return np.inf
+
+
 def test_module_import():
     import easydiffraction.analysis.minimizers.base as MUT
 
@@ -12,10 +28,6 @@ def test_module_import():
 
 def test_minimizer_base_fit_flow_and_finalize():
     from easydiffraction.analysis.minimizers.base import MinimizerBase
-
-    class DummyParam:
-        def __init__(self, v):
-            self.value = v
 
     class DummyResult:
         def __init__(self, *, success=True):
@@ -57,7 +69,7 @@ def test_minimizer_base_fit_flow_and_finalize():
 
     minim = DummyMinimizer()
 
-    params = [DummyParam(1.0), DummyParam(2.0)]
+    params = [_DummyParam(1.0), _DummyParam(2.0)]
 
     # Wrap minimizer's objective creator to simulate higher-level usage
     objective = minim._create_objective_function(

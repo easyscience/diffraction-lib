@@ -127,6 +127,7 @@ expt.instrument.calib_twotheta_offset = 0.1
 # #### Set Peak Profile
 
 # %%
+expt.peak_profile_type = 'pseudo-voigt + empirical asymmetry'
 expt.peak.broad_gauss_u = 0.3
 expt.peak.broad_gauss_v = -0.5
 expt.peak.broad_gauss_w = 0.4
@@ -166,14 +167,6 @@ expt.linked_phases.create(id='cosio', scale=1.0)
 
 # %%
 project = Project()
-
-# %% [markdown]
-# #### Set Plotting Engine
-
-# %%
-# Keep the auto-selected engine. Alternatively, you can uncomment the
-# line below to explicitly set the engine to the required one.
-# project.plotter.engine = 'plotly'
 
 # %% [markdown]
 # #### Add Structure
@@ -244,6 +237,8 @@ expt.peak.broad_gauss_v.free = True
 expt.peak.broad_gauss_w.free = True
 expt.peak.broad_lorentz_y.free = True
 
+expt.peak.asym_empir_2.free = True
+
 for point in expt.background:
     point.y.free = True
 
@@ -266,9 +261,7 @@ project.analysis.aliases.create(
 # Set constraints.
 
 # %%
-project.analysis.constraints.create(
-    expression='biso_Co2 = biso_Co1',
-)
+project.analysis.constraints.create(expression='biso_Co2 = biso_Co1')
 
 
 # %% [markdown]
@@ -276,7 +269,12 @@ project.analysis.constraints.create(
 
 # %%
 project.analysis.fit()
+
+# %%
 project.analysis.display.fit_results()
+
+# %%
+project.plotter.plot_param_correlations()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated

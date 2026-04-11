@@ -136,6 +136,7 @@ py-lint-fix-unsafe = 'ruff check --fix --unsafe-fixes src/ tests/ docs/docs/tuto
 py-format-fix = 'ruff format src/ tests/ docs/docs/tutorials/'
 nonpy-format-fix = 'npx prettier --write --list-different --config=prettierrc.toml --ignore-unknown .'
 nonpy-format-fix-modified = 'python tools/nonpy_prettier_modified.py --write'
+update-package-diagrams = 'python tools/generate_package_docs.py'
 success-message = 'echo "✅ All auto-formatting steps completed successfully!"'
 
 fix = { depends-on = [
@@ -145,6 +146,7 @@ fix = { depends-on = [
   'py-lint-fix',
   'nonpy-format-fix',
   'notebook-lint-fix',
+  'update-package-diagrams',
   'success-message',
 ] }
 

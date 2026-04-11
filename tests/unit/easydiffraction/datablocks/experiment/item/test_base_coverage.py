@@ -60,25 +60,6 @@ class TestExperimentBaseDiffrn:
     def test_diffrn_defaults(self):
         ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
         assert ex.diffrn is not None
-        assert isinstance(ex.diffrn_type, str)
-
-    def test_diffrn_type_invalid(self):
-        ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
-        old_type = ex.diffrn_type
-        ex.diffrn_type = 'nonexistent'
-        assert ex.diffrn_type == old_type
-
-    def test_show_supported_diffrn_types(self, capsys):
-        ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
-        ex.show_supported_diffrn_types()
-        out = capsys.readouterr().out
-        assert len(out) > 0
-
-    def test_show_current_diffrn_type(self, capsys):
-        ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
-        ex.show_current_diffrn_type()
-        out = capsys.readouterr().out
-        assert ex.diffrn_type in out
 
 
 class TestExperimentBaseCalculator:
@@ -135,75 +116,18 @@ class TestPdExperimentLinkedPhases:
     def test_linked_phases_defaults(self):
         ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
         assert ex.linked_phases is not None
-        assert isinstance(ex.linked_phases_type, str)
-
-    def test_linked_phases_type_invalid(self):
-        ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
-        old_type = ex.linked_phases_type
-        ex.linked_phases_type = 'nonexistent'
-        assert ex.linked_phases_type == old_type
-
-    def test_show_supported_linked_phases_types(self, capsys):
-        ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
-        ex.show_supported_linked_phases_types()
-        out = capsys.readouterr().out
-        assert len(out) > 0
-
-    def test_show_current_linked_phases_type(self, capsys):
-        ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
-        ex.show_current_linked_phases_type()
-        out = capsys.readouterr().out
-        assert ex.linked_phases_type in out
 
 
 class TestPdExperimentExcludedRegions:
     def test_excluded_regions_defaults(self):
         ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
         assert ex.excluded_regions is not None
-        assert isinstance(ex.excluded_regions_type, str)
-
-    def test_excluded_regions_type_invalid(self):
-        ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
-        old_type = ex.excluded_regions_type
-        ex.excluded_regions_type = 'nonexistent'
-        assert ex.excluded_regions_type == old_type
-
-    def test_show_supported_excluded_regions_types(self, capsys):
-        ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
-        ex.show_supported_excluded_regions_types()
-        out = capsys.readouterr().out
-        assert len(out) > 0
-
-    def test_show_current_excluded_regions_type(self, capsys):
-        ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
-        ex.show_current_excluded_regions_type()
-        out = capsys.readouterr().out
-        assert ex.excluded_regions_type in out
 
 
 class TestPdExperimentData:
     def test_data_defaults(self):
         ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
         assert ex.data is not None
-        assert isinstance(ex.data_type, str)
-
-    def test_data_type_invalid(self):
-        ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
-        old_type = ex.data_type
-        ex.data_type = 'nonexistent'
-        assert ex.data_type == old_type
-
-    def test_show_supported_data_types(self, capsys):
-        ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
-        ex.show_supported_data_types()
-        out = capsys.readouterr().out
-        assert len(out) > 0
-
-    def test_show_current_data_type(self, capsys):
-        ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
-        ex.show_current_data_type()
-        out = capsys.readouterr().out
-        assert ex.data_type in out
 
 
 class TestPdExperimentPeak:

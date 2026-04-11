@@ -4,6 +4,16 @@ Issues that have been fully resolved. Kept for historical reference.
 
 ---
 
+## Restore Minimiser Variant Support
+
+Used thin subclasses (approach A) to restore lmfit algorithm variants.
+`LmfitLeastsqMinimizer` and `LmfitLeastSquaresMinimizer` extend
+`LmfitMinimizer`, each with its own `TypeInfo` tag. Added
+`MinimizerTypeEnum` for all minimizer tags. No `FactoryBase` changes
+needed — one class per tag.
+
+---
+
 ## Implement `Project.load()`
 
 `Project.load(dir_path)` classmethod reads `project.cif`,
@@ -89,3 +99,27 @@ output. Unified `plot_param_series()` to read from CSV. Added
 also writes CSV. Prerequisites included: CIF truncation fix, CIF
 round-trip verification, `analysis.cif` moved into `analysis/`
 directory, `extract_data_paths_from_zip` destination parameter.
+
+---
+
+## Make `data_type` Read-Only on Experiments
+
+Removed the `data_type` setter, `show_supported_data_types()`, and
+`show_current_data_type()` from both `ScExperimentBase` and
+`PdExperimentBase`. The data collection type is now fixed at experiment
+creation (resolved from `DataFactory.default_tag(...)` using the
+experiment's axes), like experiment type itself. This prevents switching
+to an incompatible data class and silently discarding loaded data.
+
+---
+
+## 78. Add `SEQUENTIAL` to `FitModeEnum` and Show Methods to Analysis
+
+Added `SEQUENTIAL = 'sequential'` to `FitModeEnum`. `fit_sequential()`
+now sets `fit_mode.mode = 'sequential'` internally so the mode is
+persisted in CIF. Added `show_supported_fit_mode_types()` (filters by
+experiment count: ≤1 → only `single`; >1 → all three) and
+`show_current_fit_mode_type()` on `Analysis`. If `fit()` is called while
+mode is `'sequential'`, it logs an error directing the user to
+`fit_sequential()`. Promoted `fit_mode` from a pure single-type category
+to one with show methods.

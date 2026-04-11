@@ -11,6 +11,9 @@ import numpy as np
 from easydiffraction.analysis.fit_helpers.reporting import FitResults
 from easydiffraction.analysis.fit_helpers.tracking import FitProgressTracker
 from easydiffraction.utils.enums import VerbosityEnum
+from easydiffraction.utils.logging import log
+
+BOUNDARY_PROXIMITY_FRACTION = 0.01
 
 
 class MinimizerBase(ABC):
@@ -118,6 +121,8 @@ class MinimizerBase(ABC):
             Aggregated outcome of the fit.
         """
         self._sync_result_to_parameters(parameters, raw_result)
+        self._warn_boundary_parameters(parameters)
+        self._warn_physical_limit_violations(parameters)
         success = self._check_success(raw_result)
         self.result = FitResults(
             success=success,
@@ -129,6 +134,99 @@ class MinimizerBase(ABC):
         )
         return self.result
 
+    @staticmethod
+    def _warn_boundary_parameters(parameters: list[object]) -> None:
+        """
+        Warn if any parameter is near its fit bounds after fitting.
+        """
+        for param in parameters:
+            v = param.value
+            lo, hi = param.fit_min, param.fit_max
+            span = hi - lo
+            if not np.isfinite(span):
+                # One-sided or unbounded — check absolute proximity
+                if np.isfinite(lo) and abs(v - lo) < BOUNDARY_PROXIMITY_FRACTION * max(
+                    abs(lo), 1.0
+                ):
+                    log.warning(
+                        f"Parameter '{param.unique_name}' ({v}) is at its lower "
+                        f'bound ({lo}). Consider widening fit_min.'
+                    )
+                if np.isfinite(hi) and abs(v - hi) < BOUNDARY_PROXIMITY_FRACTION * max(
+                    abs(hi), 1.0
+                ):
+                    log.warning(
+                        f"Parameter '{param.unique_name}' ({v}) is at its upper "
+                        f'bound ({hi}). Consider widening fit_max.'
+                    )
+            elif span > 0:
+                tol = BOUNDARY_PROXIMITY_FRACTION * span
+                if (v - lo) < tol:
+                    log.warning(
+                        f"Parameter '{param.unique_name}' ({v}) is at its lower "
+                        f'bound ({lo}). Consider widening fit_min.'
+                    )
+                if (hi - v) < tol:
+                    log.warning(
+                        f"Parameter '{param.unique_name}' ({v}) is at its upper "
+                        f'bound ({hi}). Consider widening fit_max.'
+                    )
+
+    @staticmethod
+    def _apply_physical_limits(parameters: list[object]) -> None:
+        """
+        Set fit bounds from physical limits for unbounded parameters.
+
+        For each parameter whose ``fit_min`` is ``-inf``, replace it
+        with the lower physical limit from the value spec.  Likewise for
+        ``fit_max`` and the upper physical limit.
+
+        Parameters
+        ----------
+        parameters : list[object]
+            Free parameters to adjust.
+        """
+        for param in parameters:
+            if param.fit_min == -np.inf:
+                phys_lo = param._physical_lower_bound()
+                if np.isfinite(phys_lo):
+                    param.fit_min = phys_lo
+            if param.fit_max == np.inf:
+                phys_hi = param._physical_upper_bound()
+                if np.isfinite(phys_hi):
+                    param.fit_max = phys_hi
+
+    @staticmethod
+    def _warn_physical_limit_violations(parameters: list[object]) -> None:
+        """
+        Flag parameters outside their physical limits.
+
+        Sets ``param._outside_physical_limits = True`` on any parameter
+        whose value falls outside its physical bounds.
+
+        Parameters
+        ----------
+        parameters : list[object]
+            Parameters after fitting.
+        """
+        for param in parameters:
+            lo = param._physical_lower_bound()
+            hi = param._physical_upper_bound()
+            outside = False
+            if np.isfinite(lo) and param.value < lo:
+                log.warning(
+                    f"Parameter '{param.unique_name}' ({param.value}) is below "
+                    f'its physical lower limit ({lo}).'
+                )
+                outside = True
+            if np.isfinite(hi) and param.value > hi:
+                log.warning(
+                    f"Parameter '{param.unique_name}' ({param.value}) is above "
+                    f'its physical upper limit ({hi}).'
+                )
+                outside = True
+            param._outside_physical_limits = outside
+
     @abstractmethod
     def _check_success(self, raw_result: object) -> bool:
         """Determine whether the fit was successful."""
@@ -138,6 +236,8 @@ class MinimizerBase(ABC):
         parameters: list[object],
         objective_function: Callable[..., object],
         verbosity: VerbosityEnum = VerbosityEnum.FULL,
+        *,
+        use_physical_limits: bool = False,
     ) -> FitResults:
         """
         Run the full minimization workflow.
@@ -151,14 +251,21 @@ class MinimizerBase(ABC):
             arguments.
         verbosity : VerbosityEnum, default=VerbosityEnum.FULL
             Console output verbosity.
+        use_physical_limits : bool, default=False
+            When ``True``, fall back to physical limits from the value
+            spec for parameters whose ``fit_min``/``fit_max`` are
+            unbounded.
 
         Returns
         -------
         FitResults
             FitResults with success flag, best chi2 and timing.
         """
+        if use_physical_limits:
+            self._apply_physical_limits(parameters)
+
         minimizer_name = self.name or 'Unnamed Minimizer'
-        if self.method is not None:
+        if self.method is not None and f'({self.method})' not in minimizer_name:
             minimizer_name += f' ({self.method})'
 
         self._start_tracking(minimizer_name, verbosity=verbosity)

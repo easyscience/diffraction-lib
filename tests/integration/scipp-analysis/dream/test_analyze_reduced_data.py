@@ -210,4 +210,4 @@ def test_analyze_reduced_data__fit_quality(
 ) -> None:
     """Verify fit quality is reasonable (chi-square value)."""
     chi_square = fitted_project.analysis.fit_results.reduced_chi_square
-    assert chi_square == pytest.approx(16.8, abs=0.1)
+    assert chi_square == pytest.approx(16.3, abs=0.1)

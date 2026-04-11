@@ -942,7 +942,13 @@ class Plotter(RendererBase):
                 if should_blank:
                     row_values.append('')
                 else:
-                    row_values.append(f'{float(value):>{cell_width}.{precision}f}')
+                    fval = float(value)
+                    text = f'{fval:>{cell_width}.{precision}f}'
+                    if fval < 0:
+                        text = f'[red]{text}[/red]'
+                    elif fval > 0:
+                        text = f'[blue]{text}[/blue]'
+                    row_values.append(text)
             rows.append([label, *row_values])
 
         df = pd.DataFrame(rows, columns=pd.MultiIndex.from_tuples(headers))

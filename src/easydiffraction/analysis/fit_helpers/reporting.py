@@ -150,6 +150,42 @@ class FitResults:
             columns_data=rows,
         )
 
+        self._print_table_notes()
+
+    def _print_table_notes(self) -> None:
+        """Print color-coded notes below the fitted parameters table."""
+        notes: list[str] = []
+        if any(getattr(p, '_outside_physical_limits', False) for p in self.parameters):
+            notes.append('[red]red fitted value[/red] — outside expected physical limits')
+        if any(_is_uncertainty_large(p) for p in self.parameters):
+            notes.append(
+                '[red]red uncertainty[/red] — exceeds the fitted value (poorly constrained)'
+            )
+        for note in notes:
+            console.print(note)
+
+
+def _is_uncertainty_large(param: object) -> bool:
+    """
+    Return True when the uncertainty exceeds the absolute fitted value.
+
+    Parameters
+    ----------
+    param : object
+        Fitted parameter descriptor.
+
+    Returns
+    -------
+    bool
+        Whether the parameter is poorly constrained.
+    """
+    if param.uncertainty is None or param.value is None:
+        return False
+    abs_value = abs(param.value)
+    if abs_value == 0:
+        return param.uncertainty > 0
+    return param.uncertainty > abs_value
+
 
 def _build_parameter_row(param: object) -> list[str]:
     """
@@ -168,7 +204,11 @@ def _build_parameter_row(param: object) -> list[str]:
     name = getattr(param, 'name', 'N/A')
     start = f'{param._fit_start_value:.4f}' if param._fit_start_value is not None else 'N/A'
     fitted = f'{param.value:.4f}' if param.value is not None else 'N/A'
+    if getattr(param, '_outside_physical_limits', False):
+        fitted = f'[red]{fitted}[/red]'
     uncertainty = f'{param.uncertainty:.4f}' if param.uncertainty is not None else 'N/A'
+    if _is_uncertainty_large(param):
+        uncertainty = f'[red]{uncertainty}[/red]'
     units = getattr(param, 'units', 'N/A')
     relative_change = _compute_relative_change(param)
     return [

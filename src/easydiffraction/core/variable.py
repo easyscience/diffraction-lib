@@ -284,6 +284,24 @@ class GenericParameter(GenericNumericDescriptor):
         self._constrained_spec = self._BOOL_SPEC_TEMPLATE
         self._constrained = self._constrained_spec.default
 
+    def _physical_lower_bound(self) -> float:
+        """
+        Return the lower physical limit from the value spec, or -inf.
+        """
+        validator = getattr(self._value_spec, '_validator', None)
+        if isinstance(validator, RangeValidator):
+            return validator.ge
+        return -np.inf
+
+    def _physical_upper_bound(self) -> float:
+        """
+        Return the upper physical limit from the value spec, or inf.
+        """
+        validator = getattr(self._value_spec, '_validator', None)
+        if isinstance(validator, RangeValidator):
+            return validator.le
+        return np.inf
+
     def __str__(self) -> str:
         """Return string representation with uncertainty and free."""
         s = GenericDescriptorBase.__str__(self)

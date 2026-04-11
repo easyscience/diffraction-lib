@@ -58,12 +58,27 @@
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 base.py
 │   │   │   └── 🏷️ class MinimizerBase
+│   │   ├── 📄 bumps.py
+│   │   │   ├── 🏷️ class _EasyDiffractionFitness
+│   │   │   └── 🏷️ class BumpsMinimizer
+│   │   ├── 📄 bumps_amoeba.py
+│   │   │   └── 🏷️ class BumpsAmoebaMinimizer
+│   │   ├── 📄 bumps_de.py
+│   │   │   └── 🏷️ class BumpsDEMinimizer
+│   │   ├── 📄 bumps_lm.py
+│   │   │   └── 🏷️ class BumpsLmMinimizer
 │   │   ├── 📄 dfols.py
 │   │   │   └── 🏷️ class DfolsMinimizer
+│   │   ├── 📄 enums.py
+│   │   │   └── 🏷️ class MinimizerTypeEnum
 │   │   ├── 📄 factory.py
 │   │   │   └── 🏷️ class MinimizerFactory
-│   │   └── 📄 lmfit.py
-│   │       └── 🏷️ class LmfitMinimizer
+│   │   ├── 📄 lmfit.py
+│   │   │   └── 🏷️ class LmfitMinimizer
+│   │   ├── 📄 lmfit_least_squares.py
+│   │   │   └── 🏷️ class LmfitLeastSquaresMinimizer
+│   │   └── 📄 lmfit_leastsq.py
+│   │       └── 🏷️ class LmfitLeastsqMinimizer
 │   ├── 📄 __init__.py
 │   ├── 📄 analysis.py
 │   │   ├── 🏷️ class AnalysisDisplay
@@ -119,6 +134,7 @@
 │   ├── 📄 __init__.py
 │   ├── 📄 crystallography.py
 │   └── 📄 space_groups.py
+│       └── 🏷️ class _RestrictedUnpickler
 ├── 📁 datablocks
 │   ├── 📁 experiment
 │   │   ├── 📁 categories
@@ -177,10 +193,10 @@
 │   │   │   │       └── 🏷️ class ExperimentTypeFactory
 │   │   │   ├── 📁 extinction
 │   │   │   │   ├── 📄 __init__.py
-│   │   │   │   ├── 📄 factory.py
-│   │   │   │   │   └── 🏷️ class ExtinctionFactory
-│   │   │   │   └── 📄 becker_coppens.py
-│   │   │   │       └── 🏷️ class BeckerCoppensExtinction
+│   │   │   │   ├── 📄 becker_coppens.py
+│   │   │   │   │   └── 🏷️ class BeckerCoppensExtinction
+│   │   │   │   └── 📄 factory.py
+│   │   │   │       └── 🏷️ class ExtinctionFactory
 │   │   │   ├── 📁 instrument
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 base.py
@@ -252,7 +268,8 @@
 │   │   │   │   ├── 🏷️ class RadiationProbeEnum
 │   │   │   │   ├── 🏷️ class BeamModeEnum
 │   │   │   │   ├── 🏷️ class CalculatorEnum
-│   │   │   │   └── 🏷️ class PeakProfileTypeEnum
+│   │   │   │   ├── 🏷️ class PeakProfileTypeEnum
+│   │   │   │   └── 🏷️ class ExtinctionModelEnum
 │   │   │   ├── 📄 factory.py
 │   │   │   │   └── 🏷️ class ExperimentFactory
 │   │   │   └── 📄 total_pd.py

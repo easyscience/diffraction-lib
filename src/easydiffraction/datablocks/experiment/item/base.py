@@ -77,51 +77,13 @@ class ExperimentBase(DatablockItem):
         return self._type
 
     # ------------------------------------------------------------------
-    #  Diffrn conditions (switchable-category pattern)
+    #  Diffrn conditions (read-only, single type)
     # ------------------------------------------------------------------
 
     @property
     def diffrn(self) -> object:
         """Ambient conditions recorded during measurement."""
         return self._diffrn
-
-    @property
-    def diffrn_type(self) -> str:
-        """Tag of the active diffraction conditions type."""
-        return self._diffrn_type
-
-    @diffrn_type.setter
-    def diffrn_type(self, new_type: str) -> None:
-        """
-        Switch to a different diffraction conditions type.
-
-        Parameters
-        ----------
-        new_type : str
-            Diffrn conditions tag (e.g. ``'default'``).
-        """
-        supported_tags = DiffrnFactory.supported_tags()
-        if new_type not in supported_tags:
-            log.warning(
-                f"Unsupported diffrn type '{new_type}'. "
-                f'Supported: {supported_tags}. '
-                f"For more information, use 'show_supported_diffrn_types()'",
-            )
-            return
-
-        self._diffrn = DiffrnFactory.create(new_type)
-        self._diffrn_type = new_type
-        console.paragraph(f"Diffrn type for experiment '{self.name}' changed to")
-        console.print(new_type)
-
-    def show_supported_diffrn_types(self) -> None:  # noqa: PLR6301
-        """Print a table of supported diffraction conditions types."""
-        DiffrnFactory.show_supported()
-
-    def show_current_diffrn_type(self) -> None:
-        """Print the currently used diffraction conditions type."""
-        console.paragraph('Current diffrn type')
-        console.print(self.diffrn_type)
 
     def _restore_switchable_types(self, block: object) -> None:
         """
@@ -346,23 +308,22 @@ class ScExperimentBase(ExperimentBase):
                 f"For more information, use 'show_supported_extinction_types()'",
             )
             return
-
         self._extinction = ExtinctionFactory.create(new_type)
         self._extinction_type = new_type
-        console.paragraph(f"Extinction type for experiment '{self.name}' changed to")
+        console.paragraph('Extinction type changed to')
         console.print(new_type)
 
     def show_supported_extinction_types(self) -> None:  # noqa: PLR6301
-        """Print a table of supported extinction correction models."""
+        """Print a table of supported extinction correction types."""
         ExtinctionFactory.show_supported()
 
     def show_current_extinction_type(self) -> None:
-        """Print the currently used extinction correction model."""
+        """Print the currently used extinction correction type."""
         console.paragraph('Current extinction type')
-        console.print(self.extinction_type)
+        console.print(self._extinction_type)
 
     # ------------------------------------------------------------------
-    #  Linked crystal (switchable-category pattern)
+    #  Linked crystal (read-only, single type)
     # ------------------------------------------------------------------
 
     @property
@@ -370,46 +331,8 @@ class ScExperimentBase(ExperimentBase):
         """Linked crystal model for this experiment."""
         return self._linked_crystal
 
-    @property
-    def linked_crystal_type(self) -> str:
-        """Tag of the active linked-crystal reference type."""
-        return self._linked_crystal_type
-
-    @linked_crystal_type.setter
-    def linked_crystal_type(self, new_type: str) -> None:
-        """
-        Switch to a different linked-crystal reference type.
-
-        Parameters
-        ----------
-        new_type : str
-            Linked-crystal tag (e.g. ``'default'``).
-        """
-        supported_tags = LinkedCrystalFactory.supported_tags()
-        if new_type not in supported_tags:
-            log.warning(
-                f"Unsupported linked crystal type '{new_type}'. "
-                f'Supported: {supported_tags}. '
-                f"For more information, use 'show_supported_linked_crystal_types()'",
-            )
-            return
-
-        self._linked_crystal = LinkedCrystalFactory.create(new_type)
-        self._linked_crystal_type = new_type
-        console.paragraph(f"Linked crystal type for experiment '{self.name}' changed to")
-        console.print(new_type)
-
-    def show_supported_linked_crystal_types(self) -> None:  # noqa: PLR6301
-        """Print a table of supported linked-crystal reference types."""
-        LinkedCrystalFactory.show_supported()
-
-    def show_current_linked_crystal_type(self) -> None:
-        """Print the currently used linked-crystal reference type."""
-        console.paragraph('Current linked crystal type')
-        console.print(self.linked_crystal_type)
-
     # ------------------------------------------------------------------
-    #  Instrument (switchable-category pattern)
+    #  Instrument (fixed at creation)
     # ------------------------------------------------------------------
 
     @property
@@ -417,97 +340,14 @@ class ScExperimentBase(ExperimentBase):
         """Active instrument model for this experiment."""
         return self._instrument
 
-    @property
-    def instrument_type(self) -> str:
-        """Tag of the active instrument type."""
-        return self._instrument_type
-
-    @instrument_type.setter
-    def instrument_type(self, new_type: str) -> None:
-        """
-        Switch to a different instrument type.
-
-        Parameters
-        ----------
-        new_type : str
-            Instrument tag (e.g. ``'cwl-sc'``).
-        """
-        supported = InstrumentFactory.supported_for(
-            scattering_type=self.type.scattering_type.value,
-            beam_mode=self.type.beam_mode.value,
-            sample_form=self.type.sample_form.value,
-        )
-        supported_tags = [k.type_info.tag for k in supported]
-        if new_type not in supported_tags:
-            log.warning(
-                f"Unsupported instrument type '{new_type}'. "
-                f'Supported: {supported_tags}. '
-                f"For more information, use 'show_supported_instrument_types()'",
-            )
-            return
-        self._instrument = InstrumentFactory.create(new_type)
-        self._instrument_type = new_type
-        console.paragraph(f"Instrument type for experiment '{self.name}' changed to")
-        console.print(new_type)
-
-    def show_supported_instrument_types(self) -> None:
-        """Print a table of supported instrument types."""
-        InstrumentFactory.show_supported(
-            scattering_type=self.type.scattering_type.value,
-            beam_mode=self.type.beam_mode.value,
-            sample_form=self.type.sample_form.value,
-        )
-
-    def show_current_instrument_type(self) -> None:
-        """Print the currently used instrument type."""
-        console.paragraph('Current instrument type')
-        console.print(self.instrument_type)
-
     # ------------------------------------------------------------------
-    #  Data (switchable-category pattern)
+    #  Data (fixed at creation)
     # ------------------------------------------------------------------
 
     @property
     def data(self) -> object:
         """Data collection for this experiment."""
         return self._data
-
-    @property
-    def data_type(self) -> str:
-        """Tag of the active data collection type."""
-        return self._data_type
-
-    @data_type.setter
-    def data_type(self, new_type: str) -> None:
-        """
-        Switch to a different data collection type.
-
-        Parameters
-        ----------
-        new_type : str
-            Data tag (e.g. ``'bragg-sc'``).
-        """
-        supported_tags = DataFactory.supported_tags()
-        if new_type not in supported_tags:
-            log.warning(
-                f"Unsupported data type '{new_type}'. "
-                f'Supported: {supported_tags}. '
-                f"For more information, use 'show_supported_data_types()'",
-            )
-            return
-        self._data = DataFactory.create(new_type)
-        self._data_type = new_type
-        console.paragraph(f"Data type for experiment '{self.name}' changed to")
-        console.print(new_type)
-
-    def show_supported_data_types(self) -> None:  # noqa: PLR6301
-        """Print a table of supported data collection types."""
-        DataFactory.show_supported()
-
-    def show_current_data_type(self) -> None:
-        """Print the currently used data collection type."""
-        console.paragraph('Current data type')
-        console.print(self.data_type)
 
 
 class PdExperimentBase(ExperimentBase):
@@ -598,131 +438,18 @@ class PdExperimentBase(ExperimentBase):
         return self._linked_phases
 
     @property
-    def linked_phases_type(self) -> str:
-        """Tag of the active linked-phases collection type."""
-        return self._linked_phases_type
-
-    @linked_phases_type.setter
-    def linked_phases_type(self, new_type: str) -> None:
-        """
-        Switch to a different linked-phases collection type.
-
-        Parameters
-        ----------
-        new_type : str
-            Linked-phases tag (e.g. ``'default'``).
-        """
-        supported_tags = LinkedPhasesFactory.supported_tags()
-        if new_type not in supported_tags:
-            log.warning(
-                f"Unsupported linked phases type '{new_type}'. "
-                f'Supported: {supported_tags}. '
-                f"For more information, use 'show_supported_linked_phases_types()'",
-            )
-            return
-
-        self._linked_phases = LinkedPhasesFactory.create(new_type)
-        self._linked_phases_type = new_type
-        console.paragraph(f"Linked phases type for experiment '{self.name}' changed to")
-        console.print(new_type)
-
-    def show_supported_linked_phases_types(self) -> None:  # noqa: PLR6301
-        """Print a table of supported linked-phases collection types."""
-        LinkedPhasesFactory.show_supported()
-
-    def show_current_linked_phases_type(self) -> None:
-        """Print the currently used linked-phases collection type."""
-        console.paragraph('Current linked phases type')
-        console.print(self.linked_phases_type)
-
-    @property
     def excluded_regions(self) -> object:
         """Collection of excluded regions for the x-grid."""
         return self._excluded_regions
 
-    @property
-    def excluded_regions_type(self) -> str:
-        """Tag of the active excluded-regions collection type."""
-        return self._excluded_regions_type
-
-    @excluded_regions_type.setter
-    def excluded_regions_type(self, new_type: str) -> None:
-        """
-        Switch to a different excluded-regions collection type.
-
-        Parameters
-        ----------
-        new_type : str
-            Excluded-regions tag (e.g. ``'default'``).
-        """
-        supported_tags = ExcludedRegionsFactory.supported_tags()
-        if new_type not in supported_tags:
-            log.warning(
-                f"Unsupported excluded regions type '{new_type}'. "
-                f'Supported: {supported_tags}. '
-                f"For more information, use 'show_supported_excluded_regions_types()'",
-            )
-            return
-
-        self._excluded_regions = ExcludedRegionsFactory.create(new_type)
-        self._excluded_regions_type = new_type
-        console.paragraph(f"Excluded regions type for experiment '{self.name}' changed to")
-        console.print(new_type)
-
-    def show_supported_excluded_regions_types(self) -> None:  # noqa: PLR6301
-        """Print a table of supported excluded-regions types."""
-        ExcludedRegionsFactory.show_supported()
-
-    def show_current_excluded_regions_type(self) -> None:
-        """Print the currently used excluded-regions collection type."""
-        console.paragraph('Current excluded regions type')
-        console.print(self.excluded_regions_type)
-
     # ------------------------------------------------------------------
-    #  Data (switchable-category pattern)
+    #  Data (fixed at creation)
     # ------------------------------------------------------------------
 
     @property
     def data(self) -> object:
         """Data collection for this experiment."""
         return self._data
-
-    @property
-    def data_type(self) -> str:
-        """Tag of the active data collection type."""
-        return self._data_type
-
-    @data_type.setter
-    def data_type(self, new_type: str) -> None:
-        """
-        Switch to a different data collection type.
-
-        Parameters
-        ----------
-        new_type : str
-            Data tag (e.g. ``'bragg-pd-cwl'``).
-        """
-        supported_tags = DataFactory.supported_tags()
-        if new_type not in supported_tags:
-            log.warning(
-                f"Unsupported data type '{new_type}'. "
-                f'Supported: {supported_tags}. '
-                f"For more information, use 'show_supported_data_types()'",
-            )
-            return
-        self._data = DataFactory.create(new_type)
-        self._data_type = new_type
-        console.paragraph(f"Data type for experiment '{self.name}' changed to")
-        console.print(new_type)
-
-    def show_supported_data_types(self) -> None:  # noqa: PLR6301
-        """Print a table of supported data collection types."""
-        DataFactory.show_supported()
-
-    def show_current_data_type(self) -> None:
-        """Print the currently used data collection type."""
-        console.paragraph('Current data type')
-        console.print(self.data_type)
 
     @property
     def peak(self) -> object:

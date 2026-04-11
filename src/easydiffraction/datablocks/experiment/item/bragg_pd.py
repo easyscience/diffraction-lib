@@ -120,59 +120,13 @@ class BraggPdExperiment(PdExperimentBase):
         return len(x)
 
     # ------------------------------------------------------------------
-    #  Instrument (switchable-category pattern)
+    #  Instrument (fixed at creation)
     # ------------------------------------------------------------------
 
     @property
     def instrument(self) -> object:
         """Active instrument model for this experiment."""
         return self._instrument
-
-    @property
-    def instrument_type(self) -> str:
-        """Tag of the active instrument type."""
-        return self._instrument_type
-
-    @instrument_type.setter
-    def instrument_type(self, new_type: str) -> None:
-        """
-        Switch to a different instrument type.
-
-        Parameters
-        ----------
-        new_type : str
-            Instrument tag (e.g. ``'cwl-pd'``).
-        """
-        supported = InstrumentFactory.supported_for(
-            scattering_type=self.type.scattering_type.value,
-            beam_mode=self.type.beam_mode.value,
-            sample_form=self.type.sample_form.value,
-        )
-        supported_tags = [k.type_info.tag for k in supported]
-        if new_type not in supported_tags:
-            log.warning(
-                f"Unsupported instrument type '{new_type}'. "
-                f'Supported: {supported_tags}. '
-                f"For more information, use 'show_supported_instrument_types()'",
-            )
-            return
-        self._instrument = InstrumentFactory.create(new_type)
-        self._instrument_type = new_type
-        console.paragraph(f"Instrument type for experiment '{self.name}' changed to")
-        console.print(new_type)
-
-    def show_supported_instrument_types(self) -> None:
-        """Print a table of supported instrument types."""
-        InstrumentFactory.show_supported(
-            scattering_type=self.type.scattering_type.value,
-            beam_mode=self.type.beam_mode.value,
-            sample_form=self.type.sample_form.value,
-        )
-
-    def show_current_instrument_type(self) -> None:
-        """Print the currently used instrument type."""
-        console.paragraph('Current instrument type')
-        console.print(self.instrument_type)
 
     # ------------------------------------------------------------------
     #  Background (switchable-category pattern)

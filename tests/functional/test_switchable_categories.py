@@ -31,17 +31,17 @@ def _make_project_with_experiment():
 
 
 class TestAnalysisSwitchableCategories:
-    def test_aliases_type_default(self):
+    def test_aliases_default(self):
         project = _make_project_with_experiment()
-        assert project.analysis.aliases_type is not None
+        assert project.analysis.aliases is not None
 
-    def test_constraints_type_default(self):
+    def test_constraints_default(self):
         project = _make_project_with_experiment()
-        assert project.analysis.constraints_type is not None
+        assert project.analysis.constraints is not None
 
-    def test_fit_mode_type_default(self):
+    def test_fit_mode_default(self):
         project = _make_project_with_experiment()
-        assert project.analysis.fit_mode_type is not None
+        assert project.analysis.fit_mode is not None
 
     def test_minimizer_default(self):
         project = _make_project_with_experiment()

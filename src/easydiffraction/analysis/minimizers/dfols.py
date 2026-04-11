@@ -6,6 +6,7 @@ import numpy as np
 from dfols import solve
 
 from easydiffraction.analysis.minimizers.base import MinimizerBase
+from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 from easydiffraction.core.metadata import TypeInfo
 
@@ -17,13 +18,13 @@ class DfolsMinimizer(MinimizerBase):
     """Minimizer using DFO-LS (derivative-free least-squares)."""
 
     type_info = TypeInfo(
-        tag='dfols',
-        description='DFO-LS derivative-free least-squares optimization',
+        tag=MinimizerTypeEnum.DFOLS,
+        description='DFO-LS library for derivative-free least-squares optimization',
     )
 
     def __init__(
         self,
-        name: str = 'dfols',
+        name: str = MinimizerTypeEnum.DFOLS,
         max_iterations: int = DEFAULT_MAX_ITERATIONS,
         **kwargs: object,
     ) -> None:

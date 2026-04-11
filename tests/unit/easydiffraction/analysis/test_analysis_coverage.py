@@ -34,100 +34,6 @@ def _make_project():
 
 
 # ------------------------------------------------------------------
-# Aliases switchable-category pattern
-# ------------------------------------------------------------------
-
-
-class TestAliasesType:
-    def test_getter_returns_default(self):
-        from easydiffraction.analysis.analysis import Analysis
-
-        a = Analysis(project=_make_project())
-        assert a.aliases_type == 'default'
-
-    def test_setter_valid(self, capsys):
-        from easydiffraction.analysis.analysis import Analysis
-
-        a = Analysis(project=_make_project())
-        a.aliases_type = 'default'
-        out = capsys.readouterr().out
-        assert 'Aliases type changed to' in out
-
-    def test_setter_invalid(self, capsys):
-        from easydiffraction.analysis.analysis import Analysis
-
-        a = Analysis(project=_make_project())
-        a.aliases_type = 'nonexistent'
-        out = capsys.readouterr().out
-        assert 'Unsupported' in out
-        assert a.aliases_type == 'default'
-
-    def test_show_supported(self, capsys):
-        from easydiffraction.analysis.analysis import Analysis
-
-        a = Analysis(project=_make_project())
-        a.show_supported_aliases_types()
-        out = capsys.readouterr().out
-        assert 'default' in out
-
-    def test_show_current(self, capsys):
-        from easydiffraction.analysis.analysis import Analysis
-
-        a = Analysis(project=_make_project())
-        a.show_current_aliases_type()
-        out = capsys.readouterr().out
-        assert 'Current aliases type' in out
-        assert 'default' in out
-
-
-# ------------------------------------------------------------------
-# Constraints switchable-category pattern
-# ------------------------------------------------------------------
-
-
-class TestConstraintsType:
-    def test_getter_returns_default(self):
-        from easydiffraction.analysis.analysis import Analysis
-
-        a = Analysis(project=_make_project())
-        assert a.constraints_type == 'default'
-
-    def test_setter_valid(self, capsys):
-        from easydiffraction.analysis.analysis import Analysis
-
-        a = Analysis(project=_make_project())
-        a.constraints_type = 'default'
-        out = capsys.readouterr().out
-        assert 'Constraints type changed to' in out
-
-    def test_setter_invalid(self, capsys):
-        from easydiffraction.analysis.analysis import Analysis
-
-        a = Analysis(project=_make_project())
-        a.constraints_type = 'nonexistent'
-        out = capsys.readouterr().out
-        assert 'Unsupported' in out
-        assert a.constraints_type == 'default'
-
-    def test_show_supported(self, capsys):
-        from easydiffraction.analysis.analysis import Analysis
-
-        a = Analysis(project=_make_project())
-        a.show_supported_constraints_types()
-        out = capsys.readouterr().out
-        assert 'default' in out
-
-    def test_show_current(self, capsys):
-        from easydiffraction.analysis.analysis import Analysis
-
-        a = Analysis(project=_make_project())
-        a.show_current_constraints_type()
-        out = capsys.readouterr().out
-        assert 'Current constraints type' in out
-        assert 'default' in out
-
-
-# ------------------------------------------------------------------
 # AnalysisDisplay.as_cif
 # ------------------------------------------------------------------
 
@@ -258,8 +164,8 @@ class TestCurrentMinimizerSetter:
         from easydiffraction.analysis.analysis import Analysis
 
         a = Analysis(project=_make_project())
-        assert a.current_minimizer == 'lmfit'
-        a.current_minimizer = 'lmfit'
+        assert a.current_minimizer == 'bumps (lm)'
+        a.current_minimizer = 'bumps (lm)'
         out = capsys.readouterr().out
         assert 'Current minimizer changed to' in out
 

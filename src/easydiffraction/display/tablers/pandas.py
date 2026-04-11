@@ -11,9 +11,13 @@ except ImportError:
     HTML = None
     display = None
 
+import re
+
 from easydiffraction.display.tablers.base import TableBackendBase
 from easydiffraction.utils.environment import can_use_ipython_display
 from easydiffraction.utils.logging import log
+
+_RICH_COLOR_RE = re.compile(r'\[(\w+)\](.*?)\[/\1\]')
 
 
 class PandasTableBackend(TableBackendBase):
@@ -106,6 +110,42 @@ class PandasTableBackend(TableBackendBase):
             for column, align in zip(df.columns, alignments, strict=False)
         ]
 
+    @staticmethod
+    def _strip_rich_markup(df: object) -> tuple[object, object | None]:
+        """
+        Strip Rich color markup and build a CSS style frame.
+
+        Scans every cell for patterns like ``[red]text[/red]``. Matching
+        cells have the markup removed and a corresponding ``color:
+        <name>`` CSS entry in the returned style frame.
+
+        Parameters
+        ----------
+        df : object
+            DataFrame whose string cells may contain Rich markup.
+
+        Returns
+        -------
+        tuple[object, object | None]
+            ``(clean_df, style_df)`` where *style_df* is ``None`` when
+            no markup was found.
+        """
+        clean = df.copy()
+        styles = df.copy().astype(str)
+        found = False
+        for col in df.columns:
+            for idx in df.index:
+                val = str(df.at[idx, col])
+                m = _RICH_COLOR_RE.fullmatch(val)
+                if m:
+                    tag, text = m.groups()
+                    clean.at[idx, col] = text
+                    styles.at[idx, col] = f'color: {tag}'
+                    found = True
+                else:
+                    styles.at[idx, col] = ''
+        return clean, styles if found else None
+
     def _apply_styling(self, df: object, alignments: object, color: str) -> object:
         """
         Build a configured Styler with alignments and base styles.
@@ -124,10 +164,14 @@ class PandasTableBackend(TableBackendBase):
         object
             A configured pandas Styler ready for display.
         """
+        df, color_styles = self._strip_rich_markup(df)
+
         table_styles = self._build_base_styles(color)
         header_alignment_styles = self._build_header_alignment_styles(df, alignments)
 
         styler = df.style.format(precision=self.FLOAT_PRECISION)
+        if color_styles is not None:
+            styler = styler.apply(lambda _: color_styles, axis=None)
         styler = styler.set_table_attributes('class="dataframe"')  # For mkdocs-jupyter
         styler = styler.set_table_styles(table_styles + header_alignment_styles)
 

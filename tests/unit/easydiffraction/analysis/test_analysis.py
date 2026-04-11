@@ -34,7 +34,7 @@ def test_show_current_minimizer_prints(capsys):
     a.show_current_minimizer()
     out = capsys.readouterr().out
     assert 'Current minimizer' in out
-    assert 'lmfit' in out
+    assert 'bumps (lm)' in out
 
 
 def test_fit_mode_category_and_joint_fit_experiments(monkeypatch, capsys):
@@ -51,51 +51,6 @@ def test_fit_mode_category_and_joint_fit_experiments(monkeypatch, capsys):
 
     # joint_fit_experiments exists but is empty until fit() populates it
     assert len(a.joint_fit_experiments) == 0
-
-
-def test_fit_mode_type_getter(capsys):
-    from easydiffraction.analysis.analysis import Analysis
-
-    a = Analysis(project=_make_project_with_names([]))
-    assert a.fit_mode_type == 'default'
-
-
-def test_show_supported_fit_mode_types(capsys):
-    from easydiffraction.analysis.analysis import Analysis
-
-    a = Analysis(project=_make_project_with_names([]))
-    a.show_supported_fit_mode_types()
-    out = capsys.readouterr().out
-    assert 'default' in out
-
-
-def test_show_current_fit_mode_type(capsys):
-    from easydiffraction.analysis.analysis import Analysis
-
-    a = Analysis(project=_make_project_with_names([]))
-    a.show_current_fit_mode_type()
-    out = capsys.readouterr().out
-    assert 'Current fit-mode type' in out
-    assert 'default' in out
-
-
-def test_fit_mode_type_setter_valid(capsys):
-    from easydiffraction.analysis.analysis import Analysis
-
-    a = Analysis(project=_make_project_with_names([]))
-    a.fit_mode_type = 'default'
-    assert a.fit_mode_type == 'default'
-
-
-def test_fit_mode_type_setter_invalid(capsys):
-    from easydiffraction.analysis.analysis import Analysis
-
-    a = Analysis(project=_make_project_with_names([]))
-    a.fit_mode_type = 'nonexistent'
-    out = capsys.readouterr().out
-    assert 'Unsupported' in out
-    # Type should remain unchanged
-    assert a.fit_mode_type == 'default'
 
 
 def test_analysis_help(capsys):

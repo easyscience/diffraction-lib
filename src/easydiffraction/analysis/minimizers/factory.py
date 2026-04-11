@@ -6,6 +6,7 @@ from __future__ import annotations
 
 from typing import ClassVar
 
+from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.core.factory import FactoryBase
 
 
@@ -13,5 +14,5 @@ class MinimizerFactory(FactoryBase):
     """Factory for creating minimizer instances."""
 
     _default_rules: ClassVar[dict] = {
-        frozenset(): 'lmfit',
+        frozenset(): MinimizerTypeEnum.default(),
     }
