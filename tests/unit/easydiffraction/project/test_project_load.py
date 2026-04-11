@@ -46,7 +46,7 @@ class TestLoadStructures:
             fract_x=0.0,
             fract_y=0.0,
             fract_z=0.0,
-            b_iso=0.5,
+            adp_iso=0.5,
         )
         original.save_as(str(tmp_path / 'proj'))
 
@@ -58,7 +58,7 @@ class TestLoadStructures:
         assert abs(ls.cell.length_a.value - 3.88) < 1e-6
         assert len(ls.atom_sites) == 1
         assert ls.atom_sites['Co'].type_symbol.value == 'Co'
-        assert abs(ls.atom_sites['Co'].b_iso.value - 0.5) < 1e-6
+        assert abs(ls.atom_sites['Co'].adp_iso.value - 0.5) < 1e-6
 
 
 class TestLoadAnalysis:

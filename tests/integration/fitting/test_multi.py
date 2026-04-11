@@ -27,7 +27,7 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
         fract_y=0,
         fract_z=0,
         wyckoff_letter='a',
-        b_iso=0.2,
+        adp_iso=0.2,
         occupancy=0.5,
     )
     model_1.atom_sites.create(
@@ -37,7 +37,7 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
         fract_y=0,
         fract_z=0,
         wyckoff_letter='a',
-        b_iso=0.2,
+        adp_iso=0.2,
         occupancy=0.5,
     )
     model_1.atom_sites.create(
@@ -47,7 +47,7 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
         fract_y=0.5,
         fract_z=0.5,
         wyckoff_letter='b',
-        b_iso=0.2567,
+        adp_iso=0.2567,
     )
     model_1.atom_sites.create(
         label='O',
@@ -56,7 +56,7 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
         fract_y=0.5,
         fract_z=0.5,
         wyckoff_letter='c',
-        b_iso=1.4041,
+        adp_iso=1.4041,
     )
 
     model_2 = StructureFactory.from_scratch(name='si')
@@ -70,7 +70,7 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
         fract_y=0.0,
         fract_z=0.0,
         wyckoff_letter='a',
-        b_iso=0.0,
+        adp_iso=0.0,
     )
 
     # Set experiment
@@ -111,12 +111,12 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
 
     # Select fitting parameters
     model_1.cell.length_a.free = True
-    model_1.atom_sites['La'].b_iso.free = True
-    model_1.atom_sites['Ba'].b_iso.free = True
-    model_1.atom_sites['Co'].b_iso.free = True
-    model_1.atom_sites['O'].b_iso.free = True
+    model_1.atom_sites['La'].adp_iso.free = True
+    model_1.atom_sites['Ba'].adp_iso.free = True
+    model_1.atom_sites['Co'].adp_iso.free = True
+    model_1.atom_sites['O'].adp_iso.free = True
     model_2.cell.length_a.free = True
-    model_2.atom_sites['Si'].b_iso.free = True
+    model_2.atom_sites['Si'].adp_iso.free = True
     expt.linked_phases['lbco'].scale.free = True
     expt.linked_phases['si'].scale.free = True
     expt.peak.broad_gauss_sigma_0.free = True
@@ -151,7 +151,7 @@ def _test_joint_fit_bragg_pdf_neutron_pd_tof_si() -> None:
         fract_x=0.125,
         fract_y=0.125,
         fract_z=0.125,
-        b_iso=0.5,
+        adp_iso=0.5,
     )
 
     # Set Bragg experiment (SEPD, TOF)
@@ -205,7 +205,7 @@ def _test_joint_fit_bragg_pdf_neutron_pd_tof_si() -> None:
 
     # Select fitting parameters — shared structure
     model.cell.length_a.free = True
-    model.atom_sites['Si'].b_iso.free = True
+    model.atom_sites['Si'].adp_iso.free = True
 
     # Select fitting parameters — Bragg experiment
     bragg_expt.linked_phases['si'].scale.free = True

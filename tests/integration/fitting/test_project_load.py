@@ -41,7 +41,7 @@ def _create_lbco_project() -> Project:
         fract_z=0,
         wyckoff_letter='a',
         occupancy=0.5,
-        b_iso=0.5,
+        adp_iso=0.5,
     )
     model.atom_sites.create(
         label='Ba',
@@ -51,7 +51,7 @@ def _create_lbco_project() -> Project:
         fract_z=0,
         wyckoff_letter='a',
         occupancy=0.5,
-        b_iso=0.5,
+        adp_iso=0.5,
     )
     model.atom_sites.create(
         label='Co',
@@ -60,7 +60,7 @@ def _create_lbco_project() -> Project:
         fract_y=0.5,
         fract_z=0.5,
         wyckoff_letter='b',
-        b_iso=0.5,
+        adp_iso=0.5,
     )
     model.atom_sites.create(
         label='O',
@@ -69,7 +69,7 @@ def _create_lbco_project() -> Project:
         fract_y=0.5,
         fract_z=0.5,
         wyckoff_letter='c',
-        b_iso=0.5,
+        adp_iso=0.5,
     )
 
     # Experiment
@@ -104,11 +104,11 @@ def _create_lbco_project() -> Project:
     # Aliases and constraints
     project.analysis.aliases.create(
         label='biso_La',
-        param=model.atom_sites['La'].b_iso,
+        param=model.atom_sites['La'].adp_iso,
     )
     project.analysis.aliases.create(
         label='biso_Ba',
-        param=model.atom_sites['Ba'].b_iso,
+        param=model.atom_sites['Ba'].adp_iso,
     )
     project.analysis.constraints.create(expression='biso_Ba = biso_La')
 

@@ -34,10 +34,10 @@ project.structures.show_names()
 structure = project.structures['tbti']
 
 # %%
-structure.atom_sites['Tb'].b_iso = 0.0
-structure.atom_sites['Ti'].b_iso = 0.0
-structure.atom_sites['O1'].b_iso = 0.0
-structure.atom_sites['O2'].b_iso = 0.0
+structure.atom_sites['Tb'].adp_iso = 0.0
+structure.atom_sites['Ti'].adp_iso = 0.0
+structure.atom_sites['O1'].adp_iso = 0.0
+structure.atom_sites['O2'].adp_iso = 0.0
 
 # %%
 structure.show_as_cif()

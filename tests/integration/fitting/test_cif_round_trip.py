@@ -265,7 +265,7 @@ def test_structure_cif_round_trip_preserves_parameters() -> None:
         fract_z=0,
         wyckoff_letter='a',
         occupancy=0.5,
-        b_iso=0.5,
+        adp_iso=0.5,
     )
     original.atom_sites.create(
         label='Co',
@@ -274,7 +274,7 @@ def test_structure_cif_round_trip_preserves_parameters() -> None:
         fract_y=0.5,
         fract_z=0.5,
         wyckoff_letter='b',
-        b_iso=0.5,
+        adp_iso=0.5,
     )
     original.atom_sites.create(
         label='O',
@@ -283,7 +283,7 @@ def test_structure_cif_round_trip_preserves_parameters() -> None:
         fract_y=0.5,
         fract_z=0.5,
         wyckoff_letter='c',
-        b_iso=0.5,
+        adp_iso=0.5,
     )
     # Apply symmetry constraints before serialisation
     original._update_categories()
@@ -315,8 +315,8 @@ def test_structure_cif_round_trip_preserves_parameters() -> None:
             err_msg=f'fract_x mismatch for {label}',
         )
         assert_almost_equal(
-            loaded_site.b_iso.value,
-            orig_site.b_iso.value,
+            loaded_site.adp_iso.value,
+            orig_site.adp_iso.value,
             decimal=4,
-            err_msg=f'b_iso mismatch for {label}',
+            err_msg=f'adp_iso mismatch for {label}',
         )

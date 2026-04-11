@@ -9,12 +9,15 @@ in crystallographic structures.
 
 from __future__ import annotations
 
+import math
+
 from cryspy.A_functions_base.database import DATABASE
 
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
+from easydiffraction.datablocks.structure.categories.atom_sites.enums import AdpTypeEnum
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
@@ -110,23 +113,30 @@ class AtomSite(CategoryItem):
             ),
             cif_handler=CifHandler(names=['_atom_site.occupancy']),
         )
-        self._b_iso = Parameter(
-            name='b_iso',
+        self._adp_iso = Parameter(
+            name='adp_iso',
             description='Isotropic atomic displacement parameter (ADP) for the atom site.',
             units='Å²',
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0.0, le=100.0),
             ),
-            cif_handler=CifHandler(names=['_atom_site.B_iso_or_equiv']),
+            cif_handler=CifHandler(
+                names=[
+                    '_atom_site.B_iso_or_equiv',
+                    '_atom_site.U_iso_or_equiv',
+                ]
+            ),
         )
         self._adp_type = StringDescriptor(
             name='adp_type',
             description='Type of atomic displacement parameter (ADP) '
             'used (e.g., Biso, Uiso, Uani, Bani).',
             value_spec=AttributeSpec(
-                default='Biso',
-                validator=MembershipValidator(allowed=['Biso']),
+                default=AdpTypeEnum.default(),
+                validator=MembershipValidator(
+                    allowed=[m.value for m in AdpTypeEnum]
+                ),
             ),
             cif_handler=CifHandler(names=['_atom_site.adp_type']),
         )
@@ -179,6 +189,48 @@ class AtomSite(CategoryItem):
         # TODO: What to pass as default?
         return self._wyckoff_letter_allowed_values[0]
 
+    def _convert_adp_values(self, old_type: str, new_type: str) -> None:
+        """
+        Convert ADP values when the type changes.
+
+        Handles B ↔ U conversion using B = 8π²U.
+
+        Parameters
+        ----------
+        old_type : str
+            Previous ADP type value.
+        new_type : str
+            New ADP type value.
+        """
+        b_to_u = AdpTypeEnum(old_type) in (AdpTypeEnum.BISO, AdpTypeEnum.BANI)
+        u_to_b = AdpTypeEnum(old_type) in (AdpTypeEnum.UISO, AdpTypeEnum.UANI)
+        factor = 8.0 * math.pi**2
+        if b_to_u and AdpTypeEnum(new_type) in (AdpTypeEnum.UISO, AdpTypeEnum.UANI):
+            self._adp_iso.value = self._adp_iso.value / factor
+        elif u_to_b and AdpTypeEnum(new_type) in (AdpTypeEnum.BISO, AdpTypeEnum.BANI):
+            self._adp_iso.value = self._adp_iso.value * factor
+
+    def _reorder_adp_cif_names(self, new_type: str) -> None:
+        """
+        Reorder CIF names on ``adp_iso`` so serialisation emits the
+        correct tag.
+
+        Parameters
+        ----------
+        new_type : str
+            The new ADP type value.
+        """
+        if AdpTypeEnum(new_type) in (AdpTypeEnum.UISO, AdpTypeEnum.UANI):
+            self._adp_iso._cif_handler._names = [
+                '_atom_site.U_iso_or_equiv',
+                '_atom_site.B_iso_or_equiv',
+            ]
+        else:
+            self._adp_iso._cif_handler._names = [
+                '_atom_site.B_iso_or_equiv',
+                '_atom_site.U_iso_or_equiv',
+            ]
+
     # ------------------------------------------------------------------
     #  Public properties
     # ------------------------------------------------------------------
@@ -226,7 +278,12 @@ class AtomSite(CategoryItem):
 
     @adp_type.setter
     def adp_type(self, value: str) -> None:
+        old_type = self._adp_type.value
         self._adp_type.value = value
+        new_type = self._adp_type.value
+        if old_type != new_type:
+            self._convert_adp_values(old_type, new_type)
+            self._reorder_adp_cif_names(new_type)
 
     @property
     def wyckoff_letter(self) -> StringDescriptor:
@@ -300,18 +357,18 @@ class AtomSite(CategoryItem):
         self._occupancy.value = value
 
     @property
-    def b_iso(self) -> Parameter:
+    def adp_iso(self) -> Parameter:
         """
         Isotropic ADP for the atom site (Å²).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
         """
-        return self._b_iso
+        return self._adp_iso
 
-    @b_iso.setter
-    def b_iso(self, value: float) -> None:
-        self._b_iso.value = value
+    @adp_iso.setter
+    def adp_iso(self, value: float) -> None:
+        self._adp_iso.value = value
 
 
 @AtomSitesFactory.register

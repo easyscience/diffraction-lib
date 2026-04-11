@@ -107,7 +107,7 @@ class Summary:
                     f'{site.fract_y.value:.5f}',
                     f'{site.fract_z.value:.5f}',
                     f'{site.occupancy.value:.5f}',
-                    f'{site.b_iso.value:.5f}',
+                    f'{site.adp_iso.value:.5f}',
                 ]
                 for site in model.atom_sites
             ]

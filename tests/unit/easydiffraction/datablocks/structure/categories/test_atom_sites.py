@@ -60,7 +60,7 @@ class TestAtomSite:
         assert site.fract_y.value == 0.0
         assert site.fract_z.value == 0.0
         assert site.occupancy.value == 1.0
-        assert site.b_iso.value == 0.0
+        assert site.adp_iso.value == 0.0
         assert site.adp_type.value == 'Biso'
 
     def test_label_setter(self):
@@ -95,12 +95,12 @@ class TestAtomSite:
         site.occupancy = 0.5
         assert site.occupancy.value == 0.5
 
-    def test_b_iso_setter(self):
+    def test_adp_iso_setter(self):
         from easydiffraction.datablocks.structure.categories.atom_sites.default import AtomSite
 
         site = AtomSite()
-        site.b_iso = 1.5
-        assert site.b_iso.value == 1.5
+        site.adp_iso = 1.5
+        assert site.adp_iso.value == 1.5
 
     def test_type_symbol_allowed_values(self):
         from easydiffraction.datablocks.structure.categories.atom_sites.default import AtomSite

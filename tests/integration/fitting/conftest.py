@@ -29,7 +29,7 @@ def lbco_fitted_project():
         fract_z=0,
         wyckoff_letter='a',
         occupancy=0.5,
-        b_iso=0.1,
+        adp_iso=0.1,
     )
     model.atom_sites.create(
         label='Ba',
@@ -39,7 +39,7 @@ def lbco_fitted_project():
         fract_z=0,
         wyckoff_letter='a',
         occupancy=0.5,
-        b_iso=0.1,
+        adp_iso=0.1,
     )
     model.atom_sites.create(
         label='Co',
@@ -48,7 +48,7 @@ def lbco_fitted_project():
         fract_y=0.5,
         fract_z=0.5,
         wyckoff_letter='b',
-        b_iso=0.1,
+        adp_iso=0.1,
     )
     model.atom_sites.create(
         label='O',
@@ -57,7 +57,7 @@ def lbco_fitted_project():
         fract_y=0.5,
         fract_z=0.5,
         wyckoff_letter='c',
-        b_iso=0.1,
+        adp_iso=0.1,
     )
 
     data_path = download_data(id=3, destination=TEMP_DIR)

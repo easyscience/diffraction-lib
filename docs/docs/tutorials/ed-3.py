@@ -129,7 +129,7 @@ project.structures['lbco'].atom_sites.create(
     fract_y=0,
     fract_z=0,
     wyckoff_letter='a',
-    b_iso=0.5,
+    adp_iso=0.5,
     occupancy=0.5,
 )
 project.structures['lbco'].atom_sites.create(
@@ -139,7 +139,7 @@ project.structures['lbco'].atom_sites.create(
     fract_y=0,
     fract_z=0,
     wyckoff_letter='a',
-    b_iso=0.5,
+    adp_iso=0.5,
     occupancy=0.5,
 )
 project.structures['lbco'].atom_sites.create(
@@ -149,7 +149,7 @@ project.structures['lbco'].atom_sites.create(
     fract_y=0.5,
     fract_z=0.5,
     wyckoff_letter='b',
-    b_iso=0.5,
+    adp_iso=0.5,
 )
 project.structures['lbco'].atom_sites.create(
     label='O',
@@ -158,7 +158,7 @@ project.structures['lbco'].atom_sites.create(
     fract_y=0.5,
     fract_z=0.5,
     wyckoff_letter='c',
-    b_iso=0.5,
+    adp_iso=0.5,
 )
 
 # %% [markdown]
@@ -516,10 +516,10 @@ project.save_as(dir_path='lbco_hrpt', temporary=True)
 # Set more parameters to be refined.
 
 # %%
-project.structures['lbco'].atom_sites['La'].b_iso.free = True
-project.structures['lbco'].atom_sites['Ba'].b_iso.free = True
-project.structures['lbco'].atom_sites['Co'].b_iso.free = True
-project.structures['lbco'].atom_sites['O'].b_iso.free = True
+project.structures['lbco'].atom_sites['La'].adp_iso.free = True
+project.structures['lbco'].atom_sites['Ba'].adp_iso.free = True
+project.structures['lbco'].atom_sites['Co'].adp_iso.free = True
+project.structures['lbco'].atom_sites['O'].adp_iso.free = True
 
 # %% [markdown]
 # Show free parameters after selection.
@@ -559,11 +559,11 @@ project.save_as(dir_path='lbco_hrpt', temporary=True)
 # %%
 project.analysis.aliases.create(
     label='biso_La',
-    param=project.structures['lbco'].atom_sites['La'].b_iso,
+    param=project.structures['lbco'].atom_sites['La'].adp_iso,
 )
 project.analysis.aliases.create(
     label='biso_Ba',
-    param=project.structures['lbco'].atom_sites['Ba'].b_iso,
+    param=project.structures['lbco'].atom_sites['Ba'].adp_iso,
 )
 
 # %% [markdown]

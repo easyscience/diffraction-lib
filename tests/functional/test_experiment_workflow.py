@@ -34,7 +34,7 @@ def _make_project_with_experiment():
         fract_z=0,
         wyckoff_letter='a',
         occupancy=0.5,
-        b_iso=0.5,
+        adp_iso=0.5,
     )
 
     # Add experiment from data file

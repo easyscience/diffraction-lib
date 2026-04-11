@@ -29,7 +29,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
         fract_y=0.25,
         fract_z=0.167,
         wyckoff_letter='c',
-        b_iso=1.37,
+        adp_iso=1.37,
     )
     model.atom_sites.create(
         label='S',
@@ -38,7 +38,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
         fract_y=0.25,
         fract_z=0.684,
         wyckoff_letter='c',
-        b_iso=0.3777,
+        adp_iso=0.3777,
     )
     model.atom_sites.create(
         label='O1',
@@ -47,7 +47,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
         fract_y=0.25,
         fract_z=0.5954,
         wyckoff_letter='c',
-        b_iso=1.9764,
+        adp_iso=1.9764,
     )
     model.atom_sites.create(
         label='O2',
@@ -56,7 +56,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
         fract_y=0.25,
         fract_z=0.5432,
         wyckoff_letter='c',
-        b_iso=1.4456,
+        adp_iso=1.4456,
     )
     model.atom_sites.create(
         label='O3',
@@ -65,7 +65,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
         fract_y=0.0272,
         fract_z=0.8086,
         wyckoff_letter='d',
-        b_iso=1.2822,
+        adp_iso=1.2822,
     )
 
     # Set experiments
@@ -156,7 +156,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         fract_y=0.25,
         fract_z=0.167,
         wyckoff_letter='c',
-        b_iso=1.37,
+        adp_iso=1.37,
     )
     model.atom_sites.create(
         label='S',
@@ -165,7 +165,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         fract_y=0.25,
         fract_z=0.684,
         wyckoff_letter='c',
-        b_iso=0.3777,
+        adp_iso=0.3777,
     )
     model.atom_sites.create(
         label='O1',
@@ -174,7 +174,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         fract_y=0.25,
         fract_z=0.5954,
         wyckoff_letter='c',
-        b_iso=1.9764,
+        adp_iso=1.9764,
     )
     model.atom_sites.create(
         label='O2',
@@ -183,7 +183,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         fract_y=0.25,
         fract_z=0.5432,
         wyckoff_letter='c',
-        b_iso=1.4456,
+        adp_iso=1.4456,
     )
     model.atom_sites.create(
         label='O3',
@@ -192,7 +192,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         fract_y=0.0272,
         fract_z=0.8086,
         wyckoff_letter='d',
-        b_iso=1.2822,
+        adp_iso=1.2822,
     )
 
     # Set experiments

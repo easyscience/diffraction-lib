@@ -334,8 +334,8 @@ data live in separate collections on `Structure`. Every atom always has
 an entry in both collections; when `adp_type` is isotropic, the aniso
 parameters hold `0.0` and are ignored by calculators.
 
-**Type-neutral names.** `atom_site.adp_iso` replaces the former
-`atom_site.b_iso`. Its physical meaning (B or U) is determined by
+**Type-neutral names.** `atom_site.adp_iso` is the type-neutral
+isotropic ADP parameter. Its physical meaning (B or U) is determined by
 `atom_site.adp_type`. Similarly, `atom_site_aniso.adp_11`…`adp_23` are
 type-neutral tensor components.
 
@@ -868,7 +868,7 @@ project.structures['lbco'].atom_sites.create(
     fract_y=0,
     fract_z=0,
     wyckoff_letter='a',
-    b_iso=0.5,
+    adp_iso=0.5,
     occupancy=0.5,
 )
 

@@ -10,9 +10,9 @@ from easydiffraction.io.cif.handler import CifHandler
 
 def test_alias_creation_and_collection():
     p1 = Parameter(
-        name='b_iso',
+        name='adp_iso',
         value_spec=AttributeSpec(default=0.5),
-        cif_handler=CifHandler(names=['_atom_site.b_iso']),
+        cif_handler=CifHandler(names=['_atom_site.adp_iso']),
     )
     a = Alias()
     a.label = 'x'

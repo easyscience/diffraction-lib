@@ -280,10 +280,10 @@ class CryspyCalculator(CalculatorBase):
         for idx, atom_site in enumerate(structure.atom_sites):
             cryspy_occ[idx] = atom_site.occupancy.value
 
-        # Atomic ADPs - Biso only for now
+        # Atomic ADPs - isotropic only for now
         cryspy_biso = cryspy_model_dict['atom_b_iso']
         for idx, atom_site in enumerate(structure.atom_sites):
-            cryspy_biso[idx] = atom_site.b_iso.value
+            cryspy_biso[idx] = atom_site.adp_iso.value
 
     @staticmethod
     def _update_experiment_in_cryspy_dict(

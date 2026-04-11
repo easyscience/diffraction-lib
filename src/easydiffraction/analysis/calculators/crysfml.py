@@ -198,8 +198,8 @@ class CrysfmlCalculator(CalculatorBase):
                 '_fract_y': atom.fract_y.value,
                 '_fract_z': atom.fract_z.value,
                 '_occupancy': atom.occupancy.value,
-                '_adp_type': 'Biso',  # Assuming Biso for simplicity
-                '_B_iso_or_equiv': atom.b_iso.value,
+                '_adp_type': atom.adp_type.value,
+                '_B_iso_or_equiv': atom.adp_iso.value,
             }
             structure_dict[structure.name]['_atom_site'].append(atom_site)
 

@@ -488,7 +488,7 @@ project_1.structures['si'].atom_sites.create(
     fract_y=0,
     fract_z=0,
     wyckoff_letter='a',
-    b_iso=0.89,
+    adp_iso=0.89,
 )
 
 # %% [markdown]
@@ -1013,7 +1013,7 @@ project_2.structures['lbco'].atom_sites.create(
     fract_y=0,
     fract_z=0,
     wyckoff_letter='a',
-    b_iso=0.95,
+    adp_iso=0.95,
     occupancy=0.5,
 )
 project_2.structures['lbco'].atom_sites.create(
@@ -1023,7 +1023,7 @@ project_2.structures['lbco'].atom_sites.create(
     fract_y=0,
     fract_z=0,
     wyckoff_letter='a',
-    b_iso=0.95,
+    adp_iso=0.95,
     occupancy=0.5,
 )
 project_2.structures['lbco'].atom_sites.create(
@@ -1033,7 +1033,7 @@ project_2.structures['lbco'].atom_sites.create(
     fract_y=0.5,
     fract_z=0.5,
     wyckoff_letter='b',
-    b_iso=0.80,
+    adp_iso=0.80,
 )
 project_2.structures['lbco'].atom_sites.create(
     label='O',
@@ -1042,7 +1042,7 @@ project_2.structures['lbco'].atom_sites.create(
     fract_y=0.5,
     fract_z=0.5,
     wyckoff_letter='c',
-    b_iso=1.66,
+    adp_iso=1.66,
 )
 
 # %% [markdown]
@@ -1385,7 +1385,7 @@ project_2.structures['si'].atom_sites.create(
     fract_y=0,
     fract_z=0,
     wyckoff_letter='a',
-    b_iso=0.89,
+    adp_iso=0.89,
 )
 
 # Assign Structure to Experiment

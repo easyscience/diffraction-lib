@@ -273,11 +273,11 @@ An example of setting aliases for parameters in a structure:
 # Set aliases for the atomic displacement parameters
 project.analysis.aliases.create(
     label='biso_La',
-    param_uid=project.structures['lbco'].atom_sites['La'].b_iso.uid,
+    param_uid=project.structures['lbco'].atom_sites['La'].adp_iso.uid,
 )
 project.analysis.aliases.create(
     label='biso_Ba',
-    param_uid=project.structures['lbco'].atom_sites['Ba'].b_iso.uid,
+    param_uid=project.structures['lbco'].atom_sites['Ba'].adp_iso.uid,
 )
 
 # Set aliases for the occupancies of the atom sites

@@ -13,9 +13,9 @@ reference, and it belongs to a specific category.
   of the CIF name to comply with Python naming conventions. For example,
   `name_H-M_alt` becomes `name_h_m`, replacing hyphens with underscores
   and using lowercase letters.
-- In rare cases, the EasyDiffraction name is a bit shorter, like `b_iso`
-  instead of CIF `B_iso_or_equiv`, to make the code a bit more
-  user-friendly.
+- In rare cases, the EasyDiffraction name is a bit shorter, like `adp_iso`
+  instead of CIF `B_iso_or_equiv` / `U_iso_or_equiv`, to make the code
+  a bit more user-friendly.
 - When there is no defined CIF name for a parameter, EasyDiffraction
   introduces its own name, which is used in the code as well as an
   equivalent CIF name to be placed in the custom CIF dictionary
@@ -106,7 +106,7 @@ EasyDiffraction.
     |                                                     | :material-map-marker: [fract_z][atom_site]                   | atom_sites['ID'].fract_z           |
     |                                                     | :material-format-color-fill: [occupancy][atom_site]          | atom_sites['ID'].occupancy         |
     |                                                     | :material-cursor-move: [adp_type][atom_site]                 | atom_sites['ID'].adp_type          |
-    |                                                     | :material-cursor-move: [b_iso][atom_site]                    | atom_sites['ID'].b_iso             |
+    |                                                     | :material-cursor-move: [adp_iso][atom_site]                  | atom_sites['ID'].adp_iso           |
     |                                                     | :material-reflect-horizontal: [multiplicity][atom_site]      | atom_sites['ID'].multiplicity      |
     |                                                     | :material-reflect-horizontal: [wyckoff_letter][atom_site]    | atom_sites['ID'].wyckoff_letter    |
 
@@ -129,7 +129,7 @@ EasyDiffraction.
     |                                                     | :material-map-marker: [fract_z][atom_site]                   | \_atom_site.fract_z                     | [coreCIF][1]{:.label-cif} |
     |                                                     | :material-format-color-fill: [occupancy][atom_site]          | \_atom_site.occupancy                   | [coreCIF][1]{:.label-cif} |
     |                                                     | :material-cursor-move: [adp_type][atom_site]                 | \_atom_site.ADP_type                    | [coreCIF][1]{:.label-cif} |
-    |                                                     | :material-cursor-move: [b_iso][atom_site]                    | \_atom_site.B_iso_or_equiv              | [coreCIF][1]{:.label-cif} |
+    |                                                     | :material-cursor-move: [adp_iso][atom_site]                  | \_atom_site.B_iso_or_equiv              | [coreCIF][1]{:.label-cif} |
     |                                                     | :material-reflect-horizontal: [multiplicity][atom_site]      | \_atom_site.site_symmetry_multiplicity  | [coreCIF][1]{:.label-cif} |
     |                                                     | :material-reflect-horizontal: [wyckoff_letter][atom_site]    | \_atom_site.Wyckoff_symbol              | [coreCIF][1]{:.label-cif} |
 

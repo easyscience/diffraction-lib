@@ -49,7 +49,7 @@ structure_1.atom_sites.create(
     fract_y=0,
     fract_z=0,
     wyckoff_letter='a',
-    b_iso=0.2,
+    adp_iso=0.2,
     occupancy=0.5,
 )
 structure_1.atom_sites.create(
@@ -59,7 +59,7 @@ structure_1.atom_sites.create(
     fract_y=0,
     fract_z=0,
     wyckoff_letter='a',
-    b_iso=0.2,
+    adp_iso=0.2,
     occupancy=0.5,
 )
 structure_1.atom_sites.create(
@@ -69,7 +69,7 @@ structure_1.atom_sites.create(
     fract_y=0.5,
     fract_z=0.5,
     wyckoff_letter='b',
-    b_iso=0.2567,
+    adp_iso=0.2567,
 )
 structure_1.atom_sites.create(
     label='O',
@@ -78,7 +78,7 @@ structure_1.atom_sites.create(
     fract_y=0.5,
     fract_z=0.5,
     wyckoff_letter='c',
-    b_iso=1.4041,
+    adp_iso=1.4041,
 )
 
 # %% [markdown]
@@ -111,7 +111,7 @@ structure_2.atom_sites.create(
     fract_y=0.0,
     fract_z=0.0,
     wyckoff_letter='a',
-    b_iso=0.0,
+    adp_iso=0.0,
 )
 
 # %% [markdown]
@@ -275,8 +275,8 @@ project.analysis.current_minimizer = 'lmfit'
 
 # %%
 structure_1.cell.length_a.free = True
-structure_1.atom_sites['Co'].b_iso.free = True
-structure_1.atom_sites['O'].b_iso.free = True
+structure_1.atom_sites['Co'].adp_iso.free = True
+structure_1.atom_sites['O'].adp_iso.free = True
 
 structure_2.cell.length_a.free = True
 

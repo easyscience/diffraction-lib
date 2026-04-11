@@ -108,7 +108,7 @@ project.structures['nacl'].atom_sites.create(
     fract_y=0,
     fract_z=0,
     occupancy=1,
-    b_iso_or_equiv=0.5,
+    adp_iso=0.5,
 )
 project.structures['nacl'].atom_sites.create(
     label='Cl',
@@ -117,7 +117,7 @@ project.structures['nacl'].atom_sites.create(
     fract_y=0,
     fract_z=0.5,
     occupancy=1,
-    b_iso_or_equiv=0.5,
+    adp_iso=0.5,
 )
 ```
 

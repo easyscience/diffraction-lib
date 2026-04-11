@@ -26,7 +26,7 @@ def test_single_fit_neutron_pd_tof_si() -> None:
         fract_y=0.125,
         fract_z=0.125,
         wyckoff_letter='a',
-        b_iso=0.529,
+        adp_iso=0.529,
     )
 
     # Set experiment
@@ -62,7 +62,7 @@ def test_single_fit_neutron_pd_tof_si() -> None:
 
     # Select fitting parameters
     model.cell.length_a.free = True
-    model.atom_sites['Si'].b_iso.free = True
+    model.atom_sites['Si'].adp_iso.free = True
     expt.linked_phases['si'].scale.free = True
     expt.instrument.calib_d_to_tof_offset.free = True
     for point in expt.background:
@@ -92,7 +92,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
         fract_y=0.0,
         fract_z=0.25,
         wyckoff_letter='b',
-        b_iso=0.9,
+        adp_iso=0.9,
     )
     model.atom_sites.create(
         label='Al',
@@ -101,7 +101,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
         fract_y=0.25171,
         fract_z=0.25171,
         wyckoff_letter='a',
-        b_iso=0.66,
+        adp_iso=0.66,
     )
     model.atom_sites.create(
         label='Na',
@@ -110,7 +110,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
         fract_y=0.08481,
         fract_z=0.08481,
         wyckoff_letter='a',
-        b_iso=1.9,
+        adp_iso=1.9,
     )
     model.atom_sites.create(
         label='F1',
@@ -119,7 +119,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
         fract_y=0.3053,
         fract_z=0.1195,
         wyckoff_letter='c',
-        b_iso=0.9,
+        adp_iso=0.9,
     )
     model.atom_sites.create(
         label='F2',
@@ -128,7 +128,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
         fract_y=0.3634,
         fract_z=0.1867,
         wyckoff_letter='c',
-        b_iso=1.28,
+        adp_iso=1.28,
     )
     model.atom_sites.create(
         label='F3',
@@ -137,7 +137,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
         fract_y=0.4612,
         fract_z=0.4612,
         wyckoff_letter='a',
-        b_iso=0.79,
+        adp_iso=0.79,
     )
 
     # Set experiment
