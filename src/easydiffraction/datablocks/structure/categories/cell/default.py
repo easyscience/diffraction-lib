@@ -38,7 +38,7 @@ class Cell(CategoryItem):
             units='Å',
             value_spec=AttributeSpec(
                 default=10.0,
-                validator=RangeValidator(ge=0, le=3.885),
+                validator=RangeValidator(ge=0, le=30),
             ),
             cif_handler=CifHandler(names=['_cell.length_a']),
         )
