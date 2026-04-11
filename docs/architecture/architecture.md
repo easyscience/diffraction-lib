@@ -149,6 +149,29 @@ def _set_sample_form(self, value: str) -> None:
 
 ### 2.3 CategoryItem and CategoryCollection
 
+**Parameter access pattern.** Users reach any parameter through at most
+two levels of navigation from the datablock:
+
+```python
+# CategoryItem → Parameter
+structure.cell.length_a = 3.88
+experiment.instrument.setup_wavelength = 1.494
+
+# CategoryCollection[item_id] → Parameter
+structure.atom_sites['Si'].adp_iso = 0.47
+experiment.background['10'].y = 170
+```
+
+The general forms are:
+
+- `DATABLOCK.CATEGORY_ITEM.PARAMETER`
+- `DATABLOCK.CATEGORY_COLLECTION[ITEM_ID].PARAMETER`
+
+This two-level convention (category then parameter) is a deliberate
+design constraint. Categories are never nested inside other categories
+(see § 9.7), which keeps the path depth uniform and the API
+predictable.
+
 | Aspect          | `CategoryItem`                     | `CategoryCollection`                      |
 | --------------- | ---------------------------------- | ----------------------------------------- |
 | CIF analogy     | Single category row                | Loop (table) of rows                      |
@@ -285,17 +308,53 @@ being replaced.
 
 ```shell
 DatablockItem
-└── Structure                       # name, cell, space_group, atom_sites
+└── Structure                       # name, cell, space_group, atom_sites, atom_site_aniso
 ```
 
-A `Structure` contains three categories:
+A `Structure` contains four categories:
 
 - `Cell` — unit cell parameters (`CategoryItem`)
 - `SpaceGroup` — symmetry information (`CategoryItem`)
-- `AtomSites` — atomic positions collection (`CategoryCollection`)
+- `AtomSites` — atomic positions and isotropic ADP (`CategoryCollection`)
+- `AtomSiteAniso` — anisotropic ADP tensor components
+  (`CategoryCollection`)
 
 Symmetry constraints (cell metric, atomic coordinates, ADPs) are applied
 via the `crystallography` module during `_update_categories()`.
+
+### 4.2 Atomic Displacement Parameters (ADP)
+
+ADP support covers four CIF-standard types: **Biso**, **Uiso**,
+**Bani**, **Uani**. The design uses **type-neutral parameter names** so
+that switching type is a one-line operation on `adp_type`.
+
+**Two sibling collections.** Following CIF conventions (`_atom_site`
+and `_atom_site_aniso` are separate loops), isotropic and anisotropic
+data live in separate collections on `Structure`. Every atom always has
+an entry in both collections; when `adp_type` is isotropic, the aniso
+parameters hold `0.0` and are ignored by calculators.
+
+**Type-neutral names.** `atom_site.adp_iso` replaces the former
+`atom_site.b_iso`. Its physical meaning (B or U) is determined by
+`atom_site.adp_type`. Similarly, `atom_site_aniso.adp_11`…`adp_23` are
+type-neutral tensor components.
+
+**Dual CIF names.** Each parameter's `CifHandler` carries both CIF name
+variants (e.g. `['_atom_site.B_iso_or_equiv',
+'_atom_site.U_iso_or_equiv']`). Reading tries each name until a match
+is found; writing uses `names[0]`. The `adp_type` setter reorders the
+list so the correct tag is emitted.
+
+**Auto-conversion.** Setting `adp_type` triggers value conversion:
+B ↔ U via `B = 8π²U`; iso → ani seeds the diagonal; ani → iso
+averages the diagonal.
+
+**Collection sync.** `Structure._update_categories()` reconciles the
+two collections: adds missing aniso entries, removes stale ones, and
+rekeys on label rename.
+
+See [`adp_implementation.md`](adp_implementation.md) for the full
+implementation plan.
 
 ---
 
@@ -400,6 +459,7 @@ from .line_segment import LineSegmentBackground
 | `CellFactory`                | Unit cells             | `Cell`                                                                                                                                                                      |
 | `SpaceGroupFactory`          | Space groups           | `SpaceGroup`                                                                                                                                                                |
 | `AtomSitesFactory`           | Atom sites             | `AtomSites`                                                                                                                                                                 |
+| `AtomSiteAnisoFactory`       | Anisotropic ADPs       | `AtomSiteAnisoCollection`                                                                                                                                                   |
 | `AliasesFactory`             | Parameter aliases      | `Aliases`                                                                                                                                                                   |
 | `ConstraintsFactory`         | Parameter constraints  | `Constraints`                                                                                                                                                               |
 | `FitModeFactory`             | Fit-mode category      | `FitMode`                                                                                                                                                                   |
@@ -572,6 +632,7 @@ line-segment points.
 | `ExcludedRegions`               | `ExcludedRegionsFactory`     |
 | `LinkedPhases`                  | `LinkedPhasesFactory`        |
 | `AtomSites`                     | `AtomSitesFactory`           |
+| `AtomSiteAnisoCollection`       | `AtomSiteAnisoFactory`       |
 | `Aliases`                       | `AliasesFactory`             |
 | `Constraints`                   | `ConstraintsFactory`         |
 | `JointFitExperiments`           | `JointFitExperimentsFactory` |
@@ -583,6 +644,7 @@ line-segment points.
 | `LineSegment`        | `LineSegmentBackground`         |
 | `PolynomialTerm`     | `ChebyshevPolynomialBackground` |
 | `AtomSite`           | `AtomSites`                     |
+| `AtomSiteAniso`      | `AtomSiteAnisoCollection`       |
 | `PdCwlDataPoint`     | `PdCwlData`                     |
 | `PdTofDataPoint`     | `PdTofData`                     |
 | `TotalDataPoint`     | `TotalData`                     |
@@ -991,7 +1053,8 @@ Single-type categories (no public `_type` property):
 
 - **Experiment:** `diffrn`, `linked_crystal`, `excluded_regions`,
   `linked_phases`.
-- **Structure:** `cell`, `space_group`, `atom_sites`.
+- **Structure:** `cell`, `space_group`, `atom_sites`,
+  `atom_site_aniso`.
 - **Analysis:** `aliases`, `constraints`.
 
 `fit_mode` has show methods (`show_supported_fit_mode_types()`,
