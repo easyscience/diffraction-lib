@@ -82,7 +82,7 @@ def test_single_fit_neut_sc_tof_taurine() -> None:
 
     # Compare fit quality
     chi2 = project.analysis.fit_results.reduced_chi_square
-    assert chi2 == pytest.approx(expected=23.6, abs=0.1)
+    assert chi2 == pytest.approx(expected=23.5, abs=0.1)
 
 
 if __name__ == '__main__':
