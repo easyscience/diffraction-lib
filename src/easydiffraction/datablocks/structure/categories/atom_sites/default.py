@@ -188,10 +188,9 @@ class AtomSite(CategoryItem):
         return self._wyckoff_letter_allowed_values[0]
 
     def _convert_adp_values(self, old_type: str, new_type: str) -> None:
-        """
-        Convert ADP values when the type changes.
+        """Convert ADP values when the type changes.
 
-        Handles B ↔ U conversion using B = 8π²U.
+        Handles B ↔ U conversion using B = 8π²U and iso ↔ ani seeding.
 
         Parameters
         ----------
@@ -200,24 +199,95 @@ class AtomSite(CategoryItem):
         new_type : str
             New ADP type value.
         """
-        b_to_u = AdpTypeEnum(old_type) in {AdpTypeEnum.BISO, AdpTypeEnum.BANI}
-        u_to_b = AdpTypeEnum(old_type) in {AdpTypeEnum.UISO, AdpTypeEnum.UANI}
+        old_enum = AdpTypeEnum(old_type)
+        new_enum = AdpTypeEnum(new_type)
         factor = 8.0 * math.pi**2
-        if b_to_u and AdpTypeEnum(new_type) in {AdpTypeEnum.UISO, AdpTypeEnum.UANI}:
+        old_is_b = old_enum in {AdpTypeEnum.BISO, AdpTypeEnum.BANI}
+        new_is_u = new_enum in {AdpTypeEnum.UISO, AdpTypeEnum.UANI}
+        old_is_iso = old_enum in {AdpTypeEnum.BISO, AdpTypeEnum.UISO}
+        new_is_iso = new_enum in {AdpTypeEnum.BISO, AdpTypeEnum.UISO}
+
+        # Ani → Iso: collapse tensor to scalar first (in old units)
+        if not old_is_iso and new_is_iso:
+            self._collapse_aniso_to_iso()
+
+        # B ↔ U conversion for iso value
+        if old_is_b and new_is_u:
             self._adp_iso.value /= factor
-        elif u_to_b and AdpTypeEnum(new_type) in {AdpTypeEnum.BISO, AdpTypeEnum.BANI}:
+        elif not old_is_b and not new_is_u:
             self._adp_iso.value *= factor
 
+        # Iso → Ani: seed diagonal from (already converted) adp_iso
+        if old_is_iso and not new_is_iso:
+            self._seed_aniso_from_iso()
+        elif not old_is_iso and not new_is_iso:
+            # Ani → Ani (e.g. Bani→Uani): apply B↔U to aniso values
+            aniso = self._get_aniso_entry()
+            if aniso is not None:
+                self._convert_aniso_values(aniso, old_is_b, new_is_u, factor)
+
+    def _seed_aniso_from_iso(self) -> None:
+        """Seed aniso diagonal from current adp_iso value."""
+        aniso = self._get_aniso_entry()
+        if aniso is None:
+            return
+        iso_val = self._adp_iso.value
+        aniso.adp_11 = iso_val
+        aniso.adp_22 = iso_val
+        aniso.adp_33 = iso_val
+        aniso.adp_12 = 0.0
+        aniso.adp_13 = 0.0
+        aniso.adp_23 = 0.0
+
+    def _collapse_aniso_to_iso(self) -> None:
+        """Set adp_iso to the mean of the aniso diagonal."""
+        aniso = self._get_aniso_entry()
+        if aniso is None:
+            return
+        self._adp_iso.value = (
+            aniso.adp_11.value + aniso.adp_22.value + aniso.adp_33.value
+        ) / 3.0
+
+    def _get_aniso_entry(self) -> object | None:
+        """Return the matching AtomSiteAniso entry, or None."""
+        structure = getattr(self._parent, '_parent', None)
+        if structure is None:
+            return None
+        aniso_coll = getattr(structure, '_atom_site_aniso', None)
+        if aniso_coll is None:
+            return None
+        lbl = self._label.value
+        if lbl in aniso_coll:
+            return aniso_coll[lbl]
+        return None
+
+    @staticmethod
+    def _convert_aniso_values(
+        aniso: object,
+        old_is_b: bool,
+        new_is_u: bool,
+        factor: float,
+    ) -> None:
+        """Apply B↔U conversion to all six aniso tensor components."""
+        if old_is_b and new_is_u:
+            for attr in ('adp_11', 'adp_22', 'adp_33', 'adp_12', 'adp_13', 'adp_23'):
+                p = getattr(aniso, attr)
+                p.value /= factor
+        elif not old_is_b and not new_is_u:
+            for attr in ('adp_11', 'adp_22', 'adp_33', 'adp_12', 'adp_13', 'adp_23'):
+                p = getattr(aniso, attr)
+                p.value *= factor
+
     def _reorder_adp_cif_names(self, new_type: str) -> None:
-        """
-        Reorder CIF names on adp_iso for correct serialisation.
+        """Reorder CIF names on adp_iso and aniso params for serialisation.
 
         Parameters
         ----------
         new_type : str
             The new ADP type value.
         """
-        if AdpTypeEnum(new_type) in {AdpTypeEnum.UISO, AdpTypeEnum.UANI}:
+        is_u = AdpTypeEnum(new_type) in {AdpTypeEnum.UISO, AdpTypeEnum.UANI}
+        if is_u:
             self._adp_iso._cif_handler._names = [
                 '_atom_site.U_iso_or_equiv',
                 '_atom_site.B_iso_or_equiv',
@@ -227,6 +297,23 @@ class AtomSite(CategoryItem):
                 '_atom_site.B_iso_or_equiv',
                 '_atom_site.U_iso_or_equiv',
             ]
+
+        # Reorder aniso CIF names
+        aniso = self._get_aniso_entry()
+        if aniso is None:
+            return
+        for suffix in ('11', '22', '33', '12', '13', '23'):
+            param = getattr(aniso, f'_adp_{suffix}')
+            if is_u:
+                param._cif_handler._names = [
+                    f'_atom_site_aniso.U_{suffix}',
+                    f'_atom_site_aniso.B_{suffix}',
+                ]
+            else:
+                param._cif_handler._names = [
+                    f'_atom_site_aniso.B_{suffix}',
+                    f'_atom_site_aniso.U_{suffix}',
+                ]
 
     # ------------------------------------------------------------------
     #  Public properties
