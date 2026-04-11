@@ -12,6 +12,7 @@ class FitModeEnum(StrEnum):
 
     SINGLE = 'single'
     JOINT = 'joint'
+    SEQUENTIAL = 'sequential'
 
     @classmethod
     def default(cls) -> FitModeEnum:
@@ -21,7 +22,9 @@ class FitModeEnum(StrEnum):
     def description(self) -> str:
         """Return a human-readable description of this fit mode."""
         if self is FitModeEnum.SINGLE:
-            return 'Independent fitting of each experiment; no shared parameters'
+            return 'Independent fitting of each experiment'
         if self is FitModeEnum.JOINT:
-            return 'Simultaneous fitting of all experiments; some parameters are shared'
+            return 'Simultaneous fitting of all experiments with weights'
+        if self is FitModeEnum.SEQUENTIAL:
+            return 'Sequential fitting over data files in a directory'
         return None

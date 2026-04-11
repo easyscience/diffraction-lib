@@ -1235,25 +1235,6 @@ the user to the next level:
 
 ---
 
-## 78. 🟡 Clarify `fit_mode` Naming and Add Sequential Reuse Semantics
-
-**Type:** Design
-
-`FitModeEnum` has `SINGLE` and `JOINT`. Issues:
-
-- `single` implies one experiment, but structure parameters are shared
-  across experiments. A more accurate name might be `independent`.
-- Sequential fitting (reusing fitted parameters from the previous step)
-  is implemented in `sequential.py` but not represented in
-  `FitModeEnum`. Should it be a third mode, or is it a workflow on top
-  of existing modes?
-- For sequential fitting: should it reuse both structure and experiment
-  parameters from the previous fit as initial values?
-
-**Depends on:** nothing.
-
----
-
 ## 79. 🟢 Verify Completeness of Analysis CIF Serialisation
 
 **Type:** Correctness
@@ -1356,7 +1337,7 @@ parameters (both structure and experiment) so that any experiment can be
 re-plotted or inspected later. Also clarify: does `fit_results` need to
 keep the last mutable parameter set after adding a snapshot?
 
-**Depends on:** related to issue 78 (fit_mode semantics).
+**Depends on:** nothing (issue 78 resolved).
 
 ---
 
@@ -1410,7 +1391,7 @@ structure parameters and is completely independent. These fits could run
 in parallel threads. Sequential mode, by contrast, must remain single-
 threaded because each step's output is the next step's input.
 
-**Depends on:** issue 78 (fit_mode clarification).
+**Depends on:** nothing (issue 78 resolved).
 
 ---
 
@@ -1527,7 +1508,6 @@ operation is possible (e.g. in automated pipelines or tests).
 | 75  | `show_supported_calculators()` on Analysis       | 🟢 Low   | API completeness |
 | 76  | Consistent `_type` suffix in switchable APIs     | 🟡 Med   | Naming           |
 | 77  | Add `help()` to Project + enrich existing        | 🟡 Med   | Discoverability  |
-| 78  | Clarify `fit_mode` naming + sequential semantics | 🟡 Med   | Design           |
 | 79  | Verify analysis CIF serialisation completeness   | 🟢 Low   | Correctness      |
 | 80  | Resolve `Any` vs `object` annotation policy      | 🟢 Low   | Code style       |
 | 81  | Enforce docstrings on all public methods         | 🟡 Med   | Code quality     |

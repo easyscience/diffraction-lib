@@ -25,7 +25,8 @@ class FitMode(CategoryItem):
     Fitting strategy selector.
 
     Holds a single ``mode`` descriptor whose value is one of
-    ``FitModeEnum`` members (``'single'`` or ``'joint'``).
+    ``FitModeEnum`` members (``'single'``, ``'joint'``, or
+    ``'sequential'``).
     """
 
     type_info = TypeInfo(

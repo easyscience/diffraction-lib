@@ -656,12 +656,17 @@ workflow:
 - Fit mode: `fit_mode` (`CategoryItem` with a `mode` descriptor
   validated by `FitModeEnum`); `'single'` fits each experiment
   independently, `'joint'` fits all simultaneously with weights from
-  `joint_fit_experiments`.
+  `joint_fit_experiments`, `'sequential'` records that sequential
+  fitting was used. `show_supported_fit_mode_types()` filters by
+  experiment count (≤1 → only `single`; >1 → all three).
+  `show_current_fit_mode_type()` prints the current mode.
 - Joint-fit weights: `joint_fit_experiments` (`CategoryCollection` of
   per-experiment weight entries); sibling of `fit_mode`, not a child.
 - Parameter tables: `show_all_params()`, `show_fittable_params()`,
   `show_free_params()`, `how_to_access_parameters()`
-- Fitting: `fit()`, `show_fit_results()`
+- Fitting: `fit()` dispatches single/joint; `fit_sequential()` handles
+  sequential mode (sets `fit_mode` to `'sequential'` internally).
+  `display.fit_results()` shows results.
 - Aliases and constraints (single-type categories; no public `_type`
   getter or setter)
 
@@ -987,7 +992,12 @@ Single-type categories (no public `_type` property):
 - **Experiment:** `diffrn`, `linked_crystal`, `excluded_regions`,
   `linked_phases`.
 - **Structure:** `cell`, `space_group`, `atom_sites`.
-- **Analysis:** `aliases`, `constraints`, `fit_mode`.
+- **Analysis:** `aliases`, `constraints`.
+
+`fit_mode` has show methods (`show_supported_fit_mode_types()`,
+`show_current_fit_mode_type()`) but no public `_type` getter or setter
+because it has only one factory implementation. The mode is changed via
+the `fit_mode.mode` descriptor directly.
 
 **Design decisions:**
 
@@ -1028,7 +1038,7 @@ class. This applies to:
 - Factory tags (§5.6) — e.g. `PeakProfileTypeEnum`, `CalculatorEnum`.
 - Experiment-axis values — e.g. `SampleFormEnum`, `BeamModeEnum`.
 - Category descriptors with enumerated choices — e.g. fit mode
-  (`FitModeEnum.SINGLE`, `FitModeEnum.JOINT`).
+  (`FitModeEnum.SINGLE`, `FitModeEnum.JOINT`, `FitModeEnum.SEQUENTIAL`).
 
 The enum serves as the **single source of truth** for valid values,
 their user-facing string representations, and their descriptions.

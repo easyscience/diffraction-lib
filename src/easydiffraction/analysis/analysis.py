@@ -517,13 +517,33 @@ class Analysis:
         console.print(self.current_minimizer)
 
     # ------------------------------------------------------------------
-    #  Fit mode (read-only, single type)
+    #  Fit mode (single type, with show methods)
     # ------------------------------------------------------------------
 
     @property
     def fit_mode(self) -> object:
         """Fit-mode category item holding the active strategy."""
         return self._fit_mode
+
+    def show_supported_fit_mode_types(self) -> None:
+        """Print a table of supported fit modes for this project."""
+        num_expts = len(self.project.experiments) if self.project.experiments else 0
+        if num_expts <= 1:
+            modes = [FitModeEnum.SINGLE]
+        else:
+            modes = [FitModeEnum.SINGLE, FitModeEnum.JOINT, FitModeEnum.SEQUENTIAL]
+        columns_data = [[mode.value, mode.description()] for mode in modes]
+        console.paragraph('Supported fit modes')
+        render_table(
+            columns_headers=['Mode', 'Description'],
+            columns_alignment=['left', 'left'],
+            columns_data=columns_data,
+        )
+
+    def show_current_fit_mode_type(self) -> None:
+        """Print the currently selected fit mode."""
+        console.paragraph('Current fit mode')
+        console.print(self._fit_mode.mode.value)
 
     # ------------------------------------------------------------------
     #  Joint-fit experiments (category)
@@ -545,7 +565,8 @@ class Analysis:
 
         In 'single' mode, fits each experiment independently. In 'joint'
         mode, performs a simultaneous fit across experiments with
-        weights.
+        weights. If mode is 'sequential', logs an error directing the
+        user to :meth:`fit_sequential` instead.
 
         Sets :attr:`fit_results` on success, which can be accessed
         programmatically (e.g.,
@@ -562,11 +583,6 @@ class Analysis:
             When ``True``, fall back to physical limits from the value
             spec for parameters whose ``fit_min``/``fit_max`` are
             unbounded.
-
-        Raises
-        ------
-        NotImplementedError
-            If the fit mode is not ``'single'`` or ``'joint'``.
         """
         verb = VerbosityEnum(verbosity if verbosity is not None else self.project.verbosity)
 
@@ -593,9 +609,11 @@ class Analysis:
             self._fit_single(
                 verb, structures, experiments, use_physical_limits=use_physical_limits
             )
-        else:
-            msg = f'Fit mode {mode.value} not implemented yet.'
-            raise NotImplementedError(msg)
+        elif mode is FitModeEnum.SEQUENTIAL:
+            log.error(
+                "fit_mode is 'sequential'. Use fit_sequential(data_dir=...) instead of fit()."
+            )
+            return
 
         # After fitting, save the project
         if self.project.info.path is not None:
@@ -845,6 +863,9 @@ class Analysis:
             (e.g. highest-temperature dataset in a cooling scan).
         """
         from easydiffraction.analysis.sequential import fit_sequential as _fit_seq  # noqa: PLC0415
+
+        # Record the fit mode for CIF serialization
+        self._fit_mode.mode = FitModeEnum.SEQUENTIAL.value
 
         # Apply constraints before building the template
         self._update_categories()
