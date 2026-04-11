@@ -400,7 +400,7 @@ class Analysis:
         self._fit_mode_type: str = FitModeFactory.default_tag()
         self._fit_mode = FitModeFactory.create(self._fit_mode_type)
         self._joint_fit_experiments = JointFitExperiments()
-        self.fitter = Fitter('lmfit')
+        self.fitter = Fitter()
         self.fit_results = None
         self._parameter_snapshots: dict[str, dict[str, dict]] = {}
         self._display = AnalysisDisplay(self)

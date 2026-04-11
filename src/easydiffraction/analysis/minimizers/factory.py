@@ -14,5 +14,5 @@ class MinimizerFactory(FactoryBase):
     """Factory for creating minimizer instances."""
 
     _default_rules: ClassVar[dict] = {
-        frozenset(): MinimizerTypeEnum.LMFIT,
+        frozenset(): MinimizerTypeEnum.default(),
     }
