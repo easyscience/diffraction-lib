@@ -283,7 +283,7 @@ class CryspyCalculator(CalculatorBase):
         # Atomic ADPs - isotropic only for now
         cryspy_biso = cryspy_model_dict['atom_b_iso']
         for idx, atom_site in enumerate(structure.atom_sites):
-            cryspy_biso[idx] = atom_site.adp_iso.value
+            cryspy_biso[idx] = atom_site.adp_iso_as_b
 
     @staticmethod
     def _update_experiment_in_cryspy_dict(

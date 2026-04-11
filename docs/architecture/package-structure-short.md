@@ -140,6 +140,7 @@
 │   │   │   ├── 📁 atom_sites
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 default.py
+│   │   │   │   ├── 📄 enums.py
 │   │   │   │   └── 📄 factory.py
 │   │   │   ├── 📁 cell
 │   │   │   │   ├── 📄 __init__.py

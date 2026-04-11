@@ -17,13 +17,13 @@ from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
-from easydiffraction.datablocks.structure.categories.atom_sites.enums import AdpTypeEnum
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
 from easydiffraction.core.variable import Parameter
 from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.crystallography import crystallography as ecr
+from easydiffraction.datablocks.structure.categories.atom_sites.enums import AdpTypeEnum
 from easydiffraction.datablocks.structure.categories.atom_sites.factory import AtomSitesFactory
 from easydiffraction.io.cif.handler import CifHandler
 
@@ -134,9 +134,7 @@ class AtomSite(CategoryItem):
             'used (e.g., Biso, Uiso, Uani, Bani).',
             value_spec=AttributeSpec(
                 default=AdpTypeEnum.default(),
-                validator=MembershipValidator(
-                    allowed=[m.value for m in AdpTypeEnum]
-                ),
+                validator=MembershipValidator(allowed=[m.value for m in AdpTypeEnum]),
             ),
             cif_handler=CifHandler(names=['_atom_site.adp_type']),
         )
@@ -202,25 +200,24 @@ class AtomSite(CategoryItem):
         new_type : str
             New ADP type value.
         """
-        b_to_u = AdpTypeEnum(old_type) in (AdpTypeEnum.BISO, AdpTypeEnum.BANI)
-        u_to_b = AdpTypeEnum(old_type) in (AdpTypeEnum.UISO, AdpTypeEnum.UANI)
+        b_to_u = AdpTypeEnum(old_type) in {AdpTypeEnum.BISO, AdpTypeEnum.BANI}
+        u_to_b = AdpTypeEnum(old_type) in {AdpTypeEnum.UISO, AdpTypeEnum.UANI}
         factor = 8.0 * math.pi**2
-        if b_to_u and AdpTypeEnum(new_type) in (AdpTypeEnum.UISO, AdpTypeEnum.UANI):
-            self._adp_iso.value = self._adp_iso.value / factor
-        elif u_to_b and AdpTypeEnum(new_type) in (AdpTypeEnum.BISO, AdpTypeEnum.BANI):
-            self._adp_iso.value = self._adp_iso.value * factor
+        if b_to_u and AdpTypeEnum(new_type) in {AdpTypeEnum.UISO, AdpTypeEnum.UANI}:
+            self._adp_iso.value /= factor
+        elif u_to_b and AdpTypeEnum(new_type) in {AdpTypeEnum.BISO, AdpTypeEnum.BANI}:
+            self._adp_iso.value *= factor
 
     def _reorder_adp_cif_names(self, new_type: str) -> None:
         """
-        Reorder CIF names on ``adp_iso`` so serialisation emits the
-        correct tag.
+        Reorder CIF names on adp_iso for correct serialisation.
 
         Parameters
         ----------
         new_type : str
             The new ADP type value.
         """
-        if AdpTypeEnum(new_type) in (AdpTypeEnum.UISO, AdpTypeEnum.UANI):
+        if AdpTypeEnum(new_type) in {AdpTypeEnum.UISO, AdpTypeEnum.UANI}:
             self._adp_iso._cif_handler._names = [
                 '_atom_site.U_iso_or_equiv',
                 '_atom_site.B_iso_or_equiv',
@@ -369,6 +366,24 @@ class AtomSite(CategoryItem):
     @adp_iso.setter
     def adp_iso(self, value: float) -> None:
         self._adp_iso.value = value
+
+    @property
+    def adp_iso_as_b(self) -> float:
+        """
+        Return the isotropic ADP as a B-factor value.
+
+        When ``adp_type`` is ``Uiso`` or ``Uani`` the stored U value is
+        converted to B via B = 8π²U.  Otherwise the stored value is
+        returned unchanged.
+
+        Returns
+        -------
+        float
+            Equivalent B_iso value.
+        """
+        if AdpTypeEnum(self._adp_type.value) in {AdpTypeEnum.UISO, AdpTypeEnum.UANI}:
+            return self._adp_iso.value * 8.0 * math.pi**2
+        return self._adp_iso.value
 
 
 @AtomSitesFactory.register

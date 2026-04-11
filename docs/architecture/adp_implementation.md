@@ -1,7 +1,7 @@
 # ADP Implementation Plan
 
-**Date:** 2026-04-12
-**Status:** Design approved — awaiting implementation
+**Date:** 2026-04-12 **Status:** Design approved — awaiting
+implementation
 
 ---
 
@@ -40,16 +40,16 @@ checks throughout the codebase.
 Parameters on `AtomSite` and `AtomSiteAniso` use type-neutral names
 whose physical meaning is determined by `atom_site.adp_type`:
 
-| Parameter | Location | CIF names (order depends on `adp_type`) |
-|-----------|----------|----------------------------------------|
-| `adp_type` | `AtomSite` | `_atom_site.adp_type` |
-| `adp_iso` | `AtomSite` | `_atom_site.B_iso_or_equiv`, `_atom_site.U_iso_or_equiv` |
-| `adp_11` | `AtomSiteAniso` | `_atom_site_aniso.B_11`, `_atom_site_aniso.U_11` |
-| `adp_22` | `AtomSiteAniso` | `_atom_site_aniso.B_22`, `_atom_site_aniso.U_22` |
-| `adp_33` | `AtomSiteAniso` | `_atom_site_aniso.B_33`, `_atom_site_aniso.U_33` |
-| `adp_12` | `AtomSiteAniso` | `_atom_site_aniso.B_12`, `_atom_site_aniso.U_12` |
-| `adp_13` | `AtomSiteAniso` | `_atom_site_aniso.B_13`, `_atom_site_aniso.U_13` |
-| `adp_23` | `AtomSiteAniso` | `_atom_site_aniso.B_23`, `_atom_site_aniso.U_23` |
+| Parameter  | Location        | CIF names (order depends on `adp_type`)                  |
+| ---------- | --------------- | -------------------------------------------------------- |
+| `adp_type` | `AtomSite`      | `_atom_site.adp_type`                                    |
+| `adp_iso`  | `AtomSite`      | `_atom_site.B_iso_or_equiv`, `_atom_site.U_iso_or_equiv` |
+| `adp_11`   | `AtomSiteAniso` | `_atom_site_aniso.B_11`, `_atom_site_aniso.U_11`         |
+| `adp_22`   | `AtomSiteAniso` | `_atom_site_aniso.B_22`, `_atom_site_aniso.U_22`         |
+| `adp_33`   | `AtomSiteAniso` | `_atom_site_aniso.B_33`, `_atom_site_aniso.U_33`         |
+| `adp_12`   | `AtomSiteAniso` | `_atom_site_aniso.B_12`, `_atom_site_aniso.U_12`         |
+| `adp_13`   | `AtomSiteAniso` | `_atom_site_aniso.B_13`, `_atom_site_aniso.U_13`         |
+| `adp_23`   | `AtomSiteAniso` | `_atom_site_aniso.B_23`, `_atom_site_aniso.U_23`         |
 
 ### 2.3 Dual CIF Names — Static Read, Reordered Write
 
@@ -57,9 +57,9 @@ Each parameter's `CifHandler` carries both CIF name variants. The
 existing infrastructure handles this:
 
 - **Reading (deserialization):** `param_from_cif()` and
-  `category_collection_from_cif()` iterate `_cif_handler.names` and
-  stop at the first match. A CIF file with `_atom_site.U_iso_or_equiv`
-  is read correctly regardless of name order.
+  `category_collection_from_cif()` iterate `_cif_handler.names` and stop
+  at the first match. A CIF file with `_atom_site.U_iso_or_equiv` is
+  read correctly regardless of name order.
 - **Writing (serialization):** `param_to_cif()` and
   `category_collection_to_cif()` always use `names[0]`. The `adp_type`
   setter reorders the `names` list so that the correct CIF tag is
@@ -107,11 +107,11 @@ collection.
 
 `Structure._update_categories()` reconciles the two collections:
 
-| Event | Sync action |
-|-------|-------------|
-| Atom added to `atom_sites` | Create matching `AtomSiteAniso` entry with defaults (0.0) |
-| Atom removed from `atom_sites` | Remove matching `AtomSiteAniso` entry |
-| Atom label renamed in `atom_sites` | Rekey the matching `AtomSiteAniso` entry |
+| Event                              | Sync action                                               |
+| ---------------------------------- | --------------------------------------------------------- |
+| Atom added to `atom_sites`         | Create matching `AtomSiteAniso` entry with defaults (0.0) |
+| Atom removed from `atom_sites`     | Remove matching `AtomSiteAniso` entry                     |
+| Atom label renamed in `atom_sites` | Rekey the matching `AtomSiteAniso` entry                  |
 
 The sync is driven by the dirty flag — any parameter or collection
 change sets `_need_categories_update = True`, and the next
@@ -119,9 +119,9 @@ serialization, plot, or fit call triggers `_update_categories()`.
 
 ### 2.7 Inactive Aniso Values
 
-When `adp_type` is `'Biso'` or `'Uiso'`, the aniso parameters exist
-with value `0.0` but are not read by calculators. This avoids
-introducing `None` into the `float`-based `Parameter` system.
+When `adp_type` is `'Biso'` or `'Uiso'`, the aniso parameters exist with
+value `0.0` but are not read by calculators. This avoids introducing
+`None` into the `float`-based `Parameter` system.
 
 ---
 
@@ -199,8 +199,9 @@ _atom_site_aniso.B_23
 Si  0.00000000  0.00000000  0.00000000  0.00000000  0.00000000  0.00000000
 ```
 
-When `adp_type = 'Uiso'`, the CIF tag becomes `_atom_site.U_iso_or_equiv`
-and the aniso loop uses `_atom_site_aniso.U_*` tags.
+When `adp_type = 'Uiso'`, the CIF tag becomes
+`_atom_site.U_iso_or_equiv` and the aniso loop uses
+`_atom_site_aniso.U_*` tags.
 
 ---
 
@@ -239,11 +240,11 @@ and the aniso loop uses `_atom_site_aniso.U_*` tags.
 
 1. **`atom_site_aniso/`** package under
    `datablocks/structure/categories/`:
-   - `__init__.py` — imports `AtomSiteAniso` and `AtomSiteAnisoCollection`.
+   - `__init__.py` — imports `AtomSiteAniso` and
+     `AtomSiteAnisoCollection`.
    - `default.py` — `AtomSiteAniso` (CategoryItem) with `label`
-     (StringDescriptor) and six Parameters (`adp_11`…`adp_23`) each
-     with dual CIF names. `AtomSiteAnisoCollection`
-     (CategoryCollection).
+     (StringDescriptor) and six Parameters (`adp_11`…`adp_23`) each with
+     dual CIF names. `AtomSiteAnisoCollection` (CategoryCollection).
    - `factory.py` — `AtomSiteAnisoFactory`.
    - `enums.py` — if needed (likely shared with Phase 1 enum).
 
@@ -278,11 +279,11 @@ and the aniso loop uses `_atom_site_aniso.U_*` tags.
 
 ## 5. Breaking Changes
 
-| Change | Scope | Migration |
-|--------|-------|-----------|
-| `b_iso` → `adp_iso` | All code referencing `atom.b_iso` | Mechanical rename (greppable) |
-| `b_iso=0.5` → `adp_iso=0.5` in `create()` | Tutorials, tests, user scripts | Mechanical rename |
-| New `atom_site_aniso` on Structure | Structure API surface grows | Additive — no existing code breaks |
+| Change                                    | Scope                             | Migration                          |
+| ----------------------------------------- | --------------------------------- | ---------------------------------- |
+| `b_iso` → `adp_iso`                       | All code referencing `atom.b_iso` | Mechanical rename (greppable)      |
+| `b_iso=0.5` → `adp_iso=0.5` in `create()` | Tutorials, tests, user scripts    | Mechanical rename                  |
+| New `atom_site_aniso` on Structure        | Structure API surface grows       | Additive — no existing code breaks |
 
 The project is in beta, so no deprecation path is needed.
 
@@ -309,7 +310,8 @@ branches.
 
 Loose coupling: `AtomSites` and `AtomSiteAnisoCollection` don't know
 about each other. `Structure` coordinates them at update time. This
-follows the existing dirty-flag pattern and keeps categories independent.
+follows the existing dirty-flag pattern and keeps categories
+independent.
 
 ### Why reorder `_cif_handler.names` instead of dynamic CIF handler?
 

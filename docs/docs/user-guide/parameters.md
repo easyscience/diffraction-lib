@@ -13,9 +13,9 @@ reference, and it belongs to a specific category.
   of the CIF name to comply with Python naming conventions. For example,
   `name_H-M_alt` becomes `name_h_m`, replacing hyphens with underscores
   and using lowercase letters.
-- In rare cases, the EasyDiffraction name is a bit shorter, like `adp_iso`
-  instead of CIF `B_iso_or_equiv` / `U_iso_or_equiv`, to make the code
-  a bit more user-friendly.
+- In rare cases, the EasyDiffraction name is a bit shorter, like
+  `adp_iso` instead of CIF `B_iso_or_equiv` / `U_iso_or_equiv`, to make
+  the code a bit more user-friendly.
 - When there is no defined CIF name for a parameter, EasyDiffraction
   introduces its own name, which is used in the code as well as an
   equivalent CIF name to be placed in the custom CIF dictionary

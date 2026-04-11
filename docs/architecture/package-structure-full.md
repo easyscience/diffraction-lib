@@ -284,6 +284,8 @@
 │   │   │   │   ├── 📄 default.py
 │   │   │   │   │   ├── 🏷️ class AtomSite
 │   │   │   │   │   └── 🏷️ class AtomSites
+│   │   │   │   ├── 📄 enums.py
+│   │   │   │   │   └── 🏷️ class AdpTypeEnum
 │   │   │   │   └── 📄 factory.py
 │   │   │   │       └── 🏷️ class AtomSitesFactory
 │   │   │   ├── 📁 cell

@@ -169,8 +169,7 @@ The general forms are:
 
 This two-level convention (category then parameter) is a deliberate
 design constraint. Categories are never nested inside other categories
-(see § 9.7), which keeps the path depth uniform and the API
-predictable.
+(see § 9.7), which keeps the path depth uniform and the API predictable.
 
 | Aspect          | `CategoryItem`                     | `CategoryCollection`                      |
 | --------------- | ---------------------------------- | ----------------------------------------- |
@@ -315,7 +314,8 @@ A `Structure` contains four categories:
 
 - `Cell` — unit cell parameters (`CategoryItem`)
 - `SpaceGroup` — symmetry information (`CategoryItem`)
-- `AtomSites` — atomic positions and isotropic ADP (`CategoryCollection`)
+- `AtomSites` — atomic positions and isotropic ADP
+  (`CategoryCollection`)
 - `AtomSiteAniso` — anisotropic ADP tensor components
   (`CategoryCollection`)
 
@@ -328,10 +328,10 @@ ADP support covers four CIF-standard types: **Biso**, **Uiso**,
 **Bani**, **Uani**. The design uses **type-neutral parameter names** so
 that switching type is a one-line operation on `adp_type`.
 
-**Two sibling collections.** Following CIF conventions (`_atom_site`
-and `_atom_site_aniso` are separate loops), isotropic and anisotropic
-data live in separate collections on `Structure`. Every atom always has
-an entry in both collections; when `adp_type` is isotropic, the aniso
+**Two sibling collections.** Following CIF conventions (`_atom_site` and
+`_atom_site_aniso` are separate loops), isotropic and anisotropic data
+live in separate collections on `Structure`. Every atom always has an
+entry in both collections; when `adp_type` is isotropic, the aniso
 parameters hold `0.0` and are ignored by calculators.
 
 **Type-neutral names.** `atom_site.adp_iso` is the type-neutral
@@ -340,18 +340,18 @@ isotropic ADP parameter. Its physical meaning (B or U) is determined by
 type-neutral tensor components.
 
 **Dual CIF names.** Each parameter's `CifHandler` carries both CIF name
-variants (e.g. `['_atom_site.B_iso_or_equiv',
-'_atom_site.U_iso_or_equiv']`). Reading tries each name until a match
-is found; writing uses `names[0]`. The `adp_type` setter reorders the
-list so the correct tag is emitted.
+variants (e.g.
+`['_atom_site.B_iso_or_equiv', '_atom_site.U_iso_or_equiv']`). Reading
+tries each name until a match is found; writing uses `names[0]`. The
+`adp_type` setter reorders the list so the correct tag is emitted.
 
-**Auto-conversion.** Setting `adp_type` triggers value conversion:
-B ↔ U via `B = 8π²U`; iso → ani seeds the diagonal; ani → iso
-averages the diagonal.
+**Auto-conversion.** Setting `adp_type` triggers value conversion: B ↔ U
+via `B = 8π²U`; iso → ani seeds the diagonal; ani → iso averages the
+diagonal.
 
-**Collection sync.** `Structure._update_categories()` reconciles the
-two collections: adds missing aniso entries, removes stale ones, and
-rekeys on label rename.
+**Collection sync.** `Structure._update_categories()` reconciles the two
+collections: adds missing aniso entries, removes stale ones, and rekeys
+on label rename.
 
 See [`adp_implementation.md`](adp_implementation.md) for the full
 implementation plan.
@@ -1053,8 +1053,7 @@ Single-type categories (no public `_type` property):
 
 - **Experiment:** `diffrn`, `linked_crystal`, `excluded_regions`,
   `linked_phases`.
-- **Structure:** `cell`, `space_group`, `atom_sites`,
-  `atom_site_aniso`.
+- **Structure:** `cell`, `space_group`, `atom_sites`, `atom_site_aniso`.
 - **Analysis:** `aliases`, `constraints`.
 
 `fit_mode` has show methods (`show_supported_fit_mode_types()`,
