@@ -3934,7 +3934,28 @@ computations across the project's structures and experiments.</p>
 <span class="normal">902</span>
 <span class="normal">903</span>
 <span class="normal">904</span>
-<span class="normal">905</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Analysis</span><span class="p">:</span>
+<span class="normal">905</span>
+<span class="normal">906</span>
+<span class="normal">907</span>
+<span class="normal">908</span>
+<span class="normal">909</span>
+<span class="normal">910</span>
+<span class="normal">911</span>
+<span class="normal">912</span>
+<span class="normal">913</span>
+<span class="normal">914</span>
+<span class="normal">915</span>
+<span class="normal">916</span>
+<span class="normal">917</span>
+<span class="normal">918</span>
+<span class="normal">919</span>
+<span class="normal">920</span>
+<span class="normal">921</span>
+<span class="normal">922</span>
+<span class="normal">923</span>
+<span class="normal">924</span>
+<span class="normal">925</span>
+<span class="normal">926</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Analysis</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    High-level orchestration of analysis tasks for a Project.</span>
 
@@ -4078,13 +4099,33 @@ computations across the project's structures and experiments.</p>
         <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_minimizer</span><span class="p">)</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
-    <span class="c1">#  Fit mode (read-only, single type)</span>
+    <span class="c1">#  Fit mode (single type, with show methods)</span>
     <span class="c1"># ------------------------------------------------------------------</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">fit_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit-mode category item holding the active strategy.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fit_mode</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">show_supported_fit_mode_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print a table of supported fit modes for this project.&quot;&quot;&quot;</span>
+        <span class="n">num_expts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">experiments</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">num_expts</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">modes</span> <span class="o">=</span> <span class="p">[</span><span class="n">FitModeEnum</span><span class="o">.</span><span class="n">SINGLE</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">modes</span> <span class="o">=</span> <span class="p">[</span><span class="n">FitModeEnum</span><span class="o">.</span><span class="n">SINGLE</span><span class="p">,</span> <span class="n">FitModeEnum</span><span class="o">.</span><span class="n">JOINT</span><span class="p">,</span> <span class="n">FitModeEnum</span><span class="o">.</span><span class="n">SEQUENTIAL</span><span class="p">]</span>
+        <span class="n">columns_data</span> <span class="o">=</span> <span class="p">[[</span><span class="n">mode</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">mode</span><span class="o">.</span><span class="n">description</span><span class="p">()]</span> <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="n">modes</span><span class="p">]</span>
+        <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Supported fit modes&#39;</span><span class="p">)</span>
+        <span class="n">render_table</span><span class="p">(</span>
+            <span class="n">columns_headers</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Mode&#39;</span><span class="p">,</span> <span class="s1">&#39;Description&#39;</span><span class="p">],</span>
+            <span class="n">columns_alignment</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">],</span>
+            <span class="n">columns_data</span><span class="o">=</span><span class="n">columns_data</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">show_current_fit_mode_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print the currently selected fit mode.&quot;&quot;&quot;</span>
+        <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Current fit mode&#39;</span><span class="p">)</span>
+        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fit_mode</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1">#  Joint-fit experiments (category)</span>
@@ -4106,7 +4147,8 @@ computations across the project's structures and experiments.</p>
 
 <span class="sd">        In &#39;single&#39; mode, fits each experiment independently. In &#39;joint&#39;</span>
 <span class="sd">        mode, performs a simultaneous fit across experiments with</span>
-<span class="sd">        weights.</span>
+<span class="sd">        weights. If mode is &#39;sequential&#39;, logs an error directing the</span>
+<span class="sd">        user to :meth:`fit_sequential` instead.</span>
 
 <span class="sd">        Sets :attr:`fit_results` on success, which can be accessed</span>
 <span class="sd">        programmatically (e.g.,</span>
@@ -4123,11 +4165,6 @@ computations across the project's structures and experiments.</p>
 <span class="sd">            When ``True``, fall back to physical limits from the value</span>
 <span class="sd">            spec for parameters whose ``fit_min``/``fit_max`` are</span>
 <span class="sd">            unbounded.</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        NotImplementedError</span>
-<span class="sd">            If the fit mode is not ``&#39;single&#39;`` or ``&#39;joint&#39;``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">verb</span> <span class="o">=</span> <span class="n">VerbosityEnum</span><span class="p">(</span><span class="n">verbosity</span> <span class="k">if</span> <span class="n">verbosity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">verbosity</span><span class="p">)</span>
 
@@ -4154,9 +4191,11 @@ computations across the project's structures and experiments.</p>
             <span class="bp">self</span><span class="o">.</span><span class="n">_fit_single</span><span class="p">(</span>
                 <span class="n">verb</span><span class="p">,</span> <span class="n">structures</span><span class="p">,</span> <span class="n">experiments</span><span class="p">,</span> <span class="n">use_physical_limits</span><span class="o">=</span><span class="n">use_physical_limits</span>
             <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Fit mode </span><span class="si">{</span><span class="n">mode</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s1"> not implemented yet.&#39;</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="ow">is</span> <span class="n">FitModeEnum</span><span class="o">.</span><span class="n">SEQUENTIAL</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;fit_mode is &#39;sequential&#39;. Use fit_sequential(data_dir=...) instead of fit().&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
 
         <span class="c1"># After fitting, save the project</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -4407,6 +4446,9 @@ computations across the project's structures and experiments.</p>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction.analysis.sequential</span><span class="w"> </span><span class="kn">import</span> <span class="n">fit_sequential</span> <span class="k">as</span> <span class="n">_fit_seq</span>  <span class="c1"># noqa: PLC0415</span>
 
+        <span class="c1"># Record the fit mode for CIF serialization</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fit_mode</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">FitModeEnum</span><span class="o">.</span><span class="n">SEQUENTIAL</span><span class="o">.</span><span class="n">value</span>
+
         <span class="c1"># Apply constraints before building the template</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_categories</span><span class="p">()</span>
 
@@ -4629,17 +4671,17 @@ computations across the project's structures and experiments.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/analysis.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">895</span>
-<span class="normal">896</span>
-<span class="normal">897</span>
-<span class="normal">898</span>
-<span class="normal">899</span>
-<span class="normal">900</span>
-<span class="normal">901</span>
-<span class="normal">902</span>
-<span class="normal">903</span>
-<span class="normal">904</span>
-<span class="normal">905</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">916</span>
+<span class="normal">917</span>
+<span class="normal">918</span>
+<span class="normal">919</span>
+<span class="normal">920</span>
+<span class="normal">921</span>
+<span class="normal">922</span>
+<span class="normal">923</span>
+<span class="normal">924</span>
+<span class="normal">925</span>
+<span class="normal">926</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Serialize the analysis section to a CIF string.</span>
 
@@ -4740,7 +4782,8 @@ fitting to see a summary of the fit quality and parameter
 values.</p>
 <p>In 'single' mode, fits each experiment independently. In 'joint'
 mode, performs a simultaneous fit across experiments with
-weights.</p>
+weights. If mode is 'sequential', logs an error directing the
+user to :meth:<code>fit_sequential</code> instead.</p>
 <p>Sets :attr:<code>fit_results</code> on success, which can be accessed
 programmatically (e.g.,
 <code>analysis.fit_results.reduced_chi_square</code>).</p>
@@ -4807,55 +4850,9 @@ unbounded.</p>
     </table>
 
 
-<p><span class="doc-section-title">Raises:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="NotImplementedError">NotImplementedError</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>If the fit mode is not <code>'single'</code> or <code>'joint'</code>.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/analysis.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">537</span>
-<span class="normal">538</span>
-<span class="normal">539</span>
-<span class="normal">540</span>
-<span class="normal">541</span>
-<span class="normal">542</span>
-<span class="normal">543</span>
-<span class="normal">544</span>
-<span class="normal">545</span>
-<span class="normal">546</span>
-<span class="normal">547</span>
-<span class="normal">548</span>
-<span class="normal">549</span>
-<span class="normal">550</span>
-<span class="normal">551</span>
-<span class="normal">552</span>
-<span class="normal">553</span>
-<span class="normal">554</span>
-<span class="normal">555</span>
-<span class="normal">556</span>
-<span class="normal">557</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">557</span>
 <span class="normal">558</span>
 <span class="normal">559</span>
 <span class="normal">560</span>
@@ -4900,7 +4897,25 @@ unbounded.</p>
 <span class="normal">599</span>
 <span class="normal">600</span>
 <span class="normal">601</span>
-<span class="normal">602</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbosity</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">use_physical_limits</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">602</span>
+<span class="normal">603</span>
+<span class="normal">604</span>
+<span class="normal">605</span>
+<span class="normal">606</span>
+<span class="normal">607</span>
+<span class="normal">608</span>
+<span class="normal">609</span>
+<span class="normal">610</span>
+<span class="normal">611</span>
+<span class="normal">612</span>
+<span class="normal">613</span>
+<span class="normal">614</span>
+<span class="normal">615</span>
+<span class="normal">616</span>
+<span class="normal">617</span>
+<span class="normal">618</span>
+<span class="normal">619</span>
+<span class="normal">620</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbosity</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">use_physical_limits</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Execute fitting for all experiments.</span>
 
@@ -4911,7 +4926,8 @@ unbounded.</p>
 
 <span class="sd">    In &#39;single&#39; mode, fits each experiment independently. In &#39;joint&#39;</span>
 <span class="sd">    mode, performs a simultaneous fit across experiments with</span>
-<span class="sd">    weights.</span>
+<span class="sd">    weights. If mode is &#39;sequential&#39;, logs an error directing the</span>
+<span class="sd">    user to :meth:`fit_sequential` instead.</span>
 
 <span class="sd">    Sets :attr:`fit_results` on success, which can be accessed</span>
 <span class="sd">    programmatically (e.g.,</span>
@@ -4928,11 +4944,6 @@ unbounded.</p>
 <span class="sd">        When ``True``, fall back to physical limits from the value</span>
 <span class="sd">        spec for parameters whose ``fit_min``/``fit_max`` are</span>
 <span class="sd">        unbounded.</span>
-
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    NotImplementedError</span>
-<span class="sd">        If the fit mode is not ``&#39;single&#39;`` or ``&#39;joint&#39;``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">verb</span> <span class="o">=</span> <span class="n">VerbosityEnum</span><span class="p">(</span><span class="n">verbosity</span> <span class="k">if</span> <span class="n">verbosity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">verbosity</span><span class="p">)</span>
 
@@ -4959,9 +4970,11 @@ unbounded.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fit_single</span><span class="p">(</span>
             <span class="n">verb</span><span class="p">,</span> <span class="n">structures</span><span class="p">,</span> <span class="n">experiments</span><span class="p">,</span> <span class="n">use_physical_limits</span><span class="o">=</span><span class="n">use_physical_limits</span>
         <span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Fit mode </span><span class="si">{</span><span class="n">mode</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s1"> not implemented yet.&#39;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="ow">is</span> <span class="n">FitModeEnum</span><span class="o">.</span><span class="n">SEQUENTIAL</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="s2">&quot;fit_mode is &#39;sequential&#39;. Use fit_sequential(data_dir=...) instead of fit().&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span>
 
     <span class="c1"># After fitting, save the project</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -5187,25 +5200,7 @@ when starting values are better matched to the last file
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/analysis.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">801</span>
-<span class="normal">802</span>
-<span class="normal">803</span>
-<span class="normal">804</span>
-<span class="normal">805</span>
-<span class="normal">806</span>
-<span class="normal">807</span>
-<span class="normal">808</span>
-<span class="normal">809</span>
-<span class="normal">810</span>
-<span class="normal">811</span>
-<span class="normal">812</span>
-<span class="normal">813</span>
-<span class="normal">814</span>
-<span class="normal">815</span>
-<span class="normal">816</span>
-<span class="normal">817</span>
-<span class="normal">818</span>
-<span class="normal">819</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">819</span>
 <span class="normal">820</span>
 <span class="normal">821</span>
 <span class="normal">822</span>
@@ -5255,7 +5250,28 @@ when starting values are better matched to the last file
 <span class="normal">866</span>
 <span class="normal">867</span>
 <span class="normal">868</span>
-<span class="normal">869</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fit_sequential</span><span class="p">(</span>
+<span class="normal">869</span>
+<span class="normal">870</span>
+<span class="normal">871</span>
+<span class="normal">872</span>
+<span class="normal">873</span>
+<span class="normal">874</span>
+<span class="normal">875</span>
+<span class="normal">876</span>
+<span class="normal">877</span>
+<span class="normal">878</span>
+<span class="normal">879</span>
+<span class="normal">880</span>
+<span class="normal">881</span>
+<span class="normal">882</span>
+<span class="normal">883</span>
+<span class="normal">884</span>
+<span class="normal">885</span>
+<span class="normal">886</span>
+<span class="normal">887</span>
+<span class="normal">888</span>
+<span class="normal">889</span>
+<span class="normal">890</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fit_sequential</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">data_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
@@ -5302,6 +5318,9 @@ when starting values are better matched to the last file
 <span class="sd">        (e.g. highest-temperature dataset in a cooling scan).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction.analysis.sequential</span><span class="w"> </span><span class="kn">import</span> <span class="n">fit_sequential</span> <span class="k">as</span> <span class="n">_fit_seq</span>  <span class="c1"># noqa: PLC0415</span>
+
+    <span class="c1"># Record the fit mode for CIF serialization</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_fit_mode</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">FitModeEnum</span><span class="o">.</span><span class="n">SEQUENTIAL</span><span class="o">.</span><span class="n">value</span>
 
     <span class="c1"># Apply constraints before building the template</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_update_categories</span><span class="p">()</span>
@@ -5484,6 +5503,43 @@ when starting values are better matched to the last file
 <div class="doc doc-object doc-function">
 
 
+<h4 id="easydiffraction.analysis.analysis.Analysis.show_current_fit_mode_type" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">show_current_fit_mode_type</span><span class="p">()</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Print the currently selected fit mode.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/analysis/analysis.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">543</span>
+<span class="normal">544</span>
+<span class="normal">545</span>
+<span class="normal">546</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_current_fit_mode_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Print the currently selected fit mode.&quot;&quot;&quot;</span>
+    <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Current fit mode&#39;</span><span class="p">)</span>
+    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fit_mode</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
 <h4 id="easydiffraction.analysis.analysis.Analysis.show_current_minimizer" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">show_current_minimizer</span><span class="p">()</span></code>
 
@@ -5507,6 +5563,63 @@ when starting values are better matched to the last file
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print the name of the currently selected minimizer.&quot;&quot;&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Current minimizer&#39;</span><span class="p">)</span>
     <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_minimizer</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="easydiffraction.analysis.analysis.Analysis.show_supported_fit_mode_types" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">show_supported_fit_mode_types</span><span class="p">()</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Print a table of supported fit modes for this project.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/analysis/analysis.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">528</span>
+<span class="normal">529</span>
+<span class="normal">530</span>
+<span class="normal">531</span>
+<span class="normal">532</span>
+<span class="normal">533</span>
+<span class="normal">534</span>
+<span class="normal">535</span>
+<span class="normal">536</span>
+<span class="normal">537</span>
+<span class="normal">538</span>
+<span class="normal">539</span>
+<span class="normal">540</span>
+<span class="normal">541</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported_fit_mode_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Print a table of supported fit modes for this project.&quot;&quot;&quot;</span>
+    <span class="n">num_expts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">experiments</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">num_expts</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">modes</span> <span class="o">=</span> <span class="p">[</span><span class="n">FitModeEnum</span><span class="o">.</span><span class="n">SINGLE</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">modes</span> <span class="o">=</span> <span class="p">[</span><span class="n">FitModeEnum</span><span class="o">.</span><span class="n">SINGLE</span><span class="p">,</span> <span class="n">FitModeEnum</span><span class="o">.</span><span class="n">JOINT</span><span class="p">,</span> <span class="n">FitModeEnum</span><span class="o">.</span><span class="n">SEQUENTIAL</span><span class="p">]</span>
+    <span class="n">columns_data</span> <span class="o">=</span> <span class="p">[[</span><span class="n">mode</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">mode</span><span class="o">.</span><span class="n">description</span><span class="p">()]</span> <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="n">modes</span><span class="p">]</span>
+    <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Supported fit modes&#39;</span><span class="p">)</span>
+    <span class="n">render_table</span><span class="p">(</span>
+        <span class="n">columns_headers</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Mode&#39;</span><span class="p">,</span> <span class="s1">&#39;Description&#39;</span><span class="p">],</span>
+        <span class="n">columns_alignment</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">],</span>
+        <span class="n">columns_data</span><span class="o">=</span><span class="n">columns_data</span><span class="p">,</span>
+    <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -12866,11 +12979,15 @@ splitting the expression at the <code>=</code> sign.</p>
 <span class="normal">24</span>
 <span class="normal">25</span>
 <span class="normal">26</span>
-<span class="normal">27</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">FitModeEnum</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">FitModeEnum</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Fitting strategy for the analysis.&quot;&quot;&quot;</span>
 
     <span class="n">SINGLE</span> <span class="o">=</span> <span class="s1">&#39;single&#39;</span>
     <span class="n">JOINT</span> <span class="o">=</span> <span class="s1">&#39;joint&#39;</span>
+    <span class="n">SEQUENTIAL</span> <span class="o">=</span> <span class="s1">&#39;sequential&#39;</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">default</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FitModeEnum</span><span class="p">:</span>
@@ -12880,9 +12997,11 @@ splitting the expression at the <code>=</code> sign.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable description of this fit mode.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span> <span class="ow">is</span> <span class="n">FitModeEnum</span><span class="o">.</span><span class="n">SINGLE</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s1">&#39;Independent fitting of each experiment; no shared parameters&#39;</span>
+            <span class="k">return</span> <span class="s1">&#39;Independent fitting of each experiment&#39;</span>
         <span class="k">if</span> <span class="bp">self</span> <span class="ow">is</span> <span class="n">FitModeEnum</span><span class="o">.</span><span class="n">JOINT</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s1">&#39;Simultaneous fitting of all experiments; some parameters are shared&#39;</span>
+            <span class="k">return</span> <span class="s1">&#39;Simultaneous fitting of all experiments with weights&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span> <span class="ow">is</span> <span class="n">FitModeEnum</span><span class="o">.</span><span class="n">SEQUENTIAL</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;Sequential fitting over data files in a directory&#39;</span>
         <span class="k">return</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -12920,10 +13039,10 @@ splitting the expression at the <code>=</code> sign.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/categories/fit_mode/enums.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">16</span>
-<span class="normal">17</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">17</span>
 <span class="normal">18</span>
-<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">19</span>
+<span class="normal">20</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">default</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FitModeEnum</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the default fit mode (SINGLE).&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">SINGLE</span>
@@ -12957,18 +13076,22 @@ splitting the expression at the <code>=</code> sign.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/categories/fit_mode/enums.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">21</span>
-<span class="normal">22</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">22</span>
 <span class="normal">23</span>
 <span class="normal">24</span>
 <span class="normal">25</span>
 <span class="normal">26</span>
-<span class="normal">27</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a human-readable description of this fit mode.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="bp">self</span> <span class="ow">is</span> <span class="n">FitModeEnum</span><span class="o">.</span><span class="n">SINGLE</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s1">&#39;Independent fitting of each experiment; no shared parameters&#39;</span>
+        <span class="k">return</span> <span class="s1">&#39;Independent fitting of each experiment&#39;</span>
     <span class="k">if</span> <span class="bp">self</span> <span class="ow">is</span> <span class="n">FitModeEnum</span><span class="o">.</span><span class="n">JOINT</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s1">&#39;Simultaneous fitting of all experiments; some parameters are shared&#39;</span>
+        <span class="k">return</span> <span class="s1">&#39;Simultaneous fitting of all experiments with weights&#39;</span>
+    <span class="k">if</span> <span class="bp">self</span> <span class="ow">is</span> <span class="n">FitModeEnum</span><span class="o">.</span><span class="n">SEQUENTIAL</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;Sequential fitting over data files in a directory&#39;</span>
     <span class="k">return</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -13177,7 +13300,8 @@ validated by <code>FitModeEnum</code>.</p>
 
         <p>Fitting strategy selector.</p>
 <p>Holds a single <code>mode</code> descriptor whose value is one of
-<code>FitModeEnum</code> members (<code>'single'</code> or <code>'joint'</code>).</p>
+<code>FitModeEnum</code> members (<code>'single'</code>, <code>'joint'</code>, or
+<code>'sequential'</code>).</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -13233,13 +13357,15 @@ validated by <code>FitModeEnum</code>.</p>
 <span class="normal">61</span>
 <span class="normal">62</span>
 <span class="normal">63</span>
-<span class="normal">64</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@FitModeFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">64</span>
+<span class="normal">65</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@FitModeFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">FitMode</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Fitting strategy selector.</span>
 
 <span class="sd">    Holds a single ``mode`` descriptor whose value is one of</span>
-<span class="sd">    ``FitModeEnum`` members (``&#39;single&#39;`` or ``&#39;joint&#39;``).</span>
+<span class="sd">    ``FitModeEnum`` members (``&#39;single&#39;``, ``&#39;joint&#39;``, or</span>
+<span class="sd">    ``&#39;sequential&#39;``).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">type_info</span> <span class="o">=</span> <span class="n">TypeInfo</span><span class="p">(</span>

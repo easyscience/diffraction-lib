@@ -1,5 +1,5 @@
 _project.id               reference
 _project.title            'Reference Silicon Fit'
 _project.description      'Fitting simulated powder diffraction pattern of Si.'
-_project.created          '11 Apr 2026 18:19:06'
-_project.last_modified    '11 Apr 2026 18:19:06'
+_project.created          '11 Apr 2026 19:45:34'
+_project.last_modified    '11 Apr 2026 19:45:34'
