@@ -107,7 +107,7 @@ def test_prepare_solver_args_applies_fit_bounds():
     assert bp.bounds == (0.0, 10.0)
 
 
-def test_prepare_solver_args_falls_back_to_physical_bounds():
+def test_prepare_solver_args_does_not_use_physical_bounds():
     from easydiffraction.analysis.minimizers.bumps import BumpsMinimizer
 
     class PhysParam(FakeParam):
@@ -121,7 +121,7 @@ def test_prepare_solver_args_falls_back_to_physical_bounds():
     params = [PhysParam('x', 5.0)]
     kwargs = m._prepare_solver_args(params)
     bp = kwargs['bumps_params'][0]
-    assert bp.bounds == (0.0, 100.0)
+    assert bp.bounds == (-np.inf, np.inf)
 
 
 # -- _EasyDiffractionFitness tests --------------------------------------------
