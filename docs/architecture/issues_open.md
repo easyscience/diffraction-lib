@@ -1069,6 +1069,7 @@ Parameters and Descriptors use `RangeValidator`, `RegexValidator`,
 `MembershipValidator` for values but rely on `@typechecked` (only in
 some places) for type checking. Category switchable types use different
 validation paths. Decide whether to:
+
 - Use custom validators for both types and values on Parameters.
 - Use custom validators for category type setters.
 - Standardise the approach across the codebase.
@@ -1115,9 +1116,9 @@ Agree on and enforce a consistent ordering within every class:
 4. Public properties (getters/setters)
 5. Public methods
 
-Each group should have a comment header (e.g. `# --- Public properties
----`) for visual separation. Some classes already use this pattern;
-apply it uniformly.
+Each group should have a comment header (e.g.
+`# --- Public properties ---`) for visual separation. Some classes
+already use this pattern; apply it uniformly.
 
 **Depends on:** nothing.
 
@@ -1176,6 +1177,7 @@ Public property getters return `Parameter` / `StringDescriptor` etc.,
 and setters accept `float` / `str` etc. These annotations must stay in
 sync with the private `_attr` type. Currently there is no automated
 check. Options:
+
 - A custom script (like `param_consistency.py`) to verify sync.
 - A ruff plugin or post-ruff check step.
 - Also covers: enforcing `Base` suffix (not prefix), checking missing
@@ -1202,10 +1204,9 @@ calculators are installed.
 
 **Type:** Naming / Consistency
 
-The switchable-category naming convention prescribes
-`<category>_type` (getter/setter) and
-`show_supported_<category>_types()`. But some names deviate: e.g.
-`show_supported_minimizers()` instead of
+The switchable-category naming convention prescribes `<category>_type`
+(getter/setter) and `show_supported_<category>_types()`. But some names
+deviate: e.g. `show_supported_minimizers()` instead of
 `show_supported_minimizer_types()`, and `current_minimizer` instead of
 `minimizer_type`. Audit and align all switchable-category APIs.
 
@@ -1239,6 +1240,7 @@ the user to the next level:
 **Type:** Design
 
 `FitModeEnum` has `SINGLE` and `JOINT`. Issues:
+
 - `single` implies one experiment, but structure parameters are shared
   across experiments. A more accurate name might be `independent`.
 - Sequential fitting (reusing fitted parameters from the previous step)
@@ -1272,6 +1274,7 @@ fields means a loaded project silently differs from the saved one.
 Both `Any` and `object` are used as generic parameter types. Current
 pattern: `Any` inside containers (`dict[str, Any]`), `object` for
 standalone params (often to avoid circular imports). Decide on a policy:
+
 - Use protocol types / `TYPE_CHECKING` imports instead of `object`.
 - Reserve `Any` for genuinely unknown types.
 - Document when each is appropriate.
@@ -1286,6 +1289,7 @@ standalone params (often to avoid circular imports). Decide on a policy:
 
 Some public methods (e.g. `plot_meas_vs_calc`, others) lack docstrings.
 Decide:
+
 - All public methods **must** have numpy-style docstrings.
 - Private helpers: minimal one-liner docstring or none? Choose a policy.
 - Enable a ruff rule (e.g. `D103`, `D102`) or add a custom check to
@@ -1300,6 +1304,7 @@ Decide:
 **Type:** Documentation
 
 Two manual workflow steps are required between releases/changes:
+
 1. `pixi run param-docstring-fix` — sync Parameter docstrings.
 2. `pixi run notebook-prepare` — regenerate tutorial notebooks from
    scripts.
@@ -1327,11 +1332,11 @@ single-responsibility principle.
 
 **Type:** Correctness
 
-CIF output currently writes `None` as literal text for some fields
-(e.g. `_diffrn.ambient_pressure None`). CIF convention uses `.` for
+CIF output currently writes `None` as literal text for some fields (e.g.
+`_diffrn.ambient_pressure None`). CIF convention uses `.` for
 inapplicable values and `?` for unknown. The CIF writer should map
-`None` → `.` (or `?` depending on semantics), and the reader should
-map `.` → `None`.
+`None` → `.` (or `?` depending on semantics), and the reader should map
+`.` → `None`.
 
 **Depends on:** nothing.
 
@@ -1343,7 +1348,8 @@ map `.` → `None`.
 
 In `single` fit mode, only the last experiment's fit results are
 retained because structure parameters are overwritten on each iteration.
-This means earlier experiments cannot be plotted correctly after fitting.
+This means earlier experiments cannot be plotted correctly after
+fitting.
 
 **Fix:** after fitting each experiment, store a snapshot of its fitted
 parameters (both structure and experiment) so that any experiment can be
@@ -1361,8 +1367,8 @@ keep the last mutable parameter set after adding a snapshot?
 `plot_param_series` currently requires the user to manually specify the
 x-axis parameter (e.g. `x_axis='temperature'` → look up
 `diffrn.ambient_temperature`). This should be auto-resolved from the
-parameter name. Additionally, axis labels should include units
-(e.g. "Temperature (K)").
+parameter name. Additionally, axis labels should include units (e.g.
+"Temperature (K)").
 
 **Depends on:** nothing.
 
@@ -1374,6 +1380,7 @@ parameter name. Additionally, axis labels should include units
 
 The current tutorial index uses a flat `"level": "advanced"` tag. A
 richer categorisation system is needed:
+
 - Group by topic (matching the docs structure).
 - Multiple difficulty levels.
 - Multiple Python-knowledge levels.
@@ -1411,8 +1418,7 @@ threaded because each step's output is the next step's input.
 
 **Type:** UX
 
-Currently prints:
-`Using experiment 🔬 'd20_30' for 'single' fitting`
+Currently prints: `Using experiment 🔬 'd20_30' for 'single' fitting`
 
 Should print:
 `Using experiment 🔬 'd20_30' (No. 30 of 47) for 'single' fitting`
@@ -1448,91 +1454,91 @@ operation is possible (e.g. in automated pipelines or tests).
 
 ## Summary
 
-| #   | Issue                                            | Severity | Type            |
-| --- | ------------------------------------------------ | -------- | --------------- |
-| 3   | Rebuild joint-fit weights                        | 🟡 Med   | Fragility       |
-| 5   | `Analysis` as `DatablockItem`                    | 🟡 Med   | Consistency     |
-| 8   | Explicit `create()` signatures                   | 🟡 Med   | API safety      |
-| 9   | Future enum extensions                           | 🟢 Low   | Design          |
-| 10  | Unify update orchestration                       | 🟢 Low   | Maintainability |
-| 11  | Document `_update` contract                      | 🟢 Low   | Maintainability |
-| 13  | Suppress redundant dirty-flag sets               | 🟢 Low   | Performance     |
-| 14  | Finer-grained change tracking                    | 🟢 Low   | Performance     |
-| 15  | Validate joint-fit weights                       | 🟡 Med   | Correctness     |
-| 16  | Persist per-experiment `calculator_type`         | 🟡 Med   | Completeness    |
-| 17  | Use PDF-specific CIF names                       | 🟢 Low   | Naming          |
-| 18  | Move CIF v2→v1 conversion out of calculator      | 🟢 Low   | Maintainability |
-| 19  | Debug-mode logging for calculator imports        | 🟢 Low   | Diagnostics     |
-| 20  | Redirect/suppress CrysPy stderr                  | 🟢 Low   | UX              |
-| 21  | Clarify CrysPy TOF background CIF tags           | 🟡 Med   | Correctness     |
-| 22  | Check SC instrument mapping in CrysPy            | 🟢 Low   | Correctness     |
-| 23  | Investigate PyCrysFML pattern length discrepancy | 🟢 Low   | Correctness     |
-| 24  | Process defaults on experiment creation          | 🟢 Low   | Design          |
-| 25  | Refactor data `_update` methods                  | 🟡 Med   | Maintainability |
-| 26  | Clarify `dtype` usage in data arrays             | 🟢 Low   | Cleanup         |
-| 27  | Handle zero uncertainty in Bragg PD              | 🟢 Low   | Correctness     |
-| 28  | Clarify Bragg PD data collection description     | 🟢 Low   | Cleanup         |
-| 29  | Standardise CIF ID validator pattern             | 🟡 Med   | Consistency     |
-| 30  | Make `refinement_status` default an Enum         | 🟢 Low   | Design          |
-| 31  | Rename PD data point mixins                      | 🟢 Low   | Naming          |
-| 32  | Move common methods to `DatablockCollection`     | 🟡 Med   | Maintainability |
-| 33  | Make `_update_categories` abstract               | 🟡 Med   | Design          |
-| 34  | Auto-extract `PeakProfileTypeEnum`               | 🟢 Low   | Design          |
-| 35  | Rename `BeamModeEnum` members to CWL/TOF         | 🟢 Low   | Naming          |
-| 36  | Common `EnumBase` class                          | 🟢 Low   | Design          |
-| 37  | Rename experiment `.type` property               | 🟢 Low   | Naming          |
-| 38  | Fix `@typechecked`/gemmi in factories            | 🟡 Med   | Bug             |
-| 39  | Improve `_update_priority` handling              | 🟢 Low   | Design          |
-| 40  | Implement resetting `.constrained` to `False`    | 🟢 Low   | Feature         |
-| 41  | Check `_mark_dirty` in `_set_value`              | 🟢 Low   | Cleanup         |
-| 42  | MkDocs type unpacking in validation              | 🟢 Low   | Docs            |
-| 43  | Fix summary display inconsistencies              | 🟢 Low   | UX              |
-| 44  | Merge parameter record construction              | 🟢 Low   | Cleanup         |
-| 45  | Decide alias/constraint descriptor default       | 🟢 Low   | Design          |
-| 46  | Rename `JointFitExperiments` id + descriptions   | 🟢 Low   | Naming          |
-| 47  | Improve error handling in crystallography        | 🟢 Low   | Diagnostics     |
-| 48  | Fix CrysPy TOF instrument default                | 🟢 Low   | Bug workaround  |
-| 49  | Automate space group CIF name variants           | 🟢 Low   | Maintainability |
-| 50  | Clarify `Cell._update` minimizer param           | 🟢 Low   | Cleanup         |
-| 51  | Access space group for Wyckoff letters           | 🟢 Low   | Design          |
-| 52  | Rename line-segment `y` to `intensity`           | 🟢 Low   | Naming          |
-| 53  | Move `show()` to `CategoryCollection`            | 🟢 Low   | Maintainability |
-| 54  | Add `point_id` to excluded regions               | 🟢 Low   | Completeness    |
-| 55  | Fix Jupyter scroll disabling for MkDocs          | 🟢 Low   | Docs / UX       |
-| 56  | Make ASCII plot width configurable               | 🟢 Low   | UX              |
-| 57  | Clean up CIF deserialisation helpers             | 🟢 Low   | Maintainability |
-| 58  | Move `ProjectInfo` CIF methods to `serialize`    | 🟢 Low   | Maintainability |
-| 59  | Add CIF name validation in parse                 | 🟢 Low   | Robustness      |
-| 60  | Unify `mkdir` usage                              | 🟢 Low   | Cleanup         |
-| 61  | Clarify logger default reaction mode             | 🟢 Low   | Design          |
-| 62  | Complete `render_table` → `TableRenderer`        | 🟢 Low   | Cleanup         |
-| 63  | Fix calculator `calculate_pattern` signature     | 🟢 Low   | Design          |
-| 64  | Check unused-if-loading-from-CIF code            | 🟢 Low   | Cleanup         |
-| 65  | Replace all bare `print()` with logging          | 🟡 Med   | Code quality    |
-| 66  | Error-handling strategy: `log.error` vs `raise`  | 🟡 Med   | Design          |
-| 67  | Custom validation for params and category types  | 🟡 Med   | Design          |
-| 68  | `@typechecked` on all public methods?            | 🟢 Low   | Design          |
-| 69  | Shorter public API names via `__init__`           | 🟢 Low   | API ergonomics  |
-| 70  | Standardise class member ordering + headers      | 🟡 Med   | Code style      |
-| 71  | `_update_priority` reference table               | 🟢 Low   | Documentation   |
-| 72  | Warn on all switchable-category type changes     | 🟡 Med   | UX              |
-| 73  | Unify setter parameter naming                    | 🟢 Low   | Code style      |
-| 74  | Sync property type hints + custom lint rules     | 🟡 Med   | Tooling         |
-| 75  | `show_supported_calculators()` on Analysis       | 🟢 Low   | API completeness|
-| 76  | Consistent `_type` suffix in switchable APIs     | 🟡 Med   | Naming          |
-| 77  | Add `help()` to Project + enrich existing        | 🟡 Med   | Discoverability |
-| 78  | Clarify `fit_mode` naming + sequential semantics | 🟡 Med   | Design          |
-| 79  | Verify analysis CIF serialisation completeness   | 🟢 Low   | Correctness     |
-| 80  | Resolve `Any` vs `object` annotation policy      | 🟢 Low   | Code style      |
-| 81  | Enforce docstrings on all public methods         | 🟡 Med   | Code quality    |
-| 82  | Document `param-docstring-fix` workflow           | 🟢 Low   | Documentation   |
-| 83  | Remove redundant parameter listing               | 🟢 Low   | Cleanup         |
-| 84  | Serialise `None` as `.` in CIF output            | 🟡 Med   | Correctness     |
-| 85  | Retain per-experiment fitted params for plotting | 🟡 Med   | Correctness     |
-| 86  | Auto-resolve `plot_param` x-axis + add units     | 🟢 Low   | UX              |
-| 87  | Redesign tutorial grouping/categorisation        | 🟢 Low   | Documentation   |
-| 88  | Fix Dataset 26 description (47 not 57)           | 🟢 Low   | Data            |
-| 89  | Parallel independent fits for single mode        | 🟡 Med   | Performance     |
-| 90  | Show experiment number during sequential fitting | 🟢 Low   | UX              |
-| 91  | Disable TODO checks in CodeFactor PRs            | 🟢 Low   | CI / Tooling    |
-| 92  | Make `save()` respect verbosity                   | 🟢 Low   | UX              |
+| #   | Issue                                            | Severity | Type             |
+| --- | ------------------------------------------------ | -------- | ---------------- |
+| 3   | Rebuild joint-fit weights                        | 🟡 Med   | Fragility        |
+| 5   | `Analysis` as `DatablockItem`                    | 🟡 Med   | Consistency      |
+| 8   | Explicit `create()` signatures                   | 🟡 Med   | API safety       |
+| 9   | Future enum extensions                           | 🟢 Low   | Design           |
+| 10  | Unify update orchestration                       | 🟢 Low   | Maintainability  |
+| 11  | Document `_update` contract                      | 🟢 Low   | Maintainability  |
+| 13  | Suppress redundant dirty-flag sets               | 🟢 Low   | Performance      |
+| 14  | Finer-grained change tracking                    | 🟢 Low   | Performance      |
+| 15  | Validate joint-fit weights                       | 🟡 Med   | Correctness      |
+| 16  | Persist per-experiment `calculator_type`         | 🟡 Med   | Completeness     |
+| 17  | Use PDF-specific CIF names                       | 🟢 Low   | Naming           |
+| 18  | Move CIF v2→v1 conversion out of calculator      | 🟢 Low   | Maintainability  |
+| 19  | Debug-mode logging for calculator imports        | 🟢 Low   | Diagnostics      |
+| 20  | Redirect/suppress CrysPy stderr                  | 🟢 Low   | UX               |
+| 21  | Clarify CrysPy TOF background CIF tags           | 🟡 Med   | Correctness      |
+| 22  | Check SC instrument mapping in CrysPy            | 🟢 Low   | Correctness      |
+| 23  | Investigate PyCrysFML pattern length discrepancy | 🟢 Low   | Correctness      |
+| 24  | Process defaults on experiment creation          | 🟢 Low   | Design           |
+| 25  | Refactor data `_update` methods                  | 🟡 Med   | Maintainability  |
+| 26  | Clarify `dtype` usage in data arrays             | 🟢 Low   | Cleanup          |
+| 27  | Handle zero uncertainty in Bragg PD              | 🟢 Low   | Correctness      |
+| 28  | Clarify Bragg PD data collection description     | 🟢 Low   | Cleanup          |
+| 29  | Standardise CIF ID validator pattern             | 🟡 Med   | Consistency      |
+| 30  | Make `refinement_status` default an Enum         | 🟢 Low   | Design           |
+| 31  | Rename PD data point mixins                      | 🟢 Low   | Naming           |
+| 32  | Move common methods to `DatablockCollection`     | 🟡 Med   | Maintainability  |
+| 33  | Make `_update_categories` abstract               | 🟡 Med   | Design           |
+| 34  | Auto-extract `PeakProfileTypeEnum`               | 🟢 Low   | Design           |
+| 35  | Rename `BeamModeEnum` members to CWL/TOF         | 🟢 Low   | Naming           |
+| 36  | Common `EnumBase` class                          | 🟢 Low   | Design           |
+| 37  | Rename experiment `.type` property               | 🟢 Low   | Naming           |
+| 38  | Fix `@typechecked`/gemmi in factories            | 🟡 Med   | Bug              |
+| 39  | Improve `_update_priority` handling              | 🟢 Low   | Design           |
+| 40  | Implement resetting `.constrained` to `False`    | 🟢 Low   | Feature          |
+| 41  | Check `_mark_dirty` in `_set_value`              | 🟢 Low   | Cleanup          |
+| 42  | MkDocs type unpacking in validation              | 🟢 Low   | Docs             |
+| 43  | Fix summary display inconsistencies              | 🟢 Low   | UX               |
+| 44  | Merge parameter record construction              | 🟢 Low   | Cleanup          |
+| 45  | Decide alias/constraint descriptor default       | 🟢 Low   | Design           |
+| 46  | Rename `JointFitExperiments` id + descriptions   | 🟢 Low   | Naming           |
+| 47  | Improve error handling in crystallography        | 🟢 Low   | Diagnostics      |
+| 48  | Fix CrysPy TOF instrument default                | 🟢 Low   | Bug workaround   |
+| 49  | Automate space group CIF name variants           | 🟢 Low   | Maintainability  |
+| 50  | Clarify `Cell._update` minimizer param           | 🟢 Low   | Cleanup          |
+| 51  | Access space group for Wyckoff letters           | 🟢 Low   | Design           |
+| 52  | Rename line-segment `y` to `intensity`           | 🟢 Low   | Naming           |
+| 53  | Move `show()` to `CategoryCollection`            | 🟢 Low   | Maintainability  |
+| 54  | Add `point_id` to excluded regions               | 🟢 Low   | Completeness     |
+| 55  | Fix Jupyter scroll disabling for MkDocs          | 🟢 Low   | Docs / UX        |
+| 56  | Make ASCII plot width configurable               | 🟢 Low   | UX               |
+| 57  | Clean up CIF deserialisation helpers             | 🟢 Low   | Maintainability  |
+| 58  | Move `ProjectInfo` CIF methods to `serialize`    | 🟢 Low   | Maintainability  |
+| 59  | Add CIF name validation in parse                 | 🟢 Low   | Robustness       |
+| 60  | Unify `mkdir` usage                              | 🟢 Low   | Cleanup          |
+| 61  | Clarify logger default reaction mode             | 🟢 Low   | Design           |
+| 62  | Complete `render_table` → `TableRenderer`        | 🟢 Low   | Cleanup          |
+| 63  | Fix calculator `calculate_pattern` signature     | 🟢 Low   | Design           |
+| 64  | Check unused-if-loading-from-CIF code            | 🟢 Low   | Cleanup          |
+| 65  | Replace all bare `print()` with logging          | 🟡 Med   | Code quality     |
+| 66  | Error-handling strategy: `log.error` vs `raise`  | 🟡 Med   | Design           |
+| 67  | Custom validation for params and category types  | 🟡 Med   | Design           |
+| 68  | `@typechecked` on all public methods?            | 🟢 Low   | Design           |
+| 69  | Shorter public API names via `__init__`          | 🟢 Low   | API ergonomics   |
+| 70  | Standardise class member ordering + headers      | 🟡 Med   | Code style       |
+| 71  | `_update_priority` reference table               | 🟢 Low   | Documentation    |
+| 72  | Warn on all switchable-category type changes     | 🟡 Med   | UX               |
+| 73  | Unify setter parameter naming                    | 🟢 Low   | Code style       |
+| 74  | Sync property type hints + custom lint rules     | 🟡 Med   | Tooling          |
+| 75  | `show_supported_calculators()` on Analysis       | 🟢 Low   | API completeness |
+| 76  | Consistent `_type` suffix in switchable APIs     | 🟡 Med   | Naming           |
+| 77  | Add `help()` to Project + enrich existing        | 🟡 Med   | Discoverability  |
+| 78  | Clarify `fit_mode` naming + sequential semantics | 🟡 Med   | Design           |
+| 79  | Verify analysis CIF serialisation completeness   | 🟢 Low   | Correctness      |
+| 80  | Resolve `Any` vs `object` annotation policy      | 🟢 Low   | Code style       |
+| 81  | Enforce docstrings on all public methods         | 🟡 Med   | Code quality     |
+| 82  | Document `param-docstring-fix` workflow          | 🟢 Low   | Documentation    |
+| 83  | Remove redundant parameter listing               | 🟢 Low   | Cleanup          |
+| 84  | Serialise `None` as `.` in CIF output            | 🟡 Med   | Correctness      |
+| 85  | Retain per-experiment fitted params for plotting | 🟡 Med   | Correctness      |
+| 86  | Auto-resolve `plot_param` x-axis + add units     | 🟢 Low   | UX               |
+| 87  | Redesign tutorial grouping/categorisation        | 🟢 Low   | Documentation    |
+| 88  | Fix Dataset 26 description (47 not 57)           | 🟢 Low   | Data             |
+| 89  | Parallel independent fits for single mode        | 🟡 Med   | Performance      |
+| 90  | Show experiment number during sequential fitting | 🟢 Low   | UX               |
+| 91  | Disable TODO checks in CodeFactor PRs            | 🟢 Low   | CI / Tooling     |
+| 92  | Make `save()` respect verbosity                  | 🟢 Low   | UX               |
