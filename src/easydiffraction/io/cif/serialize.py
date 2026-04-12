@@ -171,6 +171,11 @@ def category_collection_to_cif(
     if not len(collection):
         return ''
 
+    # Allow collections to conditionally suppress CIF output
+    skip = getattr(collection, '_skip_cif_serialization', None)
+    if skip is not None and skip():
+        return ''
+
     lines: list[str] = []
 
     # Header

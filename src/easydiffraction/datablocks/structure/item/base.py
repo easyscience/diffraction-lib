@@ -5,12 +5,8 @@
 from typeguard import typechecked
 
 from easydiffraction.core.datablock import DatablockItem
-from easydiffraction.datablocks.structure.categories.atom_site_aniso import (
-    AtomSiteAnisoCollection,
-)
-from easydiffraction.datablocks.structure.categories.atom_site_aniso.default import (
-    AtomSiteAniso,
-)
+from easydiffraction.datablocks.structure.categories.atom_site_aniso import AtomSiteAnisoCollection
+from easydiffraction.datablocks.structure.categories.atom_site_aniso.default import AtomSiteAniso
 from easydiffraction.datablocks.structure.categories.atom_site_aniso.factory import (
     AtomSiteAnisoFactory,
 )
@@ -166,7 +162,8 @@ class Structure(DatablockItem):
     # ------------------------------------------------------------------
 
     def _sync_atom_site_aniso(self) -> None:
-        """Reconcile ``atom_site_aniso`` with ``atom_sites``.
+        """
+        Reconcile ``atom_site_aniso`` with ``atom_sites``.
 
         Ensures every atom in ``atom_sites`` has a matching entry in
         ``atom_site_aniso`` and removes stale entries whose label no
@@ -184,7 +181,9 @@ class Structure(DatablockItem):
                 self._atom_site_aniso.add(entry)
 
         # Remove stale entries
-        stale = [a.label.value for a in self._atom_site_aniso if a.label.value not in existing_labels]
+        stale = [
+            a.label.value for a in self._atom_site_aniso if a.label.value not in existing_labels
+        ]
         for lbl in stale:
             self._atom_site_aniso.remove(lbl)
 

@@ -280,10 +280,89 @@ class CryspyCalculator(CalculatorBase):
         for idx, atom_site in enumerate(structure.atom_sites):
             cryspy_occ[idx] = atom_site.occupancy.value
 
-        # Atomic ADPs - isotropic only for now
+        # Atomic ADPs - isotropic
         cryspy_biso = cryspy_model_dict['atom_b_iso']
         for idx, atom_site in enumerate(structure.atom_sites):
             cryspy_biso[idx] = atom_site.adp_iso_as_b
+
+        # Atomic ADPs - anisotropic (update β tensor when present)
+        if 'atom_beta' in cryspy_model_dict:
+            CryspyCalculator._update_aniso_beta(
+                cryspy_model_dict,
+                structure,
+            )
+
+    @staticmethod
+    def _update_aniso_beta(
+        cryspy_model_dict: dict[str, Any],
+        structure: Structure,
+    ) -> None:
+        """
+        Update cryspy ``atom_beta`` from anisotropic ADP values.
+
+        Converts B or U tensor components to cryspy's internal β
+        representation using β_ij = 2π²·U_ij·a*_i·a*_j.
+
+        Parameters
+        ----------
+        cryspy_model_dict : dict[str, Any]
+            The ``crystal_<name>`` sub-dict.
+        structure : Structure
+            The source structure.
+        """
+        from cryspy.A_functions_base.function_1_atomic_vibrations import (  # noqa: PLC0415
+            calc_beta_by_u,
+        )
+        from cryspy.A_functions_base.unit_cell import (  # noqa: PLC0415
+            calc_reciprocal_by_unit_cell_parameters,
+        )
+
+        from easydiffraction.datablocks.structure.categories.atom_sites.enums import (  # noqa: PLC0415
+            AdpTypeEnum,
+        )
+
+        aniso_index = cryspy_model_dict.get('atom_site_aniso_index')
+        if aniso_index is None:
+            return
+
+        cryspy_beta = cryspy_model_dict['atom_beta']
+        cell_params = cryspy_model_dict['unit_cell_parameters']
+
+        # Compute reciprocal lengths from cell parameters (with angles
+        # already in radians as stored by cryspy).
+        recip_params, _ = calc_reciprocal_by_unit_cell_parameters(cell_params)
+
+        class _CellLike:
+            reciprocal_length_a = recip_params[0]
+            reciprocal_length_b = recip_params[1]
+            reciprocal_length_c = recip_params[2]
+
+        cell_like = _CellLike()
+        factor = 8.0 * np.pi**2
+
+        for col, atom_idx in enumerate(aniso_index):
+            atom = list(structure.atom_sites)[atom_idx]
+            adp_enum = AdpTypeEnum(atom.adp_type.value)
+            if adp_enum not in {AdpTypeEnum.BANI, AdpTypeEnum.UANI}:
+                continue
+
+            aniso = structure.atom_site_aniso[atom.label.value]
+            u_vals = [
+                aniso.adp_11.value,
+                aniso.adp_22.value,
+                aniso.adp_33.value,
+                aniso.adp_12.value,
+                aniso.adp_13.value,
+                aniso.adp_23.value,
+            ]
+
+            # Convert to U if stored as B
+            if adp_enum == AdpTypeEnum.BANI:
+                u_vals = [v / factor for v in u_vals]
+
+            betas = calc_beta_by_u(u_vals, cell_like)
+            for k in range(6):
+                cryspy_beta[k][col] = betas[k]
 
     @staticmethod
     def _update_experiment_in_cryspy_dict(

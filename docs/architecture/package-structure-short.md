@@ -137,6 +137,10 @@
 │   │   └── 📄 collection.py
 │   ├── 📁 structure
 │   │   ├── 📁 categories
+│   │   │   ├── 📁 atom_site_aniso
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   └── 📄 factory.py
 │   │   │   ├── 📁 atom_sites
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 default.py

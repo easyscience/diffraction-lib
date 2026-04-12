@@ -3,9 +3,9 @@
 """
 Anisotropic ADP category.
 
-Defines :class:`AtomSiteAniso` items and :class:`AtomSiteAnisoCollection`
-used alongside :class:`AtomSites` to hold anisotropic displacement
-parameters.
+Defines :class:`AtomSiteAniso` items and
+:class:`AtomSiteAnisoCollection` used alongside :class:`AtomSites` to
+hold anisotropic displacement parameters.
 """
 
 from __future__ import annotations
@@ -24,11 +24,12 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 class AtomSiteAniso(CategoryItem):
-    """Single atom site anisotropic ADP entry.
+    """
+    Single atom site anisotropic ADP entry.
 
     Each entry mirrors an :class:`AtomSite` by label and holds six
-    tensor components whose physical meaning (B or U) is determined
-    by ``atom_site.adp_type``.
+    tensor components whose physical meaning (B or U) is determined by
+    ``atom_site.adp_type``.
     """
 
     def __init__(self) -> None:
@@ -216,3 +217,25 @@ class AtomSiteAnisoCollection(CategoryCollection):
     def __init__(self) -> None:
         """Initialise an empty aniso-ADP collection."""
         super().__init__(item_type=AtomSiteAniso)
+
+    def _skip_cif_serialization(self) -> bool:
+        """
+        Return ``True`` when no atoms use an anisotropic ADP type.
+
+        Returns
+        -------
+        bool
+            ``True`` if CIF output should be suppressed.
+        """
+        structure = getattr(self, '_parent', None)
+        if structure is None:
+            return True
+        atom_sites = getattr(structure, '_atom_sites', None)
+        if atom_sites is None:
+            return True
+        from easydiffraction.datablocks.structure.categories.atom_sites.enums import (  # noqa: PLC0415
+            AdpTypeEnum,
+        )
+
+        aniso_types = {AdpTypeEnum.BANI.value, AdpTypeEnum.UANI.value}
+        return not any(atom.adp_type.value in aniso_types for atom in atom_sites)

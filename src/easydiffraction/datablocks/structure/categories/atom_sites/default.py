@@ -188,7 +188,8 @@ class AtomSite(CategoryItem):
         return self._wyckoff_letter_allowed_values[0]
 
     def _convert_adp_values(self, old_type: str, new_type: str) -> None:
-        """Convert ADP values when the type changes.
+        """
+        Convert ADP values when the type changes.
 
         Handles B ↔ U conversion using B = 8π²U and iso ↔ ani seeding.
 
@@ -224,7 +225,12 @@ class AtomSite(CategoryItem):
             # Ani → Ani (e.g. Bani→Uani): apply B↔U to aniso values
             aniso = self._get_aniso_entry()
             if aniso is not None:
-                self._convert_aniso_values(aniso, old_is_b, new_is_u, factor)
+                self._convert_aniso_values(
+                    aniso,
+                    old_is_b=old_is_b,
+                    new_is_u=new_is_u,
+                    factor=factor,
+                )
 
     def _seed_aniso_from_iso(self) -> None:
         """Seed aniso diagonal from current adp_iso value."""
@@ -244,12 +250,13 @@ class AtomSite(CategoryItem):
         aniso = self._get_aniso_entry()
         if aniso is None:
             return
-        self._adp_iso.value = (
-            aniso.adp_11.value + aniso.adp_22.value + aniso.adp_33.value
-        ) / 3.0
+        self._adp_iso.value = (aniso.adp_11.value + aniso.adp_22.value + aniso.adp_33.value) / 3.0
 
     def _get_aniso_entry(self) -> object | None:
         """Return the matching AtomSiteAniso entry, or None."""
+        # _parent is absent before the atom is added to a collection
+        if '_parent' not in self.__dict__:
+            return None
         structure = getattr(self._parent, '_parent', None)
         if structure is None:
             return None
@@ -264,6 +271,7 @@ class AtomSite(CategoryItem):
     @staticmethod
     def _convert_aniso_values(
         aniso: object,
+        *,
         old_is_b: bool,
         new_is_u: bool,
         factor: float,
@@ -279,7 +287,8 @@ class AtomSite(CategoryItem):
                 p.value *= factor
 
     def _reorder_adp_cif_names(self, new_type: str) -> None:
-        """Reorder CIF names on adp_iso and aniso params for serialisation.
+        """
+        Reorder CIF names on adp_iso and aniso params for serialisation.
 
         Parameters
         ----------
