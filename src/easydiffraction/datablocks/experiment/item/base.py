@@ -472,6 +472,7 @@ class PdExperimentBase(ExperimentBase):
             New profile type as tag string.
         """
         supported = PeakFactory.supported_for(
+            calculator=self.calculator_type,
             scattering_type=self.type.scattering_type.value,
             beam_mode=self.type.beam_mode.value,
         )
@@ -498,6 +499,7 @@ class PdExperimentBase(ExperimentBase):
     def show_supported_peak_profile_types(self) -> None:
         """Print available peak profile types for this experiment."""
         PeakFactory.show_supported(
+            calculator=self.calculator_type,
             scattering_type=self.type.scattering_type.value,
             beam_mode=self.type.beam_mode.value,
         )
