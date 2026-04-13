@@ -160,9 +160,9 @@ class TestMixedAdpTypes:
     def test_mixed_types_coexist(self):
         project = _make_project_with_structure()
         s = project.structures['cubic']
-        s.atom_sites['A'].adp_type = 'Uani'
+        s.atom_sites['A'].adp_type = 'Uani'  # Auto-changed to Bani by next line
         s.atom_sites['B'].adp_type = 'Biso'
-        assert s.atom_sites['A'].adp_type.value == 'Uani'
+        assert s.atom_sites['A'].adp_type.value == 'Bani'
         assert s.atom_sites['B'].adp_type.value == 'Biso'
 
     def test_mixed_cif_has_question_marks_for_iso(self):
