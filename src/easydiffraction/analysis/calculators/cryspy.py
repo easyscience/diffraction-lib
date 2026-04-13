@@ -118,9 +118,8 @@ class CryspyCalculator(CalculatorBase):
         When either changes the cached dictionary is stale and must be
         rebuilt from a fresh cryspy object.
         """
-        peak = getattr(experiment, 'peak', None)
-        if peak is not None:
-            current_type = peak.type_info.tag
+        if 'peak' in type(experiment)._public_attrs():
+            current_type = experiment.peak.type_info.tag
             if self._cached_peak_types.get(combined_name) != current_type:
                 self._cryspy_dicts.pop(combined_name, None)
             self._cached_peak_types[combined_name] = current_type
@@ -696,10 +695,11 @@ class CryspyCalculator(CalculatorBase):
         str
             The Cryspy CIF string representation of the experiment.
         """
-        expt_type = getattr(experiment, 'type', None)
-        instrument = getattr(experiment, 'instrument', None)
-        peak = getattr(experiment, 'peak', None)
-        extinction = getattr(experiment, 'extinction', None)
+        attrs = type(experiment)._public_attrs()
+        expt_type = experiment.type if 'type' in attrs else None
+        instrument = experiment.instrument if 'instrument' in attrs else None
+        peak = experiment.peak if 'peak' in attrs else None
+        extinction = experiment.extinction if 'extinction' in attrs else None
 
         cif_lines = [f'data_{experiment.name}']
 

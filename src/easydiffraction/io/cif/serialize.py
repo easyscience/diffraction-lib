@@ -100,8 +100,10 @@ def format_param_value(param: object) -> str:
     str
         Formatted CIF value string.
     """
-    is_free = getattr(param, 'free', False)
-    is_constrained = getattr(param, 'constrained', False)
+    from easydiffraction.core.variable import Parameter  # noqa: PLC0415
+
+    is_free = param.free if isinstance(param, Parameter) else False
+    is_constrained = param.constrained if isinstance(param, Parameter) else False
     value = param.value  # type: ignore[attr-defined]
 
     if not is_free or is_constrained or not isinstance(value, (int, float)):

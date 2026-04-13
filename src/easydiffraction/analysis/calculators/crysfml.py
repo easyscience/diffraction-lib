@@ -222,9 +222,10 @@ class CrysfmlCalculator(CalculatorBase):
         dict[str, Any]
             A dictionary representation of the experiment.
         """
-        expt_type = getattr(experiment, 'type', None)
-        instrument = getattr(experiment, 'instrument', None)
-        peak = getattr(experiment, 'peak', None)
+        attrs = type(experiment)._public_attrs()
+        expt_type = experiment.type if 'type' in attrs else None
+        instrument = experiment.instrument if 'instrument' in attrs else None
+        peak = experiment.peak if 'peak' in attrs else None
 
         x_data = experiment.data.x
         twotheta_min = float(x_data.min())

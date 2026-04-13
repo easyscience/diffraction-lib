@@ -252,11 +252,18 @@ class AtomSite(CategoryItem):
         aniso.adp_23 = 0.0
 
     def _collapse_aniso_to_iso(self) -> None:
-        """Set adp_iso to the mean of the aniso diagonal."""
+        """
+        Set adp_iso to the mean of the aniso diagonal.
+
+        Writes directly to ``_value`` to bypass range validation,
+        because intermediate minimizer steps can produce negative
+        anisotropic components whose mean falls outside the nominal
+        ``[0, 100]`` range.
+        """
         aniso = self._get_aniso_entry()
         if aniso is None:
             return
-        self._adp_iso.value = (aniso.adp_11.value + aniso.adp_22.value + aniso.adp_33.value) / 3.0
+        self._adp_iso._value = (aniso.adp_11.value + aniso.adp_22.value + aniso.adp_33.value) / 3.0
 
     def _get_aniso_entry(self) -> object | None:
         """Return the matching AtomSiteAniso entry, or None."""
