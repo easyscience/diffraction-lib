@@ -32,7 +32,7 @@ class Summary:
     def _fmt_row(
         pretty_name: str,
         parameter: Parameter,
-    ) -> None:
+    ) -> list[str]:
         digits = 8
         value = f'{parameter.value:.{digits}f}'
         uncertainty = parameter.uncertainty
