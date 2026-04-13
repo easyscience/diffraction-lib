@@ -83,7 +83,8 @@ expt.instrument.calib_d_to_tof_quad = -1.54
 # #### Set Peak Profile
 
 # %%
-expt.peak_profile_type = 'jorgensen'
+expt.show_supported_peak_profile_types()
+expt.show_current_peak_profile_type()
 expt.peak.broad_gauss_sigma_0 = 3.0
 expt.peak.broad_gauss_sigma_1 = 40.0
 expt.peak.broad_gauss_sigma_2 = 2.0
@@ -138,6 +139,8 @@ project.experiments.add(expt)
 # #### Set Minimizer
 
 # %%
+project.analysis.show_available_minimizers()
+project.analysis.show_current_minimizer()
 project.analysis.current_minimizer = 'lmfit'
 
 # %% [markdown]

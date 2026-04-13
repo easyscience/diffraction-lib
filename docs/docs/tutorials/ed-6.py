@@ -118,6 +118,9 @@ expt.instrument.calib_twotheta_offset = 0.0
 # #### Set Peak Profile
 
 # %%
+expt.show_supported_peak_profile_types()
+expt.show_current_peak_profile_type()
+expt.peak_profile_type = 'pseudo-voigt + empirical asymmetry'
 expt.peak.broad_gauss_u = 0.1
 expt.peak.broad_gauss_v = -0.2
 expt.peak.broad_gauss_w = 0.2
@@ -156,14 +159,6 @@ expt.linked_phases.create(id='hs', scale=0.5)
 project = Project()
 
 # %% [markdown]
-# #### Set Plotting Engine
-
-# %%
-# Keep the auto-selected engine. Alternatively, you can uncomment the
-# line below to explicitly set the engine to the required one.
-# project.plotter.engine = 'plotly'
-
-# %% [markdown]
 # #### Add Structure
 
 # %%
@@ -184,6 +179,8 @@ project.experiments.add(expt)
 # #### Set Minimizer
 
 # %%
+project.analysis.show_available_minimizers()
+project.analysis.show_current_minimizer()
 project.analysis.current_minimizer = 'lmfit'
 
 # %% [markdown]
@@ -196,7 +193,7 @@ project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 project.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=48, x_max=51, show_residual=True)
 
 # %% [markdown]
-# ### Perform Fit 1/5
+# ### Perform Fit 1/4
 #
 # Set parameters to be refined.
 
@@ -232,7 +229,7 @@ project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 project.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=48, x_max=51, show_residual=True)
 
 # %% [markdown]
-# ### Perform Fit 2/5
+# ### Perform Fit 2/4
 #
 # Set more parameters to be refined.
 
@@ -240,7 +237,7 @@ project.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=48, x_max=51, show_res
 expt.peak.broad_gauss_u.free = True
 expt.peak.broad_gauss_v.free = True
 expt.peak.broad_gauss_w.free = True
-expt.peak.broad_lorentz_x.free = True
+expt.peak.broad_lorentz_y.free = True
 
 for point in expt.background:
     point.y.free = True
@@ -270,7 +267,7 @@ project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 project.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=48, x_max=51, show_residual=True)
 
 # %% [markdown]
-# ### Perform Fit 3/5
+# ### Perform Fit 3/4
 #
 # Set more parameters to be refined.
 
@@ -306,7 +303,7 @@ project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 project.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=48, x_max=51, show_residual=True)
 
 # %% [markdown]
-# ### Perform Fit 4/5
+# ### Perform Fit 4/4
 #
 # Set more parameters to be refined.
 
@@ -316,6 +313,11 @@ structure.atom_sites['Cu'].adp_iso.free = True
 structure.atom_sites['O'].adp_iso.free = True
 structure.atom_sites['Cl'].adp_iso.free = True
 structure.atom_sites['H'].adp_iso.free = True
+
+expt.peak.asym_empir_1.free = True
+expt.peak.asym_empir_2.free = True
+expt.peak.asym_empir_3.free = True
+expt.peak.asym_empir_4.free = True
 
 # %% [markdown]
 # Show free parameters after selection.
