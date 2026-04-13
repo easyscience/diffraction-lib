@@ -7,6 +7,7 @@ Becker-Coppens isotropic extinction correction for single crystals.
 from __future__ import annotations
 
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.metadata import CalculatorSupport
 from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
@@ -15,6 +16,7 @@ from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.variable import Parameter
 from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.datablocks.experiment.categories.extinction.factory import ExtinctionFactory
+from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.datablocks.experiment.item.enums import ExtinctionModelEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.io.cif.handler import CifHandler
@@ -40,6 +42,9 @@ class BeckerCoppensExtinction(CategoryItem):
     )
     compatibility = Compatibility(
         sample_form=frozenset({SampleFormEnum.SINGLE_CRYSTAL}),
+    )
+    calculator_support = CalculatorSupport(
+        calculators=frozenset({CalculatorEnum.CRYSPY}),
     )
 
     def __init__(self) -> None:

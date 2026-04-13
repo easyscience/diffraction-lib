@@ -300,7 +300,10 @@ class ScExperimentBase(ExperimentBase):
         new_type : str
             Extinction tag (e.g. ``'becker-coppens'``).
         """
-        supported_tags = ExtinctionFactory.supported_tags()
+        supported = ExtinctionFactory.supported_for(
+            calculator=self.calculator_type,
+        )
+        supported_tags = [k.type_info.tag for k in supported]
         if new_type not in supported_tags:
             log.warning(
                 f"Unsupported extinction type '{new_type}'. "
@@ -313,9 +316,11 @@ class ScExperimentBase(ExperimentBase):
         console.paragraph('Extinction type changed to')
         console.print(new_type)
 
-    def show_supported_extinction_types(self) -> None:  # noqa: PLR6301
+    def show_supported_extinction_types(self) -> None:
         """Print a table of supported extinction correction types."""
-        ExtinctionFactory.show_supported()
+        ExtinctionFactory.show_supported(
+            calculator=self.calculator_type,
+        )
 
     def show_current_extinction_type(self) -> None:
         """Print the currently used extinction correction type."""
