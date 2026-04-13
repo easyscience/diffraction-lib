@@ -33,28 +33,25 @@ try:
         index_hkl: np.ndarray,
         beta: np.ndarray,
         symm_elems_r: np.ndarray,
+        *,
         flag_beta: bool = False,
     ) -> tuple:
-        b_11, b_22, b_33 = beta[0], beta[1], beta[2]
-        b_12, b_13, b_23 = beta[3], beta[4], beta[5]
         h, k, l = index_hkl[0], index_hkl[1], index_hkl[2]  # noqa: E741
-        r_11, r_12, r_13 = symm_elems_r[4], symm_elems_r[5], symm_elems_r[6]
-        r_21, r_22, r_23 = symm_elems_r[7], symm_elems_r[8], symm_elems_r[9]
-        r_31, r_32, r_33 = symm_elems_r[10], symm_elems_r[11], symm_elems_r[12]
-        h_s = h * r_11 + k * r_21 + l * r_31
-        k_s = h * r_12 + k * r_22 + l * r_32
-        l_s = h * r_13 + k * r_23 + l * r_33
+        r = symm_elems_r
+        h_s = h * r[4] + k * r[7] + l * r[10]
+        k_s = h * r[5] + k * r[8] + l * r[11]
+        l_s = h * r[6] + k * r[9] + l * r[12]
         power = (
-            b_11 * np.square(h_s)
-            + b_22 * np.square(k_s)
-            + b_33 * np.square(l_s)
-            + 2.0 * b_12 * h_s * k_s
-            + 2.0 * b_13 * h_s * l_s
-            + 2.0 * b_23 * k_s * l_s
+            beta[0] * np.square(h_s)
+            + beta[1] * np.square(k_s)
+            + beta[2] * np.square(l_s)
+            + 2.0 * beta[3] * h_s * k_s
+            + 2.0 * beta[4] * h_s * l_s
+            + 2.0 * beta[5] * k_s * l_s
         )
         dder: dict = {}
         if flag_beta:
-            ones_b = np.ones_like(b_11)
+            ones_b = np.ones_like(beta[0])
             dder['beta'] = np.stack(
                 [
                     ones_b * np.square(h_s),
@@ -670,7 +667,7 @@ class CryspyCalculator(CalculatorBase):
             atom._adp_iso._value = orig_iso_val
             atom._adp_iso._cif_handler._names = orig_iso_names
             if aniso is not None and orig_vals is not None:
-                for s, val, names in zip(suffixes, orig_vals, orig_names):
+                for s, val, names in zip(suffixes, orig_vals, orig_names, strict=False):
                     param = getattr(aniso, f'_adp_{s}')
                     param._value = val
                     param._cif_handler._names = names

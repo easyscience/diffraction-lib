@@ -209,8 +209,7 @@ def category_collection_to_cif(
             lines.append(' '.join(_row(item)))
     # No limit
     else:
-        for item in collection.values():
-            lines.append(' '.join(_row(item)))
+        lines.extend(' '.join(_row(item)) for item in collection.values())
 
     return '\n'.join(lines)
 

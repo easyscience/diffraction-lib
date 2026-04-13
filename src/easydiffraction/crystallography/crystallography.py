@@ -201,8 +201,10 @@ def apply_atom_site_symmetry_constraints(
 
 def _parse_rotation_matrix(expr_str: str) -> tuple[np.ndarray, np.ndarray]:
     """
-    Extract the 3x3 rotation matrix and translation vector from a
-    coordinate expression string such as ``'(-x+1/2, y, -z+1/2)'``.
+    Extract rotation and translation from a coordinate expression.
+
+    Parses a symmetry-equivalent position string such as ``'(-x+1/2, y,
+    -z+1/2)'`` into a 3x3 rotation matrix and a translation vector.
 
     Parameters
     ----------
@@ -224,14 +226,14 @@ def _parse_rotation_matrix(expr_str: str) -> tuple[np.ndarray, np.ndarray]:
     var_map = {'x': 0, 'y': 1, 'z': 2}
     for row, part in enumerate(parts):
         # Replace subtraction by addition of negative terms
-        part = part.replace('-', '+-')
-        tokens = [t for t in part.split('+') if t]
+        normalized = part.replace('-', '+-')
+        tokens = [t for t in normalized.split('+') if t]
         for token in tokens:
             matched = False
             for var, col in var_map.items():
                 if var in token:
                     coeff_str = token.replace(var, '').strip()
-                    if coeff_str in ('', '+'):
+                    if coeff_str in {'', '+'}:
                         coeff = 1
                     elif coeff_str == '-':
                         coeff = -1
@@ -312,13 +314,13 @@ def _site_stabilizer_rotations(
 
 def _calc_adp_constraint_number(stabiliser: list[np.ndarray]) -> int:
     """
-    Derive the ADP vibration-constraint type using the Peterse–Palm
-    probe technique (Acta Cryst. 1966, 20, 147).
+    Derive ADP constraint type via the Peterse-Palm probe technique.
 
     A set of coprime probe values is transformed by each site-stabiliser
-    rotation.  The algebraic relationships among the summed transformed
-    components uniquely identify one of 19 constraint types (0 = no
-    constraint, 1–18 as defined in cryspy's ``vibration_constraints``).
+    rotation (Acta Cryst. 1966, 20, 147).  The algebraic relationships
+    among the summed transformed components uniquely identify one of 19
+    constraint types (0 = no constraint, 1-18 as defined in cryspy's
+    ``vibration_constraints``).
 
     Parameters
     ----------
@@ -328,9 +330,9 @@ def _calc_adp_constraint_number(stabiliser: list[np.ndarray]) -> int:
     Returns
     -------
     int
-        Constraint type number (0–18).
+        Constraint type number (0-18).
     """
-    # Peterse–Palm probe values (coprime, pairwise distinct)
+    # Peterse-Palm probe values (coprime, pairwise distinct)
     b_vals = np.array([107, 181, 41, 7, 19, 1], dtype=float)
     b_matrix = np.array([
         [b_vals[0], b_vals[3], b_vals[4]],
@@ -342,12 +344,12 @@ def _calc_adp_constraint_number(stabiliser: list[np.ndarray]) -> int:
     for rot in stabiliser:
         accumulated += rot @ b_matrix @ rot.T
 
-    r_11 = int(round(accumulated[0, 0]))
-    r_22 = int(round(accumulated[1, 1]))
-    r_33 = int(round(accumulated[2, 2]))
-    r_12 = int(round(accumulated[0, 1]))
-    r_13 = int(round(accumulated[0, 2]))
-    r_23 = int(round(accumulated[1, 2]))
+    r_11 = round(accumulated[0, 0])
+    r_22 = round(accumulated[1, 1])
+    r_33 = round(accumulated[2, 2])
+    r_12 = round(accumulated[0, 1])
+    r_13 = round(accumulated[0, 2])
+    r_23 = round(accumulated[1, 2])
 
     return _classify_constraint(r_11, r_22, r_33, r_12, r_13, r_23)
 
@@ -361,9 +363,9 @@ def _classify_constraint(
     r_23: int,
 ) -> int:
     """
-    Map Peterse–Palm probe sums to a constraint type number.
+    Map Peterse-Palm probe sums to a constraint type number.
 
-    Decision tree follows cryspy (Peterse & Palm, Acta Cryst. 1966).
+    Rule table follows cryspy (Peterse & Palm, Acta Cryst. 1966).
 
     Parameters
     ----------
@@ -383,44 +385,42 @@ def _classify_constraint(
     Returns
     -------
     int
-        Constraint type (0–18).
+        Constraint type (0-18).
     """
-    if r_13 == 0:
-        if r_23 == 0:
-            if r_12 == 0:
-                if r_11 == r_22:
-                    if r_22 == r_33:
-                        return 17
-                    return 8
-                if r_22 == r_33:
-                    return 12
-                return 4
-            if r_11 == r_22:
-                if r_22 == 2 * r_12:
-                    return 16
-                return 5
-            if r_22 == 2 * r_12:
-                return 14
-            return 2
-        if r_22 == r_33:
-            return 9
-        return 3
-    if r_23 == 0:
-        if r_22 == 2 * r_12:
-            return 13
-        return 1
-    if r_23 == r_13:
-        if r_22 == r_33:
-            return 18
-        return 6
-    if r_12 == r_13:
-        return 10
-    if r_23 == -r_13:
-        return 7
-    if r_22 == r_33:
-        return 11
-    if r_22 == 2 * r_12:
-        return 15
+    z13 = r_13 == 0
+    z23 = r_23 == 0
+    z12 = r_12 == 0
+    eq_11_22 = r_11 == r_22
+    eq_22_33 = r_22 == r_33
+    eq_22_2x12 = r_22 == 2 * r_12
+    eq_23_13 = r_23 == r_13
+    eq_12_13 = r_12 == r_13
+    neg_23_13 = r_23 == -r_13
+
+    # Ordered from most specific to least; first match wins.
+    rules = [
+        (z13 and z23 and z12 and eq_11_22 and eq_22_33, 17),
+        (z13 and z23 and z12 and eq_11_22, 8),
+        (z13 and z23 and z12 and eq_22_33, 12),
+        (z13 and z23 and z12, 4),
+        (z13 and z23 and eq_11_22 and eq_22_2x12, 16),
+        (z13 and z23 and eq_11_22, 5),
+        (z13 and z23 and eq_22_2x12, 14),
+        (z13 and z23, 2),
+        (z13 and eq_22_33, 9),
+        (z13, 3),
+        (z23 and eq_22_2x12, 13),
+        (z23, 1),
+        (eq_23_13 and eq_22_33, 18),
+        (eq_23_13, 6),
+        (eq_12_13, 10),
+        (neg_23_13, 7),
+        (eq_22_33, 11),
+        (eq_22_2x12, 15),
+    ]
+    for condition, result in rules:
+        if condition:
+            return result
     return 0
 
 
@@ -428,13 +428,13 @@ def apply_atom_site_aniso_symmetry_constraints(
     atom_site_aniso: dict[str, float],
     name_hm: str,
     coord_code: str | None,
-    wyckoff_letter: str,
+    _wyckoff_letter: str,
     site_fract: tuple[float, float, float],
 ) -> tuple[dict[str, float], tuple[bool, ...]]:
     """
     Apply symmetry constraints to anisotropic ADP tensor components.
 
-    Uses the Peterse–Palm probe technique to determine which tensor
+    Uses the Peterse-Palm probe technique to determine which tensor
     components are constrained by the site symmetry, then delegates to
     cryspy's ``vibration_constraints`` to enforce them.
 
@@ -447,8 +447,8 @@ def apply_atom_site_aniso_symmetry_constraints(
         Hermann-Mauguin symbol of the space group.
     coord_code : str | None
         IT coordinate system code.
-    wyckoff_letter : str
-        Wyckoff position letter.
+    _wyckoff_letter : str
+        Wyckoff position letter (unused, reserved).
     site_fract : tuple[float, float, float]
         Fractional coordinates of the atom site.
 
@@ -498,7 +498,6 @@ def apply_atom_site_aniso_symmetry_constraints(
     )
 
     keys = ('adp_11', 'adp_22', 'adp_33', 'adp_12', 'adp_13', 'adp_23')
-    for key, val in zip(keys, param_i):
-        atom_site_aniso[key] = val
+    atom_site_aniso.update(dict(zip(keys, param_i, strict=False)))
 
     return atom_site_aniso, ref_i

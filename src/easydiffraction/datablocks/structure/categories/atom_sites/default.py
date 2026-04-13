@@ -236,7 +236,7 @@ class AtomSite(CategoryItem):
         """Seed aniso diagonal from current adp_iso value."""
         aniso = self._get_aniso_entry()
         if aniso is None:
-            # Entry not yet created; force a sync on the parent structure
+            # Entry not yet created; force sync on parent
             structure = getattr(self._parent, '_parent', None)
             if structure is not None and hasattr(structure, '_sync_atom_site_aniso'):
                 structure._sync_atom_site_aniso()
@@ -561,7 +561,7 @@ class AtomSites(CategoryCollection):
         for atom in self._items:
             if atom.adp_type.value not in aniso_types:
                 continue
-            # Isotropic ADP is not independently refinable for aniso atoms
+            # Isotropic ADP is not refinable for aniso atoms
             atom._adp_iso.free = False
             wl = atom.wyckoff_letter.value
             if not wl:
@@ -587,11 +587,11 @@ class AtomSites(CategoryCollection):
                 atom_site_aniso=dummy,
                 name_hm=space_group_name,
                 coord_code=space_group_coord_code,
-                wyckoff_letter=wl,
+                _wyckoff_letter=wl,
                 site_fract=site_fract,
             )
             adp_keys = ('adp_11', 'adp_22', 'adp_33', 'adp_12', 'adp_13', 'adp_23')
-            for key, is_free in zip(adp_keys, ref_i):
+            for key, is_free in zip(adp_keys, ref_i, strict=False):
                 param = getattr(aniso_entry, key)
                 param.value = dummy[key]
                 if not is_free:
