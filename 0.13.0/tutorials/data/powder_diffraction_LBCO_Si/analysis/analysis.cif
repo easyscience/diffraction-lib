@@ -1,0 +1,5 @@
+_analysis.fitting_engine  "bumps (lm)"
+_analysis.fit_mode single
+
+
+
