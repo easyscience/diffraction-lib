@@ -277,6 +277,12 @@ project.analysis.current_minimizer = 'bumps (lm)'
 project.analysis.fit()
 
 # %% [markdown]
+# #### Show parameter correlations
+
+# %%
+project.plotter.plot_param_correlations()
+
+# %% [markdown]
 # #### Compare measured and calculated patterns for the first fit.
 
 # %%

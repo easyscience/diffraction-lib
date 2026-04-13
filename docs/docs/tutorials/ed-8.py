@@ -355,6 +355,7 @@ project.plotter.plot_meas_vs_calc(expt_name='wish_4_7', show_residual=True)
 # %%
 project.analysis.fit()
 project.analysis.display.fit_results()
+project.plotter.plot_param_correlations()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
