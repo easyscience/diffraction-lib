@@ -297,14 +297,6 @@ project.experiments.add(expt47)
 # This section shows the analysis process, including how to set up
 # calculation and fitting engines.
 #
-# #### Set Minimizer
-
-# %%
-project.analysis.show_available_minimizers()
-project.analysis.show_current_minimizer()
-project.analysis.current_minimizer = 'lmfit'
-
-# %% [markdown]
 # #### Set Fit Mode
 
 # %%

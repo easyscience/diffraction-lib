@@ -262,12 +262,6 @@ project.experiments['mcstas'].show_as_cif()
 # This section outlines the analysis process, including how to configure
 # calculation and fitting engines.
 #
-# #### Set Minimizer
-
-# %%
-project.analysis.current_minimizer = 'lmfit'
-
-# %% [markdown]
 # #### Set Fitting Parameters
 #
 # Set structure parameters to be optimized.
