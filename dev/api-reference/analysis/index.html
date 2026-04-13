@@ -9297,7 +9297,8 @@ patterns.</p>
 <span class="normal">717</span>
 <span class="normal">718</span>
 <span class="normal">719</span>
-<span class="normal">720</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@CalculatorFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">720</span>
+<span class="normal">721</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@CalculatorFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CryspyCalculator</span><span class="p">(</span><span class="n">CalculatorBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cryspy-based diffraction calculator.</span>
@@ -9784,9 +9785,10 @@ patterns.</p>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">saved</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_temporarily_convert_to_u_notation</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span>
 
-        <span class="n">cif</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">as_cif</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_restore_from_u_notation</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">saved</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cif</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">as_cif</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_restore_from_u_notation</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">saved</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">cif</span>
 

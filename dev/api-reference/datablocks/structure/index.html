@@ -4698,7 +4698,10 @@ in crystallographic structures.</p>
 <span class="normal">492</span>
 <span class="normal">493</span>
 <span class="normal">494</span>
-<span class="normal">495</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AtomSite</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
+<span class="normal">495</span>
+<span class="normal">496</span>
+<span class="normal">497</span>
+<span class="normal">498</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AtomSite</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Single atom site with fractional coordinates and ADP.</span>
 
@@ -5060,6 +5063,9 @@ in crystallographic structures.</p>
         <span class="k">if</span> <span class="n">old_type</span> <span class="o">!=</span> <span class="n">new_type</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_convert_adp_values</span><span class="p">(</span><span class="n">old_type</span><span class="p">,</span> <span class="n">new_type</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_reorder_adp_cif_names</span><span class="p">(</span><span class="n">new_type</span><span class="p">)</span>
+            <span class="n">parent</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_parent&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">parent</span><span class="o">.</span><span class="n">_propagate_adp_convention</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">wyckoff_letter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StringDescriptor</span><span class="p">:</span>
@@ -5815,10 +5821,7 @@ parameter value.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/atom_sites/default.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">498</span>
-<span class="normal">499</span>
-<span class="normal">500</span>
-<span class="normal">501</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">501</span>
 <span class="normal">502</span>
 <span class="normal">503</span>
 <span class="normal">504</span>
@@ -5949,7 +5952,43 @@ parameter value.</p>
 <span class="normal">629</span>
 <span class="normal">630</span>
 <span class="normal">631</span>
-<span class="normal">632</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AtomSitesFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">632</span>
+<span class="normal">633</span>
+<span class="normal">634</span>
+<span class="normal">635</span>
+<span class="normal">636</span>
+<span class="normal">637</span>
+<span class="normal">638</span>
+<span class="normal">639</span>
+<span class="normal">640</span>
+<span class="normal">641</span>
+<span class="normal">642</span>
+<span class="normal">643</span>
+<span class="normal">644</span>
+<span class="normal">645</span>
+<span class="normal">646</span>
+<span class="normal">647</span>
+<span class="normal">648</span>
+<span class="normal">649</span>
+<span class="normal">650</span>
+<span class="normal">651</span>
+<span class="normal">652</span>
+<span class="normal">653</span>
+<span class="normal">654</span>
+<span class="normal">655</span>
+<span class="normal">656</span>
+<span class="normal">657</span>
+<span class="normal">658</span>
+<span class="normal">659</span>
+<span class="normal">660</span>
+<span class="normal">661</span>
+<span class="normal">662</span>
+<span class="normal">663</span>
+<span class="normal">664</span>
+<span class="normal">665</span>
+<span class="normal">666</span>
+<span class="normal">667</span>
+<span class="normal">668</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@AtomSitesFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AtomSites</span><span class="p">(</span><span class="n">CategoryCollection</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Collection of :class:`AtomSite` instances.&quot;&quot;&quot;</span>
 
@@ -5965,6 +6004,39 @@ parameter value.</p>
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1">#  Private helper methods</span>
     <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_propagate_adp_convention</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="n">AtomSite</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Align all atoms to the B/U convention of *source*.</span>
+
+<span class="sd">        When an atom switches between B and U convention, all siblings</span>
+<span class="sd">        are converted to the same convention so that CIF loop headers</span>
+<span class="sd">        remain consistent.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        source : AtomSite</span>
+<span class="sd">            The atom whose convention just changed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_enum</span> <span class="o">=</span> <span class="n">AdpTypeEnum</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">_adp_type</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">target_is_u</span> <span class="o">=</span> <span class="n">new_enum</span> <span class="ow">in</span> <span class="p">{</span><span class="n">AdpTypeEnum</span><span class="o">.</span><span class="n">UISO</span><span class="p">,</span> <span class="n">AdpTypeEnum</span><span class="o">.</span><span class="n">UANI</span><span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">atom</span> <span class="ow">is</span> <span class="n">source</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">sib_enum</span> <span class="o">=</span> <span class="n">AdpTypeEnum</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">_adp_type</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">sib_is_u</span> <span class="o">=</span> <span class="n">sib_enum</span> <span class="ow">in</span> <span class="p">{</span><span class="n">AdpTypeEnum</span><span class="o">.</span><span class="n">UISO</span><span class="p">,</span> <span class="n">AdpTypeEnum</span><span class="o">.</span><span class="n">UANI</span><span class="p">}</span>
+            <span class="k">if</span> <span class="n">sib_is_u</span> <span class="o">==</span> <span class="n">target_is_u</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">sib_is_iso</span> <span class="o">=</span> <span class="n">sib_enum</span> <span class="ow">in</span> <span class="p">{</span><span class="n">AdpTypeEnum</span><span class="o">.</span><span class="n">BISO</span><span class="p">,</span> <span class="n">AdpTypeEnum</span><span class="o">.</span><span class="n">UISO</span><span class="p">}</span>
+            <span class="k">if</span> <span class="n">target_is_u</span><span class="p">:</span>
+                <span class="n">target</span> <span class="o">=</span> <span class="n">AdpTypeEnum</span><span class="o">.</span><span class="n">UISO</span> <span class="k">if</span> <span class="n">sib_is_iso</span> <span class="k">else</span> <span class="n">AdpTypeEnum</span><span class="o">.</span><span class="n">UANI</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">target</span> <span class="o">=</span> <span class="n">AdpTypeEnum</span><span class="o">.</span><span class="n">BISO</span> <span class="k">if</span> <span class="n">sib_is_iso</span> <span class="k">else</span> <span class="n">AdpTypeEnum</span><span class="o">.</span><span class="n">BANI</span>
+            <span class="n">old_sib</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">_adp_type</span><span class="o">.</span><span class="n">value</span>
+            <span class="n">atom</span><span class="o">.</span><span class="n">_adp_type</span><span class="o">.</span><span class="n">_value</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">value</span>
+            <span class="n">atom</span><span class="o">.</span><span class="n">_convert_adp_values</span><span class="p">(</span><span class="n">old_sib</span><span class="p">,</span> <span class="n">target</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">atom</span><span class="o">.</span><span class="n">_reorder_adp_cif_names</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_apply_atomic_coordinates_symmetry_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -6116,9 +6188,9 @@ parameter value.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/atom_sites/default.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">507</span>
-<span class="normal">508</span>
-<span class="normal">509</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">510</span>
+<span class="normal">511</span>
+<span class="normal">512</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialise an empty atom-sites collection.&quot;&quot;&quot;</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">item_type</span><span class="o">=</span><span class="n">AtomSite</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
