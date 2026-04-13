@@ -167,7 +167,8 @@ class Structure(DatablockItem):
 
         Ensures every atom in ``atom_sites`` has a matching entry in
         ``atom_site_aniso`` and removes stale entries whose label no
-        longer appears in ``atom_sites``.
+        longer appears in ``atom_sites``.  Reorders CIF names on aniso
+        parameters to match each atom's ``adp_type``.
         """
         existing_labels = {a.label.value for a in self._atom_sites}
         aniso_labels = {a.label.value for a in self._atom_site_aniso}
@@ -186,6 +187,10 @@ class Structure(DatablockItem):
         ]
         for lbl in stale:
             self._atom_site_aniso.remove(lbl)
+
+        # Reorder CIF names to match each atom's adp_type
+        for atom in self._atom_sites:
+            atom._reorder_adp_cif_names(atom.adp_type.value)
 
     def _update_categories(
         self,

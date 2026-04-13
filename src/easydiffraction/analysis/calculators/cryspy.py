@@ -19,8 +19,56 @@ from easydiffraction.datablocks.structure.item.base import Structure
 
 try:
     import cryspy
+
+    # Patch cryspy bug: calc_power_dwf_aniso uses indices [0:9] of
+    # reduced_symm_elems for the rotation matrix, but the rotation
+    # actually starts at index 4 (layout: [b1,b2,b3,bd, R(3x3)]).
+    # This causes wrong Debye-Waller factors for all anisotropic atoms.
+    # Bug confirmed in cryspy 0.7.8, reported upstream.
+    from cryspy.A_functions_base import debye_waller_factor as _dwf_mod
     from cryspy.H_functions_global.function_1_cryspy_objects import str_to_globaln
     from cryspy.procedure_rhochi.rhochi_by_dictionary import rhochi_calc_chi_sq_by_dictionary
+
+    def _patched_calc_power_dwf_aniso(
+        index_hkl: np.ndarray,
+        beta: np.ndarray,
+        symm_elems_r: np.ndarray,
+        flag_beta: bool = False,
+    ) -> tuple:
+        b_11, b_22, b_33 = beta[0], beta[1], beta[2]
+        b_12, b_13, b_23 = beta[3], beta[4], beta[5]
+        h, k, l = index_hkl[0], index_hkl[1], index_hkl[2]  # noqa: E741
+        r_11, r_12, r_13 = symm_elems_r[4], symm_elems_r[5], symm_elems_r[6]
+        r_21, r_22, r_23 = symm_elems_r[7], symm_elems_r[8], symm_elems_r[9]
+        r_31, r_32, r_33 = symm_elems_r[10], symm_elems_r[11], symm_elems_r[12]
+        h_s = h * r_11 + k * r_21 + l * r_31
+        k_s = h * r_12 + k * r_22 + l * r_32
+        l_s = h * r_13 + k * r_23 + l * r_33
+        power = (
+            b_11 * np.square(h_s)
+            + b_22 * np.square(k_s)
+            + b_33 * np.square(l_s)
+            + 2.0 * b_12 * h_s * k_s
+            + 2.0 * b_13 * h_s * l_s
+            + 2.0 * b_23 * k_s * l_s
+        )
+        dder: dict = {}
+        if flag_beta:
+            ones_b = np.ones_like(b_11)
+            dder['beta'] = np.stack(
+                [
+                    ones_b * np.square(h_s),
+                    ones_b * np.square(k_s),
+                    ones_b * np.square(l_s),
+                    ones_b * 2.0 * h_s * k_s,
+                    ones_b * 2.0 * h_s * l_s,
+                    ones_b * 2.0 * k_s * l_s,
+                ],
+                axis=0,
+            )
+        return power, dder
+
+    _dwf_mod.calc_power_dwf_aniso = _patched_calc_power_dwf_aniso
 
     # TODO: Add the following print to debug mode
     # print("✅ 'cryspy' calculation engine is successfully imported.")
@@ -55,22 +103,33 @@ class CryspyCalculator(CalculatorBase):
         super().__init__()
         self._cryspy_dicts: dict[str, dict[str, Any]] = {}
         self._cached_peak_types: dict[str, str] = {}
+        self._cached_adp_types: dict[str, tuple[str, ...]] = {}
 
     def _invalidate_stale_cache(
         self,
         combined_name: str,
         experiment: ExperimentBase,
+        structure: Structure | None = None,
     ) -> None:
         """
-        Drop cached dict when experiment peak profile type changed.
+        Drop cached dict when experiment or structure config changed.
+
+        Checks both the peak profile type and the per-atom ADP types.
+        When either changes the cached dictionary is stale and must be
+        rebuilt from a fresh cryspy object.
         """
         peak = getattr(experiment, 'peak', None)
-        if peak is None:
-            return
-        current_type = peak.type_info.tag
-        if self._cached_peak_types.get(combined_name) != current_type:
-            self._cryspy_dicts.pop(combined_name, None)
-        self._cached_peak_types[combined_name] = current_type
+        if peak is not None:
+            current_type = peak.type_info.tag
+            if self._cached_peak_types.get(combined_name) != current_type:
+                self._cryspy_dicts.pop(combined_name, None)
+            self._cached_peak_types[combined_name] = current_type
+
+        if structure is not None:
+            current_adp = tuple(atom.adp_type.value for atom in structure.atom_sites)
+            if self._cached_adp_types.get(combined_name) != current_adp:
+                self._cryspy_dicts.pop(combined_name, None)
+            self._cached_adp_types[combined_name] = current_adp
 
     def calculate_structure_factors(
         self,
@@ -92,7 +151,7 @@ class CryspyCalculator(CalculatorBase):
             Whether the calculation is called by a minimizer.
         """
         combined_name = f'{structure.name}_{experiment.name}'
-        self._invalidate_stale_cache(combined_name, experiment)
+        self._invalidate_stale_cache(combined_name, experiment, structure)
 
         if called_by_minimizer:
             if self._cryspy_dicts and combined_name in self._cryspy_dicts:
@@ -164,7 +223,7 @@ class CryspyCalculator(CalculatorBase):
             list of floats.
         """
         combined_name = f'{structure.name}_{experiment.name}'
-        self._invalidate_stale_cache(combined_name, experiment)
+        self._invalidate_stale_cache(combined_name, experiment, structure)
 
         if called_by_minimizer:
             if self._cryspy_dicts and combined_name in self._cryspy_dicts:
@@ -281,9 +340,20 @@ class CryspyCalculator(CalculatorBase):
             cryspy_occ[idx] = atom_site.occupancy.value
 
         # Atomic ADPs - isotropic
+        # For anisotropic atoms the full ADP lives in the β tensor;
+        # setting b_iso to zero avoids double-counting in cryspy's DWF
+        # which sums both the isotropic and anisotropic contributions.
+        from easydiffraction.datablocks.structure.categories.atom_sites.enums import (  # noqa: PLC0415
+            AdpTypeEnum,
+        )
+
+        aniso_types = {AdpTypeEnum.BANI.value, AdpTypeEnum.UANI.value}
         cryspy_biso = cryspy_model_dict['atom_b_iso']
         for idx, atom_site in enumerate(structure.atom_sites):
-            cryspy_biso[idx] = atom_site.adp_iso_as_b
+            if atom_site.adp_type.value in aniso_types:
+                cryspy_biso[idx] = 0.0
+            else:
+                cryspy_biso[idx] = atom_site.adp_iso_as_b
 
         # Atomic ADPs - anisotropic (update β tensor when present)
         if 'atom_beta' in cryspy_model_dict:
@@ -474,12 +544,16 @@ class CryspyCalculator(CalculatorBase):
 
         return cryspy_obj
 
-    def _convert_structure_to_cryspy_cif(  # noqa: PLR6301
-        self,
-        structure: Structure,
-    ) -> str:
+    def _convert_structure_to_cryspy_cif(self, structure: Structure) -> str:
         """
         Convert a structure to a Cryspy CIF string.
+
+        CrysPy uses attribute names that match the CIF convention:
+        ``u_11`` for ``U_11``, ``b_11`` for ``B_11``, etc.  Its
+        ``apply_space_group_constraint`` always accesses ``u_11``
+        regardless of ``adp_type``.  To avoid mismatches the CIF sent to
+        cryspy always uses **U** notation: ``Biso`` ⟶ ``Uiso``, ``Bani``
+        ⟶ ``Uani``, values divided by 8π².
 
         Parameters
         ----------
@@ -491,7 +565,116 @@ class CryspyCalculator(CalculatorBase):
         str
             The Cryspy CIF string representation of the structure.
         """
-        return structure.as_cif
+        saved = self._temporarily_convert_to_u_notation(structure)
+
+        cif = structure.as_cif
+
+        self._restore_from_u_notation(structure, saved)
+
+        return cif
+
+    @staticmethod
+    def _temporarily_convert_to_u_notation(
+        structure: Structure,
+    ) -> list[tuple]:
+        """
+        Temporarily convert all B-convention atoms to U notation.
+
+        Returns saved state for later restoration.
+        """
+        from easydiffraction.datablocks.structure.categories.atom_sites.enums import (  # noqa: PLC0415
+            AdpTypeEnum,
+        )
+
+        factor = 8.0 * np.pi**2
+        suffixes = ('11', '22', '33', '12', '13', '23')
+        saved: list[tuple] = []
+
+        for atom in structure.atom_sites:
+            adp_enum = AdpTypeEnum(atom.adp_type.value)
+            is_b = adp_enum in {AdpTypeEnum.BISO, AdpTypeEnum.BANI}
+            if not is_b:
+                continue
+
+            orig_adp_type = atom._adp_type._value
+            orig_iso_val = atom._adp_iso._value
+            orig_iso_names = list(atom._adp_iso._cif_handler._names)
+
+            atom._adp_iso._value = orig_iso_val / factor
+            atom._adp_iso._cif_handler._names = [
+                '_atom_site.U_iso_or_equiv',
+                '_atom_site.B_iso_or_equiv',
+            ]
+
+            if adp_enum == AdpTypeEnum.BISO:
+                atom._adp_type._value = AdpTypeEnum.UISO.value
+                saved.append((atom, None, None, None, orig_adp_type, orig_iso_names, orig_iso_val))
+            else:
+                atom._adp_type._value = AdpTypeEnum.UANI.value
+                lbl = atom.label.value
+                if lbl in structure.atom_site_aniso:
+                    aniso = structure.atom_site_aniso[lbl]
+                else:
+                    aniso = None
+                if aniso is not None:
+                    orig_vals = []
+                    orig_names = []
+                    for s in suffixes:
+                        param = getattr(aniso, f'_adp_{s}')
+                        orig_vals.append(param._value)
+                        orig_names.append(list(param._cif_handler._names))
+                        param._value /= factor
+                        param._cif_handler._names = [
+                            f'_atom_site_aniso.U_{s}',
+                            f'_atom_site_aniso.B_{s}',
+                        ]
+                    saved.append((
+                        atom,
+                        aniso,
+                        orig_vals,
+                        orig_names,
+                        orig_adp_type,
+                        orig_iso_names,
+                        orig_iso_val,
+                    ))
+                else:
+                    saved.append((
+                        atom,
+                        None,
+                        None,
+                        None,
+                        orig_adp_type,
+                        orig_iso_names,
+                        orig_iso_val,
+                    ))
+
+        return saved
+
+    @staticmethod
+    def _restore_from_u_notation(
+        structure: Structure,  # noqa: ARG004
+        saved: list[tuple],
+    ) -> None:
+        """Restore original B-convention state after CIF generation."""
+        suffixes = ('11', '22', '33', '12', '13', '23')
+
+        for (
+            atom,
+            aniso,
+            orig_vals,
+            orig_names,
+            orig_adp_type,
+            orig_iso_names,
+            orig_iso_val,
+        ) in saved:
+            atom._adp_type._value = orig_adp_type
+            atom._adp_iso._value = orig_iso_val
+            atom._adp_iso._cif_handler._names = orig_iso_names
+            if aniso is not None and orig_vals is not None:
+                for s, val, names in zip(suffixes, orig_vals, orig_names):
+                    param = getattr(aniso, f'_adp_{s}')
+                    param._value = val
+                    param._cif_handler._names = names
 
     def _convert_experiment_to_cryspy_cif(  # noqa: PLR6301
         self,

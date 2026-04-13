@@ -236,6 +236,12 @@ class AtomSite(CategoryItem):
         """Seed aniso diagonal from current adp_iso value."""
         aniso = self._get_aniso_entry()
         if aniso is None:
+            # Entry not yet created; force a sync on the parent structure
+            structure = getattr(self._parent, '_parent', None)
+            if structure is not None and hasattr(structure, '_sync_atom_site_aniso'):
+                structure._sync_atom_site_aniso()
+                aniso = self._get_aniso_entry()
+        if aniso is None:
             return
         iso_val = self._adp_iso.value
         aniso.adp_11 = iso_val
@@ -530,6 +536,74 @@ class AtomSites(CategoryCollection):
             atom.fract_y.value = dummy_atom['fract_y']
             atom.fract_z.value = dummy_atom['fract_z']
 
+    def _apply_adp_symmetry_constraints(self) -> None:
+        """
+        Apply symmetry rules to anisotropic ADP tensor components.
+
+        For each atom with an anisotropic ADP type and a Wyckoff letter,
+        enforces the tensor constraints dictated by the site symmetry.
+        Also sets ``free = False`` on tensor components that are fixed
+        by symmetry and on ``adp_iso`` for all anisotropic atoms.
+        """
+        structure = self._parent
+        aniso_types = {AdpTypeEnum.BANI.value, AdpTypeEnum.UANI.value}
+        space_group_name = structure.space_group.name_h_m.value
+        space_group_coord_code = structure.space_group.it_coordinate_system_code.value
+        aniso_collection = structure.atom_site_aniso
+
+        for atom in self._items:
+            if atom.adp_type.value not in aniso_types:
+                continue
+            # Isotropic ADP is not independently refinable for aniso atoms
+            atom._adp_iso.free = False
+            wl = atom.wyckoff_letter.value
+            if not wl:
+                continue
+            lbl = atom.label.value
+            if lbl not in aniso_collection:
+                continue
+            aniso_entry = aniso_collection[lbl]
+            dummy = {
+                'adp_11': aniso_entry.adp_11.value,
+                'adp_22': aniso_entry.adp_22.value,
+                'adp_33': aniso_entry.adp_33.value,
+                'adp_12': aniso_entry.adp_12.value,
+                'adp_13': aniso_entry.adp_13.value,
+                'adp_23': aniso_entry.adp_23.value,
+            }
+            site_fract = (
+                atom.fract_x.value,
+                atom.fract_y.value,
+                atom.fract_z.value,
+            )
+            dummy, ref_i = ecr.apply_atom_site_aniso_symmetry_constraints(
+                atom_site_aniso=dummy,
+                name_hm=space_group_name,
+                coord_code=space_group_coord_code,
+                wyckoff_letter=wl,
+                site_fract=site_fract,
+            )
+            adp_keys = ('adp_11', 'adp_22', 'adp_33', 'adp_12', 'adp_13', 'adp_23')
+            for key, is_free in zip(adp_keys, ref_i):
+                param = getattr(aniso_entry, key)
+                param.value = dummy[key]
+                if not is_free:
+                    param.free = False
+
+    def _sync_iso_from_aniso(self) -> None:
+        """
+        Update ``adp_iso`` from the anisotropic tensor for aniso atoms.
+
+        For every atom whose ADP type is anisotropic (Bani / Uani), sets
+        ``adp_iso`` to the mean of the three diagonal tensor components
+        so that the isotropic value stays consistent with the current
+        tensor state.
+        """
+        aniso_types = {AdpTypeEnum.BANI.value, AdpTypeEnum.UANI.value}
+        for atom in self._items:
+            if atom.adp_type.value in aniso_types:
+                atom._collapse_aniso_to_iso()
+
     def _update(
         self,
         *,
@@ -547,3 +621,5 @@ class AtomSites(CategoryCollection):
         del called_by_minimizer
 
         self._apply_atomic_coordinates_symmetry_constraints()
+        self._apply_adp_symmetry_constraints()
+        self._sync_iso_from_aniso()

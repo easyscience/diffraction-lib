@@ -1,8 +1,11 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from fractions import Fraction
 from typing import Any
 
+import numpy as np
+from cryspy.A_functions_base.function_1_atomic_vibrations import vibration_constraints
 from cryspy.A_functions_base.function_2_space_group import get_crystal_system_by_it_number
 from cryspy.A_functions_base.function_2_space_group import get_it_number_by_name_hm_short
 from sympy import Expr
@@ -189,3 +192,313 @@ def apply_atom_site_symmetry_constraints(
 
     _apply_fract_constraints(atom_site, parsed_exprs)
     return atom_site
+
+
+# ------------------------------------------------------------------
+#  ADP symmetry constraints
+# ------------------------------------------------------------------
+
+
+def _parse_rotation_matrix(expr_str: str) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Extract the 3x3 rotation matrix and translation vector from a
+    coordinate expression string such as ``'(-x+1/2, y, -z+1/2)'``.
+
+    Parameters
+    ----------
+    expr_str : str
+        A single symmetry-equivalent position, e.g. ``'(x,y,z)'``.
+
+    Returns
+    -------
+    tuple[np.ndarray, np.ndarray]
+        rotation : (3, 3) integer array. translation : (3,) float array
+        (fractional).
+    """
+    inner = expr_str.strip().strip('()')
+    parts = [p.strip() for p in inner.split(',')]
+
+    rot = np.zeros((3, 3), dtype=int)
+    trans = np.zeros(3)
+
+    var_map = {'x': 0, 'y': 1, 'z': 2}
+    for row, part in enumerate(parts):
+        # Replace subtraction by addition of negative terms
+        part = part.replace('-', '+-')
+        tokens = [t for t in part.split('+') if t]
+        for token in tokens:
+            matched = False
+            for var, col in var_map.items():
+                if var in token:
+                    coeff_str = token.replace(var, '').strip()
+                    if coeff_str in ('', '+'):
+                        coeff = 1
+                    elif coeff_str == '-':
+                        coeff = -1
+                    else:
+                        coeff = int(coeff_str)
+                    rot[row, col] = coeff
+                    matched = True
+                    break
+            if not matched:
+                trans[row] = float(Fraction(token))
+
+    return rot, trans
+
+
+def _get_general_position_ops(
+    it_number: int,
+    coord_code: str | None,
+) -> list[tuple[np.ndarray, np.ndarray]] | None:
+    """
+    Return rotation matrices and translations for the general position.
+
+    Parameters
+    ----------
+    it_number : int
+        International Tables space group number.
+    coord_code : str | None
+        IT coordinate system code.
+
+    Returns
+    -------
+    list[tuple[np.ndarray, np.ndarray]] | None
+        List of (rotation, translation) pairs, or ``None`` on failure.
+    """
+    key = (it_number, coord_code)
+    if key not in SPACE_GROUPS:
+        log.error(f'Space group ({it_number}, {coord_code!r}) not found')
+        return None
+
+    entry = SPACE_GROUPS[key]
+    wyckoff_positions = entry['Wyckoff_positions']
+    # General position is the first key (highest multiplicity)
+    general_letter = next(iter(wyckoff_positions))
+    general_coords = wyckoff_positions[general_letter]['coords_xyz']
+    return [_parse_rotation_matrix(c) for c in general_coords]
+
+
+def _site_stabilizer_rotations(
+    ops: list[tuple[np.ndarray, np.ndarray]],
+    site_coords: tuple[float, float, float],
+) -> list[np.ndarray]:
+    """
+    Return rotation matrices of operations that leave a site invariant.
+
+    An operation (R, t) stabilises a site r when R·r + t ≡ r (mod 1).
+
+    Parameters
+    ----------
+    ops : list[tuple[np.ndarray, np.ndarray]]
+        All space group operations as (rotation, translation) pairs.
+    site_coords : tuple[float, float, float]
+        Fractional coordinates of the site.
+
+    Returns
+    -------
+    list[np.ndarray]
+        Rotation matrices of stabiliser operations.
+    """
+    r = np.array(site_coords, dtype=float)
+    stabiliser = []
+    for rot, trans in ops:
+        image = rot @ r + trans
+        diff = image - r
+        diff_mod = diff - np.round(diff)
+        if np.allclose(diff_mod, 0.0, atol=1e-6):
+            stabiliser.append(rot)
+    return stabiliser
+
+
+def _calc_adp_constraint_number(stabiliser: list[np.ndarray]) -> int:
+    """
+    Derive the ADP vibration-constraint type using the Peterse–Palm
+    probe technique (Acta Cryst. 1966, 20, 147).
+
+    A set of coprime probe values is transformed by each site-stabiliser
+    rotation.  The algebraic relationships among the summed transformed
+    components uniquely identify one of 19 constraint types (0 = no
+    constraint, 1–18 as defined in cryspy's ``vibration_constraints``).
+
+    Parameters
+    ----------
+    stabiliser : list[np.ndarray]
+        Rotation matrices of the site-stabiliser group.
+
+    Returns
+    -------
+    int
+        Constraint type number (0–18).
+    """
+    # Peterse–Palm probe values (coprime, pairwise distinct)
+    b_vals = np.array([107, 181, 41, 7, 19, 1], dtype=float)
+    b_matrix = np.array([
+        [b_vals[0], b_vals[3], b_vals[4]],
+        [b_vals[3], b_vals[1], b_vals[5]],
+        [b_vals[4], b_vals[5], b_vals[2]],
+    ])
+
+    accumulated = np.zeros((3, 3))
+    for rot in stabiliser:
+        accumulated += rot @ b_matrix @ rot.T
+
+    r_11 = int(round(accumulated[0, 0]))
+    r_22 = int(round(accumulated[1, 1]))
+    r_33 = int(round(accumulated[2, 2]))
+    r_12 = int(round(accumulated[0, 1]))
+    r_13 = int(round(accumulated[0, 2]))
+    r_23 = int(round(accumulated[1, 2]))
+
+    return _classify_constraint(r_11, r_22, r_33, r_12, r_13, r_23)
+
+
+def _classify_constraint(
+    r_11: int,
+    r_22: int,
+    r_33: int,
+    r_12: int,
+    r_13: int,
+    r_23: int,
+) -> int:
+    """
+    Map Peterse–Palm probe sums to a constraint type number.
+
+    Decision tree follows cryspy (Peterse & Palm, Acta Cryst. 1966).
+
+    Parameters
+    ----------
+    r_11 : int
+        Accumulated probe-tensor component (1,1).
+    r_22 : int
+        Accumulated probe-tensor component (2,2).
+    r_33 : int
+        Accumulated probe-tensor component (3,3).
+    r_12 : int
+        Accumulated probe-tensor component (1,2).
+    r_13 : int
+        Accumulated probe-tensor component (1,3).
+    r_23 : int
+        Accumulated probe-tensor component (2,3).
+
+    Returns
+    -------
+    int
+        Constraint type (0–18).
+    """
+    if r_13 == 0:
+        if r_23 == 0:
+            if r_12 == 0:
+                if r_11 == r_22:
+                    if r_22 == r_33:
+                        return 17
+                    return 8
+                if r_22 == r_33:
+                    return 12
+                return 4
+            if r_11 == r_22:
+                if r_22 == 2 * r_12:
+                    return 16
+                return 5
+            if r_22 == 2 * r_12:
+                return 14
+            return 2
+        if r_22 == r_33:
+            return 9
+        return 3
+    if r_23 == 0:
+        if r_22 == 2 * r_12:
+            return 13
+        return 1
+    if r_23 == r_13:
+        if r_22 == r_33:
+            return 18
+        return 6
+    if r_12 == r_13:
+        return 10
+    if r_23 == -r_13:
+        return 7
+    if r_22 == r_33:
+        return 11
+    if r_22 == 2 * r_12:
+        return 15
+    return 0
+
+
+def apply_atom_site_aniso_symmetry_constraints(
+    atom_site_aniso: dict[str, float],
+    name_hm: str,
+    coord_code: str | None,
+    wyckoff_letter: str,
+    site_fract: tuple[float, float, float],
+) -> tuple[dict[str, float], tuple[bool, ...]]:
+    """
+    Apply symmetry constraints to anisotropic ADP tensor components.
+
+    Uses the Peterse–Palm probe technique to determine which tensor
+    components are constrained by the site symmetry, then delegates to
+    cryspy's ``vibration_constraints`` to enforce them.
+
+    Parameters
+    ----------
+    atom_site_aniso : dict[str, float]
+        Dictionary with keys ``'adp_11'`` … ``'adp_23'``.  Modified in
+        place.
+    name_hm : str
+        Hermann-Mauguin symbol of the space group.
+    coord_code : str | None
+        IT coordinate system code.
+    wyckoff_letter : str
+        Wyckoff position letter.
+    site_fract : tuple[float, float, float]
+        Fractional coordinates of the atom site.
+
+    Returns
+    -------
+    tuple[dict[str, float], tuple[bool, ...]]
+        The *atom_site_aniso* dictionary with constrained values, and a
+        6-tuple of booleans indicating which components remain free for
+        refinement (``True`` = free, ``False`` = fixed by symmetry).
+    """
+    all_free = (True, True, True, True, True, True)
+
+    it_number = get_it_number_by_name_hm_short(name_hm)
+    if it_number is None:
+        log.error(f"Failed to get IT_number for name_H-M '{name_hm}'")
+        return atom_site_aniso, all_free
+
+    ops = _get_general_position_ops(it_number, coord_code)
+    if ops is None:
+        return atom_site_aniso, all_free
+
+    stabiliser = _site_stabilizer_rotations(ops, site_fract)
+    if len(stabiliser) <= 1:
+        # Identity only — no ADP constraints
+        return atom_site_aniso, all_free
+
+    numb = _calc_adp_constraint_number(stabiliser)
+    if numb == 0:
+        return atom_site_aniso, all_free
+
+    param_i = (
+        atom_site_aniso['adp_11'],
+        atom_site_aniso['adp_22'],
+        atom_site_aniso['adp_33'],
+        atom_site_aniso['adp_12'],
+        atom_site_aniso['adp_13'],
+        atom_site_aniso['adp_23'],
+    )
+    sigma_i = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+    ref_i = (True, True, True, True, True, True)
+
+    param_i, _sigma_i, ref_i, _constr_i = vibration_constraints(
+        numb,
+        param_i,
+        sigma_i,
+        ref_i,
+    )
+
+    keys = ('adp_11', 'adp_22', 'adp_33', 'adp_12', 'adp_13', 'adp_23')
+    for key, val in zip(keys, param_i):
+        atom_site_aniso[key] = val
+
+    return atom_site_aniso, ref_i

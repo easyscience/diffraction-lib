@@ -34,18 +34,28 @@ project.structures.show_names()
 structure = project.structures['tbti']
 
 # %%
+structure.show_as_cif()
+
+# %%
+structure.atom_sites['Tb'].adp_type = 'Uiso'
+structure.atom_sites['Ti'].adp_type = 'Uiso'
+structure.atom_sites['O1'].adp_type = 'Uiso'
+structure.atom_sites['O2'].adp_type = 'Uiso'
+
+# %%
+print(structure.atom_sites.as_cif)
+
+# %%
 structure.atom_sites['Tb'].adp_iso = 0.0
 structure.atom_sites['Ti'].adp_iso = 0.0
 structure.atom_sites['O1'].adp_iso = 0.0
 structure.atom_sites['O2'].adp_iso = 0.0
 
-# %%
-structure.show_as_cif()
-
 # %% [markdown]
 # ## Step 3: Define Experiment
 
 # %%
+# Download data file from repository
 data_path = ed.download_data(id=19, destination='data')
 
 # %%
@@ -58,7 +68,7 @@ project.experiments.add_from_data_path(
 )
 
 # %%
-experiment = project.experiments['heidi']  # TODO: <heidi (None)>
+experiment = project.experiments['heidi']
 
 # %%
 experiment.linked_crystal.id = 'tbti'
@@ -68,21 +78,30 @@ experiment.linked_crystal.scale = 1.0
 experiment.instrument.setup_wavelength = 0.793
 
 # %%
-experiment.extinction.mosaicity = 29820
-experiment.extinction.radius = 30
+experiment.extinction.mosaicity = 35000
+experiment.extinction.radius = 10
 
 # %% [markdown]
-# ## Step 4: Perform Analysis
+# ## Step 4: Perform Analysis I (ADP iso)
 
 # %%
 project.plotter.plot_meas_vs_calc(expt_name='heidi')
 
 # %%
-experiment.linked_crystal.scale.free = True
-experiment.extinction.radius.free = True
+structure.atom_sites['O1'].fract_x.free = True
+
+structure.atom_sites['Ti'].occupancy.free = True
+structure.atom_sites['O1'].occupancy.free = True
+structure.atom_sites['O2'].occupancy.free = True
+
+structure.atom_sites['Tb'].adp_iso.free = True
+structure.atom_sites['Ti'].adp_iso.free = True
+structure.atom_sites['O1'].adp_iso.free = True
+structure.atom_sites['O2'].adp_iso.free = True
 
 # %%
-experiment.show_as_cif()
+experiment.linked_crystal.scale.free = True
+experiment.extinction.radius.free = True
 
 # %%
 # Start refinement. All parameters, which have standard uncertainties
@@ -94,7 +113,7 @@ project.analysis.fit()
 project.analysis.display.fit_results()
 
 # %%
-experiment.show_as_cif()
+structure.show_as_cif()
 
 # %%
 project.experiments.show_names()
@@ -103,7 +122,38 @@ project.experiments.show_names()
 project.plotter.plot_meas_vs_calc(expt_name='heidi')
 
 # %% [markdown]
-# ## Step 5: Show Project Summary
+# ## Step 5: Perform Analysis (ADP aniso)
 
 # %%
-project.summary.show_report()
+structure.atom_sites['Tb'].adp_type = 'Uani'
+structure.atom_sites['Ti'].adp_type = 'Uani'
+structure.atom_sites['O1'].adp_type = 'Uani'
+# structure.atom_sites['O2'].adp_type = 'Uani'
+
+# %%
+print(structure.atom_site_aniso.as_cif)
+
+# %%
+structure.atom_site_aniso['Tb'].adp_11.free = True
+structure.atom_site_aniso['Tb'].adp_12.free = True
+structure.atom_site_aniso['Ti'].adp_11.free = True
+structure.atom_site_aniso['Ti'].adp_12.free = True
+structure.atom_site_aniso['O1'].adp_11.free = True
+structure.atom_site_aniso['O1'].adp_22.free = True
+structure.atom_site_aniso['O1'].adp_23.free = True
+# structure.atom_site_aniso['O2'].adp_11.free = True
+
+# %%
+project.analysis.fit()
+
+# %%
+project.analysis.display.fit_results()
+
+# %%
+project.plotter.plot_param_correlations()
+
+# %%
+project.plotter.plot_meas_vs_calc(expt_name='heidi')
+
+# %%
+structure.show_as_cif()

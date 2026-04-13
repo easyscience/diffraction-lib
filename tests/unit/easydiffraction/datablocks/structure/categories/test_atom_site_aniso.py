@@ -344,3 +344,194 @@ class TestCifNameReordering:
         structure.atom_sites['Si'].adp_type = 'Uani'
         aniso = structure.atom_site_aniso['Si']
         assert aniso._adp_11._cif_handler.names[0] == '_atom_site_aniso.U_11'
+
+
+# ------------------------------------------------------------------
+#  _iso_labels helper
+# ------------------------------------------------------------------
+
+
+class TestIsoLabels:
+    def test_all_iso_returns_all_labels(self):
+        from easydiffraction.datablocks.structure.item.base import Structure
+
+        structure = Structure(name='test')
+        structure.atom_sites.create(label='A', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
+        structure.atom_sites.create(label='B', type_symbol='O', adp_type='Uiso', adp_iso=0.01)
+        structure._sync_atom_site_aniso()
+        labels = structure.atom_site_aniso._iso_labels()
+        assert labels == {'A', 'B'}
+
+    def test_all_aniso_returns_empty(self):
+        from easydiffraction.datablocks.structure.item.base import Structure
+
+        structure = Structure(name='test')
+        structure.atom_sites.create(label='A', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
+        structure._sync_atom_site_aniso()
+        structure.atom_sites['A'].adp_type = 'Bani'
+        labels = structure.atom_site_aniso._iso_labels()
+        assert labels == set()
+
+    def test_mixed_returns_only_iso(self):
+        from easydiffraction.datablocks.structure.item.base import Structure
+
+        structure = Structure(name='test')
+        structure.atom_sites.create(label='A', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
+        structure.atom_sites.create(label='B', type_symbol='O', adp_type='Biso', adp_iso=0.3)
+        structure._sync_atom_site_aniso()
+        structure.atom_sites['A'].adp_type = 'Bani'
+        labels = structure.atom_site_aniso._iso_labels()
+        assert labels == {'B'}
+
+    def test_no_parent_returns_empty(self):
+        from easydiffraction.datablocks.structure.categories.atom_site_aniso.default import (
+            AtomSiteAnisoCollection,
+        )
+
+        coll = AtomSiteAnisoCollection()
+        assert coll._iso_labels() == set()
+
+
+# ------------------------------------------------------------------
+#  _format_cif_row (? for iso atoms)
+# ------------------------------------------------------------------
+
+
+class TestFormatCifRow:
+    def _make_structure(self):
+        from easydiffraction.datablocks.structure.item.base import Structure
+
+        structure = Structure(name='test')
+        structure.atom_sites.create(label='A', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
+        structure.atom_sites.create(label='B', type_symbol='O', adp_type='Biso', adp_iso=0.3)
+        structure._sync_atom_site_aniso()
+        return structure
+
+    def test_iso_atom_gets_question_marks(self):
+        structure = self._make_structure()
+        structure.atom_sites['A'].adp_type = 'Bani'
+        aniso_coll = structure.atom_site_aniso
+        row = aniso_coll._format_cif_row(aniso_coll['B'])
+        assert row is not None
+        assert len(row) == 7
+        assert row[0] == 'B'
+        assert all(v == '?' for v in row[1:])
+
+    def test_aniso_atom_returns_none(self):
+        structure = self._make_structure()
+        structure.atom_sites['A'].adp_type = 'Bani'
+        aniso_coll = structure.atom_site_aniso
+        row = aniso_coll._format_cif_row(aniso_coll['A'])
+        assert row is None
+
+    def test_cif_output_has_question_marks_for_iso(self):
+        structure = self._make_structure()
+        structure.atom_sites['A'].adp_type = 'Bani'
+        cif = structure.atom_site_aniso.as_cif
+        lines = cif.strip().split('\n')
+        data_lines = [l for l in lines if not l.startswith(('loop_', '_atom_site_aniso'))]
+        # B is iso → should have ?
+        b_line = next(l for l in data_lines if l.strip().startswith('B'))
+        assert '?' in b_line
+        # A is aniso → should not have ?
+        a_line = next(l for l in data_lines if l.strip().startswith('A'))
+        assert '?' not in a_line
+
+    def test_all_aniso_no_question_marks(self):
+        structure = self._make_structure()
+        structure.atom_sites['A'].adp_type = 'Bani'
+        structure.atom_sites['B'].adp_type = 'Bani'
+        cif = structure.atom_site_aniso.as_cif
+        assert '?' not in cif
+
+    def test_all_iso_cif_suppressed(self):
+        structure = self._make_structure()
+        cif = structure.atom_site_aniso.as_cif
+        assert cif == ''
+
+
+# ------------------------------------------------------------------
+#  Additional ADP type switching paths
+# ------------------------------------------------------------------
+
+
+class TestAdpTypeSwitchingPaths:
+    def _make_structure(self, adp_type='Biso', adp_iso=0.5):
+        from easydiffraction.datablocks.structure.item.base import Structure
+
+        structure = Structure(name='test')
+        structure.atom_sites.create(
+            label='Si',
+            type_symbol='Si',
+            adp_type=adp_type,
+            adp_iso=adp_iso,
+        )
+        structure._sync_atom_site_aniso()
+        return structure
+
+    def test_uani_to_uiso_collapses(self):
+        structure = self._make_structure(adp_type='Uiso', adp_iso=0.05)
+        structure.atom_sites['Si'].adp_type = 'Uani'
+        aniso = structure.atom_site_aniso['Si']
+        aniso.adp_11 = 0.01
+        aniso.adp_22 = 0.02
+        aniso.adp_33 = 0.03
+        structure.atom_sites['Si'].adp_type = 'Uiso'
+        expected = (0.01 + 0.02 + 0.03) / 3.0
+        assert math.isclose(structure.atom_sites['Si'].adp_iso.value, expected, rel_tol=1e-10)
+
+    def test_uani_to_biso_converts_and_collapses(self):
+        factor = 8.0 * math.pi**2
+        structure = self._make_structure(adp_type='Uiso', adp_iso=0.05)
+        structure.atom_sites['Si'].adp_type = 'Uani'
+        aniso = structure.atom_site_aniso['Si']
+        aniso.adp_11 = 0.01
+        aniso.adp_22 = 0.02
+        aniso.adp_33 = 0.03
+        structure.atom_sites['Si'].adp_type = 'Biso'
+        expected_b = (0.01 + 0.02 + 0.03) / 3.0 * factor
+        assert math.isclose(structure.atom_sites['Si'].adp_iso.value, expected_b, rel_tol=1e-10)
+
+    def test_uani_to_bani_converts_values(self):
+        factor = 8.0 * math.pi**2
+        structure = self._make_structure(adp_type='Uiso', adp_iso=0.05)
+        structure.atom_sites['Si'].adp_type = 'Uani'
+        structure.atom_sites['Si'].adp_type = 'Bani'
+        aniso = structure.atom_site_aniso['Si']
+        expected_b = 0.05 * factor
+        assert math.isclose(aniso.adp_11.value, expected_b, rel_tol=1e-10)
+
+    def test_biso_to_uiso_converts(self):
+        factor = 8.0 * math.pi**2
+        structure = self._make_structure(adp_type='Biso', adp_iso=0.5)
+        structure.atom_sites['Si'].adp_type = 'Uiso'
+        expected_u = 0.5 / factor
+        assert math.isclose(structure.atom_sites['Si'].adp_iso.value, expected_u, rel_tol=1e-10)
+
+    def test_uiso_to_biso_converts(self):
+        factor = 8.0 * math.pi**2
+        u_val = 0.005
+        structure = self._make_structure(adp_type='Uiso', adp_iso=u_val)
+        structure.atom_sites['Si'].adp_type = 'Biso'
+        expected_b = u_val * factor
+        assert math.isclose(structure.atom_sites['Si'].adp_iso.value, expected_b, rel_tol=1e-10)
+
+    def test_round_trip_uiso_bani_uiso(self):
+        structure = self._make_structure(adp_type='Uiso', adp_iso=0.05)
+        structure.atom_sites['Si'].adp_type = 'Bani'
+        structure.atom_sites['Si'].adp_type = 'Uiso'
+        assert math.isclose(structure.atom_sites['Si'].adp_iso.value, 0.05, rel_tol=1e-10)
+
+    def test_round_trip_biso_bani_biso(self):
+        structure = self._make_structure(adp_type='Biso', adp_iso=0.5)
+        structure.atom_sites['Si'].adp_type = 'Bani'
+        structure.atom_sites['Si'].adp_type = 'Biso'
+        assert math.isclose(structure.atom_sites['Si'].adp_iso.value, 0.5, rel_tol=1e-10)
+
+    def test_adp_iso_not_free_when_aniso(self):
+        structure = self._make_structure(adp_type='Biso', adp_iso=0.5)
+        structure.space_group.name_h_m = 'P m -3 m'
+        structure.atom_sites['Si'].adp_iso.free = True
+        structure.atom_sites['Si'].adp_type = 'Bani'
+        structure.atom_sites._update()
+        assert structure.atom_sites['Si'].adp_iso.free is False

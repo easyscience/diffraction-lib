@@ -18,6 +18,8 @@ def test_cryspy_calculator_engine_flag_and_converters():
 
     # Converters should just delegate/format without external deps
     class DummySample:
+        atom_sites = []
+
         @property
         def as_cif(self):
             return 'data_x'

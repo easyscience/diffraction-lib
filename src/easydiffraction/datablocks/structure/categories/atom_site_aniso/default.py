@@ -239,3 +239,45 @@ class AtomSiteAnisoCollection(CategoryCollection):
 
         aniso_types = {AdpTypeEnum.BANI.value, AdpTypeEnum.UANI.value}
         return not any(atom.adp_type.value in aniso_types for atom in atom_sites)
+
+    def _iso_labels(self) -> set[str]:
+        """Return labels of atoms with isotropic ADP type."""
+        structure = getattr(self, '_parent', None)
+        if structure is None:
+            return set()
+        atom_sites = getattr(structure, '_atom_sites', None)
+        if atom_sites is None:
+            return set()
+        from easydiffraction.datablocks.structure.categories.atom_sites.enums import (  # noqa: PLC0415
+            AdpTypeEnum,
+        )
+
+        iso_types = {AdpTypeEnum.BISO.value, AdpTypeEnum.UISO.value}
+        return {atom.label.value for atom in atom_sites if atom.adp_type.value in iso_types}
+
+    def _format_cif_row(self, item: object) -> list[str] | None:
+        """
+        Return ``?`` markers for isotropic atoms, ``None`` otherwise.
+
+        Used by :func:`category_collection_to_cif` as a per-row hook.
+        Atoms whose ADP type is isotropic get ``?`` for the six tensor
+        components so they are not mistaken for genuine zeros.
+
+        Parameters
+        ----------
+        item : object
+            An :class:`AtomSiteAniso` instance.
+
+        Returns
+        -------
+        list[str] | None
+            Formatted row when overridden, ``None`` for default output.
+        """
+        if item.label.value not in self._iso_labels():
+            return None
+        from easydiffraction.io.cif.serialize import format_param_value  # noqa: PLC0415
+        from easydiffraction.io.cif.serialize import format_value  # noqa: PLC0415
+
+        row = [format_param_value(item._label)]
+        row.extend([format_value(None)] * 6)
+        return row

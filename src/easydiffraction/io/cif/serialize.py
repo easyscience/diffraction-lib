@@ -36,7 +36,6 @@ def format_value(value: object) -> str:
     minimizer's     finite-difference Jacobian probes (typically ~1e-8
     relative)     survive the float→string→float round-trip through CIF.
     """
-    width = 12
     precision = 8
 
     # Converting
@@ -58,10 +57,10 @@ def format_value(value: object) -> str:
 
     # Format floats with given precision
     if isinstance(value, float):
-        return f'{value:>{width}.{precision}f}'
-    # Format strings right-aligned
+        return f'{value:.{precision}f}'
+    # Format strings as-is
     if isinstance(value, str):
-        return f'{value:>{width}s}'
+        return value
     # Everything else: fallback
     return str(value)
 
@@ -185,24 +184,31 @@ def category_collection_to_cif(
         tags = p._cif_handler.names  # type: ignore[attr-defined]
         lines.append(tags[0])
 
+    # Allow collections to customise per-item row formatting
+    row_hook = getattr(collection, '_format_cif_row', None)
+
+    def _row(item: object) -> list[str]:
+        if row_hook is not None:
+            override = row_hook(item)
+            if override is not None:
+                return override
+        return [format_param_value(p) for p in item.parameters]
+
     # Rows
     # Limit number of displayed rows if requested
     if max_display is not None and len(collection) > max_display:
         half_display = max_display // 2
         for i in range(half_display):
             item = list(collection.values())[i]
-            row_vals = [format_param_value(p) for p in item.parameters]
-            lines.append(' '.join(row_vals))
+            lines.append(' '.join(_row(item)))
         lines.append('...')
         for i in range(-half_display, 0):
             item = list(collection.values())[i]
-            row_vals = [format_param_value(p) for p in item.parameters]
-            lines.append(' '.join(row_vals))
+            lines.append(' '.join(_row(item)))
     # No limit
     else:
         for item in collection.values():
-            row_vals = [format_param_value(p) for p in item.parameters]
-            lines.append(' '.join(row_vals))
+            lines.append(' '.join(_row(item)))
 
     return '\n'.join(lines)
 
