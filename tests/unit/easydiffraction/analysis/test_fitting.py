@@ -13,8 +13,17 @@ def test_module_import():
 def test_fitter_early_exit_when_no_params(capsys, monkeypatch):
     from easydiffraction.analysis.fitting import Fitter
 
+    class DummyStructure:
+        _need_categories_update = False
+
+        def _update_categories(self):
+            pass
+
     class DummyStructures:
         free_parameters = []
+
+        def __iter__(self):
+            return iter([DummyStructure()])
 
     class DummyExperiment:
         parameters = []
@@ -22,7 +31,7 @@ def test_fitter_early_exit_when_no_params(capsys, monkeypatch):
     class DummyMin:
         tracker = type('T', (), {'track': staticmethod(lambda a, b: a)})()
 
-        def fit(self, params, obj, verbosity=None):
+        def fit(self, params, obj, verbosity=None, **kwargs):
             return None
 
     f = Fitter()
@@ -46,8 +55,17 @@ def test_fitter_fit_does_not_call_process_fit_results(monkeypatch):
         value = 1.0
         _fit_start_value = None
 
+    class DummyStructure:
+        _need_categories_update = False
+
+        def _update_categories(self):
+            pass
+
     class DummyStructures:
         free_parameters = [DummyParam()]
+
+        def __iter__(self):
+            return iter([DummyStructure()])
 
     class DummyExperiment:
         parameters = []
@@ -58,7 +76,7 @@ def test_fitter_fit_does_not_call_process_fit_results(monkeypatch):
     class DummyMin:
         tracker = type('T', (), {'track': staticmethod(lambda a, b: a)})()
 
-        def fit(self, params, obj, verbosity=None):
+        def fit(self, params, obj, verbosity=None, **kwargs):
             return MockFitResults()
 
         def _sync_result_to_parameters(self, params, engine_params):

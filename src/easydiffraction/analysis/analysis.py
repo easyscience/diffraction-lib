@@ -400,7 +400,7 @@ class Analysis:
         self._fit_mode_type: str = FitModeFactory.default_tag()
         self._fit_mode = FitModeFactory.create(self._fit_mode_type)
         self._joint_fit_experiments = JointFitExperiments()
-        self.fitter = Fitter('lmfit')
+        self.fitter = Fitter()
         self.fit_results = None
         self._parameter_snapshots: dict[str, dict[str, dict]] = {}
         self._display = AnalysisDisplay(self)
@@ -435,86 +435,8 @@ class Analysis:
             )
 
     # ------------------------------------------------------------------
-    #  Aliases (switchable-category pattern)
+    #  Parameter helpers
     # ------------------------------------------------------------------
-
-    @property
-    def aliases_type(self) -> str:
-        """Tag of the active aliases collection type."""
-        return self._aliases_type
-
-    @aliases_type.setter
-    def aliases_type(self, new_type: str) -> None:
-        """
-        Switch to a different aliases collection type.
-
-        Parameters
-        ----------
-        new_type : str
-            Aliases tag (e.g. ``'default'``).
-        """
-        supported_tags = AliasesFactory.supported_tags()
-        if new_type not in supported_tags:
-            log.warning(
-                f"Unsupported aliases type '{new_type}'. "
-                f'Supported: {supported_tags}. '
-                f"For more information, use 'show_supported_aliases_types()'",
-            )
-            return
-        self.aliases = AliasesFactory.create(new_type)
-        self._aliases_type = new_type
-        console.paragraph('Aliases type changed to')
-        console.print(new_type)
-
-    def show_supported_aliases_types(self) -> None:  # noqa: PLR6301
-        """Print a table of supported aliases collection types."""
-        AliasesFactory.show_supported()
-
-    def show_current_aliases_type(self) -> None:
-        """Print the currently used aliases collection type."""
-        console.paragraph('Current aliases type')
-        console.print(self._aliases_type)
-
-    # ------------------------------------------------------------------
-    #  Constraints (switchable-category pattern)
-    # ------------------------------------------------------------------
-
-    @property
-    def constraints_type(self) -> str:
-        """Tag of the active constraints collection type."""
-        return self._constraints_type
-
-    @constraints_type.setter
-    def constraints_type(self, new_type: str) -> None:
-        """
-        Switch to a different constraints collection type.
-
-        Parameters
-        ----------
-        new_type : str
-            Constraints tag (e.g. ``'default'``).
-        """
-        supported_tags = ConstraintsFactory.supported_tags()
-        if new_type not in supported_tags:
-            log.warning(
-                f"Unsupported constraints type '{new_type}'. "
-                f'Supported: {supported_tags}. '
-                f"For more information, use 'show_supported_constraints_types()'",
-            )
-            return
-        self.constraints = ConstraintsFactory.create(new_type)
-        self._constraints_type = new_type
-        console.paragraph('Constraints type changed to')
-        console.print(new_type)
-
-    def show_supported_constraints_types(self) -> None:  # noqa: PLR6301
-        """Print a table of supported constraints collection types."""
-        ConstraintsFactory.show_supported()
-
-    def show_current_constraints_type(self) -> None:
-        """Print the currently used constraints collection type."""
-        console.paragraph('Current constraints type')
-        console.print(self._constraints_type)
 
     @staticmethod
     def _get_params_as_dataframe(
@@ -595,7 +517,7 @@ class Analysis:
         console.print(self.current_minimizer)
 
     # ------------------------------------------------------------------
-    #  Fit mode (switchable-category pattern)
+    #  Fit mode (single type, with show methods)
     # ------------------------------------------------------------------
 
     @property
@@ -603,42 +525,25 @@ class Analysis:
         """Fit-mode category item holding the active strategy."""
         return self._fit_mode
 
-    @property
-    def fit_mode_type(self) -> str:
-        """Tag of the active fit-mode category type."""
-        return self._fit_mode_type
-
-    @fit_mode_type.setter
-    def fit_mode_type(self, new_type: str) -> None:
-        """
-        Switch to a different fit-mode category type.
-
-        Parameters
-        ----------
-        new_type : str
-            Fit-mode tag (e.g. ``'default'``).
-        """
-        supported_tags = FitModeFactory.supported_tags()
-        if new_type not in supported_tags:
-            log.warning(
-                f"Unsupported fit-mode type '{new_type}'. "
-                f'Supported: {supported_tags}. '
-                f"For more information, use 'show_supported_fit_mode_types()'",
-            )
-            return
-        self._fit_mode = FitModeFactory.create(new_type)
-        self._fit_mode_type = new_type
-        console.paragraph('Fit-mode type changed to')
-        console.print(new_type)
-
-    def show_supported_fit_mode_types(self) -> None:  # noqa: PLR6301
-        """Print a table of supported fit-mode category types."""
-        FitModeFactory.show_supported()
+    def show_supported_fit_mode_types(self) -> None:
+        """Print a table of supported fit modes for this project."""
+        num_expts = len(self.project.experiments) if self.project.experiments else 0
+        if num_expts <= 1:
+            modes = [FitModeEnum.SINGLE]
+        else:
+            modes = [FitModeEnum.SINGLE, FitModeEnum.JOINT, FitModeEnum.SEQUENTIAL]
+        columns_data = [[mode.value, mode.description()] for mode in modes]
+        console.paragraph('Supported fit modes')
+        render_table(
+            columns_headers=['Mode', 'Description'],
+            columns_alignment=['left', 'left'],
+            columns_data=columns_data,
+        )
 
     def show_current_fit_mode_type(self) -> None:
-        """Print the currently used fit-mode category type."""
-        console.paragraph('Current fit-mode type')
-        console.print(self._fit_mode_type)
+        """Print the currently selected fit mode."""
+        console.paragraph('Current fit mode')
+        console.print(self._fit_mode.mode.value)
 
     # ------------------------------------------------------------------
     #  Joint-fit experiments (category)
@@ -649,7 +554,7 @@ class Analysis:
         """Per-experiment weight collection for joint fitting."""
         return self._joint_fit_experiments
 
-    def fit(self, verbosity: str | None = None) -> None:
+    def fit(self, verbosity: str | None = None, *, use_physical_limits: bool = False) -> None:
         """
         Execute fitting for all experiments.
 
@@ -660,7 +565,8 @@ class Analysis:
 
         In 'single' mode, fits each experiment independently. In 'joint'
         mode, performs a simultaneous fit across experiments with
-        weights.
+        weights. If mode is 'sequential', logs an error directing the
+        user to :meth:`fit_sequential` instead.
 
         Sets :attr:`fit_results` on success, which can be accessed
         programmatically (e.g.,
@@ -673,11 +579,10 @@ class Analysis:
             experiment progress, ``'short'`` for a
             one-row-per-experiment summary table, or ``'silent'`` for no
             output. When ``None``, uses ``project.verbosity``.
-
-        Raises
-        ------
-        NotImplementedError
-            If the fit mode is not ``'single'`` or ``'joint'``.
+        use_physical_limits : bool, default=False
+            When ``True``, fall back to physical limits from the value
+            spec for parameters whose ``fit_min``/``fit_max`` are
+            unbounded.
         """
         verb = VerbosityEnum(verbosity if verbosity is not None else self.project.verbosity)
 
@@ -699,12 +604,16 @@ class Analysis:
         # Run the fitting process
         mode = FitModeEnum(self._fit_mode.mode.value)
         if mode is FitModeEnum.JOINT:
-            self._fit_joint(verb, structures, experiments)
+            self._fit_joint(verb, structures, experiments, use_physical_limits=use_physical_limits)
         elif mode is FitModeEnum.SINGLE:
-            self._fit_single(verb, structures, experiments)
-        else:
-            msg = f'Fit mode {mode.value} not implemented yet.'
-            raise NotImplementedError(msg)
+            self._fit_single(
+                verb, structures, experiments, use_physical_limits=use_physical_limits
+            )
+        elif mode is FitModeEnum.SEQUENTIAL:
+            log.error(
+                "fit_mode is 'sequential'. Use fit_sequential(data_dir=...) instead of fit()."
+            )
+            return
 
         # After fitting, save the project
         if self.project.info.path is not None:
@@ -715,6 +624,8 @@ class Analysis:
         verb: VerbosityEnum,
         structures: object,
         experiments: object,
+        *,
+        use_physical_limits: bool,
     ) -> None:
         """
         Run joint fitting across all experiments with weights.
@@ -727,6 +638,8 @@ class Analysis:
             Project structures collection.
         experiments : object
             Project experiments collection.
+        use_physical_limits : bool
+            Whether to use physical limits as fit bounds.
         """
         mode = FitModeEnum.JOINT
         # Auto-populate joint_fit_experiments if empty
@@ -749,6 +662,7 @@ class Analysis:
             weights=weights_array,
             analysis=self,
             verbosity=verb,
+            use_physical_limits=use_physical_limits,
         )
 
         # After fitting, get the results
@@ -759,6 +673,8 @@ class Analysis:
         verb: VerbosityEnum,
         structures: object,
         experiments: object,
+        *,
+        use_physical_limits: bool,
     ) -> None:
         """
         Run single-mode fitting for each experiment independently.
@@ -771,6 +687,8 @@ class Analysis:
             Project structures collection.
         experiments : object
             Project experiments collection.
+        use_physical_limits : bool
+            Whether to use physical limits as fit bounds.
         """
         mode = FitModeEnum.SINGLE
         expt_names = experiments.names
@@ -788,6 +706,7 @@ class Analysis:
                 [experiment],
                 analysis=self,
                 verbosity=verb,
+                use_physical_limits=use_physical_limits,
             )
 
             # After fitting, snapshot parameter values before
@@ -905,6 +824,7 @@ class Analysis:
         file_pattern: str = '*',
         extract_diffrn: object = None,
         verbosity: str | None = None,
+        *,
         reverse: bool = False,
     ) -> None:
         """
@@ -944,6 +864,9 @@ class Analysis:
         """
         from easydiffraction.analysis.sequential import fit_sequential as _fit_seq  # noqa: PLC0415
 
+        # Record the fit mode for CIF serialization
+        self._fit_mode.mode = FitModeEnum.SEQUENTIAL.value
+
         # Apply constraints before building the template
         self._update_categories()
 
@@ -966,7 +889,11 @@ class Analysis:
             if original_verbosity is not None:
                 self.project.verbosity = original_verbosity
 
-    def _update_categories(self, called_by_minimizer: bool = False) -> None:
+    def _update_categories(
+        self,
+        *,
+        called_by_minimizer: bool = False,
+    ) -> None:
         """
         Update all categories owned by Analysis.
 

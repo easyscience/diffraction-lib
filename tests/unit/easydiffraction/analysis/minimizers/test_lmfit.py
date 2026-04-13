@@ -17,7 +17,7 @@ def test_lmfit_prepare_and_sync(monkeypatch):
     from easydiffraction.analysis.minimizers.lmfit import LmfitMinimizer
 
     class P:
-        def __init__(self, name, value, free=True, lo=-np.inf, hi=np.inf):
+        def __init__(self, name, value, *, free=True, lo=-np.inf, hi=np.inf):
             self._minimizer_uid = name
             self._value = value
             self.free = free

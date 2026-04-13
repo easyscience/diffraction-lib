@@ -323,7 +323,11 @@ class ReflnData(CategoryCollection):
 
     # Misc
 
-    def _update(self, called_by_minimizer: bool = False) -> None:
+    def _update(
+        self,
+        *,
+        called_by_minimizer: bool = False,
+    ) -> None:
         experiment = self._parent
         experiments = experiment._parent
         project = experiments._parent

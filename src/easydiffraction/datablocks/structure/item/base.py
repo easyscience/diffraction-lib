@@ -5,6 +5,11 @@
 from typeguard import typechecked
 
 from easydiffraction.core.datablock import DatablockItem
+from easydiffraction.datablocks.structure.categories.atom_site_aniso import AtomSiteAnisoCollection
+from easydiffraction.datablocks.structure.categories.atom_site_aniso.default import AtomSiteAniso
+from easydiffraction.datablocks.structure.categories.atom_site_aniso.factory import (
+    AtomSiteAnisoFactory,
+)
 from easydiffraction.datablocks.structure.categories.atom_sites import AtomSites
 from easydiffraction.datablocks.structure.categories.atom_sites.factory import AtomSitesFactory
 from easydiffraction.datablocks.structure.categories.cell import Cell
@@ -12,7 +17,6 @@ from easydiffraction.datablocks.structure.categories.cell.factory import CellFac
 from easydiffraction.datablocks.structure.categories.space_group import SpaceGroup
 from easydiffraction.datablocks.structure.categories.space_group.factory import SpaceGroupFactory
 from easydiffraction.utils.logging import console
-from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_cif
 
 
@@ -32,6 +36,8 @@ class Structure(DatablockItem):
         self._space_group = SpaceGroupFactory.create(self._space_group_type)
         self._atom_sites_type: str = AtomSitesFactory.default_tag()
         self._atom_sites = AtomSitesFactory.create(self._atom_sites_type)
+        self._atom_site_aniso_type: str = AtomSiteAnisoFactory.default_tag()
+        self._atom_site_aniso = AtomSiteAnisoFactory.create(self._atom_site_aniso_type)
         self._identity.datablock_entry_name = lambda: self.name
 
     # ------------------------------------------------------------------
@@ -64,7 +70,7 @@ class Structure(DatablockItem):
         self._name = new
 
     # ------------------------------------------------------------------
-    #  Cell (switchable-category pattern)
+    #  Cell (read-only, single type)
     # ------------------------------------------------------------------
 
     @property
@@ -85,45 +91,8 @@ class Structure(DatablockItem):
         """
         self._cell = new
 
-    @property
-    def cell_type(self) -> str:
-        """Tag of the active unit-cell type."""
-        return self._cell_type
-
-    @cell_type.setter
-    def cell_type(self, new_type: str) -> None:
-        """
-        Switch to a different unit-cell type.
-
-        Parameters
-        ----------
-        new_type : str
-            Cell tag (e.g. ``'default'``).
-        """
-        supported_tags = CellFactory.supported_tags()
-        if new_type not in supported_tags:
-            log.warning(
-                f"Unsupported cell type '{new_type}'. "
-                f'Supported: {supported_tags}. '
-                f"For more information, use 'show_supported_cell_types()'",
-            )
-            return
-        self._cell = CellFactory.create(new_type)
-        self._cell_type = new_type
-        console.paragraph(f"Cell type for structure '{self.name}' changed to")
-        console.print(new_type)
-
-    def show_supported_cell_types(self) -> None:  # noqa: PLR6301
-        """Print a table of supported unit-cell types."""
-        CellFactory.show_supported()
-
-    def show_current_cell_type(self) -> None:
-        """Print the currently used unit-cell type."""
-        console.paragraph('Current cell type')
-        console.print(self.cell_type)
-
     # ------------------------------------------------------------------
-    #  Space group (switchable-category pattern)
+    #  Space group (read-only, single type)
     # ------------------------------------------------------------------
 
     @property
@@ -144,45 +113,8 @@ class Structure(DatablockItem):
         """
         self._space_group = new
 
-    @property
-    def space_group_type(self) -> str:
-        """Tag of the active space-group type."""
-        return self._space_group_type
-
-    @space_group_type.setter
-    def space_group_type(self, new_type: str) -> None:
-        """
-        Switch to a different space-group type.
-
-        Parameters
-        ----------
-        new_type : str
-            Space-group tag (e.g. ``'default'``).
-        """
-        supported_tags = SpaceGroupFactory.supported_tags()
-        if new_type not in supported_tags:
-            log.warning(
-                f"Unsupported space group type '{new_type}'. "
-                f'Supported: {supported_tags}. '
-                f"For more information, use 'show_supported_space_group_types()'",
-            )
-            return
-        self._space_group = SpaceGroupFactory.create(new_type)
-        self._space_group_type = new_type
-        console.paragraph(f"Space group type for structure '{self.name}' changed to")
-        console.print(new_type)
-
-    def show_supported_space_group_types(self) -> None:  # noqa: PLR6301
-        """Print a table of supported space-group types."""
-        SpaceGroupFactory.show_supported()
-
-    def show_current_space_group_type(self) -> None:
-        """Print the currently used space-group type."""
-        console.paragraph('Current space group type')
-        console.print(self.space_group_type)
-
     # ------------------------------------------------------------------
-    #  Atom sites (switchable-category pattern)
+    #  Atom sites (read-only, single type)
     # ------------------------------------------------------------------
 
     @property
@@ -203,42 +135,78 @@ class Structure(DatablockItem):
         """
         self._atom_sites = new
 
-    @property
-    def atom_sites_type(self) -> str:
-        """Tag of the active atom-sites collection type."""
-        return self._atom_sites_type
+    # ------------------------------------------------------------------
+    #  Atom site aniso (read-only, single type)
+    # ------------------------------------------------------------------
 
-    @atom_sites_type.setter
-    def atom_sites_type(self, new_type: str) -> None:
+    @property
+    def atom_site_aniso(self) -> AtomSiteAnisoCollection:
+        """Anisotropic-ADP collection for this structure."""
+        return self._atom_site_aniso
+
+    @atom_site_aniso.setter
+    @typechecked
+    def atom_site_aniso(self, new: AtomSiteAnisoCollection) -> None:
         """
-        Switch to a different atom-sites collection type.
+        Replace the anisotropic-ADP collection for this structure.
 
         Parameters
         ----------
-        new_type : str
-            Atom-sites tag (e.g. ``'default'``).
+        new : AtomSiteAnisoCollection
+            New aniso collection.
         """
-        supported_tags = AtomSitesFactory.supported_tags()
-        if new_type not in supported_tags:
-            log.warning(
-                f"Unsupported atom sites type '{new_type}'. "
-                f'Supported: {supported_tags}. '
-                f"For more information, use 'show_supported_atom_sites_types()'",
-            )
+        self._atom_site_aniso = new
+
+    # ------------------------------------------------------------------
+    # Private methods
+    # ------------------------------------------------------------------
+
+    def _sync_atom_site_aniso(self) -> None:
+        """
+        Reconcile ``atom_site_aniso`` with ``atom_sites``.
+
+        Ensures every atom in ``atom_sites`` has a matching entry in
+        ``atom_site_aniso`` and removes stale entries whose label no
+        longer appears in ``atom_sites``.  Reorders CIF names on aniso
+        parameters to match each atom's ``adp_type``.
+        """
+        existing_labels = {a.label.value for a in self._atom_sites}
+        aniso_labels = {a.label.value for a in self._atom_site_aniso}
+
+        # Add missing entries
+        for atom in self._atom_sites:
+            lbl = atom.label.value
+            if lbl not in aniso_labels:
+                entry = AtomSiteAniso()
+                entry.label = lbl
+                self._atom_site_aniso.add(entry)
+
+        # Remove stale entries
+        stale = [
+            a.label.value for a in self._atom_site_aniso if a.label.value not in existing_labels
+        ]
+        for lbl in stale:
+            self._atom_site_aniso.remove(lbl)
+
+        # Reorder CIF names to match each atom's adp_type
+        for atom in self._atom_sites:
+            atom._reorder_adp_cif_names(atom.adp_type.value)
+
+    def _update_categories(
+        self,
+        *,
+        called_by_minimizer: bool = False,
+    ) -> None:
+        """Update categories with atom_site_aniso sync."""
+        if not called_by_minimizer and not self._need_categories_update:
             return
-        self._atom_sites = AtomSitesFactory.create(new_type)
-        self._atom_sites_type = new_type
-        console.paragraph(f"Atom sites type for structure '{self.name}' changed to")
-        console.print(new_type)
 
-    def show_supported_atom_sites_types(self) -> None:  # noqa: PLR6301
-        """Print a table of supported atom-sites collection types."""
-        AtomSitesFactory.show_supported()
+        self._sync_atom_site_aniso()
 
-    def show_current_atom_sites_type(self) -> None:
-        """Print the currently used atom-sites collection type."""
-        console.paragraph('Current atom sites type')
-        console.print(self.atom_sites_type)
+        for category in self.categories:
+            category._update(called_by_minimizer=called_by_minimizer)
+
+        self._need_categories_update = False
 
     # ------------------------------------------------------------------
     # Public methods

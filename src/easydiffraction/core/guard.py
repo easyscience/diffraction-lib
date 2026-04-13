@@ -33,6 +33,10 @@ class GuardedBase(ABC):
 
     def __getattr__(self, key: str) -> None:
         """Raise a descriptive error for unknown attribute access."""
+        # Private/dunder lookups should not trigger diagnostics —
+        # raise AttributeError so getattr(obj, '_foo', default) works.
+        if key.startswith('_'):
+            raise AttributeError(key)
         cls = type(self)
         allowed = cls._public_attrs()
         if key not in allowed:
@@ -113,7 +117,11 @@ class GuardedBase(ABC):
         """Public properties with a setter."""
         return {key for key, prop in cls._iter_properties() if prop.fset is not None}
 
-    def _allowed_attrs(self, writable_only: bool = False) -> set[str]:
+    def _allowed_attrs(
+        self,
+        *,
+        writable_only: bool = False,
+    ) -> set[str]:
         cls = type(self)
         if writable_only:
             return cls._public_writable_attrs()

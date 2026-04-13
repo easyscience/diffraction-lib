@@ -36,6 +36,7 @@ class SampleFormEnum(StrEnum):
             return 'Powdered or polycrystalline sample.'
         if self is SampleFormEnum.SINGLE_CRYSTAL:
             return 'Single crystal sample.'
+        return None
 
 
 class ScatteringTypeEnum(StrEnum):
@@ -69,6 +70,7 @@ class ScatteringTypeEnum(StrEnum):
             return 'Bragg diffraction for conventional structure refinement.'
         if self is ScatteringTypeEnum.TOTAL:
             return 'Total scattering for pair distribution function analysis (PDF).'
+        return None
 
 
 class RadiationProbeEnum(StrEnum):
@@ -102,6 +104,7 @@ class RadiationProbeEnum(StrEnum):
             return 'Neutron diffraction.'
         if self is RadiationProbeEnum.XRAY:
             return 'X-ray diffraction.'
+        return None
 
 
 class BeamModeEnum(StrEnum):
@@ -136,6 +139,7 @@ class BeamModeEnum(StrEnum):
             return 'Constant wavelength (CW) diffraction.'
         if self is BeamModeEnum.TIME_OF_FLIGHT:
             return 'Time-of-flight (TOF) diffraction.'
+        return None
 
 
 class CalculatorEnum(StrEnum):
@@ -156,10 +160,11 @@ class PeakProfileTypeEnum(StrEnum):
     """Available peak profile types per scattering and beam mode."""
 
     PSEUDO_VOIGT = 'pseudo-voigt'
-    SPLIT_PSEUDO_VOIGT = 'split pseudo-voigt'
+    PSEUDO_VOIGT_EMPIRICAL_ASYMMETRY = 'pseudo-voigt + empirical asymmetry'
     THOMPSON_COX_HASTINGS = 'thompson-cox-hastings'
-    PSEUDO_VOIGT_IKEDA_CARPENTER = 'pseudo-voigt * ikeda-carpenter'
-    PSEUDO_VOIGT_BACK_TO_BACK = 'pseudo-voigt * back-to-back'
+    JORGENSEN = 'jorgensen'
+    JORGENSEN_VON_DREELE = 'jorgensen-von-dreele'
+    DOUBLE_JORGENSEN_VON_DREELE = 'double-jorgensen-von-dreele'
     GAUSSIAN_DAMPED_SINC = 'gaussian-damped-sinc'
 
     @classmethod
@@ -194,12 +199,12 @@ class PeakProfileTypeEnum(StrEnum):
             (
                 ScatteringTypeEnum.BRAGG,
                 BeamModeEnum.TIME_OF_FLIGHT,
-            ): cls.PSEUDO_VOIGT_IKEDA_CARPENTER,
+            ): cls.JORGENSEN,
             (ScatteringTypeEnum.TOTAL, BeamModeEnum.CONSTANT_WAVELENGTH): cls.GAUSSIAN_DAMPED_SINC,
             (ScatteringTypeEnum.TOTAL, BeamModeEnum.TIME_OF_FLIGHT): cls.GAUSSIAN_DAMPED_SINC,
         }[scattering_type, beam_mode]
 
-    def description(self) -> str:
+    def description(self) -> str:  # noqa: PLR0911
         """
         Return a human-readable description of this peak profile type.
 
@@ -210,13 +215,52 @@ class PeakProfileTypeEnum(StrEnum):
         """
         if self is PeakProfileTypeEnum.PSEUDO_VOIGT:
             return 'Pseudo-Voigt profile'
-        if self is PeakProfileTypeEnum.SPLIT_PSEUDO_VOIGT:
-            return 'Split pseudo-Voigt profile with empirical asymmetry correction.'
+        if self is PeakProfileTypeEnum.PSEUDO_VOIGT_EMPIRICAL_ASYMMETRY:
+            return 'Pseudo-Voigt profile with empirical asymmetry correction.'
         if self is PeakProfileTypeEnum.THOMPSON_COX_HASTINGS:
             return 'Thompson-Cox-Hastings profile with FCJ asymmetry correction.'
-        if self is PeakProfileTypeEnum.PSEUDO_VOIGT_IKEDA_CARPENTER:
-            return 'Pseudo-Voigt profile with Ikeda-Carpenter asymmetry correction.'
-        if self is PeakProfileTypeEnum.PSEUDO_VOIGT_BACK_TO_BACK:
-            return 'Pseudo-Voigt profile with Back-to-Back Exponential asymmetry correction.'
+        if self is PeakProfileTypeEnum.JORGENSEN:
+            return 'Jorgensen back-to-back exponentials convolved with Gaussian.'
+        if self is PeakProfileTypeEnum.JORGENSEN_VON_DREELE:
+            return 'Jorgensen-Von Dreele back-to-back exponentials convolved with pseudo-Voigt.'
+        if self is PeakProfileTypeEnum.DOUBLE_JORGENSEN_VON_DREELE:
+            return (
+                'Double back-to-back exponentials convolved with pseudo-Voigt (Z-Rietveld type0m).'
+            )
         if self is PeakProfileTypeEnum.GAUSSIAN_DAMPED_SINC:
             return 'Gaussian-damped sinc profile for pair distribution function (PDF) analysis.'
+        return None
+
+
+class ExtinctionModelEnum(StrEnum):
+    """Mosaicity distribution model for Becker-Coppens extinction."""
+
+    GAUSS = 'gauss'
+    LORENTZ = 'lorentz'
+
+    @classmethod
+    def default(cls) -> 'ExtinctionModelEnum':
+        """
+        Return the default extinction model (GAUSS).
+
+        Returns
+        -------
+        'ExtinctionModelEnum'
+            The default enum member.
+        """
+        return cls.GAUSS
+
+    def description(self) -> str:
+        """
+        Return a human-readable description of this extinction model.
+
+        Returns
+        -------
+        str
+            Description string for the current enum member.
+        """
+        if self is ExtinctionModelEnum.GAUSS:
+            return 'Gaussian mosaicity distribution for extinction correction.'
+        if self is ExtinctionModelEnum.LORENTZ:
+            return 'Lorentzian mosaicity distribution for extinction correction.'
+        return None

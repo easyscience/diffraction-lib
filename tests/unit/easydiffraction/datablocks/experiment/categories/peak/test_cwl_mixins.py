@@ -2,7 +2,9 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 from easydiffraction.datablocks.experiment.categories.peak.cwl import CwlPseudoVoigt
-from easydiffraction.datablocks.experiment.categories.peak.cwl import CwlSplitPseudoVoigt
+from easydiffraction.datablocks.experiment.categories.peak.cwl import (
+    CwlPseudoVoigtEmpiricalAsymmetry,
+)
 from easydiffraction.datablocks.experiment.categories.peak.cwl import CwlThompsonCoxHastings
 
 
@@ -15,7 +17,7 @@ def test_cwl_pseudo_voigt_params_exist_and_settable():
 
 
 def test_cwl_split_pseudo_voigt_adds_empirical_asymmetry():
-    peak = CwlSplitPseudoVoigt()
+    peak = CwlPseudoVoigtEmpiricalAsymmetry()
     # Has broadening and empirical asymmetry params
     assert peak.broad_gauss_w.name == 'broad_gauss_w'
     assert peak.asym_empir_1.name == 'asym_empir_1'

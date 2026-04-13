@@ -3,3 +3,4 @@
 
 from easydiffraction.datablocks.structure.categories.atom_sites.default import AtomSite
 from easydiffraction.datablocks.structure.categories.atom_sites.default import AtomSites
+from easydiffraction.datablocks.structure.categories.atom_sites.enums import AdpTypeEnum

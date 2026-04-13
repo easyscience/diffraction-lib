@@ -58,12 +58,27 @@
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 base.py
 │   │   │   └── 🏷️ class MinimizerBase
+│   │   ├── 📄 bumps.py
+│   │   │   ├── 🏷️ class _EasyDiffractionFitness
+│   │   │   └── 🏷️ class BumpsMinimizer
+│   │   ├── 📄 bumps_amoeba.py
+│   │   │   └── 🏷️ class BumpsAmoebaMinimizer
+│   │   ├── 📄 bumps_de.py
+│   │   │   └── 🏷️ class BumpsDEMinimizer
+│   │   ├── 📄 bumps_lm.py
+│   │   │   └── 🏷️ class BumpsLmMinimizer
 │   │   ├── 📄 dfols.py
 │   │   │   └── 🏷️ class DfolsMinimizer
+│   │   ├── 📄 enums.py
+│   │   │   └── 🏷️ class MinimizerTypeEnum
 │   │   ├── 📄 factory.py
 │   │   │   └── 🏷️ class MinimizerFactory
-│   │   └── 📄 lmfit.py
-│   │       └── 🏷️ class LmfitMinimizer
+│   │   ├── 📄 lmfit.py
+│   │   │   └── 🏷️ class LmfitMinimizer
+│   │   ├── 📄 lmfit_least_squares.py
+│   │   │   └── 🏷️ class LmfitLeastSquaresMinimizer
+│   │   └── 📄 lmfit_leastsq.py
+│   │       └── 🏷️ class LmfitLeastsqMinimizer
 │   ├── 📄 __init__.py
 │   ├── 📄 analysis.py
 │   │   ├── 🏷️ class AnalysisDisplay
@@ -119,6 +134,7 @@
 │   ├── 📄 __init__.py
 │   ├── 📄 crystallography.py
 │   └── 📄 space_groups.py
+│       └── 🏷️ class _RestrictedUnpickler
 ├── 📁 datablocks
 │   ├── 📁 experiment
 │   │   ├── 📁 categories
@@ -177,10 +193,10 @@
 │   │   │   │       └── 🏷️ class ExperimentTypeFactory
 │   │   │   ├── 📁 extinction
 │   │   │   │   ├── 📄 __init__.py
-│   │   │   │   ├── 📄 factory.py
-│   │   │   │   │   └── 🏷️ class ExtinctionFactory
-│   │   │   │   └── 📄 shelx.py
-│   │   │   │       └── 🏷️ class ShelxExtinction
+│   │   │   │   ├── 📄 becker_coppens.py
+│   │   │   │   │   └── 🏷️ class BeckerCoppensExtinction
+│   │   │   │   └── 📄 factory.py
+│   │   │   │       └── 🏷️ class ExtinctionFactory
 │   │   │   ├── 📁 instrument
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 base.py
@@ -213,7 +229,7 @@
 │   │   │   │   │   └── 🏷️ class PeakBase
 │   │   │   │   ├── 📄 cwl.py
 │   │   │   │   │   ├── 🏷️ class CwlPseudoVoigt
-│   │   │   │   │   ├── 🏷️ class CwlSplitPseudoVoigt
+│   │   │   │   │   ├── 🏷️ class CwlPseudoVoigtEmpiricalAsymmetry
 │   │   │   │   │   └── 🏷️ class CwlThompsonCoxHastings
 │   │   │   │   ├── 📄 cwl_mixins.py
 │   │   │   │   │   ├── 🏷️ class CwlBroadeningMixin
@@ -222,12 +238,14 @@
 │   │   │   │   ├── 📄 factory.py
 │   │   │   │   │   └── 🏷️ class PeakFactory
 │   │   │   │   ├── 📄 tof.py
-│   │   │   │   │   ├── 🏷️ class TofPseudoVoigt
-│   │   │   │   │   ├── 🏷️ class TofPseudoVoigtIkedaCarpenter
-│   │   │   │   │   └── 🏷️ class TofPseudoVoigtBackToBack
+│   │   │   │   │   ├── 🏷️ class TofJorgensen
+│   │   │   │   │   ├── 🏷️ class TofJorgensenVonDreele
+│   │   │   │   │   └── 🏷️ class TofDoubleJorgensenVonDreele
 │   │   │   │   ├── 📄 tof_mixins.py
-│   │   │   │   │   ├── 🏷️ class TofBroadeningMixin
-│   │   │   │   │   └── 🏷️ class IkedaCarpenterAsymmetryMixin
+│   │   │   │   │   ├── 🏷️ class TofGaussianBroadeningMixin
+│   │   │   │   │   ├── 🏷️ class TofLorentzianBroadeningMixin
+│   │   │   │   │   ├── 🏷️ class TofBackToBackExponentialMixin
+│   │   │   │   │   └── 🏷️ class TofDoubleExponentialMixin
 │   │   │   │   ├── 📄 total.py
 │   │   │   │   │   └── 🏷️ class TotalGaussianDampedSinc
 │   │   │   │   └── 📄 total_mixins.py
@@ -250,7 +268,8 @@
 │   │   │   │   ├── 🏷️ class RadiationProbeEnum
 │   │   │   │   ├── 🏷️ class BeamModeEnum
 │   │   │   │   ├── 🏷️ class CalculatorEnum
-│   │   │   │   └── 🏷️ class PeakProfileTypeEnum
+│   │   │   │   ├── 🏷️ class PeakProfileTypeEnum
+│   │   │   │   └── 🏷️ class ExtinctionModelEnum
 │   │   │   ├── 📄 factory.py
 │   │   │   │   └── 🏷️ class ExperimentFactory
 │   │   │   └── 📄 total_pd.py
@@ -260,11 +279,20 @@
 │   │       └── 🏷️ class Experiments
 │   ├── 📁 structure
 │   │   ├── 📁 categories
+│   │   │   ├── 📁 atom_site_aniso
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   │   ├── 🏷️ class AtomSiteAniso
+│   │   │   │   │   └── 🏷️ class AtomSiteAnisoCollection
+│   │   │   │   └── 📄 factory.py
+│   │   │   │       └── 🏷️ class AtomSiteAnisoFactory
 │   │   │   ├── 📁 atom_sites
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 default.py
 │   │   │   │   │   ├── 🏷️ class AtomSite
 │   │   │   │   │   └── 🏷️ class AtomSites
+│   │   │   │   ├── 📄 enums.py
+│   │   │   │   │   └── 🏷️ class AdpTypeEnum
 │   │   │   │   └── 📄 factory.py
 │   │   │   │       └── 🏷️ class AtomSitesFactory
 │   │   │   ├── 📁 cell

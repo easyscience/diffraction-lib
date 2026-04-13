@@ -62,7 +62,7 @@ class ConstraintsHandler(SingletonBase):
         Set the alias map (name → alias wrapper).
 
         Called when user registers parameter aliases like:
-        alias='biso_La', param=model.atom_sites['La'].b_iso
+        alias='biso_La', param=model.atom_sites['La'].adp_iso
         """
         self._alias_to_param = dict(aliases.items())
 

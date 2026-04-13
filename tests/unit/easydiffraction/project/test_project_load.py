@@ -46,7 +46,7 @@ class TestLoadStructures:
             fract_x=0.0,
             fract_y=0.0,
             fract_z=0.0,
-            b_iso=0.5,
+            adp_iso=0.5,
         )
         original.save_as(str(tmp_path / 'proj'))
 
@@ -58,7 +58,7 @@ class TestLoadStructures:
         assert abs(ls.cell.length_a.value - 3.88) < 1e-6
         assert len(ls.atom_sites) == 1
         assert ls.atom_sites['Co'].type_symbol.value == 'Co'
-        assert abs(ls.atom_sites['Co'].b_iso.value - 0.5) < 1e-6
+        assert abs(ls.atom_sites['Co'].adp_iso.value - 0.5) < 1e-6
 
 
 class TestLoadAnalysis:
@@ -70,7 +70,7 @@ class TestLoadAnalysis:
 
         loaded = Project.load(str(tmp_path / 'proj'))
 
-        assert loaded.analysis.current_minimizer == 'lmfit'
+        assert loaded.analysis.current_minimizer == 'bumps (lm)'
 
     def test_round_trips_fit_mode(self, tmp_path):
         original = Project(name='a2')
@@ -125,7 +125,7 @@ class TestLoadAnalysisCifFallback:
         assert (tmp_path / 'proj' / 'analysis' / 'analysis.cif').is_file()
 
         loaded = Project.load(str(tmp_path / 'proj'))
-        assert loaded.analysis.current_minimizer == 'lmfit'
+        assert loaded.analysis.current_minimizer == 'bumps (lm)'
 
     def test_loads_analysis_from_root_fallback(self, tmp_path):
         """Old layout fallback: analysis.cif at project root."""
@@ -139,4 +139,4 @@ class TestLoadAnalysisCifFallback:
         analysis_dir.rmdir()
 
         loaded = Project.load(str(proj_dir))
-        assert loaded.analysis.current_minimizer == 'lmfit'
+        assert loaded.analysis.current_minimizer == 'bumps (lm)'

@@ -35,7 +35,7 @@ def _make_fit_ready_project():
         fract_z=0,
         wyckoff_letter='a',
         occupancy=0.5,
-        b_iso=0.5,
+        adp_iso=0.5,
     )
     s.atom_sites.create(
         label='Ba',
@@ -45,7 +45,7 @@ def _make_fit_ready_project():
         fract_z=0,
         wyckoff_letter='a',
         occupancy=0.5,
-        b_iso=0.5,
+        adp_iso=0.5,
     )
     s.atom_sites.create(
         label='Co',
@@ -54,7 +54,7 @@ def _make_fit_ready_project():
         fract_y=0.5,
         fract_z=0.5,
         wyckoff_letter='b',
-        b_iso=0.5,
+        adp_iso=0.5,
     )
     s.atom_sites.create(
         label='O',
@@ -63,7 +63,7 @@ def _make_fit_ready_project():
         fract_y=0.5,
         fract_z=0.5,
         wyckoff_letter='c',
-        b_iso=0.5,
+        adp_iso=0.5,
     )
 
     # Experiment
@@ -100,7 +100,7 @@ class TestAliases:
         s = project.structures['lbco']
         project.analysis.aliases.create(
             label='biso_La',
-            param=s.atom_sites['La'].b_iso,
+            param=s.atom_sites['La'].adp_iso,
         )
         assert len(project.analysis.aliases) == 1
 
@@ -109,11 +109,11 @@ class TestAliases:
         s = project.structures['lbco']
         project.analysis.aliases.create(
             label='biso_La',
-            param=s.atom_sites['La'].b_iso,
+            param=s.atom_sites['La'].adp_iso,
         )
         project.analysis.aliases.create(
             label='biso_Ba',
-            param=s.atom_sites['Ba'].b_iso,
+            param=s.atom_sites['Ba'].adp_iso,
         )
         assert len(project.analysis.aliases) == 2
 
@@ -124,11 +124,11 @@ class TestConstraints:
         s = project.structures['lbco']
         project.analysis.aliases.create(
             label='biso_La',
-            param=s.atom_sites['La'].b_iso,
+            param=s.atom_sites['La'].adp_iso,
         )
         project.analysis.aliases.create(
             label='biso_Ba',
-            param=s.atom_sites['Ba'].b_iso,
+            param=s.atom_sites['Ba'].adp_iso,
         )
         project.analysis.constraints.create(
             expression='biso_Ba = biso_La',
@@ -162,16 +162,16 @@ class TestFitting:
     def test_fit_with_constraints(self):
         project = _make_fit_ready_project()
         s = project.structures['lbco']
-        s.atom_sites['La'].b_iso.free = True
-        s.atom_sites['Ba'].b_iso.free = True
+        s.atom_sites['La'].adp_iso.free = True
+        s.atom_sites['Ba'].adp_iso.free = True
 
         project.analysis.aliases.create(
             label='biso_La',
-            param=s.atom_sites['La'].b_iso,
+            param=s.atom_sites['La'].adp_iso,
         )
         project.analysis.aliases.create(
             label='biso_Ba',
-            param=s.atom_sites['Ba'].b_iso,
+            param=s.atom_sites['Ba'].adp_iso,
         )
         project.analysis.constraints.create(
             expression='biso_Ba = biso_La',
@@ -180,6 +180,6 @@ class TestFitting:
         project.analysis.fit(verbosity='silent')
         assert project.analysis.fit_results.success is True
         # Constrained params should be equal after fitting
-        la_biso = s.atom_sites['La'].b_iso.value
-        ba_biso = s.atom_sites['Ba'].b_iso.value
+        la_biso = s.atom_sites['La'].adp_iso.value
+        ba_biso = s.atom_sites['Ba'].adp_iso.value
         assert la_biso == pytest.approx(ba_biso, rel=1e-3)

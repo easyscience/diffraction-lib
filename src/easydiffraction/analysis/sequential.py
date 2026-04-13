@@ -811,6 +811,7 @@ def fit_sequential(
     chunk_size: int | None = None,
     file_pattern: str = '*',
     extract_diffrn: Callable | None = None,
+    *,
     reverse: bool = False,
 ) -> None:
     """

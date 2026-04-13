@@ -1,7 +1,14 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+import re
+
 import pytest
+
+
+def _strip_markup(text: str) -> str:
+    """Remove Rich color markup tags like [red]...[/red]."""
+    return re.sub(r'\[(\w+)\](.*?)\[/\1\]', r'\2', text)
 
 
 def test_module_import():
@@ -219,7 +226,7 @@ def test_plot_param_correlations_renders_ascii_table(monkeypatch):
     assert df.iloc[0, 0] == 'phase.cell.length_a'
     assert df.iloc[0, 1] == ''
     assert df.iloc[1, 0] == 'phase.cell.length_b'
-    assert df.iloc[1, 1].strip() == '0.167'
+    assert _strip_markup(df.iloc[1, 1]).strip() == '0.167'
 
 
 def test_plot_param_correlations_renders_plotly_heatmap(monkeypatch):
@@ -420,7 +427,7 @@ def test_plot_param_correlations_filters_by_default_threshold(monkeypatch):
     assert df.iloc[0, 0] == 'phase.scale'
     assert df.iloc[0, 1] == ''
     assert df.iloc[1, 0] == 'phase.cell.length_a'
-    assert df.iloc[1, 1].strip() == '0.82'
+    assert _strip_markup(df.iloc[1, 1]).strip() == '0.82'
 
 
 def test_plot_param_correlations_hides_subthreshold_table_values(monkeypatch):
@@ -489,11 +496,11 @@ def test_plot_param_correlations_hides_subthreshold_table_values(monkeypatch):
     assert df.iloc[0, 1] == ''
     assert df.iloc[1, 1] == ''
     assert df.iloc[2, 1] == ''
-    assert df.iloc[2, 2].strip() == '-0.91'
+    assert _strip_markup(df.iloc[2, 2]).strip() == '-0.91'
     assert df.iloc[3, 1] == ''
     assert df.iloc[3, 2] == ''
-    assert df.iloc[3, 3].strip() == '-0.89'
-    assert df.iloc[4, 1].strip() == '0.82'
+    assert _strip_markup(df.iloc[3, 3]).strip() == '-0.89'
+    assert _strip_markup(df.iloc[4, 1]).strip() == '0.82'
     assert df.iloc[4, 2] == ''
     assert df.iloc[4, 3] == ''
     assert df.iloc[4, 4] == ''

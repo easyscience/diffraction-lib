@@ -52,7 +52,7 @@ structure.atom_sites.create(
     fract_y=0.0,
     fract_z=0.25,
     wyckoff_letter='b',
-    b_iso=0.92,
+    adp_iso=0.92,
 )
 structure.atom_sites.create(
     label='Al',
@@ -61,7 +61,7 @@ structure.atom_sites.create(
     fract_y=0.2521,
     fract_z=0.2521,
     wyckoff_letter='a',
-    b_iso=0.73,
+    adp_iso=0.73,
 )
 structure.atom_sites.create(
     label='Na',
@@ -70,7 +70,7 @@ structure.atom_sites.create(
     fract_y=0.0851,
     fract_z=0.0851,
     wyckoff_letter='a',
-    b_iso=2.08,
+    adp_iso=2.08,
 )
 structure.atom_sites.create(
     label='F1',
@@ -79,7 +79,7 @@ structure.atom_sites.create(
     fract_y=0.3054,
     fract_z=0.1195,
     wyckoff_letter='c',
-    b_iso=0.90,
+    adp_iso=0.90,
 )
 structure.atom_sites.create(
     label='F2',
@@ -88,7 +88,7 @@ structure.atom_sites.create(
     fract_y=0.3633,
     fract_z=0.1867,
     wyckoff_letter='c',
-    b_iso=1.37,
+    adp_iso=1.37,
 )
 structure.atom_sites.create(
     label='F3',
@@ -97,7 +97,7 @@ structure.atom_sites.create(
     fract_y=0.4612,
     fract_z=0.4612,
     wyckoff_letter='a',
-    b_iso=0.88,
+    adp_iso=0.88,
 )
 
 # %% [markdown]
@@ -153,19 +153,19 @@ expt47.instrument.calib_d_to_tof_quad = -0.47488
 expt56.peak.broad_gauss_sigma_0 = 0.0
 expt56.peak.broad_gauss_sigma_1 = 0.0
 expt56.peak.broad_gauss_sigma_2 = 15.5
-expt56.peak.broad_mix_beta_0 = 0.007
-expt56.peak.broad_mix_beta_1 = 0.01
-expt56.peak.asym_alpha_0 = -0.0094
-expt56.peak.asym_alpha_1 = 0.1
+expt56.peak.exp_decay_beta_0 = 0.007
+expt56.peak.exp_decay_beta_1 = 0.01
+expt56.peak.exp_rise_alpha_0 = -0.0094
+expt56.peak.exp_rise_alpha_1 = 0.1
 
 # %%
 expt47.peak.broad_gauss_sigma_0 = 0.0
 expt47.peak.broad_gauss_sigma_1 = 29.8
 expt47.peak.broad_gauss_sigma_2 = 18.0
-expt47.peak.broad_mix_beta_0 = 0.006
-expt47.peak.broad_mix_beta_1 = 0.015
-expt47.peak.asym_alpha_0 = -0.0115
-expt47.peak.asym_alpha_1 = 0.1
+expt47.peak.exp_decay_beta_0 = 0.006
+expt47.peak.exp_decay_beta_1 = 0.015
+expt47.peak.exp_rise_alpha_0 = -0.0115
+expt47.peak.exp_rise_alpha_1 = 0.1
 
 # %% [markdown]
 # #### Set Background
@@ -316,29 +316,29 @@ project.analysis.fit_mode.mode = 'joint'
 # #### Set Free Parameters
 
 # %%
-structure.atom_sites['Ca'].b_iso.free = True
-structure.atom_sites['Al'].b_iso.free = True
-structure.atom_sites['Na'].b_iso.free = True
-structure.atom_sites['F1'].b_iso.free = True
-structure.atom_sites['F2'].b_iso.free = True
-structure.atom_sites['F3'].b_iso.free = True
+structure.atom_sites['Ca'].adp_iso.free = True
+structure.atom_sites['Al'].adp_iso.free = True
+structure.atom_sites['Na'].adp_iso.free = True
+structure.atom_sites['F1'].adp_iso.free = True
+structure.atom_sites['F2'].adp_iso.free = True
+structure.atom_sites['F3'].adp_iso.free = True
 
 # %%
 expt56.linked_phases['ncaf'].scale.free = True
 expt56.instrument.calib_d_to_tof_offset.free = True
 expt56.instrument.calib_d_to_tof_linear.free = True
 expt56.peak.broad_gauss_sigma_2.free = True
-expt56.peak.broad_mix_beta_0.free = True
-expt56.peak.broad_mix_beta_1.free = True
-expt56.peak.asym_alpha_1.free = True
+expt56.peak.exp_decay_beta_0.free = True
+expt56.peak.exp_decay_beta_1.free = True
+expt56.peak.exp_rise_alpha_1.free = True
 
 expt47.linked_phases['ncaf'].scale.free = True
 expt47.instrument.calib_d_to_tof_linear.free = True
 expt47.instrument.calib_d_to_tof_offset.free = True
 expt47.peak.broad_gauss_sigma_2.free = True
-expt47.peak.broad_mix_beta_0.free = True
-expt47.peak.broad_mix_beta_1.free = True
-expt47.peak.asym_alpha_1.free = True
+expt47.peak.exp_decay_beta_0.free = True
+expt47.peak.exp_decay_beta_1.free = True
+expt47.peak.exp_rise_alpha_1.free = True
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
@@ -355,6 +355,7 @@ project.plotter.plot_meas_vs_calc(expt_name='wish_4_7', show_residual=True)
 # %%
 project.analysis.fit()
 project.analysis.display.fit_results()
+project.plotter.plot_param_correlations()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated

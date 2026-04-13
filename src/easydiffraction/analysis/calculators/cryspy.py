@@ -13,13 +13,59 @@ from easydiffraction.analysis.calculators.factory import CalculatorFactory
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.datablocks.experiment.item.base import ExperimentBase
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+from easydiffraction.datablocks.experiment.item.enums import PeakProfileTypeEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.structure.item.base import Structure
 
 try:
     import cryspy
+
+    # Patch cryspy bug: calc_power_dwf_aniso uses indices [0:9] of
+    # reduced_symm_elems for the rotation matrix, but the rotation
+    # actually starts at index 4 (layout: [b1,b2,b3,bd, R(3x3)]).
+    # This causes wrong Debye-Waller factors for all anisotropic atoms.
+    # Bug confirmed in cryspy 0.7.8, reported upstream.
+    from cryspy.A_functions_base import debye_waller_factor as _dwf_mod
     from cryspy.H_functions_global.function_1_cryspy_objects import str_to_globaln
     from cryspy.procedure_rhochi.rhochi_by_dictionary import rhochi_calc_chi_sq_by_dictionary
+
+    def _patched_calc_power_dwf_aniso(
+        index_hkl: np.ndarray,
+        beta: np.ndarray,
+        symm_elems_r: np.ndarray,
+        *,
+        flag_beta: bool = False,
+    ) -> tuple:
+        h, k, l = index_hkl[0], index_hkl[1], index_hkl[2]  # noqa: E741
+        r = symm_elems_r
+        h_s = h * r[4] + k * r[7] + l * r[10]
+        k_s = h * r[5] + k * r[8] + l * r[11]
+        l_s = h * r[6] + k * r[9] + l * r[12]
+        power = (
+            beta[0] * np.square(h_s)
+            + beta[1] * np.square(k_s)
+            + beta[2] * np.square(l_s)
+            + 2.0 * beta[3] * h_s * k_s
+            + 2.0 * beta[4] * h_s * l_s
+            + 2.0 * beta[5] * k_s * l_s
+        )
+        dder: dict = {}
+        if flag_beta:
+            ones_b = np.ones_like(beta[0])
+            dder['beta'] = np.stack(
+                [
+                    ones_b * np.square(h_s),
+                    ones_b * np.square(k_s),
+                    ones_b * np.square(l_s),
+                    ones_b * 2.0 * h_s * k_s,
+                    ones_b * 2.0 * h_s * l_s,
+                    ones_b * 2.0 * k_s * l_s,
+                ],
+                axis=0,
+            )
+        return power, dder
+
+    _dwf_mod.calc_power_dwf_aniso = _patched_calc_power_dwf_aniso
 
     # TODO: Add the following print to debug mode
     # print("✅ 'cryspy' calculation engine is successfully imported.")
@@ -53,11 +99,39 @@ class CryspyCalculator(CalculatorBase):
     def __init__(self) -> None:
         super().__init__()
         self._cryspy_dicts: dict[str, dict[str, Any]] = {}
+        self._cached_peak_types: dict[str, str] = {}
+        self._cached_adp_types: dict[str, tuple[str, ...]] = {}
+
+    def _invalidate_stale_cache(
+        self,
+        combined_name: str,
+        experiment: ExperimentBase,
+        structure: Structure | None = None,
+    ) -> None:
+        """
+        Drop cached dict when experiment or structure config changed.
+
+        Checks both the peak profile type and the per-atom ADP types.
+        When either changes the cached dictionary is stale and must be
+        rebuilt from a fresh cryspy object.
+        """
+        if 'peak' in type(experiment)._public_attrs():
+            current_type = experiment.peak.type_info.tag
+            if self._cached_peak_types.get(combined_name) != current_type:
+                self._cryspy_dicts.pop(combined_name, None)
+            self._cached_peak_types[combined_name] = current_type
+
+        if structure is not None:
+            current_adp = tuple(atom.adp_type.value for atom in structure.atom_sites)
+            if self._cached_adp_types.get(combined_name) != current_adp:
+                self._cryspy_dicts.pop(combined_name, None)
+            self._cached_adp_types[combined_name] = current_adp
 
     def calculate_structure_factors(
         self,
         structure: Structure,
         experiment: ExperimentBase,
+        *,
         called_by_minimizer: bool = False,
     ) -> None:
         """
@@ -73,6 +147,7 @@ class CryspyCalculator(CalculatorBase):
             Whether the calculation is called by a minimizer.
         """
         combined_name = f'{structure.name}_{experiment.name}'
+        self._invalidate_stale_cache(combined_name, experiment, structure)
 
         if called_by_minimizer:
             if self._cryspy_dicts and combined_name in self._cryspy_dicts:
@@ -117,6 +192,7 @@ class CryspyCalculator(CalculatorBase):
         self,
         structure: Structure,
         experiment: ExperimentBase,
+        *,
         called_by_minimizer: bool = False,
     ) -> np.ndarray | list[float]:
         """
@@ -143,6 +219,7 @@ class CryspyCalculator(CalculatorBase):
             list of floats.
         """
         combined_name = f'{structure.name}_{experiment.name}'
+        self._invalidate_stale_cache(combined_name, experiment, structure)
 
         if called_by_minimizer:
             if self._cryspy_dicts and combined_name in self._cryspy_dicts:
@@ -258,10 +335,100 @@ class CryspyCalculator(CalculatorBase):
         for idx, atom_site in enumerate(structure.atom_sites):
             cryspy_occ[idx] = atom_site.occupancy.value
 
-        # Atomic ADPs - Biso only for now
+        # Atomic ADPs - isotropic
+        # For anisotropic atoms the full ADP lives in the β tensor;
+        # setting b_iso to zero avoids double-counting in cryspy's DWF
+        # which sums both the isotropic and anisotropic contributions.
+        from easydiffraction.datablocks.structure.categories.atom_sites.enums import (  # noqa: PLC0415
+            AdpTypeEnum,
+        )
+
+        aniso_types = {AdpTypeEnum.BANI.value, AdpTypeEnum.UANI.value}
         cryspy_biso = cryspy_model_dict['atom_b_iso']
         for idx, atom_site in enumerate(structure.atom_sites):
-            cryspy_biso[idx] = atom_site.b_iso.value
+            if atom_site.adp_type.value in aniso_types:
+                cryspy_biso[idx] = 0.0
+            else:
+                cryspy_biso[idx] = atom_site.adp_iso_as_b
+
+        # Atomic ADPs - anisotropic (update β tensor when present)
+        if 'atom_beta' in cryspy_model_dict:
+            CryspyCalculator._update_aniso_beta(
+                cryspy_model_dict,
+                structure,
+            )
+
+    @staticmethod
+    def _update_aniso_beta(
+        cryspy_model_dict: dict[str, Any],
+        structure: Structure,
+    ) -> None:
+        """
+        Update cryspy ``atom_beta`` from anisotropic ADP values.
+
+        Converts B or U tensor components to cryspy's internal β
+        representation using β_ij = 2π²·U_ij·a*_i·a*_j.
+
+        Parameters
+        ----------
+        cryspy_model_dict : dict[str, Any]
+            The ``crystal_<name>`` sub-dict.
+        structure : Structure
+            The source structure.
+        """
+        from cryspy.A_functions_base.function_1_atomic_vibrations import (  # noqa: PLC0415
+            calc_beta_by_u,
+        )
+        from cryspy.A_functions_base.unit_cell import (  # noqa: PLC0415
+            calc_reciprocal_by_unit_cell_parameters,
+        )
+
+        from easydiffraction.datablocks.structure.categories.atom_sites.enums import (  # noqa: PLC0415
+            AdpTypeEnum,
+        )
+
+        aniso_index = cryspy_model_dict.get('atom_site_aniso_index')
+        if aniso_index is None:
+            return
+
+        cryspy_beta = cryspy_model_dict['atom_beta']
+        cell_params = cryspy_model_dict['unit_cell_parameters']
+
+        # Compute reciprocal lengths from cell parameters (with angles
+        # already in radians as stored by cryspy).
+        recip_params, _ = calc_reciprocal_by_unit_cell_parameters(cell_params)
+
+        class _CellLike:
+            reciprocal_length_a = recip_params[0]
+            reciprocal_length_b = recip_params[1]
+            reciprocal_length_c = recip_params[2]
+
+        cell_like = _CellLike()
+        factor = 8.0 * np.pi**2
+
+        for col, atom_idx in enumerate(aniso_index):
+            atom = list(structure.atom_sites)[atom_idx]
+            adp_enum = AdpTypeEnum(atom.adp_type.value)
+            if adp_enum not in {AdpTypeEnum.BANI, AdpTypeEnum.UANI}:
+                continue
+
+            aniso = structure.atom_site_aniso[atom.label.value]
+            u_vals = [
+                aniso.adp_11.value,
+                aniso.adp_22.value,
+                aniso.adp_33.value,
+                aniso.adp_12.value,
+                aniso.adp_13.value,
+                aniso.adp_23.value,
+            ]
+
+            # Convert to U if stored as B
+            if adp_enum == AdpTypeEnum.BANI:
+                u_vals = [v / factor for v in u_vals]
+
+            betas = calc_beta_by_u(u_vals, cell_like)
+            for k in range(6):
+                cryspy_beta[k][col] = betas[k]
 
     @staticmethod
     def _update_experiment_in_cryspy_dict(
@@ -316,19 +483,13 @@ class CryspyCalculator(CalculatorBase):
                     experiment.instrument.setup_twotheta_bank.value
                 )
 
-                # Peak
+                # Peak - sigma (common to all TOF profiles)
                 cryspy_sigma = cryspy_expt_dict['profile_sigmas']
                 cryspy_sigma[0] = experiment.peak.broad_gauss_sigma_0.value
                 cryspy_sigma[1] = experiment.peak.broad_gauss_sigma_1.value
                 cryspy_sigma[2] = experiment.peak.broad_gauss_sigma_2.value
 
-                cryspy_beta = cryspy_expt_dict['profile_betas']
-                cryspy_beta[0] = experiment.peak.broad_mix_beta_0.value
-                cryspy_beta[1] = experiment.peak.broad_mix_beta_1.value
-
-                cryspy_alpha = cryspy_expt_dict['profile_alphas']
-                cryspy_alpha[0] = experiment.peak.asym_alpha_0.value
-                cryspy_alpha[1] = experiment.peak.asym_alpha_1.value
+                _update_tof_peak_in_cryspy_dict(cryspy_expt_dict, experiment.peak)
 
         if experiment.type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL:
             cryspy_expt_name = f'diffrn_{experiment.name}'
@@ -379,12 +540,16 @@ class CryspyCalculator(CalculatorBase):
 
         return cryspy_obj
 
-    def _convert_structure_to_cryspy_cif(  # noqa: PLR6301
-        self,
-        structure: Structure,
-    ) -> str:
+    def _convert_structure_to_cryspy_cif(self, structure: Structure) -> str:
         """
         Convert a structure to a Cryspy CIF string.
+
+        CrysPy uses attribute names that match the CIF convention:
+        ``u_11`` for ``U_11``, ``b_11`` for ``B_11``, etc.  Its
+        ``apply_space_group_constraint`` always accesses ``u_11``
+        regardless of ``adp_type``.  To avoid mismatches the CIF sent to
+        cryspy always uses **U** notation: ``Biso`` ⟶ ``Uiso``, ``Bani``
+        ⟶ ``Uani``, values divided by 8π².
 
         Parameters
         ----------
@@ -396,7 +561,117 @@ class CryspyCalculator(CalculatorBase):
         str
             The Cryspy CIF string representation of the structure.
         """
-        return structure.as_cif
+        saved = self._temporarily_convert_to_u_notation(structure)
+
+        try:
+            cif = structure.as_cif
+        finally:
+            self._restore_from_u_notation(structure, saved)
+
+        return cif
+
+    @staticmethod
+    def _temporarily_convert_to_u_notation(
+        structure: Structure,
+    ) -> list[tuple]:
+        """
+        Temporarily convert all B-convention atoms to U notation.
+
+        Returns saved state for later restoration.
+        """
+        from easydiffraction.datablocks.structure.categories.atom_sites.enums import (  # noqa: PLC0415
+            AdpTypeEnum,
+        )
+
+        factor = 8.0 * np.pi**2
+        suffixes = ('11', '22', '33', '12', '13', '23')
+        saved: list[tuple] = []
+
+        for atom in structure.atom_sites:
+            adp_enum = AdpTypeEnum(atom.adp_type.value)
+            is_b = adp_enum in {AdpTypeEnum.BISO, AdpTypeEnum.BANI}
+            if not is_b:
+                continue
+
+            orig_adp_type = atom._adp_type._value
+            orig_iso_val = atom._adp_iso._value
+            orig_iso_names = list(atom._adp_iso._cif_handler._names)
+
+            atom._adp_iso._value = orig_iso_val / factor
+            atom._adp_iso._cif_handler._names = [
+                '_atom_site.U_iso_or_equiv',
+                '_atom_site.B_iso_or_equiv',
+            ]
+
+            if adp_enum == AdpTypeEnum.BISO:
+                atom._adp_type._value = AdpTypeEnum.UISO.value
+                saved.append((atom, None, None, None, orig_adp_type, orig_iso_names, orig_iso_val))
+            else:
+                atom._adp_type._value = AdpTypeEnum.UANI.value
+                lbl = atom.label.value
+                if lbl in structure.atom_site_aniso:
+                    aniso = structure.atom_site_aniso[lbl]
+                else:
+                    aniso = None
+                if aniso is not None:
+                    orig_vals = []
+                    orig_names = []
+                    for s in suffixes:
+                        param = getattr(aniso, f'_adp_{s}')
+                        orig_vals.append(param._value)
+                        orig_names.append(list(param._cif_handler._names))
+                        param._value /= factor
+                        param._cif_handler._names = [
+                            f'_atom_site_aniso.U_{s}',
+                            f'_atom_site_aniso.B_{s}',
+                        ]
+                    saved.append((
+                        atom,
+                        aniso,
+                        orig_vals,
+                        orig_names,
+                        orig_adp_type,
+                        orig_iso_names,
+                        orig_iso_val,
+                    ))
+                else:
+                    saved.append((
+                        atom,
+                        None,
+                        None,
+                        None,
+                        orig_adp_type,
+                        orig_iso_names,
+                        orig_iso_val,
+                    ))
+
+        return saved
+
+    @staticmethod
+    def _restore_from_u_notation(
+        structure: Structure,  # noqa: ARG004
+        saved: list[tuple],
+    ) -> None:
+        """Restore original B-convention state after CIF generation."""
+        suffixes = ('11', '22', '33', '12', '13', '23')
+
+        for (
+            atom,
+            aniso,
+            orig_vals,
+            orig_names,
+            orig_adp_type,
+            orig_iso_names,
+            orig_iso_val,
+        ) in saved:
+            atom._adp_type._value = orig_adp_type
+            atom._adp_iso._value = orig_iso_val
+            atom._adp_iso._cif_handler._names = orig_iso_names
+            if aniso is not None and orig_vals is not None:
+                for s, val, names in zip(suffixes, orig_vals, orig_names, strict=False):
+                    param = getattr(aniso, f'_adp_{s}')
+                    param._value = val
+                    param._cif_handler._names = names
 
     def _convert_experiment_to_cryspy_cif(  # noqa: PLR6301
         self,
@@ -418,10 +693,11 @@ class CryspyCalculator(CalculatorBase):
         str
             The Cryspy CIF string representation of the experiment.
         """
-        expt_type = getattr(experiment, 'type', None)
-        instrument = getattr(experiment, 'instrument', None)
-        peak = getattr(experiment, 'peak', None)
-        extinction = getattr(experiment, 'extinction', None)
+        attrs = type(experiment)._public_attrs()
+        expt_type = experiment.type if 'type' in attrs else None
+        instrument = experiment.instrument if 'instrument' in attrs else None
+        peak = experiment.peak if 'peak' in attrs else None
+        extinction = experiment.extinction if 'extinction' in attrs else None
 
         cif_lines = [f'data_{experiment.name}']
 
@@ -497,6 +773,40 @@ def _cif_instrument_section(
             cif_lines.append(f'{engine_key_name} {attr_obj.value}')
 
 
+def _update_tof_peak_in_cryspy_dict(
+    cryspy_expt_dict: dict[str, Any],
+    peak: object,
+) -> None:
+    """Update TOF peak profile-specific arrays in the cached dict."""
+    peak_tag = peak.type_info.tag
+    if peak_tag == PeakProfileTypeEnum.DOUBLE_JORGENSEN_VON_DREELE:
+        cryspy_expt_dict['profile_alphas'][0] = peak.dexp_rise_alpha_1.value
+        cryspy_expt_dict['profile_alphas'][1] = peak.dexp_rise_alpha_2.value
+
+        cryspy_expt_dict['profile_betas'][0] = peak.dexp_decay_beta_00.value
+        cryspy_expt_dict['profile_betas'][1] = peak.dexp_decay_beta_01.value
+        cryspy_expt_dict['profile_betas'][2] = peak.dexp_decay_beta_10.value
+
+        cryspy_expt_dict['profile_rs'][0] = peak.dexp_switch_r_01.value
+        cryspy_expt_dict['profile_rs'][1] = peak.dexp_switch_r_02.value
+        cryspy_expt_dict['profile_rs'][2] = peak.dexp_switch_r_03.value
+
+        cryspy_expt_dict['profile_gammas'][0] = peak.broad_lorentz_gamma_0.value
+        cryspy_expt_dict['profile_gammas'][1] = peak.broad_lorentz_gamma_1.value
+        cryspy_expt_dict['profile_gammas'][2] = peak.broad_lorentz_gamma_2.value
+    else:
+        cryspy_expt_dict['profile_betas'][0] = peak.exp_decay_beta_0.value
+        cryspy_expt_dict['profile_betas'][1] = peak.exp_decay_beta_1.value
+
+        cryspy_expt_dict['profile_alphas'][0] = peak.exp_rise_alpha_0.value
+        cryspy_expt_dict['profile_alphas'][1] = peak.exp_rise_alpha_1.value
+
+        if peak_tag == PeakProfileTypeEnum.JORGENSEN_VON_DREELE:
+            cryspy_expt_dict['profile_gammas'][0] = peak.broad_lorentz_gamma_0.value
+            cryspy_expt_dict['profile_gammas'][1] = peak.broad_lorentz_gamma_1.value
+            cryspy_expt_dict['profile_gammas'][2] = peak.broad_lorentz_gamma_2.value
+
+
 def _cif_peak_section(
     cif_lines: list[str],
     expt_type: object | None,
@@ -524,12 +834,34 @@ def _cif_peak_section(
             'broad_gauss_sigma_0': '_tof_profile_sigma0',
             'broad_gauss_sigma_1': '_tof_profile_sigma1',
             'broad_gauss_sigma_2': '_tof_profile_sigma2',
-            'broad_mix_beta_0': '_tof_profile_beta0',
-            'broad_mix_beta_1': '_tof_profile_beta1',
-            'asym_alpha_0': '_tof_profile_alpha0',
-            'asym_alpha_1': '_tof_profile_alpha1',
+            'broad_lorentz_gamma_0': '_tof_profile_gamma0',
+            'broad_lorentz_gamma_1': '_tof_profile_gamma1',
+            'broad_lorentz_gamma_2': '_tof_profile_gamma2',
         }
-        cif_lines.append('_tof_profile_peak_shape Gauss')
+
+        if peak.type_info.tag == PeakProfileTypeEnum.DOUBLE_JORGENSEN_VON_DREELE:
+            cif_lines.append('_tof_profile_peak_shape type0m')
+            peak_mapping.update({
+                'dexp_rise_alpha_1': '_tof_profile_alpha1',
+                'dexp_rise_alpha_2': '_tof_profile_alpha2',
+                'dexp_decay_beta_00': '_tof_profile_beta00',
+                'dexp_decay_beta_01': '_tof_profile_beta01',
+                'dexp_decay_beta_10': '_tof_profile_beta10',
+                'dexp_switch_r_01': '_tof_profile_r01',
+                'dexp_switch_r_02': '_tof_profile_r02',
+                'dexp_switch_r_03': '_tof_profile_r03',
+            })
+        else:
+            peak_mapping.update({
+                'exp_decay_beta_0': '_tof_profile_beta0',
+                'exp_decay_beta_1': '_tof_profile_beta1',
+                'exp_rise_alpha_0': '_tof_profile_alpha0',
+                'exp_rise_alpha_1': '_tof_profile_alpha1',
+            })
+            if peak.type_info.tag == PeakProfileTypeEnum.JORGENSEN_VON_DREELE:
+                cif_lines.append('_tof_profile_peak_shape pseudo-Voigt')
+            else:
+                cif_lines.append('_tof_profile_peak_shape Gauss')
 
     cif_lines.append('')
     for local_attr_name, engine_key_name in peak_mapping.items():
@@ -550,7 +882,7 @@ def _cif_extinction_section(
         'mosaicity': '_extinction_mosaicity',
         'radius': '_extinction_radius',
     }
-    cif_lines.extend(('', '_extinction_model gauss'))
+    cif_lines.extend(('', f'_extinction_model {extinction.model.value}'))
     for local_attr_name, engine_key_name in extinction_mapping.items():
         attr_obj = getattr(extinction, local_attr_name)
         if attr_obj is not None:

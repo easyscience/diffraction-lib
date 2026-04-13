@@ -77,14 +77,6 @@ project.plotter.show_supported_engines()
 project.plotter.show_config()
 
 # %% [markdown]
-# Set plotting engine.
-
-# %%
-# Keep the auto-selected engine. Alternatively, you can uncomment the
-# line below to explicitly set the engine to the required one.
-# project.plotter.engine = 'plotly'
-
-# %% [markdown]
 # ## Step 2: Define Structure
 #
 # This section shows how to add structures and modify their
@@ -137,7 +129,7 @@ project.structures['lbco'].atom_sites.create(
     fract_y=0,
     fract_z=0,
     wyckoff_letter='a',
-    b_iso=0.5,
+    adp_iso=0.5,
     occupancy=0.5,
 )
 project.structures['lbco'].atom_sites.create(
@@ -147,7 +139,7 @@ project.structures['lbco'].atom_sites.create(
     fract_y=0,
     fract_z=0,
     wyckoff_letter='a',
-    b_iso=0.5,
+    adp_iso=0.5,
     occupancy=0.5,
 )
 project.structures['lbco'].atom_sites.create(
@@ -157,7 +149,7 @@ project.structures['lbco'].atom_sites.create(
     fract_y=0.5,
     fract_z=0.5,
     wyckoff_letter='b',
-    b_iso=0.5,
+    adp_iso=0.5,
 )
 project.structures['lbco'].atom_sites.create(
     label='O',
@@ -166,7 +158,7 @@ project.structures['lbco'].atom_sites.create(
     fract_y=0.5,
     fract_z=0.5,
     wyckoff_letter='c',
-    b_iso=0.5,
+    adp_iso=0.5,
 )
 
 # %% [markdown]
@@ -524,10 +516,10 @@ project.save_as(dir_path='lbco_hrpt', temporary=True)
 # Set more parameters to be refined.
 
 # %%
-project.structures['lbco'].atom_sites['La'].b_iso.free = True
-project.structures['lbco'].atom_sites['Ba'].b_iso.free = True
-project.structures['lbco'].atom_sites['Co'].b_iso.free = True
-project.structures['lbco'].atom_sites['O'].b_iso.free = True
+project.structures['lbco'].atom_sites['La'].adp_iso.free = True
+project.structures['lbco'].atom_sites['Ba'].adp_iso.free = True
+project.structures['lbco'].atom_sites['Co'].adp_iso.free = True
+project.structures['lbco'].atom_sites['O'].adp_iso.free = True
 
 # %% [markdown]
 # Show free parameters after selection.
@@ -567,11 +559,11 @@ project.save_as(dir_path='lbco_hrpt', temporary=True)
 # %%
 project.analysis.aliases.create(
     label='biso_La',
-    param=project.structures['lbco'].atom_sites['La'].b_iso,
+    param=project.structures['lbco'].atom_sites['La'].adp_iso,
 )
 project.analysis.aliases.create(
     label='biso_Ba',
-    param=project.structures['lbco'].atom_sites['Ba'].b_iso,
+    param=project.structures['lbco'].atom_sites['Ba'].adp_iso,
 )
 
 # %% [markdown]
@@ -664,6 +656,7 @@ project.analysis.display.free_params()
 # %%
 project.analysis.fit()
 project.analysis.display.fit_results()
+project.plotter.plot_param_correlations()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
@@ -690,5 +683,3 @@ project.save_as(dir_path='lbco_hrpt', temporary=True)
 
 # %%
 project.summary.show_report()
-
-# %%

@@ -34,12 +34,13 @@ project.structures.show_names()
 structure = project.structures['taurine']
 
 # %%
-# structure.show_as_cif()
+structure.show_as_cif()
 
 # %% [markdown]
 # ## Step 3: Define Experiment
 
 # %%
+# Download data file from repository
 data_path = ed.download_data(id=22, destination='data')
 
 # %%
@@ -63,7 +64,7 @@ experiment.extinction.mosaicity = 1000.0
 experiment.extinction.radius = 100.0
 
 # %% [markdown]
-# ## Step 4: Perform Analysis
+# ## Step 4: Perform Analysis I (ADP iso)
 
 # %%
 project.plotter.plot_meas_vs_calc(expt_name='senju')
@@ -73,7 +74,7 @@ experiment.linked_crystal.scale.free = True
 experiment.extinction.radius.free = True
 
 # %%
-# experiment.show_as_cif()
+project.analysis.current_minimizer = 'lmfit'
 
 # %%
 # Start refinement. All parameters, which have standard uncertainties
@@ -85,7 +86,7 @@ project.analysis.fit()
 project.analysis.display.fit_results()
 
 # %%
-# experiment.show_as_cif()
+structure.show_as_cif()
 
 # %%
 project.experiments.show_names()
@@ -94,7 +95,35 @@ project.experiments.show_names()
 project.plotter.plot_meas_vs_calc(expt_name='senju')
 
 # %% [markdown]
-# ## Step 5: Show Project Summary
+# ## Step 5: Perform Analysis (ADP aniso)
 
 # %%
-project.summary.show_report()
+for atom_site in structure.atom_sites:
+    atom_site.adp_type = 'Uani'
+
+# %%
+adp_components = ('adp_11', 'adp_22', 'adp_33', 'adp_12', 'adp_13', 'adp_23')
+for atom_site in structure.atom_site_aniso:
+    for component in adp_components:
+        getattr(atom_site, component).free = True
+
+# %%
+structure.show_as_cif()
+
+# %%
+project.analysis.display.free_params()
+
+# %%
+project.analysis.fit()
+
+# %%
+project.analysis.display.fit_results()
+
+# %%
+project.plotter.plot_param_correlations()
+
+# %%
+project.plotter.plot_meas_vs_calc(expt_name='senju')
+
+# %%
+structure.show_as_cif()

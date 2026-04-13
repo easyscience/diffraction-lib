@@ -123,7 +123,7 @@ class TestPeakProfileTypeEnum:
             scattering_type=ScatteringTypeEnum.BRAGG,
             beam_mode=BeamModeEnum.TIME_OF_FLIGHT,
         )
-        assert result is PeakProfileTypeEnum.PSEUDO_VOIGT_IKEDA_CARPENTER
+        assert result is PeakProfileTypeEnum.JORGENSEN
 
     def test_default_total_cwl(self):
         result = PeakProfileTypeEnum.default(
@@ -152,25 +152,30 @@ class TestPeakProfileTypeEnum:
         assert isinstance(desc, str)
         assert 'Pseudo-Voigt' in desc
 
-    def test_description_split_pseudo_voigt(self):
-        desc = PeakProfileTypeEnum.SPLIT_PSEUDO_VOIGT.description()
+    def test_description_pseudo_voigt_empirical_asymmetry(self):
+        desc = PeakProfileTypeEnum.PSEUDO_VOIGT_EMPIRICAL_ASYMMETRY.description()
         assert isinstance(desc, str)
-        assert 'Split' in desc
+        assert 'asymmetry' in desc.lower()
 
     def test_description_thompson_cox_hastings(self):
         desc = PeakProfileTypeEnum.THOMPSON_COX_HASTINGS.description()
         assert isinstance(desc, str)
         assert 'Thompson' in desc
 
-    def test_description_pseudo_voigt_ikeda_carpenter(self):
-        desc = PeakProfileTypeEnum.PSEUDO_VOIGT_IKEDA_CARPENTER.description()
+    def test_description_jorgensen(self):
+        desc = PeakProfileTypeEnum.JORGENSEN.description()
         assert isinstance(desc, str)
-        assert 'Ikeda' in desc
+        assert 'Jorgensen' in desc
 
-    def test_description_pseudo_voigt_back_to_back(self):
-        desc = PeakProfileTypeEnum.PSEUDO_VOIGT_BACK_TO_BACK.description()
+    def test_description_jorgensen_von_dreele(self):
+        desc = PeakProfileTypeEnum.JORGENSEN_VON_DREELE.description()
         assert isinstance(desc, str)
-        assert 'Back-to-Back' in desc
+        assert 'Jorgensen' in desc
+
+    def test_description_double_jorgensen_von_dreele(self):
+        desc = PeakProfileTypeEnum.DOUBLE_JORGENSEN_VON_DREELE.description()
+        assert isinstance(desc, str)
+        assert 'type0m' in desc
 
     def test_description_gaussian_damped_sinc(self):
         desc = PeakProfileTypeEnum.GAUSSIAN_DAMPED_SINC.description()

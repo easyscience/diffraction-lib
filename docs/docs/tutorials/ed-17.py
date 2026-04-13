@@ -66,7 +66,7 @@ structure.atom_sites.create(
     fract_y=0,
     fract_z=0,
     wyckoff_letter='a',
-    b_iso=0.3,
+    adp_iso=0.3,
 )
 structure.atom_sites.create(
     label='Co2',
@@ -75,7 +75,7 @@ structure.atom_sites.create(
     fract_y=0.25,
     fract_z=0.985,
     wyckoff_letter='c',
-    b_iso=0.3,
+    adp_iso=0.3,
 )
 structure.atom_sites.create(
     label='Si',
@@ -84,7 +84,7 @@ structure.atom_sites.create(
     fract_y=0.25,
     fract_z=0.429,
     wyckoff_letter='c',
-    b_iso=0.34,
+    adp_iso=0.34,
 )
 structure.atom_sites.create(
     label='O1',
@@ -93,7 +93,7 @@ structure.atom_sites.create(
     fract_y=0.25,
     fract_z=0.771,
     wyckoff_letter='c',
-    b_iso=0.63,
+    adp_iso=0.63,
 )
 structure.atom_sites.create(
     label='O2',
@@ -102,7 +102,7 @@ structure.atom_sites.create(
     fract_y=0.25,
     fract_z=0.217,
     wyckoff_letter='c',
-    b_iso=0.59,
+    adp_iso=0.59,
 )
 structure.atom_sites.create(
     label='O3',
@@ -111,7 +111,7 @@ structure.atom_sites.create(
     fract_y=0.032,
     fract_z=0.28,
     wyckoff_letter='d',
-    b_iso=0.83,
+    adp_iso=0.83,
 )
 
 # %% [markdown]
@@ -218,12 +218,12 @@ structure.atom_sites['O3'].fract_x.free = True
 structure.atom_sites['O3'].fract_y.free = True
 structure.atom_sites['O3'].fract_z.free = True
 
-structure.atom_sites['Co1'].b_iso.free = True
-structure.atom_sites['Co2'].b_iso.free = True
-structure.atom_sites['Si'].b_iso.free = True
-structure.atom_sites['O1'].b_iso.free = True
-structure.atom_sites['O2'].b_iso.free = True
-structure.atom_sites['O3'].b_iso.free = True
+structure.atom_sites['Co1'].adp_iso.free = True
+structure.atom_sites['Co2'].adp_iso.free = True
+structure.atom_sites['Si'].adp_iso.free = True
+structure.atom_sites['O1'].adp_iso.free = True
+structure.atom_sites['O2'].adp_iso.free = True
+structure.atom_sites['O3'].adp_iso.free = True
 
 # %%
 expt.linked_phases['cosio'].scale.free = True
@@ -246,11 +246,11 @@ for point in expt.background:
 # %%
 project.analysis.aliases.create(
     label='biso_Co1',
-    param=structure.atom_sites['Co1'].b_iso,
+    param=structure.atom_sites['Co1'].adp_iso,
 )
 project.analysis.aliases.create(
     label='biso_Co2',
-    param=structure.atom_sites['Co2'].b_iso,
+    param=structure.atom_sites['Co2'].adp_iso,
 )
 
 # %% [markdown]
@@ -258,6 +258,12 @@ project.analysis.aliases.create(
 
 # %%
 project.analysis.constraints.create(expression='biso_Co2 = biso_Co1')
+
+# %% [markdown]
+# #### Set Minimizer
+
+# %%
+project.analysis.current_minimizer = 'bumps (lm)'
 
 # %% [markdown]
 # #### Run Single Fitting
@@ -269,6 +275,12 @@ project.analysis.constraints.create(expression='biso_Co2 = biso_Co1')
 
 # %%
 project.analysis.fit()
+
+# %% [markdown]
+# #### Show parameter correlations
+
+# %%
+project.plotter.plot_param_correlations()
 
 # %% [markdown]
 # #### Compare measured and calculated patterns for the first fit.
@@ -347,11 +359,11 @@ project.plotter.plot_param_series(structure.cell.length_c, versus=temperature)
 # Plot isotropic displacement parameters vs. temperature.
 
 # %%
-project.plotter.plot_param_series(structure.atom_sites['Co1'].b_iso, versus=temperature)
-project.plotter.plot_param_series(structure.atom_sites['Si'].b_iso, versus=temperature)
-project.plotter.plot_param_series(structure.atom_sites['O1'].b_iso, versus=temperature)
-project.plotter.plot_param_series(structure.atom_sites['O2'].b_iso, versus=temperature)
-project.plotter.plot_param_series(structure.atom_sites['O3'].b_iso, versus=temperature)
+project.plotter.plot_param_series(structure.atom_sites['Co1'].adp_iso, versus=temperature)
+project.plotter.plot_param_series(structure.atom_sites['Si'].adp_iso, versus=temperature)
+project.plotter.plot_param_series(structure.atom_sites['O1'].adp_iso, versus=temperature)
+project.plotter.plot_param_series(structure.atom_sites['O2'].adp_iso, versus=temperature)
+project.plotter.plot_param_series(structure.atom_sites['O3'].adp_iso, versus=temperature)
 
 # %% [markdown]
 # Plot selected fractional coordinates vs. temperature.

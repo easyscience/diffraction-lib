@@ -1,16 +1,73 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Tests for extract_project_from_zip, extract_data_paths_from_zip and extract_data_paths_from_dir."""
+"""Tests for load_numeric_block, extract_project_from_zip, extract_data_paths_from_zip and extract_data_paths_from_dir."""
 
 from __future__ import annotations
 
 import zipfile
 
+import numpy as np
 import pytest
 
 from easydiffraction.io.ascii import extract_data_paths_from_dir
 from easydiffraction.io.ascii import extract_data_paths_from_zip
 from easydiffraction.io.ascii import extract_project_from_zip
+from easydiffraction.io.ascii import load_numeric_block
+
+
+class TestLoadNumericBlock:
+    """Tests for load_numeric_block."""
+
+    def test_plain_numeric_file(self, tmp_path):
+        """Parses a file with only numeric rows."""
+        f = tmp_path / 'data.dat'
+        f.write_text('1 2 3\n4 5 6\n')
+        result = load_numeric_block(f)
+        assert result.shape == (2, 3)
+        np.testing.assert_array_equal(result[0], [1, 2, 3])
+
+    def test_skips_header_lines(self, tmp_path):
+        """Non-numeric header lines are skipped."""
+        f = tmp_path / 'data.dat'
+        f.write_text('# comment\nx y z\n1 2 3\n4 5 6\n')
+        result = load_numeric_block(f)
+        assert result.shape == (2, 3)
+
+    def test_skips_footer_lines(self, tmp_path):
+        """Non-numeric footer lines are skipped."""
+        f = tmp_path / 'data.dat'
+        f.write_text('1 2 3\n4 5 6\nEND\n')
+        result = load_numeric_block(f)
+        assert result.shape == (2, 3)
+
+    def test_skips_header_and_footer(self, tmp_path):
+        """Both header and footer non-numeric lines are skipped."""
+        f = tmp_path / 'data.dat'
+        f.write_text('IGOR\nWAVES tof yint yerr nc\nBEGIN\n1 2 3 4\n5 6 7 8\nEND\n')
+        result = load_numeric_block(f)
+        assert result.shape == (2, 4)
+        np.testing.assert_array_equal(result[0], [1, 2, 3, 4])
+
+    def test_skips_blank_lines(self, tmp_path):
+        """Blank lines are ignored."""
+        f = tmp_path / 'data.dat'
+        f.write_text('\n1 2 3\n\n4 5 6\n\n')
+        result = load_numeric_block(f)
+        assert result.shape == (2, 3)
+
+    def test_raises_on_no_numeric_lines(self, tmp_path):
+        """Raises OSError when no numeric data is found."""
+        f = tmp_path / 'empty.dat'
+        f.write_text('header\nfooter\n')
+        with pytest.raises(OSError, match='no numeric lines found'):
+            load_numeric_block(f)
+
+    def test_raises_on_empty_file(self, tmp_path):
+        """Raises OSError for an empty file."""
+        f = tmp_path / 'empty.dat'
+        f.write_text('')
+        with pytest.raises(OSError, match='no numeric lines found'):
+            load_numeric_block(f)
 
 
 class TestExtractProjectFromZip:

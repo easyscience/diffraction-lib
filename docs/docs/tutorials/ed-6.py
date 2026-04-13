@@ -51,7 +51,7 @@ structure.atom_sites.create(
     fract_y=0,
     fract_z=0.5,
     wyckoff_letter='b',
-    b_iso=0.5,
+    adp_iso=0.5,
 )
 structure.atom_sites.create(
     label='Cu',
@@ -60,7 +60,7 @@ structure.atom_sites.create(
     fract_y=0,
     fract_z=0,
     wyckoff_letter='e',
-    b_iso=0.5,
+    adp_iso=0.5,
 )
 structure.atom_sites.create(
     label='O',
@@ -69,7 +69,7 @@ structure.atom_sites.create(
     fract_y=-0.21,
     fract_z=0.06,
     wyckoff_letter='h',
-    b_iso=0.5,
+    adp_iso=0.5,
 )
 structure.atom_sites.create(
     label='Cl',
@@ -78,7 +78,7 @@ structure.atom_sites.create(
     fract_y=0,
     fract_z=0.197,
     wyckoff_letter='c',
-    b_iso=0.5,
+    adp_iso=0.5,
 )
 structure.atom_sites.create(
     label='H',
@@ -87,7 +87,7 @@ structure.atom_sites.create(
     fract_y=-0.13,
     fract_z=0.08,
     wyckoff_letter='h',
-    b_iso=0.5,
+    adp_iso=0.5,
 )
 
 # %% [markdown]
@@ -311,11 +311,11 @@ project.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=48, x_max=51, show_res
 # Set more parameters to be refined.
 
 # %%
-structure.atom_sites['Zn'].b_iso.free = True
-structure.atom_sites['Cu'].b_iso.free = True
-structure.atom_sites['O'].b_iso.free = True
-structure.atom_sites['Cl'].b_iso.free = True
-structure.atom_sites['H'].b_iso.free = True
+structure.atom_sites['Zn'].adp_iso.free = True
+structure.atom_sites['Cu'].adp_iso.free = True
+structure.atom_sites['O'].adp_iso.free = True
+structure.atom_sites['Cl'].adp_iso.free = True
+structure.atom_sites['H'].adp_iso.free = True
 
 # %% [markdown]
 # Show free parameters after selection.
@@ -331,6 +331,9 @@ project.analysis.fit()
 
 # %%
 project.analysis.display.fit_results()
+
+# %%
+project.plotter.plot_param_correlations()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated

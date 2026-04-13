@@ -51,7 +51,7 @@ structure.atom_sites.create(
     fract_y=0,
     fract_z=0,
     wyckoff_letter='a',
-    b_iso=0.5,
+    adp_iso=0.5,
 )
 structure.atom_sites.create(
     label='Co2',
@@ -60,7 +60,7 @@ structure.atom_sites.create(
     fract_y=0.25,
     fract_z=0.985,
     wyckoff_letter='c',
-    b_iso=0.5,
+    adp_iso=0.5,
 )
 structure.atom_sites.create(
     label='Si',
@@ -69,7 +69,7 @@ structure.atom_sites.create(
     fract_y=0.25,
     fract_z=0.429,
     wyckoff_letter='c',
-    b_iso=0.5,
+    adp_iso=0.5,
 )
 structure.atom_sites.create(
     label='O1',
@@ -78,7 +78,7 @@ structure.atom_sites.create(
     fract_y=0.25,
     fract_z=0.771,
     wyckoff_letter='c',
-    b_iso=0.5,
+    adp_iso=0.5,
 )
 structure.atom_sites.create(
     label='O2',
@@ -87,7 +87,7 @@ structure.atom_sites.create(
     fract_y=0.25,
     fract_z=0.217,
     wyckoff_letter='c',
-    b_iso=0.5,
+    adp_iso=0.5,
 )
 structure.atom_sites.create(
     label='O3',
@@ -96,7 +96,7 @@ structure.atom_sites.create(
     fract_y=0.032,
     fract_z=0.28,
     wyckoff_letter='d',
-    b_iso=0.5,
+    adp_iso=0.5,
 )
 
 # %% [markdown]
@@ -127,6 +127,7 @@ expt.instrument.calib_twotheta_offset = 0.1
 # #### Set Peak Profile
 
 # %%
+expt.peak_profile_type = 'pseudo-voigt + empirical asymmetry'
 expt.peak.broad_gauss_u = 0.3
 expt.peak.broad_gauss_v = -0.5
 expt.peak.broad_gauss_w = 0.4
@@ -166,14 +167,6 @@ expt.linked_phases.create(id='cosio', scale=1.0)
 
 # %%
 project = Project()
-
-# %% [markdown]
-# #### Set Plotting Engine
-
-# %%
-# Keep the auto-selected engine. Alternatively, you can uncomment the
-# line below to explicitly set the engine to the required one.
-# project.plotter.engine = 'plotly'
 
 # %% [markdown]
 # #### Add Structure
@@ -227,12 +220,12 @@ structure.atom_sites['O3'].fract_x.free = True
 structure.atom_sites['O3'].fract_y.free = True
 structure.atom_sites['O3'].fract_z.free = True
 
-structure.atom_sites['Co1'].b_iso.free = True
-structure.atom_sites['Co2'].b_iso.free = True
-structure.atom_sites['Si'].b_iso.free = True
-structure.atom_sites['O1'].b_iso.free = True
-structure.atom_sites['O2'].b_iso.free = True
-structure.atom_sites['O3'].b_iso.free = True
+structure.atom_sites['Co1'].adp_iso.free = True
+structure.atom_sites['Co2'].adp_iso.free = True
+structure.atom_sites['Si'].adp_iso.free = True
+structure.atom_sites['O1'].adp_iso.free = True
+structure.atom_sites['O2'].adp_iso.free = True
+structure.atom_sites['O3'].adp_iso.free = True
 
 # %%
 expt.linked_phases['cosio'].scale.free = True
@@ -243,6 +236,8 @@ expt.peak.broad_gauss_u.free = True
 expt.peak.broad_gauss_v.free = True
 expt.peak.broad_gauss_w.free = True
 expt.peak.broad_lorentz_y.free = True
+
+expt.peak.asym_empir_2.free = True
 
 for point in expt.background:
     point.y.free = True
@@ -255,20 +250,18 @@ for point in expt.background:
 # %%
 project.analysis.aliases.create(
     label='biso_Co1',
-    param=project.structures['cosio'].atom_sites['Co1'].b_iso,
+    param=project.structures['cosio'].atom_sites['Co1'].adp_iso,
 )
 project.analysis.aliases.create(
     label='biso_Co2',
-    param=project.structures['cosio'].atom_sites['Co2'].b_iso,
+    param=project.structures['cosio'].atom_sites['Co2'].adp_iso,
 )
 
 # %% [markdown]
 # Set constraints.
 
 # %%
-project.analysis.constraints.create(
-    expression='biso_Co2 = biso_Co1',
-)
+project.analysis.constraints.create(expression='biso_Co2 = biso_Co1')
 
 
 # %% [markdown]
@@ -276,7 +269,12 @@ project.analysis.constraints.create(
 
 # %%
 project.analysis.fit()
+
+# %%
 project.analysis.display.fit_results()
+
+# %%
+project.plotter.plot_param_correlations()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated

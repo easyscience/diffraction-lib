@@ -149,6 +149,28 @@ def _set_sample_form(self, value: str) -> None:
 
 ### 2.3 CategoryItem and CategoryCollection
 
+**Parameter access pattern.** Users reach any parameter through at most
+two levels of navigation from the datablock:
+
+```python
+# CategoryItem → Parameter
+structure.cell.length_a = 3.88
+experiment.instrument.setup_wavelength = 1.494
+
+# CategoryCollection[item_id] → Parameter
+structure.atom_sites['Si'].adp_iso = 0.47
+experiment.background['10'].y = 170
+```
+
+The general forms are:
+
+- `DATABLOCK.CATEGORY_ITEM.PARAMETER`
+- `DATABLOCK.CATEGORY_COLLECTION[ITEM_ID].PARAMETER`
+
+This two-level convention (category then parameter) is a deliberate
+design constraint. Categories are never nested inside other categories
+(see § 9.7), which keeps the path depth uniform and the API predictable.
+
 | Aspect          | `CategoryItem`                     | `CategoryCollection`                      |
 | --------------- | ---------------------------------- | ----------------------------------------- |
 | CIF analogy     | Single category row                | Loop (table) of rows                      |
@@ -269,10 +291,7 @@ experiment.data  # CategoryCollection
 # Type-switchable — recreates the underlying object
 experiment.background_type = 'chebyshev'  # triggers BackgroundFactory.create(...)
 experiment.peak_profile_type = 'thompson-cox-hastings'  # triggers PeakFactory.create(...)
-experiment.extinction_type = 'shelx'  # triggers ExtinctionFactory.create(...)
-experiment.linked_crystal_type = 'default'  # triggers LinkedCrystalFactory.create(...)
-experiment.excluded_regions_type = 'default'  # triggers ExcludedRegionsFactory.create(...)
-experiment.linked_phases_type = 'default'  # triggers LinkedPhasesFactory.create(...)
+experiment.extinction_type = 'becker-coppens'  # triggers ExtinctionFactory.create(...)
 ```
 
 **Type switching pattern:** `expt.background_type = 'chebyshev'` rather
@@ -288,17 +307,54 @@ being replaced.
 
 ```shell
 DatablockItem
-└── Structure                       # name, cell, space_group, atom_sites
+└── Structure                       # name, cell, space_group, atom_sites, atom_site_aniso
 ```
 
-A `Structure` contains three categories:
+A `Structure` contains four categories:
 
 - `Cell` — unit cell parameters (`CategoryItem`)
 - `SpaceGroup` — symmetry information (`CategoryItem`)
-- `AtomSites` — atomic positions collection (`CategoryCollection`)
+- `AtomSites` — atomic positions and isotropic ADP
+  (`CategoryCollection`)
+- `AtomSiteAniso` — anisotropic ADP tensor components
+  (`CategoryCollection`)
 
 Symmetry constraints (cell metric, atomic coordinates, ADPs) are applied
 via the `crystallography` module during `_update_categories()`.
+
+### 4.2 Atomic Displacement Parameters (ADP)
+
+ADP support covers four CIF-standard types: **Biso**, **Uiso**,
+**Bani**, **Uani**. The design uses **type-neutral parameter names** so
+that switching type is a one-line operation on `adp_type`.
+
+**Two sibling collections.** Following CIF conventions (`_atom_site` and
+`_atom_site_aniso` are separate loops), isotropic and anisotropic data
+live in separate collections on `Structure`. Every atom always has an
+entry in both collections; when `adp_type` is isotropic, the aniso
+parameters hold `0.0` and are ignored by calculators.
+
+**Type-neutral names.** `atom_site.adp_iso` is the type-neutral
+isotropic ADP parameter. Its physical meaning (B or U) is determined by
+`atom_site.adp_type`. Similarly, `atom_site_aniso.adp_11`…`adp_23` are
+type-neutral tensor components.
+
+**Dual CIF names.** Each parameter's `CifHandler` carries both CIF name
+variants (e.g.
+`['_atom_site.B_iso_or_equiv', '_atom_site.U_iso_or_equiv']`). Reading
+tries each name until a match is found; writing uses `names[0]`. The
+`adp_type` setter reorders the list so the correct tag is emitted.
+
+**Auto-conversion.** Setting `adp_type` triggers value conversion: B ↔ U
+via `B = 8π²U`; iso → ani seeds the diagonal; ani → iso averages the
+diagonal.
+
+**Collection sync.** `Structure._update_categories()` reconciles the two
+collections: adds missing aniso entries, removes stale ones, and rekeys
+on label rename.
+
+See [`adp_implementation.md`](adp_implementation.md) for the full
+implementation plan.
 
 ---
 
@@ -337,7 +393,7 @@ class PeakFactory(FactoryBase):
         frozenset({
             ('scattering_type', ScatteringTypeEnum.BRAGG),
             ('beam_mode', BeamModeEnum.TIME_OF_FLIGHT),
-        }): PeakProfileTypeEnum.PSEUDO_VOIGT_IKEDA_CARPENTER,
+        }): PeakProfileTypeEnum.JORGENSEN,
         frozenset({
             ('scattering_type', ScatteringTypeEnum.TOTAL),
         }): PeakProfileTypeEnum.GAUSSIAN_DAMPED_SINC,
@@ -389,26 +445,27 @@ from .line_segment import LineSegmentBackground
 
 ### 5.5 All Factories
 
-| Factory                      | Domain                 | Tags resolve to                                             |
-| ---------------------------- | ---------------------- | ----------------------------------------------------------- |
-| `BackgroundFactory`          | Background categories  | `LineSegmentBackground`, `ChebyshevPolynomialBackground`    |
-| `PeakFactory`                | Peak profiles          | `CwlPseudoVoigt`, `TofPseudoVoigtIkedaCarpenter`, …         |
-| `InstrumentFactory`          | Instruments            | `CwlPdInstrument`, `TofPdInstrument`, …                     |
-| `DataFactory`                | Data collections       | `PdCwlData`, `PdTofData`, `ReflnData`, `TotalData`          |
-| `ExtinctionFactory`          | Extinction models      | `ShelxExtinction`                                           |
-| `LinkedCrystalFactory`       | Linked-crystal refs    | `LinkedCrystal`                                             |
-| `ExcludedRegionsFactory`     | Excluded regions       | `ExcludedRegions`                                           |
-| `LinkedPhasesFactory`        | Linked phases          | `LinkedPhases`                                              |
-| `ExperimentTypeFactory`      | Experiment descriptors | `ExperimentType`                                            |
-| `CellFactory`                | Unit cells             | `Cell`                                                      |
-| `SpaceGroupFactory`          | Space groups           | `SpaceGroup`                                                |
-| `AtomSitesFactory`           | Atom sites             | `AtomSites`                                                 |
-| `AliasesFactory`             | Parameter aliases      | `Aliases`                                                   |
-| `ConstraintsFactory`         | Parameter constraints  | `Constraints`                                               |
-| `FitModeFactory`             | Fit-mode category      | `FitMode`                                                   |
-| `JointFitExperimentsFactory` | Joint-fit weights      | `JointFitExperiments`                                       |
-| `CalculatorFactory`          | Calculation engines    | `CryspyCalculator`, `CrysfmlCalculator`, `PdffitCalculator` |
-| `MinimizerFactory`           | Minimisers             | `LmfitMinimizer`, `DfolsMinimizer`, …                       |
+| Factory                      | Domain                 | Tags resolve to                                                                                                                                                             |
+| ---------------------------- | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `BackgroundFactory`          | Background categories  | `LineSegmentBackground`, `ChebyshevPolynomialBackground`                                                                                                                    |
+| `PeakFactory`                | Peak profiles          | `CwlPseudoVoigt`, `TofJorgensen`, `TofJorgensenVonDreele`, …                                                                                                                |
+| `InstrumentFactory`          | Instruments            | `CwlPdInstrument`, `TofPdInstrument`, …                                                                                                                                     |
+| `DataFactory`                | Data collections       | `PdCwlData`, `PdTofData`, `ReflnData`, `TotalData`                                                                                                                          |
+| `ExtinctionFactory`          | Extinction models      | `BeckerCoppensExtinction`                                                                                                                                                   |
+| `LinkedCrystalFactory`       | Linked-crystal refs    | `LinkedCrystal`                                                                                                                                                             |
+| `ExcludedRegionsFactory`     | Excluded regions       | `ExcludedRegions`                                                                                                                                                           |
+| `LinkedPhasesFactory`        | Linked phases          | `LinkedPhases`                                                                                                                                                              |
+| `ExperimentTypeFactory`      | Experiment descriptors | `ExperimentType`                                                                                                                                                            |
+| `CellFactory`                | Unit cells             | `Cell`                                                                                                                                                                      |
+| `SpaceGroupFactory`          | Space groups           | `SpaceGroup`                                                                                                                                                                |
+| `AtomSitesFactory`           | Atom sites             | `AtomSites`                                                                                                                                                                 |
+| `AtomSiteAnisoFactory`       | Anisotropic ADPs       | `AtomSiteAnisoCollection`                                                                                                                                                   |
+| `AliasesFactory`             | Parameter aliases      | `Aliases`                                                                                                                                                                   |
+| `ConstraintsFactory`         | Parameter constraints  | `Constraints`                                                                                                                                                               |
+| `FitModeFactory`             | Fit-mode category      | `FitMode`                                                                                                                                                                   |
+| `JointFitExperimentsFactory` | Joint-fit weights      | `JointFitExperiments`                                                                                                                                                       |
+| `CalculatorFactory`          | Calculation engines    | `CryspyCalculator`, `CrysfmlCalculator`, `PdffitCalculator`                                                                                                                 |
+| `MinimizerFactory`           | Minimisers             | `LmfitMinimizer`, `LmfitLeastsqMinimizer`, `LmfitLeastSquaresMinimizer`, `DfolsMinimizer`, `BumpsMinimizer`, `BumpsLmMinimizer`, `BumpsAmoebaMinimizer`, `BumpsDEMinimizer` |
 
 > **Note:** `ExperimentFactory` and `StructureFactory` are _builder_
 > factories with `from_cif_path`, `from_cif_str`, `from_data_path`, and
@@ -450,15 +507,15 @@ Tags are the user-facing identifiers for selecting types. They must be:
 
 **Peak tags**
 
-| Tag                                | Class                          |
-| ---------------------------------- | ------------------------------ |
-| `pseudo-voigt`                     | `CwlPseudoVoigt`               |
-| `split-pseudo-voigt`               | `CwlSplitPseudoVoigt`          |
-| `thompson-cox-hastings`            | `CwlThompsonCoxHastings`       |
-| `tof-pseudo-voigt`                 | `TofPseudoVoigt`               |
-| `tof-pseudo-voigt-ikeda-carpenter` | `TofPseudoVoigtIkedaCarpenter` |
-| `tof-pseudo-voigt-back-to-back`    | `TofPseudoVoigtBackToBack`     |
-| `gaussian-damped-sinc`             | `TotalGaussianDampedSinc`      |
+| Tag                                  | Class                              |
+| ------------------------------------ | ---------------------------------- |
+| `pseudo-voigt`                       | `CwlPseudoVoigt`                   |
+| `pseudo-voigt + empirical asymmetry` | `CwlPseudoVoigtEmpiricalAsymmetry` |
+| `thompson-cox-hastings`              | `CwlThompsonCoxHastings`           |
+| `jorgensen`                          | `TofJorgensen`                     |
+| `jorgensen-von-dreele`               | `TofJorgensenVonDreele`            |
+| `double-jorgensen-von-dreele`        | `TofDoubleJorgensenVonDreele`      |
+| `gaussian-damped-sinc`               | `TotalGaussianDampedSinc`          |
 
 **Instrument tags**
 
@@ -480,9 +537,9 @@ Tags are the user-facing identifiers for selecting types. They must be:
 
 **Extinction tags**
 
-| Tag     | Class             |
-| ------- | ----------------- |
-| `shelx` | `ShelxExtinction` |
+| Tag              | Class                     |
+| ---------------- | ------------------------- |
+| `becker-coppens` | `BeckerCoppensExtinction` |
 
 **Linked-crystal tags**
 
@@ -509,16 +566,16 @@ Tags are the user-facing identifiers for selecting types. They must be:
 
 **Minimizer tags**
 
-| Tag                     | Class                                     |
-| ----------------------- | ----------------------------------------- |
-| `lmfit`                 | `LmfitMinimizer`                          |
-| `lmfit (leastsq)`       | `LmfitMinimizer` (method=`leastsq`)       |
-| `lmfit (least_squares)` | `LmfitMinimizer` (method=`least_squares`) |
-| `dfols`                 | `DfolsMinimizer`                          |
-
-> **Note:** minimizer variant tags (`lmfit (leastsq)`,
-> `lmfit (least_squares)`) are planned but not yet re-implemented after
-> the `FactoryBase` migration. See `issues_open.md` for details.
+| Tag                     | Class                        |
+| ----------------------- | ---------------------------- |
+| `lmfit`                 | `LmfitMinimizer`             |
+| `lmfit (leastsq)`       | `LmfitLeastsqMinimizer`      |
+| `lmfit (least_squares)` | `LmfitLeastSquaresMinimizer` |
+| `dfols`                 | `DfolsMinimizer`             |
+| `bumps`                 | `BumpsMinimizer`             |
+| `bumps (lm)`            | `BumpsLmMinimizer`           |
+| `bumps (amoeba)`        | `BumpsAmoebaMinimizer`       |
+| `bumps (de)`            | `BumpsDEMinimizer`           |
 
 ### 5.7 Metadata Classification — Which Classes Get What
 
@@ -542,25 +599,25 @@ line-segment points.
 
 #### Singleton CategoryItems — factory-created (get all three)
 
-| Class                          | Factory                 |
-| ------------------------------ | ----------------------- |
-| `CwlPdInstrument`              | `InstrumentFactory`     |
-| `CwlScInstrument`              | `InstrumentFactory`     |
-| `TofPdInstrument`              | `InstrumentFactory`     |
-| `TofScInstrument`              | `InstrumentFactory`     |
-| `CwlPseudoVoigt`               | `PeakFactory`           |
-| `CwlSplitPseudoVoigt`          | `PeakFactory`           |
-| `CwlThompsonCoxHastings`       | `PeakFactory`           |
-| `TofPseudoVoigt`               | `PeakFactory`           |
-| `TofPseudoVoigtIkedaCarpenter` | `PeakFactory`           |
-| `TofPseudoVoigtBackToBack`     | `PeakFactory`           |
-| `TotalGaussianDampedSinc`      | `PeakFactory`           |
-| `ShelxExtinction`              | `ExtinctionFactory`     |
-| `LinkedCrystal`                | `LinkedCrystalFactory`  |
-| `Cell`                         | `CellFactory`           |
-| `SpaceGroup`                   | `SpaceGroupFactory`     |
-| `ExperimentType`               | `ExperimentTypeFactory` |
-| `FitMode`                      | `FitModeFactory`        |
+| Class                              | Factory                 |
+| ---------------------------------- | ----------------------- |
+| `CwlPdInstrument`                  | `InstrumentFactory`     |
+| `CwlScInstrument`                  | `InstrumentFactory`     |
+| `TofPdInstrument`                  | `InstrumentFactory`     |
+| `TofScInstrument`                  | `InstrumentFactory`     |
+| `CwlPseudoVoigt`                   | `PeakFactory`           |
+| `CwlPseudoVoigtEmpiricalAsymmetry` | `PeakFactory`           |
+| `CwlThompsonCoxHastings`           | `PeakFactory`           |
+| `TofJorgensen`                     | `PeakFactory`           |
+| `TofJorgensenVonDreele`            | `PeakFactory`           |
+| `TofDoubleJorgensenVonDreele`      | `PeakFactory`           |
+| `TotalGaussianDampedSinc`          | `PeakFactory`           |
+| `BeckerCoppensExtinction`          | `ExtinctionFactory`     |
+| `LinkedCrystal`                    | `LinkedCrystalFactory`  |
+| `Cell`                             | `CellFactory`           |
+| `SpaceGroup`                       | `SpaceGroupFactory`     |
+| `ExperimentType`                   | `ExperimentTypeFactory` |
+| `FitMode`                          | `FitModeFactory`        |
 
 #### CategoryCollections — factory-created (get all three)
 
@@ -575,6 +632,7 @@ line-segment points.
 | `ExcludedRegions`               | `ExcludedRegionsFactory`     |
 | `LinkedPhases`                  | `LinkedPhasesFactory`        |
 | `AtomSites`                     | `AtomSitesFactory`           |
+| `AtomSiteAnisoCollection`       | `AtomSiteAnisoFactory`       |
 | `Aliases`                       | `AliasesFactory`             |
 | `Constraints`                   | `ConstraintsFactory`         |
 | `JointFitExperiments`           | `JointFitExperimentsFactory` |
@@ -586,6 +644,7 @@ line-segment points.
 | `LineSegment`        | `LineSegmentBackground`         |
 | `PolynomialTerm`     | `ChebyshevPolynomialBackground` |
 | `AtomSite`           | `AtomSites`                     |
+| `AtomSiteAniso`      | `AtomSiteAnisoCollection`       |
 | `PdCwlDataPoint`     | `PdCwlData`                     |
 | `PdTofDataPoint`     | `PdTofData`                     |
 | `TotalDataPoint`     | `TotalData`                     |
@@ -605,6 +664,7 @@ line-segment points.
 | `PdffitCalculator`  | `CalculatorFactory` | (same)                                                   |
 | `LmfitMinimizer`    | `MinimizerFactory`  | `type_info` only                                         |
 | `DfolsMinimizer`    | `MinimizerFactory`  | (same)                                                   |
+| `BumpsMinimizer`    | `MinimizerFactory`  | (same)                                                   |
 | `BraggPdExperiment` | `ExperimentFactory` | `type_info` + `compatibility` (no `calculator_support`)  |
 | `TotalPdExperiment` | `ExperimentFactory` | (same)                                                   |
 | `CwlScExperiment`   | `ExperimentFactory` | (same)                                                   |
@@ -636,7 +696,7 @@ The experiment exposes the standard switchable-category API:
 ### 6.2 Minimiser
 
 The minimiser drives the optimisation loop. `MinimizerFactory` creates
-instances by tag (e.g. `'lmfit'`, `'dfols'`).
+instances by tag (e.g. `'lmfit'`, `'dfols'`, `'bumps'`).
 
 ### 6.3 Fitter
 
@@ -658,14 +718,19 @@ workflow:
 - Fit mode: `fit_mode` (`CategoryItem` with a `mode` descriptor
   validated by `FitModeEnum`); `'single'` fits each experiment
   independently, `'joint'` fits all simultaneously with weights from
-  `joint_fit_experiments`.
+  `joint_fit_experiments`, `'sequential'` records that sequential
+  fitting was used. `show_supported_fit_mode_types()` filters by
+  experiment count (≤1 → only `single`; >1 → all three).
+  `show_current_fit_mode_type()` prints the current mode.
 - Joint-fit weights: `joint_fit_experiments` (`CategoryCollection` of
   per-experiment weight entries); sibling of `fit_mode`, not a child.
 - Parameter tables: `show_all_params()`, `show_fittable_params()`,
   `show_free_params()`, `how_to_access_parameters()`
-- Fitting: `fit()`, `show_fit_results()`
-- Aliases and constraints (switchable categories with `aliases_type`,
-  `constraints_type`, `fit_mode_type`, `joint_fit_experiments_type`)
+- Fitting: `fit()` dispatches single/joint; `fit_sequential()` handles
+  sequential mode (sets `fit_mode` to `'sequential'` internally).
+  `display.fit_results()` shows results.
+- Aliases and constraints (single-type categories; no public `_type`
+  getter or setter)
 
 ---
 
@@ -803,7 +868,7 @@ project.structures['lbco'].atom_sites.create(
     fract_y=0,
     fract_z=0,
     wyckoff_letter='a',
-    b_iso=0.5,
+    adp_iso=0.5,
     occupancy=0.5,
 )
 
@@ -889,7 +954,7 @@ expt = ExperimentFactory.from_data_path(
 )
 expt.instrument.calib_d_to_tof_offset = 0.0
 expt.instrument.calib_d_to_tof_linear = 7476.91
-expt.peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
+expt.peak_profile_type = 'jorgensen'
 expt.peak.broad_gauss_sigma_0 = 3.0
 ```
 
@@ -955,8 +1020,11 @@ and simplifies maintenance.
 Categories whose concrete implementation can be swapped at runtime
 (background, peak profile, etc.) are called **switchable categories**.
 **Every category must be factory-based** — even if only one
-implementation exists today. This ensures a uniform API, consistent
-discoverability, and makes adding a second implementation trivial.
+implementation exists today. This ensures uniform construction,
+consistent metadata, and makes adding a second implementation trivial.
+
+For categories with **multiple implementations** (multi-type), the owner
+exposes the full switchable API:
 
 | Facet           | Naming pattern                               | Example                                          |
 | --------------- | -------------------------------------------- | ------------------------------------------------ |
@@ -965,15 +1033,33 @@ discoverability, and makes adding a second implementation trivial.
 | Show supported  | `show_supported_<category>_types()`          | `expt.show_supported_background_types()`         |
 | Show current    | `show_current_<category>_type()`             | `expt.show_current_peak_profile_type()`          |
 
-The convention applies universally:
+Multi-type categories:
 
 - **Experiment:** `calculator_type`, `background_type`,
-  `peak_profile_type`, `extinction_type`, `linked_crystal_type`,
-  `excluded_regions_type`, `linked_phases_type`, `instrument_type`,
-  `data_type`.
-- **Structure:** `cell_type`, `space_group_type`, `atom_sites_type`.
-- **Analysis:** `aliases_type`, `constraints_type`, `fit_mode_type`,
-  `joint_fit_experiments_type`.
+  `peak_profile_type`, `extinction_type`.
+
+Categories that are **fixed at creation** (determined by the experiment
+type and never changed) expose only a read-only `<category>` property
+with no `_type` getter, setter, or show methods:
+
+- **Experiment:** `instrument`, `data`.
+
+For categories with **only one implementation** (single-type), the
+`_type` getter, setter, and show methods are omitted from the public API
+to avoid clutter. The factory and `_type` attribute still exist
+internally for consistency and future extensibility.
+
+Single-type categories (no public `_type` property):
+
+- **Experiment:** `diffrn`, `linked_crystal`, `excluded_regions`,
+  `linked_phases`.
+- **Structure:** `cell`, `space_group`, `atom_sites`, `atom_site_aniso`.
+- **Analysis:** `aliases`, `constraints`.
+
+`fit_mode` has show methods (`show_supported_fit_mode_types()`,
+`show_current_fit_mode_type()`) but no public `_type` getter or setter
+because it has only one factory implementation. The mode is changed via
+the `fit_mode.mode` descriptor directly.
 
 **Design decisions:**
 
@@ -998,18 +1084,6 @@ expt.show_supported_peak_profile_types()
 expt.show_supported_background_types()
 expt.show_supported_calculator_types()
 expt.show_supported_extinction_types()
-expt.show_supported_linked_crystal_types()
-expt.show_supported_excluded_regions_types()
-expt.show_supported_linked_phases_types()
-expt.show_supported_instrument_types()
-expt.show_supported_data_types()
-struct.show_supported_cell_types()
-struct.show_supported_space_group_types()
-struct.show_supported_atom_sites_types()
-project.analysis.show_supported_aliases_types()
-project.analysis.show_supported_constraints_types()
-project.analysis.show_supported_fit_mode_types()
-project.analysis.show_supported_joint_fit_experiments_types()
 project.analysis.show_available_minimizers()
 ```
 
@@ -1026,7 +1100,7 @@ class. This applies to:
 - Factory tags (§5.6) — e.g. `PeakProfileTypeEnum`, `CalculatorEnum`.
 - Experiment-axis values — e.g. `SampleFormEnum`, `BeamModeEnum`.
 - Category descriptors with enumerated choices — e.g. fit mode
-  (`FitModeEnum.SINGLE`, `FitModeEnum.JOINT`).
+  (`FitModeEnum.SINGLE`, `FitModeEnum.JOINT`, `FitModeEnum.SEQUENTIAL`).
 
 The enum serves as the **single source of truth** for valid values,
 their user-facing string representations, and their descriptions.

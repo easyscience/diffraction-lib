@@ -9,6 +9,7 @@ from typing import Any
 import numpy as np
 
 from easydiffraction.analysis.fit_helpers.metrics import get_reliability_inputs
+from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 from easydiffraction.core.variable import Parameter
 from easydiffraction.utils.enums import VerbosityEnum
@@ -22,7 +23,7 @@ if TYPE_CHECKING:
 class Fitter:
     """Handles the fitting workflow using a pluggable minimizer."""
 
-    def __init__(self, selection: str = 'lmfit') -> None:
+    def __init__(self, selection: str = MinimizerTypeEnum.default()) -> None:
         self.selection: str = selection
         self.engine: str = selection
         self.minimizer = MinimizerFactory.create(selection)
@@ -35,6 +36,8 @@ class Fitter:
         weights: np.ndarray | None = None,
         analysis: object = None,
         verbosity: VerbosityEnum = VerbosityEnum.FULL,
+        *,
+        use_physical_limits: bool = False,
     ) -> None:
         """
         Run the fitting process.
@@ -57,7 +60,18 @@ class Fitter:
             fitting.
         verbosity : VerbosityEnum, default=VerbosityEnum.FULL
             Console output verbosity.
+        use_physical_limits : bool, default=False
+            When ``True``, fall back to physical limits from the value
+            spec for parameters whose ``fit_min``/``fit_max`` are
+            unbounded.
         """
+        # Enforce symmetry constraints (e.g. ADP) before collecting
+        # free parameters so that components fixed by site symmetry are
+        # excluded from the minimizer's parameter set.
+        for structure in structures:
+            structure._need_categories_update = True
+            structure._update_categories()
+
         expt_free_params: list[Parameter] = []
         for expt in experiments:
             expt_free_params.extend(
@@ -98,7 +112,12 @@ class Fitter:
             )
 
         # Perform fitting
-        self.results = self.minimizer.fit(params, objective_function, verbosity=verbosity)
+        self.results = self.minimizer.fit(
+            params,
+            objective_function,
+            verbosity=verbosity,
+            use_physical_limits=use_physical_limits,
+        )
 
     def _process_fit_results(
         self,

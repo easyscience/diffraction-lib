@@ -5,6 +5,7 @@
 import lmfit
 
 from easydiffraction.analysis.minimizers.base import MinimizerBase
+from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 from easydiffraction.core.metadata import TypeInfo
 
@@ -17,13 +18,13 @@ class LmfitMinimizer(MinimizerBase):
     """Minimizer using the lmfit package."""
 
     type_info = TypeInfo(
-        tag='lmfit',
-        description='LMFIT with Levenberg-Marquardt least squares',
+        tag=MinimizerTypeEnum.LMFIT,
+        description='LMFIT library using the default Levenberg-Marquardt least squares method',
     )
 
     def __init__(
         self,
-        name: str = 'lmfit',
+        name: str = MinimizerTypeEnum.LMFIT,
         method: str = DEFAULT_METHOD,
         max_iterations: int = DEFAULT_MAX_ITERATIONS,
     ) -> None:

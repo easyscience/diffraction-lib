@@ -84,7 +84,7 @@ def project_with_data(
         fract_y=0.125,
         fract_z=0.125,
         wyckoff_letter='c',
-        b_iso=1.1,
+        adp_iso=1.1,
     )
 
     # Step 3: Add experiment from modified CIF file
@@ -103,10 +103,10 @@ def project_with_data(
     experiment.peak.broad_gauss_sigma_0 = 48500.0
     experiment.peak.broad_gauss_sigma_1 = 3000.0
     experiment.peak.broad_gauss_sigma_2 = 0.0
-    experiment.peak.broad_mix_beta_0 = 0.05
-    experiment.peak.broad_mix_beta_1 = 0.0
-    experiment.peak.asym_alpha_0 = 0.0
-    experiment.peak.asym_alpha_1 = 0.26
+    experiment.peak.exp_decay_beta_0 = 0.05
+    experiment.peak.exp_decay_beta_1 = 0.0
+    experiment.peak.exp_rise_alpha_0 = 0.0
+    experiment.peak.exp_rise_alpha_1 = 0.26
 
     # Excluded regions
     experiment.excluded_regions.create(id='1', start=0, end=10000)
@@ -144,7 +144,7 @@ def fitted_project(
 
     # Step 5: Select parameters to be fitted
     # Set free parameters for structure
-    structure.atom_sites['C'].b_iso.free = True
+    structure.atom_sites['C'].adp_iso.free = True
 
     # Set free parameters for experiment
     experiment.linked_phases['diamond'].scale.free = True
@@ -152,7 +152,7 @@ def fitted_project(
 
     experiment.peak.broad_gauss_sigma_0.free = True
     experiment.peak.broad_gauss_sigma_1.free = True
-    experiment.peak.broad_mix_beta_0.free = True
+    experiment.peak.exp_decay_beta_0.free = True
 
     # Set free parameters for background
     for point in experiment.background:
@@ -210,4 +210,4 @@ def test_analyze_reduced_data__fit_quality(
 ) -> None:
     """Verify fit quality is reasonable (chi-square value)."""
     chi_square = fitted_project.analysis.fit_results.reduced_chi_square
-    assert chi_square == pytest.approx(16.8, abs=0.1)
+    assert chi_square == pytest.approx(16.3, abs=0.1)

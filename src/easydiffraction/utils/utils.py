@@ -73,7 +73,7 @@ def _fetch_data_index() -> dict:
     _validate_url(index_url)
 
     # macOS: sha256sum index.json
-    index_hash = 'sha256:af64483b9e0941af56d582b9d50285b8404e3d10a103d8696cddf3850ee2b660'
+    index_hash = 'sha256:b73db869debfe56ee776920644bfd28704885e8287ec7edb556e6ad7335cfe36'
     destination_dirname = 'easydiffraction'
     destination_fname = 'data-index.json'
     cache_dir = pooch.os_cache(destination_dirname)
@@ -125,6 +125,7 @@ def _fetch_tutorials_index() -> dict:
 def download_data(
     id: int | str,
     destination: str = 'data',
+    *,
     overwrite: bool = False,
 ) -> str:
     """
@@ -381,6 +382,7 @@ def list_tutorials() -> None:
 def download_tutorial(
     id: int | str,
     destination: str = 'tutorials',
+    *,
     overwrite: bool = False,
 ) -> str:
     """
@@ -455,6 +457,7 @@ def download_tutorial(
 
 def download_all_tutorials(
     destination: str = 'tutorials',
+    *,
     overwrite: bool = False,
 ) -> list[str]:
     """
@@ -676,9 +679,7 @@ def twotheta_to_d(twotheta: object, wavelength: float) -> object:
     theta_rad = np.radians(twotheta / 2)
 
     # Calculate d-spacing using Bragg's law
-    d = wavelength / (2 * np.sin(theta_rad))
-
-    return d
+    return wavelength / (2 * np.sin(theta_rad))
 
 
 def sin_theta_over_lambda_to_d_spacing(sin_theta_over_lambda: object) -> object:
@@ -699,8 +700,7 @@ def sin_theta_over_lambda_to_d_spacing(sin_theta_over_lambda: object) -> object:
     with np.errstate(divide='ignore', invalid='ignore'):
         d = 1 / (2 * sin_theta_over_lambda)
         # Set non-positive inputs to NaN
-        d = np.where(sin_theta_over_lambda > 0, d, np.nan)
-    return d
+        return np.where(sin_theta_over_lambda > 0, d, np.nan)
 
 
 def str_to_ufloat(s: str | None, default: float | None = None) -> UFloat:

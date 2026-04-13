@@ -143,16 +143,16 @@ their projects.
 An example of the output for the
 `project.analysis.display.how_to_access_parameters()` method is:
 
-|     | Code variable                                       | Unique ID for CIF                |
-| --- | --------------------------------------------------- | -------------------------------- |
-| 1   | project.structures['lbco'].atom_site['La'].adp_type | lbco.atom_site.La.ADP_type       |
-| 2   | project.structures['lbco'].atom_site['La'].b_iso    | lbco.atom_site.La.B_iso_or_equiv |
-| 3   | project.structures['lbco'].atom_site['La'].fract_x  | lbco.atom_site.La.fract_x        |
-| 4   | project.structures['lbco'].atom_site['La'].fract_y  | lbco.atom_site.La.fract_y        |
-| ... | ...                                                 | ...                              |
-| 59  | project.experiments['hrpt'].peak.broad_gauss_u      | hrpt.peak.broad_gauss_u          |
-| 60  | project.experiments['hrpt'].peak.broad_gauss_v      | hrpt.peak.broad_gauss_v          |
-| 61  | project.experiments['hrpt'].peak.broad_gauss_w      | hrpt.peak.broad_gauss_w          |
+|     | Code variable                                       | Unique ID for CIF          |
+| --- | --------------------------------------------------- | -------------------------- |
+| 1   | project.structures['lbco'].atom_site['La'].adp_type | lbco.atom_site.La.ADP_type |
+| 2   | project.structures['lbco'].atom_site['La'].adp_iso  | lbco.atom_site.La.adp_iso  |
+| 3   | project.structures['lbco'].atom_site['La'].fract_x  | lbco.atom_site.La.fract_x  |
+| 4   | project.structures['lbco'].atom_site['La'].fract_y  | lbco.atom_site.La.fract_y  |
+| ... | ...                                                 | ...                        |
+| 59  | project.experiments['hrpt'].peak.broad_gauss_u      | hrpt.peak.broad_gauss_u    |
+| 60  | project.experiments['hrpt'].peak.broad_gauss_v      | hrpt.peak.broad_gauss_v    |
+| 61  | project.experiments['hrpt'].peak.broad_gauss_w      | hrpt.peak.broad_gauss_w    |
 
 ### Supported plotters
 

@@ -38,7 +38,7 @@ class Cell(CategoryItem):
             units='Å',
             value_spec=AttributeSpec(
                 default=10.0,
-                validator=RangeValidator(ge=0, le=1000),
+                validator=RangeValidator(ge=0, le=30),
             ),
             cif_handler=CifHandler(names=['_cell.length_a']),
         )
@@ -48,7 +48,7 @@ class Cell(CategoryItem):
             units='Å',
             value_spec=AttributeSpec(
                 default=10.0,
-                validator=RangeValidator(ge=0, le=1000),
+                validator=RangeValidator(ge=0, le=30),
             ),
             cif_handler=CifHandler(names=['_cell.length_b']),
         )
@@ -58,7 +58,7 @@ class Cell(CategoryItem):
             units='Å',
             value_spec=AttributeSpec(
                 default=10.0,
-                validator=RangeValidator(ge=0, le=1000),
+                validator=RangeValidator(ge=0, le=30),
             ),
             cif_handler=CifHandler(names=['_cell.length_c']),
         )
@@ -131,6 +131,7 @@ class Cell(CategoryItem):
 
     def _update(
         self,
+        *,
         called_by_minimizer: bool = False,
     ) -> None:
         """

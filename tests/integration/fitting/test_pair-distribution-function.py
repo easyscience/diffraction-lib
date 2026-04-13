@@ -27,7 +27,7 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
         fract_y=0,
         fract_z=0,
         wyckoff_letter='a',
-        b_iso=1.1053,
+        adp_iso=1.1053,
     )
     structure.atom_sites.create(
         label='Cl',
@@ -36,7 +36,7 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
         fract_y=0.5,
         fract_z=0.5,
         wyckoff_letter='b',
-        b_iso=0.5708,
+        adp_iso=0.5708,
     )
 
     # Set experiment
@@ -61,8 +61,8 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
 
     # Select fitting parameters
     structure.cell.length_a.free = True
-    structure.atom_sites['Na'].b_iso.free = True
-    structure.atom_sites['Cl'].b_iso.free = True
+    structure.atom_sites['Na'].adp_iso.free = True
+    structure.atom_sites['Cl'].adp_iso.free = True
     experiment.linked_phases['nacl'].scale.free = True
     experiment.peak.damp_q.free = True
     experiment.peak.sharp_delta_2.free = True
@@ -92,7 +92,7 @@ def test_single_fit_pdf_neutron_pd_cw_ni():
         fract_y=0,
         fract_z=0,
         wyckoff_letter='a',
-        b_iso=0.4281,
+        adp_iso=0.4281,
     )
 
     # Set experiment
@@ -116,7 +116,7 @@ def test_single_fit_pdf_neutron_pd_cw_ni():
 
     # Select fitting parameters
     structure.cell.length_a.free = True
-    structure.atom_sites['Ni'].b_iso.free = True
+    structure.atom_sites['Ni'].adp_iso.free = True
     experiment.linked_phases['ni'].scale.free = True
     experiment.peak.broad_q.free = True
     experiment.peak.sharp_delta_2.free = True
@@ -145,7 +145,7 @@ def test_single_fit_pdf_neutron_pd_tof_si():
         fract_y=0,
         fract_z=0,
         wyckoff_letter='a',
-        b_iso=0.717,
+        adp_iso=0.717,
     )
 
     # Set experiment
@@ -169,7 +169,7 @@ def test_single_fit_pdf_neutron_pd_tof_si():
 
     # Select fitting parameters
     project.structures['si'].cell.length_a.free = True
-    project.structures['si'].atom_sites['Si'].b_iso.free = True
+    project.structures['si'].atom_sites['Si'].adp_iso.free = True
     experiment.linked_phases['si'].scale.free = True
     experiment.peak.damp_q.free = True
     experiment.peak.broad_q.free = True

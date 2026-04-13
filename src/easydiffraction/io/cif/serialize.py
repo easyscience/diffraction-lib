@@ -36,7 +36,6 @@ def format_value(value: object) -> str:
     minimizer's     finite-difference Jacobian probes (typically ~1e-8
     relative)     survive the float→string→float round-trip through CIF.
     """
-    width = 12
     precision = 8
 
     # Converting
@@ -58,10 +57,10 @@ def format_value(value: object) -> str:
 
     # Format floats with given precision
     if isinstance(value, float):
-        return f'{value:>{width}.{precision}f}'
-    # Format strings right-aligned
+        return f'{value:.{precision}f}'
+    # Format strings as-is
     if isinstance(value, str):
-        return f'{value:>{width}s}'
+        return value
     # Everything else: fallback
     return str(value)
 
@@ -101,8 +100,10 @@ def format_param_value(param: object) -> str:
     str
         Formatted CIF value string.
     """
-    is_free = getattr(param, 'free', False)
-    is_constrained = getattr(param, 'constrained', False)
+    from easydiffraction.core.variable import Parameter  # noqa: PLC0415
+
+    is_free = param.free if isinstance(param, Parameter) else False
+    is_constrained = param.constrained if isinstance(param, Parameter) else False
     value = param.value  # type: ignore[attr-defined]
 
     if not is_free or is_constrained or not isinstance(value, (int, float)):
@@ -145,6 +146,46 @@ def category_item_to_cif(item: object) -> str:
     return '\n'.join(lines)
 
 
+def _validate_loop_tags(
+    item: object,
+    header_tags: list[str],
+) -> None:
+    """Log an error if any row tag disagrees with *header_tags*."""
+    for col, p in enumerate(item.parameters):
+        tag = p._cif_handler.names[0]  # type: ignore[attr-defined]
+        if tag != header_tags[col]:
+            log.error(
+                f'CIF tag mismatch in loop column {col}: '
+                f"header expects '{header_tags[col]}', "
+                f"row has '{tag}'",
+                exc_type=ValueError,
+            )
+
+
+def _emit_loop_rows(
+    items: list,
+    row_fn: object,
+    header_tags: list[str],
+    max_display: int | None,
+) -> list[str]:
+    """Build formatted rows, optionally truncated."""
+    lines: list[str] = []
+    if max_display is not None and len(items) > max_display:
+        half = max_display // 2
+        for item in items[:half]:
+            _validate_loop_tags(item, header_tags)
+            lines.append(' '.join(row_fn(item)))
+        lines.append('...')
+        for item in items[-half:]:
+            _validate_loop_tags(item, header_tags)
+            lines.append(' '.join(row_fn(item)))
+    else:
+        for item in items:
+            _validate_loop_tags(item, header_tags)
+            lines.append(' '.join(row_fn(item)))
+    return lines
+
+
 def category_collection_to_cif(
     collection: object,
     max_display: int | None = None,
@@ -171,33 +212,34 @@ def category_collection_to_cif(
     if not len(collection):
         return ''
 
+    # Allow collections to conditionally suppress CIF output
+    skip = getattr(collection, '_skip_cif_serialization', None)
+    if skip is not None and skip():
+        return ''
+
     lines: list[str] = []
 
-    # Header
+    # Header — use first item's CIF tag names as the canonical columns
     first_item = next(iter(collection.values()))
     lines.append('loop_')
+    header_tags: list[str] = []
     for p in first_item.parameters:
         tags = p._cif_handler.names  # type: ignore[attr-defined]
+        header_tags.append(tags[0])
         lines.append(tags[0])
 
-    # Rows
-    # Limit number of displayed rows if requested
-    if max_display is not None and len(collection) > max_display:
-        half_display = max_display // 2
-        for i in range(half_display):
-            item = list(collection.values())[i]
-            row_vals = [format_param_value(p) for p in item.parameters]
-            lines.append(' '.join(row_vals))
-        lines.append('...')
-        for i in range(-half_display, 0):
-            item = list(collection.values())[i]
-            row_vals = [format_param_value(p) for p in item.parameters]
-            lines.append(' '.join(row_vals))
-    # No limit
-    else:
-        for item in collection.values():
-            row_vals = [format_param_value(p) for p in item.parameters]
-            lines.append(' '.join(row_vals))
+    # Allow collections to customise per-item row formatting
+    row_hook = getattr(collection, '_format_cif_row', None)
+
+    def _row(item: object) -> list[str]:
+        if row_hook is not None:
+            override = row_hook(item)
+            if override is not None:
+                return override
+        return [format_param_value(p) for p in item.parameters]
+
+    items = list(collection.values())
+    lines.extend(_emit_loop_rows(items, _row, header_tags, max_display))
 
     return '\n'.join(lines)
 

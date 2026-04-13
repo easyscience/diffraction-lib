@@ -172,9 +172,7 @@ class Plotter(RendererBase):
             x_max = self.x_max
 
         mask = (x_array >= x_min) & (x_array <= x_max)
-        filtered_y_array = y_array[mask]
-
-        return filtered_y_array
+        return y_array[mask]
 
     @staticmethod
     def _get_axes_labels(
@@ -424,6 +422,7 @@ class Plotter(RendererBase):
         expt_name: str,
         x_min: float | None = None,
         x_max: float | None = None,
+        *,
         show_residual: bool = False,
         x: object | None = None,
     ) -> None:
@@ -641,6 +640,7 @@ class Plotter(RendererBase):
     @staticmethod
     def _trim_correlation_display_dataframe(
         corr_df: pd.DataFrame,
+        *,
         preserve_all_rows: bool,
     ) -> tuple[pd.DataFrame, list[int], list[int]]:
         """
@@ -942,7 +942,13 @@ class Plotter(RendererBase):
                 if should_blank:
                     row_values.append('')
                 else:
-                    row_values.append(f'{float(value):>{cell_width}.{precision}f}')
+                    fval = float(value)
+                    text = f'{fval:>{cell_width}.{precision}f}'
+                    if fval < 0:
+                        text = f'[red]{text}[/red]'
+                    elif fval > 0:
+                        text = f'[blue]{text}[/blue]'
+                    row_values.append(text)
             rows.append([label, *row_values])
 
         df = pd.DataFrame(rows, columns=pd.MultiIndex.from_tuples(headers))
@@ -1065,6 +1071,7 @@ class Plotter(RendererBase):
         expt_name: str,
         x_min: object = None,
         x_max: object = None,
+        *,
         show_residual: bool = False,
         x: object = None,
     ) -> None:

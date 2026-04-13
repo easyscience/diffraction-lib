@@ -46,17 +46,11 @@ def test_structure_switchable_category_types(lbco_fitted_project):
     project = lbco_fitted_project
     model = project.structures['lbco']
     # Cell
-    model.show_supported_cell_types()
-    model.show_current_cell_type()
-    assert isinstance(model.cell_type, str)
+    assert model.cell is not None
     # Space group
-    model.show_supported_space_group_types()
-    model.show_current_space_group_type()
-    assert isinstance(model.space_group_type, str)
+    assert model.space_group is not None
     # Atom sites
-    model.show_supported_atom_sites_types()
-    model.show_current_atom_sites_type()
-    assert isinstance(model.atom_sites_type, str)
+    assert model.atom_sites is not None
 
 
 def test_experiment_help(lbco_fitted_project):
@@ -83,9 +77,7 @@ def test_experiment_switchable_category_types(lbco_fitted_project):
     project = lbco_fitted_project
     expt = project.experiments['hrpt']
     # Instrument
-    expt.show_supported_instrument_types()
-    expt.show_current_instrument_type()
-    assert isinstance(expt.instrument_type, str)
+    assert expt.instrument is not None
     # Background
     expt.show_supported_background_types()
     expt.show_current_background_type()
@@ -95,17 +87,13 @@ def test_experiment_switchable_category_types(lbco_fitted_project):
     expt.show_current_peak_profile_type()
     assert isinstance(expt.peak_profile_type, str)
     # Linked phases
-    expt.show_supported_linked_phases_types()
-    expt.show_current_linked_phases_type()
-    assert isinstance(expt.linked_phases_type, str)
+    assert expt.linked_phases is not None
     # Calculator
     expt.show_supported_calculator_types()
     expt.show_current_calculator_type()
     assert isinstance(expt.calculator_type, str)
     # Diffrn
-    expt.show_supported_diffrn_types()
-    expt.show_current_diffrn_type()
-    assert isinstance(expt.diffrn_type, str)
+    assert expt.diffrn is not None
 
 
 def test_experiment_data_info(lbco_fitted_project):

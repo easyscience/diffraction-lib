@@ -44,6 +44,10 @@
 - Type-annotate all public function signatures.
 - Docstrings on all public classes and methods (numpy style). These must
   include sections Parameters, Returns and Raises, where applicable.
+- Docstring summary must be a single line no longer than 72 characters
+  (the `max-doc-length` setting in `pyproject.toml`). If the summary
+  does not fit, shorten the wording rather than wrapping to a second
+  line.
 - Prefer flat over nested, explicit over clever.
 - Write straightforward code; do not add defensive checks for unlikely
   edge cases.
@@ -173,6 +177,15 @@
 
 ## Workflow
 
+- Use a two-phase workflow for all non-trivial changes:
+  - **Phase 1 — Implementation:** implement the change (source code,
+    docs, architecture updates). Do not create new tests or run existing
+    tests. Present the implementation for review and iterate until
+    approved.
+  - **Phase 2 — Verification:** once the implementation is approved, add
+    or update tests, then run linting (`pixi run fix`, `pixi run check`)
+    and all test suites (`pixi run unit-tests`,
+    `pixi run integration-tests`, `pixi run script-tests`).
 - All open issues, design questions, and planned improvements are
   tracked in `docs/architecture/issues_open.md`, ordered by priority.
   When an issue is fully implemented, move it from that file to
@@ -180,9 +193,12 @@
   architecture, update the relevant sections of
   `docs/architecture/architecture.md`.
 - After changes, run linting and formatting fixes with `pixi run fix`.
-  Do not check what was auto-fixed, just accept the fixes and move on.
-  Then, run linting and formatting checks with `pixi run check` and
-  address any remaining issues until the code is clean.
+  This also regenerates `docs/architecture/package-structure-full.md`
+  and `docs/architecture/package-structure-short.md` automatically — do
+  not edit those files by hand. Do not check what was auto-fixed, just
+  accept the fixes and move on. Then, run linting and formatting checks
+  with `pixi run check` and address any remaining issues until the code
+  is clean.
 - After changes, run unit tests with `pixi run unit-tests`.
 - After changes, run integration tests with
   `pixi run integration-tests`.

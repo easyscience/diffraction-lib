@@ -30,7 +30,11 @@ class CategoryItem(GuardedBase):
         return f'<{name} ({params})>'
 
     # TODO: Common for all categories
-    def _update(self, called_by_minimizer: bool = False) -> None:  # noqa: PLR6301
+    def _update(  # noqa: PLR6301
+        self,
+        *,
+        called_by_minimizer: bool = False,
+    ) -> None:
         del called_by_minimizer
 
     @property
@@ -193,7 +197,11 @@ class CategoryCollection(CollectionBase):
         return f'<{name} collection ({size} items)>'
 
     # TODO: Common for all categories
-    def _update(self, called_by_minimizer: bool = False) -> None:  # noqa: PLR6301
+    def _update(  # noqa: PLR6301
+        self,
+        *,
+        called_by_minimizer: bool = False,
+    ) -> None:
         del called_by_minimizer
 
     @property

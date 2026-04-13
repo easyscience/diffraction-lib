@@ -40,7 +40,7 @@ class LinkedPhase(CategoryItem):
             description='Scale factor of the linked phase.',
             value_spec=AttributeSpec(
                 default=1.0,
-                validator=RangeValidator(),
+                validator=RangeValidator(ge=0.0),
             ),
             cif_handler=CifHandler(names=['_pd_phase_block.scale']),
         )

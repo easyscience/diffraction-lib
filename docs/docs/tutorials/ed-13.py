@@ -271,8 +271,7 @@ print(project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear.value)
 #
 # The next set of parameters is needed to define the peak profile used
 # in the fitting process. The peak profile describes the shape of the
-# diffraction peaks. They include parameters for the broadening and
-# asymmetry of the peaks.
+# diffraction peaks.
 #
 # There are several commonly used peak profile functions:
 # - **Gaussian**: Describes peaks with a symmetric bell-shaped curve,
@@ -309,14 +308,14 @@ print(project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear.value)
 # for more details about the peak profile types.
 
 # %%
-project_1.experiments['sim_si'].peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
+project_1.experiments['sim_si'].peak_profile_type = 'jorgensen'
 project_1.experiments['sim_si'].peak.broad_gauss_sigma_0 = 69498
 project_1.experiments['sim_si'].peak.broad_gauss_sigma_1 = -55578
 project_1.experiments['sim_si'].peak.broad_gauss_sigma_2 = 14560
-project_1.experiments['sim_si'].peak.broad_mix_beta_0 = 0.0019
-project_1.experiments['sim_si'].peak.broad_mix_beta_1 = 0.0137
-project_1.experiments['sim_si'].peak.asym_alpha_0 = -0.0055
-project_1.experiments['sim_si'].peak.asym_alpha_1 = 0.0147
+project_1.experiments['sim_si'].peak.exp_decay_beta_0 = 0.0019
+project_1.experiments['sim_si'].peak.exp_decay_beta_1 = 0.0137
+project_1.experiments['sim_si'].peak.exp_rise_alpha_0 = -0.0055
+project_1.experiments['sim_si'].peak.exp_rise_alpha_1 = 0.0147
 
 # %% [markdown]
 # #### Set Background
@@ -489,7 +488,7 @@ project_1.structures['si'].atom_sites.create(
     fract_y=0,
     fract_z=0,
     wyckoff_letter='a',
-    b_iso=0.89,
+    adp_iso=0.89,
 )
 
 # %% [markdown]
@@ -566,10 +565,10 @@ for line_segment in project_1.experiments['sim_si'].background:
 project_1.experiments['sim_si'].peak.broad_gauss_sigma_0.free = True
 project_1.experiments['sim_si'].peak.broad_gauss_sigma_1.free = True
 project_1.experiments['sim_si'].peak.broad_gauss_sigma_2.free = True
-project_1.experiments['sim_si'].peak.broad_mix_beta_0.free = True
-project_1.experiments['sim_si'].peak.broad_mix_beta_1.free = True
-project_1.experiments['sim_si'].peak.asym_alpha_0.free = True
-project_1.experiments['sim_si'].peak.asym_alpha_1.free = True
+project_1.experiments['sim_si'].peak.exp_decay_beta_0.free = True
+project_1.experiments['sim_si'].peak.exp_decay_beta_1.free = True
+project_1.experiments['sim_si'].peak.exp_rise_alpha_0.free = True
+project_1.experiments['sim_si'].peak.exp_rise_alpha_1.free = True
 
 # %% [markdown]
 # #### Show Free Parameters
@@ -832,14 +831,14 @@ project_2.experiments['sim_lbco'].instrument.calib_d_to_tof_linear = ed.extract_
 # %% tags=["solution", "hide-input"]
 # # Create a reference to the peak profile parameters from the Si
 sim_si_peak = project_1.experiments['sim_si'].peak
-project_2.experiments['sim_lbco'].peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
+project_2.experiments['sim_lbco'].peak_profile_type = 'jorgensen'
 project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_0 = sim_si_peak.broad_gauss_sigma_0.value
 project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_1 = sim_si_peak.broad_gauss_sigma_1.value
 project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_2 = sim_si_peak.broad_gauss_sigma_2.value
-project_2.experiments['sim_lbco'].peak.broad_mix_beta_0 = sim_si_peak.broad_mix_beta_0.value
-project_2.experiments['sim_lbco'].peak.broad_mix_beta_1 = sim_si_peak.broad_mix_beta_1.value
-project_2.experiments['sim_lbco'].peak.asym_alpha_0 = sim_si_peak.asym_alpha_0.value
-project_2.experiments['sim_lbco'].peak.asym_alpha_1 = sim_si_peak.asym_alpha_1.value
+project_2.experiments['sim_lbco'].peak.exp_decay_beta_0 = sim_si_peak.exp_decay_beta_0.value
+project_2.experiments['sim_lbco'].peak.exp_decay_beta_1 = sim_si_peak.exp_decay_beta_1.value
+project_2.experiments['sim_lbco'].peak.exp_rise_alpha_0 = sim_si_peak.exp_rise_alpha_0.value
+project_2.experiments['sim_lbco'].peak.exp_rise_alpha_1 = sim_si_peak.exp_rise_alpha_1.value
 
 # %% [markdown]
 # #### Exercise 2.4: Set Background
@@ -1014,7 +1013,7 @@ project_2.structures['lbco'].atom_sites.create(
     fract_y=0,
     fract_z=0,
     wyckoff_letter='a',
-    b_iso=0.95,
+    adp_iso=0.95,
     occupancy=0.5,
 )
 project_2.structures['lbco'].atom_sites.create(
@@ -1024,7 +1023,7 @@ project_2.structures['lbco'].atom_sites.create(
     fract_y=0,
     fract_z=0,
     wyckoff_letter='a',
-    b_iso=0.95,
+    adp_iso=0.95,
     occupancy=0.5,
 )
 project_2.structures['lbco'].atom_sites.create(
@@ -1034,7 +1033,7 @@ project_2.structures['lbco'].atom_sites.create(
     fract_y=0.5,
     fract_z=0.5,
     wyckoff_letter='b',
-    b_iso=0.80,
+    adp_iso=0.80,
 )
 project_2.structures['lbco'].atom_sites.create(
     label='O',
@@ -1043,7 +1042,7 @@ project_2.structures['lbco'].atom_sites.create(
     fract_y=0.5,
     fract_z=0.5,
     wyckoff_letter='c',
-    b_iso=1.66,
+    adp_iso=1.66,
 )
 
 # %% [markdown]
@@ -1252,10 +1251,10 @@ project_2.plotter.plot_meas_vs_calc(expt_name='sim_lbco', x='d_spacing', x_min=1
 project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_0.free = True
 project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_1.free = True
 project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_2.free = True
-project_2.experiments['sim_lbco'].peak.broad_mix_beta_0.free = True
-project_2.experiments['sim_lbco'].peak.broad_mix_beta_1.free = True
-project_2.experiments['sim_lbco'].peak.asym_alpha_0.free = True
-project_2.experiments['sim_lbco'].peak.asym_alpha_1.free = True
+project_2.experiments['sim_lbco'].peak.exp_decay_beta_0.free = True
+project_2.experiments['sim_lbco'].peak.exp_decay_beta_1.free = True
+project_2.experiments['sim_lbco'].peak.exp_rise_alpha_0.free = True
+project_2.experiments['sim_lbco'].peak.exp_rise_alpha_1.free = True
 
 project_2.analysis.fit()
 project_2.analysis.display.fit_results()
@@ -1386,7 +1385,7 @@ project_2.structures['si'].atom_sites.create(
     fract_y=0,
     fract_z=0,
     wyckoff_letter='a',
-    b_iso=0.89,
+    adp_iso=0.89,
 )
 
 # Assign Structure to Experiment

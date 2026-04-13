@@ -68,24 +68,6 @@ def test_show_available_minimizers(lbco_fitted_project):
     Analysis.show_available_minimizers()
 
 
-def test_show_supported_aliases_types(lbco_fitted_project):
-    project = lbco_fitted_project
-    project.analysis.show_supported_aliases_types()
-    project.analysis.show_current_aliases_type()
-
-
-def test_show_supported_constraints_types(lbco_fitted_project):
-    project = lbco_fitted_project
-    project.analysis.show_supported_constraints_types()
-    project.analysis.show_current_constraints_type()
-
-
-def test_show_supported_fit_mode_types(lbco_fitted_project):
-    project = lbco_fitted_project
-    project.analysis.show_supported_fit_mode_types()
-    project.analysis.show_current_fit_mode_type()
-
-
 def test_fit_results_attributes(lbco_fitted_project):
     project = lbco_fitted_project
     results = project.analysis.fit_results

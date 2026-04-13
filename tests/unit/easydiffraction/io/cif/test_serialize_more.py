@@ -34,7 +34,7 @@ def test_datablock_item_to_cif_includes_item_and_collection():
 
     out = MUT.datablock_item_to_cif(DB())
     assert out.startswith('data_block1')
-    assert '_aa  42.0000' in out
+    assert '_aa 42.0000' in out
     assert 'loop_' in out
     assert '_aa' in out
     assert '7' in out

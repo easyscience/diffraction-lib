@@ -23,7 +23,7 @@ class PeakFactory(FactoryBase):
         frozenset({
             ('scattering_type', ScatteringTypeEnum.BRAGG),
             ('beam_mode', BeamModeEnum.TIME_OF_FLIGHT),
-        }): PeakProfileTypeEnum.PSEUDO_VOIGT_IKEDA_CARPENTER,
+        }): PeakProfileTypeEnum.JORGENSEN,
         frozenset({
             ('scattering_type', ScatteringTypeEnum.TOTAL),
         }): PeakProfileTypeEnum.GAUSSIAN_DAMPED_SINC,

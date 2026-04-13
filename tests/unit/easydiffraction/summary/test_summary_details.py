@@ -32,7 +32,7 @@ class _Site:
         self.fract_y = _Val(y)
         self.fract_z = _Val(z)
         self.occupancy = _Val(occ)
-        self.b_iso = _Val(biso)
+        self.adp_iso = _Val(biso)
 
 
 class _Model:

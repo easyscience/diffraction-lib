@@ -60,7 +60,7 @@ class TestAtomSite:
         assert site.fract_y.value == 0.0
         assert site.fract_z.value == 0.0
         assert site.occupancy.value == 1.0
-        assert site.b_iso.value == 0.0
+        assert site.adp_iso.value == 0.0
         assert site.adp_type.value == 'Biso'
 
     def test_label_setter(self):
@@ -95,12 +95,12 @@ class TestAtomSite:
         site.occupancy = 0.5
         assert site.occupancy.value == 0.5
 
-    def test_b_iso_setter(self):
+    def test_adp_iso_setter(self):
         from easydiffraction.datablocks.structure.categories.atom_sites.default import AtomSite
 
         site = AtomSite()
-        site.b_iso = 1.5
-        assert site.b_iso.value == 1.5
+        site.adp_iso = 1.5
+        assert site.adp_iso.value == 1.5
 
     def test_type_symbol_allowed_values(self):
         from easydiffraction.datablocks.structure.categories.atom_sites.default import AtomSite
@@ -130,3 +130,120 @@ class TestAtomSites:
 
         sites = AtomSites()
         assert sites is not None
+
+
+# ------------------------------------------------------------------
+#  _sync_iso_from_aniso
+# ------------------------------------------------------------------
+
+
+class TestSyncIsoFromAniso:
+    def _make_structure(self, adp_type='Biso', adp_iso=0.5):
+        from easydiffraction.datablocks.structure.item.base import Structure
+
+        structure = Structure(name='test')
+        structure.atom_sites.create(
+            label='Si',
+            type_symbol='Si',
+            adp_type=adp_type,
+            adp_iso=adp_iso,
+        )
+        structure._sync_atom_site_aniso()
+        return structure
+
+    def test_sync_updates_iso_for_bani_atom(self):
+        import math
+
+        structure = self._make_structure(adp_type='Biso', adp_iso=0.5)
+        structure.atom_sites['Si'].adp_type = 'Bani'
+        aniso = structure.atom_site_aniso['Si']
+        aniso.adp_11 = 0.3
+        aniso.adp_22 = 0.6
+        aniso.adp_33 = 0.9
+        structure.atom_sites._sync_iso_from_aniso()
+        expected = (0.3 + 0.6 + 0.9) / 3.0
+        assert math.isclose(structure.atom_sites['Si'].adp_iso.value, expected, rel_tol=1e-10)
+
+    def test_sync_updates_iso_for_uani_atom(self):
+        import math
+
+        structure = self._make_structure(adp_type='Uiso', adp_iso=0.05)
+        structure.atom_sites['Si'].adp_type = 'Uani'
+        aniso = structure.atom_site_aniso['Si']
+        aniso.adp_11 = 0.01
+        aniso.adp_22 = 0.02
+        aniso.adp_33 = 0.03
+        structure.atom_sites._sync_iso_from_aniso()
+        expected = (0.01 + 0.02 + 0.03) / 3.0
+        assert math.isclose(structure.atom_sites['Si'].adp_iso.value, expected, rel_tol=1e-10)
+
+    def test_sync_skips_iso_atoms(self):
+        structure = self._make_structure(adp_type='Biso', adp_iso=0.5)
+        structure.atom_sites._sync_iso_from_aniso()
+        assert structure.atom_sites['Si'].adp_iso.value == 0.5
+
+    def test_update_calls_sync(self):
+        """Verify _update() triggers _sync_iso_from_aniso().
+
+        In P m -3 m Wyckoff a, symmetry forces U11=U22=U33.
+        We set all diags to 0.3 (satisfying the constraint), then
+        manually overwrite adp_iso to a wrong value.  After _update(),
+        adp_iso must be resynced from the (still-equal) diags.
+        """
+        structure = self._make_structure(adp_type='Biso', adp_iso=0.5)
+        structure.space_group.name_h_m = 'P m -3 m'
+        structure.atom_sites['Si'].adp_type = 'Bani'
+        aniso = structure.atom_site_aniso['Si']
+        aniso.adp_11 = 0.3
+        aniso.adp_22 = 0.3
+        aniso.adp_33 = 0.3
+        # Force adp_iso to a wrong value so we can confirm _update resyncs it
+        structure.atom_sites['Si'].adp_iso = 0.99
+        structure.atom_sites._update()
+        assert structure.atom_sites['Si'].adp_iso.value == 0.3
+
+
+# ------------------------------------------------------------------
+#  adp_iso_as_b property
+# ------------------------------------------------------------------
+
+
+class TestAdpIsoAsB:
+    def _make_structure(self, adp_type='Biso', adp_iso=0.5):
+        from easydiffraction.datablocks.structure.item.base import Structure
+
+        structure = Structure(name='test')
+        structure.atom_sites.create(
+            label='Si',
+            type_symbol='Si',
+            adp_type=adp_type,
+            adp_iso=adp_iso,
+        )
+        structure._sync_atom_site_aniso()
+        return structure
+
+    def test_biso_as_b_returns_same_value(self):
+        structure = self._make_structure(adp_type='Biso', adp_iso=0.5)
+        assert structure.atom_sites['Si'].adp_iso_as_b == 0.5
+
+    def test_uiso_as_b_converts(self):
+        import math
+
+        u_val = 0.005
+        structure = self._make_structure(adp_type='Uiso', adp_iso=u_val)
+        expected_b = u_val * 8.0 * math.pi**2
+        assert math.isclose(structure.atom_sites['Si'].adp_iso_as_b, expected_b, rel_tol=1e-10)
+
+    def test_bani_as_b_returns_iso_value(self):
+        structure = self._make_structure(adp_type='Biso', adp_iso=0.5)
+        structure.atom_sites['Si'].adp_type = 'Bani'
+        assert structure.atom_sites['Si'].adp_iso_as_b == 0.5
+
+    def test_uani_as_b_converts(self):
+        import math
+
+        u_val = 0.005
+        structure = self._make_structure(adp_type='Uiso', adp_iso=u_val)
+        structure.atom_sites['Si'].adp_type = 'Uani'
+        expected_b = u_val * 8.0 * math.pi**2
+        assert math.isclose(structure.atom_sites['Si'].adp_iso_as_b, expected_b, rel_tol=1e-10)

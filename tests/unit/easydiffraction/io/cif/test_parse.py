@@ -76,11 +76,11 @@ class TestReadCifStr:
     def test_double_quoted_value(self):
         from easydiffraction.io.cif.parse import read_cif_str
 
-        block = self._block('_peak.profile_type "split pseudo-voigt"\n')
-        assert read_cif_str(block, '_peak.profile_type') == 'split pseudo-voigt'
+        block = self._block('_peak.profile_type "pseudo-voigt + empirical asymmetry"\n')
+        assert read_cif_str(block, '_peak.profile_type') == 'pseudo-voigt + empirical asymmetry'
 
     def test_single_quoted_value(self):
         from easydiffraction.io.cif.parse import read_cif_str
 
-        block = self._block("_peak.profile_type 'split pseudo-voigt'\n")
-        assert read_cif_str(block, '_peak.profile_type') == 'split pseudo-voigt'
+        block = self._block("_peak.profile_type 'pseudo-voigt + empirical asymmetry'\n")
+        assert read_cif_str(block, '_peak.profile_type') == 'pseudo-voigt + empirical asymmetry'

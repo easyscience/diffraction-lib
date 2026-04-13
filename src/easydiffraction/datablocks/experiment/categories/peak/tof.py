@@ -1,6 +1,13 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Time-of-flight peak profile classes."""
+"""
+Time-of-flight peak profile classes.
+
+Jorgensen: BBE ⊗ Gaussian (CrysPy ``peak_shape="Gauss"``). Jorgensen-Von
+Dreele: BBE ⊗ pseudo-Voigt (CrysPy ``peak_shape="pseudo-Voigt"``).
+Double-Jorgensen-Von Dreele: double BBE ⊗ pseudo-Voigt (CrysPy
+``peak_shape="type0m"``, Z-Rietveld).
+"""
 
 from easydiffraction.core.metadata import CalculatorSupport
 from easydiffraction.core.metadata import Compatibility
@@ -8,24 +15,33 @@ from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.datablocks.experiment.categories.peak.base import PeakBase
 from easydiffraction.datablocks.experiment.categories.peak.factory import PeakFactory
 from easydiffraction.datablocks.experiment.categories.peak.tof_mixins import (
-    IkedaCarpenterAsymmetryMixin,
+    TofBackToBackExponentialMixin,
 )
-from easydiffraction.datablocks.experiment.categories.peak.tof_mixins import TofBroadeningMixin
+from easydiffraction.datablocks.experiment.categories.peak.tof_mixins import (
+    TofDoubleExponentialMixin,
+)
+from easydiffraction.datablocks.experiment.categories.peak.tof_mixins import (
+    TofGaussianBroadeningMixin,
+)
+from easydiffraction.datablocks.experiment.categories.peak.tof_mixins import (
+    TofLorentzianBroadeningMixin,
+)
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 
 
 @PeakFactory.register
-class TofPseudoVoigt(
+class TofJorgensen(
     PeakBase,
-    TofBroadeningMixin,
+    TofGaussianBroadeningMixin,
+    TofBackToBackExponentialMixin,
 ):
-    """Time-of-flight pseudo-Voigt peak shape."""
+    """Jorgensen TOF profile: back-to-back exponentials ⊗ Gaussian."""
 
     type_info = TypeInfo(
-        tag='tof-pseudo-voigt',
-        description='TOF pseudo-Voigt profile',
+        tag='jorgensen',
+        description='Jorgensen BBE ⊗ Gaussian profile',
     )
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
@@ -40,16 +56,17 @@ class TofPseudoVoigt(
 
 
 @PeakFactory.register
-class TofPseudoVoigtIkedaCarpenter(
+class TofJorgensenVonDreele(
     PeakBase,
-    TofBroadeningMixin,
-    IkedaCarpenterAsymmetryMixin,
+    TofGaussianBroadeningMixin,
+    TofLorentzianBroadeningMixin,
+    TofBackToBackExponentialMixin,
 ):
-    """TOF pseudo-Voigt with Ikeda-Carpenter asymmetry."""
+    """Jorgensen-Von Dreele TOF profile: BBE ⊗ pseudo-Voigt."""
 
     type_info = TypeInfo(
-        tag='pseudo-voigt * ikeda-carpenter',
-        description='Pseudo-Voigt with Ikeda-Carpenter asymmetry correction',
+        tag='jorgensen-von-dreele',
+        description='Jorgensen-Von Dreele BBE ⊗ pseudo-Voigt profile',
     )
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
@@ -64,23 +81,24 @@ class TofPseudoVoigtIkedaCarpenter(
 
 
 @PeakFactory.register
-class TofPseudoVoigtBackToBack(
+class TofDoubleJorgensenVonDreele(
     PeakBase,
-    TofBroadeningMixin,
-    IkedaCarpenterAsymmetryMixin,
+    TofGaussianBroadeningMixin,
+    TofLorentzianBroadeningMixin,
+    TofDoubleExponentialMixin,
 ):
-    """TOF back-to-back pseudo-Voigt with asymmetry."""
+    """Double-Jorgensen-Von Dreele TOF profile: double BBE ⊗ pV."""
 
     type_info = TypeInfo(
-        tag='pseudo-voigt * back-to-back',
-        description='TOF back-to-back pseudo-Voigt with asymmetry',
+        tag='double-jorgensen-von-dreele',
+        description='Double-exp ⊗ pseudo-Voigt profile (Z-Rietveld type0m)',
     )
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
         beam_mode=frozenset({BeamModeEnum.TIME_OF_FLIGHT}),
     )
     calculator_support = CalculatorSupport(
-        calculators=frozenset({CalculatorEnum.CRYSPY, CalculatorEnum.CRYSFML}),
+        calculators=frozenset({CalculatorEnum.CRYSPY}),
     )
 
     def __init__(self) -> None:

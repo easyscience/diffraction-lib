@@ -49,7 +49,7 @@ structure_1.atom_sites.create(
     fract_y=0,
     fract_z=0,
     wyckoff_letter='a',
-    b_iso=0.2,
+    adp_iso=0.2,
     occupancy=0.5,
 )
 structure_1.atom_sites.create(
@@ -59,7 +59,7 @@ structure_1.atom_sites.create(
     fract_y=0,
     fract_z=0,
     wyckoff_letter='a',
-    b_iso=0.2,
+    adp_iso=0.2,
     occupancy=0.5,
 )
 structure_1.atom_sites.create(
@@ -69,7 +69,7 @@ structure_1.atom_sites.create(
     fract_y=0.5,
     fract_z=0.5,
     wyckoff_letter='b',
-    b_iso=0.2567,
+    adp_iso=0.2567,
 )
 structure_1.atom_sites.create(
     label='O',
@@ -78,7 +78,7 @@ structure_1.atom_sites.create(
     fract_y=0.5,
     fract_z=0.5,
     wyckoff_letter='c',
-    b_iso=1.4041,
+    adp_iso=1.4041,
 )
 
 # %% [markdown]
@@ -111,7 +111,7 @@ structure_2.atom_sites.create(
     fract_y=0.0,
     fract_z=0.0,
     wyckoff_letter='a',
-    b_iso=0.0,
+    adp_iso=0.0,
 )
 
 # %% [markdown]
@@ -151,14 +151,14 @@ experiment.instrument.calib_d_to_tof_quad = -0.00001
 # #### Set Peak Profile
 
 # %%
-# experiment.peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
+# experiment.peak_profile_type = 'jorgensen'
 experiment.peak.broad_gauss_sigma_0 = 45137
 experiment.peak.broad_gauss_sigma_1 = -52394
 experiment.peak.broad_gauss_sigma_2 = 22998
-experiment.peak.broad_mix_beta_0 = 0.0055
-experiment.peak.broad_mix_beta_1 = 0.0041
-experiment.peak.asym_alpha_0 = 0
-experiment.peak.asym_alpha_1 = 0.0097
+experiment.peak.exp_decay_beta_0 = 0.0055
+experiment.peak.exp_decay_beta_1 = 0.0041
+experiment.peak.exp_rise_alpha_0 = 0
+experiment.peak.exp_rise_alpha_1 = 0.0097
 
 # %% [markdown]
 # #### Set Background
@@ -275,8 +275,8 @@ project.analysis.current_minimizer = 'lmfit'
 
 # %%
 structure_1.cell.length_a.free = True
-structure_1.atom_sites['Co'].b_iso.free = True
-structure_1.atom_sites['O'].b_iso.free = True
+structure_1.atom_sites['Co'].adp_iso.free = True
+structure_1.atom_sites['O'].adp_iso.free = True
 
 structure_2.cell.length_a.free = True
 
@@ -291,9 +291,9 @@ experiment.peak.broad_gauss_sigma_0.free = True
 experiment.peak.broad_gauss_sigma_1.free = True
 experiment.peak.broad_gauss_sigma_2.free = True
 
-experiment.peak.asym_alpha_1.free = True
-experiment.peak.broad_mix_beta_0.free = True
-experiment.peak.broad_mix_beta_1.free = True
+experiment.peak.exp_rise_alpha_1.free = True
+experiment.peak.exp_decay_beta_0.free = True
+experiment.peak.exp_decay_beta_1.free = True
 
 for point in experiment.background:
     point.y.free = True
@@ -304,11 +304,10 @@ for point in experiment.background:
 # %%
 project.analysis.fit()
 project.analysis.display.fit_results()
+project.plotter.plot_param_correlations()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
 project.plotter.plot_meas_vs_calc(expt_name='mcstas')
-
-# %%

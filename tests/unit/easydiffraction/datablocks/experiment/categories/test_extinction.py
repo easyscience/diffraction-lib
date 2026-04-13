@@ -3,26 +3,58 @@
 
 
 def test_module_import():
-    import easydiffraction.datablocks.experiment.categories.extinction.shelx as MUT
+    import easydiffraction.datablocks.experiment.categories.extinction.becker_coppens as MUT
 
-    expected_module_name = 'easydiffraction.datablocks.experiment.categories.extinction.shelx'
+    expected_module_name = (
+        'easydiffraction.datablocks.experiment.categories.extinction.becker_coppens'
+    )
     actual_module_name = MUT.__name__
     assert expected_module_name == actual_module_name
 
 
 def test_extinction_defaults():
-    from easydiffraction.datablocks.experiment.categories.extinction.shelx import ShelxExtinction
+    from easydiffraction.datablocks.experiment.categories.extinction.becker_coppens import (
+        BeckerCoppensExtinction,
+    )
 
-    ext = ShelxExtinction()
+    ext = BeckerCoppensExtinction()
+    assert ext.model.value == 'gauss'
     assert ext.mosaicity.value == 1.0
     assert ext.radius.value == 1.0
     assert ext._identity.category_code == 'extinction'
 
 
-def test_extinction_property_setters():
-    from easydiffraction.datablocks.experiment.categories.extinction.shelx import ShelxExtinction
+def test_extinction_model_setter():
+    from easydiffraction.datablocks.experiment.categories.extinction.becker_coppens import (
+        BeckerCoppensExtinction,
+    )
 
-    ext = ShelxExtinction()
+    ext = BeckerCoppensExtinction()
+
+    ext.model = 'lorentz'
+    assert ext.model.value == 'lorentz'
+
+    ext.model = 'gauss'
+    assert ext.model.value == 'gauss'
+
+
+def test_extinction_model_invalid():
+    from easydiffraction.datablocks.experiment.categories.extinction.becker_coppens import (
+        BeckerCoppensExtinction,
+    )
+
+    ext = BeckerCoppensExtinction()
+
+    ext.model = 'invalid'
+    assert ext.model.value == 'gauss'  # keeps previous value
+
+
+def test_extinction_property_setters():
+    from easydiffraction.datablocks.experiment.categories.extinction.becker_coppens import (
+        BeckerCoppensExtinction,
+    )
+
+    ext = BeckerCoppensExtinction()
 
     ext.mosaicity = 0.5
     assert ext.mosaicity.value == 0.5
@@ -32,9 +64,14 @@ def test_extinction_property_setters():
 
 
 def test_extinction_cif_handler_names():
-    from easydiffraction.datablocks.experiment.categories.extinction.shelx import ShelxExtinction
+    from easydiffraction.datablocks.experiment.categories.extinction.becker_coppens import (
+        BeckerCoppensExtinction,
+    )
 
-    ext = ShelxExtinction()
+    ext = BeckerCoppensExtinction()
+
+    model_cif_names = ext._model._cif_handler.names
+    assert '_extinction.model' in model_cif_names
 
     mosaicity_cif_names = ext._mosaicity._cif_handler.names
     assert '_extinction.mosaicity' in mosaicity_cif_names
@@ -44,10 +81,12 @@ def test_extinction_cif_handler_names():
 
 
 def test_extinction_type_info():
-    from easydiffraction.datablocks.experiment.categories.extinction.shelx import ShelxExtinction
+    from easydiffraction.datablocks.experiment.categories.extinction.becker_coppens import (
+        BeckerCoppensExtinction,
+    )
 
-    assert ShelxExtinction.type_info.tag == 'shelx'
-    assert ShelxExtinction.type_info.description != ''
+    assert BeckerCoppensExtinction.type_info.tag == 'becker-coppens'
+    assert BeckerCoppensExtinction.type_info.description != ''
 
 
 def test_extinction_factory_registration():
@@ -55,17 +94,19 @@ def test_extinction_factory_registration():
         ExtinctionFactory,
     )
 
-    assert 'shelx' in ExtinctionFactory.supported_tags()
+    assert 'becker-coppens' in ExtinctionFactory.supported_tags()
 
 
 def test_extinction_factory_create():
     from easydiffraction.datablocks.experiment.categories.extinction.factory import (
         ExtinctionFactory,
     )
-    from easydiffraction.datablocks.experiment.categories.extinction.shelx import ShelxExtinction
+    from easydiffraction.datablocks.experiment.categories.extinction.becker_coppens import (
+        BeckerCoppensExtinction,
+    )
 
-    ext = ExtinctionFactory.create('shelx')
-    assert isinstance(ext, ShelxExtinction)
+    ext = ExtinctionFactory.create('becker-coppens')
+    assert isinstance(ext, BeckerCoppensExtinction)
 
 
 def test_extinction_factory_default_tag():
@@ -73,4 +114,4 @@ def test_extinction_factory_default_tag():
         ExtinctionFactory,
     )
 
-    assert ExtinctionFactory.default_tag() == 'shelx'
+    assert ExtinctionFactory.default_tag() == 'becker-coppens'

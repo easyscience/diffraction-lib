@@ -26,7 +26,7 @@ def test_single_fit_neutron_pd_tof_si() -> None:
         fract_y=0.125,
         fract_z=0.125,
         wyckoff_letter='a',
-        b_iso=0.529,
+        adp_iso=0.529,
     )
 
     # Set experiment
@@ -40,14 +40,14 @@ def test_single_fit_neutron_pd_tof_si() -> None:
     expt.instrument.calib_d_to_tof_offset = -9.29
     expt.instrument.calib_d_to_tof_linear = 7476.91
     expt.instrument.calib_d_to_tof_quad = -1.54
-    expt.peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
+    expt.peak_profile_type = 'jorgensen'
     expt.peak.broad_gauss_sigma_0 = 4.2
     expt.peak.broad_gauss_sigma_1 = 45.8
     expt.peak.broad_gauss_sigma_2 = 1.1
-    expt.peak.broad_mix_beta_0 = 0.04221
-    expt.peak.broad_mix_beta_1 = 0.00946
-    expt.peak.asym_alpha_0 = 0.0
-    expt.peak.asym_alpha_1 = 0.5971
+    expt.peak.exp_decay_beta_0 = 0.04221
+    expt.peak.exp_decay_beta_1 = 0.00946
+    expt.peak.exp_rise_alpha_0 = 0.0
+    expt.peak.exp_rise_alpha_1 = 0.5971
     expt.linked_phases.create(id='si', scale=14.92)
     for x in range(0, 35000, 5000):
         expt.background.create(id=str(x), x=x, y=200)
@@ -62,7 +62,7 @@ def test_single_fit_neutron_pd_tof_si() -> None:
 
     # Select fitting parameters
     model.cell.length_a.free = True
-    model.atom_sites['Si'].b_iso.free = True
+    model.atom_sites['Si'].adp_iso.free = True
     expt.linked_phases['si'].scale.free = True
     expt.instrument.calib_d_to_tof_offset.free = True
     for point in expt.background:
@@ -92,7 +92,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
         fract_y=0.0,
         fract_z=0.25,
         wyckoff_letter='b',
-        b_iso=0.9,
+        adp_iso=0.9,
     )
     model.atom_sites.create(
         label='Al',
@@ -101,7 +101,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
         fract_y=0.25171,
         fract_z=0.25171,
         wyckoff_letter='a',
-        b_iso=0.66,
+        adp_iso=0.66,
     )
     model.atom_sites.create(
         label='Na',
@@ -110,7 +110,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
         fract_y=0.08481,
         fract_z=0.08481,
         wyckoff_letter='a',
-        b_iso=1.9,
+        adp_iso=1.9,
     )
     model.atom_sites.create(
         label='F1',
@@ -119,7 +119,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
         fract_y=0.3053,
         fract_z=0.1195,
         wyckoff_letter='c',
-        b_iso=0.9,
+        adp_iso=0.9,
     )
     model.atom_sites.create(
         label='F2',
@@ -128,7 +128,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
         fract_y=0.3634,
         fract_z=0.1867,
         wyckoff_letter='c',
-        b_iso=1.28,
+        adp_iso=1.28,
     )
     model.atom_sites.create(
         label='F3',
@@ -137,7 +137,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
         fract_y=0.4612,
         fract_z=0.4612,
         wyckoff_letter='a',
-        b_iso=0.79,
+        adp_iso=0.79,
     )
 
     # Set experiment
@@ -153,14 +153,14 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
     expt.instrument.calib_d_to_tof_offset = -13.7123
     expt.instrument.calib_d_to_tof_linear = 20773.1
     expt.instrument.calib_d_to_tof_quad = -1.08308
-    expt.peak_profile_type = 'pseudo-voigt * ikeda-carpenter'
+    expt.peak_profile_type = 'jorgensen'
     expt.peak.broad_gauss_sigma_0 = 0.0
     expt.peak.broad_gauss_sigma_1 = 0.0
     expt.peak.broad_gauss_sigma_2 = 15.7
-    expt.peak.broad_mix_beta_0 = 0.00670
-    expt.peak.broad_mix_beta_1 = 0.0099
-    expt.peak.asym_alpha_0 = -0.009
-    expt.peak.asym_alpha_1 = 0.1085
+    expt.peak.exp_decay_beta_0 = 0.00670
+    expt.peak.exp_decay_beta_1 = 0.0099
+    expt.peak.exp_rise_alpha_0 = -0.009
+    expt.peak.exp_rise_alpha_1 = 0.1085
     expt.linked_phases.create(id='ncaf', scale=1.0928)
     for x, y in [
         (9162, 465),
@@ -206,8 +206,8 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
     expt.linked_phases['ncaf'].scale.free = True
     expt.instrument.calib_d_to_tof_offset.free = True
     expt.peak.broad_gauss_sigma_2.free = True
-    expt.peak.broad_mix_beta_1.free = True
-    expt.peak.asym_alpha_1.free = True
+    expt.peak.exp_decay_beta_1.free = True
+    expt.peak.exp_rise_alpha_1.free = True
 
     # Perform fit
     project.analysis.fit()

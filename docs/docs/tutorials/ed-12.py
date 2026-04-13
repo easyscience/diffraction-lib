@@ -50,7 +50,7 @@ project.structures['nacl'].atom_sites.create(
     fract_y=0,
     fract_z=0,
     wyckoff_letter='a',
-    b_iso=1.0,
+    adp_iso=1.0,
 )
 project.structures['nacl'].atom_sites.create(
     label='Cl',
@@ -59,7 +59,7 @@ project.structures['nacl'].atom_sites.create(
     fract_y=0.5,
     fract_z=0.5,
     wyckoff_letter='b',
-    b_iso=1.0,
+    adp_iso=1.0,
 )
 
 # %% [markdown]
@@ -103,8 +103,8 @@ project.experiments['xray_pdf'].linked_phases.create(id='nacl', scale=0.5)
 
 # %%
 project.structures['nacl'].cell.length_a.free = True
-project.structures['nacl'].atom_sites['Na'].b_iso.free = True
-project.structures['nacl'].atom_sites['Cl'].b_iso.free = True
+project.structures['nacl'].atom_sites['Na'].adp_iso.free = True
+project.structures['nacl'].atom_sites['Cl'].adp_iso.free = True
 
 # %%
 project.experiments['xray_pdf'].linked_phases['nacl'].scale.free = True
@@ -117,6 +117,7 @@ project.experiments['xray_pdf'].peak.sharp_delta_2.free = True
 # %%
 project.analysis.fit()
 project.analysis.display.fit_results()
+project.plotter.plot_param_correlations()
 
 # %% [markdown]
 # ## Plot Measured vs Calculated
