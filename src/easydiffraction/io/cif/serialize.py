@@ -146,6 +146,46 @@ def category_item_to_cif(item: object) -> str:
     return '\n'.join(lines)
 
 
+def _validate_loop_tags(
+    item: object,
+    header_tags: list[str],
+) -> None:
+    """Log an error if any row tag disagrees with *header_tags*."""
+    for col, p in enumerate(item.parameters):
+        tag = p._cif_handler.names[0]  # type: ignore[attr-defined]
+        if tag != header_tags[col]:
+            log.error(
+                f'CIF tag mismatch in loop column {col}: '
+                f"header expects '{header_tags[col]}', "
+                f"row has '{tag}'",
+                exc_type=ValueError,
+            )
+
+
+def _emit_loop_rows(
+    items: list,
+    row_fn: object,
+    header_tags: list[str],
+    max_display: int | None,
+) -> list[str]:
+    """Build formatted rows, optionally truncated."""
+    lines: list[str] = []
+    if max_display is not None and len(items) > max_display:
+        half = max_display // 2
+        for item in items[:half]:
+            _validate_loop_tags(item, header_tags)
+            lines.append(' '.join(row_fn(item)))
+        lines.append('...')
+        for item in items[-half:]:
+            _validate_loop_tags(item, header_tags)
+            lines.append(' '.join(row_fn(item)))
+    else:
+        for item in items:
+            _validate_loop_tags(item, header_tags)
+            lines.append(' '.join(row_fn(item)))
+    return lines
+
+
 def category_collection_to_cif(
     collection: object,
     max_display: int | None = None,
@@ -179,11 +219,13 @@ def category_collection_to_cif(
 
     lines: list[str] = []
 
-    # Header
+    # Header — use first item's CIF tag names as the canonical columns
     first_item = next(iter(collection.values()))
     lines.append('loop_')
+    header_tags: list[str] = []
     for p in first_item.parameters:
         tags = p._cif_handler.names  # type: ignore[attr-defined]
+        header_tags.append(tags[0])
         lines.append(tags[0])
 
     # Allow collections to customise per-item row formatting
@@ -196,20 +238,8 @@ def category_collection_to_cif(
                 return override
         return [format_param_value(p) for p in item.parameters]
 
-    # Rows
-    # Limit number of displayed rows if requested
-    if max_display is not None and len(collection) > max_display:
-        half_display = max_display // 2
-        for i in range(half_display):
-            item = list(collection.values())[i]
-            lines.append(' '.join(_row(item)))
-        lines.append('...')
-        for i in range(-half_display, 0):
-            item = list(collection.values())[i]
-            lines.append(' '.join(_row(item)))
-    # No limit
-    else:
-        lines.extend(' '.join(_row(item)) for item in collection.values())
+    items = list(collection.values())
+    lines.extend(_emit_loop_rows(items, _row, header_tags, max_display))
 
     return '\n'.join(lines)
 
