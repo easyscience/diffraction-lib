@@ -104,7 +104,7 @@ def test_prepare_solver_args_applies_fit_bounds():
     params = [FakeParam('x', 5.0, fit_min=0.0, fit_max=10.0)]
     kwargs = m._prepare_solver_args(params)
     bp = kwargs['bumps_params'][0]
-    assert bp.bounds == (0.0, 10.0)
+    assert getattr(bp.bounds, 'limits', bp.bounds) == (0.0, 10.0)
 
 
 def test_prepare_solver_args_does_not_use_physical_bounds():
@@ -121,7 +121,7 @@ def test_prepare_solver_args_does_not_use_physical_bounds():
     params = [PhysParam('x', 5.0)]
     kwargs = m._prepare_solver_args(params)
     bp = kwargs['bumps_params'][0]
-    assert bp.bounds == (-np.inf, np.inf)
+    assert getattr(bp.bounds, 'limits', bp.bounds) == (-np.inf, np.inf)
 
 
 # -- _EasyDiffractionFitness tests --------------------------------------------

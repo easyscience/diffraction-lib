@@ -34,7 +34,7 @@ def test_show_current_minimizer_prints(capsys):
     a.show_current_minimizer()
     out = capsys.readouterr().out
     assert 'Current minimizer' in out
-    assert 'bumps (lm)' in out
+    assert 'lmfit (leastsq)' in out
 
 
 def test_fit_mode_category_and_joint_fit_experiments(monkeypatch, capsys):

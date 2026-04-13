@@ -70,7 +70,7 @@ class TestLoadAnalysis:
 
         loaded = Project.load(str(tmp_path / 'proj'))
 
-        assert loaded.analysis.current_minimizer == 'bumps (lm)'
+        assert loaded.analysis.current_minimizer == 'lmfit (leastsq)'
 
     def test_round_trips_fit_mode(self, tmp_path):
         original = Project(name='a2')
@@ -125,7 +125,7 @@ class TestLoadAnalysisCifFallback:
         assert (tmp_path / 'proj' / 'analysis' / 'analysis.cif').is_file()
 
         loaded = Project.load(str(tmp_path / 'proj'))
-        assert loaded.analysis.current_minimizer == 'bumps (lm)'
+        assert loaded.analysis.current_minimizer == 'lmfit (leastsq)'
 
     def test_loads_analysis_from_root_fallback(self, tmp_path):
         """Old layout fallback: analysis.cif at project root."""
@@ -139,4 +139,4 @@ class TestLoadAnalysisCifFallback:
         analysis_dir.rmdir()
 
         loaded = Project.load(str(proj_dir))
-        assert loaded.analysis.current_minimizer == 'bumps (lm)'
+        assert loaded.analysis.current_minimizer == 'lmfit (leastsq)'
