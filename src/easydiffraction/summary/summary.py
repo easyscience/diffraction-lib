@@ -3,6 +3,7 @@
 
 from textwrap import wrap
 
+from easydiffraction.core.variable import Parameter
 from easydiffraction.io.cif.serialize import summary_to_cif
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.utils import render_table
@@ -26,6 +27,17 @@ class Summary:
             The Project instance this summary belongs to.
         """
         self.project = project
+
+    @staticmethod
+    def _fmt_row(
+        pretty_name: str,
+        parameter: Parameter,
+    ) -> None:
+        digits = 8
+        value = f'{parameter.value:.{digits}f}'
+        uncertainty = parameter.uncertainty
+        uncertainty = f'{uncertainty:.{digits}f}' if uncertainty is not None else ''
+        return [pretty_name, value, uncertainty]
 
     # ------------------------------------------
     #  Report Generation
@@ -60,24 +72,27 @@ class Summary:
         """Print crystallographic data for all phases."""
         console.section('Crystallographic data')
 
-        for model in self.project.structures.values():
+        for structure in self.project.structures.values():
             console.paragraph('Phase datablock')
-            console.print(f'🧩 {model.name}')
+            console.print(f'🧩 {structure.name}')
 
             console.paragraph('Space group')
-            console.print(model.space_group.name_h_m.value)
+            console.print(structure.space_group.name_h_m.value)
 
-            console.paragraph('Cell parameters')
-            columns_headers = ['Parameter', 'Value']
-            columns_alignment: list[str] = ['left', 'right']
-            cell_data = [
-                [p.name.replace('length_', '').replace('angle_', ''), f'{p.value:.5f}']
-                for p in model.cell.parameters
+            columns_headers = ['Parameter', 'Value', 'Uncertainty']
+            columns_alignment = ['left', 'right', 'right']
+            columns_data = [
+                Summary._fmt_row('a', structure.cell.length_a),
+                Summary._fmt_row('b', structure.cell.length_a),
+                Summary._fmt_row('c', structure.cell.length_a),
+                Summary._fmt_row('α', structure.cell.angle_alpha),  # noqa: RUF001
+                Summary._fmt_row('β', structure.cell.angle_beta),
+                Summary._fmt_row('γ', structure.cell.angle_gamma),  # noqa: RUF001
             ]
             render_table(
                 columns_headers=columns_headers,
                 columns_alignment=columns_alignment,
-                columns_data=cell_data,
+                columns_data=columns_data,
             )
 
             console.paragraph('Atom sites')
@@ -103,13 +118,13 @@ class Summary:
                 [
                     site.label.value,
                     site.type_symbol.value,
-                    f'{site.fract_x.value:.5f}',
-                    f'{site.fract_y.value:.5f}',
-                    f'{site.fract_z.value:.5f}',
-                    f'{site.occupancy.value:.5f}',
-                    f'{site.adp_iso.value:.5f}',
+                    f'{site.fract_x.value:.8f}',
+                    f'{site.fract_y.value:.8f}',
+                    f'{site.fract_z.value:.8f}',
+                    f'{site.occupancy.value:.8f}',
+                    f'{site.adp_iso.value:.8f}',
                 ]
-                for site in model.atom_sites
+                for site in structure.atom_sites
             ]
             render_table(
                 columns_headers=columns_headers,
@@ -129,8 +144,12 @@ class Summary:
             console.print(
                 f'{expt.type.sample_form.value}, '
                 f'{expt.type.radiation_probe.value}, '
-                f'{expt.type.beam_mode.value}'
+                f'{expt.type.beam_mode.value}',
+                f'{expt.type.scattering_type.value}',
             )
+
+            console.paragraph('Calculation engine')
+            console.print(f'{expt.calculator_type}')
 
             if 'instrument' in expt._public_attrs():
                 if 'setup_wavelength' in expt.instrument._public_attrs():
@@ -147,12 +166,12 @@ class Summary:
             if 'peak' in expt._public_attrs():
                 if 'broad_gauss_u' in expt.peak._public_attrs():
                     console.paragraph('Peak broadening (Gaussian)')
-                    columns_headers = ['Parameter', 'Value']
-                    columns_alignment = ['left', 'right']
+                    columns_headers = ['Parameter', 'Value', 'Uncertainty']
+                    columns_alignment = ['left', 'right', 'right']
                     columns_data = [
-                        ['U', f'{expt.peak.broad_gauss_u.value:.5f}'],
-                        ['V', f'{expt.peak.broad_gauss_v.value:.5f}'],
-                        ['W', f'{expt.peak.broad_gauss_w.value:.5f}'],
+                        Summary._fmt_row('U', expt.peak.broad_gauss_u),
+                        Summary._fmt_row('V', expt.peak.broad_gauss_v),
+                        Summary._fmt_row('W', expt.peak.broad_gauss_w),
                     ]
                     render_table(
                         columns_headers=columns_headers,
@@ -163,11 +182,26 @@ class Summary:
                     console.paragraph('Peak broadening (Lorentzian)')
                     # TODO: Some headers capitalize, some don't -
                     #  be consistent
-                    columns_headers = ['Parameter', 'Value']
-                    columns_alignment = ['left', 'right']
+                    columns_headers = ['Parameter', 'Value', 'Uncertainty']
+                    columns_alignment = ['left', 'right', 'right']
                     columns_data = [
-                        ['X', f'{expt.peak.broad_lorentz_x.value:.5f}'],
-                        ['Y', f'{expt.peak.broad_lorentz_y.value:.5f}'],
+                        Summary._fmt_row('X', expt.peak.broad_lorentz_x),
+                        Summary._fmt_row('Y', expt.peak.broad_lorentz_y),
+                    ]
+                    render_table(
+                        columns_headers=columns_headers,
+                        columns_alignment=columns_alignment,
+                        columns_data=columns_data,
+                    )
+                if 'asym_empir_1' in expt.peak._public_attrs():
+                    console.paragraph('Asymmetry (Empirical)')
+                    columns_headers = ['Parameter', 'Value', 'Uncertainty']
+                    columns_alignment = ['left', 'right', 'right']
+                    columns_data = [
+                        Summary._fmt_row('p1', expt.peak.asym_empir_1),
+                        Summary._fmt_row('p2', expt.peak.asym_empir_2),
+                        Summary._fmt_row('p3', expt.peak.asym_empir_3),
+                        Summary._fmt_row('p4', expt.peak.asym_empir_4),
                     ]
                     render_table(
                         columns_headers=columns_headers,
@@ -178,10 +212,6 @@ class Summary:
     def show_fitting_details(self) -> None:
         """Print fitting details including engines and metrics."""
         console.section('Fitting')
-
-        console.paragraph('Calculation engine')
-        for expt in self.project.experiments.values():
-            console.print(f'  {expt.name}: {expt.calculator_type}')
 
         console.paragraph('Minimization engine')
         console.print(self.project.analysis.current_minimizer)
