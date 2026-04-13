@@ -563,9 +563,10 @@ class CryspyCalculator(CalculatorBase):
         """
         saved = self._temporarily_convert_to_u_notation(structure)
 
-        cif = structure.as_cif
-
-        self._restore_from_u_notation(structure, saved)
+        try:
+            cif = structure.as_cif
+        finally:
+            self._restore_from_u_notation(structure, saved)
 
         return cif
 
