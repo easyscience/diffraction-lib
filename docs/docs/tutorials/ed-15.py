@@ -70,21 +70,20 @@ experiment.extinction.radius = 100.0
 project.plotter.plot_meas_vs_calc(expt_name='senju')
 
 # %%
-# for label in site_labels:
-#    structure.atom_sites[label].adp_iso.free = True
-
-# %%
 experiment.linked_crystal.scale.free = True
 experiment.extinction.radius.free = True
 
 # %%
+project.analysis.current_minimizer = 'lmfit'
+
+# %%
 # Start refinement. All parameters, which have standard uncertainties
 # in the input CIF files, are refined by default.
-# project.analysis.fit()
+project.analysis.fit()
 
 # %%
 # Show fit results summary
-# project.analysis.display.fit_results()
+project.analysis.display.fit_results()
 
 # %%
 structure.show_as_cif()
@@ -103,15 +102,16 @@ for atom_site in structure.atom_sites:
     atom_site.adp_type = 'Uani'
 
 # %%
-# print(structure.atom_site_aniso.as_cif)
+adp_components = ('adp_11', 'adp_22', 'adp_33', 'adp_12', 'adp_13', 'adp_23')
+for atom_site in structure.atom_site_aniso:
+    for component in adp_components:
+        getattr(atom_site, component).free = True
+
 # %%
 structure.show_as_cif()
 
 # %%
-adp_tensor_components = ('adp_11', 'adp_22', 'adp_33', 'adp_12', 'adp_13', 'adp_23')
-for atom_site in structure.atom_site_aniso:
-    for component in adp_tensor_components:
-        getattr(atom_site, component).free = True
+project.analysis.display.free_params()
 
 # %%
 project.analysis.fit()
