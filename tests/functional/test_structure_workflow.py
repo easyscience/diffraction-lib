@@ -77,7 +77,7 @@ class TestAtomSites:
             fract_y=0,
             fract_z=0,
             wyckoff_letter='a',
-            b_iso=0.5,
+            adp_iso=0.5,
         )
         assert len(s.atom_sites) == 1
 
@@ -92,11 +92,11 @@ class TestAtomSites:
             fract_y=0,
             fract_z=0,
             wyckoff_letter='a',
-            b_iso=0.5,
+            adp_iso=0.5,
         )
         atom = s.atom_sites['La']
         assert atom.fract_x.value == pytest.approx(0)
-        assert atom.b_iso.value == pytest.approx(0.5)
+        assert atom.adp_iso.value == pytest.approx(0.5)
 
     def test_atom_site_fract_is_fittable(self):
         project = _make_project()
@@ -109,7 +109,7 @@ class TestAtomSites:
             fract_y=0.2,
             fract_z=0.3,
             wyckoff_letter='a',
-            b_iso=0.5,
+            adp_iso=0.5,
         )
         s.atom_sites['La'].fract_x.free = True
         assert s.atom_sites['La'].fract_x.free is True
@@ -125,7 +125,7 @@ class TestAtomSites:
             fract_y=0,
             fract_z=0,
             wyckoff_letter='a',
-            b_iso=0.5,
+            adp_iso=0.5,
         )
         s.atom_sites.create(
             label='O',
@@ -134,6 +134,6 @@ class TestAtomSites:
             fract_y=0.5,
             fract_z=0,
             wyckoff_letter='c',
-            b_iso=0.3,
+            adp_iso=0.3,
         )
         assert len(s.atom_sites) == 2

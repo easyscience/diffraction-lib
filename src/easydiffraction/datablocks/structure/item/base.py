@@ -5,6 +5,11 @@
 from typeguard import typechecked
 
 from easydiffraction.core.datablock import DatablockItem
+from easydiffraction.datablocks.structure.categories.atom_site_aniso import AtomSiteAnisoCollection
+from easydiffraction.datablocks.structure.categories.atom_site_aniso.default import AtomSiteAniso
+from easydiffraction.datablocks.structure.categories.atom_site_aniso.factory import (
+    AtomSiteAnisoFactory,
+)
 from easydiffraction.datablocks.structure.categories.atom_sites import AtomSites
 from easydiffraction.datablocks.structure.categories.atom_sites.factory import AtomSitesFactory
 from easydiffraction.datablocks.structure.categories.cell import Cell
@@ -31,6 +36,8 @@ class Structure(DatablockItem):
         self._space_group = SpaceGroupFactory.create(self._space_group_type)
         self._atom_sites_type: str = AtomSitesFactory.default_tag()
         self._atom_sites = AtomSitesFactory.create(self._atom_sites_type)
+        self._atom_site_aniso_type: str = AtomSiteAnisoFactory.default_tag()
+        self._atom_site_aniso = AtomSiteAnisoFactory.create(self._atom_site_aniso_type)
         self._identity.datablock_entry_name = lambda: self.name
 
     # ------------------------------------------------------------------
@@ -127,6 +134,79 @@ class Structure(DatablockItem):
             New atom-sites collection.
         """
         self._atom_sites = new
+
+    # ------------------------------------------------------------------
+    #  Atom site aniso (read-only, single type)
+    # ------------------------------------------------------------------
+
+    @property
+    def atom_site_aniso(self) -> AtomSiteAnisoCollection:
+        """Anisotropic-ADP collection for this structure."""
+        return self._atom_site_aniso
+
+    @atom_site_aniso.setter
+    @typechecked
+    def atom_site_aniso(self, new: AtomSiteAnisoCollection) -> None:
+        """
+        Replace the anisotropic-ADP collection for this structure.
+
+        Parameters
+        ----------
+        new : AtomSiteAnisoCollection
+            New aniso collection.
+        """
+        self._atom_site_aniso = new
+
+    # ------------------------------------------------------------------
+    # Private methods
+    # ------------------------------------------------------------------
+
+    def _sync_atom_site_aniso(self) -> None:
+        """
+        Reconcile ``atom_site_aniso`` with ``atom_sites``.
+
+        Ensures every atom in ``atom_sites`` has a matching entry in
+        ``atom_site_aniso`` and removes stale entries whose label no
+        longer appears in ``atom_sites``.  Reorders CIF names on aniso
+        parameters to match each atom's ``adp_type``.
+        """
+        existing_labels = {a.label.value for a in self._atom_sites}
+        aniso_labels = {a.label.value for a in self._atom_site_aniso}
+
+        # Add missing entries
+        for atom in self._atom_sites:
+            lbl = atom.label.value
+            if lbl not in aniso_labels:
+                entry = AtomSiteAniso()
+                entry.label = lbl
+                self._atom_site_aniso.add(entry)
+
+        # Remove stale entries
+        stale = [
+            a.label.value for a in self._atom_site_aniso if a.label.value not in existing_labels
+        ]
+        for lbl in stale:
+            self._atom_site_aniso.remove(lbl)
+
+        # Reorder CIF names to match each atom's adp_type
+        for atom in self._atom_sites:
+            atom._reorder_adp_cif_names(atom.adp_type.value)
+
+    def _update_categories(
+        self,
+        *,
+        called_by_minimizer: bool = False,
+    ) -> None:
+        """Update categories with atom_site_aniso sync."""
+        if not called_by_minimizer and not self._need_categories_update:
+            return
+
+        self._sync_atom_site_aniso()
+
+        for category in self.categories:
+            category._update(called_by_minimizer=called_by_minimizer)
+
+        self._need_categories_update = False
 
     # ------------------------------------------------------------------
     # Public methods

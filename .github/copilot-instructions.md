@@ -44,6 +44,10 @@
 - Type-annotate all public function signatures.
 - Docstrings on all public classes and methods (numpy style). These must
   include sections Parameters, Returns and Raises, where applicable.
+- Docstring summary must be a single line no longer than 72 characters
+  (the `max-doc-length` setting in `pyproject.toml`). If the summary
+  does not fit, shorten the wording rather than wrapping to a second
+  line.
 - Prefer flat over nested, explicit over clever.
 - Write straightforward code; do not add defensive checks for unlikely
   edge cases.

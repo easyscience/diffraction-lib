@@ -27,7 +27,7 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
         fract_z=0,
         wyckoff_letter='a',
         occupancy=0.5,
-        b_iso=0.1,
+        adp_iso=0.1,
     )
     model.atom_sites.create(
         label='Ba',
@@ -37,7 +37,7 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
         fract_z=0,
         wyckoff_letter='a',
         occupancy=0.5,
-        b_iso=0.1,
+        adp_iso=0.1,
     )
     model.atom_sites.create(
         label='Co',
@@ -46,7 +46,7 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
         fract_y=0.5,
         fract_z=0.5,
         wyckoff_letter='b',
-        b_iso=0.1,
+        adp_iso=0.1,
     )
     model.atom_sites.create(
         label='O',
@@ -55,7 +55,7 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
         fract_y=0.5,
         fract_z=0.5,
         wyckoff_letter='c',
-        b_iso=0.1,
+        adp_iso=0.1,
     )
 
     # Set experiment
@@ -128,10 +128,10 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
     # ------------ 3rd fitting ------------
 
     # Select fitting parameters
-    model.atom_sites['La'].b_iso.free = True
-    model.atom_sites['Ba'].b_iso.free = True
-    model.atom_sites['Co'].b_iso.free = True
-    model.atom_sites['O'].b_iso.free = True
+    model.atom_sites['La'].adp_iso.free = True
+    model.atom_sites['Ba'].adp_iso.free = True
+    model.atom_sites['Co'].adp_iso.free = True
+    model.atom_sites['O'].adp_iso.free = True
 
     # Perform fit
     project.analysis.fit()
@@ -163,7 +163,7 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
         fract_y=0,
         fract_z=0,
         wyckoff_letter='a',
-        b_iso=1.0,
+        adp_iso=1.0,
         occupancy=0.5,
     )
     atom_sites.create(
@@ -173,7 +173,7 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
         fract_y=0,
         fract_z=0,
         wyckoff_letter='a',
-        b_iso=1.0,
+        adp_iso=1.0,
         occupancy=0.5,
     )
     atom_sites.create(
@@ -183,7 +183,7 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
         fract_y=0.5,
         fract_z=0.5,
         wyckoff_letter='b',
-        b_iso=1.0,
+        adp_iso=1.0,
     )
     atom_sites.create(
         label='O',
@@ -192,7 +192,7 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
         fract_y=0.5,
         fract_z=0.5,
         wyckoff_letter='c',
-        b_iso=1.0,
+        adp_iso=1.0,
     )
 
     # Set experiment
@@ -241,16 +241,16 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     # Select fitting parameters
     atom_sites['La'].occupancy.free = True
     atom_sites['Ba'].occupancy.free = True
-    atom_sites['La'].b_iso.free = True
-    atom_sites['Ba'].b_iso.free = True
-    atom_sites['Co'].b_iso.free = True
-    atom_sites['O'].b_iso.free = True
+    atom_sites['La'].adp_iso.free = True
+    atom_sites['Ba'].adp_iso.free = True
+    atom_sites['Co'].adp_iso.free = True
+    atom_sites['O'].adp_iso.free = True
 
     # Compare parameter values before fit
-    assert_almost_equal(atom_sites['La'].b_iso.value, 1.0, decimal=2)
-    assert_almost_equal(atom_sites['Ba'].b_iso.value, 1.0, decimal=2)
-    assert_almost_equal(atom_sites['Co'].b_iso.value, 1.0, decimal=2)
-    assert_almost_equal(atom_sites['O'].b_iso.value, 1.0, decimal=2)
+    assert_almost_equal(atom_sites['La'].adp_iso.value, 1.0, decimal=2)
+    assert_almost_equal(atom_sites['Ba'].adp_iso.value, 1.0, decimal=2)
+    assert_almost_equal(atom_sites['Co'].adp_iso.value, 1.0, decimal=2)
+    assert_almost_equal(atom_sites['O'].adp_iso.value, 1.0, decimal=2)
     assert_almost_equal(atom_sites['La'].occupancy.value, 0.5, decimal=2)
     assert_almost_equal(atom_sites['Ba'].occupancy.value, 0.5, decimal=2)
 
@@ -258,10 +258,10 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     project.analysis.fit()
 
     # Compare parameter values after fit
-    assert_almost_equal(atom_sites['La'].b_iso.value, desired=15.0945, decimal=2)
-    assert_almost_equal(atom_sites['Ba'].b_iso.value, desired=0.5226, decimal=2)
-    assert_almost_equal(atom_sites['Co'].b_iso.value, desired=0.2398, decimal=2)
-    assert_almost_equal(atom_sites['O'].b_iso.value, desired=1.4049, decimal=2)
+    assert_almost_equal(atom_sites['La'].adp_iso.value, desired=15.0945, decimal=2)
+    assert_almost_equal(atom_sites['Ba'].adp_iso.value, desired=0.5226, decimal=2)
+    assert_almost_equal(atom_sites['Co'].adp_iso.value, desired=0.2398, decimal=2)
+    assert_almost_equal(atom_sites['O'].adp_iso.value, desired=1.4049, decimal=2)
     assert_almost_equal(atom_sites['La'].occupancy.value, desired=0.011, decimal=2)
     assert_almost_equal(atom_sites['Ba'].occupancy.value, desired=1.3206, decimal=2)
 
@@ -277,11 +277,11 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     # Set aliases for parameters
     project.analysis.aliases.create(
         label='biso_La',
-        param=atom_sites['La'].b_iso,
+        param=atom_sites['La'].adp_iso,
     )
     project.analysis.aliases.create(
         label='biso_Ba',
-        param=atom_sites['Ba'].b_iso,
+        param=atom_sites['Ba'].adp_iso,
     )
     project.analysis.aliases.create(
         label='occ_La',
@@ -300,10 +300,10 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     project.analysis.fit()
 
     # Compare parameter values after fit
-    assert_almost_equal(atom_sites['La'].b_iso.value, desired=0.5443, decimal=2)
-    assert_almost_equal(atom_sites['Ba'].b_iso.value, desired=0.5443, decimal=2)
-    assert_almost_equal(atom_sites['Co'].b_iso.value, desired=0.2335, decimal=2)
-    assert_almost_equal(atom_sites['O'].b_iso.value, desired=1.4056, decimal=2)
+    assert_almost_equal(atom_sites['La'].adp_iso.value, desired=0.5443, decimal=2)
+    assert_almost_equal(atom_sites['Ba'].adp_iso.value, desired=0.5443, decimal=2)
+    assert_almost_equal(atom_sites['Co'].adp_iso.value, desired=0.2335, decimal=2)
+    assert_almost_equal(atom_sites['O'].adp_iso.value, desired=1.4056, decimal=2)
     assert_almost_equal(atom_sites['La'].occupancy.value, desired=0.5274, decimal=2)
     assert_almost_equal(atom_sites['Ba'].occupancy.value, desired=0.4726, decimal=2)
 
@@ -329,7 +329,7 @@ def test_fit_neutron_pd_cwl_hs() -> None:
         fract_y=0,
         fract_z=0.5,
         wyckoff_letter='b',
-        b_iso=0.1,
+        adp_iso=0.1,
     )
     model.atom_sites.create(
         label='Cu',
@@ -338,7 +338,7 @@ def test_fit_neutron_pd_cwl_hs() -> None:
         fract_y=0,
         fract_z=0,
         wyckoff_letter='e',
-        b_iso=1.2,
+        adp_iso=1.2,
     )
     model.atom_sites.create(
         label='O',
@@ -347,7 +347,7 @@ def test_fit_neutron_pd_cwl_hs() -> None:
         fract_y=-0.206,
         fract_z=0.061,
         wyckoff_letter='h',
-        b_iso=0.7,
+        adp_iso=0.7,
     )
     model.atom_sites.create(
         label='Cl',
@@ -356,7 +356,7 @@ def test_fit_neutron_pd_cwl_hs() -> None:
         fract_y=0,
         fract_z=0.197,
         wyckoff_letter='c',
-        b_iso=1.1,
+        adp_iso=1.1,
     )
     model.atom_sites.create(
         label='H',
@@ -365,7 +365,7 @@ def test_fit_neutron_pd_cwl_hs() -> None:
         fract_y=-0.132,
         fract_z=0.09,
         wyckoff_letter='h',
-        b_iso=2.3,
+        adp_iso=2.3,
     )
 
     # Set experiment
@@ -462,11 +462,11 @@ def test_fit_neutron_pd_cwl_hs() -> None:
     # ------------ 3rd fitting ------------
 
     # Select fitting parameters
-    model.atom_sites['Zn'].b_iso.free = True
-    model.atom_sites['Cu'].b_iso.free = True
-    model.atom_sites['O'].b_iso.free = True
-    model.atom_sites['Cl'].b_iso.free = True
-    model.atom_sites['H'].b_iso.free = True
+    model.atom_sites['Zn'].adp_iso.free = True
+    model.atom_sites['Cu'].adp_iso.free = True
+    model.atom_sites['O'].adp_iso.free = True
+    model.atom_sites['Cl'].adp_iso.free = True
+    model.atom_sites['H'].adp_iso.free = True
 
     # Perform fit
     project.analysis.fit()
@@ -490,11 +490,11 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints_from_project(tmp_path) 
     # Set constraints
     project.analysis.aliases.create(
         label='biso_La',
-        param=project.structures['lbco'].atom_sites['La'].b_iso,
+        param=project.structures['lbco'].atom_sites['La'].adp_iso,
     )
     project.analysis.aliases.create(
         label='biso_Ba',
-        param=project.structures['lbco'].atom_sites['Ba'].b_iso,
+        param=project.structures['lbco'].atom_sites['Ba'].adp_iso,
     )
 
     project.analysis.aliases.create(

@@ -84,7 +84,7 @@ def project_with_data(
         fract_y=0.125,
         fract_z=0.125,
         wyckoff_letter='c',
-        b_iso=1.1,
+        adp_iso=1.1,
     )
 
     # Step 3: Add experiment from modified CIF file
@@ -144,7 +144,7 @@ def fitted_project(
 
     # Step 5: Select parameters to be fitted
     # Set free parameters for structure
-    structure.atom_sites['C'].b_iso.free = True
+    structure.atom_sites['C'].adp_iso.free = True
 
     # Set free parameters for experiment
     experiment.linked_phases['diamond'].scale.free = True

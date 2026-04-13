@@ -37,7 +37,7 @@ project.structures['ni'].atom_sites.create(
     fract_y=0.0,
     fract_z=0.0,
     wyckoff_letter='a',
-    b_iso=0.5,
+    adp_iso=0.5,
 )
 
 # %% [markdown]
@@ -70,7 +70,7 @@ project.experiments['pdf'].peak.damp_particle_diameter = 0
 
 # %%
 project.structures['ni'].cell.length_a.free = True
-project.structures['ni'].atom_sites['Ni'].b_iso.free = True
+project.structures['ni'].atom_sites['Ni'].adp_iso.free = True
 
 # %%
 project.experiments['pdf'].linked_phases['ni'].scale.free = True
@@ -83,6 +83,7 @@ project.experiments['pdf'].peak.sharp_delta_2.free = True
 # %%
 project.analysis.fit()
 project.analysis.display.fit_results()
+project.plotter.plot_param_correlations()
 
 # %% [markdown]
 # ## Plot Measured vs Calculated

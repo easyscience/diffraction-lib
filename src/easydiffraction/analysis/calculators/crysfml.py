@@ -198,8 +198,8 @@ class CrysfmlCalculator(CalculatorBase):
                 '_fract_y': atom.fract_y.value,
                 '_fract_z': atom.fract_z.value,
                 '_occupancy': atom.occupancy.value,
-                '_adp_type': 'Biso',  # Assuming Biso for simplicity
-                '_B_iso_or_equiv': atom.b_iso.value,
+                '_adp_type': atom.adp_type.value,
+                '_B_iso_or_equiv': atom.adp_iso_as_b,
             }
             structure_dict[structure.name]['_atom_site'].append(atom_site)
 
@@ -222,9 +222,10 @@ class CrysfmlCalculator(CalculatorBase):
         dict[str, Any]
             A dictionary representation of the experiment.
         """
-        expt_type = getattr(experiment, 'type', None)
-        instrument = getattr(experiment, 'instrument', None)
-        peak = getattr(experiment, 'peak', None)
+        attrs = type(experiment)._public_attrs()
+        expt_type = experiment.type if 'type' in attrs else None
+        instrument = experiment.instrument if 'instrument' in attrs else None
+        peak = experiment.peak if 'peak' in attrs else None
 
         x_data = experiment.data.x
         twotheta_min = float(x_data.min())

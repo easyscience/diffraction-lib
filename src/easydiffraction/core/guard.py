@@ -33,6 +33,10 @@ class GuardedBase(ABC):
 
     def __getattr__(self, key: str) -> None:
         """Raise a descriptive error for unknown attribute access."""
+        # Private/dunder lookups should not trigger diagnostics —
+        # raise AttributeError so getattr(obj, '_foo', default) works.
+        if key.startswith('_'):
+            raise AttributeError(key)
         cls = type(self)
         allowed = cls._public_attrs()
         if key not in allowed:

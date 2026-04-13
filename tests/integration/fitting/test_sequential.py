@@ -39,7 +39,7 @@ def _create_sequential_project(tmp_path: Path) -> tuple[Project, str]:
         fract_z=0,
         wyckoff_letter='a',
         occupancy=0.5,
-        b_iso=0.5,
+        adp_iso=0.5,
     )
     model.atom_sites.create(
         label='Ba',
@@ -49,7 +49,7 @@ def _create_sequential_project(tmp_path: Path) -> tuple[Project, str]:
         fract_z=0,
         wyckoff_letter='a',
         occupancy=0.5,
-        b_iso=0.5,
+        adp_iso=0.5,
     )
     model.atom_sites.create(
         label='Co',
@@ -58,7 +58,7 @@ def _create_sequential_project(tmp_path: Path) -> tuple[Project, str]:
         fract_y=0.5,
         fract_z=0.5,
         wyckoff_letter='b',
-        b_iso=0.5,
+        adp_iso=0.5,
     )
     model.atom_sites.create(
         label='O',
@@ -67,7 +67,7 @@ def _create_sequential_project(tmp_path: Path) -> tuple[Project, str]:
         fract_y=0.5,
         fract_z=0.5,
         wyckoff_letter='c',
-        b_iso=0.5,
+        adp_iso=0.5,
     )
 
     # Experiment (template)

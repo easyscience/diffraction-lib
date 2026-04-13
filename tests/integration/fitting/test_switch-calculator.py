@@ -21,11 +21,11 @@ def test_neutron_pd_cwl_lbco_crysfml(tmp_path) -> None:
     # Set constraints
     project.analysis.aliases.create(
         label='biso_La',
-        param=project.structures['lbco'].atom_sites['La'].b_iso,
+        param=project.structures['lbco'].atom_sites['La'].adp_iso,
     )
     project.analysis.aliases.create(
         label='biso_Ba',
-        param=project.structures['lbco'].atom_sites['Ba'].b_iso,
+        param=project.structures['lbco'].atom_sites['Ba'].adp_iso,
     )
 
     project.analysis.aliases.create(

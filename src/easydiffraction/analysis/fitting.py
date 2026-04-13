@@ -65,6 +65,13 @@ class Fitter:
             spec for parameters whose ``fit_min``/``fit_max`` are
             unbounded.
         """
+        # Enforce symmetry constraints (e.g. ADP) before collecting
+        # free parameters so that components fixed by site symmetry are
+        # excluded from the minimizer's parameter set.
+        for structure in structures:
+            structure._need_categories_update = True
+            structure._update_categories()
+
         expt_free_params: list[Parameter] = []
         for expt in experiments:
             expt_free_params.extend(

@@ -80,11 +80,11 @@ project.plotter.plot_param_correlations()
 # define aliases and then use them to create a constraint.
 project.analysis.aliases.create(
     label='biso_La',
-    param=project.structures['lbco'].atom_sites['La'].b_iso,
+    param=project.structures['lbco'].atom_sites['La'].adp_iso,
 )
 project.analysis.aliases.create(
     label='biso_Ba',
-    param=project.structures['lbco'].atom_sites['Ba'].b_iso,
+    param=project.structures['lbco'].atom_sites['Ba'].adp_iso,
 )
 project.analysis.constraints.create(expression='biso_Ba = biso_La')
 
