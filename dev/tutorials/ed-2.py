@@ -131,7 +131,7 @@ experiment.excluded_regions.create(id='2', start=165, end=180)
 experiment.linked_phases.create(id='lbco', scale=10.0)
 
 # %% [markdown]
-# ## Step 4: Perform Analysis
+# ## Step 4: Perform Analysis (no constraints)
 
 # %%
 structure.cell.length_a.free = True
@@ -157,10 +157,47 @@ experiment.background['5'].y.free = True
 
 experiment.linked_phases['lbco'].scale.free = True
 
+# %%
+project.analysis.fit()
+
+# %%
+project.analysis.display.fit_results()
+
+# %%
+project.plotter.plot_param_correlations()
+
+# %%
+project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+
+# %% [markdown]
+# ## Step 5: Perform Analysis (with constraints)
+
+# %%
+# As can be seen from the parameter-correlation plot, the isotropic
+# displacement parameters of La and Ba are highly correlated. Because
+# La and Ba share the same mixed-occupancy site, their contributions to
+# the neutron diffraction pattern are difficult to separate, especially
+# since their coherent scattering lengths are not very different.
+# Therefore, it is necessary to constrain them to be equal. First we
+# define aliases and then use them to create a constraint.
+project.analysis.aliases.create(
+    label='biso_La',
+    param=project.structures['lbco'].atom_sites['La'].adp_iso,
+)
+project.analysis.aliases.create(
+    label='biso_Ba',
+    param=project.structures['lbco'].atom_sites['Ba'].adp_iso,
+)
+project.analysis.constraints.create(expression='biso_Ba = biso_La')
 
 # %%
 project.analysis.fit()
+
+# %%
 project.analysis.display.fit_results()
+
+# %%
+project.plotter.plot_param_correlations()
 
 # %%
 project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)

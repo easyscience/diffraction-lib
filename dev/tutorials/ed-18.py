@@ -23,7 +23,7 @@ from easydiffraction import extract_project_from_zip
 # ## Download Project Archive
 
 # %%
-zip_path = download_data(id=28, destination='data')
+zip_path = download_data(id=30, destination='data')
 
 # %% [markdown]
 # ## Extract Project
@@ -48,6 +48,12 @@ project.analysis.fit()
 
 # %%
 project.analysis.display.fit_results()
+
+# %% [markdown]
+# #### Show parameter correlations
+
+# %%
+project.plotter.plot_param_correlations()
 
 # %% [markdown]
 # ## Plot Meas vs Calc
