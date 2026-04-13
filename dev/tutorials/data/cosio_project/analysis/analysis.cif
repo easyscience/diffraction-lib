@@ -1,11 +1,11 @@
 _analysis.fitting_engine  "bumps (lm)"
-_analysis.fit_mode       single
+_analysis.fit_mode single
 
 loop_
 _alias.label
 _alias.param_unique_name
-    biso_Co1 cosio.atom_site.Co1.b_iso
-    biso_Co2 cosio.atom_site.Co2.b_iso
+biso_Co1 cosio.atom_site.Co1.adp_iso
+biso_Co2 cosio.atom_site.Co2.adp_iso
 
 loop_
 _constraint.expression

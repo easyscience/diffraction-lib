@@ -56,7 +56,7 @@ structure.atom_sites.create(
     fract_y=0,
     fract_z=0,
     wyckoff_letter='a',
-    b_iso=0.5,
+    adp_iso=0.5,
     occupancy=0.5,
 )
 structure.atom_sites.create(
@@ -66,7 +66,7 @@ structure.atom_sites.create(
     fract_y=0,
     fract_z=0,
     wyckoff_letter='a',
-    b_iso=0.5,
+    adp_iso=0.5,
     occupancy=0.5,
 )
 structure.atom_sites.create(
@@ -76,7 +76,7 @@ structure.atom_sites.create(
     fract_y=0.5,
     fract_z=0.5,
     wyckoff_letter='b',
-    b_iso=0.5,
+    adp_iso=0.5,
 )
 structure.atom_sites.create(
     label='O',
@@ -85,7 +85,7 @@ structure.atom_sites.create(
     fract_y=0.5,
     fract_z=0.5,
     wyckoff_letter='c',
-    b_iso=0.5,
+    adp_iso=0.5,
 )
 
 # %% [markdown]
@@ -136,10 +136,10 @@ experiment.linked_phases.create(id='lbco', scale=10.0)
 # %%
 structure.cell.length_a.free = True
 
-structure.atom_sites['La'].b_iso.free = True
-structure.atom_sites['Ba'].b_iso.free = True
-structure.atom_sites['Co'].b_iso.free = True
-structure.atom_sites['O'].b_iso.free = True
+structure.atom_sites['La'].adp_iso.free = True
+structure.atom_sites['Ba'].adp_iso.free = True
+structure.atom_sites['Co'].adp_iso.free = True
+structure.atom_sites['O'].adp_iso.free = True
 
 # %%
 experiment.instrument.calib_twotheta_offset.free = True

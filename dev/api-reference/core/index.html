@@ -10248,7 +10248,11 @@ TypeInfo(...)</p>
 <span class="normal">231</span>
 <span class="normal">232</span>
 <span class="normal">233</span>
-<span class="normal">234</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GuardedBase</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GuardedBase</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class enforcing controlled attribute access and linkage.&quot;&quot;&quot;</span>
 
     <span class="n">_diagnoser</span> <span class="o">=</span> <span class="n">Diagnostics</span><span class="p">()</span>
@@ -10267,6 +10271,10 @@ TypeInfo(...)</p>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Raise a descriptive error for unknown attribute access.&quot;&quot;&quot;</span>
+        <span class="c1"># Private/dunder lookups should not trigger diagnostics —</span>
+        <span class="c1"># raise AttributeError so getattr(obj, &#39;_foo&#39;, default) works.</span>
+        <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="bp">cls</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">allowed</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_public_attrs</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed</span><span class="p">:</span>
@@ -10508,8 +10516,16 @@ TypeInfo(...)</p>
 <span class="normal">41</span>
 <span class="normal">42</span>
 <span class="normal">43</span>
-<span class="normal">44</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Raise a descriptive error for unknown attribute access.&quot;&quot;&quot;</span>
+    <span class="c1"># Private/dunder lookups should not trigger diagnostics —</span>
+    <span class="c1"># raise AttributeError so getattr(obj, &#39;_foo&#39;, default) works.</span>
+    <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
     <span class="bp">cls</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
     <span class="n">allowed</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_public_attrs</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed</span><span class="p">:</span>
@@ -10584,11 +10600,7 @@ TypeInfo(...)</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/guard.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">50</span>
 <span class="normal">51</span>
 <span class="normal">52</span>
 <span class="normal">53</span>
@@ -10615,7 +10627,11 @@ TypeInfo(...)</p>
 <span class="normal">74</span>
 <span class="normal">75</span>
 <span class="normal">76</span>
-<span class="normal">77</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Set an attribute with access-control diagnostics.&quot;&quot;&quot;</span>
     <span class="c1"># Always allow private or special attributes without diagnostics</span>
     <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">):</span>
@@ -10743,11 +10759,7 @@ TypeInfo(...)</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/guard.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">193</span>
-<span class="normal">194</span>
-<span class="normal">195</span>
-<span class="normal">196</span>
-<span class="normal">197</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">197</span>
 <span class="normal">198</span>
 <span class="normal">199</span>
 <span class="normal">200</span>
@@ -10784,7 +10796,11 @@ TypeInfo(...)</p>
 <span class="normal">231</span>
 <span class="normal">232</span>
 <span class="normal">233</span>
-<span class="normal">234</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">help</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">help</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print a summary of public properties and methods.&quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction.utils.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">console</span>  <span class="c1"># noqa: PLC0415</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">render_table</span>  <span class="c1"># noqa: PLC0415</span>
@@ -12135,7 +12151,7 @@ expression(rhs_aliases).</p>
 <span class="sd">        Set the alias map (name → alias wrapper).</span>
 
 <span class="sd">        Called when user registers parameter aliases like:</span>
-<span class="sd">        alias=&#39;biso_La&#39;, param=model.atom_sites[&#39;La&#39;].b_iso</span>
+<span class="sd">        alias=&#39;biso_La&#39;, param=model.atom_sites[&#39;La&#39;].adp_iso</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_alias_to_param</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">aliases</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
 
@@ -12367,7 +12383,7 @@ expression(rhs_aliases).</p>
 
         <p>Set the alias map (name → alias wrapper).</p>
 <p>Called when user registers parameter aliases like:
-alias='biso_La', param=model.atom_sites['La'].b_iso</p>
+alias='biso_La', param=model.atom_sites['La'].adp_iso</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -12387,7 +12403,7 @@ alias='biso_La', param=model.atom_sites['La'].b_iso</p>
 <span class="sd">    Set the alias map (name → alias wrapper).</span>
 
 <span class="sd">    Called when user registers parameter aliases like:</span>
-<span class="sd">    alias=&#39;biso_La&#39;, param=model.atom_sites[&#39;La&#39;].b_iso</span>
+<span class="sd">    alias=&#39;biso_La&#39;, param=model.atom_sites[&#39;La&#39;].adp_iso</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_alias_to_param</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">aliases</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
 </code></pre></div></td></tr></table></div>

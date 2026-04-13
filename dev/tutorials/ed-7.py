@@ -48,7 +48,7 @@ structure.atom_sites.create(
     fract_x=0.125,
     fract_y=0.125,
     fract_z=0.125,
-    b_iso=0.5,
+    adp_iso=0.5,
 )
 
 # %% [markdown]
@@ -256,7 +256,7 @@ project.plotter.plot_meas_vs_calc(expt_name='sepd', x_min=23200, x_max=23700, sh
 # Set more parameters to be refined.
 
 # %%
-structure.atom_sites['Si'].b_iso.free = True
+structure.atom_sites['Si'].adp_iso.free = True
 
 expt.peak.exp_decay_beta_0.free = True
 expt.peak.exp_decay_beta_1.free = True

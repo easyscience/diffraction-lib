@@ -53,7 +53,7 @@ structure.atom_sites.create(
     fract_y=0,
     fract_z=0,
     wyckoff_letter='a',
-    b_iso=0.2,
+    adp_iso=0.2,
 )
 
 # %% [markdown]
@@ -209,7 +209,7 @@ project.plotter.plot_meas_vs_calc(expt_name='nomad', show_residual=False)
 
 # %%
 structure.cell.length_a.free = True
-structure.atom_sites['Si'].b_iso.free = True
+structure.atom_sites['Si'].adp_iso.free = True
 
 # %% [markdown]
 # Bragg experiment parameters.

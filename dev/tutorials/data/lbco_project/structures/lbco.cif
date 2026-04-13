@@ -1,11 +1,11 @@
 data_lbco
 
-_cell.length_a 3.89086822(3732)
-_cell.length_b   3.89086822
-_cell.length_c   3.89086822
-_cell.angle_alpha  90.00000000
-_cell.angle_beta  90.00000000
-_cell.angle_gamma  90.00000000
+_cell.length_a   3.88(1)
+_cell.length_b   3.88
+_cell.length_c   3.88
+_cell.angle_alpha  90.0
+_cell.angle_beta   90.0
+_cell.angle_gamma  90.0
 
 _space_group.name_H-M_alt   "P m -3 m"
 _space_group.IT_coordinate_system_code            1
@@ -20,7 +20,7 @@ _atom_site.Wyckoff_letter
 _atom_site.occupancy
 _atom_site.B_iso_or_equiv
 _atom_site.adp_type
-          La           La   0.00000000   0.00000000   0.00000000            a 0.56496133(2001426) 0.56166401(3514400)         Biso
-          Ba           Ba   0.00000000   0.00000000   0.00000000            a   0.43503867   0.56166401         Biso
-          Co           Co   0.50000000   0.50000000   0.50000000            b   1.00000000 0.20007468(5809455)         Biso
-           O            O   0.00000000   0.50000000   0.50000000            c   1.00000000 1.36822403(1907496)         Biso
+La  La   0.00000000   0.00000000   0.00000000  a  0.5(1) 1.0(1)   Biso
+Ba  Ba   0.00000000   0.00000000   0.00000000  a  0.5    1.0      Biso
+Co  Co   0.50000000   0.50000000   0.50000000  b  1.0    1.0(1)   Biso
+O   O    0.00000000   0.50000000   0.50000000  c  1.0    1.0(1)   Biso

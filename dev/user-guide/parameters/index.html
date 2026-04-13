@@ -2648,9 +2648,9 @@ reference, and it belongs to a specific category.</p>
   of the <abbr title="Crystallographic Information File.">CIF</abbr> name to comply with Python naming conventions. For example,
   <code>name_H-M_alt</code> becomes <code>name_h_m</code>, replacing hyphens with underscores
   and using lowercase letters.</li>
-<li>In rare cases, the EasyDiffraction name is a bit shorter, like <code>b_iso</code>
-  instead of <abbr title="Crystallographic Information File.">CIF</abbr> <code>B_iso_or_equiv</code>, to make the code a bit more
-  user-friendly.</li>
+<li>In rare cases, the EasyDiffraction name is a bit shorter, like
+  <code>adp_iso</code> instead of <abbr title="Crystallographic Information File.">CIF</abbr> <code>B_iso_or_equiv</code> / <code>U_iso_or_equiv</code>, to make
+  the code a bit more user-friendly.</li>
 <li>When there is no defined <abbr title="Crystallographic Information File.">CIF</abbr> name for a parameter, EasyDiffraction
   introduces its own name, which is used in the code as well as an
   equivalent <abbr title="Crystallographic Information File.">CIF</abbr> name to be placed in the custom <abbr title="Crystallographic Information File.">CIF</abbr> dictionary
@@ -2796,8 +2796,8 @@ EasyDiffraction.</p>
 </tr>
 <tr>
 <td></td>
-<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 6v5h5V7.75L22.25 12 18 16.25V13h-5v5h3.25L12 22.25 7.75 18H11v-5H6v3.25L1.75 12 6 7.75V11h5V6H7.75L12 1.75 16.25 6z"/></svg></span> <a href="atom_site/">b_iso</a></td>
-<td>atom_sites['ID'].b_iso</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 6v5h5V7.75L22.25 12 18 16.25V13h-5v5h3.25L12 22.25 7.75 18H11v-5H6v3.25L1.75 12 6 7.75V11h5V6H7.75L12 1.75 16.25 6z"/></svg></span> <a href="atom_site/">adp_iso</a></td>
+<td>atom_sites['ID'].adp_iso</td>
 </tr>
 <tr>
 <td></td>
@@ -2915,7 +2915,7 @@ EasyDiffraction.</p>
 </tr>
 <tr>
 <td></td>
-<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 6v5h5V7.75L22.25 12 18 16.25V13h-5v5h3.25L12 22.25 7.75 18H11v-5H6v3.25L1.75 12 6 7.75V11h5V6H7.75L12 1.75 16.25 6z"/></svg></span> <a href="atom_site/">b_iso</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 6v5h5V7.75L22.25 12 18 16.25V13h-5v5h3.25L12 22.25 7.75 18H11v-5H6v3.25L1.75 12 6 7.75V11h5V6H7.75L12 1.75 16.25 6z"/></svg></span> <a href="atom_site/">adp_iso</a></td>
 <td>_atom_site.B_iso_or_equiv</td>
 <td><a class="label-cif" href="https://www.iucr.org/resources/cif/dictionaries/browse/cif_core">coreCIF</a></td>
 </tr>
