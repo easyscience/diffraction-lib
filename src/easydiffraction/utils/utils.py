@@ -66,7 +66,7 @@ def _validate_url(url: str) -> None:
         raise ValueError(msg)
 
 
-def _filename_for_id_from_url(data_id: int | str, record_path: str) -> str:
+def _filename_for_id_from_path(data_id: int | str, record_path: str) -> str:
     """
     Return local filename using the extension from the record path.
     """
@@ -93,10 +93,7 @@ def _normalize_known_hash(value: str | None) -> str | None:
 
 def _fetch_data_index() -> dict:
     """Fetch and cache the diffraction data index.json."""
-    index_url = (
-        'https://raw.githubusercontent.com/easyscience/diffraction/'
-        f'{_DATA_INDEX_REF}/data/index.json'
-    )
+    index_url = _build_data_url('index.json')
     _validate_url(index_url)
 
     destination_dirname = 'easydiffraction'
@@ -192,7 +189,7 @@ def download_data(
     record_path = _record_path(record)
     url = _build_data_url(record_path)
     _validate_url(url)
-    fname = _filename_for_id_from_url(id, record_path)
+    fname = _filename_for_id_from_path(id, record_path)
 
     dest_path = pathlib.Path(destination)
     dest_path.mkdir(parents=True, exist_ok=True)
