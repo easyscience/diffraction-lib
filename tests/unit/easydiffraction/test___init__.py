@@ -53,7 +53,7 @@ def test_lazy_functions_execute_with_monkeypatch(monkeypatch, capsys, tmp_path):
 
     fake_index = {
         '12': {
-            'url': 'https://example.com/data.xye',
+            'path': 'data.xye',
             'hash': 'sha256:...',
             'description': 'Demo dataset',
         }
@@ -72,4 +72,4 @@ def test_lazy_functions_execute_with_monkeypatch(monkeypatch, capsys, tmp_path):
 
     result = utils.download_data(id=12, destination=str(tmp_path), overwrite=True)
     assert Path(result).exists()
-    assert calls['kwargs']['url'] == 'https://example.com/data.xye'
+    assert calls['kwargs']['url'] == utils._build_data_url('data.xye')

@@ -322,7 +322,7 @@ def test_tof_to_d_linear_negative_tof_minus_offset_gives_nan():
 def test_download_data_unknown_id(monkeypatch):
     import easydiffraction.utils.utils as MUT
 
-    fake_index = {'1': {'url': 'https://example.com/data.xye', 'hash': None}}
+    fake_index = {'1': {'path': 'data.xye', 'hash': None}}
     monkeypatch.setattr(MUT, '_fetch_data_index', lambda: fake_index)
     with pytest.raises(KeyError, match='Unknown dataset id=999'):
         MUT.download_data(id=999)
@@ -333,7 +333,7 @@ def test_download_data_already_exists_no_overwrite(monkeypatch, tmp_path, capsys
 
     fake_index = {
         '1': {
-            'url': 'https://example.com/data.xye',
+            'path': 'data.xye',
             'hash': None,
             'description': 'Test data',
         }
@@ -355,7 +355,7 @@ def test_download_data_success(monkeypatch, tmp_path, capsys):
 
     fake_index = {
         '1': {
-            'url': 'https://example.com/data.xye',
+            'path': 'data.xye',
             'hash': None,
             'description': 'Test data',
         }
@@ -383,7 +383,7 @@ def test_download_data_overwrite_existing(monkeypatch, tmp_path, capsys):
 
     fake_index = {
         '1': {
-            'url': 'https://example.com/data.xye',
+            'path': 'data.xye',
             'hash': None,
             'description': 'Test data',
         }
@@ -411,7 +411,7 @@ def test_download_data_no_description(monkeypatch, tmp_path, capsys):
 
     fake_index = {
         '1': {
-            'url': 'https://example.com/data.xye',
+            'path': 'data.xye',
             'hash': 'sha256:...',
         }
     }
