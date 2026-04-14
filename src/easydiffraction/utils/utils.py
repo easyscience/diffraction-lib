@@ -25,6 +25,11 @@ from easydiffraction.utils.logging import log
 
 pooch.get_logger().setLevel('WARNING')  # Suppress pooch info messages
 
+# commit SHA preferred
+_DATA_INDEX_REF = '010c69546fa9ec1bd998bdcaa902e1df4f5d10af'
+# macOS: sha256sum index.json
+_DATA_INDEX_HASH = 'sha256:9449dbba0475158bbce9dea1fbb1e5e596c1f63d41fc136a3e3f5d677c5c6779'
+
 
 def _validate_url(url: str) -> None:
     """
@@ -69,18 +74,19 @@ def _normalize_known_hash(value: str | None) -> str | None:
 
 def _fetch_data_index() -> dict:
     """Fetch and cache the diffraction data index.json."""
-    index_url = 'https://raw.githubusercontent.com/easyscience/data/refs/heads/master/diffraction/index.json'
+    index_url = (
+        'https://raw.githubusercontent.com/easyscience/diffraction/'
+        f'{_DATA_INDEX_REF}/data/index.json'
+    )
     _validate_url(index_url)
 
-    # macOS: sha256sum index.json
-    index_hash = 'sha256:9449dbba0475158bbce9dea1fbb1e5e596c1f63d41fc136a3e3f5d677c5c6779'
     destination_dirname = 'easydiffraction'
     destination_fname = 'data-index.json'
     cache_dir = pooch.os_cache(destination_dirname)
 
     index_path = pooch.retrieve(
         url=index_url,
-        known_hash=index_hash,
+        known_hash=_DATA_INDEX_HASH,
         fname=destination_fname,
         path=cache_dir,
         progressbar=False,
