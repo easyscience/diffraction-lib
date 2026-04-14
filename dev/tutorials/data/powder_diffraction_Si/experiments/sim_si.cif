@@ -14,9 +14,9 @@ _peak.rise_alpha_0 -0.00661668(46957)
 _peak.rise_alpha_1 0.01585666(74583)
 _peak.decay_beta_0 0.00078517(14881)
 _peak.decay_beta_1 0.01896406(99190)
-_peak.gauss_sigma_0 87503.66029071(7064.88976970)
-_peak.gauss_sigma_1 -66953.22375445(8731.03126566)
-_peak.gauss_sigma_2 16276.47947836(2444.45939154)
+_peak.gauss_sigma_0 87503.66027977(7064.88976914)
+_peak.gauss_sigma_1 -66953.22373947(8731.03126446)
+_peak.gauss_sigma_2 16276.47947410(2444.45939114)
 _peak.profile_type jorgensen
 
 _instr.2theta_bank 100.86825208
