@@ -18,9 +18,9 @@ Legend:
 
 ---
 
-# 1. Sample Model
+# 1. Structure Model
 
-## 1.1 Crystal Structure Parameters
+## 1.1 Crystal Structure
 
 ### Space Group
 
@@ -48,35 +48,51 @@ Legend:
 | Occupancy                                      | ✅  | ✅  |
 | Symmetry _wyckoff_letter_                      | ✅  | ✅  |
 
-### Atomic Displacement Parameters (ADP)
+### Atomic Displacement (ADP)
 
-| Feature                                         | LIB | APP |
-| ----------------------------------------------- | --- | --- |
-| Isotropic Biso                                  | ✅  | 🗓  |
-| Isotropic Uiso                                  | 🚧  | ✅  |
-| Anisotropic Bani _B11, B22, B33, B12, B13, B23_ | 🚧  | 🗓  |
-| Anisotropic Uani _U11, U22, U33, U12, U13, U23_ | 🚧  | 🗓  |
+| Feature                                             | LIB | APP |
+| --------------------------------------------------- | --- | --- |
+| Isotropic _Biso_                                    | ✅  | 🗓  |
+| Isotropic _Uiso_                                    | 🚧  | ✅  |
+| Anisotropic _Bani_ (_B11, B22, B33, B12, B13, B23_) | 🚧  | 🗓  |
+| Anisotropic _Uani_ (_U11, U22, U33, U12, U13, U23_) | 🚧  | 🗓  |
 
 ---
 
-## 1.2 Magnetic Structure Parameters
+## 1.2 Magnetic Structure - EPIC
 
-| Feature                                                 | LIB | APP |
-| ------------------------------------------------------- | --- | --- |
-| EPIC (Magnetic space groups, unpolarized and polarized) | 🗓  | 🗓  |
+| Feature                                               | LIB | APP |
+| ----------------------------------------------------- | --- | --- |
+| Magnetic Space Groups                                 | 🗓  | 🗓  |
+| Irreducible representations                           | 🗓  | 🗓  |
+| Magnetic propagation vector (_kx, ky, kz_)            | 🗓  | 🗓  |
+| Magnetic moments (_mx, my, mz_)                       | 🗓  | 🗓  |
+| Local Susceptibility (_𝜒11, 𝜒22, 𝜒33, 𝜒12, 𝜒13, 𝜒23_) | 🗓  | 🗓  |
 
 ---
 
 # 2. Experiment Model
 
-## 2.1 Powder Diffraction
+| Techniques                                           | LIB   | APP   |
+| ---------------------------------------------------- | ----- | ----- |
+| 2.1. Powder Diffraction                              | ✅/🗓 | ✅/🗓 |
+| 2.1.1. Common features                               | ✅/🗓 | ✅/🗓 |
+| 2.1.2. Standard Bragg diffraction (CWL)              | ✅/🗓 | ✅/🗓 |
+| 2.1.2. Standard Bragg diffraction (TOF)              | ✅/🗓 | ✅/🗓 |
+| 2.1.3. Total Scattering (Pair-Distribution Function) | ✅/🗓 | 🗓    |
+| 2.2. Single-Crystal Diffraction (CWL)                | ✅/🗓 | ✅/🗓 |
+| 2.2. Single-Crystal Diffraction (TOF)                | ✅/🗓 | ✅/🗓 |
+| 2.3. Polarized Powder Diffraction                    | 🗓    | 🗓    |
+| 2.3.1. Flipping-rathio method (TOF)                  | 🗓    | 🗓    |
+| 2.3.1. Flipping-rathio method (CWL)                  | 🗓    | 🗓    |
+| 2.4. Polarized Single-Crystal Diffraction            | 🗓    | 🗓    |
+| 2.4.1. Flipping-rathio method (CWL)                  | 🗓    | 🗓    |
+| 2.4.2. Flipping-rathio method (TOF)                  | 🗓    | 🗓    |
+| 2.4.3. Spherical neutron polarimetry                 | 🗓    | 🗓    |
 
-### Fitting Methods
+## 2.1. Powder Diffraction
 
-| Feature                               | LIB | APP |
-| ------------------------------------- | --- | --- |
-| Rietveld refinement (full pattern)    | ✅  | ✅  |
-| Le Bail refinement (profile matching) | 🗓  | 🗓  |
+## 2.1.1 Common features
 
 ### Linked Phases
 
@@ -90,7 +106,14 @@ Legend:
 | ----------------------------------------- | --- | --- |
 | Multiple regions<br>_start/end positions_ | ✅  | 🗓  |
 
----
+## 2.1.1 Standard Bragg diffraction
+
+### Fitting Methods
+
+| Feature                               | LIB | APP |
+| ------------------------------------- | --- | --- |
+| Rietveld refinement (full pattern)    | ✅  | ✅  |
+| Le Bail refinement (profile matching) | 🗓  | 🗓  |
 
 ### Background
 
@@ -130,20 +153,12 @@ Legend:
 
 ### Peak Profile — Time-of-Flight
 
-CrysPy peak_shape options:
-
-- "Gauss": Jorgensen (back-to-back exponentials ⊗ Gaussian)
-- "pseudo-Voigt": Jorgensen-Von Dreele (back-to-back exponentials ⊗
-  pseudo-Voigt)
-- "type0m": Double back-to-back exponentials ⊗ pseudo-Voigt (Z-Rietveld
-  type 0m)
-
-| Feature                                                                                                                                                                                                                            | LIB | APP |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | --- |
-| Jorgensen (back-to-back exponentials ⊗ Gaussian)<br>_Gaussian broadening σ₀, σ₁, σ₂<br>Back-to-back exponential rise α₀, α₁. Back-to-back exponential decay β₀, β₁_<br>(CrysPy)                                                    | ✅  | ✅  |
-| Jorgensen-Von Dreele (back-to-back exponentials ⊗ pseudo-Voigt)<br>_Gaussian broadening σ₀, σ₁, σ₂. Lorentzian broadening γ₀, γ₁, γ₂<br>Back-to-back exponential rise α₀, α₁. Back-to-back exponential decay β₀, β₁_<br>(CrysPy)   | ✅  | ✅  |
-| Double back-to-back exponentials ⊗ pseudo-Voigt [Z-Rietveld type0m]<br>_Gaussian broadening σ₀, σ₁, σ₂. Lorentzian broadening γ₀, γ₁, γ₂<br>Rise α₁, α₂. Fast decay β₀₀, β₀₁. Slow decay β₁₀. Switching r₀₁, r₀₂, r₀₃_<br>(CrysPy) | ✅  | 🗓  |
-| Ikeda-Carpenter ⊗ pseudo-Voigt<br>_Moderator pulse α₀, α₁, β₀, κ<br>Gaussian broadening σ². Lorentzian broadening γ_<br>(CrysFML)                                                                                                  | 🗓  | 🗓  |
+| Feature                                                                                                                                                                                                                                         | LIB | APP |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | --- |
+| Jorgensen (back-to-back exponentials ⊗ Gaussian)<br>_Gaussian broadening σ₀, σ₁, σ₂<br>Back-to-back exponential rise α₀, α₁. Back-to-back exponential decay β₀, β₁_<br>(CrysPy "Gauss")                                                         | ✅  | ✅  |
+| Jorgensen-Von Dreele (back-to-back exponentials ⊗ pseudo-Voigt)<br>_Gaussian broadening σ₀, σ₁, σ₂. Lorentzian broadening γ₀, γ₁, γ₂<br>Back-to-back exponential rise α₀, α₁. Back-to-back exponential decay β₀, β₁_<br>(CrysPy "pseudo-Voigt") | ✅  | ✅  |
+| Double back-to-back exponentials ⊗ pseudo-Voigt [Z-Rietveld type0m]<br>_Gaussian broadening σ₀, σ₁, σ₂. Lorentzian broadening γ₀, γ₁, γ₂<br>Rise α₁, α₂. Fast decay β₀₀, β₀₁. Slow decay β₁₀. Switching r₀₁, r₀₂, r₀₃_<br>(CrysPy "type0m")     | ✅  | 🗓  |
+| Ikeda-Carpenter ⊗ pseudo-Voigt<br>_Moderator pulse α₀, α₁, β₀, κ<br>Gaussian broadening σ². Lorentzian broadening γ_<br>(CrysFML)                                                                                                               | 🗓  | 🗓  |
 
 | TOF profile                                                         | TOF source                                                        | Performance |
 | ------------------------------------------------------------------- | ----------------------------------------------------------------- | ----------- |
@@ -154,13 +169,13 @@ CrysPy peak_shape options:
 
 ---
 
-## 2.1.2 Total Scattering (Pair Distribution Function)
+## 2.1.3 Total Scattering (Pair Distribution Function)
 
 ### Peak Profile
 
-| Feature                                                                                                | LIB | APP |
-| ------------------------------------------------------------------------------------------------------ | --- | --- |
-| GaussianDampedSinc type<br>_cutoff q. broadening q. sharpening δ₁, δ₂<br>damping q, particle diameter_ | ✅  | 🗓  |
+| Feature                                                                                                                  | LIB | APP |
+| ------------------------------------------------------------------------------------------------------------------------ | --- | --- |
+| Gaussian-damped sinc termination function<br>_cutoff q. broadening q. sharpening δ₁, δ₂<br>damping q, particle diameter_ | ✅  | 🗓  |
 
 ---
 
@@ -196,11 +211,20 @@ Gauss or Lorentz mosaicity distribution
 | ------------------------------------ | --- | --- |
 | Individual wavelength per reflection | ✅  | 🗓  |
 
-## 2.3. Polarized Neutron Diffraction
+## 2.3. Polarized Neutron Powder Diffraction - EPIC
 
-| Feature                                        | LIB | APP |
-| ---------------------------------------------- | --- | --- |
-| EPIC (powders and single crystals, FR and SNP) | 🗓  | 🗓  |
+| Feature                      | LIB | APP |
+| ---------------------------- | --- | --- |
+| Flipping-rathio method (TOF) | 🗓  | 🗓  |
+| Flipping-rathio method (CWL) | 🗓  | 🗓  |
+
+## 2.3. Polarized Neutron Single Crystal Diffraction - EPIC
+
+| Feature                       | LIB | APP |
+| ----------------------------- | --- | --- |
+| Flipping-rathio method (TOF)  | 🗓  | 🗓  |
+| Flipping-rathio method (CWL)  | 🗓  | 🗓  |
+| Spherical neutron polarimetry | 🗓  | 🗓  |
 
 ---
 
@@ -215,19 +239,21 @@ Gauss or Lorentz mosaicity distribution
 
 # 4. Analysis (Fitting)
 
-### Refinement Algorithms
+### Refinement Algorithms (numerical derivatives)
 
-| Feature                                                         | LIB | APP |
-| --------------------------------------------------------------- | --- | --- |
-| Levenberg–Marquardt (numerical derivatives)<br>LMFIT minimizer  | ✅  | ✅  |
-| Levenberg–Marquardt (analytical derivatives)<br>LMFIT minimizer | 🗓  | 🗓  |
-| Derivative-free minimization<br>DFO-LS minimizer                | ✅  | ✅  |
-| Bayesian analysis<br>BUMPS minimizer                            | 🗓  | 🗓  |
+| Feature                                              | LIB | APP |
+| ---------------------------------------------------- | --- | --- |
+| Levenberg–Marquardt<br>LMFIT minimizer               | ✅  | ✅  |
+| Levenberg–Marquardt<br>LMFIT minimizer (scipy-based) | ✅  | ✅  |
+| Levenberg–Marquardt<br>BUMPS minimizer               | 🚧  | 🗓  |
+| Derivative-free minimization<br>DFO-LS minimizer     | ✅  | ✅  |
+| Bayesian analysis<br>BUMPS minimizer                 | 🗓  | 🗓  |
 
 ### Fit Strategies
 
 | Feature                                                                                              | LIB | APP |
 | ---------------------------------------------------------------------------------------------------- | --- | --- |
+| Single fit of one experimental data block to one/multiple structural data block                      | ✅  | ✅  |
 | Sequential fit of experimental data blocks                                                           | ✅  | 🗓  |
 | Joint fit of experimental data blocks within the same calculation engine                             | ✅  | 🗓  |
 | Joint fit of experimental data blocks using different calculation engines<br>(e.g. CrysPy + Pdffit2) | ✅  | 🗓  |
@@ -292,8 +318,8 @@ Gauss or Lorentz mosaicity distribution
 
 | Feature                           | LIB | APP | CLI |
 | --------------------------------- | --- | --- | --- |
-| List available tutorial notebooks | —   | —   | ✅  |
-| Download tutorial notebooks       | —   | —   | ✅  |
+| List available tutorial notebooks | ✅  | —   | ✅  |
+| Download tutorial notebooks       | ✅  | —   | ✅  |
 
 ---
 
@@ -371,12 +397,10 @@ Gauss or Lorentz mosaicity distribution
 
 ---
 
-# 10. Future Topics
-
-Here, we list features that are not sorted into the above categories,
-but are still on our radar for future development.
+# 10. Unsorted features
 
 - Restrains (soft constraints, e.g. bond lengths, angles)
+- Refinement using analytical derivatives
 - Global optimization algorithms (e.g. simulated annealing)
 - Incommensurate structures
 - 2D Rietveld refinement

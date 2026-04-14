@@ -33,11 +33,12 @@ def test_load_ascii_data_pdf(tmp_path: pytest.TempPathFactory):
     f = tmp_path / 'g.dat'
     np.savetxt(f, data)
 
-    # Try to import loadData; if diffpy isn't installed, expect ImportError
     try:
-        has_diffpy = True
+        from diffpy.utils.parsers import load_data  # noqa: F401
     except ImportError:
         has_diffpy = False
+    else:
+        has_diffpy = True
 
     if not has_diffpy:
         with pytest.raises(ImportError):

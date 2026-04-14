@@ -119,7 +119,7 @@ class AtomSite(CategoryItem):
             units='Å²',
             value_spec=AttributeSpec(
                 default=0.0,
-                validator=RangeValidator(ge=0.0, le=100.0),
+                validator=RangeValidator(ge=0.0, le=10.0),
             ),
             cif_handler=CifHandler(
                 names=[

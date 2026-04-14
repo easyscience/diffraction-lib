@@ -26,28 +26,35 @@ def test_validate_url_accepts_https():
     MUT._validate_url('https://example.com/file.cif')
 
 
-# --- _filename_for_id_from_url ------------------------------------------------
+# --- _filename_for_id_from_path -----------------------------------------------
 
 
-def test_filename_for_id_from_url_with_extension():
+def test_filename_for_id_from_path_with_extension():
     import easydiffraction.utils.utils as MUT
 
-    result = MUT._filename_for_id_from_url(12, 'https://example.com/data/file.xye')
+    result = MUT._filename_for_id_from_path(12, 'file.xye')
     assert result == 'ed-12.xye'
 
 
-def test_filename_for_id_from_url_cif_extension():
+def test_filename_for_id_from_path_cif_extension():
     import easydiffraction.utils.utils as MUT
 
-    result = MUT._filename_for_id_from_url('3', 'https://example.com/path/model.cif')
+    result = MUT._filename_for_id_from_path('3', 'path/model.cif')
     assert result == 'ed-3.cif'
 
 
-def test_filename_for_id_from_url_no_extension():
+def test_filename_for_id_from_path_no_extension():
     import easydiffraction.utils.utils as MUT
 
-    result = MUT._filename_for_id_from_url(7, 'https://example.com/path/noext')
+    result = MUT._filename_for_id_from_path(7, 'path/noext')
     assert result == 'ed-7'
+
+
+def test_record_path_raises_for_missing_path_key():
+    import easydiffraction.utils.utils as MUT
+
+    with pytest.raises(KeyError, match="Index record must contain 'path' key"):
+        MUT._record_path({'url': 'https://example.com/data.xye'})
 
 
 # --- _normalize_known_hash ----------------------------------------------------
@@ -322,7 +329,7 @@ def test_tof_to_d_linear_negative_tof_minus_offset_gives_nan():
 def test_download_data_unknown_id(monkeypatch):
     import easydiffraction.utils.utils as MUT
 
-    fake_index = {'1': {'url': 'https://example.com/data.xye', 'hash': None}}
+    fake_index = {'1': {'path': 'data.xye', 'hash': None}}
     monkeypatch.setattr(MUT, '_fetch_data_index', lambda: fake_index)
     with pytest.raises(KeyError, match='Unknown dataset id=999'):
         MUT.download_data(id=999)
@@ -333,7 +340,7 @@ def test_download_data_already_exists_no_overwrite(monkeypatch, tmp_path, capsys
 
     fake_index = {
         '1': {
-            'url': 'https://example.com/data.xye',
+            'path': 'data.xye',
             'hash': None,
             'description': 'Test data',
         }
@@ -355,7 +362,7 @@ def test_download_data_success(monkeypatch, tmp_path, capsys):
 
     fake_index = {
         '1': {
-            'url': 'https://example.com/data.xye',
+            'path': 'data.xye',
             'hash': None,
             'description': 'Test data',
         }
@@ -383,7 +390,7 @@ def test_download_data_overwrite_existing(monkeypatch, tmp_path, capsys):
 
     fake_index = {
         '1': {
-            'url': 'https://example.com/data.xye',
+            'path': 'data.xye',
             'hash': None,
             'description': 'Test data',
         }
@@ -411,7 +418,7 @@ def test_download_data_no_description(monkeypatch, tmp_path, capsys):
 
     fake_index = {
         '1': {
-            'url': 'https://example.com/data.xye',
+            'path': 'data.xye',
             'hash': 'sha256:...',
         }
     }

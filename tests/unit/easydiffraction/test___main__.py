@@ -75,8 +75,12 @@ def test_cli_fit_loads_and_fits(monkeypatch, tmp_path):
     class FakeInfo:
         _path = '/some/path'
 
+    class FakeExperiment:
+        name = 'exp1'
+
     class FakeProject:
         info = FakeInfo()
+        experiments = [FakeExperiment()]
 
         class _analysis:
             @staticmethod
@@ -89,6 +93,17 @@ def test_cli_fit_loads_and_fits(monkeypatch, tmp_path):
                     calls.append('DISPLAY')
 
         analysis = _analysis()
+
+        class _plotter:
+            @staticmethod
+            def plot_param_correlations():
+                calls.append('PLOT_CORR')
+
+            @staticmethod
+            def plot_meas_vs_calc(expt_name, *, show_residual=False):
+                calls.append(f'PLOT_{expt_name}_{show_residual}')
+
+        plotter = _plotter()
 
         class _summary:
             @staticmethod
@@ -108,7 +123,7 @@ def test_cli_fit_loads_and_fits(monkeypatch, tmp_path):
 
     result = runner.invoke(main_mod.app, ['fit', str(proj_dir)])
     assert result.exit_code == 0
-    assert calls == ['FIT', 'DISPLAY', 'SUMMARY']
+    assert calls == ['FIT', 'DISPLAY', 'PLOT_CORR', 'PLOT_exp1_True', 'SUMMARY']
 
 
 def test_cli_fit_dry_clears_path(monkeypatch, tmp_path):
@@ -118,8 +133,12 @@ def test_cli_fit_dry_clears_path(monkeypatch, tmp_path):
     class FakeInfo:
         _path = '/some/path'
 
+    class FakeExperiment:
+        name = 'exp1'
+
     class FakeProject:
         info = FakeInfo()
+        experiments = [FakeExperiment()]
 
         class _analysis:
             @staticmethod
@@ -132,6 +151,17 @@ def test_cli_fit_dry_clears_path(monkeypatch, tmp_path):
                     pass
 
         analysis = _analysis()
+
+        class _plotter:
+            @staticmethod
+            def plot_param_correlations():
+                pass
+
+            @staticmethod
+            def plot_meas_vs_calc(expt_name, *, show_residual=False):
+                pass
+
+        plotter = _plotter()
 
         class _summary:
             @staticmethod

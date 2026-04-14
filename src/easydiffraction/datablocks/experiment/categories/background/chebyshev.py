@@ -142,10 +142,7 @@ class ChebyshevPolynomialBackground(BackgroundBase):
         }),
     )
     calculator_support = CalculatorSupport(
-        calculators=frozenset({
-            CalculatorEnum.CRYSPY,
-            CalculatorEnum.CRYSFML,
-        }),
+        calculators=frozenset({CalculatorEnum.CRYSPY}),
     )
 
     def __init__(self) -> None:
