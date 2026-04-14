@@ -25,10 +25,25 @@ from easydiffraction.utils.logging import log
 
 pooch.get_logger().setLevel('WARNING')  # Suppress pooch info messages
 
+_DATA_REPO = 'easyscience/diffraction'
+_DATA_ROOT = 'data'
 # commit SHA preferred
-_DATA_INDEX_REF = '010c69546fa9ec1bd998bdcaa902e1df4f5d10af'
+_DATA_INDEX_REF = '927f96547a80c3328f43f2a69cb9c8048286bcb7'
 # macOS: sha256sum index.json
-_DATA_INDEX_HASH = 'sha256:9449dbba0475158bbce9dea1fbb1e5e596c1f63d41fc136a3e3f5d677c5c6779'
+_DATA_INDEX_HASH = 'sha256:301d6aafdc1ccf5f97d2edb491a6b350f6195f05106f8f38c9bf5530e592c8ec'
+
+
+def _build_data_url(path: str) -> str:
+    path = path.lstrip('/')
+    return f'https://raw.githubusercontent.com/{_DATA_REPO}/{_DATA_INDEX_REF}/{_DATA_ROOT}/{path}'
+
+
+def _record_path(record: dict) -> str:
+    if 'path' in record:
+        return record['path']
+
+    msg = "Index record must contain 'path' key."
+    raise KeyError(msg)
 
 
 def _validate_url(url: str) -> None:
@@ -51,9 +66,13 @@ def _validate_url(url: str) -> None:
         raise ValueError(msg)
 
 
-def _filename_for_id_from_url(data_id: int | str, url: str) -> str:
-    """Return local filename using the extension from the URL."""
-    suffix = pathlib.Path(urlparse(url).path).suffix  # includes leading dot ('.cif', '.xye', ...)
+def _filename_for_id_from_path(data_id: int | str, record_path: str) -> str:
+    """
+    Return local filename using the extension from the record path.
+    """
+    suffix = pathlib.PurePosixPath(
+        record_path
+    ).suffix  # includes leading dot ('.cif', '.xye', ...)
     # If URL has no suffix, fall back to no extension.
     return f'ed-{data_id}{suffix}'
 
@@ -74,10 +93,7 @@ def _normalize_known_hash(value: str | None) -> str | None:
 
 def _fetch_data_index() -> dict:
     """Fetch and cache the diffraction data index.json."""
-    index_url = (
-        'https://raw.githubusercontent.com/easyscience/diffraction/'
-        f'{_DATA_INDEX_REF}/data/index.json'
-    )
+    index_url = _build_data_url('index.json')
     _validate_url(index_url)
 
     destination_dirname = 'easydiffraction'
@@ -170,11 +186,10 @@ def download_data(
         raise KeyError(msg)
 
     record = index[key]
-    url = record['url']
+    record_path = _record_path(record)
+    url = _build_data_url(record_path)
     _validate_url(url)
-
-    known_hash = _normalize_known_hash(record.get('hash'))
-    fname = _filename_for_id_from_url(id, url)
+    fname = _filename_for_id_from_path(id, record_path)
 
     dest_path = pathlib.Path(destination)
     dest_path.mkdir(parents=True, exist_ok=True)
@@ -196,6 +211,8 @@ def download_data(
             return str(file_path)
         log.debug(f"Data #{id} already present at '{file_path}', but will be overwritten.")
         file_path.unlink()
+
+    known_hash = _normalize_known_hash(record.get('hash'))
 
     # Pooch downloads to destination with our controlled filename.
     pooch.retrieve(
