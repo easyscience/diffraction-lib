@@ -15711,8 +15711,7 @@ indicators and a table of fitted parameters.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/analysis/fit_helpers/reporting.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 13</span>
-<span class="normal"> 14</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 14</span>
 <span class="normal"> 15</span>
 <span class="normal"> 16</span>
 <span class="normal"> 17</span>
@@ -15863,7 +15862,12 @@ indicators and a table of fitted parameters.</p>
 <span class="normal">162</span>
 <span class="normal">163</span>
 <span class="normal">164</span>
-<span class="normal">165</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">FitResults</span><span class="p">:</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">FitResults</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Container for results of a single optimization run.</span>
 
@@ -16009,13 +16013,17 @@ indicators and a table of fitted parameters.</p>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Print color-coded notes below the fitted parameters table.&quot;&quot;&quot;</span>
         <span class="n">notes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s1">&#39;_outside_physical_limits&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">):</span>
-            <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;[red]red fitted value[/red] — outside expected physical limits&#39;</span><span class="p">)</span>
+            <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="s1">&#39;[red]Red fitted value:[/red] outside expected physical limits (consider &#39;</span>
+                <span class="s1">&#39;adding constraints)&#39;</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">_is_uncertainty_large</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">):</span>
             <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="s1">&#39;[red]red uncertainty[/red] — exceeds the fitted value (poorly constrained)&#39;</span>
+                <span class="s1">&#39;[red]Red uncertainty:[/red] exceeds the fitted value (consider adding &#39;</span>
+                <span class="s1">&#39;constraints)&#39;</span>
             <span class="p">)</span>
         <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">notes</span><span class="p">:</span>
-            <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -16198,8 +16206,7 @@ reduced chi-square value.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/fit_helpers/reporting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">22</span>
-<span class="normal">23</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">23</span>
 <span class="normal">24</span>
 <span class="normal">25</span>
 <span class="normal">26</span>
@@ -16248,7 +16255,8 @@ reduced chi-square value.</p>
 <span class="normal">69</span>
 <span class="normal">70</span>
 <span class="normal">71</span>
-<span class="normal">72</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">72</span>
+<span class="normal">73</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">success</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -16439,8 +16447,7 @@ reduced chi-square value.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/fit_helpers/reporting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 74</span>
-<span class="normal"> 75</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 75</span>
 <span class="normal"> 76</span>
 <span class="normal"> 77</span>
 <span class="normal"> 78</span>
@@ -16518,7 +16525,8 @@ reduced chi-square value.</p>
 <span class="normal">150</span>
 <span class="normal">151</span>
 <span class="normal">152</span>
-<span class="normal">153</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">display_results</span><span class="p">(</span>
+<span class="normal">153</span>
+<span class="normal">154</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">display_results</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">y_obs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">y_calc</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -19482,13 +19490,13 @@ workflow and returns     :class:<code>FitResults</code>.</p>
             <span class="n">outside</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">lo</span><span class="p">)</span> <span class="ow">and</span> <span class="n">param</span><span class="o">.</span><span class="n">value</span> <span class="o">&lt;</span> <span class="n">lo</span><span class="p">:</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Parameter &#39;</span><span class="si">{</span><span class="n">param</span><span class="o">.</span><span class="n">unique_name</span><span class="si">}</span><span class="s2">&#39; (</span><span class="si">{</span><span class="n">param</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">) is below &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Parameter &#39;</span><span class="si">{</span><span class="n">param</span><span class="o">.</span><span class="n">unique_name</span><span class="si">}</span><span class="s2">&#39; (</span><span class="si">{</span><span class="n">param</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s2">.8f</span><span class="si">}</span><span class="s2">) is below &quot;</span>
                     <span class="sa">f</span><span class="s1">&#39;its physical lower limit (</span><span class="si">{</span><span class="n">lo</span><span class="si">}</span><span class="s1">).&#39;</span>
                 <span class="p">)</span>
                 <span class="n">outside</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">hi</span><span class="p">)</span> <span class="ow">and</span> <span class="n">param</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="n">hi</span><span class="p">:</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Parameter &#39;</span><span class="si">{</span><span class="n">param</span><span class="o">.</span><span class="n">unique_name</span><span class="si">}</span><span class="s2">&#39; (</span><span class="si">{</span><span class="n">param</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">) is above &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Parameter &#39;</span><span class="si">{</span><span class="n">param</span><span class="o">.</span><span class="n">unique_name</span><span class="si">}</span><span class="s2">&#39; (</span><span class="si">{</span><span class="n">param</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s2">.8f</span><span class="si">}</span><span class="s2">) is above &quot;</span>
                     <span class="sa">f</span><span class="s1">&#39;its physical upper limit (</span><span class="si">{</span><span class="n">hi</span><span class="si">}</span><span class="s1">).&#39;</span>
                 <span class="p">)</span>
                 <span class="n">outside</span> <span class="o">=</span> <span class="kc">True</span>
@@ -21205,7 +21213,7 @@ unbounded.</p>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">default</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MinimizerTypeEnum</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the default minimizer type.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">BUMPS_LM</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">LMFIT_LEASTSQ</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -21274,7 +21282,7 @@ unbounded.</p>
 <span class="normal">25</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">default</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MinimizerTypeEnum</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the default minimizer type.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">BUMPS_LM</span>
+    <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">LMFIT_LEASTSQ</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>

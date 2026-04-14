@@ -74,6 +74,8 @@ experiment.linked_crystal.scale.free = True
 experiment.extinction.radius.free = True
 
 # %%
+project.analysis.show_available_minimizers()
+project.analysis.show_current_minimizer()
 project.analysis.current_minimizer = 'lmfit'
 
 # %%

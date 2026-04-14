@@ -187,12 +187,6 @@ project.analysis.joint_fit_experiments.create(id='sepd', weight=0.7)
 project.analysis.joint_fit_experiments.create(id='nomad', weight=0.3)
 
 # %% [markdown]
-# #### Set Minimizer
-
-# %%
-project.analysis.current_minimizer = 'lmfit'
-
-# %% [markdown]
 # #### Plot Measured vs Calculated (Before Fit)
 
 # %%
