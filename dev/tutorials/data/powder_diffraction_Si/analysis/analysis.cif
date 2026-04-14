@@ -1,5 +1,0 @@
-_analysis.fitting_engine  "lmfit (leastsq)"
-_analysis.fit_mode single
-
-
-

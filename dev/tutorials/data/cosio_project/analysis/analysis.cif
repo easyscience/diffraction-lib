@@ -1,12 +1,5 @@
-_analysis.fitting_engine  "bumps (lm)"
+_analysis.fitting_engine  "lmfit (leastsq)"
 _analysis.fit_mode single
 
-loop_
-_alias.label
-_alias.param_unique_name
-biso_Co1 cosio.atom_site.Co1.adp_iso
-biso_Co2 cosio.atom_site.Co2.adp_iso
 
-loop_
-_constraint.expression
-"biso_Co2 = biso_Co1"
+

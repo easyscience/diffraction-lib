@@ -1,8 +1,0 @@
-_project.id               lbco_hrpt
-_project.title            'Structure Refinement: LBCO, HRPT'
-_project.description      
-;
-La0.5Ba0.5CoO3 structure refinement from constant-wavelength neutron powder diffraction data measured at HRPT@PSI.
-;
-_project.created          '14 Apr 2026 07:35:29'
-_project.last_modified    '14 Apr 2026 07:35:29'
