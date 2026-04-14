@@ -3,6 +3,7 @@
 """Tests for display/tablers/pandas.py (PandasTableBackend)."""
 
 import pandas as pd
+import pytest
 
 
 class TestPandasTableBackend:
@@ -27,6 +28,7 @@ class TestPandasTableBackend:
     def test_apply_styling_returns_styler(self):
         from easydiffraction.display.tablers.pandas import PandasTableBackend
 
+        pytest.importorskip('jinja2')
         backend = PandasTableBackend()
         df = pd.DataFrame({'A': [1.0], 'B': [2.0]})
         styler = backend._apply_styling(df, ['left', 'right'], '#aabbcc')

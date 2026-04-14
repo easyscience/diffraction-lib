@@ -7,6 +7,7 @@ from easydiffraction.analysis.fit_helpers.metrics import calculate_r_factor_squa
 from easydiffraction.analysis.fit_helpers.metrics import calculate_rb_factor
 from easydiffraction.analysis.fit_helpers.metrics import calculate_weighted_r_factor
 from easydiffraction.utils.logging import console
+from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_table
 
 
@@ -156,13 +157,17 @@ class FitResults:
         """Print color-coded notes below the fitted parameters table."""
         notes: list[str] = []
         if any(getattr(p, '_outside_physical_limits', False) for p in self.parameters):
-            notes.append('[red]red fitted value[/red] — outside expected physical limits')
+            notes.append(
+                '[red]Red fitted value:[/red] outside expected physical limits (consider '
+                'adding constraints)'
+            )
         if any(_is_uncertainty_large(p) for p in self.parameters):
             notes.append(
-                '[red]red uncertainty[/red] — exceeds the fitted value (poorly constrained)'
+                '[red]Red uncertainty:[/red] exceeds the fitted value (consider adding '
+                'constraints)'
             )
         for note in notes:
-            console.print(note)
+            log.warning(note)
 
 
 def _is_uncertainty_large(param: object) -> bool:

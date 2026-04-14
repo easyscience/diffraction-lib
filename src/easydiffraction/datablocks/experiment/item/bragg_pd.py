@@ -145,7 +145,10 @@ class BraggPdExperiment(PdExperimentBase):
             console.print(new_type)
             return
 
-        supported_tags = BackgroundFactory.supported_tags()
+        supported = BackgroundFactory.supported_for(
+            calculator=self.calculator_type,
+        )
+        supported_tags = [k.type_info.tag for k in supported]
         if new_type not in supported_tags:
             log.warning(
                 f"Unsupported background type '{new_type}'. "
@@ -170,9 +173,11 @@ class BraggPdExperiment(PdExperimentBase):
         """Active background model for this experiment."""
         return self._background
 
-    def show_supported_background_types(self) -> None:  # noqa: PLR6301
+    def show_supported_background_types(self) -> None:
         """Print a table of supported background types."""
-        BackgroundFactory.show_supported()
+        BackgroundFactory.show_supported(
+            calculator=self.calculator_type,
+        )
 
     def show_current_background_type(self) -> None:
         """Print the currently used background type."""

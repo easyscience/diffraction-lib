@@ -150,6 +150,8 @@ expt47.instrument.calib_d_to_tof_quad = -0.47488
 # #### Set Peak Profile
 
 # %%
+expt56.show_supported_peak_profile_types()
+expt56.show_current_peak_profile_type()
 expt56.peak.broad_gauss_sigma_0 = 0.0
 expt56.peak.broad_gauss_sigma_1 = 0.0
 expt56.peak.broad_gauss_sigma_2 = 15.5
@@ -171,6 +173,8 @@ expt47.peak.exp_rise_alpha_1 = 0.1
 # #### Set Background
 
 # %%
+expt56.show_supported_background_types()
+expt56.show_current_background_type()
 expt56.background_type = 'line-segment'
 for idx, (x, y) in enumerate(
     [
@@ -275,14 +279,6 @@ expt47.excluded_regions.create(id='2', start=100004, end=200000)
 project = Project()
 
 # %% [markdown]
-# #### Set Plotting Engine
-
-# %%
-# Keep the auto-selected engine. Alternatively, you can uncomment the
-# line below to explicitly set the engine to the required one.
-# project.plotter.engine = 'plotly'
-
-# %% [markdown]
 # #### Add Structure
 
 # %%
@@ -301,15 +297,11 @@ project.experiments.add(expt47)
 # This section shows the analysis process, including how to set up
 # calculation and fitting engines.
 #
-# #### Set Minimizer
-
-# %%
-project.analysis.current_minimizer = 'lmfit'
-
-# %% [markdown]
 # #### Set Fit Mode
 
 # %%
+project.analysis.show_supported_fit_mode_types()
+project.analysis.show_current_fit_mode_type()
 project.analysis.fit_mode.mode = 'joint'
 
 # %% [markdown]

@@ -100,6 +100,9 @@ def fit(
         project.info._path = None
     project.analysis.fit()
     project.analysis.display.fit_results()
+    project.plotter.plot_param_correlations()
+    for expt in project.experiments:
+        project.plotter.plot_meas_vs_calc(expt_name=expt.name, show_residual=True)
     project.summary.show_report()
 
 

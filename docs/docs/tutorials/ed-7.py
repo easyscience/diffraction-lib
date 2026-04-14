@@ -83,7 +83,8 @@ expt.instrument.calib_d_to_tof_quad = -1.54
 # #### Set Peak Profile
 
 # %%
-expt.peak_profile_type = 'jorgensen'
+expt.show_supported_peak_profile_types()
+expt.show_current_peak_profile_type()
 expt.peak.broad_gauss_sigma_0 = 3.0
 expt.peak.broad_gauss_sigma_1 = 40.0
 expt.peak.broad_gauss_sigma_2 = 2.0
@@ -135,12 +136,6 @@ project.experiments.add(expt)
 # This section shows the analysis process, including how to set up
 # calculation and fitting engines.
 #
-# #### Set Minimizer
-
-# %%
-project.analysis.current_minimizer = 'lmfit'
-
-# %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%

@@ -22,7 +22,7 @@ class MinimizerTypeEnum(StrEnum):
     @classmethod
     def default(cls) -> MinimizerTypeEnum:
         """Return the default minimizer type."""
-        return cls.BUMPS_LM
+        return cls.LMFIT_LEASTSQ
 
     def description(self) -> str:
         """

@@ -215,13 +215,13 @@ class MinimizerBase(ABC):
             outside = False
             if np.isfinite(lo) and param.value < lo:
                 log.warning(
-                    f"Parameter '{param.unique_name}' ({param.value}) is below "
+                    f"Parameter '{param.unique_name}' ({param.value:.8f}) is below "
                     f'its physical lower limit ({lo}).'
                 )
                 outside = True
             if np.isfinite(hi) and param.value > hi:
                 log.warning(
-                    f"Parameter '{param.unique_name}' ({param.value}) is above "
+                    f"Parameter '{param.unique_name}' ({param.value:.8f}) is above "
                     f'its physical upper limit ({hi}).'
                 )
                 outside = True

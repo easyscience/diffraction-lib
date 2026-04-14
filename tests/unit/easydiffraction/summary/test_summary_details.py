@@ -5,23 +5,26 @@
 
 
 class _Val:
-    def __init__(self, v):
+    def __init__(self, v, uncertainty=None):
         self.value = v
+        self.uncertainty = uncertainty
 
 
 class _CellParam:
-    def __init__(self, name, value):
+    def __init__(self, name, value, uncertainty=None):
         self.name = name
         self.value = value
+        self.uncertainty = uncertainty
 
 
 class _Cell:
-    @property
-    def parameters(self):
-        return [
-            _CellParam('length_a', 5.4321),
-            _CellParam('angle_alpha', 90.0),
-        ]
+    def __init__(self):
+        self.length_a = _CellParam('length_a', 5.4321)
+        self.length_b = _CellParam('length_b', 5.4321)
+        self.length_c = _CellParam('length_c', 5.4321)
+        self.angle_alpha = _CellParam('angle_alpha', 90.0)
+        self.angle_beta = _CellParam('angle_beta', 90.0)
+        self.angle_gamma = _CellParam('angle_gamma', 90.0)
 
 
 class _Site:
@@ -80,9 +83,11 @@ class _Expt:
                 'sample_form': _Val('powder'),
                 'radiation_probe': _Val('neutron'),
                 'beam_mode': _Val('constant wavelength'),
+                'scattering_type': _Val('total'),
             },
         )
         self.type = typ()
+        self.calculator_type = 'cryspy'
         self.instrument = _Instr()
         self.peak_profile_type = 'pseudo-Voigt'
         self.peak = _Peak()
@@ -130,10 +135,9 @@ def test_summary_crystallographic_and_experimental_sections(capsys):
     assert '🧩 phaseA' in out
     assert 'Space group' in out
     assert 'P 1' in out
-    # Cell parameter names are shortened by the implementation (e.g., 'length_a' -> 'a')
-    assert 'Cell parameters' in out
+    assert 'Parameter' in out
     assert ' a ' in out
-    assert ' alpha ' in out
+    assert ' α ' in out  # noqa: RUF001
     assert 'Atom sites' in out
     assert 'Na1' in out
     assert 'Na' in out
@@ -144,6 +148,9 @@ def test_summary_crystallographic_and_experimental_sections(capsys):
     assert 'powder' in out
     assert 'neutron' in out
     assert 'constant wavelength' in out
+    assert 'total' in out
+    assert 'Calculation engine' in out
+    assert 'cryspy' in out
     assert 'Wavelength' in out
     assert '1.23456'[:6] in out
     assert '2θ offset' in out
