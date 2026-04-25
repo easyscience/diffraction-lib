@@ -111,33 +111,39 @@ class TestBeamModeEnum:
 
 
 class TestPeakProfileTypeEnum:
+    def test_values_are_canonical_and_unique(self):
+        assert PeakProfileTypeEnum.CWL_PSEUDO_VOIGT == 'cwl-pseudo-voigt'
+        assert PeakProfileTypeEnum.TOF_PSEUDO_VOIGT == 'tof-pseudo-voigt'
+        assert PeakProfileTypeEnum.TOF_JORGENSEN == 'tof-jorgensen'
+        assert len(PeakProfileTypeEnum) == len({member.value for member in PeakProfileTypeEnum})
+
     def test_default_bragg_cwl(self):
         result = PeakProfileTypeEnum.default(
             scattering_type=ScatteringTypeEnum.BRAGG,
             beam_mode=BeamModeEnum.CONSTANT_WAVELENGTH,
         )
-        assert result is PeakProfileTypeEnum.PSEUDO_VOIGT
+        assert result is PeakProfileTypeEnum.CWL_PSEUDO_VOIGT
 
     def test_default_bragg_tof(self):
         result = PeakProfileTypeEnum.default(
             scattering_type=ScatteringTypeEnum.BRAGG,
             beam_mode=BeamModeEnum.TIME_OF_FLIGHT,
         )
-        assert result is PeakProfileTypeEnum.JORGENSEN
+        assert result is PeakProfileTypeEnum.TOF_JORGENSEN
 
     def test_default_total_cwl(self):
         result = PeakProfileTypeEnum.default(
             scattering_type=ScatteringTypeEnum.TOTAL,
             beam_mode=BeamModeEnum.CONSTANT_WAVELENGTH,
         )
-        assert result is PeakProfileTypeEnum.GAUSSIAN_DAMPED_SINC
+        assert result is PeakProfileTypeEnum.TOTAL_GAUSSIAN_DAMPED_SINC
 
     def test_default_total_tof(self):
         result = PeakProfileTypeEnum.default(
             scattering_type=ScatteringTypeEnum.TOTAL,
             beam_mode=BeamModeEnum.TIME_OF_FLIGHT,
         )
-        assert result is PeakProfileTypeEnum.GAUSSIAN_DAMPED_SINC
+        assert result is PeakProfileTypeEnum.TOTAL_GAUSSIAN_DAMPED_SINC
 
     def test_default_none_uses_defaults(self):
         result = PeakProfileTypeEnum.default()
@@ -148,36 +154,42 @@ class TestPeakProfileTypeEnum:
         assert result is expected
 
     def test_description_pseudo_voigt(self):
-        desc = PeakProfileTypeEnum.PSEUDO_VOIGT.description()
+        desc = PeakProfileTypeEnum.CWL_PSEUDO_VOIGT.description()
         assert isinstance(desc, str)
-        assert 'Pseudo-Voigt' in desc
+        assert 'pseudo-voigt' in desc.lower()
 
     def test_description_pseudo_voigt_empirical_asymmetry(self):
-        desc = PeakProfileTypeEnum.PSEUDO_VOIGT_EMPIRICAL_ASYMMETRY.description()
+        desc = PeakProfileTypeEnum.CWL_PSEUDO_VOIGT_EMPIRICAL_ASYMMETRY.description()
         assert isinstance(desc, str)
         assert 'asymmetry' in desc.lower()
 
     def test_description_thompson_cox_hastings(self):
-        desc = PeakProfileTypeEnum.THOMPSON_COX_HASTINGS.description()
+        desc = PeakProfileTypeEnum.CWL_THOMPSON_COX_HASTINGS.description()
         assert isinstance(desc, str)
         assert 'Thompson' in desc
 
+    def test_description_tof_pseudo_voigt(self):
+        desc = PeakProfileTypeEnum.TOF_PSEUDO_VOIGT.description()
+        assert isinstance(desc, str)
+        assert 'TOF' in desc
+        assert 'pseudo-voigt' in desc.lower()
+
     def test_description_jorgensen(self):
-        desc = PeakProfileTypeEnum.JORGENSEN.description()
+        desc = PeakProfileTypeEnum.TOF_JORGENSEN.description()
         assert isinstance(desc, str)
         assert 'Jorgensen' in desc
 
     def test_description_jorgensen_von_dreele(self):
-        desc = PeakProfileTypeEnum.JORGENSEN_VON_DREELE.description()
+        desc = PeakProfileTypeEnum.TOF_JORGENSEN_VON_DREELE.description()
         assert isinstance(desc, str)
         assert 'Jorgensen' in desc
 
     def test_description_double_jorgensen_von_dreele(self):
-        desc = PeakProfileTypeEnum.DOUBLE_JORGENSEN_VON_DREELE.description()
+        desc = PeakProfileTypeEnum.TOF_DOUBLE_JORGENSEN_VON_DREELE.description()
         assert isinstance(desc, str)
         assert 'type0m' in desc
 
     def test_description_gaussian_damped_sinc(self):
-        desc = PeakProfileTypeEnum.GAUSSIAN_DAMPED_SINC.description()
+        desc = PeakProfileTypeEnum.TOTAL_GAUSSIAN_DAMPED_SINC.description()
         assert isinstance(desc, str)
         assert 'sinc' in desc.lower() or 'PDF' in desc

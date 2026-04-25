@@ -42,12 +42,12 @@ def test_tof_double_jorgensen_von_dreele_has_double_bbe_params():
 
 
 def test_tof_jorgensen_descriptions_match_peak_profile_enum():
-    assert TofJorgensen.type_info.description == PeakProfileTypeEnum.JORGENSEN.description()
+    assert TofJorgensen.type_info.description == PeakProfileTypeEnum.TOF_JORGENSEN.description()
     assert (
         TofJorgensenVonDreele.type_info.description
-        == PeakProfileTypeEnum.JORGENSEN_VON_DREELE.description()
+        == PeakProfileTypeEnum.TOF_JORGENSEN_VON_DREELE.description()
     )
     assert (
         TofDoubleJorgensenVonDreele.type_info.description
-        == PeakProfileTypeEnum.DOUBLE_JORGENSEN_VON_DREELE.description()
+        == PeakProfileTypeEnum.TOF_DOUBLE_JORGENSEN_VON_DREELE.description()
     )
