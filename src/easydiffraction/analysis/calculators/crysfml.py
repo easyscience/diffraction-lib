@@ -8,10 +8,12 @@ import numpy as np
 from easydiffraction.analysis.calculators.base import CalculatorBase
 from easydiffraction.analysis.calculators.factory import CalculatorFactory
 from easydiffraction.core.metadata import TypeInfo
+from easydiffraction.datablocks.experiment.categories.experiment_type import ExperimentType
 from easydiffraction.datablocks.experiment.collection import Experiments
 from easydiffraction.datablocks.experiment.item.base import ExperimentBase
 from easydiffraction.datablocks.structure.collection import Structures
 from easydiffraction.datablocks.structure.item.base import Structure
+from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 
 try:
     from pycrysfml import cfml_py_utilities
@@ -94,7 +96,13 @@ class CrysfmlCalculator(CalculatorBase):
 
         crysfml_dict = self._crysfml_dict(structure, experiment)
         try:
-            _, y = cfml_py_utilities.cw_powder_pattern_from_dict(crysfml_dict)
+            if experiment.type.beam_mode.value == BeamModeEnum.CONSTANT_WAVELENGTH:
+                _, y = cfml_py_utilities.cw_powder_pattern_from_dict(crysfml_dict)
+            elif experiment.type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
+                _, y = cfml_py_utilities.tof_powder_pattern_from_dict(crysfml_dict)
+            else:
+                print(f'[CrysfmlCalculator] Error: Unsupported beam mode {experiment.type.beam_mode.value}')
+                return np.array([])
             y = self._adjust_pattern_length(y, len(experiment.data.x))
         except KeyError:
             print('[CrysfmlCalculator] Error: No calculated data')
@@ -155,6 +163,12 @@ class CrysfmlCalculator(CalculatorBase):
         """
         structure_dict = self._convert_structure_to_dict(structure)
         experiment_dict = self._convert_experiment_to_dict(experiment)
+
+        pycrysfml_dict = {
+            'phases': [structure_dict],
+            'experiments': [experiment_dict],
+        }
+
         return {
             'phases': [structure_dict],
             'experiments': [experiment_dict],
@@ -198,12 +212,16 @@ class CrysfmlCalculator(CalculatorBase):
                 '_fract_y': atom.fract_y.value,
                 '_fract_z': atom.fract_z.value,
                 '_occupancy': atom.occupancy.value,
-                '_adp_type': atom.adp_type.value,
+                '_adp_type': str(atom.adp_type.value),
                 '_B_iso_or_equiv': atom.adp_iso_as_b,
             }
             structure_dict[structure.name]['_atom_site'].append(atom_site)
 
         return structure_dict
+
+
+
+
 
     def _convert_experiment_to_dict(  # noqa: PLR6301
         self,
@@ -222,41 +240,119 @@ class CrysfmlCalculator(CalculatorBase):
         dict[str, Any]
             A dictionary representation of the experiment.
         """
-        attrs = type(experiment)._public_attrs()
-        expt_type = experiment.type if 'type' in attrs else None
-        instrument = experiment.instrument if 'instrument' in attrs else None
-        peak = experiment.peak if 'peak' in attrs else None
+        expt_type = experiment.type
 
-        x_data = experiment.data.x
-        twotheta_min = float(x_data.min())
-        twotheta_max = float(x_data.max())
+        # Category: expt_type
+        experiment_dict = {
+            '_diffrn_radiation_probe': expt_type.radiation_probe.value,
+        }
 
-        # TODO: Process default values on the experiment creation
-        #  instead of here
+        # Category: instrument
+        if hasattr(experiment, 'instrument'):
+            instrument = experiment.instrument
+
+            # CWL
+            if hasattr(experiment.instrument, 'setup_wavelength'):
+                experiment_dict['_diffrn_radiation_wavelength'] = instrument.setup_wavelength.value
+            if hasattr(experiment.instrument, 'calib_twotheta_offset'):
+                experiment_dict['_pd_meas_2theta_offset'] = instrument.calib_twotheta_offset.value
+
+            # TOF
+            if hasattr(experiment.instrument, 'calib_d_to_tof_offset'):
+                experiment_dict['_pd_meas_tof_offset'] = instrument.calib_d_to_tof_offset.value
+            if hasattr(experiment.instrument, 'calib_d_to_tof_linear'):
+                experiment_dict['_pd_meas_tof_dtt1'] = instrument.calib_d_to_tof_linear.value
+            if hasattr(experiment.instrument, 'calib_d_to_tof_quad'):
+                experiment_dict['_pd_meas_tof_dtt2'] = instrument.calib_d_to_tof_quad.value
+            #if hasattr(experiment.instrument, 'calib_d_to_tof_recip'):
+            #    experiment_dict['???'] = instrument.calib_d_to_tof_recip.value
+
+            if hasattr(experiment.instrument, 'setup_twotheta_bank'):
+                experiment_dict['_pd_meas_tof_bank_angle'] = instrument.setup_twotheta_bank.value
+
+        # Category: peak
+        if hasattr(experiment, 'peak'):
+            peak = experiment.peak
+
+            # CWL
+            if hasattr(experiment.peak, 'broad_gauss_u'):
+                experiment_dict['_pd_instr_resolution_u'] = peak.broad_gauss_u.value
+            if hasattr(experiment.peak, 'broad_gauss_v'):
+                experiment_dict['_pd_instr_resolution_v'] = peak.broad_gauss_v.value
+            if hasattr(experiment.peak, 'broad_gauss_w'):
+                experiment_dict['_pd_instr_resolution_w'] = peak.broad_gauss_w.value
+            if hasattr(experiment.peak, 'broad_lorentz_x'):
+                experiment_dict['_pd_instr_resolution_x'] = peak.broad_lorentz_x.value
+            if hasattr(experiment.peak, 'broad_lorentz_y'):
+                experiment_dict['_pd_instr_resolution_y'] = peak.broad_lorentz_y.value
+
+            if hasattr(experiment.peak, 'asym_fcj_1'):
+                experiment_dict['_pd_instr_reflex_s_l'] = peak.asym_fcj_1.value
+            if hasattr(experiment.peak, 'asym_fcj_2'):
+                experiment_dict['_pd_instr_reflex_d_l'] = peak.asym_fcj_2.value
+
+            if hasattr(experiment.peak, 'asym_empir_1'):
+                experiment_dict['_pd_instr_reflex_asymmetry_p1'] = peak.asym_empir_1.value
+            if hasattr(experiment.peak, 'asym_empir_2'):
+                experiment_dict['_pd_instr_reflex_asymmetry_p2'] = peak.asym_empir_2.value
+            if hasattr(experiment.peak, 'asym_empir_3'):
+                experiment_dict['_pd_instr_reflex_asymmetry_p3'] = peak.asym_empir_3.value
+            if hasattr(experiment.peak, 'asym_empir_4'):
+                experiment_dict['_pd_instr_reflex_asymmetry_p4'] = peak.asym_empir_4.value
+
+            # TOF
+            if hasattr(experiment.peak, 'broad_gauss_sigma_0'):
+                experiment_dict['_pd_jorg_vondreele_sigma0'] = peak.broad_gauss_sigma_0.value
+            if hasattr(experiment.peak, 'broad_gauss_sigma_1'):
+                experiment_dict['_pd_jorg_vondreele_sigma1'] = peak.broad_gauss_sigma_1.value
+            if hasattr(experiment.peak, 'broad_gauss_sigma_2'):
+                experiment_dict['_pd_jorg_vondreele_sigma2'] = peak.broad_gauss_sigma_2.value
+
+            if hasattr(experiment.peak, 'broad_lorentz_gamma_0'):
+                experiment_dict['_pd_jorg_vondreele_gamma0'] = peak.broad_lorentz_gamma_0.value
+            if hasattr(experiment.peak, 'broad_lorentz_gamma_1'):
+                experiment_dict['_pd_jorg_vondreele_gamma1'] = peak.broad_lorentz_gamma_1.value
+            if hasattr(experiment.peak, 'broad_lorentz_gamma_2'):
+                experiment_dict['_pd_jorg_vondreele_gamma2'] = peak.broad_lorentz_gamma_2.value
+
+            if hasattr(experiment.peak, 'exp_decay_beta_0'):
+                experiment_dict['_pd_jorg_vondreele_beta0'] = peak.exp_decay_beta_0.value
+            if hasattr(experiment.peak, 'exp_decay_beta_1'):
+                experiment_dict['_pd_jorg_vondreele_beta1'] = peak.exp_decay_beta_1.value
+
+            if hasattr(experiment.peak, 'exp_rise_alpha_0'):
+                experiment_dict['_pd_jorg_vondreele_alpha0'] = peak.exp_rise_alpha_0.value
+            if hasattr(experiment.peak, 'exp_rise_alpha_1'):
+                experiment_dict['_pd_jorg_vondreele_alpha1'] = peak.exp_rise_alpha_1.value
+
+        # Category: data
+        if hasattr(experiment, 'data'):
+            x_data = experiment.data.x
+
+            # CWL
+            if hasattr(experiment.data, 'two_theta'):
+                #twotheta_min = float(x_data.min())
+                #twotheta_max = float(x_data.max())
+                #twotheta_inc = (twotheta_max - twotheta_min) / (len(x_data) - 1 + 1e-9)
+                #experiment_dict['_pd_meas_2theta_range_min'] = twotheta_min
+                #experiment_dict['_pd_meas_2theta_range_max'] = twotheta_max
+                #experiment_dict['_pd_meas_2theta_range_inc'] = twotheta_inc
+
+                x_data = x_data.tolist()
+                experiment_dict['_pd_meas_2theta_scan'] = x_data
+
+            # TOF
+            if hasattr(experiment.data, 'time_of_flight'):
+                x_min = float(x_data.min())
+                x_max = float(x_data.max())
+                x_inc = (x_max - x_min) / (len(x_data) - 1 + 1e-9)
+                experiment_dict['_pd_meas_tof_range_min'] = x_min
+                experiment_dict['_pd_meas_tof_range_max'] = x_max
+                experiment_dict['_pd_meas_tof_range_inc'] = x_inc
+
+                #x_data = x_data.tolist()
+                #experiment_dict['_pd_meas_time_of_flight'] = x_data
+
         return {
-            'NPD': {
-                '_diffrn_radiation_probe': expt_type.radiation_probe.value
-                if expt_type
-                else 'neutron',
-                '_diffrn_radiation_wavelength': instrument.setup_wavelength.value
-                if instrument
-                else 1.0,
-                '_pd_instr_resolution_u': peak.broad_gauss_u.value if peak else 0.0,
-                '_pd_instr_resolution_v': peak.broad_gauss_v.value if peak else 0.0,
-                '_pd_instr_resolution_w': peak.broad_gauss_w.value if peak else 0.0,
-                '_pd_instr_resolution_x': peak.broad_lorentz_x.value if peak else 0.0,
-                '_pd_instr_resolution_y': peak.broad_lorentz_y.value if peak else 0.0,
-                '_pd_meas_2theta_offset': instrument.calib_twotheta_offset.value
-                if instrument
-                else 0.0,
-                '_pd_meas_2theta_range_min': twotheta_min,
-                '_pd_meas_2theta_range_max': twotheta_max,
-                # TODO: Check the origin of this discrepancy coming from
-                #  PyCrysFML
-                # Divide by (N-1+ε) instead of (N-1) so that pycrysfml's
-                # internal floor((max-min)/step) is robustly N-1 despite
-                # floating-point rounding, producing exactly N points.
-                '_pd_meas_2theta_range_inc': (twotheta_max - twotheta_min)
-                / (len(x_data) - 1 + 1e-9),
-            }
+            'NPD': experiment_dict
         }
