@@ -238,6 +238,7 @@
 │   │   │   │   ├── 📄 factory.py
 │   │   │   │   │   └── 🏷️ class PeakFactory
 │   │   │   │   ├── 📄 tof.py
+│   │   │   │   │   ├── 🏷️ class TofPseudoVoigt
 │   │   │   │   │   ├── 🏷️ class TofJorgensen
 │   │   │   │   │   ├── 🏷️ class TofJorgensenVonDreele
 │   │   │   │   │   └── 🏷️ class TofDoubleJorgensenVonDreele
