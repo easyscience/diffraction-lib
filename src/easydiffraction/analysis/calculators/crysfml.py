@@ -8,12 +8,11 @@ import numpy as np
 from easydiffraction.analysis.calculators.base import CalculatorBase
 from easydiffraction.analysis.calculators.factory import CalculatorFactory
 from easydiffraction.core.metadata import TypeInfo
-from easydiffraction.datablocks.experiment.categories.experiment_type import ExperimentType
 from easydiffraction.datablocks.experiment.collection import Experiments
 from easydiffraction.datablocks.experiment.item.base import ExperimentBase
+from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.structure.collection import Structures
 from easydiffraction.datablocks.structure.item.base import Structure
-from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 
 try:
     from pycrysfml import cfml_py_utilities
@@ -101,7 +100,8 @@ class CrysfmlCalculator(CalculatorBase):
             elif experiment.type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT:
                 _, y = cfml_py_utilities.tof_powder_pattern_from_dict(crysfml_dict)
             else:
-                print(f'[CrysfmlCalculator] Error: Unsupported beam mode {experiment.type.beam_mode.value}')
+                print(f'[CrysfmlCalculator] Error: '
+                      f'Unsupported beam mode {experiment.type.beam_mode.value}')
                 return np.array([])
             y = self._adjust_pattern_length(y, len(experiment.data.x))
         except KeyError:
@@ -164,11 +164,6 @@ class CrysfmlCalculator(CalculatorBase):
         structure_dict = self._convert_structure_to_dict(structure)
         experiment_dict = self._convert_experiment_to_dict(experiment)
 
-        pycrysfml_dict = {
-            'phases': [structure_dict],
-            'experiments': [experiment_dict],
-        }
-
         return {
             'phases': [structure_dict],
             'experiments': [experiment_dict],
@@ -219,10 +214,6 @@ class CrysfmlCalculator(CalculatorBase):
 
         return structure_dict
 
-
-
-
-
     def _convert_experiment_to_dict(  # noqa: PLR6301
         self,
         experiment: ExperimentBase,
@@ -264,8 +255,8 @@ class CrysfmlCalculator(CalculatorBase):
                 experiment_dict['_pd_meas_tof_dtt1'] = instrument.calib_d_to_tof_linear.value
             if hasattr(experiment.instrument, 'calib_d_to_tof_quad'):
                 experiment_dict['_pd_meas_tof_dtt2'] = instrument.calib_d_to_tof_quad.value
-            #if hasattr(experiment.instrument, 'calib_d_to_tof_recip'):
-            #    experiment_dict['???'] = instrument.calib_d_to_tof_recip.value
+            # if hasattr(experiment.instrument, 'calib_d_to_tof_recip'):
+            #    ??? = instrument.calib_d_to_tof_recip.value
 
             if hasattr(experiment.instrument, 'setup_twotheta_bank'):
                 experiment_dict['_pd_meas_tof_bank_angle'] = instrument.setup_twotheta_bank.value
@@ -331,12 +322,16 @@ class CrysfmlCalculator(CalculatorBase):
 
             # CWL
             if hasattr(experiment.data, 'two_theta'):
-                #twotheta_min = float(x_data.min())
-                #twotheta_max = float(x_data.max())
-                #twotheta_inc = (twotheta_max - twotheta_min) / (len(x_data) - 1 + 1e-9)
-                #experiment_dict['_pd_meas_2theta_range_min'] = twotheta_min
-                #experiment_dict['_pd_meas_2theta_range_max'] = twotheta_max
-                #experiment_dict['_pd_meas_2theta_range_inc'] = twotheta_inc
+                # twotheta_min = float(x_data.min())
+                # twotheta_max = float(x_data.max())
+                # twotheta_inc = ((twotheta_max - twotheta_min) /
+                #                 (len(x_data) - 1 + 1e-9))
+                # experiment_dict['_pd_meas_2theta_range_min'] = (
+                #     twotheta_min)
+                # experiment_dict['_pd_meas_2theta_range_max'] = (
+                #     twotheta_max)
+                # experiment_dict['_pd_meas_2theta_range_inc'] = (
+                #     twotheta_inc)
 
                 x_data = x_data.tolist()
                 experiment_dict['_pd_meas_2theta_scan'] = x_data
@@ -350,9 +345,7 @@ class CrysfmlCalculator(CalculatorBase):
                 experiment_dict['_pd_meas_tof_range_max'] = x_max
                 experiment_dict['_pd_meas_tof_range_inc'] = x_inc
 
-                #x_data = x_data.tolist()
-                #experiment_dict['_pd_meas_time_of_flight'] = x_data
+                # x_data = x_data.tolist()
+                # experiment_dict['_pd_meas_time_of_flight'] = x_data
 
-        return {
-            'NPD': experiment_dict
-        }
+        return {'NPD': experiment_dict}

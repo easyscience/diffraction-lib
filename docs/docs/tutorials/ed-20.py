@@ -139,7 +139,7 @@ expt_s2.show_supported_background_types()
 expt_s2.show_current_background_type()
 
 # %%
-#expt_s2.background_type = 'line-segment'
+# expt_s2.background_type = 'line-segment'
 
 # %%
 for idx, (x, y) in enumerate(
@@ -292,11 +292,19 @@ for segment in expt_n2.background:
 # #### Add Constraints
 
 # %%
-project.analysis.aliases.create(label='ferrite_scale_s2', param=expt_s2.linked_phases['ferrite'].scale)
-project.analysis.aliases.create(label='austenite_scale_s2', param=expt_s2.linked_phases['austenite'].scale)
+project.analysis.aliases.create(
+    label='ferrite_scale_s2', param=expt_s2.linked_phases['ferrite'].scale
+)
+project.analysis.aliases.create(
+    label='austenite_scale_s2', param=expt_s2.linked_phases['austenite'].scale
+)
 
-project.analysis.aliases.create(label='ferrite_scale_n2', param=expt_n2.linked_phases['ferrite'].scale)
-project.analysis.aliases.create(label='austenite_scale_n2', param=expt_n2.linked_phases['austenite'].scale)
+project.analysis.aliases.create(
+    label='ferrite_scale_n2', param=expt_n2.linked_phases['ferrite'].scale
+)
+project.analysis.aliases.create(
+    label='austenite_scale_n2', param=expt_n2.linked_phases['austenite'].scale
+)
 
 project.analysis.constraints.create(expression='ferrite_scale_n2 = ferrite_scale_s2')
 project.analysis.constraints.create(expression='austenite_scale_n2 = austenite_scale_s2')
