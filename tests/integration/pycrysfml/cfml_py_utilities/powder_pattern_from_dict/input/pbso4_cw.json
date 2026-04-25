@@ -3,7 +3,7 @@
     {
       "SrTiO3": {
         "_space_group_name_H-M_alt": "P n m a",
-        "_cell_length_a": 8.478440,
+        "_cell_length_a": 8.47844,
         "_cell_length_b": 5.396774,
         "_cell_length_c": 6.958105,
         "_cell_angle_alpha": 90,
@@ -43,7 +43,7 @@
           {
             "_label": "O2",
             "_type_symbol": "O",
-            "_fract_x": 0.19380,
+            "_fract_x": 0.1938,
             "_fract_y": 0.25,
             "_fract_z": 0.54354,
             "_occupancy": 1,
@@ -54,7 +54,7 @@
             "_label": "O3",
             "_type_symbol": "O",
             "_fract_x": 0.08116,
-            "_fract_y": 0.02720,
+            "_fract_y": 0.0272,
             "_fract_z": 0.80856,
             "_occupancy": 1,
             "_adp_type": "Biso",
@@ -69,7 +69,7 @@
       "NPD": {
         "_diffrn_radiation_probe": "neutron",
         "_diffrn_radiation_wavelength": 1.912,
-        "_pd_instr_resolution_u": 0.140090,
+        "_pd_instr_resolution_u": 0.14009,
         "_pd_instr_resolution_v": -0.415422,
         "_pd_instr_resolution_w": 0.390087,
         "_pd_instr_resolution_x": 0,

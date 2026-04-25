@@ -18,7 +18,7 @@
             "_fract_z": 0.16708,
             "_occupancy": 1,
             "_adp_type": "Biso",
-            "_B_iso_or_equiv": 1.38880
+            "_B_iso_or_equiv": 1.3888
           },
           {
             "_label": "S",
@@ -28,7 +28,7 @@
             "_fract_z": 0.68411,
             "_occupancy": 1,
             "_adp_type": "Biso",
-            "_B_iso_or_equiv": 0.37140
+            "_B_iso_or_equiv": 0.3714
           },
           {
             "_label": "O1",
