@@ -32,6 +32,30 @@ from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 
 
 @PeakFactory.register
+class TofPseudoVoigt(
+    PeakBase,
+    TofGaussianBroadeningMixin,
+    TofLorentzianBroadeningMixin,
+):
+    """Simple non-convoluted pseudo-Voigt TOF profile."""
+
+    type_info = TypeInfo(
+        tag='pseudo-voigt',
+        description='Non-convoluted pseudo-Voigt profile',
+    )
+    compatibility = Compatibility(
+        scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
+        beam_mode=frozenset({BeamModeEnum.TIME_OF_FLIGHT}),
+    )
+    calculator_support = CalculatorSupport(
+        calculators=frozenset({CalculatorEnum.CRYSPY}),
+    )
+
+    def __init__(self) -> None:
+        super().__init__()
+
+
+@PeakFactory.register
 class TofJorgensen(
     PeakBase,
     TofGaussianBroadeningMixin,

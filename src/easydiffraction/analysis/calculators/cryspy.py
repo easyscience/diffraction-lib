@@ -779,7 +779,13 @@ def _update_tof_peak_in_cryspy_dict(
 ) -> None:
     """Update TOF peak profile-specific arrays in the cached dict."""
     peak_tag = peak.type_info.tag
-    if peak_tag == PeakProfileTypeEnum.DOUBLE_JORGENSEN_VON_DREELE:
+    # TODO: Need to improve this logic to be more robust and extensible
+    #  for future profiles
+    if not hasattr(peak, 'exp_decay_beta_0') and not hasattr(peak, 'dexp_decay_beta_00'):
+        cryspy_expt_dict['profile_gammas'][0] = peak.broad_lorentz_gamma_0.value
+        cryspy_expt_dict['profile_gammas'][1] = peak.broad_lorentz_gamma_1.value
+        cryspy_expt_dict['profile_gammas'][2] = peak.broad_lorentz_gamma_2.value
+    elif peak_tag == PeakProfileTypeEnum.DOUBLE_JORGENSEN_VON_DREELE:
         cryspy_expt_dict['profile_alphas'][0] = peak.dexp_rise_alpha_1.value
         cryspy_expt_dict['profile_alphas'][1] = peak.dexp_rise_alpha_2.value
 
@@ -851,7 +857,7 @@ def _cif_peak_section(
                 'dexp_switch_r_02': '_tof_profile_r02',
                 'dexp_switch_r_03': '_tof_profile_r03',
             })
-        else:
+        elif hasattr(peak, 'exp_decay_beta_0') and hasattr(peak, 'exp_rise_alpha_0'):
             peak_mapping.update({
                 'exp_decay_beta_0': '_tof_profile_beta0',
                 'exp_decay_beta_1': '_tof_profile_beta1',
@@ -862,6 +868,8 @@ def _cif_peak_section(
                 cif_lines.append('_tof_profile_peak_shape pseudo-Voigt')
             else:
                 cif_lines.append('_tof_profile_peak_shape Gauss')
+        else:
+            cif_lines.append('_tof_profile_peak_shape non-conv-pseudo-Voigt')
 
     cif_lines.append('')
     for local_attr_name, engine_key_name in peak_mapping.items():
