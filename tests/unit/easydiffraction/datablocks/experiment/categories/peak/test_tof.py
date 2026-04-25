@@ -4,6 +4,7 @@
 from easydiffraction.datablocks.experiment.categories.peak.tof import TofDoubleJorgensenVonDreele
 from easydiffraction.datablocks.experiment.categories.peak.tof import TofJorgensen
 from easydiffraction.datablocks.experiment.categories.peak.tof import TofJorgensenVonDreele
+from easydiffraction.datablocks.experiment.item.enums import PeakProfileTypeEnum
 
 
 def test_tof_jorgensen_has_broadening_and_bbe_params():
@@ -38,3 +39,15 @@ def test_tof_double_jorgensen_von_dreele_has_double_bbe_params():
     assert peak.dexp_switch_r_01.name == 'dexp_switch_r_01'
     peak.dexp_decay_beta_10 = 0.33
     assert peak.dexp_decay_beta_10.value == 0.33
+
+
+def test_tof_jorgensen_descriptions_match_peak_profile_enum():
+    assert TofJorgensen.type_info.description == PeakProfileTypeEnum.JORGENSEN.description()
+    assert (
+        TofJorgensenVonDreele.type_info.description
+        == PeakProfileTypeEnum.JORGENSEN_VON_DREELE.description()
+    )
+    assert (
+        TofDoubleJorgensenVonDreele.type_info.description
+        == PeakProfileTypeEnum.DOUBLE_JORGENSEN_VON_DREELE.description()
+    )

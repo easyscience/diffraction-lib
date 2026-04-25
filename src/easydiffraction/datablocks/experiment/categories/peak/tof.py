@@ -3,10 +3,11 @@
 """
 Time-of-flight peak profile classes.
 
-Jorgensen: BBE ⊗ Gaussian (CrysPy ``peak_shape="Gauss"``). Jorgensen-Von
-Dreele: BBE ⊗ pseudo-Voigt (CrysPy ``peak_shape="pseudo-Voigt"``).
-Double-Jorgensen-Von Dreele: double BBE ⊗ pseudo-Voigt (CrysPy
-``peak_shape="type0m"``, Z-Rietveld).
+Jorgensen: back-to-back exponentials ⊗ Gaussian (CrysPy
+``peak_shape="Gauss"``). Jorgensen-Von Dreele: back-to-back exponentials
+⊗ pseudo-Voigt (CrysPy ``peak_shape="pseudo-Voigt"``).
+Double-Jorgensen-Von Dreele: double back-to-back exponentials ⊗
+pseudo-Voigt (CrysPy ``peak_shape="type0m"``, Z-Rietveld).
 """
 
 from easydiffraction.core.metadata import CalculatorSupport
@@ -65,7 +66,7 @@ class TofJorgensen(
 
     type_info = TypeInfo(
         tag='jorgensen',
-        description='Jorgensen BBE ⊗ Gaussian profile',
+        description='Jorgensen profile: back-to-back exponentials ⊗ Gaussian',
     )
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
@@ -86,11 +87,11 @@ class TofJorgensenVonDreele(
     TofLorentzianBroadeningMixin,
     TofBackToBackExponentialMixin,
 ):
-    """Jorgensen-Von Dreele TOF profile: BBE ⊗ pseudo-Voigt."""
+    """Back-to-back exponentials ⊗ pseudo-Voigt TOF profile."""
 
     type_info = TypeInfo(
         tag='jorgensen-von-dreele',
-        description='Jorgensen-Von Dreele BBE ⊗ pseudo-Voigt profile',
+        description='Jorgensen-Von Dreele profile: back-to-back exponentials ⊗ pseudo-Voigt',
     )
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
@@ -111,11 +112,14 @@ class TofDoubleJorgensenVonDreele(
     TofLorentzianBroadeningMixin,
     TofDoubleExponentialMixin,
 ):
-    """Double-Jorgensen-Von Dreele TOF profile: double BBE ⊗ pV."""
+    """Double back-to-back exponentials ⊗ pseudo-Voigt TOF profile."""
 
     type_info = TypeInfo(
         tag='double-jorgensen-von-dreele',
-        description='Double-exp ⊗ pseudo-Voigt profile (Z-Rietveld type0m)',
+        description=(
+            'Double-Jorgensen-Von Dreele profile: double back-to-back exponentials '
+            '⊗ pseudo-Voigt (Z-Rietveld type0m)'
+        ),
     )
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
