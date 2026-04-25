@@ -265,7 +265,7 @@ class FcjAsymmetryMixin:
             description='Finger-Cox-Jephcoat asymmetry parameter 1',
             units='',
             value_spec=AttributeSpec(
-                default=0.01,
+                default=0.0,
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(names=['_peak.asym_fcj_1']),
@@ -275,7 +275,7 @@ class FcjAsymmetryMixin:
             description='Finger-Cox-Jephcoat asymmetry parameter 2',
             units='',
             value_spec=AttributeSpec(
-                default=0.02,
+                default=0.0,
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(names=['_peak.asym_fcj_2']),
