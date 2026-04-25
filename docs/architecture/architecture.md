@@ -389,14 +389,14 @@ class PeakFactory(FactoryBase):
         frozenset({
             ('scattering_type', ScatteringTypeEnum.BRAGG),
             ('beam_mode', BeamModeEnum.CONSTANT_WAVELENGTH),
-        }): PeakProfileTypeEnum.PSEUDO_VOIGT,
+        }): PeakProfileTypeEnum.CWL_PSEUDO_VOIGT,
         frozenset({
             ('scattering_type', ScatteringTypeEnum.BRAGG),
             ('beam_mode', BeamModeEnum.TIME_OF_FLIGHT),
-        }): PeakProfileTypeEnum.JORGENSEN,
+        }): PeakProfileTypeEnum.TOF_JORGENSEN,
         frozenset({
             ('scattering_type', ScatteringTypeEnum.TOTAL),
-        }): PeakProfileTypeEnum.GAUSSIAN_DAMPED_SINC,
+        }): PeakProfileTypeEnum.TOTAL_GAUSSIAN_DAMPED_SINC,
     }
 ```
 
@@ -413,8 +413,8 @@ attributes:
 @PeakFactory.register
 class CwlPseudoVoigt(PeakBase, CwlBroadeningMixin):
     type_info = TypeInfo(
-        tag='pseudo-voigt',
-        description='Pseudo-Voigt profile',
+        tag=PeakProfileTypeEnum.CWL_PSEUDO_VOIGT.value,
+        description=PeakProfileTypeEnum.CWL_PSEUDO_VOIGT.description(),
     )
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
@@ -478,7 +478,11 @@ from .line_segment import LineSegmentBackground
 
 ### 5.6 Tag Naming Convention
 
-Tags are the user-facing identifiers for selecting types. They must be:
+Canonical tags are the stable identifiers for factory lookup and
+serialisation. User-facing APIs may expose context-local aliases when
+the owner object already provides enough context to disambiguate the
+choice (for example, `experiment.peak_profile_type = 'pseudo-voigt'`
+inside a CWL or TOF experiment). Canonical tags must be:
 
 - **Consistent** — use the same abbreviations everywhere.
 - **Hyphen-separated** — all lowercase, words joined by hyphens.
@@ -507,15 +511,22 @@ Tags are the user-facing identifiers for selecting types. They must be:
 
 **Peak tags**
 
-| Tag                                  | Class                              |
-| ------------------------------------ | ---------------------------------- |
-| `pseudo-voigt`                       | `CwlPseudoVoigt`                   |
-| `pseudo-voigt + empirical asymmetry` | `CwlPseudoVoigtEmpiricalAsymmetry` |
-| `thompson-cox-hastings`              | `CwlThompsonCoxHastings`           |
-| `jorgensen`                          | `TofJorgensen`                     |
-| `jorgensen-von-dreele`               | `TofJorgensenVonDreele`            |
-| `double-jorgensen-von-dreele`        | `TofDoubleJorgensenVonDreele`      |
-| `gaussian-damped-sinc`               | `TotalGaussianDampedSinc`          |
+Canonical peak tags are globally unique within `PeakFactory`. The
+experiment-facing `peak_profile_type` getter, setter, and supported-type
+display use context-local aliases so users do not need to type `cwl-`,
+`tof-`, or `total-` when the experiment context already disambiguates
+the choice.
+
+| Canonical tag                          | Local alias                          | Class                              |
+| -------------------------------------- | ------------------------------------ | ---------------------------------- |
+| `cwl-pseudo-voigt`                     | `pseudo-voigt`                       | `CwlPseudoVoigt`                   |
+| `cwl-pseudo-voigt-empirical-asymmetry` | `pseudo-voigt + empirical asymmetry` | `CwlPseudoVoigtEmpiricalAsymmetry` |
+| `cwl-thompson-cox-hastings`            | `thompson-cox-hastings`              | `CwlThompsonCoxHastings`           |
+| `tof-pseudo-voigt`                     | `pseudo-voigt`                       | `TofPseudoVoigt`                   |
+| `tof-jorgensen`                        | `jorgensen`                          | `TofJorgensen`                     |
+| `tof-jorgensen-von-dreele`             | `jorgensen-von-dreele`               | `TofJorgensenVonDreele`            |
+| `tof-double-jorgensen-von-dreele`      | `double-jorgensen-von-dreele`        | `TofDoubleJorgensenVonDreele`      |
+| `total-gaussian-damped-sinc`           | `gaussian-damped-sinc`               | `TotalGaussianDampedSinc`          |
 
 **Instrument tags**
 

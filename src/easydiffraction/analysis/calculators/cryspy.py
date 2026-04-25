@@ -740,7 +740,7 @@ def _update_tof_peak_in_cryspy_dict(
         cryspy_expt_dict['profile_gammas'][0] = peak.broad_lorentz_gamma_0.value
         cryspy_expt_dict['profile_gammas'][1] = peak.broad_lorentz_gamma_1.value
         cryspy_expt_dict['profile_gammas'][2] = peak.broad_lorentz_gamma_2.value
-    elif peak_tag == PeakProfileTypeEnum.DOUBLE_JORGENSEN_VON_DREELE:
+    elif peak_tag == PeakProfileTypeEnum.TOF_DOUBLE_JORGENSEN_VON_DREELE:
         cryspy_expt_dict['profile_alphas'][0] = peak.dexp_rise_alpha_1.value
         cryspy_expt_dict['profile_alphas'][1] = peak.dexp_rise_alpha_2.value
 
@@ -762,7 +762,7 @@ def _update_tof_peak_in_cryspy_dict(
         cryspy_expt_dict['profile_alphas'][0] = peak.exp_rise_alpha_0.value
         cryspy_expt_dict['profile_alphas'][1] = peak.exp_rise_alpha_1.value
 
-        if peak_tag == PeakProfileTypeEnum.JORGENSEN_VON_DREELE:
+        if peak_tag == PeakProfileTypeEnum.TOF_JORGENSEN_VON_DREELE:
             cryspy_expt_dict['profile_gammas'][0] = peak.broad_lorentz_gamma_0.value
             cryspy_expt_dict['profile_gammas'][1] = peak.broad_lorentz_gamma_1.value
             cryspy_expt_dict['profile_gammas'][2] = peak.broad_lorentz_gamma_2.value
@@ -800,7 +800,7 @@ def _cif_peak_section(
             'broad_lorentz_gamma_2': '_tof_profile_gamma2',
         }
 
-        if peak.type_info.tag == PeakProfileTypeEnum.DOUBLE_JORGENSEN_VON_DREELE:
+        if peak.type_info.tag == PeakProfileTypeEnum.TOF_DOUBLE_JORGENSEN_VON_DREELE:
             cif_lines.append('_tof_profile_peak_shape type0m')
             peak_mapping.update({
                 'dexp_rise_alpha_1': '_tof_profile_alpha1',
@@ -819,7 +819,7 @@ def _cif_peak_section(
                 'exp_rise_alpha_0': '_tof_profile_alpha0',
                 'exp_rise_alpha_1': '_tof_profile_alpha1',
             })
-            if peak.type_info.tag == PeakProfileTypeEnum.JORGENSEN_VON_DREELE:
+            if peak.type_info.tag == PeakProfileTypeEnum.TOF_JORGENSEN_VON_DREELE:
                 cif_lines.append('_tof_profile_peak_shape pseudo-Voigt')
             else:
                 cif_lines.append('_tof_profile_peak_shape Gauss')

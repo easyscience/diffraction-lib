@@ -29,6 +29,7 @@ from easydiffraction.datablocks.experiment.categories.peak.tof_mixins import (
 )
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
+from easydiffraction.datablocks.experiment.item.enums import PeakProfileTypeEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 
 
@@ -41,8 +42,8 @@ class TofPseudoVoigt(
     """Simple non-convoluted pseudo-Voigt TOF profile."""
 
     type_info = TypeInfo(
-        tag='pseudo-voigt',
-        description='Non-convoluted pseudo-Voigt profile',
+        tag=PeakProfileTypeEnum.TOF_PSEUDO_VOIGT.value,
+        description=PeakProfileTypeEnum.TOF_PSEUDO_VOIGT.description(),
     )
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
@@ -65,8 +66,8 @@ class TofJorgensen(
     """Jorgensen TOF profile: back-to-back exponentials ⊗ Gaussian."""
 
     type_info = TypeInfo(
-        tag='jorgensen',
-        description='Jorgensen profile: back-to-back exponentials ⊗ Gaussian',
+        tag=PeakProfileTypeEnum.TOF_JORGENSEN.value,
+        description=PeakProfileTypeEnum.TOF_JORGENSEN.description(),
     )
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
@@ -90,8 +91,8 @@ class TofJorgensenVonDreele(
     """Back-to-back exponentials ⊗ pseudo-Voigt TOF profile."""
 
     type_info = TypeInfo(
-        tag='jorgensen-von-dreele',
-        description='Jorgensen-Von Dreele profile: back-to-back exponentials ⊗ pseudo-Voigt',
+        tag=PeakProfileTypeEnum.TOF_JORGENSEN_VON_DREELE.value,
+        description=PeakProfileTypeEnum.TOF_JORGENSEN_VON_DREELE.description(),
     )
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
@@ -115,11 +116,8 @@ class TofDoubleJorgensenVonDreele(
     """Double back-to-back exponentials ⊗ pseudo-Voigt TOF profile."""
 
     type_info = TypeInfo(
-        tag='double-jorgensen-von-dreele',
-        description=(
-            'Double-Jorgensen-Von Dreele profile: double back-to-back exponentials '
-            '⊗ pseudo-Voigt (Z-Rietveld type0m)'
-        ),
+        tag=PeakProfileTypeEnum.TOF_DOUBLE_JORGENSEN_VON_DREELE.value,
+        description=PeakProfileTypeEnum.TOF_DOUBLE_JORGENSEN_VON_DREELE.description(),
     )
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
