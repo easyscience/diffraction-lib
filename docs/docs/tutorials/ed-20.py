@@ -310,16 +310,38 @@ project.analysis.constraints.create(expression='ferrite_scale_n2 = ferrite_scale
 project.analysis.constraints.create(expression='austenite_scale_n2 = austenite_scale_s2')
 
 # %%
-project.analysis.aliases.create(label='ferrite_fe_adp', param=ferrite.atom_sites['Fe'].adp_iso)
-project.analysis.aliases.create(label='austenite_fe_adp', param=austenite.atom_sites['Fe'].adp_iso)
+# project.analysis.aliases.create(
+#    label='ferrite_fe_adp', param=ferrite.atom_sites['Fe'].adp_iso
+# )
+# project.analysis.aliases.create(
+#    label='austenite_fe_adp', param=austenite.atom_sites['Fe'].adp_iso
+# )
 
-project.analysis.constraints.create(expression='austenite_fe_adp = ferrite_fe_adp')
+# project.analysis.constraints.create(expression='austenite_fe_adp = ferrite_fe_adp')
 
 # %% [markdown]
 # #### Run Fitting
+#
+# Run full fitting with all free parameters.
 
 # %%
 project.analysis.fit()
+
+# %% [markdown]
+# Fix background and run fitting again.
+
+# %%
+for segment in expt_s2.background:
+    segment.y.free = False
+for segment in expt_n2.background:
+    segment.y.free = False
+
+# %%
+project.analysis.fit()
+
+# %% [markdown]
+# Show fit results and parameter correlations.
+
 project.analysis.display.fit_results()
 project.plotter.plot_param_correlations()
 
