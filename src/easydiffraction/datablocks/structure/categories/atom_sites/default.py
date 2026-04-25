@@ -211,6 +211,9 @@ class AtomSite(CategoryItem):
         # Ani → Iso: collapse tensor to scalar first (in old units)
         if not old_is_iso and new_is_iso:
             self._collapse_aniso_to_iso()
+            structure = getattr(getattr(self, '_parent', None), '_parent', None)
+            if structure is not None and hasattr(structure, '_sync_atom_site_aniso'):
+                structure._sync_atom_site_aniso()
 
         # B ↔ U conversion for iso value
         if old_is_b and new_is_u:

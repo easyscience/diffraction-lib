@@ -1,7 +1,15 @@
 # %% [markdown]
 # # Instrument calibration: BEER at ESS
 #
-# Two datasets from two symmetrical detector banks.
+# Two datasets from two symmetrically positioned banks (S2 and N2) of
+# the BEER instrument are analyzed in this tutorial.
+#
+# The tutorial demonstrates how to set up the structures, experiments,
+# and analysis for joint fitting of the two datasets, including how to
+# link parameters across the two datasets.
+#
+# The tutorial also shows how to configure the instrument parameters
+# based on metadata extracted from the data files.
 
 # %% [markdown]
 # ## Import Library
@@ -37,6 +45,7 @@ ferrite.atom_sites.create(
     fract_y=0.0,
     fract_z=0.0,
     wyckoff_letter='a',
+    adp_type='Biso',
     adp_iso=1.0,
 )
 
@@ -58,6 +67,7 @@ austenite.atom_sites.create(
     fract_y=0.0,
     fract_z=0.0,
     wyckoff_letter='a',
+    adp_type='Biso',
     adp_iso=1.0,
 )
 
@@ -319,16 +329,6 @@ project.analysis.aliases.create(
 project.analysis.constraints.create(expression='n2_ferrite_scale = s2_ferrite_scale')
 project.analysis.constraints.create(expression='n2_austenite_scale = s2_austenite_scale')
 
-# %%
-# project.analysis.aliases.create(
-#    label='ferrite_fe_adp', param=ferrite.atom_sites['Fe'].adp_iso
-# )
-# project.analysis.aliases.create(
-#    label='austenite_fe_adp', param=austenite.atom_sites['Fe'].adp_iso
-# )
-
-# project.analysis.constraints.create(expression='austenite_fe_adp = ferrite_fe_adp')
-
 # %% [markdown]
 # #### Run Fitting
 #
@@ -375,5 +375,3 @@ project.plotter.plot_meas_vs_calc(expt_name='expt_s2', x='d_spacing', x_min=2.08
 
 # %%
 project.plotter.plot_meas_vs_calc(expt_name='expt_n2', x='d_spacing', x_min=2.08, x_max=2.13)
-
-# %%

@@ -190,22 +190,44 @@ class TestAtomSiteAnisoCollection:
 
 
 class TestStructureAnisoSync:
-    def test_sync_adds_missing_entries(self):
+    def test_sync_does_not_add_iso_entries(self):
         from easydiffraction.datablocks.structure.item.base import Structure
 
         structure = Structure(name='test')
-        structure.atom_sites.create(label='Si', type_symbol='Si')
+        structure.atom_sites.create(label='Si', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
+        structure._sync_atom_site_aniso()
+        assert 'Si' not in structure.atom_site_aniso
+        assert len(structure.atom_site_aniso) == 0
+
+    def test_sync_adds_aniso_entry(self):
+        from easydiffraction.datablocks.structure.item.base import Structure
+
+        structure = Structure(name='test')
+        structure.atom_sites.create(label='Si', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
+        structure.atom_sites['Si'].adp_type = 'Bani'
+        # adp_type setter triggers sync internally; verify idempotent on explicit call
         structure._sync_atom_site_aniso()
         assert 'Si' in structure.atom_site_aniso
         assert structure.atom_site_aniso['Si'].label.value == 'Si'
+
+    def test_sync_removes_entry_when_atom_switches_to_iso(self):
+        from easydiffraction.datablocks.structure.item.base import Structure
+
+        structure = Structure(name='test')
+        structure.atom_sites.create(label='Si', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
+        structure.atom_sites['Si'].adp_type = 'Bani'
+        assert 'Si' in structure.atom_site_aniso
+        structure.atom_sites['Si'].adp_type = 'Biso'
+        assert 'Si' not in structure.atom_site_aniso
 
     def test_sync_removes_stale_entries(self):
         from easydiffraction.datablocks.structure.item.base import Structure
 
         structure = Structure(name='test')
-        structure.atom_sites.create(label='Si', type_symbol='Si')
-        structure.atom_sites.create(label='O', type_symbol='O')
-        structure._sync_atom_site_aniso()
+        structure.atom_sites.create(label='Si', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
+        structure.atom_sites.create(label='O', type_symbol='O', adp_type='Biso', adp_iso=0.3)
+        structure.atom_sites['Si'].adp_type = 'Bani'
+        structure.atom_sites['O'].adp_type = 'Bani'
         assert len(structure.atom_site_aniso) == 2
 
         structure.atom_sites.remove('O')
@@ -213,13 +235,15 @@ class TestStructureAnisoSync:
         assert len(structure.atom_site_aniso) == 1
         assert 'Si' in structure.atom_site_aniso
 
-    def test_sync_multiple_atoms(self):
+    def test_sync_multiple_aniso_atoms(self):
         from easydiffraction.datablocks.structure.item.base import Structure
 
         structure = Structure(name='test')
-        structure.atom_sites.create(label='La', type_symbol='La')
-        structure.atom_sites.create(label='Ba', type_symbol='Ba')
-        structure.atom_sites.create(label='Co', type_symbol='Co')
+        structure.atom_sites.create(label='La', type_symbol='La', adp_type='Biso', adp_iso=0.5)
+        structure.atom_sites.create(label='Ba', type_symbol='Ba', adp_type='Biso', adp_iso=0.5)
+        structure.atom_sites.create(label='Co', type_symbol='Co', adp_type='Biso', adp_iso=0.5)
+        for lbl in ('La', 'Ba', 'Co'):
+            structure.atom_sites[lbl].adp_type = 'Bani'
         structure._sync_atom_site_aniso()
         assert len(structure.atom_site_aniso) == 3
         for lbl in ('La', 'Ba', 'Co'):
@@ -347,100 +371,29 @@ class TestCifNameReordering:
 
 
 # ------------------------------------------------------------------
-#  _iso_labels helper
+#  CIF output: iso atoms absent, aniso atoms present
 # ------------------------------------------------------------------
 
 
-class TestIsoLabels:
-    def test_all_iso_returns_all_labels(self):
-        from easydiffraction.datablocks.structure.item.base import Structure
-
-        structure = Structure(name='test')
-        structure.atom_sites.create(label='A', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
-        structure.atom_sites.create(label='B', type_symbol='O', adp_type='Uiso', adp_iso=0.01)
-        structure._sync_atom_site_aniso()
-        labels = structure.atom_site_aniso._iso_labels()
-        assert labels == {'A', 'B'}
-
-    def test_all_aniso_returns_empty(self):
-        from easydiffraction.datablocks.structure.item.base import Structure
-
-        structure = Structure(name='test')
-        structure.atom_sites.create(label='A', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
-        structure._sync_atom_site_aniso()
-        structure.atom_sites['A'].adp_type = 'Bani'
-        labels = structure.atom_site_aniso._iso_labels()
-        assert labels == set()
-
-    def test_mixed_returns_only_iso(self):
-        from easydiffraction.datablocks.structure.item.base import Structure
-
-        structure = Structure(name='test')
-        structure.atom_sites.create(label='A', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
-        structure.atom_sites.create(label='B', type_symbol='O', adp_type='Biso', adp_iso=0.3)
-        structure._sync_atom_site_aniso()
-        structure.atom_sites['A'].adp_type = 'Bani'
-        labels = structure.atom_site_aniso._iso_labels()
-        assert labels == {'B'}
-
-    def test_no_parent_returns_empty(self):
-        from easydiffraction.datablocks.structure.categories.atom_site_aniso.default import (
-            AtomSiteAnisoCollection,
-        )
-
-        coll = AtomSiteAnisoCollection()
-        assert coll._iso_labels() == set()
-
-
-# ------------------------------------------------------------------
-#  _format_cif_row (? for iso atoms)
-# ------------------------------------------------------------------
-
-
-class TestFormatCifRow:
+class TestAnisoCollectionCif:
     def _make_structure(self):
         from easydiffraction.datablocks.structure.item.base import Structure
 
         structure = Structure(name='test')
         structure.atom_sites.create(label='A', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
         structure.atom_sites.create(label='B', type_symbol='O', adp_type='Biso', adp_iso=0.3)
-        structure._sync_atom_site_aniso()
         return structure
 
-    def test_iso_atom_gets_question_marks(self):
+    def test_iso_atom_absent_from_collection(self):
         structure = self._make_structure()
         structure.atom_sites['A'].adp_type = 'Bani'
-        aniso_coll = structure.atom_site_aniso
-        row = aniso_coll._format_cif_row(aniso_coll['B'])
-        assert row is not None
-        assert len(row) == 7
-        assert row[0] == 'B'
-        assert all(v == '?' for v in row[1:])
+        # B is still Biso → must not appear in aniso collection
+        assert 'A' in structure.atom_site_aniso
+        assert 'B' not in structure.atom_site_aniso
 
-    def test_aniso_atom_returns_none(self):
+    def test_aniso_cif_has_no_question_marks(self):
         structure = self._make_structure()
         structure.atom_sites['A'].adp_type = 'Bani'
-        aniso_coll = structure.atom_site_aniso
-        row = aniso_coll._format_cif_row(aniso_coll['A'])
-        assert row is None
-
-    def test_cif_output_has_question_marks_for_iso(self):
-        structure = self._make_structure()
-        structure.atom_sites['A'].adp_type = 'Bani'
-        cif = structure.atom_site_aniso.as_cif
-        lines = cif.strip().split('\n')
-        data_lines = [l for l in lines if not l.startswith(('loop_', '_atom_site_aniso'))]
-        # B is iso → should have ?
-        b_line = next(l for l in data_lines if l.strip().startswith('B'))
-        assert '?' in b_line
-        # A is aniso → should not have ?
-        a_line = next(l for l in data_lines if l.strip().startswith('A'))
-        assert '?' not in a_line
-
-    def test_all_aniso_no_question_marks(self):
-        structure = self._make_structure()
-        structure.atom_sites['A'].adp_type = 'Bani'
-        structure.atom_sites['B'].adp_type = 'Bani'
         cif = structure.atom_site_aniso.as_cif
         assert '?' not in cif
 
@@ -448,6 +401,14 @@ class TestFormatCifRow:
         structure = self._make_structure()
         cif = structure.atom_site_aniso.as_cif
         assert cif == ''
+
+    def test_all_aniso_cif_present(self):
+        structure = self._make_structure()
+        structure.atom_sites['A'].adp_type = 'Bani'
+        structure.atom_sites['B'].adp_type = 'Bani'
+        cif = structure.atom_site_aniso.as_cif
+        assert 'A' in cif
+        assert 'B' in cif
 
 
 # ------------------------------------------------------------------
