@@ -12,6 +12,7 @@ from easydiffraction import Project
 from easydiffraction import StructureFactory
 from easydiffraction import download_data
 from easydiffraction import extract_data_paths_from_zip
+from easydiffraction import extract_metadata
 
 # %% [markdown]
 # ## Define Structures
@@ -96,14 +97,20 @@ expt_n2 = ExperimentFactory.from_data_path(
 # #### Set Instrument
 
 # %%
-expt_s2.instrument.setup_twotheta_bank = 90.0
-expt_s2.instrument.calib_d_to_tof_offset = -1.0
-expt_s2.instrument.calib_d_to_tof_linear = 54902.1875
+expt_s2.instrument.setup_twotheta_bank = extract_metadata(
+    data_path_s2, r'two_theta\s*=\s*(\d*\.?\d+)'
+)
+expt_s2.instrument.calib_d_to_tof_linear = extract_metadata(
+    data_path_s2, r'DIFC\s*=\s*(\d*\.?\d+)'
+)
 
 # %%
-expt_n2.instrument.setup_twotheta_bank = 90.0
-expt_n2.instrument.calib_d_to_tof_offset = -1.0
-expt_n2.instrument.calib_d_to_tof_linear = 54902.1875
+expt_n2.instrument.setup_twotheta_bank = extract_metadata(
+    data_path_n2, r'two_theta\s*=\s*(\d*\.?\d+)'
+)
+expt_n2.instrument.calib_d_to_tof_linear = extract_metadata(
+    data_path_n2, r'DIFC\s*=\s*(\d*\.?\d+)'
+)
 
 # %% [markdown]
 # #### Set Peak Profile
@@ -120,16 +127,13 @@ expt_s2.peak.broad_gauss_sigma_0 = 300
 expt_s2.peak.broad_gauss_sigma_1 = 1200
 expt_s2.peak.broad_gauss_sigma_2 = 900
 
-expt_s2.peak.broad_lorentz_gamma_0 = 5
-
 # %%
 expt_n2.peak_profile_type = 'pseudo-voigt'
 
+# %%
 expt_n2.peak.broad_gauss_sigma_0 = 300
 expt_n2.peak.broad_gauss_sigma_1 = 1200
 expt_n2.peak.broad_gauss_sigma_2 = 900
-
-expt_n2.peak.broad_lorentz_gamma_0 = 5
 
 # %% [markdown]
 # #### Set Background
@@ -188,11 +192,11 @@ for point in expt_s2.background:
 # #### Set Linked Phases
 
 # %%
-expt_s2.linked_phases.create(id='ferrite', scale=100)
+expt_s2.linked_phases.create(id='ferrite', scale=10)
 expt_s2.linked_phases.create(id='austenite', scale=10)
 
 # %%
-expt_n2.linked_phases.create(id='ferrite', scale=100)
+expt_n2.linked_phases.create(id='ferrite', scale=10)
 expt_n2.linked_phases.create(id='austenite', scale=10)
 
 # %% [markdown]
@@ -215,7 +219,8 @@ expt_n2.excluded_regions.create(id='2', start=130000, end=180000)
 # #### Create Project
 
 # %%
-project = Project()
+project = Project(name='beer')
+project.save_as(dir_path='beer')
 
 # %% [markdown]
 # #### Add Structures
@@ -251,10 +256,15 @@ project.plotter.plot_meas_vs_calc(expt_name='expt_n2', show_residual=False)
 # %%
 project.analysis.show_supported_fit_mode_types()
 project.analysis.show_current_fit_mode_type()
+
+# %%
 project.analysis.fit_mode.mode = 'joint'
 
 # %% [markdown]
 # #### Set Free Parameters
+
+# %%
+project.analysis.display.fittable_params()
 
 # %%
 ferrite.atom_sites['Fe'].adp_iso.free = True
@@ -293,21 +303,21 @@ for segment in expt_n2.background:
 
 # %%
 project.analysis.aliases.create(
-    label='ferrite_scale_s2', param=expt_s2.linked_phases['ferrite'].scale
+    label='s2_ferrite_scale', param=expt_s2.linked_phases['ferrite'].scale
 )
 project.analysis.aliases.create(
-    label='austenite_scale_s2', param=expt_s2.linked_phases['austenite'].scale
+    label='s2_austenite_scale', param=expt_s2.linked_phases['austenite'].scale
 )
 
 project.analysis.aliases.create(
-    label='ferrite_scale_n2', param=expt_n2.linked_phases['ferrite'].scale
+    label='n2_ferrite_scale', param=expt_n2.linked_phases['ferrite'].scale
 )
 project.analysis.aliases.create(
-    label='austenite_scale_n2', param=expt_n2.linked_phases['austenite'].scale
+    label='n2_austenite_scale', param=expt_n2.linked_phases['austenite'].scale
 )
 
-project.analysis.constraints.create(expression='ferrite_scale_n2 = ferrite_scale_s2')
-project.analysis.constraints.create(expression='austenite_scale_n2 = austenite_scale_s2')
+project.analysis.constraints.create(expression='n2_ferrite_scale = s2_ferrite_scale')
+project.analysis.constraints.create(expression='n2_austenite_scale = s2_austenite_scale')
 
 # %%
 # project.analysis.aliases.create(
@@ -342,25 +352,28 @@ project.analysis.fit()
 # %% [markdown]
 # Show fit results and parameter correlations.
 
+# %%
 project.analysis.display.fit_results()
 project.plotter.plot_param_correlations()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
-
-# %%
-project.plotter.plot_meas_vs_calc(expt_name='expt_s2', show_residual=True)
-
-# %%
-project.plotter.plot_meas_vs_calc(expt_name='expt_n2', show_residual=True)
-
-# %% [markdown]
-# ## Summary
 #
-# This final section shows how to review the results of the analysis.
-
-# %% [markdown]
-# #### Show Project Summary
+# Show full range in TOF.
 
 # %%
-project.summary.show_report()
+project.plotter.plot_meas_vs_calc(expt_name='expt_s2', show_residual=False)
+
+# %%
+project.plotter.plot_meas_vs_calc(expt_name='expt_n2', show_residual=False)
+
+# %% [markdown]
+# Show selected peaks in d-spacing.
+
+# %%
+project.plotter.plot_meas_vs_calc(expt_name='expt_s2', x='d_spacing', x_min=2.08, x_max=2.13)
+
+# %%
+project.plotter.plot_meas_vs_calc(expt_name='expt_n2', x='d_spacing', x_min=2.08, x_max=2.13)
+
+# %%
