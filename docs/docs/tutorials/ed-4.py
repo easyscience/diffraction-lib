@@ -264,13 +264,13 @@ project.experiments.add(expt2)
 # #### Set Fit Mode
 
 # %%
-project.analysis.fit_mode_type = 'joint'
+project.analysis.fit.mode = 'joint'
 
 # %% [markdown]
 # #### Set Minimizer
 
 # %%
-project.analysis.minimizer_type = 'lmfit'
+project.analysis.fit.minimizer_type = 'lmfit'
 
 # %% [markdown]
 # #### Set Fitting Parameters
@@ -315,7 +315,11 @@ for term in expt2.background:
 # #### Plot Measured vs Calculated
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='npd', x_min=35.5, x_max=38.3, show_residual=True)
+project.display.plotter.plot_meas_vs_calc(
+    expt_name='npd', x_min=35.5, x_max=38.3, show_residual=True
+)
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='xrd', x_min=29.0, x_max=30.4, show_residual=True)
+project.display.plotter.plot_meas_vs_calc(
+    expt_name='xrd', x_min=29.0, x_max=30.4, show_residual=True
+)

@@ -28,7 +28,10 @@ def test_summary_show_report_prints_sections(capsys):
             self.experiments = {}  # empty mapping to exercise loops safely
 
             class A:
-                minimizer_type = 'lmfit'
+                class Fit:
+                    minimizer_type = type('V', (), {'value': 'lmfit'})()
+
+                fit = Fit()
 
                 class R:
                     reduced_chi_square = 0.0

@@ -39,13 +39,13 @@ class TestAnalysisSwitchableCategories:
         project = _make_project_with_experiment()
         assert project.analysis.constraints is not None
 
-    def test_fit_mode_default(self):
+    def test_fit_default(self):
         project = _make_project_with_experiment()
-        assert project.analysis.fit_mode is not None
+        assert project.analysis.fit is not None
 
     def test_minimizer_default(self):
         project = _make_project_with_experiment()
-        assert project.analysis.minimizer_type is not None
+        assert project.analysis.fit.minimizer_type is not None
 
 
 # ------------------------------------------------------------------
@@ -59,7 +59,7 @@ class TestExperimentSwitchableCategories:
         expt = project.experiments['e']
         assert expt.background_type is not None
 
-    def test_calculator_type_has_getter(self):
+    def test_calculation_has_getter(self):
         project = _make_project_with_experiment()
         expt = project.experiments['e']
-        assert expt.calculator_type is not None
+        assert expt.calculation.calculator_type is not None

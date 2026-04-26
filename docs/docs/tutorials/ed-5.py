@@ -191,10 +191,10 @@ project.experiments.add(expt)
 # #### Plot Measured vs Calculated
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='d20', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='d20', show_residual=True)
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='d20', x_min=41, x_max=54, show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='d20', x_min=41, x_max=54, show_residual=True)
 
 # %% [markdown]
 # #### Set Free Parameters
@@ -270,16 +270,16 @@ project.analysis.fit()
 project.analysis.display.fit_results()
 
 # %%
-project.plotter.plot_param_correlations()
+project.display.plotter.plot_param_correlations()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='d20', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='d20', show_residual=True)
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='d20', x_min=42, x_max=52, show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='d20', x_min=42, x_max=52, show_residual=True)
 
 # %% [markdown]
 # ## Perform Analysis (ADP aniso)
@@ -310,13 +310,13 @@ project.analysis.fit()
 project.analysis.display.fit_results()
 
 # %%
-project.plotter.plot_param_correlations()
+project.display.plotter.plot_param_correlations()
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='d20', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='d20', show_residual=True)
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='d20', x_min=42, x_max=52, show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='d20', x_min=42, x_max=52, show_residual=True)
 
 # %%
 structure.show_as_cif()

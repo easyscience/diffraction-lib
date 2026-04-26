@@ -5,6 +5,4 @@
 from __future__ import annotations
 
 from easydiffraction.datablocks.experiment.categories.calculation.default import Calculation
-from easydiffraction.datablocks.experiment.categories.calculation.factory import (
-    CalculationFactory,
-)
+from easydiffraction.datablocks.experiment.categories.calculation.factory import CalculationFactory

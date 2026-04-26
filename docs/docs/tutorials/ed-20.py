@@ -248,10 +248,10 @@ project.experiments.add(expt_n2)
 # #### Plot Measured vs Calculated
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='expt_s2', show_residual=False)
+project.display.plotter.plot_meas_vs_calc(expt_name='expt_s2', show_residual=False)
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='expt_n2', show_residual=False)
+project.display.plotter.plot_meas_vs_calc(expt_name='expt_n2', show_residual=False)
 
 # %% [markdown]
 # ## Perform Analysis
@@ -262,10 +262,10 @@ project.plotter.plot_meas_vs_calc(expt_name='expt_n2', show_residual=False)
 # #### Set Fit Mode
 
 # %%
-project.analysis.show_fit_mode_types()
+project.analysis.fit.show_modes()
 
 # %%
-project.analysis.fit_mode_type = 'joint'
+project.analysis.fit.mode = 'joint'
 
 # %% [markdown]
 # #### Set Free Parameters
@@ -351,7 +351,7 @@ project.analysis.fit()
 
 # %%
 project.analysis.display.fit_results()
-project.plotter.plot_param_correlations()
+project.display.plotter.plot_param_correlations()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
@@ -359,16 +359,26 @@ project.plotter.plot_param_correlations()
 # Show full range in TOF.
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='expt_s2', show_residual=False)
+project.display.plotter.plot_meas_vs_calc(expt_name='expt_s2', show_residual=False)
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='expt_n2', show_residual=False)
+project.display.plotter.plot_meas_vs_calc(expt_name='expt_n2', show_residual=False)
 
 # %% [markdown]
 # Show selected peaks in d-spacing.
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='expt_s2', x='d_spacing', x_min=2.08, x_max=2.13)
+project.display.plotter.plot_meas_vs_calc(
+    expt_name='expt_s2',
+    x='d_spacing',
+    x_min=2.08,
+    x_max=2.13,
+)
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='expt_n2', x='d_spacing', x_min=2.08, x_max=2.13)
+project.display.plotter.plot_meas_vs_calc(
+    expt_name='expt_n2',
+    x='d_spacing',
+    x_min=2.08,
+    x_max=2.13,
+)

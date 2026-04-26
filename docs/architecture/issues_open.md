@@ -180,25 +180,6 @@ minimiser.
 
 ---
 
-## 16. 🟡 Persist Per-Experiment `calculator_type`
-
-**Type:** Completeness
-
-The current architecture moved calculator selection to the experiment
-level via `calculator_type`, but this selection is not written to CIF
-during `save()` / `show_as_cif()`. Reloading or exporting a project
-therefore loses explicit calculator choices and falls back to
-auto-resolution.
-
-**Fix:** serialise `calculator_type` as part of the experiment or
-analysis state, and make sure `load()` restores it. The saved project
-should represent the exact active calculator configuration, not just a
-re-derivable default.
-
-**Depends on:** nothing.
-
----
-
 ## 17. 🟢 Use PDF-Specific CIF Names for Total Scattering
 
 **Type:** Naming
@@ -1446,7 +1427,6 @@ operation is possible (e.g. in automated pipelines or tests).
 | 13  | Suppress redundant dirty-flag sets               | 🟢 Low   | Performance      |
 | 14  | Finer-grained change tracking                    | 🟢 Low   | Performance      |
 | 15  | Validate joint-fit weights                       | 🟡 Med   | Correctness      |
-| 16  | Persist per-experiment `calculator_type`         | 🟡 Med   | Completeness     |
 | 17  | Use PDF-specific CIF names                       | 🟢 Low   | Naming           |
 | 18  | Move CIF v2→v1 conversion out of calculator      | 🟢 Low   | Maintainability  |
 | 19  | Debug-mode logging for calculator imports        | 🟢 Low   | Diagnostics      |

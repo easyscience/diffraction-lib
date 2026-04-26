@@ -30,14 +30,15 @@
 │   │   │   │   └── 🏷️ class Constraints
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class ConstraintsFactory
-│   │   ├── 📁 fit_mode
+│   │   ├── 📁 fit
 │   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   └── 🏷️ class Fit
 │   │   │   ├── 📄 enums.py
 │   │   │   │   └── 🏷️ class FitModeEnum
-│   │   │   ├── 📄 factory.py
-│   │   │   │   └── 🏷️ class FitModeFactory
-│   │   │   └── 📄 fit_mode.py
-│   │   │       └── 🏷️ class FitMode
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class FitFactory
+│   │   ├── 📁 fit_mode
 │   │   ├── 📁 joint_fit_experiments
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -152,6 +153,12 @@
 │   │   │   │   └── 📄 line_segment.py
 │   │   │   │       ├── 🏷️ class LineSegment
 │   │   │   │       └── 🏷️ class LineSegmentBackground
+│   │   │   ├── 📁 calculation
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   │   └── 🏷️ class Calculation
+│   │   │   │   └── 📄 factory.py
+│   │   │   │       └── 🏷️ class CalculationFactory
 │   │   │   ├── 📁 data
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 bragg_pd.py
@@ -361,6 +368,14 @@
 │   ├── 📄 __init__.py
 │   └── 📄 ascii.py
 ├── 📁 project
+│   ├── 📁 categories
+│   │   ├── 📁 display
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   └── 🏷️ class Display
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class DisplayFactory
+│   │   └── 📄 __init__.py
 │   ├── 📄 __init__.py
 │   ├── 📄 project.py
 │   │   └── 🏷️ class Project

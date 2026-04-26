@@ -138,7 +138,8 @@ project.analysis.fit.show_modes()
 ```
 
 If access to the live minimizer backend is needed, it should also be
-exposed through the category, for example via `project.analysis.fit.minimizer`.
+exposed through the category, for example via
+`project.analysis.fit.minimizer`.
 
 ### 4.3 Keep `mode`, not `strategy`
 
@@ -148,8 +149,8 @@ Reason:
 
 - `single`, `joint`, and `sequential` describe the current fitting mode
 - the word `strategy` is likely to be needed later for higher-level
-  staged refinement workflows (for example, refining different groups
-  of parameters in a preferred order)
+  staged refinement workflows (for example, refining different groups of
+  parameters in a preferred order)
 
 So `strategy` should stay available for a future concept instead of
 being reused now for the current mode selector.
@@ -170,8 +171,8 @@ Reason:
 child of `fit`.
 
 The `fit` category stores scalar fitting configuration. The joint-fit
-weights collection stores per-experiment data. They are related, but
-not nested.
+weights collection stores per-experiment data. They are related, but not
+nested.
 
 Target structure:
 
@@ -185,7 +186,8 @@ Analysis
 
 ### 4.6 Introduce a new `calculation` category on `Experiment`
 
-Add a new category package under `datablocks/experiment/categories/calculation/`.
+Add a new category package under
+`datablocks/experiment/categories/calculation/`.
 
 This category will hold at least one persisted selector:
 
@@ -262,8 +264,8 @@ Recommended display access model:
 - top-level `project.plotter` and `project.tabler` are removed from the
   public API
 
-This keeps project-level UI preferences in `project.cif`, where they
-are appropriate for CLI-driven reuse of a saved project.
+This keeps project-level UI preferences in `project.cif`, where they are
+appropriate for CLI-driven reuse of a saved project.
 
 ---
 
@@ -271,14 +273,14 @@ are appropriate for CLI-driven reuse of a saved project.
 
 ### 5.1 Selector families
 
-After the redesign, the public model should explicitly distinguish
-three selector families:
+After the redesign, the public model should explicitly distinguish three
+selector families:
 
-| Family | User intent | Example | CIF style |
-| --- | --- | --- | --- |
-| Backend selector | Choose execution backend | `fit.minimizer_type`, `calculation.calculator_type`, `display.plotter_type` | `_fit.minimizer_type`, `_calculation.calculator_type`, `_display.plotter_type` |
-| Switchable category implementation selector | Choose category implementation | `experiment.background_type` | category-owned type tag such as `_peak.profile_type` |
-| Semantic value selector | Choose a scientific/analysis mode | `fit.mode` | `_fit.mode` |
+| Family                                      | User intent                       | Example                                                                     | CIF style                                                                      |
+| ------------------------------------------- | --------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Backend selector                            | Choose execution backend          | `fit.minimizer_type`, `calculation.calculator_type`, `display.plotter_type` | `_fit.minimizer_type`, `_calculation.calculator_type`, `_display.plotter_type` |
+| Switchable category implementation selector | Choose category implementation    | `experiment.background_type`                                                | category-owned type tag such as `_peak.profile_type`                           |
+| Semantic value selector                     | Choose a scientific/analysis mode | `fit.mode`                                                                  | `_fit.mode`                                                                    |
 
 The important UX point is that all three remain easy to inspect and set
 in a similar way, even if they are not implemented by the same classes.
@@ -375,7 +377,7 @@ project metadata.
 That refactor should:
 
 1. write project metadata and project categories together into
-  `project.cif`
+   `project.cif`
 2. parse `_project.*` into `ProjectInfo`
 3. parse `_display.*` into `Project.display`
 
@@ -390,13 +392,13 @@ This is a deliberate redesign, not a small extension of
 
 1. Add `analysis/categories/fit/`.
 2. Implement a `Fit` `CategoryItem` with descriptors `minimizer_type`
-  and `mode`.
+   and `mode`.
 3. Move listing methods onto the category: `fit.show_minimizer_types()`
-  and `fit.show_modes()`.
+   and `fit.show_modes()`.
 4. Initialize `Analysis.fit` instead of `Analysis._fit_mode`.
 5. Remove public owner-level fitting selector proxies.
 6. Update analysis CIF serialization/deserialization to use
-  `_fit.minimizer_type` and `_fit.mode`.
+   `_fit.minimizer_type` and `_fit.mode`.
 7. Keep `joint_fit_experiments` as a sibling category.
 8. Update docs, fixtures, and tests.
 
@@ -404,17 +406,17 @@ This is a deliberate redesign, not a small extension of
 
 1. Add `datablocks/experiment/categories/calculation/`.
 2. Implement a `Calculation` `CategoryItem` with descriptor
-  `calculator_type`.
+   `calculator_type`.
 3. Move supported-type listing onto the category via
-  `calculation.show_calculator_types()`.
+   `calculation.show_calculator_types()`.
 4. Move live backend access behind the category via
-  `calculation.calculator`.
+   `calculation.calculator`.
 5. Remove public `experiment.calculator` and
-  `experiment.calculator_type`.
+   `experiment.calculator_type`.
 6. Update dependent experiment code to read calculator selection from
-  `experiment.calculation`.
+   `experiment.calculation`.
 7. Serialize and deserialize `_calculation.calculator_type` in
-  experiment CIF.
+   experiment CIF.
 8. Update docs, fixtures, and tests.
 
 ### Phase 3 - Project display configuration
@@ -422,14 +424,14 @@ This is a deliberate redesign, not a small extension of
 1. Add a project-side `display` configuration object/category.
 2. Implement descriptors `plotter_type` and `tabler_type`.
 3. Move engine-listing APIs onto `display` via
-  `display.show_plotter_types()` and `display.show_tabler_types()`.
+   `display.show_plotter_types()` and `display.show_tabler_types()`.
 4. Expose the live facades from `display` via `display.plotter` and
-  `display.tabler`.
+   `display.tabler`.
 5. Remove public `project.plotter` and `project.tabler`.
 6. Refactor `project.cif` save/load so it persists `_project.*` and
-  `_display.*` together.
-7. Update CLI entry points and docs to use `project.display.plotter`
-  and `project.display.tabler`.
+   `_display.*` together.
+7. Update CLI entry points and docs to use `project.display.plotter` and
+   `project.display.tabler`.
 8. Update docs, fixtures, and tests.
 
 ### Phase 4 - Architecture text cleanup

@@ -21,12 +21,12 @@ project = ed.Project()
 # ## Set Plotting Engine
 
 # %%
-project.plotter.show_supported_engines()
-project.plotter.show_current_engine()
+project.display.plotter.show_supported_engines()
+project.display.plotter.show_current_engine()
 
 # %%
 # Set global plot range for plots
-project.plotter.x_max = 40
+project.display.plotter.x_max = 40
 
 # %% [markdown]
 # ## Add Structure
@@ -95,10 +95,10 @@ experiment.peak.sharp_delta_2.free = True
 # %%
 project.analysis.fit()
 project.analysis.display.fit_results()
-project.plotter.plot_param_correlations()
+project.display.plotter.plot_param_correlations()
 
 # %% [markdown]
 # ## Plot Measured vs Calculated
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='nomad', show_residual=False)
+project.display.plotter.plot_meas_vs_calc(expt_name='nomad', show_residual=False)

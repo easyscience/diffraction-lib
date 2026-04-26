@@ -166,8 +166,8 @@ O  O    0   0.5 0.5   c   1    Biso 1.4041
 ### 3. experiments / <span class="orange">hrpt.cif</span>
 
 This file contains the **experiment type**, **calculation engine**,
-**instrumental parameters**, **peak parameters**, **associated
-phases**, **background parameters** and **measured diffraction data**.
+**instrumental parameters**, **peak parameters**, **associated phases**,
+**background parameters** and **measured diffraction data**.
 
 <!-- prettier-ignore-start -->
 

@@ -156,8 +156,8 @@ An example of the output for the
 
 ### Supported plotters
 
-To see the available plotters, you can use the
-`display` category on the `Project` instance:
+To see the available plotters, you can use the `display` category on the
+`Project` instance:
 
 ```python
 project.display.show_plotter_types()

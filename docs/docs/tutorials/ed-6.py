@@ -179,10 +179,10 @@ project.experiments.add(expt)
 # #### Plot Measured vs Calculated
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=48, x_max=51, show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=48, x_max=51, show_residual=True)
 
 # %% [markdown]
 # ### Perform Fit 1/4
@@ -215,10 +215,10 @@ project.analysis.display.fit_results()
 # #### Plot Measured vs Calculated
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=48, x_max=51, show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=48, x_max=51, show_residual=True)
 
 # %% [markdown]
 # ### Perform Fit 2/4
@@ -253,10 +253,10 @@ project.analysis.display.fit_results()
 # #### Plot Measured vs Calculated
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=48, x_max=51, show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=48, x_max=51, show_residual=True)
 
 # %% [markdown]
 # ### Perform Fit 3/4
@@ -289,10 +289,10 @@ project.analysis.display.fit_results()
 # #### Plot Measured vs Calculated
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=48, x_max=51, show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=48, x_max=51, show_residual=True)
 
 # %% [markdown]
 # ### Perform Fit 4/4
@@ -327,16 +327,16 @@ project.analysis.fit()
 project.analysis.display.fit_results()
 
 # %%
-project.plotter.plot_param_correlations()
+project.display.plotter.plot_param_correlations()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=48, x_max=51, show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=48, x_max=51, show_residual=True)
 
 # %% [markdown]
 # ## Summary

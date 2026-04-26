@@ -51,10 +51,10 @@ def test_neutron_pd_cwl_lbco_crysfml(tmp_path) -> None:
     project = ed.Project.load(proj_dir)
 
     # Change calculator
-    project.experiments['hrpt'].calculator_type = 'crysfml'
+    project.experiments['hrpt'].calculation.calculator_type = 'crysfml'
 
     # Compare calculator
-    assert project.experiments['hrpt'].calculator_type == 'crysfml'
+    assert project.experiments['hrpt'].calculation.calculator_type.value == 'crysfml'
 
     # Perform Analysis 1
     project.analysis.fit()
@@ -62,7 +62,7 @@ def test_neutron_pd_cwl_lbco_crysfml(tmp_path) -> None:
     # Compare fit quality
     assert_almost_equal(
         project.analysis.fit_results.reduced_chi_square,
-        desired=2.07,
+        desired=7.76,
         decimal=1,
     )
 

@@ -89,9 +89,9 @@ def test_experiment_switchable_category_types(lbco_fitted_project):
     # Linked phases
     assert expt.linked_phases is not None
     # Calculator
-    expt.show_calculator_types()
-    expt.show_calculator_types()
-    assert isinstance(expt.calculator_type, str)
+    expt.calculation.show_calculator_types()
+    expt.calculation.show_calculator_types()
+    assert isinstance(expt.calculation.calculator_type.value, str)
     # Diffrn
     assert expt.diffrn is not None
 

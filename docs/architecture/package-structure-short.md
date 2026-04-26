@@ -19,11 +19,12 @@
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
-│   │   ├── 📁 fit_mode
+│   │   ├── 📁 fit
 │   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
 │   │   │   ├── 📄 enums.py
-│   │   │   ├── 📄 factory.py
-│   │   │   └── 📄 fit_mode.py
+│   │   │   └── 📄 factory.py
+│   │   ├── 📁 fit_mode
 │   │   ├── 📁 joint_fit_experiments
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -78,6 +79,10 @@
 │   │   │   │   ├── 📄 enums.py
 │   │   │   │   ├── 📄 factory.py
 │   │   │   │   └── 📄 line_segment.py
+│   │   │   ├── 📁 calculation
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   └── 📄 factory.py
 │   │   │   ├── 📁 data
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 bragg_pd.py
@@ -187,6 +192,12 @@
 │   ├── 📄 __init__.py
 │   └── 📄 ascii.py
 ├── 📁 project
+│   ├── 📁 categories
+│   │   ├── 📁 display
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   └── 📄 factory.py
+│   │   └── 📄 __init__.py
 │   ├── 📄 __init__.py
 │   ├── 📄 project.py
 │   └── 📄 project_info.py

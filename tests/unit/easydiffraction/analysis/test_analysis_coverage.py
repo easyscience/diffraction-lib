@@ -164,8 +164,8 @@ class TestCurrentMinimizerSetter:
         from easydiffraction.analysis.analysis import Analysis
 
         a = Analysis(project=_make_project())
-        assert a.minimizer_type == 'lmfit (leastsq)'
-        a.minimizer_type = 'lmfit (leastsq)'
+        assert a.fit.minimizer_type.value == 'lmfit (leastsq)'
+        a.fit.minimizer_type = 'lmfit (leastsq)'
         out = capsys.readouterr().out
         assert 'Current minimizer changed to' in out
 

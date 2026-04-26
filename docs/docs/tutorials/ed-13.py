@@ -156,10 +156,10 @@ project_1.experiments.add_from_data_path(
 # %%
 # Keep the auto-selected engine. Alternatively, you can uncomment the
 # line below to explicitly set the engine to the required one.
-# project.plotter.engine = 'plotly'
+# project_1.display.plotter.engine = 'plotly'
 
 # %%
-project_1.plotter.plot_meas(expt_name='sim_si')
+project_1.display.plotter.plot_meas(expt_name='sim_si')
 
 # %% [markdown]
 # If you zoom in on the highest TOF peak (around 120,000 μs), you will
@@ -194,7 +194,7 @@ project_1.experiments['sim_si'].excluded_regions.create(id='2', start=105500, en
 # plot and is not used in the fitting process.
 
 # %%
-project_1.plotter.plot_meas(expt_name='sim_si')
+project_1.display.plotter.plot_meas(expt_name='sim_si')
 
 # %% [markdown]
 # #### Set Instrument Parameters
@@ -598,7 +598,7 @@ project_1.analysis.display.free_params()
 # this comparison.
 
 # %%
-project_1.plotter.plot_meas_vs_calc(expt_name='sim_si')
+project_1.display.plotter.plot_meas_vs_calc(expt_name='sim_si')
 
 # %% [markdown]
 # #### Run Fitting
@@ -638,7 +638,7 @@ project_1.analysis.display.fit_results()
 # pattern is now based on the refined parameters.
 
 # %%
-project_1.plotter.plot_meas_vs_calc(expt_name='sim_si')
+project_1.display.plotter.plot_meas_vs_calc(expt_name='sim_si')
 
 # %% [markdown]
 # #### TOF vs d-spacing
@@ -669,7 +669,7 @@ project_1.plotter.plot_meas_vs_calc(expt_name='sim_si')
 # setting the `d_spacing` parameter to `True`.
 
 # %%
-project_1.plotter.plot_meas_vs_calc(expt_name='sim_si', x='d_spacing')
+project_1.display.plotter.plot_meas_vs_calc(expt_name='sim_si', x='d_spacing')
 
 # %% [markdown]
 # As you can see, the calculated diffraction pattern now matches the
@@ -780,12 +780,12 @@ project_2.experiments.add_from_data_path(
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.plotter.plot_meas(expt_name='sim_lbco')
+project_2.display.plotter.plot_meas(expt_name='sim_lbco')
 
 project_2.experiments['sim_lbco'].excluded_regions.create(id='1', start=0, end=55000)
 project_2.experiments['sim_lbco'].excluded_regions.create(id='2', start=105500, end=200000)
 
-project_2.plotter.plot_meas(expt_name='sim_lbco')
+project_2.display.plotter.plot_meas(expt_name='sim_lbco')
 
 # %% [markdown]
 # #### Exercise 2.2: Set Instrument Parameters
@@ -1106,7 +1106,7 @@ for line_segment in project_2.experiments['sim_lbco'].background:
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.plotter.plot_meas_vs_calc(expt_name='sim_lbco')
+project_2.display.plotter.plot_meas_vs_calc(expt_name='sim_lbco')
 
 project_2.analysis.fit()
 project_2.analysis.display.fit_results()
@@ -1151,7 +1151,7 @@ project_2.analysis.display.fit_results()
 # peak positions.
 
 # %% tags=["solution", "hide-input"]
-project_2.plotter.plot_meas_vs_calc(expt_name='sim_lbco')
+project_2.display.plotter.plot_meas_vs_calc(expt_name='sim_lbco')
 
 # %% [markdown]
 # #### Exercise 5.4: Refine the LBCO Lattice Parameter
@@ -1180,7 +1180,7 @@ project_2.structures['lbco'].cell.length_a.free = True
 project_2.analysis.fit()
 project_2.analysis.display.fit_results()
 
-project_2.plotter.plot_meas_vs_calc(expt_name='sim_lbco')
+project_2.display.plotter.plot_meas_vs_calc(expt_name='sim_lbco')
 
 # %% [markdown]
 # One of the main goals of this study was to refine the lattice
@@ -1207,7 +1207,7 @@ project_2.plotter.plot_meas_vs_calc(expt_name='sim_lbco')
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.plotter.plot_meas_vs_calc(expt_name='sim_lbco', x='d_spacing')
+project_2.display.plotter.plot_meas_vs_calc(expt_name='sim_lbco', x='d_spacing')
 
 # %% [markdown]
 # #### Exercise 5.6: Refine the Peak Profile Parameters
@@ -1224,7 +1224,9 @@ project_2.plotter.plot_meas_vs_calc(expt_name='sim_lbco', x='d_spacing')
 # perfectly describe the peak at about 1.38 Å, as can be seen below:
 
 # %%
-project_2.plotter.plot_meas_vs_calc(expt_name='sim_lbco', x='d_spacing', x_min=1.35, x_max=1.40)
+project_2.display.plotter.plot_meas_vs_calc(
+    expt_name='sim_lbco', x='d_spacing', x_min=1.35, x_max=1.40
+)
 
 # %% [markdown]
 # The peak profile parameters are determined based on both the
@@ -1259,7 +1261,9 @@ project_2.experiments['sim_lbco'].peak.exp_rise_alpha_1.free = True
 project_2.analysis.fit()
 project_2.analysis.display.fit_results()
 
-project_2.plotter.plot_meas_vs_calc(expt_name='sim_lbco', x='d_spacing', x_min=1.35, x_max=1.40)
+project_2.display.plotter.plot_meas_vs_calc(
+    expt_name='sim_lbco', x='d_spacing', x_min=1.35, x_max=1.40
+)
 
 # %% [markdown]
 # #### Exercise 5.7: Find Undefined Features
@@ -1282,7 +1286,9 @@ project_2.plotter.plot_meas_vs_calc(expt_name='sim_lbco', x='d_spacing', x_min=1
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.plotter.plot_meas_vs_calc(expt_name='sim_lbco', x='d_spacing', x_min=1.53, x_max=1.7)
+project_2.display.plotter.plot_meas_vs_calc(
+    expt_name='sim_lbco', x='d_spacing', x_min=1.53, x_max=1.7
+)
 
 # %% [markdown]
 # #### Exercise 5.8: Identify the Cause of the Unexplained Peaks
@@ -1347,8 +1353,10 @@ project_2.plotter.plot_meas_vs_calc(expt_name='sim_lbco', x='d_spacing', x_min=1
 # confirm this hypothesis.
 
 # %% tags=["solution", "hide-input"]
-project_1.plotter.plot_meas_vs_calc(expt_name='sim_si', x='d_spacing', x_min=1, x_max=1.7)
-project_2.plotter.plot_meas_vs_calc(expt_name='sim_lbco', x='d_spacing', x_min=1, x_max=1.7)
+project_1.display.plotter.plot_meas_vs_calc(expt_name='sim_si', x='d_spacing', x_min=1, x_max=1.7)
+project_2.display.plotter.plot_meas_vs_calc(
+    expt_name='sim_lbco', x='d_spacing', x_min=1, x_max=1.7
+)
 
 # %% [markdown]
 # #### Exercise 5.10: Create a Second Structure – Si as Impurity
@@ -1415,7 +1423,7 @@ project_2.experiments['sim_lbco'].linked_phases.create(id='si', scale=1.0)
 # Before optimizing the parameters, we can visualize the measured
 # diffraction pattern and the calculated diffraction pattern based on
 # the two phases: LBCO and Si.
-project_2.plotter.plot_meas_vs_calc(expt_name='sim_lbco')
+project_2.display.plotter.plot_meas_vs_calc(expt_name='sim_lbco')
 
 # As you can see, the calculated pattern is now the sum of both phases,
 # and Si peaks are visible in the calculated pattern. However, their
@@ -1431,8 +1439,8 @@ project_2.analysis.display.fit_results()
 # diffraction pattern both for the full range and for a zoomed-in region
 # around the previously unexplained peak near 95,000 μs. The calculated
 # pattern will be the sum of the two phases.
-project_2.plotter.plot_meas_vs_calc(expt_name='sim_lbco')
-project_2.plotter.plot_meas_vs_calc(expt_name='sim_lbco', x_min=88000, x_max=101000)
+project_2.display.plotter.plot_meas_vs_calc(expt_name='sim_lbco')
+project_2.display.plotter.plot_meas_vs_calc(expt_name='sim_lbco', x_min=88000, x_max=101000)
 
 # %% [markdown]
 # All previously unexplained peaks are now accounted for in the pattern,

@@ -66,32 +66,32 @@ class TestExperimentBaseCalculator:
     def test_calculator_auto_resolves(self):
         ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
         # calculator should auto-resolve on first access
-        assert ex.calculator is not None
+        assert ex.calculation.calculator is not None
 
     def test_calculator_type_auto_resolves(self):
         ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
-        ct = ex.calculator_type
+        ct = ex.calculation.calculator_type.value
         assert isinstance(ct, str)
         assert len(ct) > 0
 
     def test_calculator_type_invalid(self):
         ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
-        _ = ex.calculator_type  # trigger resolve
-        old = ex.calculator_type
-        ex.calculator_type = 'bogus-engine'
-        assert ex.calculator_type == old
+        _ = ex.calculation.calculator_type.value  # trigger resolve
+        old = ex.calculation.calculator_type.value
+        ex.calculation.calculator_type = 'bogus-engine'
+        assert ex.calculation.calculator_type.value == old
 
     def test_show_calculator_types(self, capsys):
         ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
-        ex.show_calculator_types()
+        ex.calculation.show_calculator_types()
         out = capsys.readouterr().out
         assert len(out) > 0
 
     def test_show_calculator_types_includes_current(self, capsys):
         ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
-        ex.show_calculator_types()
+        ex.calculation.show_calculator_types()
         out = capsys.readouterr().out
-        assert ex.calculator_type in out
+        assert ex.calculation.calculator_type.value in out
 
 
 class TestExperimentBaseAsCif:

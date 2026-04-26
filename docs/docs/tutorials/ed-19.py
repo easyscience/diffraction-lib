@@ -507,19 +507,19 @@ project.analysis.display.constraints()
 # identify any issues with the data or the model before running the fit.
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='xrd')
+project.display.plotter.plot_meas_vs_calc(expt_name='xrd')
 
 # %% [markdown]
 # Show supported fitting engines.
 
 # %%
-project.analysis.show_minimizer_types()
+project.analysis.fit.show_minimizer_types()
 
 # %% [markdown]
 # Select desired fitting engine.
 
 # %%
-project.analysis.minimizer_type = 'bumps (lm)'
+project.analysis.fit.minimizer_type = 'bumps (lm)'
 
 # %% [markdown]
 # Rietveld refinement is performed by calling the `fit()` method of the
@@ -538,16 +538,16 @@ project.analysis.display.fit_results()
 # Show parameter correlations.
 
 # %%
-project.plotter.plot_param_correlations()
+project.display.plotter.plot_param_correlations()
 
 # %% [markdown]
 # Plot measured vs calculated data for the experiment, including the residual.
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='xrd', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='xrd', show_residual=True)
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='xrd', x_min=46.00, x_max=47.4)
+project.display.plotter.plot_meas_vs_calc(expt_name='xrd', x_min=46.00, x_max=47.4)
 
 # %% [markdown]
 # ## Step 7: Show Project Summary

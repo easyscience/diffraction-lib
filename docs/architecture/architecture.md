@@ -728,16 +728,15 @@ workflow:
   `mode` descriptors). `fit.minimizer_type` selects the minimizer
   backend. `fit.mode` stores whether fitting is `'single'`, `'joint'`,
   or `'sequential'`. `fit.show_minimizer_types()` lists supported
-  minimizers; `fit.show_modes()` filters modes by experiment count
-  (≤1 → only `single`; >1 → all three).
+  minimizers; `fit.show_modes()` filters modes by experiment count (≤1 →
+  only `single`; >1 → all three).
 - Joint-fit weights: `joint_fit_experiments` (`CategoryCollection` of
   per-experiment weight entries); sibling of `fit`, not a child.
 - Parameter tables: `show_all_params()`, `show_fittable_params()`,
   `show_free_params()`, `how_to_access_parameters()`
 - Fitting: `fit()` dispatches single/joint through the callable `fit`
-  category; `fit_sequential()` handles sequential mode (sets
-  `fit.mode` to `'sequential'` internally). `display.fit_results()`
-  shows results.
+  category; `fit_sequential()` handles sequential mode (sets `fit.mode`
+  to `'sequential'` internally). `display.fit_results()` shows results.
 - Aliases and constraints (single-type categories; no public `_type`
   getter or setter)
 
@@ -761,7 +760,7 @@ It owns and coordinates all components:
 | `project.structures`  | `Structures`  | Collection of structure datablocks       |
 | `project.experiments` | `Experiments` | Collection of experiment datablocks      |
 | `project.display`     | `Display`     | Plot/table engine selection and facades  |
-| `project.analysis`    | `Analysis`    | Calculator, minimiser, fitting           |
+| `project.analysis`    | `Analysis`    | Minimiser, fitting, aliases, constraints |
 | `project.summary`     | `Summary`     | Report generation                        |
 | `project.verbosity`   | `str`         | Console output level (full/short/silent) |
 

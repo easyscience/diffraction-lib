@@ -138,8 +138,10 @@ project.experiments.add(expt)
 # #### Plot Measured vs Calculated
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='sepd', show_residual=True)
-project.plotter.plot_meas_vs_calc(expt_name='sepd', x_min=23200, x_max=23700, show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='sepd', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(
+    expt_name='sepd', x_min=23200, x_max=23700, show_residual=True
+)
 
 # %% [markdown]
 # ### Perform Fit 1/5
@@ -169,10 +171,12 @@ project.analysis.display.fit_results()
 # #### Plot Measured vs Calculated
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='sepd', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='sepd', show_residual=True)
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='sepd', x_min=23200, x_max=23700, show_residual=True)
+project.display.plotter.plot_meas_vs_calc(
+    expt_name='sepd', x_min=23200, x_max=23700, show_residual=True
+)
 
 # %% [markdown]
 # ### Perform Fit 2/5
@@ -200,10 +204,12 @@ project.analysis.display.fit_results()
 # #### Plot Measured vs Calculated
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='sepd', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='sepd', show_residual=True)
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='sepd', x_min=23200, x_max=23700, show_residual=True)
+project.display.plotter.plot_meas_vs_calc(
+    expt_name='sepd', x_min=23200, x_max=23700, show_residual=True
+)
 
 # %% [markdown]
 # ### Perform Fit 3/5
@@ -239,10 +245,12 @@ project.analysis.display.fit_results()
 # #### Plot Measured vs Calculated
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='sepd', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='sepd', show_residual=True)
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='sepd', x_min=23200, x_max=23700, show_residual=True)
+project.display.plotter.plot_meas_vs_calc(
+    expt_name='sepd', x_min=23200, x_max=23700, show_residual=True
+)
 
 # %% [markdown]
 # ### Perform Fit 4/5
@@ -273,16 +281,18 @@ project.analysis.display.fit_results()
 # #### Show parameter correlations
 
 # %%
-project.plotter.plot_param_correlations()
+project.display.plotter.plot_param_correlations()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='sepd', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='sepd', show_residual=True)
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='sepd', x_min=23200, x_max=23700, show_residual=True)
+project.display.plotter.plot_meas_vs_calc(
+    expt_name='sepd', x_min=23200, x_max=23700, show_residual=True
+)
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='sepd', x='d_spacing', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='sepd', x='d_spacing', show_residual=True)

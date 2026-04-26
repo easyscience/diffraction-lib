@@ -325,12 +325,18 @@ def project_info_to_cif(info: object) -> str:
     )
 
 
+def _as_cif_text(section: object) -> str:
+    """Return CIF text from either an ``as_cif`` property or method."""
+    cif_value = section.as_cif
+    return cif_value() if callable(cif_value) else cif_value
+
+
 def project_config_to_cif(project: object) -> str:
     """Render project-level configuration to ``project.cif`` text."""
-    lines: list[str] = [project.info.as_cif]
+    lines: list[str] = [_as_cif_text(project.info)]
     display = getattr(project, 'display', None)
     if display is not None:
-        lines.extend(('', display.as_cif))
+        lines.extend(('', _as_cif_text(display)))
     return '\n'.join(lines)
 
 
@@ -340,9 +346,9 @@ def project_to_cif(project: object) -> str:
     if hasattr(project, 'info'):
         parts.append(project_config_to_cif(project))
     if getattr(project, 'structures', None):
-        parts.append(project.structures.as_cif)
+        parts.append(_as_cif_text(project.structures))
     if getattr(project, 'experiments', None):
-        parts.append(project.experiments.as_cif)
+        parts.append(_as_cif_text(project.experiments))
     if getattr(project, 'analysis', None):
         parts.append(project.analysis.as_cif())
     if getattr(project, 'summary', None):
@@ -439,7 +445,9 @@ def project_info_from_cif(info: object, cif_text: str) -> None:
 
 
 def project_config_from_cif(project: object, cif_text: str) -> None:
-    """Populate project-level configuration from ``project.cif`` text."""
+    """
+    Populate project-level configuration from ``project.cif`` text.
+    """
     import gemmi  # noqa: PLC0415
 
     doc = gemmi.cif.read_string(_wrap_in_data_block(cif_text, 'project'))
@@ -456,8 +464,8 @@ def analysis_from_cif(analysis: object, cif_text: str) -> None:
     """
     Populate an Analysis instance from CIF text.
 
-    Reads the fit configuration, aliases, constraints, and
-    joint-fit experiment weights from the given CIF string.
+    Reads the fit configuration, aliases, constraints, and joint-fit
+    experiment weights from the given CIF string.
 
     Parameters
     ----------
@@ -470,8 +478,6 @@ def analysis_from_cif(analysis: object, cif_text: str) -> None:
 
     doc = gemmi.cif.read_string(_wrap_in_data_block(cif_text, 'analysis'))
     block = doc.sole_block()
-
-    read_cif_string = _make_cif_string_reader(block)
 
     # Restore fit configuration
     analysis.fit.from_cif(block)

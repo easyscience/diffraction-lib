@@ -14,7 +14,6 @@ from easydiffraction.analysis.categories.fit import FitModeEnum
 from easydiffraction.analysis.categories.joint_fit_experiments import JointFitExperiments
 from easydiffraction.analysis.fit_helpers.tracking import _make_display_handle
 from easydiffraction.analysis.fitting import Fitter
-from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 from easydiffraction.core.guard import GuardedBase
 from easydiffraction.core.singleton import ConstraintsHandler
 from easydiffraction.core.variable import NumericDescriptor

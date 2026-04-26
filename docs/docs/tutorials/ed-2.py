@@ -164,10 +164,10 @@ project.analysis.fit()
 project.analysis.display.fit_results()
 
 # %%
-project.plotter.plot_param_correlations()
+project.display.plotter.plot_param_correlations()
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # %% [markdown]
 # ## Step 5: Perform Analysis (with constraints)
@@ -191,8 +191,8 @@ project.analysis.aliases.create(
 project.analysis.constraints.create(expression='biso_Ba = biso_La')
 
 # %%
-project.analysis.show_minimizer_types()
-project.analysis.minimizer_type = 'lmfit'
+project.analysis.fit.show_minimizer_types()
+project.analysis.fit.minimizer_type = 'lmfit'
 
 # %%
 project.analysis.fit()
@@ -201,7 +201,7 @@ project.analysis.fit()
 project.analysis.display.fit_results()
 
 # %%
-project.plotter.plot_param_correlations()
+project.display.plotter.plot_param_correlations()
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)

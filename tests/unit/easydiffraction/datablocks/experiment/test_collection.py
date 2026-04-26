@@ -18,6 +18,7 @@ def test_experiments_show_and_remove(monkeypatch, capsys):
         def __init__(self):
             self.sample_form = type('E', (), {'value': 'powder'})
             self.beam_mode = type('E', (), {'value': 'constant wavelength'})
+            self.scattering_type = type('E', (), {'value': 'bragg'})
 
     class DummyExp(ExperimentBase):
         def __init__(self, name='e1'):

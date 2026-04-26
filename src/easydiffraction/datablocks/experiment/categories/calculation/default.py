@@ -4,15 +4,12 @@
 
 from __future__ import annotations
 
-from easydiffraction.analysis.calculators.factory import CalculatorFactory
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.variable import StringDescriptor
-from easydiffraction.datablocks.experiment.categories.calculation.factory import (
-    CalculationFactory,
-)
+from easydiffraction.datablocks.experiment.categories.calculation.factory import CalculationFactory
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.io.cif.parse import read_cif_str
@@ -75,6 +72,8 @@ class Calculation(CategoryItem):
 
     def show_calculator_types(self) -> None:
         """Print supported calculator backends and mark current type."""
+        from easydiffraction.analysis.calculators.factory import CalculatorFactory  # noqa: PLC0415
+
         parent = getattr(self, '_parent', None)
         current = self.calculator_type.value
         if parent is None:

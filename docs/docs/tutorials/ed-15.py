@@ -67,15 +67,15 @@ experiment.extinction.radius = 100.0
 # ## Step 4: Perform Analysis I (ADP iso)
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='senju')
+project.display.plotter.plot_meas_vs_calc(expt_name='senju')
 
 # %%
 experiment.linked_crystal.scale.free = True
 experiment.extinction.radius.free = True
 
 # %%
-project.analysis.show_minimizer_types()
-project.analysis.minimizer_type = 'lmfit'
+project.analysis.fit.show_minimizer_types()
+project.analysis.fit.minimizer_type = 'lmfit'
 
 # %%
 # Start refinement. All parameters, which have standard uncertainties
@@ -93,7 +93,7 @@ structure.show_as_cif()
 project.experiments.show_names()
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='senju')
+project.display.plotter.plot_meas_vs_calc(expt_name='senju')
 
 # %% [markdown]
 # ## Step 5: Perform Analysis (ADP aniso)
@@ -121,10 +121,10 @@ project.analysis.fit()
 project.analysis.display.fit_results()
 
 # %%
-project.plotter.plot_param_correlations()
+project.display.plotter.plot_param_correlations()
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='senju')
+project.display.plotter.plot_meas_vs_calc(expt_name='senju')
 
 # %%
 structure.show_as_cif()

@@ -68,13 +68,13 @@ project.save_as(dir_path='lbco_hrpt', temporary=True)
 # Show supported plotting engines.
 
 # %%
-project.plotter.show_supported_engines()
+project.display.plotter.show_supported_engines()
 
 # %% [markdown]
 # Show current plotting configuration.
 
 # %%
-project.plotter.show_config()
+project.display.plotter.show_config()
 
 # %% [markdown]
 # ## Step 2: Define Structure
@@ -219,7 +219,7 @@ project.experiments.show_names()
 # #### Show Measured Data
 
 # %%
-project.plotter.plot_meas(expt_name='hrpt')
+project.display.plotter.plot_meas(expt_name='hrpt')
 
 # %% [markdown]
 # #### Set Instrument
@@ -316,28 +316,28 @@ project.save()
 # Show supported calculation engines for this experiment.
 
 # %%
-project.experiments['hrpt'].show_calculator_types()
+project.experiments['hrpt'].calculation.show_calculator_types()
 
 # %% [markdown]
 # Select the desired calculation engine.
 
 # %%
-project.experiments['hrpt'].calculator_type = 'cryspy'
+project.experiments['hrpt'].calculation.calculator_type = 'cryspy'
 
 # %% [markdown]
 # #### Show Calculated Data
 
 # %%
-project.plotter.plot_calc(expt_name='hrpt')
+project.display.plotter.plot_calc(expt_name='hrpt')
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=True)
 
 # %% [markdown]
 # #### Show Parameters
@@ -371,13 +371,13 @@ project.analysis.display.free_params()
 # Show supported fit modes.
 
 # %%
-project.analysis.show_fit_mode_types()
+project.analysis.fit.show_modes()
 
 # %% [markdown]
 # Select desired fit mode.
 
 # %%
-project.analysis.fit_mode_type = 'single'
+project.analysis.fit.mode = 'single'
 
 # %% [markdown]
 # #### Set Minimizer
@@ -385,13 +385,13 @@ project.analysis.fit_mode_type = 'single'
 # Show supported fitting engines.
 
 # %%
-project.analysis.show_minimizer_types()
+project.analysis.fit.show_minimizer_types()
 
 # %% [markdown]
 # Select desired fitting engine.
 
 # %%
-project.analysis.minimizer_type = 'lmfit'
+project.analysis.fit.minimizer_type = 'lmfit'
 
 # %% [markdown]
 # ### Perform Fit 1/5
@@ -430,10 +430,10 @@ project.analysis.display.fit_results()
 # #### Plot Measured vs Calculated
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=True)
 
 # %% [markdown]
 # #### Save Project State
@@ -469,10 +469,10 @@ project.analysis.display.fit_results()
 # #### Plot Measured vs Calculated
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=True)
 
 # %% [markdown]
 # #### Save Project State
@@ -508,10 +508,10 @@ project.analysis.display.fit_results()
 # #### Plot Measured vs Calculated
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=True)
 
 # %% [markdown]
 # #### Save Project State
@@ -565,10 +565,10 @@ project.analysis.display.fit_results()
 # #### Plot Measured vs Calculated
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=True)
 
 # %% [markdown]
 # #### Save Project State
@@ -626,16 +626,16 @@ project.analysis.display.free_params()
 # %%
 project.analysis.fit()
 project.analysis.display.fit_results()
-project.plotter.plot_param_correlations()
+project.display.plotter.plot_param_correlations()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=True)
 
 # %% [markdown]
 # #### Save Project State
