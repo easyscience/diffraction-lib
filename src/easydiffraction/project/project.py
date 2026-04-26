@@ -14,9 +14,10 @@ from easydiffraction.analysis.analysis import Analysis
 from easydiffraction.core.guard import GuardedBase
 from easydiffraction.datablocks.experiment.collection import Experiments
 from easydiffraction.datablocks.structure.collection import Structures
-from easydiffraction.display.plotting import Plotter
-from easydiffraction.display.tables import TableRenderer
+from easydiffraction.io.cif.serialize import project_config_to_cif
 from easydiffraction.io.cif.serialize import project_to_cif
+from easydiffraction.project.categories.display import Display
+from easydiffraction.project.categories.display import DisplayFactory
 from easydiffraction.project.project_info import ProjectInfo
 from easydiffraction.summary.summary import Summary
 from easydiffraction.utils.enums import VerbosityEnum
@@ -81,9 +82,8 @@ class Project(GuardedBase):
         self._info: ProjectInfo = ProjectInfo(name, title, description)
         self._structures = Structures()
         self._experiments = Experiments()
-        self._tabler = TableRenderer.get()
-        self._plotter = Plotter()
-        self._plotter._set_project(self)
+        self._display = DisplayFactory.create('default')
+        self._display._parent = self
         self._analysis = Analysis(self)
         self._summary = Summary(self)
         self._saved = False
@@ -152,14 +152,9 @@ class Project(GuardedBase):
         self._experiments = experiments
 
     @property
-    def plotter(self) -> Plotter:
-        """Plotting facade bound to the project."""
-        return self._plotter
-
-    @property
-    def tabler(self) -> TableRenderer:
-        """Tables rendering facade bound to the project."""
-        return self._tabler
+    def display(self) -> Display:
+        """Display configuration and facades bound to the project."""
+        return self._display
 
     @property
     def analysis(self) -> Analysis:
@@ -218,7 +213,8 @@ class Project(GuardedBase):
 
         Reads ``project.cif``, ``structures/*.cif``,
         ``experiments/*.cif``, and ``analysis.cif`` from *dir_path* and
-        reconstructs the full project state.
+        reconstructs the full project state, including project-level
+        display configuration.
 
         Parameters
         ----------
@@ -237,7 +233,7 @@ class Project(GuardedBase):
             If *dir_path* does not exist.
         """
         from easydiffraction.io.cif.serialize import analysis_from_cif  # noqa: PLC0415
-        from easydiffraction.io.cif.serialize import project_info_from_cif  # noqa: PLC0415
+        from easydiffraction.io.cif.serialize import project_config_from_cif  # noqa: PLC0415
 
         project_path = pathlib.Path(dir_path)
         if not project_path.is_dir():
@@ -257,7 +253,7 @@ class Project(GuardedBase):
         project_cif_path = project_path / 'project.cif'
         if project_cif_path.is_file():
             cif_text = project_cif_path.read_text()
-            project_info_from_cif(project._info, cif_text)
+            project_config_from_cif(project, cif_text)
 
         project._info.path = project_path
 
@@ -341,9 +337,9 @@ class Project(GuardedBase):
         # Ensure project directory exists
         self._info.path.mkdir(parents=True, exist_ok=True)
 
-        # Save project info
+        # Save project-level configuration
         with (self._info.path / 'project.cif').open('w') as f:
-            f.write(self._info.as_cif())
+            f.write(project_config_to_cif(self))
             console.print('├── 📄 project.cif')
 
         # Save structures
@@ -406,8 +402,9 @@ class Project(GuardedBase):
         sequential-fit results where ``file_path`` points to a real
         file) reloads the measured data into the template experiment.
 
-        After calling this method, ``plotter.plot_meas_vs_calc()`` will
-        fit for that specific dataset.
+        After calling this method,
+        ``display.plotter.plot_meas_vs_calc()`` will fit for that
+        specific dataset.
 
         Parameters
         ----------

@@ -104,8 +104,7 @@ directory, showing the contents of all files in the project.
 
 ### 1. <span class="orange">project.cif</span>
 
-This file provides an overview of the project, including file names of
-the **structures** and **experiments** associated with the project.
+This file stores project-level metadata and display configuration.
 
 <!-- prettier-ignore-start -->
 
@@ -116,13 +115,8 @@ data_<span class="red"><b>La0.5Ba0.5CoO3</b></span>
 <span class="blue"><b>_project</b>.title</span>       "La0.5Ba0.5CoO3 from neutron diffraction at HRPT@PSI"
 <span class="blue"><b>_project</b>.description</span> "neutrons, powder, constant wavelength, HRPT@PSI"
 
-loop_
-<span class="green"><b>_structure</b>.cif_file_name</span>
-lbco.cif
-
-loop_
-<span class="green"><b>_experiment</b>.cif_file_name</span>
-hrpt.cif
+<span class="blue"><b>_display</b>.plotter_type</span>  asciichartpy
+<span class="blue"><b>_display</b>.tabler_type</span>   rich
 </pre>
 </div>
 

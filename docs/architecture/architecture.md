@@ -760,9 +760,9 @@ It owns and coordinates all components:
 | `project.info`        | `ProjectInfo` | Metadata: name, title, description, path |
 | `project.structures`  | `Structures`  | Collection of structure datablocks       |
 | `project.experiments` | `Experiments` | Collection of experiment datablocks      |
+| `project.display`     | `Display`     | Plot/table engine selection and facades  |
 | `project.analysis`    | `Analysis`    | Calculator, minimiser, fitting           |
 | `project.summary`     | `Summary`     | Report generation                        |
-| `project.plotter`     | `Plotter`     | Visualisation                            |
 | `project.verbosity`   | `str`         | Console output level (full/short/silent) |
 
 ### 7.1 Data Flow
@@ -931,7 +931,7 @@ project.experiments['hrpt'].calculation.calculator_type = 'cryspy'
 project.analysis.fit.minimizer_type = 'lmfit'
 
 # Plot before fitting
-project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # Select free parameters
 project.structures['lbco'].cell.length_a.free = True
@@ -947,7 +947,7 @@ project.analysis.fit()
 project.analysis.display.fit_results()
 
 # Plot after fitting
-project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # Save
 project.save()

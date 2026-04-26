@@ -325,11 +325,20 @@ def project_info_to_cif(info: object) -> str:
     )
 
 
+def project_config_to_cif(project: object) -> str:
+    """Render project-level configuration to ``project.cif`` text."""
+    lines: list[str] = [project.info.as_cif]
+    display = getattr(project, 'display', None)
+    if display is not None:
+        lines.extend(('', display.as_cif))
+    return '\n'.join(lines)
+
+
 def project_to_cif(project: object) -> str:
     """Render a whole project by concatenating sections when present."""
     parts: list[str] = []
     if hasattr(project, 'info'):
-        parts.append(project.info.as_cif)
+        parts.append(project_config_to_cif(project))
     if getattr(project, 'structures', None):
         parts.append(project.structures.as_cif)
     if getattr(project, 'experiments', None):
@@ -386,6 +395,26 @@ def _wrap_in_data_block(cif_text: str, block_name: str = '_') -> str:
     return f'data_{block_name}\n\n{cif_text}'
 
 
+def _populate_project_info_from_block(
+    info: object,
+    block: gemmi.cif.Block,
+) -> None:
+    """Populate ProjectInfo fields from a parsed CIF block."""
+    read_cif_string = _make_cif_string_reader(block)
+
+    name = read_cif_string('_project.id')
+    if name is not None:
+        info.name = name
+
+    title = read_cif_string('_project.title')
+    if title is not None:
+        info.title = title
+
+    description = read_cif_string('_project.description')
+    if description is not None:
+        info.description = description
+
+
 def project_info_from_cif(info: object, cif_text: str) -> None:
     """
     Populate a ProjectInfo instance from CIF text.
@@ -406,19 +435,21 @@ def project_info_from_cif(info: object, cif_text: str) -> None:
     doc = gemmi.cif.read_string(_wrap_in_data_block(cif_text, 'project'))
     block = doc.sole_block()
 
-    read_cif_string = _make_cif_string_reader(block)
+    _populate_project_info_from_block(info, block)
 
-    name = read_cif_string('_project.id')
-    if name is not None:
-        info.name = name
 
-    title = read_cif_string('_project.title')
-    if title is not None:
-        info.title = title
+def project_config_from_cif(project: object, cif_text: str) -> None:
+    """Populate project-level configuration from ``project.cif`` text."""
+    import gemmi  # noqa: PLC0415
 
-    description = read_cif_string('_project.description')
-    if description is not None:
-        info.description = description
+    doc = gemmi.cif.read_string(_wrap_in_data_block(cif_text, 'project'))
+    block = doc.sole_block()
+
+    _populate_project_info_from_block(project.info, block)
+
+    display = getattr(project, 'display', None)
+    if display is not None:
+        display.from_cif(block)
 
 
 def analysis_from_cif(analysis: object, cif_text: str) -> None:

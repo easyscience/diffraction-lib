@@ -157,11 +157,10 @@ An example of the output for the
 ### Supported plotters
 
 To see the available plotters, you can use the
-`show_available_plotters()` method on the `plotter` attribute of the
-`Project` instance:
+`display` category on the `Project` instance:
 
 ```python
-project.plotter.show_supported_engines()
+project.display.show_plotter_types()
 ```
 
 An example of the output is:
