@@ -211,11 +211,11 @@ expt_n2.linked_phases.create(id='austenite', scale=10)
 # #### Set Excluded Regions
 
 # %%
-expt_s2.excluded_regions.create(id='1', start=0, end=40000)
+expt_s2.excluded_regions.create(id='1', start=0, end=40500)
 expt_s2.excluded_regions.create(id='2', start=130000, end=180000)
 
 # %%
-expt_n2.excluded_regions.create(id='1', start=0, end=40000)
+expt_n2.excluded_regions.create(id='1', start=0, end=40500)
 expt_n2.excluded_regions.create(id='2', start=130000, end=180000)
 
 # %% [markdown]
