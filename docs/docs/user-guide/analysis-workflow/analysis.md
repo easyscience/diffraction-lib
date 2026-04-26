@@ -151,7 +151,7 @@ Supported minimizers
 To select the desired minimizer, e.g., 'lmfit':
 
 ```python
-project.analysis.minimizer_type = 'lmfit'
+project.analysis.fit.minimizer_type = 'lmfit'
 ```
 
 ### Fit Mode
@@ -168,16 +168,16 @@ The supported fit modes are:
 | single | Independent fitting of each experiment; no shared parameters        |
 | joint  | Simultaneous fitting of all experiments; some parameters are shared |
 
-You can set the fit mode on the `analysis` object:
+You can set the fit mode on the `fit` category:
 
 ```python
-project.analysis.fit_mode_type = 'joint'
+project.analysis.fit.mode = 'joint'
 ```
 
 To check the current fit mode:
 
 ```python
-print(project.analysis.fit_mode_type)
+print(project.analysis.fit.mode.value)
 ```
 
 ### Perform Fit
@@ -344,8 +344,8 @@ Example output:
 
 ```
 ╒════════════════════════════════════════════════╕
-│ _analysis.minimizer_type     "lmfit (leastsq)" │
-│ _analysis.fit_mode_type      single            │
+│ _fit.minimizer_type          "lmfit (leastsq)" │
+│ _fit.mode                    single            │
 │                                                │
 │ loop_                                          │
 │ _alias.label                                   │

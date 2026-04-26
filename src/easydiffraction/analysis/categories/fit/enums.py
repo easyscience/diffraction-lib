@@ -8,7 +8,7 @@ from enum import StrEnum
 
 
 class FitModeEnum(StrEnum):
-    """Fitting strategy for the analysis."""
+    """Fitting mode for the analysis."""
 
     SINGLE = 'single'
     JOINT = 'joint'
@@ -27,4 +27,4 @@ class FitModeEnum(StrEnum):
             return 'Simultaneous fitting of all experiments with weights'
         if self is FitModeEnum.SEQUENTIAL:
             return 'Sequential fitting over data files in a directory'
-        return None
+        return ''

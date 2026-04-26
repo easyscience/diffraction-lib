@@ -348,11 +348,9 @@ def experiment_to_cif(experiment: object) -> str:
 
 def analysis_to_cif(analysis: object) -> str:
     """Render analysis metadata, aliases, and constraints to CIF."""
-    cur_min = format_value(analysis.minimizer_type)
     lines: list[str] = []
     lines.extend((
-        f'_analysis.minimizer_type  {cur_min}',
-        analysis.fit_mode.as_cif,
+        analysis.fit.as_cif,
         '',
         analysis.aliases.as_cif,
         '',
@@ -427,7 +425,7 @@ def analysis_from_cif(analysis: object, cif_text: str) -> None:
     """
     Populate an Analysis instance from CIF text.
 
-    Reads the fitting engine, fit mode, aliases, constraints, and
+    Reads the fit configuration, aliases, constraints, and
     joint-fit experiment weights from the given CIF string.
 
     Parameters
@@ -444,15 +442,8 @@ def analysis_from_cif(analysis: object, cif_text: str) -> None:
 
     read_cif_string = _make_cif_string_reader(block)
 
-    # Restore minimizer selection
-    engine = read_cif_string('_analysis.minimizer_type')
-    if engine is not None:
-        from easydiffraction.analysis.fitting import Fitter  # noqa: PLC0415
-
-        analysis.fitter = Fitter(engine)
-
-    # Restore fit mode
-    analysis.fit_mode.from_cif(block)
+    # Restore fit configuration
+    analysis.fit.from_cif(block)
 
     # Restore aliases (loop)
     analysis.aliases.from_cif(block)

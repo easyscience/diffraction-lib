@@ -723,21 +723,20 @@ workflow:
 
 `Analysis` is bound to a `Project` and provides the high-level API:
 
-- Minimiser selection: `minimizer_type`, `show_minimizer_types()`
-- Fit mode: `fit_mode` (`CategoryItem` with a `mode` descriptor
-  validated by `FitModeEnum`); `'single'` fits each experiment
-  independently, `'joint'` fits all simultaneously with weights from
-  `joint_fit_experiments`, `'sequential'` records that sequential
-  fitting was used. `fit_mode_type` is the user-facing selector.
-  `show_fit_mode_types()` filters by experiment count (≤1 → only
-  `single`; >1 → all three) and marks the current mode.
+- Fit configuration: `fit` (`CategoryItem` with `minimizer_type` and
+  `mode` descriptors). `fit.minimizer_type` selects the minimizer
+  backend. `fit.mode` stores whether fitting is `'single'`, `'joint'`,
+  or `'sequential'`. `fit.show_minimizer_types()` lists supported
+  minimizers; `fit.show_modes()` filters modes by experiment count
+  (≤1 → only `single`; >1 → all three).
 - Joint-fit weights: `joint_fit_experiments` (`CategoryCollection` of
-  per-experiment weight entries); sibling of `fit_mode`, not a child.
+  per-experiment weight entries); sibling of `fit`, not a child.
 - Parameter tables: `show_all_params()`, `show_fittable_params()`,
   `show_free_params()`, `how_to_access_parameters()`
-- Fitting: `fit()` dispatches single/joint; `fit_sequential()` handles
-  sequential mode (sets `fit_mode` to `'sequential'` internally).
-  `display.fit_results()` shows results.
+- Fitting: `fit()` dispatches single/joint through the callable `fit`
+  category; `fit_sequential()` handles sequential mode (sets
+  `fit.mode` to `'sequential'` internally). `display.fit_results()`
+  shows results.
 - Aliases and constraints (single-type categories; no public `_type`
   getter or setter)
 
@@ -928,7 +927,7 @@ project.experiments['hrpt'].linked_phases.create(id='lbco', scale=10.0)
 # Calculator is auto-resolved per experiment; override if needed
 project.experiments['hrpt'].show_calculator_types()
 project.experiments['hrpt'].calculator_type = 'cryspy'
-project.analysis.minimizer_type = 'lmfit'
+project.analysis.fit.minimizer_type = 'lmfit'
 
 # Plot before fitting
 project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
@@ -1064,9 +1063,9 @@ Single-type categories (no public `_type` property):
 - **Structure:** `cell`, `space_group`, `atom_sites`, `atom_site_aniso`.
 - **Analysis:** `aliases`, `constraints`.
 
-`fit_mode` has a user-facing selector `fit_mode_type` (proxy to the
-underlying descriptor). The implementation detail `fit_mode.mode` should
-not be the preferred user API.
+`fit` is a dedicated analysis category. Its public selector surface is
+`fit.minimizer_type` and `fit.mode`; there is no separate owner-level
+proxy API.
 
 **Design decisions:**
 
@@ -1129,10 +1128,10 @@ but internal dispatch always uses the enum:
 
 ```python
 # ✅ Correct — compare with enum
-if self._fit_mode.mode.value == FitModeEnum.JOINT:
+if self._fit.mode.value == FitModeEnum.JOINT:
 
 # ❌ Wrong — compare with raw string
-if self._fit_mode.mode.value == 'joint':
+if self._fit.mode.value == 'joint':
 ```
 
 ### 9.7 Flat Category Structure — No Nested Categories
@@ -1157,25 +1156,26 @@ Owner
     └── CategoryB   ← WRONG: CategoryB is a child of CategoryA
 ```
 
-**Example — `fit_mode` and `joint_fit_experiments`:** `fit_mode` is a
-`CategoryItem` holding the active strategy (`'single'` or `'joint'`).
+**Example — `fit` and `joint_fit_experiments`:** `fit` is a
+`CategoryItem` holding the active minimizer and fitting mode.
 `joint_fit_experiments` is a separate `CategoryCollection` holding
 per-experiment weights. Both are direct children of `Analysis`, not
 nested:
 
 ```python
 # ✅ Correct — sibling categories on Analysis
-project.analysis.fit_mode_type = 'joint'
+project.analysis.fit.mode = 'joint'
 project.analysis.joint_fit_experiments['npd'].weight = 0.7
 
-# ❌ Wrong — joint_fit_experiments as a child of fit_mode
-project.analysis.fit_mode.joint_fit_experiments['npd'].weight = 0.7
+# ❌ Wrong — joint_fit_experiments as a child of fit
+project.analysis.fit.joint_fit_experiments['npd'].weight = 0.7
 ```
 
 In CIF output, sibling categories appear as independent blocks:
 
 ```
-_analysis.fit_mode_type  joint
+_fit.minimizer_type  lmfit
+_fit.mode            joint
 
 loop_
 _joint_fit_experiment.id

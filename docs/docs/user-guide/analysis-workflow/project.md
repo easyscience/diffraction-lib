@@ -247,9 +247,8 @@ of **calculation** and **fitting** engines, as well as user defined
 
 <div class="cif">
 <pre>
-<span class="blue"><b>_analysis</b>.calculator_engine</span>  cryspy
-<span class="blue"><b>_analysis</b>.fitting_engine</span>     "lmfit (leastsq)"
-<span class="blue"><b>_analysis</b>.fit_mode</span>           single
+<span class="blue"><b>_fit</b>.minimizer_type</span>          "lmfit (leastsq)"
+<span class="blue"><b>_fit</b>.mode</span>                    single
 
 loop_
 <span class="green"><b>_alias</b>.label</span>

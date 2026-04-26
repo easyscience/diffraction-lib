@@ -8,8 +8,9 @@ import pandas as pd
 
 from easydiffraction.analysis.categories.aliases.factory import AliasesFactory
 from easydiffraction.analysis.categories.constraints.factory import ConstraintsFactory
-from easydiffraction.analysis.categories.fit_mode import FitModeEnum
-from easydiffraction.analysis.categories.fit_mode import FitModeFactory
+from easydiffraction.analysis.categories.fit import Fit
+from easydiffraction.analysis.categories.fit import FitFactory
+from easydiffraction.analysis.categories.fit import FitModeEnum
 from easydiffraction.analysis.categories.joint_fit_experiments import JointFitExperiments
 from easydiffraction.analysis.fit_helpers.tracking import _make_display_handle
 from easydiffraction.analysis.fitting import Fitter
@@ -397,10 +398,10 @@ class Analysis:
         self._constraints_type: str = ConstraintsFactory.default_tag()
         self.constraints = ConstraintsFactory.create(self._constraints_type)
         self.constraints_handler = ConstraintsHandler.get()
-        self._fit_mode_type: str = FitModeFactory.default_tag()
-        self._fit_mode = FitModeFactory.create(self._fit_mode_type)
+        self._fit: Fit = FitFactory.create(FitFactory.default_tag())
+        self._fit._parent = self
         self._joint_fit_experiments = JointFitExperiments()
-        self.fitter = Fitter()
+        self.fitter = Fitter(self._fit.minimizer_type.value)
         self.fit_results = None
         self._parameter_snapshots: dict[str, dict[str, dict]] = {}
         self._display = AnalysisDisplay(self)
@@ -487,92 +488,10 @@ class Analysis:
         df.columns = pd.MultiIndex.from_tuples(df.columns)
         return df
 
-    def show_minimizer_types(self) -> None:
-        """Print supported minimizers and mark the current selection."""
-        current = self.minimizer_type
-        supported = MinimizerFactory.supported_tags()
-        all_classes = MinimizerFactory._supported_map()
-        columns_data = [
-            ['*' if tag == current else '', tag, cls.type_info.description]
-            for tag, cls in all_classes.items()
-            if tag in supported
-        ]
-        console.paragraph('Minimizer types')
-        render_table(
-            columns_headers=['', 'Type', 'Description'],
-            columns_alignment=['left', 'left', 'left'],
-            columns_data=columns_data,
-        )
-
-    @staticmethod
-    def show_available_minimizers() -> None:
-        """Print available minimizer drivers on this system."""
-        MinimizerFactory.show_supported()
-
     @property
-    def minimizer_type(self) -> str | None:
-        """The identifier of the active minimizer, if any."""
-        return self.fitter.selection if self.fitter else None
-
-    @minimizer_type.setter
-    def minimizer_type(self, selection: str) -> None:
-        """
-        Switch to a different minimizer implementation.
-
-        Parameters
-        ----------
-        selection : str
-            Minimizer selection string, e.g. 'lmfit'.
-        """
-        self.fitter = Fitter(selection)
-        console.paragraph('Current minimizer changed to')
-        console.print(self.minimizer_type)
-
-    @property
-    def current_minimizer(self) -> str | None:
-        """Backward-compatible alias for :attr:`minimizer_type`."""
-        return self.minimizer_type
-
-    @current_minimizer.setter
-    def current_minimizer(self, selection: str) -> None:
-        self.minimizer_type = selection
-
-    # ------------------------------------------------------------------
-    #  Fit mode (single type, with show methods)
-    # ------------------------------------------------------------------
-
-    @property
-    def fit_mode(self) -> object:
-        """Fit-mode category item holding the active strategy."""
-        return self._fit_mode
-
-    def show_fit_mode_types(self) -> None:
-        """Print supported fit modes and mark the current selection."""
-        num_expts = len(self.project.experiments) if self.project.experiments else 0
-        if num_expts <= 1:
-            modes = [FitModeEnum.SINGLE]
-        else:
-            modes = [FitModeEnum.SINGLE, FitModeEnum.JOINT, FitModeEnum.SEQUENTIAL]
-        current = self.fit_mode_type
-        columns_data = [
-            ['*' if mode.value == current else '', mode.value, mode.description()]
-            for mode in modes
-        ]
-        console.paragraph('Fit mode types')
-        render_table(
-            columns_headers=['', 'Type', 'Description'],
-            columns_alignment=['left', 'left', 'left'],
-            columns_data=columns_data,
-        )
-
-    @property
-    def fit_mode_type(self) -> str:
-        """Current fit-mode type string (single, joint, sequential)."""
-        return self._fit_mode.mode.value
-
-    @fit_mode_type.setter
-    def fit_mode_type(self, value: str) -> None:
-        self._fit_mode.mode = value
+    def fit(self) -> Fit:
+        """Fit configuration and execution entry-point."""
+        return self._fit
 
     # ------------------------------------------------------------------
     #  Joint-fit experiments (category)
@@ -583,7 +502,7 @@ class Analysis:
         """Per-experiment weight collection for joint fitting."""
         return self._joint_fit_experiments
 
-    def fit(self, verbosity: str | None = None, *, use_physical_limits: bool = False) -> None:
+    def _run_fit(self, verbosity: str | None = None, *, use_physical_limits: bool = False) -> None:
         """
         Execute fitting for all experiments.
 
@@ -631,7 +550,7 @@ class Analysis:
         self._update_categories()
 
         # Run the fitting process
-        mode = FitModeEnum(self._fit_mode.mode.value)
+        mode = FitModeEnum(self._fit.mode.value)
         if mode is FitModeEnum.JOINT:
             self._fit_joint(verb, structures, experiments, use_physical_limits=use_physical_limits)
         elif mode is FitModeEnum.SINGLE:
@@ -640,7 +559,7 @@ class Analysis:
             )
         elif mode is FitModeEnum.SEQUENTIAL:
             log.error(
-                "fit_mode is 'sequential'. Use fit_sequential(data_dir=...) instead of fit()."
+                "fit.mode is 'sequential'. Use fit_sequential(data_dir=...) instead of fit()."
             )
             return
 
@@ -894,7 +813,7 @@ class Analysis:
         from easydiffraction.analysis.sequential import fit_sequential as _fit_seq  # noqa: PLC0415
 
         # Record the fit mode for CIF serialization
-        self._fit_mode.mode = FitModeEnum.SEQUENTIAL.value
+        self._fit.mode = FitModeEnum.SEQUENTIAL.value
 
         # Apply constraints before building the template
         self._update_categories()
