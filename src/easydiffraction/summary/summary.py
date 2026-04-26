@@ -214,7 +214,7 @@ class Summary:
         console.section('Fitting')
 
         console.paragraph('Minimization engine')
-        console.print(self.project.analysis.current_minimizer)
+        console.print(self.project.analysis.minimizer_type)
 
         console.paragraph('Fit quality')
         columns_headers = ['metric', 'value']

@@ -176,7 +176,7 @@ class ExperimentBase(DatablockItem):
             log.warning(
                 f"Unsupported calculator '{tag}' for experiment "
                 f"'{self.name}'. Supported: {supported}. "
-                f"For more information, use 'show_supported_calculator_types()'",
+                f"For more information, use 'show_calculator_types()'",
             )
             return
         self._calculator = CalculatorFactory.create(tag)
@@ -184,31 +184,31 @@ class ExperimentBase(DatablockItem):
         console.paragraph(f"Calculator for experiment '{self.name}' changed to")
         console.print(tag)
 
-    def show_supported_calculator_types(self) -> None:
-        """Print a table of supported calculator backends."""
+    def show_calculator_types(self) -> None:
+        """Print supported calculator backends and mark current type."""
         from easydiffraction.analysis.calculators.factory import CalculatorFactory  # noqa: PLC0415
 
+        current = self.calculator_type
         supported_tags = self._supported_calculator_tags()
         all_classes = CalculatorFactory._supported_map()
-        columns_headers = ['Type', 'Description']
-        columns_alignment = ['left', 'left']
+        columns_headers = ['Current', 'Type', 'Description']
+        columns_alignment = ['left', 'left', 'left']
         columns_data = [
-            [cls.type_info.tag, cls.type_info.description]
+            ['*' if tag == current else '', cls.type_info.tag, cls.type_info.description]
             for tag, cls in all_classes.items()
             if tag in supported_tags
         ]
 
-        console.paragraph('Supported calculator types')
+        console.paragraph('Calculator types')
         render_table(
             columns_headers=columns_headers,
             columns_alignment=columns_alignment,
             columns_data=columns_data,
         )
 
-    def show_current_calculator_type(self) -> None:
-        """Print the name of the currently active calculator."""
-        console.paragraph('Current calculator type')
-        console.print(self.calculator_type)
+    def show_supported_calculator_types(self) -> None:
+        """Backward-compatible alias for :meth:`show_calculator_types`."""
+        self.show_calculator_types()
 
     def _resolve_calculator(self) -> None:
         """Auto-resolve the default calculator from data category."""
@@ -313,7 +313,7 @@ class ScExperimentBase(ExperimentBase):
             log.warning(
                 f"Unsupported extinction type '{new_type}'. "
                 f'Supported: {supported_tags}. '
-                f"For more information, use 'show_supported_extinction_types()'",
+                f"For more information, use 'show_extinction_types()'",
             )
             return
         self._extinction = ExtinctionFactory.create(new_type)
@@ -321,16 +321,29 @@ class ScExperimentBase(ExperimentBase):
         console.paragraph('Extinction type changed to')
         console.print(new_type)
 
-    def show_supported_extinction_types(self) -> None:
-        """Print a table of supported extinction correction types."""
-        ExtinctionFactory.show_supported(
+    def show_extinction_types(self) -> None:
+        """Print supported extinction types and mark current type."""
+        supported = ExtinctionFactory.supported_for(
             calculator=self.calculator_type,
         )
+        columns_data = [
+            [
+                '*' if klass.type_info.tag == self._extinction_type else '',
+                klass.type_info.tag,
+                klass.type_info.description,
+            ]
+            for klass in supported
+        ]
+        console.paragraph('Extinction types')
+        render_table(
+            columns_headers=['Current', 'Type', 'Description'],
+            columns_alignment=['left', 'left', 'left'],
+            columns_data=columns_data,
+        )
 
-    def show_current_extinction_type(self) -> None:
-        """Print the currently used extinction correction type."""
-        console.paragraph('Current extinction type')
-        console.print(self._extinction_type)
+    def show_supported_extinction_types(self) -> None:
+        """Backward-compatible alias for :meth:`show_extinction_types`."""
+        self.show_extinction_types()
 
     # ------------------------------------------------------------------
     #  Linked crystal (read-only, single type)
@@ -499,7 +512,7 @@ class PdExperimentBase(ExperimentBase):
             log.warning(
                 f"Unsupported peak profile '{new_type}'. "
                 f'Supported peak profiles: {supported_aliases}. '
-                f"For more information, use 'show_supported_peak_profile_types()'",
+                f"For more information, use 'show_peak_profile_types()'",
             )
             return
 
@@ -513,18 +526,35 @@ class PdExperimentBase(ExperimentBase):
         console.paragraph(f"Peak profile type for experiment '{self.name}' changed to")
         console.print(self.peak_profile_type)
 
-    def show_supported_peak_profile_types(self) -> None:
-        """Print available peak profile types for this experiment."""
-        PeakFactory.show_supported(
+    def show_peak_profile_types(self) -> None:
+        """Print supported peak profile types and mark current type."""
+        supported = PeakFactory.supported_for(
             calculator=self.calculator_type,
             scattering_type=self.type.scattering_type.value,
             beam_mode=self.type.beam_mode.value,
         )
+        context = self._peak_profile_context()
+        current = PeakFactory._local_alias_for(self._peak_profile_type, **context)
+        columns_data = [
+            [
+                '*'
+                if PeakFactory._local_alias_for(klass.type_info.tag, **context) == current
+                else '',
+                PeakFactory._local_alias_for(klass.type_info.tag, **context),
+                klass.type_info.description,
+            ]
+            for klass in supported
+        ]
+        console.paragraph('Peak profile types')
+        render_table(
+            columns_headers=['Current', 'Type', 'Description'],
+            columns_alignment=['left', 'left', 'left'],
+            columns_data=columns_data,
+        )
 
-    def show_current_peak_profile_type(self) -> None:
-        """Print the currently selected peak profile type."""
-        console.paragraph('Current peak profile type')
-        console.print(self.peak_profile_type)
+    def show_supported_peak_profile_types(self) -> None:
+        """Backward-compatible alias for :meth:`show_peak_profile_types`."""
+        self.show_peak_profile_types()
 
     def _set_peak_profile_type(self, new_type: str) -> None:
         """

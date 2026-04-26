@@ -487,10 +487,22 @@ class Analysis:
         df.columns = pd.MultiIndex.from_tuples(df.columns)
         return df
 
-    def show_current_minimizer(self) -> None:
-        """Print the name of the currently selected minimizer."""
-        console.paragraph('Current minimizer')
-        console.print(self.current_minimizer)
+    def show_minimizer_types(self) -> None:
+        """Print supported minimizers and mark the current selection."""
+        current = self.minimizer_type
+        supported = MinimizerFactory.supported_tags()
+        all_classes = MinimizerFactory._supported_map()
+        columns_data = [
+            ['*' if tag == current else '', tag, cls.type_info.description]
+            for tag, cls in all_classes.items()
+            if tag in supported
+        ]
+        console.paragraph('Minimizer types')
+        render_table(
+            columns_headers=['Current', 'Type', 'Description'],
+            columns_alignment=['left', 'left', 'left'],
+            columns_data=columns_data,
+        )
 
     @staticmethod
     def show_available_minimizers() -> None:
@@ -498,12 +510,12 @@ class Analysis:
         MinimizerFactory.show_supported()
 
     @property
-    def current_minimizer(self) -> str | None:
+    def minimizer_type(self) -> str | None:
         """The identifier of the active minimizer, if any."""
         return self.fitter.selection if self.fitter else None
 
-    @current_minimizer.setter
-    def current_minimizer(self, selection: str) -> None:
+    @minimizer_type.setter
+    def minimizer_type(self, selection: str) -> None:
         """
         Switch to a different minimizer implementation.
 
@@ -514,7 +526,16 @@ class Analysis:
         """
         self.fitter = Fitter(selection)
         console.paragraph('Current minimizer changed to')
-        console.print(self.current_minimizer)
+        console.print(self.minimizer_type)
+
+    @property
+    def current_minimizer(self) -> str | None:
+        """Backward-compatible alias for :attr:`minimizer_type`."""
+        return self.minimizer_type
+
+    @current_minimizer.setter
+    def current_minimizer(self, selection: str) -> None:
+        self.minimizer_type = selection
 
     # ------------------------------------------------------------------
     #  Fit mode (single type, with show methods)
@@ -525,25 +546,37 @@ class Analysis:
         """Fit-mode category item holding the active strategy."""
         return self._fit_mode
 
-    def show_supported_fit_mode_types(self) -> None:
-        """Print a table of supported fit modes for this project."""
+    def show_fit_mode_types(self) -> None:
+        """Print supported fit modes and mark the current selection."""
         num_expts = len(self.project.experiments) if self.project.experiments else 0
         if num_expts <= 1:
             modes = [FitModeEnum.SINGLE]
         else:
             modes = [FitModeEnum.SINGLE, FitModeEnum.JOINT, FitModeEnum.SEQUENTIAL]
-        columns_data = [[mode.value, mode.description()] for mode in modes]
-        console.paragraph('Supported fit modes')
+        current = self.fit_mode_type
+        columns_data = [
+            ['*' if mode.value == current else '', mode.value, mode.description()]
+            for mode in modes
+        ]
+        console.paragraph('Fit mode types')
         render_table(
-            columns_headers=['Mode', 'Description'],
-            columns_alignment=['left', 'left'],
+            columns_headers=['Current', 'Type', 'Description'],
+            columns_alignment=['left', 'left', 'left'],
             columns_data=columns_data,
         )
 
-    def show_current_fit_mode_type(self) -> None:
-        """Print the currently selected fit mode."""
-        console.paragraph('Current fit mode')
-        console.print(self._fit_mode.mode.value)
+    @property
+    def fit_mode_type(self) -> str:
+        """Current fit-mode type string (single, joint, sequential)."""
+        return self._fit_mode.mode.value
+
+    @fit_mode_type.setter
+    def fit_mode_type(self, value: str) -> None:
+        self._fit_mode.mode = value
+
+    def show_supported_fit_mode_types(self) -> None:
+        """Backward-compatible alias for :meth:`show_fit_mode_types`."""
+        self.show_fit_mode_types()
 
     # ------------------------------------------------------------------
     #  Joint-fit experiments (category)

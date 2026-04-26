@@ -343,7 +343,7 @@ def experiment_to_cif(experiment: object) -> str:
 
 def analysis_to_cif(analysis: object) -> str:
     """Render analysis metadata, aliases, and constraints to CIF."""
-    cur_min = format_value(analysis.current_minimizer)
+    cur_min = format_value(analysis.minimizer_type)
     lines: list[str] = []
     lines.extend((
         f'_analysis.fitting_engine  {cur_min}',

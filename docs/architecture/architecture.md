@@ -700,9 +700,8 @@ The experiment exposes the standard switchable-category API:
 - `calculator` — read-only property (lazy, auto-resolved on first
   access)
 - `calculator_type` — getter + setter
-- `show_supported_calculator_types()` — filtered by data category
-  support
-- `show_current_calculator_type()`
+- `show_calculator_types()` — filtered by data category support and
+  marks current type
 
 ### 6.2 Minimiser
 
@@ -724,15 +723,14 @@ workflow:
 
 `Analysis` is bound to a `Project` and provides the high-level API:
 
-- Minimiser selection: `current_minimizer`,
-  `show_available_minimizers()`
+- Minimiser selection: `minimizer_type`, `show_minimizer_types()`
 - Fit mode: `fit_mode` (`CategoryItem` with a `mode` descriptor
   validated by `FitModeEnum`); `'single'` fits each experiment
   independently, `'joint'` fits all simultaneously with weights from
   `joint_fit_experiments`, `'sequential'` records that sequential
-  fitting was used. `show_supported_fit_mode_types()` filters by
-  experiment count (≤1 → only `single`; >1 → all three).
-  `show_current_fit_mode_type()` prints the current mode.
+  fitting was used. `fit_mode_type` is the user-facing selector.
+  `show_fit_mode_types()` filters by experiment count (≤1 → only
+  `single`; >1 → all three) and marks the current mode.
 - Joint-fit weights: `joint_fit_experiments` (`CategoryCollection` of
   per-experiment weight entries); sibling of `fit_mode`, not a child.
 - Parameter tables: `show_all_params()`, `show_fittable_params()`,
@@ -905,7 +903,7 @@ project.experiments['hrpt'].instrument.setup_wavelength = 1.494
 project.experiments['hrpt'].instrument.calib_twotheta_offset = 0.6
 
 # Browse and select peak profile type
-project.experiments['hrpt'].show_supported_peak_profile_types()
+project.experiments['hrpt'].show_peak_profile_types()
 project.experiments['hrpt'].peak_profile_type = 'pseudo-voigt'
 
 # Set peak profile parameters
@@ -913,7 +911,7 @@ project.experiments['hrpt'].peak.broad_gauss_u = 0.1
 project.experiments['hrpt'].peak.broad_gauss_v = -0.1
 
 # Browse and select background type
-project.experiments['hrpt'].show_supported_background_types()
+project.experiments['hrpt'].show_background_types()
 project.experiments['hrpt'].background_type = 'line-segment'
 
 # Add background points
@@ -928,9 +926,9 @@ project.experiments['hrpt'].linked_phases.create(id='lbco', scale=10.0)
 
 ```python
 # Calculator is auto-resolved per experiment; override if needed
-project.experiments['hrpt'].show_supported_calculator_types()
+project.experiments['hrpt'].show_calculator_types()
 project.experiments['hrpt'].calculator_type = 'cryspy'
-project.analysis.current_minimizer = 'lmfit'
+project.analysis.minimizer_type = 'lmfit'
 
 # Plot before fitting
 project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
@@ -1041,8 +1039,7 @@ exposes the full switchable API:
 | --------------- | -------------------------------------------- | ------------------------------------------------ |
 | Current object  | `<category>` property (read-only)            | `expt.background`, `expt.peak`                   |
 | Active type tag | `<category>_type` property (getter + setter) | `expt.background_type`, `expt.peak_profile_type` |
-| Show supported  | `show_supported_<category>_types()`          | `expt.show_supported_background_types()`         |
-| Show current    | `show_current_<category>_type()`             | `expt.show_current_peak_profile_type()`          |
+| Show types      | `show_<category>_types()`                    | `expt.show_background_types()`                   |
 
 Multi-type categories:
 
@@ -1067,10 +1064,9 @@ Single-type categories (no public `_type` property):
 - **Structure:** `cell`, `space_group`, `atom_sites`, `atom_site_aniso`.
 - **Analysis:** `aliases`, `constraints`.
 
-`fit_mode` has show methods (`show_supported_fit_mode_types()`,
-`show_current_fit_mode_type()`) but no public `_type` getter or setter
-because it has only one factory implementation. The mode is changed via
-the `fit_mode.mode` descriptor directly.
+`fit_mode` has a user-facing selector `fit_mode_type` (proxy to the
+underlying descriptor). The implementation detail `fit_mode.mode`
+should not be the preferred user API.
 
 **Design decisions:**
 
@@ -1091,11 +1087,11 @@ The user can always discover what is supported for the current
 experiment:
 
 ```python
-expt.show_supported_peak_profile_types()
-expt.show_supported_background_types()
-expt.show_supported_calculator_types()
-expt.show_supported_extinction_types()
-project.analysis.show_available_minimizers()
+expt.show_peak_profile_types()
+expt.show_background_types()
+expt.show_calculator_types()
+expt.show_extinction_types()
+project.analysis.show_minimizer_types()
 ```
 
 Available calculators are filtered by `engine_imported` (whether the
@@ -1169,7 +1165,7 @@ nested:
 
 ```python
 # ✅ Correct — sibling categories on Analysis
-project.analysis.fit_mode.mode = 'joint'
+project.analysis.fit_mode_type = 'joint'
 project.analysis.joint_fit_experiments['npd'].weight = 0.7
 
 # ❌ Wrong — joint_fit_experiments as a child of fit_mode
@@ -1343,7 +1339,7 @@ in `KNOWN_ALIASES` inside the tool script.
 | **Factory** (`factory.py`)       | Registration check, `supported_tags()`, `default_tag()`, `create()` for each tag, `show_supported()` output, invalid-tag handling.                         |
 | **Category** (`default.py`)      | Instantiation, all public properties (read + write where applicable), CIF round-trip (`as_cif` → `from_cif`), parameter enumeration.                       |
 | **Enum** (`enums.py`)            | Membership of all members, `default()` method, `description()` for every member, `StrEnum` string equality.                                                |
-| **Datablock item** (`base.py`)   | Construction, switchable-category full API (`<cat>`, `<cat>_type` get/set, `show_supported_<cat>_types`, `show_current_<cat>_type`), `show`/`show_as_cif`. |
+| **Datablock item** (`base.py`)   | Construction, switchable-category full API (`<cat>`, `<cat>_type` get/set, `show_<cat>_types`), `show`/`show_as_cif`. |
 | **Collection** (`collection.py`) | `create`, `add`, `remove`, `names`, `show_names`, `show_params`, iteration, duplicate-name handling.                                                       |
 | **Calculator / Minimizer**       | `can_handle()` with compatible and incompatible experiment types, `_compute()` stub or mock.                                                               |
 | **Display / IO**                 | Input → output for representative cases; file-not-found and malformed-input error paths.                                                                   |

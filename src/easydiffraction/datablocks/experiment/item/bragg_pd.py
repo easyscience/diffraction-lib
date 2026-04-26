@@ -19,6 +19,7 @@ from easydiffraction.datablocks.experiment.item.factory import ExperimentFactory
 from easydiffraction.io.ascii import load_numeric_block
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
+from easydiffraction.utils.utils import render_table
 
 if TYPE_CHECKING:
     from easydiffraction.datablocks.experiment.categories.experiment_type import ExperimentType
@@ -153,7 +154,7 @@ class BraggPdExperiment(PdExperimentBase):
             log.warning(
                 f"Unsupported background type '{new_type}'. "
                 f'Supported: {supported_tags}. '
-                f"For more information, use 'show_supported_background_types()'",
+                f"For more information, use 'show_background_types()'",
             )
             return
 
@@ -173,13 +174,27 @@ class BraggPdExperiment(PdExperimentBase):
         """Active background model for this experiment."""
         return self._background
 
-    def show_supported_background_types(self) -> None:
-        """Print a table of supported background types."""
-        BackgroundFactory.show_supported(
+    def show_background_types(self) -> None:
+        """Print supported background types and mark current type."""
+        supported = BackgroundFactory.supported_for(
             calculator=self.calculator_type,
         )
+        columns_data = [
+            [
+                '*' if klass.type_info.tag == self._background_type else '',
+                klass.type_info.tag,
+                klass.type_info.description,
+            ]
+            for klass in supported
+        ]
+        console.paragraph('Background types')
+        render_table(
+            columns_headers=['Current', 'Type', 'Description'],
+            columns_alignment=['left', 'left', 'left'],
+            columns_data=columns_data,
+        )
 
-    def show_current_background_type(self) -> None:
-        """Print the currently used background type."""
-        console.paragraph('Current background type')
-        console.print(self.background_type)
+    def show_supported_background_types(self) -> None:
+        """Backward-compatible alias for :meth:`show_background_types`."""
+        self.show_background_types()
+
