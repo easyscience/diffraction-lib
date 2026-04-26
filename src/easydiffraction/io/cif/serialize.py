@@ -38,6 +38,8 @@ def format_value(value: object) -> str:
     .. note::     The precision must be high enough so that the
     minimizer's     finite-difference Jacobian probes (typically ~1e-8
     relative)     survive the float→string→float round-trip through CIF.
+    Trailing zeros after the decimal point are stripped for readability
+    (e.g. ``54902.18695000`` → ``54902.18695``, ``0.0`` → ``0.``).
     """
     precision = 8
 
@@ -58,9 +60,9 @@ def format_value(value: object) -> str:
 
     # Formatting
 
-    # Format floats with given precision
+    # Format floats with given precision; strip trailing zeros
     if isinstance(value, float):
-        return f'{value:.{precision}f}'
+        return f'{value:.{precision}f}'.rstrip('0')
     # Format strings as-is
     if isinstance(value, str):
         return value
@@ -79,11 +81,11 @@ def format_param_value(param: object) -> str:
 
     CIF convention for numeric parameters:
 
-    - Fixed or constrained parameter: plain value, e.g. ``3.89090000``
+    - Fixed or constrained parameter: plain value, e.g. ``3.8909``
     - Free parameter without uncertainty: value with empty brackets,
-      e.g. ``3.89090000()``
+      e.g. ``3.8909()``
     - Free parameter with uncertainty: value with esd in brackets,
-      e.g. ``3.89090000(200000)``
+      e.g. ``3.89(20)``
 
     Constrained (dependent) parameters are always written without
     brackets, even if their ``free`` flag is ``True``, because they are
@@ -114,7 +116,7 @@ def format_param_value(param: object) -> str:
 
     precision = 8
     uncertainty = getattr(param, 'uncertainty', None)
-    formatted_value = f'{float(value):.{precision}f}'
+    formatted_value = f'{float(value):.{precision}f}'.rstrip('0')
 
     if uncertainty is not None and uncertainty > 0:
         from uncertainties import ufloat as _ufloat  # noqa: PLC0415
