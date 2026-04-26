@@ -147,7 +147,7 @@ class BraggPdExperiment(PdExperimentBase):
             return
 
         supported = BackgroundFactory.supported_for(
-            calculator=self.calculator_type,
+            calculator=self.calculation.calculator_type.value,
         )
         supported_tags = [k.type_info.tag for k in supported]
         if new_type not in supported_tags:
@@ -177,7 +177,7 @@ class BraggPdExperiment(PdExperimentBase):
     def show_background_types(self) -> None:
         """Print supported background types and mark current type."""
         supported = BackgroundFactory.supported_for(
-            calculator=self.calculator_type,
+            calculator=self.calculation.calculator_type.value,
         )
         columns_data = [
             [

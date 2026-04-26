@@ -63,7 +63,7 @@ The calculator is automatically selected based on the experiment type
 To show the supported calculation engines for a specific experiment:
 
 ```python
-project.experiments['hrpt'].show_calculator_types()
+project.experiments['hrpt'].calculation.show_calculator_types()
 ```
 
 The example of the output is:
@@ -77,7 +77,7 @@ Supported calculator types
 To explicitly select a calculation engine for an experiment:
 
 ```python
-project.experiments['hrpt'].calculator_type = 'cryspy'
+project.experiments['hrpt'].calculation.calculator_type = 'cryspy'
 ```
 
 ## Minimization / Optimization

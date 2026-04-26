@@ -332,7 +332,7 @@ class ReflnData(CategoryCollection):
         experiments = experiment._parent
         project = experiments._parent
         structures = project.structures
-        calculator = experiment.calculator
+        calculator = experiment.calculation.calculator
 
         linked_crystal = experiment.linked_crystal
         linked_crystal_id = experiment.linked_crystal.id.value

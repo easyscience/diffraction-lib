@@ -149,7 +149,7 @@ class Summary:
             )
 
             console.paragraph('Calculation engine')
-            console.print(f'{expt.calculator_type}')
+            console.print(f'{expt.calculation.calculator_type.value}')
 
             if 'instrument' in expt._public_attrs():
                 if 'setup_wavelength' in expt.instrument._public_attrs():

@@ -378,7 +378,7 @@ class PdDataBase(CategoryCollection):
         experiments = experiment._parent
         project = experiments._parent
         structures = project.structures
-        calculator = experiment.calculator
+        calculator = experiment.calculation.calculator
 
         initial_calc = np.zeros_like(self.x)
         calc = initial_calc

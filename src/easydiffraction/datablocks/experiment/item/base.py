@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 from typing import Any
 
 from easydiffraction.core.datablock import DatablockItem
+from easydiffraction.datablocks.experiment.categories.calculation import CalculationFactory
 from easydiffraction.datablocks.experiment.categories.data.factory import DataFactory
 from easydiffraction.datablocks.experiment.categories.diffrn.factory import DiffrnFactory
 from easydiffraction.datablocks.experiment.categories.excluded_regions.factory import (
@@ -53,6 +54,11 @@ class ExperimentBase(DatablockItem):
 
         self._diffrn_type: str = DiffrnFactory.default_tag()
         self._diffrn = DiffrnFactory.create(self._diffrn_type)
+        self._calculation = CalculationFactory.create(
+            'default',
+            calculator_type=self._default_calculator_tag(),
+        )
+        self._calculation._parent = self
 
     @property
     def name(self) -> str:
@@ -100,11 +106,16 @@ class ExperimentBase(DatablockItem):
         block : object
             Parsed ``gemmi.cif.Block`` to read type tags from.
         """
+        calculator_type = read_cif_str(block, '_calculation.calculator_type')
+        if calculator_type is not None:
+            self._set_calculator_type(calculator_type, announce=False)
 
     def _normalize_switchable_type_descriptors(self) -> None:
         """
         Normalize switchable category descriptors after CIF loading.
         """
+        if self._calculator_type is not None:
+            self.calculation.calculator_type.value = self._calculator_type
 
     @property
     def as_cif(self) -> str:
@@ -135,40 +146,36 @@ class ExperimentBase(DatablockItem):
         raise NotImplementedError
 
     # ------------------------------------------------------------------
-    #  Calculator (switchable-category pattern)
+    #  Calculation (switchable-category pattern)
     # ------------------------------------------------------------------
 
     @property
-    def calculator(self) -> object:
+    def calculation(self) -> object:
         """
-        The active calculator instance for this experiment.
+        The active calculation category for this experiment.
 
-        Auto-resolved on first access from the experiment's data
-        category ``calculator_support`` and
-        ``CalculatorFactory._default_rules``.
+        Holds the selected calculator type and provides access to the
+        live calculator backend instance.
         """
         if self._calculator is None:
-            self._resolve_calculator()
-        return self._calculator
+            self._resolve_calculation()
+        return self._calculation
 
-    @property
-    def calculator_type(self) -> str:
-        """Tag of the active calculator backend (e.g. ``'cryspy'``)."""
-        if self._calculator_type is None:
-            self._resolve_calculator()
-        return self._calculator_type
+    def _default_calculator_tag(self) -> str:
+        """Return the default calculator tag for this experiment."""
+        from easydiffraction.analysis.calculators.factory import CalculatorFactory  # noqa: PLC0415
 
-    @calculator_type.setter
-    def calculator_type(self, tag: str) -> None:
-        """
-        Switch to a different calculator backend.
+        return CalculatorFactory.default_tag(
+            scattering_type=self.type.scattering_type.value,
+        )
 
-        Parameters
-        ----------
-        tag : str
-            Calculator tag (e.g. ``'cryspy'``, ``'crysfml'``,
-            ``'pdffit'``).
-        """
+    def _set_calculator_type(
+        self,
+        tag: str,
+        *,
+        announce: bool = True,
+    ) -> None:
+        """Switch to a different calculator backend."""
         from easydiffraction.analysis.calculators.factory import CalculatorFactory  # noqa: PLC0415
 
         supported = self._supported_calculator_tags()
@@ -176,48 +183,32 @@ class ExperimentBase(DatablockItem):
             log.warning(
                 f"Unsupported calculator '{tag}' for experiment "
                 f"'{self.name}'. Supported: {supported}. "
-                f"For more information, use 'show_calculator_types()'",
+                f"For more information, use 'calculation.show_calculator_types()'",
             )
+            return
+        if self._calculator_type == tag and self._calculator is not None:
+            if announce:
+                console.paragraph(f"Calculator for experiment '{self.name}' already set to")
+                console.print(tag)
             return
         self._calculator = CalculatorFactory.create(tag)
         self._calculator_type = tag
-        console.paragraph(f"Calculator for experiment '{self.name}' changed to")
-        console.print(tag)
+        self.calculation.calculator_type.value = tag
+        if announce:
+            console.paragraph(f"Calculator for experiment '{self.name}' changed to")
+            console.print(tag)
 
-    def show_calculator_types(self) -> None:
-        """Print supported calculator backends and mark current type."""
-        from easydiffraction.analysis.calculators.factory import CalculatorFactory  # noqa: PLC0415
-
-        current = self.calculator_type
-        supported_tags = self._supported_calculator_tags()
-        all_classes = CalculatorFactory._supported_map()
-        columns_headers = ['', 'Type', 'Description']
-        columns_alignment = ['left', 'left', 'left']
-        columns_data = [
-            ['*' if tag == current else '', cls.type_info.tag, cls.type_info.description]
-            for tag, cls in all_classes.items()
-            if tag in supported_tags
-        ]
-
-        console.paragraph('Calculator types')
-        render_table(
-            columns_headers=columns_headers,
-            columns_alignment=columns_alignment,
-            columns_data=columns_data,
-        )
-
-    def _resolve_calculator(self) -> None:
+    def _resolve_calculation(self) -> None:
         """Auto-resolve the default calculator from data category."""
         from easydiffraction.analysis.calculators.factory import CalculatorFactory  # noqa: PLC0415
 
-        tag = CalculatorFactory.default_tag(
-            scattering_type=self.type.scattering_type.value,
-        )
+        tag = self._default_calculator_tag()
         supported = self._supported_calculator_tags()
         if supported and tag not in supported:
             tag = supported[0]
         self._calculator = CalculatorFactory.create(tag)
         self._calculator_type = tag
+        self.calculation.calculator_type.value = tag
 
     def _supported_calculator_tags(self) -> list[str]:
         """
@@ -264,6 +255,7 @@ class ScExperimentBase(ExperimentBase):
             scattering_type=self.type.scattering_type.value,
         )
         self._data = DataFactory.create(self._data_type)
+        self._resolve_calculation()
 
     @abstractmethod
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
@@ -302,7 +294,7 @@ class ScExperimentBase(ExperimentBase):
             Extinction tag (e.g. ``'becker-coppens'``).
         """
         supported = ExtinctionFactory.supported_for(
-            calculator=self.calculator_type,
+            calculator=self.calculation.calculator_type.value,
         )
         supported_tags = [k.type_info.tag for k in supported]
         if new_type not in supported_tags:
@@ -320,7 +312,7 @@ class ScExperimentBase(ExperimentBase):
     def show_extinction_types(self) -> None:
         """Print supported extinction types and mark current type."""
         supported = ExtinctionFactory.supported_for(
-            calculator=self.calculator_type,
+            calculator=self.calculation.calculator_type.value,
         )
         columns_data = [
             [
@@ -391,6 +383,7 @@ class PdExperimentBase(ExperimentBase):
         )
         self._data = DataFactory.create(self._data_type)
         self._peak = PeakFactory.create(self._peak_profile_type)
+        self._resolve_calculation()
 
     def _get_valid_linked_phases(
         self,
@@ -491,7 +484,7 @@ class PdExperimentBase(ExperimentBase):
         """
         context = self._peak_profile_context()
         supported = PeakFactory.supported_for(
-            calculator=self.calculator_type,
+            calculator=self.calculation.calculator_type.value,
             **context,
         )
         supported_tags = [klass.type_info.tag for klass in supported]
@@ -521,7 +514,7 @@ class PdExperimentBase(ExperimentBase):
     def show_peak_profile_types(self) -> None:
         """Print supported peak profile types and mark current type."""
         supported = PeakFactory.supported_for(
-            calculator=self.calculator_type,
+            calculator=self.calculation.calculator_type.value,
             scattering_type=self.type.scattering_type.value,
             beam_mode=self.type.beam_mode.value,
         )
@@ -588,6 +581,7 @@ class PdExperimentBase(ExperimentBase):
         """
         Normalize switchable category descriptors after CIF loading.
         """
+        super()._normalize_switchable_type_descriptors()
         self.peak.profile_type.value = self._peak_profile_type
 
     def _restore_switchable_types(self, block: object) -> None:
@@ -603,6 +597,7 @@ class PdExperimentBase(ExperimentBase):
         block : object
             Parsed ``gemmi.cif.Block`` to read type tags from.
         """
+        super()._restore_switchable_types(block)
         peak_type = read_cif_str(block, '_peak.profile_type')
         if peak_type is not None:
             self._set_peak_profile_type(peak_type)

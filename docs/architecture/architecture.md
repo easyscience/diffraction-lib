@@ -695,13 +695,14 @@ category's `calculator_support` metadata and
 registry by `engine_imported` (whether the third-party library is
 available in the environment).
 
-The experiment exposes the standard switchable-category API:
+The experiment exposes a dedicated `calculation` category:
 
-- `calculator` — read-only property (lazy, auto-resolved on first
-  access)
-- `calculator_type` — getter + setter
-- `show_calculator_types()` — filtered by data category support and
-  marks current type
+- `calculation.calculator_type` — getter + setter for the calculator
+  backend tag
+- `calculation.calculator` — read-only access to the live backend
+  instance
+- `calculation.show_calculator_types()` — filtered by data category
+  support and marks the current type
 
 ### 6.2 Minimiser
 
@@ -925,8 +926,8 @@ project.experiments['hrpt'].linked_phases.create(id='lbco', scale=10.0)
 
 ```python
 # Calculator is auto-resolved per experiment; override if needed
-project.experiments['hrpt'].show_calculator_types()
-project.experiments['hrpt'].calculator_type = 'cryspy'
+project.experiments['hrpt'].calculation.show_calculator_types()
+project.experiments['hrpt'].calculation.calculator_type = 'cryspy'
 project.analysis.fit.minimizer_type = 'lmfit'
 
 # Plot before fitting
@@ -1088,7 +1089,7 @@ experiment:
 ```python
 expt.show_peak_profile_types()
 expt.show_background_types()
-expt.show_calculator_types()
+expt.calculation.show_calculator_types()
 expt.show_extinction_types()
 project.analysis.show_minimizer_types()
 ```

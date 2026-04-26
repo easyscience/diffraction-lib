@@ -95,11 +95,11 @@ different categories.
 ### Supported calculators
 
 The calculator is automatically selected based on the experiment type.
-You can use the `show_calculator_types()` method on an experiment to see
-which calculation engines are compatible:
+You can use the experiment `calculation` category to see which
+calculation engines are compatible:
 
 ```python
-project.experiments['hrpt'].show_calculator_types()
+project.experiments['hrpt'].calculation.show_calculator_types()
 ```
 
 This will display a list of supported calculators along with their
