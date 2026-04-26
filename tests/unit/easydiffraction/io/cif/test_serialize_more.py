@@ -140,9 +140,9 @@ def test_analysis_to_cif_renders_all_sections():
 
     out = MUT.analysis_to_cif(A())
     lines = out.splitlines()
-    assert lines[0].startswith('_analysis.fitting_engine')
+    assert lines[0].startswith('_analysis.minimizer_type')
     assert 'lmfit' in lines[0]
-    assert lines[1].startswith('_analysis.fit_mode')
+    assert lines[1].startswith('_analysis.fit_mode_type')
     assert 'single' in lines[1]
     assert 'ALIASES' in out
     assert 'CONSTRAINTS' in out

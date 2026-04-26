@@ -44,7 +44,7 @@ class FitMode(CategoryItem):
                 default=FitModeEnum.default().value,
                 validator=MembershipValidator(allowed=[member.value for member in FitModeEnum]),
             ),
-            cif_handler=CifHandler(names=['_analysis.fit_mode']),
+            cif_handler=CifHandler(names=['_analysis.fit_mode_type']),
         )
 
         self._identity.category_code = 'fit_mode'

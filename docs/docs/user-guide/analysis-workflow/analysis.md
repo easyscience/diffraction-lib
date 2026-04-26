@@ -344,9 +344,8 @@ Example output:
 
 ```
 ╒════════════════════════════════════════════════╕
-│ _analysis.calculator_engine  cryspy            │
-│ _analysis.fitting_engine     "lmfit (leastsq)" │
-│ _analysis.fit_mode           single            │
+│ _analysis.minimizer_type     "lmfit (leastsq)" │
+│ _analysis.fit_mode_type      single            │
 │                                                │
 │ loop_                                          │
 │ _alias.label                                   │

@@ -1175,7 +1175,7 @@ project.analysis.fit_mode.joint_fit_experiments['npd'].weight = 0.7
 In CIF output, sibling categories appear as independent blocks:
 
 ```
-_analysis.fit_mode  joint
+_analysis.fit_mode_type  joint
 
 loop_
 _joint_fit_experiment.id
