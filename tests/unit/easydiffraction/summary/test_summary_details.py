@@ -108,7 +108,7 @@ class _StubProject:
         self.experiments = {'exp1': _Expt()}
 
         class A:
-            current_minimizer = 'lmfit'
+            minimizer_type = 'lmfit'
 
             class R:
                 reduced_chi_square = 1.23

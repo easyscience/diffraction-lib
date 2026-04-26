@@ -1191,9 +1191,9 @@ check. Options:
 
 **Type:** API completeness
 
-`show_supported_calculator_types()` exists per-experiment, but there is
-no project/analysis-level method to list all available calculator
-engines. Users exploring the API have no single entry point to see what
+`show_calculator_types()` exists per-experiment, but there is no
+project/analysis-level method to list all available calculator engines.
+Users exploring the API have no single entry point to see what
 calculators are installed.
 
 **Depends on:** nothing.
@@ -1206,8 +1206,8 @@ calculators are installed.
 
 The switchable-category naming convention prescribes `<category>_type`
 (getter/setter) and `show_supported_<category>_types()`. But some names
-deviate: e.g. `show_supported_minimizers()` instead of
-`show_supported_minimizer_types()`, and `current_minimizer` instead of
+deviate: e.g. `show_minimizer_types()` instead of
+`show_supported_minimizer_types()`, and `minimizer_type` instead of
 `minimizer_type`. Audit and align all switchable-category APIs.
 
 **Depends on:** nothing.

@@ -126,8 +126,7 @@ expt_n2.instrument.calib_d_to_tof_linear = extract_metadata(
 # #### Set Peak Profile
 
 # %%
-expt_s2.show_supported_peak_profile_types()
-expt_s2.show_current_peak_profile_type()
+expt_s2.show_peak_profile_types()
 
 # %%
 expt_s2.peak_profile_type = 'pseudo-voigt'
@@ -149,8 +148,7 @@ expt_n2.peak.broad_gauss_sigma_2 = 900
 # #### Set Background
 
 # %%
-expt_s2.show_supported_background_types()
-expt_s2.show_current_background_type()
+expt_s2.show_background_types()
 
 # %%
 # expt_s2.background_type = 'line-segment'
@@ -264,11 +262,10 @@ project.plotter.plot_meas_vs_calc(expt_name='expt_n2', show_residual=False)
 # #### Set Fit Mode
 
 # %%
-project.analysis.show_supported_fit_mode_types()
-project.analysis.show_current_fit_mode_type()
+project.analysis.show_fit_mode_types()
 
 # %%
-project.analysis.fit_mode.mode = 'joint'
+project.analysis.fit_mode_type = 'joint'
 
 # %% [markdown]
 # #### Set Free Parameters

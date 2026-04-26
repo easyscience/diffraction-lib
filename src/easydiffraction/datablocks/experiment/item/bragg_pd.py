@@ -189,12 +189,7 @@ class BraggPdExperiment(PdExperimentBase):
         ]
         console.paragraph('Background types')
         render_table(
-            columns_headers=['Current', 'Type', 'Description'],
+            columns_headers=['', 'Type', 'Description'],
             columns_alignment=['left', 'left', 'left'],
             columns_data=columns_data,
         )
-
-    def show_supported_background_types(self) -> None:
-        """Backward-compatible alias for :meth:`show_background_types`."""
-        self.show_background_types()
-

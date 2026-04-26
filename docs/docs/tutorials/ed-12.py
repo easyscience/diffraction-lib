@@ -79,10 +79,7 @@ project.experiments.add_from_data_path(
 )
 
 # %%
-project.experiments['xray_pdf'].show_supported_peak_profile_types()
-
-# %%
-project.experiments['xray_pdf'].show_current_peak_profile_type()
+project.experiments['xray_pdf'].show_peak_profile_types()
 
 # %%
 project.experiments['xray_pdf'].peak_profile_type = 'gaussian-damped-sinc'

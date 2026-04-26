@@ -117,9 +117,8 @@ to an incompatible data class and silently discarding loaded data.
 
 Added `SEQUENTIAL = 'sequential'` to `FitModeEnum`. `fit_sequential()`
 now sets `fit_mode.mode = 'sequential'` internally so the mode is
-persisted in CIF. Added `show_supported_fit_mode_types()` (filters by
-experiment count: ≤1 → only `single`; >1 → all three) and
-`show_current_fit_mode_type()` on `Analysis`. If `fit()` is called while
-mode is `'sequential'`, it logs an error directing the user to
-`fit_sequential()`. Promoted `fit_mode` from a pure single-type category
-to one with show methods.
+persisted in CIF. Added `show_fit_mode_types()` (filters by experiment
+count: ≤1 → only `single`; >1 → all three) and `show_fit_mode_types()`
+on `Analysis`. If `fit()` is called while mode is `'sequential'`, it
+logs an error directing the user to `fit_sequential()`. Promoted
+`fit_mode` from a pure single-type category to one with show methods.

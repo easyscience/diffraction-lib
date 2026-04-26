@@ -236,13 +236,7 @@ project.experiments['hrpt'].instrument.calib_twotheta_offset = 0.6
 # Show supported peak profile types.
 
 # %%
-project.experiments['hrpt'].show_supported_peak_profile_types()
-
-# %% [markdown]
-# Show the current peak profile type.
-
-# %%
-project.experiments['hrpt'].show_current_peak_profile_type()
+project.experiments['hrpt'].show_peak_profile_types()
 
 # %% [markdown]
 # Select the desired peak profile type.
@@ -267,13 +261,7 @@ project.experiments['hrpt'].peak.broad_lorentz_y = 0.1
 # Show supported background types.
 
 # %%
-project.experiments['hrpt'].show_supported_background_types()
-
-# %% [markdown]
-# Show current background type.
-
-# %%
-project.experiments['hrpt'].show_current_background_type()
+project.experiments['hrpt'].show_background_types()
 
 # %% [markdown]
 # Select the desired background type.
@@ -328,13 +316,7 @@ project.save()
 # Show supported calculation engines for this experiment.
 
 # %%
-project.experiments['hrpt'].show_supported_calculator_types()
-
-# %% [markdown]
-# Show current calculation engine for this experiment.
-
-# %%
-project.experiments['hrpt'].show_current_calculator_type()
+project.experiments['hrpt'].show_calculator_types()
 
 # %% [markdown]
 # Select the desired calculation engine.
@@ -389,19 +371,13 @@ project.analysis.display.free_params()
 # Show supported fit modes.
 
 # %%
-project.analysis.show_supported_fit_mode_types()
-
-# %% [markdown]
-# Show current fit mode.
-
-# %%
-project.analysis.show_current_fit_mode_type()
+project.analysis.show_fit_mode_types()
 
 # %% [markdown]
 # Select desired fit mode.
 
 # %%
-project.analysis.fit_mode.mode = 'single'
+project.analysis.fit_mode_type = 'single'
 
 # %% [markdown]
 # #### Set Minimizer
@@ -409,19 +385,13 @@ project.analysis.fit_mode.mode = 'single'
 # Show supported fitting engines.
 
 # %%
-project.analysis.show_available_minimizers()
-
-# %% [markdown]
-# Show current fitting engine.
-
-# %%
-project.analysis.show_current_minimizer()
+project.analysis.show_minimizer_types()
 
 # %% [markdown]
 # Select desired fitting engine.
 
 # %%
-project.analysis.current_minimizer = 'lmfit'
+project.analysis.minimizer_type = 'lmfit'
 
 # %% [markdown]
 # ### Perform Fit 1/5

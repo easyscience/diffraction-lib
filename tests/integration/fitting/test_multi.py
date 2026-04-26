@@ -107,7 +107,7 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     project.experiments['mcstas'].excluded_regions.create(start=108000, end=200000)
 
     # Prepare for fitting
-    project.analysis.current_minimizer = 'lmfit'
+    project.analysis.minimizer_type = 'lmfit'
 
     # Select fitting parameters
     model_1.cell.length_a.free = True
@@ -200,8 +200,8 @@ def _test_joint_fit_bragg_pdf_neutron_pd_tof_si() -> None:
     project.experiments.add(pdf_expt)
 
     # Prepare for fitting
-    project.analysis.fit_mode.mode = 'joint'
-    project.analysis.current_minimizer = 'lmfit'
+    project.analysis.fit_mode_type = 'joint'
+    project.analysis.minimizer_type = 'lmfit'
 
     # Select fitting parameters — shared structure
     model.cell.length_a.free = True

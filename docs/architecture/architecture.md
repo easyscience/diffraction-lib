@@ -1065,8 +1065,8 @@ Single-type categories (no public `_type` property):
 - **Analysis:** `aliases`, `constraints`.
 
 `fit_mode` has a user-facing selector `fit_mode_type` (proxy to the
-underlying descriptor). The implementation detail `fit_mode.mode`
-should not be the preferred user API.
+underlying descriptor). The implementation detail `fit_mode.mode` should
+not be the preferred user API.
 
 **Design decisions:**
 
@@ -1333,16 +1333,16 @@ in `KNOWN_ALIASES` inside the tool script.
 
 ### 10.3 What to Test per Source Module Type
 
-| Source module type               | Required tests                                                                                                                                             |
-| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Core base class** (`core/`)    | Instantiation, public properties, validation edge cases, identity wiring.                                                                                  |
-| **Factory** (`factory.py`)       | Registration check, `supported_tags()`, `default_tag()`, `create()` for each tag, `show_supported()` output, invalid-tag handling.                         |
-| **Category** (`default.py`)      | Instantiation, all public properties (read + write where applicable), CIF round-trip (`as_cif` → `from_cif`), parameter enumeration.                       |
-| **Enum** (`enums.py`)            | Membership of all members, `default()` method, `description()` for every member, `StrEnum` string equality.                                                |
-| **Datablock item** (`base.py`)   | Construction, switchable-category full API (`<cat>`, `<cat>_type` get/set, `show_<cat>_types`), `show`/`show_as_cif`. |
-| **Collection** (`collection.py`) | `create`, `add`, `remove`, `names`, `show_names`, `show_params`, iteration, duplicate-name handling.                                                       |
-| **Calculator / Minimizer**       | `can_handle()` with compatible and incompatible experiment types, `_compute()` stub or mock.                                                               |
-| **Display / IO**                 | Input → output for representative cases; file-not-found and malformed-input error paths.                                                                   |
+| Source module type               | Required tests                                                                                                                       |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| **Core base class** (`core/`)    | Instantiation, public properties, validation edge cases, identity wiring.                                                            |
+| **Factory** (`factory.py`)       | Registration check, `supported_tags()`, `default_tag()`, `create()` for each tag, `show_supported()` output, invalid-tag handling.   |
+| **Category** (`default.py`)      | Instantiation, all public properties (read + write where applicable), CIF round-trip (`as_cif` → `from_cif`), parameter enumeration. |
+| **Enum** (`enums.py`)            | Membership of all members, `default()` method, `description()` for every member, `StrEnum` string equality.                          |
+| **Datablock item** (`base.py`)   | Construction, switchable-category full API (`<cat>`, `<cat>_type` get/set, `show_<cat>_types`), `show`/`show_as_cif`.                |
+| **Collection** (`collection.py`) | `create`, `add`, `remove`, `names`, `show_names`, `show_params`, iteration, duplicate-name handling.                                 |
+| **Calculator / Minimizer**       | `can_handle()` with compatible and incompatible experiment types, `_compute()` stub or mock.                                         |
+| **Display / IO**                 | Input → output for representative cases; file-not-found and malformed-input error paths.                                             |
 
 ### 10.4 Test Conventions
 

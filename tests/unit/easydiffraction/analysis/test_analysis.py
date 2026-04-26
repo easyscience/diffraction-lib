@@ -27,13 +27,13 @@ def _make_project_with_names(names):
     return P()
 
 
-def test_show_current_minimizer_prints(capsys):
+def test_show_minimizer_types_prints(capsys):
     from easydiffraction.analysis.analysis import Analysis
 
     a = Analysis(project=_make_project_with_names([]))
-    a.show_current_minimizer()
+    a.show_minimizer_types()
     out = capsys.readouterr().out
-    assert 'Current minimizer' in out
+    assert 'Minimizer types' in out
     assert 'lmfit (leastsq)' in out
 
 
@@ -43,11 +43,11 @@ def test_fit_mode_category_and_joint_fit_experiments(monkeypatch, capsys):
     a = Analysis(project=_make_project_with_names(['e1', 'e2']))
 
     # Default fit mode is 'single'
-    assert a.fit_mode.mode.value == 'single'
+    assert a.fit_mode_type == 'single'
 
     # Switch to joint
-    a.fit_mode.mode = 'joint'
-    assert a.fit_mode.mode.value == 'joint'
+    a.fit_mode_type = 'joint'
+    assert a.fit_mode_type == 'joint'
 
     # joint_fit_experiments exists but is empty until fit() populates it
     assert len(a.joint_fit_experiments) == 0
@@ -61,7 +61,7 @@ def test_analysis_help(capsys):
     out = capsys.readouterr().out
     assert "Help for 'Analysis'" in out
     assert 'fit_mode' in out
-    assert 'current_minimizer' in out
+    assert 'minimizer_type' in out
     assert 'Properties' in out
     assert 'Methods' in out
     assert 'fit()' in out

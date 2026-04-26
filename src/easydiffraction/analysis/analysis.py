@@ -499,7 +499,7 @@ class Analysis:
         ]
         console.paragraph('Minimizer types')
         render_table(
-            columns_headers=['Current', 'Type', 'Description'],
+            columns_headers=['', 'Type', 'Description'],
             columns_alignment=['left', 'left', 'left'],
             columns_data=columns_data,
         )
@@ -560,7 +560,7 @@ class Analysis:
         ]
         console.paragraph('Fit mode types')
         render_table(
-            columns_headers=['Current', 'Type', 'Description'],
+            columns_headers=['', 'Type', 'Description'],
             columns_alignment=['left', 'left', 'left'],
             columns_data=columns_data,
         )
@@ -573,10 +573,6 @@ class Analysis:
     @fit_mode_type.setter
     def fit_mode_type(self, value: str) -> None:
         self._fit_mode.mode = value
-
-    def show_supported_fit_mode_types(self) -> None:
-        """Backward-compatible alias for :meth:`show_fit_mode_types`."""
-        self.show_fit_mode_types()
 
     # ------------------------------------------------------------------
     #  Joint-fit experiments (category)

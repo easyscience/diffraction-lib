@@ -191,7 +191,7 @@ class ExperimentBase(DatablockItem):
         current = self.calculator_type
         supported_tags = self._supported_calculator_tags()
         all_classes = CalculatorFactory._supported_map()
-        columns_headers = ['Current', 'Type', 'Description']
+        columns_headers = ['', 'Type', 'Description']
         columns_alignment = ['left', 'left', 'left']
         columns_data = [
             ['*' if tag == current else '', cls.type_info.tag, cls.type_info.description]
@@ -205,10 +205,6 @@ class ExperimentBase(DatablockItem):
             columns_alignment=columns_alignment,
             columns_data=columns_data,
         )
-
-    def show_supported_calculator_types(self) -> None:
-        """Backward-compatible alias for :meth:`show_calculator_types`."""
-        self.show_calculator_types()
 
     def _resolve_calculator(self) -> None:
         """Auto-resolve the default calculator from data category."""
@@ -336,14 +332,10 @@ class ScExperimentBase(ExperimentBase):
         ]
         console.paragraph('Extinction types')
         render_table(
-            columns_headers=['Current', 'Type', 'Description'],
+            columns_headers=['', 'Type', 'Description'],
             columns_alignment=['left', 'left', 'left'],
             columns_data=columns_data,
         )
-
-    def show_supported_extinction_types(self) -> None:
-        """Backward-compatible alias for :meth:`show_extinction_types`."""
-        self.show_extinction_types()
 
     # ------------------------------------------------------------------
     #  Linked crystal (read-only, single type)
@@ -547,14 +539,10 @@ class PdExperimentBase(ExperimentBase):
         ]
         console.paragraph('Peak profile types')
         render_table(
-            columns_headers=['Current', 'Type', 'Description'],
+            columns_headers=['', 'Type', 'Description'],
             columns_alignment=['left', 'left', 'left'],
             columns_data=columns_data,
         )
-
-    def show_supported_peak_profile_types(self) -> None:
-        """Backward-compatible alias for :meth:`show_peak_profile_types`."""
-        self.show_peak_profile_types()
 
     def _set_peak_profile_type(self, new_type: str) -> None:
         """

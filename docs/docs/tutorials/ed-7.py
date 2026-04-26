@@ -83,8 +83,7 @@ expt.instrument.calib_d_to_tof_quad = -1.54
 # #### Set Peak Profile
 
 # %%
-expt.show_supported_peak_profile_types()
-expt.show_current_peak_profile_type()
+expt.show_peak_profile_types()
 expt.peak.broad_gauss_sigma_0 = 3.0
 expt.peak.broad_gauss_sigma_1 = 40.0
 expt.peak.broad_gauss_sigma_2 = 2.0

@@ -79,18 +79,18 @@ def test_experiment_switchable_category_types(lbco_fitted_project):
     # Instrument
     assert expt.instrument is not None
     # Background
-    expt.show_supported_background_types()
-    expt.show_current_background_type()
+    expt.show_background_types()
+    expt.show_background_types()
     assert isinstance(expt.background_type, str)
     # Peak profile
-    expt.show_supported_peak_profile_types()
-    expt.show_current_peak_profile_type()
+    expt.show_peak_profile_types()
+    expt.show_peak_profile_types()
     assert isinstance(expt.peak_profile_type, str)
     # Linked phases
     assert expt.linked_phases is not None
     # Calculator
-    expt.show_supported_calculator_types()
-    expt.show_current_calculator_type()
+    expt.show_calculator_types()
+    expt.show_calculator_types()
     assert isinstance(expt.calculator_type, str)
     # Diffrn
     assert expt.diffrn is not None

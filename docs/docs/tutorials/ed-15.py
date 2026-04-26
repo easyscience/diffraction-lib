@@ -74,9 +74,8 @@ experiment.linked_crystal.scale.free = True
 experiment.extinction.radius.free = True
 
 # %%
-project.analysis.show_available_minimizers()
-project.analysis.show_current_minimizer()
-project.analysis.current_minimizer = 'lmfit'
+project.analysis.show_minimizer_types()
+project.analysis.minimizer_type = 'lmfit'
 
 # %%
 # Start refinement. All parameters, which have standard uncertainties

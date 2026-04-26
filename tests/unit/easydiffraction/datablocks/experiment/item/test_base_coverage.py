@@ -81,15 +81,15 @@ class TestExperimentBaseCalculator:
         ex.calculator_type = 'bogus-engine'
         assert ex.calculator_type == old
 
-    def test_show_supported_calculator_types(self, capsys):
+    def test_show_calculator_types(self, capsys):
         ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
-        ex.show_supported_calculator_types()
+        ex.show_calculator_types()
         out = capsys.readouterr().out
         assert len(out) > 0
 
-    def test_show_current_calculator_type(self, capsys):
+    def test_show_calculator_types_includes_current(self, capsys):
         ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
-        ex.show_current_calculator_type()
+        ex.show_calculator_types()
         out = capsys.readouterr().out
         assert ex.calculator_type in out
 
@@ -136,14 +136,14 @@ class TestPdExperimentPeak:
         assert ex.peak is not None
         assert ex.peak_profile_type is not None
 
-    def test_show_supported_peak_profile_types(self, capsys):
+    def test_show_peak_profile_types(self, capsys):
         ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
-        ex.show_supported_peak_profile_types()
+        ex.show_peak_profile_types()
         out = capsys.readouterr().out
         assert len(out) > 0
 
-    def test_show_current_peak_profile_type(self, capsys):
+    def test_show_peak_profile_types_includes_current(self, capsys):
         ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
-        ex.show_current_peak_profile_type()
+        ex.show_peak_profile_types()
         out = capsys.readouterr().out
         assert str(ex.peak_profile_type) in out

@@ -263,7 +263,7 @@ project.analysis.constraints.create(expression='biso_Co2 = biso_Co1')
 # #### Set Minimizer
 
 # %%
-project.analysis.current_minimizer = 'bumps (lm)'
+project.analysis.minimizer_type = 'bumps (lm)'
 
 # %% [markdown]
 # #### Run Single Fitting

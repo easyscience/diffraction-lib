@@ -86,7 +86,7 @@ def test_single_fit_neutron_pd_cwl_lbco() -> None:
     project.experiments.add(expt)
 
     # Prepare for fitting
-    project.analysis.current_minimizer = 'lmfit'
+    project.analysis.minimizer_type = 'lmfit'
 
     # ------------ 1st fitting ------------
 
@@ -234,7 +234,7 @@ def test_single_fit_neutron_pd_cwl_lbco_with_constraints() -> None:
     project.experiments.add(expt)
 
     # Prepare for fitting
-    project.analysis.current_minimizer = 'lmfit'
+    project.analysis.minimizer_type = 'lmfit'
 
     # ------------ 1st fitting ------------
 
@@ -400,7 +400,7 @@ def test_fit_neutron_pd_cwl_hs() -> None:
     project.experiments.add(expt)
 
     # Prepare for fitting
-    project.analysis.current_minimizer = 'lmfit'
+    project.analysis.minimizer_type = 'lmfit'
 
     # ------------ 1st fitting ------------
 

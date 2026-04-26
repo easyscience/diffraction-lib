@@ -63,7 +63,7 @@ The calculator is automatically selected based on the experiment type
 To show the supported calculation engines for a specific experiment:
 
 ```python
-project.experiments['hrpt'].show_supported_calculator_types()
+project.experiments['hrpt'].show_calculator_types()
 ```
 
 The example of the output is:
@@ -134,7 +134,7 @@ derivatives of the objective.
 To show the supported minimizers:
 
 ```python
-project.analysis.show_supported_minimizers()
+project.analysis.show_minimizer_types()
 ```
 
 The example of the output is:
@@ -151,7 +151,7 @@ Supported minimizers
 To select the desired minimizer, e.g., 'lmfit':
 
 ```python
-project.analysis.current_minimizer = 'lmfit'
+project.analysis.minimizer_type = 'lmfit'
 ```
 
 ### Fit Mode
@@ -171,13 +171,13 @@ The supported fit modes are:
 You can set the fit mode on the `analysis` object:
 
 ```python
-project.analysis.fit_mode.mode = 'joint'
+project.analysis.fit_mode_type = 'joint'
 ```
 
 To check the current fit mode:
 
 ```python
-print(project.analysis.fit_mode.mode.value)
+print(project.analysis.fit_mode_type)
 ```
 
 ### Perform Fit

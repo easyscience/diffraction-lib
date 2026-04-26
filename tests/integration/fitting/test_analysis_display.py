@@ -57,15 +57,14 @@ def test_analysis_help(lbco_fitted_project):
     project.analysis.help()
 
 
-def test_show_current_minimizer(lbco_fitted_project):
+def test_show_minimizer_types_again(lbco_fitted_project):
     project = lbco_fitted_project
-    project.analysis.show_current_minimizer()
+    project.analysis.show_minimizer_types()
 
 
-def test_show_available_minimizers(lbco_fitted_project):
-    from easydiffraction.analysis.analysis import Analysis
-
-    Analysis.show_available_minimizers()
+def test_show_minimizer_types(lbco_fitted_project):
+    project = lbco_fitted_project
+    project.analysis.show_minimizer_types()
 
 
 def test_fit_results_attributes(lbco_fitted_project):

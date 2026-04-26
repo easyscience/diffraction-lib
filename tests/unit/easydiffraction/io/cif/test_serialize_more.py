@@ -132,7 +132,7 @@ def test_analysis_to_cif_renders_all_sections():
             return self._t
 
     class A:
-        current_minimizer = 'lmfit'
+        minimizer_type = 'lmfit'
         fit_mode = FitMode()
         joint_fit_experiments = JointFitExperiments()
         aliases = Obj('ALIASES')

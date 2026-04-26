@@ -269,10 +269,7 @@ experiment.instrument.calib_twotheta_offset = 0.048
 # broadening.
 
 # %%
-experiment.show_current_peak_profile_type()
-
-# %%
-experiment.show_supported_peak_profile_types()
+experiment.show_peak_profile_types()
 
 # %%
 experiment.peak.help()
@@ -305,8 +302,7 @@ experiment.peak.help()
 # Some points are commented out and thus not used.
 
 # %%
-experiment.show_current_background_type()
-experiment.show_supported_background_types()
+experiment.show_background_types()
 
 # %%
 for x, y in [
@@ -517,19 +513,13 @@ project.plotter.plot_meas_vs_calc(expt_name='xrd')
 # Show supported fitting engines.
 
 # %%
-project.analysis.show_available_minimizers()
-
-# %% [markdown]
-# Show current fitting engine.
-
-# %%
-project.analysis.show_current_minimizer()
+project.analysis.show_minimizer_types()
 
 # %% [markdown]
 # Select desired fitting engine.
 
 # %%
-project.analysis.current_minimizer = 'bumps (lm)'
+project.analysis.minimizer_type = 'bumps (lm)'
 
 # %% [markdown]
 # Rietveld refinement is performed by calling the `fit()` method of the

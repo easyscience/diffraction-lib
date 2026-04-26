@@ -45,7 +45,7 @@ class TestAnalysisSwitchableCategories:
 
     def test_minimizer_default(self):
         project = _make_project_with_experiment()
-        assert project.analysis.current_minimizer is not None
+        assert project.analysis.minimizer_type is not None
 
 
 # ------------------------------------------------------------------
