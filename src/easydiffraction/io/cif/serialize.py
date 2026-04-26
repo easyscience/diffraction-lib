@@ -27,6 +27,9 @@ _CIF_DESCRIPTION_WRAP_LEN = 60
 # Minimum string length to check for surrounding quotes
 _MIN_QUOTED_LEN = 2
 
+# Number of significant digits kept for CIF uncertainty notation
+_CIF_UNCERTAINTY_SIG_DIGITS = 2
+
 
 def format_value(value: object) -> str:
     """
@@ -117,7 +120,7 @@ def format_param_value(param: object) -> str:
         from uncertainties import ufloat as _ufloat  # noqa: PLC0415
 
         u = _ufloat(float(value), float(uncertainty))
-        return f'{u:.{precision}fS}'
+        return f'{u:.{_CIF_UNCERTAINTY_SIG_DIGITS}uS}'
 
     return f'{formatted_value}()'
 

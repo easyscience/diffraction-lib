@@ -30,6 +30,44 @@ def test_param_to_cif_minimal():
     assert MUT.param_to_cif(p) == '_x.y 3.00000000'
 
 
+def test_format_param_value_with_uncertainty_uses_two_sig_digits():
+    import easydiffraction.io.cif.serialize as MUT
+
+    from easydiffraction.core.validation import AttributeSpec
+    from easydiffraction.core.variable import Parameter
+    from easydiffraction.io.cif.handler import CifHandler
+
+    p = Parameter(
+        name='p',
+        value_spec=AttributeSpec(default=0.0),
+        cif_handler=CifHandler(names=['_x.p']),
+    )
+    p.value = 11.98509310
+    p.free = True
+    p.uncertainty = 0.03069505
+
+    assert MUT.format_param_value(p) == '11.985(31)'
+
+
+def test_format_param_value_with_large_uncertainty_is_readable():
+    import easydiffraction.io.cif.serialize as MUT
+
+    from easydiffraction.core.validation import AttributeSpec
+    from easydiffraction.core.variable import Parameter
+    from easydiffraction.io.cif.handler import CifHandler
+
+    p = Parameter(
+        name='p',
+        value_spec=AttributeSpec(default=0.0),
+        cif_handler=CifHandler(names=['_x.p']),
+    )
+    p.value = 882.16515040
+    p.free = True
+    p.uncertainty = 58.10490730
+
+    assert MUT.format_param_value(p) == '882(58)'
+
+
 def test_category_collection_to_cif_empty_and_one_row():
     import easydiffraction.io.cif.serialize as MUT
     from easydiffraction.core.category import CategoryCollection
