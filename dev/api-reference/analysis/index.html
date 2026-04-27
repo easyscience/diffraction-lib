@@ -8976,7 +8976,68 @@ patterns.</p>
 <span class="normal">673</span>
 <span class="normal">674</span>
 <span class="normal">675</span>
-<span class="normal">676</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@CalculatorFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">676</span>
+<span class="normal">677</span>
+<span class="normal">678</span>
+<span class="normal">679</span>
+<span class="normal">680</span>
+<span class="normal">681</span>
+<span class="normal">682</span>
+<span class="normal">683</span>
+<span class="normal">684</span>
+<span class="normal">685</span>
+<span class="normal">686</span>
+<span class="normal">687</span>
+<span class="normal">688</span>
+<span class="normal">689</span>
+<span class="normal">690</span>
+<span class="normal">691</span>
+<span class="normal">692</span>
+<span class="normal">693</span>
+<span class="normal">694</span>
+<span class="normal">695</span>
+<span class="normal">696</span>
+<span class="normal">697</span>
+<span class="normal">698</span>
+<span class="normal">699</span>
+<span class="normal">700</span>
+<span class="normal">701</span>
+<span class="normal">702</span>
+<span class="normal">703</span>
+<span class="normal">704</span>
+<span class="normal">705</span>
+<span class="normal">706</span>
+<span class="normal">707</span>
+<span class="normal">708</span>
+<span class="normal">709</span>
+<span class="normal">710</span>
+<span class="normal">711</span>
+<span class="normal">712</span>
+<span class="normal">713</span>
+<span class="normal">714</span>
+<span class="normal">715</span>
+<span class="normal">716</span>
+<span class="normal">717</span>
+<span class="normal">718</span>
+<span class="normal">719</span>
+<span class="normal">720</span>
+<span class="normal">721</span>
+<span class="normal">722</span>
+<span class="normal">723</span>
+<span class="normal">724</span>
+<span class="normal">725</span>
+<span class="normal">726</span>
+<span class="normal">727</span>
+<span class="normal">728</span>
+<span class="normal">729</span>
+<span class="normal">730</span>
+<span class="normal">731</span>
+<span class="normal">732</span>
+<span class="normal">733</span>
+<span class="normal">734</span>
+<span class="normal">735</span>
+<span class="normal">736</span>
+<span class="normal">737</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@CalculatorFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CryspyCalculator</span><span class="p">(</span><span class="n">CalculatorBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cryspy-based diffraction calculator.</span>
@@ -9055,9 +9116,19 @@ patterns.</p>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">cryspy_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recreate_cryspy_obj</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
                 <span class="n">cryspy_dict</span> <span class="o">=</span> <span class="n">cryspy_obj</span><span class="o">.</span><span class="n">get_dictionary</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_update_structure_in_cryspy_dict</span><span class="p">(</span>
+                    <span class="n">cryspy_dict</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;crystal_</span><span class="si">{</span><span class="n">structure</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">],</span>
+                    <span class="n">structure</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_update_experiment_in_cryspy_dict</span><span class="p">(</span><span class="n">cryspy_dict</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">cryspy_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recreate_cryspy_obj</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
             <span class="n">cryspy_dict</span> <span class="o">=</span> <span class="n">cryspy_obj</span><span class="o">.</span><span class="n">get_dictionary</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_structure_in_cryspy_dict</span><span class="p">(</span>
+                <span class="n">cryspy_dict</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;crystal_</span><span class="si">{</span><span class="n">structure</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">],</span>
+                <span class="n">structure</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_experiment_in_cryspy_dict</span><span class="p">(</span><span class="n">cryspy_dict</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_cryspy_dicts</span><span class="p">[</span><span class="n">combined_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">cryspy_dict</span><span class="p">)</span>
 
@@ -9127,9 +9198,19 @@ patterns.</p>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">cryspy_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recreate_cryspy_obj</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
                 <span class="n">cryspy_dict</span> <span class="o">=</span> <span class="n">cryspy_obj</span><span class="o">.</span><span class="n">get_dictionary</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_update_structure_in_cryspy_dict</span><span class="p">(</span>
+                    <span class="n">cryspy_dict</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;crystal_</span><span class="si">{</span><span class="n">structure</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">],</span>
+                    <span class="n">structure</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_update_experiment_in_cryspy_dict</span><span class="p">(</span><span class="n">cryspy_dict</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">cryspy_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recreate_cryspy_obj</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
             <span class="n">cryspy_dict</span> <span class="o">=</span> <span class="n">cryspy_obj</span><span class="o">.</span><span class="n">get_dictionary</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_structure_in_cryspy_dict</span><span class="p">(</span>
+                <span class="n">cryspy_dict</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;crystal_</span><span class="si">{</span><span class="n">structure</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">],</span>
+                <span class="n">structure</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_experiment_in_cryspy_dict</span><span class="p">(</span><span class="n">cryspy_dict</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_cryspy_dicts</span><span class="p">[</span><span class="n">combined_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">cryspy_dict</span><span class="p">)</span>
 
@@ -9235,6 +9316,13 @@ patterns.</p>
         <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">atom_site</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">atom_sites</span><span class="p">):</span>
             <span class="n">cryspy_occ</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">atom_site</span><span class="o">.</span><span class="n">occupancy</span><span class="o">.</span><span class="n">value</span>
 
+        <span class="c1"># Atomic multiplicities</span>
+        <span class="k">if</span> <span class="s1">&#39;atom_multiplicity&#39;</span> <span class="ow">in</span> <span class="n">cryspy_model_dict</span><span class="p">:</span>
+            <span class="n">CryspyCalculator</span><span class="o">.</span><span class="n">_update_atom_multiplicity</span><span class="p">(</span>
+                <span class="n">cryspy_model_dict</span><span class="p">,</span>
+                <span class="n">structure</span><span class="p">,</span>
+            <span class="p">)</span>
+
         <span class="c1"># Atomic ADPs - isotropic</span>
         <span class="c1"># For anisotropic atoms the full ADP lives in the β tensor;</span>
         <span class="c1"># setting b_iso to zero avoids double-counting in cryspy&#39;s DWF</span>
@@ -9257,6 +9345,40 @@ patterns.</p>
                 <span class="n">cryspy_model_dict</span><span class="p">,</span>
                 <span class="n">structure</span><span class="p">,</span>
             <span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_atom_multiplicity</span><span class="p">(</span>
+        <span class="n">cryspy_model_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update cryspy atom multiplicities.</span>
+
+<span class="sd">        CrysPy normalizes fractional coordinates into the ``[0, 1)``</span>
+<span class="sd">        interval while parsing CIF.  For sites such as ``(x, -x, z)``,</span>
+<span class="sd">        that can turn ``-x`` into ``1 - x`` before the Wyckoff</span>
+<span class="sd">        multiplicity is inferred, making special positions look like</span>
+<span class="sd">        general positions.  EasyDiffraction already stores the intended</span>
+<span class="sd">        Wyckoff letter, so keep the calculator dictionary aligned with</span>
+<span class="sd">        that model state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">cryspy.A_functions_base.function_2_space_group</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>  <span class="c1"># noqa: PLC0415</span>
+            <span class="n">get_it_number_by_name_hm_short</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction.crystallography.space_groups</span><span class="w"> </span><span class="kn">import</span> <span class="n">SPACE_GROUPS</span>  <span class="c1"># noqa: PLC0415</span>
+
+        <span class="n">it_number</span> <span class="o">=</span> <span class="n">get_it_number_by_name_hm_short</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">space_group</span><span class="o">.</span><span class="n">name_h_m</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">coord_code</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">space_group</span><span class="o">.</span><span class="n">it_coordinate_system_code</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">if</span> <span class="n">it_number</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="p">(</span><span class="n">it_number</span><span class="p">,</span> <span class="n">coord_code</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">SPACE_GROUPS</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">positions</span> <span class="o">=</span> <span class="n">SPACE_GROUPS</span><span class="p">[</span><span class="n">it_number</span><span class="p">,</span> <span class="n">coord_code</span><span class="p">][</span><span class="s1">&#39;Wyckoff_positions&#39;</span><span class="p">]</span>
+        <span class="n">multiplicity</span> <span class="o">=</span> <span class="n">cryspy_model_dict</span><span class="p">[</span><span class="s1">&#39;atom_multiplicity&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">atom_site</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">atom_sites</span><span class="p">):</span>
+            <span class="n">wyckoff_letter</span> <span class="o">=</span> <span class="n">atom_site</span><span class="o">.</span><span class="n">wyckoff_letter</span><span class="o">.</span><span class="n">value</span>
+            <span class="k">if</span> <span class="n">wyckoff_letter</span> <span class="ow">in</span> <span class="n">positions</span><span class="p">:</span>
+                <span class="n">multiplicity</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[</span><span class="n">wyckoff_letter</span><span class="p">][</span><span class="s1">&#39;multiplicity&#39;</span><span class="p">]</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_update_aniso_beta</span><span class="p">(</span>
@@ -9754,17 +9876,7 @@ list of floats.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/calculators/cryspy.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">156</span>
 <span class="normal">157</span>
 <span class="normal">158</span>
 <span class="normal">159</span>
@@ -9834,7 +9946,27 @@ list of floats.</p>
 <span class="normal">223</span>
 <span class="normal">224</span>
 <span class="normal">225</span>
-<span class="normal">226</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">calculate_pattern</span><span class="p">(</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">calculate_pattern</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span>
     <span class="n">experiment</span><span class="p">:</span> <span class="n">ExperimentBase</span><span class="p">,</span>
@@ -9873,9 +10005,19 @@ list of floats.</p>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">cryspy_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recreate_cryspy_obj</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
             <span class="n">cryspy_dict</span> <span class="o">=</span> <span class="n">cryspy_obj</span><span class="o">.</span><span class="n">get_dictionary</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_structure_in_cryspy_dict</span><span class="p">(</span>
+                <span class="n">cryspy_dict</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;crystal_</span><span class="si">{</span><span class="n">structure</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">],</span>
+                <span class="n">structure</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_experiment_in_cryspy_dict</span><span class="p">(</span><span class="n">cryspy_dict</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">cryspy_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recreate_cryspy_obj</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
         <span class="n">cryspy_dict</span> <span class="o">=</span> <span class="n">cryspy_obj</span><span class="o">.</span><span class="n">get_dictionary</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_structure_in_cryspy_dict</span><span class="p">(</span>
+            <span class="n">cryspy_dict</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;crystal_</span><span class="si">{</span><span class="n">structure</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">],</span>
+            <span class="n">structure</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_experiment_in_cryspy_dict</span><span class="p">(</span><span class="n">cryspy_dict</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_cryspy_dicts</span><span class="p">[</span><span class="n">combined_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">cryspy_dict</span><span class="p">)</span>
 
@@ -10076,7 +10218,17 @@ list of floats.</p>
 <span class="normal">141</span>
 <span class="normal">142</span>
 <span class="normal">143</span>
-<span class="normal">144</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">calculate_structure_factors</span><span class="p">(</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">calculate_structure_factors</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span>
     <span class="n">experiment</span><span class="p">:</span> <span class="n">ExperimentBase</span><span class="p">,</span>
@@ -10104,9 +10256,19 @@ list of floats.</p>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">cryspy_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recreate_cryspy_obj</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
             <span class="n">cryspy_dict</span> <span class="o">=</span> <span class="n">cryspy_obj</span><span class="o">.</span><span class="n">get_dictionary</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_structure_in_cryspy_dict</span><span class="p">(</span>
+                <span class="n">cryspy_dict</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;crystal_</span><span class="si">{</span><span class="n">structure</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">],</span>
+                <span class="n">structure</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_experiment_in_cryspy_dict</span><span class="p">(</span><span class="n">cryspy_dict</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">cryspy_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recreate_cryspy_obj</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
         <span class="n">cryspy_dict</span> <span class="o">=</span> <span class="n">cryspy_obj</span><span class="o">.</span><span class="n">get_dictionary</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_structure_in_cryspy_dict</span><span class="p">(</span>
+            <span class="n">cryspy_dict</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;crystal_</span><span class="si">{</span><span class="n">structure</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">],</span>
+            <span class="n">structure</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_experiment_in_cryspy_dict</span><span class="p">(</span><span class="n">cryspy_dict</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_cryspy_dicts</span><span class="p">[</span><span class="n">combined_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">cryspy_dict</span><span class="p">)</span>
 
