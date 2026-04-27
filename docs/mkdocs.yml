@@ -210,9 +210,11 @@ nav:
           - NaCl pd-xray: tutorials/ed-12.ipynb
       - Multiple Data Blocks:
           - PbSO4 NPD+XRD: tutorials/ed-4.ipynb
-          - LBCO+Si McStas: tutorials/ed-9.ipynb
           - Si Bragg+PDF: tutorials/ed-16.ipynb
           - Co2SiO4 T-scan: tutorials/ed-17.ipynb
+      - Simulated Data:
+          - LBCO+Si McStas: tutorials/ed-9.ipynb
+          - BEER McStas: tutorials/ed-20.ipynb
       - Workshops & Schools:
           - DMSC Summer School: tutorials/ed-13.ipynb
   - API Reference:

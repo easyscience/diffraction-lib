@@ -389,14 +389,14 @@ class PeakFactory(FactoryBase):
         frozenset({
             ('scattering_type', ScatteringTypeEnum.BRAGG),
             ('beam_mode', BeamModeEnum.CONSTANT_WAVELENGTH),
-        }): PeakProfileTypeEnum.PSEUDO_VOIGT,
+        }): PeakProfileTypeEnum.CWL_PSEUDO_VOIGT,
         frozenset({
             ('scattering_type', ScatteringTypeEnum.BRAGG),
             ('beam_mode', BeamModeEnum.TIME_OF_FLIGHT),
-        }): PeakProfileTypeEnum.JORGENSEN,
+        }): PeakProfileTypeEnum.TOF_JORGENSEN,
         frozenset({
             ('scattering_type', ScatteringTypeEnum.TOTAL),
-        }): PeakProfileTypeEnum.GAUSSIAN_DAMPED_SINC,
+        }): PeakProfileTypeEnum.TOTAL_GAUSSIAN_DAMPED_SINC,
     }
 ```
 
@@ -413,8 +413,8 @@ attributes:
 @PeakFactory.register
 class CwlPseudoVoigt(PeakBase, CwlBroadeningMixin):
     type_info = TypeInfo(
-        tag='pseudo-voigt',
-        description='Pseudo-Voigt profile',
+        tag=PeakProfileTypeEnum.CWL_PSEUDO_VOIGT.value,
+        description=PeakProfileTypeEnum.CWL_PSEUDO_VOIGT.description(),
     )
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
@@ -478,7 +478,11 @@ from .line_segment import LineSegmentBackground
 
 ### 5.6 Tag Naming Convention
 
-Tags are the user-facing identifiers for selecting types. They must be:
+Canonical tags are the stable identifiers for factory lookup and
+serialisation. User-facing APIs may expose context-local aliases when
+the owner object already provides enough context to disambiguate the
+choice (for example, `experiment.peak_profile_type = 'pseudo-voigt'`
+inside a CWL or TOF experiment). Canonical tags must be:
 
 - **Consistent** — use the same abbreviations everywhere.
 - **Hyphen-separated** — all lowercase, words joined by hyphens.
@@ -507,15 +511,22 @@ Tags are the user-facing identifiers for selecting types. They must be:
 
 **Peak tags**
 
-| Tag                                  | Class                              |
-| ------------------------------------ | ---------------------------------- |
-| `pseudo-voigt`                       | `CwlPseudoVoigt`                   |
-| `pseudo-voigt + empirical asymmetry` | `CwlPseudoVoigtEmpiricalAsymmetry` |
-| `thompson-cox-hastings`              | `CwlThompsonCoxHastings`           |
-| `jorgensen`                          | `TofJorgensen`                     |
-| `jorgensen-von-dreele`               | `TofJorgensenVonDreele`            |
-| `double-jorgensen-von-dreele`        | `TofDoubleJorgensenVonDreele`      |
-| `gaussian-damped-sinc`               | `TotalGaussianDampedSinc`          |
+Canonical peak tags are globally unique within `PeakFactory`. The
+experiment-facing `peak_profile_type` getter, setter, and supported-type
+display use context-local aliases so users do not need to type `cwl-`,
+`tof-`, or `total-` when the experiment context already disambiguates
+the choice.
+
+| Canonical tag                          | Local alias                          | Class                              |
+| -------------------------------------- | ------------------------------------ | ---------------------------------- |
+| `cwl-pseudo-voigt`                     | `pseudo-voigt`                       | `CwlPseudoVoigt`                   |
+| `cwl-pseudo-voigt-empirical-asymmetry` | `pseudo-voigt + empirical asymmetry` | `CwlPseudoVoigtEmpiricalAsymmetry` |
+| `cwl-thompson-cox-hastings`            | `thompson-cox-hastings`              | `CwlThompsonCoxHastings`           |
+| `tof-pseudo-voigt`                     | `pseudo-voigt`                       | `TofPseudoVoigt`                   |
+| `tof-jorgensen`                        | `jorgensen`                          | `TofJorgensen`                     |
+| `tof-jorgensen-von-dreele`             | `jorgensen-von-dreele`               | `TofJorgensenVonDreele`            |
+| `tof-double-jorgensen-von-dreele`      | `double-jorgensen-von-dreele`        | `TofDoubleJorgensenVonDreele`      |
+| `total-gaussian-damped-sinc`           | `gaussian-damped-sinc`               | `TotalGaussianDampedSinc`          |
 
 **Instrument tags**
 
@@ -684,14 +695,14 @@ category's `calculator_support` metadata and
 registry by `engine_imported` (whether the third-party library is
 available in the environment).
 
-The experiment exposes the standard switchable-category API:
+The experiment exposes a dedicated `calculation` category:
 
-- `calculator` — read-only property (lazy, auto-resolved on first
-  access)
-- `calculator_type` — getter + setter
-- `show_supported_calculator_types()` — filtered by data category
-  support
-- `show_current_calculator_type()`
+- `calculation.calculator_type` — getter + setter for the calculator
+  backend tag
+- `calculation.calculator` — read-only access to the live backend
+  instance
+- `calculation.show_calculator_types()` — filtered by data category
+  support and marks the current type
 
 ### 6.2 Minimiser
 
@@ -713,22 +724,19 @@ workflow:
 
 `Analysis` is bound to a `Project` and provides the high-level API:
 
-- Minimiser selection: `current_minimizer`,
-  `show_available_minimizers()`
-- Fit mode: `fit_mode` (`CategoryItem` with a `mode` descriptor
-  validated by `FitModeEnum`); `'single'` fits each experiment
-  independently, `'joint'` fits all simultaneously with weights from
-  `joint_fit_experiments`, `'sequential'` records that sequential
-  fitting was used. `show_supported_fit_mode_types()` filters by
-  experiment count (≤1 → only `single`; >1 → all three).
-  `show_current_fit_mode_type()` prints the current mode.
+- Fit configuration: `fit` (`CategoryItem` with `minimizer_type` and
+  `mode` descriptors). `fit.minimizer_type` selects the minimizer
+  backend. `fit.mode` stores whether fitting is `'single'`, `'joint'`,
+  or `'sequential'`. `fit.show_minimizer_types()` lists supported
+  minimizers; `fit.show_modes()` filters modes by experiment count (≤1 →
+  only `single`; >1 → all three).
 - Joint-fit weights: `joint_fit_experiments` (`CategoryCollection` of
-  per-experiment weight entries); sibling of `fit_mode`, not a child.
+  per-experiment weight entries); sibling of `fit`, not a child.
 - Parameter tables: `show_all_params()`, `show_fittable_params()`,
   `show_free_params()`, `how_to_access_parameters()`
-- Fitting: `fit()` dispatches single/joint; `fit_sequential()` handles
-  sequential mode (sets `fit_mode` to `'sequential'` internally).
-  `display.fit_results()` shows results.
+- Fitting: `fit()` dispatches single/joint through the callable `fit`
+  category; `fit_sequential()` handles sequential mode (sets `fit.mode`
+  to `'sequential'` internally). `display.fit_results()` shows results.
 - Aliases and constraints (single-type categories; no public `_type`
   getter or setter)
 
@@ -751,9 +759,9 @@ It owns and coordinates all components:
 | `project.info`        | `ProjectInfo` | Metadata: name, title, description, path |
 | `project.structures`  | `Structures`  | Collection of structure datablocks       |
 | `project.experiments` | `Experiments` | Collection of experiment datablocks      |
-| `project.analysis`    | `Analysis`    | Calculator, minimiser, fitting           |
+| `project.display`     | `Display`     | Plot/table engine selection and facades  |
+| `project.analysis`    | `Analysis`    | Minimiser, fitting, aliases, constraints |
 | `project.summary`     | `Summary`     | Report generation                        |
-| `project.plotter`     | `Plotter`     | Visualisation                            |
 | `project.verbosity`   | `str`         | Console output level (full/short/silent) |
 
 ### 7.1 Data Flow
@@ -778,7 +786,7 @@ Projects are saved as a directory of CIF files:
 
 ```shell
 project_dir/
-├── project.cif          # ProjectInfo
+├── project.cif          # ProjectInfo + Display preferences
 ├── summary.cif          # Summary report
 ├── structures/
 │   └── lbco.cif         # One file per structure
@@ -787,6 +795,13 @@ project_dir/
 └── analysis/
     └── analysis.cif     # Analysis settings
 ```
+
+`project.cif` carries both the `_project.*` metadata and the
+`_display.*` engine preferences (`plotter_type`, `tabler_type`), so a
+saved project re-opens with the same display backends. Per-experiment
+calculator selection (`_calculation.calculator_type`) lives in each
+experiment file, and fit configuration (`_fit.minimizer_type`,
+`_fit.mode`) lives in `analysis/analysis.cif`.
 
 ### 7.3 Verbosity
 
@@ -894,7 +909,7 @@ project.experiments['hrpt'].instrument.setup_wavelength = 1.494
 project.experiments['hrpt'].instrument.calib_twotheta_offset = 0.6
 
 # Browse and select peak profile type
-project.experiments['hrpt'].show_supported_peak_profile_types()
+project.experiments['hrpt'].show_peak_profile_types()
 project.experiments['hrpt'].peak_profile_type = 'pseudo-voigt'
 
 # Set peak profile parameters
@@ -902,7 +917,7 @@ project.experiments['hrpt'].peak.broad_gauss_u = 0.1
 project.experiments['hrpt'].peak.broad_gauss_v = -0.1
 
 # Browse and select background type
-project.experiments['hrpt'].show_supported_background_types()
+project.experiments['hrpt'].show_background_types()
 project.experiments['hrpt'].background_type = 'line-segment'
 
 # Add background points
@@ -917,12 +932,12 @@ project.experiments['hrpt'].linked_phases.create(id='lbco', scale=10.0)
 
 ```python
 # Calculator is auto-resolved per experiment; override if needed
-project.experiments['hrpt'].show_supported_calculator_types()
-project.experiments['hrpt'].calculator_type = 'cryspy'
-project.analysis.current_minimizer = 'lmfit'
+project.experiments['hrpt'].calculation.show_calculator_types()
+project.experiments['hrpt'].calculation.calculator_type = 'cryspy'
+project.analysis.fit.minimizer_type = 'lmfit'
 
 # Plot before fitting
-project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # Select free parameters
 project.structures['lbco'].cell.length_a.free = True
@@ -938,7 +953,7 @@ project.analysis.fit()
 project.analysis.display.fit_results()
 
 # Plot after fitting
-project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # Save
 project.save()
@@ -1030,13 +1045,12 @@ exposes the full switchable API:
 | --------------- | -------------------------------------------- | ------------------------------------------------ |
 | Current object  | `<category>` property (read-only)            | `expt.background`, `expt.peak`                   |
 | Active type tag | `<category>_type` property (getter + setter) | `expt.background_type`, `expt.peak_profile_type` |
-| Show supported  | `show_supported_<category>_types()`          | `expt.show_supported_background_types()`         |
-| Show current    | `show_current_<category>_type()`             | `expt.show_current_peak_profile_type()`          |
+| Show types      | `show_<category>_types()`                    | `expt.show_background_types()`                   |
 
 Multi-type categories:
 
-- **Experiment:** `calculator_type`, `background_type`,
-  `peak_profile_type`, `extinction_type`.
+- **Experiment:** `background_type`, `peak_profile_type`,
+  `extinction_type`.
 
 Categories that are **fixed at creation** (determined by the experiment
 type and never changed) expose only a read-only `<category>` property
@@ -1056,10 +1070,15 @@ Single-type categories (no public `_type` property):
 - **Structure:** `cell`, `space_group`, `atom_sites`, `atom_site_aniso`.
 - **Analysis:** `aliases`, `constraints`.
 
-`fit_mode` has show methods (`show_supported_fit_mode_types()`,
-`show_current_fit_mode_type()`) but no public `_type` getter or setter
-because it has only one factory implementation. The mode is changed via
-the `fit_mode.mode` descriptor directly.
+`fit` is a dedicated analysis category. Its public selector surface is
+`fit.minimizer_type` and `fit.mode`; there is no separate owner-level
+proxy API. Likewise, `calculation` is a dedicated experiment category
+that owns calculator selection —
+`experiment.calculation.calculator_type` and
+`experiment.calculation.show_calculator_types()` — instead of the
+selector being exposed at the experiment owner level. The same pattern
+applies to `display` on `Project`, which owns `plotter_type` and
+`tabler_type` (see §9.4.1).
 
 **Design decisions:**
 
@@ -1074,17 +1093,39 @@ the `fit_mode.mode` descriptor directly.
   displaying the current content (not on the base
   `CategoryItem`/`CategoryCollection`).
 
+#### 9.4.1 Selector Families
+
+Not every `_type` attribute represents the same kind of choice. The API
+recognises three distinct selector families. They share a similar
+`<name>_type` shape so the user can inspect and set them uniformly, but
+their intent and ownership differ:
+
+| Family                             | User intent                     | Examples                                                                    | CIF                                                                            |
+| ---------------------------------- | ------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Backend selector                   | Pick an execution backend       | `fit.minimizer_type`, `calculation.calculator_type`, `display.plotter_type` | `_fit.minimizer_type`, `_calculation.calculator_type`, `_display.plotter_type` |
+| Switchable-category impl. selector | Swap a category implementation  | `experiment.background_type`, `experiment.peak_profile_type`                | category-owned type tag such as `_peak.profile_type`                           |
+| Semantic value selector            | Pick a scientific/analysis mode | `fit.mode`                                                                  | `_fit.mode`                                                                    |
+
+Backend selectors and semantic value selectors live on a dedicated
+configuration category (`fit`, `calculation`, `display`). Switchable-
+category implementation selectors are owned by the host (typically the
+experiment) because switching them replaces the category instance, as
+described in §9.3.
+
 ### 9.5 Discoverable Supported Options
 
 The user can always discover what is supported for the current
 experiment:
 
 ```python
-expt.show_supported_peak_profile_types()
-expt.show_supported_background_types()
-expt.show_supported_calculator_types()
-expt.show_supported_extinction_types()
-project.analysis.show_available_minimizers()
+expt.show_peak_profile_types()
+expt.show_background_types()
+expt.calculation.show_calculator_types()
+expt.show_extinction_types()
+project.analysis.fit.show_minimizer_types()
+project.analysis.fit.show_modes()
+project.display.show_plotter_types()
+project.display.show_tabler_types()
 ```
 
 Available calculators are filtered by `engine_imported` (whether the
@@ -1122,10 +1163,10 @@ but internal dispatch always uses the enum:
 
 ```python
 # ✅ Correct — compare with enum
-if self._fit_mode.mode.value == FitModeEnum.JOINT:
+if self._fit.mode.value == FitModeEnum.JOINT:
 
 # ❌ Wrong — compare with raw string
-if self._fit_mode.mode.value == 'joint':
+if self._fit.mode.value == 'joint':
 ```
 
 ### 9.7 Flat Category Structure — No Nested Categories
@@ -1150,25 +1191,26 @@ Owner
     └── CategoryB   ← WRONG: CategoryB is a child of CategoryA
 ```
 
-**Example — `fit_mode` and `joint_fit_experiments`:** `fit_mode` is a
-`CategoryItem` holding the active strategy (`'single'` or `'joint'`).
+**Example — `fit` and `joint_fit_experiments`:** `fit` is a
+`CategoryItem` holding the active minimizer and fitting mode.
 `joint_fit_experiments` is a separate `CategoryCollection` holding
 per-experiment weights. Both are direct children of `Analysis`, not
 nested:
 
 ```python
 # ✅ Correct — sibling categories on Analysis
-project.analysis.fit_mode.mode = 'joint'
+project.analysis.fit.mode = 'joint'
 project.analysis.joint_fit_experiments['npd'].weight = 0.7
 
-# ❌ Wrong — joint_fit_experiments as a child of fit_mode
-project.analysis.fit_mode.joint_fit_experiments['npd'].weight = 0.7
+# ❌ Wrong — joint_fit_experiments as a child of fit
+project.analysis.fit.joint_fit_experiments['npd'].weight = 0.7
 ```
 
 In CIF output, sibling categories appear as independent blocks:
 
 ```
-_analysis.fit_mode  joint
+_fit.minimizer_type  lmfit
+_fit.mode            joint
 
 loop_
 _joint_fit_experiment.id
@@ -1326,16 +1368,16 @@ in `KNOWN_ALIASES` inside the tool script.
 
 ### 10.3 What to Test per Source Module Type
 
-| Source module type               | Required tests                                                                                                                                             |
-| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Core base class** (`core/`)    | Instantiation, public properties, validation edge cases, identity wiring.                                                                                  |
-| **Factory** (`factory.py`)       | Registration check, `supported_tags()`, `default_tag()`, `create()` for each tag, `show_supported()` output, invalid-tag handling.                         |
-| **Category** (`default.py`)      | Instantiation, all public properties (read + write where applicable), CIF round-trip (`as_cif` → `from_cif`), parameter enumeration.                       |
-| **Enum** (`enums.py`)            | Membership of all members, `default()` method, `description()` for every member, `StrEnum` string equality.                                                |
-| **Datablock item** (`base.py`)   | Construction, switchable-category full API (`<cat>`, `<cat>_type` get/set, `show_supported_<cat>_types`, `show_current_<cat>_type`), `show`/`show_as_cif`. |
-| **Collection** (`collection.py`) | `create`, `add`, `remove`, `names`, `show_names`, `show_params`, iteration, duplicate-name handling.                                                       |
-| **Calculator / Minimizer**       | `can_handle()` with compatible and incompatible experiment types, `_compute()` stub or mock.                                                               |
-| **Display / IO**                 | Input → output for representative cases; file-not-found and malformed-input error paths.                                                                   |
+| Source module type               | Required tests                                                                                                                       |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| **Core base class** (`core/`)    | Instantiation, public properties, validation edge cases, identity wiring.                                                            |
+| **Factory** (`factory.py`)       | Registration check, `supported_tags()`, `default_tag()`, `create()` for each tag, `show_supported()` output, invalid-tag handling.   |
+| **Category** (`default.py`)      | Instantiation, all public properties (read + write where applicable), CIF round-trip (`as_cif` → `from_cif`), parameter enumeration. |
+| **Enum** (`enums.py`)            | Membership of all members, `default()` method, `description()` for every member, `StrEnum` string equality.                          |
+| **Datablock item** (`base.py`)   | Construction, switchable-category full API (`<cat>`, `<cat>_type` get/set, `show_<cat>_types`), `show`/`show_as_cif`.                |
+| **Collection** (`collection.py`) | `create`, `add`, `remove`, `names`, `show_names`, `show_params`, iteration, duplicate-name handling.                                 |
+| **Calculator / Minimizer**       | `can_handle()` with compatible and incompatible experiment types, `_compute()` stub or mock.                                         |
+| **Display / IO**                 | Input → output for representative cases; file-not-found and malformed-input error paths.                                             |
 
 ### 10.4 Test Conventions
 

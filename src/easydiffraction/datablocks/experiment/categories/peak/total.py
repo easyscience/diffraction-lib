@@ -10,6 +10,7 @@ from easydiffraction.datablocks.experiment.categories.peak.factory import PeakFa
 from easydiffraction.datablocks.experiment.categories.peak.total_mixins import TotalBroadeningMixin
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
+from easydiffraction.datablocks.experiment.item.enums import PeakProfileTypeEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 
 
@@ -21,12 +22,15 @@ class TotalGaussianDampedSinc(
     """Gaussian-damped sinc peak for total scattering (PDF)."""
 
     type_info = TypeInfo(
-        tag='gaussian-damped-sinc',
-        description='Gaussian-damped sinc for pair distribution function analysis',
+        tag=PeakProfileTypeEnum.TOTAL_GAUSSIAN_DAMPED_SINC.value,
+        description=PeakProfileTypeEnum.TOTAL_GAUSSIAN_DAMPED_SINC.description(),
     )
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.TOTAL}),
-        beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH, BeamModeEnum.TIME_OF_FLIGHT}),
+        beam_mode=frozenset({
+            BeamModeEnum.CONSTANT_WAVELENGTH,
+            BeamModeEnum.TIME_OF_FLIGHT,
+        }),
     )
     calculator_support = CalculatorSupport(
         calculators=frozenset({CalculatorEnum.PDFFIT}),

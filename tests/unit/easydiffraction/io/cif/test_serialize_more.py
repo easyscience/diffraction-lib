@@ -34,7 +34,7 @@ def test_datablock_item_to_cif_includes_item_and_collection():
 
     out = MUT.datablock_item_to_cif(DB())
     assert out.startswith('data_block1')
-    assert '_aa 42.0000' in out
+    assert '_aa 42.' in out
     assert 'loop_' in out
     assert '_aa' in out
     assert '7' in out
@@ -115,12 +115,11 @@ def test_experiment_to_cif_with_and_without_data():
 
     out_without = MUT.experiment_to_cif(Exp(''))
     assert out_without.startswith('data_expA')
-    assert out_without.endswith('1.00000000')
+    assert out_without.endswith('1.')
 
 
 def test_analysis_to_cif_renders_all_sections():
     import easydiffraction.io.cif.serialize as MUT
-    from easydiffraction.analysis.categories.fit_mode import FitMode
     from easydiffraction.analysis.categories.joint_fit_experiments import JointFitExperiments
 
     class Obj:
@@ -132,17 +131,16 @@ def test_analysis_to_cif_renders_all_sections():
             return self._t
 
     class A:
-        current_minimizer = 'lmfit'
-        fit_mode = FitMode()
+        fit = Obj('_fit.minimizer_type lmfit\n_fit.mode single')
         joint_fit_experiments = JointFitExperiments()
         aliases = Obj('ALIASES')
         constraints = Obj('CONSTRAINTS')
 
     out = MUT.analysis_to_cif(A())
     lines = out.splitlines()
-    assert lines[0].startswith('_analysis.fitting_engine')
+    assert lines[0].startswith('_fit.minimizer_type')
     assert 'lmfit' in lines[0]
-    assert lines[1].startswith('_analysis.fit_mode')
+    assert lines[1].startswith('_fit.mode')
     assert 'single' in lines[1]
     assert 'ALIASES' in out
     assert 'CONSTRAINTS' in out

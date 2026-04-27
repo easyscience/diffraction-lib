@@ -83,15 +83,15 @@ class TestCwlScExperiment:
         ex.extinction_type = 'bogus'
         assert ex.extinction_type == old
 
-    def test_show_supported_extinction_types(self, capsys):
+    def test_show_extinction_types(self, capsys):
         ex = CwlScExperiment(name='cwl_sc', type=_mk_type_sc_cwl())
-        ex.show_supported_extinction_types()
+        ex.show_extinction_types()
         out = capsys.readouterr().out
         assert len(out) > 0
 
-    def test_show_current_extinction_type(self, capsys):
+    def test_show_extinction_types_includes_current(self, capsys):
         ex = CwlScExperiment(name='cwl_sc', type=_mk_type_sc_cwl())
-        ex.show_current_extinction_type()
+        ex.show_extinction_types()
         out = capsys.readouterr().out
         assert ex.extinction_type in out
 

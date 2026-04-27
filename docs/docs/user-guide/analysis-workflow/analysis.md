@@ -63,7 +63,7 @@ The calculator is automatically selected based on the experiment type
 To show the supported calculation engines for a specific experiment:
 
 ```python
-project.experiments['hrpt'].show_supported_calculator_types()
+project.experiments['hrpt'].calculation.show_calculator_types()
 ```
 
 The example of the output is:
@@ -77,7 +77,7 @@ Supported calculator types
 To explicitly select a calculation engine for an experiment:
 
 ```python
-project.experiments['hrpt'].calculator_type = 'cryspy'
+project.experiments['hrpt'].calculation.calculator_type = 'cryspy'
 ```
 
 ## Minimization / Optimization
@@ -134,7 +134,7 @@ derivatives of the objective.
 To show the supported minimizers:
 
 ```python
-project.analysis.show_supported_minimizers()
+project.analysis.fit.show_minimizer_types()
 ```
 
 The example of the output is:
@@ -151,7 +151,7 @@ Supported minimizers
 To select the desired minimizer, e.g., 'lmfit':
 
 ```python
-project.analysis.current_minimizer = 'lmfit'
+project.analysis.fit.minimizer_type = 'lmfit'
 ```
 
 ### Fit Mode
@@ -168,16 +168,16 @@ The supported fit modes are:
 | single | Independent fitting of each experiment; no shared parameters        |
 | joint  | Simultaneous fitting of all experiments; some parameters are shared |
 
-You can set the fit mode on the `analysis` object:
+You can set the fit mode on the `fit` category:
 
 ```python
-project.analysis.fit_mode.mode = 'joint'
+project.analysis.fit.mode = 'joint'
 ```
 
 To check the current fit mode:
 
 ```python
-print(project.analysis.fit_mode.mode.value)
+print(project.analysis.fit.mode.value)
 ```
 
 ### Perform Fit
@@ -251,7 +251,7 @@ To plot the measured vs calculated data after the fit, you can use the
 `plot_meas_vs_calc` method of the `analysis` object:
 
 ```python
-project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 ```
 
 ## Constraints
@@ -344,9 +344,8 @@ Example output:
 
 ```
 ╒════════════════════════════════════════════════╕
-│ _analysis.calculator_engine  cryspy            │
-│ _analysis.fitting_engine     "lmfit (leastsq)" │
-│ _analysis.fit_mode           single            │
+│ _fit.minimizer_type          "lmfit (leastsq)" │
+│ _fit.mode                    single            │
 │                                                │
 │ loop_                                          │
 │ _alias.label                                   │

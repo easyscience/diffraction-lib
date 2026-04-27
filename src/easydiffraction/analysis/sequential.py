@@ -122,11 +122,9 @@ def _fit_worker(
 
         # 8. Set calculator and minimizer
         #    (internal, no console output)
-        from easydiffraction.analysis.calculators.factory import CalculatorFactory  # noqa: PLC0415
         from easydiffraction.analysis.fitting import Fitter  # noqa: PLC0415
 
-        expt._calculator = CalculatorFactory.create(template.calculator_tag)
-        expt._calculator_type = template.calculator_tag
+        expt._set_calculator_type(template.calculator_tag, announce=False)
         project.analysis.fitter = Fitter(template.minimizer_tag)
 
         # 9. Fit
@@ -487,8 +485,8 @@ def _build_template(project: object) -> SequentialFitTemplate:
         alias_defs=alias_defs,
         constraint_defs=constraint_defs,
         constraints_enabled=project.analysis.constraints.enabled,
-        minimizer_tag=project.analysis.current_minimizer or 'lmfit',
-        calculator_tag=experiment.calculator_type,
+        minimizer_tag=project.analysis.fit.minimizer_type.value or 'lmfit',
+        calculator_tag=experiment.calculation.calculator_type.value,
         diffrn_field_names=diffrn_field_names,
     )
 

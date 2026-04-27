@@ -145,21 +145,10 @@ project_1.experiments.add_from_data_path(
 # for more details about the measured data and its format.
 #
 # To visualize the measured data, we can use the `plot_meas` method of
-# the project. Before plotting, we need to set the plotting engine to
-# 'plotly', which provides interactive visualizations.
-
-# %% [markdown] tags=["doc-link"]
-# 📖 See
-# [documentation](https://easyscience.github.io/diffraction-lib/user-guide/first-steps/#supported-plotters)
-# for more details about setting the plotting engine.
+# the project.
 
 # %%
-# Keep the auto-selected engine. Alternatively, you can uncomment the
-# line below to explicitly set the engine to the required one.
-# project.plotter.engine = 'plotly'
-
-# %%
-project_1.plotter.plot_meas(expt_name='sim_si')
+project_1.display.plotter.plot_meas(expt_name='sim_si')
 
 # %% [markdown]
 # If you zoom in on the highest TOF peak (around 120,000 μs), you will
@@ -194,7 +183,7 @@ project_1.experiments['sim_si'].excluded_regions.create(id='2', start=105500, en
 # plot and is not used in the fitting process.
 
 # %%
-project_1.plotter.plot_meas(expt_name='sim_si')
+project_1.display.plotter.plot_meas(expt_name='sim_si')
 
 # %% [markdown]
 # #### Set Instrument Parameters
@@ -221,10 +210,10 @@ project_1.plotter.plot_meas(expt_name='sim_si')
 
 # %%
 project_1.experiments['sim_si'].instrument.setup_twotheta_bank = ed.extract_metadata(
-    si_xye_path, r'two_theta\s*=\s*([-+]?\d*\.?\d+(?:[eE][-+]?\d+)?)'
+    si_xye_path, r'two_theta\s*=\s*(\d*\.?\d+)'
 )
 project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear = ed.extract_metadata(
-    si_xye_path, r'DIFC\s*=\s*([-+]?\d*\.?\d+(?:[eE][-+]?\d+)?)'
+    si_xye_path, r'DIFC\s*=\s*(\d*\.?\d+)'
 )
 
 # %% [markdown]
@@ -273,25 +262,40 @@ print(project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear.value)
 # in the fitting process. The peak profile describes the shape of the
 # diffraction peaks.
 #
-# There are several commonly used peak profile functions:
-# - **Gaussian**: Describes peaks with a symmetric bell-shaped curve,
-#   often used when instrumental broadening dominates. [Click for more
+# Several peak profile functions are commonly used:
+# - **Gaussian**: A symmetric bell-shaped peak profile. It is often used
+#   when instrumental broadening is dominant. [Click for more
 #   details.](https://mantidproject.github.io/docs-versioned/v6.1.0/fitting/fitfunctions/Gaussian.html)
-# - **Lorentzian**: Produces narrower central peaks with longer tails,
-#   frequently used to model size broadening effects. [Click for more
+# - **Lorentzian**: A symmetric peak profile with a sharper centre and
+#   longer tails than a Gaussian. It is often used to describe size
+#   broadening effects. [Click for more
 #   details.](https://mantidproject.github.io/docs-versioned/v6.1.0/fitting/fitfunctions/Lorentzian.html)
 # - **Pseudo-Voigt**: A linear combination of Gaussian and Lorentzian
-#   components, providing flexibility to represent real diffraction
-#   peaks. [Click for more
+#   components. It provides a flexible approximation for many real
+#   diffraction peak shapes. [Click for more
 #   details.](https://mantidproject.github.io/docs-versioned/v6.1.0/fitting/fitfunctions/PseudoVoigt.html)
-# - **Pseudo-Voigt convoluted with Ikeda-Carpenter**: Incorporates the
-#   asymmetry introduced by the neutron pulse shape in time-of-flight
-#   instruments. This is a common choice for TOF neutron powder
-#   diffraction data. [Click for more
+# - **Jorgensen**: A convolution of back-to-back exponentials with a
+#   Gaussian. This profile can describe asymmetric TOF peak shapes.
+#   [Click for more details.](
+#   https://docs.mantidproject.org/nightly/fitting/fitfunctions/BackToBackExponential.html)
+# - **Jorgensen–Von Dreele**: A convolution of back-to-back exponentials
+#   with a pseudo-Voigt function. This extends the Jorgensen profile by
+#   allowing a more flexible symmetric peak component.
+#   [Click for more details.](https://docs.mantidproject.org/nightly/fitting/fitfunctions/BackToBackExponential.html)
+# - **Ikeda–Carpenter pseudo-Voigt**: A convolution of the
+#   Ikeda–Carpenter function with a pseudo-Voigt function. It includes
+#   asymmetry caused by the neutron pulse shape and is commonly used for
+#   TOF neutron powder diffraction data. [Click for more
 #   details.](https://docs.mantidproject.org/v6.1.0/fitting/fitfunctions/IkedaCarpenterPV.html)
 #
-# Here, we use a pseudo-Voigt peak profile function with Ikeda-Carpenter
-# asymmetry.
+# In TOF neutron powder diffraction, peak profiles are usually built by
+# combining a symmetric peak-shape function, such as a Gaussian,
+# Lorentzian, or pseudo-Voigt, with an asymmetric component, such as a
+# back-to-back exponential or Ikeda–Carpenter function. This combination
+# gives a more realistic description of TOF peak shapes, which are often
+# asymmetric because of the neutron pulse shape and instrumental effects.
+#
+# Here, we use a simple Jorgensen peak profile.
 #
 # The parameter values are typically determined experimentally on the
 # same instrument and under the same configuration as the data being
@@ -308,7 +312,9 @@ print(project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear.value)
 # for more details about the peak profile types.
 
 # %%
-project_1.experiments['sim_si'].peak_profile_type = 'jorgensen'
+project_1.experiments['sim_si'].show_peak_profile_types()
+
+# %%
 project_1.experiments['sim_si'].peak.broad_gauss_sigma_0 = 69498
 project_1.experiments['sim_si'].peak.broad_gauss_sigma_1 = -55578
 project_1.experiments['sim_si'].peak.broad_gauss_sigma_2 = 14560
@@ -351,6 +357,9 @@ project_1.experiments['sim_si'].peak.exp_rise_alpha_1 = 0.0147
 # 📖 See
 # [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/experiment/#background-category)
 # for more details about the background and its types.
+
+# %%
+project_1.experiments['sim_si'].show_background_types()
 
 # %%
 project_1.experiments['sim_si'].background_type = 'line-segment'
@@ -524,7 +533,7 @@ project_1.experiments['sim_si'].linked_phases.create(id='si', scale=1.0)
 # the expected diffraction pattern is already defined in the library and
 # will be applied automatically during the fitting process.
 
-# %% [markdown] **Reminder:**
+# %% **Reminder:** [markdown]
 #
 # The fitting process involves comparing the measured diffraction
 # pattern with the calculated diffraction pattern based on the crystal
@@ -598,7 +607,7 @@ project_1.analysis.display.free_params()
 # this comparison.
 
 # %%
-project_1.plotter.plot_meas_vs_calc(expt_name='sim_si')
+project_1.display.plotter.plot_meas_vs_calc(expt_name='sim_si')
 
 # %% [markdown]
 # #### Run Fitting
@@ -638,7 +647,7 @@ project_1.analysis.display.fit_results()
 # pattern is now based on the refined parameters.
 
 # %%
-project_1.plotter.plot_meas_vs_calc(expt_name='sim_si')
+project_1.display.plotter.plot_meas_vs_calc(expt_name='sim_si')
 
 # %% [markdown]
 # #### TOF vs d-spacing
@@ -669,7 +678,7 @@ project_1.plotter.plot_meas_vs_calc(expt_name='sim_si')
 # setting the `d_spacing` parameter to `True`.
 
 # %%
-project_1.plotter.plot_meas_vs_calc(expt_name='sim_si', x='d_spacing')
+project_1.display.plotter.plot_meas_vs_calc(expt_name='sim_si', x='d_spacing')
 
 # %% [markdown]
 # As you can see, the calculated diffraction pattern now matches the
@@ -780,12 +789,12 @@ project_2.experiments.add_from_data_path(
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.plotter.plot_meas(expt_name='sim_lbco')
+project_2.display.plotter.plot_meas(expt_name='sim_lbco')
 
 project_2.experiments['sim_lbco'].excluded_regions.create(id='1', start=0, end=55000)
 project_2.experiments['sim_lbco'].excluded_regions.create(id='2', start=105500, end=200000)
 
-project_2.plotter.plot_meas(expt_name='sim_lbco')
+project_2.display.plotter.plot_meas(expt_name='sim_lbco')
 
 # %% [markdown]
 # #### Exercise 2.2: Set Instrument Parameters
@@ -804,10 +813,10 @@ project_2.plotter.plot_meas(expt_name='sim_lbco')
 
 # %% tags=["solution", "hide-input"]
 project_2.experiments['sim_lbco'].instrument.setup_twotheta_bank = ed.extract_metadata(
-    lbco_xye_path, r'two_theta\s*=\s*([-+]?\d*\.?\d+(?:[eE][-+]?\d+)?)'
+    lbco_xye_path, r'two_theta\s*=\s*(\d*\.?\d+)'
 )
 project_2.experiments['sim_lbco'].instrument.calib_d_to_tof_linear = ed.extract_metadata(
-    lbco_xye_path, r'DIFC\s*=\s*([-+]?\d*\.?\d+(?:[eE][-+]?\d+)?)'
+    lbco_xye_path, r'DIFC\s*=\s*(\d*\.?\d+)'
 )
 
 # %% [markdown]
@@ -829,9 +838,10 @@ project_2.experiments['sim_lbco'].instrument.calib_d_to_tof_linear = ed.extract_
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-# # Create a reference to the peak profile parameters from the Si
+# Create a reference to the peak profile parameters from the Si...
 sim_si_peak = project_1.experiments['sim_si'].peak
-project_2.experiments['sim_lbco'].peak_profile_type = 'jorgensen'
+
+# ...and use their values to set the initial parameters for the LBCO
 project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_0 = sim_si_peak.broad_gauss_sigma_0.value
 project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_1 = sim_si_peak.broad_gauss_sigma_1.value
 project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_2 = sim_si_peak.broad_gauss_sigma_2.value
@@ -859,7 +869,6 @@ project_2.experiments['sim_lbco'].peak.exp_rise_alpha_1 = sim_si_peak.exp_rise_a
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.experiments['sim_lbco'].background_type = 'line-segment'
 project_2.experiments['sim_lbco'].background.create(id='1', x=50000, y=0.2)
 project_2.experiments['sim_lbco'].background.create(id='2', x=60000, y=0.2)
 project_2.experiments['sim_lbco'].background.create(id='3', x=70000, y=0.2)
@@ -1106,7 +1115,7 @@ for line_segment in project_2.experiments['sim_lbco'].background:
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.plotter.plot_meas_vs_calc(expt_name='sim_lbco')
+project_2.display.plotter.plot_meas_vs_calc(expt_name='sim_lbco')
 
 project_2.analysis.fit()
 project_2.analysis.display.fit_results()
@@ -1135,7 +1144,7 @@ project_2.analysis.display.fit_results()
 # **Solution:**
 
 # %% [markdown] tags=["dmsc-school-hint"]
-
+#
 # 1. ❌ The conversion parameters from TOF to d-spacing were set based
 # on the data reduction step. While they are specific to each dataset
 # and thus differ from those used for the Si data, the full reduction
@@ -1151,7 +1160,7 @@ project_2.analysis.display.fit_results()
 # peak positions.
 
 # %% tags=["solution", "hide-input"]
-project_2.plotter.plot_meas_vs_calc(expt_name='sim_lbco')
+project_2.display.plotter.plot_meas_vs_calc(expt_name='sim_lbco')
 
 # %% [markdown]
 # #### Exercise 5.4: Refine the LBCO Lattice Parameter
@@ -1180,7 +1189,7 @@ project_2.structures['lbco'].cell.length_a.free = True
 project_2.analysis.fit()
 project_2.analysis.display.fit_results()
 
-project_2.plotter.plot_meas_vs_calc(expt_name='sim_lbco')
+project_2.display.plotter.plot_meas_vs_calc(expt_name='sim_lbco')
 
 # %% [markdown]
 # One of the main goals of this study was to refine the lattice
@@ -1207,7 +1216,7 @@ project_2.plotter.plot_meas_vs_calc(expt_name='sim_lbco')
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.plotter.plot_meas_vs_calc(expt_name='sim_lbco', x='d_spacing')
+project_2.display.plotter.plot_meas_vs_calc(expt_name='sim_lbco', x='d_spacing')
 
 # %% [markdown]
 # #### Exercise 5.6: Refine the Peak Profile Parameters
@@ -1224,7 +1233,9 @@ project_2.plotter.plot_meas_vs_calc(expt_name='sim_lbco', x='d_spacing')
 # perfectly describe the peak at about 1.38 Å, as can be seen below:
 
 # %%
-project_2.plotter.plot_meas_vs_calc(expt_name='sim_lbco', x='d_spacing', x_min=1.35, x_max=1.40)
+project_2.display.plotter.plot_meas_vs_calc(
+    expt_name='sim_lbco', x='d_spacing', x_min=1.35, x_max=1.40
+)
 
 # %% [markdown]
 # The peak profile parameters are determined based on both the
@@ -1259,7 +1270,9 @@ project_2.experiments['sim_lbco'].peak.exp_rise_alpha_1.free = True
 project_2.analysis.fit()
 project_2.analysis.display.fit_results()
 
-project_2.plotter.plot_meas_vs_calc(expt_name='sim_lbco', x='d_spacing', x_min=1.35, x_max=1.40)
+project_2.display.plotter.plot_meas_vs_calc(
+    expt_name='sim_lbco', x='d_spacing', x_min=1.35, x_max=1.40
+)
 
 # %% [markdown]
 # #### Exercise 5.7: Find Undefined Features
@@ -1282,7 +1295,9 @@ project_2.plotter.plot_meas_vs_calc(expt_name='sim_lbco', x='d_spacing', x_min=1
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.plotter.plot_meas_vs_calc(expt_name='sim_lbco', x='d_spacing', x_min=1.53, x_max=1.7)
+project_2.display.plotter.plot_meas_vs_calc(
+    expt_name='sim_lbco', x='d_spacing', x_min=1.53, x_max=1.7
+)
 
 # %% [markdown]
 # #### Exercise 5.8: Identify the Cause of the Unexplained Peaks
@@ -1347,8 +1362,10 @@ project_2.plotter.plot_meas_vs_calc(expt_name='sim_lbco', x='d_spacing', x_min=1
 # confirm this hypothesis.
 
 # %% tags=["solution", "hide-input"]
-project_1.plotter.plot_meas_vs_calc(expt_name='sim_si', x='d_spacing', x_min=1, x_max=1.7)
-project_2.plotter.plot_meas_vs_calc(expt_name='sim_lbco', x='d_spacing', x_min=1, x_max=1.7)
+project_1.display.plotter.plot_meas_vs_calc(expt_name='sim_si', x='d_spacing', x_min=1, x_max=1.7)
+project_2.display.plotter.plot_meas_vs_calc(
+    expt_name='sim_lbco', x='d_spacing', x_min=1, x_max=1.7
+)
 
 # %% [markdown]
 # #### Exercise 5.10: Create a Second Structure – Si as Impurity
@@ -1415,7 +1432,7 @@ project_2.experiments['sim_lbco'].linked_phases.create(id='si', scale=1.0)
 # Before optimizing the parameters, we can visualize the measured
 # diffraction pattern and the calculated diffraction pattern based on
 # the two phases: LBCO and Si.
-project_2.plotter.plot_meas_vs_calc(expt_name='sim_lbco')
+project_2.display.plotter.plot_meas_vs_calc(expt_name='sim_lbco')
 
 # As you can see, the calculated pattern is now the sum of both phases,
 # and Si peaks are visible in the calculated pattern. However, their
@@ -1431,8 +1448,8 @@ project_2.analysis.display.fit_results()
 # diffraction pattern both for the full range and for a zoomed-in region
 # around the previously unexplained peak near 95,000 μs. The calculated
 # pattern will be the sum of the two phases.
-project_2.plotter.plot_meas_vs_calc(expt_name='sim_lbco')
-project_2.plotter.plot_meas_vs_calc(expt_name='sim_lbco', x_min=88000, x_max=101000)
+project_2.display.plotter.plot_meas_vs_calc(expt_name='sim_lbco')
+project_2.display.plotter.plot_meas_vs_calc(expt_name='sim_lbco', x_min=88000, x_max=101000)
 
 # %% [markdown]
 # All previously unexplained peaks are now accounted for in the pattern,

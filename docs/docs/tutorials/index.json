@@ -124,5 +124,12 @@
     "title": "Quick Start: LBCO Load Project",
     "description": "Most minimal example: load a saved project from a directory and run Rietveld refinement of La0.5Ba0.5CoO3",
     "level": "quick"
+  },
+  "20": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-20/ed-20.ipynb",
+    "original_name": "",
+    "title": "Instrument calibration: BEER at ESS",
+    "description": "Instrument calibration of BEER at ESS using neutron powder diffraction data simulated with McStas",
+    "level": "intermediate"
   }
 }

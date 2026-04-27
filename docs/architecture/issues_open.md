@@ -14,7 +14,7 @@ needed.
 
 **Type:** Fragility
 
-`joint_fit_experiments` is created once when `fit_mode` becomes
+`joint_fit_experiments` is created once when `fit.mode` becomes
 `'joint'`. If experiments are added, removed, or renamed afterwards, the
 weight collection is stale. Joint fitting can fail with missing keys or
 run with incorrect weights.
@@ -177,25 +177,6 @@ instead of letting invalid floating-point values propagate into the
 minimiser.
 
 **Depends on:** related to issue 3, but independent.
-
----
-
-## 16. 🟡 Persist Per-Experiment `calculator_type`
-
-**Type:** Completeness
-
-The current architecture moved calculator selection to the experiment
-level via `calculator_type`, but this selection is not written to CIF
-during `save()` / `show_as_cif()`. Reloading or exporting a project
-therefore loses explicit calculator choices and falls back to
-auto-resolution.
-
-**Fix:** serialise `calculator_type` as part of the experiment or
-analysis state, and make sure `load()` restores it. The saved project
-should represent the exact active calculator configuration, not just a
-re-derivable default.
-
-**Depends on:** nothing.
 
 ---
 
@@ -1191,9 +1172,9 @@ check. Options:
 
 **Type:** API completeness
 
-`show_supported_calculator_types()` exists per-experiment, but there is
-no project/analysis-level method to list all available calculator
-engines. Users exploring the API have no single entry point to see what
+`show_calculator_types()` exists per-experiment, but there is no
+project/analysis-level method to list all available calculator engines.
+Users exploring the API have no single entry point to see what
 calculators are installed.
 
 **Depends on:** nothing.
@@ -1206,8 +1187,8 @@ calculators are installed.
 
 The switchable-category naming convention prescribes `<category>_type`
 (getter/setter) and `show_supported_<category>_types()`. But some names
-deviate: e.g. `show_supported_minimizers()` instead of
-`show_supported_minimizer_types()`, and `current_minimizer` instead of
+deviate: e.g. `show_minimizer_types()` instead of
+`show_supported_minimizer_types()`, and `minimizer_type` instead of
 `minimizer_type`. Audit and align all switchable-category APIs.
 
 **Depends on:** nothing.
@@ -1446,7 +1427,6 @@ operation is possible (e.g. in automated pipelines or tests).
 | 13  | Suppress redundant dirty-flag sets               | 🟢 Low   | Performance      |
 | 14  | Finer-grained change tracking                    | 🟢 Low   | Performance      |
 | 15  | Validate joint-fit weights                       | 🟡 Med   | Correctness      |
-| 16  | Persist per-experiment `calculator_type`         | 🟡 Med   | Completeness     |
 | 17  | Use PDF-specific CIF names                       | 🟢 Low   | Naming           |
 | 18  | Move CIF v2→v1 conversion out of calculator      | 🟢 Low   | Maintainability  |
 | 19  | Debug-mode logging for calculator imports        | 🟢 Low   | Diagnostics      |

@@ -79,10 +79,10 @@ The example below illustrates a typical **project structure** for a
 ├── 📁 structures  - Folder with structures (crystallographic structures).
 │   ├── 📄 <span class="orange"><b>lbco.cif</b></span>   - File with La0.5Ba0.5CoO3 structure parameters.
 │   └── ...
-├── 📁 experiments    - Folder with instrumental parameters and measured data.
-│   ├── 📄 <span class="orange"><b>hrpt.cif</b></span>   - Instrumental parameters and measured data from HRPT@PSI.
+├── 📁 experiments    - Folder with experiment settings and measured data.
+│   ├── 📄 <span class="orange"><b>hrpt.cif</b></span>   - Instrumental parameters, calculator selection and measured data from HRPT@PSI.
 │   └── ...
-├── 📄 <span class="orange"><b>analysis.cif</b></span>   - Settings for data analysis (calculator, minimizer, etc.).
+├── 📄 <span class="orange"><b>analysis.cif</b></span>   - Settings for data analysis (minimizer, fit mode, etc.).
 └── 📁 summary
     └── 📄 report.cif - Summary report after structure refinement.
 </pre>
@@ -104,8 +104,7 @@ directory, showing the contents of all files in the project.
 
 ### 1. <span class="orange">project.cif</span>
 
-This file provides an overview of the project, including file names of
-the **structures** and **experiments** associated with the project.
+This file stores project-level metadata and display configuration.
 
 <!-- prettier-ignore-start -->
 
@@ -116,13 +115,8 @@ data_<span class="red"><b>La0.5Ba0.5CoO3</b></span>
 <span class="blue"><b>_project</b>.title</span>       "La0.5Ba0.5CoO3 from neutron diffraction at HRPT@PSI"
 <span class="blue"><b>_project</b>.description</span> "neutrons, powder, constant wavelength, HRPT@PSI"
 
-loop_
-<span class="green"><b>_structure</b>.cif_file_name</span>
-lbco.cif
-
-loop_
-<span class="green"><b>_experiment</b>.cif_file_name</span>
-hrpt.cif
+<span class="blue"><b>_display</b>.plotter_type</span>  asciichartpy
+<span class="blue"><b>_display</b>.tabler_type</span>   rich
 </pre>
 </div>
 
@@ -171,9 +165,9 @@ O  O    0   0.5 0.5   c   1    Biso 1.4041
 
 ### 3. experiments / <span class="orange">hrpt.cif</span>
 
-This file contains the **experiment type**, **instrumental parameters**,
-**peak parameters**, **associated phases**, **background parameters**
-and **measured diffraction data**.
+This file contains the **experiment type**, **calculation engine**,
+**instrumental parameters**, **peak parameters**, **associated phases**,
+**background parameters** and **measured diffraction data**.
 
 <!-- prettier-ignore-start -->
 
@@ -185,6 +179,8 @@ data_<span class="red"><b>hrpt</b></span>
 <span class="blue"><b>_expt_type</b>.radiation_probe</span>  neutron
 <span class="blue"><b>_expt_type</b>.sample_form</span>      powder
 <span class="blue"><b>_expt_type</b>.scattering_type</span>  bragg
+
+<span class="blue"><b>_calculation</b>.calculator_type</span> cryspy
 
 <span class="blue"><b>_instr</b>.wavelength</span>    1.494
 <span class="blue"><b>_instr</b>.2theta_offset</span> 0.6225(4)
@@ -247,9 +243,8 @@ of **calculation** and **fitting** engines, as well as user defined
 
 <div class="cif">
 <pre>
-<span class="blue"><b>_analysis</b>.calculator_engine</span>  cryspy
-<span class="blue"><b>_analysis</b>.fitting_engine</span>     "lmfit (leastsq)"
-<span class="blue"><b>_analysis</b>.fit_mode</span>           single
+<span class="blue"><b>_fit</b>.minimizer_type</span>          "lmfit (leastsq)"
+<span class="blue"><b>_fit</b>.mode</span>                    single
 
 loop_
 <span class="green"><b>_alias</b>.label</span>

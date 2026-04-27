@@ -7,20 +7,26 @@ import pytest
 def test_peak_factory_default_and_combinations_and_errors():
     from easydiffraction.datablocks.experiment.categories.peak.factory import PeakFactory
     from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+    from easydiffraction.datablocks.experiment.item.enums import PeakProfileTypeEnum
     from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 
-    # Explicit valid combos by tag
-    p = PeakFactory.create('pseudo-voigt')
+    supported_tags = PeakFactory.supported_tags()
+    assert len(supported_tags) == len(set(supported_tags))
+
+    # Explicit valid combos by canonical tag
+    p = PeakFactory.create(PeakProfileTypeEnum.CWL_PSEUDO_VOIGT)
     assert p._identity.category_code == 'peak'
 
-    # Explicit valid combos by tag
-    p1 = PeakFactory.create('pseudo-voigt')
+    p1 = PeakFactory.create(PeakProfileTypeEnum.CWL_PSEUDO_VOIGT)
     assert p1.__class__.__name__ == 'CwlPseudoVoigt'
 
-    p2 = PeakFactory.create('jorgensen')
+    p_tof = PeakFactory.create(PeakProfileTypeEnum.TOF_PSEUDO_VOIGT)
+    assert p_tof.__class__.__name__ == 'TofPseudoVoigt'
+
+    p2 = PeakFactory.create(PeakProfileTypeEnum.TOF_JORGENSEN)
     assert p2.__class__.__name__ == 'TofJorgensen'
 
-    p3 = PeakFactory.create('gaussian-damped-sinc')
+    p3 = PeakFactory.create(PeakProfileTypeEnum.TOTAL_GAUSSIAN_DAMPED_SINC)
     assert p3.__class__.__name__ == 'TotalGaussianDampedSinc'
 
     # Context-dependent defaults
@@ -28,18 +34,32 @@ def test_peak_factory_default_and_combinations_and_errors():
         scattering_type=ScatteringTypeEnum.BRAGG,
         beam_mode=BeamModeEnum.CONSTANT_WAVELENGTH,
     )
-    assert tag_bragg_cwl == 'pseudo-voigt'
+    assert tag_bragg_cwl is PeakProfileTypeEnum.CWL_PSEUDO_VOIGT
 
     tag_bragg_tof = PeakFactory.default_tag(
         scattering_type=ScatteringTypeEnum.BRAGG,
         beam_mode=BeamModeEnum.TIME_OF_FLIGHT,
     )
-    assert tag_bragg_tof == 'jorgensen'
+    assert tag_bragg_tof is PeakProfileTypeEnum.TOF_JORGENSEN
 
     tag_total = PeakFactory.default_tag(
         scattering_type=ScatteringTypeEnum.TOTAL,
     )
-    assert tag_total == 'gaussian-damped-sinc'
+    assert tag_total is PeakProfileTypeEnum.TOTAL_GAUSSIAN_DAMPED_SINC
+
+    cwl_alias = PeakFactory._canonical_tag_for(
+        'pseudo-voigt',
+        scattering_type=ScatteringTypeEnum.BRAGG,
+        beam_mode=BeamModeEnum.CONSTANT_WAVELENGTH,
+    )
+    assert cwl_alias == PeakProfileTypeEnum.CWL_PSEUDO_VOIGT
+
+    tof_alias = PeakFactory._canonical_tag_for(
+        'pseudo-voigt',
+        scattering_type=ScatteringTypeEnum.BRAGG,
+        beam_mode=BeamModeEnum.TIME_OF_FLIGHT,
+    )
+    assert tof_alias == PeakProfileTypeEnum.TOF_PSEUDO_VOIGT
 
     # supported_for filtering
     cwl_profiles = PeakFactory.supported_for(
@@ -48,6 +68,18 @@ def test_peak_factory_default_and_combinations_and_errors():
     )
     assert len(cwl_profiles) == 3
     assert all(k.type_info.tag for k in cwl_profiles)
+    assert [k.__name__ for k in cwl_profiles] == [
+        'CwlPseudoVoigt',
+        'CwlPseudoVoigtEmpiricalAsymmetry',
+        'CwlThompsonCoxHastings',
+    ]
+
+    # Local aliases are context-dependent and not accepted by bare create().
+    with pytest.raises(
+        ValueError,
+        match=r"Unsupported type: 'pseudo-voigt'\. Supported: .*",
+    ):
+        PeakFactory.create('pseudo-voigt')
 
     # Invalid tag
     with pytest.raises(

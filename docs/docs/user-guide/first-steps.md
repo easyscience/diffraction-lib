@@ -95,11 +95,11 @@ different categories.
 ### Supported calculators
 
 The calculator is automatically selected based on the experiment type.
-You can use the `show_supported_calculator_types()` method on an
-experiment to see which calculation engines are compatible:
+You can use the experiment `calculation` category to see which
+calculation engines are compatible:
 
 ```python
-project.experiments['hrpt'].show_supported_calculator_types()
+project.experiments['hrpt'].calculation.show_calculator_types()
 ```
 
 This will display a list of supported calculators along with their
@@ -114,10 +114,10 @@ An example of the output for a Bragg diffraction experiment:
 ### Supported minimizers
 
 You can also check the available minimizers using the
-`show_available_minimizers()` method:
+`show_minimizer_types()` method:
 
 ```python
-project.show_available_minimizers()
+project.analysis.fit.show_minimizer_types()
 ```
 
 ### Available parameters
@@ -156,12 +156,11 @@ An example of the output for the
 
 ### Supported plotters
 
-To see the available plotters, you can use the
-`show_available_plotters()` method on the `plotter` attribute of the
+To see the available plotters, you can use the `display` category on the
 `Project` instance:
 
 ```python
-project.plotter.show_supported_engines()
+project.display.show_plotter_types()
 ```
 
 An example of the output is:

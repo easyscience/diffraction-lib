@@ -82,9 +82,6 @@ The tutorials are organized into the following categories:
 
 - [PbSO4 NPD+XRD](ed-4.ipynb) – Joint fit of PbSO4 using X-ray and
   neutron constant wavelength powder diffraction data.
-- [LBCO+Si McStas](ed-9.ipynb) – Multi-phase Rietveld refinement of
-  La0.5Ba0.5CoO3 with Si impurity using time-of-flight neutron data
-  simulated with McStas.
 - [Si Bragg+PDF](ed-16.ipynb) – Joint refinement of Si combining Bragg
   diffraction (SEPD) and pair distribution function (NOMAD) analysis. A
   single shared structure is refined simultaneously against both
@@ -92,6 +89,14 @@ The tutorials are organized into the following categories:
 - [Co2SiO4 Temperature scan](ed-17.ipynb) – Sequential Rietveld
   refinement of Co2SiO4 using constant wavelength neutron powder
   diffraction data from D20 at ILL across a temperature scan.
+
+## Simulated Data
+
+- [LBCO+Si McStas](ed-9.ipynb) – Multi-phase Rietveld refinement of
+  La0.5Ba0.5CoO3 with Si impurity using time-of-flight neutron data
+  simulated with McStas.
+- [BEER McStas](ed-20.ipynb) – Rietveld refinement based on the data
+  simulated with McStas for the BEER instrument at ESS.
 
 ## Workshops & Schools
 

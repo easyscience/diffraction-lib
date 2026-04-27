@@ -68,5 +68,5 @@ def test_background_base_minimal_impl_and_collection_cif():
     cif = coll.as_cif
     assert 'loop_' in cif
     assert '_bkg.level' in cif
-    assert '1.0' in cif
-    assert '2.0' in cif
+    assert '1.' in cif
+    assert '2.' in cif

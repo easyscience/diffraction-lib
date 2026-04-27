@@ -87,7 +87,11 @@ class _Expt:
             },
         )
         self.type = typ()
-        self.calculator_type = 'cryspy'
+        self.calculation = type(
+            'Calculation',
+            (),
+            {'calculator_type': _Val('cryspy')},
+        )()
         self.instrument = _Instr()
         self.peak_profile_type = 'pseudo-Voigt'
         self.peak = _Peak()
@@ -108,7 +112,10 @@ class _StubProject:
         self.experiments = {'exp1': _Expt()}
 
         class A:
-            current_minimizer = 'lmfit'
+            class Fit:
+                minimizer_type = _Val('lmfit')
+
+            fit = Fit()
 
             class R:
                 reduced_chi_square = 1.23
