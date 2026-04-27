@@ -36,7 +36,7 @@ class SampleFormEnum(StrEnum):
             return 'Powdered or polycrystalline sample.'
         if self is SampleFormEnum.SINGLE_CRYSTAL:
             return 'Single crystal sample.'
-        return None
+        return ''
 
 
 class ScatteringTypeEnum(StrEnum):
@@ -70,7 +70,7 @@ class ScatteringTypeEnum(StrEnum):
             return 'Bragg diffraction for conventional structure refinement.'
         if self is ScatteringTypeEnum.TOTAL:
             return 'Total scattering for pair distribution function analysis (PDF).'
-        return None
+        return ''
 
 
 class RadiationProbeEnum(StrEnum):

@@ -58,3 +58,23 @@ def test_tof_pseudo_voigt_cif_section_uses_non_convoluted_peak_shape():
     assert '_tof_profile_gamma2 6.0' in cif_text
     assert '_tof_profile_alpha0' not in cif_text
     assert '_tof_profile_beta0' not in cif_text
+
+
+def test_update_structure_zeroes_biso_for_anisotropic_atoms():
+    from easydiffraction.analysis.calculators.cryspy import CryspyCalculator
+    from easydiffraction.datablocks.structure.item.base import Structure
+
+    structure = Structure(name='test')
+    structure.atom_sites.create(label='Si', type_symbol='Si', adp_type='Biso', adp_iso=0.5)
+    structure.atom_sites['Si'].adp_type = 'Bani'
+
+    cryspy_model_dict = {
+        'unit_cell_parameters': [0.0] * 6,
+        'atom_fract_xyz': [[0.0], [0.0], [0.0]],
+        'atom_occupancy': [0.0],
+        'atom_b_iso': [123.0],
+    }
+
+    CryspyCalculator._update_structure_in_cryspy_dict(cryspy_model_dict, structure)
+
+    assert cryspy_model_dict['atom_b_iso'][0] == 0.0
