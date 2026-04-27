@@ -82,6 +82,9 @@ def test_update_structure_zeroes_biso_for_anisotropic_atoms():
 
 def test_update_structure_restores_wyckoff_multiplicity_after_coordinate_wrapping():
     import numpy as np
+    import pytest
+
+    pytest.importorskip('cryspy')
 
     from easydiffraction.analysis.calculators.cryspy import CryspyCalculator
     from easydiffraction.datablocks.structure.item.base import Structure

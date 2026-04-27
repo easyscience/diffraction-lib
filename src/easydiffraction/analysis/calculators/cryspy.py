@@ -356,6 +356,9 @@ class CryspyCalculator(CalculatorBase):
         Wyckoff letter, so keep the calculator dictionary aligned with
         that model state.
         """
+        if cryspy is None:
+            return
+
         from cryspy.A_functions_base.function_2_space_group import (  # noqa: PLC0415
             get_it_number_by_name_hm_short,
         )
