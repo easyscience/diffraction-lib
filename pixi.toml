@@ -59,8 +59,8 @@ pixi-kernel = '*' # Pixi Jupyter kernel
 gsl = '*'         # GNU Scientific Library; required for diffpy.pdffit2
 
 [pypi-dependencies] # == [feature.default.pypi-dependencies]
-#pip = '*' # Native package installer
-pycrysfml = { version = ">=0.2.1", index = "https://easyscience.github.io/pypi/" }
+pip = '*' # Native package installer
+pycrysfml = { version = ">=0.4.0", index = "https://easyscience.github.io/pypi/" }
 easydiffraction = { path = '.', editable = true, extras = ['dev'] }
 
 # Specific features: Set specific Python versions

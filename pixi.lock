@@ -221,7 +221,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/a0/61/5c78b91c3143ed5c14207f463aecfc8f9dbb5092fb2869baf37c273b2705/gitdb-4.0.12-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f2/c5/a1bc0996af85757903cf2bf444a7824e68e0035ce63fb41d6f76f9def68b/gitpython-3.1.47-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/91/4c/e0ce1ef95d4000ebc1c11801f9b944fa5910ecc15b5e351865763d8657f8/graphviz-0.21-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/07/49/d4cad6e5381a50947bb973d2f6cf6592621451b09368b8c20d9b8af49c5b/greenlet-3.4.0-cp314-cp314-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/a3/59/1bd6d7428d6ed9106efbb8c52310c60fd04f6672490f452aeaa3829aa436/greenlet-3.5.0-cp314-cp314-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/11/8c/c9138d881c79aa0ea9ed83cbd58d5ca75624378b38cee225dcf5c42cc91f/griffelib-2.0.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f1/16/d905e7f53e661ce2c24686c38048d8e2b750ffc4350009d41c4e6c6c9826/h5py-3.16.0-cp314-cp314-manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/94/84/d9273cd09688070a6523c4aee4663a8538721b2b755c4962aafae0011e72/identify-2.6.19-py2.py3-none-any.whl
@@ -276,6 +276,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/71/e7/40fb618334dcdf7c5a316c0e7343c5cd82d3d866edc100d98e29bc945ecd/partd-1.4.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f1/d9/7fb5aa316bc299258e68c73ba3bddbc499654a07f151cba08f6153988714/pathspec-1.1.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/11/8d/d2532ad2a603ca2b93ad9f5135732124e57811d0168155852f37fbce2458/pillow-12.2.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/70/7a/be4bd8bcbb24ea475856dd68159d78b03b2bb53dae369f69c9606b8888f5/pip-26.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e4/bc/daa30c02069eeac5b9198985ba42f5d65ca71bed6705b18329e51d352b7c/plopp-26.4.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/90/ad/cba91b3bcf04073e4d1655a5c1710ef3f457f56f7d1b79dcc3d72f4dd912/plotly-6.7.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/54/20/4d324d65cc6d9205fabedc306948156824eb9f0ee1633355a8f7ec5c66bf/pluggy-1.6.0-py3-none-any.whl
@@ -291,7 +292,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/58/e0/f1871f520c359e4e3a2eb7437c9e7e792bb6c356414e8617937561167caf/pycifrw-5.0.1.tar.gz
       - pypi: https://files.pythonhosted.org/packages/78/3c/2a612b95ddbb9a6bdcb47b7a93c4884f74c6ff22356b2f7b213b16e65c35/pycifstar-0.3.0.tar.gz
       - pypi: https://files.pythonhosted.org/packages/d7/27/a58ddaf8c588a3ef080db9d0b7e0b97215cee3a45df74f3a94dbbf5c893a/pycodestyle-2.14.0-py2.py3-none-any.whl
-      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.1/pycrysfml-0.2.1-py314-none-linux_x86_64.whl
+      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.4.0/pycrysfml-0.4.0-py314-none-linux_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/f3/0a/fd7d723f8f8153418fb40cf9c940e82004fce7e987026b08a68a36dd3fe7/pydantic-2.13.3-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/fd/86/ef96a4c6e79e7a2d0410826a68fbc0eccc0fd44aa733be199d5fcac3bb87/pydantic_core-2.46.3-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/87/6f/cc2b231dc78d8c3aaa674a676db190b8f8071c50134af8f8cf39b9b8e8df/pydoclint-0.8.3-py3-none-any.whl
@@ -610,6 +611,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/71/e7/40fb618334dcdf7c5a316c0e7343c5cd82d3d866edc100d98e29bc945ecd/partd-1.4.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f1/d9/7fb5aa316bc299258e68c73ba3bddbc499654a07f151cba08f6153988714/pathspec-1.1.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ba/8c/1a9e46228571de18f8e28f16fabdfc20212a5d019f3e3303452b3f0a580d/pillow-12.2.0-cp314-cp314-macosx_11_0_arm64.whl
+      - pypi: https://files.pythonhosted.org/packages/70/7a/be4bd8bcbb24ea475856dd68159d78b03b2bb53dae369f69c9606b8888f5/pip-26.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e4/bc/daa30c02069eeac5b9198985ba42f5d65ca71bed6705b18329e51d352b7c/plopp-26.4.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/90/ad/cba91b3bcf04073e4d1655a5c1710ef3f457f56f7d1b79dcc3d72f4dd912/plotly-6.7.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/54/20/4d324d65cc6d9205fabedc306948156824eb9f0ee1633355a8f7ec5c66bf/pluggy-1.6.0-py3-none-any.whl
@@ -625,7 +627,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/58/e0/f1871f520c359e4e3a2eb7437c9e7e792bb6c356414e8617937561167caf/pycifrw-5.0.1.tar.gz
       - pypi: https://files.pythonhosted.org/packages/78/3c/2a612b95ddbb9a6bdcb47b7a93c4884f74c6ff22356b2f7b213b16e65c35/pycifstar-0.3.0.tar.gz
       - pypi: https://files.pythonhosted.org/packages/d7/27/a58ddaf8c588a3ef080db9d0b7e0b97215cee3a45df74f3a94dbbf5c893a/pycodestyle-2.14.0-py2.py3-none-any.whl
-      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.1/pycrysfml-0.2.1-py314-none-macosx_14_0_arm64.whl
+      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.4.0/pycrysfml-0.4.0-py314-none-macosx_14_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/f3/0a/fd7d723f8f8153418fb40cf9c940e82004fce7e987026b08a68a36dd3fe7/pydantic-2.13.3-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/24/35/e4066358a22e3e99519db370494c7528f5a2aa1367370e80e27e20283543/pydantic_core-2.46.3-cp314-cp314-macosx_11_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/87/6f/cc2b231dc78d8c3aaa674a676db190b8f8071c50134af8f8cf39b9b8e8df/pydoclint-0.8.3-py3-none-any.whl
@@ -883,7 +885,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/a0/61/5c78b91c3143ed5c14207f463aecfc8f9dbb5092fb2869baf37c273b2705/gitdb-4.0.12-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f2/c5/a1bc0996af85757903cf2bf444a7824e68e0035ce63fb41d6f76f9def68b/gitpython-3.1.47-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/91/4c/e0ce1ef95d4000ebc1c11801f9b944fa5910ecc15b5e351865763d8657f8/graphviz-0.21-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/63/45/c1ca4a1ad975de4727e52d3ffe641ae23e1d7a8ffaa8ff7a0477e1827b92/greenlet-3.4.0-cp314-cp314-win_amd64.whl
+      - pypi: https://files.pythonhosted.org/packages/91/20/6b165108058767ee643c55c5c4904d591a830ee2b3c7dbd359828fbc829f/greenlet-3.5.0-cp314-cp314-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/11/8c/c9138d881c79aa0ea9ed83cbd58d5ca75624378b38cee225dcf5c42cc91f/griffelib-2.0.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3e/14/615a450205e1b56d16c6783f5ccd116cde05550faad70ae077c955654a75/h5py-3.16.0-cp314-cp314-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/94/84/d9273cd09688070a6523c4aee4663a8538721b2b755c4962aafae0011e72/identify-2.6.19-py2.py3-none-any.whl
@@ -938,6 +940,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/71/e7/40fb618334dcdf7c5a316c0e7343c5cd82d3d866edc100d98e29bc945ecd/partd-1.4.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f1/d9/7fb5aa316bc299258e68c73ba3bddbc499654a07f151cba08f6153988714/pathspec-1.1.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/cd/8b/601e6566b957ca50e28725cb6c355c59c2c8609751efbecd980db44e0349/pillow-12.2.0-cp314-cp314-win_amd64.whl
+      - pypi: https://files.pythonhosted.org/packages/70/7a/be4bd8bcbb24ea475856dd68159d78b03b2bb53dae369f69c9606b8888f5/pip-26.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e4/bc/daa30c02069eeac5b9198985ba42f5d65ca71bed6705b18329e51d352b7c/plopp-26.4.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/90/ad/cba91b3bcf04073e4d1655a5c1710ef3f457f56f7d1b79dcc3d72f4dd912/plotly-6.7.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/54/20/4d324d65cc6d9205fabedc306948156824eb9f0ee1633355a8f7ec5c66bf/pluggy-1.6.0-py3-none-any.whl
@@ -953,7 +956,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/58/e0/f1871f520c359e4e3a2eb7437c9e7e792bb6c356414e8617937561167caf/pycifrw-5.0.1.tar.gz
       - pypi: https://files.pythonhosted.org/packages/78/3c/2a612b95ddbb9a6bdcb47b7a93c4884f74c6ff22356b2f7b213b16e65c35/pycifstar-0.3.0.tar.gz
       - pypi: https://files.pythonhosted.org/packages/d7/27/a58ddaf8c588a3ef080db9d0b7e0b97215cee3a45df74f3a94dbbf5c893a/pycodestyle-2.14.0-py2.py3-none-any.whl
-      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.1/pycrysfml-0.2.1-py314-none-win_amd64.whl
+      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.4.0/pycrysfml-0.4.0-py314-none-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/f3/0a/fd7d723f8f8153418fb40cf9c940e82004fce7e987026b08a68a36dd3fe7/pydantic-2.13.3-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/20/eb/59980e5f1ae54a3b86372bd9f0fa373ea2d402e8cdcd3459334430f91e91/pydantic_core-2.46.3-cp314-cp314-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/87/6f/cc2b231dc78d8c3aaa674a676db190b8f8071c50134af8f8cf39b9b8e8df/pydoclint-0.8.3-py3-none-any.whl
@@ -1228,7 +1231,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/a0/61/5c78b91c3143ed5c14207f463aecfc8f9dbb5092fb2869baf37c273b2705/gitdb-4.0.12-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f2/c5/a1bc0996af85757903cf2bf444a7824e68e0035ce63fb41d6f76f9def68b/gitpython-3.1.47-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/91/4c/e0ce1ef95d4000ebc1c11801f9b944fa5910ecc15b5e351865763d8657f8/graphviz-0.21-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/36/f7/229f3aed6948faa20e0616a0b8568da22e365ede6a54d7d369058b128afd/greenlet-3.4.0-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/2b/e0/2e13df68f367e2f9960616927d60857dd7e56aaadd59a47c644216b2f920/greenlet-3.5.0-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/11/8c/c9138d881c79aa0ea9ed83cbd58d5ca75624378b38cee225dcf5c42cc91f/griffelib-2.0.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/9e/e9/1a19e42cd43cc1365e127db6aae85e1c671da1d9a5d746f4d34a50edb577/h5py-3.16.0-cp312-cp312-manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/94/84/d9273cd09688070a6523c4aee4663a8538721b2b755c4962aafae0011e72/identify-2.6.19-py2.py3-none-any.whl
@@ -1283,6 +1286,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/71/e7/40fb618334dcdf7c5a316c0e7343c5cd82d3d866edc100d98e29bc945ecd/partd-1.4.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f1/d9/7fb5aa316bc299258e68c73ba3bddbc499654a07f151cba08f6153988714/pathspec-1.1.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/43/e3/fdc657359e919462369869f1c9f0e973f353f9a9ee295a39b1fea8ee1a77/pillow-12.2.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/70/7a/be4bd8bcbb24ea475856dd68159d78b03b2bb53dae369f69c9606b8888f5/pip-26.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e4/bc/daa30c02069eeac5b9198985ba42f5d65ca71bed6705b18329e51d352b7c/plopp-26.4.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/90/ad/cba91b3bcf04073e4d1655a5c1710ef3f457f56f7d1b79dcc3d72f4dd912/plotly-6.7.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/54/20/4d324d65cc6d9205fabedc306948156824eb9f0ee1633355a8f7ec5c66bf/pluggy-1.6.0-py3-none-any.whl
@@ -1298,7 +1302,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/ae/61/3c1ea8c10bf4f6bf83c33a7f5b4a3143f4cc1f979859dec5498b6cc31900/pycifrw-5.0.1-cp312-cp312-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/78/3c/2a612b95ddbb9a6bdcb47b7a93c4884f74c6ff22356b2f7b213b16e65c35/pycifstar-0.3.0.tar.gz
       - pypi: https://files.pythonhosted.org/packages/d7/27/a58ddaf8c588a3ef080db9d0b7e0b97215cee3a45df74f3a94dbbf5c893a/pycodestyle-2.14.0-py2.py3-none-any.whl
-      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.1/pycrysfml-0.2.1-py312-none-linux_x86_64.whl
+      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.4.0/pycrysfml-0.4.0-py312-none-linux_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/f3/0a/fd7d723f8f8153418fb40cf9c940e82004fce7e987026b08a68a36dd3fe7/pydantic-2.13.3-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/5e/d5/e3d9717c9eba10855325650afd2a9cba8e607321697f18953af9d562da2f/pydantic_core-2.46.3-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/87/6f/cc2b231dc78d8c3aaa674a676db190b8f8071c50134af8f8cf39b9b8e8df/pydoclint-0.8.3-py3-none-any.whl
@@ -1616,6 +1620,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/71/e7/40fb618334dcdf7c5a316c0e7343c5cd82d3d866edc100d98e29bc945ecd/partd-1.4.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f1/d9/7fb5aa316bc299258e68c73ba3bddbc499654a07f151cba08f6153988714/pathspec-1.1.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/d8/95/0a351b9289c2b5cbde0bacd4a83ebc44023e835490a727b2a3bd60ddc0f4/pillow-12.2.0-cp312-cp312-macosx_11_0_arm64.whl
+      - pypi: https://files.pythonhosted.org/packages/70/7a/be4bd8bcbb24ea475856dd68159d78b03b2bb53dae369f69c9606b8888f5/pip-26.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e4/bc/daa30c02069eeac5b9198985ba42f5d65ca71bed6705b18329e51d352b7c/plopp-26.4.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/90/ad/cba91b3bcf04073e4d1655a5c1710ef3f457f56f7d1b79dcc3d72f4dd912/plotly-6.7.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/54/20/4d324d65cc6d9205fabedc306948156824eb9f0ee1633355a8f7ec5c66bf/pluggy-1.6.0-py3-none-any.whl
@@ -1631,7 +1636,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/32/a0/37fb236da6040e337381dd656cafb97d09eacb998c5db3057547f5ffddd9/pycifrw-5.0.1-cp312-cp312-macosx_11_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/78/3c/2a612b95ddbb9a6bdcb47b7a93c4884f74c6ff22356b2f7b213b16e65c35/pycifstar-0.3.0.tar.gz
       - pypi: https://files.pythonhosted.org/packages/d7/27/a58ddaf8c588a3ef080db9d0b7e0b97215cee3a45df74f3a94dbbf5c893a/pycodestyle-2.14.0-py2.py3-none-any.whl
-      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.1/pycrysfml-0.2.1-py312-none-macosx_14_0_arm64.whl
+      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.4.0/pycrysfml-0.4.0-py312-none-macosx_14_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/f3/0a/fd7d723f8f8153418fb40cf9c940e82004fce7e987026b08a68a36dd3fe7/pydantic-2.13.3-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a1/4f/2fb62c2267cae99b815bbf4a7b9283812c88ca3153ef29f7707200f1d4e5/pydantic_core-2.46.3-cp312-cp312-macosx_11_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/87/6f/cc2b231dc78d8c3aaa674a676db190b8f8071c50134af8f8cf39b9b8e8df/pydoclint-0.8.3-py3-none-any.whl
@@ -1888,7 +1893,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/a0/61/5c78b91c3143ed5c14207f463aecfc8f9dbb5092fb2869baf37c273b2705/gitdb-4.0.12-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f2/c5/a1bc0996af85757903cf2bf444a7824e68e0035ce63fb41d6f76f9def68b/gitpython-3.1.47-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/91/4c/e0ce1ef95d4000ebc1c11801f9b944fa5910ecc15b5e351865763d8657f8/graphviz-0.21-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/42/cf/bb2c32d9a100e36ee9f6e38fad6b1e082b8184010cb06259b49e1266ca01/greenlet-3.4.0-cp312-cp312-win_amd64.whl
+      - pypi: https://files.pythonhosted.org/packages/4c/fe/4fb3a0805bd5165da5ebf858da7cc01cce8061674106d2cf5bdab32cbfde/greenlet-3.5.0-cp312-cp312-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/11/8c/c9138d881c79aa0ea9ed83cbd58d5ca75624378b38cee225dcf5c42cc91f/griffelib-2.0.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/03/c1/0976b235cf29ead553e22f2fb6385a8252b533715e00d0ae52ed7b900582/h5py-3.16.0-cp312-cp312-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/94/84/d9273cd09688070a6523c4aee4663a8538721b2b755c4962aafae0011e72/identify-2.6.19-py2.py3-none-any.whl
@@ -1943,6 +1948,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/71/e7/40fb618334dcdf7c5a316c0e7343c5cd82d3d866edc100d98e29bc945ecd/partd-1.4.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f1/d9/7fb5aa316bc299258e68c73ba3bddbc499654a07f151cba08f6153988714/pathspec-1.1.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/5d/7b/25a221d2c761c6a8ae21bfa3874988ff2583e19cf8a27bf2fee358df7942/pillow-12.2.0-cp312-cp312-win_amd64.whl
+      - pypi: https://files.pythonhosted.org/packages/70/7a/be4bd8bcbb24ea475856dd68159d78b03b2bb53dae369f69c9606b8888f5/pip-26.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e4/bc/daa30c02069eeac5b9198985ba42f5d65ca71bed6705b18329e51d352b7c/plopp-26.4.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/90/ad/cba91b3bcf04073e4d1655a5c1710ef3f457f56f7d1b79dcc3d72f4dd912/plotly-6.7.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/54/20/4d324d65cc6d9205fabedc306948156824eb9f0ee1633355a8f7ec5c66bf/pluggy-1.6.0-py3-none-any.whl
@@ -1958,7 +1964,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/28/55/5733807f4af131ea6194309ac0f43eb5b05463c676d036ef948f3143c1f2/pycifrw-5.0.1-cp312-cp312-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/78/3c/2a612b95ddbb9a6bdcb47b7a93c4884f74c6ff22356b2f7b213b16e65c35/pycifstar-0.3.0.tar.gz
       - pypi: https://files.pythonhosted.org/packages/d7/27/a58ddaf8c588a3ef080db9d0b7e0b97215cee3a45df74f3a94dbbf5c893a/pycodestyle-2.14.0-py2.py3-none-any.whl
-      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.1/pycrysfml-0.2.1-py312-none-win_amd64.whl
+      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.4.0/pycrysfml-0.4.0-py312-none-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/f3/0a/fd7d723f8f8153418fb40cf9c940e82004fce7e987026b08a68a36dd3fe7/pydantic-2.13.3-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/57/be/6b5e757b859013ebfbd7adba02f23b428f37c86dcbf78b5bb0b4ffd36e99/pydantic_core-2.46.3-cp312-cp312-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/87/6f/cc2b231dc78d8c3aaa674a676db190b8f8071c50134af8f8cf39b9b8e8df/pydoclint-0.8.3-py3-none-any.whl
@@ -2232,7 +2238,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/a0/61/5c78b91c3143ed5c14207f463aecfc8f9dbb5092fb2869baf37c273b2705/gitdb-4.0.12-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f2/c5/a1bc0996af85757903cf2bf444a7824e68e0035ce63fb41d6f76f9def68b/gitpython-3.1.47-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/91/4c/e0ce1ef95d4000ebc1c11801f9b944fa5910ecc15b5e351865763d8657f8/graphviz-0.21-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/07/49/d4cad6e5381a50947bb973d2f6cf6592621451b09368b8c20d9b8af49c5b/greenlet-3.4.0-cp314-cp314-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/a3/59/1bd6d7428d6ed9106efbb8c52310c60fd04f6672490f452aeaa3829aa436/greenlet-3.5.0-cp314-cp314-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/11/8c/c9138d881c79aa0ea9ed83cbd58d5ca75624378b38cee225dcf5c42cc91f/griffelib-2.0.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f1/16/d905e7f53e661ce2c24686c38048d8e2b750ffc4350009d41c4e6c6c9826/h5py-3.16.0-cp314-cp314-manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/94/84/d9273cd09688070a6523c4aee4663a8538721b2b755c4962aafae0011e72/identify-2.6.19-py2.py3-none-any.whl
@@ -2287,6 +2293,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/71/e7/40fb618334dcdf7c5a316c0e7343c5cd82d3d866edc100d98e29bc945ecd/partd-1.4.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f1/d9/7fb5aa316bc299258e68c73ba3bddbc499654a07f151cba08f6153988714/pathspec-1.1.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/11/8d/d2532ad2a603ca2b93ad9f5135732124e57811d0168155852f37fbce2458/pillow-12.2.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/70/7a/be4bd8bcbb24ea475856dd68159d78b03b2bb53dae369f69c9606b8888f5/pip-26.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e4/bc/daa30c02069eeac5b9198985ba42f5d65ca71bed6705b18329e51d352b7c/plopp-26.4.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/90/ad/cba91b3bcf04073e4d1655a5c1710ef3f457f56f7d1b79dcc3d72f4dd912/plotly-6.7.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/54/20/4d324d65cc6d9205fabedc306948156824eb9f0ee1633355a8f7ec5c66bf/pluggy-1.6.0-py3-none-any.whl
@@ -2302,7 +2309,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/58/e0/f1871f520c359e4e3a2eb7437c9e7e792bb6c356414e8617937561167caf/pycifrw-5.0.1.tar.gz
       - pypi: https://files.pythonhosted.org/packages/78/3c/2a612b95ddbb9a6bdcb47b7a93c4884f74c6ff22356b2f7b213b16e65c35/pycifstar-0.3.0.tar.gz
       - pypi: https://files.pythonhosted.org/packages/d7/27/a58ddaf8c588a3ef080db9d0b7e0b97215cee3a45df74f3a94dbbf5c893a/pycodestyle-2.14.0-py2.py3-none-any.whl
-      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.1/pycrysfml-0.2.1-py314-none-linux_x86_64.whl
+      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.4.0/pycrysfml-0.4.0-py314-none-linux_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/f3/0a/fd7d723f8f8153418fb40cf9c940e82004fce7e987026b08a68a36dd3fe7/pydantic-2.13.3-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/fd/86/ef96a4c6e79e7a2d0410826a68fbc0eccc0fd44aa733be199d5fcac3bb87/pydantic_core-2.46.3-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/87/6f/cc2b231dc78d8c3aaa674a676db190b8f8071c50134af8f8cf39b9b8e8df/pydoclint-0.8.3-py3-none-any.whl
@@ -2621,6 +2628,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/71/e7/40fb618334dcdf7c5a316c0e7343c5cd82d3d866edc100d98e29bc945ecd/partd-1.4.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f1/d9/7fb5aa316bc299258e68c73ba3bddbc499654a07f151cba08f6153988714/pathspec-1.1.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ba/8c/1a9e46228571de18f8e28f16fabdfc20212a5d019f3e3303452b3f0a580d/pillow-12.2.0-cp314-cp314-macosx_11_0_arm64.whl
+      - pypi: https://files.pythonhosted.org/packages/70/7a/be4bd8bcbb24ea475856dd68159d78b03b2bb53dae369f69c9606b8888f5/pip-26.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e4/bc/daa30c02069eeac5b9198985ba42f5d65ca71bed6705b18329e51d352b7c/plopp-26.4.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/90/ad/cba91b3bcf04073e4d1655a5c1710ef3f457f56f7d1b79dcc3d72f4dd912/plotly-6.7.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/54/20/4d324d65cc6d9205fabedc306948156824eb9f0ee1633355a8f7ec5c66bf/pluggy-1.6.0-py3-none-any.whl
@@ -2636,7 +2644,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/58/e0/f1871f520c359e4e3a2eb7437c9e7e792bb6c356414e8617937561167caf/pycifrw-5.0.1.tar.gz
       - pypi: https://files.pythonhosted.org/packages/78/3c/2a612b95ddbb9a6bdcb47b7a93c4884f74c6ff22356b2f7b213b16e65c35/pycifstar-0.3.0.tar.gz
       - pypi: https://files.pythonhosted.org/packages/d7/27/a58ddaf8c588a3ef080db9d0b7e0b97215cee3a45df74f3a94dbbf5c893a/pycodestyle-2.14.0-py2.py3-none-any.whl
-      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.1/pycrysfml-0.2.1-py314-none-macosx_14_0_arm64.whl
+      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.4.0/pycrysfml-0.4.0-py314-none-macosx_14_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/f3/0a/fd7d723f8f8153418fb40cf9c940e82004fce7e987026b08a68a36dd3fe7/pydantic-2.13.3-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/24/35/e4066358a22e3e99519db370494c7528f5a2aa1367370e80e27e20283543/pydantic_core-2.46.3-cp314-cp314-macosx_11_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/87/6f/cc2b231dc78d8c3aaa674a676db190b8f8071c50134af8f8cf39b9b8e8df/pydoclint-0.8.3-py3-none-any.whl
@@ -2894,7 +2902,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/a0/61/5c78b91c3143ed5c14207f463aecfc8f9dbb5092fb2869baf37c273b2705/gitdb-4.0.12-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f2/c5/a1bc0996af85757903cf2bf444a7824e68e0035ce63fb41d6f76f9def68b/gitpython-3.1.47-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/91/4c/e0ce1ef95d4000ebc1c11801f9b944fa5910ecc15b5e351865763d8657f8/graphviz-0.21-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/63/45/c1ca4a1ad975de4727e52d3ffe641ae23e1d7a8ffaa8ff7a0477e1827b92/greenlet-3.4.0-cp314-cp314-win_amd64.whl
+      - pypi: https://files.pythonhosted.org/packages/91/20/6b165108058767ee643c55c5c4904d591a830ee2b3c7dbd359828fbc829f/greenlet-3.5.0-cp314-cp314-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/11/8c/c9138d881c79aa0ea9ed83cbd58d5ca75624378b38cee225dcf5c42cc91f/griffelib-2.0.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/3e/14/615a450205e1b56d16c6783f5ccd116cde05550faad70ae077c955654a75/h5py-3.16.0-cp314-cp314-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/94/84/d9273cd09688070a6523c4aee4663a8538721b2b755c4962aafae0011e72/identify-2.6.19-py2.py3-none-any.whl
@@ -2949,6 +2957,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/71/e7/40fb618334dcdf7c5a316c0e7343c5cd82d3d866edc100d98e29bc945ecd/partd-1.4.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f1/d9/7fb5aa316bc299258e68c73ba3bddbc499654a07f151cba08f6153988714/pathspec-1.1.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/cd/8b/601e6566b957ca50e28725cb6c355c59c2c8609751efbecd980db44e0349/pillow-12.2.0-cp314-cp314-win_amd64.whl
+      - pypi: https://files.pythonhosted.org/packages/70/7a/be4bd8bcbb24ea475856dd68159d78b03b2bb53dae369f69c9606b8888f5/pip-26.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e4/bc/daa30c02069eeac5b9198985ba42f5d65ca71bed6705b18329e51d352b7c/plopp-26.4.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/90/ad/cba91b3bcf04073e4d1655a5c1710ef3f457f56f7d1b79dcc3d72f4dd912/plotly-6.7.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/54/20/4d324d65cc6d9205fabedc306948156824eb9f0ee1633355a8f7ec5c66bf/pluggy-1.6.0-py3-none-any.whl
@@ -2964,7 +2973,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/58/e0/f1871f520c359e4e3a2eb7437c9e7e792bb6c356414e8617937561167caf/pycifrw-5.0.1.tar.gz
       - pypi: https://files.pythonhosted.org/packages/78/3c/2a612b95ddbb9a6bdcb47b7a93c4884f74c6ff22356b2f7b213b16e65c35/pycifstar-0.3.0.tar.gz
       - pypi: https://files.pythonhosted.org/packages/d7/27/a58ddaf8c588a3ef080db9d0b7e0b97215cee3a45df74f3a94dbbf5c893a/pycodestyle-2.14.0-py2.py3-none-any.whl
-      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.1/pycrysfml-0.2.1-py314-none-win_amd64.whl
+      - pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.4.0/pycrysfml-0.4.0-py314-none-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/f3/0a/fd7d723f8f8153418fb40cf9c940e82004fce7e987026b08a68a36dd3fe7/pydantic-2.13.3-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/20/eb/59980e5f1ae54a3b86372bd9f0fa373ea2d402e8cdcd3459334430f91e91/pydantic_core-2.46.3-cp314-cp314-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/87/6f/cc2b231dc78d8c3aaa674a676db190b8f8071c50134af8f8cf39b9b8e8df/pydoclint-0.8.3-py3-none-any.whl
@@ -4533,7 +4542,7 @@ packages:
   requires_python: '>=3.5'
 - pypi: ./
   name: easydiffraction
-  version: 0.13.1+dev10
+  version: 0.14.0+devdirty1
   sha256: d0a6da0c0814569c01873a0136611e665fb757287b4c4650972e98ef87d5a43b
   requires_dist:
   - asciichartpy
@@ -5151,10 +5160,10 @@ packages:
   - sphinx-autodoc-typehints ; extra == 'docs'
   - sphinx-rtd-theme>=0.2.5 ; extra == 'docs'
   requires_python: '>=3.9'
-- pypi: https://files.pythonhosted.org/packages/07/49/d4cad6e5381a50947bb973d2f6cf6592621451b09368b8c20d9b8af49c5b/greenlet-3.4.0-cp314-cp314-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
+- pypi: https://files.pythonhosted.org/packages/2b/e0/2e13df68f367e2f9960616927d60857dd7e56aaadd59a47c644216b2f920/greenlet-3.5.0-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
   name: greenlet
-  version: 3.4.0
-  sha256: 4df3b0b2289ec686d3c821a5fee44259c05cfe824dd5e6e12c8e5f5df23085cf
+  version: 3.5.0
+  sha256: 9d280a7f5c331622c69f97eb167f33577ff2d1df282c41cd15907fc0a3ca198c
   requires_dist:
   - sphinx ; extra == 'docs'
   - furo ; extra == 'docs'
@@ -5162,10 +5171,10 @@ packages:
   - psutil ; extra == 'test'
   - setuptools ; extra == 'test'
   requires_python: '>=3.10'
-- pypi: https://files.pythonhosted.org/packages/36/f7/229f3aed6948faa20e0616a0b8568da22e365ede6a54d7d369058b128afd/greenlet-3.4.0-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
+- pypi: https://files.pythonhosted.org/packages/4c/fe/4fb3a0805bd5165da5ebf858da7cc01cce8061674106d2cf5bdab32cbfde/greenlet-3.5.0-cp312-cp312-win_amd64.whl
   name: greenlet
-  version: 3.4.0
-  sha256: a1c4f6b453006efb8310affb2d132832e9bbb4fc01ce6df6b70d810d38f1f6dc
+  version: 3.5.0
+  sha256: d4d9f0624c775f2dfc56ba54d515a8c771044346852a918b405914f6b19d7fd8
   requires_dist:
   - sphinx ; extra == 'docs'
   - furo ; extra == 'docs'
@@ -5173,10 +5182,10 @@ packages:
   - psutil ; extra == 'test'
   - setuptools ; extra == 'test'
   requires_python: '>=3.10'
-- pypi: https://files.pythonhosted.org/packages/42/cf/bb2c32d9a100e36ee9f6e38fad6b1e082b8184010cb06259b49e1266ca01/greenlet-3.4.0-cp312-cp312-win_amd64.whl
+- pypi: https://files.pythonhosted.org/packages/91/20/6b165108058767ee643c55c5c4904d591a830ee2b3c7dbd359828fbc829f/greenlet-3.5.0-cp314-cp314-win_amd64.whl
   name: greenlet
-  version: 3.4.0
-  sha256: a0a53fb071531d003b075c444014ff8f8b1a9898d36bb88abd9ac7b3524648a2
+  version: 3.5.0
+  sha256: 3bc59be3945ae9750b9e7d45067d01ae3fe90ea5f9ade99239dabdd6e28a5033
   requires_dist:
   - sphinx ; extra == 'docs'
   - furo ; extra == 'docs'
@@ -5184,10 +5193,10 @@ packages:
   - psutil ; extra == 'test'
   - setuptools ; extra == 'test'
   requires_python: '>=3.10'
-- pypi: https://files.pythonhosted.org/packages/63/45/c1ca4a1ad975de4727e52d3ffe641ae23e1d7a8ffaa8ff7a0477e1827b92/greenlet-3.4.0-cp314-cp314-win_amd64.whl
+- pypi: https://files.pythonhosted.org/packages/a3/59/1bd6d7428d6ed9106efbb8c52310c60fd04f6672490f452aeaa3829aa436/greenlet-3.5.0-cp314-cp314-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
   name: greenlet
-  version: 3.4.0
-  sha256: 207ba5b97ea8b0b60eb43ffcacf26969dd83726095161d676aac03ff913ee50d
+  version: 3.5.0
+  sha256: 8f52a464e4ed91780bdfbbdd2b97197f3accaa629b98c200f4dffada759f3ae7
   requires_dist:
   - sphinx ; extra == 'docs'
   - furo ; extra == 'docs'
@@ -8886,6 +8895,11 @@ packages:
   - trove-classifiers>=2024.10.12 ; extra == 'tests'
   - defusedxml ; extra == 'xmp'
   requires_python: '>=3.10'
+- pypi: https://files.pythonhosted.org/packages/70/7a/be4bd8bcbb24ea475856dd68159d78b03b2bb53dae369f69c9606b8888f5/pip-26.1-py3-none-any.whl
+  name: pip
+  version: '26.1'
+  sha256: 4e8486d821d814b77319acb7b9e8bf5a4ee7590a643e7cb21029f209be8573c1
+  requires_python: '>=3.10'
 - conda: https://conda.anaconda.org/conda-forge/noarch/pixi-kernel-0.7.1-pyhbbac1ac_0.conda
   sha256: 506c9330b8dc5ae98f4c32629fa59fa40e6bdd42a681c48d2f9554693dd01156
   md5: d57ef7cb7ad6b5d62cef8b9bdf1d400b
@@ -9306,9 +9320,9 @@ packages:
   - pkg:pypi/pycparser?source=hash-mapping
   size: 110100
   timestamp: 1733195786147
-- pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.1/pycrysfml-0.2.1-py312-none-linux_x86_64.whl
+- pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.4.0/pycrysfml-0.4.0-py312-none-linux_x86_64.whl
   name: pycrysfml
-  version: 0.2.1
+  version: 0.4.0
   requires_dist:
   - numpy
   - abi3audit ; extra == 'ci'
@@ -9324,9 +9338,9 @@ packages:
   - pytest-benchmark ; extra == 'test'
   - pytest>=5.2 ; extra == 'test'
   requires_python: '>=3.11,<3.15'
-- pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.1/pycrysfml-0.2.1-py312-none-macosx_14_0_arm64.whl
+- pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.4.0/pycrysfml-0.4.0-py312-none-macosx_14_0_arm64.whl
   name: pycrysfml
-  version: 0.2.1
+  version: 0.4.0
   requires_dist:
   - numpy
   - abi3audit ; extra == 'ci'
@@ -9342,9 +9356,9 @@ packages:
   - pytest-benchmark ; extra == 'test'
   - pytest>=5.2 ; extra == 'test'
   requires_python: '>=3.11,<3.15'
-- pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.1/pycrysfml-0.2.1-py312-none-win_amd64.whl
+- pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.4.0/pycrysfml-0.4.0-py312-none-win_amd64.whl
   name: pycrysfml
-  version: 0.2.1
+  version: 0.4.0
   requires_dist:
   - numpy
   - abi3audit ; extra == 'ci'
@@ -9360,9 +9374,9 @@ packages:
   - pytest-benchmark ; extra == 'test'
   - pytest>=5.2 ; extra == 'test'
   requires_python: '>=3.11,<3.15'
-- pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.1/pycrysfml-0.2.1-py314-none-linux_x86_64.whl
+- pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.4.0/pycrysfml-0.4.0-py314-none-linux_x86_64.whl
   name: pycrysfml
-  version: 0.2.1
+  version: 0.4.0
   requires_dist:
   - numpy
   - abi3audit ; extra == 'ci'
@@ -9378,9 +9392,9 @@ packages:
   - pytest-benchmark ; extra == 'test'
   - pytest>=5.2 ; extra == 'test'
   requires_python: '>=3.11,<3.15'
-- pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.1/pycrysfml-0.2.1-py314-none-macosx_14_0_arm64.whl
+- pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.4.0/pycrysfml-0.4.0-py314-none-macosx_14_0_arm64.whl
   name: pycrysfml
-  version: 0.2.1
+  version: 0.4.0
   requires_dist:
   - numpy
   - abi3audit ; extra == 'ci'
@@ -9396,9 +9410,9 @@ packages:
   - pytest-benchmark ; extra == 'test'
   - pytest>=5.2 ; extra == 'test'
   requires_python: '>=3.11,<3.15'
-- pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.2.1/pycrysfml-0.2.1-py314-none-win_amd64.whl
+- pypi: https://github.com/easyscience/deps-pycrysfml/releases/download/v0.4.0/pycrysfml-0.4.0-py314-none-win_amd64.whl
   name: pycrysfml
-  version: 0.2.1
+  version: 0.4.0
   requires_dist:
   - numpy
   - abi3audit ; extra == 'ci'
