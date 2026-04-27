@@ -53,10 +53,10 @@ project.analysis.display.fit_results()
 # #### Show parameter correlations
 
 # %%
-project.plotter.plot_param_correlations()
+project.display.plotter.plot_param_correlations()
 
 # %% [markdown]
 # ## Plot Meas vs Calc
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)

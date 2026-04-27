@@ -1,5 +1,8 @@
 _project.id               reference
 _project.title            'Reference Silicon Fit'
 _project.description      'Fitting simulated powder diffraction pattern of Si.'
-_project.created          '14 Apr 2026 13:20:50'
-_project.last_modified    '14 Apr 2026 13:20:50'
+_project.created          '27 Apr 2026 11:32:07'
+_project.last_modified    '27 Apr 2026 11:32:07'
+
+_display.plotter_type plotly
+_display.tabler_type pandas

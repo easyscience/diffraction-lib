@@ -1,5 +1,5 @@
-_analysis.fitting_engine  lmfit
-_analysis.fit_mode single
+_fit.minimizer_type "lmfit (leastsq)"
+_fit.mode single
 
 loop_
 _alias.label

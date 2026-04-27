@@ -1063,6 +1063,8 @@
       
         
       
+        
+      
     
     
     
@@ -1777,8 +1779,6 @@
       
         
       
-        
-      
     
     
     
@@ -1834,34 +1834,6 @@
     
   
     PbSO4 NPD+XRD
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../tutorials/ed-9/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    LBCO+Si McStas
   
 
     
@@ -1950,6 +1922,8 @@
       
         
       
+        
+      
     
     
     
@@ -1968,7 +1942,7 @@
   <span class="md-ellipsis">
     
   
-    Workshops & Schools
+    Simulated Data
   
 
     
@@ -1981,6 +1955,121 @@
         
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_7_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Simulated Data
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/ed-9/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LBCO+Si McStas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/ed-20/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BEER McStas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_8" id="__nav_4_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workshops & Schools
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_8">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2767,9 +2856,9 @@ be called on the <code>Project</code> instance to display the available options 
 different categories.</p>
 <h3 id="supported-calculators">Supported calculators</h3>
 <p>The calculator is automatically selected based on the experiment type.
-You can use the <code>show_supported_calculator_types()</code> method on an
-experiment to see which calculation engines are compatible:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">show_supported_calculator_types</span><span class="p">()</span>
+You can use the experiment <code>calculation</code> category to see which
+calculation engines are compatible:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">calculation</span><span class="o">.</span><span class="n">show_calculator_types</span><span class="p">()</span>
 </code></pre></div>
 <p>This will display a list of supported calculators along with their
 descriptions, allowing you to choose the one that best fits your needs.</p>
@@ -2790,8 +2879,8 @@ descriptions, allowing you to choose the one that best fits your needs.</p>
 </table>
 <h3 id="supported-minimizers">Supported minimizers</h3>
 <p>You can also check the available minimizers using the
-<code>show_available_minimizers()</code> method:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">show_available_minimizers</span><span class="p">()</span>
+<code>show_minimizer_types()</code> method:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fit</span><span class="o">.</span><span class="n">show_minimizer_types</span><span class="p">()</span>
 </code></pre></div>
 <h3 id="available-parameters">Available parameters</h3>
 <p>EasyDiffraction provides several methods for showing the available
@@ -2865,10 +2954,9 @@ their projects.</p>
 </tbody>
 </table>
 <h3 id="supported-plotters">Supported plotters</h3>
-<p>To see the available plotters, you can use the
-<code>show_available_plotters()</code> method on the <code>plotter</code> attribute of the
+<p>To see the available plotters, you can use the <code>display</code> category on the
 <code>Project</code> instance:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">show_supported_engines</span><span class="p">()</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">show_plotter_types</span><span class="p">()</span>
 </code></pre></div>
 <p>An example of the output is:</p>
 <table>

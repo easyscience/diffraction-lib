@@ -892,6 +892,8 @@
       
         
       
+        
+      
     
     
     
@@ -1606,8 +1608,6 @@
       
         
       
-        
-      
     
     
     
@@ -1663,34 +1663,6 @@
     
   
     PbSO4 NPD+XRD
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../tutorials/ed-9/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    LBCO+Si McStas
   
 
     
@@ -1779,6 +1751,8 @@
       
         
       
+        
+      
     
     
     
@@ -1797,7 +1771,7 @@
   <span class="md-ellipsis">
     
   
-    Workshops & Schools
+    Simulated Data
   
 
     
@@ -1810,6 +1784,121 @@
         
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_7_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Simulated Data
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/ed-9/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LBCO+Si McStas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/ed-20/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BEER McStas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_8" id="__nav_4_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workshops & Schools
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_8">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2974,7 +3063,7 @@ fitted model, experiments, and analysis results.</p>
             <span class="p">)</span>
 
             <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Calculation engine&#39;</span><span class="p">)</span>
-            <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">expt</span><span class="o">.</span><span class="n">calculator_type</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">expt</span><span class="o">.</span><span class="n">calculation</span><span class="o">.</span><span class="n">calculator_type</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="s1">&#39;instrument&#39;</span> <span class="ow">in</span> <span class="n">expt</span><span class="o">.</span><span class="n">_public_attrs</span><span class="p">():</span>
                 <span class="k">if</span> <span class="s1">&#39;setup_wavelength&#39;</span> <span class="ow">in</span> <span class="n">expt</span><span class="o">.</span><span class="n">instrument</span><span class="o">.</span><span class="n">_public_attrs</span><span class="p">():</span>
@@ -3039,7 +3128,7 @@ fitted model, experiments, and analysis results.</p>
         <span class="n">console</span><span class="o">.</span><span class="n">section</span><span class="p">(</span><span class="s1">&#39;Fitting&#39;</span><span class="p">)</span>
 
         <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Minimization engine&#39;</span><span class="p">)</span>
-        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">current_minimizer</span><span class="p">)</span>
+        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fit</span><span class="o">.</span><span class="n">minimizer_type</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
         <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Fit quality&#39;</span><span class="p">)</span>
         <span class="n">columns_headers</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;metric&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">]</span>
@@ -3460,7 +3549,7 @@ fitted model, experiments, and analysis results.</p>
         <span class="p">)</span>
 
         <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Calculation engine&#39;</span><span class="p">)</span>
-        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">expt</span><span class="o">.</span><span class="n">calculator_type</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">expt</span><span class="o">.</span><span class="n">calculation</span><span class="o">.</span><span class="n">calculator_type</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="s1">&#39;instrument&#39;</span> <span class="ow">in</span> <span class="n">expt</span><span class="o">.</span><span class="n">_public_attrs</span><span class="p">():</span>
             <span class="k">if</span> <span class="s1">&#39;setup_wavelength&#39;</span> <span class="ow">in</span> <span class="n">expt</span><span class="o">.</span><span class="n">instrument</span><span class="o">.</span><span class="n">_public_attrs</span><span class="p">():</span>
@@ -3574,7 +3663,7 @@ fitted model, experiments, and analysis results.</p>
     <span class="n">console</span><span class="o">.</span><span class="n">section</span><span class="p">(</span><span class="s1">&#39;Fitting&#39;</span><span class="p">)</span>
 
     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Minimization engine&#39;</span><span class="p">)</span>
-    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">current_minimizer</span><span class="p">)</span>
+    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fit</span><span class="o">.</span><span class="n">minimizer_type</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Fit quality&#39;</span><span class="p">)</span>
     <span class="n">columns_headers</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;metric&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">]</span>

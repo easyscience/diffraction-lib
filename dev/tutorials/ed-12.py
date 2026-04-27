@@ -26,12 +26,12 @@ project = ed.Project()
 # %%
 # Keep the auto-selected engine. Alternatively, you can uncomment the
 # line below to explicitly set the engine to the required one.
-# project.plotter.engine = 'plotly'
+# project.display.plotter.engine = 'plotly'
 
 # %%
 # Set global plot range for plots
-project.plotter.x_min = 2.0
-project.plotter.x_max = 30.0
+project.display.plotter.x_min = 2.0
+project.display.plotter.x_max = 30.0
 
 # %% [markdown]
 # ## Add Structure
@@ -79,10 +79,7 @@ project.experiments.add_from_data_path(
 )
 
 # %%
-project.experiments['xray_pdf'].show_supported_peak_profile_types()
-
-# %%
-project.experiments['xray_pdf'].show_current_peak_profile_type()
+project.experiments['xray_pdf'].show_peak_profile_types()
 
 # %%
 project.experiments['xray_pdf'].peak_profile_type = 'gaussian-damped-sinc'
@@ -117,10 +114,10 @@ project.experiments['xray_pdf'].peak.sharp_delta_2.free = True
 # %%
 project.analysis.fit()
 project.analysis.display.fit_results()
-project.plotter.plot_param_correlations()
+project.display.plotter.plot_param_correlations()
 
 # %% [markdown]
 # ## Plot Measured vs Calculated
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='xray_pdf')
+project.display.plotter.plot_meas_vs_calc(expt_name='xray_pdf')

@@ -65,7 +65,7 @@ project.analysis.display.fit_results()
 
 # %%
 # Show parameter correlations
-project.plotter.plot_param_correlations()
+project.display.plotter.plot_param_correlations()
 
 # %% [markdown]
 # ## Step 5: Perform Analysis (with constraints)
@@ -99,7 +99,7 @@ project.analysis.display.fit_results()
 
 # %%
 # Show parameter correlations
-project.plotter.plot_param_correlations()
+project.display.plotter.plot_param_correlations()
 
 # %%
 # Show defined experiment names
@@ -107,4 +107,4 @@ project.experiments.show_names()
 
 # %%
 # Plot measured vs. calculated diffraction patterns
-project.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)

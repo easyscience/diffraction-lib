@@ -1161,6 +1161,8 @@
       
         
       
+        
+      
     
     
     
@@ -1875,8 +1877,6 @@
       
         
       
-        
-      
     
     
     
@@ -1932,34 +1932,6 @@
     
   
     PbSO4 NPD+XRD
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../tutorials/ed-9/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    LBCO+Si McStas
   
 
     
@@ -2048,6 +2020,8 @@
       
         
       
+        
+      
     
     
     
@@ -2066,7 +2040,7 @@
   <span class="md-ellipsis">
     
   
-    Workshops & Schools
+    Simulated Data
   
 
     
@@ -2079,6 +2053,121 @@
         
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_7_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Simulated Data
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/ed-9/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LBCO+Si McStas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/ed-20/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BEER McStas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_8" id="__nav_4_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workshops & Schools
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_8">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2937,7 +3026,7 @@ crystallographic models.</p>
 <p>The calculator is automatically selected based on the experiment type
 (e.g., <code>cryspy</code> for Bragg diffraction, <code>pdffit</code> for total scattering).
 To show the supported calculation engines for a specific experiment:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">show_supported_calculator_types</span><span class="p">()</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">calculation</span><span class="o">.</span><span class="n">show_calculator_types</span><span class="p">()</span>
 </code></pre></div>
 <p>The example of the output is:</p>
 <p>Supported calculator types</p>
@@ -2956,7 +3045,7 @@ To show the supported calculation engines for a specific experiment:</p>
 </tbody>
 </table>
 <p>To explicitly select a calculation engine for an experiment:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">calculator_type</span> <span class="o">=</span> <span class="s1">&#39;cryspy&#39;</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="s1">&#39;hrpt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">calculation</span><span class="o">.</span><span class="n">calculator_type</span> <span class="o">=</span> <span class="s1">&#39;cryspy&#39;</span>
 </code></pre></div>
 <h2 id="minimization-optimization">Minimization / Optimization</h2>
 <p>The process of refining model parameters involves iterating through
@@ -2997,7 +3086,7 @@ solving nonlinear least-squares minimization, without requiring
 derivatives of the objective.</p>
 <h3 id="set-minimizer">Set Minimizer</h3>
 <p>To show the supported minimizers:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">show_supported_minimizers</span><span class="p">()</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fit</span><span class="o">.</span><span class="n">show_minimizer_types</span><span class="p">()</span>
 </code></pre></div>
 <p>The example of the output is:</p>
 <p>Supported minimizers</p>
@@ -3028,7 +3117,7 @@ derivatives of the objective.</p>
 </tbody>
 </table>
 <p>To select the desired minimizer, e.g., 'lmfit':</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">current_minimizer</span> <span class="o">=</span> <span class="s1">&#39;lmfit&#39;</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fit</span><span class="o">.</span><span class="n">minimizer_type</span> <span class="o">=</span> <span class="s1">&#39;lmfit&#39;</span>
 </code></pre></div>
 <h3 id="fit-mode">Fit Mode</h3>
 <p>In EasyDiffraction, you can set the <strong>fit mode</strong> to control how the
@@ -3054,11 +3143,11 @@ across all experiments.</p>
 </tr>
 </tbody>
 </table>
-<p>You can set the fit mode on the <code>analysis</code> object:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fit_mode</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;joint&#39;</span>
+<p>You can set the fit mode on the <code>fit</code> category:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fit</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;joint&#39;</span>
 </code></pre></div>
 <p>To check the current fit mode:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fit_mode</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fit</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 </code></pre></div>
 <h3 id="perform-fit">Perform Fit</h3>
 <p>Refining the structure and experiment parameters against measured data
@@ -3115,7 +3204,7 @@ during the refinement process, select more parameters to be refined, and
 perform additional fits as needed.</p>
 <p>To plot the measured vs calculated data after the fit, you can use the
 <code>plot_meas_vs_calc</code> method of the <code>analysis</code> object:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">plot_meas_vs_calc</span><span class="p">(</span><span class="n">expt_name</span><span class="o">=</span><span class="s1">&#39;hrpt&#39;</span><span class="p">,</span> <span class="n">show_residual</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">plot_meas_vs_calc</span><span class="p">(</span><span class="n">expt_name</span><span class="o">=</span><span class="s1">&#39;hrpt&#39;</span><span class="p">,</span> <span class="n">show_residual</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="constraints">Constraints</h2>
 <p>In EasyDiffraction, you can define <strong>constraints</strong> on the model
@@ -3192,9 +3281,8 @@ method:</p>
 </code></pre></div>
 <p>Example output:</p>
 <div class="language-text highlight"><pre><span></span><code>╒════════════════════════════════════════════════╕
-│ _analysis.calculator_engine  cryspy            │
-│ _analysis.fitting_engine     &quot;lmfit (leastsq)&quot; │
-│ _analysis.fit_mode           single            │
+│ _fit.minimizer_type          &quot;lmfit (leastsq)&quot; │
+│ _fit.mode                    single            │
 │                                                │
 │ loop_                                          │
 │ _alias.label                                   │
