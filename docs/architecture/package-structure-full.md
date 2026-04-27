@@ -38,7 +38,6 @@
 │   │   │   │   └── 🏷️ class FitModeEnum
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class FitFactory
-│   │   ├── 📁 fit_mode
 │   │   ├── 📁 joint_fit_experiments
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py

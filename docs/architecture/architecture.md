@@ -1073,8 +1073,9 @@ Single-type categories (no public `_type` property):
 `fit` is a dedicated analysis category. Its public selector surface is
 `fit.minimizer_type` and `fit.mode`; there is no separate owner-level
 proxy API. Likewise, `calculation` is a dedicated experiment category
-that owns calculator selection — `experiment.calculation.calculator_type`
-and `experiment.calculation.show_calculator_types()` — instead of the
+that owns calculator selection —
+`experiment.calculation.calculator_type` and
+`experiment.calculation.show_calculator_types()` — instead of the
 selector being exposed at the experiment owner level. The same pattern
 applies to `display` on `Project`, which owns `plotter_type` and
 `tabler_type` (see §9.4.1).
@@ -1099,11 +1100,11 @@ recognises three distinct selector families. They share a similar
 `<name>_type` shape so the user can inspect and set them uniformly, but
 their intent and ownership differ:
 
-| Family                                | User intent                          | Examples                                                                          | CIF                                                                              |
-| ------------------------------------- | ------------------------------------ | --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| Backend selector                      | Pick an execution backend            | `fit.minimizer_type`, `calculation.calculator_type`, `display.plotter_type`       | `_fit.minimizer_type`, `_calculation.calculator_type`, `_display.plotter_type`   |
-| Switchable-category impl. selector    | Swap a category implementation       | `experiment.background_type`, `experiment.peak_profile_type`                      | category-owned type tag such as `_peak.profile_type`                             |
-| Semantic value selector               | Pick a scientific/analysis mode      | `fit.mode`                                                                        | `_fit.mode`                                                                      |
+| Family                             | User intent                     | Examples                                                                    | CIF                                                                            |
+| ---------------------------------- | ------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Backend selector                   | Pick an execution backend       | `fit.minimizer_type`, `calculation.calculator_type`, `display.plotter_type` | `_fit.minimizer_type`, `_calculation.calculator_type`, `_display.plotter_type` |
+| Switchable-category impl. selector | Swap a category implementation  | `experiment.background_type`, `experiment.peak_profile_type`                | category-owned type tag such as `_peak.profile_type`                           |
+| Semantic value selector            | Pick a scientific/analysis mode | `fit.mode`                                                                  | `_fit.mode`                                                                    |
 
 Backend selectors and semantic value selectors live on a dedicated
 configuration category (`fit`, `calculation`, `display`). Switchable-

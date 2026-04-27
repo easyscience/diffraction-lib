@@ -24,7 +24,6 @@
 │   │   │   ├── 📄 default.py
 │   │   │   ├── 📄 enums.py
 │   │   │   └── 📄 factory.py
-│   │   ├── 📁 fit_mode
 │   │   ├── 📁 joint_fit_experiments
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
