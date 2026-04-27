@@ -14,7 +14,7 @@ needed.
 
 **Type:** Fragility
 
-`joint_fit_experiments` is created once when `fit_mode` becomes
+`joint_fit_experiments` is created once when `fit.mode` becomes
 `'joint'`. If experiments are added, removed, or renamed afterwards, the
 weight collection is stale. Joint fitting can fail with missing keys or
 run with incorrect weights.
