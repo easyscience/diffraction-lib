@@ -134,7 +134,7 @@ derivatives of the objective.
 To show the supported minimizers:
 
 ```python
-project.analysis.show_minimizer_types()
+project.analysis.fit.show_minimizer_types()
 ```
 
 The example of the output is:
