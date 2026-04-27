@@ -110,9 +110,19 @@ class CryspyCalculator(CalculatorBase):
             else:
                 cryspy_obj = self._recreate_cryspy_obj(structure, experiment)
                 cryspy_dict = cryspy_obj.get_dictionary()
+                self._update_structure_in_cryspy_dict(
+                    cryspy_dict[f'crystal_{structure.name}'],
+                    structure,
+                )
+                self._update_experiment_in_cryspy_dict(cryspy_dict, experiment)
         else:
             cryspy_obj = self._recreate_cryspy_obj(structure, experiment)
             cryspy_dict = cryspy_obj.get_dictionary()
+            self._update_structure_in_cryspy_dict(
+                cryspy_dict[f'crystal_{structure.name}'],
+                structure,
+            )
+            self._update_experiment_in_cryspy_dict(cryspy_dict, experiment)
 
         self._cryspy_dicts[combined_name] = copy.deepcopy(cryspy_dict)
 
@@ -182,9 +192,19 @@ class CryspyCalculator(CalculatorBase):
             else:
                 cryspy_obj = self._recreate_cryspy_obj(structure, experiment)
                 cryspy_dict = cryspy_obj.get_dictionary()
+                self._update_structure_in_cryspy_dict(
+                    cryspy_dict[f'crystal_{structure.name}'],
+                    structure,
+                )
+                self._update_experiment_in_cryspy_dict(cryspy_dict, experiment)
         else:
             cryspy_obj = self._recreate_cryspy_obj(structure, experiment)
             cryspy_dict = cryspy_obj.get_dictionary()
+            self._update_structure_in_cryspy_dict(
+                cryspy_dict[f'crystal_{structure.name}'],
+                structure,
+            )
+            self._update_experiment_in_cryspy_dict(cryspy_dict, experiment)
 
         self._cryspy_dicts[combined_name] = copy.deepcopy(cryspy_dict)
 
@@ -290,6 +310,13 @@ class CryspyCalculator(CalculatorBase):
         for idx, atom_site in enumerate(structure.atom_sites):
             cryspy_occ[idx] = atom_site.occupancy.value
 
+        # Atomic multiplicities
+        if 'atom_multiplicity' in cryspy_model_dict:
+            CryspyCalculator._update_atom_multiplicity(
+                cryspy_model_dict,
+                structure,
+            )
+
         # Atomic ADPs - isotropic
         # For anisotropic atoms the full ADP lives in the β tensor;
         # setting b_iso to zero avoids double-counting in cryspy's DWF
@@ -312,6 +339,40 @@ class CryspyCalculator(CalculatorBase):
                 cryspy_model_dict,
                 structure,
             )
+
+    @staticmethod
+    def _update_atom_multiplicity(
+        cryspy_model_dict: dict[str, Any],
+        structure: Structure,
+    ) -> None:
+        """
+        Update cryspy atom multiplicities.
+
+        CrysPy normalizes fractional coordinates into the ``[0, 1)``
+        interval while parsing CIF.  For sites such as ``(x, -x, z)``,
+        that can turn ``-x`` into ``1 - x`` before the Wyckoff
+        multiplicity is inferred, making special positions look like
+        general positions.  EasyDiffraction already stores the intended
+        Wyckoff letter, so keep the calculator dictionary aligned with
+        that model state.
+        """
+        from cryspy.A_functions_base.function_2_space_group import (  # noqa: PLC0415
+            get_it_number_by_name_hm_short,
+        )
+
+        from easydiffraction.crystallography.space_groups import SPACE_GROUPS  # noqa: PLC0415
+
+        it_number = get_it_number_by_name_hm_short(structure.space_group.name_h_m.value)
+        coord_code = structure.space_group.it_coordinate_system_code.value
+        if it_number is None or (it_number, coord_code) not in SPACE_GROUPS:
+            return
+
+        positions = SPACE_GROUPS[it_number, coord_code]['Wyckoff_positions']
+        multiplicity = cryspy_model_dict['atom_multiplicity']
+        for idx, atom_site in enumerate(structure.atom_sites):
+            wyckoff_letter = atom_site.wyckoff_letter.value
+            if wyckoff_letter in positions:
+                multiplicity[idx] = positions[wyckoff_letter]['multiplicity']
 
     @staticmethod
     def _update_aniso_beta(
