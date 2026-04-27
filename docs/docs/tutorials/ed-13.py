@@ -216,10 +216,6 @@ project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear = ed.extract_me
     si_xye_path, r'DIFC\s*=\s*(\d*\.?\d+)'
 )
 
-# %%
-# TEMPORARY
-project_1.experiments['sim_si'].instrument.calib_d_to_tof_quad = -0.00001
-
 # %% [markdown]
 # Before proceeding, let's take a quick look at the concept of
 # parameters in EasyDiffraction, which is similar to the parameter
@@ -822,10 +818,6 @@ project_2.experiments['sim_lbco'].instrument.setup_twotheta_bank = ed.extract_me
 project_2.experiments['sim_lbco'].instrument.calib_d_to_tof_linear = ed.extract_metadata(
     lbco_xye_path, r'DIFC\s*=\s*(\d*\.?\d+)'
 )
-
-# %%
-# TEMPORARY
-project_2.experiments['sim_lbco'].instrument.calib_d_to_tof_quad = -0.00001
 
 # %% [markdown]
 # #### Exercise 2.3: Set Peak Profile Parameters
