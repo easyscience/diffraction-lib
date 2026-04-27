@@ -78,3 +78,39 @@ def test_update_structure_zeroes_biso_for_anisotropic_atoms():
     CryspyCalculator._update_structure_in_cryspy_dict(cryspy_model_dict, structure)
 
     assert cryspy_model_dict['atom_b_iso'][0] == 0.0
+
+
+def test_update_structure_restores_wyckoff_multiplicity_after_coordinate_wrapping():
+    import numpy as np
+    import pytest
+
+    pytest.importorskip('cryspy')
+
+    from easydiffraction.analysis.calculators.cryspy import CryspyCalculator
+    from easydiffraction.datablocks.structure.item.base import Structure
+
+    structure = Structure(name='hs')
+    structure.space_group.name_h_m = 'R -3 m'
+    structure.space_group.it_coordinate_system_code = 'h'
+    structure.atom_sites.create(
+        label='O',
+        type_symbol='O',
+        fract_x=0.20587714,
+        fract_y=-0.20587714,
+        fract_z=0.06271739,
+        wyckoff_letter='h',
+        adp_iso=0.5,
+    )
+
+    cryspy_model_dict = {
+        'unit_cell_parameters': [6.86, 6.86, 14.14, np.pi / 2, np.pi / 2, 2 * np.pi / 3],
+        'atom_fract_xyz': np.array([[0.20587714], [0.79412286], [0.06271739]]),
+        'atom_occupancy': np.array([1.0]),
+        'atom_multiplicity': np.array([36]),
+        'atom_b_iso': np.array([0.5]),
+    }
+
+    CryspyCalculator._update_structure_in_cryspy_dict(cryspy_model_dict, structure)
+
+    assert cryspy_model_dict['atom_fract_xyz'][1][0] == -0.20587714
+    assert cryspy_model_dict['atom_multiplicity'][0] == 18

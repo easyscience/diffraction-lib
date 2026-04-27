@@ -75,7 +75,9 @@ experiment.extinction.radius.free = True
 
 # %%
 project.analysis.fit.show_minimizer_types()
-project.analysis.fit.minimizer_type = 'lmfit'
+
+# %%
+project.analysis.fit.minimizer_type = 'bumps'
 
 # %%
 # Start refinement. All parameters, which have standard uncertainties
