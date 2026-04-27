@@ -786,7 +786,7 @@ Projects are saved as a directory of CIF files:
 
 ```shell
 project_dir/
-├── project.cif          # ProjectInfo
+├── project.cif          # ProjectInfo + Display preferences
 ├── summary.cif          # Summary report
 ├── structures/
 │   └── lbco.cif         # One file per structure
@@ -795,6 +795,13 @@ project_dir/
 └── analysis/
     └── analysis.cif     # Analysis settings
 ```
+
+`project.cif` carries both the `_project.*` metadata and the
+`_display.*` engine preferences (`plotter_type`, `tabler_type`), so a
+saved project re-opens with the same display backends. Per-experiment
+calculator selection (`_calculation.calculator_type`) lives in each
+experiment file, and fit configuration (`_fit.minimizer_type`,
+`_fit.mode`) lives in `analysis/analysis.cif`.
 
 ### 7.3 Verbosity
 
@@ -1042,8 +1049,8 @@ exposes the full switchable API:
 
 Multi-type categories:
 
-- **Experiment:** `calculator_type`, `background_type`,
-  `peak_profile_type`, `extinction_type`.
+- **Experiment:** `background_type`, `peak_profile_type`,
+  `extinction_type`.
 
 Categories that are **fixed at creation** (determined by the experiment
 type and never changed) expose only a read-only `<category>` property
@@ -1065,7 +1072,12 @@ Single-type categories (no public `_type` property):
 
 `fit` is a dedicated analysis category. Its public selector surface is
 `fit.minimizer_type` and `fit.mode`; there is no separate owner-level
-proxy API.
+proxy API. Likewise, `calculation` is a dedicated experiment category
+that owns calculator selection — `experiment.calculation.calculator_type`
+and `experiment.calculation.show_calculator_types()` — instead of the
+selector being exposed at the experiment owner level. The same pattern
+applies to `display` on `Project`, which owns `plotter_type` and
+`tabler_type` (see §9.4.1).
 
 **Design decisions:**
 
@@ -1080,6 +1092,25 @@ proxy API.
   displaying the current content (not on the base
   `CategoryItem`/`CategoryCollection`).
 
+#### 9.4.1 Selector Families
+
+Not every `_type` attribute represents the same kind of choice. The API
+recognises three distinct selector families. They share a similar
+`<name>_type` shape so the user can inspect and set them uniformly, but
+their intent and ownership differ:
+
+| Family                                | User intent                          | Examples                                                                          | CIF                                                                              |
+| ------------------------------------- | ------------------------------------ | --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| Backend selector                      | Pick an execution backend            | `fit.minimizer_type`, `calculation.calculator_type`, `display.plotter_type`       | `_fit.minimizer_type`, `_calculation.calculator_type`, `_display.plotter_type`   |
+| Switchable-category impl. selector    | Swap a category implementation       | `experiment.background_type`, `experiment.peak_profile_type`                      | category-owned type tag such as `_peak.profile_type`                             |
+| Semantic value selector               | Pick a scientific/analysis mode      | `fit.mode`                                                                        | `_fit.mode`                                                                      |
+
+Backend selectors and semantic value selectors live on a dedicated
+configuration category (`fit`, `calculation`, `display`). Switchable-
+category implementation selectors are owned by the host (typically the
+experiment) because switching them replaces the category instance, as
+described in §9.3.
+
 ### 9.5 Discoverable Supported Options
 
 The user can always discover what is supported for the current
@@ -1090,7 +1121,10 @@ expt.show_peak_profile_types()
 expt.show_background_types()
 expt.calculation.show_calculator_types()
 expt.show_extinction_types()
-project.analysis.show_minimizer_types()
+project.analysis.fit.show_minimizer_types()
+project.analysis.fit.show_modes()
+project.display.show_plotter_types()
+project.display.show_tabler_types()
 ```
 
 Available calculators are filtered by `engine_imported` (whether the
