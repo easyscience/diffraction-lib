@@ -9,4 +9,5 @@ from easydiffraction.datablocks.experiment.categories.peak.cwl import CwlThompso
 from easydiffraction.datablocks.experiment.categories.peak.tof import TofDoubleJorgensenVonDreele
 from easydiffraction.datablocks.experiment.categories.peak.tof import TofJorgensen
 from easydiffraction.datablocks.experiment.categories.peak.tof import TofJorgensenVonDreele
+from easydiffraction.datablocks.experiment.categories.peak.tof import TofPseudoVoigt
 from easydiffraction.datablocks.experiment.categories.peak.total import TotalGaussianDampedSinc

@@ -127,6 +127,8 @@ class ExperimentFactory(FactoryBase):
         for category in expt_obj.categories:
             category.from_cif(block)
 
+        expt_obj._normalize_switchable_type_descriptors()
+
         return expt_obj
 
     # ------------------------------------------------------------------

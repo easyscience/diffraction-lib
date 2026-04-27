@@ -19,53 +19,8 @@ from easydiffraction.datablocks.structure.item.base import Structure
 
 try:
     import cryspy
-
-    # Patch cryspy bug: calc_power_dwf_aniso uses indices [0:9] of
-    # reduced_symm_elems for the rotation matrix, but the rotation
-    # actually starts at index 4 (layout: [b1,b2,b3,bd, R(3x3)]).
-    # This causes wrong Debye-Waller factors for all anisotropic atoms.
-    # Bug confirmed in cryspy 0.7.8, reported upstream.
-    from cryspy.A_functions_base import debye_waller_factor as _dwf_mod
     from cryspy.H_functions_global.function_1_cryspy_objects import str_to_globaln
     from cryspy.procedure_rhochi.rhochi_by_dictionary import rhochi_calc_chi_sq_by_dictionary
-
-    def _patched_calc_power_dwf_aniso(
-        index_hkl: np.ndarray,
-        beta: np.ndarray,
-        symm_elems_r: np.ndarray,
-        *,
-        flag_beta: bool = False,
-    ) -> tuple:
-        h, k, l = index_hkl[0], index_hkl[1], index_hkl[2]  # noqa: E741
-        r = symm_elems_r
-        h_s = h * r[4] + k * r[7] + l * r[10]
-        k_s = h * r[5] + k * r[8] + l * r[11]
-        l_s = h * r[6] + k * r[9] + l * r[12]
-        power = (
-            beta[0] * np.square(h_s)
-            + beta[1] * np.square(k_s)
-            + beta[2] * np.square(l_s)
-            + 2.0 * beta[3] * h_s * k_s
-            + 2.0 * beta[4] * h_s * l_s
-            + 2.0 * beta[5] * k_s * l_s
-        )
-        dder: dict = {}
-        if flag_beta:
-            ones_b = np.ones_like(beta[0])
-            dder['beta'] = np.stack(
-                [
-                    ones_b * np.square(h_s),
-                    ones_b * np.square(k_s),
-                    ones_b * np.square(l_s),
-                    ones_b * 2.0 * h_s * k_s,
-                    ones_b * 2.0 * h_s * l_s,
-                    ones_b * 2.0 * k_s * l_s,
-                ],
-                axis=0,
-            )
-        return power, dder
-
-    _dwf_mod.calc_power_dwf_aniso = _patched_calc_power_dwf_aniso
 
     # TODO: Add the following print to debug mode
     # print("✅ 'cryspy' calculation engine is successfully imported.")
@@ -779,7 +734,13 @@ def _update_tof_peak_in_cryspy_dict(
 ) -> None:
     """Update TOF peak profile-specific arrays in the cached dict."""
     peak_tag = peak.type_info.tag
-    if peak_tag == PeakProfileTypeEnum.DOUBLE_JORGENSEN_VON_DREELE:
+    # TODO: Need to improve this logic to be more robust and extensible
+    #  for future profiles
+    if not hasattr(peak, 'exp_decay_beta_0') and not hasattr(peak, 'dexp_decay_beta_00'):
+        cryspy_expt_dict['profile_gammas'][0] = peak.broad_lorentz_gamma_0.value
+        cryspy_expt_dict['profile_gammas'][1] = peak.broad_lorentz_gamma_1.value
+        cryspy_expt_dict['profile_gammas'][2] = peak.broad_lorentz_gamma_2.value
+    elif peak_tag == PeakProfileTypeEnum.TOF_DOUBLE_JORGENSEN_VON_DREELE:
         cryspy_expt_dict['profile_alphas'][0] = peak.dexp_rise_alpha_1.value
         cryspy_expt_dict['profile_alphas'][1] = peak.dexp_rise_alpha_2.value
 
@@ -801,7 +762,7 @@ def _update_tof_peak_in_cryspy_dict(
         cryspy_expt_dict['profile_alphas'][0] = peak.exp_rise_alpha_0.value
         cryspy_expt_dict['profile_alphas'][1] = peak.exp_rise_alpha_1.value
 
-        if peak_tag == PeakProfileTypeEnum.JORGENSEN_VON_DREELE:
+        if peak_tag == PeakProfileTypeEnum.TOF_JORGENSEN_VON_DREELE:
             cryspy_expt_dict['profile_gammas'][0] = peak.broad_lorentz_gamma_0.value
             cryspy_expt_dict['profile_gammas'][1] = peak.broad_lorentz_gamma_1.value
             cryspy_expt_dict['profile_gammas'][2] = peak.broad_lorentz_gamma_2.value
@@ -839,7 +800,7 @@ def _cif_peak_section(
             'broad_lorentz_gamma_2': '_tof_profile_gamma2',
         }
 
-        if peak.type_info.tag == PeakProfileTypeEnum.DOUBLE_JORGENSEN_VON_DREELE:
+        if peak.type_info.tag == PeakProfileTypeEnum.TOF_DOUBLE_JORGENSEN_VON_DREELE:
             cif_lines.append('_tof_profile_peak_shape type0m')
             peak_mapping.update({
                 'dexp_rise_alpha_1': '_tof_profile_alpha1',
@@ -851,17 +812,19 @@ def _cif_peak_section(
                 'dexp_switch_r_02': '_tof_profile_r02',
                 'dexp_switch_r_03': '_tof_profile_r03',
             })
-        else:
+        elif hasattr(peak, 'exp_decay_beta_0') and hasattr(peak, 'exp_rise_alpha_0'):
             peak_mapping.update({
                 'exp_decay_beta_0': '_tof_profile_beta0',
                 'exp_decay_beta_1': '_tof_profile_beta1',
                 'exp_rise_alpha_0': '_tof_profile_alpha0',
                 'exp_rise_alpha_1': '_tof_profile_alpha1',
             })
-            if peak.type_info.tag == PeakProfileTypeEnum.JORGENSEN_VON_DREELE:
+            if peak.type_info.tag == PeakProfileTypeEnum.TOF_JORGENSEN_VON_DREELE:
                 cif_lines.append('_tof_profile_peak_shape pseudo-Voigt')
             else:
                 cif_lines.append('_tof_profile_peak_shape Gauss')
+        else:
+            cif_lines.append('_tof_profile_peak_shape non-conv-pseudo-Voigt')
 
     cif_lines.append('')
     for local_attr_name, engine_key_name in peak_mapping.items():

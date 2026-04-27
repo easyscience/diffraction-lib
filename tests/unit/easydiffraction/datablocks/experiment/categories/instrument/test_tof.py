@@ -13,7 +13,7 @@ def test_tof_instrument_defaults_and_setters_and_parameters_and_cif():
     assert np.isclose(inst.setup_twotheta_bank.value, 150.0)
     assert np.isclose(inst.calib_d_to_tof_offset.value, 0.0)
     assert np.isclose(inst.calib_d_to_tof_linear.value, 10000.0)
-    assert np.isclose(inst.calib_d_to_tof_quad.value, -0.00001)
+    assert np.isclose(inst.calib_d_to_tof_quad.value, 0.0)
     assert np.isclose(inst.calib_d_to_tof_recip.value, 0.0)
 
     # Setters

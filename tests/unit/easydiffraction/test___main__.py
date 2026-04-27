@@ -94,23 +94,19 @@ def test_cli_fit_loads_and_fits(monkeypatch, tmp_path):
 
         analysis = _analysis()
 
-        class _plotter:
-            @staticmethod
-            def plot_param_correlations():
-                calls.append('PLOT_CORR')
+        class _display:
+            class _plotter:
+                @staticmethod
+                def plot_param_correlations():
+                    calls.append('PLOT_CORR')
 
-            @staticmethod
-            def plot_meas_vs_calc(expt_name, *, show_residual=False):
-                calls.append(f'PLOT_{expt_name}_{show_residual}')
+                @staticmethod
+                def plot_meas_vs_calc(expt_name, *, show_residual=False):
+                    calls.append(f'PLOT_{expt_name}_{show_residual}')
 
-        plotter = _plotter()
+            plotter = _plotter()
 
-        class _summary:
-            @staticmethod
-            def show_report():
-                calls.append('SUMMARY')
-
-        summary = _summary()
+        display = _display()
 
     fake_project = FakeProject()
 
@@ -123,7 +119,7 @@ def test_cli_fit_loads_and_fits(monkeypatch, tmp_path):
 
     result = runner.invoke(main_mod.app, ['fit', str(proj_dir)])
     assert result.exit_code == 0
-    assert calls == ['FIT', 'DISPLAY', 'PLOT_CORR', 'PLOT_exp1_True', 'SUMMARY']
+    assert calls == ['FIT', 'DISPLAY', 'PLOT_CORR', 'PLOT_exp1_True']
 
 
 def test_cli_fit_dry_clears_path(monkeypatch, tmp_path):
@@ -152,23 +148,19 @@ def test_cli_fit_dry_clears_path(monkeypatch, tmp_path):
 
         analysis = _analysis()
 
-        class _plotter:
-            @staticmethod
-            def plot_param_correlations():
-                pass
+        class _display:
+            class _plotter:
+                @staticmethod
+                def plot_param_correlations():
+                    pass
 
-            @staticmethod
-            def plot_meas_vs_calc(expt_name, *, show_residual=False):
-                pass
+                @staticmethod
+                def plot_meas_vs_calc(expt_name, *, show_residual=False):
+                    pass
 
-        plotter = _plotter()
+            plotter = _plotter()
 
-        class _summary:
-            @staticmethod
-            def show_report():
-                pass
-
-        summary = _summary()
+        display = _display()
 
     fake_project = FakeProject()
 

@@ -27,6 +27,9 @@ _CIF_DESCRIPTION_WRAP_LEN = 60
 # Minimum string length to check for surrounding quotes
 _MIN_QUOTED_LEN = 2
 
+# Number of significant digits kept for CIF uncertainty notation
+_CIF_UNCERTAINTY_SIG_DIGITS = 2
+
 
 def format_value(value: object) -> str:
     """
@@ -35,6 +38,8 @@ def format_value(value: object) -> str:
     .. note::     The precision must be high enough so that the
     minimizer's     finite-difference Jacobian probes (typically ~1e-8
     relative)     survive the float→string→float round-trip through CIF.
+    Trailing zeros after the decimal point are stripped for readability
+    (e.g. ``54902.18695000`` → ``54902.18695``, ``0.0`` → ``0.``).
     """
     precision = 8
 
@@ -55,9 +60,9 @@ def format_value(value: object) -> str:
 
     # Formatting
 
-    # Format floats with given precision
+    # Format floats with given precision; strip trailing zeros
     if isinstance(value, float):
-        return f'{value:.{precision}f}'
+        return f'{value:.{precision}f}'.rstrip('0')
     # Format strings as-is
     if isinstance(value, str):
         return value
@@ -76,11 +81,11 @@ def format_param_value(param: object) -> str:
 
     CIF convention for numeric parameters:
 
-    - Fixed or constrained parameter: plain value, e.g. ``3.89090000``
+    - Fixed or constrained parameter: plain value, e.g. ``3.8909``
     - Free parameter without uncertainty: value with empty brackets,
-      e.g. ``3.89090000()``
+      e.g. ``3.8909()``
     - Free parameter with uncertainty: value with esd in brackets,
-      e.g. ``3.89090000(200000)``
+      e.g. ``3.89(20)``
 
     Constrained (dependent) parameters are always written without
     brackets, even if their ``free`` flag is ``True``, because they are
@@ -111,13 +116,13 @@ def format_param_value(param: object) -> str:
 
     precision = 8
     uncertainty = getattr(param, 'uncertainty', None)
-    formatted_value = f'{float(value):.{precision}f}'
+    formatted_value = f'{float(value):.{precision}f}'.rstrip('0')
 
     if uncertainty is not None and uncertainty > 0:
         from uncertainties import ufloat as _ufloat  # noqa: PLC0415
 
         u = _ufloat(float(value), float(uncertainty))
-        return f'{u:.{precision}fS}'
+        return f'{u:.{_CIF_UNCERTAINTY_SIG_DIGITS}uS}'
 
     return f'{formatted_value}()'
 
@@ -320,15 +325,30 @@ def project_info_to_cif(info: object) -> str:
     )
 
 
+def _as_cif_text(section: object) -> str:
+    """Return CIF text from either an ``as_cif`` property or method."""
+    cif_value = section.as_cif
+    return cif_value() if callable(cif_value) else cif_value
+
+
+def project_config_to_cif(project: object) -> str:
+    """Render project-level configuration to ``project.cif`` text."""
+    lines: list[str] = [_as_cif_text(project.info)]
+    display = getattr(project, 'display', None)
+    if display is not None:
+        lines.extend(('', _as_cif_text(display)))
+    return '\n'.join(lines)
+
+
 def project_to_cif(project: object) -> str:
     """Render a whole project by concatenating sections when present."""
     parts: list[str] = []
     if hasattr(project, 'info'):
-        parts.append(project.info.as_cif)
+        parts.append(project_config_to_cif(project))
     if getattr(project, 'structures', None):
-        parts.append(project.structures.as_cif)
+        parts.append(_as_cif_text(project.structures))
     if getattr(project, 'experiments', None):
-        parts.append(project.experiments.as_cif)
+        parts.append(_as_cif_text(project.experiments))
     if getattr(project, 'analysis', None):
         parts.append(project.analysis.as_cif())
     if getattr(project, 'summary', None):
@@ -343,11 +363,9 @@ def experiment_to_cif(experiment: object) -> str:
 
 def analysis_to_cif(analysis: object) -> str:
     """Render analysis metadata, aliases, and constraints to CIF."""
-    cur_min = format_value(analysis.current_minimizer)
     lines: list[str] = []
     lines.extend((
-        f'_analysis.fitting_engine  {cur_min}',
-        analysis.fit_mode.as_cif,
+        analysis.fit.as_cif,
         '',
         analysis.aliases.as_cif,
         '',
@@ -383,6 +401,26 @@ def _wrap_in_data_block(cif_text: str, block_name: str = '_') -> str:
     return f'data_{block_name}\n\n{cif_text}'
 
 
+def _populate_project_info_from_block(
+    info: object,
+    block: gemmi.cif.Block,
+) -> None:
+    """Populate ProjectInfo fields from a parsed CIF block."""
+    read_cif_string = _make_cif_string_reader(block)
+
+    name = read_cif_string('_project.id')
+    if name is not None:
+        info.name = name
+
+    title = read_cif_string('_project.title')
+    if title is not None:
+        info.title = title
+
+    description = read_cif_string('_project.description')
+    if description is not None:
+        info.description = description
+
+
 def project_info_from_cif(info: object, cif_text: str) -> None:
     """
     Populate a ProjectInfo instance from CIF text.
@@ -403,27 +441,31 @@ def project_info_from_cif(info: object, cif_text: str) -> None:
     doc = gemmi.cif.read_string(_wrap_in_data_block(cif_text, 'project'))
     block = doc.sole_block()
 
-    read_cif_string = _make_cif_string_reader(block)
+    _populate_project_info_from_block(info, block)
 
-    name = read_cif_string('_project.id')
-    if name is not None:
-        info.name = name
 
-    title = read_cif_string('_project.title')
-    if title is not None:
-        info.title = title
+def project_config_from_cif(project: object, cif_text: str) -> None:
+    """
+    Populate project-level configuration from ``project.cif`` text.
+    """
+    import gemmi  # noqa: PLC0415
 
-    description = read_cif_string('_project.description')
-    if description is not None:
-        info.description = description
+    doc = gemmi.cif.read_string(_wrap_in_data_block(cif_text, 'project'))
+    block = doc.sole_block()
+
+    _populate_project_info_from_block(project.info, block)
+
+    display = getattr(project, 'display', None)
+    if display is not None:
+        display.from_cif(block)
 
 
 def analysis_from_cif(analysis: object, cif_text: str) -> None:
     """
     Populate an Analysis instance from CIF text.
 
-    Reads the fitting engine, fit mode, aliases, constraints, and
-    joint-fit experiment weights from the given CIF string.
+    Reads the fit configuration, aliases, constraints, and joint-fit
+    experiment weights from the given CIF string.
 
     Parameters
     ----------
@@ -437,17 +479,8 @@ def analysis_from_cif(analysis: object, cif_text: str) -> None:
     doc = gemmi.cif.read_string(_wrap_in_data_block(cif_text, 'analysis'))
     block = doc.sole_block()
 
-    read_cif_string = _make_cif_string_reader(block)
-
-    # Restore minimizer selection
-    engine = read_cif_string('_analysis.fitting_engine')
-    if engine is not None:
-        from easydiffraction.analysis.fitting import Fitter  # noqa: PLC0415
-
-        analysis.fitter = Fitter(engine)
-
-    # Restore fit mode
-    analysis.fit_mode.from_cif(block)
+    # Restore fit configuration
+    analysis.fit.from_cif(block)
 
     # Restore aliases (loop)
     analysis.aliases.from_cif(block)

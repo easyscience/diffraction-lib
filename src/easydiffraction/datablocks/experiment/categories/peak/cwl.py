@@ -14,6 +14,7 @@ from easydiffraction.datablocks.experiment.categories.peak.cwl_mixins import Fcj
 from easydiffraction.datablocks.experiment.categories.peak.factory import PeakFactory
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
+from easydiffraction.datablocks.experiment.item.enums import PeakProfileTypeEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 
 
@@ -25,8 +26,8 @@ class CwlPseudoVoigt(
     """Constant-wavelength pseudo-Voigt peak shape."""
 
     type_info = TypeInfo(
-        tag='pseudo-voigt',
-        description='Pseudo-Voigt profile',
+        tag=PeakProfileTypeEnum.CWL_PSEUDO_VOIGT.value,
+        description=PeakProfileTypeEnum.CWL_PSEUDO_VOIGT.description(),
     )
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
@@ -49,8 +50,8 @@ class CwlPseudoVoigtEmpiricalAsymmetry(
     """Pseudo-Voigt with empirical asymmetry correction for CWL mode."""
 
     type_info = TypeInfo(
-        tag='pseudo-voigt + empirical asymmetry',
-        description='Pseudo-Voigt with empirical asymmetry correction',
+        tag=PeakProfileTypeEnum.CWL_PSEUDO_VOIGT_EMPIRICAL_ASYMMETRY.value,
+        description=(PeakProfileTypeEnum.CWL_PSEUDO_VOIGT_EMPIRICAL_ASYMMETRY.description()),
     )
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
@@ -73,8 +74,8 @@ class CwlThompsonCoxHastings(
     """Thompson-Cox-Hastings with FCJ asymmetry for CWL mode."""
 
     type_info = TypeInfo(
-        tag='thompson-cox-hastings',
-        description='Thompson-Cox-Hastings with FCJ asymmetry correction',
+        tag=PeakProfileTypeEnum.CWL_THOMPSON_COX_HASTINGS.value,
+        description=PeakProfileTypeEnum.CWL_THOMPSON_COX_HASTINGS.description(),
     )
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),

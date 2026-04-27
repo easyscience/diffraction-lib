@@ -28,9 +28,9 @@ pooch.get_logger().setLevel('WARNING')  # Suppress pooch info messages
 _DATA_REPO = 'easyscience/diffraction'
 _DATA_ROOT = 'data'
 # commit SHA preferred
-_DATA_INDEX_REF = '927f96547a80c3328f43f2a69cb9c8048286bcb7'
+_DATA_INDEX_REF = 'd5a1fddd0d3e3e919c7e4a19e83b94b4231b99b6'
 # macOS: sha256sum index.json
-_DATA_INDEX_HASH = 'sha256:301d6aafdc1ccf5f97d2edb491a6b350f6195f05106f8f38c9bf5530e592c8ec'
+_DATA_INDEX_HASH = 'sha256:8305fd55d5b0c7c63ffa2641c082c623a107c32af09343ba901e196f68fd9f73'
 
 
 def _build_data_url(path: str) -> str:

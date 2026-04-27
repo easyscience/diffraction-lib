@@ -165,17 +165,15 @@ class TestMixedAdpTypes:
         assert s.atom_sites['A'].adp_type.value == 'Bani'
         assert s.atom_sites['B'].adp_type.value == 'Biso'
 
-    def test_mixed_cif_has_question_marks_for_iso(self):
+    def test_mixed_cif_excludes_iso_atoms(self):
         project = _make_project_with_structure()
         s = project.structures['cubic']
         s.atom_sites['A'].adp_type = 'Bani'
+        # Only A (Bani) should be in the aniso collection; B (Biso) must be absent
+        assert 'A' in s.atom_site_aniso
+        assert 'B' not in s.atom_site_aniso
         cif = s.atom_site_aniso.as_cif
-        # A is Bani → numerical values
-        # B is Biso → ? markers
-        lines = cif.strip().split('\n')
-        data_lines = [l for l in lines if not l.startswith(('loop_', '_atom_site_aniso'))]
-        b_line = next(l for l in data_lines if 'B ' in l or l.startswith('B '))
-        assert '?' in b_line
+        assert '?' not in cif
 
     def test_all_iso_suppresses_aniso_cif(self):
         project = _make_project_with_structure()

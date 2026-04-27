@@ -3,10 +3,11 @@
 """
 Time-of-flight peak profile classes.
 
-Jorgensen: BBE ⊗ Gaussian (CrysPy ``peak_shape="Gauss"``). Jorgensen-Von
-Dreele: BBE ⊗ pseudo-Voigt (CrysPy ``peak_shape="pseudo-Voigt"``).
-Double-Jorgensen-Von Dreele: double BBE ⊗ pseudo-Voigt (CrysPy
-``peak_shape="type0m"``, Z-Rietveld).
+Jorgensen: back-to-back exponentials ⊗ Gaussian (CrysPy
+``peak_shape="Gauss"``). Jorgensen-Von Dreele: back-to-back exponentials
+⊗ pseudo-Voigt (CrysPy ``peak_shape="pseudo-Voigt"``).
+Double-Jorgensen-Von Dreele: double back-to-back exponentials ⊗
+pseudo-Voigt (CrysPy ``peak_shape="type0m"``, Z-Rietveld).
 """
 
 from easydiffraction.core.metadata import CalculatorSupport
@@ -28,7 +29,32 @@ from easydiffraction.datablocks.experiment.categories.peak.tof_mixins import (
 )
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
+from easydiffraction.datablocks.experiment.item.enums import PeakProfileTypeEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
+
+
+@PeakFactory.register
+class TofPseudoVoigt(
+    PeakBase,
+    TofGaussianBroadeningMixin,
+    TofLorentzianBroadeningMixin,
+):
+    """Simple non-convoluted pseudo-Voigt TOF profile."""
+
+    type_info = TypeInfo(
+        tag=PeakProfileTypeEnum.TOF_PSEUDO_VOIGT.value,
+        description=PeakProfileTypeEnum.TOF_PSEUDO_VOIGT.description(),
+    )
+    compatibility = Compatibility(
+        scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
+        beam_mode=frozenset({BeamModeEnum.TIME_OF_FLIGHT}),
+    )
+    calculator_support = CalculatorSupport(
+        calculators=frozenset({CalculatorEnum.CRYSPY}),
+    )
+
+    def __init__(self) -> None:
+        super().__init__()
 
 
 @PeakFactory.register
@@ -40,8 +66,8 @@ class TofJorgensen(
     """Jorgensen TOF profile: back-to-back exponentials ⊗ Gaussian."""
 
     type_info = TypeInfo(
-        tag='jorgensen',
-        description='Jorgensen BBE ⊗ Gaussian profile',
+        tag=PeakProfileTypeEnum.TOF_JORGENSEN.value,
+        description=PeakProfileTypeEnum.TOF_JORGENSEN.description(),
     )
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
@@ -62,11 +88,11 @@ class TofJorgensenVonDreele(
     TofLorentzianBroadeningMixin,
     TofBackToBackExponentialMixin,
 ):
-    """Jorgensen-Von Dreele TOF profile: BBE ⊗ pseudo-Voigt."""
+    """Back-to-back exponentials ⊗ pseudo-Voigt TOF profile."""
 
     type_info = TypeInfo(
-        tag='jorgensen-von-dreele',
-        description='Jorgensen-Von Dreele BBE ⊗ pseudo-Voigt profile',
+        tag=PeakProfileTypeEnum.TOF_JORGENSEN_VON_DREELE.value,
+        description=PeakProfileTypeEnum.TOF_JORGENSEN_VON_DREELE.description(),
     )
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
@@ -87,11 +113,11 @@ class TofDoubleJorgensenVonDreele(
     TofLorentzianBroadeningMixin,
     TofDoubleExponentialMixin,
 ):
-    """Double-Jorgensen-Von Dreele TOF profile: double BBE ⊗ pV."""
+    """Double back-to-back exponentials ⊗ pseudo-Voigt TOF profile."""
 
     type_info = TypeInfo(
-        tag='double-jorgensen-von-dreele',
-        description='Double-exp ⊗ pseudo-Voigt profile (Z-Rietveld type0m)',
+        tag=PeakProfileTypeEnum.TOF_DOUBLE_JORGENSEN_VON_DREELE.value,
+        description=PeakProfileTypeEnum.TOF_DOUBLE_JORGENSEN_VON_DREELE.description(),
     )
     compatibility = Compatibility(
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),

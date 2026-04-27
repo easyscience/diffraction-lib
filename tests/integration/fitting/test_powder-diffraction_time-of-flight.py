@@ -58,7 +58,7 @@ def test_single_fit_neutron_pd_tof_si() -> None:
     project.experiments.add(expt)
 
     # Prepare for fitting
-    project.analysis.current_minimizer = 'lmfit'
+    project.analysis.fit.minimizer_type = 'lmfit'
 
     # Select fitting parameters
     model.cell.length_a.free = True
@@ -200,7 +200,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
     project.experiments.add(expt)
 
     # Prepare for fitting
-    project.analysis.current_minimizer = 'lmfit'
+    project.analysis.fit.minimizer_type = 'lmfit'
 
     # Select fitting parameters
     expt.linked_phases['ncaf'].scale.free = True

@@ -127,8 +127,7 @@ expt.instrument.calib_twotheta_offset = 0.1
 # #### Set Peak Profile
 
 # %%
-expt.show_current_peak_profile_type()
-expt.show_supported_peak_profile_types()
+expt.show_peak_profile_types()
 expt.peak_profile_type = 'pseudo-voigt + empirical asymmetry'
 expt.peak.broad_gauss_u = 0.3
 expt.peak.broad_gauss_v = -0.5
@@ -138,8 +137,7 @@ expt.peak.broad_gauss_w = 0.4
 # #### Set Background
 
 # %%
-expt.show_current_background_type()
-expt.show_supported_background_types()
+expt.show_background_types()
 expt.background.create(id='1', x=8, y=500)
 expt.background.create(id='2', x=9, y=500)
 expt.background.create(id='3', x=10, y=500)
@@ -193,10 +191,10 @@ project.experiments.add(expt)
 # #### Plot Measured vs Calculated
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='d20', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='d20', show_residual=True)
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='d20', x_min=41, x_max=54, show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='d20', x_min=41, x_max=54, show_residual=True)
 
 # %% [markdown]
 # #### Set Free Parameters
@@ -272,16 +270,16 @@ project.analysis.fit()
 project.analysis.display.fit_results()
 
 # %%
-project.plotter.plot_param_correlations()
+project.display.plotter.plot_param_correlations()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='d20', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='d20', show_residual=True)
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='d20', x_min=42, x_max=52, show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='d20', x_min=42, x_max=52, show_residual=True)
 
 # %% [markdown]
 # ## Perform Analysis (ADP aniso)
@@ -312,13 +310,13 @@ project.analysis.fit()
 project.analysis.display.fit_results()
 
 # %%
-project.plotter.plot_param_correlations()
+project.display.plotter.plot_param_correlations()
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='d20', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='d20', show_residual=True)
 
 # %%
-project.plotter.plot_meas_vs_calc(expt_name='d20', x_min=42, x_max=52, show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='d20', x_min=42, x_max=52, show_residual=True)
 
 # %%
 structure.show_as_cif()

@@ -66,8 +66,8 @@ def test_parameter_string_repr_and_as_cif_and_flags():
     assert 'A' in s
     assert '(free=True)' in s
 
-    # CIF line: free param with uncertainty uses esd brackets
-    assert p.as_cif == '_param.a 2.50000000(10000000)'
+    # CIF line: free param with uncertainty uses 2-sig-digit esd brackets
+    assert p.as_cif == '_param.a 2.50(10)'
 
     # CifHandler uid is owner's unique_name (parameter name here)
     assert p._cif_handler.uid == p.unique_name == 'a'

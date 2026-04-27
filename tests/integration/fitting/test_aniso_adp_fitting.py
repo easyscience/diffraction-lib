@@ -94,12 +94,11 @@ def test_iso_then_aniso_fit() -> None:
     # O2 should still be Uiso
     assert s.atom_sites['O2'].adp_type.value == 'Uiso'
 
-    # CIF should show ? for O2 in aniso loop
+    # CIF should omit O2 from the aniso loop because it remains Uiso
     cif = s.atom_site_aniso.as_cif
     lines = cif.strip().split('\n')
     o2_lines = [l for l in lines if l.strip().startswith('O2')]
-    assert len(o2_lines) == 1
-    assert '?' in o2_lines[0]
+    assert not o2_lines
 
 
 if __name__ == '__main__':

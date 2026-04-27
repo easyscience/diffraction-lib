@@ -92,7 +92,7 @@ class TofPdInstrument(InstrumentBase):
             description='TOF quadratic correction',
             units='μs/Å²',
             value_spec=AttributeSpec(
-                default=-0.00001,  # TODO: Fix CrysPy to accept 0
+                default=0.0,
                 validator=RangeValidator(),
             ),
             cif_handler=CifHandler(names=['_instr.d_to_tof_quad']),

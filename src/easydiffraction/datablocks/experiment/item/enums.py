@@ -36,7 +36,7 @@ class SampleFormEnum(StrEnum):
             return 'Powdered or polycrystalline sample.'
         if self is SampleFormEnum.SINGLE_CRYSTAL:
             return 'Single crystal sample.'
-        return None
+        return ''
 
 
 class ScatteringTypeEnum(StrEnum):
@@ -70,7 +70,7 @@ class ScatteringTypeEnum(StrEnum):
             return 'Bragg diffraction for conventional structure refinement.'
         if self is ScatteringTypeEnum.TOTAL:
             return 'Total scattering for pair distribution function analysis (PDF).'
-        return None
+        return ''
 
 
 class RadiationProbeEnum(StrEnum):
@@ -159,13 +159,14 @@ class CalculatorEnum(StrEnum):
 class PeakProfileTypeEnum(StrEnum):
     """Available peak profile types per scattering and beam mode."""
 
-    PSEUDO_VOIGT = 'pseudo-voigt'
-    PSEUDO_VOIGT_EMPIRICAL_ASYMMETRY = 'pseudo-voigt + empirical asymmetry'
-    THOMPSON_COX_HASTINGS = 'thompson-cox-hastings'
-    JORGENSEN = 'jorgensen'
-    JORGENSEN_VON_DREELE = 'jorgensen-von-dreele'
-    DOUBLE_JORGENSEN_VON_DREELE = 'double-jorgensen-von-dreele'
-    GAUSSIAN_DAMPED_SINC = 'gaussian-damped-sinc'
+    CWL_PSEUDO_VOIGT = 'cwl-pseudo-voigt'
+    CWL_PSEUDO_VOIGT_EMPIRICAL_ASYMMETRY = 'cwl-pseudo-voigt-empirical-asymmetry'
+    CWL_THOMPSON_COX_HASTINGS = 'cwl-thompson-cox-hastings'
+    TOF_PSEUDO_VOIGT = 'tof-pseudo-voigt'
+    TOF_JORGENSEN = 'tof-jorgensen'
+    TOF_JORGENSEN_VON_DREELE = 'tof-jorgensen-von-dreele'
+    TOF_DOUBLE_JORGENSEN_VON_DREELE = 'tof-double-jorgensen-von-dreele'
+    TOTAL_GAUSSIAN_DAMPED_SINC = 'total-gaussian-damped-sinc'
 
     @classmethod
     def default(
@@ -195,13 +196,17 @@ class PeakProfileTypeEnum(StrEnum):
         if beam_mode is None:
             beam_mode = BeamModeEnum.default()
         return {
-            (ScatteringTypeEnum.BRAGG, BeamModeEnum.CONSTANT_WAVELENGTH): cls.PSEUDO_VOIGT,
+            (ScatteringTypeEnum.BRAGG, BeamModeEnum.CONSTANT_WAVELENGTH): (cls.CWL_PSEUDO_VOIGT),
             (
                 ScatteringTypeEnum.BRAGG,
                 BeamModeEnum.TIME_OF_FLIGHT,
-            ): cls.JORGENSEN,
-            (ScatteringTypeEnum.TOTAL, BeamModeEnum.CONSTANT_WAVELENGTH): cls.GAUSSIAN_DAMPED_SINC,
-            (ScatteringTypeEnum.TOTAL, BeamModeEnum.TIME_OF_FLIGHT): cls.GAUSSIAN_DAMPED_SINC,
+            ): cls.TOF_JORGENSEN,
+            (ScatteringTypeEnum.TOTAL, BeamModeEnum.CONSTANT_WAVELENGTH): (
+                cls.TOTAL_GAUSSIAN_DAMPED_SINC
+            ),
+            (ScatteringTypeEnum.TOTAL, BeamModeEnum.TIME_OF_FLIGHT): (
+                cls.TOTAL_GAUSSIAN_DAMPED_SINC
+            ),
         }[scattering_type, beam_mode]
 
     def description(self) -> str:  # noqa: PLR0911
@@ -213,22 +218,25 @@ class PeakProfileTypeEnum(StrEnum):
         str
             Description string for the current enum member.
         """
-        if self is PeakProfileTypeEnum.PSEUDO_VOIGT:
-            return 'Pseudo-Voigt profile'
-        if self is PeakProfileTypeEnum.PSEUDO_VOIGT_EMPIRICAL_ASYMMETRY:
-            return 'Pseudo-Voigt profile with empirical asymmetry correction.'
-        if self is PeakProfileTypeEnum.THOMPSON_COX_HASTINGS:
-            return 'Thompson-Cox-Hastings profile with FCJ asymmetry correction.'
-        if self is PeakProfileTypeEnum.JORGENSEN:
-            return 'Jorgensen back-to-back exponentials convolved with Gaussian.'
-        if self is PeakProfileTypeEnum.JORGENSEN_VON_DREELE:
-            return 'Jorgensen-Von Dreele back-to-back exponentials convolved with pseudo-Voigt.'
-        if self is PeakProfileTypeEnum.DOUBLE_JORGENSEN_VON_DREELE:
+        if self is PeakProfileTypeEnum.CWL_PSEUDO_VOIGT:
+            return 'CWL pseudo-Voigt profile'
+        if self is PeakProfileTypeEnum.CWL_PSEUDO_VOIGT_EMPIRICAL_ASYMMETRY:
+            return 'CWL pseudo-Voigt profile with empirical asymmetry correction.'
+        if self is PeakProfileTypeEnum.CWL_THOMPSON_COX_HASTINGS:
+            return 'CWL Thompson-Cox-Hastings profile with FCJ asymmetry correction.'
+        if self is PeakProfileTypeEnum.TOF_PSEUDO_VOIGT:
+            return 'TOF non-convoluted pseudo-Voigt profile'
+        if self is PeakProfileTypeEnum.TOF_JORGENSEN:
+            return 'TOF Jorgensen profile: back-to-back exponentials ⊗ Gaussian'
+        if self is PeakProfileTypeEnum.TOF_JORGENSEN_VON_DREELE:
+            return 'TOF Jorgensen-Von Dreele profile: back-to-back exponentials ⊗ pseudo-Voigt'
+        if self is PeakProfileTypeEnum.TOF_DOUBLE_JORGENSEN_VON_DREELE:
             return (
-                'Double back-to-back exponentials convolved with pseudo-Voigt (Z-Rietveld type0m).'
+                'TOF Double-Jorgensen-Von Dreele profile: double back-to-back '
+                'exponentials ⊗ pseudo-Voigt (Z-Rietveld type0m)'
             )
-        if self is PeakProfileTypeEnum.GAUSSIAN_DAMPED_SINC:
-            return 'Gaussian-damped sinc profile for pair distribution function (PDF) analysis.'
+        if self is PeakProfileTypeEnum.TOTAL_GAUSSIAN_DAMPED_SINC:
+            return 'Total-scattering Gaussian-damped sinc profile for PDF analysis.'
         return None
 
 
