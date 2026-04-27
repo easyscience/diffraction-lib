@@ -145,18 +145,7 @@ project_1.experiments.add_from_data_path(
 # for more details about the measured data and its format.
 #
 # To visualize the measured data, we can use the `plot_meas` method of
-# the project. Before plotting, we need to set the plotting engine to
-# 'plotly', which provides interactive visualizations.
-
-# %% [markdown] tags=["doc-link"]
-# 📖 See
-# [documentation](https://easyscience.github.io/diffraction-lib/user-guide/first-steps/#supported-plotters)
-# for more details about setting the plotting engine.
-
-# %%
-# Keep the auto-selected engine. Alternatively, you can uncomment the
-# line below to explicitly set the engine to the required one.
-# project_1.display.plotter.engine = 'plotly'
+# the project.
 
 # %%
 project_1.display.plotter.plot_meas(expt_name='sim_si')
@@ -221,11 +210,15 @@ project_1.display.plotter.plot_meas(expt_name='sim_si')
 
 # %%
 project_1.experiments['sim_si'].instrument.setup_twotheta_bank = ed.extract_metadata(
-    si_xye_path, r'two_theta\s*=\s*([-+]?\d*\.?\d+(?:[eE][-+]?\d+)?)'
+    si_xye_path, r'two_theta\s*=\s*(\d*\.?\d+)'
 )
 project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear = ed.extract_metadata(
-    si_xye_path, r'DIFC\s*=\s*([-+]?\d*\.?\d+(?:[eE][-+]?\d+)?)'
+    si_xye_path, r'DIFC\s*=\s*(\d*\.?\d+)'
 )
+
+# %%
+# TEMPORARY
+project_1.experiments['sim_si'].instrument.calib_d_to_tof_quad = -0.00001
 
 # %% [markdown]
 # Before proceeding, let's take a quick look at the concept of
@@ -273,25 +266,40 @@ print(project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear.value)
 # in the fitting process. The peak profile describes the shape of the
 # diffraction peaks.
 #
-# There are several commonly used peak profile functions:
-# - **Gaussian**: Describes peaks with a symmetric bell-shaped curve,
-#   often used when instrumental broadening dominates. [Click for more
+# Several peak profile functions are commonly used:
+# - **Gaussian**: A symmetric bell-shaped peak profile. It is often used
+#   when instrumental broadening is dominant. [Click for more
 #   details.](https://mantidproject.github.io/docs-versioned/v6.1.0/fitting/fitfunctions/Gaussian.html)
-# - **Lorentzian**: Produces narrower central peaks with longer tails,
-#   frequently used to model size broadening effects. [Click for more
+# - **Lorentzian**: A symmetric peak profile with a sharper centre and
+#   longer tails than a Gaussian. It is often used to describe size
+#   broadening effects. [Click for more
 #   details.](https://mantidproject.github.io/docs-versioned/v6.1.0/fitting/fitfunctions/Lorentzian.html)
 # - **Pseudo-Voigt**: A linear combination of Gaussian and Lorentzian
-#   components, providing flexibility to represent real diffraction
-#   peaks. [Click for more
+#   components. It provides a flexible approximation for many real
+#   diffraction peak shapes. [Click for more
 #   details.](https://mantidproject.github.io/docs-versioned/v6.1.0/fitting/fitfunctions/PseudoVoigt.html)
-# - **Pseudo-Voigt convoluted with Ikeda-Carpenter**: Incorporates the
-#   asymmetry introduced by the neutron pulse shape in time-of-flight
-#   instruments. This is a common choice for TOF neutron powder
-#   diffraction data. [Click for more
+# - **Jorgensen**: A convolution of back-to-back exponentials with a
+#   Gaussian. This profile can describe asymmetric TOF peak shapes.
+#   [Click for more details.](
+#   https://docs.mantidproject.org/nightly/fitting/fitfunctions/BackToBackExponential.html)
+# - **Jorgensen–Von Dreele**: A convolution of back-to-back exponentials
+#   with a pseudo-Voigt function. This extends the Jorgensen profile by
+#   allowing a more flexible symmetric peak component.
+#   [Click for more details.](https://docs.mantidproject.org/nightly/fitting/fitfunctions/BackToBackExponential.html)
+# - **Ikeda–Carpenter pseudo-Voigt**: A convolution of the
+#   Ikeda–Carpenter function with a pseudo-Voigt function. It includes
+#   asymmetry caused by the neutron pulse shape and is commonly used for
+#   TOF neutron powder diffraction data. [Click for more
 #   details.](https://docs.mantidproject.org/v6.1.0/fitting/fitfunctions/IkedaCarpenterPV.html)
 #
-# Here, we use a pseudo-Voigt peak profile function with Ikeda-Carpenter
-# asymmetry.
+# In TOF neutron powder diffraction, peak profiles are usually built by
+# combining a symmetric peak-shape function, such as a Gaussian,
+# Lorentzian, or pseudo-Voigt, with an asymmetric component, such as a
+# back-to-back exponential or Ikeda–Carpenter function. This combination
+# gives a more realistic description of TOF peak shapes, which are often
+# asymmetric because of the neutron pulse shape and instrumental effects.
+#
+# Here, we use a simple Jorgensen peak profile.
 #
 # The parameter values are typically determined experimentally on the
 # same instrument and under the same configuration as the data being
@@ -308,7 +316,9 @@ print(project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear.value)
 # for more details about the peak profile types.
 
 # %%
-project_1.experiments['sim_si'].peak_profile_type = 'jorgensen'
+project_1.experiments['sim_si'].show_peak_profile_types()
+
+# %%
 project_1.experiments['sim_si'].peak.broad_gauss_sigma_0 = 69498
 project_1.experiments['sim_si'].peak.broad_gauss_sigma_1 = -55578
 project_1.experiments['sim_si'].peak.broad_gauss_sigma_2 = 14560
@@ -351,6 +361,9 @@ project_1.experiments['sim_si'].peak.exp_rise_alpha_1 = 0.0147
 # 📖 See
 # [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/experiment/#background-category)
 # for more details about the background and its types.
+
+# %%
+project_1.experiments['sim_si'].show_background_types()
 
 # %%
 project_1.experiments['sim_si'].background_type = 'line-segment'
@@ -524,7 +537,7 @@ project_1.experiments['sim_si'].linked_phases.create(id='si', scale=1.0)
 # the expected diffraction pattern is already defined in the library and
 # will be applied automatically during the fitting process.
 
-# %% [markdown] **Reminder:**
+# %% **Reminder:** [markdown]
 #
 # The fitting process involves comparing the measured diffraction
 # pattern with the calculated diffraction pattern based on the crystal
@@ -804,11 +817,15 @@ project_2.display.plotter.plot_meas(expt_name='sim_lbco')
 
 # %% tags=["solution", "hide-input"]
 project_2.experiments['sim_lbco'].instrument.setup_twotheta_bank = ed.extract_metadata(
-    lbco_xye_path, r'two_theta\s*=\s*([-+]?\d*\.?\d+(?:[eE][-+]?\d+)?)'
+    lbco_xye_path, r'two_theta\s*=\s*(\d*\.?\d+)'
 )
 project_2.experiments['sim_lbco'].instrument.calib_d_to_tof_linear = ed.extract_metadata(
-    lbco_xye_path, r'DIFC\s*=\s*([-+]?\d*\.?\d+(?:[eE][-+]?\d+)?)'
+    lbco_xye_path, r'DIFC\s*=\s*(\d*\.?\d+)'
 )
+
+# %%
+# TEMPORARY
+project_2.experiments['sim_lbco'].instrument.calib_d_to_tof_quad = -0.00001
 
 # %% [markdown]
 # #### Exercise 2.3: Set Peak Profile Parameters
@@ -829,9 +846,10 @@ project_2.experiments['sim_lbco'].instrument.calib_d_to_tof_linear = ed.extract_
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-# # Create a reference to the peak profile parameters from the Si
+# Create a reference to the peak profile parameters from the Si...
 sim_si_peak = project_1.experiments['sim_si'].peak
-project_2.experiments['sim_lbco'].peak_profile_type = 'jorgensen'
+
+# ...and use their values to set the initial parameters for the LBCO
 project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_0 = sim_si_peak.broad_gauss_sigma_0.value
 project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_1 = sim_si_peak.broad_gauss_sigma_1.value
 project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_2 = sim_si_peak.broad_gauss_sigma_2.value
@@ -859,7 +877,6 @@ project_2.experiments['sim_lbco'].peak.exp_rise_alpha_1 = sim_si_peak.exp_rise_a
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.experiments['sim_lbco'].background_type = 'line-segment'
 project_2.experiments['sim_lbco'].background.create(id='1', x=50000, y=0.2)
 project_2.experiments['sim_lbco'].background.create(id='2', x=60000, y=0.2)
 project_2.experiments['sim_lbco'].background.create(id='3', x=70000, y=0.2)
@@ -1135,7 +1152,7 @@ project_2.analysis.display.fit_results()
 # **Solution:**
 
 # %% [markdown] tags=["dmsc-school-hint"]
-
+#
 # 1. ❌ The conversion parameters from TOF to d-spacing were set based
 # on the data reduction step. While they are specific to each dataset
 # and thus differ from those used for the Si data, the full reduction

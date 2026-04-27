@@ -143,9 +143,7 @@ experiment = ExperimentFactory.from_data_path(
 
 # %%
 experiment.instrument.setup_twotheta_bank = 94.90931761529106
-experiment.instrument.calib_d_to_tof_offset = 0.0
 experiment.instrument.calib_d_to_tof_linear = 58724.76869981215
-experiment.instrument.calib_d_to_tof_quad = -0.00001
 
 # %% [markdown]
 # #### Set Peak Profile
