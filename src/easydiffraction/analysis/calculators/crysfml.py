@@ -322,19 +322,23 @@ class CrysfmlCalculator(CalculatorBase):
         data = experiment.data
         x_data = data.x
 
+        # Do not pass x_min, x_max, and x_inc; instead, always pass
+        # the full x_data to support non-uniform x spacing.
+        # x_min = float(x_data.min())
+        # x_max = float(x_data.max())
+        # x_inc = (x_max - x_min) / (len(x_data) - 1 + 1e-9)
+
         if hasattr(data, 'two_theta'):
+            # experiment_dict['_pd_meas_2theta_range_min'] = x_min
+            # experiment_dict['_pd_meas_2theta_range_max'] = x_max
+            # experiment_dict['_pd_meas_2theta_range_inc'] = x_inc
             experiment_dict['_pd_meas_2theta_scan'] = x_data.tolist()
 
         if hasattr(data, 'time_of_flight'):
-            x_min = float(x_data.min())
-            x_max = float(x_data.max())
-            x_inc = (x_max - x_min) / (len(x_data) - 1 + 1e-9)
-            experiment_dict['_pd_meas_tof_range_min'] = x_min
-            experiment_dict['_pd_meas_tof_range_max'] = x_max
-            experiment_dict['_pd_meas_tof_range_inc'] = x_inc
-            # experiment_dict['_pd_meas_time_of_flight'] = (
-            #     x_data.tolist()
-            # )
+            # experiment_dict['_pd_meas_tof_range_min'] = x_min
+            # experiment_dict['_pd_meas_tof_range_max'] = x_max
+            # experiment_dict['_pd_meas_tof_range_inc'] = x_inc
+            experiment_dict['_pd_meas_time_of_flight'] = x_data.tolist()
 
     @staticmethod
     def _copy_present_values(
