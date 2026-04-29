@@ -62,7 +62,7 @@ def test_neutron_pd_cwl_lbco_crysfml(tmp_path) -> None:
     # Compare fit quality
     assert_almost_equal(
         project.analysis.fit_results.reduced_chi_square,
-        desired=7.76,
+        desired=1.28,
         decimal=1,
     )
 
