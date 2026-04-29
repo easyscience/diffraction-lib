@@ -4,7 +4,8 @@
 # This minimalistic example is designed to show how Rietveld refinement
 # can be performed when both the crystal structure and experiment are
 # defined directly in code. Only the experimentally measured data is
-# loaded from an external file.
+# loaded from an external file. It also shows how to switch calculation
+# engine.
 #
 # For this example, constant-wavelength neutron powder diffraction data
 # for La0.5Ba0.5CoO3 from HRPT at PSI is used.
@@ -193,6 +194,27 @@ project.analysis.constraints.create(expression='biso_Ba = biso_La')
 # %%
 project.analysis.fit.show_minimizer_types()
 project.analysis.fit.minimizer_type = 'lmfit'
+
+# %%
+project.analysis.fit()
+
+# %%
+project.analysis.display.fit_results()
+
+# %%
+project.display.plotter.plot_param_correlations()
+
+# %%
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+
+# %% [markdown]
+# ## Step 6: Switch calculator engine
+
+# %%
+experiment.calculation.show_calculator_types()
+
+# %%
+experiment.calculation.calculator_type = 'crysfml'
 
 # %%
 project.analysis.fit()

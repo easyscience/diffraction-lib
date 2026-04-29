@@ -4,6 +4,8 @@
 # This example demonstrates a Rietveld refinement of Si crystal
 # structure using time-of-flight neutron powder diffraction data from
 # SEPD at Argonne.
+#
+# It also shows how to switch calculation engine and peak profile type.
 
 # %% [markdown]
 # ## Import Library
@@ -288,6 +290,70 @@ project.display.plotter.plot_param_correlations()
 
 # %%
 project.display.plotter.plot_meas_vs_calc(expt_name='sepd', show_residual=True)
+
+# %%
+project.display.plotter.plot_meas_vs_calc(
+    expt_name='sepd', x_min=23200, x_max=23700, show_residual=True
+)
+
+# %%
+project.display.plotter.plot_meas_vs_calc(expt_name='sepd', x='d_spacing', show_residual=True)
+
+
+# %% [markdown]
+# ### Perform Fit 5/5
+#
+# #### Switch calculator engine
+
+# %%
+expt.calculation.show_calculator_types()
+
+# %%
+expt.calculation.calculator_type = 'crysfml'
+
+# %% [markdown]
+# #### Change peak profile type
+
+# %%
+expt.show_peak_profile_types()
+
+# %%
+expt.peak_profile_type = 'jorgensen-von-dreele'
+
+# %%
+expt.peak.broad_gauss_sigma_0 = 3.0148
+expt.peak.broad_gauss_sigma_1 = 33.3451
+expt.peak.broad_lorentz_gamma_1 = 2.5489
+expt.peak.exp_decay_beta_0 = 0.04221
+expt.peak.exp_decay_beta_1 = 0.00946
+expt.peak.exp_rise_alpha_1 = 0.5971
+
+# %% [markdown]
+# #### Add new free parameters
+
+# %%
+expt.peak.broad_gauss_sigma_0.free = True
+expt.peak.broad_gauss_sigma_1.free = True
+expt.peak.broad_lorentz_gamma_1.free = True
+expt.peak.exp_decay_beta_0.free = True
+expt.peak.exp_decay_beta_1.free = True
+expt.peak.exp_rise_alpha_1.free = True
+
+# %% [markdown]
+# #### Run Fitting
+
+# %%
+project.analysis.fit()
+project.analysis.display.fit_results()
+
+# %% [markdown]
+# #### Show parameter correlations
+
+# %%
+project.display.plotter.plot_param_correlations()
+
+# %% [markdown]
+# #### Plot Measured vs Calculated
 
 # %%
 project.display.plotter.plot_meas_vs_calc(

@@ -7524,7 +7524,11 @@ False.</p>
 <span class="normal">345</span>
 <span class="normal">346</span>
 <span class="normal">347</span>
-<span class="normal">348</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@CalculatorFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@CalculatorFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CrysfmlCalculator</span><span class="p">(</span><span class="n">CalculatorBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper for Crysfml library.&quot;&quot;&quot;</span>
 
@@ -7629,9 +7633,9 @@ False.</p>
 <span class="sd">            The adjusted pattern.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># TODO: Check the origin of this discrepancy coming from</span>
-        <span class="c1">#  PyCrysFML</span>
+        <span class="c1">#  CrysFML</span>
         <span class="c1"># Safety guard: with the correct step formula (max-min)/(N-1+ε),</span>
-        <span class="c1"># pycrysfml should return exactly target_length points. Truncate</span>
+        <span class="c1"># crysfml should return exactly target_length points. Truncate</span>
         <span class="c1"># if over-length; pad with the last value if under-length.</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">target_length</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">pattern</span><span class="p">[:</span><span class="n">target_length</span><span class="p">]</span>
@@ -7785,19 +7789,23 @@ False.</p>
         <span class="n">data</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">data</span>
         <span class="n">x_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">x</span>
 
+        <span class="c1"># Do not pass x_min, x_max, and x_inc; instead, always pass</span>
+        <span class="c1"># the full x_data to support non-uniform x spacing.</span>
+        <span class="c1"># x_min = float(x_data.min())</span>
+        <span class="c1"># x_max = float(x_data.max())</span>
+        <span class="c1"># x_inc = (x_max - x_min) / (len(x_data) - 1 + 1e-9)</span>
+
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;two_theta&#39;</span><span class="p">):</span>
+            <span class="c1"># experiment_dict[&#39;_pd_meas_2theta_range_min&#39;] = x_min</span>
+            <span class="c1"># experiment_dict[&#39;_pd_meas_2theta_range_max&#39;] = x_max</span>
+            <span class="c1"># experiment_dict[&#39;_pd_meas_2theta_range_inc&#39;] = x_inc</span>
             <span class="n">experiment_dict</span><span class="p">[</span><span class="s1">&#39;_pd_meas_2theta_scan&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_data</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;time_of_flight&#39;</span><span class="p">):</span>
-            <span class="n">x_min</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">x_data</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
-            <span class="n">x_max</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">x_data</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
-            <span class="n">x_inc</span> <span class="o">=</span> <span class="p">(</span><span class="n">x_max</span> <span class="o">-</span> <span class="n">x_min</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x_data</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">+</span> <span class="mf">1e-9</span><span class="p">)</span>
-            <span class="n">experiment_dict</span><span class="p">[</span><span class="s1">&#39;_pd_meas_tof_range_min&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_min</span>
-            <span class="n">experiment_dict</span><span class="p">[</span><span class="s1">&#39;_pd_meas_tof_range_max&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_max</span>
-            <span class="n">experiment_dict</span><span class="p">[</span><span class="s1">&#39;_pd_meas_tof_range_inc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_inc</span>
-            <span class="c1"># experiment_dict[&#39;_pd_meas_time_of_flight&#39;] = (</span>
-            <span class="c1">#     x_data.tolist()</span>
-            <span class="c1"># )</span>
+            <span class="c1"># experiment_dict[&#39;_pd_meas_tof_range_min&#39;] = x_min</span>
+            <span class="c1"># experiment_dict[&#39;_pd_meas_tof_range_max&#39;] = x_max</span>
+            <span class="c1"># experiment_dict[&#39;_pd_meas_tof_range_inc&#39;] = x_inc</span>
+            <span class="n">experiment_dict</span><span class="p">[</span><span class="s1">&#39;_pd_meas_time_of_flight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_data</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_copy_present_values</span><span class="p">(</span>
@@ -9037,7 +9045,10 @@ patterns.</p>
 <span class="normal">734</span>
 <span class="normal">735</span>
 <span class="normal">736</span>
-<span class="normal">737</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@CalculatorFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">737</span>
+<span class="normal">738</span>
+<span class="normal">739</span>
+<span class="normal">740</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@CalculatorFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CryspyCalculator</span><span class="p">(</span><span class="n">CalculatorBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cryspy-based diffraction calculator.</span>
@@ -9362,6 +9373,9 @@ patterns.</p>
 <span class="sd">        Wyckoff letter, so keep the calculator dictionary aligned with</span>
 <span class="sd">        that model state.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">cryspy</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
         <span class="kn">from</span><span class="w"> </span><span class="nn">cryspy.A_functions_base.function_2_space_group</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>  <span class="c1"># noqa: PLC0415</span>
             <span class="n">get_it_number_by_name_hm_short</span><span class="p">,</span>
         <span class="p">)</span>
