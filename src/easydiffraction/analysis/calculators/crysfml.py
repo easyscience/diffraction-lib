@@ -15,10 +15,10 @@ from easydiffraction.datablocks.structure.collection import Structures
 from easydiffraction.datablocks.structure.item.base import Structure
 
 try:
-    from pycrysfml import cfml_py_utilities
+    from crysfml import cfml_py_utilities
 
     # TODO: Add the following print to debug mode
-    # print("✅ 'pycrysfml' calculation engine is successfully
+    # print("✅ 'crysfml' calculation engine is successfully
     # imported.")
 except ImportError:
     # TODO: Add the following print to debug mode
@@ -166,9 +166,9 @@ class CrysfmlCalculator(CalculatorBase):
             The adjusted pattern.
         """
         # TODO: Check the origin of this discrepancy coming from
-        #  PyCrysFML
+        #  CrysFML
         # Safety guard: with the correct step formula (max-min)/(N-1+ε),
-        # pycrysfml should return exactly target_length points. Truncate
+        # crysfml should return exactly target_length points. Truncate
         # if over-length; pad with the last value if under-length.
         if len(pattern) > target_length:
             return pattern[:target_length]
