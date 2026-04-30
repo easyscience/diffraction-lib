@@ -105,7 +105,8 @@ class Cell(CategoryItem):
 
         Uses the parent structure's space-group symbol to determine
         which lattice parameters are dependent and sets them
-        accordingly.
+        accordingly. Dependent parameters are also flagged as
+        ``symmetry_fixed`` so they cannot be marked refinable.
         """
         dummy_cell = {
             'lattice_a': self.length_a.value,
@@ -121,13 +122,19 @@ class Cell(CategoryItem):
             cell=dummy_cell,
             name_hm=space_group_name,
         )
+        fixed_flags = ecr.cell_symmetry_fixed_flags(name_hm=space_group_name)
 
-        self.length_a.value = dummy_cell['lattice_a']
-        self.length_b.value = dummy_cell['lattice_b']
-        self.length_c.value = dummy_cell['lattice_c']
-        self.angle_alpha.value = dummy_cell['angle_alpha']
-        self.angle_beta.value = dummy_cell['angle_beta']
-        self.angle_gamma.value = dummy_cell['angle_gamma']
+        param_by_key = {
+            'lattice_a': self._length_a,
+            'lattice_b': self._length_b,
+            'lattice_c': self._length_c,
+            'angle_alpha': self._angle_alpha,
+            'angle_beta': self._angle_beta,
+            'angle_gamma': self._angle_gamma,
+        }
+        for key, param in param_by_key.items():
+            param.value = dummy_cell[key]
+            param._set_symmetry_fixed(fixed_flags[key])
 
     def _update(
         self,

@@ -15,6 +15,7 @@ from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import TypeValidator
 from easydiffraction.io.cif.serialize import param_from_cif
 from easydiffraction.io.cif.serialize import param_to_cif
+from easydiffraction.utils.logging import log
 
 if TYPE_CHECKING:
     from easydiffraction.io.cif.handler import CifHandler
@@ -283,6 +284,8 @@ class GenericParameter(GenericNumericDescriptor):
         self._start_value = self._start_value_spec.default
         self._constrained_spec = self._BOOL_SPEC_TEMPLATE
         self._constrained = self._constrained_spec.default
+        self._symmetry_fixed_spec = self._BOOL_SPEC_TEMPLATE
+        self._symmetry_fixed = self._symmetry_fixed_spec.default
 
     def _physical_lower_bound(self) -> float:
         """
@@ -347,9 +350,43 @@ class GenericParameter(GenericNumericDescriptor):
     @free.setter
     def free(self, v: bool) -> None:
         """Set the "free" flag after validation."""
-        self._free = self._free_spec.validated(
+        validated = self._free_spec.validated(
             v, name=f'{self.unique_name}.free', current=self._free
         )
+        if validated and self._symmetry_fixed:
+            log.warning(
+                f"Parameter '{self.unique_name}' is fixed by symmetry "
+                'and cannot be refined. Ignoring free=True.'
+            )
+            self._free = False
+            return
+        self._free = validated
+
+    @property
+    def symmetry_fixed(self) -> bool:
+        """Whether this parameter is fixed by crystallographic symmetry."""
+        return self._symmetry_fixed
+
+    def _set_symmetry_fixed(self, v: bool) -> None:
+        """
+        Mark or unmark this parameter as fixed by symmetry.
+
+        When set to True, ``free`` is forced to False and any subsequent
+        attempt to set ``free = True`` is ignored with a warning. When
+        cleared (set to False), the parameter becomes refinable again
+        but ``free`` is left at its current value.
+
+        Parameters
+        ----------
+        v : bool
+            New symmetry-fixed state.
+        """
+        validated = self._symmetry_fixed_spec.validated(
+            v, name=f'{self.unique_name}.symmetry_fixed', current=self._symmetry_fixed
+        )
+        self._symmetry_fixed = validated
+        if validated:
+            self._free = False
 
     @property
     def uncertainty(self) -> float | None:
