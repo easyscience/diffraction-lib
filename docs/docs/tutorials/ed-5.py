@@ -240,6 +240,12 @@ for point in expt.background:
     point.y.free = True
 
 # %% [markdown]
+# Show free parameters after selection.
+
+# %%
+project.analysis.display.free_params()
+
+# %% [markdown]
 # #### Set Constraints
 #
 # Set aliases for parameters.
