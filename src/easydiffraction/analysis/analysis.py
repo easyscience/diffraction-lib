@@ -105,9 +105,19 @@ class AnalysisDisplay:
     def __init__(self, analysis: 'Analysis') -> None:
         self._analysis = analysis
 
+    def _flush_structure_categories(self) -> None:
+        """
+        Flush pending category updates so symmetry flags are fresh.
+        """
+        project = self._analysis.project
+        for structure in project.structures:
+            structure._need_categories_update = True
+            structure._update_categories()
+
     def all_params(self) -> None:
         """Print all parameters for structures and experiments."""
         project = self._analysis.project
+        self._flush_structure_categories()
         structures_params = project.structures.parameters
         experiments_params = project.experiments.parameters
 
@@ -139,6 +149,7 @@ class AnalysisDisplay:
     def fittable_params(self) -> None:
         """Print all fittable parameters."""
         project = self._analysis.project
+        self._flush_structure_categories()
         structures_params = project.structures.fittable_parameters
         experiments_params = project.experiments.fittable_parameters
 
@@ -172,6 +183,7 @@ class AnalysisDisplay:
     def free_params(self) -> None:
         """Print only currently free (varying) parameters."""
         project = self._analysis.project
+        self._flush_structure_categories()
         structures_params = project.structures.free_parameters
         experiments_params = project.experiments.free_parameters
         free_params = structures_params + experiments_params

@@ -36,16 +36,8 @@ def apply_cell_symmetry_constraints(
     dict[str, float]
         The cell dictionary with applied symmetry constraints.
     """
-    it_number = get_it_number_by_name_hm_short(name_hm)
-    if it_number is None:
-        error_msg = f"Failed to get IT_number for name_H-M '{name_hm}'"
-        log.error(error_msg)  # TODO: ValueError? Diagnostics?
-        return cell
-
-    crystal_system = get_crystal_system_by_it_number(it_number)
+    crystal_system = _crystal_system_from_name_hm(name_hm)
     if crystal_system is None:
-        error_msg = f"Failed to get crystal system for IT_number '{it_number}'"
-        log.error(error_msg)  # TODO: ValueError? Diagnostics?
         return cell
 
     if crystal_system == 'cubic':
@@ -89,6 +81,99 @@ def apply_cell_symmetry_constraints(
     return cell
 
 
+_CELL_KEYS = (
+    'lattice_a',
+    'lattice_b',
+    'lattice_c',
+    'angle_alpha',
+    'angle_beta',
+    'angle_gamma',
+)
+
+
+def _crystal_system_from_name_hm(name_hm: str) -> str | None:
+    """
+    Resolve a crystal system from a Hermann-Mauguin symbol.
+
+    Returns ``None`` and logs the error when the lookup fails.
+
+    Parameters
+    ----------
+    name_hm : str
+        Hermann-Mauguin symbol of the space group.
+
+    Returns
+    -------
+    str | None
+        Crystal system name (e.g. ``'cubic'``) or ``None`` on failure.
+    """
+    it_number = get_it_number_by_name_hm_short(name_hm)
+    if it_number is None:
+        log.error(f"Failed to get IT_number for name_H-M '{name_hm}'")
+        return None
+    crystal_system = get_crystal_system_by_it_number(it_number)
+    if crystal_system is None:
+        log.error(f"Failed to get crystal system for IT_number '{it_number}'")
+        return None
+    return crystal_system
+
+
+_CELL_FIXED_AXES_BY_SYSTEM: dict[str, set[str]] = {
+    'cubic': {'lattice_b', 'lattice_c', 'angle_alpha', 'angle_beta', 'angle_gamma'},
+    'tetragonal': {'lattice_b', 'angle_alpha', 'angle_beta', 'angle_gamma'},
+    'orthorhombic': {'angle_alpha', 'angle_beta', 'angle_gamma'},
+    'hexagonal': {'lattice_b', 'angle_alpha', 'angle_beta', 'angle_gamma'},
+    'trigonal': {'lattice_b', 'angle_alpha', 'angle_beta', 'angle_gamma'},
+    'monoclinic': {'angle_alpha', 'angle_gamma'},
+    'triclinic': set(),
+}
+
+
+def _cell_fixed_axes(crystal_system: str) -> set[str]:
+    """
+    Return cell keys that are dependent on others for a crystal system.
+
+    Independent (free) parameters are excluded; dependent / constant
+    parameters (e.g. ``lattice_b = lattice_a`` in cubic, or angles fixed
+    to 90/120 degrees) are returned.
+
+    Parameters
+    ----------
+    crystal_system : str
+        Crystal system name.
+
+    Returns
+    -------
+    set[str]
+        Subset of cell keys that are fixed by symmetry.
+    """
+    return _CELL_FIXED_AXES_BY_SYSTEM.get(crystal_system, set())
+
+
+def cell_symmetry_fixed_flags(name_hm: str) -> dict[str, bool]:
+    """
+    Return per-key flags indicating which cell parameters are fixed.
+
+    Parameters
+    ----------
+    name_hm : str
+        Hermann-Mauguin symbol of the space group.
+
+    Returns
+    -------
+    dict[str, bool]
+        Mapping of cell key to ``True`` when the parameter is fixed by
+        symmetry (dependent on another parameter or set to a fixed
+        angle), ``False`` when it is independent. Returns all keys
+        ``False`` when the space group cannot be resolved.
+    """
+    crystal_system = _crystal_system_from_name_hm(name_hm)
+    if crystal_system is None:
+        return dict.fromkeys(_CELL_KEYS, False)
+    fixed = _cell_fixed_axes(crystal_system)
+    return {key: key in fixed for key in _CELL_KEYS}
+
+
 def _get_wyckoff_exprs(
     name_hm: str,
     coord_code: int,
@@ -121,10 +206,45 @@ def _get_wyckoff_exprs(
         log.error('IT_coordinate_system_code is not set')
         return None
 
+    if (it_number, coord_code) not in SPACE_GROUPS:
+        # Space group is not in the local SPACE_GROUPS table (e.g. P 1,
+        # where cryspy reports no coordinate-system codes). Treat as
+        # "no symmetry constraints to apply".
+        return None
+
     entry = SPACE_GROUPS[it_number, coord_code]
     first_position = entry['Wyckoff_positions'][wyckoff_letter]['coords_xyz'][0]
     components = first_position.strip('()').split(',')
     return [sympify(comp.strip()) for comp in components]
+
+
+def _fract_fixed_flags(parsed_exprs: list[Expr]) -> dict[str, bool]:
+    """
+    Return per-axis flags marking coordinates fixed by site symmetry.
+
+    For each axis (x, y, z), the coordinate is considered fixed when the
+    corresponding symbol does not appear as a free symbol in any of the
+    Wyckoff position expressions.
+
+    Parameters
+    ----------
+    parsed_exprs : list[Expr]
+        Three sympy expressions from the Wyckoff position.
+
+    Returns
+    -------
+    dict[str, bool]
+        Mapping ``'fract_x' / 'fract_y' / 'fract_z'`` to ``True`` if
+        that axis is fixed by symmetry.
+    """
+    x, y, z = symbols('x y z')
+    symbols_xyz = (x, y, z)
+    axes = ('x', 'y', 'z')
+    flags: dict[str, bool] = {}
+    for i, axis in enumerate(axes):
+        is_free = any(symbols_xyz[i] in expr.free_symbols for expr in parsed_exprs)
+        flags[f'fract_{axis}'] = not is_free
+    return flags
 
 
 def _apply_fract_constraints(
@@ -145,18 +265,16 @@ def _apply_fract_constraints(
     parsed_exprs : list[Expr]
         Three sympy expressions from the Wyckoff position.
     """
-    x, y, z = symbols('x y z')
-    symbols_xyz = (x, y, z)
     axes = ('x', 'y', 'z')
     substitutions = {
         'x': sympify(atom_site['fract_x']),
         'y': sympify(atom_site['fract_y']),
         'z': sympify(atom_site['fract_z']),
     }
+    fixed_flags = _fract_fixed_flags(parsed_exprs)
 
     for i, axis in enumerate(axes):
-        is_free = any(symbols_xyz[i] in expr.free_symbols for expr in parsed_exprs)
-        if not is_free:
+        if fixed_flags[f'fract_{axis}']:
             evaluated = simplify(parsed_exprs[i].subs(substitutions))
             atom_site[f'fract_{axis}'] = float(evaluated)
 
@@ -192,6 +310,36 @@ def apply_atom_site_symmetry_constraints(
 
     _apply_fract_constraints(atom_site, parsed_exprs)
     return atom_site
+
+
+def atom_site_symmetry_fixed_flags(
+    name_hm: str,
+    coord_code: int,
+    wyckoff_letter: str,
+) -> dict[str, bool]:
+    """
+    Return per-axis flags marking coordinates fixed by site symmetry.
+
+    Parameters
+    ----------
+    name_hm : str
+        Hermann-Mauguin symbol of the space group.
+    coord_code : int
+        Coordinate system code.
+    wyckoff_letter : str
+        Wyckoff position letter.
+
+    Returns
+    -------
+    dict[str, bool]
+        Mapping ``'fract_x' / 'fract_y' / 'fract_z'`` to ``True`` if the
+        axis is fully determined by site symmetry. Returns all ``False``
+        when the Wyckoff position cannot be resolved.
+    """
+    parsed_exprs = _get_wyckoff_exprs(name_hm, coord_code, wyckoff_letter)
+    if parsed_exprs is None:
+        return {'fract_x': False, 'fract_y': False, 'fract_z': False}
+    return _fract_fixed_flags(parsed_exprs)
 
 
 # ------------------------------------------------------------------

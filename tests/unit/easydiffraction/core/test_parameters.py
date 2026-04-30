@@ -101,3 +101,57 @@ def test_parameter_fit_bounds_assign_and_read():
     p.fit_max = 10.0
     assert np.isclose(p.fit_min, -1.0)
     assert np.isclose(p.fit_max, 10.0)
+
+
+def _make_param() -> object:
+    from easydiffraction.core.validation import AttributeSpec
+    from easydiffraction.core.variable import Parameter
+    from easydiffraction.io.cif.handler import CifHandler
+
+    return Parameter(
+        name='p',
+        value_spec=AttributeSpec(default=0.0),
+        cif_handler=CifHandler(names=['_param.p']),
+    )
+
+
+def test_parameter_symmetry_fixed_default_is_false():
+    p = _make_param()
+    assert p.symmetry_fixed is False
+
+
+def test_parameter_set_symmetry_fixed_forces_free_false():
+    p = _make_param()
+    p.free = True
+    assert p.free is True
+    p._set_symmetry_fixed(value=True)
+    assert p.symmetry_fixed is True
+    assert p.free is False
+
+
+def test_parameter_free_true_ignored_when_symmetry_fixed(monkeypatch):
+    from easydiffraction.utils.logging import Logger
+
+    p = _make_param()
+    p._set_symmetry_fixed(value=True)
+    monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.WARN, raising=True)
+    p.free = True
+    assert p.free is False
+    assert p.symmetry_fixed is True
+    monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.RAISE, raising=True)
+
+
+def test_parameter_free_false_allowed_when_symmetry_fixed():
+    p = _make_param()
+    p._set_symmetry_fixed(value=True)
+    p.free = False  # should not warn or raise
+    assert p.free is False
+
+
+def test_parameter_clearing_symmetry_fixed_allows_free_true():
+    p = _make_param()
+    p._set_symmetry_fixed(value=True)
+    p._set_symmetry_fixed(value=False)
+    p.free = True
+    assert p.free is True
+    assert p.symmetry_fixed is False

@@ -217,8 +217,9 @@ jobs:
             pixi init easydiffraction_py$py_ver
             cd easydiffraction_py$py_ver
 
-            echo "Setting macOS 14.0 as minimum required"
+            echo "Setting the minimum system requirements"
             pixi project system-requirements add macos 14.0
+            pixi project system-requirements add glibc 2.35
 
             echo "Adding Python $py_ver"
             pixi add "python=$py_ver"
@@ -236,10 +237,10 @@ jobs:
             # Doing this in a hacky way, as pixi does not support adding 
             # dependencies from a custom PyPI index with a CLI command without
             # specifying full wheel name.
-            echo "Adding pycrysfml from custom PyPI index"
-            echo '' >> pixi.toml
-            echo '[pypi-dependencies]' >> pixi.toml
-            echo 'pycrysfml = { version = ">=0.2.1", index = "https://easyscience.github.io/pypi/" }' >> pixi.toml
+            #echo "Adding pycrysfml from custom PyPI index"
+            #echo '' >> pixi.toml
+            #echo '[pypi-dependencies]' >> pixi.toml
+            #echo 'pycrysfml = { version = ">=0.2.1", index = "https://easyscience.github.io/pypi/" }' >> pixi.toml
 
             echo "Looking for wheel in ../dist/py$py_ver/"
             ls -l "../dist/py$py_ver/"

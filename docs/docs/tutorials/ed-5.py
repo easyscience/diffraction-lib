@@ -4,6 +4,9 @@
 # This example demonstrates a Rietveld refinement of Co2SiO4 crystal
 # structure using constant wavelength neutron powder diffraction data
 # from D20 at ILL.
+#
+# It also shows different ways to set free parameters: standard
+# one-by-one and batch setting.
 
 # %% [markdown]
 # ## Import Library
@@ -128,7 +131,11 @@ expt.instrument.calib_twotheta_offset = 0.1
 
 # %%
 expt.show_peak_profile_types()
+
+# %%
 expt.peak_profile_type = 'pseudo-voigt + empirical asymmetry'
+
+# %%
 expt.peak.broad_gauss_u = 0.3
 expt.peak.broad_gauss_v = -0.5
 expt.peak.broad_gauss_w = 0.4
@@ -138,6 +145,8 @@ expt.peak.broad_gauss_w = 0.4
 
 # %%
 expt.show_background_types()
+
+# %%
 expt.background.create(id='1', x=8, y=500)
 expt.background.create(id='2', x=9, y=500)
 expt.background.create(id='3', x=10, y=500)
@@ -204,24 +213,16 @@ structure.cell.length_a.free = True
 structure.cell.length_b.free = True
 structure.cell.length_c.free = True
 
-structure.atom_sites['Co2'].fract_x.free = True
-structure.atom_sites['Co2'].fract_z.free = True
-structure.atom_sites['Si'].fract_x.free = True
-structure.atom_sites['Si'].fract_z.free = True
-structure.atom_sites['O1'].fract_x.free = True
-structure.atom_sites['O1'].fract_z.free = True
-structure.atom_sites['O2'].fract_x.free = True
-structure.atom_sites['O2'].fract_z.free = True
-structure.atom_sites['O3'].fract_x.free = True
-structure.atom_sites['O3'].fract_y.free = True
-structure.atom_sites['O3'].fract_z.free = True
+for atom_site in structure.atom_sites:
+    for parameter in ('fract_x', 'fract_y', 'fract_z'):
+        getattr(atom_site, parameter).free = True
 
-structure.atom_sites['Co1'].adp_iso.free = True
-structure.atom_sites['Co2'].adp_iso.free = True
-structure.atom_sites['Si'].adp_iso.free = True
-structure.atom_sites['O1'].adp_iso.free = True
-structure.atom_sites['O2'].adp_iso.free = True
-structure.atom_sites['O3'].adp_iso.free = True
+for atom_site in structure.atom_sites:
+    atom_site.adp_iso.free = True
+
+for label in ('O1', 'O2', 'O3'):
+    atom_site = structure.atom_sites[label]
+    atom_site.occupancy.free = True
 
 # %%
 expt.linked_phases['cosio'].scale.free = True
@@ -237,6 +238,12 @@ expt.peak.asym_empir_2.free = True
 
 for point in expt.background:
     point.y.free = True
+
+# %% [markdown]
+# Show free parameters after selection.
+
+# %%
+project.analysis.display.free_params()
 
 # %% [markdown]
 # #### Set Constraints
@@ -280,47 +287,6 @@ project.display.plotter.plot_meas_vs_calc(expt_name='d20', show_residual=True)
 
 # %%
 project.display.plotter.plot_meas_vs_calc(expt_name='d20', x_min=42, x_max=52, show_residual=True)
-
-# %% [markdown]
-# ## Perform Analysis (ADP aniso)
-
-# %%
-for label in ('O1', 'O2', 'O3'):
-    atom_site = structure.atom_sites[label]
-    atom_site.occupancy.free = True
-
-# %%
-for label in ('O1', 'O2', 'O3'):
-    atom_site = structure.atom_sites[label]
-    atom_site.adp_type = 'Uani'
-    atom_site_aniso = structure.atom_site_aniso[label]
-    for component in ('adp_11', 'adp_22', 'adp_33', 'adp_12', 'adp_13', 'adp_23'):
-        getattr(atom_site_aniso, component).free = True
-
-# %%
-structure.show_as_cif()
-
-# %%
-project.analysis.display.free_params()
-
-# %%
-project.analysis.fit()
-
-# %%
-project.analysis.display.fit_results()
-
-# %%
-project.display.plotter.plot_param_correlations()
-
-# %%
-project.display.plotter.plot_meas_vs_calc(expt_name='d20', show_residual=True)
-
-# %%
-project.display.plotter.plot_meas_vs_calc(expt_name='d20', x_min=42, x_max=52, show_residual=True)
-
-# %%
-structure.show_as_cif()
-
 
 # %% [markdown]
 # ## Summary
