@@ -364,10 +364,12 @@ class GenericParameter(GenericNumericDescriptor):
 
     @property
     def symmetry_fixed(self) -> bool:
-        """Whether this parameter is fixed by crystallographic symmetry."""
+        """
+        Whether this parameter is fixed by crystallographic symmetry.
+        """
         return self._symmetry_fixed
 
-    def _set_symmetry_fixed(self, v: bool) -> None:
+    def _set_symmetry_fixed(self, *, value: bool) -> None:
         """
         Mark or unmark this parameter as fixed by symmetry.
 
@@ -378,11 +380,13 @@ class GenericParameter(GenericNumericDescriptor):
 
         Parameters
         ----------
-        v : bool
+        value : bool
             New symmetry-fixed state.
         """
         validated = self._symmetry_fixed_spec.validated(
-            v, name=f'{self.unique_name}.symmetry_fixed', current=self._symmetry_fixed
+            value,
+            name=f'{self.unique_name}.symmetry_fixed',
+            current=self._symmetry_fixed,
         )
         self._symmetry_fixed = validated
         if validated:

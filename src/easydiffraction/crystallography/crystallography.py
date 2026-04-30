@@ -118,6 +118,17 @@ def _crystal_system_from_name_hm(name_hm: str) -> str | None:
     return crystal_system
 
 
+_CELL_FIXED_AXES_BY_SYSTEM: dict[str, set[str]] = {
+    'cubic': {'lattice_b', 'lattice_c', 'angle_alpha', 'angle_beta', 'angle_gamma'},
+    'tetragonal': {'lattice_b', 'angle_alpha', 'angle_beta', 'angle_gamma'},
+    'orthorhombic': {'angle_alpha', 'angle_beta', 'angle_gamma'},
+    'hexagonal': {'lattice_b', 'angle_alpha', 'angle_beta', 'angle_gamma'},
+    'trigonal': {'lattice_b', 'angle_alpha', 'angle_beta', 'angle_gamma'},
+    'monoclinic': {'angle_alpha', 'angle_gamma'},
+    'triclinic': set(),
+}
+
+
 def _cell_fixed_axes(crystal_system: str) -> set[str]:
     """
     Return cell keys that are dependent on others for a crystal system.
@@ -136,19 +147,7 @@ def _cell_fixed_axes(crystal_system: str) -> set[str]:
     set[str]
         Subset of cell keys that are fixed by symmetry.
     """
-    if crystal_system == 'cubic':
-        return {'lattice_b', 'lattice_c', 'angle_alpha', 'angle_beta', 'angle_gamma'}
-    if crystal_system == 'tetragonal':
-        return {'lattice_b', 'angle_alpha', 'angle_beta', 'angle_gamma'}
-    if crystal_system == 'orthorhombic':
-        return {'angle_alpha', 'angle_beta', 'angle_gamma'}
-    if crystal_system in {'hexagonal', 'trigonal'}:
-        return {'lattice_b', 'angle_alpha', 'angle_beta', 'angle_gamma'}
-    if crystal_system == 'monoclinic':
-        return {'angle_alpha', 'angle_gamma'}
-    if crystal_system == 'triclinic':
-        return set()
-    return set()
+    return _CELL_FIXED_AXES_BY_SYSTEM.get(crystal_system, set())
 
 
 def cell_symmetry_fixed_flags(name_hm: str) -> dict[str, bool]:
@@ -170,7 +169,7 @@ def cell_symmetry_fixed_flags(name_hm: str) -> dict[str, bool]:
     """
     crystal_system = _crystal_system_from_name_hm(name_hm)
     if crystal_system is None:
-        return {key: False for key in _CELL_KEYS}
+        return dict.fromkeys(_CELL_KEYS, False)
     fixed = _cell_fixed_axes(crystal_system)
     return {key: key in fixed for key in _CELL_KEYS}
 
@@ -207,6 +206,12 @@ def _get_wyckoff_exprs(
         log.error('IT_coordinate_system_code is not set')
         return None
 
+    if (it_number, coord_code) not in SPACE_GROUPS:
+        # Space group is not in the local SPACE_GROUPS table (e.g. P 1,
+        # where cryspy reports no coordinate-system codes). Treat as
+        # "no symmetry constraints to apply".
+        return None
+
     entry = SPACE_GROUPS[it_number, coord_code]
     first_position = entry['Wyckoff_positions'][wyckoff_letter]['coords_xyz'][0]
     components = first_position.strip('()').split(',')
@@ -217,9 +222,9 @@ def _fract_fixed_flags(parsed_exprs: list[Expr]) -> dict[str, bool]:
     """
     Return per-axis flags marking coordinates fixed by site symmetry.
 
-    For each axis (x, y, z), the coordinate is considered fixed when
-    the corresponding symbol does not appear as a free symbol in any of
-    the Wyckoff position expressions.
+    For each axis (x, y, z), the coordinate is considered fixed when the
+    corresponding symbol does not appear as a free symbol in any of the
+    Wyckoff position expressions.
 
     Parameters
     ----------
@@ -327,9 +332,9 @@ def atom_site_symmetry_fixed_flags(
     Returns
     -------
     dict[str, bool]
-        Mapping ``'fract_x' / 'fract_y' / 'fract_z'`` to ``True`` if
-        the axis is fully determined by site symmetry. Returns all
-        ``False`` when the Wyckoff position cannot be resolved.
+        Mapping ``'fract_x' / 'fract_y' / 'fract_z'`` to ``True`` if the
+        axis is fully determined by site symmetry. Returns all ``False``
+        when the Wyckoff position cannot be resolved.
     """
     parsed_exprs = _get_wyckoff_exprs(name_hm, coord_code, wyckoff_letter)
     if parsed_exprs is None:

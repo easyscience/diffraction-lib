@@ -96,3 +96,57 @@ class TestApplyCellSymmetryConstraints:
         original = dict(cell)
         result = apply_cell_symmetry_constraints(cell, 'NOT A REAL SG')
         assert result == original
+
+
+# ------------------------------------------------------------------
+# cell_symmetry_fixed_flags
+# ------------------------------------------------------------------
+
+
+class TestCellSymmetryFixedFlags:
+    def test_cubic_only_a_is_free(self):
+        from easydiffraction.crystallography.crystallography import (
+            cell_symmetry_fixed_flags,
+        )
+
+        flags = cell_symmetry_fixed_flags('F m -3 m')
+        assert flags == {
+            'lattice_a': False,
+            'lattice_b': True,
+            'lattice_c': True,
+            'angle_alpha': True,
+            'angle_beta': True,
+            'angle_gamma': True,
+        }
+
+    def test_monoclinic_b_and_beta_free(self):
+        from easydiffraction.crystallography.crystallography import (
+            cell_symmetry_fixed_flags,
+        )
+
+        flags = cell_symmetry_fixed_flags('P 21/c')
+        assert flags['lattice_a'] is False
+        assert flags['lattice_b'] is False
+        assert flags['lattice_c'] is False
+        assert flags['angle_alpha'] is True
+        assert flags['angle_beta'] is False
+        assert flags['angle_gamma'] is True
+
+    def test_triclinic_all_free(self):
+        from easydiffraction.crystallography.crystallography import (
+            cell_symmetry_fixed_flags,
+        )
+
+        flags = cell_symmetry_fixed_flags('P 1')
+        assert all(v is False for v in flags.values())
+
+    def test_invalid_returns_all_false(self, monkeypatch):
+        from easydiffraction.crystallography.crystallography import (
+            cell_symmetry_fixed_flags,
+        )
+        from easydiffraction.utils.logging import Logger
+
+        monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.WARN, raising=True)
+        flags = cell_symmetry_fixed_flags('NOT A REAL SG')
+        assert all(v is False for v in flags.values())
+        monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.RAISE, raising=True)

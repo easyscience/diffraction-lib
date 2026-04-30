@@ -558,8 +558,8 @@ class AtomSites(CategoryCollection):
         Uses the parent structure's space-group symbol, IT coordinate
         system code and each atom's Wyckoff letter.  Atoms without a
         Wyckoff letter are silently skipped. Coordinates fully
-        determined by site symmetry are flagged as ``symmetry_fixed``
-        so they cannot be marked refinable.
+        determined by site symmetry are flagged as ``symmetry_fixed`` so
+        they cannot be marked refinable.
         """
         structure = self._parent
         space_group_name = structure.space_group.name_h_m.value
@@ -589,16 +589,17 @@ class AtomSites(CategoryCollection):
             atom.fract_x.value = dummy_atom['fract_x']
             atom.fract_y.value = dummy_atom['fract_y']
             atom.fract_z.value = dummy_atom['fract_z']
-            atom._fract_x._set_symmetry_fixed(fixed_flags['fract_x'])
-            atom._fract_y._set_symmetry_fixed(fixed_flags['fract_y'])
-            atom._fract_z._set_symmetry_fixed(fixed_flags['fract_z'])
+            atom._fract_x._set_symmetry_fixed(value=fixed_flags['fract_x'])
+            atom._fract_y._set_symmetry_fixed(value=fixed_flags['fract_y'])
+            atom._fract_z._set_symmetry_fixed(value=fixed_flags['fract_z'])
 
     @staticmethod
     def _clear_fract_symmetry_fixed(atom: AtomSite) -> None:
-        """Reset the ``symmetry_fixed`` flag on all fract coordinates."""
-        atom._fract_x._set_symmetry_fixed(False)
-        atom._fract_y._set_symmetry_fixed(False)
-        atom._fract_z._set_symmetry_fixed(False)
+        """
+        Reset the ``symmetry_fixed`` flag on all fract coordinates.
+        """
+        for axis_param in (atom._fract_x, atom._fract_y, atom._fract_z):
+            axis_param._set_symmetry_fixed(value=False)
 
     def _apply_adp_symmetry_constraints(self) -> None:
         """
@@ -619,7 +620,7 @@ class AtomSites(CategoryCollection):
         for atom in self._items:
             is_aniso = atom.adp_type.value in aniso_types
             # Isotropic ADP is not refinable for aniso atoms
-            atom._adp_iso._set_symmetry_fixed(is_aniso)
+            atom._adp_iso._set_symmetry_fixed(value=is_aniso)
             if not is_aniso:
                 continue
             wl = atom.wyckoff_letter.value
@@ -653,7 +654,7 @@ class AtomSites(CategoryCollection):
             for key, is_free in zip(adp_keys, ref_i, strict=False):
                 param = getattr(aniso_entry, key)
                 param.value = dummy[key]
-                param._set_symmetry_fixed(not is_free)
+                param._set_symmetry_fixed(value=not is_free)
 
     def _sync_iso_from_aniso(self) -> None:
         """

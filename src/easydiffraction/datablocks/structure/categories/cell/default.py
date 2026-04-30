@@ -134,7 +134,7 @@ class Cell(CategoryItem):
         }
         for key, param in param_by_key.items():
             param.value = dummy_cell[key]
-            param._set_symmetry_fixed(fixed_flags[key])
+            param._set_symmetry_fixed(value=fixed_flags[key])
 
     def _update(
         self,
