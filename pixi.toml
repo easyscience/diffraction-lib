@@ -49,7 +49,8 @@ macos = '14.0'
 # Set minimum supported version for glibc to be 2.35 to ensure packages
 # like `crysfml` that only have wheels for glibc 2.35+
 # (manylinux_2_35_x86_64) are used.
-libc = { family = "glibc", version = "2.35" }
+#libc = { family = 'glibc', version = '2.35' }
+libc = '2.35'
 
 ##########
 # FEATURES
