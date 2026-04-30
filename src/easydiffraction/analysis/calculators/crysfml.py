@@ -15,10 +15,10 @@ from easydiffraction.datablocks.structure.collection import Structures
 from easydiffraction.datablocks.structure.item.base import Structure
 
 try:
-    from pycrysfml import cfml_py_utilities
+    from crysfml import cfml_py_utilities
 
     # TODO: Add the following print to debug mode
-    # print("✅ 'pycrysfml' calculation engine is successfully
+    # print("✅ 'crysfml' calculation engine is successfully
     # imported.")
 except ImportError:
     # TODO: Add the following print to debug mode
@@ -166,9 +166,9 @@ class CrysfmlCalculator(CalculatorBase):
             The adjusted pattern.
         """
         # TODO: Check the origin of this discrepancy coming from
-        #  PyCrysFML
+        #  CrysFML
         # Safety guard: with the correct step formula (max-min)/(N-1+ε),
-        # pycrysfml should return exactly target_length points. Truncate
+        # crysfml should return exactly target_length points. Truncate
         # if over-length; pad with the last value if under-length.
         if len(pattern) > target_length:
             return pattern[:target_length]
@@ -322,19 +322,23 @@ class CrysfmlCalculator(CalculatorBase):
         data = experiment.data
         x_data = data.x
 
+        # Do not pass x_min, x_max, and x_inc; instead, always pass
+        # the full x_data to support non-uniform x spacing.
+        # x_min = float(x_data.min())
+        # x_max = float(x_data.max())
+        # x_inc = (x_max - x_min) / (len(x_data) - 1 + 1e-9)
+
         if hasattr(data, 'two_theta'):
+            # experiment_dict['_pd_meas_2theta_range_min'] = x_min
+            # experiment_dict['_pd_meas_2theta_range_max'] = x_max
+            # experiment_dict['_pd_meas_2theta_range_inc'] = x_inc
             experiment_dict['_pd_meas_2theta_scan'] = x_data.tolist()
 
         if hasattr(data, 'time_of_flight'):
-            x_min = float(x_data.min())
-            x_max = float(x_data.max())
-            x_inc = (x_max - x_min) / (len(x_data) - 1 + 1e-9)
-            experiment_dict['_pd_meas_tof_range_min'] = x_min
-            experiment_dict['_pd_meas_tof_range_max'] = x_max
-            experiment_dict['_pd_meas_tof_range_inc'] = x_inc
-            # experiment_dict['_pd_meas_time_of_flight'] = (
-            #     x_data.tolist()
-            # )
+            # experiment_dict['_pd_meas_tof_range_min'] = x_min
+            # experiment_dict['_pd_meas_tof_range_max'] = x_max
+            # experiment_dict['_pd_meas_tof_range_inc'] = x_inc
+            experiment_dict['_pd_meas_time_of_flight'] = x_data.tolist()
 
     @staticmethod
     def _copy_present_values(

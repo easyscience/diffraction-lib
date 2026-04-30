@@ -137,3 +137,103 @@ class TestAtomSites:
             adp_iso=0.3,
         )
         assert len(s.atom_sites) == 2
+
+
+class TestSymmetryFixedParameters:
+    def test_special_position_fract_cannot_be_freed(self, monkeypatch):
+        from easydiffraction.utils.logging import Logger
+
+        project = _make_project()
+        project.structures.create(name='test')
+        s = project.structures['test']
+        s.space_group.name_h_m = 'P m -3 m'
+        s.atom_sites.create(
+            label='La',
+            type_symbol='La',
+            fract_x=0,
+            fract_y=0,
+            fract_z=0,
+            wyckoff_letter='a',
+            adp_iso=0.5,
+        )
+        # Trigger symmetry-flag computation (normally done by display
+        # / fitting, here we call it explicitly).
+        s._need_categories_update = True
+        s._update_categories()
+
+        atom = s.atom_sites['La']
+        assert atom.fract_x.symmetry_fixed is True
+        assert atom.fract_y.symmetry_fixed is True
+        assert atom.fract_z.symmetry_fixed is True
+
+        monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.WARN, raising=True)
+        for parameter in ('fract_x', 'fract_y', 'fract_z'):
+            getattr(atom, parameter).free = True
+        monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.RAISE, raising=True)
+
+        assert atom.fract_x.free is False
+        assert atom.fract_y.free is False
+        assert atom.fract_z.free is False
+
+    def test_cubic_cell_has_only_a_free(self):
+        project = _make_project()
+        project.structures.create(name='test')
+        s = project.structures['test']
+        s.space_group.name_h_m = 'P m -3 m'
+        s._need_categories_update = True
+        s._update_categories()
+
+        assert s.cell.length_a.symmetry_fixed is False
+        assert s.cell.length_b.symmetry_fixed is True
+        assert s.cell.length_c.symmetry_fixed is True
+        assert s.cell.angle_alpha.symmetry_fixed is True
+        assert s.cell.angle_beta.symmetry_fixed is True
+        assert s.cell.angle_gamma.symmetry_fixed is True
+
+    def test_general_position_remains_refinable(self):
+        project = _make_project()
+        project.structures.create(name='test')
+        s = project.structures['test']
+        # Default space group is P 1 -- general position 'a'
+        s.atom_sites.create(
+            label='La',
+            type_symbol='La',
+            fract_x=0.1,
+            fract_y=0.2,
+            fract_z=0.3,
+            wyckoff_letter='a',
+            adp_iso=0.5,
+        )
+        s._need_categories_update = True
+        s._update_categories()
+
+        atom = s.atom_sites['La']
+        assert atom.fract_x.symmetry_fixed is False
+        atom.fract_x.free = True
+        assert atom.fract_x.free is True
+
+    def test_changing_space_group_updates_flags(self, monkeypatch):
+        from easydiffraction.utils.logging import Logger
+
+        project = _make_project()
+        project.structures.create(name='test')
+        s = project.structures['test']
+
+        # Start in P 1: cell free
+        s._need_categories_update = True
+        s._update_categories()
+        assert s.cell.length_b.symmetry_fixed is False
+        s.cell.length_b.free = True
+        assert s.cell.length_b.free is True
+
+        # Switch to cubic: length_b becomes fixed
+        s.space_group.name_h_m = 'P m -3 m'
+        s._update_categories()
+        assert s.cell.length_b.symmetry_fixed is True
+        assert s.cell.length_b.free is False
+
+        # Setting free=True is now ignored with a warning
+        monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.WARN, raising=True)
+        s.cell.length_b.free = True
+        monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.RAISE, raising=True)
+        assert s.cell.length_b.free is False

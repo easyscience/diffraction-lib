@@ -53,3 +53,34 @@ class TestApplyAtomSiteSymmetryConstraints:
         atom = {'fract_x': 0.0, 'fract_y': 0.0, 'fract_z': 0.0}
         result = apply_atom_site_symmetry_constraints(atom, 'P m -3 m', '1', 'a')
         assert result is not None
+
+
+class TestAtomSiteSymmetryFixedFlags:
+    def test_special_position_all_fixed(self):
+        from easydiffraction.crystallography.crystallography import (
+            atom_site_symmetry_fixed_flags,
+        )
+
+        # P m -3 m (IT 221), Wyckoff 'a' = (0,0,0): all three axes fixed
+        flags = atom_site_symmetry_fixed_flags('P m -3 m', '1', 'a')
+        assert flags == {'fract_x': True, 'fract_y': True, 'fract_z': True}
+
+    def test_general_position_all_free(self):
+        from easydiffraction.crystallography.crystallography import (
+            atom_site_symmetry_fixed_flags,
+        )
+
+        # P 1 (IT 1), Wyckoff 'a' is the general position
+        flags = atom_site_symmetry_fixed_flags('P 1', '1', 'a')
+        assert flags == {'fract_x': False, 'fract_y': False, 'fract_z': False}
+
+    def test_invalid_returns_all_false(self, monkeypatch):
+        from easydiffraction.crystallography.crystallography import (
+            atom_site_symmetry_fixed_flags,
+        )
+        from easydiffraction.utils.logging import Logger
+
+        monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.WARN, raising=True)
+        flags = atom_site_symmetry_fixed_flags('NOT REAL', None, 'a')
+        assert flags == {'fract_x': False, 'fract_y': False, 'fract_z': False}
+        monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.RAISE, raising=True)

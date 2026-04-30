@@ -18,6 +18,9 @@ def test_show_params_empty_branches(capsys):
         def free_parameters(self):
             return []
 
+        def __iter__(self):
+            return iter(())
+
     class P:
         structures = Empty()
         experiments = Empty()

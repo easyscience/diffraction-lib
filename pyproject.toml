@@ -40,7 +40,8 @@ dependencies = [
   'dfo-ls',         # Non-linear optimization and curve fitting
   'gemmi',          # Crystallography library
   'cryspy',         # Calculations of diffraction patterns
-  'diffpy.pdffit2', # Calculations of Pair Distribution Function (PDF), Python >=3.11,<3.14
+  'crysfml',        # Calculations of diffraction patterns
+  'diffpy.pdffit2', # Calculations of Pair Distribution Function (PDF)
   'diffpy.utils',   # Utilities for PDF calculations
   'uncertainties',  # Propagation of uncertainties
   'typeguard',      # Runtime type checking
