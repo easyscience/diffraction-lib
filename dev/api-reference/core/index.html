@@ -1139,8 +1139,6 @@
       
         
       
-        
-      
     
     
     
@@ -1280,34 +1278,6 @@
     
   
     NCAF pd-neut-tof
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../tutorials/ed-9/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    LBCO+Si McStas
   
 
     
@@ -15691,8 +15661,7 @@ integrate with specific backends while preserving this interface.</p>
 <span class="normal">425</span>
 <span class="normal">426</span>
 <span class="normal">427</span>
-<span class="normal">428</span>
-<span class="normal">429</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GenericParameter</span><span class="p">(</span><span class="n">GenericNumericDescriptor</span><span class="p">):</span>
+<span class="normal">428</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GenericParameter</span><span class="p">(</span><span class="n">GenericNumericDescriptor</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Numeric descriptor extended with fitting-related attributes.</span>
 
@@ -15795,8 +15764,7 @@ integrate with specific backends while preserving this interface.</p>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">validated</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_symmetry_fixed</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Parameter &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="si">}</span><span class="s2">&#39; is fixed by symmetry &quot;</span>
-                <span class="s1">&#39;and cannot be refined. Ignoring free=True.&#39;</span>
+                <span class="sa">f</span><span class="s2">&quot;Parameter &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="si">}</span><span class="s2">&#39; is fixed by symmetry. Ignoring free=True.&quot;</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_free</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">return</span>
@@ -16229,7 +16197,8 @@ integrate with specific backends while preserving this interface.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/core/variable.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">462</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">461</span>
+<span class="normal">462</span>
 <span class="normal">463</span>
 <span class="normal">464</span>
 <span class="normal">465</span>
@@ -16249,8 +16218,7 @@ integrate with specific backends while preserving this interface.</p>
 <span class="normal">479</span>
 <span class="normal">480</span>
 <span class="normal">481</span>
-<span class="normal">482</span>
-<span class="normal">483</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">NumericDescriptor</span><span class="p">(</span><span class="n">GenericNumericDescriptor</span><span class="p">):</span>
+<span class="normal">482</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">NumericDescriptor</span><span class="p">(</span><span class="n">GenericNumericDescriptor</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Numeric descriptor bound to a CIF handler.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -16357,7 +16325,8 @@ integrate with specific backends while preserving this interface.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/variable.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">465</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">464</span>
+<span class="normal">465</span>
 <span class="normal">466</span>
 <span class="normal">467</span>
 <span class="normal">468</span>
@@ -16374,8 +16343,7 @@ integrate with specific backends while preserving this interface.</p>
 <span class="normal">479</span>
 <span class="normal">480</span>
 <span class="normal">481</span>
-<span class="normal">482</span>
-<span class="normal">483</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">482</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">cif_handler</span><span class="p">:</span> <span class="n">CifHandler</span><span class="p">,</span>
@@ -16445,7 +16413,8 @@ integrate with specific backends while preserving this interface.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/core/variable.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">489</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">488</span>
+<span class="normal">489</span>
 <span class="normal">490</span>
 <span class="normal">491</span>
 <span class="normal">492</span>
@@ -16465,8 +16434,7 @@ integrate with specific backends while preserving this interface.</p>
 <span class="normal">506</span>
 <span class="normal">507</span>
 <span class="normal">508</span>
-<span class="normal">509</span>
-<span class="normal">510</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Parameter</span><span class="p">(</span><span class="n">GenericParameter</span><span class="p">):</span>
+<span class="normal">509</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Parameter</span><span class="p">(</span><span class="n">GenericParameter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Fittable parameter bound to a CIF handler.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -16573,7 +16541,8 @@ integrate with specific backends while preserving this interface.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/variable.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">492</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">491</span>
+<span class="normal">492</span>
 <span class="normal">493</span>
 <span class="normal">494</span>
 <span class="normal">495</span>
@@ -16590,8 +16559,7 @@ integrate with specific backends while preserving this interface.</p>
 <span class="normal">506</span>
 <span class="normal">507</span>
 <span class="normal">508</span>
-<span class="normal">509</span>
-<span class="normal">510</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">509</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">cif_handler</span><span class="p">:</span> <span class="n">CifHandler</span><span class="p">,</span>
@@ -16665,7 +16633,8 @@ integrate with specific backends while preserving this interface.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/core/variable.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">435</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">434</span>
+<span class="normal">435</span>
 <span class="normal">436</span>
 <span class="normal">437</span>
 <span class="normal">438</span>
@@ -16685,8 +16654,7 @@ integrate with specific backends while preserving this interface.</p>
 <span class="normal">452</span>
 <span class="normal">453</span>
 <span class="normal">454</span>
-<span class="normal">455</span>
-<span class="normal">456</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">StringDescriptor</span><span class="p">(</span><span class="n">GenericStringDescriptor</span><span class="p">):</span>
+<span class="normal">455</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">StringDescriptor</span><span class="p">(</span><span class="n">GenericStringDescriptor</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;String descriptor bound to a CIF handler.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -16793,7 +16761,8 @@ integrate with specific backends while preserving this interface.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/core/variable.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">438</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">437</span>
+<span class="normal">438</span>
 <span class="normal">439</span>
 <span class="normal">440</span>
 <span class="normal">441</span>
@@ -16810,8 +16779,7 @@ integrate with specific backends while preserving this interface.</p>
 <span class="normal">452</span>
 <span class="normal">453</span>
 <span class="normal">454</span>
-<span class="normal">455</span>
-<span class="normal">456</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">455</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">cif_handler</span><span class="p">:</span> <span class="n">CifHandler</span><span class="p">,</span>

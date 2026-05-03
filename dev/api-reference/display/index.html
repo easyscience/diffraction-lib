@@ -1139,8 +1139,6 @@
       
         
       
-        
-      
     
     
     
@@ -1280,34 +1278,6 @@
     
   
     NCAF pd-neut-tof
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../tutorials/ed-9/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    LBCO+Si McStas
   
 
     
@@ -7928,7 +7898,15 @@ renderer may be used depending on configuration.</p>
 <span class="normal">957</span>
 <span class="normal">958</span>
 <span class="normal">959</span>
-<span class="normal">960</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PlotlyPlotter</span><span class="p">(</span><span class="n">PlotterBase</span><span class="p">):</span>
+<span class="normal">960</span>
+<span class="normal">961</span>
+<span class="normal">962</span>
+<span class="normal">963</span>
+<span class="normal">964</span>
+<span class="normal">965</span>
+<span class="normal">966</span>
+<span class="normal">967</span>
+<span class="normal">968</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PlotlyPlotter</span><span class="p">(</span><span class="n">PlotterBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Interactive plotter using Plotly for notebooks and browsers.&quot;&quot;&quot;</span>
 
     <span class="n">_supports_graphical_heatmap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
@@ -8601,14 +8579,20 @@ renderer may be used depending on configuration.</p>
         <span class="k">if</span> <span class="n">plot_spec</span><span class="o">.</span><span class="n">y_resid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="mf">1.0</span>
 
-        <span class="n">main_y_min</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">plot_spec</span><span class="o">.</span><span class="n">y_meas</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">plot_spec</span><span class="o">.</span><span class="n">y_calc</span><span class="p">)))</span>
-        <span class="n">main_y_max</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">plot_spec</span><span class="o">.</span><span class="n">y_meas</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">plot_spec</span><span class="o">.</span><span class="n">y_calc</span><span class="p">)))</span>
+        <span class="n">y_meas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">plot_spec</span><span class="o">.</span><span class="n">y_meas</span><span class="p">)</span>
+        <span class="n">y_calc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">plot_spec</span><span class="o">.</span><span class="n">y_calc</span><span class="p">)</span>
+        <span class="n">y_resid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">plot_spec</span><span class="o">.</span><span class="n">y_resid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">min</span><span class="p">(</span><span class="n">y_meas</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">y_calc</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">y_resid</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">1.0</span>
+
+        <span class="n">main_y_min</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">y_meas</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">y_calc</span><span class="p">)))</span>
+        <span class="n">main_y_max</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">y_meas</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">y_calc</span><span class="p">)))</span>
         <span class="n">main_y_range</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">main_y_max</span> <span class="o">-</span> <span class="n">main_y_min</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
         <span class="n">scale_matched_half_range</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">main_y_range</span> <span class="o">*</span> <span class="n">plot_spec</span><span class="o">.</span><span class="n">residual_height_fraction</span>
         <span class="k">if</span> <span class="n">scale_matched_half_range</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">scale_matched_half_range</span>
 
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_nice_axis_limit</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">plot_spec</span><span class="o">.</span><span class="n">y_resid</span><span class="p">))))</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_nice_axis_limit</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">y_resid</span><span class="p">))))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">plot_powder_meas_vs_calc</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -8622,8 +8606,10 @@ renderer may be used depending on configuration.</p>
 <span class="sd">        residual row is added only when residual data is requested.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_powder_composite_rows</span><span class="p">(</span><span class="n">plot_spec</span><span class="p">)</span>
-        <span class="n">x_min</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">plot_spec</span><span class="o">.</span><span class="n">x</span><span class="p">))</span>
-        <span class="n">x_max</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">plot_spec</span><span class="o">.</span><span class="n">x</span><span class="p">))</span>
+        <span class="n">x_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">plot_spec</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">has_x_values</span> <span class="o">=</span> <span class="n">x_values</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="n">x_min</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">x_values</span><span class="p">))</span> <span class="k">if</span> <span class="n">has_x_values</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">x_max</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">x_values</span><span class="p">))</span> <span class="k">if</span> <span class="n">has_x_values</span> <span class="k">else</span> <span class="kc">None</span>
 
         <span class="n">fig</span> <span class="o">=</span> <span class="n">make_subplots</span><span class="p">(</span>
             <span class="n">rows</span><span class="o">=</span><span class="n">layout</span><span class="o">.</span><span class="n">row_count</span><span class="p">,</span>
@@ -8674,17 +8660,17 @@ renderer may be used depending on configuration.</p>
         <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">row_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">layout</span><span class="o">.</span><span class="n">row_count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-            <span class="n">fig</span><span class="o">.</span><span class="n">update_xaxes</span><span class="p">(</span>
-                <span class="n">matches</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span>
-                <span class="nb">range</span><span class="o">=</span><span class="p">[</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">],</span>
-                <span class="n">showline</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">mirror</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">zeroline</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                <span class="n">tickformat</span><span class="o">=</span><span class="s1">&#39;,.6~g&#39;</span><span class="p">,</span>
-                <span class="n">separatethousands</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">row</span><span class="o">=</span><span class="n">row_idx</span><span class="p">,</span>
-                <span class="n">col</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="n">x_axis_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;matches&#39;</span><span class="p">:</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;showline&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s1">&#39;mirror&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s1">&#39;zeroline&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="s1">&#39;tickformat&#39;</span><span class="p">:</span> <span class="s1">&#39;,.6~g&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;separatethousands&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="k">if</span> <span class="n">has_x_values</span><span class="p">:</span>
+                <span class="n">x_axis_kwargs</span><span class="p">[</span><span class="s1">&#39;range&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">]</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">update_xaxes</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row_idx</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">x_axis_kwargs</span><span class="p">)</span>
             <span class="n">fig</span><span class="o">.</span><span class="n">update_yaxes</span><span class="p">(</span>
                 <span class="n">showline</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">mirror</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -9498,13 +9484,7 @@ residual row is added only when residual data is requested.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotters/plotly.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">746</span>
-<span class="normal">747</span>
-<span class="normal">748</span>
-<span class="normal">749</span>
-<span class="normal">750</span>
-<span class="normal">751</span>
-<span class="normal">752</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">752</span>
 <span class="normal">753</span>
 <span class="normal">754</span>
 <span class="normal">755</span>
@@ -9619,7 +9599,15 @@ residual row is added only when residual data is requested.</p>
 <span class="normal">864</span>
 <span class="normal">865</span>
 <span class="normal">866</span>
-<span class="normal">867</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_powder_meas_vs_calc</span><span class="p">(</span>
+<span class="normal">867</span>
+<span class="normal">868</span>
+<span class="normal">869</span>
+<span class="normal">870</span>
+<span class="normal">871</span>
+<span class="normal">872</span>
+<span class="normal">873</span>
+<span class="normal">874</span>
+<span class="normal">875</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_powder_meas_vs_calc</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">plot_spec</span><span class="p">:</span> <span class="n">PowderMeasVsCalcSpec</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -9631,8 +9619,10 @@ residual row is added only when residual data is requested.</p>
 <span class="sd">    residual row is added only when residual data is requested.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_powder_composite_rows</span><span class="p">(</span><span class="n">plot_spec</span><span class="p">)</span>
-    <span class="n">x_min</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">plot_spec</span><span class="o">.</span><span class="n">x</span><span class="p">))</span>
-    <span class="n">x_max</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">plot_spec</span><span class="o">.</span><span class="n">x</span><span class="p">))</span>
+    <span class="n">x_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">plot_spec</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">has_x_values</span> <span class="o">=</span> <span class="n">x_values</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="n">x_min</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">x_values</span><span class="p">))</span> <span class="k">if</span> <span class="n">has_x_values</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">x_max</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">x_values</span><span class="p">))</span> <span class="k">if</span> <span class="n">has_x_values</span> <span class="k">else</span> <span class="kc">None</span>
 
     <span class="n">fig</span> <span class="o">=</span> <span class="n">make_subplots</span><span class="p">(</span>
         <span class="n">rows</span><span class="o">=</span><span class="n">layout</span><span class="o">.</span><span class="n">row_count</span><span class="p">,</span>
@@ -9683,17 +9673,17 @@ residual row is added only when residual data is requested.</p>
     <span class="p">)</span>
 
     <span class="k">for</span> <span class="n">row_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">layout</span><span class="o">.</span><span class="n">row_count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-        <span class="n">fig</span><span class="o">.</span><span class="n">update_xaxes</span><span class="p">(</span>
-            <span class="n">matches</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span>
-            <span class="nb">range</span><span class="o">=</span><span class="p">[</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">],</span>
-            <span class="n">showline</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">mirror</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">zeroline</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">tickformat</span><span class="o">=</span><span class="s1">&#39;,.6~g&#39;</span><span class="p">,</span>
-            <span class="n">separatethousands</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">row</span><span class="o">=</span><span class="n">row_idx</span><span class="p">,</span>
-            <span class="n">col</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="n">x_axis_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;matches&#39;</span><span class="p">:</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;showline&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s1">&#39;mirror&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s1">&#39;zeroline&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s1">&#39;tickformat&#39;</span><span class="p">:</span> <span class="s1">&#39;,.6~g&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;separatethousands&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">has_x_values</span><span class="p">:</span>
+            <span class="n">x_axis_kwargs</span><span class="p">[</span><span class="s1">&#39;range&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">]</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">update_xaxes</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row_idx</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">x_axis_kwargs</span><span class="p">)</span>
         <span class="n">fig</span><span class="o">.</span><span class="n">update_yaxes</span><span class="p">(</span>
             <span class="n">showline</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">mirror</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -9771,15 +9761,7 @@ residual row is added only when residual data is requested.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotters/plotly.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">920</span>
-<span class="normal">921</span>
-<span class="normal">922</span>
-<span class="normal">923</span>
-<span class="normal">924</span>
-<span class="normal">925</span>
-<span class="normal">926</span>
-<span class="normal">927</span>
-<span class="normal">928</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">928</span>
 <span class="normal">929</span>
 <span class="normal">930</span>
 <span class="normal">931</span>
@@ -9811,7 +9793,15 @@ residual row is added only when residual data is requested.</p>
 <span class="normal">957</span>
 <span class="normal">958</span>
 <span class="normal">959</span>
-<span class="normal">960</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_scatter</span><span class="p">(</span>
+<span class="normal">960</span>
+<span class="normal">961</span>
+<span class="normal">962</span>
+<span class="normal">963</span>
+<span class="normal">964</span>
+<span class="normal">965</span>
+<span class="normal">966</span>
+<span class="normal">967</span>
+<span class="normal">968</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_scatter</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">x</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="n">y</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
@@ -10014,15 +10004,7 @@ a diagonal reference line.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotters/plotly.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">869</span>
-<span class="normal">870</span>
-<span class="normal">871</span>
-<span class="normal">872</span>
-<span class="normal">873</span>
-<span class="normal">874</span>
-<span class="normal">875</span>
-<span class="normal">876</span>
-<span class="normal">877</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">877</span>
 <span class="normal">878</span>
 <span class="normal">879</span>
 <span class="normal">880</span>
@@ -10063,7 +10045,15 @@ a diagonal reference line.</p>
 <span class="normal">915</span>
 <span class="normal">916</span>
 <span class="normal">917</span>
-<span class="normal">918</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_single_crystal</span><span class="p">(</span>
+<span class="normal">918</span>
+<span class="normal">919</span>
+<span class="normal">920</span>
+<span class="normal">921</span>
+<span class="normal">922</span>
+<span class="normal">923</span>
+<span class="normal">924</span>
+<span class="normal">925</span>
+<span class="normal">926</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_single_crystal</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">x_calc</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="n">y_meas</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
@@ -11762,7 +11752,26 @@ consistent configuration surface and engine handling.</p>
 <span class="normal">1522</span>
 <span class="normal">1523</span>
 <span class="normal">1524</span>
-<span class="normal">1525</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Plotter</span><span class="p">(</span><span class="n">RendererBase</span><span class="p">):</span>
+<span class="normal">1525</span>
+<span class="normal">1526</span>
+<span class="normal">1527</span>
+<span class="normal">1528</span>
+<span class="normal">1529</span>
+<span class="normal">1530</span>
+<span class="normal">1531</span>
+<span class="normal">1532</span>
+<span class="normal">1533</span>
+<span class="normal">1534</span>
+<span class="normal">1535</span>
+<span class="normal">1536</span>
+<span class="normal">1537</span>
+<span class="normal">1538</span>
+<span class="normal">1539</span>
+<span class="normal">1540</span>
+<span class="normal">1541</span>
+<span class="normal">1542</span>
+<span class="normal">1543</span>
+<span class="normal">1544</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Plotter</span><span class="p">(</span><span class="n">RendererBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;User-facing plotting facade backed by concrete plotters.&quot;&quot;&quot;</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
@@ -11936,14 +11945,21 @@ consistent configuration surface and engine handling.</p>
 
         <span class="c1"># Filter x</span>
         <span class="n">x_filtered</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filtered_y_array</span><span class="p">(</span><span class="n">x_array</span><span class="p">,</span> <span class="n">x_array</span><span class="p">,</span> <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">)</span>
+        <span class="n">resolved_x_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_min</span> <span class="k">if</span> <span class="n">x_min</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">x_min</span><span class="p">)</span>
+        <span class="n">resolved_x_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_max</span> <span class="k">if</span> <span class="n">x_max</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">x_max</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">x_filtered</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">x_min</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">resolved_x_min</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">x_filtered</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">x_max</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">resolved_x_max</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">x_filtered</span><span class="p">))</span>
 
         <span class="n">axes_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_axes_labels</span><span class="p">(</span><span class="n">sample_form</span><span class="p">,</span> <span class="n">scattering_type</span><span class="p">,</span> <span class="n">x_axis</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="p">{</span>
             <span class="s1">&#39;x_filtered&#39;</span><span class="p">:</span> <span class="n">x_filtered</span><span class="p">,</span>
             <span class="s1">&#39;x_array&#39;</span><span class="p">:</span> <span class="n">x_array</span><span class="p">,</span>
-            <span class="s1">&#39;x_min&#39;</span><span class="p">:</span> <span class="n">x_min</span><span class="p">,</span>
-            <span class="s1">&#39;x_max&#39;</span><span class="p">:</span> <span class="n">x_max</span><span class="p">,</span>
+            <span class="s1">&#39;x_min&#39;</span><span class="p">:</span> <span class="n">resolved_x_min</span><span class="p">,</span>
+            <span class="s1">&#39;x_max&#39;</span><span class="p">:</span> <span class="n">resolved_x_max</span><span class="p">,</span>
             <span class="s1">&#39;axes_labels&#39;</span><span class="p">:</span> <span class="n">axes_labels</span><span class="p">,</span>
         <span class="p">}</span>
 
@@ -12126,7 +12142,7 @@ consistent configuration surface and engine handling.</p>
         <span class="n">x_min</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">x_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
-        <span class="n">show_residual</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">show_residual</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">residual_height_fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DEFAULT_RESID_HEIGHT</span><span class="p">,</span>
         <span class="n">bragg_peaks_height_fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DEFAULT_BRAGG_ROW</span><span class="p">,</span>
         <span class="n">x</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -12142,8 +12158,10 @@ consistent configuration surface and engine handling.</p>
 <span class="sd">            Lower bound for the x-axis range.</span>
 <span class="sd">        x_max : float | None, default=None</span>
 <span class="sd">            Upper bound for the x-axis range.</span>
-<span class="sd">        show_residual : bool, default=True</span>
-<span class="sd">            When ``True``, include the residual (difference) curve.</span>
+<span class="sd">        show_residual : bool | None, default=None</span>
+<span class="sd">            When ``None``, powder Bragg plots include the residual by</span>
+<span class="sd">            default while other measured-vs-calculated plots keep the</span>
+<span class="sd">            historical no-residual default.</span>
 <span class="sd">        residual_height_fraction : float, default=DEFAULT_RESID_HEIGHT</span>
 <span class="sd">            Optional. Defaults to 0.25. Residual-row height relative to</span>
 <span class="sd">            the main intensity row.</span>
@@ -12874,7 +12892,9 @@ consistent configuration surface and engine handling.</p>
             <span class="n">ctx</span><span class="o">=</span><span class="n">ctx</span><span class="p">,</span>
             <span class="n">y_meas</span><span class="o">=</span><span class="n">y_meas</span><span class="p">,</span>
             <span class="n">y_calc</span><span class="o">=</span><span class="n">y_calc</span><span class="p">,</span>
-            <span class="n">show_residual</span><span class="o">=</span><span class="n">plot_options</span><span class="o">.</span><span class="n">show_residual</span><span class="p">,</span>
+            <span class="n">show_residual</span><span class="o">=</span><span class="kc">False</span>
+            <span class="k">if</span> <span class="n">plot_options</span><span class="o">.</span><span class="n">show_residual</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="n">plot_options</span><span class="o">.</span><span class="n">show_residual</span><span class="p">,</span>
             <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -12919,13 +12939,17 @@ consistent configuration surface and engine handling.</p>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Render the composite powder Bragg measured-vs-calculated plot.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">y_resid</span> <span class="o">=</span> <span class="n">y_meas</span> <span class="o">-</span> <span class="n">y_calc</span> <span class="k">if</span> <span class="n">plot_options</span><span class="o">.</span><span class="n">show_residual</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="n">bragg_tick_sets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_bragg_tick_sets</span><span class="p">(</span>
-            <span class="n">experiment</span><span class="o">=</span><span class="n">experiment</span><span class="p">,</span>
-            <span class="n">expt_name</span><span class="o">=</span><span class="n">expt_name</span><span class="p">,</span>
-            <span class="n">x_min</span><span class="o">=</span><span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;x_min&#39;</span><span class="p">],</span>
-            <span class="n">x_max</span><span class="o">=</span><span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;x_max&#39;</span><span class="p">],</span>
-        <span class="p">)</span>
+        <span class="n">show_residual</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">plot_options</span><span class="o">.</span><span class="n">show_residual</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">plot_options</span><span class="o">.</span><span class="n">show_residual</span>
+        <span class="n">y_resid</span> <span class="o">=</span> <span class="n">y_meas</span> <span class="o">-</span> <span class="n">y_calc</span> <span class="k">if</span> <span class="n">show_residual</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;x_filtered&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">bragg_tick_sets</span> <span class="o">=</span> <span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">bragg_tick_sets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_bragg_tick_sets</span><span class="p">(</span>
+                <span class="n">experiment</span><span class="o">=</span><span class="n">experiment</span><span class="p">,</span>
+                <span class="n">expt_name</span><span class="o">=</span><span class="n">expt_name</span><span class="p">,</span>
+                <span class="n">x_min</span><span class="o">=</span><span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;x_min&#39;</span><span class="p">],</span>
+                <span class="n">x_max</span><span class="o">=</span><span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;x_max&#39;</span><span class="p">],</span>
+            <span class="p">)</span>
         <span class="n">plot_spec</span> <span class="o">=</span> <span class="n">PowderMeasVsCalcSpec</span><span class="p">(</span>
             <span class="n">x</span><span class="o">=</span><span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;x_filtered&#39;</span><span class="p">],</span>
             <span class="n">y_meas</span><span class="o">=</span><span class="n">y_meas</span><span class="p">,</span>
@@ -12971,8 +12995,8 @@ consistent configuration surface and engine handling.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">_extract_bragg_tick_sets</span><span class="p">(</span>
         <span class="n">experiment</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
         <span class="n">expt_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">x_min</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-        <span class="n">x_max</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">x_min</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">x_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">BraggTickSet</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert future experiment peak-position data into display rows.</span>
@@ -13001,7 +13025,9 @@ consistent configuration surface and engine handling.</p>
         <span class="k">if</span> <span class="n">arrays</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">()</span>
 
-        <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">arrays</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">x_min</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">arrays</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">x_max</span><span class="p">)</span>
+        <span class="n">lower_bound</span> <span class="o">=</span> <span class="n">DEFAULT_MIN</span> <span class="k">if</span> <span class="n">x_min</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x_min</span>
+        <span class="n">upper_bound</span> <span class="o">=</span> <span class="n">DEFAULT_MAX</span> <span class="k">if</span> <span class="n">x_max</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x_max</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">arrays</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">lower_bound</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">arrays</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">upper_bound</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
             <span class="k">return</span> <span class="p">()</span>
 
@@ -13009,17 +13035,19 @@ consistent configuration surface and engine handling.</p>
         <span class="n">peak_id_array</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">peak_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">peak_id</span><span class="p">)</span>
         <span class="n">structure_ids</span> <span class="o">=</span> <span class="n">arrays</span><span class="p">[</span><span class="s1">&#39;structure_id&#39;</span><span class="p">][</span><span class="n">mask</span><span class="p">]</span>
         <span class="n">unique_structure_ids</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">structure_id</span> <span class="ow">in</span> <span class="n">structure_ids</span><span class="p">:</span>
-            <span class="n">structure_id_value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">structure_id</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">structure_id_value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">unique_structure_ids</span><span class="p">:</span>
-                <span class="n">unique_structure_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">structure_id_value</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">raw_structure_id</span> <span class="ow">in</span> <span class="n">structure_ids</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">raw_structure_id</span><span class="p">,</span> <span class="n">existing_structure_id</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">existing_structure_id</span> <span class="ow">in</span> <span class="n">unique_structure_ids</span>
+            <span class="p">):</span>
+                <span class="n">unique_structure_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">raw_structure_id</span><span class="p">)</span>
 
         <span class="n">tick_sets</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">structure_id</span> <span class="ow">in</span> <span class="n">unique_structure_ids</span><span class="p">:</span>
-            <span class="n">structure_mask</span> <span class="o">=</span> <span class="n">mask</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">arrays</span><span class="p">[</span><span class="s1">&#39;structure_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">structure_id</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">raw_structure_id</span> <span class="ow">in</span> <span class="n">unique_structure_ids</span><span class="p">:</span>
+            <span class="n">structure_mask</span> <span class="o">=</span> <span class="n">mask</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">arrays</span><span class="p">[</span><span class="s1">&#39;structure_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">raw_structure_id</span><span class="p">)</span>
             <span class="n">tick_sets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="n">BraggTickSet</span><span class="p">(</span>
-                    <span class="n">structure_id</span><span class="o">=</span><span class="n">structure_id</span><span class="p">,</span>
+                    <span class="n">structure_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">raw_structure_id</span><span class="p">),</span>
                     <span class="n">x</span><span class="o">=</span><span class="n">arrays</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">][</span><span class="n">structure_mask</span><span class="p">],</span>
                     <span class="n">h</span><span class="o">=</span><span class="n">arrays</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">][</span><span class="n">structure_mask</span><span class="p">],</span>
                     <span class="n">k</span><span class="o">=</span><span class="n">arrays</span><span class="p">[</span><span class="s1">&#39;k&#39;</span><span class="p">][</span><span class="n">structure_mask</span><span class="p">],</span>
@@ -13359,14 +13387,7 @@ consistent configuration surface and engine handling.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">409</span>
-<span class="normal">410</span>
-<span class="normal">411</span>
-<span class="normal">412</span>
-<span class="normal">413</span>
-<span class="normal">414</span>
-<span class="normal">415</span>
-<span class="normal">416</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">416</span>
 <span class="normal">417</span>
 <span class="normal">418</span>
 <span class="normal">419</span>
@@ -13389,7 +13410,14 @@ consistent configuration surface and engine handling.</p>
 <span class="normal">436</span>
 <span class="normal">437</span>
 <span class="normal">438</span>
-<span class="normal">439</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_calc</span><span class="p">(</span>
+<span class="normal">439</span>
+<span class="normal">440</span>
+<span class="normal">441</span>
+<span class="normal">442</span>
+<span class="normal">443</span>
+<span class="normal">444</span>
+<span class="normal">445</span>
+<span class="normal">446</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_calc</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">expt_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">x_min</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -13541,14 +13569,7 @@ consistent configuration surface and engine handling.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">377</span>
-<span class="normal">378</span>
-<span class="normal">379</span>
-<span class="normal">380</span>
-<span class="normal">381</span>
-<span class="normal">382</span>
-<span class="normal">383</span>
-<span class="normal">384</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">384</span>
 <span class="normal">385</span>
 <span class="normal">386</span>
 <span class="normal">387</span>
@@ -13571,7 +13592,14 @@ consistent configuration surface and engine handling.</p>
 <span class="normal">404</span>
 <span class="normal">405</span>
 <span class="normal">406</span>
-<span class="normal">407</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_meas</span><span class="p">(</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_meas</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">expt_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">x_min</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -13617,7 +13645,7 @@ consistent configuration surface and engine handling.</p>
 
 
 <h4 id="easydiffraction.display.plotting.Plotter.plot_meas_vs_calc" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">plot_meas_vs_calc</span><span class="p">(</span><span class="n">expt_name</span><span class="p">,</span> <span class="n">x_min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">x_max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">show_residual</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">residual_height_fraction</span><span class="o">=</span><span class="n">DEFAULT_RESID_HEIGHT</span><span class="p">,</span> <span class="n">bragg_peaks_height_fraction</span><span class="o">=</span><span class="n">DEFAULT_BRAGG_ROW</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">plot_meas_vs_calc</span><span class="p">(</span><span class="n">expt_name</span><span class="p">,</span> <span class="n">x_min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">x_max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">show_residual</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">residual_height_fraction</span><span class="o">=</span><span class="n">DEFAULT_RESID_HEIGHT</span><span class="p">,</span> <span class="n">bragg_peaks_height_fraction</span><span class="o">=</span><span class="n">DEFAULT_BRAGG_ROW</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h4>
 
@@ -13703,18 +13731,20 @@ consistent configuration surface and engine handling.</p>
                 <code>show_residual</code>
             </td>
             <td>
-                  <code><span title="bool">bool</span></code>
+                  <code><span title="bool">bool</span> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>When <code>True</code>, include the residual (difference) curve.</p>
+                <p>When <code>None</code>, powder Bragg plots include the residual by
+default while other measured-vs-calculated plots keep the
+historical no-residual default.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
               </div>
             </td>
             <td>
-                  <code>True</code>
+                  <code>None</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -13782,14 +13812,7 @@ to the main intensity row.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">441</span>
-<span class="normal">442</span>
-<span class="normal">443</span>
-<span class="normal">444</span>
-<span class="normal">445</span>
-<span class="normal">446</span>
-<span class="normal">447</span>
-<span class="normal">448</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">448</span>
 <span class="normal">449</span>
 <span class="normal">450</span>
 <span class="normal">451</span>
@@ -13829,13 +13852,22 @@ to the main intensity row.</p>
 <span class="normal">485</span>
 <span class="normal">486</span>
 <span class="normal">487</span>
-<span class="normal">488</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_meas_vs_calc</span><span class="p">(</span>
+<span class="normal">488</span>
+<span class="normal">489</span>
+<span class="normal">490</span>
+<span class="normal">491</span>
+<span class="normal">492</span>
+<span class="normal">493</span>
+<span class="normal">494</span>
+<span class="normal">495</span>
+<span class="normal">496</span>
+<span class="normal">497</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_meas_vs_calc</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">expt_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">x_min</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">x_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
-    <span class="n">show_residual</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">show_residual</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">residual_height_fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DEFAULT_RESID_HEIGHT</span><span class="p">,</span>
     <span class="n">bragg_peaks_height_fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DEFAULT_BRAGG_ROW</span><span class="p">,</span>
     <span class="n">x</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -13851,8 +13883,10 @@ to the main intensity row.</p>
 <span class="sd">        Lower bound for the x-axis range.</span>
 <span class="sd">    x_max : float | None, default=None</span>
 <span class="sd">        Upper bound for the x-axis range.</span>
-<span class="sd">    show_residual : bool, default=True</span>
-<span class="sd">        When ``True``, include the residual (difference) curve.</span>
+<span class="sd">    show_residual : bool | None, default=None</span>
+<span class="sd">        When ``None``, powder Bragg plots include the residual by</span>
+<span class="sd">        default while other measured-vs-calculated plots keep the</span>
+<span class="sd">        historical no-residual default.</span>
 <span class="sd">    residual_height_fraction : float, default=DEFAULT_RESID_HEIGHT</span>
 <span class="sd">        Optional. Defaults to 0.25. Residual-row height relative to</span>
 <span class="sd">        the main intensity row.</span>
@@ -13969,16 +14003,7 @@ matrix.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">540</span>
-<span class="normal">541</span>
-<span class="normal">542</span>
-<span class="normal">543</span>
-<span class="normal">544</span>
-<span class="normal">545</span>
-<span class="normal">546</span>
-<span class="normal">547</span>
-<span class="normal">548</span>
-<span class="normal">549</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">549</span>
 <span class="normal">550</span>
 <span class="normal">551</span>
 <span class="normal">552</span>
@@ -14032,7 +14057,16 @@ matrix.</p>
 <span class="normal">600</span>
 <span class="normal">601</span>
 <span class="normal">602</span>
-<span class="normal">603</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_param_correlations</span><span class="p">(</span>
+<span class="normal">603</span>
+<span class="normal">604</span>
+<span class="normal">605</span>
+<span class="normal">606</span>
+<span class="normal">607</span>
+<span class="normal">608</span>
+<span class="normal">609</span>
+<span class="normal">610</span>
+<span class="normal">611</span>
+<span class="normal">612</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_param_correlations</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">DEFAULT_CORRELATION_THRESHOLD</span><span class="p">,</span>
     <span class="n">precision</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
@@ -14187,16 +14221,7 @@ experiment sequence number is used instead.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">490</span>
-<span class="normal">491</span>
-<span class="normal">492</span>
-<span class="normal">493</span>
-<span class="normal">494</span>
-<span class="normal">495</span>
-<span class="normal">496</span>
-<span class="normal">497</span>
-<span class="normal">498</span>
-<span class="normal">499</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">499</span>
 <span class="normal">500</span>
 <span class="normal">501</span>
 <span class="normal">502</span>
@@ -14235,7 +14260,16 @@ experiment sequence number is used instead.</p>
 <span class="normal">535</span>
 <span class="normal">536</span>
 <span class="normal">537</span>
-<span class="normal">538</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_param_series</span><span class="p">(</span>
+<span class="normal">538</span>
+<span class="normal">539</span>
+<span class="normal">540</span>
+<span class="normal">541</span>
+<span class="normal">542</span>
+<span class="normal">543</span>
+<span class="normal">544</span>
+<span class="normal">545</span>
+<span class="normal">546</span>
+<span class="normal">547</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_param_series</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">param</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="n">versus</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -14408,26 +14442,7 @@ adds CSV output to the existing fit loop).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1425</span>
-<span class="normal">1426</span>
-<span class="normal">1427</span>
-<span class="normal">1428</span>
-<span class="normal">1429</span>
-<span class="normal">1430</span>
-<span class="normal">1431</span>
-<span class="normal">1432</span>
-<span class="normal">1433</span>
-<span class="normal">1434</span>
-<span class="normal">1435</span>
-<span class="normal">1436</span>
-<span class="normal">1437</span>
-<span class="normal">1438</span>
-<span class="normal">1439</span>
-<span class="normal">1440</span>
-<span class="normal">1441</span>
-<span class="normal">1442</span>
-<span class="normal">1443</span>
-<span class="normal">1444</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1444</span>
 <span class="normal">1445</span>
 <span class="normal">1446</span>
 <span class="normal">1447</span>
@@ -14475,7 +14490,26 @@ adds CSV output to the existing fit loop).</p>
 <span class="normal">1489</span>
 <span class="normal">1490</span>
 <span class="normal">1491</span>
-<span class="normal">1492</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_param_series_from_snapshots</span><span class="p">(</span>
+<span class="normal">1492</span>
+<span class="normal">1493</span>
+<span class="normal">1494</span>
+<span class="normal">1495</span>
+<span class="normal">1496</span>
+<span class="normal">1497</span>
+<span class="normal">1498</span>
+<span class="normal">1499</span>
+<span class="normal">1500</span>
+<span class="normal">1501</span>
+<span class="normal">1502</span>
+<span class="normal">1503</span>
+<span class="normal">1504</span>
+<span class="normal">1505</span>
+<span class="normal">1506</span>
+<span class="normal">1507</span>
+<span class="normal">1508</span>
+<span class="normal">1509</span>
+<span class="normal">1510</span>
+<span class="normal">1511</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_param_series_from_snapshots</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">unique_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">versus_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
@@ -14573,20 +14607,20 @@ adds CSV output to the existing fit loop).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">362</span>
-<span class="normal">363</span>
-<span class="normal">364</span>
-<span class="normal">365</span>
-<span class="normal">366</span>
-<span class="normal">367</span>
-<span class="normal">368</span>
-<span class="normal">369</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">369</span>
 <span class="normal">370</span>
 <span class="normal">371</span>
 <span class="normal">372</span>
 <span class="normal">373</span>
 <span class="normal">374</span>
-<span class="normal">375</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Display the current plotting configuration.&quot;&quot;&quot;</span>
     <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">(</span><span class="s1">&#39;Parameter&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">),</span>
@@ -14901,21 +14935,21 @@ adds CSV output to the existing fit loop).</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1528</span>
-<span class="normal">1529</span>
-<span class="normal">1530</span>
-<span class="normal">1531</span>
-<span class="normal">1532</span>
-<span class="normal">1533</span>
-<span class="normal">1534</span>
-<span class="normal">1535</span>
-<span class="normal">1536</span>
-<span class="normal">1537</span>
-<span class="normal">1538</span>
-<span class="normal">1539</span>
-<span class="normal">1540</span>
-<span class="normal">1541</span>
-<span class="normal">1542</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PlotterFactory</span><span class="p">(</span><span class="n">RendererFactoryBase</span><span class="p">):</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1547</span>
+<span class="normal">1548</span>
+<span class="normal">1549</span>
+<span class="normal">1550</span>
+<span class="normal">1551</span>
+<span class="normal">1552</span>
+<span class="normal">1553</span>
+<span class="normal">1554</span>
+<span class="normal">1555</span>
+<span class="normal">1556</span>
+<span class="normal">1557</span>
+<span class="normal">1558</span>
+<span class="normal">1559</span>
+<span class="normal">1560</span>
+<span class="normal">1561</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PlotterFactory</span><span class="p">(</span><span class="n">RendererFactoryBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Factory for plotter implementations.&quot;&quot;&quot;</span>
 
     <span class="nd">@classmethod</span>
