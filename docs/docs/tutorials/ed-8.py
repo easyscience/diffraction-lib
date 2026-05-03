@@ -333,10 +333,10 @@ expt47.peak.exp_rise_alpha_1.free = True
 # #### Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='wish_5_6', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='wish_5_6')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='wish_4_7', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='wish_4_7')
 
 # %% [markdown]
 # #### Run Fitting
@@ -350,10 +350,10 @@ project.display.plotter.plot_param_correlations()
 # #### Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='wish_5_6', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='wish_5_6')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='wish_4_7', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='wish_4_7')
 
 # %% [markdown]
 # ## Summary

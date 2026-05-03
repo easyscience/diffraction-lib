@@ -387,3 +387,38 @@ def test_plot_powder_meas_vs_calc_keeps_exact_residual_scale_match(monkeypatch):
     assert fig.layout.yaxis2.range[0] == pytest.approx(-expected_limit)
     assert fig.layout.yaxis2.range[1] == pytest.approx(expected_limit)
     assert list(fig.layout.yaxis2.tickvals) == pytest.approx([-400.0, 0.0, 400.0])
+
+
+def test_plot_powder_meas_vs_calc_clips_large_residual_spikes(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
+
+    captured = {}
+
+    def fake_show_figure(self, fig):
+        captured['fig'] = fig
+
+    monkeypatch.setattr(pp.PlotlyPlotter, '_show_figure', fake_show_figure)
+
+    plotter = pp.PlotlyPlotter()
+    plotter.plot_powder_meas_vs_calc(
+        plot_spec=PowderMeasVsCalcSpec(
+            x=np.array([1.0, 2.0, 3.0]),
+            y_meas=np.array([200.0, 3600.0, 220.0]),
+            y_calc=np.array([180.0, 3400.0, 210.0]),
+            y_resid=np.array([20.0, 1200.0, 10.0]),
+            bragg_tick_sets=(),
+            axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+            title='Powder',
+            residual_height_fraction=0.25,
+            bragg_peaks_height_fraction=0.15,
+            height=None,
+        ),
+    )
+
+    fig = captured['fig']
+    expected_limit = 0.5 * (3600.0 - 180.0) * 0.25
+    assert fig.layout.yaxis2.range[0] == pytest.approx(-expected_limit)
+    assert fig.layout.yaxis2.range[1] == pytest.approx(expected_limit)
+    assert list(fig.layout.yaxis2.tickvals) == pytest.approx([-400.0, 0.0, 400.0])

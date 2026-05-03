@@ -738,10 +738,10 @@ class PlotlyPlotter(PlotterBase):
         main_y_max = float(max(np.max(plot_spec.y_meas), np.max(plot_spec.y_calc)))
         main_y_range = max(main_y_max - main_y_min, 0.0)
         scale_matched_half_range = 0.5 * main_y_range * plot_spec.residual_height_fraction
-        return max(
-            scale_matched_half_range,
-            float(np.max(np.abs(plot_spec.y_resid))),
-        )
+        if scale_matched_half_range > 0.0:
+            return scale_matched_half_range
+
+        return cls._nice_axis_limit(float(np.max(np.abs(plot_spec.y_resid))))
 
     def plot_powder_meas_vs_calc(
         self,

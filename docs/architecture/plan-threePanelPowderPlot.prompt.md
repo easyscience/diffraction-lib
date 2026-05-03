@@ -10,40 +10,42 @@ positions itself.
 **Status**
 
 - [x] Step 1 confirmed. Peak-position data will come from a future
-   experiment category and is out of scope for this implementation.
+      experiment category and is out of scope for this implementation.
 - [x] Step 2 completed. Added a display-specific Bragg tick DTO in
-   `src/easydiffraction/display/plotters/base.py`.
+      `src/easydiffraction/display/plotters/base.py`.
 - [x] Step 3 completed. Powder Bragg `plot_meas_vs_calc()` now routes
-   through a composite plotting path and defaults `show_residual` to
-   `True`.
+      through a composite plotting path and defaults `show_residual` to
+      `True`.
 - [x] Step 4 completed. Added a helper that consumes the future
-   `experiment.bragg_peaks` arrays when present and otherwise logs a
-   clear warning while rendering an empty Bragg row.
+      `experiment.bragg_peaks` arrays when present and otherwise logs a
+      clear warning while rendering an empty Bragg row.
 - [x] Step 5 completed. Added `plot_powder_meas_vs_calc(...)` to the
-   plotting backend contract and routed powder Bragg plots to it.
+      plotting backend contract and routed powder Bragg plots to it.
 - [x] Step 6 completed. Plotly now renders stacked subplots with shared
-   x axes and configurable row-height fractions.
+      x axes and configurable row-height fractions.
 - [x] Step 7 completed. The residual row now uses a scale-aware,
-   symmetric y range with exactly three ticks and no extra colored zero
-   line.
+      symmetric y range with exactly three ticks and no extra colored
+      zero line.
 - [x] Step 8 completed. The Bragg row renders one hover-capable tick
-   trace per structure or phase row.
-- [x] Step 9 completed. The composite Plotly figure explicitly matches
-   x axes across the main, Bragg, and residual rows.
+      trace per structure or phase row.
+- [x] Step 9 completed. The composite Plotly figure explicitly matches x
+      axes across the main, Bragg, and residual rows.
 - [x] Step 10 completed. The ASCII backend now falls back to the
-   measured/calculated/residual chart and announces the Plotly-only
-   Bragg row.
+      measured/calculated/residual chart and announces the Plotly-only
+      Bragg row.
 - [x] Step 11 completed for the targeted tutorial source. Updated
-   `docs/docs/tutorials/ed-2.py` to rely on the new default plot call.
+      `docs/docs/tutorials/ed-2.py` to rely on the new default plot
+      call.
 - [x] Step 12 completed. Added focused facade/backend tests, regenerated
-   `docs/docs/tutorials/ed-2.ipynb`, and ran the targeted Phase 2
-   verification commands.
+      `docs/docs/tutorials/ed-2.ipynb`, and ran the targeted Phase 2
+      verification commands.
 
 **Atomic Change Log**
 
-1. Added `BraggTickSet` in `src/easydiffraction/display/plotters/base.py`
-    so future experiment-category peak arrays can be passed to plotting
-    backends without coupling them to datablock internals.
+1. Added `BraggTickSet` in
+   `src/easydiffraction/display/plotters/base.py` so future
+   experiment-category peak arrays can be passed to plotting backends
+   without coupling them to datablock internals.
 2. Routed powder Bragg `plot_meas_vs_calc()` through a dedicated
    composite backend method, added Plotly three-row subplot rendering,
    and added an ASCII fallback while tolerating the still-missing
@@ -62,6 +64,21 @@ positions itself.
 7. Refactored the composite plot so the Bragg subplot is created only
    when tick data exists; otherwise the figure collapses to the main and
    residual rows without a no-data warning.
+8. Refactored the composite powder plotting path around a typed spec
+   object so the backend contract, facade routing, and Bragg DTO stay
+   within the repository's lint-complexity limits while preserving the
+   same three-panel behavior.
+9. Removed residual-axis rounding after the physical scale match so the
+   residual panel now preserves the intended pixel-per-unit alignment
+   for positive-background datasets such as the HRPT tutorial case.
+10. Kept the exact residual range for scale matching but moved the
+    visible residual y-axis ticks to cleaner symmetric display values so
+    the subplot no longer shows awkward endpoint labels such as
+    `78.8649` or `439.109`.
+11. Stopped expanding the residual y-axis to fit outlier spikes when the
+    main plot has a real y range, so oversized residuals are now clipped
+    within the scale-matched subplot instead of breaking the intended
+    physical alignment.
 
 **Steps**
 
@@ -114,8 +131,8 @@ positions itself.
    layout shapes, so hovering shows structure/phase, peak id if
    available, hkl, x position, and intensity. Keep numeric y-axis labels
    hidden or replace them with structure labels if that remains
-   readable.
-   When no Bragg tick data exists, omit the Bragg subplot entirely.
+   readable. When no Bragg tick data exists, omit the Bragg subplot
+   entirely.
 9. Make X synchronization explicit: zooming or panning the main pattern
    must update the Bragg tick row and residual row, and the shared
    x-axis range should start at the filtered data minimum and end at the
