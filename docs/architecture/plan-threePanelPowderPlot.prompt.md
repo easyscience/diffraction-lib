@@ -34,7 +34,9 @@ positions itself.
    Bragg row.
 - [x] Step 11 completed for the targeted tutorial source. Updated
    `docs/docs/tutorials/ed-2.py` to rely on the new default plot call.
-- [ ] Step 12 not started.
+- [x] Step 12 completed. Added focused facade/backend tests, regenerated
+   `docs/docs/tutorials/ed-2.ipynb`, and ran the targeted Phase 2
+   verification commands.
 
 **Atomic Change Log**
 
@@ -48,6 +50,9 @@ positions itself.
 3. Updated `docs/docs/tutorials/ed-2.py` so the tutorial now uses the
    default three-panel powder plot without explicitly passing
    `show_residual=True`.
+4. Added focused display tests for composite powder routing, Bragg tick
+   extraction, Plotly subplot rendering, and the ASCII fallback, then
+   regenerated `docs/docs/tutorials/ed-2.ipynb`.
 
 **Steps**
 
