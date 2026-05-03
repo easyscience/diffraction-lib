@@ -53,28 +53,31 @@ def test_ascii_plotter_plot_single_crystal(capsys):
 def test_ascii_plotter_plot_powder_meas_vs_calc_announces_plotly_only_bragg_row(capsys):
     from easydiffraction.display.plotters.ascii import AsciiPlotter
     from easydiffraction.display.plotters.base import BraggTickSet
+    from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
 
     plotter = AsciiPlotter()
     plotter.plot_powder_meas_vs_calc(
-        x=np.array([0.0, 1.0, 2.0]),
-        y_meas=np.array([3.0, 4.0, 5.0]),
-        y_calc=np.array([2.5, 4.5, 4.0]),
-        y_resid=np.array([0.5, -0.5, 1.0]),
-        bragg_tick_sets=(
-            BraggTickSet(
-                structure_id='phase-a',
-                x=np.array([0.5]),
-                h=np.array([1]),
-                k=np.array([0]),
-                l=np.array([1]),
-                intensity=np.array([100.0]),
+        plot_spec=PowderMeasVsCalcSpec(
+            x=np.array([0.0, 1.0, 2.0]),
+            y_meas=np.array([3.0, 4.0, 5.0]),
+            y_calc=np.array([2.5, 4.5, 4.0]),
+            y_resid=np.array([0.5, -0.5, 1.0]),
+            bragg_tick_sets=(
+                BraggTickSet(
+                    structure_id='phase-a',
+                    x=np.array([0.5]),
+                    h=np.array([1]),
+                    k=np.array([0]),
+                    ell=np.array([1]),
+                    intensity=np.array([100.0]),
+                ),
             ),
+            axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+            title='Powder plot',
+            residual_height_fraction=0.25,
+            bragg_peaks_height_fraction=0.15,
+            height=8,
         ),
-        axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
-        title='Powder plot',
-        residual_height_fraction=0.25,
-        bragg_peaks_height_fraction=0.15,
-        height=8,
     )
 
     out = capsys.readouterr().out

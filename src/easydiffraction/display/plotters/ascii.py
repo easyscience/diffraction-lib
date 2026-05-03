@@ -15,8 +15,8 @@ import numpy as np
 
 from easydiffraction.display.plotters.base import DEFAULT_HEIGHT
 from easydiffraction.display.plotters.base import SERIES_CONFIG
-from easydiffraction.display.plotters.base import BraggTickSet
 from easydiffraction.display.plotters.base import PlotterBase
+from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
 from easydiffraction.utils.logging import console
 
 DEFAULT_COLORS = {
@@ -108,16 +108,7 @@ class AsciiPlotter(PlotterBase):
 
     def plot_powder_meas_vs_calc(
         self,
-        x: np.ndarray,
-        y_meas: np.ndarray,
-        y_calc: np.ndarray,
-        y_resid: np.ndarray | None,
-        bragg_tick_sets: tuple[BraggTickSet, ...],
-        axes_labels: list[str],
-        title: str,
-        residual_height_fraction: float,
-        bragg_peaks_height_fraction: float,
-        height: int | None = None,
+        plot_spec: PowderMeasVsCalcSpec,
     ) -> None:
         """
         Render a composite powder plot in the terminal.
@@ -126,24 +117,21 @@ class AsciiPlotter(PlotterBase):
         for measured, calculated, and residual series. Bragg tick rows
         are announced but not rendered graphically.
         """
-        del residual_height_fraction
-        del bragg_peaks_height_fraction
-
-        y_series = [y_meas, y_calc]
+        y_series = [plot_spec.y_meas, plot_spec.y_calc]
         labels = ['meas', 'calc']
-        if y_resid is not None:
-            y_series.append(y_resid)
+        if plot_spec.y_resid is not None:
+            y_series.append(plot_spec.y_resid)
             labels.append('resid')
 
         self.plot_powder(
-            x=x,
+            x=plot_spec.x,
             y_series=y_series,
             labels=labels,
-            axes_labels=axes_labels,
-            title=title,
-            height=height,
+            axes_labels=plot_spec.axes_labels,
+            title=plot_spec.title,
+            height=plot_spec.height,
         )
-        if bragg_tick_sets:
+        if plot_spec.bragg_tick_sets:
             console.print('Bragg peak subplot rows are available with the Plotly engine only.')
 
     @staticmethod

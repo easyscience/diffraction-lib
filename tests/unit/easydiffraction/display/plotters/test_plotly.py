@@ -224,7 +224,7 @@ def test_get_bragg_tick_trace_includes_peak_metadata():
             x=np.array([1.5, 2.5]),
             h=np.array([1, 2]),
             k=np.array([0, 1]),
-            l=np.array([1, 0]),
+            ell=np.array([1, 0]),
             intensity=np.array([100.0, 80.0]),
             peak_id=np.array(['p1', 'p2']),
         ),
@@ -246,6 +246,7 @@ def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch)
     import easydiffraction.display.plotters.plotly as pp
 
     from easydiffraction.display.plotters.base import BraggTickSet
+    from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
 
     captured = {}
 
@@ -256,35 +257,37 @@ def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch)
 
     plotter = pp.PlotlyPlotter()
     plotter.plot_powder_meas_vs_calc(
-        x=np.array([1.0, 2.0, 3.0]),
-        y_meas=np.array([10.0, 12.0, 11.0]),
-        y_calc=np.array([9.0, 11.0, 10.5]),
-        y_resid=np.array([1.0, 1.0, 0.5]),
-        bragg_tick_sets=(
-            BraggTickSet(
-                structure_id='phase-a',
-                x=np.array([1.5]),
-                h=np.array([1]),
-                k=np.array([0]),
-                l=np.array([1]),
-                intensity=np.array([100.0]),
-                peak_id=np.array(['p1']),
+        plot_spec=PowderMeasVsCalcSpec(
+            x=np.array([1.0, 2.0, 3.0]),
+            y_meas=np.array([10.0, 12.0, 11.0]),
+            y_calc=np.array([9.0, 11.0, 10.5]),
+            y_resid=np.array([1.0, 1.0, 0.5]),
+            bragg_tick_sets=(
+                BraggTickSet(
+                    structure_id='phase-a',
+                    x=np.array([1.5]),
+                    h=np.array([1]),
+                    k=np.array([0]),
+                    ell=np.array([1]),
+                    intensity=np.array([100.0]),
+                    peak_id=np.array(['p1']),
+                ),
+                BraggTickSet(
+                    structure_id='phase-b',
+                    x=np.array([2.5]),
+                    h=np.array([2]),
+                    k=np.array([1]),
+                    ell=np.array([0]),
+                    intensity=np.array([80.0]),
+                    peak_id=np.array(['p2']),
+                ),
             ),
-            BraggTickSet(
-                structure_id='phase-b',
-                x=np.array([2.5]),
-                h=np.array([2]),
-                k=np.array([1]),
-                l=np.array([0]),
-                intensity=np.array([80.0]),
-                peak_id=np.array(['p2']),
-            ),
+            axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+            title='Powder',
+            residual_height_fraction=0.25,
+            bragg_peaks_height_fraction=0.15,
+            height=None,
         ),
-        axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
-        title='Powder',
-        residual_height_fraction=0.25,
-        bragg_peaks_height_fraction=0.15,
-        height=None,
     )
 
     fig = captured['fig']
@@ -313,6 +316,8 @@ def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch)
 def test_plot_powder_meas_vs_calc_skips_bragg_row_when_no_ticks(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
 
+    from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
+
     captured = {}
 
     def fake_show_figure(self, fig):
@@ -322,16 +327,18 @@ def test_plot_powder_meas_vs_calc_skips_bragg_row_when_no_ticks(monkeypatch):
 
     plotter = pp.PlotlyPlotter()
     plotter.plot_powder_meas_vs_calc(
-        x=np.array([1.0, 2.0, 3.0]),
-        y_meas=np.array([10.0, 12.0, 11.0]),
-        y_calc=np.array([9.0, 11.0, 10.5]),
-        y_resid=np.array([1.0, 1.0, 0.5]),
-        bragg_tick_sets=(),
-        axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
-        title='Powder',
-        residual_height_fraction=0.25,
-        bragg_peaks_height_fraction=0.15,
-        height=None,
+        plot_spec=PowderMeasVsCalcSpec(
+            x=np.array([1.0, 2.0, 3.0]),
+            y_meas=np.array([10.0, 12.0, 11.0]),
+            y_calc=np.array([9.0, 11.0, 10.5]),
+            y_resid=np.array([1.0, 1.0, 0.5]),
+            bragg_tick_sets=(),
+            axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+            title='Powder',
+            residual_height_fraction=0.25,
+            bragg_peaks_height_fraction=0.15,
+            height=None,
+        ),
     )
 
     fig = captured['fig']
@@ -345,3 +352,38 @@ def test_plot_powder_meas_vs_calc_skips_bragg_row_when_no_ticks(monkeypatch):
         'Total calculated (Icalc)',
         'Residual (Imeas - Icalc)',
     ]
+
+
+def test_plot_powder_meas_vs_calc_keeps_exact_residual_scale_match(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
+
+    captured = {}
+
+    def fake_show_figure(self, fig):
+        captured['fig'] = fig
+
+    monkeypatch.setattr(pp.PlotlyPlotter, '_show_figure', fake_show_figure)
+
+    plotter = pp.PlotlyPlotter()
+    plotter.plot_powder_meas_vs_calc(
+        plot_spec=PowderMeasVsCalcSpec(
+            x=np.array([1.0, 2.0, 3.0]),
+            y_meas=np.array([200.0, 3600.0, 220.0]),
+            y_calc=np.array([180.0, 3400.0, 210.0]),
+            y_resid=np.array([20.0, 200.0, 10.0]),
+            bragg_tick_sets=(),
+            axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+            title='Powder',
+            residual_height_fraction=0.25,
+            bragg_peaks_height_fraction=0.15,
+            height=None,
+        ),
+    )
+
+    fig = captured['fig']
+    expected_limit = 0.5 * (3600.0 - 180.0) * 0.25
+    assert fig.layout.yaxis2.range[0] == pytest.approx(-expected_limit)
+    assert fig.layout.yaxis2.range[1] == pytest.approx(expected_limit)
+    assert list(fig.layout.yaxis2.tickvals) == pytest.approx([-400.0, 0.0, 400.0])

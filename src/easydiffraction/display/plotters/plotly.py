@@ -10,6 +10,8 @@ renderer may be used depending on configuration.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 import darkdetect
 import numpy as np
 import plotly.graph_objects as go
@@ -26,6 +28,7 @@ except ImportError:
 from easydiffraction.display.plotters.base import SERIES_CONFIG
 from easydiffraction.display.plotters.base import BraggTickSet
 from easydiffraction.display.plotters.base import PlotterBase
+from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
 from easydiffraction.utils._vendored.theme_detect import is_dark
 from easydiffraction.utils.environment import in_jupyter
 from easydiffraction.utils.environment import in_pycharm
@@ -43,6 +46,19 @@ BRAGG_TICK_COLORS = (
     'rgb(188, 189, 34)',
     'rgb(148, 103, 189)',
 )
+
+NICE_AXIS_FRACTIONS = (1.0, 2.0, 5.0, 10.0)
+DISPLAY_TICK_FRACTIONS = (1.0, 2.0, 2.5, 4.0, 5.0, 7.5, 10.0)
+
+
+@dataclass(frozen=True)
+class PowderCompositeRows:
+    """Resolved row layout for the composite powder figure."""
+
+    row_count: int
+    normalized_heights: list[float]
+    bragg_row: int | None
+    residual_row: int | None
 
 
 class PlotlyPlotter(PlotterBase):
@@ -627,10 +643,14 @@ class PlotlyPlotter(PlotterBase):
                 peak_value = str(peak_ids[idx])
                 if peak_value:
                     peak_line = f'peak: {peak_value}<br>'
+            hkl_text = (
+                f'hkl: ({int(tick_set.h[idx])} '
+                f'{int(tick_set.k[idx])} {int(tick_set.ell[idx])})<br>'
+            )
             hover_text.append(
                 f'structure: {tick_set.structure_id}<br>'
                 f'{peak_line}'
-                f'hkl: ({int(tick_set.h[idx])} {int(tick_set.k[idx])} {int(tick_set.l[idx])})<br>'
+                f'{hkl_text}'
                 f'x: {float(x_value):.6g}<br>'
                 f'intensity: {float(tick_set.intensity[idx]):.6g}<extra></extra>'
             )
@@ -661,42 +681,31 @@ class PlotlyPlotter(PlotterBase):
         base = 10.0**exponent
         fraction = raw_limit / base
 
-        if fraction <= 1.0:
-            nice_fraction = 1.0
-        elif fraction <= 2.0:
-            nice_fraction = 2.0
-        elif fraction <= 5.0:
-            nice_fraction = 5.0
-        else:
-            nice_fraction = 10.0
+        for nice_fraction in NICE_AXIS_FRACTIONS:
+            if fraction <= nice_fraction:
+                return nice_fraction * base
+        return NICE_AXIS_FRACTIONS[-1] * base
 
-        return nice_fraction * base
+    @staticmethod
+    def _get_display_tick_limit(raw_limit: float) -> float:
+        """Return a rounded positive tick limit within ``raw_limit``."""
+        if raw_limit <= 0:
+            return 1.0
 
-    def plot_powder_meas_vs_calc(
-        self,
-        x: np.ndarray,
-        y_meas: np.ndarray,
-        y_calc: np.ndarray,
-        y_resid: np.ndarray | None,
-        bragg_tick_sets: tuple[BraggTickSet, ...],
-        axes_labels: list[str],
-        title: str,
-        residual_height_fraction: float,
-        bragg_peaks_height_fraction: float,
-        height: int | None = None,
-    ) -> None:
-        """
-        Render a composite powder plot with optional Bragg ticks.
+        exponent = float(np.floor(np.log10(raw_limit)))
+        base = 10.0**exponent
+        fraction = raw_limit / base
 
-        The main row shows measured and calculated intensities. The
-        Bragg row is added only when tick data is available. The
-        residual row is added only when residual data is requested.
-        """
-        del height
+        for nice_fraction in reversed(DISPLAY_TICK_FRACTIONS):
+            if fraction >= nice_fraction:
+                return nice_fraction * base
+        return DISPLAY_TICK_FRACTIONS[0] * base
 
-        has_bragg_ticks = bool(bragg_tick_sets)
-        has_residual = y_resid is not None
-        row_count = 1 + int(has_bragg_ticks) + int(has_residual)
+    @staticmethod
+    def _get_powder_composite_rows(plot_spec: PowderMeasVsCalcSpec) -> PowderCompositeRows:
+        """Resolve subplot rows for the composite powder figure."""
+        has_bragg_ticks = bool(plot_spec.bragg_tick_sets)
+        has_residual = plot_spec.y_resid is not None
         row_heights = [1.0]
         bragg_row = None
         residual_row = None
@@ -705,28 +714,63 @@ class PlotlyPlotter(PlotterBase):
         if has_bragg_ticks:
             bragg_row = next_row
             next_row += 1
-            row_heights.append(bragg_peaks_height_fraction)
+            row_heights.append(plot_spec.bragg_peaks_height_fraction)
         if has_residual:
             residual_row = next_row
-            row_heights.append(residual_height_fraction)
-        x_min = float(np.min(x))
-        x_max = float(np.max(x))
+            row_heights.append(plot_spec.residual_height_fraction)
+
         total_height = sum(row_heights)
-        normalized_row_heights = [row_height / total_height for row_height in row_heights]
+        normalized_heights = [row_height / total_height for row_height in row_heights]
+        return PowderCompositeRows(
+            row_count=1 + int(has_bragg_ticks) + int(has_residual),
+            normalized_heights=normalized_heights,
+            bragg_row=bragg_row,
+            residual_row=residual_row,
+        )
+
+    @classmethod
+    def _get_residual_limit(cls, plot_spec: PowderMeasVsCalcSpec) -> float:
+        """Return a symmetric residual limit matched to the main row."""
+        if plot_spec.y_resid is None:
+            return 1.0
+
+        main_y_min = float(min(np.min(plot_spec.y_meas), np.min(plot_spec.y_calc)))
+        main_y_max = float(max(np.max(plot_spec.y_meas), np.max(plot_spec.y_calc)))
+        main_y_range = max(main_y_max - main_y_min, 0.0)
+        scale_matched_half_range = 0.5 * main_y_range * plot_spec.residual_height_fraction
+        return max(
+            scale_matched_half_range,
+            float(np.max(np.abs(plot_spec.y_resid))),
+        )
+
+    def plot_powder_meas_vs_calc(
+        self,
+        plot_spec: PowderMeasVsCalcSpec,
+    ) -> None:
+        """
+        Render a composite powder plot with optional Bragg ticks.
+
+        The main row shows measured and calculated intensities. The
+        Bragg row is added only when tick data is available. The
+        residual row is added only when residual data is requested.
+        """
+        layout = self._get_powder_composite_rows(plot_spec)
+        x_min = float(np.min(plot_spec.x))
+        x_max = float(np.max(plot_spec.x))
 
         fig = make_subplots(
-            rows=row_count,
+            rows=layout.row_count,
             cols=1,
             shared_xaxes=True,
             vertical_spacing=0.04,
-            row_heights=normalized_row_heights,
+            row_heights=layout.normalized_heights,
         )
 
-        fig.add_trace(self._get_powder_trace(x, y_meas, 'meas'), row=1, col=1)
-        fig.add_trace(self._get_powder_trace(x, y_calc, 'calc'), row=1, col=1)
+        fig.add_trace(self._get_powder_trace(plot_spec.x, plot_spec.y_meas, 'meas'), row=1, col=1)
+        fig.add_trace(self._get_powder_trace(plot_spec.x, plot_spec.y_calc, 'calc'), row=1, col=1)
 
-        if bragg_row is not None:
-            for idx, tick_set in enumerate(bragg_tick_sets):
+        if layout.bragg_row is not None:
+            for idx, tick_set in enumerate(plot_spec.bragg_tick_sets):
                 color = BRAGG_TICK_COLORS[idx % len(BRAGG_TICK_COLORS)]
                 fig.add_trace(
                     self._get_bragg_tick_trace(
@@ -734,19 +778,17 @@ class PlotlyPlotter(PlotterBase):
                         row_y=float(idx + 1),
                         color=color,
                     ),
-                    row=bragg_row,
+                    row=layout.bragg_row,
                     col=1,
                 )
 
-        if has_residual:
-            fig.add_trace(self._get_powder_trace(x, y_resid, 'resid'), row=residual_row, col=1)
-
-            main_y_min = float(min(np.min(y_meas), np.min(y_calc)))
-            main_y_max = float(max(np.max(y_meas), np.max(y_calc)))
-            main_y_range = max(main_y_max - main_y_min, 0.0)
-            scale_matched_half_range = 0.5 * main_y_range * residual_height_fraction
-            residual_half_range = max(scale_matched_half_range, float(np.max(np.abs(y_resid))))
-            residual_limit = self._nice_axis_limit(residual_half_range)
+        if layout.residual_row is not None and plot_spec.y_resid is not None:
+            residual_limit = self._get_residual_limit(plot_spec)
+            fig.add_trace(
+                self._get_powder_trace(plot_spec.x, plot_spec.y_resid, 'resid'),
+                row=layout.residual_row,
+                col=1,
+            )
 
         fig.update_layout(
             margin={
@@ -755,7 +797,7 @@ class PlotlyPlotter(PlotterBase):
                 't': 40,
                 'b': 45,
             },
-            title={'text': title},
+            title={'text': plot_spec.title},
             legend={
                 'xanchor': 'right',
                 'x': 1.0,
@@ -764,7 +806,7 @@ class PlotlyPlotter(PlotterBase):
             },
         )
 
-        for row_idx in range(1, row_count + 1):
+        for row_idx in range(1, layout.row_count + 1):
             fig.update_xaxes(
                 matches='x',
                 range=[x_min, x_max],
@@ -786,36 +828,41 @@ class PlotlyPlotter(PlotterBase):
                 col=1,
             )
 
-        fig.update_xaxes(showticklabels=(row_count == 1), row=1, col=1)
-        fig.update_yaxes(title_text=axes_labels[1], row=1, col=1)
+        fig.update_xaxes(showticklabels=(layout.row_count == 1), row=1, col=1)
+        fig.update_yaxes(title_text=plot_spec.axes_labels[1], row=1, col=1)
 
-        if bragg_row is not None:
+        if layout.bragg_row is not None:
             fig.update_yaxes(
                 title_text='Bragg peaks',
                 tickmode='array',
-                tickvals=[float(idx + 1) for idx in range(len(bragg_tick_sets))],
-                ticktext=[tick_set.structure_id for tick_set in bragg_tick_sets],
-                range=[0.5, float(len(bragg_tick_sets)) + 0.5],
+                tickvals=[float(idx + 1) for idx in range(len(plot_spec.bragg_tick_sets))],
+                ticktext=[tick_set.structure_id for tick_set in plot_spec.bragg_tick_sets],
+                range=[0.5, float(len(plot_spec.bragg_tick_sets)) + 0.5],
                 showgrid=False,
-                row=bragg_row,
+                row=layout.bragg_row,
                 col=1,
             )
-            fig.update_xaxes(showticklabels=not has_residual, row=bragg_row, col=1)
+            fig.update_xaxes(
+                showticklabels=layout.residual_row is None,
+                row=layout.bragg_row,
+                col=1,
+            )
 
-        if has_residual:
+        if layout.residual_row is not None and plot_spec.y_resid is not None:
+            residual_tick_limit = self._get_display_tick_limit(residual_limit)
             fig.update_yaxes(
                 title_text='Residual',
                 range=[-residual_limit, residual_limit],
                 tickmode='array',
-                tickvals=[-residual_limit, 0.0, residual_limit],
+                tickvals=[-residual_tick_limit, 0.0, residual_tick_limit],
                 zeroline=False,
-                row=residual_row,
+                row=layout.residual_row,
                 col=1,
             )
-            fig.update_xaxes(title_text=axes_labels[0], row=residual_row, col=1)
+            fig.update_xaxes(title_text=plot_spec.axes_labels[0], row=layout.residual_row, col=1)
         else:
-            terminal_row = bragg_row if bragg_row is not None else 1
-            fig.update_xaxes(title_text=axes_labels[0], row=terminal_row, col=1)
+            terminal_row = layout.bragg_row if layout.bragg_row is not None else 1
+            fig.update_xaxes(title_text=plot_spec.axes_labels[0], row=terminal_row, col=1)
 
         self._show_figure(fig)
 

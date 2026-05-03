@@ -34,9 +34,31 @@ class BraggTickSet:
     x: np.ndarray
     h: np.ndarray
     k: np.ndarray
-    l: np.ndarray
+    ell: np.ndarray
     intensity: np.ndarray
     peak_id: np.ndarray | None = None
+
+
+@dataclass(frozen=True)
+class PowderMeasVsCalcSpec:
+    """
+    Specification for one composite powder plot.
+
+    The plotting facade assembles the measured, calculated, residual,
+    and Bragg-tick data into this display-specific object before
+    delegating to a backend.
+    """
+
+    x: np.ndarray
+    y_meas: np.ndarray
+    y_calc: np.ndarray
+    y_resid: np.ndarray | None
+    bragg_tick_sets: tuple[BraggTickSet, ...]
+    axes_labels: list[str]
+    title: str
+    residual_height_fraction: float
+    bragg_peaks_height_fraction: float
+    height: int | None = None
 
 
 class XAxisType(StrEnum):
@@ -223,42 +245,15 @@ class PlotterBase(ABC):
     @abstractmethod
     def plot_powder_meas_vs_calc(
         self,
-        x: np.ndarray,
-        y_meas: np.ndarray,
-        y_calc: np.ndarray,
-        y_resid: np.ndarray | None,
-        bragg_tick_sets: tuple[BraggTickSet, ...],
-        axes_labels: list[str],
-        title: str,
-        residual_height_fraction: float,
-        bragg_peaks_height_fraction: float,
-        height: int | None,
+        plot_spec: PowderMeasVsCalcSpec,
     ) -> None:
         """
         Render a composite powder plot with Bragg ticks and residual.
 
         Parameters
         ----------
-        x : np.ndarray
-            Powder x-axis values.
-        y_meas : np.ndarray
-            Measured intensity values.
-        y_calc : np.ndarray
-            Calculated intensity values.
-        y_resid : np.ndarray | None
-            Residual values, or ``None`` to omit the residual row.
-        bragg_tick_sets : tuple[BraggTickSet, ...]
-            One Bragg tick set per structure or phase row.
-        axes_labels : list[str]
-            Pair of strings for the x and y titles.
-        title : str
-            Figure title.
-        residual_height_fraction : float
-            Residual-row height relative to the main row.
-        bragg_peaks_height_fraction : float
-            Bragg-row height relative to the main row.
-        height : int | None
-            Backend-specific height (text rows or pixels).
+        plot_spec : PowderMeasVsCalcSpec
+            Composite powder-plot inputs and layout settings.
         """
 
     @abstractmethod

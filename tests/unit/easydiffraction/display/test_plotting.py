@@ -67,6 +67,7 @@ def test_plotter_error_paths_and_filtering(capsys, monkeypatch):
     from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
     from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
     from easydiffraction.display.plotting import Plotter
+    from easydiffraction.display.plotting import _MeasVsCalcPlotOptions
     from easydiffraction.utils.logging import Logger
 
     monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.WARN, raising=True)
@@ -113,18 +114,21 @@ def test_plotter_error_paths_and_filtering(capsys, monkeypatch):
     p._plot_meas_vs_calc_data(
         Expt(Ptn(two_theta=None, intensity_meas=None, intensity_calc=None), ExptType()),
         'E',
+        _MeasVsCalcPlotOptions(),
     )
     out = capsys.readouterr().out
     assert 'No measured data available for experiment E' in out
     p._plot_meas_vs_calc_data(
         Expt(Ptn(two_theta=[1], intensity_meas=None, intensity_calc=[1]), ExptType()),
         'E',
+        _MeasVsCalcPlotOptions(),
     )
     out = capsys.readouterr().out
     assert 'No measured data available for experiment E' in out
     p._plot_meas_vs_calc_data(
         Expt(Ptn(two_theta=[1], intensity_meas=[1], intensity_calc=None), ExptType()),
         'E',
+        _MeasVsCalcPlotOptions(),
     )
     out = capsys.readouterr().out
     assert 'No calculated data available for experiment E' in out
@@ -204,7 +208,7 @@ def test_extract_bragg_tick_sets_groups_and_filters():
     assert np.array_equal(tick_sets[0].peak_id, np.array(['p1']))
     assert np.array_equal(tick_sets[1].h, np.array([3]))
     assert np.array_equal(tick_sets[1].k, np.array([1]))
-    assert np.array_equal(tick_sets[1].l, np.array([2]))
+    assert np.array_equal(tick_sets[1].ell, np.array([2]))
     assert np.allclose(tick_sets[1].intensity, np.array([30.0]))
 
 
@@ -231,12 +235,13 @@ def test_plot_meas_vs_calc_routes_powder_bragg_to_composite_backend():
     from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
     from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
     from easydiffraction.display.plotting import Plotter
+    from easydiffraction.display.plotting import _MeasVsCalcPlotOptions
 
     captured = {}
 
     class FakeBackend:
         def plot_powder_meas_vs_calc(self, **kwargs):
-            captured['powder_meas_vs_calc'] = kwargs
+            captured['powder_meas_vs_calc'] = kwargs['plot_spec']
 
         def plot_powder(self, **kwargs):
             captured['powder'] = kwargs
@@ -271,23 +276,22 @@ def test_plot_meas_vs_calc_routes_powder_bragg_to_composite_backend():
     plotter._plot_meas_vs_calc_data(
         experiment=Experiment(),
         expt_name='E1',
-        x_min=1.0,
-        x_max=2.0,
+        plot_options=_MeasVsCalcPlotOptions(x_min=1.0, x_max=2.0),
     )
 
     assert 'powder_meas_vs_calc' in captured
     assert 'powder' not in captured
     call = captured['powder_meas_vs_calc']
-    assert np.allclose(call['x'], np.array([1.0, 2.0]))
-    assert np.allclose(call['y_meas'], np.array([20.0, 30.0]))
-    assert np.allclose(call['y_calc'], np.array([18.0, 27.0]))
-    assert np.allclose(call['y_resid'], np.array([2.0, 3.0]))
-    assert [tick_set.structure_id for tick_set in call['bragg_tick_sets']] == [
+    assert np.allclose(call.x, np.array([1.0, 2.0]))
+    assert np.allclose(call.y_meas, np.array([20.0, 30.0]))
+    assert np.allclose(call.y_calc, np.array([18.0, 27.0]))
+    assert np.allclose(call.y_resid, np.array([2.0, 3.0]))
+    assert [tick_set.structure_id for tick_set in call.bragg_tick_sets] == [
         'phase-a',
         'phase-b',
     ]
-    assert np.allclose(call['bragg_tick_sets'][0].x, np.array([1.5]))
-    assert np.allclose(call['bragg_tick_sets'][1].x, np.array([2.0]))
+    assert np.allclose(call.bragg_tick_sets[0].x, np.array([1.5]))
+    assert np.allclose(call.bragg_tick_sets[1].x, np.array([2.0]))
 
 
 def test_plot_meas_vs_calc_keeps_single_crystal_routing():
@@ -297,6 +301,7 @@ def test_plot_meas_vs_calc_keeps_single_crystal_routing():
     from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
     from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
     from easydiffraction.display.plotting import Plotter
+    from easydiffraction.display.plotting import _MeasVsCalcPlotOptions
 
     captured = {}
 
@@ -305,7 +310,7 @@ def test_plot_meas_vs_calc_keeps_single_crystal_routing():
             captured['single_crystal'] = kwargs
 
         def plot_powder_meas_vs_calc(self, **kwargs):
-            captured['powder_meas_vs_calc'] = kwargs
+            captured['powder_meas_vs_calc'] = kwargs['plot_spec']
 
     class Pattern:
         intensity_calc = np.array([1.0, 2.0, 3.0])
@@ -326,6 +331,7 @@ def test_plot_meas_vs_calc_keeps_single_crystal_routing():
     plotter._plot_meas_vs_calc_data(
         experiment=Experiment(),
         expt_name='E1',
+        plot_options=_MeasVsCalcPlotOptions(),
     )
 
     assert 'single_crystal' in captured

@@ -490,7 +490,7 @@ class TestPlotterPublicMethods:
                 calls.append(('powder', kwargs))
 
             def plot_powder_meas_vs_calc(self, **kwargs):
-                calls.append(('powder_meas_vs_calc', kwargs))
+                calls.append(('powder_meas_vs_calc', kwargs['plot_spec']))
 
         p = Plotter()
         p._set_project(FakeProject())
@@ -515,13 +515,13 @@ class TestPlotterPublicMethods:
         p.plot_meas_vs_calc('E1')
         assert len(calls) == 1
         assert calls[0][0] == 'powder_meas_vs_calc'
-        assert calls[0][1]['y_resid'] is not None
-        assert calls[0][1]['bragg_tick_sets'] == ()
+        assert calls[0][1].y_resid is not None
+        assert calls[0][1].bragg_tick_sets == ()
 
     def test_plot_meas_vs_calc_without_residual(self, monkeypatch):
         p, calls = self._make_plotter_with_project(monkeypatch)
         p.plot_meas_vs_calc('E1', show_residual=False)
         assert len(calls) == 1
         assert calls[0][0] == 'powder_meas_vs_calc'
-        assert calls[0][1]['y_resid'] is None
-        assert calls[0][1]['bragg_tick_sets'] == ()
+        assert calls[0][1].y_resid is None
+        assert calls[0][1].bragg_tick_sets == ()
