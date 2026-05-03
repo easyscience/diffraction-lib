@@ -39,6 +39,9 @@ positions itself.
 - [x] Step 12 completed. Added focused facade/backend tests, regenerated
       `docs/docs/tutorials/ed-2.ipynb`, and ran the targeted Phase 2
       verification commands.
+- [x] Follow-up review fixes completed. Empty filtered powder ranges no
+      longer render stray Bragg rows, and Bragg grouping now preserves
+      raw structure ids before converting labels for display.
 
 **Atomic Change Log**
 
@@ -83,6 +86,10 @@ positions itself.
     before masking future `bragg_peaks` data, keeping the residual
     default scoped to the powder-Bragg composite path, and guarding the
     composite Plotly backend against empty filtered x ranges.
+13. Fixed follow-up review gaps by suppressing Bragg ticks when the
+    filtered main pattern is empty and by grouping Bragg rows on raw
+    structure ids so numeric identifiers still produce populated tick
+    rows with string labels.
 
 **Steps**
 

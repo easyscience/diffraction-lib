@@ -1250,12 +1250,15 @@ class Plotter(RendererBase):
         """
         show_residual = True if plot_options.show_residual is None else plot_options.show_residual
         y_resid = y_meas - y_calc if show_residual else None
-        bragg_tick_sets = self._extract_bragg_tick_sets(
-            experiment=experiment,
-            expt_name=expt_name,
-            x_min=ctx['x_min'],
-            x_max=ctx['x_max'],
-        )
+        if np.asarray(ctx['x_filtered']).size == 0:
+            bragg_tick_sets = ()
+        else:
+            bragg_tick_sets = self._extract_bragg_tick_sets(
+                experiment=experiment,
+                expt_name=expt_name,
+                x_min=ctx['x_min'],
+                x_max=ctx['x_max'],
+            )
         plot_spec = PowderMeasVsCalcSpec(
             x=ctx['x_filtered'],
             y_meas=y_meas,
@@ -1341,17 +1344,19 @@ class Plotter(RendererBase):
         peak_id_array = None if peak_id is None else np.asarray(peak_id)
         structure_ids = arrays['structure_id'][mask]
         unique_structure_ids = []
-        for structure_id in structure_ids:
-            structure_id_value = str(structure_id)
-            if structure_id_value not in unique_structure_ids:
-                unique_structure_ids.append(structure_id_value)
+        for raw_structure_id in structure_ids:
+            if not any(
+                np.array_equal(raw_structure_id, existing_structure_id)
+                for existing_structure_id in unique_structure_ids
+            ):
+                unique_structure_ids.append(raw_structure_id)
 
         tick_sets = []
-        for structure_id in unique_structure_ids:
-            structure_mask = mask & (arrays['structure_id'] == structure_id)
+        for raw_structure_id in unique_structure_ids:
+            structure_mask = mask & (arrays['structure_id'] == raw_structure_id)
             tick_sets.append(
                 BraggTickSet(
-                    structure_id=structure_id,
+                    structure_id=str(raw_structure_id),
                     x=arrays['x'][structure_mask],
                     h=arrays['h'][structure_mask],
                     k=arrays['k'][structure_mask],
