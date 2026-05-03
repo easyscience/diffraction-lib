@@ -516,6 +516,7 @@ class TestPlotterPublicMethods:
         assert len(calls) == 1
         assert calls[0][0] == 'powder_meas_vs_calc'
         assert calls[0][1]['y_resid'] is not None
+        assert calls[0][1]['bragg_tick_sets'] == ()
 
     def test_plot_meas_vs_calc_without_residual(self, monkeypatch):
         p, calls = self._make_plotter_with_project(monkeypatch)
@@ -523,3 +524,4 @@ class TestPlotterPublicMethods:
         assert len(calls) == 1
         assert calls[0][0] == 'powder_meas_vs_calc'
         assert calls[0][1]['y_resid'] is None
+        assert calls[0][1]['bragg_tick_sets'] == ()

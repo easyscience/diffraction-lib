@@ -208,6 +208,22 @@ def test_extract_bragg_tick_sets_groups_and_filters():
     assert np.allclose(tick_sets[1].intensity, np.array([30.0]))
 
 
+def test_extract_bragg_tick_sets_returns_empty_without_category():
+    from easydiffraction.display.plotting import Plotter
+
+    class Experiment:
+        pass
+
+    tick_sets = Plotter()._extract_bragg_tick_sets(
+        experiment=Experiment(),
+        expt_name='E1',
+        x_min=1.0,
+        x_max=3.0,
+    )
+
+    assert tick_sets == ()
+
+
 def test_plot_meas_vs_calc_routes_powder_bragg_to_composite_backend():
     import numpy as np
 

@@ -126,7 +126,6 @@ class AsciiPlotter(PlotterBase):
         for measured, calculated, and residual series. Bragg tick rows
         are announced but not rendered graphically.
         """
-        del bragg_tick_sets
         del residual_height_fraction
         del bragg_peaks_height_fraction
 
@@ -144,7 +143,8 @@ class AsciiPlotter(PlotterBase):
             title=title,
             height=height,
         )
-        console.print('Bragg peak subplot rows are available with the Plotly engine only.')
+        if bragg_tick_sets:
+            console.print('Bragg peak subplot rows are available with the Plotly engine only.')
 
     @staticmethod
     def plot_single_crystal(

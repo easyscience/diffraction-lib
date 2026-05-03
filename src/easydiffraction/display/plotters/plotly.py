@@ -686,18 +686,28 @@ class PlotlyPlotter(PlotterBase):
         height: int | None = None,
     ) -> None:
         """
-        Render a three-row powder plot with Bragg ticks and residual.
+        Render a composite powder plot with optional Bragg ticks.
 
         The main row shows measured and calculated intensities. The
-        middle row shows one Bragg tick row per structure or phase. The
-        bottom row shows the residual when requested.
+        Bragg row is added only when tick data is available. The
+        residual row is added only when residual data is requested.
         """
         del height
 
+        has_bragg_ticks = bool(bragg_tick_sets)
         has_residual = y_resid is not None
-        row_count = 3 if has_residual else 2
-        row_heights = [1.0, bragg_peaks_height_fraction]
+        row_count = 1 + int(has_bragg_ticks) + int(has_residual)
+        row_heights = [1.0]
+        bragg_row = None
+        residual_row = None
+        next_row = 2
+
+        if has_bragg_ticks:
+            bragg_row = next_row
+            next_row += 1
+            row_heights.append(bragg_peaks_height_fraction)
         if has_residual:
+            residual_row = next_row
             row_heights.append(residual_height_fraction)
         x_min = float(np.min(x))
         x_max = float(np.max(x))
@@ -715,20 +725,21 @@ class PlotlyPlotter(PlotterBase):
         fig.add_trace(self._get_powder_trace(x, y_meas, 'meas'), row=1, col=1)
         fig.add_trace(self._get_powder_trace(x, y_calc, 'calc'), row=1, col=1)
 
-        for idx, tick_set in enumerate(bragg_tick_sets):
-            color = BRAGG_TICK_COLORS[idx % len(BRAGG_TICK_COLORS)]
-            fig.add_trace(
-                self._get_bragg_tick_trace(
-                    tick_set=tick_set,
-                    row_y=float(idx + 1),
-                    color=color,
-                ),
-                row=2,
-                col=1,
-            )
+        if bragg_row is not None:
+            for idx, tick_set in enumerate(bragg_tick_sets):
+                color = BRAGG_TICK_COLORS[idx % len(BRAGG_TICK_COLORS)]
+                fig.add_trace(
+                    self._get_bragg_tick_trace(
+                        tick_set=tick_set,
+                        row_y=float(idx + 1),
+                        color=color,
+                    ),
+                    row=bragg_row,
+                    col=1,
+                )
 
         if has_residual:
-            fig.add_trace(self._get_powder_trace(x, y_resid, 'resid'), row=3, col=1)
+            fig.add_trace(self._get_powder_trace(x, y_resid, 'resid'), row=residual_row, col=1)
 
             main_y_min = float(min(np.min(y_meas), np.min(y_calc)))
             main_y_max = float(max(np.max(y_meas), np.max(y_calc)))
@@ -775,10 +786,10 @@ class PlotlyPlotter(PlotterBase):
                 col=1,
             )
 
-        fig.update_xaxes(showticklabels=False, row=1, col=1)
+        fig.update_xaxes(showticklabels=(row_count == 1), row=1, col=1)
         fig.update_yaxes(title_text=axes_labels[1], row=1, col=1)
 
-        if bragg_tick_sets:
+        if bragg_row is not None:
             fig.update_yaxes(
                 title_text='Bragg peaks',
                 tickmode='array',
@@ -786,19 +797,10 @@ class PlotlyPlotter(PlotterBase):
                 ticktext=[tick_set.structure_id for tick_set in bragg_tick_sets],
                 range=[0.5, float(len(bragg_tick_sets)) + 0.5],
                 showgrid=False,
-                row=2,
+                row=bragg_row,
                 col=1,
             )
-        else:
-            fig.update_yaxes(
-                title_text='Bragg peaks',
-                showticklabels=False,
-                range=[0.5, 1.5],
-                showgrid=False,
-                row=2,
-                col=1,
-            )
-        fig.update_xaxes(showticklabels=not has_residual, row=2, col=1)
+            fig.update_xaxes(showticklabels=not has_residual, row=bragg_row, col=1)
 
         if has_residual:
             fig.update_yaxes(
@@ -807,12 +809,13 @@ class PlotlyPlotter(PlotterBase):
                 tickmode='array',
                 tickvals=[-residual_limit, 0.0, residual_limit],
                 zeroline=False,
-                row=3,
+                row=residual_row,
                 col=1,
             )
-            fig.update_xaxes(title_text=axes_labels[0], row=3, col=1)
+            fig.update_xaxes(title_text=axes_labels[0], row=residual_row, col=1)
         else:
-            fig.update_xaxes(title_text=axes_labels[0], row=2, col=1)
+            terminal_row = bragg_row if bragg_row is not None else 1
+            fig.update_xaxes(title_text=axes_labels[0], row=terminal_row, col=1)
 
         self._show_figure(fig)
 

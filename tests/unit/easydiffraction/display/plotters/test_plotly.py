@@ -304,7 +304,44 @@ def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch)
     assert fig.layout.yaxis2.title.text == 'Bragg peaks'
     assert list(fig.layout.yaxis2.ticktext) == ['phase-a', 'phase-b']
     assert fig.layout.yaxis3.title.text == 'Residual'
-    assert fig.layout.yaxis3.zeroline is True
+    assert fig.layout.yaxis3.zeroline is False
     assert fig.layout.xaxis3.title.text == '2θ (degree)'
     assert 'hkl: (1 0 1)' in bragg_traces[0].text[0]
     assert 'intensity: 100' in bragg_traces[0].text[0]
+
+
+def test_plot_powder_meas_vs_calc_skips_bragg_row_when_no_ticks(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    captured = {}
+
+    def fake_show_figure(self, fig):
+        captured['fig'] = fig
+
+    monkeypatch.setattr(pp.PlotlyPlotter, '_show_figure', fake_show_figure)
+
+    plotter = pp.PlotlyPlotter()
+    plotter.plot_powder_meas_vs_calc(
+        x=np.array([1.0, 2.0, 3.0]),
+        y_meas=np.array([10.0, 12.0, 11.0]),
+        y_calc=np.array([9.0, 11.0, 10.5]),
+        y_resid=np.array([1.0, 1.0, 0.5]),
+        bragg_tick_sets=(),
+        axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+        title='Powder',
+        residual_height_fraction=0.25,
+        bragg_peaks_height_fraction=0.15,
+        height=None,
+    )
+
+    fig = captured['fig']
+    assert len(fig.data) == 3
+    assert fig.layout.xaxis.matches == 'x'
+    assert fig.layout.xaxis2.matches == 'x'
+    assert fig.layout.yaxis2.title.text == 'Residual'
+    assert fig.layout.xaxis2.title.text == '2θ (degree)'
+    assert [trace.name for trace in fig.data] == [
+        'Measured (Imeas)',
+        'Total calculated (Icalc)',
+        'Residual (Imeas - Icalc)',
+    ]

@@ -1230,15 +1230,11 @@ class Plotter(RendererBase):
 
         The future category is expected to expose array-like attributes
         named ``structure_id``, ``x``, ``h``, ``k``, ``l``, and
-        ``intensity``. Until that category exists, this method returns
-        an empty tuple and logs a clear warning.
+        ``intensity``. Until that category exists, this method simply
+        returns an empty tuple.
         """
         bragg_peaks = getattr(experiment, 'bragg_peaks', None)
         if bragg_peaks is None:
-            log.warning(
-                f"Experiment '{expt_name}' has no Bragg peak position data. "
-                'Rendering an empty Bragg row.',
-            )
             return ()
 
         required_names = ('structure_id', 'x', 'h', 'k', 'l', 'intensity')
@@ -1248,16 +1244,12 @@ class Plotter(RendererBase):
             if value is None:
                 log.warning(
                     f"Experiment '{expt_name}' Bragg peak data is missing '{name}'. "
-                    'Rendering an empty Bragg row.',
+                    'Skipping the Bragg subplot.',
                 )
                 return ()
             arrays[name] = np.asarray(value)
 
         if arrays['x'].size == 0:
-            log.warning(
-                f"Experiment '{expt_name}' has empty Bragg peak position data. "
-                'Rendering an empty Bragg row.',
-            )
             return ()
 
         mask = (arrays['x'] >= x_min) & (arrays['x'] <= x_max)

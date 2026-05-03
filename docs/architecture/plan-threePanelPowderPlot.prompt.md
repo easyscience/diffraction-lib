@@ -59,6 +59,9 @@ positions itself.
    zero line is removed.
 6. Locked the composite plot x axis to the actual data minimum and
    maximum so Plotly no longer adds autorange padding around the scan.
+7. Refactored the composite plot so the Bragg subplot is created only
+   when tick data exists; otherwise the figure collapses to the main and
+   residual rows without a no-data warning.
 
 **Steps**
 
@@ -112,6 +115,7 @@ positions itself.
    available, hkl, x position, and intensity. Keep numeric y-axis labels
    hidden or replace them with structure labels if that remains
    readable.
+   When no Bragg tick data exists, omit the Bragg subplot entirely.
 9. Make X synchronization explicit: zooming or panning the main pattern
    must update the Bragg tick row and residual row, and the shared
    x-axis range should start at the filtered data minimum and end at the
