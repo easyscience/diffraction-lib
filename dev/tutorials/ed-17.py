@@ -286,7 +286,7 @@ project.display.plotter.plot_param_correlations()
 # #### Compare measured and calculated patterns for the first fit.
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='d20', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='d20')
 
 # %% [markdown]
 # #### Run Sequential Fitting
@@ -329,7 +329,7 @@ project.analysis.fit_sequential(
 
 # %%
 project.apply_params_from_csv(row_index=0)
-project.display.plotter.plot_meas_vs_calc(expt_name='d20', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='d20')
 
 # %% [markdown]
 #
@@ -337,7 +337,7 @@ project.display.plotter.plot_meas_vs_calc(expt_name='d20', show_residual=True)
 
 # %%
 project.apply_params_from_csv(row_index=-1)
-project.display.plotter.plot_meas_vs_calc(expt_name='d20', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='d20')
 
 # %% [markdown]
 # #### Plot Parameter Evolution

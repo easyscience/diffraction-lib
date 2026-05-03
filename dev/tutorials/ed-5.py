@@ -200,10 +200,10 @@ project.experiments.add(expt)
 # #### Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='d20', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='d20')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='d20', x_min=41, x_max=54, show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='d20', x_min=41, x_max=54)
 
 # %% [markdown]
 # #### Set Free Parameters
@@ -283,10 +283,10 @@ project.display.plotter.plot_param_correlations()
 # #### Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='d20', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='d20')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='d20', x_min=42, x_max=52, show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='d20', x_min=42, x_max=52)
 
 # %% [markdown]
 # ## Summary

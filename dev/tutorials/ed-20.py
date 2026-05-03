@@ -245,10 +245,10 @@ project.experiments.add(expt_n2)
 # #### Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='expt_s2', show_residual=False)
+project.display.plotter.plot_meas_vs_calc(expt_name='expt_s2')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='expt_n2', show_residual=False)
+project.display.plotter.plot_meas_vs_calc(expt_name='expt_n2')
 
 # %% [markdown]
 # ## Perform Analysis
@@ -356,10 +356,10 @@ project.display.plotter.plot_param_correlations()
 # Show full range in TOF.
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='expt_s2', show_residual=False)
+project.display.plotter.plot_meas_vs_calc(expt_name='expt_s2')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='expt_n2', show_residual=False)
+project.display.plotter.plot_meas_vs_calc(expt_name='expt_n2')
 
 # %% [markdown]
 # Show selected peaks in d-spacing.

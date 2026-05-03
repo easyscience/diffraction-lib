@@ -190,10 +190,10 @@ project.analysis.joint_fit_experiments.create(id='nomad', weight=0.3)
 # #### Plot Measured vs Calculated (Before Fit)
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='sepd', show_residual=False)
+project.display.plotter.plot_meas_vs_calc(expt_name='sepd')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='nomad', show_residual=False)
+project.display.plotter.plot_meas_vs_calc(expt_name='nomad')
 
 # %% [markdown]
 # #### Set Fitting Parameters
@@ -245,7 +245,7 @@ project.display.plotter.plot_param_correlations()
 # #### Plot Measured vs Calculated (After Fit)
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='sepd', show_residual=False)
+project.display.plotter.plot_meas_vs_calc(expt_name='sepd')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='nomad', show_residual=False)
+project.display.plotter.plot_meas_vs_calc(expt_name='nomad')

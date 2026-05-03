@@ -334,10 +334,10 @@ project.display.plotter.plot_calc(expt_name='hrpt')
 # #### Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41)
 
 # %% [markdown]
 # #### Show Parameters
@@ -430,10 +430,10 @@ project.analysis.display.fit_results()
 # #### Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41)
 
 # %% [markdown]
 # #### Save Project State
@@ -469,10 +469,10 @@ project.analysis.display.fit_results()
 # #### Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41)
 
 # %% [markdown]
 # #### Save Project State
@@ -508,10 +508,10 @@ project.analysis.display.fit_results()
 # #### Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41)
 
 # %% [markdown]
 # #### Save Project State
@@ -565,10 +565,10 @@ project.analysis.display.fit_results()
 # #### Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41)
 
 # %% [markdown]
 # #### Save Project State
@@ -632,10 +632,10 @@ project.display.plotter.plot_param_correlations()
 # #### Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41, show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41)
 
 # %% [markdown]
 # #### Save Project State
