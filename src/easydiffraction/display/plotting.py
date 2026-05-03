@@ -74,7 +74,7 @@ class _MeasVsCalcPlotOptions:
 
     x_min: float | None = None
     x_max: float | None = None
-    show_residual: bool = True
+    show_residual: bool | None = None
     residual_height_fraction: float = DEFAULT_RESID_HEIGHT
     bragg_peaks_height_fraction: float = DEFAULT_BRAGG_ROW
     x: object | None = None
@@ -254,14 +254,21 @@ class Plotter(RendererBase):
 
         # Filter x
         x_filtered = self._filtered_y_array(x_array, x_array, x_min, x_max)
+        resolved_x_min = self.x_min if x_min is None else float(x_min)
+        resolved_x_max = self.x_max if x_max is None else float(x_max)
+        if x_filtered.size > 0:
+            if x_min is None:
+                resolved_x_min = float(np.min(x_filtered))
+            if x_max is None:
+                resolved_x_max = float(np.max(x_filtered))
 
         axes_labels = self._get_axes_labels(sample_form, scattering_type, x_axis)
 
         return {
             'x_filtered': x_filtered,
             'x_array': x_array,
-            'x_min': x_min,
-            'x_max': x_max,
+            'x_min': resolved_x_min,
+            'x_max': resolved_x_max,
             'axes_labels': axes_labels,
         }
 
@@ -444,7 +451,7 @@ class Plotter(RendererBase):
         x_min: float | None = None,
         x_max: float | None = None,
         *,
-        show_residual: bool = True,
+        show_residual: bool | None = None,
         residual_height_fraction: float = DEFAULT_RESID_HEIGHT,
         bragg_peaks_height_fraction: float = DEFAULT_BRAGG_ROW,
         x: object | None = None,
@@ -460,8 +467,10 @@ class Plotter(RendererBase):
             Lower bound for the x-axis range.
         x_max : float | None, default=None
             Upper bound for the x-axis range.
-        show_residual : bool, default=True
-            When ``True``, include the residual (difference) curve.
+        show_residual : bool | None, default=None
+            When ``None``, powder Bragg plots include the residual by
+            default while other measured-vs-calculated plots keep the
+            historical no-residual default.
         residual_height_fraction : float, default=DEFAULT_RESID_HEIGHT
             Optional. Defaults to 0.25. Residual-row height relative to
             the main intensity row.
@@ -1192,7 +1201,9 @@ class Plotter(RendererBase):
             ctx=ctx,
             y_meas=y_meas,
             y_calc=y_calc,
-            show_residual=plot_options.show_residual,
+            show_residual=False
+            if plot_options.show_residual is None
+            else plot_options.show_residual,
             title=title,
         )
 
@@ -1237,7 +1248,8 @@ class Plotter(RendererBase):
         """
         Render the composite powder Bragg measured-vs-calculated plot.
         """
-        y_resid = y_meas - y_calc if plot_options.show_residual else None
+        show_residual = True if plot_options.show_residual is None else plot_options.show_residual
+        y_resid = y_meas - y_calc if show_residual else None
         bragg_tick_sets = self._extract_bragg_tick_sets(
             experiment=experiment,
             expt_name=expt_name,
@@ -1289,8 +1301,8 @@ class Plotter(RendererBase):
     def _extract_bragg_tick_sets(
         experiment: object,
         expt_name: str,
-        x_min: float,
-        x_max: float,
+        x_min: float | None,
+        x_max: float | None,
     ) -> tuple[BraggTickSet, ...]:
         """
         Convert future experiment peak-position data into display rows.
@@ -1319,7 +1331,9 @@ class Plotter(RendererBase):
         if arrays['x'].size == 0:
             return ()
 
-        mask = (arrays['x'] >= x_min) & (arrays['x'] <= x_max)
+        lower_bound = DEFAULT_MIN if x_min is None else x_min
+        upper_bound = DEFAULT_MAX if x_max is None else x_max
+        mask = (arrays['x'] >= lower_bound) & (arrays['x'] <= upper_bound)
         if not np.any(mask):
             return ()
 

@@ -14,8 +14,8 @@ positions itself.
 - [x] Step 2 completed. Added a display-specific Bragg tick DTO in
       `src/easydiffraction/display/plotters/base.py`.
 - [x] Step 3 completed. Powder Bragg `plot_meas_vs_calc()` now routes
-      through a composite plotting path and defaults `show_residual` to
-      `True`.
+      through a composite plotting path, with residuals enabled by
+      default only for the powder-Bragg composite branch.
 - [x] Step 4 completed. Added a helper that consumes the future
       `experiment.bragg_peaks` arrays when present and otherwise logs a
       clear warning while rendering an empty Bragg row.
@@ -79,6 +79,10 @@ positions itself.
     main plot has a real y range, so oversized residuals are now clipped
     within the scale-matched subplot instead of breaking the intended
     physical alignment.
+12. Addressed review regressions by normalizing Bragg filtering bounds
+    before masking future `bragg_peaks` data, keeping the residual
+    default scoped to the powder-Bragg composite path, and guarding the
+    composite Plotly backend against empty filtered x ranges.
 
 **Steps**
 

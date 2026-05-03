@@ -734,14 +734,20 @@ class PlotlyPlotter(PlotterBase):
         if plot_spec.y_resid is None:
             return 1.0
 
-        main_y_min = float(min(np.min(plot_spec.y_meas), np.min(plot_spec.y_calc)))
-        main_y_max = float(max(np.max(plot_spec.y_meas), np.max(plot_spec.y_calc)))
+        y_meas = np.asarray(plot_spec.y_meas)
+        y_calc = np.asarray(plot_spec.y_calc)
+        y_resid = np.asarray(plot_spec.y_resid)
+        if min(y_meas.size, y_calc.size, y_resid.size) == 0:
+            return 1.0
+
+        main_y_min = float(min(np.min(y_meas), np.min(y_calc)))
+        main_y_max = float(max(np.max(y_meas), np.max(y_calc)))
         main_y_range = max(main_y_max - main_y_min, 0.0)
         scale_matched_half_range = 0.5 * main_y_range * plot_spec.residual_height_fraction
         if scale_matched_half_range > 0.0:
             return scale_matched_half_range
 
-        return cls._nice_axis_limit(float(np.max(np.abs(plot_spec.y_resid))))
+        return cls._nice_axis_limit(float(np.max(np.abs(y_resid))))
 
     def plot_powder_meas_vs_calc(
         self,
@@ -755,8 +761,10 @@ class PlotlyPlotter(PlotterBase):
         residual row is added only when residual data is requested.
         """
         layout = self._get_powder_composite_rows(plot_spec)
-        x_min = float(np.min(plot_spec.x))
-        x_max = float(np.max(plot_spec.x))
+        x_values = np.asarray(plot_spec.x)
+        has_x_values = x_values.size > 0
+        x_min = float(np.min(x_values)) if has_x_values else None
+        x_max = float(np.max(x_values)) if has_x_values else None
 
         fig = make_subplots(
             rows=layout.row_count,
@@ -807,17 +815,17 @@ class PlotlyPlotter(PlotterBase):
         )
 
         for row_idx in range(1, layout.row_count + 1):
-            fig.update_xaxes(
-                matches='x',
-                range=[x_min, x_max],
-                showline=True,
-                mirror=True,
-                zeroline=False,
-                tickformat=',.6~g',
-                separatethousands=True,
-                row=row_idx,
-                col=1,
-            )
+            x_axis_kwargs = {
+                'matches': 'x',
+                'showline': True,
+                'mirror': True,
+                'zeroline': False,
+                'tickformat': ',.6~g',
+                'separatethousands': True,
+            }
+            if has_x_values:
+                x_axis_kwargs['range'] = [x_min, x_max]
+            fig.update_xaxes(row=row_idx, col=1, **x_axis_kwargs)
             fig.update_yaxes(
                 showline=True,
                 mirror=True,
