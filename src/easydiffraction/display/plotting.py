@@ -15,9 +15,12 @@ from enum import StrEnum
 import numpy as np
 import pandas as pd
 
+from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.display.base import RendererBase
 from easydiffraction.display.base import RendererFactoryBase
 from easydiffraction.display.plotters.ascii import AsciiPlotter
+from easydiffraction.display.plotters.base import BraggTickSet
 from easydiffraction.display.plotters.base import DEFAULT_AXES_LABELS
 from easydiffraction.display.plotters.base import DEFAULT_HEIGHT
 from easydiffraction.display.plotters.base import DEFAULT_MAX
@@ -57,6 +60,8 @@ class PlotterEngineEnum(StrEnum):
 
 DEFAULT_CORRELATION_THRESHOLD = 0.7
 EXPECTED_COVAR_NDIM = 2
+DEFAULT_RESIDUAL_HEIGHT_FRACTION = 0.25
+DEFAULT_BRAGG_PEAKS_HEIGHT_FRACTION = 0.15
 
 
 class Plotter(RendererBase):
@@ -423,7 +428,9 @@ class Plotter(RendererBase):
         x_min: float | None = None,
         x_max: float | None = None,
         *,
-        show_residual: bool = False,
+        show_residual: bool = True,
+        residual_height_fraction: float = DEFAULT_RESIDUAL_HEIGHT_FRACTION,
+        bragg_peaks_height_fraction: float = DEFAULT_BRAGG_PEAKS_HEIGHT_FRACTION,
         x: object | None = None,
     ) -> None:
         """
@@ -437,8 +444,12 @@ class Plotter(RendererBase):
             Lower bound for the x-axis range.
         x_max : float | None, default=None
             Upper bound for the x-axis range.
-        show_residual : bool, default=False
+        show_residual : bool, default=True
             When ``True``, include the residual (difference) curve.
+        residual_height_fraction : float, default=0.25
+            Residual-row height relative to the main intensity row.
+        bragg_peaks_height_fraction : float, default=0.15
+            Bragg-tick-row height relative to the main intensity row.
         x : object | None, default=None
             Optional explicit x-axis data to override stored values.
         """
@@ -450,6 +461,8 @@ class Plotter(RendererBase):
             x_min=x_min,
             x_max=x_max,
             show_residual=show_residual,
+            residual_height_fraction=residual_height_fraction,
+            bragg_peaks_height_fraction=bragg_peaks_height_fraction,
             x=x,
         )
 
@@ -1072,7 +1085,9 @@ class Plotter(RendererBase):
         x_min: object = None,
         x_max: object = None,
         *,
-        show_residual: bool = False,
+        show_residual: bool = True,
+        residual_height_fraction: float = DEFAULT_RESIDUAL_HEIGHT_FRACTION,
+        bragg_peaks_height_fraction: float = DEFAULT_BRAGG_PEAKS_HEIGHT_FRACTION,
         x: object = None,
     ) -> None:
         """
@@ -1097,8 +1112,12 @@ class Plotter(RendererBase):
             Optional minimum x-axis limit.
         x_max : object, default=None
             Optional maximum x-axis limit.
-        show_residual : bool, default=False
+        show_residual : bool, default=True
             If ``True``, add residual series (powder only).
+        residual_height_fraction : float, default=0.25
+            Residual-row height relative to the main intensity row.
+        bragg_peaks_height_fraction : float, default=0.15
+            Bragg-tick-row height relative to the main intensity row.
         x : object, default=None
             X-axis type. If ``None``, auto-detected from sample form and
             beam mode.
@@ -1161,6 +1180,32 @@ class Plotter(RendererBase):
         y_calc = self._filtered_y_array(
             pattern.intensity_calc, ctx['x_array'], ctx['x_min'], ctx['x_max']
         )
+
+        if (
+            sample_form == SampleFormEnum.POWDER
+            and scattering_type == ScatteringTypeEnum.BRAGG
+        ):
+            y_resid = y_meas - y_calc if show_residual else None
+            bragg_tick_sets = self._extract_bragg_tick_sets(
+                experiment=experiment,
+                expt_name=expt_name,
+                x_min=ctx['x_min'],
+                x_max=ctx['x_max'],
+            )
+            self._backend.plot_powder_meas_vs_calc(
+                x=ctx['x_filtered'],
+                y_meas=y_meas,
+                y_calc=y_calc,
+                y_resid=y_resid,
+                bragg_tick_sets=bragg_tick_sets,
+                axes_labels=ctx['axes_labels'],
+                title=title,
+                residual_height_fraction=residual_height_fraction,
+                bragg_peaks_height_fraction=bragg_peaks_height_fraction,
+                height=self.height,
+            )
+            return
+
         y_series.append(y_calc)
         y_labels.append('calc')
         if show_residual:
@@ -1175,6 +1220,78 @@ class Plotter(RendererBase):
             title=title,
             height=self.height,
         )
+
+    def _extract_bragg_tick_sets(
+        self,
+        experiment: object,
+        expt_name: str,
+        x_min: float,
+        x_max: float,
+    ) -> tuple[BraggTickSet, ...]:
+        """
+        Convert future experiment peak-position data into display rows.
+
+        The future category is expected to expose array-like attributes
+        named ``structure_id``, ``x``, ``h``, ``k``, ``l``, and
+        ``intensity``. Until that category exists, this method returns
+        an empty tuple and logs a clear warning.
+        """
+        bragg_peaks = getattr(experiment, 'bragg_peaks', None)
+        if bragg_peaks is None:
+            log.warning(
+                f"Experiment '{expt_name}' has no Bragg peak position data. "
+                'Rendering an empty Bragg row.',
+            )
+            return ()
+
+        required_names = ('structure_id', 'x', 'h', 'k', 'l', 'intensity')
+        arrays = {}
+        for name in required_names:
+            value = getattr(bragg_peaks, name, None)
+            if value is None:
+                log.warning(
+                    f"Experiment '{expt_name}' Bragg peak data is missing '{name}'. "
+                    'Rendering an empty Bragg row.',
+                )
+                return ()
+            arrays[name] = np.asarray(value)
+
+        if arrays['x'].size == 0:
+            log.warning(
+                f"Experiment '{expt_name}' has empty Bragg peak position data. "
+                'Rendering an empty Bragg row.',
+            )
+            return ()
+
+        mask = (arrays['x'] >= x_min) & (arrays['x'] <= x_max)
+        if not np.any(mask):
+            return ()
+
+        peak_id = getattr(bragg_peaks, 'peak_id', None)
+        peak_id_array = None if peak_id is None else np.asarray(peak_id)
+        structure_ids = arrays['structure_id'][mask]
+        unique_structure_ids = []
+        for structure_id in structure_ids:
+            structure_id_value = str(structure_id)
+            if structure_id_value not in unique_structure_ids:
+                unique_structure_ids.append(structure_id_value)
+
+        tick_sets = []
+        for structure_id in unique_structure_ids:
+            structure_mask = mask & (arrays['structure_id'] == structure_id)
+            tick_sets.append(
+                BraggTickSet(
+                    structure_id=structure_id,
+                    x=arrays['x'][structure_mask],
+                    h=arrays['h'][structure_mask],
+                    k=arrays['k'][structure_mask],
+                    l=arrays['l'][structure_mask],
+                    intensity=arrays['intensity'][structure_mask],
+                    peak_id=None if peak_id_array is None else peak_id_array[structure_mask],
+                )
+            )
+
+        return tuple(tick_sets)
 
     def _plot_param_series_from_csv(
         self,

@@ -14,6 +14,7 @@ import darkdetect
 import numpy as np
 import plotly.graph_objects as go
 import plotly.io as pio
+from plotly.subplots import make_subplots
 
 try:
     from IPython.display import HTML
@@ -22,6 +23,7 @@ except ImportError:
     display = None
     HTML = None
 
+from easydiffraction.display.plotters.base import BraggTickSet
 from easydiffraction.display.plotters.base import SERIES_CONFIG
 from easydiffraction.display.plotters.base import PlotterBase
 from easydiffraction.utils._vendored.theme_detect import is_dark
@@ -33,6 +35,14 @@ DEFAULT_COLORS = {
     'calc': 'rgb(214, 39, 40)',
     'resid': 'rgb(44, 160, 44)',
 }
+
+BRAGG_TICK_COLORS = (
+    'rgb(255, 127, 14)',
+    'rgb(23, 190, 207)',
+    'rgb(140, 140, 140)',
+    'rgb(188, 189, 34)',
+    'rgb(148, 103, 189)',
+)
 
 
 class PlotlyPlotter(PlotterBase):
@@ -599,6 +609,178 @@ class PlotlyPlotter(PlotterBase):
         )
 
         fig = self._get_figure(data, layout)
+        self._show_figure(fig)
+
+    @staticmethod
+    def _get_bragg_tick_trace(
+        tick_set: BraggTickSet,
+        row_y: float,
+        color: str,
+    ) -> object:
+        """Create a hover-capable Bragg tick trace for one structure."""
+        y = np.full(tick_set.x.shape, row_y, dtype=float)
+        peak_ids = tick_set.peak_id
+        hover_text = []
+        for idx, x_value in enumerate(tick_set.x):
+            peak_line = ''
+            if peak_ids is not None:
+                peak_value = str(peak_ids[idx])
+                if peak_value:
+                    peak_line = f'peak: {peak_value}<br>'
+            hover_text.append(
+                f'structure: {tick_set.structure_id}<br>'
+                f'{peak_line}'
+                f'hkl: ({int(tick_set.h[idx])} {int(tick_set.k[idx])} {int(tick_set.l[idx])})<br>'
+                f'x: {float(x_value):.6g}<br>'
+                f'intensity: {float(tick_set.intensity[idx]):.6g}<extra></extra>'
+            )
+
+        return go.Scatter(
+            x=tick_set.x,
+            y=y,
+            mode='markers',
+            marker={
+                'symbol': 'line-ns-open',
+                'size': 18,
+                'line': {'color': color, 'width': 2},
+                'color': color,
+            },
+            name=f"Bragg ({tick_set.structure_id})",
+            text=hover_text,
+            hovertemplate='%{text}',
+            showlegend=False,
+        )
+
+    def plot_powder_meas_vs_calc(
+        self,
+        x: np.ndarray,
+        y_meas: np.ndarray,
+        y_calc: np.ndarray,
+        y_resid: np.ndarray | None,
+        bragg_tick_sets: tuple[BraggTickSet, ...],
+        axes_labels: list[str],
+        title: str,
+        residual_height_fraction: float,
+        bragg_peaks_height_fraction: float,
+        height: int | None = None,
+    ) -> None:
+        """
+        Render a three-row powder plot with Bragg ticks and residual.
+
+        The main row shows measured and calculated intensities. The
+        middle row shows one Bragg tick row per structure or phase. The
+        bottom row shows the residual when requested.
+        """
+        del height
+
+        has_residual = y_resid is not None
+        row_count = 3 if has_residual else 2
+        row_heights = [1.0, bragg_peaks_height_fraction]
+        if has_residual:
+            row_heights.append(residual_height_fraction)
+        total_height = sum(row_heights)
+        normalized_row_heights = [row_height / total_height for row_height in row_heights]
+
+        fig = make_subplots(
+            rows=row_count,
+            cols=1,
+            shared_xaxes=True,
+            vertical_spacing=0.04,
+            row_heights=normalized_row_heights,
+        )
+
+        fig.add_trace(self._get_powder_trace(x, y_meas, 'meas'), row=1, col=1)
+        fig.add_trace(self._get_powder_trace(x, y_calc, 'calc'), row=1, col=1)
+
+        for idx, tick_set in enumerate(bragg_tick_sets):
+            color = BRAGG_TICK_COLORS[idx % len(BRAGG_TICK_COLORS)]
+            fig.add_trace(
+                self._get_bragg_tick_trace(
+                    tick_set=tick_set,
+                    row_y=float(idx + 1),
+                    color=color,
+                ),
+                row=2,
+                col=1,
+            )
+
+        if has_residual:
+            fig.add_trace(self._get_powder_trace(x, y_resid, 'resid'), row=3, col=1)
+
+        fig.update_layout(
+            margin={
+                'autoexpand': True,
+                'r': 30,
+                't': 40,
+                'b': 45,
+            },
+            title={'text': title},
+            legend={
+                'xanchor': 'right',
+                'x': 1.0,
+                'yanchor': 'top',
+                'y': 1.0,
+            },
+        )
+
+        for row_idx in range(1, row_count + 1):
+            fig.update_xaxes(
+                matches='x',
+                showline=True,
+                mirror=True,
+                zeroline=False,
+                tickformat=',.6~g',
+                separatethousands=True,
+                row=row_idx,
+                col=1,
+            )
+            fig.update_yaxes(
+                showline=True,
+                mirror=True,
+                zeroline=False,
+                tickformat=',.6~g',
+                separatethousands=True,
+                row=row_idx,
+                col=1,
+            )
+
+        fig.update_xaxes(showticklabels=False, row=1, col=1)
+        fig.update_yaxes(title_text=axes_labels[1], row=1, col=1)
+
+        if bragg_tick_sets:
+            fig.update_yaxes(
+                title_text='Bragg peaks',
+                tickmode='array',
+                tickvals=[float(idx + 1) for idx in range(len(bragg_tick_sets))],
+                ticktext=[tick_set.structure_id for tick_set in bragg_tick_sets],
+                range=[0.5, float(len(bragg_tick_sets)) + 0.5],
+                showgrid=False,
+                row=2,
+                col=1,
+            )
+        else:
+            fig.update_yaxes(
+                title_text='Bragg peaks',
+                showticklabels=False,
+                range=[0.5, 1.5],
+                showgrid=False,
+                row=2,
+                col=1,
+            )
+        fig.update_xaxes(showticklabels=not has_residual, row=2, col=1)
+
+        if has_residual:
+            fig.update_yaxes(
+                title_text='Residual',
+                zeroline=True,
+                zerolinecolor=DEFAULT_COLORS['resid'],
+                row=3,
+                col=1,
+            )
+            fig.update_xaxes(title_text=axes_labels[0], row=3, col=1)
+        else:
+            fig.update_xaxes(title_text=axes_labels[0], row=2, col=1)
+
         self._show_figure(fig)
 
     def plot_single_crystal(
