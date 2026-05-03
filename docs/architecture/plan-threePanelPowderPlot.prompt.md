@@ -23,8 +23,9 @@ positions itself.
    plotting backend contract and routed powder Bragg plots to it.
 - [x] Step 6 completed. Plotly now renders stacked subplots with shared
    x axes and configurable row-height fractions.
-- [x] Step 7 completed. The residual row uses the same units as the
-   main chart with independent auto-ranging and a visible zero line.
+- [x] Step 7 completed. The residual row now uses a scale-aware,
+   symmetric y range with exactly three ticks and no extra colored zero
+   line.
 - [x] Step 8 completed. The Bragg row renders one hover-capable tick
    trace per structure or phase row.
 - [x] Step 9 completed. The composite Plotly figure explicitly matches
@@ -53,6 +54,11 @@ positions itself.
 4. Added focused display tests for composite powder routing, Bragg tick
    extraction, Plotly subplot rendering, and the ASCII fallback, then
    regenerated `docs/docs/tutorials/ed-2.ipynb`.
+5. Refined the residual subplot axis so its physical y scale follows the
+   main chart, its ticks are symmetric about zero, and the extra green
+   zero line is removed.
+6. Locked the composite plot x axis to the actual data minimum and
+   maximum so Plotly no longer adds autorange padding around the scan.
 
 **Steps**
 
@@ -95,10 +101,10 @@ positions itself.
    default 0.25, so the residual row is 25% of the main row height.
 7. In the Plotly main row, render measured and calculated traces using
    the existing `SERIES_CONFIG` colors and names. In the residual row,
-   render `Imeas - Icalc` in the same intensity units with independent
-   auto y-range and a visible zero line. Do not match residual y-axis
-   range to the main chart because the chosen behavior is same units
-   with auto range.
+   render `Imeas - Icalc` in the same intensity units with a symmetric,
+   scale-aware y range derived from the main chart height ratio. Show
+   exactly three residual-axis ticks (`min`, `0`, `max`) and do not add
+   a separate colored zero line.
 8. In the Bragg row, render one trace per structure/phase. Each peak
    should appear as a vertical tick at its x position and at a
    per-structure y row. Use a hover-capable trace representation, not
@@ -107,10 +113,12 @@ positions itself.
    hidden or replace them with structure labels if that remains
    readable.
 9. Make X synchronization explicit: zooming or panning the main pattern
-   must update the Bragg tick row and residual row. Y axes should remain
-   independent: the main y-axis reflects intensity, the Bragg y-axis is
-   arbitrary row placement, and the residual y-axis auto-ranges in
-   intensity-difference units.
+   must update the Bragg tick row and residual row, and the shared
+   x-axis range should start at the filtered data minimum and end at the
+   filtered data maximum instead of using Plotly autorange padding. Y
+   axes should remain independent: the main y-axis reflects intensity,
+   the Bragg y-axis is arbitrary row placement, and the residual y-axis
+   auto-ranges in intensity-difference units.
 10. Implement an ASCII backend fallback in
     `src/easydiffraction/display/plotters/ascii.py` for the new method.
     It can render measured/calculated/residual using the existing single

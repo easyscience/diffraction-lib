@@ -13,9 +13,9 @@ from __future__ import annotations
 import asciichartpy
 import numpy as np
 
-from easydiffraction.display.plotters.base import BraggTickSet
 from easydiffraction.display.plotters.base import DEFAULT_HEIGHT
 from easydiffraction.display.plotters.base import SERIES_CONFIG
+from easydiffraction.display.plotters.base import BraggTickSet
 from easydiffraction.display.plotters.base import PlotterBase
 from easydiffraction.utils.logging import console
 

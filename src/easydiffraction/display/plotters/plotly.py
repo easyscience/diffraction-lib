@@ -23,8 +23,8 @@ except ImportError:
     display = None
     HTML = None
 
-from easydiffraction.display.plotters.base import BraggTickSet
 from easydiffraction.display.plotters.base import SERIES_CONFIG
+from easydiffraction.display.plotters.base import BraggTickSet
 from easydiffraction.display.plotters.base import PlotterBase
 from easydiffraction.utils._vendored.theme_detect import is_dark
 from easydiffraction.utils.environment import in_jupyter
@@ -645,11 +645,32 @@ class PlotlyPlotter(PlotterBase):
                 'line': {'color': color, 'width': 2},
                 'color': color,
             },
-            name=f"Bragg ({tick_set.structure_id})",
+            name=f'Bragg ({tick_set.structure_id})',
             text=hover_text,
             hovertemplate='%{text}',
             showlegend=False,
         )
+
+    @staticmethod
+    def _nice_axis_limit(raw_limit: float) -> float:
+        """Round a positive axis limit up to a readable value."""
+        if raw_limit <= 0:
+            return 1.0
+
+        exponent = float(np.floor(np.log10(raw_limit)))
+        base = 10.0**exponent
+        fraction = raw_limit / base
+
+        if fraction <= 1.0:
+            nice_fraction = 1.0
+        elif fraction <= 2.0:
+            nice_fraction = 2.0
+        elif fraction <= 5.0:
+            nice_fraction = 5.0
+        else:
+            nice_fraction = 10.0
+
+        return nice_fraction * base
 
     def plot_powder_meas_vs_calc(
         self,
@@ -678,6 +699,8 @@ class PlotlyPlotter(PlotterBase):
         row_heights = [1.0, bragg_peaks_height_fraction]
         if has_residual:
             row_heights.append(residual_height_fraction)
+        x_min = float(np.min(x))
+        x_max = float(np.max(x))
         total_height = sum(row_heights)
         normalized_row_heights = [row_height / total_height for row_height in row_heights]
 
@@ -707,6 +730,13 @@ class PlotlyPlotter(PlotterBase):
         if has_residual:
             fig.add_trace(self._get_powder_trace(x, y_resid, 'resid'), row=3, col=1)
 
+            main_y_min = float(min(np.min(y_meas), np.min(y_calc)))
+            main_y_max = float(max(np.max(y_meas), np.max(y_calc)))
+            main_y_range = max(main_y_max - main_y_min, 0.0)
+            scale_matched_half_range = 0.5 * main_y_range * residual_height_fraction
+            residual_half_range = max(scale_matched_half_range, float(np.max(np.abs(y_resid))))
+            residual_limit = self._nice_axis_limit(residual_half_range)
+
         fig.update_layout(
             margin={
                 'autoexpand': True,
@@ -726,6 +756,7 @@ class PlotlyPlotter(PlotterBase):
         for row_idx in range(1, row_count + 1):
             fig.update_xaxes(
                 matches='x',
+                range=[x_min, x_max],
                 showline=True,
                 mirror=True,
                 zeroline=False,
@@ -772,8 +803,10 @@ class PlotlyPlotter(PlotterBase):
         if has_residual:
             fig.update_yaxes(
                 title_text='Residual',
-                zeroline=True,
-                zerolinecolor=DEFAULT_COLORS['resid'],
+                range=[-residual_limit, residual_limit],
+                tickmode='array',
+                tickvals=[-residual_limit, 0.0, residual_limit],
+                zeroline=False,
                 row=3,
                 col=1,
             )

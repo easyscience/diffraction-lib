@@ -20,12 +20,12 @@ from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.display.base import RendererBase
 from easydiffraction.display.base import RendererFactoryBase
 from easydiffraction.display.plotters.ascii import AsciiPlotter
-from easydiffraction.display.plotters.base import BraggTickSet
 from easydiffraction.display.plotters.base import DEFAULT_AXES_LABELS
 from easydiffraction.display.plotters.base import DEFAULT_HEIGHT
 from easydiffraction.display.plotters.base import DEFAULT_MAX
 from easydiffraction.display.plotters.base import DEFAULT_MIN
 from easydiffraction.display.plotters.base import DEFAULT_X_AXIS
+from easydiffraction.display.plotters.base import BraggTickSet
 from easydiffraction.display.plotters.base import XAxisType
 from easydiffraction.display.plotters.plotly import PlotlyPlotter
 from easydiffraction.display.tables import TableRenderer
@@ -446,9 +446,9 @@ class Plotter(RendererBase):
             Upper bound for the x-axis range.
         show_residual : bool, default=True
             When ``True``, include the residual (difference) curve.
-        residual_height_fraction : float, default=0.25
+        residual_height_fraction : float, default=DEFAULT_RESIDUAL_HEIGHT_FRACTION
             Residual-row height relative to the main intensity row.
-        bragg_peaks_height_fraction : float, default=0.15
+        bragg_peaks_height_fraction : float, default=DEFAULT_BRAGG_PEAKS_HEIGHT_FRACTION
             Bragg-tick-row height relative to the main intensity row.
         x : object | None, default=None
             Optional explicit x-axis data to override stored values.
@@ -1114,9 +1114,9 @@ class Plotter(RendererBase):
             Optional maximum x-axis limit.
         show_residual : bool, default=True
             If ``True``, add residual series (powder only).
-        residual_height_fraction : float, default=0.25
+        residual_height_fraction : float, default=DEFAULT_RESIDUAL_HEIGHT_FRACTION
             Residual-row height relative to the main intensity row.
-        bragg_peaks_height_fraction : float, default=0.15
+        bragg_peaks_height_fraction : float, default=DEFAULT_BRAGG_PEAKS_HEIGHT_FRACTION
             Bragg-tick-row height relative to the main intensity row.
         x : object, default=None
             X-axis type. If ``None``, auto-detected from sample form and
@@ -1181,10 +1181,7 @@ class Plotter(RendererBase):
             pattern.intensity_calc, ctx['x_array'], ctx['x_min'], ctx['x_max']
         )
 
-        if (
-            sample_form == SampleFormEnum.POWDER
-            and scattering_type == ScatteringTypeEnum.BRAGG
-        ):
+        if sample_form == SampleFormEnum.POWDER and scattering_type == ScatteringTypeEnum.BRAGG:
             y_resid = y_meas - y_calc if show_residual else None
             bragg_tick_sets = self._extract_bragg_tick_sets(
                 experiment=experiment,
