@@ -5,11 +5,92 @@ metadata per linked phase. The category will be populated when powder
 patterns are calculated and will provide the data source for hoverable
 Bragg ticks in the existing three-panel powder plot.
 
+- Plan file: `docs/dev/plan_powder-refln-category.md`
+- Feature name: `powder-refln-category`
+- Feature branch: `feature/powder-refln-category`
+
 ## Status
 
 - [x] Record design decisions below.
+- [ ] Create and switch to branch `feature/powder-refln-category`.
 - [ ] Phase 1: implement code and documentation changes only.
-- [ ] Phase 2: add/update tests and run verification commands.
+- [ ] Stop for user review after Phase 1 is complete.
+- [ ] Phase 2: add/update tests and run verification commands after
+         user approval.
+- [ ] Final clean-up: update this plan, confirm commits, and summarize
+         remaining risks.
+
+## Execution Protocol
+
+- Work independently through Phase 1 until all implementation checklist
+   items are complete. Do not add tests or run tests during Phase 1 unless
+   the user explicitly asks.
+- Mark each checklist item from `[ ]` to `[x]` when it is completed.
+- Commit after every completed implementation step. Stage only the files
+   modified for that step and avoid staging unrelated user changes.
+- Do not push commits unless the user explicitly asks.
+- Do not commit data files, project files, CIF files, or other generated
+   artifacts created by integration tests, script tests, or notebook
+   execution unless the user explicitly asks to update those artifacts.
+- After Phase 1, stop and ask the user to review the implementation.
+   Continue to Phase 2 only after user approval.
+
+## Implementation Checklist
+
+### Phase 1 — Implementation
+
+- [ ] Step 1: Create branch `feature/powder-refln-category` from the
+         current working branch.
+   Suggested commit: no commit; branch setup only.
+- [ ] Step 2: Add the powder `Refln` item and collection, including
+         `phase_id`, `f_calc`, `f_squared_calc`, beam-mode x fields, array
+         accessors, and `_replace_from_records(...)`.
+   Suggested commit: `Add powder Refln category`
+- [ ] Step 3: Wire `experiment.refln` into `BraggPdExperiment` as a
+         read-only sibling category and include it in CIF serialization.
+   Suggested commit: `Wire powder Refln into Bragg experiments`
+- [ ] Step 4: Add calculator-side reflection record extraction for
+         Cryspy, reusing values from the powder pattern calculation output
+         when available.
+   Suggested commit: `Extract Cryspy powder reflection records`
+- [ ] Step 5: Update `PdDataBase._update()` so every calculation clears
+         and repopulates `experiment.refln` in sync with `data.intensity_calc`.
+   Suggested commit: `Populate powder Refln during calculation`
+- [ ] Step 6: Update plotting to consume `experiment.refln`, group by
+         `phase_id`, use the selected x-axis space, and show `phase_id`,
+         `(index_h index_k index_l)`, `f_squared_calc`, and `f_calc` in
+         Bragg tick hover content.
+   Suggested commit: `Use powder Refln for Bragg ticks`
+- [ ] Step 7: Update documentation and any affected developer plans so
+         they refer to `experiment.refln` and `phase_id`.
+   Suggested commit: `Document powder Refln Bragg ticks`
+- [ ] Step 8: Review Phase 1 diffs, update this checklist, and stop for
+         user review before adding tests or running verification.
+   Suggested commit: `Update powder Refln implementation plan`
+
+### Phase 2 — Verification
+
+- [ ] Step 9: Add/update focused unit tests for the powder `Refln` item,
+         collection replacement, `BraggPdExperiment` wiring, Cryspy record
+         extraction, data update population, plotting, and CIF round-trip.
+   Suggested commit: `Test powder Refln category`
+- [ ] Step 10: Run targeted unit tests for the changed areas and fix any
+         failures.
+   Suggested commit: `Fix powder Refln test failures`
+- [ ] Step 11: Run project formatting, linting, unit tests, integration
+         tests, and script tests listed below. Do not commit generated data,
+         project, or CIF artifacts from those runs.
+   Suggested commit: `Verify powder Refln implementation`
+- [ ] Step 12: Update this plan with completed verification results and
+         any remaining risks.
+   Suggested commit: `Finalize powder Refln plan`
+
+## Clarification Questions
+
+All known questions have been answered and recorded in
+`Decisions Recorded`. If new ambiguity appears during implementation,
+pause only when the ambiguity changes public API, scientific semantics,
+data persistence, or removes/replaces existing behavior.
 
 ## Current Context
 
