@@ -37,6 +37,25 @@ if TYPE_CHECKING:
     from easydiffraction.datablocks.structure.collection import Structures
 
 
+def intensity_category_for(experiment: object) -> object:
+    """Return the category exposing measured and calculated values."""
+    resolver = getattr(experiment, '_intensity_category', None)
+    if callable(resolver):
+        return resolver()
+
+    data = getattr(experiment, 'data', None)
+    if data is not None:
+        return data
+
+    refln = getattr(experiment, 'refln', None)
+    if refln is not None:
+        return refln
+
+    name = getattr(experiment, 'name', type(experiment).__name__)
+    msg = f"Experiment '{name}' has no intensity category."
+    raise AttributeError(msg)
+
+
 class ExperimentBase(DatablockItem):
     """Base class for all experiment datablock items."""
 

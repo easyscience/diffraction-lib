@@ -12,6 +12,7 @@ from easydiffraction.analysis.fit_helpers.metrics import get_reliability_inputs
 from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 from easydiffraction.core.variable import Parameter
+from easydiffraction.datablocks.experiment.item.base import intensity_category_for
 from easydiffraction.utils.enums import VerbosityEnum
 
 if TYPE_CHECKING:
@@ -225,7 +226,7 @@ class Fitter:
 
             # Calculate the difference between measured and calculated
             # patterns
-            intensity_category = experiment._intensity_category()
+            intensity_category = intensity_category_for(experiment)
             y_calc = intensity_category.intensity_calc
             y_meas = intensity_category.intensity_meas
             y_meas_su = intensity_category.intensity_meas_su

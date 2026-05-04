@@ -64,13 +64,13 @@ target state is:
 - [x] Phase 1 — update docs, tutorials, and code references from
       single-crystal `experiment.data` to `experiment.refln`
 - [x] Phase 1 — stop for review before verification work
-- [ ] Phase 2 — add/update tests for factories, experiment wiring, CIF
+- [x] Phase 2 — add/update tests for factories, experiment wiring, CIF
       round-trip, plotting, and migrated regressions
-- [ ] Phase 2 — run `pixi run fix`
-- [ ] Phase 2 — run `pixi run check`
-- [ ] Phase 2 — run `pixi run unit-tests`
-- [ ] Phase 2 — run `pixi run integration-tests`
-- [ ] Phase 2 — run `pixi run script-tests`
+- [x] Phase 2 — run `pixi run fix`
+- [x] Phase 2 — run `pixi run check`
+- [x] Phase 2 — run `pixi run unit-tests`
+- [x] Phase 2 — run `pixi run integration-tests`
+- [x] Phase 2 — run `pixi run script-tests`
 
 ## Phase 1 — Implementation
 

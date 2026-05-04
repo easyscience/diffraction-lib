@@ -16,6 +16,7 @@ from enum import StrEnum
 import numpy as np
 import pandas as pd
 
+from easydiffraction.datablocks.experiment.item.base import intensity_category_for
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.display.base import RendererBase
@@ -410,7 +411,7 @@ class Plotter(RendererBase):
         self._update_project_categories(expt_name)
         experiment = self._project.experiments[expt_name]
         self._plot_meas_data(
-            experiment._intensity_category(),
+            intensity_category_for(experiment),
             expt_name,
             experiment.type,
             x_min=x_min,
@@ -442,7 +443,7 @@ class Plotter(RendererBase):
         self._update_project_categories(expt_name)
         experiment = self._project.experiments[expt_name]
         self._plot_calc_data(
-            experiment._intensity_category(),
+            intensity_category_for(experiment),
             expt_name,
             experiment.type,
             x_min=x_min,
@@ -1141,7 +1142,7 @@ class Plotter(RendererBase):
         plot_options : _MeasVsCalcPlotOptions
             X-range, residual, and x-axis selection options.
         """
-        pattern = experiment._intensity_category()
+        pattern = intensity_category_for(experiment)
         expt_type = experiment.type
 
         x_axis, _, sample_form, scattering_type, _ = self._resolve_x_axis(
