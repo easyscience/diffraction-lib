@@ -4,4 +4,6 @@
 from easydiffraction.datablocks.experiment.categories.data.bragg_pd import PdCwlData
 from easydiffraction.datablocks.experiment.categories.data.bragg_pd import PdTofData
 from easydiffraction.datablocks.experiment.categories.data.bragg_sc import ReflnData
+from easydiffraction.datablocks.experiment.categories.data.refln_pd import PowderCwlReflnData
+from easydiffraction.datablocks.experiment.categories.data.refln_pd import PowderTofReflnData
 from easydiffraction.datablocks.experiment.categories.data.total_pd import TotalData
