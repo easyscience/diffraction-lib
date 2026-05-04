@@ -1,14 +1,33 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from __future__ import annotations
+
 from abc import ABC
 from abc import abstractmethod
+from dataclasses import dataclass
 
 import numpy as np
 
 from easydiffraction.datablocks.experiment.item.base import ExperimentBase
 from easydiffraction.datablocks.structure.collection import Structures
 from easydiffraction.datablocks.structure.item.base import Structure
+
+
+@dataclass(frozen=True)
+class PowderReflnRecord:
+    """Calculated powder reflection metadata for one reflection row."""
+
+    phase_id: str
+    d_spacing: float
+    sin_theta_over_lambda: float
+    index_h: int
+    index_k: int
+    index_l: int
+    f_calc: float
+    f_squared_calc: float
+    two_theta: float | None = None
+    time_of_flight: float | None = None
 
 
 class CalculatorBase(ABC):
@@ -60,3 +79,19 @@ class CalculatorBase(ABC):
         np.ndarray
             The calculated diffraction pattern as a NumPy array.
         """
+
+    def last_powder_refln_records(
+        self,
+        structure: Structure,
+        experiment: ExperimentBase,
+        *,
+        phase_id: str,
+    ) -> list[PowderReflnRecord] | None:
+        """
+        Return the last powder reflection records for one phase.
+
+        Backends that do not expose powder reflection metadata return
+        ``None`` so callers can clear stale reflection rows and warn.
+        """
+        del structure, experiment, phase_id
+        return None
