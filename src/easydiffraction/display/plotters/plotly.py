@@ -655,8 +655,8 @@ class PlotlyPlotter(PlotterBase):
             mode='markers',
             marker={
                 'symbol': 'line-ns-open',
-                'size': 18,
-                'line': {'color': color, 'width': 2},
+                'size': 12,
+                'line': {'color': color, 'width': 1},
                 'color': color,
             },
             name=f'Bragg ({tick_set.phase_id})',
@@ -696,6 +696,36 @@ class PlotlyPlotter(PlotterBase):
         return DISPLAY_TICK_FRACTIONS[0] * base
 
     @staticmethod
+    def _scaled_bragg_row_height(plot_spec: PowderMeasVsCalcSpec) -> float:
+        """
+        Return Bragg-row height that preserves single-phase row spacing.
+
+        ``plot_spec.bragg_peaks_height_fraction`` is treated as the
+        single-phase baseline. For multiple phases, the total Bragg-row
+        height grows so each phase keeps the same vertical space as in
+        the one-phase case.
+        """
+        phase_count = len(plot_spec.bragg_tick_sets)
+        if phase_count == 0:
+            return 0.0
+
+        base_height = plot_spec.bragg_peaks_height_fraction
+        other_height = 1.0
+        if plot_spec.y_resid is not None:
+            other_height += plot_spec.residual_height_fraction
+
+        single_phase_normalized_height = base_height / (other_height + base_height)
+        target_bragg_normalized_height = phase_count * single_phase_normalized_height
+
+        if target_bragg_normalized_height >= 1.0:
+            return base_height * phase_count
+
+        return (
+            target_bragg_normalized_height * other_height
+            / (1.0 - target_bragg_normalized_height)
+        )
+
+    @staticmethod
     def _get_powder_composite_rows(plot_spec: PowderMeasVsCalcSpec) -> PowderCompositeRows:
         """Resolve subplot rows for the composite powder figure."""
         has_bragg_ticks = bool(plot_spec.bragg_tick_sets)
@@ -708,7 +738,7 @@ class PlotlyPlotter(PlotterBase):
         if has_bragg_ticks:
             bragg_row = next_row
             next_row += 1
-            row_heights.append(plot_spec.bragg_peaks_height_fraction)
+            row_heights.append(PlotlyPlotter._scaled_bragg_row_height(plot_spec))
         if has_residual:
             residual_row = next_row
             row_heights.append(plot_spec.residual_height_fraction)
@@ -835,7 +865,7 @@ class PlotlyPlotter(PlotterBase):
 
         if layout.bragg_row is not None:
             fig.update_yaxes(
-                title_text='Bragg peaks',
+                #title_text='Bragg peaks',
                 tickmode='array',
                 tickvals=[float(idx + 1) for idx in range(len(plot_spec.bragg_tick_sets))],
                 ticktext=[tick_set.phase_id for tick_set in plot_spec.bragg_tick_sets],
@@ -853,7 +883,7 @@ class PlotlyPlotter(PlotterBase):
         if layout.residual_row is not None and plot_spec.y_resid is not None:
             residual_tick_limit = self._get_display_tick_limit(residual_limit)
             fig.update_yaxes(
-                title_text='Residual',
+                #title_text='Residual',
                 range=[-residual_limit, residual_limit],
                 tickmode='array',
                 tickvals=[-residual_tick_limit, 0.0, residual_tick_limit],
