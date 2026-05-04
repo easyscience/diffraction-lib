@@ -3,9 +3,9 @@
 Extend `project.display.plotter.plot_meas_vs_calc()` so powder Bragg
 plots render as three vertically stacked, X-synced Plotly subplots by
 default: measured/calculated pattern, Bragg peak tick rows, and residual
-curve. The plotter will consume a future experiment peak-position
-category, but this change should not calculate or populate peak
-positions itself.
+curve. The plotter consumes the calculated powder reflection category at
+`experiment.refln`; the plotter itself should not calculate or populate
+reflection rows.
 
 **Status**
 
@@ -17,8 +17,9 @@ positions itself.
       through a composite plotting path, with residuals enabled by
       default only for the powder-Bragg composite branch.
 - [x] Step 4 completed. Added a helper that consumes the future
-      `experiment.bragg_peaks` arrays when present and otherwise logs a
-      clear warning while rendering an empty Bragg row.
+      category contract; this is now backed by `experiment.refln`
+      arrays and renders an empty Bragg row only when reflection data is
+      absent.
 - [x] Step 5 completed. Added `plot_powder_meas_vs_calc(...)` to the
       plotting backend contract and routed powder Bragg plots to it.
 - [x] Step 6 completed. Plotly now renders stacked subplots with shared
@@ -51,8 +52,8 @@ positions itself.
    without coupling them to datablock internals.
 2. Routed powder Bragg `plot_meas_vs_calc()` through a dedicated
    composite backend method, added Plotly three-row subplot rendering,
-   and added an ASCII fallback while tolerating the still-missing
-   `experiment.bragg_peaks` category.
+   and added an ASCII fallback while tolerating missing
+   `experiment.refln` data.
 3. Updated `docs/docs/tutorials/ed-2.py` so the tutorial now uses the
    default three-panel powder plot without explicitly passing
    `show_residual=True`.
@@ -83,28 +84,26 @@ positions itself.
     within the scale-matched subplot instead of breaking the intended
     physical alignment.
 12. Addressed review regressions by normalizing Bragg filtering bounds
-    before masking future `bragg_peaks` data, keeping the residual
+    before masking reflection data, keeping the residual
     default scoped to the powder-Bragg composite path, and guarding the
     composite Plotly backend against empty filtered x ranges.
 13. Fixed follow-up review gaps by suppressing Bragg ticks when the
-    filtered main pattern is empty and by grouping Bragg rows on raw
-    structure ids so numeric identifiers still produce populated tick
-    rows with string labels.
+   filtered main pattern is empty and by grouping Bragg rows on raw
+   phase ids so numeric identifiers still produce populated tick
+   rows with string labels.
 
 **Steps**
 
-1. Confirm the future peak-position category contract before
+1. Confirm the powder reflection category contract before
    implementation. It should be a powder experiment category similar to
-   `data`, exposing array-like peak data in the experiment's active x
-   coordinate: structure/phase id, x position, Miller indices h/k/l, and
-   peak intensity. Optional peak id can be included for hover text. This
-   is a prerequisite for real Bragg tick content, but can land as a
-   separate change.
+   `data`, exposing array-like calculated reflection data in the active x
+   coordinate: `phase_id`, x position, Miller indices h/k/l,
+   `f_squared_calc`, and `f_calc`.
 2. Add a small plotting data transfer object for Bragg tick sets in
-   `src/easydiffraction/display/plotters/base.py`, for example a frozen
-   dataclass containing `structure_id`, `x`, `h`, `k`, `l`, and
-   `intensity`. Keep it display-specific so the plotting backend does
-   not depend on experiment category internals.
+    `src/easydiffraction/display/plotters/base.py`, for example a frozen
+    dataclass containing `phase_id`, `x`, `h`, `k`, `l`,
+    `f_squared_calc`, and `f_calc`. Keep it display-specific so the
+    plotting backend does not depend on experiment category internals.
 3. Extend `Plotter.plot_meas_vs_calc()` in
    `src/easydiffraction/display/plotting.py` so powder Bragg plots
    include residuals by default. Recommended API: make residual display
@@ -112,11 +111,11 @@ positions itself.
    `show_residual` only after confirming whether public removal is
    acceptable. Single-crystal behavior remains unchanged.
 4. Add helper logic in `src/easydiffraction/display/plotting.py` to
-   extract Bragg tick sets from the future category when present. The
-   helper should group peaks by structure/phase id, filter x positions
-   to the displayed `x_min`/`x_max`, and build hover fields. If the
-   category is absent or empty, log a clear warning and render the Bragg
-   axis rectangle empty rather than silently failing.
+   extract Bragg tick sets from `experiment.refln`. The helper should
+   group rows by `phase_id`, select the x array matching the displayed
+   plot axis, filter x positions to the displayed `x_min`/`x_max`, and
+   build hover fields. If the category is absent or empty, render no
+   Bragg subplot rather than silently failing.
 5. Route powder Bragg `plot_meas_vs_calc()` calls to a new backend
    method dedicated to this composite plot, such as
    `plot_powder_meas_vs_calc(...)`, instead of overloading the generic
@@ -137,13 +136,13 @@ positions itself.
    exactly three residual-axis ticks (`min`, `0`, `max`) and do not add
    a separate colored zero line.
 8. In the Bragg row, render one trace per structure/phase. Each peak
-   should appear as a vertical tick at its x position and at a
-   per-structure y row. Use a hover-capable trace representation, not
-   layout shapes, so hovering shows structure/phase, peak id if
-   available, hkl, x position, and intensity. Keep numeric y-axis labels
-   hidden or replace them with structure labels if that remains
-   readable. When no Bragg tick data exists, omit the Bragg subplot
-   entirely.
+    should appear as a vertical tick at its x position and at a
+    per-structure y row. Use a hover-capable trace representation, not
+    layout shapes, so hovering shows `phase_id`, hkl, x position,
+    `f_squared_calc`, and `f_calc`. Keep numeric y-axis labels hidden or
+    replace them with phase labels if that remains
+    readable. When no Bragg tick data exists, omit the Bragg subplot
+    entirely.
 9. Make X synchronization explicit: zooming or panning the main pattern
    must update the Bragg tick row and residual row, and the shared
    x-axis range should start at the filtered data minimum and end at the
@@ -169,7 +168,7 @@ positions itself.
 
 - `src/easydiffraction/display/plotting.py` — public
   `Plotter.plot_meas_vs_calc()`, `_plot_meas_vs_calc_data()`, and new
-  helper for consuming future peak-position category data.
+  helper for consuming `experiment.refln` data.
 - `src/easydiffraction/display/plotters/base.py` — `PlotterBase`, shared
   plotting DTO/constants, and backend method contract.
 - `src/easydiffraction/display/plotters/plotly.py` — Plotly
@@ -179,12 +178,11 @@ positions itself.
   implementation for the new composite plot method.
 - `src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py`
   — reference pattern for array-like powder data category behavior; not
-  modified unless the peak-position category lands in the same
-  implementation cycle.
+  modified unless reflection-category population needs coordinated plot
+  updates.
 - `src/easydiffraction/datablocks/experiment/item/base.py` and
-  `src/easydiffraction/datablocks/experiment/item/bragg_pd.py` — future
-  category wiring reference if the peak-position category is implemented
-  in this change.
+  `src/easydiffraction/datablocks/experiment/item/bragg_pd.py` —
+  experiment-category wiring reference for `experiment.refln`.
 - `docs/docs/tutorials/ed-2.py` — tutorial source to update;
   `docs/docs/tutorials/ed-2.ipynb` is generated by
   `pixi run notebook-prepare`.
@@ -206,13 +204,13 @@ positions itself.
 2. Unit-test the Plotly backend by monkeypatching Plotly figure/subplot
    creation or inspecting a real figure object before display. Verify
    three rows, matched x axes, residual row height fraction 0.25
-   relative to main, hover templates include hkl and intensity, and one
-   Bragg tick trace exists per structure.
+   relative to main, hover templates include hkl, `f_squared_calc`, and
+   `f_calc`, and one Bragg tick trace exists per phase.
 3. Unit-test the ASCII fallback to ensure calls do not fail and the user
    gets a clear note about graphical-only Bragg tick rows.
-4. After the future peak-position category exists, add category/unit
-   round-trip tests for peak x positions, h/k/l, intensity, and
-   structure id, plus an integration plotting test using
+4. After the powder reflection category exists, add category/unit
+   round-trip tests for peak x positions, h/k/l, `f_squared_calc`,
+   `f_calc`, and `phase_id`, plus an integration plotting test using
    `lbco_fitted_project`.
 5. Phase 2 commands:
    `pixi run unit-tests tests/unit/easydiffraction/display/`,
@@ -234,7 +232,8 @@ positions itself.
   intentionally independent.
 - Bragg tick y positions are arbitrary row offsets used only to separate
   structures/phases.
-- Tick hover text must show peak identity/hkl and intensity.
+- Tick hover text must show `phase_id`, hkl, `f_squared_calc`, and
+  `f_calc`.
 
 **Further Considerations**
 
@@ -242,11 +241,11 @@ positions itself.
    remove `show_residual`, change its default to true, or keep it as a
    compatibility option. Removing it is a public API change and should
    be explicit.
-2. Peak-position category naming: recommended names are `bragg_peaks`
-   for the category and `structure_id` or `phase_id` for grouping. This
-   should be finalized when that category is implemented.
-3. Coordinate contract: the category should expose peak x positions in
-   the same coordinate as `experiment.data.x`; if multiple x axes are
-   later supported, it should expose enough metadata or arrays to match
+2. The implemented plotting contract now uses `experiment.refln` and
+   groups rows by `phase_id`. Revisit only if the experiment-side
+   category is renamed in future work.
+3. Coordinate contract: the category should expose reflection x
+   positions in the same coordinate as `experiment.data.x`; if multiple
+   x axes are supported, it should expose enough arrays to match
    `x='two_theta'`, `x='time_of_flight'`, or `x='d_spacing'`
    unambiguously.
