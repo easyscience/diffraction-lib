@@ -633,26 +633,20 @@ class PlotlyPlotter(PlotterBase):
         row_y: float,
         color: str,
     ) -> object:
-        """Create a hover-capable Bragg tick trace for one structure."""
+        """Create a hover-capable Bragg tick trace for one linked phase."""
         y = np.full(tick_set.x.shape, row_y, dtype=float)
-        peak_ids = tick_set.peak_id
         hover_text = []
         for idx, x_value in enumerate(tick_set.x):
-            peak_line = ''
-            if peak_ids is not None:
-                peak_value = str(peak_ids[idx])
-                if peak_value:
-                    peak_line = f'peak: {peak_value}<br>'
             hkl_text = (
                 f'hkl: ({int(tick_set.h[idx])} '
                 f'{int(tick_set.k[idx])} {int(tick_set.ell[idx])})<br>'
             )
             hover_text.append(
-                f'structure: {tick_set.structure_id}<br>'
-                f'{peak_line}'
+                f'phase_id: {tick_set.phase_id}<br>'
                 f'{hkl_text}'
                 f'x: {float(x_value):.6g}<br>'
-                f'intensity: {float(tick_set.intensity[idx]):.6g}<extra></extra>'
+                f'f_squared_calc: {float(tick_set.f_squared_calc[idx]):.6g}<br>'
+                f'f_calc: {float(tick_set.f_calc[idx]):.6g}<extra></extra>'
             )
 
         return go.Scatter(
@@ -665,7 +659,7 @@ class PlotlyPlotter(PlotterBase):
                 'line': {'color': color, 'width': 2},
                 'color': color,
             },
-            name=f'Bragg ({tick_set.structure_id})',
+            name=f'Bragg ({tick_set.phase_id})',
             text=hover_text,
             hovertemplate='%{text}',
             showlegend=False,
@@ -844,7 +838,7 @@ class PlotlyPlotter(PlotterBase):
                 title_text='Bragg peaks',
                 tickmode='array',
                 tickvals=[float(idx + 1) for idx in range(len(plot_spec.bragg_tick_sets))],
-                ticktext=[tick_set.structure_id for tick_set in plot_spec.bragg_tick_sets],
+                ticktext=[tick_set.phase_id for tick_set in plot_spec.bragg_tick_sets],
                 range=[0.5, float(len(plot_spec.bragg_tick_sets)) + 0.5],
                 showgrid=False,
                 row=layout.bragg_row,

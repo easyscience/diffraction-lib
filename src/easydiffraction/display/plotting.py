@@ -269,6 +269,7 @@ class Plotter(RendererBase):
             'x_array': x_array,
             'x_min': resolved_x_min,
             'x_max': resolved_x_max,
+            'x_axis': x_axis,
             'axes_labels': axes_labels,
         }
 
@@ -1256,6 +1257,7 @@ class Plotter(RendererBase):
             bragg_tick_sets = self._extract_bragg_tick_sets(
                 experiment=experiment,
                 expt_name=expt_name,
+                x_axis=ctx['x_axis'],
                 x_min=ctx['x_min'],
                 x_max=ctx['x_max'],
             )
@@ -1304,32 +1306,57 @@ class Plotter(RendererBase):
     def _extract_bragg_tick_sets(
         experiment: object,
         expt_name: str,
+        x_axis: object,
         x_min: float | None,
         x_max: float | None,
     ) -> tuple[BraggTickSet, ...]:
         """
-        Convert future experiment peak-position data into display rows.
-
-        The future category is expected to expose array-like attributes
-        named ``structure_id``, ``x``, ``h``, ``k``, ``l``, and
-        ``intensity``. Until that category exists, this method simply
-        returns an empty tuple.
+        Convert experiment reflection data into Bragg tick display rows.
         """
-        bragg_peaks = getattr(experiment, 'bragg_peaks', None)
-        if bragg_peaks is None:
+        refln = getattr(experiment, 'refln', None)
+        if refln is None:
             return ()
 
-        required_names = ('structure_id', 'x', 'h', 'k', 'l', 'intensity')
+        x_name = getattr(x_axis, 'value', x_axis)
+        if x_name == XAxisType.D_SPACING:
+            x_values = refln.d_spacing
+        elif x_name == XAxisType.TWO_THETA:
+            x_values = getattr(refln, 'two_theta', None)
+        elif x_name == XAxisType.TIME_OF_FLIGHT:
+            x_values = getattr(refln, 'time_of_flight', None)
+        else:
+            log.warning(
+                f"Unsupported Bragg tick x axis '{x_name}' for experiment '{expt_name}'. "
+                'Skipping the Bragg subplot.',
+            )
+            return ()
+
+        if x_values is None:
+            log.warning(
+                f"Experiment '{expt_name}' reflection data does not expose '{x_name}'. "
+                'Skipping the Bragg subplot.',
+            )
+            return ()
+
+        required_names = (
+            'phase_id',
+            'index_h',
+            'index_k',
+            'index_l',
+            'f_squared_calc',
+            'f_calc',
+        )
         arrays = {}
         for name in required_names:
-            value = getattr(bragg_peaks, name, None)
+            value = getattr(refln, name, None)
             if value is None:
                 log.warning(
-                    f"Experiment '{expt_name}' Bragg peak data is missing '{name}'. "
+                    f"Experiment '{expt_name}' reflection data is missing '{name}'. "
                     'Skipping the Bragg subplot.',
                 )
                 return ()
             arrays[name] = np.asarray(value)
+        arrays['x'] = np.asarray(x_values)
 
         if arrays['x'].size == 0:
             return ()
@@ -1340,29 +1367,27 @@ class Plotter(RendererBase):
         if not np.any(mask):
             return ()
 
-        peak_id = getattr(bragg_peaks, 'peak_id', None)
-        peak_id_array = None if peak_id is None else np.asarray(peak_id)
-        structure_ids = arrays['structure_id'][mask]
-        unique_structure_ids = []
-        for raw_structure_id in structure_ids:
+        phase_ids = arrays['phase_id'][mask]
+        unique_phase_ids = []
+        for raw_phase_id in phase_ids:
             if not any(
-                np.array_equal(raw_structure_id, existing_structure_id)
-                for existing_structure_id in unique_structure_ids
+                np.array_equal(raw_phase_id, existing_phase_id)
+                for existing_phase_id in unique_phase_ids
             ):
-                unique_structure_ids.append(raw_structure_id)
+                unique_phase_ids.append(raw_phase_id)
 
         tick_sets = []
-        for raw_structure_id in unique_structure_ids:
-            structure_mask = mask & (arrays['structure_id'] == raw_structure_id)
+        for raw_phase_id in unique_phase_ids:
+            phase_mask = mask & (arrays['phase_id'] == raw_phase_id)
             tick_sets.append(
                 BraggTickSet(
-                    structure_id=str(raw_structure_id),
-                    x=arrays['x'][structure_mask],
-                    h=arrays['h'][structure_mask],
-                    k=arrays['k'][structure_mask],
-                    ell=arrays['l'][structure_mask],
-                    intensity=arrays['intensity'][structure_mask],
-                    peak_id=None if peak_id_array is None else peak_id_array[structure_mask],
+                    phase_id=str(raw_phase_id),
+                    x=arrays['x'][phase_mask],
+                    h=arrays['index_h'][phase_mask],
+                    k=arrays['index_k'][phase_mask],
+                    ell=arrays['index_l'][phase_mask],
+                    f_squared_calc=arrays['f_squared_calc'][phase_mask],
+                    f_calc=arrays['f_calc'][phase_mask],
                 )
             )
 

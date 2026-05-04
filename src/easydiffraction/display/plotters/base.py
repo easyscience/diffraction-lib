@@ -23,20 +23,20 @@ DEFAULT_MAX = np.inf
 @dataclass(frozen=True)
 class BraggTickSet:
     """
-    Bragg tick data for one structure or phase row.
+    Bragg tick data for one linked phase row.
 
-    The plotting facade converts future experiment-category peak data
-    into this display-specific container so plotting backends stay
-    decoupled from experiment datablock internals.
+    The plotting facade converts experiment reflection-category data into
+    this display-specific container so plotting backends stay decoupled
+    from experiment datablock internals.
     """
 
-    structure_id: str
+    phase_id: str
     x: np.ndarray
     h: np.ndarray
     k: np.ndarray
     ell: np.ndarray
-    intensity: np.ndarray
-    peak_id: np.ndarray | None = None
+    f_squared_calc: np.ndarray
+    f_calc: np.ndarray
 
 
 @dataclass(frozen=True)
