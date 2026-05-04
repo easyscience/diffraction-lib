@@ -717,28 +717,32 @@ class PlotlyPlotter(PlotterBase):
 
     @staticmethod
     def _composite_plot_area_height(full_height: float) -> float:
-        """Return the drawable plot area height after vertical margins."""
+        """
+        Return the drawable plot area height after vertical margins.
+        """
         return max(full_height - COMPOSITE_MARGIN_TOP - COMPOSITE_MARGIN_BOTTOM, 1.0)
 
     @staticmethod
     def _subplot_available_height_fraction(row_count: int) -> float:
-        """Return the fraction of plot height available for subplot rows."""
+        """
+        Return the fraction of plot height available for subplot rows.
+        """
         return 1.0 - COMPOSITE_VERTICAL_SPACING * max(row_count - 1, 0)
 
     @staticmethod
     def _bragg_tick_symbol_height_pixels() -> float:
         """Return rendered pixel height for one Bragg tick marker."""
         return (
-            BRAGG_TICK_MARKER_SIZE * BRAGG_TICK_SYMBOL_HEIGHT_SCALE
-            + BRAGG_TICK_MARKER_LINE_WIDTH
+            BRAGG_TICK_MARKER_SIZE * BRAGG_TICK_SYMBOL_HEIGHT_SCALE + BRAGG_TICK_MARKER_LINE_WIDTH
         )
 
     @staticmethod
     def _bragg_row_height_pixels(plot_spec: PowderMeasVsCalcSpec) -> float:
-        """Return the exact Bragg-row pixel height for the current phases."""
+        """
+        Return the exact Bragg-row pixel height for the current phases.
+        """
         return float(
-            len(plot_spec.bragg_tick_sets)
-            * PlotlyPlotter._bragg_tick_symbol_height_pixels()
+            len(plot_spec.bragg_tick_sets) * PlotlyPlotter._bragg_tick_symbol_height_pixels()
         )
 
     @classmethod
@@ -753,7 +757,9 @@ class PlotlyPlotter(PlotterBase):
         baseline_height = cls._base_composite_height_pixels(plot_spec)
         plot_area_height = cls._composite_plot_area_height(baseline_height)
         available_row_pixels = plot_area_height * cls._subplot_available_height_fraction(row_count)
-        baseline_bragg_pixels = float(cls._bragg_tick_symbol_height_pixels() if has_bragg_ticks else 0)
+        baseline_bragg_pixels = float(
+            cls._bragg_tick_symbol_height_pixels() if has_bragg_ticks else 0
+        )
         non_bragg_pixels = max(available_row_pixels - baseline_bragg_pixels, 1.0)
 
         if not has_residual:
@@ -801,21 +807,26 @@ class PlotlyPlotter(PlotterBase):
         plot_spec: PowderMeasVsCalcSpec,
         layout: PowderCompositeRows,
     ) -> float:
-        """Return figure height with Bragg growth from a single-phase baseline."""
+        """
+        Return figure height with Bragg growth from a single-phase
+        baseline.
+        """
         base_pixels = cls._base_composite_height_pixels(plot_spec)
         phase_count = len(plot_spec.bragg_tick_sets)
         if phase_count <= 1:
             return base_pixels
 
-        added_bragg_pixels = float(
-            (phase_count - 1) * cls._bragg_tick_symbol_height_pixels()
+        added_bragg_pixels = float((phase_count - 1) * cls._bragg_tick_symbol_height_pixels())
+        growth_pixels = added_bragg_pixels / cls._subplot_available_height_fraction(
+            layout.row_count
         )
-        growth_pixels = added_bragg_pixels / cls._subplot_available_height_fraction(layout.row_count)
         return base_pixels + growth_pixels
 
     @classmethod
     def _get_main_intensity_range(cls, plot_spec: PowderMeasVsCalcSpec) -> tuple[float, float]:
-        """Return an explicit y-range for the main powder intensity row."""
+        """
+        Return an explicit y-range for the main powder intensity row.
+        """
         y_meas = np.asarray(plot_spec.y_meas)
         y_calc = np.asarray(plot_spec.y_calc)
         if min(y_meas.size, y_calc.size) == 0:
@@ -823,7 +834,7 @@ class PlotlyPlotter(PlotterBase):
 
         main_y_min = float(min(np.min(y_meas), np.min(y_calc)))
         main_y_max = float(max(np.max(y_meas), np.max(y_calc)))
-        lower_limit = 0.0 if main_y_min >= 0.0 else main_y_min
+        lower_limit = min(0.0, main_y_min)
         if main_y_max <= lower_limit:
             return lower_limit - 1.0, lower_limit + 1.0
         return lower_limit, main_y_max

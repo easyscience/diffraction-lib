@@ -566,9 +566,13 @@ def test_plot_powder_meas_vs_calc_keeps_exact_residual_scale_match(monkeypatch):
     assert fig.layout.yaxis2.range[1] == pytest.approx(expected_limit)
     plot_area_height = fig.layout.height - fig.layout.margin.t - fig.layout.margin.b
     main_pixels = plot_area_height * (fig.layout.yaxis.domain[1] - fig.layout.yaxis.domain[0])
-    residual_pixels = plot_area_height * (fig.layout.yaxis2.domain[1] - fig.layout.yaxis2.domain[0])
+    residual_pixels = plot_area_height * (
+        fig.layout.yaxis2.domain[1] - fig.layout.yaxis2.domain[0]
+    )
     main_units_per_pixel = (fig.layout.yaxis.range[1] - fig.layout.yaxis.range[0]) / main_pixels
-    residual_units_per_pixel = (fig.layout.yaxis2.range[1] - fig.layout.yaxis2.range[0]) / residual_pixels
+    residual_units_per_pixel = (
+        fig.layout.yaxis2.range[1] - fig.layout.yaxis2.range[0]
+    ) / residual_pixels
     assert residual_units_per_pixel == pytest.approx(main_units_per_pixel)
     assert list(fig.layout.yaxis2.tickvals) == pytest.approx([-400.0, 0.0, 400.0])
 
