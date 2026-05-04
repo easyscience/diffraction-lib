@@ -11,6 +11,8 @@ from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.datablocks.experiment.categories.background.factory import BackgroundFactory
 from easydiffraction.datablocks.experiment.categories.instrument.factory import InstrumentFactory
+from easydiffraction.datablocks.experiment.categories.data.refln_pd import PowderCwlReflnData
+from easydiffraction.datablocks.experiment.categories.data.refln_pd import PowderTofReflnData
 from easydiffraction.datablocks.experiment.item.base import PdExperimentBase
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
@@ -62,6 +64,18 @@ class BraggPdExperiment(PdExperimentBase):
         self._instrument = InstrumentFactory.create(self._instrument_type)
         self._background_type: str = BackgroundFactory.default_tag()
         self._background = BackgroundFactory.create(self._background_type)
+        self._refln = self._create_refln_collection()
+
+    def _create_refln_collection(self) -> object:
+        """Create the beam-mode-specific calculated reflection collection."""
+        beam_mode = self.type.beam_mode.value
+        if beam_mode == BeamModeEnum.CONSTANT_WAVELENGTH:
+            return PowderCwlReflnData()
+        if beam_mode == BeamModeEnum.TIME_OF_FLIGHT:
+            return PowderTofReflnData()
+
+        msg = f'Unsupported beam mode for powder reflection data: {beam_mode}.'
+        raise ValueError(msg)
 
     def _load_ascii_data_to_experiment(
         self,
@@ -128,6 +142,11 @@ class BraggPdExperiment(PdExperimentBase):
     def instrument(self) -> object:
         """Active instrument model for this experiment."""
         return self._instrument
+
+    @property
+    def refln(self) -> object:
+        """Calculated reflection metadata for this experiment."""
+        return self._refln
 
     # ------------------------------------------------------------------
     #  Background (switchable-category pattern)
