@@ -94,10 +94,12 @@ def test_bragg_pd_experiment_creates_beam_mode_specific_refln_collection():
 
 
 def test_pd_data_update_populates_and_clears_refln():
-    class FakeStructures(dict):
+    from collections import UserDict
+
+    class FakeStructures(UserDict):
         @property
         def names(self):
-            return list(self.keys())
+            return list(self.data.keys())
 
     class FakeCalculator:
         name = 'fake'
@@ -127,44 +129,42 @@ def test_pd_data_update_populates_and_clears_refln():
     experiment.data._create_items_set_xcoord_and_id(np.array([10.0, 20.0, 30.0]))
     experiment.data._set_intensity_meas(np.array([100.0, 110.0, 120.0]))
 
-    structures = FakeStructures(
-        {
-            'phase_a': FakeStructure(
-                'phase_a',
-                np.array([1.0, 2.0, 3.0]),
-                [
-                    PowderReflnRecord(
-                        phase_id='phase_a',
-                        d_spacing=2.1,
-                        sin_theta_over_lambda=0.25,
-                        index_h=1,
-                        index_k=0,
-                        index_l=1,
-                        f_calc=3.0,
-                        f_squared_calc=9.0,
-                        two_theta=14.5,
-                    )
-                ],
-            ),
-            'phase_b': FakeStructure(
-                'phase_b',
-                np.array([4.0, 5.0, 6.0]),
-                [
-                    PowderReflnRecord(
-                        phase_id='phase_b',
-                        d_spacing=1.8,
-                        sin_theta_over_lambda=0.28,
-                        index_h=2,
-                        index_k=1,
-                        index_l=0,
-                        f_calc=4.0,
-                        f_squared_calc=16.0,
-                        two_theta=18.5,
-                    )
-                ],
-            ),
-        }
-    )
+    structures = FakeStructures({
+        'phase_a': FakeStructure(
+            'phase_a',
+            np.array([1.0, 2.0, 3.0]),
+            [
+                PowderReflnRecord(
+                    phase_id='phase_a',
+                    d_spacing=2.1,
+                    sin_theta_over_lambda=0.25,
+                    index_h=1,
+                    index_k=0,
+                    index_l=1,
+                    f_calc=3.0,
+                    f_squared_calc=9.0,
+                    two_theta=14.5,
+                )
+            ],
+        ),
+        'phase_b': FakeStructure(
+            'phase_b',
+            np.array([4.0, 5.0, 6.0]),
+            [
+                PowderReflnRecord(
+                    phase_id='phase_b',
+                    d_spacing=1.8,
+                    sin_theta_over_lambda=0.28,
+                    index_h=2,
+                    index_k=1,
+                    index_l=0,
+                    f_calc=4.0,
+                    f_squared_calc=16.0,
+                    two_theta=18.5,
+                )
+            ],
+        ),
+    })
     project = type('Project', (), {'structures': structures})()
     experiments = type('Experiments', (), {'_parent': project})()
     experiment._parent = experiments

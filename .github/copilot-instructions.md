@@ -124,8 +124,9 @@
 
 - When asked to create a plan, first gather enough repository context to
   make the plan concrete. Ask all ambiguous, potentially ambiguous, or
-  unclear questions in one concise batch, and record unresolved questions
-  in the plan if the user wants the plan saved before answering them.
+  unclear questions in one concise batch, and record unresolved
+  questions in the plan if the user wants the plan saved before
+  answering them.
 - Save plans as Markdown files in `docs/dev` with the filename pattern
   `plan_<feature-name>.md`. The `<feature-name>` part uses lowercase
   words separated by dashes, for example
@@ -142,14 +143,14 @@
     explicitly asks. When Phase 1 is complete, stop and ask the user to
     review the implementation.
   - **Phase 2 — Verification:** after user approval, add/update tests,
-    run formatting, linting, unit tests, integration tests, and script or
-    notebook checks requested by the plan.
-- Every completed implementation step must end with a local commit. Stage
-  only the files modified for that step, using explicit paths where
-  practical. Do not include data files, project files, CIF files, or
-  other generated artifacts created by integration tests, script tests,
-  or notebook execution unless the user explicitly asked to update those
-  artifacts.
+    run formatting, linting, unit tests, integration tests, and script
+    or notebook checks requested by the plan.
+- Every completed implementation step must end with a local commit.
+  Stage only the files modified for that step, using explicit paths
+  where practical. Do not include data files, project files, CIF files,
+  or other generated artifacts created by integration tests, script
+  tests, or notebook execution unless the user explicitly asked to
+  update those artifacts.
 - Keep commits atomic, single-purpose, and aligned with plan steps. Use
   imperative commit messages, no type prefix, and keep the subject line
   at or below 72 characters.

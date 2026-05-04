@@ -6,12 +6,14 @@ from __future__ import annotations
 from abc import ABC
 from abc import abstractmethod
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
-import numpy as np
+if TYPE_CHECKING:
+    import numpy as np
 
-from easydiffraction.datablocks.experiment.item.base import ExperimentBase
-from easydiffraction.datablocks.structure.collection import Structures
-from easydiffraction.datablocks.structure.item.base import Structure
+    from easydiffraction.datablocks.experiment.item.base import ExperimentBase
+    from easydiffraction.datablocks.structure.collection import Structures
+    from easydiffraction.datablocks.structure.item.base import Structure
 
 
 @dataclass(frozen=True)
@@ -93,5 +95,5 @@ class CalculatorBase(ABC):
         Backends that do not expose powder reflection metadata return
         ``None`` so callers can clear stale reflection rows and warn.
         """
-        del structure, experiment, phase_id
+        del self, structure, experiment, phase_id
         return None

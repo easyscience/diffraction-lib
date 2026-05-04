@@ -1321,56 +1321,106 @@ class Plotter(RendererBase):
         if refln is None:
             return ()
 
+        x_values = Plotter._bragg_tick_x_values(
+            refln=refln,
+            experiment=experiment,
+            expt_name=expt_name,
+            x_axis=x_axis,
+        )
+        arrays = Plotter._bragg_tick_arrays(refln=refln, expt_name=expt_name)
+        if x_values is None or arrays is None:
+            return ()
+
+        arrays['x'] = np.asarray(x_values)
+        if arrays['x'].size == 0:
+            return ()
+
+        mask = Plotter._bragg_tick_mask(arrays['x'], x_min=x_min, x_max=x_max)
+        if not np.any(mask):
+            return ()
+
+        return Plotter._group_bragg_tick_sets(arrays=arrays, mask=mask)
+
+    @staticmethod
+    def _bragg_tick_x_values(
+        *,
+        refln: object,
+        experiment: object,
+        expt_name: str,
+        x_axis: object,
+    ) -> object | None:
         x_name = getattr(x_axis, 'value', x_axis)
         if x_name == XAxisType.D_SPACING:
-            x_values = Plotter._bragg_tick_d_spacing(refln=refln, experiment=experiment)
-        elif x_name == XAxisType.TWO_THETA:
-            x_values = getattr(refln, 'two_theta', None)
-        elif x_name == XAxisType.TIME_OF_FLIGHT:
-            x_values = getattr(refln, 'time_of_flight', None)
-        else:
-            log.warning(
-                f"Unsupported Bragg tick x axis '{x_name}' for experiment '{expt_name}'. "
-                'Skipping the Bragg subplot.',
-            )
-            return ()
+            return Plotter._bragg_tick_d_spacing(refln=refln, experiment=experiment)
+        if x_name == XAxisType.TWO_THETA:
+            return Plotter._bragg_tick_attr(refln, x_name, expt_name)
+        if x_name == XAxisType.TIME_OF_FLIGHT:
+            return Plotter._bragg_tick_attr(refln, x_name, expt_name)
 
-        if x_values is None:
-            log.warning(
-                f"Experiment '{expt_name}' reflection data does not expose '{x_name}'. "
-                'Skipping the Bragg subplot.',
-            )
-            return ()
+        log.warning(
+            f"Unsupported Bragg tick x axis '{x_name}' for experiment '{expt_name}'. "
+            'Skipping the Bragg subplot.',
+        )
+        return None
 
-        required_names = (
+    @staticmethod
+    def _bragg_tick_attr(
+        refln: object,
+        name: str,
+        expt_name: str,
+    ) -> object | None:
+        value = getattr(refln, name, None)
+        if value is not None:
+            return value
+
+        log.warning(
+            f"Experiment '{expt_name}' reflection data does not expose '{name}'. "
+            'Skipping the Bragg subplot.',
+        )
+        return None
+
+    @staticmethod
+    def _bragg_tick_arrays(
+        *,
+        refln: object,
+        expt_name: str,
+    ) -> dict[str, np.ndarray] | None:
+        arrays: dict[str, np.ndarray] = {}
+        for name in (
             'phase_id',
             'index_h',
             'index_k',
             'index_l',
             'f_squared_calc',
             'f_calc',
-        )
-        arrays = {}
-        for name in required_names:
+        ):
             value = getattr(refln, name, None)
             if value is None:
                 log.warning(
                     f"Experiment '{expt_name}' reflection data is missing '{name}'. "
                     'Skipping the Bragg subplot.',
                 )
-                return ()
+                return None
             arrays[name] = np.asarray(value)
-        arrays['x'] = np.asarray(x_values)
+        return arrays
 
-        if arrays['x'].size == 0:
-            return ()
-
+    @staticmethod
+    def _bragg_tick_mask(
+        x_values: np.ndarray,
+        *,
+        x_min: float | None,
+        x_max: float | None,
+    ) -> np.ndarray:
         lower_bound = DEFAULT_MIN if x_min is None else min(x_min, x_max)
         upper_bound = DEFAULT_MAX if x_max is None else max(x_min, x_max)
-        mask = (arrays['x'] >= lower_bound) & (arrays['x'] <= upper_bound)
-        if not np.any(mask):
-            return ()
+        return (x_values >= lower_bound) & (x_values <= upper_bound)
 
+    @staticmethod
+    def _group_bragg_tick_sets(
+        *,
+        arrays: dict[str, np.ndarray],
+        mask: np.ndarray,
+    ) -> tuple[BraggTickSet, ...]:
         phase_ids = arrays['phase_id'][mask]
         unique_phase_ids = []
         for raw_phase_id in phase_ids:
@@ -1403,7 +1453,9 @@ class Plotter(RendererBase):
         refln: object,
         experiment: object,
     ) -> object:
-        """Resolve Bragg tick d-spacing in the plotted coordinate system."""
+        """
+        Resolve Bragg tick d-spacing in the plotted coordinate system.
+        """
         if hasattr(refln, 'two_theta'):
             return twotheta_to_d(
                 refln.two_theta,

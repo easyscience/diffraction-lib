@@ -16,10 +16,9 @@ reflection rows.
 - [x] Step 3 completed. Powder Bragg `plot_meas_vs_calc()` now routes
       through a composite plotting path, with residuals enabled by
       default only for the powder-Bragg composite branch.
-- [x] Step 4 completed. Added a helper that consumes the future
-      category contract; this is now backed by `experiment.refln`
-      arrays and renders an empty Bragg row only when reflection data is
-      absent.
+- [x] Step 4 completed. Added a helper that consumes the future category
+      contract; this is now backed by `experiment.refln` arrays and
+      renders an empty Bragg row only when reflection data is absent.
 - [x] Step 5 completed. Added `plot_powder_meas_vs_calc(...)` to the
       plotting backend contract and routed powder Bragg plots to it.
 - [x] Step 6 completed. Plotly now renders stacked subplots with shared
@@ -84,26 +83,26 @@ reflection rows.
     within the scale-matched subplot instead of breaking the intended
     physical alignment.
 12. Addressed review regressions by normalizing Bragg filtering bounds
-    before masking reflection data, keeping the residual
-    default scoped to the powder-Bragg composite path, and guarding the
-    composite Plotly backend against empty filtered x ranges.
+    before masking reflection data, keeping the residual default scoped
+    to the powder-Bragg composite path, and guarding the composite
+    Plotly backend against empty filtered x ranges.
 13. Fixed follow-up review gaps by suppressing Bragg ticks when the
-   filtered main pattern is empty and by grouping Bragg rows on raw
-   phase ids so numeric identifiers still produce populated tick
-   rows with string labels.
+    filtered main pattern is empty and by grouping Bragg rows on raw
+    phase ids so numeric identifiers still produce populated tick rows
+    with string labels.
 
 **Steps**
 
 1. Confirm the powder reflection category contract before
    implementation. It should be a powder experiment category similar to
-   `data`, exposing array-like calculated reflection data in the active x
-   coordinate: `phase_id`, x position, Miller indices h/k/l,
+   `data`, exposing array-like calculated reflection data in the active
+   x coordinate: `phase_id`, x position, Miller indices h/k/l,
    `f_squared_calc`, and `f_calc`.
 2. Add a small plotting data transfer object for Bragg tick sets in
-    `src/easydiffraction/display/plotters/base.py`, for example a frozen
-    dataclass containing `phase_id`, `x`, `h`, `k`, `l`,
-    `f_squared_calc`, and `f_calc`. Keep it display-specific so the
-    plotting backend does not depend on experiment category internals.
+   `src/easydiffraction/display/plotters/base.py`, for example a frozen
+   dataclass containing `phase_id`, `x`, `h`, `k`, `l`,
+   `f_squared_calc`, and `f_calc`. Keep it display-specific so the
+   plotting backend does not depend on experiment category internals.
 3. Extend `Plotter.plot_meas_vs_calc()` in
    `src/easydiffraction/display/plotting.py` so powder Bragg plots
    include residuals by default. Recommended API: make residual display
@@ -136,13 +135,12 @@ reflection rows.
    exactly three residual-axis ticks (`min`, `0`, `max`) and do not add
    a separate colored zero line.
 8. In the Bragg row, render one trace per structure/phase. Each peak
-    should appear as a vertical tick at its x position and at a
-    per-structure y row. Use a hover-capable trace representation, not
-    layout shapes, so hovering shows `phase_id`, hkl, x position,
-    `f_squared_calc`, and `f_calc`. Keep numeric y-axis labels hidden or
-    replace them with phase labels if that remains
-    readable. When no Bragg tick data exists, omit the Bragg subplot
-    entirely.
+   should appear as a vertical tick at its x position and at a
+   per-structure y row. Use a hover-capable trace representation, not
+   layout shapes, so hovering shows `phase_id`, hkl, x position,
+   `f_squared_calc`, and `f_calc`. Keep numeric y-axis labels hidden or
+   replace them with phase labels if that remains readable. When no
+   Bragg tick data exists, omit the Bragg subplot entirely.
 9. Make X synchronization explicit: zooming or panning the main pattern
    must update the Bragg tick row and residual row, and the shared
    x-axis range should start at the filtered data minimum and end at the

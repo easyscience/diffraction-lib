@@ -633,7 +633,9 @@ class PlotlyPlotter(PlotterBase):
         row_y: float,
         color: str,
     ) -> object:
-        """Create a hover-capable Bragg tick trace for one linked phase."""
+        """
+        Create a hover-capable Bragg tick trace for one linked phase.
+        """
         y = np.full(tick_set.x.shape, row_y, dtype=float)
         hover_text = []
         for idx, x_value in enumerate(tick_set.x):
@@ -721,8 +723,7 @@ class PlotlyPlotter(PlotterBase):
             return base_height * phase_count
 
         return (
-            target_bragg_normalized_height * other_height
-            / (1.0 - target_bragg_normalized_height)
+            target_bragg_normalized_height * other_height / (1.0 - target_bragg_normalized_height)
         )
 
     @staticmethod
@@ -865,7 +866,7 @@ class PlotlyPlotter(PlotterBase):
 
         if layout.bragg_row is not None:
             fig.update_yaxes(
-                #title_text='Bragg peaks',
+                # title_text='Bragg peaks',
                 tickmode='array',
                 tickvals=[float(idx + 1) for idx in range(len(plot_spec.bragg_tick_sets))],
                 ticktext=[tick_set.phase_id for tick_set in plot_spec.bragg_tick_sets],
@@ -883,7 +884,7 @@ class PlotlyPlotter(PlotterBase):
         if layout.residual_row is not None and plot_spec.y_resid is not None:
             residual_tick_limit = self._get_display_tick_limit(residual_limit)
             fig.update_yaxes(
-                #title_text='Residual',
+                # title_text='Residual',
                 range=[-residual_limit, residual_limit],
                 tickmode='array',
                 tickvals=[-residual_tick_limit, 0.0, residual_tick_limit],

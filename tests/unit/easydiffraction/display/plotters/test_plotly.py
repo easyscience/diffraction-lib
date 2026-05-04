@@ -373,7 +373,9 @@ def test_scaled_bragg_row_height_preserves_single_phase_baseline():
     single_phase_normalized = single_height / (
         1.0 + single_phase.residual_height_fraction + single_height
     )
-    two_phase_normalized_per_phase = (two_phase_height / (1.0 + two_phase.residual_height_fraction + two_phase_height)) / 2
+    two_phase_normalized_per_phase = (
+        two_phase_height / (1.0 + two_phase.residual_height_fraction + two_phase_height)
+    ) / 2
 
     assert two_phase_normalized_per_phase == pytest.approx(single_phase_normalized)
 

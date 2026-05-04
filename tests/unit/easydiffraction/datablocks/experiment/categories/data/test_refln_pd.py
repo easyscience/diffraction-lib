@@ -25,32 +25,30 @@ def test_powder_cwl_refln_data_replace_from_records_sets_arrays():
     from easydiffraction.datablocks.experiment.categories.data.refln_pd import PowderCwlReflnData
 
     refln = PowderCwlReflnData()
-    refln._replace_from_records(
-        [
-            PowderReflnRecord(
-                phase_id='alpha',
-                d_spacing=2.1,
-                sin_theta_over_lambda=0.25,
-                index_h=1,
-                index_k=0,
-                index_l=1,
-                f_calc=3.0,
-                f_squared_calc=9.0,
-                two_theta=14.5,
-            ),
-            PowderReflnRecord(
-                phase_id='beta',
-                d_spacing=1.5,
-                sin_theta_over_lambda=0.33,
-                index_h=2,
-                index_k=1,
-                index_l=0,
-                f_calc=4.0,
-                f_squared_calc=16.0,
-                two_theta=22.0,
-            ),
-        ]
-    )
+    refln._replace_from_records([
+        PowderReflnRecord(
+            phase_id='alpha',
+            d_spacing=2.1,
+            sin_theta_over_lambda=0.25,
+            index_h=1,
+            index_k=0,
+            index_l=1,
+            f_calc=3.0,
+            f_squared_calc=9.0,
+            two_theta=14.5,
+        ),
+        PowderReflnRecord(
+            phase_id='beta',
+            d_spacing=1.5,
+            sin_theta_over_lambda=0.33,
+            index_h=2,
+            index_k=1,
+            index_l=0,
+            f_calc=4.0,
+            f_squared_calc=16.0,
+            two_theta=22.0,
+        ),
+    ])
 
     assert [item.id.value for item in refln._items] == ['1', '2']
     np.testing.assert_array_equal(refln.phase_id, np.array(['alpha', 'beta']))
@@ -64,21 +62,19 @@ def test_powder_tof_refln_data_replace_from_records_sets_arrays():
     from easydiffraction.datablocks.experiment.categories.data.refln_pd import PowderTofReflnData
 
     refln = PowderTofReflnData()
-    refln._replace_from_records(
-        [
-            PowderReflnRecord(
-                phase_id='gamma',
-                d_spacing=3.2,
-                sin_theta_over_lambda=0.15,
-                index_h=1,
-                index_k=1,
-                index_l=0,
-                f_calc=5.0,
-                f_squared_calc=25.0,
-                time_of_flight=1200.0,
-            )
-        ]
-    )
+    refln._replace_from_records([
+        PowderReflnRecord(
+            phase_id='gamma',
+            d_spacing=3.2,
+            sin_theta_over_lambda=0.15,
+            index_h=1,
+            index_k=1,
+            index_l=0,
+            f_calc=5.0,
+            f_squared_calc=25.0,
+            time_of_flight=1200.0,
+        )
+    ])
 
     assert [item.id.value for item in refln._items] == ['1']
     np.testing.assert_array_equal(refln.phase_id, np.array(['gamma']))
@@ -94,32 +90,30 @@ def test_powder_refln_round_trips_via_experiment_cif():
         radiation_probe='neutron',
         scattering_type='bragg',
     )
-    experiment.refln._replace_from_records(
-        [
-            PowderReflnRecord(
-                phase_id='alpha',
-                d_spacing=2.1,
-                sin_theta_over_lambda=0.25,
-                index_h=1,
-                index_k=0,
-                index_l=1,
-                f_calc=3.0,
-                f_squared_calc=9.0,
-                two_theta=14.5,
-            ),
-            PowderReflnRecord(
-                phase_id='beta',
-                d_spacing=1.5,
-                sin_theta_over_lambda=0.33,
-                index_h=2,
-                index_k=1,
-                index_l=0,
-                f_calc=4.0,
-                f_squared_calc=16.0,
-                two_theta=22.0,
-            ),
-        ]
-    )
+    experiment.refln._replace_from_records([
+        PowderReflnRecord(
+            phase_id='alpha',
+            d_spacing=2.1,
+            sin_theta_over_lambda=0.25,
+            index_h=1,
+            index_k=0,
+            index_l=1,
+            f_calc=3.0,
+            f_squared_calc=9.0,
+            two_theta=14.5,
+        ),
+        PowderReflnRecord(
+            phase_id='beta',
+            d_spacing=1.5,
+            sin_theta_over_lambda=0.33,
+            index_h=2,
+            index_k=1,
+            index_l=0,
+            f_calc=4.0,
+            f_squared_calc=16.0,
+            two_theta=22.0,
+        ),
+    ])
     experiment._need_categories_update = False
 
     cif = experiment.as_cif

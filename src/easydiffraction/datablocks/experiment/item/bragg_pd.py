@@ -10,9 +10,9 @@ import numpy as np
 from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.datablocks.experiment.categories.background.factory import BackgroundFactory
-from easydiffraction.datablocks.experiment.categories.instrument.factory import InstrumentFactory
 from easydiffraction.datablocks.experiment.categories.data.refln_pd import PowderCwlReflnData
 from easydiffraction.datablocks.experiment.categories.data.refln_pd import PowderTofReflnData
+from easydiffraction.datablocks.experiment.categories.instrument.factory import InstrumentFactory
 from easydiffraction.datablocks.experiment.item.base import PdExperimentBase
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
@@ -67,7 +67,9 @@ class BraggPdExperiment(PdExperimentBase):
         self._refln = self._create_refln_collection()
 
     def _create_refln_collection(self) -> object:
-        """Create the beam-mode-specific calculated reflection collection."""
+        """
+        Create the beam-mode-specific calculated reflection collection.
+        """
         beam_mode = self.type.beam_mode.value
         if beam_mode == BeamModeEnum.CONSTANT_WAVELENGTH:
             return PowderCwlReflnData()

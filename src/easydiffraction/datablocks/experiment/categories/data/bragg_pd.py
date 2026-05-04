@@ -386,44 +386,16 @@ class PdDataBase(CategoryCollection):
         structures = project.structures
         calculator = experiment.calculation.calculator
 
-        initial_calc = np.zeros_like(self.x)
-        calc = initial_calc
-        refln_records: list[PowderReflnRecord] = []
-        missing_refln_records = False
-
-        # TODO: refactor _get_valid_linked_phases to only be responsible
-        #  for returning list. Warning message should be defined here,
-        #  at least some of them.
-        # TODO: Adapt following the _update method in bragg_sc.py
-        for linked_phase in experiment._get_valid_linked_phases(structures):
-            structure_id = linked_phase._identity.category_entry_name
-            phase_id = linked_phase.id.value
-            structure_scale = linked_phase.scale.value
-            structure = structures[structure_id]
-
-            structure_calc = calculator.calculate_pattern(
-                structure,
-                experiment,
-                called_by_minimizer=called_by_minimizer,
-            )
-
-            structure_scaled_calc = structure_scale * structure_calc
-            calc += structure_scaled_calc
-
-            structure_refln_records = calculator.last_powder_refln_records(
-                structure,
-                experiment,
-                phase_id=phase_id,
-            )
-            if structure_refln_records is None:
-                missing_refln_records = True
-            else:
-                refln_records.extend(structure_refln_records)
-
+        calc, refln_records, missing_refln_records = self._phase_calculation_results(
+            experiment=experiment,
+            structures=structures,
+            calculator=calculator,
+            called_by_minimizer=called_by_minimizer,
+        )
         self._set_intensity_calc(calc + self.intensity_bkg)
         if missing_refln_records:
             experiment.refln._replace_from_records([])
-            log.warning(
+            log.debug(
                 'Calculated powder reflection metadata is unavailable for '
                 f"experiment '{experiment.name}' with calculator "
                 f"'{calculator.name}'. Clearing experiment.refln.",
@@ -431,6 +403,58 @@ class PdDataBase(CategoryCollection):
             return
 
         experiment.refln._replace_from_records(refln_records)
+
+    def _phase_calculation_results(
+        self,
+        *,
+        experiment: object,
+        structures: object,
+        calculator: object,
+        called_by_minimizer: bool,
+    ) -> tuple[np.ndarray, list[PowderReflnRecord], bool]:
+        calc = np.zeros_like(self.x)
+        refln_records: list[PowderReflnRecord] = []
+        missing_refln_records = False
+
+        for linked_phase in experiment._get_valid_linked_phases(structures):
+            structure_id = linked_phase._identity.category_entry_name
+            structure = structures[structure_id]
+            structure_scaled_calc, structure_refln_records = self._phase_result(
+                structure=structure,
+                experiment=experiment,
+                calculator=calculator,
+                linked_phase=linked_phase,
+                called_by_minimizer=called_by_minimizer,
+            )
+            calc += structure_scaled_calc
+            if structure_refln_records is None:
+                missing_refln_records = True
+                continue
+            refln_records.extend(structure_refln_records)
+
+        return calc, refln_records, missing_refln_records
+
+    @staticmethod
+    def _phase_result(
+        *,
+        structure: object,
+        experiment: object,
+        calculator: object,
+        linked_phase: object,
+        called_by_minimizer: bool,
+    ) -> tuple[np.ndarray, list[PowderReflnRecord] | None]:
+        structure_calc = calculator.calculate_pattern(
+            structure,
+            experiment,
+            called_by_minimizer=called_by_minimizer,
+        )
+        structure_scaled_calc = linked_phase.scale.value * structure_calc
+        structure_refln_records = calculator.last_powder_refln_records(
+            structure,
+            experiment,
+            phase_id=linked_phase.id.value,
+        )
+        return structure_scaled_calc, structure_refln_records
 
     ###################
     # Public properties

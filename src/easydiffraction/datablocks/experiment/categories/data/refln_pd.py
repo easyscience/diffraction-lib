@@ -71,7 +71,7 @@ class PowderReflnBase(SingleCrystalRefln):
 
     @property
     def f_squared_calc(self) -> NumericDescriptor:
-        """Calculated structure-factor amplitude squared for this reflection."""
+        """Calculated structure-factor amplitude squared."""
         return self._f_squared_calc
 
     @property
@@ -152,7 +152,7 @@ class PowderReflnDataBase(CategoryCollection):
     _update_priority = 110
 
     def _replace_from_records(self, records: Sequence[PowderReflnRecord]) -> None:
-        """Replace all reflection rows from calculator output records."""
+        """Replace all rows from calculator reflection records."""
         self._items = [self._item_type() for _ in records]
 
         for index, (item, record) in enumerate(zip(self._items, records, strict=True), start=1):
@@ -173,7 +173,8 @@ class PowderReflnDataBase(CategoryCollection):
         item: PowderReflnBase,
         record: PowderReflnRecord,
     ) -> None:
-        """Set the beam-mode-specific x coordinate on a reflection row."""
+        """Set the beam-mode-specific x coordinate."""
+        del self, item, record
 
     @property
     def id(self) -> np.ndarray:
@@ -220,7 +221,9 @@ class PowderReflnDataBase(CategoryCollection):
 
     @property
     def f_squared_calc(self) -> np.ndarray:
-        """Calculated structure-factor amplitudes squared for all rows."""
+        """
+        Calculated structure-factor amplitudes squared for all rows.
+        """
         return np.fromiter((item.f_squared_calc.value for item in self._items), dtype=float)
 
 
@@ -243,6 +246,7 @@ class PowderCwlReflnData(PowderReflnDataBase):
         item: PowderReflnBase,
         record: PowderReflnRecord,
     ) -> None:
+        del self
         item.two_theta._value = float(record.two_theta)
 
     @property
@@ -270,6 +274,7 @@ class PowderTofReflnData(PowderReflnDataBase):
         item: PowderReflnBase,
         record: PowderReflnRecord,
     ) -> None:
+        del self
         item.time_of_flight._value = float(record.time_of_flight)
 
     @property
