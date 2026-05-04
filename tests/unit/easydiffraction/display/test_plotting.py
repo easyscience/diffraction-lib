@@ -67,6 +67,7 @@ def test_plotter_error_paths_and_filtering(capsys, monkeypatch):
     from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
     from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
     from easydiffraction.display.plotting import Plotter
+    from easydiffraction.display.plotting import _MeasVsCalcPlotOptions
     from easydiffraction.utils.logging import Logger
 
     monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.WARN, raising=True)
@@ -113,18 +114,21 @@ def test_plotter_error_paths_and_filtering(capsys, monkeypatch):
     p._plot_meas_vs_calc_data(
         Expt(Ptn(two_theta=None, intensity_meas=None, intensity_calc=None), ExptType()),
         'E',
+        _MeasVsCalcPlotOptions(),
     )
     out = capsys.readouterr().out
     assert 'No measured data available for experiment E' in out
     p._plot_meas_vs_calc_data(
         Expt(Ptn(two_theta=[1], intensity_meas=None, intensity_calc=[1]), ExptType()),
         'E',
+        _MeasVsCalcPlotOptions(),
     )
     out = capsys.readouterr().out
     assert 'No measured data available for experiment E' in out
     p._plot_meas_vs_calc_data(
         Expt(Ptn(two_theta=[1], intensity_meas=[1], intensity_calc=None), ExptType()),
         'E',
+        _MeasVsCalcPlotOptions(),
     )
     out = capsys.readouterr().out
     assert 'No calculated data available for experiment E' in out
@@ -173,6 +177,372 @@ def test_plotter_routes_to_ascii_plotter(monkeypatch):
     p._plot_meas_data(Ptn(), 'E', ExptType())
     assert called['labels'] == ('meas',)
     assert 'Measured data' in called['title']
+
+
+def test_extract_bragg_tick_sets_groups_and_filters():
+    import numpy as np
+
+    from easydiffraction.display.plotting import Plotter
+
+    class BraggPeaks:
+        structure_id = np.array(['phase-a', 'phase-a', 'phase-b', 'phase-b'])
+        x = np.array([0.5, 1.5, 2.5, 3.5])
+        h = np.array([1, 2, 3, 4])
+        k = np.array([0, 1, 1, 2])
+        l = np.array([1, 0, 2, 1])
+        intensity = np.array([10.0, 20.0, 30.0, 40.0])
+        peak_id = np.array(['p0', 'p1', 'p2', 'p3'])
+
+    class Experiment:
+        bragg_peaks = BraggPeaks()
+
+    tick_sets = Plotter()._extract_bragg_tick_sets(
+        experiment=Experiment(),
+        expt_name='E1',
+        x_min=1.0,
+        x_max=3.0,
+    )
+
+    assert [tick_set.structure_id for tick_set in tick_sets] == ['phase-a', 'phase-b']
+    assert np.allclose(tick_sets[0].x, np.array([1.5]))
+    assert np.array_equal(tick_sets[0].peak_id, np.array(['p1']))
+    assert np.array_equal(tick_sets[1].h, np.array([3]))
+    assert np.array_equal(tick_sets[1].k, np.array([1]))
+    assert np.array_equal(tick_sets[1].ell, np.array([2]))
+    assert np.allclose(tick_sets[1].intensity, np.array([30.0]))
+
+
+def test_extract_bragg_tick_sets_returns_empty_without_category():
+    from easydiffraction.display.plotting import Plotter
+
+    class Experiment:
+        pass
+
+    tick_sets = Plotter()._extract_bragg_tick_sets(
+        experiment=Experiment(),
+        expt_name='E1',
+        x_min=1.0,
+        x_max=3.0,
+    )
+
+    assert tick_sets == ()
+
+
+def test_plot_meas_vs_calc_routes_powder_bragg_to_composite_backend():
+    import numpy as np
+
+    from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+    from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+    from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
+    from easydiffraction.display.plotting import Plotter
+    from easydiffraction.display.plotting import _MeasVsCalcPlotOptions
+
+    captured = {}
+
+    class FakeBackend:
+        def plot_powder_meas_vs_calc(self, **kwargs):
+            captured['powder_meas_vs_calc'] = kwargs['plot_spec']
+
+        def plot_powder(self, **kwargs):
+            captured['powder'] = kwargs
+
+    class Pattern:
+        two_theta = np.array([0.0, 1.0, 2.0, 3.0])
+        d_spacing = two_theta
+        intensity_meas = np.array([10.0, 20.0, 30.0, 40.0])
+        intensity_calc = np.array([9.0, 18.0, 27.0, 39.0])
+
+    class BraggPeaks:
+        structure_id = np.array(['phase-a', 'phase-a', 'phase-b'])
+        x = np.array([0.5, 1.5, 2.0])
+        h = np.array([1, 2, 3])
+        k = np.array([0, 1, 1])
+        l = np.array([1, 0, 2])
+        intensity = np.array([100.0, 80.0, 60.0])
+        peak_id = np.array(['p0', 'p1', 'p2'])
+
+    class ExptType:
+        sample_form = type('SF', (), {'value': SampleFormEnum.POWDER})()
+        scattering_type = type('S', (), {'value': ScatteringTypeEnum.BRAGG})()
+        beam_mode = type('B', (), {'value': BeamModeEnum.CONSTANT_WAVELENGTH})()
+
+    class Experiment:
+        data = Pattern()
+        type = ExptType()
+        bragg_peaks = BraggPeaks()
+
+    plotter = Plotter()
+    plotter._backend = FakeBackend()
+    plotter._plot_meas_vs_calc_data(
+        experiment=Experiment(),
+        expt_name='E1',
+        plot_options=_MeasVsCalcPlotOptions(x_min=1.0, x_max=2.0),
+    )
+
+    assert 'powder_meas_vs_calc' in captured
+    assert 'powder' not in captured
+    call = captured['powder_meas_vs_calc']
+    assert np.allclose(call.x, np.array([1.0, 2.0]))
+    assert np.allclose(call.y_meas, np.array([20.0, 30.0]))
+    assert np.allclose(call.y_calc, np.array([18.0, 27.0]))
+    assert np.allclose(call.y_resid, np.array([2.0, 3.0]))
+    assert [tick_set.structure_id for tick_set in call.bragg_tick_sets] == [
+        'phase-a',
+        'phase-b',
+    ]
+    assert np.allclose(call.bragg_tick_sets[0].x, np.array([1.5]))
+    assert np.allclose(call.bragg_tick_sets[1].x, np.array([2.0]))
+
+
+def test_plot_meas_vs_calc_extracts_bragg_ticks_with_default_bounds():
+    import numpy as np
+
+    from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+    from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+    from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
+    from easydiffraction.display.plotting import Plotter
+    from easydiffraction.display.plotting import _MeasVsCalcPlotOptions
+
+    captured = {}
+
+    class FakeBackend:
+        def plot_powder_meas_vs_calc(self, **kwargs):
+            captured['powder_meas_vs_calc'] = kwargs['plot_spec']
+
+    class Pattern:
+        time_of_flight = np.array([10.0, 11.0, 12.0])
+        intensity_meas = np.array([100.0, 110.0, 105.0])
+        intensity_calc = np.array([99.0, 108.0, 104.0])
+
+    class BraggPeaks:
+        structure_id = np.array(['phase-a'])
+        x = np.array([11.0])
+        h = np.array([1])
+        k = np.array([0])
+        l = np.array([1])
+        intensity = np.array([50.0])
+
+    class ExptType:
+        sample_form = type('SF', (), {'value': SampleFormEnum.POWDER})()
+        scattering_type = type('S', (), {'value': ScatteringTypeEnum.BRAGG})()
+        beam_mode = type('B', (), {'value': BeamModeEnum.TIME_OF_FLIGHT})()
+
+    class Experiment:
+        data = Pattern()
+        type = ExptType()
+        bragg_peaks = BraggPeaks()
+
+    plotter = Plotter()
+    plotter._backend = FakeBackend()
+    plotter._plot_meas_vs_calc_data(
+        experiment=Experiment(),
+        expt_name='E1',
+        plot_options=_MeasVsCalcPlotOptions(),
+    )
+
+    call = captured['powder_meas_vs_calc']
+    assert np.allclose(call.x, np.array([10.0, 11.0, 12.0]))
+    assert [tick_set.structure_id for tick_set in call.bragg_tick_sets] == ['phase-a']
+    assert np.allclose(call.bragg_tick_sets[0].x, np.array([11.0]))
+
+
+def test_plot_meas_vs_calc_groups_numeric_bragg_structure_ids():
+    import numpy as np
+
+    from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+    from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+    from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
+    from easydiffraction.display.plotting import Plotter
+    from easydiffraction.display.plotting import _MeasVsCalcPlotOptions
+
+    captured = {}
+
+    class FakeBackend:
+        def plot_powder_meas_vs_calc(self, **kwargs):
+            captured['powder_meas_vs_calc'] = kwargs['plot_spec']
+
+    class Pattern:
+        time_of_flight = np.array([10.0, 11.0, 12.0])
+        intensity_meas = np.array([100.0, 110.0, 105.0])
+        intensity_calc = np.array([99.0, 108.0, 104.0])
+
+    class BraggPeaks:
+        structure_id = np.array([1, 1, 2])
+        x = np.array([10.0, 11.0, 12.0])
+        h = np.array([1, 2, 3])
+        k = np.array([0, 1, 1])
+        l = np.array([1, 0, 2])
+        intensity = np.array([50.0, 40.0, 30.0])
+
+    class ExptType:
+        sample_form = type('SF', (), {'value': SampleFormEnum.POWDER})()
+        scattering_type = type('S', (), {'value': ScatteringTypeEnum.BRAGG})()
+        beam_mode = type('B', (), {'value': BeamModeEnum.TIME_OF_FLIGHT})()
+
+    class Experiment:
+        data = Pattern()
+        type = ExptType()
+        bragg_peaks = BraggPeaks()
+
+    plotter = Plotter()
+    plotter._backend = FakeBackend()
+    plotter._plot_meas_vs_calc_data(
+        experiment=Experiment(),
+        expt_name='E1',
+        plot_options=_MeasVsCalcPlotOptions(),
+    )
+
+    call = captured['powder_meas_vs_calc']
+    assert [tick_set.structure_id for tick_set in call.bragg_tick_sets] == ['1', '2']
+    assert np.allclose(call.bragg_tick_sets[0].x, np.array([10.0, 11.0]))
+    assert np.allclose(call.bragg_tick_sets[1].x, np.array([12.0]))
+
+
+def test_plot_meas_vs_calc_skips_bragg_ticks_when_filtered_pattern_is_empty():
+    import numpy as np
+
+    from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+    from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+    from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
+    from easydiffraction.display.plotting import Plotter
+    from easydiffraction.display.plotting import _MeasVsCalcPlotOptions
+
+    captured = {}
+
+    class FakeBackend:
+        def plot_powder_meas_vs_calc(self, **kwargs):
+            captured['powder_meas_vs_calc'] = kwargs['plot_spec']
+
+    class Pattern:
+        time_of_flight = np.array([10.0, 11.0, 12.0])
+        intensity_meas = np.array([100.0, 110.0, 105.0])
+        intensity_calc = np.array([99.0, 108.0, 104.0])
+
+    class BraggPeaks:
+        structure_id = np.array(['phase-a'])
+        x = np.array([8.0])
+        h = np.array([1])
+        k = np.array([0])
+        l = np.array([1])
+        intensity = np.array([50.0])
+
+    class ExptType:
+        sample_form = type('SF', (), {'value': SampleFormEnum.POWDER})()
+        scattering_type = type('S', (), {'value': ScatteringTypeEnum.BRAGG})()
+        beam_mode = type('B', (), {'value': BeamModeEnum.TIME_OF_FLIGHT})()
+
+    class Experiment:
+        data = Pattern()
+        type = ExptType()
+        bragg_peaks = BraggPeaks()
+
+    plotter = Plotter()
+    plotter._backend = FakeBackend()
+    plotter._plot_meas_vs_calc_data(
+        experiment=Experiment(),
+        expt_name='E1',
+        plot_options=_MeasVsCalcPlotOptions(x_min=7.0, x_max=9.0),
+    )
+
+    call = captured['powder_meas_vs_calc']
+    assert call.x.size == 0
+    assert call.bragg_tick_sets == ()
+
+
+def test_plot_meas_vs_calc_keeps_single_crystal_routing():
+    import numpy as np
+
+    from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+    from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+    from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
+    from easydiffraction.display.plotting import Plotter
+    from easydiffraction.display.plotting import _MeasVsCalcPlotOptions
+
+    captured = {}
+
+    class FakeBackend:
+        def plot_single_crystal(self, **kwargs):
+            captured['single_crystal'] = kwargs
+
+        def plot_powder_meas_vs_calc(self, **kwargs):
+            captured['powder_meas_vs_calc'] = kwargs['plot_spec']
+
+    class Pattern:
+        intensity_calc = np.array([1.0, 2.0, 3.0])
+        intensity_meas = np.array([1.1, 1.9, 3.2])
+        intensity_meas_su = np.array([0.1, 0.1, 0.1])
+
+    class ExptType:
+        sample_form = type('SF', (), {'value': SampleFormEnum.SINGLE_CRYSTAL})()
+        scattering_type = type('S', (), {'value': ScatteringTypeEnum.BRAGG})()
+        beam_mode = type('B', (), {'value': BeamModeEnum.CONSTANT_WAVELENGTH})()
+
+    class Experiment:
+        data = Pattern()
+        type = ExptType()
+
+    plotter = Plotter()
+    plotter._backend = FakeBackend()
+    plotter._plot_meas_vs_calc_data(
+        experiment=Experiment(),
+        expt_name='E1',
+        plot_options=_MeasVsCalcPlotOptions(),
+    )
+
+    assert 'single_crystal' in captured
+    assert 'powder_meas_vs_calc' not in captured
+    assert np.allclose(captured['single_crystal']['x_calc'], np.array([1.0, 2.0, 3.0]))
+    assert np.allclose(captured['single_crystal']['y_meas'], np.array([1.1, 1.9, 3.2]))
+    assert np.allclose(captured['single_crystal']['y_meas_su'], np.array([0.1, 0.1, 0.1]))
+
+
+def test_plot_meas_vs_calc_keeps_default_residual_off_for_line_paths():
+    import numpy as np
+
+    from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+    from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+    from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
+    from easydiffraction.display.plotting import Plotter
+    from easydiffraction.display.plotting import _MeasVsCalcPlotOptions
+
+    captured = {}
+
+    class FakeBackend:
+        def plot_powder(self, **kwargs):
+            captured['powder'] = kwargs
+
+        def plot_single_crystal(self, **kwargs):
+            captured['single_crystal'] = kwargs
+
+        def plot_powder_meas_vs_calc(self, **kwargs):
+            captured['powder_meas_vs_calc'] = kwargs['plot_spec']
+
+    class Pattern:
+        d_spacing = np.array([1.0, 2.0, 3.0])
+        intensity_meas = np.array([5.0, 6.0, 7.0])
+        intensity_calc = np.array([4.5, 6.1, 7.2])
+
+    class ExptType:
+        sample_form = type('SF', (), {'value': SampleFormEnum.SINGLE_CRYSTAL})()
+        scattering_type = type('S', (), {'value': ScatteringTypeEnum.BRAGG})()
+        beam_mode = type('B', (), {'value': BeamModeEnum.CONSTANT_WAVELENGTH})()
+
+    class Experiment:
+        data = Pattern()
+        type = ExptType()
+
+    plotter = Plotter()
+    plotter._backend = FakeBackend()
+    plotter._plot_meas_vs_calc_data(
+        experiment=Experiment(),
+        expt_name='E1',
+        plot_options=_MeasVsCalcPlotOptions(x='d_spacing'),
+    )
+
+    assert 'powder' in captured
+    assert 'single_crystal' not in captured
+    assert 'powder_meas_vs_calc' not in captured
+    assert captured['powder']['labels'] == ['meas', 'calc']
 
 
 def test_plot_param_correlations_renders_ascii_table(monkeypatch):

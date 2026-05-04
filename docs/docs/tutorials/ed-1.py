@@ -107,4 +107,4 @@ project.experiments.show_names()
 
 # %%
 # Plot measured vs. calculated diffraction patterns
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')

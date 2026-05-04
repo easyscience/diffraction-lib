@@ -2,210 +2,140 @@
 
 ## Project Context
 
-- Python library for crystallographic diffraction analysis, such as
-  refinement of the structural model against experimental data.
-- Support for
-  - sample_form: powder and single crystal
-  - beam_mode: time-of-flight and constant wavelength
-  - radiation_probe: neutron and x-ray
-  - scattering_type: bragg and total scattering
-- Calculations are done using external calculation libraries:
-  - `cryspy` for Bragg diffraction
-  - `crysfml` for Bragg diffraction
-  - `pdffit2` for Total scattering
-- Follow CIF naming conventions where possible. In some places, we
-  deviate for better API design, but we try to keep the spirit of the
-  CIF names.
-- Reusing the concept of datablocks and categories from CIF. We have
-  `DatablockItem` (structure or experiment) and `DatablockCollection`
-  (collection of structures or experiments), as well as `CategoryItem`
-  (single categories in CIF) and `CategoryCollection` (loop categories
-  in CIF).
+- Python library for crystallographic diffraction analysis (refining
+  structural models against experimental data).
+- Axes: `sample_form` (powder, single crystal), `beam_mode` (time-of-
+  flight, constant wavelength), `radiation_probe` (neutron, x-ray),
+  `scattering_type` (bragg, total).
+- Calculation backends: `cryspy` and `crysfml` (Bragg), `pdffit2` (total
+  scattering).
+- Follow CIF naming conventions; deviate only for clearly better API.
+- CIF concepts map to: `DatablockItem` / `DatablockCollection` and
+  `CategoryItem` / `CategoryCollection` (loops).
 - Metadata via frozen dataclasses: `TypeInfo`, `Compatibility`,
   `CalculatorSupport`.
-- The API is designed for scientists who use EasyDiffraction as a final
-  product in a user-friendly, intuitive way. The target users are not
-  software developers and may have little or no Python experience. The
-  design is not oriented toward developers building their own tooling on
-  top of the library, although experienced developers will find their
-  own way. Prioritize discoverability, clear error messages, and safe
-  defaults so that non-programmers are not stuck by standard API
-  conventions.
-- This project must be developed to be as error-free as possible, with
-  the same rigour applied to critical software (e.g. nuclear-plant
-  control systems). Every code path must be tested, edge cases must be
-  handled explicitly, and silent failures are not acceptable.
+- Audience: scientists, often non-programmers. Prioritize
+  discoverability, clear errors, safe defaults over developer
+  ergonomics.
+- Critical-software rigor: every code path tested, edge cases handled
+  explicitly, no silent failures.
 
 ## Code Style
 
-- Use snake_case for functions and variables, PascalCase for classes,
-  and UPPER_SNAKE_CASE for constants.
-- Use `from __future__ import annotations` in every module.
-- Type-annotate all public function signatures.
-- Docstrings on all public classes and methods (numpy style). These must
-  include sections Parameters, Returns and Raises, where applicable.
-- Docstring summary must be a single line no longer than 72 characters
-  (the `max-doc-length` setting in `pyproject.toml`). If the summary
-  does not fit, shorten the wording rather than wrapping to a second
-  line.
-- Prefer flat over nested, explicit over clever.
-- Write straightforward code; do not add defensive checks for unlikely
-  edge cases.
-- Prefer composition over deep inheritance.
-- One class per file when the class is substantial; group small related
-  classes.
-- Avoid `**kwargs`; use explicit keyword arguments for clarity,
-  autocomplete, and typo detection.
-- Do not use string-based dispatch (e.g. `getattr(self, f'_{name}')`) to
-  route to attributes or methods. Instead, write explicit named methods
-  (e.g. `_set_sample_form`, `_set_beam_mode`). This keeps the code
-  greppable, autocomplete-friendly, and type-safe.
-- Public parameters and descriptors are either **editable** (property
-  with both getter and setter) or **read-only** (property with getter
-  only). If internal code needs to mutate a read-only property, add a
-  private `_set_<name>` method instead of exposing a public setter.
-- Lint complexity thresholds (`max-args`, `max-branches`,
-  `max-statements`, `max-locals`, `max-nested-blocks`, etc. in
-  `pyproject.toml`) are intentional code-quality guardrails. They are
-  not arbitrary numbers — the project uses ruff's defaults (with
-  `max-args` and `max-positional-args` set to 6 instead of 5 to account
-  for ruff counting `self`/`cls`). When code violates a threshold, it is
-  a signal that the function or class needs refactoring — not that the
-  threshold needs raising. Do not raise thresholds, add `# noqa`
-  comments, or use any other mechanism to silence complexity violations.
-  Instead, refactor the code (extract helpers, introduce parameter
-  objects, flatten nesting, etc.). For complex refactors that touch many
-  lines or change public API, propose a refactoring plan and wait for
-  approval before proceeding.
+- snake_case (functions/vars), PascalCase (classes), UPPER_SNAKE_CASE
+  (constants).
+- `from __future__ import annotations` in every module.
+- Type-annotate all public signatures.
+- Numpy-style docstrings on all public classes/methods, with Parameters
+  / Returns / Raises where applicable. Summary is one line ≤72 chars
+  (`max-doc-length`); shorten wording rather than wrap.
+- Flat over nested, explicit over clever. No defensive checks for
+  unlikely edge cases. Composition over deep inheritance.
+- One class per file when substantial; group small related classes.
+- No `**kwargs` — use explicit keyword arguments.
+- No string-based dispatch (e.g. `getattr(self, f'_{name}')`); write
+  explicit named methods (`_set_sample_form`, `_set_beam_mode`).
+- Public attrs are either editable (getter+setter property) or read-only
+  (getter only). For internal mutation of read-only props, add a private
+  `_set_<name>` method, not a public setter.
+- Lint complexity thresholds in `pyproject.toml` (`max-args`,
+  `max-branches`, `max-statements`, `max-locals`, `max-nested-blocks`,
+  …) are guardrails. A violation means refactor (extract helpers,
+  parameter objects, flatten). Do not raise thresholds, add `# noqa`, or
+  otherwise silence them. For complex refactors touching many lines or
+  public API, propose a plan and wait for approval.
 
 ## Architecture
 
-- Eager imports at the top of the module by default. Use lazy imports
-  (inside a method body) only when necessary to break circular
-  dependencies or to keep `core/` free of heavy utility imports on
-  rarely-called paths (e.g. `help()`).
-- No `pkgutil` / `importlib` auto-discovery patterns.
-- No background/daemon threads.
-- No monkey-patching or runtime class mutation.
-- Do not use `__all__` in modules; instead, rely on explicit imports in
-  `__init__.py` to control the public API.
-- Do not use redundant `import X as X` aliases in `__init__.py`. Use
-  plain `from module import X`.
-- Concrete classes use `@Factory.register` decorators. To trigger
-  registration, each package's `__init__.py` must explicitly import
-  every concrete class (e.g.
-  `from .chebyshev import ChebyshevPolynomialBackground`). When adding a
-  new concrete class, always add its import to the corresponding
-  `__init__.py`.
-- Switchable categories (those whose implementation can be swapped at
-  runtime via a factory) follow a fixed naming convention on the owner
-  (experiment, structure, or analysis): `<category>` (read-only
-  property), `<category>_type` (getter + setter),
+- Eager top-of-module imports by default. Lazy imports only to break
+  circular deps or keep `core/` free of heavy imports on rarely-called
+  paths (e.g. `help()`).
+- No `pkgutil` / `importlib` auto-discovery, no background threads, no
+  monkey-patching or runtime class mutation.
+- No `__all__`; control public API via explicit `__init__.py` imports.
+- No redundant `import X as X` aliases — use plain
+  `from module import X`.
+- Concrete classes use `@Factory.register`. Each package's `__init__.py`
+  must explicitly import every concrete class to trigger registration.
+  Always add new concrete classes to the corresponding `__init__.py`.
+- Switchable categories (factory-swappable at runtime) follow this fixed
+  API on the owner (experiment / structure / analysis): `<category>`
+  (read-only), `<category>_type` (getter+setter),
   `show_supported_<category>_types()`, `show_current_<category>_type()`.
-  The owner class owns the type setter and the show methods; the show
-  methods delegate to `Factory.show_supported(...)` passing context.
-  Every factory-created category must have this full API, even if only
-  one implementation exists today.
-- Categories are flat siblings within their owner (datablock or
-  analysis). A category must never be a child of another category of a
-  different type. Categories can reference each other via IDs, but not
-  via parent-child nesting.
-- Every finite, closed set of values (factory tags, experiment axes,
-  category descriptors with enumerated choices) must use a `(str, Enum)`
-  class. Internal code compares against enum members, never raw strings.
-- Keep `core/` free of domain logic — only base classes and utilities.
-- Don't introduce a new abstraction until there is a concrete second use
-  case.
+  The owner owns the type setter and show methods; show methods delegate
+  to `Factory.show_supported(...)`. Required even if only one
+  implementation exists.
+- Categories are flat siblings within their owner. Never nest a category
+  as a child of another category of a different type; cross-reference
+  via IDs instead.
+- Every finite, closed set of values (factory tags, axes, enumerated
+  descriptors) uses a `(str, Enum)` class; compare against members, not
+  raw strings.
+- Keep `core/` free of domain logic (base classes and utilities only).
+- Don't introduce abstractions before a concrete second use case.
 - Don't add dependencies without asking.
 
 ## Tutorials
 
-- Jupyter notebooks (`docs/docs/tutorials/*.ipynb`) are **generated
-  artifacts** — never edit them by hand. Edit only the corresponding
-  `*.py` script, then run `pixi run notebook-prepare` to regenerate the
-  notebook.
+- Notebooks in `docs/docs/tutorials/*.ipynb` are generated artifacts.
+  Edit only the corresponding `*.py`, then run
+  `pixi run notebook-prepare`.
 
 ## Testing
 
-- Every new module, class, or bug fix must ship with tests. See
-  `docs/architecture/architecture.md` §10 for the full test strategy.
-- **Unit tests mirror the source tree:**
+- Every new module, class, or bug fix ships with tests. See
+  `docs/architecture/architecture.md` §10 for the full strategy.
+- Unit tests mirror the source tree:
   `src/easydiffraction/<pkg>/<mod>.py` →
-  `tests/unit/easydiffraction/<pkg>/test_<mod>.py`. Run
-  `pixi run test-structure-check` to verify.
-- Category packages with only `default.py`/`factory.py` may use a single
-  parent-level `test_<package>.py` instead of per-file tests.
-- Supplementary test files use the pattern `test_<mod>_coverage.py`.
-- Tests that expect `log.error()` to raise must `monkeypatch` Logger to
+  `tests/unit/easydiffraction/<pkg>/test_<mod>.py`. Verify with
+  `pixi run test-structure-check`.
+- Category packages with only `default.py`/`factory.py` may use one
+  parent-level `test_<package>.py`.
+- Supplementary tests: `test_<mod>_coverage.py`.
+- Tests expecting `log.error()` to raise must `monkeypatch` Logger to
   RAISE mode (another test may have leaked WARN mode).
 - `@typechecked` setters raise `typeguard.TypeCheckError`, not
   `TypeError`.
 - No test-ordering dependence, no network, no sleeping, no real
   calculation engines in unit tests.
-- After adding or modifying tests, run `pixi run unit-tests` and confirm
-  all tests pass.
 
 ## Changes
 
-- Before implementing any structural or design change (new categories,
-  new factories, switchable-category wiring, new datablocks, CIF
-  serialisation changes), read `docs/architecture/architecture.md` to
-  understand the current design choices and conventions. Follow the
-  documented patterns (factory registration, switchable-category naming,
-  metadata classification, etc.) to stay consistent with the rest of the
-  codebase. For localised bug fixes or test updates, the rules in this
-  file are sufficient.
-- The project is in beta; do not keep legacy code or add deprecation
-  warnings. Instead, update tests and tutorials to follow the current
-  API.
-- Minimal diffs: don't rewrite working code just to reformat it.
-- Never remove or replace existing functionality as part of a new change
-  without explicit confirmation. If a refactor would drop features,
-  options, or configurations, highlight every removal and wait for
-  approval.
-- Fix only what's asked; flag adjacent issues as comments, don't fix
-  them silently.
-- Don't add new features or refactor existing code unless explicitly
-  asked.
-- Do not remove TODOs or comments unless the change fully resolves them.
+- Before any structural/design change (new categories, factories,
+  switchable-category wiring, datablocks, CIF serialisation), read
+  `docs/architecture/architecture.md` and follow documented patterns.
+  Localised bug fixes or test updates need only this file.
+- Project is in beta: no legacy shims, no deprecation warnings — update
+  tests and tutorials to current API.
+- Minimal diffs; don't reformat working code.
+- Never remove or replace existing functionality without explicit
+  confirmation. Highlight every removal and wait for approval.
+- Fix only what's asked; flag adjacent issues as comments.
+- Don't add features or refactor unless asked. Don't remove TODOs or
+  comments unless the change fully resolves them.
 - When renaming, grep the entire project (code, tests, tutorials, docs).
-- Every change should be atomic and self-contained, small enough to be
-  described by a single commit message. Make one change, suggest the
-  commit message, then stop and wait for confirmation before starting
-  the next change.
-- When in doubt, ask for clarification before making changes.
+- Each change is atomic, single-commit-sized. Make one change, suggest
+  the commit message, then stop and wait for confirmation.
+- When in doubt, ask.
 
 ## Workflow
 
-- Use a two-phase workflow for all non-trivial changes:
-  - **Phase 1 — Implementation:** implement the change (source code,
-    docs, architecture updates). Do not create new tests or run existing
-    tests. Present the implementation for review and iterate until
-    approved.
-  - **Phase 2 — Verification:** once the implementation is approved, add
-    or update tests, then run linting (`pixi run fix`, `pixi run check`)
-    and all test suites (`pixi run unit-tests`,
-    `pixi run integration-tests`, `pixi run script-tests`).
-- All open issues, design questions, and planned improvements are
-  tracked in `docs/architecture/issues_open.md`, ordered by priority.
-  When an issue is fully implemented, move it from that file to
-  `docs/architecture/issues_closed.md`. When the resolution affects the
-  architecture, update the relevant sections of
-  `docs/architecture/architecture.md`.
-- After changes, run linting and formatting fixes with `pixi run fix`.
-  This also regenerates `docs/architecture/package-structure-full.md`
-  and `docs/architecture/package-structure-short.md` automatically — do
-  not edit those files by hand. Do not check what was auto-fixed, just
-  accept the fixes and move on. Then, run linting and formatting checks
-  with `pixi run check` and address any remaining issues until the code
-  is clean.
-- After changes, run unit tests with `pixi run unit-tests`.
-- After changes, run integration tests with
-  `pixi run integration-tests`.
-- After changes, run tutorial tests with `pixi run script-tests`.
-- Suggest a concise commit message (as a code block) after each change
-  (less than 72 characters, imperative mood, without prefixing with the
-  type of change). E.g.:
+- Two-phase workflow for non-trivial changes:
+  - **Phase 1 — Implementation:** code, docs, architecture updates. Do
+    not create new tests or run existing tests. Present for review and
+    iterate until approved.
+  - **Phase 2 — Verification:** add/update tests, then run
+    `pixi run fix`, `pixi run check`, `pixi run unit-tests`,
+    `pixi run integration-tests`, `pixi run script-tests`.
+- Open issues / design questions / planned improvements live in
+  `docs/architecture/issues_open.md` (priority-ordered). On resolution,
+  move to `docs/architecture/issues_closed.md` and update
+  `architecture.md` if affected.
+- `pixi run fix` regenerates `docs/architecture/package-structure-*.md`
+  automatically — never edit those by hand. Don't review auto-fixes;
+  accept and move on. Then `pixi run check` until clean.
+- Suggest a commit message (code block, ≤72 chars, imperative mood, no
+  type prefix) after each change. E.g.:
   - Add ChebyshevPolynomialBackground class
   - Implement background_type setter on Experiment
   - Standardize switchable-category naming convention

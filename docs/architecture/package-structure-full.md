@@ -331,9 +331,12 @@
 │   │   ├── 📄 ascii.py
 │   │   │   └── 🏷️ class AsciiPlotter
 │   │   ├── 📄 base.py
+│   │   │   ├── 🏷️ class BraggTickSet
+│   │   │   ├── 🏷️ class PowderMeasVsCalcSpec
 │   │   │   ├── 🏷️ class XAxisType
 │   │   │   └── 🏷️ class PlotterBase
 │   │   └── 📄 plotly.py
+│   │       ├── 🏷️ class PowderCompositeRows
 │   │       └── 🏷️ class PlotlyPlotter
 │   ├── 📁 tablers
 │   │   ├── 📄 __init__.py
@@ -349,6 +352,7 @@
 │   │   └── 🏷️ class RendererFactoryBase
 │   ├── 📄 plotting.py
 │   │   ├── 🏷️ class PlotterEngineEnum
+│   │   ├── 🏷️ class _MeasVsCalcPlotOptions
 │   │   ├── 🏷️ class Plotter
 │   │   └── 🏷️ class PlotterFactory
 │   ├── 📄 tables.py

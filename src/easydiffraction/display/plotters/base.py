@@ -6,6 +6,7 @@ from __future__ import annotations
 
 from abc import ABC
 from abc import abstractmethod
+from dataclasses import dataclass
 from enum import StrEnum
 
 import numpy as np
@@ -17,6 +18,47 @@ from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 DEFAULT_HEIGHT = 25
 DEFAULT_MIN = -np.inf
 DEFAULT_MAX = np.inf
+
+
+@dataclass(frozen=True)
+class BraggTickSet:
+    """
+    Bragg tick data for one structure or phase row.
+
+    The plotting facade converts future experiment-category peak data
+    into this display-specific container so plotting backends stay
+    decoupled from experiment datablock internals.
+    """
+
+    structure_id: str
+    x: np.ndarray
+    h: np.ndarray
+    k: np.ndarray
+    ell: np.ndarray
+    intensity: np.ndarray
+    peak_id: np.ndarray | None = None
+
+
+@dataclass(frozen=True)
+class PowderMeasVsCalcSpec:
+    """
+    Specification for one composite powder plot.
+
+    The plotting facade assembles the measured, calculated, residual,
+    and Bragg-tick data into this display-specific object before
+    delegating to a backend.
+    """
+
+    x: np.ndarray
+    y_meas: np.ndarray
+    y_calc: np.ndarray
+    y_resid: np.ndarray | None
+    bragg_tick_sets: tuple[BraggTickSet, ...]
+    axes_labels: list[str]
+    title: str
+    residual_height_fraction: float
+    bragg_peaks_height_fraction: float
+    height: int | None = None
 
 
 class XAxisType(StrEnum):
@@ -198,6 +240,20 @@ class PlotterBase(ABC):
             Figure title.
         height : int | None
             Backend-specific height (text rows or pixels).
+        """
+
+    @abstractmethod
+    def plot_powder_meas_vs_calc(
+        self,
+        plot_spec: PowderMeasVsCalcSpec,
+    ) -> None:
+        """
+        Render a composite powder plot with Bragg ticks and residual.
+
+        Parameters
+        ----------
+        plot_spec : PowderMeasVsCalcSpec
+            Composite powder-plot inputs and layout settings.
         """
 
     @abstractmethod

@@ -10,11 +10,14 @@ consistent configuration surface and engine handling.
 from __future__ import annotations
 
 import pathlib
+from dataclasses import dataclass
 from enum import StrEnum
 
 import numpy as np
 import pandas as pd
 
+from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.display.base import RendererBase
 from easydiffraction.display.base import RendererFactoryBase
 from easydiffraction.display.plotters.ascii import AsciiPlotter
@@ -23,6 +26,8 @@ from easydiffraction.display.plotters.base import DEFAULT_HEIGHT
 from easydiffraction.display.plotters.base import DEFAULT_MAX
 from easydiffraction.display.plotters.base import DEFAULT_MIN
 from easydiffraction.display.plotters.base import DEFAULT_X_AXIS
+from easydiffraction.display.plotters.base import BraggTickSet
+from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
 from easydiffraction.display.plotters.base import XAxisType
 from easydiffraction.display.plotters.plotly import PlotlyPlotter
 from easydiffraction.display.tables import TableRenderer
@@ -57,6 +62,22 @@ class PlotterEngineEnum(StrEnum):
 
 DEFAULT_CORRELATION_THRESHOLD = 0.7
 EXPECTED_COVAR_NDIM = 2
+DEFAULT_RESIDUAL_HEIGHT_FRACTION = 0.25
+DEFAULT_BRAGG_PEAKS_HEIGHT_FRACTION = 0.15
+DEFAULT_RESID_HEIGHT = DEFAULT_RESIDUAL_HEIGHT_FRACTION
+DEFAULT_BRAGG_ROW = DEFAULT_BRAGG_PEAKS_HEIGHT_FRACTION
+
+
+@dataclass(frozen=True)
+class _MeasVsCalcPlotOptions:
+    """Internal options for a measured-vs-calculated plot request."""
+
+    x_min: float | None = None
+    x_max: float | None = None
+    show_residual: bool | None = None
+    residual_height_fraction: float = DEFAULT_RESID_HEIGHT
+    bragg_peaks_height_fraction: float = DEFAULT_BRAGG_ROW
+    x: object | None = None
 
 
 class Plotter(RendererBase):
@@ -233,14 +254,21 @@ class Plotter(RendererBase):
 
         # Filter x
         x_filtered = self._filtered_y_array(x_array, x_array, x_min, x_max)
+        resolved_x_min = self.x_min if x_min is None else float(x_min)
+        resolved_x_max = self.x_max if x_max is None else float(x_max)
+        if x_filtered.size > 0:
+            if x_min is None:
+                resolved_x_min = float(np.min(x_filtered))
+            if x_max is None:
+                resolved_x_max = float(np.max(x_filtered))
 
         axes_labels = self._get_axes_labels(sample_form, scattering_type, x_axis)
 
         return {
             'x_filtered': x_filtered,
             'x_array': x_array,
-            'x_min': x_min,
-            'x_max': x_max,
+            'x_min': resolved_x_min,
+            'x_max': resolved_x_max,
             'axes_labels': axes_labels,
         }
 
@@ -423,7 +451,9 @@ class Plotter(RendererBase):
         x_min: float | None = None,
         x_max: float | None = None,
         *,
-        show_residual: bool = False,
+        show_residual: bool | None = None,
+        residual_height_fraction: float = DEFAULT_RESID_HEIGHT,
+        bragg_peaks_height_fraction: float = DEFAULT_BRAGG_ROW,
         x: object | None = None,
     ) -> None:
         """
@@ -437,20 +467,33 @@ class Plotter(RendererBase):
             Lower bound for the x-axis range.
         x_max : float | None, default=None
             Upper bound for the x-axis range.
-        show_residual : bool, default=False
-            When ``True``, include the residual (difference) curve.
+        show_residual : bool | None, default=None
+            When ``None``, powder Bragg plots include the residual by
+            default while other measured-vs-calculated plots keep the
+            historical no-residual default.
+        residual_height_fraction : float, default=DEFAULT_RESID_HEIGHT
+            Optional. Defaults to 0.25. Residual-row height relative to
+            the main intensity row.
+        bragg_peaks_height_fraction : float, default=DEFAULT_BRAGG_ROW
+            Optional. Defaults to 0.15. Bragg-tick-row height relative
+            to the main intensity row.
         x : object | None, default=None
             Optional explicit x-axis data to override stored values.
         """
         self._update_project_categories(expt_name)
         experiment = self._project.experiments[expt_name]
-        self._plot_meas_vs_calc_data(
-            experiment,
-            expt_name,
+        plot_options = _MeasVsCalcPlotOptions(
             x_min=x_min,
             x_max=x_max,
             show_residual=show_residual,
+            residual_height_fraction=residual_height_fraction,
+            bragg_peaks_height_fraction=bragg_peaks_height_fraction,
             x=x,
+        )
+        self._plot_meas_vs_calc_data(
+            experiment=experiment,
+            expt_name=expt_name,
+            plot_options=plot_options,
         )
 
     def plot_param_series(
@@ -1069,11 +1112,7 @@ class Plotter(RendererBase):
         self,
         experiment: object,
         expt_name: str,
-        x_min: object = None,
-        x_max: object = None,
-        *,
-        show_residual: bool = False,
-        x: object = None,
+        plot_options: _MeasVsCalcPlotOptions,
     ) -> None:
         """
         Plot measured and calculated series and optional residual.
@@ -1093,20 +1132,16 @@ class Plotter(RendererBase):
             Experiment instance with ``.data`` and ``.type`` attributes.
         expt_name : str
             Experiment name for the title.
-        x_min : object, default=None
-            Optional minimum x-axis limit.
-        x_max : object, default=None
-            Optional maximum x-axis limit.
-        show_residual : bool, default=False
-            If ``True``, add residual series (powder only).
-        x : object, default=None
-            X-axis type. If ``None``, auto-detected from sample form and
-            beam mode.
+        plot_options : _MeasVsCalcPlotOptions
+            X-range, residual, and x-axis selection options.
         """
         pattern = experiment.data
         expt_type = experiment.type
 
-        x_axis, _, sample_form, scattering_type, _ = self._resolve_x_axis(expt_type, x)
+        x_axis, _, sample_form, scattering_type, _ = self._resolve_x_axis(
+            expt_type,
+            plot_options.x,
+        )
 
         # Validate required data (before x-array check, matching
         # original behavior for plot_meas_vs_calc)
@@ -1121,21 +1156,13 @@ class Plotter(RendererBase):
 
         # Single crystal scatter plot (I²calc vs I²meas)
         if x_axis in {XAxisType.INTENSITY_CALC, 'intensity_calc'}:
-            axes_labels = self._get_axes_labels(sample_form, scattering_type, x_axis)
-
-            if pattern.intensity_meas_su is None:
-                log.warning(f'No measurement uncertainties for experiment {expt_name}')
-                meas_su = np.zeros_like(pattern.intensity_meas)
-            else:
-                meas_su = pattern.intensity_meas_su
-
-            self._backend.plot_single_crystal(
-                x_calc=pattern.intensity_calc,
-                y_meas=pattern.intensity_meas,
-                y_meas_su=meas_su,
-                axes_labels=axes_labels,
-                title=f"Measured vs Calculated data for experiment 🔬 '{expt_name}'",
-                height=self.height,
+            self._plot_single_crystal_meas_vs_calc(
+                pattern=pattern,
+                expt_name=expt_name,
+                sample_form=sample_form,
+                scattering_type=scattering_type,
+                x_axis=x_axis,
+                title=title,
             )
             return
 
@@ -1144,25 +1171,122 @@ class Plotter(RendererBase):
             pattern,
             expt_name,
             expt_type,
-            x_min,
-            x_max,
-            x,
+            plot_options.x_min,
+            plot_options.x_max,
+            plot_options.x,
         )
         if ctx is None:
             return
 
-        y_series = []
-        y_labels = []
         y_meas = self._filtered_y_array(
             pattern.intensity_meas, ctx['x_array'], ctx['x_min'], ctx['x_max']
         )
-        y_series.append(y_meas)
-        y_labels.append('meas')
         y_calc = self._filtered_y_array(
             pattern.intensity_calc, ctx['x_array'], ctx['x_min'], ctx['x_max']
         )
-        y_series.append(y_calc)
-        y_labels.append('calc')
+
+        if sample_form == SampleFormEnum.POWDER and scattering_type == ScatteringTypeEnum.BRAGG:
+            self._plot_powder_bragg_meas_vs_calc(
+                experiment=experiment,
+                expt_name=expt_name,
+                ctx=ctx,
+                y_meas=y_meas,
+                y_calc=y_calc,
+                plot_options=plot_options,
+                title=title,
+            )
+            return
+
+        self._plot_line_meas_vs_calc(
+            ctx=ctx,
+            y_meas=y_meas,
+            y_calc=y_calc,
+            show_residual=False
+            if plot_options.show_residual is None
+            else plot_options.show_residual,
+            title=title,
+        )
+
+    def _plot_single_crystal_meas_vs_calc(
+        self,
+        pattern: object,
+        expt_name: str,
+        sample_form: SampleFormEnum,
+        scattering_type: ScatteringTypeEnum,
+        x_axis: XAxisType | str,
+        title: str,
+    ) -> None:
+        """
+        Render the single-crystal measured-vs-calculated scatter plot.
+        """
+        axes_labels = self._get_axes_labels(sample_form, scattering_type, x_axis)
+        if pattern.intensity_meas_su is None:
+            log.warning(f'No measurement uncertainties for experiment {expt_name}')
+            meas_su = np.zeros_like(pattern.intensity_meas)
+        else:
+            meas_su = pattern.intensity_meas_su
+
+        self._backend.plot_single_crystal(
+            x_calc=pattern.intensity_calc,
+            y_meas=pattern.intensity_meas,
+            y_meas_su=meas_su,
+            axes_labels=axes_labels,
+            title=title,
+            height=self.height,
+        )
+
+    def _plot_powder_bragg_meas_vs_calc(
+        self,
+        experiment: object,
+        expt_name: str,
+        ctx: dict[str, object],
+        y_meas: np.ndarray,
+        y_calc: np.ndarray,
+        plot_options: _MeasVsCalcPlotOptions,
+        title: str,
+    ) -> None:
+        """
+        Render the composite powder Bragg measured-vs-calculated plot.
+        """
+        show_residual = True if plot_options.show_residual is None else plot_options.show_residual
+        y_resid = y_meas - y_calc if show_residual else None
+        if np.asarray(ctx['x_filtered']).size == 0:
+            bragg_tick_sets = ()
+        else:
+            bragg_tick_sets = self._extract_bragg_tick_sets(
+                experiment=experiment,
+                expt_name=expt_name,
+                x_min=ctx['x_min'],
+                x_max=ctx['x_max'],
+            )
+        plot_spec = PowderMeasVsCalcSpec(
+            x=ctx['x_filtered'],
+            y_meas=y_meas,
+            y_calc=y_calc,
+            y_resid=y_resid,
+            bragg_tick_sets=bragg_tick_sets,
+            axes_labels=ctx['axes_labels'],
+            title=title,
+            residual_height_fraction=plot_options.residual_height_fraction,
+            bragg_peaks_height_fraction=plot_options.bragg_peaks_height_fraction,
+            height=self.height,
+        )
+        self._backend.plot_powder_meas_vs_calc(plot_spec=plot_spec)
+
+    def _plot_line_meas_vs_calc(
+        self,
+        ctx: dict[str, object],
+        y_meas: np.ndarray,
+        y_calc: np.ndarray,
+        *,
+        show_residual: bool,
+        title: str,
+    ) -> None:
+        """
+        Render the non-composite line version of measured-vs-calculated.
+        """
+        y_series = [y_meas, y_calc]
+        y_labels = ['meas', 'calc']
         if show_residual:
             y_series.append(y_meas - y_calc)
             y_labels.append('resid')
@@ -1175,6 +1299,74 @@ class Plotter(RendererBase):
             title=title,
             height=self.height,
         )
+
+    @staticmethod
+    def _extract_bragg_tick_sets(
+        experiment: object,
+        expt_name: str,
+        x_min: float | None,
+        x_max: float | None,
+    ) -> tuple[BraggTickSet, ...]:
+        """
+        Convert future experiment peak-position data into display rows.
+
+        The future category is expected to expose array-like attributes
+        named ``structure_id``, ``x``, ``h``, ``k``, ``l``, and
+        ``intensity``. Until that category exists, this method simply
+        returns an empty tuple.
+        """
+        bragg_peaks = getattr(experiment, 'bragg_peaks', None)
+        if bragg_peaks is None:
+            return ()
+
+        required_names = ('structure_id', 'x', 'h', 'k', 'l', 'intensity')
+        arrays = {}
+        for name in required_names:
+            value = getattr(bragg_peaks, name, None)
+            if value is None:
+                log.warning(
+                    f"Experiment '{expt_name}' Bragg peak data is missing '{name}'. "
+                    'Skipping the Bragg subplot.',
+                )
+                return ()
+            arrays[name] = np.asarray(value)
+
+        if arrays['x'].size == 0:
+            return ()
+
+        lower_bound = DEFAULT_MIN if x_min is None else x_min
+        upper_bound = DEFAULT_MAX if x_max is None else x_max
+        mask = (arrays['x'] >= lower_bound) & (arrays['x'] <= upper_bound)
+        if not np.any(mask):
+            return ()
+
+        peak_id = getattr(bragg_peaks, 'peak_id', None)
+        peak_id_array = None if peak_id is None else np.asarray(peak_id)
+        structure_ids = arrays['structure_id'][mask]
+        unique_structure_ids = []
+        for raw_structure_id in structure_ids:
+            if not any(
+                np.array_equal(raw_structure_id, existing_structure_id)
+                for existing_structure_id in unique_structure_ids
+            ):
+                unique_structure_ids.append(raw_structure_id)
+
+        tick_sets = []
+        for raw_structure_id in unique_structure_ids:
+            structure_mask = mask & (arrays['structure_id'] == raw_structure_id)
+            tick_sets.append(
+                BraggTickSet(
+                    structure_id=str(raw_structure_id),
+                    x=arrays['x'][structure_mask],
+                    h=arrays['h'][structure_mask],
+                    k=arrays['k'][structure_mask],
+                    ell=arrays['l'][structure_mask],
+                    intensity=arrays['intensity'][structure_mask],
+                    peak_id=None if peak_id_array is None else peak_id_array[structure_mask],
+                )
+            )
+
+        return tuple(tick_sets)
 
     def _plot_param_series_from_csv(
         self,
