@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
 
 from easydiffraction.core.category import CategoryCollection
@@ -24,6 +26,9 @@ from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.utils.utils import tof_to_d
 from easydiffraction.utils.utils import twotheta_to_d
+
+if TYPE_CHECKING:
+    from easydiffraction.analysis.calculators.base import PowderReflnRecord
 
 # Uncertainty values below this threshold are replaced with 1.0
 _MIN_UNCERTAINTY = 0.0001
@@ -382,6 +387,8 @@ class PdDataBase(CategoryCollection):
 
         initial_calc = np.zeros_like(self.x)
         calc = initial_calc
+        refln_records: list[PowderReflnRecord] = []
+        missing_refln_records = False
 
         # TODO: refactor _get_valid_linked_phases to only be responsible
         #  for returning list. Warning message should be defined here,
@@ -389,6 +396,7 @@ class PdDataBase(CategoryCollection):
         # TODO: Adapt following the _update method in bragg_sc.py
         for linked_phase in experiment._get_valid_linked_phases(structures):
             structure_id = linked_phase._identity.category_entry_name
+            phase_id = linked_phase.id.value
             structure_scale = linked_phase.scale.value
             structure = structures[structure_id]
 
@@ -401,7 +409,27 @@ class PdDataBase(CategoryCollection):
             structure_scaled_calc = structure_scale * structure_calc
             calc += structure_scaled_calc
 
+            structure_refln_records = calculator.last_powder_refln_records(
+                structure,
+                experiment,
+                phase_id=phase_id,
+            )
+            if structure_refln_records is None:
+                missing_refln_records = True
+            else:
+                refln_records.extend(structure_refln_records)
+
         self._set_intensity_calc(calc + self.intensity_bkg)
+        if missing_refln_records:
+            experiment.refln._replace_from_records([])
+            log.warning(
+                'Calculated powder reflection metadata is unavailable for '
+                f"experiment '{experiment.name}' with calculator "
+                f"'{calculator.name}'. Clearing experiment.refln.",
+            )
+            return
+
+        experiment.refln._replace_from_records(refln_records)
 
     ###################
     # Public properties
