@@ -814,6 +814,21 @@ class PlotlyPlotter(PlotterBase):
         return base_pixels + growth_pixels
 
     @classmethod
+    def _get_main_intensity_range(cls, plot_spec: PowderMeasVsCalcSpec) -> tuple[float, float]:
+        """Return an explicit y-range for the main powder intensity row."""
+        y_meas = np.asarray(plot_spec.y_meas)
+        y_calc = np.asarray(plot_spec.y_calc)
+        if min(y_meas.size, y_calc.size) == 0:
+            return 0.0, 1.0
+
+        main_y_min = float(min(np.min(y_meas), np.min(y_calc)))
+        main_y_max = float(max(np.max(y_meas), np.max(y_calc)))
+        lower_limit = 0.0 if main_y_min >= 0.0 else main_y_min
+        if main_y_max <= lower_limit:
+            return lower_limit - 1.0, lower_limit + 1.0
+        return lower_limit, main_y_max
+
+    @classmethod
     def _get_residual_limit(cls, plot_spec: PowderMeasVsCalcSpec) -> float:
         """Return a symmetric residual limit matched to the main row."""
         if plot_spec.y_resid is None:
@@ -825,8 +840,7 @@ class PlotlyPlotter(PlotterBase):
         if min(y_meas.size, y_calc.size, y_resid.size) == 0:
             return 1.0
 
-        main_y_min = float(min(np.min(y_meas), np.min(y_calc)))
-        main_y_max = float(max(np.max(y_meas), np.max(y_calc)))
+        main_y_min, main_y_max = cls._get_main_intensity_range(plot_spec)
         main_y_range = max(main_y_max - main_y_min, 0.0)
         scale_matched_half_range = 0.5 * main_y_range * plot_spec.residual_height_fraction
         if scale_matched_half_range > 0.0:
@@ -850,6 +864,8 @@ class PlotlyPlotter(PlotterBase):
         has_x_values = x_values.size > 0
         x_min = float(np.min(x_values)) if has_x_values else None
         x_max = float(np.max(x_values)) if has_x_values else None
+        main_y_min, main_y_max = self._get_main_intensity_range(plot_spec)
+        residual_limit = None
 
         fig = make_subplots(
             rows=layout.row_count,
@@ -923,7 +939,12 @@ class PlotlyPlotter(PlotterBase):
             )
 
         fig.update_xaxes(showticklabels=(layout.row_count == 1), row=1, col=1)
-        fig.update_yaxes(title_text=plot_spec.axes_labels[1], row=1, col=1)
+        fig.update_yaxes(
+            title_text=plot_spec.axes_labels[1],
+            range=[main_y_min, main_y_max],
+            row=1,
+            col=1,
+        )
 
         if layout.bragg_row is not None:
             fig.update_yaxes(
@@ -949,6 +970,8 @@ class PlotlyPlotter(PlotterBase):
                 range=[-residual_limit, residual_limit],
                 tickmode='array',
                 tickvals=[-residual_tick_limit, 0.0, residual_tick_limit],
+                scaleanchor='y',
+                scaleratio=1,
                 zeroline=False,
                 row=layout.residual_row,
                 col=1,

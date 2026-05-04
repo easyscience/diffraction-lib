@@ -296,6 +296,8 @@ def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch)
     assert fig.layout.xaxis.matches == 'x'
     assert fig.layout.xaxis2.matches == 'x'
     assert fig.layout.xaxis3.matches == 'x'
+    assert fig.layout.yaxis3.scaleanchor == 'y'
+    assert fig.layout.yaxis3.scaleratio == pytest.approx(1.0)
 
     plot_area_height = fig.layout.height - fig.layout.margin.t - fig.layout.margin.b
     main_height = fig.layout.yaxis.domain[1] - fig.layout.yaxis.domain[0]
@@ -555,9 +557,19 @@ def test_plot_powder_meas_vs_calc_keeps_exact_residual_scale_match(monkeypatch):
     )
 
     fig = captured['fig']
-    expected_limit = 0.5 * (3600.0 - 180.0) * 0.25
+    expected_limit = 0.5 * (3600.0 - 0.0) * 0.25
+    assert fig.layout.yaxis2.scaleanchor == 'y'
+    assert fig.layout.yaxis2.scaleratio == pytest.approx(1.0)
+    assert fig.layout.yaxis.range[0] == pytest.approx(0.0)
+    assert fig.layout.yaxis.range[1] == pytest.approx(3600.0)
     assert fig.layout.yaxis2.range[0] == pytest.approx(-expected_limit)
     assert fig.layout.yaxis2.range[1] == pytest.approx(expected_limit)
+    plot_area_height = fig.layout.height - fig.layout.margin.t - fig.layout.margin.b
+    main_pixels = plot_area_height * (fig.layout.yaxis.domain[1] - fig.layout.yaxis.domain[0])
+    residual_pixels = plot_area_height * (fig.layout.yaxis2.domain[1] - fig.layout.yaxis2.domain[0])
+    main_units_per_pixel = (fig.layout.yaxis.range[1] - fig.layout.yaxis.range[0]) / main_pixels
+    residual_units_per_pixel = (fig.layout.yaxis2.range[1] - fig.layout.yaxis2.range[0]) / residual_pixels
+    assert residual_units_per_pixel == pytest.approx(main_units_per_pixel)
     assert list(fig.layout.yaxis2.tickvals) == pytest.approx([-400.0, 0.0, 400.0])
 
 
@@ -590,7 +602,7 @@ def test_plot_powder_meas_vs_calc_clips_large_residual_spikes(monkeypatch):
     )
 
     fig = captured['fig']
-    expected_limit = 0.5 * (3600.0 - 180.0) * 0.25
+    expected_limit = 0.5 * (3600.0 - 0.0) * 0.25
     assert fig.layout.yaxis2.range[0] == pytest.approx(-expected_limit)
     assert fig.layout.yaxis2.range[1] == pytest.approx(expected_limit)
     assert list(fig.layout.yaxis2.tickvals) == pytest.approx([-400.0, 0.0, 400.0])
