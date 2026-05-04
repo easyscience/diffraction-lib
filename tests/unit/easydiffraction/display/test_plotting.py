@@ -492,6 +492,18 @@ def test_plot_meas_vs_calc_skips_bragg_ticks_when_filtered_pattern_is_empty():
     assert call.bragg_tick_sets == ()
 
 
+def test_plot_meas_vs_calc_does_not_accept_layout_fraction_overrides():
+    from easydiffraction.display.plotting import Plotter
+
+    plotter = Plotter()
+
+    with pytest.raises(TypeError, match='residual_height_fraction'):
+        plotter.plot_meas_vs_calc('E1', residual_height_fraction=0.20)
+
+    with pytest.raises(TypeError, match='bragg_peaks_height_fraction'):
+        plotter.plot_meas_vs_calc('E1', bragg_peaks_height_fraction=0.20)
+
+
 def test_plot_meas_vs_calc_keeps_single_crystal_routing():
     import numpy as np
 

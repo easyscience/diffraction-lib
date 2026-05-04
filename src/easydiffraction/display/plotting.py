@@ -78,8 +78,6 @@ class _MeasVsCalcPlotOptions:
     x_min: float | None = None
     x_max: float | None = None
     show_residual: bool | None = None
-    residual_height_fraction: float = DEFAULT_RESID_HEIGHT
-    bragg_peaks_height_fraction: float = DEFAULT_BRAGG_ROW
     x: object | None = None
 
 
@@ -467,8 +465,6 @@ class Plotter(RendererBase):
         x_max: float | None = None,
         *,
         show_residual: bool | None = None,
-        residual_height_fraction: float = DEFAULT_RESID_HEIGHT,
-        bragg_peaks_height_fraction: float = DEFAULT_BRAGG_ROW,
         x: object | None = None,
     ) -> None:
         """
@@ -486,12 +482,6 @@ class Plotter(RendererBase):
             When ``None``, powder Bragg plots include the residual by
             default while other measured-vs-calculated plots keep the
             historical no-residual default.
-        residual_height_fraction : float, default=DEFAULT_RESID_HEIGHT
-            Optional. Defaults to 0.25. Residual-row height relative to
-            the main intensity row.
-        bragg_peaks_height_fraction : float, default=DEFAULT_BRAGG_ROW
-            Optional. Defaults to 0.15. Bragg-tick-row height relative
-            to the main intensity row.
         x : object | None, default=None
             Optional explicit x-axis data to override stored values.
         """
@@ -501,8 +491,6 @@ class Plotter(RendererBase):
             x_min=x_min,
             x_max=x_max,
             show_residual=show_residual,
-            residual_height_fraction=residual_height_fraction,
-            bragg_peaks_height_fraction=bragg_peaks_height_fraction,
             x=x,
         )
         self._plot_meas_vs_calc_data(
@@ -1284,8 +1272,8 @@ class Plotter(RendererBase):
             bragg_tick_sets=bragg_tick_sets,
             axes_labels=ctx['axes_labels'],
             title=title,
-            residual_height_fraction=plot_options.residual_height_fraction,
-            bragg_peaks_height_fraction=plot_options.bragg_peaks_height_fraction,
+            residual_height_fraction=DEFAULT_RESID_HEIGHT,
+            bragg_peaks_height_fraction=DEFAULT_BRAGG_ROW,
             height=self._composite_plot_height(),
         )
         self._backend.plot_powder_meas_vs_calc(plot_spec=plot_spec)
