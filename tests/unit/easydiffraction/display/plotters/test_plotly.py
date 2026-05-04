@@ -307,7 +307,10 @@ def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch)
 
     bragg_traces = [trace for trace in fig.data if trace.name.startswith('Bragg')]
     assert [trace.name for trace in bragg_traces] == ['Bragg (phase-a)', 'Bragg (phase-b)']
+    assert list(bragg_traces[0].y) == [1.0]
+    assert list(bragg_traces[1].y) == [2.0]
     assert list(fig.layout.yaxis2.ticktext) == ['phase-a', 'phase-b']
+    assert list(fig.layout.yaxis2.range) == [2.5, 0.5]
     assert fig.layout.yaxis2.title.text is None
     assert fig.layout.yaxis3.title.text is None
     assert fig.layout.yaxis3.zeroline is False

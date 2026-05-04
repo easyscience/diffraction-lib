@@ -870,7 +870,7 @@ class PlotlyPlotter(PlotterBase):
                 tickmode='array',
                 tickvals=[float(idx + 1) for idx in range(len(plot_spec.bragg_tick_sets))],
                 ticktext=[tick_set.phase_id for tick_set in plot_spec.bragg_tick_sets],
-                range=[0.5, float(len(plot_spec.bragg_tick_sets)) + 0.5],
+                range=[float(len(plot_spec.bragg_tick_sets)) + 0.5, 0.5],
                 showgrid=False,
                 row=layout.bragg_row,
                 col=1,

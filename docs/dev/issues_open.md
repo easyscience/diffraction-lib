@@ -635,7 +635,7 @@ single-crystal plots.
 **TODOs:**
 
 - [plotting.py](src/easydiffraction/display/plotting.py#L459)
-- [__main__.py](src/easydiffraction/__main__.py#L105)
+- [\_\_main\_\_.py](src/easydiffraction/__main__.py#L105)
 
 **Depends on:** nothing.
 
