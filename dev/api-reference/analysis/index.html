@@ -6731,28 +6731,7 @@ creating <abbr title="Crystallographic Information File.">CIF</abbr>-based const
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/analysis/calculators/base.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">35</span>
 <span class="normal">36</span>
 <span class="normal">37</span>
 <span class="normal">38</span>
@@ -6779,7 +6758,44 @@ creating <abbr title="Crystallographic Information File.">CIF</abbr>-based const
 <span class="normal">59</span>
 <span class="normal">60</span>
 <span class="normal">61</span>
-<span class="normal">62</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CalculatorBase</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span>
+<span class="normal">95</span>
+<span class="normal">96</span>
+<span class="normal">97</span>
+<span class="normal">98</span>
+<span class="normal">99</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CalculatorBase</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base API for diffraction calculation engines.&quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
@@ -6828,6 +6844,22 @@ creating <abbr title="Crystallographic Information File.">CIF</abbr>-based const
 <span class="sd">        np.ndarray</span>
 <span class="sd">            The calculated diffraction pattern as a NumPy array.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">last_powder_refln_records</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span>
+        <span class="n">experiment</span><span class="p">:</span> <span class="n">ExperimentBase</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">phase_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">PowderReflnRecord</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the last powder reflection records for one phase.</span>
+
+<span class="sd">        Backends that do not expose powder reflection metadata return</span>
+<span class="sd">        ``None`` so callers can clear stale reflection rows and warn.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">,</span> <span class="n">experiment</span><span class="p">,</span> <span class="n">phase_id</span>
+        <span class="k">return</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -6963,32 +6995,32 @@ False.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/calculators/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">58</span>
 <span class="normal">59</span>
 <span class="normal">60</span>
 <span class="normal">61</span>
-<span class="normal">62</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">calculate_pattern</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">structure</span><span class="p">:</span> <span class="n">Structures</span><span class="p">,</span>  <span class="c1"># TODO: Structure?</span>
@@ -7048,15 +7080,15 @@ False.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/calculators/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">calculate_structure_factors</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span>
@@ -7107,6 +7139,67 @@ False.</p>
 
 
 
+<div class="doc doc-object doc-function">
+
+
+<h5 id="easydiffraction.analysis.calculators.base.CalculatorBase.last_powder_refln_records" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">last_powder_refln_records</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">experiment</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">phase_id</span><span class="p">)</span></code>
+
+</h5>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the last powder reflection records for one phase.</p>
+<p>Backends that do not expose powder reflection metadata return
+<code>None</code> so callers can clear stale reflection rows and warn.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/analysis/calculators/base.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span>
+<span class="normal">95</span>
+<span class="normal">96</span>
+<span class="normal">97</span>
+<span class="normal">98</span>
+<span class="normal">99</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">last_powder_refln_records</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span>
+    <span class="n">experiment</span><span class="p">:</span> <span class="n">ExperimentBase</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">phase_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">PowderReflnRecord</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the last powder reflection records for one phase.</span>
+
+<span class="sd">    Backends that do not expose powder reflection metadata return</span>
+<span class="sd">    ``None`` so callers can clear stale reflection rows and warn.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">del</span> <span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">,</span> <span class="n">experiment</span><span class="p">,</span> <span class="n">phase_id</span>
+    <span class="k">return</span> <span class="kc">None</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+
+
+
 <div class="doc doc-object doc-attribute">
 
 
@@ -7145,6 +7238,88 @@ False.</p>
 
 
 
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h4 id="easydiffraction.analysis.calculators.base.PowderReflnRecord" class="doc doc-heading">
+            <code>PowderReflnRecord</code>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Calculated powder reflection metadata for one reflection row.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+
+
+
+
+
+
+              <details class="mkdocstrings-source">
+                <summary>Source code in <code>src/easydiffraction/analysis/calculators/base.py</code></summary>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PowderReflnRecord</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculated powder reflection metadata for one reflection row.&quot;&quot;&quot;</span>
+
+    <span class="n">phase_id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">d_spacing</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">sin_theta_over_lambda</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">index_h</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">index_k</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">index_l</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">f_calc</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">f_squared_calc</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">two_theta</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">time_of_flight</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
 
 
 
@@ -8342,17 +8517,7 @@ patterns.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/analysis/calculators/cryspy.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 34</span>
-<span class="normal"> 35</span>
-<span class="normal"> 36</span>
-<span class="normal"> 37</span>
-<span class="normal"> 38</span>
-<span class="normal"> 39</span>
-<span class="normal"> 40</span>
-<span class="normal"> 41</span>
-<span class="normal"> 42</span>
-<span class="normal"> 43</span>
-<span class="normal"> 44</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 44</span>
 <span class="normal"> 45</span>
 <span class="normal"> 46</span>
 <span class="normal"> 47</span>
@@ -9048,7 +9213,143 @@ patterns.</p>
 <span class="normal">737</span>
 <span class="normal">738</span>
 <span class="normal">739</span>
-<span class="normal">740</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@CalculatorFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">740</span>
+<span class="normal">741</span>
+<span class="normal">742</span>
+<span class="normal">743</span>
+<span class="normal">744</span>
+<span class="normal">745</span>
+<span class="normal">746</span>
+<span class="normal">747</span>
+<span class="normal">748</span>
+<span class="normal">749</span>
+<span class="normal">750</span>
+<span class="normal">751</span>
+<span class="normal">752</span>
+<span class="normal">753</span>
+<span class="normal">754</span>
+<span class="normal">755</span>
+<span class="normal">756</span>
+<span class="normal">757</span>
+<span class="normal">758</span>
+<span class="normal">759</span>
+<span class="normal">760</span>
+<span class="normal">761</span>
+<span class="normal">762</span>
+<span class="normal">763</span>
+<span class="normal">764</span>
+<span class="normal">765</span>
+<span class="normal">766</span>
+<span class="normal">767</span>
+<span class="normal">768</span>
+<span class="normal">769</span>
+<span class="normal">770</span>
+<span class="normal">771</span>
+<span class="normal">772</span>
+<span class="normal">773</span>
+<span class="normal">774</span>
+<span class="normal">775</span>
+<span class="normal">776</span>
+<span class="normal">777</span>
+<span class="normal">778</span>
+<span class="normal">779</span>
+<span class="normal">780</span>
+<span class="normal">781</span>
+<span class="normal">782</span>
+<span class="normal">783</span>
+<span class="normal">784</span>
+<span class="normal">785</span>
+<span class="normal">786</span>
+<span class="normal">787</span>
+<span class="normal">788</span>
+<span class="normal">789</span>
+<span class="normal">790</span>
+<span class="normal">791</span>
+<span class="normal">792</span>
+<span class="normal">793</span>
+<span class="normal">794</span>
+<span class="normal">795</span>
+<span class="normal">796</span>
+<span class="normal">797</span>
+<span class="normal">798</span>
+<span class="normal">799</span>
+<span class="normal">800</span>
+<span class="normal">801</span>
+<span class="normal">802</span>
+<span class="normal">803</span>
+<span class="normal">804</span>
+<span class="normal">805</span>
+<span class="normal">806</span>
+<span class="normal">807</span>
+<span class="normal">808</span>
+<span class="normal">809</span>
+<span class="normal">810</span>
+<span class="normal">811</span>
+<span class="normal">812</span>
+<span class="normal">813</span>
+<span class="normal">814</span>
+<span class="normal">815</span>
+<span class="normal">816</span>
+<span class="normal">817</span>
+<span class="normal">818</span>
+<span class="normal">819</span>
+<span class="normal">820</span>
+<span class="normal">821</span>
+<span class="normal">822</span>
+<span class="normal">823</span>
+<span class="normal">824</span>
+<span class="normal">825</span>
+<span class="normal">826</span>
+<span class="normal">827</span>
+<span class="normal">828</span>
+<span class="normal">829</span>
+<span class="normal">830</span>
+<span class="normal">831</span>
+<span class="normal">832</span>
+<span class="normal">833</span>
+<span class="normal">834</span>
+<span class="normal">835</span>
+<span class="normal">836</span>
+<span class="normal">837</span>
+<span class="normal">838</span>
+<span class="normal">839</span>
+<span class="normal">840</span>
+<span class="normal">841</span>
+<span class="normal">842</span>
+<span class="normal">843</span>
+<span class="normal">844</span>
+<span class="normal">845</span>
+<span class="normal">846</span>
+<span class="normal">847</span>
+<span class="normal">848</span>
+<span class="normal">849</span>
+<span class="normal">850</span>
+<span class="normal">851</span>
+<span class="normal">852</span>
+<span class="normal">853</span>
+<span class="normal">854</span>
+<span class="normal">855</span>
+<span class="normal">856</span>
+<span class="normal">857</span>
+<span class="normal">858</span>
+<span class="normal">859</span>
+<span class="normal">860</span>
+<span class="normal">861</span>
+<span class="normal">862</span>
+<span class="normal">863</span>
+<span class="normal">864</span>
+<span class="normal">865</span>
+<span class="normal">866</span>
+<span class="normal">867</span>
+<span class="normal">868</span>
+<span class="normal">869</span>
+<span class="normal">870</span>
+<span class="normal">871</span>
+<span class="normal">872</span>
+<span class="normal">873</span>
+<span class="normal">874</span>
+<span class="normal">875</span>
+<span class="normal">876</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@CalculatorFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CryspyCalculator</span><span class="p">(</span><span class="n">CalculatorBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cryspy-based diffraction calculator.</span>
@@ -9073,6 +9374,7 @@ patterns.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cryspy_dicts</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cached_peak_types</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cached_adp_types</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_powder_phase_blocks</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_invalidate_stale_cache</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -9202,6 +9504,7 @@ patterns.</p>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">combined_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">structure</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">experiment</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_invalidate_stale_cache</span><span class="p">(</span><span class="n">combined_name</span><span class="p">,</span> <span class="n">experiment</span><span class="p">,</span> <span class="n">structure</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_powder_phase_blocks</span><span class="p">[</span><span class="n">combined_name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="n">called_by_minimizer</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cryspy_dicts</span> <span class="ow">and</span> <span class="n">combined_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cryspy_dicts</span><span class="p">:</span>
@@ -9253,14 +9556,138 @@ patterns.</p>
             <span class="k">return</span> <span class="p">[]</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">signal_plus</span> <span class="o">=</span> <span class="n">cryspy_in_out_dict</span><span class="p">[</span><span class="n">cryspy_block_name</span><span class="p">][</span><span class="s1">&#39;signal_plus&#39;</span><span class="p">]</span>
-            <span class="n">signal_minus</span> <span class="o">=</span> <span class="n">cryspy_in_out_dict</span><span class="p">[</span><span class="n">cryspy_block_name</span><span class="p">][</span><span class="s1">&#39;signal_minus&#39;</span><span class="p">]</span>
+            <span class="n">powder_block</span> <span class="o">=</span> <span class="n">cryspy_in_out_dict</span><span class="p">[</span><span class="n">cryspy_block_name</span><span class="p">]</span>
+            <span class="n">signal_plus</span> <span class="o">=</span> <span class="n">powder_block</span><span class="p">[</span><span class="s1">&#39;signal_plus&#39;</span><span class="p">]</span>
+            <span class="n">signal_minus</span> <span class="o">=</span> <span class="n">powder_block</span><span class="p">[</span><span class="s1">&#39;signal_minus&#39;</span><span class="p">]</span>
             <span class="n">y_calc</span> <span class="o">=</span> <span class="n">signal_plus</span> <span class="o">+</span> <span class="n">signal_minus</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_powder_phase_blocks</span><span class="p">[</span><span class="n">combined_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">powder_block</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;dict_in_out_</span><span class="si">{</span><span class="n">structure</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="p">)</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;[CryspyCalculator] Error: No calculated data for </span><span class="si">{</span><span class="n">cryspy_block_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="p">[]</span>
 
         <span class="k">return</span> <span class="n">y_calc</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">last_powder_refln_records</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span>
+        <span class="n">experiment</span><span class="p">:</span> <span class="n">ExperimentBase</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">phase_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">PowderReflnRecord</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return powder reflection records from the latest pattern run.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">combined_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">structure</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">experiment</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">phase_block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_powder_phase_blocks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">combined_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">phase_block</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">core_arrays</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_powder_refln_core_arrays</span><span class="p">(</span><span class="n">phase_block</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">core_arrays</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">x_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_powder_refln_x_values</span><span class="p">(</span><span class="n">phase_block</span><span class="p">,</span> <span class="n">experiment</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">x_values</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">indices</span><span class="p">,</span> <span class="n">sin_theta_over_lambda</span><span class="p">,</span> <span class="n">f_nucl</span> <span class="o">=</span> <span class="n">core_arrays</span>
+        <span class="n">d_spacing</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_powder_refln_d_spacing</span><span class="p">(</span><span class="n">phase_block</span><span class="p">,</span> <span class="n">sin_theta_over_lambda</span><span class="p">)</span>
+        <span class="n">f_calc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">f_nucl</span><span class="p">)</span>
+        <span class="n">f_squared_calc</span> <span class="o">=</span> <span class="n">f_calc</span><span class="o">**</span><span class="mi">2</span>
+
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_powder_refln_record</span><span class="p">(</span>
+                <span class="n">phase_id</span><span class="o">=</span><span class="n">phase_id</span><span class="p">,</span>
+                <span class="n">beam_mode</span><span class="o">=</span><span class="n">experiment</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="n">hkl</span><span class="o">=</span><span class="p">(</span><span class="n">index_h</span><span class="p">,</span> <span class="n">index_k</span><span class="p">,</span> <span class="n">index_l</span><span class="p">),</span>
+                <span class="n">values</span><span class="o">=</span><span class="p">(</span><span class="n">sthovl</span><span class="p">,</span> <span class="n">d_value</span><span class="p">,</span> <span class="n">x_value</span><span class="p">,</span> <span class="n">f_value</span><span class="p">,</span> <span class="n">f_sq_value</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">index_h</span><span class="p">,</span> <span class="n">index_k</span><span class="p">,</span> <span class="n">index_l</span><span class="p">,</span> <span class="n">sthovl</span><span class="p">,</span> <span class="n">d_value</span><span class="p">,</span> <span class="n">x_value</span><span class="p">,</span> <span class="n">f_value</span><span class="p">,</span> <span class="n">f_sq_value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+                <span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="n">indices</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                <span class="n">sin_theta_over_lambda</span><span class="p">,</span>
+                <span class="n">d_spacing</span><span class="p">,</span>
+                <span class="n">x_values</span><span class="p">,</span>
+                <span class="n">f_calc</span><span class="p">,</span>
+                <span class="n">f_squared_calc</span><span class="p">,</span>
+                <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">]</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_powder_refln_core_arrays</span><span class="p">(</span>
+        <span class="n">phase_block</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">phase_block</span><span class="p">[</span><span class="s1">&#39;index_hkl&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+            <span class="n">sin_theta_over_lambda</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">phase_block</span><span class="p">[</span><span class="s1">&#39;sthovl&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">f_nucl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">phase_block</span><span class="p">[</span><span class="s1">&#39;f_nucl&#39;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">indices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">EXPECTED_HKL_INDEX_ROWS</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">indices</span><span class="p">,</span> <span class="n">sin_theta_over_lambda</span><span class="p">,</span> <span class="n">f_nucl</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_powder_refln_d_spacing</span><span class="p">(</span>
+        <span class="n">phase_block</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">sin_theta_over_lambda</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="n">d_spacing_raw</span> <span class="o">=</span> <span class="n">phase_block</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;d_hkl&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">d_spacing_raw</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+                <span class="n">sin_theta_over_lambda_to_d_spacing</span><span class="p">(</span><span class="n">sin_theta_over_lambda</span><span class="p">),</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">d_spacing_raw</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_powder_refln_x_values</span><span class="p">(</span>
+        <span class="n">phase_block</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">beam_mode</span><span class="p">:</span> <span class="n">BeamModeEnum</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">x_values</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">beam_mode</span> <span class="o">==</span> <span class="n">BeamModeEnum</span><span class="o">.</span><span class="n">CONSTANT_WAVELENGTH</span><span class="p">:</span>
+            <span class="n">x_raw</span> <span class="o">=</span> <span class="n">phase_block</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ttheta_hkl&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">x_raw</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">x_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x_raw</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">beam_mode</span> <span class="o">==</span> <span class="n">BeamModeEnum</span><span class="o">.</span><span class="n">TIME_OF_FLIGHT</span><span class="p">:</span>
+            <span class="n">x_raw</span> <span class="o">=</span> <span class="n">phase_block</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;time_hkl&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">x_raw</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">x_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x_raw</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">x_values</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">x_values</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">x_values</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_powder_refln_record</span><span class="p">(</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">phase_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">beam_mode</span><span class="p">:</span> <span class="n">BeamModeEnum</span><span class="p">,</span>
+        <span class="n">hkl</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">values</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PowderReflnRecord</span><span class="p">:</span>
+        <span class="n">index_h</span><span class="p">,</span> <span class="n">index_k</span><span class="p">,</span> <span class="n">index_l</span> <span class="o">=</span> <span class="n">hkl</span>
+        <span class="n">sin_theta_over_lambda</span><span class="p">,</span> <span class="n">d_spacing</span><span class="p">,</span> <span class="n">x_value</span><span class="p">,</span> <span class="n">f_calc</span><span class="p">,</span> <span class="n">f_squared_calc</span> <span class="o">=</span> <span class="n">values</span>
+        <span class="n">x_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;two_theta&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">x_value</span><span class="p">)}</span>
+        <span class="k">if</span> <span class="n">beam_mode</span> <span class="o">==</span> <span class="n">BeamModeEnum</span><span class="o">.</span><span class="n">TIME_OF_FLIGHT</span><span class="p">:</span>
+            <span class="n">x_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;time_of_flight&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">x_value</span><span class="p">)}</span>
+
+        <span class="k">return</span> <span class="n">PowderReflnRecord</span><span class="p">(</span>
+            <span class="n">phase_id</span><span class="o">=</span><span class="n">phase_id</span><span class="p">,</span>
+            <span class="n">d_spacing</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">d_spacing</span><span class="p">),</span>
+            <span class="n">sin_theta_over_lambda</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">sin_theta_over_lambda</span><span class="p">),</span>
+            <span class="n">index_h</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">index_h</span><span class="p">),</span>
+            <span class="n">index_k</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">index_k</span><span class="p">),</span>
+            <span class="n">index_l</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">index_l</span><span class="p">),</span>
+            <span class="n">f_calc</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">f_calc</span><span class="p">),</span>
+            <span class="n">f_squared_calc</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">f_squared_calc</span><span class="p">),</span>
+            <span class="o">**</span><span class="n">x_kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_recreate_cryspy_dict</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -9890,18 +10317,7 @@ list of floats.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/calculators/cryspy.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">167</span>
 <span class="normal">168</span>
 <span class="normal">169</span>
 <span class="normal">170</span>
@@ -9980,7 +10396,23 @@ list of floats.</p>
 <span class="normal">243</span>
 <span class="normal">244</span>
 <span class="normal">245</span>
-<span class="normal">246</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">calculate_pattern</span><span class="p">(</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">calculate_pattern</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span>
     <span class="n">experiment</span><span class="p">:</span> <span class="n">ExperimentBase</span><span class="p">,</span>
@@ -10012,6 +10444,7 @@ list of floats.</p>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">combined_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">structure</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">experiment</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_invalidate_stale_cache</span><span class="p">(</span><span class="n">combined_name</span><span class="p">,</span> <span class="n">experiment</span><span class="p">,</span> <span class="n">structure</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_last_powder_phase_blocks</span><span class="p">[</span><span class="n">combined_name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">if</span> <span class="n">called_by_minimizer</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cryspy_dicts</span> <span class="ow">and</span> <span class="n">combined_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cryspy_dicts</span><span class="p">:</span>
@@ -10063,9 +10496,13 @@ list of floats.</p>
         <span class="k">return</span> <span class="p">[]</span>
 
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">signal_plus</span> <span class="o">=</span> <span class="n">cryspy_in_out_dict</span><span class="p">[</span><span class="n">cryspy_block_name</span><span class="p">][</span><span class="s1">&#39;signal_plus&#39;</span><span class="p">]</span>
-        <span class="n">signal_minus</span> <span class="o">=</span> <span class="n">cryspy_in_out_dict</span><span class="p">[</span><span class="n">cryspy_block_name</span><span class="p">][</span><span class="s1">&#39;signal_minus&#39;</span><span class="p">]</span>
+        <span class="n">powder_block</span> <span class="o">=</span> <span class="n">cryspy_in_out_dict</span><span class="p">[</span><span class="n">cryspy_block_name</span><span class="p">]</span>
+        <span class="n">signal_plus</span> <span class="o">=</span> <span class="n">powder_block</span><span class="p">[</span><span class="s1">&#39;signal_plus&#39;</span><span class="p">]</span>
+        <span class="n">signal_minus</span> <span class="o">=</span> <span class="n">powder_block</span><span class="p">[</span><span class="s1">&#39;signal_minus&#39;</span><span class="p">]</span>
         <span class="n">y_calc</span> <span class="o">=</span> <span class="n">signal_plus</span> <span class="o">+</span> <span class="n">signal_minus</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_powder_phase_blocks</span><span class="p">[</span><span class="n">combined_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">powder_block</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;dict_in_out_</span><span class="si">{</span><span class="n">structure</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="p">)</span>
     <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;[CryspyCalculator] Error: No calculated data for </span><span class="si">{</span><span class="n">cryspy_block_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[]</span>
@@ -10173,18 +10610,7 @@ list of floats.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/calculators/cryspy.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 85</span>
-<span class="normal"> 86</span>
-<span class="normal"> 87</span>
-<span class="normal"> 88</span>
-<span class="normal"> 89</span>
-<span class="normal"> 90</span>
-<span class="normal"> 91</span>
-<span class="normal"> 92</span>
-<span class="normal"> 93</span>
-<span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 96</span>
 <span class="normal"> 97</span>
 <span class="normal"> 98</span>
 <span class="normal"> 99</span>
@@ -10242,7 +10668,18 @@ list of floats.</p>
 <span class="normal">151</span>
 <span class="normal">152</span>
 <span class="normal">153</span>
-<span class="normal">154</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">calculate_structure_factors</span><span class="p">(</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">calculate_structure_factors</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span>
     <span class="n">experiment</span><span class="p">:</span> <span class="n">ExperimentBase</span><span class="p">,</span>
@@ -10323,6 +10760,127 @@ list of floats.</p>
 
 
 
+<div class="doc doc-object doc-function">
+
+
+<h5 id="easydiffraction.analysis.calculators.cryspy.CryspyCalculator.last_powder_refln_records" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">last_powder_refln_records</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">experiment</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">phase_id</span><span class="p">)</span></code>
+
+</h5>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return powder reflection records from the latest pattern run.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/analysis/calculators/cryspy.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">last_powder_refln_records</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span>
+    <span class="n">experiment</span><span class="p">:</span> <span class="n">ExperimentBase</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">phase_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">PowderReflnRecord</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return powder reflection records from the latest pattern run.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">combined_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">structure</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">experiment</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="n">phase_block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_powder_phase_blocks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">combined_name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">phase_block</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">core_arrays</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_powder_refln_core_arrays</span><span class="p">(</span><span class="n">phase_block</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">core_arrays</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">x_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_powder_refln_x_values</span><span class="p">(</span><span class="n">phase_block</span><span class="p">,</span> <span class="n">experiment</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x_values</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">indices</span><span class="p">,</span> <span class="n">sin_theta_over_lambda</span><span class="p">,</span> <span class="n">f_nucl</span> <span class="o">=</span> <span class="n">core_arrays</span>
+    <span class="n">d_spacing</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_powder_refln_d_spacing</span><span class="p">(</span><span class="n">phase_block</span><span class="p">,</span> <span class="n">sin_theta_over_lambda</span><span class="p">)</span>
+    <span class="n">f_calc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">f_nucl</span><span class="p">)</span>
+    <span class="n">f_squared_calc</span> <span class="o">=</span> <span class="n">f_calc</span><span class="o">**</span><span class="mi">2</span>
+
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_powder_refln_record</span><span class="p">(</span>
+            <span class="n">phase_id</span><span class="o">=</span><span class="n">phase_id</span><span class="p">,</span>
+            <span class="n">beam_mode</span><span class="o">=</span><span class="n">experiment</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">beam_mode</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="n">hkl</span><span class="o">=</span><span class="p">(</span><span class="n">index_h</span><span class="p">,</span> <span class="n">index_k</span><span class="p">,</span> <span class="n">index_l</span><span class="p">),</span>
+            <span class="n">values</span><span class="o">=</span><span class="p">(</span><span class="n">sthovl</span><span class="p">,</span> <span class="n">d_value</span><span class="p">,</span> <span class="n">x_value</span><span class="p">,</span> <span class="n">f_value</span><span class="p">,</span> <span class="n">f_sq_value</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">index_h</span><span class="p">,</span> <span class="n">index_k</span><span class="p">,</span> <span class="n">index_l</span><span class="p">,</span> <span class="n">sthovl</span><span class="p">,</span> <span class="n">d_value</span><span class="p">,</span> <span class="n">x_value</span><span class="p">,</span> <span class="n">f_value</span><span class="p">,</span> <span class="n">f_sq_value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+            <span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="n">indices</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+            <span class="n">sin_theta_over_lambda</span><span class="p">,</span>
+            <span class="n">d_spacing</span><span class="p">,</span>
+            <span class="n">x_values</span><span class="p">,</span>
+            <span class="n">f_calc</span><span class="p">,</span>
+            <span class="n">f_squared_calc</span><span class="p">,</span>
+            <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+
+
+
 <div class="doc doc-object doc-attribute">
 
 
@@ -10356,6 +10914,14 @@ list of floats.</p>
     </div>
 
 </div>
+
+
+
+
+
+
+
+
 
 
 
@@ -15382,9 +15948,7 @@ parameter value.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/fit_helpers/metrics.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">17</span>
 <span class="normal">18</span>
 <span class="normal">19</span>
 <span class="normal">20</span>
@@ -15405,7 +15969,9 @@ parameter value.</p>
 <span class="normal">35</span>
 <span class="normal">36</span>
 <span class="normal">37</span>
-<span class="normal">38</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">calculate_r_factor</span><span class="p">(</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">calculate_r_factor</span><span class="p">(</span>
     <span class="n">y_obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">y_calc</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -15538,9 +16104,7 @@ parameter value.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/fit_helpers/metrics.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 99</span>
 <span class="normal">100</span>
 <span class="normal">101</span>
 <span class="normal">102</span>
@@ -15561,7 +16125,9 @@ parameter value.</p>
 <span class="normal">117</span>
 <span class="normal">118</span>
 <span class="normal">119</span>
-<span class="normal">120</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">calculate_r_factor_squared</span><span class="p">(</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">calculate_r_factor_squared</span><span class="p">(</span>
     <span class="n">y_obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">y_calc</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -15694,9 +16260,7 @@ parameter value.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/fit_helpers/metrics.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">73</span>
 <span class="normal">74</span>
 <span class="normal">75</span>
 <span class="normal">76</span>
@@ -15717,7 +16281,9 @@ parameter value.</p>
 <span class="normal">91</span>
 <span class="normal">92</span>
 <span class="normal">93</span>
-<span class="normal">94</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">calculate_rb_factor</span><span class="p">(</span>
+<span class="normal">94</span>
+<span class="normal">95</span>
+<span class="normal">96</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">calculate_rb_factor</span><span class="p">(</span>
     <span class="n">y_obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">y_calc</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -15850,9 +16416,7 @@ parameter value.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/fit_helpers/metrics.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">125</span>
 <span class="normal">126</span>
 <span class="normal">127</span>
 <span class="normal">128</span>
@@ -15875,7 +16439,9 @@ parameter value.</p>
 <span class="normal">145</span>
 <span class="normal">146</span>
 <span class="normal">147</span>
-<span class="normal">148</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">calculate_reduced_chi_square</span><span class="p">(</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">calculate_reduced_chi_square</span><span class="p">(</span>
     <span class="n">residuals</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">num_parameters</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -16029,9 +16595,7 @@ parameter value.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/fit_helpers/metrics.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">43</span>
 <span class="normal">44</span>
 <span class="normal">45</span>
 <span class="normal">46</span>
@@ -16056,7 +16620,9 @@ parameter value.</p>
 <span class="normal">65</span>
 <span class="normal">66</span>
 <span class="normal">67</span>
-<span class="normal">68</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">calculate_weighted_r_factor</span><span class="p">(</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">calculate_weighted_r_factor</span><span class="p">(</span>
     <span class="n">y_obs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">y_calc</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">weights</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
@@ -16219,9 +16785,7 @@ parameter value.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/fit_helpers/metrics.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">153</span>
 <span class="normal">154</span>
 <span class="normal">155</span>
 <span class="normal">156</span>
@@ -16267,7 +16831,10 @@ parameter value.</p>
 <span class="normal">196</span>
 <span class="normal">197</span>
 <span class="normal">198</span>
-<span class="normal">199</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_reliability_inputs</span><span class="p">(</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_reliability_inputs</span><span class="p">(</span>
     <span class="n">structures</span><span class="p">:</span> <span class="n">Structures</span><span class="p">,</span>
     <span class="n">experiments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ExperimentBase</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
@@ -16298,9 +16865,10 @@ parameter value.</p>
             <span class="n">structure</span><span class="o">.</span><span class="n">_update_categories</span><span class="p">()</span>
         <span class="n">experiment</span><span class="o">.</span><span class="n">_update_categories</span><span class="p">()</span>
 
-        <span class="n">y_calc</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">intensity_calc</span>
-        <span class="n">y_meas</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">intensity_meas</span>
-        <span class="n">y_meas_su</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">intensity_meas_su</span>
+        <span class="n">intensity_category</span> <span class="o">=</span> <span class="n">intensity_category_for</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span>
+        <span class="n">y_calc</span> <span class="o">=</span> <span class="n">intensity_category</span><span class="o">.</span><span class="n">intensity_calc</span>
+        <span class="n">y_meas</span> <span class="o">=</span> <span class="n">intensity_category</span><span class="o">.</span><span class="n">intensity_meas</span>
+        <span class="n">y_meas_su</span> <span class="o">=</span> <span class="n">intensity_category</span><span class="o">.</span><span class="n">intensity_meas_su</span>
 
         <span class="k">if</span> <span class="n">y_meas</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">y_calc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># If standard uncertainty is not provided, use ones</span>
@@ -16321,6 +16889,10 @@ parameter value.</p>
     </div>
 
 </div>
+
+
+
+
 
 
 
@@ -18719,8 +19291,7 @@ a table in notebooks or a text UI in terminals.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/analysis/fitting.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 23</span>
-<span class="normal"> 24</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 24</span>
 <span class="normal"> 25</span>
 <span class="normal"> 26</span>
 <span class="normal"> 27</span>
@@ -18936,7 +19507,9 @@ a table in notebooks or a text UI in terminals.</p>
 <span class="normal">237</span>
 <span class="normal">238</span>
 <span class="normal">239</span>
-<span class="normal">240</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Fitter</span><span class="p">:</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Fitter</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Handles the fitting workflow using a pluggable minimizer.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selection</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">MinimizerTypeEnum</span><span class="o">.</span><span class="n">default</span><span class="p">())</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -19141,9 +19714,10 @@ a table in notebooks or a text UI in terminals.</p>
 
             <span class="c1"># Calculate the difference between measured and calculated</span>
             <span class="c1"># patterns</span>
-            <span class="n">y_calc</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">intensity_calc</span>
-            <span class="n">y_meas</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">intensity_meas</span>
-            <span class="n">y_meas_su</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">intensity_meas_su</span>
+            <span class="n">intensity_category</span> <span class="o">=</span> <span class="n">intensity_category_for</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span>
+            <span class="n">y_calc</span> <span class="o">=</span> <span class="n">intensity_category</span><span class="o">.</span><span class="n">intensity_calc</span>
+            <span class="n">y_meas</span> <span class="o">=</span> <span class="n">intensity_category</span><span class="o">.</span><span class="n">intensity_meas</span>
+            <span class="n">y_meas_su</span> <span class="o">=</span> <span class="n">intensity_category</span><span class="o">.</span><span class="n">intensity_meas_su</span>
             <span class="n">diff</span> <span class="o">=</span> <span class="p">(</span><span class="n">y_meas</span> <span class="o">-</span> <span class="n">y_calc</span><span class="p">)</span> <span class="o">/</span> <span class="n">y_meas_su</span>
 
             <span class="c1"># Residuals are squared before going into reduced</span>
@@ -19322,8 +19896,7 @@ unbounded.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/fitting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 32</span>
-<span class="normal"> 33</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 33</span>
 <span class="normal"> 34</span>
 <span class="normal"> 35</span>
 <span class="normal"> 36</span>
@@ -19410,7 +19983,8 @@ unbounded.</p>
 <span class="normal">117</span>
 <span class="normal">118</span>
 <span class="normal">119</span>
-<span class="normal">120</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span>
+<span class="normal">120</span>
+<span class="normal">121</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">structures</span><span class="p">:</span> <span class="n">Structures</span><span class="p">,</span>
     <span class="n">experiments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ExperimentBase</span><span class="p">],</span>
@@ -19513,6 +20087,10 @@ unbounded.</p>
     </div>
 
 </div>
+
+
+
+
 
 
 
