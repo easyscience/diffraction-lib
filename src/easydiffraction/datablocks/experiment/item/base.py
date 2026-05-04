@@ -215,8 +215,8 @@ class ExperimentBase(DatablockItem):
         """
         Return calculator tags supported by this experiment.
 
-        Intersects the active support category's ``calculator_support`` with
-        calculators whose engines are importable.
+        Intersects the active support category's ``calculator_support``
+        with calculators whose engines are importable.
         """
         from easydiffraction.analysis.calculators.factory import CalculatorFactory  # noqa: PLC0415
 
@@ -229,8 +229,10 @@ class ExperimentBase(DatablockItem):
         return available
 
     def _calculator_support_category(self) -> object | None:
-        """Return the category that constrains calculator availability."""
-        return None
+        """
+        Return the category that constrains calculator availability.
+        """
+        return getattr(self, '_data', None) or getattr(self, '_refln', None)
 
     def _intensity_category(self) -> object:
         """Return the experiment category exposing intensity arrays."""
@@ -363,7 +365,9 @@ class ScExperimentBase(ExperimentBase):
         return self._refln
 
     def _calculator_support_category(self) -> object | None:
-        """Return the reflection collection that constrains calculators."""
+        """
+        Return the reflection collection that constrains calculators.
+        """
         return self._refln
 
     def _intensity_category(self) -> object:
@@ -474,7 +478,9 @@ class PdExperimentBase(ExperimentBase):
         return self._data
 
     def _calculator_support_category(self) -> object | None:
-        """Return the powder data collection that constrains calculators."""
+        """
+        Return the powder data collection that constrains calculators.
+        """
         return self._data
 
     def _intensity_category(self) -> object:

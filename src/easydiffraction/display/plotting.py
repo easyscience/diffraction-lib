@@ -1134,7 +1134,8 @@ class Plotter(RendererBase):
         Parameters
         ----------
         experiment : object
-            Experiment instance with an intensity category and ``.type``.
+            Experiment instance with an intensity category and
+            ``.type``.
         expt_name : str
             Experiment name for the title.
         plot_options : _MeasVsCalcPlotOptions

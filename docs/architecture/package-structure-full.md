@@ -170,18 +170,8 @@
 │   │   │   │   │   ├── 🏷️ class PdDataBase
 │   │   │   │   │   ├── 🏷️ class PdCwlData
 │   │   │   │   │   └── 🏷️ class PdTofData
-│   │   │   │   ├── 📄 bragg_sc.py
-│   │   │   │   │   ├── 🏷️ class Refln
-│   │   │   │   │   └── 🏷️ class ReflnData
 │   │   │   │   ├── 📄 factory.py
 │   │   │   │   │   └── 🏷️ class DataFactory
-│   │   │   │   ├── 📄 refln_pd.py
-│   │   │   │   │   ├── 🏷️ class PowderReflnBase
-│   │   │   │   │   ├── 🏷️ class PowderCwlRefln
-│   │   │   │   │   ├── 🏷️ class PowderTofRefln
-│   │   │   │   │   ├── 🏷️ class PowderReflnDataBase
-│   │   │   │   │   ├── 🏷️ class PowderCwlReflnData
-│   │   │   │   │   └── 🏷️ class PowderTofReflnData
 │   │   │   │   └── 📄 total_pd.py
 │   │   │   │       ├── 🏷️ class TotalDataPoint
 │   │   │   │       ├── 🏷️ class TotalDataBase
@@ -265,6 +255,20 @@
 │   │   │   │   │   └── 🏷️ class TotalGaussianDampedSinc
 │   │   │   │   └── 📄 total_mixins.py
 │   │   │   │       └── 🏷️ class TotalBroadeningMixin
+│   │   │   ├── 📁 refln
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 bragg_pd.py
+│   │   │   │   │   ├── 🏷️ class PowderReflnBase
+│   │   │   │   │   ├── 🏷️ class PowderCwlRefln
+│   │   │   │   │   ├── 🏷️ class PowderTofRefln
+│   │   │   │   │   ├── 🏷️ class PowderReflnDataBase
+│   │   │   │   │   ├── 🏷️ class PowderCwlReflnData
+│   │   │   │   │   └── 🏷️ class PowderTofReflnData
+│   │   │   │   ├── 📄 bragg_sc.py
+│   │   │   │   │   ├── 🏷️ class Refln
+│   │   │   │   │   └── 🏷️ class ReflnData
+│   │   │   │   └── 📄 factory.py
+│   │   │   │       └── 🏷️ class ReflnFactory
 │   │   │   └── 📄 __init__.py
 │   │   ├── 📁 item
 │   │   │   ├── 📄 __init__.py

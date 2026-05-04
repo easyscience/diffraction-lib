@@ -85,9 +85,7 @@
 │   │   │   ├── 📁 data
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 bragg_pd.py
-│   │   │   │   ├── 📄 bragg_sc.py
 │   │   │   │   ├── 📄 factory.py
-│   │   │   │   ├── 📄 refln_pd.py
 │   │   │   │   └── 📄 total_pd.py
 │   │   │   ├── 📁 diffrn
 │   │   │   │   ├── 📄 __init__.py
@@ -129,6 +127,11 @@
 │   │   │   │   ├── 📄 tof_mixins.py
 │   │   │   │   ├── 📄 total.py
 │   │   │   │   └── 📄 total_mixins.py
+│   │   │   ├── 📁 refln
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 bragg_pd.py
+│   │   │   │   ├── 📄 bragg_sc.py
+│   │   │   │   └── 📄 factory.py
 │   │   │   └── 📄 __init__.py
 │   │   ├── 📁 item
 │   │   │   ├── 📄 __init__.py

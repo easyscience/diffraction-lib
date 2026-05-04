@@ -10,8 +10,8 @@ import numpy as np
 from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.datablocks.experiment.categories.background.factory import BackgroundFactory
-from easydiffraction.datablocks.experiment.categories.refln.factory import ReflnFactory
 from easydiffraction.datablocks.experiment.categories.instrument.factory import InstrumentFactory
+from easydiffraction.datablocks.experiment.categories.refln.factory import ReflnFactory
 from easydiffraction.datablocks.experiment.item.base import PdExperimentBase
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
