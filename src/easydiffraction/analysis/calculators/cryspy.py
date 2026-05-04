@@ -292,7 +292,7 @@ class CryspyCalculator(CalculatorBase):
             x_raw = phase_block.get('ttheta_hkl')
             if x_raw is None:
                 return None
-            x_values = np.asarray(x_raw, dtype=float)
+            x_values = np.degrees(np.asarray(x_raw, dtype=float))
         elif beam_mode == BeamModeEnum.TIME_OF_FLIGHT:
             x_raw = phase_block.get('time_hkl')
             if x_raw is None:
