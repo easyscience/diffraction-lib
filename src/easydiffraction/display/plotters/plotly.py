@@ -750,8 +750,10 @@ class PlotlyPlotter(PlotterBase):
         layout: PowderCompositeRows,
     ) -> int:
         """Return figure height scaled by Bragg-row growth."""
-        base_height = DEFAULT_HEIGHT if plot_spec.height is None else plot_spec.height
-        base_pixels = int(base_height * PLOTLY_HEIGHT_PER_UNIT)
+        if plot_spec.height is None:
+            base_pixels = DEFAULT_HEIGHT * PLOTLY_HEIGHT_PER_UNIT
+        else:
+            base_pixels = plot_spec.height
         scaled_pixels = np.ceil(base_pixels * layout.total_weight / layout.baseline_weight)
         return int(scaled_pixels)
 

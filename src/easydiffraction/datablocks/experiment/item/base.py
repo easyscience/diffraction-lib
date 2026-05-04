@@ -383,6 +383,11 @@ class ScExperimentBase(ExperimentBase):
         """Reflection collection for this experiment."""
         return self._refln
 
+    @property
+    def data(self) -> object:
+        """Compatibility alias for the reflection collection."""
+        return self._refln
+
     def _calculator_support_category(self) -> object | None:
         """
         Return the reflection collection that constrains calculators.

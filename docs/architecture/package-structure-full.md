@@ -170,6 +170,7 @@
 │   │   │   │   │   ├── 🏷️ class PdDataBase
 │   │   │   │   │   ├── 🏷️ class PdCwlData
 │   │   │   │   │   └── 🏷️ class PdTofData
+│   │   │   │   ├── 📄 bragg_sc.py
 │   │   │   │   ├── 📄 factory.py
 │   │   │   │   │   └── 🏷️ class DataFactory
 │   │   │   │   └── 📄 total_pd.py

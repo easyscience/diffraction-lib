@@ -437,6 +437,48 @@ def test_plot_powder_meas_vs_calc_grows_total_height_for_many_phases(monkeypatch
     )
 
 
+def test_plot_powder_meas_vs_calc_uses_explicit_plotly_height_as_pixels(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    from easydiffraction.display.plotters.base import BraggTickSet
+    from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
+
+    captured = {}
+
+    def fake_show_figure(self, fig):
+        captured['fig'] = fig
+
+    monkeypatch.setattr(pp.PlotlyPlotter, '_show_figure', fake_show_figure)
+
+    plotter = pp.PlotlyPlotter()
+    plotter.plot_powder_meas_vs_calc(
+        plot_spec=PowderMeasVsCalcSpec(
+            x=np.array([1.0, 2.0, 3.0]),
+            y_meas=np.array([10.0, 12.0, 11.0]),
+            y_calc=np.array([9.0, 11.0, 10.5]),
+            y_resid=None,
+            bragg_tick_sets=(
+                BraggTickSet(
+                    phase_id='phase-a',
+                    x=np.array([1.5]),
+                    h=np.array([1]),
+                    k=np.array([0]),
+                    ell=np.array([1]),
+                    f_squared_calc=np.array([100.0]),
+                    f_calc=np.array([10.0]),
+                ),
+            ),
+            axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+            title='Powder',
+            residual_height_fraction=0.25,
+            bragg_peaks_height_fraction=0.10,
+            height=800,
+        ),
+    )
+
+    assert captured['fig'].layout.height == 800
+
+
 def test_plot_powder_meas_vs_calc_skips_bragg_row_when_no_ticks(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
 
