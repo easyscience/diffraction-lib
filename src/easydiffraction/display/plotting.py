@@ -34,6 +34,8 @@ from easydiffraction.display.tables import TableRenderer
 from easydiffraction.utils.environment import in_jupyter
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
+from easydiffraction.utils.utils import tof_to_d
+from easydiffraction.utils.utils import twotheta_to_d
 
 
 class PlotterEngineEnum(StrEnum):
@@ -192,7 +194,9 @@ class Plotter(RendererBase):
         if x_max is None:
             x_max = self.x_max
 
-        mask = (x_array >= x_min) & (x_array <= x_max)
+        lower_bound = min(x_min, x_max)
+        upper_bound = max(x_min, x_max)
+        mask = (x_array >= lower_bound) & (x_array <= upper_bound)
         return y_array[mask]
 
     @staticmethod
@@ -1319,7 +1323,7 @@ class Plotter(RendererBase):
 
         x_name = getattr(x_axis, 'value', x_axis)
         if x_name == XAxisType.D_SPACING:
-            x_values = refln.d_spacing
+            x_values = Plotter._bragg_tick_d_spacing(refln=refln, experiment=experiment)
         elif x_name == XAxisType.TWO_THETA:
             x_values = getattr(refln, 'two_theta', None)
         elif x_name == XAxisType.TIME_OF_FLIGHT:
@@ -1361,8 +1365,8 @@ class Plotter(RendererBase):
         if arrays['x'].size == 0:
             return ()
 
-        lower_bound = DEFAULT_MIN if x_min is None else x_min
-        upper_bound = DEFAULT_MAX if x_max is None else x_max
+        lower_bound = DEFAULT_MIN if x_min is None else min(x_min, x_max)
+        upper_bound = DEFAULT_MAX if x_max is None else max(x_min, x_max)
         mask = (arrays['x'] >= lower_bound) & (arrays['x'] <= upper_bound)
         if not np.any(mask):
             return ()
@@ -1392,6 +1396,27 @@ class Plotter(RendererBase):
             )
 
         return tuple(tick_sets)
+
+    @staticmethod
+    def _bragg_tick_d_spacing(
+        *,
+        refln: object,
+        experiment: object,
+    ) -> object:
+        """Resolve Bragg tick d-spacing in the plotted coordinate system."""
+        if hasattr(refln, 'two_theta'):
+            return twotheta_to_d(
+                refln.two_theta,
+                experiment.instrument.setup_wavelength.value,
+            )
+        if hasattr(refln, 'time_of_flight'):
+            return tof_to_d(
+                refln.time_of_flight,
+                experiment.instrument.calib_d_to_tof_offset.value,
+                experiment.instrument.calib_d_to_tof_linear.value,
+                experiment.instrument.calib_d_to_tof_quad.value,
+            )
+        return refln.d_spacing
 
     def _plot_param_series_from_csv(
         self,
