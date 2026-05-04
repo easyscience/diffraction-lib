@@ -47,7 +47,7 @@ class CwlScExperiment(ScExperimentBase):
 
     def _load_ascii_data_to_experiment(self, data_path: str) -> int:
         """
-        Load measured data from an ASCII file into the data category.
+        Load measured data from an ASCII file into the refln category.
 
         The file format is space/column separated with 5 columns: ``h k
         l Iobs sIobs``.
@@ -80,10 +80,10 @@ class CwlScExperiment(ScExperimentBase):
         integrated_intensities = data[:, 3]
         integrated_intensities_su = data[:, 4]
 
-        # Set the experiment data
-        self.data._create_items_set_hkl_and_id(indices_h, indices_k, indices_l)
-        self.data._set_intensity_meas(integrated_intensities)
-        self.data._set_intensity_meas_su(integrated_intensities_su)
+        # Set the experiment reflections
+        self.refln._create_items_set_hkl_and_id(indices_h, indices_k, indices_l)
+        self.refln._set_intensity_meas(integrated_intensities)
+        self.refln._set_intensity_meas_su(integrated_intensities_su)
 
         return len(indices_h)
 
@@ -112,7 +112,7 @@ class TofScExperiment(ScExperimentBase):
 
     def _load_ascii_data_to_experiment(self, data_path: str) -> int:
         """
-        Load measured data from an ASCII file into the data category.
+        Load measured data from an ASCII file into the refln category.
 
         The file format is space/column separated with 6 columns: ``h k
         l Iobs sIobs wavelength``.
@@ -155,10 +155,10 @@ class TofScExperiment(ScExperimentBase):
         # Extract wavelength values
         wavelength = data[:, 5]
 
-        # Set the experiment data
-        self.data._create_items_set_hkl_and_id(indices_h, indices_k, indices_l)
-        self.data._set_intensity_meas(integrated_intensities)
-        self.data._set_intensity_meas_su(integrated_intensities_su)
-        self.data._set_wavelength(wavelength)
+        # Set the experiment reflections
+        self.refln._create_items_set_hkl_and_id(indices_h, indices_k, indices_l)
+        self.refln._set_intensity_meas(integrated_intensities)
+        self.refln._set_intensity_meas_su(integrated_intensities_su)
+        self.refln._set_wavelength(wavelength)
 
         return len(indices_h)

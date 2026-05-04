@@ -74,8 +74,8 @@ class TestCwlScExperiment:
         assert ex.linked_crystal is not None
         # instrument
         assert ex.instrument is not None
-        # data
-        assert ex.data is not None
+        # refln
+        assert ex.refln is not None
 
     def test_extinction_type_invalid(self):
         ex = CwlScExperiment(name='cwl_sc', type=_mk_type_sc_cwl())

@@ -410,7 +410,7 @@ class Plotter(RendererBase):
         self._update_project_categories(expt_name)
         experiment = self._project.experiments[expt_name]
         self._plot_meas_data(
-            experiment.data,
+            experiment._intensity_category(),
             expt_name,
             experiment.type,
             x_min=x_min,
@@ -442,7 +442,7 @@ class Plotter(RendererBase):
         self._update_project_categories(expt_name)
         experiment = self._project.experiments[expt_name]
         self._plot_calc_data(
-            experiment.data,
+            experiment._intensity_category(),
             expt_name,
             experiment.type,
             x_min=x_min,
@@ -1134,13 +1134,13 @@ class Plotter(RendererBase):
         Parameters
         ----------
         experiment : object
-            Experiment instance with ``.data`` and ``.type`` attributes.
+            Experiment instance with an intensity category and ``.type``.
         expt_name : str
             Experiment name for the title.
         plot_options : _MeasVsCalcPlotOptions
             X-range, residual, and x-axis selection options.
         """
-        pattern = experiment.data
+        pattern = experiment._intensity_category()
         expt_type = experiment.type
 
         x_axis, _, sample_form, scattering_type, _ = self._resolve_x_axis(

@@ -1181,7 +1181,7 @@ def _cif_measured_data_sc(
     experiment: ExperimentBase,
 ) -> None:
     """Append single crystal measured data loop."""
-    data = experiment.data
+    data = experiment.refln
     cif_lines.extend((
         '',
         'loop_',

@@ -15,9 +15,10 @@ from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import StringDescriptor
-from easydiffraction.datablocks.experiment.categories.data.bragg_sc import (
+from easydiffraction.datablocks.experiment.categories.refln.bragg_sc import (
     Refln as SingleCrystalRefln,
 )
+from easydiffraction.datablocks.experiment.categories.refln.factory import ReflnFactory
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
@@ -237,6 +238,7 @@ class PowderReflnDataBase(CategoryCollection):
         return np.fromiter((item.f_squared_calc.value for item in self._items), dtype=float)
 
 
+@ReflnFactory.register
 class PowderCwlReflnData(PowderReflnDataBase):
     """Calculated powder reflection collection for CWL experiments."""
 
@@ -268,6 +270,7 @@ class PowderCwlReflnData(PowderReflnDataBase):
         return np.fromiter((item.two_theta.value for item in self._items), dtype=float)
 
 
+@ReflnFactory.register
 class PowderTofReflnData(PowderReflnDataBase):
     """Calculated powder reflection collection for TOF experiments."""
 

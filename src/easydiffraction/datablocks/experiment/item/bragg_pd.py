@@ -10,8 +10,7 @@ import numpy as np
 from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.datablocks.experiment.categories.background.factory import BackgroundFactory
-from easydiffraction.datablocks.experiment.categories.data.refln_pd import PowderCwlReflnData
-from easydiffraction.datablocks.experiment.categories.data.refln_pd import PowderTofReflnData
+from easydiffraction.datablocks.experiment.categories.refln.factory import ReflnFactory
 from easydiffraction.datablocks.experiment.categories.instrument.factory import InstrumentFactory
 from easydiffraction.datablocks.experiment.item.base import PdExperimentBase
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
@@ -68,18 +67,22 @@ class BraggPdExperiment(PdExperimentBase):
         self._refln = None
         self._sync_refln_category()
 
-    def _refln_collection_type(self) -> object:
+    def _refln_collection_tag(self) -> str:
+        """
+        Return the reflection-collection tag for this beam mode.
+        """
+        return ReflnFactory.default_tag(
+            sample_form=self.type.sample_form.value,
+            beam_mode=self.type.beam_mode.value,
+            scattering_type=self.type.scattering_type.value,
+        )
+
+    def _refln_collection_type(self) -> type[object]:
         """
         Return the reflection-collection type for this beam mode.
         """
-        beam_mode = self.type.beam_mode.value
-        if beam_mode == BeamModeEnum.CONSTANT_WAVELENGTH:
-            return PowderCwlReflnData
-        if beam_mode == BeamModeEnum.TIME_OF_FLIGHT:
-            return PowderTofReflnData
-
-        msg = f'Unsupported beam mode for powder reflection data: {beam_mode}.'
-        raise ValueError(msg)
+        refln_tag = self._refln_collection_tag()
+        return ReflnFactory._supported_map()[refln_tag]
 
     def _sync_refln_category(self) -> None:
         """Create or remove ``refln`` for the active calculator."""
@@ -88,7 +91,7 @@ class BraggPdExperiment(PdExperimentBase):
         calculator = CalculatorEnum(calculator_type)
         if refln_collection_type.calculator_support.supports(calculator):
             if not isinstance(self._refln, refln_collection_type):
-                self._refln = refln_collection_type()
+                self._refln = ReflnFactory.create(self._refln_collection_tag())
             return
 
         self._refln = None

@@ -6,9 +6,13 @@ import pytest
 
 from easydiffraction.analysis.calculators.base import PowderReflnRecord
 from easydiffraction.datablocks.experiment.categories.background.factory import BackgroundFactory
-from easydiffraction.datablocks.experiment.categories.data.refln_pd import PowderCwlReflnData
-from easydiffraction.datablocks.experiment.categories.data.refln_pd import PowderTofReflnData
 from easydiffraction.datablocks.experiment.categories.experiment_type import ExperimentType
+from easydiffraction.datablocks.experiment.categories.refln.bragg_pd import (
+    PowderCwlReflnData,
+)
+from easydiffraction.datablocks.experiment.categories.refln.bragg_pd import (
+    PowderTofReflnData,
+)
 from easydiffraction.datablocks.experiment.item.bragg_pd import BraggPdExperiment
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum

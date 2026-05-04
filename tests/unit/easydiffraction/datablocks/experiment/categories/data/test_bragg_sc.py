@@ -5,7 +5,7 @@ import numpy as np
 
 
 def test_refln_data_point_defaults():
-    from easydiffraction.datablocks.experiment.categories.data.bragg_sc import Refln
+    from easydiffraction.datablocks.experiment.categories.refln.bragg_sc import Refln
 
     pt = Refln()
     assert pt.id.value == '0'
@@ -22,7 +22,7 @@ def test_refln_data_point_defaults():
 
 
 def test_refln_data_collection_create_and_properties():
-    from easydiffraction.datablocks.experiment.categories.data.bragg_sc import ReflnData
+    from easydiffraction.datablocks.experiment.categories.refln.bragg_sc import ReflnData
 
     coll = ReflnData()
 
@@ -66,7 +66,7 @@ def test_refln_data_collection_create_and_properties():
 
 
 def test_refln_data_d_spacing_and_stol():
-    from easydiffraction.datablocks.experiment.categories.data.bragg_sc import ReflnData
+    from easydiffraction.datablocks.experiment.categories.refln.bragg_sc import ReflnData
 
     coll = ReflnData()
     h = np.array([1.0, 2.0])
@@ -86,7 +86,7 @@ def test_refln_data_d_spacing_and_stol():
 
 
 def test_refln_data_type_info():
-    from easydiffraction.datablocks.experiment.categories.data.bragg_sc import ReflnData
+    from easydiffraction.datablocks.experiment.categories.refln.bragg_sc import ReflnData
 
     assert ReflnData.type_info.tag == 'bragg-sc'
     assert ReflnData.type_info.description == 'Bragg single-crystal reflection data'

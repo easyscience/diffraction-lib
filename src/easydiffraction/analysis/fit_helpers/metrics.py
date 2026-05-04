@@ -179,9 +179,10 @@ def get_reliability_inputs(
             structure._update_categories()
         experiment._update_categories()
 
-        y_calc = experiment.data.intensity_calc
-        y_meas = experiment.data.intensity_meas
-        y_meas_su = experiment.data.intensity_meas_su
+        intensity_category = experiment._intensity_category()
+        y_calc = intensity_category.intensity_calc
+        y_meas = intensity_category.intensity_meas
+        y_meas_su = intensity_category.intensity_meas_su
 
         if y_meas is not None and y_calc is not None:
             # If standard uncertainty is not provided, use ones
