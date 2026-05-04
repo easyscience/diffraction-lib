@@ -297,16 +297,20 @@ def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch)
     assert fig.layout.xaxis2.matches == 'x'
     assert fig.layout.xaxis3.matches == 'x'
 
+    plot_area_height = fig.layout.height - fig.layout.margin.t - fig.layout.margin.b
     main_height = fig.layout.yaxis.domain[1] - fig.layout.yaxis.domain[0]
     bragg_height = fig.layout.yaxis2.domain[1] - fig.layout.yaxis2.domain[0]
     residual_height = fig.layout.yaxis3.domain[1] - fig.layout.yaxis3.domain[0]
     assert residual_height == pytest.approx(main_height * 0.25)
-    assert bragg_height == pytest.approx(
-        main_height * pp.PlotlyPlotter._scaled_bragg_row_height(plot_spec)
+    assert plot_area_height * bragg_height == pytest.approx(
+        2 * pp.PlotlyPlotter._bragg_tick_symbol_height_pixels()
     )
 
     bragg_traces = [trace for trace in fig.data if trace.name.startswith('Bragg')]
-    assert [trace.name for trace in bragg_traces] == ['Bragg (phase-a)', 'Bragg (phase-b)']
+    assert [trace.name for trace in bragg_traces] == [
+        'Bragg peaks: phase-a',
+        'Bragg peaks: phase-b',
+    ]
     assert list(bragg_traces[0].y) == [1.0]
     assert list(bragg_traces[1].y) == [2.0]
     assert list(fig.layout.yaxis2.ticktext) == ['phase-a', 'phase-b']
@@ -315,11 +319,11 @@ def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch)
     assert fig.layout.yaxis3.title.text is None
     assert fig.layout.yaxis3.zeroline is False
     assert fig.layout.xaxis3.title.text == '2θ (degree)'
-    assert 'hkl: (1 0 1)' in bragg_traces[0].text[0]
-    assert 'f_squared_calc: 100' in bragg_traces[0].text[0]
+    assert 'Miller indices: (1 0 1)' in bragg_traces[0].text[0]
+    assert 'Bragg peaks: phase-a' in bragg_traces[0].text[0]
 
 
-def test_scaled_bragg_row_height_scales_linearly_with_phase_count():
+def test_bragg_row_height_pixels_scale_linearly_with_phase_count():
     from easydiffraction.display.plotters.base import BraggTickSet
     from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
     from easydiffraction.display.plotters.plotly import PlotlyPlotter
@@ -370,10 +374,11 @@ def test_scaled_bragg_row_height_scales_linearly_with_phase_count():
         height=single_phase.height,
     )
 
-    single_height = PlotlyPlotter._scaled_bragg_row_height(single_phase)
-    two_phase_height = PlotlyPlotter._scaled_bragg_row_height(two_phase)
-    assert single_height == pytest.approx(0.10)
-    assert two_phase_height == pytest.approx(0.20)
+    symbol_height = PlotlyPlotter._bragg_tick_symbol_height_pixels()
+    single_height = PlotlyPlotter._bragg_row_height_pixels(single_phase)
+    two_phase_height = PlotlyPlotter._bragg_row_height_pixels(two_phase)
+    assert single_height == pytest.approx(symbol_height)
+    assert two_phase_height == pytest.approx(2 * symbol_height)
 
 
 def test_plot_powder_meas_vs_calc_grows_total_height_for_many_phases(monkeypatch):
@@ -423,7 +428,8 @@ def test_plot_powder_meas_vs_calc_grows_total_height_for_many_phases(monkeypatch
 
     def row_height_pixels(fig, axis_name: str) -> float:
         axis = getattr(fig.layout, axis_name)
-        return fig.layout.height * (axis.domain[1] - axis.domain[0])
+        plot_area_height = fig.layout.height - fig.layout.margin.t - fig.layout.margin.b
+        return plot_area_height * (axis.domain[1] - axis.domain[0])
 
     assert multi_fig.layout.height > single_fig.layout.height
     assert row_height_pixels(multi_fig, 'yaxis') == pytest.approx(
