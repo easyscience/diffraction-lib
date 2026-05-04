@@ -7,7 +7,7 @@ Bragg ticks in the existing three-panel powder plot.
 
 ## Status
 
-- [ ] Confirm open questions below.
+- [x] Record design decisions below.
 - [ ] Phase 1: implement code and documentation changes only.
 - [ ] Phase 2: add/update tests and run verification commands.
 
@@ -40,38 +40,55 @@ Bragg ticks in the existing three-panel powder plot.
 Implement a powder-specific reflection item that inherits from the
 single-crystal `Refln` item and adds the requested powder fields.
 
-Recommended item fields:
+Recommended common item fields:
 
 | Public property | CIF name | Type | Meaning |
 | --- | --- | --- | --- |
 | `id` | `_refln.id` | string | Stable row identifier, unique within the experiment. |
-| `linked_phase_id` | `_refln.linked_phase_id` | string | Identifier of the linked phase that produced this reflection. |
+| `phase_id` | `_refln.phase_id` | string | Identifier of the linked phase that produced this reflection. |
 | `d_spacing` | `_refln.d_spacing` | numeric | Reflection d-spacing, used to derive plot x positions when needed. |
 | `sin_theta_over_lambda` | `_refln.sin_theta_over_lambda` | numeric | Reflection sin(theta)/lambda value. |
 | `index_h` | `_refln.index_h` | numeric | Miller h index. |
 | `index_k` | `_refln.index_k` | numeric | Miller k index. |
 | `index_l` | `_refln.index_l` | numeric | Miller l index. |
-| `f_calc` | `_refln.f_calc` | numeric | Calculated structure-factor amplitude. |
-| `f_squared_calc` | `_refln.f_squared_calc` | numeric | Calculated structure-factor amplitude squared. |
+| `f_calc` | `_refln.f_calc` | numeric | Calculated structure-factor amplitude `\|F_calc\|`. |
+| `f_squared_calc` | `_refln.f_squared_calc` | numeric | Raw calculated structure-factor amplitude squared `\|F_calc\|^2`. |
+
+Recommended beam-mode-specific item fields should mirror the active
+powder `data` category so Bragg ticks are always rendered in the same x
+space as the main chart:
+
+| Beam mode | Public property | CIF name basis | Meaning |
+| --- | --- | --- | --- |
+| CWL | `two_theta` | same convention as `data.two_theta` | Reflection position on the constant-wavelength 2θ axis. |
+| TOF | `time_of_flight` | same convention as `data.time_of_flight` | Reflection position on the time-of-flight axis. |
 
 Implementation notes:
 
 - Add the item as `Refln` in a powder Bragg module and inherit from
   `easydiffraction.datablocks.experiment.categories.data.bragg_sc.Refln`.
   Alias the imported single-crystal class locally to avoid a name clash.
-- Add `linked_phase_id`, `f_calc`, and `f_squared_calc` descriptors in
-  the subclass `__init__()` after `super().__init__()`.
+- Add `phase_id`, `f_calc`, and `f_squared_calc` descriptors in the
+  subclass `__init__()` after `super().__init__()`.
+- Although the public/CIF field is named `phase_id`, its value should be
+  copied exactly from `linked_phase.id.value`.
+- Add CWL and TOF powder `Refln` variants or mixins so `refln` stores
+  the same native x-coordinate field as the active powder `data`
+  category: `two_theta` for CWL and `time_of_flight` for TOF.
 - Keep `self._identity.category_code = 'refln'` from the base class.
-- Keep `f_calc` and `f_squared_calc` non-negative unless the answer to
-  the open questions requires complex structure factors.
+- Keep `f_calc` and `f_squared_calc` non-negative real numeric values.
+  `f_calc` is `|F_calc|`; `f_squared_calc` is raw `|F_calc|^2` and must
+  not include linked-phase scale or powder intensity factors.
 - Add a collection class, for example `PowderReflnData`, with typed array
-  properties for `linked_phase_id`, `d_spacing`, `sin_theta_over_lambda`,
-  `index_h`, `index_k`, `index_l`, `f_calc`, and `f_squared_calc`.
+  properties for `phase_id`, `d_spacing`, `sin_theta_over_lambda`,
+  `index_h`, `index_k`, `index_l`, `f_calc`, `f_squared_calc`, and the
+  active beam-mode x coordinate.
 - Add a private replacement method such as `_replace_from_records(...)`
   so calculators can atomically clear and repopulate all reflection rows
   after a successful pattern calculation.
 - Use globally unique row ids, likely `1`, `2`, ... in calculation order,
-  while preserving phase grouping with `linked_phase_id`.
+   while preserving phase grouping with `phase_id`. Add a future note to
+   reconsider phase-prefixed ids if CIF inspection or debugging needs it.
 
 ## Experiment Wiring
 
@@ -106,9 +123,9 @@ truth for both the calculated pattern and the reflection table.
 Recommended implementation path:
 
 1. Define a small internal reflection-record container for calculator
-   output, containing `linked_phase_id`, `d_spacing`,
+   output, containing `phase_id`, `d_spacing`,
    `sin_theta_over_lambda`, `index_h`, `index_k`, `index_l`, `f_calc`,
-   and `f_squared_calc`.
+   `f_squared_calc`, and the active beam-mode x coordinate.
 2. Extend the calculator abstraction with an explicit powder-reflection
    extraction path. Two possible designs are viable:
    - Return a typed result object from powder pattern calculation, such
@@ -129,16 +146,22 @@ Recommended implementation path:
    `experiment.refln` and log a clear warning. Do not leave stale rows
    from a previous calculation.
 6. Treat phase scale consistently. The plotted pattern should keep using
-   `linked_phase.scale * structure_calc`; the `refln` fields should store
-   either raw structure-factor values or phase-scaled values depending
-   on the decision in the open questions.
+   `linked_phase.scale * structure_calc`; the `refln` structure-factor
+   fields remain raw values from the calculator: `f_calc = |F_calc|` and
+   `f_squared_calc = |F_calc|^2`.
+7. Treat `refln` like the calculated columns in `data`: every powder
+   calculation updates the category and clears stale rows rather than
+   preserving previous calculation output.
 
 Calculator-specific notes:
 
 - Cryspy likely already computes `refln`-style arrays during powder
   pattern calculation. The implementation should extract h/k/l,
   d-spacing or sin(theta)/lambda, `f_calc`, and `f_squared_calc` from
-  the same `dict_in_out` result used by `calculate_pattern()`.
+  the same `dict_in_out` result used by `calculate_pattern()`. Start
+  with Cryspy and reuse values from the pattern calculation rather than
+  making explicit extra structure-factor calls if the required data are
+  already returned.
 - CrysFML currently returns only the calculated powder pattern through
   the EasyDiffraction wrapper. The implementation must either add a
   real reflection extraction path for CrysFML or explicitly warn and
@@ -156,32 +179,33 @@ Steps:
 1. Update `Plotter._extract_bragg_tick_sets()` in
    `src/easydiffraction/display/plotting.py` to read from
    `experiment.refln`.
-2. Group tick rows by raw `refln.linked_phase_id` values and stringify
+2. Group tick rows by raw `refln.phase_id` values and stringify
    only when constructing display labels. This preserves numeric ids and
    matches the earlier powder plot review fix.
 3. Use Miller indices from `index_h`, `index_k`, and `index_l` for hover
    text.
-4. Use `f_squared_calc` as the default hover intensity unless the open
-   questions choose `f_calc` or a phase-scaled intensity instead.
+4. Hover text must show `phase_id`, `(index_h index_k index_l)`,
+   `f_squared_calc`, and `f_calc`.
 5. Resolve tick x positions from the selected plot x axis:
    - `d_spacing`: use `refln.d_spacing` directly.
-   - `two_theta`: derive from `d_spacing` and the experiment wavelength.
-   - `time_of_flight`: derive from `d_spacing` and TOF calibration
-     coefficients.
-6. Add inverse conversion utilities if they do not already exist, for
-   example `d_to_twotheta()` and `d_to_tof()`, with invalid-domain values
-   mapped to `NaN` and filtered out before plotting.
+   - `two_theta`: use `refln.two_theta` for CWL experiments.
+   - `time_of_flight`: use `refln.time_of_flight` for TOF experiments.
+6. The Bragg tick row should always use the same coordinate space as the
+   main chart. If the plot asks for a derived x axis, the tick extractor
+   must select or derive the corresponding `refln` array before
+   filtering.
 7. Keep existing safeguards from the three-panel plot work: normalize
    `x_min`/`x_max`, return no tick sets for empty filtered main ranges,
    and tolerate an empty `refln` category without rendering stray rows.
-8. Decide whether to rename display DTO fields from `structure_id` to
-   `phase_id`/`linked_phase_id`. A rename is clearer but touches more
-   tests; keeping the internal DTO name is a smaller diff.
+8. Rename display DTO fields from `structure_id` to `phase_id` for this
+   feature so the display layer matches the `refln` category. Add a note
+   to reconsider `structure_id` later if the API needs to emphasize the
+   structural datablock rather than the linked phase row.
 
 ## CIF And Documentation
 
 1. Ensure `refln.as_cif` writes a loop containing the inherited
-   `_refln.*` fields plus `_refln.linked_phase_id`, `_refln.f_calc`, and
+   `_refln.*` fields plus `_refln.phase_id`, `_refln.f_calc`, and
    `_refln.f_squared_calc`.
 2. Ensure CIF loading can populate the new fields if a saved experiment
    contains them. If loaded rows are calculation outputs, they should be
@@ -204,7 +228,7 @@ Recommended unit tests:
    item, inherited field availability, new descriptor defaults, and
    category code `refln`.
 2. Collection tests for `_replace_from_records(...)`, array properties,
-   clearing stale rows, row id generation, and mixed `linked_phase_id`
+   clearing stale rows, row id generation, and mixed `phase_id`
    grouping.
 3. `BraggPdExperiment` tests proving `experiment.refln` exists, is
    read-only, serializes as `_refln`, and does not appear on total
@@ -215,12 +239,12 @@ Recommended unit tests:
 5. Cryspy adapter tests using small mocked `dict_in_out` payloads rather
    than real engine calculations.
 6. Plotting tests updating fake `bragg_peaks` fixtures to fake `refln`
-   fixtures, verifying grouping by `linked_phase_id`, x filtering,
-   default intensity field, and empty-category behavior.
-7. Conversion utility tests for `d_to_twotheta()` and `d_to_tof()` if
-   those helpers are added.
-8. CIF round-trip tests for `_refln.linked_phase_id`, `_refln.f_calc`,
-   and `_refln.f_squared_calc`.
+   fixtures, verifying grouping by `phase_id`, x filtering, hover fields,
+   and empty-category behavior.
+7. CWL/TOF coordinate tests proving Bragg ticks use the same x axis as
+   the main chart for `two_theta`, `time_of_flight`, and `d_spacing`.
+8. CIF round-trip tests for `_refln.phase_id`, `_refln.f_calc`, and
+   `_refln.f_squared_calc`.
 
 Suggested verification commands for Phase 2:
 
@@ -235,40 +259,37 @@ pixi run integration-tests
 pixi run script-tests
 ```
 
-## Open Questions
+## Decisions Recorded
 
-1. Should the CIF name for the phase-link column be exactly
-   `_refln.linked_phase_id`, or should it follow an existing CIF/pdCIF
-   convention such as `_refln.phase_id`?
-2. Should `linked_phase_id` store `linked_phase.id.value` exactly, or a
-   different internal structure identifier when those ever diverge?
-3. Should `f_calc` be a real non-negative amplitude `|F_calc|`, or do
-   you need the complex calculated structure factor? The proposed
-   descriptor supports only a real numeric value.
-4. Should `f_squared_calc` store raw per-reflection `|F_calc|^2`, or a
-   value already scaled by the linked phase scale and/or other powder
-   intensity factors?
-5. For Bragg tick hover intensity, should the plot display `f_calc`,
-   `f_squared_calc`, or a separately named phase-scaled contribution?
-6. Should the `refln` category store explicit powder x coordinates
-   (`two_theta` / `time_of_flight`) as persisted columns, or should
-   plotting derive x positions from `d_spacing` and instrument settings?
-7. Is it acceptable for the first implementation to populate powder
-   `refln` for Cryspy and warn/leave it empty for CrysFML until a
-   CrysFML reflection extraction API is wired?
-8. Should loaded CIF `refln` rows be considered cached calculation
-   output that is always replaced on calculation, or user-visible data
-   that should survive until the next successful calculation only?
-9. Should the display DTO and tests be renamed from `structure_id` to
-   `linked_phase_id` now, or should that rename be kept out of the first
-   implementation to minimize plotter churn?
-10. Should reflection row ids be globally sequential within the
-    experiment, or include phase information such as
-    `<linked_phase_id>:<row_number>` for easier debugging and CIF
-    inspection?
+1. Use `_refln.phase_id` / `phase_id` for the phase-link field. Add a
+   future note to consider switching to `structure_id` if that proves
+   clearer for users or CIF interoperability.
+2. Store `linked_phase.id.value` exactly in `phase_id`.
+3. Store `f_calc` as the real non-negative amplitude `|F_calc|`.
+4. Store `f_squared_calc` as raw `|F_calc|^2`, without linked-phase
+   scale or powder intensity factors.
+5. Bragg tick hover text must show `phase_id`, `(index_h index_k
+   index_l)`, `f_squared_calc`, and `f_calc`.
+6. Make `refln` beam-mode dependent like `data`: CWL rows store
+   `two_theta`, TOF rows store `time_of_flight`, and all rows expose
+   `d_spacing`. Bragg ticks must appear in the same x coordinate space
+   as the main chart, including when the user plots with
+   `x='d_spacing'`.
+7. Start with Cryspy population. Reuse structure-factor values returned
+   during the powder pattern calculation when Cryspy provides them;
+   avoid explicit extra structure-factor calls unless inspection shows
+   they are required.
+8. Treat CIF-loaded `refln` rows as cached calculation output. Every
+   calculation updates this category, similar to calculated columns in
+   `data`.
+9. Rename display internals from `structure_id` to `phase_id` for
+   consistency with the category.
+10. Use global sequential reflection row ids for now. Add a future note
+    to reconsider phase-prefixed ids if debugging or CIF inspection
+    would benefit.
 
 ## Suggested Commit Message
 
 ```text
-Add powder Refln category plan
+Record powder Refln category decisions
 ```
