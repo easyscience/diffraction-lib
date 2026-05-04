@@ -130,7 +130,7 @@
 - Save plans as Markdown files in `docs/dev` with the filename pattern
   `plan_<feature-name>.md`. The `<feature-name>` part uses lowercase
   words separated by dashes, for example
-  `docs/dev/plan_powder-refln-category.md`.
+  `docs/dev/plan_background-refactor.md`.
 - Use the same `<feature-name>` to create the implementation branch,
   normally `feature/<feature-name>`. Do not push the branch unless the
   user explicitly asks.

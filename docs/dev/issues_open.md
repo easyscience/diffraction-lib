@@ -621,6 +621,50 @@ are also marked.
 
 ---
 
+## 93. 🟢 Decide Future of `show_residual` in `plot_meas_vs_calc`
+
+**Type:** API cleanup
+
+Powder Bragg plots now show the residual row by default when
+`show_residual=None`, but the public `show_residual` argument still
+exists and some call sites still pass `show_residual=True` explicitly.
+The API should be clarified: either keep the argument as a compatibility
+option, remove it, or standardize a single meaning across powder and
+single-crystal plots.
+
+**TODOs:**
+
+- [plotting.py](src/easydiffraction/display/plotting.py#L459)
+- [__main__.py](src/easydiffraction/__main__.py#L105)
+
+**Depends on:** nothing.
+
+---
+
+## 94. 🟢 Revisit Powder `refln` Phase Labels and Row IDs
+
+**Type:** Naming / CIF UX
+
+The implemented powder reflection category uses `phase_id` throughout
+(`experiment.refln`, `PowderReflnRecord`, Bragg tick labels) and assigns
+global sequential row ids. This matches the current implementation, but
+the archived planning notes left two follow-up questions open:
+
+1. whether `structure_id` would be clearer than `phase_id` in the public
+   API / CIF output, and
+2. whether phase-prefixed row ids would make CIF inspection and
+   debugging easier than simple `1`, `2`, `3`, ...
+
+**TODOs:**
+
+- [refln_pd.py](src/easydiffraction/datablocks/experiment/categories/data/refln_pd.py#L37)
+- [refln_pd.py](src/easydiffraction/datablocks/experiment/categories/data/refln_pd.py#L154)
+- [base.py](src/easydiffraction/display/plotters/base.py#L24)
+
+**Depends on:** nothing.
+
+---
+
 ## 40. 🟢 Implement Resetting `.constrained` to `False`
 
 **Type:** Feature
