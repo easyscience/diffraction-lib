@@ -385,6 +385,7 @@ class PlotlyPlotter(PlotterBase):
             line=line,
             mode=mode,
             name=name,
+            hovertemplate=f'{name}<br>x: %{{x}}<br>y: %{{y}}<extra></extra>',
         )
 
     @staticmethod
@@ -643,16 +644,14 @@ class PlotlyPlotter(PlotterBase):
         y = np.full(tick_set.x.shape, row_y, dtype=float)
         hover_text = []
         for idx, x_value in enumerate(tick_set.x):
-            hkl_text = (
-                f'hkl: ({int(tick_set.h[idx])} '
-                f'{int(tick_set.k[idx])} {int(tick_set.ell[idx])})<br>'
-            )
             hover_text.append(
-                f'phase_id: {tick_set.phase_id}<br>'
-                f'{hkl_text}'
+                f'Bragg peaks: {tick_set.phase_id}<br>'
+                f'hkl: ({int(tick_set.h[idx])} {int(tick_set.k[idx])} '
+                f'{int(tick_set.ell[idx])})<br>'
                 f'x: {float(x_value):.6g}<br>'
-                f'f_squared_calc: {float(tick_set.f_squared_calc[idx]):.6g}<br>'
-                f'f_calc: {float(tick_set.f_calc[idx]):.6g}<extra></extra>'
+                # f'F²cal:{float(tick_set.f_squared_calc[idx]):.6g}<br>'
+                # f'Fcalc:{float(tick_set.f_calc[idx]):.6g}'
+                '<extra></extra>'
             )
 
         return go.Scatter(
@@ -662,13 +661,16 @@ class PlotlyPlotter(PlotterBase):
             marker={
                 'symbol': 'line-ns-open',
                 'size': 12,
-                'line': {'color': color, 'width': 1},
+                'line': {'width': 1},
                 'color': color,
             },
-            name=f'Bragg ({tick_set.phase_id})',
+            name=f'Bragg peaks ({tick_set.phase_id})',
             text=hover_text,
+            hoverlabel={
+                'font': {'color': 'white'},
+                'bordercolor': 'white',
+            },
             hovertemplate='%{text}',
-            showlegend=False,
         )
 
     @staticmethod
