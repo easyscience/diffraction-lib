@@ -12,9 +12,9 @@ Bragg ticks in the existing three-panel powder plot.
 ## Status
 
 - [x] Record design decisions below.
-- [ ] Create and switch to branch `feature/powder-refln-category`.
-- [ ] Phase 1: implement code and documentation changes only.
-- [ ] Stop for user review after Phase 1 is complete.
+- [x] Create and switch to branch `feature/powder-refln-category`.
+- [x] Phase 1: implement code and documentation changes only.
+- [x] Stop for user review after Phase 1 is complete.
 - [ ] Phase 2: add/update tests and run verification commands after
          user approval.
 - [ ] Final clean-up: update this plan, confirm commits, and summarize
@@ -39,34 +39,34 @@ Bragg ticks in the existing three-panel powder plot.
 
 ### Phase 1 — Implementation
 
-- [ ] Step 1: Create branch `feature/powder-refln-category` from the
+- [x] Step 1: Create branch `feature/powder-refln-category` from the
          current working branch.
-   Suggested commit: no commit; branch setup only.
-- [ ] Step 2: Add the powder `Refln` item and collection, including
+    Suggested commit: no commit; branch setup only.
+- [x] Step 2: Add the powder `Refln` item and collection, including
          `phase_id`, `f_calc`, `f_squared_calc`, beam-mode x fields, array
          accessors, and `_replace_from_records(...)`.
-   Suggested commit: `Add powder Refln category`
-- [ ] Step 3: Wire `experiment.refln` into `BraggPdExperiment` as a
+    Suggested commit: `Add powder Refln category`
+- [x] Step 3: Wire `experiment.refln` into `BraggPdExperiment` as a
          read-only sibling category and include it in CIF serialization.
-   Suggested commit: `Wire powder Refln into Bragg experiments`
-- [ ] Step 4: Add calculator-side reflection record extraction for
+    Suggested commit: `Wire powder Refln into Bragg experiments`
+- [x] Step 4: Add calculator-side reflection record extraction for
          Cryspy, reusing values from the powder pattern calculation output
          when available.
-   Suggested commit: `Extract Cryspy powder reflection records`
-- [ ] Step 5: Update `PdDataBase._update()` so every calculation clears
+    Suggested commit: `Extract Cryspy powder reflection records`
+- [x] Step 5: Update `PdDataBase._update()` so every calculation clears
          and repopulates `experiment.refln` in sync with `data.intensity_calc`.
-   Suggested commit: `Populate powder Refln during calculation`
-- [ ] Step 6: Update plotting to consume `experiment.refln`, group by
+    Suggested commit: `Populate powder Refln during calculation`
+- [x] Step 6: Update plotting to consume `experiment.refln`, group by
          `phase_id`, use the selected x-axis space, and show `phase_id`,
          `(index_h index_k index_l)`, `f_squared_calc`, and `f_calc` in
          Bragg tick hover content.
-   Suggested commit: `Use powder Refln for Bragg ticks`
-- [ ] Step 7: Update documentation and any affected developer plans so
+    Suggested commit: `Use powder Refln for Bragg ticks`
+- [x] Step 7: Update documentation and any affected developer plans so
          they refer to `experiment.refln` and `phase_id`.
-   Suggested commit: `Document powder Refln Bragg ticks`
-- [ ] Step 8: Review Phase 1 diffs, update this checklist, and stop for
+    Suggested commit: `Document powder Refln Bragg ticks`
+- [x] Step 8: Review Phase 1 diffs, update this checklist, and stop for
          user review before adding tests or running verification.
-   Suggested commit: `Update powder Refln implementation plan`
+    Suggested commit: `Update powder Refln implementation plan`
 
 ### Phase 2 — Verification
 
@@ -366,11 +366,25 @@ pixi run script-tests
 9. Rename display internals from `structure_id` to `phase_id` for
    consistency with the category.
 10. Use global sequential reflection row ids for now. Add a future note
-    to reconsider phase-prefixed ids if debugging or CIF inspection
-    would benefit.
+     to reconsider phase-prefixed ids if debugging or CIF inspection
+     would benefit.
+
+## Phase 1 Outcome
+
+- Completed implementation commits:
+  `8a3c24d71`, `97e70268d`, `dfb380da9`, `d92dc6f90`, `b5d55e38a`.
+- `experiment.refln` now exists on Bragg powder experiments, is updated
+  together with `data.intensity_calc`, and drives Bragg tick extraction
+  through `phase_id`, h/k/l, `f_squared_calc`, `f_calc`, and the active
+  powder x coordinate.
+- Cryspy populates reflection rows from the same powder-pattern
+  calculation payload. Backends without reflection metadata currently
+  clear `experiment.refln` and warn instead of leaving stale rows.
+- Phase 2 remains pending: focused tests, formatting, linting, unit
+  tests, integration tests, script tests, and final risk review.
 
 ## Suggested Commit Message
 
 ```text
-Record powder Refln category decisions
+Update powder Refln implementation plan
 ```
