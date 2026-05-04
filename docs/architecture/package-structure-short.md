@@ -85,7 +85,6 @@
 │   │   │   ├── 📁 data
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 bragg_pd.py
-│   │   │   │   ├── 📄 bragg_sc.py
 │   │   │   │   ├── 📄 factory.py
 │   │   │   │   └── 📄 total_pd.py
 │   │   │   ├── 📁 diffrn

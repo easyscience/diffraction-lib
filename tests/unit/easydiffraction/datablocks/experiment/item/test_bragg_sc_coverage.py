@@ -76,7 +76,6 @@ class TestCwlScExperiment:
         assert ex.instrument is not None
         # refln
         assert ex.refln is not None
-        assert ex.data is ex.refln
 
     def test_extinction_type_invalid(self):
         ex = CwlScExperiment(name='cwl_sc', type=_mk_type_sc_cwl())

@@ -17,10 +17,6 @@ class DataFactory(FactoryBase):
 
     _default_rules: ClassVar[dict] = {
         frozenset({
-            ('sample_form', SampleFormEnum.SINGLE_CRYSTAL),
-            ('scattering_type', ScatteringTypeEnum.BRAGG),
-        }): 'bragg-sc',
-        frozenset({
             ('sample_form', SampleFormEnum.POWDER),
             ('scattering_type', ScatteringTypeEnum.BRAGG),
             ('beam_mode', BeamModeEnum.CONSTANT_WAVELENGTH),
