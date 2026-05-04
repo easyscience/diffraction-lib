@@ -24,6 +24,7 @@ from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import tof_to_d
 from easydiffraction.utils.utils import twotheta_to_d
 

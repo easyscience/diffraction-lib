@@ -64,12 +64,13 @@ def test_ascii_plotter_plot_powder_meas_vs_calc_announces_plotly_only_bragg_row(
             y_resid=np.array([0.5, -0.5, 1.0]),
             bragg_tick_sets=(
                 BraggTickSet(
-                    structure_id='phase-a',
+                    phase_id='phase-a',
                     x=np.array([0.5]),
                     h=np.array([1]),
                     k=np.array([0]),
                     ell=np.array([1]),
-                    intensity=np.array([100.0]),
+                    f_squared_calc=np.array([100.0]),
+                    f_calc=np.array([10.0]),
                 ),
             ),
             axes_labels=['2θ (degree)', 'Intensity (arb. units)'],

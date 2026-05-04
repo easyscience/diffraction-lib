@@ -183,37 +183,41 @@ def test_extract_bragg_tick_sets_groups_and_filters():
     import numpy as np
 
     from easydiffraction.display.plotting import Plotter
+    from easydiffraction.display.plotting import XAxisType
 
-    class BraggPeaks:
-        structure_id = np.array(['phase-a', 'phase-a', 'phase-b', 'phase-b'])
-        x = np.array([0.5, 1.5, 2.5, 3.5])
-        h = np.array([1, 2, 3, 4])
-        k = np.array([0, 1, 1, 2])
-        l = np.array([1, 0, 2, 1])
-        intensity = np.array([10.0, 20.0, 30.0, 40.0])
-        peak_id = np.array(['p0', 'p1', 'p2', 'p3'])
+    class Refln:
+        phase_id = np.array(['phase-a', 'phase-a', 'phase-b', 'phase-b'])
+        two_theta = np.array([0.5, 1.5, 2.5, 3.5])
+        index_h = np.array([1, 2, 3, 4])
+        index_k = np.array([0, 1, 1, 2])
+        index_l = np.array([1, 0, 2, 1])
+        f_squared_calc = np.array([10.0, 20.0, 30.0, 40.0])
+        f_calc = np.array([3.0, 4.0, 5.0, 6.0])
 
     class Experiment:
-        bragg_peaks = BraggPeaks()
+        refln = Refln()
 
     tick_sets = Plotter()._extract_bragg_tick_sets(
         experiment=Experiment(),
         expt_name='E1',
+        x_axis=XAxisType.TWO_THETA,
         x_min=1.0,
         x_max=3.0,
     )
 
-    assert [tick_set.structure_id for tick_set in tick_sets] == ['phase-a', 'phase-b']
+    assert [tick_set.phase_id for tick_set in tick_sets] == ['phase-a', 'phase-b']
     assert np.allclose(tick_sets[0].x, np.array([1.5]))
-    assert np.array_equal(tick_sets[0].peak_id, np.array(['p1']))
+    assert np.array_equal(tick_sets[0].h, np.array([2]))
     assert np.array_equal(tick_sets[1].h, np.array([3]))
     assert np.array_equal(tick_sets[1].k, np.array([1]))
     assert np.array_equal(tick_sets[1].ell, np.array([2]))
-    assert np.allclose(tick_sets[1].intensity, np.array([30.0]))
+    assert np.allclose(tick_sets[0].f_squared_calc, np.array([20.0]))
+    assert np.allclose(tick_sets[1].f_calc, np.array([5.0]))
 
 
 def test_extract_bragg_tick_sets_returns_empty_without_category():
     from easydiffraction.display.plotting import Plotter
+    from easydiffraction.display.plotting import XAxisType
 
     class Experiment:
         pass
@@ -221,11 +225,47 @@ def test_extract_bragg_tick_sets_returns_empty_without_category():
     tick_sets = Plotter()._extract_bragg_tick_sets(
         experiment=Experiment(),
         expt_name='E1',
+        x_axis=XAxisType.TWO_THETA,
         x_min=1.0,
         x_max=3.0,
     )
 
     assert tick_sets == ()
+
+
+def test_extract_bragg_tick_sets_uses_derived_d_spacing_for_cwl_ticks():
+    import numpy as np
+
+    from easydiffraction.display.plotting import Plotter
+    from easydiffraction.display.plotting import XAxisType
+    from easydiffraction.utils.utils import twotheta_to_d
+
+    class Refln:
+        phase_id = np.array(['phase-a'])
+        two_theta = np.array([20.0])
+        d_spacing = np.array([999.0])
+        index_h = np.array([1])
+        index_k = np.array([0])
+        index_l = np.array([1])
+        f_squared_calc = np.array([10.0])
+        f_calc = np.array([3.0])
+
+    class Instrument:
+        setup_wavelength = type('Wavelength', (), {'value': 1.0})()
+
+    class Experiment:
+        refln = Refln()
+        instrument = Instrument()
+
+    tick_sets = Plotter()._extract_bragg_tick_sets(
+        experiment=Experiment(),
+        expt_name='E1',
+        x_axis=XAxisType.D_SPACING,
+        x_min=0.1,
+        x_max=10.0,
+    )
+
+    np.testing.assert_allclose(tick_sets[0].x, twotheta_to_d(np.array([20.0]), 1.0))
 
 
 def test_plot_meas_vs_calc_routes_powder_bragg_to_composite_backend():
@@ -252,14 +292,14 @@ def test_plot_meas_vs_calc_routes_powder_bragg_to_composite_backend():
         intensity_meas = np.array([10.0, 20.0, 30.0, 40.0])
         intensity_calc = np.array([9.0, 18.0, 27.0, 39.0])
 
-    class BraggPeaks:
-        structure_id = np.array(['phase-a', 'phase-a', 'phase-b'])
-        x = np.array([0.5, 1.5, 2.0])
-        h = np.array([1, 2, 3])
-        k = np.array([0, 1, 1])
-        l = np.array([1, 0, 2])
-        intensity = np.array([100.0, 80.0, 60.0])
-        peak_id = np.array(['p0', 'p1', 'p2'])
+    class Refln:
+        phase_id = np.array(['phase-a', 'phase-a', 'phase-b'])
+        two_theta = np.array([0.5, 1.5, 2.0])
+        index_h = np.array([1, 2, 3])
+        index_k = np.array([0, 1, 1])
+        index_l = np.array([1, 0, 2])
+        f_squared_calc = np.array([100.0, 80.0, 60.0])
+        f_calc = np.array([10.0, 9.0, 8.0])
 
     class ExptType:
         sample_form = type('SF', (), {'value': SampleFormEnum.POWDER})()
@@ -269,7 +309,7 @@ def test_plot_meas_vs_calc_routes_powder_bragg_to_composite_backend():
     class Experiment:
         data = Pattern()
         type = ExptType()
-        bragg_peaks = BraggPeaks()
+        refln = Refln()
 
     plotter = Plotter()
     plotter._backend = FakeBackend()
@@ -286,7 +326,7 @@ def test_plot_meas_vs_calc_routes_powder_bragg_to_composite_backend():
     assert np.allclose(call.y_meas, np.array([20.0, 30.0]))
     assert np.allclose(call.y_calc, np.array([18.0, 27.0]))
     assert np.allclose(call.y_resid, np.array([2.0, 3.0]))
-    assert [tick_set.structure_id for tick_set in call.bragg_tick_sets] == [
+    assert [tick_set.phase_id for tick_set in call.bragg_tick_sets] == [
         'phase-a',
         'phase-b',
     ]
@@ -314,13 +354,14 @@ def test_plot_meas_vs_calc_extracts_bragg_ticks_with_default_bounds():
         intensity_meas = np.array([100.0, 110.0, 105.0])
         intensity_calc = np.array([99.0, 108.0, 104.0])
 
-    class BraggPeaks:
-        structure_id = np.array(['phase-a'])
-        x = np.array([11.0])
-        h = np.array([1])
-        k = np.array([0])
-        l = np.array([1])
-        intensity = np.array([50.0])
+    class Refln:
+        phase_id = np.array(['phase-a'])
+        time_of_flight = np.array([11.0])
+        index_h = np.array([1])
+        index_k = np.array([0])
+        index_l = np.array([1])
+        f_squared_calc = np.array([50.0])
+        f_calc = np.array([7.0])
 
     class ExptType:
         sample_form = type('SF', (), {'value': SampleFormEnum.POWDER})()
@@ -330,7 +371,7 @@ def test_plot_meas_vs_calc_extracts_bragg_ticks_with_default_bounds():
     class Experiment:
         data = Pattern()
         type = ExptType()
-        bragg_peaks = BraggPeaks()
+        refln = Refln()
 
     plotter = Plotter()
     plotter._backend = FakeBackend()
@@ -342,7 +383,7 @@ def test_plot_meas_vs_calc_extracts_bragg_ticks_with_default_bounds():
 
     call = captured['powder_meas_vs_calc']
     assert np.allclose(call.x, np.array([10.0, 11.0, 12.0]))
-    assert [tick_set.structure_id for tick_set in call.bragg_tick_sets] == ['phase-a']
+    assert [tick_set.phase_id for tick_set in call.bragg_tick_sets] == ['phase-a']
     assert np.allclose(call.bragg_tick_sets[0].x, np.array([11.0]))
 
 
@@ -366,13 +407,14 @@ def test_plot_meas_vs_calc_groups_numeric_bragg_structure_ids():
         intensity_meas = np.array([100.0, 110.0, 105.0])
         intensity_calc = np.array([99.0, 108.0, 104.0])
 
-    class BraggPeaks:
-        structure_id = np.array([1, 1, 2])
-        x = np.array([10.0, 11.0, 12.0])
-        h = np.array([1, 2, 3])
-        k = np.array([0, 1, 1])
-        l = np.array([1, 0, 2])
-        intensity = np.array([50.0, 40.0, 30.0])
+    class Refln:
+        phase_id = np.array([1, 1, 2])
+        time_of_flight = np.array([10.0, 11.0, 12.0])
+        index_h = np.array([1, 2, 3])
+        index_k = np.array([0, 1, 1])
+        index_l = np.array([1, 0, 2])
+        f_squared_calc = np.array([50.0, 40.0, 30.0])
+        f_calc = np.array([7.0, 6.0, 5.0])
 
     class ExptType:
         sample_form = type('SF', (), {'value': SampleFormEnum.POWDER})()
@@ -382,7 +424,7 @@ def test_plot_meas_vs_calc_groups_numeric_bragg_structure_ids():
     class Experiment:
         data = Pattern()
         type = ExptType()
-        bragg_peaks = BraggPeaks()
+        refln = Refln()
 
     plotter = Plotter()
     plotter._backend = FakeBackend()
@@ -393,7 +435,7 @@ def test_plot_meas_vs_calc_groups_numeric_bragg_structure_ids():
     )
 
     call = captured['powder_meas_vs_calc']
-    assert [tick_set.structure_id for tick_set in call.bragg_tick_sets] == ['1', '2']
+    assert [tick_set.phase_id for tick_set in call.bragg_tick_sets] == ['1', '2']
     assert np.allclose(call.bragg_tick_sets[0].x, np.array([10.0, 11.0]))
     assert np.allclose(call.bragg_tick_sets[1].x, np.array([12.0]))
 
@@ -418,13 +460,14 @@ def test_plot_meas_vs_calc_skips_bragg_ticks_when_filtered_pattern_is_empty():
         intensity_meas = np.array([100.0, 110.0, 105.0])
         intensity_calc = np.array([99.0, 108.0, 104.0])
 
-    class BraggPeaks:
-        structure_id = np.array(['phase-a'])
-        x = np.array([8.0])
-        h = np.array([1])
-        k = np.array([0])
-        l = np.array([1])
-        intensity = np.array([50.0])
+    class Refln:
+        phase_id = np.array(['phase-a'])
+        time_of_flight = np.array([8.0])
+        index_h = np.array([1])
+        index_k = np.array([0])
+        index_l = np.array([1])
+        f_squared_calc = np.array([50.0])
+        f_calc = np.array([7.0])
 
     class ExptType:
         sample_form = type('SF', (), {'value': SampleFormEnum.POWDER})()
@@ -434,7 +477,7 @@ def test_plot_meas_vs_calc_skips_bragg_ticks_when_filtered_pattern_is_empty():
     class Experiment:
         data = Pattern()
         type = ExptType()
-        bragg_peaks = BraggPeaks()
+        refln = Refln()
 
     plotter = Plotter()
     plotter._backend = FakeBackend()
