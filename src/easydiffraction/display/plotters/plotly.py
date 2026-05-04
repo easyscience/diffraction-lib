@@ -25,6 +25,7 @@ except ImportError:
     display = None
     HTML = None
 
+from easydiffraction.display.plotters.base import DEFAULT_HEIGHT
 from easydiffraction.display.plotters.base import SERIES_CONFIG
 from easydiffraction.display.plotters.base import BraggTickSet
 from easydiffraction.display.plotters.base import PlotterBase
@@ -49,6 +50,7 @@ BRAGG_TICK_COLORS = (
 
 NICE_AXIS_FRACTIONS = (1.0, 2.0, 5.0, 10.0)
 DISPLAY_TICK_FRACTIONS = (1.0, 2.0, 2.5, 4.0, 5.0, 7.5, 10.0)
+PLOTLY_HEIGHT_PER_UNIT = 24
 
 
 @dataclass(frozen=True)
@@ -59,6 +61,8 @@ class PowderCompositeRows:
     normalized_heights: list[float]
     bragg_row: int | None
     residual_row: int | None
+    total_weight: float
+    baseline_weight: float
 
 
 class PlotlyPlotter(PlotterBase):
@@ -700,31 +704,13 @@ class PlotlyPlotter(PlotterBase):
     @staticmethod
     def _scaled_bragg_row_height(plot_spec: PowderMeasVsCalcSpec) -> float:
         """
-        Return Bragg-row height that preserves single-phase row spacing.
-
-        ``plot_spec.bragg_peaks_height_fraction`` is treated as the
-        single-phase baseline. For multiple phases, the total Bragg-row
-        height grows so each phase keeps the same vertical space as in
-        the one-phase case.
+        Return Bragg-row weight for the current number of phases.
         """
         phase_count = len(plot_spec.bragg_tick_sets)
         if phase_count == 0:
             return 0.0
 
-        base_height = plot_spec.bragg_peaks_height_fraction
-        other_height = 1.0
-        if plot_spec.y_resid is not None:
-            other_height += plot_spec.residual_height_fraction
-
-        single_phase_normalized_height = base_height / (other_height + base_height)
-        target_bragg_normalized_height = phase_count * single_phase_normalized_height
-
-        if target_bragg_normalized_height >= 1.0:
-            return base_height * phase_count
-
-        return (
-            target_bragg_normalized_height * other_height / (1.0 - target_bragg_normalized_height)
-        )
+        return plot_spec.bragg_peaks_height_fraction * phase_count
 
     @staticmethod
     def _get_powder_composite_rows(plot_spec: PowderMeasVsCalcSpec) -> PowderCompositeRows:
@@ -732,6 +718,7 @@ class PlotlyPlotter(PlotterBase):
         has_bragg_ticks = bool(plot_spec.bragg_tick_sets)
         has_residual = plot_spec.y_resid is not None
         row_heights = [1.0]
+        baseline_weight = 1.0
         bragg_row = None
         residual_row = None
         next_row = 2
@@ -740,9 +727,11 @@ class PlotlyPlotter(PlotterBase):
             bragg_row = next_row
             next_row += 1
             row_heights.append(PlotlyPlotter._scaled_bragg_row_height(plot_spec))
+            baseline_weight += plot_spec.bragg_peaks_height_fraction
         if has_residual:
             residual_row = next_row
             row_heights.append(plot_spec.residual_height_fraction)
+            baseline_weight += plot_spec.residual_height_fraction
 
         total_height = sum(row_heights)
         normalized_heights = [row_height / total_height for row_height in row_heights]
@@ -751,7 +740,20 @@ class PlotlyPlotter(PlotterBase):
             normalized_heights=normalized_heights,
             bragg_row=bragg_row,
             residual_row=residual_row,
+            total_weight=total_height,
+            baseline_weight=baseline_weight,
         )
+
+    @staticmethod
+    def _composite_figure_height(
+        plot_spec: PowderMeasVsCalcSpec,
+        layout: PowderCompositeRows,
+    ) -> int:
+        """Return figure height scaled by Bragg-row growth."""
+        base_height = DEFAULT_HEIGHT if plot_spec.height is None else plot_spec.height
+        base_pixels = int(base_height * PLOTLY_HEIGHT_PER_UNIT)
+        scaled_pixels = np.ceil(base_pixels * layout.total_weight / layout.baseline_weight)
+        return int(scaled_pixels)
 
     @classmethod
     def _get_residual_limit(cls, plot_spec: PowderMeasVsCalcSpec) -> float:
@@ -824,6 +826,7 @@ class PlotlyPlotter(PlotterBase):
             )
 
         fig.update_layout(
+            height=self._composite_figure_height(plot_spec, layout),
             margin={
                 'autoexpand': True,
                 'r': 30,

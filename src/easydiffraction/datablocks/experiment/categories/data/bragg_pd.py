@@ -385,24 +385,29 @@ class PdDataBase(CategoryCollection):
         project = experiments._parent
         structures = project.structures
         calculator = experiment.calculation.calculator
+        refln = experiment.refln
 
         calc, refln_records, missing_refln_records = self._phase_calculation_results(
             experiment=experiment,
             structures=structures,
             calculator=calculator,
             called_by_minimizer=called_by_minimizer,
+            collect_refln_records=refln is not None,
         )
         self._set_intensity_calc(calc + self.intensity_bkg)
+        if refln is None:
+            return
+
         if missing_refln_records:
-            experiment.refln._replace_from_records([])
-            log.debug(
+            refln._replace_from_records([])
+            log.warning(
                 'Calculated powder reflection metadata is unavailable for '
                 f"experiment '{experiment.name}' with calculator "
                 f"'{calculator.name}'. Clearing experiment.refln.",
             )
             return
 
-        experiment.refln._replace_from_records(refln_records)
+        refln._replace_from_records(refln_records)
 
     def _phase_calculation_results(
         self,
@@ -411,6 +416,7 @@ class PdDataBase(CategoryCollection):
         structures: object,
         calculator: object,
         called_by_minimizer: bool,
+        collect_refln_records: bool,
     ) -> tuple[np.ndarray, list[PowderReflnRecord], bool]:
         calc = np.zeros_like(self.x)
         refln_records: list[PowderReflnRecord] = []
@@ -425,8 +431,11 @@ class PdDataBase(CategoryCollection):
                 calculator=calculator,
                 linked_phase=linked_phase,
                 called_by_minimizer=called_by_minimizer,
+                collect_refln_records=collect_refln_records,
             )
             calc += structure_scaled_calc
+            if not collect_refln_records:
+                continue
             if structure_refln_records is None:
                 missing_refln_records = True
                 continue
@@ -442,6 +451,7 @@ class PdDataBase(CategoryCollection):
         calculator: object,
         linked_phase: object,
         called_by_minimizer: bool,
+        collect_refln_records: bool,
     ) -> tuple[np.ndarray, list[PowderReflnRecord] | None]:
         structure_calc = calculator.calculate_pattern(
             structure,
@@ -449,6 +459,9 @@ class PdDataBase(CategoryCollection):
             called_by_minimizer=called_by_minimizer,
         )
         structure_scaled_calc = linked_phase.scale.value * structure_calc
+        if not collect_refln_records:
+            return structure_scaled_calc, []
+
         structure_refln_records = calculator.last_powder_refln_records(
             structure,
             experiment,

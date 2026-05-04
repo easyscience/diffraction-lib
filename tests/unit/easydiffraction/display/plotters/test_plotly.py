@@ -319,7 +319,7 @@ def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch)
     assert 'f_squared_calc: 100' in bragg_traces[0].text[0]
 
 
-def test_scaled_bragg_row_height_preserves_single_phase_baseline():
+def test_scaled_bragg_row_height_scales_linearly_with_phase_count():
     from easydiffraction.display.plotters.base import BraggTickSet
     from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
     from easydiffraction.display.plotters.plotly import PlotlyPlotter
@@ -372,15 +372,69 @@ def test_scaled_bragg_row_height_preserves_single_phase_baseline():
 
     single_height = PlotlyPlotter._scaled_bragg_row_height(single_phase)
     two_phase_height = PlotlyPlotter._scaled_bragg_row_height(two_phase)
+    assert single_height == pytest.approx(0.10)
+    assert two_phase_height == pytest.approx(0.20)
 
-    single_phase_normalized = single_height / (
-        1.0 + single_phase.residual_height_fraction + single_height
+
+def test_plot_powder_meas_vs_calc_grows_total_height_for_many_phases(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    from easydiffraction.display.plotters.base import BraggTickSet
+    from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
+
+    captured = {}
+
+    def fake_show_figure(self, fig):
+        captured.setdefault('figures', []).append(fig)
+
+    monkeypatch.setattr(pp.PlotlyPlotter, '_show_figure', fake_show_figure)
+
+    def plot_spec(phase_count: int) -> PowderMeasVsCalcSpec:
+        bragg_tick_sets = tuple(
+            BraggTickSet(
+                phase_id=f'phase-{idx}',
+                x=np.array([1.0 + idx]),
+                h=np.array([idx + 1]),
+                k=np.array([0]),
+                ell=np.array([1]),
+                f_squared_calc=np.array([100.0 - idx]),
+                f_calc=np.array([10.0 - 0.1 * idx]),
+            )
+            for idx in range(phase_count)
+        )
+        return PowderMeasVsCalcSpec(
+            x=np.array([1.0, 2.0, 3.0]),
+            y_meas=np.array([10.0, 12.0, 11.0]),
+            y_calc=np.array([9.0, 11.0, 10.5]),
+            y_resid=np.array([1.0, 1.0, 0.5]),
+            bragg_tick_sets=bragg_tick_sets,
+            axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+            title='Powder',
+            residual_height_fraction=0.25,
+            bragg_peaks_height_fraction=0.10,
+            height=None,
+        )
+
+    plotter = pp.PlotlyPlotter()
+    plotter.plot_powder_meas_vs_calc(plot_spec=plot_spec(1))
+    plotter.plot_powder_meas_vs_calc(plot_spec=plot_spec(10))
+
+    single_fig, multi_fig = captured['figures']
+
+    def row_height_pixels(fig, axis_name: str) -> float:
+        axis = getattr(fig.layout, axis_name)
+        return fig.layout.height * (axis.domain[1] - axis.domain[0])
+
+    assert multi_fig.layout.height > single_fig.layout.height
+    assert row_height_pixels(multi_fig, 'yaxis') == pytest.approx(
+        row_height_pixels(single_fig, 'yaxis')
     )
-    two_phase_normalized_per_phase = (
-        two_phase_height / (1.0 + two_phase.residual_height_fraction + two_phase_height)
-    ) / 2
-
-    assert two_phase_normalized_per_phase == pytest.approx(single_phase_normalized)
+    assert row_height_pixels(multi_fig, 'yaxis3') == pytest.approx(
+        row_height_pixels(single_fig, 'yaxis3')
+    )
+    assert row_height_pixels(multi_fig, 'yaxis2') == pytest.approx(
+        row_height_pixels(single_fig, 'yaxis2') * 10
+    )
 
 
 def test_plot_powder_meas_vs_calc_skips_bragg_row_when_no_ticks(monkeypatch):

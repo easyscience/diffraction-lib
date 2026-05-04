@@ -11,6 +11,7 @@ from easydiffraction.datablocks.experiment.categories.data.refln_pd import Powde
 from easydiffraction.datablocks.experiment.categories.experiment_type import ExperimentType
 from easydiffraction.datablocks.experiment.item.bragg_pd import BraggPdExperiment
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.datablocks.experiment.item.enums import RadiationProbeEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
@@ -91,6 +92,20 @@ def test_bragg_pd_experiment_creates_beam_mode_specific_refln_collection():
 
     assert isinstance(cwl_experiment.refln, PowderCwlReflnData)
     assert isinstance(tof_experiment.refln, PowderTofReflnData)
+
+
+def test_bragg_pd_experiment_disables_refln_for_crysfml_and_restores_it_for_cryspy():
+    experiment = BraggPdExperiment(name='powder', type=_mk_type_powder_cwl_bragg())
+
+    assert isinstance(experiment.refln, PowderCwlReflnData)
+
+    experiment._calculator_type = CalculatorEnum.CRYSFML.value
+    experiment._sync_refln_category()
+    assert experiment.refln is None
+
+    experiment._calculator_type = CalculatorEnum.CRYSPY.value
+    experiment._sync_refln_category()
+    assert isinstance(experiment.refln, PowderCwlReflnData)
 
 
 def test_pd_data_update_populates_and_clears_refln():
@@ -180,3 +195,51 @@ def test_pd_data_update_populates_and_clears_refln():
     experiment.data._update()
 
     assert len(experiment.refln._items) == 0
+
+
+def test_pd_data_update_skips_refln_records_when_category_is_disabled():
+    from collections import UserDict
+
+    class FakeStructures(UserDict):
+        @property
+        def names(self):
+            return list(self.data.keys())
+
+    class FakeCalculator:
+        name = 'fake'
+
+        def calculate_pattern(self, structure, experiment, *, called_by_minimizer=False):
+            del experiment, called_by_minimizer
+            return structure.pattern
+
+        def last_powder_refln_records(self, structure, experiment, *, phase_id):
+            del structure, experiment, phase_id
+            msg = 'Powder reflection metadata should not be requested'
+            raise AssertionError(msg)
+
+    class FakeStructure:
+        def __init__(self, name, pattern):
+            self.name = name
+            self.pattern = pattern
+
+    experiment = BraggPdExperiment(name='powder', type=_mk_type_powder_cwl_bragg())
+    experiment.linked_phases.create(id='phase_a', scale=2.0)
+    experiment.data._create_items_set_xcoord_and_id(np.array([10.0, 20.0, 30.0]))
+    experiment.data._set_intensity_meas(np.array([100.0, 110.0, 120.0]))
+
+    structures = FakeStructures({
+        'phase_a': FakeStructure(
+            'phase_a',
+            np.array([1.0, 2.0, 3.0]),
+        )
+    })
+    project = type('Project', (), {'structures': structures})()
+    experiments = type('Experiments', (), {'_parent': project})()
+    experiment._parent = experiments
+    experiment._calculator = FakeCalculator()
+    experiment._refln = None
+
+    experiment.data._update()
+
+    np.testing.assert_allclose(experiment.data.intensity_calc, np.array([2.0, 4.0, 6.0]))
+    assert experiment.refln is None

@@ -15,6 +15,7 @@ from easydiffraction.datablocks.experiment.categories.data.refln_pd import Powde
 from easydiffraction.datablocks.experiment.categories.instrument.factory import InstrumentFactory
 from easydiffraction.datablocks.experiment.item.base import PdExperimentBase
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.datablocks.experiment.item.factory import ExperimentFactory
@@ -64,20 +65,43 @@ class BraggPdExperiment(PdExperimentBase):
         self._instrument = InstrumentFactory.create(self._instrument_type)
         self._background_type: str = BackgroundFactory.default_tag()
         self._background = BackgroundFactory.create(self._background_type)
-        self._refln = self._create_refln_collection()
+        self._refln = None
+        self._sync_refln_category()
 
-    def _create_refln_collection(self) -> object:
+    def _refln_collection_type(self) -> object:
         """
-        Create the beam-mode-specific calculated reflection collection.
+        Return the reflection-collection type for this beam mode.
         """
         beam_mode = self.type.beam_mode.value
         if beam_mode == BeamModeEnum.CONSTANT_WAVELENGTH:
-            return PowderCwlReflnData()
+            return PowderCwlReflnData
         if beam_mode == BeamModeEnum.TIME_OF_FLIGHT:
-            return PowderTofReflnData()
+            return PowderTofReflnData
 
         msg = f'Unsupported beam mode for powder reflection data: {beam_mode}.'
         raise ValueError(msg)
+
+    def _sync_refln_category(self) -> None:
+        """Create or remove ``refln`` for the active calculator."""
+        calculator_type = self._calculator_type or self._default_calculator_tag()
+        refln_collection_type = self._refln_collection_type()
+        calculator = CalculatorEnum(calculator_type)
+        if refln_collection_type.calculator_support.supports(calculator):
+            if not isinstance(self._refln, refln_collection_type):
+                self._refln = refln_collection_type()
+            return
+
+        self._refln = None
+
+    def _set_calculator_type(
+        self,
+        tag: str,
+        *,
+        announce: bool = True,
+    ) -> None:
+        """Switch calculator backend and sync ``refln`` availability."""
+        super()._set_calculator_type(tag, announce=announce)
+        self._sync_refln_category()
 
     def _load_ascii_data_to_experiment(
         self,
@@ -146,8 +170,8 @@ class BraggPdExperiment(PdExperimentBase):
         return self._instrument
 
     @property
-    def refln(self) -> object:
-        """Calculated reflection metadata for this experiment."""
+    def refln(self) -> object | None:
+        """Calculated reflection metadata when supported."""
         return self._refln
 
     # ------------------------------------------------------------------

@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 from easydiffraction.core.category import CategoryCollection
+from easydiffraction.core.metadata import CalculatorSupport
 from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
@@ -18,6 +19,7 @@ from easydiffraction.datablocks.experiment.categories.data.bragg_sc import (
     Refln as SingleCrystalRefln,
 )
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.io.cif.handler import CifHandler
@@ -153,9 +155,13 @@ class PowderReflnDataBase(CategoryCollection):
 
     def _replace_from_records(self, records: Sequence[PowderReflnRecord]) -> None:
         """Replace all rows from calculator reflection records."""
-        self._items = [self._item_type() for _ in records]
+        for item in self._items:
+            item._parent = None
 
-        for index, (item, record) in enumerate(zip(self._items, records, strict=True), start=1):
+        new_items = []
+        for index, record in enumerate(records, start=1):
+            item = self._item_type()
+            item._parent = self
             item.id._value = str(index)
             item.phase_id._value = str(record.phase_id)
             item.d_spacing._value = float(record.d_spacing)
@@ -166,6 +172,10 @@ class PowderReflnDataBase(CategoryCollection):
             item.f_calc._value = float(record.f_calc)
             item.f_squared_calc._value = float(record.f_squared_calc)
             self._set_x_value(item=item, record=record)
+            new_items.append(item)
+
+        self._items = new_items
+        self._rebuild_index()
 
     def _set_x_value(
         self,
@@ -236,6 +246,9 @@ class PowderCwlReflnData(PowderReflnDataBase):
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
         beam_mode=frozenset({BeamModeEnum.CONSTANT_WAVELENGTH}),
     )
+    calculator_support = CalculatorSupport(
+        calculators=frozenset({CalculatorEnum.CRYSPY}),
+    )
 
     def __init__(self) -> None:
         super().__init__(item_type=PowderCwlRefln)
@@ -263,6 +276,9 @@ class PowderTofReflnData(PowderReflnDataBase):
         sample_form=frozenset({SampleFormEnum.POWDER}),
         scattering_type=frozenset({ScatteringTypeEnum.BRAGG}),
         beam_mode=frozenset({BeamModeEnum.TIME_OF_FLIGHT}),
+    )
+    calculator_support = CalculatorSupport(
+        calculators=frozenset({CalculatorEnum.CRYSPY}),
     )
 
     def __init__(self) -> None:
