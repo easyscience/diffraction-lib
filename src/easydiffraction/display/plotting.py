@@ -96,7 +96,8 @@ class Plotter(RendererBase):
         self._x_min = DEFAULT_MIN
         self._x_max = DEFAULT_MAX
         # Chart height
-        self.height = DEFAULT_HEIGHT
+        self._height = DEFAULT_HEIGHT
+        self._height_is_explicit = False
         # Back-reference to the owning Project (set via _set_project)
         self._project = None
 
@@ -365,8 +366,16 @@ class Plotter(RendererBase):
         """
         if value is not None:
             self._height = value
+            self._height_is_explicit = True
         else:
             self._height = DEFAULT_HEIGHT
+            self._height_is_explicit = False
+
+    def _composite_plot_height(self) -> int | None:
+        """Return explicit composite height or backend default."""
+        if self._height_is_explicit:
+            return self._height
+        return None
 
     # ------------------------------------------------------------------
     #  Public methods
@@ -1277,7 +1286,7 @@ class Plotter(RendererBase):
             title=title,
             residual_height_fraction=plot_options.residual_height_fraction,
             bragg_peaks_height_fraction=plot_options.bragg_peaks_height_fraction,
-            height=self.height,
+            height=self._composite_plot_height(),
         )
         self._backend.plot_powder_meas_vs_calc(plot_spec=plot_spec)
 

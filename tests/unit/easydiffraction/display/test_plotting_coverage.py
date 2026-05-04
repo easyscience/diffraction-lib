@@ -90,6 +90,7 @@ class TestPlotterProperties:
         p = Plotter()
         p.height = 50
         assert p.height == 50
+        assert p._composite_plot_height() == 50
 
     def test_height_setter_with_none_resets_default(self):
         from easydiffraction.display.plotters.base import DEFAULT_HEIGHT
@@ -99,6 +100,15 @@ class TestPlotterProperties:
         p.height = 99
         p.height = None
         assert p.height == DEFAULT_HEIGHT
+        assert p._composite_plot_height() is None
+
+    def test_default_height_uses_backend_composite_default(self):
+        from easydiffraction.display.plotters.base import DEFAULT_HEIGHT
+        from easydiffraction.display.plotting import Plotter
+
+        p = Plotter()
+        assert p.height == DEFAULT_HEIGHT
+        assert p._composite_plot_height() is None
 
 
 # ------------------------------------------------------------------
