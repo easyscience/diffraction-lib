@@ -15,75 +15,75 @@ Bragg ticks in the existing three-panel powder plot.
 - [x] Create and switch to branch `feature/powder-refln-category`.
 - [x] Phase 1: implement code and documentation changes only.
 - [x] Stop for user review after Phase 1 is complete.
-- [ ] Phase 2: add/update tests and run verification commands after
-         user approval.
-- [ ] Final clean-up: update this plan, confirm commits, and summarize
-         remaining risks.
+- [x] Phase 2: add/update tests and run verification commands after user
+      approval.
+- [x] Final clean-up: update this plan, confirm commits, and summarize
+      remaining risks.
 
 ## Execution Protocol
 
 - Work independently through Phase 1 until all implementation checklist
-   items are complete. Do not add tests or run tests during Phase 1 unless
-   the user explicitly asks.
+  items are complete. Do not add tests or run tests during Phase 1
+  unless the user explicitly asks.
 - Mark each checklist item from `[ ]` to `[x]` when it is completed.
 - Commit after every completed implementation step. Stage only the files
-   modified for that step and avoid staging unrelated user changes.
+  modified for that step and avoid staging unrelated user changes.
 - Do not push commits unless the user explicitly asks.
 - Do not commit data files, project files, CIF files, or other generated
-   artifacts created by integration tests, script tests, or notebook
-   execution unless the user explicitly asks to update those artifacts.
+  artifacts created by integration tests, script tests, or notebook
+  execution unless the user explicitly asks to update those artifacts.
 - After Phase 1, stop and ask the user to review the implementation.
-   Continue to Phase 2 only after user approval.
+  Continue to Phase 2 only after user approval.
 
 ## Implementation Checklist
 
 ### Phase 1 — Implementation
 
 - [x] Step 1: Create branch `feature/powder-refln-category` from the
-         current working branch.
-    Suggested commit: no commit; branch setup only.
+      current working branch. Suggested commit: no commit; branch setup
+      only.
 - [x] Step 2: Add the powder `Refln` item and collection, including
-         `phase_id`, `f_calc`, `f_squared_calc`, beam-mode x fields, array
-         accessors, and `_replace_from_records(...)`.
-    Suggested commit: `Add powder Refln category`
+      `phase_id`, `f_calc`, `f_squared_calc`, beam-mode x fields, array
+      accessors, and `_replace_from_records(...)`. Suggested commit:
+      `Add powder Refln category`
 - [x] Step 3: Wire `experiment.refln` into `BraggPdExperiment` as a
-         read-only sibling category and include it in CIF serialization.
-    Suggested commit: `Wire powder Refln into Bragg experiments`
+      read-only sibling category and include it in CIF serialization.
+      Suggested commit: `Wire powder Refln into Bragg experiments`
 - [x] Step 4: Add calculator-side reflection record extraction for
-         Cryspy, reusing values from the powder pattern calculation output
-         when available.
-    Suggested commit: `Extract Cryspy powder reflection records`
+      Cryspy, reusing values from the powder pattern calculation output
+      when available. Suggested commit:
+      `Extract Cryspy powder reflection records`
 - [x] Step 5: Update `PdDataBase._update()` so every calculation clears
-         and repopulates `experiment.refln` in sync with `data.intensity_calc`.
-    Suggested commit: `Populate powder Refln during calculation`
+      and repopulates `experiment.refln` in sync with
+      `data.intensity_calc`. Suggested commit:
+      `Populate powder Refln during calculation`
 - [x] Step 6: Update plotting to consume `experiment.refln`, group by
-         `phase_id`, use the selected x-axis space, and show `phase_id`,
-         `(index_h index_k index_l)`, `f_squared_calc`, and `f_calc` in
-         Bragg tick hover content.
-    Suggested commit: `Use powder Refln for Bragg ticks`
+      `phase_id`, use the selected x-axis space, and show `phase_id`,
+      `(index_h index_k index_l)`, `f_squared_calc`, and `f_calc` in
+      Bragg tick hover content. Suggested commit:
+      `Use powder Refln for Bragg ticks`
 - [x] Step 7: Update documentation and any affected developer plans so
-         they refer to `experiment.refln` and `phase_id`.
-    Suggested commit: `Document powder Refln Bragg ticks`
+      they refer to `experiment.refln` and `phase_id`. Suggested commit:
+      `Document powder Refln Bragg ticks`
 - [x] Step 8: Review Phase 1 diffs, update this checklist, and stop for
-         user review before adding tests or running verification.
-    Suggested commit: `Update powder Refln implementation plan`
+      user review before adding tests or running verification. Suggested
+      commit: `Update powder Refln implementation plan`
 
 ### Phase 2 — Verification
 
-- [ ] Step 9: Add/update focused unit tests for the powder `Refln` item,
-         collection replacement, `BraggPdExperiment` wiring, Cryspy record
-         extraction, data update population, plotting, and CIF round-trip.
-   Suggested commit: `Test powder Refln category`
-- [ ] Step 10: Run targeted unit tests for the changed areas and fix any
-         failures.
-   Suggested commit: `Fix powder Refln test failures`
-- [ ] Step 11: Run project formatting, linting, unit tests, integration
-         tests, and script tests listed below. Do not commit generated data,
-         project, or CIF artifacts from those runs.
-   Suggested commit: `Verify powder Refln implementation`
-- [ ] Step 12: Update this plan with completed verification results and
-         any remaining risks.
-   Suggested commit: `Finalize powder Refln plan`
+- [x] Step 9: Add/update focused unit tests for the powder `Refln` item,
+      collection replacement, `BraggPdExperiment` wiring, Cryspy record
+      extraction, data update population, plotting, and CIF round-trip.
+      Suggested commit: `Test powder Refln category`
+- [x] Step 10: Run targeted unit tests for the changed areas and fix any
+      failures. Suggested commit: `Fix powder Refln test failures`
+- [x] Step 11: Run project formatting, linting, unit tests, integration
+      tests, and script tests listed below. Do not commit generated
+      data, project, or CIF artifacts from those runs. Suggested commit:
+      `Verify powder Refln implementation`
+- [x] Step 12: Update this plan with completed verification results and
+      any remaining risks. Suggested commit:
+      `Finalize powder Refln plan`
 
 ## Clarification Questions
 
@@ -101,10 +101,11 @@ data persistence, or removes/replaces existing behavior.
   intensity fields, and wavelength.
 - Powder Bragg measured/calculated pattern points live in
   `src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py`.
-  `PdDataBase._update()` loops over `experiment.linked_phases`, calls the
-  active calculator once per linked phase, scales each phase pattern, and
-  stores the summed pattern in `data.intensity_calc`.
-- Powder experiments expose linked phases through `_pd_phase_block.id` in
+  `PdDataBase._update()` loops over `experiment.linked_phases`, calls
+  the active calculator once per linked phase, scales each phase
+  pattern, and stores the summed pattern in `data.intensity_calc`.
+- Powder experiments expose linked phases through `_pd_phase_block.id`
+  in
   `src/easydiffraction/datablocks/experiment/categories/linked_phases/default.py`.
   The runtime identity used to find structures is
   `linked_phase._identity.category_entry_name`, which currently resolves
@@ -123,26 +124,26 @@ single-crystal `Refln` item and adds the requested powder fields.
 
 Recommended common item fields:
 
-| Public property | CIF name | Type | Meaning |
-| --- | --- | --- | --- |
-| `id` | `_refln.id` | string | Stable row identifier, unique within the experiment. |
-| `phase_id` | `_refln.phase_id` | string | Identifier of the linked phase that produced this reflection. |
-| `d_spacing` | `_refln.d_spacing` | numeric | Reflection d-spacing, used to derive plot x positions when needed. |
-| `sin_theta_over_lambda` | `_refln.sin_theta_over_lambda` | numeric | Reflection sin(theta)/lambda value. |
-| `index_h` | `_refln.index_h` | numeric | Miller h index. |
-| `index_k` | `_refln.index_k` | numeric | Miller k index. |
-| `index_l` | `_refln.index_l` | numeric | Miller l index. |
-| `f_calc` | `_refln.f_calc` | numeric | Calculated structure-factor amplitude `\|F_calc\|`. |
-| `f_squared_calc` | `_refln.f_squared_calc` | numeric | Raw calculated structure-factor amplitude squared `\|F_calc\|^2`. |
+| Public property         | CIF name                       | Type    | Meaning                                                            |
+| ----------------------- | ------------------------------ | ------- | ------------------------------------------------------------------ |
+| `id`                    | `_refln.id`                    | string  | Stable row identifier, unique within the experiment.               |
+| `phase_id`              | `_refln.phase_id`              | string  | Identifier of the linked phase that produced this reflection.      |
+| `d_spacing`             | `_refln.d_spacing`             | numeric | Reflection d-spacing, used to derive plot x positions when needed. |
+| `sin_theta_over_lambda` | `_refln.sin_theta_over_lambda` | numeric | Reflection sin(theta)/lambda value.                                |
+| `index_h`               | `_refln.index_h`               | numeric | Miller h index.                                                    |
+| `index_k`               | `_refln.index_k`               | numeric | Miller k index.                                                    |
+| `index_l`               | `_refln.index_l`               | numeric | Miller l index.                                                    |
+| `f_calc`                | `_refln.f_calc`                | numeric | Calculated structure-factor amplitude `\|F_calc\|`.                |
+| `f_squared_calc`        | `_refln.f_squared_calc`        | numeric | Raw calculated structure-factor amplitude squared `\|F_calc\|^2`.  |
 
 Recommended beam-mode-specific item fields should mirror the active
 powder `data` category so Bragg ticks are always rendered in the same x
 space as the main chart:
 
-| Beam mode | Public property | CIF name basis | Meaning |
-| --- | --- | --- | --- |
-| CWL | `two_theta` | same convention as `data.two_theta` | Reflection position on the constant-wavelength 2θ axis. |
-| TOF | `time_of_flight` | same convention as `data.time_of_flight` | Reflection position on the time-of-flight axis. |
+| Beam mode | Public property  | CIF name basis                           | Meaning                                                 |
+| --------- | ---------------- | ---------------------------------------- | ------------------------------------------------------- |
+| CWL       | `two_theta`      | same convention as `data.two_theta`      | Reflection position on the constant-wavelength 2θ axis. |
+| TOF       | `time_of_flight` | same convention as `data.time_of_flight` | Reflection position on the time-of-flight axis.         |
 
 Implementation notes:
 
@@ -160,21 +161,22 @@ Implementation notes:
 - Keep `f_calc` and `f_squared_calc` non-negative real numeric values.
   `f_calc` is `|F_calc|`; `f_squared_calc` is raw `|F_calc|^2` and must
   not include linked-phase scale or powder intensity factors.
-- Add a collection class, for example `PowderReflnData`, with typed array
-  properties for `phase_id`, `d_spacing`, `sin_theta_over_lambda`,
+- Add a collection class, for example `PowderReflnData`, with typed
+  array properties for `phase_id`, `d_spacing`, `sin_theta_over_lambda`,
   `index_h`, `index_k`, `index_l`, `f_calc`, `f_squared_calc`, and the
   active beam-mode x coordinate.
 - Add a private replacement method such as `_replace_from_records(...)`
   so calculators can atomically clear and repopulate all reflection rows
   after a successful pattern calculation.
-- Use globally unique row ids, likely `1`, `2`, ... in calculation order,
-   while preserving phase grouping with `phase_id`. Add a future note to
-   reconsider phase-prefixed ids if CIF inspection or debugging needs it.
+- Use globally unique row ids, likely `1`, `2`, ... in calculation
+  order, while preserving phase grouping with `phase_id`. Add a future
+  note to reconsider phase-prefixed ids if CIF inspection or debugging
+  needs it.
 
 ## Experiment Wiring
 
-Add the category as an additional category on `BraggPdExperiment`, not as
-a replacement for `experiment.data`.
+Add the category as an additional category on `BraggPdExperiment`, not
+as a replacement for `experiment.data`.
 
 Steps:
 
@@ -183,8 +185,9 @@ Steps:
    `BraggPdExperiment.__init__()`.
 2. Add a read-only `refln` property on `BraggPdExperiment`.
 3. Set the collection update priority after powder `data` updates, for
-   example `_update_priority = 110`, and keep its own `_update()` a no-op
-   unless a later design moves calculation ownership into the category.
+   example `_update_priority = 110`, and keep its own `_update()` a
+   no-op unless a later design moves calculation ownership into the
+   category.
 4. Let normal datablock category traversal serialize the new collection
    to CIF, since `experiment_to_cif()` already emits all category
    collections stored on the experiment.
@@ -204,9 +207,9 @@ truth for both the calculated pattern and the reflection table.
 Recommended implementation path:
 
 1. Define a small internal reflection-record container for calculator
-   output, containing `phase_id`, `d_spacing`,
-   `sin_theta_over_lambda`, `index_h`, `index_k`, `index_l`, `f_calc`,
-   `f_squared_calc`, and the active beam-mode x coordinate.
+   output, containing `phase_id`, `d_spacing`, `sin_theta_over_lambda`,
+   `index_h`, `index_k`, `index_l`, `f_calc`, `f_squared_calc`, and the
+   active beam-mode x coordinate.
 2. Extend the calculator abstraction with an explicit powder-reflection
    extraction path. Two possible designs are viable:
    - Return a typed result object from powder pattern calculation, such
@@ -221,8 +224,8 @@ Recommended implementation path:
 3. Update `PdDataBase._update()` so it collects reflection records while
    looping over valid linked phases. After all phases are processed,
    call `experiment.refln._replace_from_records(records)` once.
-4. If a linked phase is skipped because its structure id is missing,
-   do not emit rows for that phase.
+4. If a linked phase is skipped because its structure id is missing, do
+   not emit rows for that phase.
 5. If the calculator cannot provide reflection metadata, clear
    `experiment.refln` and log a clear warning. Do not leave stale rows
    from a previous calculation.
@@ -244,9 +247,9 @@ Calculator-specific notes:
   making explicit extra structure-factor calls if the required data are
   already returned.
 - CrysFML currently returns only the calculated powder pattern through
-  the EasyDiffraction wrapper. The implementation must either add a
-  real reflection extraction path for CrysFML or explicitly warn and
-  leave `refln` empty when CrysFML is active.
+  the EasyDiffraction wrapper. The implementation must either add a real
+  reflection extraction path for CrysFML or explicitly warn and leave
+  `refln` empty when CrysFML is active.
 - The calculator base API and all concrete calculators must agree on the
   same record shape, even when a calculator returns no records.
 
@@ -260,8 +263,8 @@ Steps:
 1. Update `Plotter._extract_bragg_tick_sets()` in
    `src/easydiffraction/display/plotting.py` to read from
    `experiment.refln`.
-2. Group tick rows by raw `refln.phase_id` values and stringify
-   only when constructing display labels. This preserves numeric ids and
+2. Group tick rows by raw `refln.phase_id` values and stringify only
+   when constructing display labels. This preserves numeric ids and
    matches the earlier powder plot review fix.
 3. Use Miller indices from `index_h`, `index_k`, and `index_l` for hover
    text.
@@ -320,8 +323,8 @@ Recommended unit tests:
 5. Cryspy adapter tests using small mocked `dict_in_out` payloads rather
    than real engine calculations.
 6. Plotting tests updating fake `bragg_peaks` fixtures to fake `refln`
-   fixtures, verifying grouping by `phase_id`, x filtering, hover fields,
-   and empty-category behavior.
+   fixtures, verifying grouping by `phase_id`, x filtering, hover
+   fields, and empty-category behavior.
 7. CWL/TOF coordinate tests proving Bragg ticks use the same x axis as
    the main chart for `two_theta`, `time_of_flight`, and `d_spacing`.
 8. CIF round-trip tests for `_refln.phase_id`, `_refln.f_calc`, and
@@ -349,8 +352,8 @@ pixi run script-tests
 3. Store `f_calc` as the real non-negative amplitude `|F_calc|`.
 4. Store `f_squared_calc` as raw `|F_calc|^2`, without linked-phase
    scale or powder intensity factors.
-5. Bragg tick hover text must show `phase_id`, `(index_h index_k
-   index_l)`, `f_squared_calc`, and `f_calc`.
+5. Bragg tick hover text must show `phase_id`,
+   `(index_h index_k index_l)`, `f_squared_calc`, and `f_calc`.
 6. Make `refln` beam-mode dependent like `data`: CWL rows store
    `two_theta`, TOF rows store `time_of_flight`, and all rows expose
    `d_spacing`. Bragg ticks must appear in the same x coordinate space
@@ -366,13 +369,13 @@ pixi run script-tests
 9. Rename display internals from `structure_id` to `phase_id` for
    consistency with the category.
 10. Use global sequential reflection row ids for now. Add a future note
-     to reconsider phase-prefixed ids if debugging or CIF inspection
-     would benefit.
+    to reconsider phase-prefixed ids if debugging or CIF inspection
+    would benefit.
 
 ## Phase 1 Outcome
 
-- Completed implementation commits:
-  `8a3c24d71`, `97e70268d`, `dfb380da9`, `d92dc6f90`, `b5d55e38a`.
+- Completed implementation commits: `8a3c24d71`, `97e70268d`,
+  `dfb380da9`, `d92dc6f90`, `b5d55e38a`.
 - `experiment.refln` now exists on Bragg powder experiments, is updated
   together with `data.intensity_calc`, and drives Bragg tick extraction
   through `phase_id`, h/k/l, `f_squared_calc`, `f_calc`, and the active
@@ -380,11 +383,25 @@ pixi run script-tests
 - Cryspy populates reflection rows from the same powder-pattern
   calculation payload. Backends without reflection metadata currently
   clear `experiment.refln` and warn instead of leaving stale rows.
-- Phase 2 remains pending: focused tests, formatting, linting, unit
-  tests, integration tests, script tests, and final risk review.
+
+## Phase 2 Outcome
+
+- Added focused tests for the powder `refln` item/collection,
+  `BraggPdExperiment` wiring, Cryspy record extraction, plotting, and
+  CIF round-trip.
+- Targeted verification for the changed areas passed after fixing one
+  directly coupled issue: the powder data update warning path now
+  imports `log` before clearing `experiment.refln`.
+- `pixi run fix`, `pixi run check`, `pixi run unit-tests`,
+  `pixi run integration-tests`, and `pixi run script-tests` completed
+  successfully.
+- `pixi run fix` also reformatted affected source files and regenerated
+  package-structure documentation under `docs/architecture/`.
+- No remaining implementation-specific risks are known beyond the
+  unrelated tutorial worktree changes left untouched during this phase.
 
 ## Suggested Commit Message
 
 ```text
-Update powder Refln implementation plan
+Finalize powder Refln plan
 ```
