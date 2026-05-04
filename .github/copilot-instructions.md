@@ -153,7 +153,8 @@
   update those artifacts.
 - Keep commits atomic, single-purpose, and aligned with plan steps. Use
   imperative commit messages, no type prefix, and keep the subject line
-  at or below 72 characters.
+  at or below 72 characters. Do not add "Co-authored-by: Copilot" to the
+  commit message.
 - Before each commit, inspect the worktree and avoid staging unrelated
   user changes. If unrelated dirty files exist, leave them untouched and
   mention them only when relevant.

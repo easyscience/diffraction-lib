@@ -750,6 +750,7 @@ class PlotlyPlotter(PlotterBase):
         cls,
         plot_spec: PowderMeasVsCalcSpec,
         row_count: int,
+        *,
         has_bragg_ticks: bool,
         has_residual: bool,
     ) -> tuple[float, float | None]:
@@ -807,10 +808,7 @@ class PlotlyPlotter(PlotterBase):
         plot_spec: PowderMeasVsCalcSpec,
         layout: PowderCompositeRows,
     ) -> float:
-        """
-        Return figure height with Bragg growth from a single-phase
-        baseline.
-        """
+        """Return figure height for Bragg row growth."""
         base_pixels = cls._base_composite_height_pixels(plot_spec)
         phase_count = len(plot_spec.bragg_tick_sets)
         if phase_count <= 1:

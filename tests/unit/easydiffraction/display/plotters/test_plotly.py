@@ -237,10 +237,9 @@ def test_get_bragg_tick_trace_includes_peak_metadata():
     assert trace.mode == 'markers'
     assert trace.marker.symbol == 'line-ns-open'
     assert trace.hovertemplate == '%{text}'
-    assert 'phase_id: phase-a' in trace.text[0]
-    assert 'hkl: (1 0 1)' in trace.text[0]
-    assert 'f_squared_calc: 100' in trace.text[0]
-    assert 'f_calc: 10' in trace.text[0]
+    assert 'Bragg peaks: phase-a' in trace.text[0]
+    assert 'Miller indices: (1 0 1)' in trace.text[0]
+    assert 'x: 1.5' in trace.text[0]
 
 
 def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch):
