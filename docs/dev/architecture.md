@@ -286,7 +286,8 @@ experiment.linked_phases  # CategoryCollection
 experiment.excluded_regions  # CategoryCollection
 experiment.instrument  # CategoryItem
 experiment.peak  # CategoryItem
-experiment.data  # CategoryCollection
+experiment.data  # CategoryCollection (powder / total only)
+experiment.refln  # CategoryCollection (Bragg powder + single crystal)
 
 # Type-switchable — recreates the underlying object
 experiment.background_type = 'chebyshev'  # triggers BackgroundFactory.create(...)
@@ -461,7 +462,8 @@ from .line_segment import LineSegmentBackground
 | `BackgroundFactory`          | Background categories  | `LineSegmentBackground`, `ChebyshevPolynomialBackground`                                                                                                                    |
 | `PeakFactory`                | Peak profiles          | `CwlPseudoVoigt`, `TofJorgensen`, `TofJorgensenVonDreele`, …                                                                                                                |
 | `InstrumentFactory`          | Instruments            | `CwlPdInstrument`, `TofPdInstrument`, …                                                                                                                                     |
-| `DataFactory`                | Data collections       | `PdCwlData`, `PdTofData`, `ReflnData`, `TotalData`                                                                                                                          |
+| `DataFactory`                | Data collections       | `PdCwlData`, `PdTofData`, `TotalData`                                                                                                                                       |
+| `ReflnFactory`               | Reflection collections | `ReflnData`, `PowderCwlReflnData`, `PowderTofReflnData`                                                                                                                     |
 | `ExtinctionFactory`          | Extinction models      | `BeckerCoppensExtinction`                                                                                                                                                   |
 | `LinkedCrystalFactory`       | Linked-crystal refs    | `LinkedCrystal`                                                                                                                                                             |
 | `ExcludedRegionsFactory`     | Excluded regions       | `ExcludedRegions`                                                                                                                                                           |
@@ -552,10 +554,17 @@ the choice.
 
 | Tag            | Class       |
 | -------------- | ----------- |
-| `bragg-pd-cwl` | `PdCwlData` |
+| `bragg-pd`     | `PdCwlData` |
 | `bragg-pd-tof` | `PdTofData` |
-| `bragg-sc`     | `ReflnData` |
 | `total-pd`     | `TotalData` |
+
+**Refln tags**
+
+| Tag                  | Class                |
+| -------------------- | -------------------- |
+| `bragg-sc`           | `ReflnData`          |
+| `bragg-pd-refln`     | `PowderCwlReflnData` |
+| `bragg-pd-tof-refln` | `PowderTofReflnData` |
 
 **Extinction tags**
 
@@ -650,7 +659,9 @@ line-segment points.
 | `PdCwlData`                     | `DataFactory`                |
 | `PdTofData`                     | `DataFactory`                |
 | `TotalData`                     | `DataFactory`                |
-| `ReflnData`                     | `DataFactory`                |
+| `ReflnData`                     | `ReflnFactory`               |
+| `PowderCwlReflnData`            | `ReflnFactory`               |
+| `PowderTofReflnData`            | `ReflnFactory`               |
 | `ExcludedRegions`               | `ExcludedRegionsFactory`     |
 | `LinkedPhases`                  | `LinkedPhasesFactory`        |
 | `AtomSites`                     | `AtomSitesFactory`           |
@@ -700,8 +711,9 @@ line-segment points.
 
 The calculator performs the actual diffraction computation. It is
 attached per-experiment on the `ExperimentBase` object. Each experiment
-auto-resolves its calculator on first access based on the data
-category's `calculator_support` metadata and
+auto-resolves its calculator on first access based on the experiment's
+active support category (`data` for powder, `refln` for Bragg
+single-crystal) `calculator_support` metadata and
 `CalculatorFactory._default_rules`. The `CalculatorFactory` filters its
 registry by `engine_imported` (whether the third-party library is
 available in the environment).
@@ -712,8 +724,8 @@ The experiment exposes a dedicated `calculation` category:
   backend tag
 - `calculation.calculator` — read-only access to the live backend
   instance
-- `calculation.show_calculator_types()` — filtered by data category
-  support and marks the current type
+- `calculation.show_calculator_types()` — filtered by the active support
+  category and marks the current type
 
 ### 6.2 Minimiser
 
@@ -1067,7 +1079,7 @@ Categories that are **fixed at creation** (determined by the experiment
 type and never changed) expose only a read-only `<category>` property
 with no `_type` getter, setter, or show methods:
 
-- **Experiment:** `instrument`, `data`.
+- **Experiment:** `instrument`, `data`, `refln`.
 
 For categories with **only one implementation** (single-type), the
 `_type` getter, setter, and show methods are omitted from the public API
@@ -1140,7 +1152,7 @@ project.display.show_tabler_types()
 ```
 
 Available calculators are filtered by `engine_imported` (whether the
-library is installed) and by the experiment's data category
+library is installed) and by the experiment's active support category
 `calculator_support` metadata.
 
 ### 9.6 Enums for Finite Value Sets

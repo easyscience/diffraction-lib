@@ -1,21 +1,28 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from __future__ import annotations
+
 import contextlib
 import copy
 import io
+from typing import TYPE_CHECKING
 from typing import Any
 
 import numpy as np
 
 from easydiffraction.analysis.calculators.base import CalculatorBase
+from easydiffraction.analysis.calculators.base import PowderReflnRecord
 from easydiffraction.analysis.calculators.factory import CalculatorFactory
 from easydiffraction.core.metadata import TypeInfo
-from easydiffraction.datablocks.experiment.item.base import ExperimentBase
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import PeakProfileTypeEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
-from easydiffraction.datablocks.structure.item.base import Structure
+from easydiffraction.utils.utils import sin_theta_over_lambda_to_d_spacing
+
+if TYPE_CHECKING:
+    from easydiffraction.datablocks.experiment.item.base import ExperimentBase
+    from easydiffraction.datablocks.structure.item.base import Structure
 
 try:
     import cryspy
@@ -29,6 +36,9 @@ except ImportError:
     # print("⚠️ 'cryspy' module not found. This calculation engine will
     # not be available.")
     cryspy = None
+
+
+EXPECTED_HKL_INDEX_ROWS = 3
 
 
 @CalculatorFactory.register
@@ -56,6 +66,7 @@ class CryspyCalculator(CalculatorBase):
         self._cryspy_dicts: dict[str, dict[str, Any]] = {}
         self._cached_peak_types: dict[str, str] = {}
         self._cached_adp_types: dict[str, tuple[str, ...]] = {}
+        self._last_powder_phase_blocks: dict[str, dict[str, Any] | None] = {}
 
     def _invalidate_stale_cache(
         self,
@@ -185,6 +196,7 @@ class CryspyCalculator(CalculatorBase):
         """
         combined_name = f'{structure.name}_{experiment.name}'
         self._invalidate_stale_cache(combined_name, experiment, structure)
+        self._last_powder_phase_blocks[combined_name] = None
 
         if called_by_minimizer:
             if self._cryspy_dicts and combined_name in self._cryspy_dicts:
@@ -236,14 +248,138 @@ class CryspyCalculator(CalculatorBase):
             return []
 
         try:
-            signal_plus = cryspy_in_out_dict[cryspy_block_name]['signal_plus']
-            signal_minus = cryspy_in_out_dict[cryspy_block_name]['signal_minus']
+            powder_block = cryspy_in_out_dict[cryspy_block_name]
+            signal_plus = powder_block['signal_plus']
+            signal_minus = powder_block['signal_minus']
             y_calc = signal_plus + signal_minus
+            self._last_powder_phase_blocks[combined_name] = powder_block.get(
+                f'dict_in_out_{structure.name}'
+            )
         except KeyError:
             print(f'[CryspyCalculator] Error: No calculated data for {cryspy_block_name}')
             return []
 
         return y_calc
+
+    def last_powder_refln_records(
+        self,
+        structure: Structure,
+        experiment: ExperimentBase,
+        *,
+        phase_id: str,
+    ) -> list[PowderReflnRecord] | None:
+        """
+        Return powder reflection records from the latest pattern run.
+        """
+        combined_name = f'{structure.name}_{experiment.name}'
+        phase_block = self._last_powder_phase_blocks.get(combined_name)
+        if phase_block is None:
+            return None
+
+        core_arrays = self._powder_refln_core_arrays(phase_block)
+        if core_arrays is None:
+            return None
+        x_values = self._powder_refln_x_values(phase_block, experiment.type.beam_mode.value)
+        if x_values is None:
+            return None
+
+        indices, sin_theta_over_lambda, f_nucl = core_arrays
+        d_spacing = self._powder_refln_d_spacing(phase_block, sin_theta_over_lambda)
+        f_calc = np.abs(f_nucl)
+        f_squared_calc = f_calc**2
+
+        return [
+            self._powder_refln_record(
+                phase_id=phase_id,
+                beam_mode=experiment.type.beam_mode.value,
+                hkl=(index_h, index_k, index_l),
+                values=(sthovl, d_value, x_value, f_value, f_sq_value),
+            )
+            for index_h, index_k, index_l, sthovl, d_value, x_value, f_value, f_sq_value in zip(
+                indices[0],
+                indices[1],
+                indices[2],
+                sin_theta_over_lambda,
+                d_spacing,
+                x_values,
+                f_calc,
+                f_squared_calc,
+                strict=True,
+            )
+        ]
+
+    @staticmethod
+    def _powder_refln_core_arrays(
+        phase_block: dict[str, Any],
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray] | None:
+        try:
+            indices = np.asarray(phase_block['index_hkl'], dtype=int)
+            sin_theta_over_lambda = np.asarray(phase_block['sthovl'], dtype=float)
+            f_nucl = np.asarray(phase_block['f_nucl'])
+        except KeyError:
+            return None
+
+        if indices.shape[0] != EXPECTED_HKL_INDEX_ROWS:
+            return None
+        return indices, sin_theta_over_lambda, f_nucl
+
+    @staticmethod
+    def _powder_refln_d_spacing(
+        phase_block: dict[str, Any],
+        sin_theta_over_lambda: np.ndarray,
+    ) -> np.ndarray:
+        d_spacing_raw = phase_block.get('d_hkl')
+        if d_spacing_raw is None:
+            return np.asarray(
+                sin_theta_over_lambda_to_d_spacing(sin_theta_over_lambda),
+                dtype=float,
+            )
+        return np.asarray(d_spacing_raw, dtype=float)
+
+    @staticmethod
+    def _powder_refln_x_values(
+        phase_block: dict[str, Any],
+        beam_mode: BeamModeEnum,
+    ) -> np.ndarray | None:
+        x_values = None
+        if beam_mode == BeamModeEnum.CONSTANT_WAVELENGTH:
+            x_raw = phase_block.get('ttheta_hkl')
+            if x_raw is not None:
+                x_values = np.degrees(np.asarray(x_raw, dtype=float))
+        elif beam_mode == BeamModeEnum.TIME_OF_FLIGHT:
+            x_raw = phase_block.get('time_hkl')
+            if x_raw is not None:
+                x_values = np.asarray(x_raw, dtype=float)
+
+        if x_values is None or x_values.size == 0:
+            return None
+        return x_values
+
+    @staticmethod
+    def _powder_refln_record(
+        *,
+        phase_id: str,
+        beam_mode: BeamModeEnum,
+        hkl: tuple[int, int, int],
+        values: tuple[float, float, float, float, float],
+    ) -> PowderReflnRecord:
+        index_h, index_k, index_l = hkl
+        sin_theta_over_lambda, d_spacing, x_value, f_calc, f_squared_calc = values
+        x_kwargs = {'two_theta': float(x_value)}
+        if beam_mode == BeamModeEnum.TIME_OF_FLIGHT:
+            x_kwargs = {'time_of_flight': float(x_value)}
+
+        return PowderReflnRecord(
+            phase_id=phase_id,
+            d_spacing=float(d_spacing),
+            sin_theta_over_lambda=float(sin_theta_over_lambda),
+            index_h=int(index_h),
+            index_k=int(index_k),
+            index_l=int(index_l),
+            f_calc=float(f_calc),
+            f_squared_calc=float(f_squared_calc),
+            **x_kwargs,
+        )
 
     def _recreate_cryspy_dict(
         self,
@@ -1045,7 +1181,7 @@ def _cif_measured_data_sc(
     experiment: ExperimentBase,
 ) -> None:
     """Append single crystal measured data loop."""
-    data = experiment.data
+    data = experiment.refln
     cif_lines.extend((
         '',
         'loop_',

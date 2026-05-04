@@ -120,6 +120,50 @@
 
 ## Workflow
 
+### Planning Workflow
+
+- When asked to create a plan, first gather enough repository context to
+  make the plan concrete. Ask all ambiguous, potentially ambiguous, or
+  unclear questions in one concise batch, and record unresolved
+  questions in the plan if the user wants the plan saved before
+  answering them.
+- Save plans as Markdown files in `docs/dev` with the filename pattern
+  `plan_<feature-name>.md`. The `<feature-name>` part uses lowercase
+  words separated by dashes, for example
+  `docs/dev/plan_background-refactor.md`.
+- Use the same `<feature-name>` to create the implementation branch,
+  normally `feature/<feature-name>`. Do not push the branch unless the
+  user explicitly asks.
+- Each plan must include a status checklist with `[ ]` items. Mark each
+  item as `[x]` as it is completed during implementation.
+- Plans for non-trivial work must separate the work into two phases:
+  - **Phase 1 — Implementation:** the agent works independently through
+    all implementation steps, updating the plan checklist as it goes. Do
+    not create tests or run tests in this phase unless the user
+    explicitly asks. When Phase 1 is complete, stop and ask the user to
+    review the implementation.
+  - **Phase 2 — Verification:** after user approval, add/update tests,
+    run formatting, linting, unit tests, integration tests, and script
+    or notebook checks requested by the plan.
+- Every completed implementation step must end with a local commit.
+  Stage only the files modified for that step, using explicit paths
+  where practical. Do not include data files, project files, CIF files,
+  or other generated artifacts created by integration tests, script
+  tests, or notebook execution unless the user explicitly asked to
+  update those artifacts.
+- Keep commits atomic, single-purpose, and aligned with plan steps. Use
+  imperative commit messages, no type prefix, and keep the subject line
+  at or below 72 characters.
+- Before each commit, inspect the worktree and avoid staging unrelated
+  user changes. If unrelated dirty files exist, leave them untouched and
+  mention them only when relevant.
+- The plan should be easy to maintain while working: include concrete
+  files likely to change, decisions already made, open questions,
+  verification commands for Phase 2, and a short suggested commit
+  message or branch name when useful.
+
+### General Workflow
+
 - Two-phase workflow for non-trivial changes:
   - **Phase 1 — Implementation:** code, docs, architecture updates. Do
     not create new tests or run existing tests. Present for review and

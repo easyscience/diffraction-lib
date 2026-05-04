@@ -25,6 +25,7 @@ except ImportError:
     display = None
     HTML = None
 
+from easydiffraction.display.plotters.base import DEFAULT_HEIGHT
 from easydiffraction.display.plotters.base import SERIES_CONFIG
 from easydiffraction.display.plotters.base import BraggTickSet
 from easydiffraction.display.plotters.base import PlotterBase
@@ -49,6 +50,7 @@ BRAGG_TICK_COLORS = (
 
 NICE_AXIS_FRACTIONS = (1.0, 2.0, 5.0, 10.0)
 DISPLAY_TICK_FRACTIONS = (1.0, 2.0, 2.5, 4.0, 5.0, 7.5, 10.0)
+PLOTLY_HEIGHT_PER_UNIT = 24
 
 
 @dataclass(frozen=True)
@@ -59,6 +61,8 @@ class PowderCompositeRows:
     normalized_heights: list[float]
     bragg_row: int | None
     residual_row: int | None
+    total_weight: float
+    baseline_weight: float
 
 
 class PlotlyPlotter(PlotterBase):
@@ -633,26 +637,22 @@ class PlotlyPlotter(PlotterBase):
         row_y: float,
         color: str,
     ) -> object:
-        """Create a hover-capable Bragg tick trace for one structure."""
+        """
+        Create a hover-capable Bragg tick trace for one linked phase.
+        """
         y = np.full(tick_set.x.shape, row_y, dtype=float)
-        peak_ids = tick_set.peak_id
         hover_text = []
         for idx, x_value in enumerate(tick_set.x):
-            peak_line = ''
-            if peak_ids is not None:
-                peak_value = str(peak_ids[idx])
-                if peak_value:
-                    peak_line = f'peak: {peak_value}<br>'
             hkl_text = (
                 f'hkl: ({int(tick_set.h[idx])} '
                 f'{int(tick_set.k[idx])} {int(tick_set.ell[idx])})<br>'
             )
             hover_text.append(
-                f'structure: {tick_set.structure_id}<br>'
-                f'{peak_line}'
+                f'phase_id: {tick_set.phase_id}<br>'
                 f'{hkl_text}'
                 f'x: {float(x_value):.6g}<br>'
-                f'intensity: {float(tick_set.intensity[idx]):.6g}<extra></extra>'
+                f'f_squared_calc: {float(tick_set.f_squared_calc[idx]):.6g}<br>'
+                f'f_calc: {float(tick_set.f_calc[idx]):.6g}<extra></extra>'
             )
 
         return go.Scatter(
@@ -661,11 +661,11 @@ class PlotlyPlotter(PlotterBase):
             mode='markers',
             marker={
                 'symbol': 'line-ns-open',
-                'size': 18,
-                'line': {'color': color, 'width': 2},
+                'size': 12,
+                'line': {'color': color, 'width': 1},
                 'color': color,
             },
-            name=f'Bragg ({tick_set.structure_id})',
+            name=f'Bragg ({tick_set.phase_id})',
             text=hover_text,
             hovertemplate='%{text}',
             showlegend=False,
@@ -702,11 +702,23 @@ class PlotlyPlotter(PlotterBase):
         return DISPLAY_TICK_FRACTIONS[0] * base
 
     @staticmethod
+    def _scaled_bragg_row_height(plot_spec: PowderMeasVsCalcSpec) -> float:
+        """
+        Return Bragg-row weight for the current number of phases.
+        """
+        phase_count = len(plot_spec.bragg_tick_sets)
+        if phase_count == 0:
+            return 0.0
+
+        return plot_spec.bragg_peaks_height_fraction * phase_count
+
+    @staticmethod
     def _get_powder_composite_rows(plot_spec: PowderMeasVsCalcSpec) -> PowderCompositeRows:
         """Resolve subplot rows for the composite powder figure."""
         has_bragg_ticks = bool(plot_spec.bragg_tick_sets)
         has_residual = plot_spec.y_resid is not None
         row_heights = [1.0]
+        baseline_weight = 1.0
         bragg_row = None
         residual_row = None
         next_row = 2
@@ -714,10 +726,12 @@ class PlotlyPlotter(PlotterBase):
         if has_bragg_ticks:
             bragg_row = next_row
             next_row += 1
-            row_heights.append(plot_spec.bragg_peaks_height_fraction)
+            row_heights.append(PlotlyPlotter._scaled_bragg_row_height(plot_spec))
+            baseline_weight += plot_spec.bragg_peaks_height_fraction
         if has_residual:
             residual_row = next_row
             row_heights.append(plot_spec.residual_height_fraction)
+            baseline_weight += plot_spec.residual_height_fraction
 
         total_height = sum(row_heights)
         normalized_heights = [row_height / total_height for row_height in row_heights]
@@ -726,7 +740,22 @@ class PlotlyPlotter(PlotterBase):
             normalized_heights=normalized_heights,
             bragg_row=bragg_row,
             residual_row=residual_row,
+            total_weight=total_height,
+            baseline_weight=baseline_weight,
         )
+
+    @staticmethod
+    def _composite_figure_height(
+        plot_spec: PowderMeasVsCalcSpec,
+        layout: PowderCompositeRows,
+    ) -> int:
+        """Return figure height scaled by Bragg-row growth."""
+        if plot_spec.height is None:
+            base_pixels = DEFAULT_HEIGHT * PLOTLY_HEIGHT_PER_UNIT
+        else:
+            base_pixels = plot_spec.height
+        scaled_pixels = np.ceil(base_pixels * layout.total_weight / layout.baseline_weight)
+        return int(scaled_pixels)
 
     @classmethod
     def _get_residual_limit(cls, plot_spec: PowderMeasVsCalcSpec) -> float:
@@ -799,6 +828,7 @@ class PlotlyPlotter(PlotterBase):
             )
 
         fig.update_layout(
+            height=self._composite_figure_height(plot_spec, layout),
             margin={
                 'autoexpand': True,
                 'r': 30,
@@ -841,11 +871,11 @@ class PlotlyPlotter(PlotterBase):
 
         if layout.bragg_row is not None:
             fig.update_yaxes(
-                title_text='Bragg peaks',
+                # title_text='Bragg peaks',
                 tickmode='array',
                 tickvals=[float(idx + 1) for idx in range(len(plot_spec.bragg_tick_sets))],
-                ticktext=[tick_set.structure_id for tick_set in plot_spec.bragg_tick_sets],
-                range=[0.5, float(len(plot_spec.bragg_tick_sets)) + 0.5],
+                ticktext=[tick_set.phase_id for tick_set in plot_spec.bragg_tick_sets],
+                range=[float(len(plot_spec.bragg_tick_sets)) + 0.5, 0.5],
                 showgrid=False,
                 row=layout.bragg_row,
                 col=1,
@@ -859,7 +889,7 @@ class PlotlyPlotter(PlotterBase):
         if layout.residual_row is not None and plot_spec.y_resid is not None:
             residual_tick_limit = self._get_display_tick_limit(residual_limit)
             fig.update_yaxes(
-                title_text='Residual',
+                # title_text='Residual',
                 range=[-residual_limit, residual_limit],
                 tickmode='array',
                 tickvals=[-residual_tick_limit, 0.0, residual_tick_limit],
