@@ -361,6 +361,9 @@ class PlotlyPlotter(PlotterBase):
         x: object,
         y: object,
         label: str,
+        *,
+        customdata: object | None = None,
+        hovertemplate: str | None = None,
     ) -> object:
         """
         Create a Plotly trace for powder diffraction data.
@@ -373,6 +376,11 @@ class PlotlyPlotter(PlotterBase):
             1D array- like of y-axis values.
         label : str
             Series identifier (``'meas'``, ``'calc'``, or ``'resid'``).
+        customdata : object | None, default=None
+            Optional per-point payload used by the hover template.
+        hovertemplate : str | None, default=None
+            Optional hover template overriding the default per-trace
+            one.
 
         Returns
         -------
@@ -390,7 +398,39 @@ class PlotlyPlotter(PlotterBase):
             line=line,
             mode=mode,
             name=name,
-            hovertemplate=f'{name}<br>x: %{{x}}<br>y: %{{y}}<extra></extra>',
+            customdata=customdata,
+            hovertemplate=(
+                hovertemplate
+                if hovertemplate is not None
+                else f'{name}<br>x: %{{x}}<br>y: %{{y}}<extra></extra>'
+            ),
+        )
+
+    @staticmethod
+    def _powder_meas_vs_calc_hover_data(plot_spec: PowderMeasVsCalcSpec) -> np.ndarray:
+        """Return shared hover values for composite powder traces."""
+        residual_values = (
+            np.asarray(plot_spec.y_resid)
+            if plot_spec.y_resid is not None
+            else np.asarray(plot_spec.y_meas) - np.asarray(plot_spec.y_calc)
+        )
+        return np.column_stack((
+            np.asarray(plot_spec.y_meas),
+            np.asarray(plot_spec.y_calc),
+            residual_values,
+        ))
+
+    @staticmethod
+    def _powder_meas_vs_calc_hover_template() -> str:
+        """
+        Return a shared hover template for composite powder traces.
+        """
+        return (
+            'x: %{x:,.2f}<br>'
+            'Imeas: %{customdata[0]:,.2f}<br>'
+            'Icalc: %{customdata[1]:,.2f}<br>'
+            'Imeas - Icalc: %{customdata[2]:,.2f}'
+            '<extra></extra>'
         )
 
     @staticmethod
@@ -649,11 +689,13 @@ class PlotlyPlotter(PlotterBase):
         y = np.full(tick_set.x.shape, row_y, dtype=float)
         hover_text = []
         for idx, x_value in enumerate(tick_set.x):
+            index_h = int(tick_set.h[idx])
+            index_k = int(tick_set.k[idx])
+            index_l = int(tick_set.ell[idx])
             hover_text.append(
-                f'Bragg peaks: {tick_set.phase_id}<br>'
-                f'Miller indices: ({int(tick_set.h[idx])} {int(tick_set.k[idx])} '
-                f'{int(tick_set.ell[idx])})<br>'
-                f'x: {float(x_value):.6g}<br>'
+                f'{tick_set.phase_id}<br>'
+                f'x: {float(x_value):,.2f}<br>'
+                f'Miller indices: ({index_h} {index_k} {index_l})<br>'
                 # f'F²cal:{float(tick_set.f_squared_calc[idx]):.6g}<br>'
                 # f'Fcalc:{float(tick_set.f_calc[idx]):.6g}'
                 '<extra></extra>'
@@ -875,6 +917,8 @@ class PlotlyPlotter(PlotterBase):
         x_max = float(np.max(x_values)) if has_x_values else None
         main_y_min, main_y_max = self._get_main_intensity_range(plot_spec)
         residual_limit = None
+        hover_data = self._powder_meas_vs_calc_hover_data(plot_spec)
+        hover_template = self._powder_meas_vs_calc_hover_template()
 
         fig = make_subplots(
             rows=layout.row_count,
@@ -884,8 +928,28 @@ class PlotlyPlotter(PlotterBase):
             row_heights=layout.row_heights,
         )
 
-        fig.add_trace(self._get_powder_trace(plot_spec.x, plot_spec.y_meas, 'meas'), row=1, col=1)
-        fig.add_trace(self._get_powder_trace(plot_spec.x, plot_spec.y_calc, 'calc'), row=1, col=1)
+        fig.add_trace(
+            self._get_powder_trace(
+                plot_spec.x,
+                plot_spec.y_meas,
+                'meas',
+                customdata=hover_data,
+                hovertemplate=hover_template,
+            ),
+            row=1,
+            col=1,
+        )
+        fig.add_trace(
+            self._get_powder_trace(
+                plot_spec.x,
+                plot_spec.y_calc,
+                'calc',
+                customdata=hover_data,
+                hovertemplate=hover_template,
+            ),
+            row=1,
+            col=1,
+        )
 
         if layout.bragg_row is not None:
             for idx, tick_set in enumerate(plot_spec.bragg_tick_sets):
@@ -903,7 +967,13 @@ class PlotlyPlotter(PlotterBase):
         if layout.residual_row is not None and plot_spec.y_resid is not None:
             residual_limit = self._get_residual_limit(plot_spec)
             fig.add_trace(
-                self._get_powder_trace(plot_spec.x, plot_spec.y_resid, 'resid'),
+                self._get_powder_trace(
+                    plot_spec.x,
+                    plot_spec.y_resid,
+                    'resid',
+                    customdata=hover_data,
+                    hovertemplate=hover_template,
+                ),
                 row=layout.residual_row,
                 col=1,
             )
@@ -1074,7 +1144,7 @@ class PlotlyPlotter(PlotterBase):
                 'array': sy,
                 'visible': True,
             },
-            hovertemplate='x: %{x}<br>y: %{y}<br><extra></extra>',
+            hovertemplate='x: %{x:,.2f}<br>y: %{y:,.2f}<br><extra></extra>',
         )
 
         layout = self._get_layout(

@@ -307,6 +307,23 @@ def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch)
         2 * pp.PlotlyPlotter._bragg_tick_symbol_height_pixels()
     )
 
+    expected_hovertemplate = (
+        'x: %{x}<br>'
+        'Imeas: %{customdata[0]}<br>'
+        'Icalc: %{customdata[1]}<br>'
+        'Imeas - Icalc: %{customdata[2]}'
+        '<extra></extra>'
+    )
+    meas_trace = next(trace for trace in fig.data if trace.name == 'Measured (Imeas)')
+    calc_trace = next(trace for trace in fig.data if trace.name == 'Total calculated (Icalc)')
+    residual_trace = next(trace for trace in fig.data if trace.name == 'Residual (Imeas - Icalc)')
+    assert meas_trace.hovertemplate == expected_hovertemplate
+    assert calc_trace.hovertemplate == expected_hovertemplate
+    assert residual_trace.hovertemplate == expected_hovertemplate
+    assert list(meas_trace.customdata[0]) == pytest.approx([10.0, 9.0, 1.0])
+    assert list(calc_trace.customdata[0]) == pytest.approx([10.0, 9.0, 1.0])
+    assert list(residual_trace.customdata[0]) == pytest.approx([10.0, 9.0, 1.0])
+
     bragg_traces = [trace for trace in fig.data if trace.name.startswith('Bragg')]
     assert [trace.name for trace in bragg_traces] == [
         'Bragg peaks: phase-a',
