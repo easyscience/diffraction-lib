@@ -36,9 +36,15 @@ from easydiffraction.utils.environment import in_pycharm
 
 DEFAULT_COLORS = {
     'meas': 'rgb(31, 119, 180)',
+    'bkg': 'rgb(140, 140, 140)',
     'calc': 'rgb(214, 39, 40)',
     'resid': 'rgb(44, 160, 44)',
 }
+
+MEASURED_LINE_WIDTH = 2.0
+BACKGROUND_LINE_WIDTH = 1.0
+CALCULATED_LINE_WIDTH = 2.0
+RESIDUAL_LINE_WIDTH = 2.0
 
 BRAGG_TICK_COLORS = (
     'rgb(255, 127, 14)',
@@ -51,6 +57,13 @@ BRAGG_TICK_COLORS = (
 NICE_AXIS_FRACTIONS = (1.0, 2.0, 5.0, 10.0)
 DISPLAY_TICK_FRACTIONS = (1.0, 2.0, 2.5, 4.0, 5.0, 7.5, 10.0)
 PLOTLY_HEIGHT_PER_UNIT = 24
+BRAGG_TICK_MARKER_SIZE = 12
+BRAGG_TICK_MARKER_LINE_WIDTH = 1
+BRAGG_TICK_SYMBOL_HEIGHT_SCALE = 1.4
+COMPOSITE_VERTICAL_SPACING = 0.03
+COMPOSITE_MARGIN_RIGHT = 30
+COMPOSITE_MARGIN_TOP = 40
+COMPOSITE_MARGIN_BOTTOM = 45
 
 
 @dataclass(frozen=True)
@@ -58,11 +71,9 @@ class PowderCompositeRows:
     """Resolved row layout for the composite powder figure."""
 
     row_count: int
-    normalized_heights: list[float]
+    row_heights: list[float]
     bragg_row: int | None
     residual_row: int | None
-    total_weight: float
-    baseline_weight: float
 
 
 class PlotlyPlotter(PlotterBase):
@@ -356,6 +367,9 @@ class PlotlyPlotter(PlotterBase):
         x: object,
         y: object,
         label: str,
+        *,
+        customdata: object | None = None,
+        hovertemplate: str | None = None,
     ) -> object:
         """
         Create a Plotly trace for powder diffraction data.
@@ -367,7 +381,13 @@ class PlotlyPlotter(PlotterBase):
         y : object
             1D array- like of y-axis values.
         label : str
-            Series identifier (``'meas'``, ``'calc'``, or ``'resid'``).
+            Series identifier (``'meas'``, ``'bkg'``, ``'calc'``, or
+            ``'resid'``).
+        customdata : object | None, default=None
+            Optional per-point payload used by the hover template.
+        hovertemplate : str | None, default=None
+            Optional hover template overriding the default per-trace
+            one.
 
         Returns
         -------
@@ -377,7 +397,19 @@ class PlotlyPlotter(PlotterBase):
         mode = SERIES_CONFIG[label]['mode']
         name = SERIES_CONFIG[label]['name']
         color = DEFAULT_COLORS[label]
-        line = {'color': color}
+        line_width = {
+            'meas': MEASURED_LINE_WIDTH,
+            'bkg': BACKGROUND_LINE_WIDTH,
+            'calc': CALCULATED_LINE_WIDTH,
+            'resid': RESIDUAL_LINE_WIDTH,
+        }[label]
+        line = {'color': color, 'width': line_width}
+        legend_rank = {
+            'meas': 10,
+            'bkg': 20,
+            'calc': 30,
+            'resid': 40,
+        }[label]
 
         return go.Scatter(
             x=x,
@@ -385,6 +417,58 @@ class PlotlyPlotter(PlotterBase):
             line=line,
             mode=mode,
             name=name,
+            legendrank=legend_rank,
+            customdata=customdata,
+            hovertemplate=(
+                hovertemplate
+                if hovertemplate is not None
+                else f'{name}<br>x: %{{x}}<br>y: %{{y}}<extra></extra>'
+            ),
+        )
+
+    @staticmethod
+    def _powder_meas_vs_calc_hover_data(plot_spec: PowderMeasVsCalcSpec) -> np.ndarray:
+        """Return shared hover values for composite powder traces."""
+        residual_values = (
+            np.asarray(plot_spec.y_resid)
+            if plot_spec.y_resid is not None
+            else np.asarray(plot_spec.y_meas) - np.asarray(plot_spec.y_calc)
+        )
+        if plot_spec.y_bkg is None:
+            return np.column_stack((
+                np.asarray(plot_spec.y_meas),
+                np.asarray(plot_spec.y_calc),
+                residual_values,
+            ))
+
+        return np.column_stack((
+            np.asarray(plot_spec.y_meas),
+            np.asarray(plot_spec.y_bkg),
+            np.asarray(plot_spec.y_calc),
+            residual_values,
+        ))
+
+    @staticmethod
+    def _powder_meas_vs_calc_hover_template(plot_spec: PowderMeasVsCalcSpec) -> str:
+        """
+        Return a shared hover template for composite powder traces.
+        """
+        if plot_spec.y_bkg is None:
+            return (
+                'x: %{x:,.2f}<br>'
+                'Imeas: %{customdata[0]:,.2f}<br>'
+                'Icalc: %{customdata[1]:,.2f}<br>'
+                'Imeas - Icalc: %{customdata[2]:,.2f}'
+                '<extra></extra>'
+            )
+
+        return (
+            'x: %{x:,.2f}<br>'
+            'Imeas: %{customdata[0]:,.2f}<br>'
+            'Ibkg: %{customdata[1]:,.2f}<br>'
+            'Icalc: %{customdata[2]:,.2f}<br>'
+            'Imeas - Icalc: %{customdata[3]:,.2f}'
+            '<extra></extra>'
         )
 
     @staticmethod
@@ -643,16 +727,16 @@ class PlotlyPlotter(PlotterBase):
         y = np.full(tick_set.x.shape, row_y, dtype=float)
         hover_text = []
         for idx, x_value in enumerate(tick_set.x):
-            hkl_text = (
-                f'hkl: ({int(tick_set.h[idx])} '
-                f'{int(tick_set.k[idx])} {int(tick_set.ell[idx])})<br>'
-            )
+            index_h = int(tick_set.h[idx])
+            index_k = int(tick_set.k[idx])
+            index_l = int(tick_set.ell[idx])
             hover_text.append(
-                f'phase_id: {tick_set.phase_id}<br>'
-                f'{hkl_text}'
-                f'x: {float(x_value):.6g}<br>'
-                f'f_squared_calc: {float(tick_set.f_squared_calc[idx]):.6g}<br>'
-                f'f_calc: {float(tick_set.f_calc[idx]):.6g}<extra></extra>'
+                f'{tick_set.phase_id}<br>'
+                f'x: {float(x_value):,.2f}<br>'
+                f'Miller indices: ({index_h} {index_k} {index_l})<br>'
+                # f'F²cal:{float(tick_set.f_squared_calc[idx]):.6g}<br>'
+                # f'Fcalc:{float(tick_set.f_calc[idx]):.6g}'
+                '<extra></extra>'
             )
 
         return go.Scatter(
@@ -661,14 +745,17 @@ class PlotlyPlotter(PlotterBase):
             mode='markers',
             marker={
                 'symbol': 'line-ns-open',
-                'size': 12,
-                'line': {'color': color, 'width': 1},
+                'size': BRAGG_TICK_MARKER_SIZE,
+                'line': {'width': BRAGG_TICK_MARKER_LINE_WIDTH},
                 'color': color,
             },
-            name=f'Bragg ({tick_set.phase_id})',
+            name=f'Bragg peaks: {tick_set.phase_id}',
             text=hover_text,
+            hoverlabel={
+                'font': {'color': 'white'},
+                'bordercolor': 'white',
+            },
             hovertemplate='%{text}',
-            showlegend=False,
         )
 
     @staticmethod
@@ -702,23 +789,80 @@ class PlotlyPlotter(PlotterBase):
         return DISPLAY_TICK_FRACTIONS[0] * base
 
     @staticmethod
-    def _scaled_bragg_row_height(plot_spec: PowderMeasVsCalcSpec) -> float:
-        """
-        Return Bragg-row weight for the current number of phases.
-        """
-        phase_count = len(plot_spec.bragg_tick_sets)
-        if phase_count == 0:
-            return 0.0
+    def _base_composite_height_pixels(plot_spec: PowderMeasVsCalcSpec) -> float:
+        """Return the baseline figure height for a single-phase plot."""
+        if plot_spec.height is None:
+            return float(DEFAULT_HEIGHT * PLOTLY_HEIGHT_PER_UNIT)
+        return float(plot_spec.height)
 
-        return plot_spec.bragg_peaks_height_fraction * phase_count
+    @staticmethod
+    def _composite_plot_area_height(full_height: float) -> float:
+        """
+        Return the drawable plot area height after vertical margins.
+        """
+        return max(full_height - COMPOSITE_MARGIN_TOP - COMPOSITE_MARGIN_BOTTOM, 1.0)
+
+    @staticmethod
+    def _subplot_available_height_fraction(row_count: int) -> float:
+        """
+        Return the fraction of plot height available for subplot rows.
+        """
+        return 1.0 - COMPOSITE_VERTICAL_SPACING * max(row_count - 1, 0)
+
+    @staticmethod
+    def _bragg_tick_symbol_height_pixels() -> float:
+        """Return rendered pixel height for one Bragg tick marker."""
+        return (
+            BRAGG_TICK_MARKER_SIZE * BRAGG_TICK_SYMBOL_HEIGHT_SCALE + BRAGG_TICK_MARKER_LINE_WIDTH
+        )
+
+    @staticmethod
+    def _bragg_row_height_pixels(plot_spec: PowderMeasVsCalcSpec) -> float:
+        """
+        Return the exact Bragg-row pixel height for the current phases.
+        """
+        return float(
+            len(plot_spec.bragg_tick_sets) * PlotlyPlotter._bragg_tick_symbol_height_pixels()
+        )
+
+    @classmethod
+    def _baseline_non_bragg_row_heights(
+        cls,
+        plot_spec: PowderMeasVsCalcSpec,
+        row_count: int,
+        *,
+        has_bragg_ticks: bool,
+        has_residual: bool,
+    ) -> tuple[float, float | None]:
+        """Return baseline main and residual row heights in pixels."""
+        baseline_height = cls._base_composite_height_pixels(plot_spec)
+        plot_area_height = cls._composite_plot_area_height(baseline_height)
+        available_row_pixels = plot_area_height * cls._subplot_available_height_fraction(row_count)
+        baseline_bragg_pixels = float(
+            cls._bragg_tick_symbol_height_pixels() if has_bragg_ticks else 0
+        )
+        non_bragg_pixels = max(available_row_pixels - baseline_bragg_pixels, 1.0)
+
+        if not has_residual:
+            return non_bragg_pixels, None
+
+        main_pixels = non_bragg_pixels / (1.0 + plot_spec.residual_height_fraction)
+        residual_pixels = main_pixels * plot_spec.residual_height_fraction
+        return main_pixels, residual_pixels
 
     @staticmethod
     def _get_powder_composite_rows(plot_spec: PowderMeasVsCalcSpec) -> PowderCompositeRows:
         """Resolve subplot rows for the composite powder figure."""
         has_bragg_ticks = bool(plot_spec.bragg_tick_sets)
         has_residual = plot_spec.y_resid is not None
-        row_heights = [1.0]
-        baseline_weight = 1.0
+        row_count = 1 + int(has_bragg_ticks) + int(has_residual)
+        main_row_height, residual_row_height = PlotlyPlotter._baseline_non_bragg_row_heights(
+            plot_spec=plot_spec,
+            row_count=row_count,
+            has_bragg_ticks=has_bragg_ticks,
+            has_residual=has_residual,
+        )
+        row_heights = [main_row_height]
         bragg_row = None
         residual_row = None
         next_row = 2
@@ -726,36 +870,52 @@ class PlotlyPlotter(PlotterBase):
         if has_bragg_ticks:
             bragg_row = next_row
             next_row += 1
-            row_heights.append(PlotlyPlotter._scaled_bragg_row_height(plot_spec))
-            baseline_weight += plot_spec.bragg_peaks_height_fraction
+            row_heights.append(PlotlyPlotter._bragg_row_height_pixels(plot_spec))
         if has_residual:
             residual_row = next_row
-            row_heights.append(plot_spec.residual_height_fraction)
-            baseline_weight += plot_spec.residual_height_fraction
+            row_heights.append(residual_row_height if residual_row_height is not None else 1.0)
 
-        total_height = sum(row_heights)
-        normalized_heights = [row_height / total_height for row_height in row_heights]
         return PowderCompositeRows(
-            row_count=1 + int(has_bragg_ticks) + int(has_residual),
-            normalized_heights=normalized_heights,
+            row_count=row_count,
+            row_heights=row_heights,
             bragg_row=bragg_row,
             residual_row=residual_row,
-            total_weight=total_height,
-            baseline_weight=baseline_weight,
         )
 
-    @staticmethod
+    @classmethod
     def _composite_figure_height(
+        cls,
         plot_spec: PowderMeasVsCalcSpec,
         layout: PowderCompositeRows,
-    ) -> int:
-        """Return figure height scaled by Bragg-row growth."""
-        if plot_spec.height is None:
-            base_pixels = DEFAULT_HEIGHT * PLOTLY_HEIGHT_PER_UNIT
-        else:
-            base_pixels = plot_spec.height
-        scaled_pixels = np.ceil(base_pixels * layout.total_weight / layout.baseline_weight)
-        return int(scaled_pixels)
+    ) -> float:
+        """Return figure height for Bragg row growth."""
+        base_pixels = cls._base_composite_height_pixels(plot_spec)
+        phase_count = len(plot_spec.bragg_tick_sets)
+        if phase_count <= 1:
+            return base_pixels
+
+        added_bragg_pixels = float((phase_count - 1) * cls._bragg_tick_symbol_height_pixels())
+        growth_pixels = added_bragg_pixels / cls._subplot_available_height_fraction(
+            layout.row_count
+        )
+        return base_pixels + growth_pixels
+
+    @classmethod
+    def _get_main_intensity_range(cls, plot_spec: PowderMeasVsCalcSpec) -> tuple[float, float]:
+        """
+        Return an explicit y-range for the main powder intensity row.
+        """
+        y_meas = np.asarray(plot_spec.y_meas)
+        y_calc = np.asarray(plot_spec.y_calc)
+        if min(y_meas.size, y_calc.size) == 0:
+            return 0.0, 1.0
+
+        main_y_min = float(min(np.min(y_meas), np.min(y_calc)))
+        main_y_max = float(max(np.max(y_meas), np.max(y_calc)))
+        lower_limit = min(0.0, main_y_min)
+        if main_y_max <= lower_limit:
+            return lower_limit - 1.0, lower_limit + 1.0
+        return lower_limit, main_y_max
 
     @classmethod
     def _get_residual_limit(cls, plot_spec: PowderMeasVsCalcSpec) -> float:
@@ -769,14 +929,20 @@ class PlotlyPlotter(PlotterBase):
         if min(y_meas.size, y_calc.size, y_resid.size) == 0:
             return 1.0
 
-        main_y_min = float(min(np.min(y_meas), np.min(y_calc)))
-        main_y_max = float(max(np.max(y_meas), np.max(y_calc)))
+        main_y_min, main_y_max = cls._get_main_intensity_range(plot_spec)
         main_y_range = max(main_y_max - main_y_min, 0.0)
         scale_matched_half_range = 0.5 * main_y_range * plot_spec.residual_height_fraction
         if scale_matched_half_range > 0.0:
             return scale_matched_half_range
 
         return cls._nice_axis_limit(float(np.max(np.abs(y_resid))))
+
+    @staticmethod
+    def _composite_x_range(x_values: np.ndarray) -> tuple[float | None, float | None]:
+        """Return the explicit x-range for the composite powder plot."""
+        if x_values.size == 0:
+            return None, None
+        return float(np.min(x_values)), float(np.max(x_values))
 
     def plot_powder_meas_vs_calc(
         self,
@@ -790,21 +956,44 @@ class PlotlyPlotter(PlotterBase):
         residual row is added only when residual data is requested.
         """
         layout = self._get_powder_composite_rows(plot_spec)
-        x_values = np.asarray(plot_spec.x)
-        has_x_values = x_values.size > 0
-        x_min = float(np.min(x_values)) if has_x_values else None
-        x_max = float(np.max(x_values)) if has_x_values else None
+        x_min, x_max = self._composite_x_range(np.asarray(plot_spec.x))
+        main_y_min, main_y_max = self._get_main_intensity_range(plot_spec)
+        residual_limit = None
+        hover_data = self._powder_meas_vs_calc_hover_data(plot_spec)
+        hover_template = self._powder_meas_vs_calc_hover_template(plot_spec)
 
         fig = make_subplots(
             rows=layout.row_count,
             cols=1,
             shared_xaxes=True,
-            vertical_spacing=0.04,
-            row_heights=layout.normalized_heights,
+            vertical_spacing=COMPOSITE_VERTICAL_SPACING,
+            row_heights=layout.row_heights,
         )
 
-        fig.add_trace(self._get_powder_trace(plot_spec.x, plot_spec.y_meas, 'meas'), row=1, col=1)
-        fig.add_trace(self._get_powder_trace(plot_spec.x, plot_spec.y_calc, 'calc'), row=1, col=1)
+        main_traces = (
+            (
+                ('meas', plot_spec.y_meas),
+                ('bkg', plot_spec.y_bkg),
+                ('calc', plot_spec.y_calc),
+            )
+            if plot_spec.y_bkg is not None
+            else (
+                ('meas', plot_spec.y_meas),
+                ('calc', plot_spec.y_calc),
+            )
+        )
+        for label, y_values in main_traces:
+            fig.add_trace(
+                self._get_powder_trace(
+                    plot_spec.x,
+                    y_values,
+                    label,
+                    customdata=hover_data,
+                    hovertemplate=hover_template,
+                ),
+                row=1,
+                col=1,
+            )
 
         if layout.bragg_row is not None:
             for idx, tick_set in enumerate(plot_spec.bragg_tick_sets):
@@ -822,7 +1011,13 @@ class PlotlyPlotter(PlotterBase):
         if layout.residual_row is not None and plot_spec.y_resid is not None:
             residual_limit = self._get_residual_limit(plot_spec)
             fig.add_trace(
-                self._get_powder_trace(plot_spec.x, plot_spec.y_resid, 'resid'),
+                self._get_powder_trace(
+                    plot_spec.x,
+                    plot_spec.y_resid,
+                    'resid',
+                    customdata=hover_data,
+                    hovertemplate=hover_template,
+                ),
                 row=layout.residual_row,
                 col=1,
             )
@@ -831,9 +1026,9 @@ class PlotlyPlotter(PlotterBase):
             height=self._composite_figure_height(plot_spec, layout),
             margin={
                 'autoexpand': True,
-                'r': 30,
-                't': 40,
-                'b': 45,
+                'r': COMPOSITE_MARGIN_RIGHT,
+                't': COMPOSITE_MARGIN_TOP,
+                'b': COMPOSITE_MARGIN_BOTTOM,
             },
             title={'text': plot_spec.title},
             legend={
@@ -853,7 +1048,7 @@ class PlotlyPlotter(PlotterBase):
                 'tickformat': ',.6~g',
                 'separatethousands': True,
             }
-            if has_x_values:
+            if x_min is not None and x_max is not None:
                 x_axis_kwargs['range'] = [x_min, x_max]
             fig.update_xaxes(row=row_idx, col=1, **x_axis_kwargs)
             fig.update_yaxes(
@@ -867,7 +1062,12 @@ class PlotlyPlotter(PlotterBase):
             )
 
         fig.update_xaxes(showticklabels=(layout.row_count == 1), row=1, col=1)
-        fig.update_yaxes(title_text=plot_spec.axes_labels[1], row=1, col=1)
+        fig.update_yaxes(
+            title_text=plot_spec.axes_labels[1],
+            range=[main_y_min, main_y_max],
+            row=1,
+            col=1,
+        )
 
         if layout.bragg_row is not None:
             fig.update_yaxes(
@@ -893,6 +1093,8 @@ class PlotlyPlotter(PlotterBase):
                 range=[-residual_limit, residual_limit],
                 tickmode='array',
                 tickvals=[-residual_tick_limit, 0.0, residual_tick_limit],
+                scaleanchor='y',
+                scaleratio=1,
                 zeroline=False,
                 row=layout.residual_row,
                 col=1,
@@ -986,7 +1188,7 @@ class PlotlyPlotter(PlotterBase):
                 'array': sy,
                 'visible': True,
             },
-            hovertemplate='x: %{x}<br>y: %{y}<br><extra></extra>',
+            hovertemplate='x: %{x:,.2f}<br>y: %{y:,.2f}<br><extra></extra>',
         )
 
         layout = self._get_layout(

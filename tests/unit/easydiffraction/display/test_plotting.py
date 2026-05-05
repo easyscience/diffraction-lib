@@ -290,6 +290,7 @@ def test_plot_meas_vs_calc_routes_powder_bragg_to_composite_backend():
         two_theta = np.array([0.0, 1.0, 2.0, 3.0])
         d_spacing = two_theta
         intensity_meas = np.array([10.0, 20.0, 30.0, 40.0])
+        intensity_bkg = np.array([1.0, 2.0, 3.0, 4.0])
         intensity_calc = np.array([9.0, 18.0, 27.0, 39.0])
 
     class Refln:
@@ -324,6 +325,7 @@ def test_plot_meas_vs_calc_routes_powder_bragg_to_composite_backend():
     call = captured['powder_meas_vs_calc']
     assert np.allclose(call.x, np.array([1.0, 2.0]))
     assert np.allclose(call.y_meas, np.array([20.0, 30.0]))
+    assert np.allclose(call.y_bkg, np.array([2.0, 3.0]))
     assert np.allclose(call.y_calc, np.array([18.0, 27.0]))
     assert np.allclose(call.y_resid, np.array([2.0, 3.0]))
     assert [tick_set.phase_id for tick_set in call.bragg_tick_sets] == [
@@ -490,6 +492,18 @@ def test_plot_meas_vs_calc_skips_bragg_ticks_when_filtered_pattern_is_empty():
     call = captured['powder_meas_vs_calc']
     assert call.x.size == 0
     assert call.bragg_tick_sets == ()
+
+
+def test_plot_meas_vs_calc_does_not_accept_layout_fraction_overrides():
+    from easydiffraction.display.plotting import Plotter
+
+    plotter = Plotter()
+
+    with pytest.raises(TypeError, match='residual_height_fraction'):
+        plotter.plot_meas_vs_calc('E1', residual_height_fraction=0.20)
+
+    with pytest.raises(TypeError, match='bragg_peaks_height_fraction'):
+        plotter.plot_meas_vs_calc('E1', bragg_peaks_height_fraction=0.20)
 
 
 def test_plot_meas_vs_calc_keeps_single_crystal_routing():

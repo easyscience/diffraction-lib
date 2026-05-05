@@ -78,9 +78,16 @@ class _MeasVsCalcPlotOptions:
     x_min: float | None = None
     x_max: float | None = None
     show_residual: bool | None = None
-    residual_height_fraction: float = DEFAULT_RESID_HEIGHT
-    bragg_peaks_height_fraction: float = DEFAULT_BRAGG_ROW
     x: object | None = None
+
+
+@dataclass(frozen=True)
+class _PowderMeasVsCalcSeries:
+    """Filtered y-series for a composite powder plot."""
+
+    y_meas: np.ndarray
+    y_calc: np.ndarray
+    y_bkg: np.ndarray | None = None
 
 
 class Plotter(RendererBase):
@@ -467,8 +474,6 @@ class Plotter(RendererBase):
         x_max: float | None = None,
         *,
         show_residual: bool | None = None,
-        residual_height_fraction: float = DEFAULT_RESID_HEIGHT,
-        bragg_peaks_height_fraction: float = DEFAULT_BRAGG_ROW,
         x: object | None = None,
     ) -> None:
         """
@@ -486,12 +491,6 @@ class Plotter(RendererBase):
             When ``None``, powder Bragg plots include the residual by
             default while other measured-vs-calculated plots keep the
             historical no-residual default.
-        residual_height_fraction : float, default=DEFAULT_RESID_HEIGHT
-            Optional. Defaults to 0.25. Residual-row height relative to
-            the main intensity row.
-        bragg_peaks_height_fraction : float, default=DEFAULT_BRAGG_ROW
-            Optional. Defaults to 0.15. Bragg-tick-row height relative
-            to the main intensity row.
         x : object | None, default=None
             Optional explicit x-axis data to override stored values.
         """
@@ -501,8 +500,6 @@ class Plotter(RendererBase):
             x_min=x_min,
             x_max=x_max,
             show_residual=show_residual,
-            residual_height_fraction=residual_height_fraction,
-            bragg_peaks_height_fraction=bragg_peaks_height_fraction,
             x=x,
         )
         self._plot_meas_vs_calc_data(
@@ -1200,14 +1197,25 @@ class Plotter(RendererBase):
         y_calc = self._filtered_y_array(
             pattern.intensity_calc, ctx['x_array'], ctx['x_min'], ctx['x_max']
         )
+        y_bkg_raw = getattr(pattern, 'intensity_bkg', None)
+        y_bkg = (
+            self._filtered_y_array(y_bkg_raw, ctx['x_array'], ctx['x_min'], ctx['x_max'])
+            if y_bkg_raw is not None
+            else None
+        )
+
+        powder_series = _PowderMeasVsCalcSeries(
+            y_meas=y_meas,
+            y_calc=y_calc,
+            y_bkg=y_bkg,
+        )
 
         if sample_form == SampleFormEnum.POWDER and scattering_type == ScatteringTypeEnum.BRAGG:
             self._plot_powder_bragg_meas_vs_calc(
                 experiment=experiment,
                 expt_name=expt_name,
                 ctx=ctx,
-                y_meas=y_meas,
-                y_calc=y_calc,
+                series=powder_series,
                 plot_options=plot_options,
                 title=title,
             )
@@ -1256,8 +1264,7 @@ class Plotter(RendererBase):
         experiment: object,
         expt_name: str,
         ctx: dict[str, object],
-        y_meas: np.ndarray,
-        y_calc: np.ndarray,
+        series: _PowderMeasVsCalcSeries,
         plot_options: _MeasVsCalcPlotOptions,
         title: str,
     ) -> None:
@@ -1265,7 +1272,7 @@ class Plotter(RendererBase):
         Render the composite powder Bragg measured-vs-calculated plot.
         """
         show_residual = True if plot_options.show_residual is None else plot_options.show_residual
-        y_resid = y_meas - y_calc if show_residual else None
+        y_resid = series.y_meas - series.y_calc if show_residual else None
         if np.asarray(ctx['x_filtered']).size == 0:
             bragg_tick_sets = ()
         else:
@@ -1278,15 +1285,16 @@ class Plotter(RendererBase):
             )
         plot_spec = PowderMeasVsCalcSpec(
             x=ctx['x_filtered'],
-            y_meas=y_meas,
-            y_calc=y_calc,
+            y_meas=series.y_meas,
+            y_calc=series.y_calc,
             y_resid=y_resid,
             bragg_tick_sets=bragg_tick_sets,
             axes_labels=ctx['axes_labels'],
             title=title,
-            residual_height_fraction=plot_options.residual_height_fraction,
-            bragg_peaks_height_fraction=plot_options.bragg_peaks_height_fraction,
+            residual_height_fraction=DEFAULT_RESID_HEIGHT,
+            bragg_peaks_height_fraction=DEFAULT_BRAGG_ROW,
             height=self._composite_plot_height(),
+            y_bkg=series.y_bkg,
         )
         self._backend.plot_powder_meas_vs_calc(plot_spec=plot_spec)
 

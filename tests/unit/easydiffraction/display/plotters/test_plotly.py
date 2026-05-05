@@ -113,6 +113,7 @@ def test_get_trace_and_plot(monkeypatch):
     assert hasattr(trace, 'kwargs')
     assert trace.kwargs['x'] == x
     assert trace.kwargs['y'] == y
+    assert trace.kwargs['line']['width'] == pp.CALCULATED_LINE_WIDTH
 
     # Exercise plot_powder (non-PyCharm, display path)
     plotter.plot_powder(
@@ -237,10 +238,9 @@ def test_get_bragg_tick_trace_includes_peak_metadata():
     assert trace.mode == 'markers'
     assert trace.marker.symbol == 'line-ns-open'
     assert trace.hovertemplate == '%{text}'
-    assert 'phase_id: phase-a' in trace.text[0]
-    assert 'hkl: (1 0 1)' in trace.text[0]
-    assert 'f_squared_calc: 100' in trace.text[0]
-    assert 'f_calc: 10' in trace.text[0]
+    assert 'phase-a' in trace.text[0]
+    assert 'Miller indices: (1 0 1)' in trace.text[0]
+    assert 'x: 1.50' in trace.text[0]
 
 
 def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch):
@@ -296,17 +296,43 @@ def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch)
     assert fig.layout.xaxis.matches == 'x'
     assert fig.layout.xaxis2.matches == 'x'
     assert fig.layout.xaxis3.matches == 'x'
+    assert fig.layout.yaxis3.scaleanchor == 'y'
+    assert fig.layout.yaxis3.scaleratio == pytest.approx(1.0)
 
+    plot_area_height = fig.layout.height - fig.layout.margin.t - fig.layout.margin.b
     main_height = fig.layout.yaxis.domain[1] - fig.layout.yaxis.domain[0]
     bragg_height = fig.layout.yaxis2.domain[1] - fig.layout.yaxis2.domain[0]
     residual_height = fig.layout.yaxis3.domain[1] - fig.layout.yaxis3.domain[0]
     assert residual_height == pytest.approx(main_height * 0.25)
-    assert bragg_height == pytest.approx(
-        main_height * pp.PlotlyPlotter._scaled_bragg_row_height(plot_spec)
+    assert plot_area_height * bragg_height == pytest.approx(
+        2 * pp.PlotlyPlotter._bragg_tick_symbol_height_pixels()
     )
 
+    expected_hovertemplate = (
+        'x: %{x:,.2f}<br>'
+        'Imeas: %{customdata[0]:,.2f}<br>'
+        'Icalc: %{customdata[1]:,.2f}<br>'
+        'Imeas - Icalc: %{customdata[2]:,.2f}'
+        '<extra></extra>'
+    )
+    meas_trace = next(trace for trace in fig.data if trace.name == 'Measured (Imeas)')
+    calc_trace = next(trace for trace in fig.data if trace.name == 'Total calculated (Icalc)')
+    residual_trace = next(trace for trace in fig.data if trace.name == 'Residual (Imeas - Icalc)')
+    assert meas_trace.hovertemplate == expected_hovertemplate
+    assert calc_trace.hovertemplate == expected_hovertemplate
+    assert residual_trace.hovertemplate == expected_hovertemplate
+    assert meas_trace.line.width == pp.MEASURED_LINE_WIDTH
+    assert calc_trace.line.width == pp.CALCULATED_LINE_WIDTH
+    assert residual_trace.line.width == pp.RESIDUAL_LINE_WIDTH
+    assert list(meas_trace.customdata[0]) == pytest.approx([10.0, 9.0, 1.0])
+    assert list(calc_trace.customdata[0]) == pytest.approx([10.0, 9.0, 1.0])
+    assert list(residual_trace.customdata[0]) == pytest.approx([10.0, 9.0, 1.0])
+
     bragg_traces = [trace for trace in fig.data if trace.name.startswith('Bragg')]
-    assert [trace.name for trace in bragg_traces] == ['Bragg (phase-a)', 'Bragg (phase-b)']
+    assert [trace.name for trace in bragg_traces] == [
+        'Bragg peaks: phase-a',
+        'Bragg peaks: phase-b',
+    ]
     assert list(bragg_traces[0].y) == [1.0]
     assert list(bragg_traces[1].y) == [2.0]
     assert list(fig.layout.yaxis2.ticktext) == ['phase-a', 'phase-b']
@@ -315,11 +341,73 @@ def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch)
     assert fig.layout.yaxis3.title.text is None
     assert fig.layout.yaxis3.zeroline is False
     assert fig.layout.xaxis3.title.text == '2θ (degree)'
-    assert 'hkl: (1 0 1)' in bragg_traces[0].text[0]
-    assert 'f_squared_calc: 100' in bragg_traces[0].text[0]
+    assert 'Miller indices: (1 0 1)' in bragg_traces[0].text[0]
+    assert 'phase-a' in bragg_traces[0].text[0]
 
 
-def test_scaled_bragg_row_height_scales_linearly_with_phase_count():
+def test_plot_powder_meas_vs_calc_adds_background_curve(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    from easydiffraction.display.plotters.base import BraggTickSet
+    from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
+
+    captured = {}
+
+    def fake_show_figure(self, fig):
+        captured['fig'] = fig
+
+    monkeypatch.setattr(pp.PlotlyPlotter, '_show_figure', fake_show_figure)
+
+    plot_spec = PowderMeasVsCalcSpec(
+        x=np.array([1.0, 2.0, 3.0]),
+        y_meas=np.array([10.0, 12.0, 11.0]),
+        y_calc=np.array([9.0, 11.0, 10.5]),
+        y_resid=np.array([1.0, 1.0, 0.5]),
+        bragg_tick_sets=(
+            BraggTickSet(
+                phase_id='phase-a',
+                x=np.array([1.5]),
+                h=np.array([1]),
+                k=np.array([0]),
+                ell=np.array([1]),
+                f_squared_calc=np.array([100.0]),
+                f_calc=np.array([10.0]),
+            ),
+        ),
+        axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+        title='Powder',
+        residual_height_fraction=0.25,
+        bragg_peaks_height_fraction=0.10,
+        height=None,
+        y_bkg=np.array([1.5, 1.5, 1.5]),
+    )
+
+    plotter = pp.PlotlyPlotter()
+    plotter.plot_powder_meas_vs_calc(plot_spec=plot_spec)
+
+    fig = captured['fig']
+    assert len(fig.data) == 5
+    assert [trace.name for trace in fig.data[:3]] == [
+        'Measured (Imeas)',
+        'Background (Ibkg)',
+        'Total calculated (Icalc)',
+    ]
+    background_trace = next(trace for trace in fig.data if trace.name == 'Background (Ibkg)')
+    meas_trace = next(trace for trace in fig.data if trace.name == 'Measured (Imeas)')
+    calc_trace = next(trace for trace in fig.data if trace.name == 'Total calculated (Icalc)')
+    residual_trace = next(trace for trace in fig.data if trace.name == 'Residual (Imeas - Icalc)')
+    assert list(background_trace.y) == pytest.approx([1.5, 1.5, 1.5])
+    assert background_trace.mode == 'lines'
+    assert background_trace.line.color == pp.DEFAULT_COLORS['bkg']
+    assert background_trace.line.width == pp.BACKGROUND_LINE_WIDTH
+    assert meas_trace.legendrank < background_trace.legendrank < calc_trace.legendrank
+    assert residual_trace.legendrank > calc_trace.legendrank
+    for trace in (meas_trace, background_trace, calc_trace, residual_trace):
+        assert 'Ibkg: %{customdata[1]' in trace.hovertemplate
+        assert list(trace.customdata[0]) == pytest.approx([10.0, 1.5, 9.0, 1.0])
+
+
+def test_bragg_row_height_pixels_scale_linearly_with_phase_count():
     from easydiffraction.display.plotters.base import BraggTickSet
     from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
     from easydiffraction.display.plotters.plotly import PlotlyPlotter
@@ -370,10 +458,11 @@ def test_scaled_bragg_row_height_scales_linearly_with_phase_count():
         height=single_phase.height,
     )
 
-    single_height = PlotlyPlotter._scaled_bragg_row_height(single_phase)
-    two_phase_height = PlotlyPlotter._scaled_bragg_row_height(two_phase)
-    assert single_height == pytest.approx(0.10)
-    assert two_phase_height == pytest.approx(0.20)
+    symbol_height = PlotlyPlotter._bragg_tick_symbol_height_pixels()
+    single_height = PlotlyPlotter._bragg_row_height_pixels(single_phase)
+    two_phase_height = PlotlyPlotter._bragg_row_height_pixels(two_phase)
+    assert single_height == pytest.approx(symbol_height)
+    assert two_phase_height == pytest.approx(2 * symbol_height)
 
 
 def test_plot_powder_meas_vs_calc_grows_total_height_for_many_phases(monkeypatch):
@@ -423,7 +512,8 @@ def test_plot_powder_meas_vs_calc_grows_total_height_for_many_phases(monkeypatch
 
     def row_height_pixels(fig, axis_name: str) -> float:
         axis = getattr(fig.layout, axis_name)
-        return fig.layout.height * (axis.domain[1] - axis.domain[0])
+        plot_area_height = fig.layout.height - fig.layout.margin.t - fig.layout.margin.b
+        return plot_area_height * (axis.domain[1] - axis.domain[0])
 
     assert multi_fig.layout.height > single_fig.layout.height
     assert row_height_pixels(multi_fig, 'yaxis') == pytest.approx(
@@ -549,9 +639,23 @@ def test_plot_powder_meas_vs_calc_keeps_exact_residual_scale_match(monkeypatch):
     )
 
     fig = captured['fig']
-    expected_limit = 0.5 * (3600.0 - 180.0) * 0.25
+    expected_limit = 0.5 * (3600.0 - 0.0) * 0.25
+    assert fig.layout.yaxis2.scaleanchor == 'y'
+    assert fig.layout.yaxis2.scaleratio == pytest.approx(1.0)
+    assert fig.layout.yaxis.range[0] == pytest.approx(0.0)
+    assert fig.layout.yaxis.range[1] == pytest.approx(3600.0)
     assert fig.layout.yaxis2.range[0] == pytest.approx(-expected_limit)
     assert fig.layout.yaxis2.range[1] == pytest.approx(expected_limit)
+    plot_area_height = fig.layout.height - fig.layout.margin.t - fig.layout.margin.b
+    main_pixels = plot_area_height * (fig.layout.yaxis.domain[1] - fig.layout.yaxis.domain[0])
+    residual_pixels = plot_area_height * (
+        fig.layout.yaxis2.domain[1] - fig.layout.yaxis2.domain[0]
+    )
+    main_units_per_pixel = (fig.layout.yaxis.range[1] - fig.layout.yaxis.range[0]) / main_pixels
+    residual_units_per_pixel = (
+        fig.layout.yaxis2.range[1] - fig.layout.yaxis2.range[0]
+    ) / residual_pixels
+    assert residual_units_per_pixel == pytest.approx(main_units_per_pixel)
     assert list(fig.layout.yaxis2.tickvals) == pytest.approx([-400.0, 0.0, 400.0])
 
 
@@ -584,7 +688,7 @@ def test_plot_powder_meas_vs_calc_clips_large_residual_spikes(monkeypatch):
     )
 
     fig = captured['fig']
-    expected_limit = 0.5 * (3600.0 - 180.0) * 0.25
+    expected_limit = 0.5 * (3600.0 - 0.0) * 0.25
     assert fig.layout.yaxis2.range[0] == pytest.approx(-expected_limit)
     assert fig.layout.yaxis2.range[1] == pytest.approx(expected_limit)
     assert list(fig.layout.yaxis2.tickvals) == pytest.approx([-400.0, 0.0, 400.0])

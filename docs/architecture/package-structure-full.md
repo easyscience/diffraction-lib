@@ -365,6 +365,7 @@
 │   ├── 📄 plotting.py
 │   │   ├── 🏷️ class PlotterEngineEnum
 │   │   ├── 🏷️ class _MeasVsCalcPlotOptions
+│   │   ├── 🏷️ class _PowderMeasVsCalcSeries
 │   │   ├── 🏷️ class Plotter
 │   │   └── 🏷️ class PlotterFactory
 │   ├── 📄 tables.py
