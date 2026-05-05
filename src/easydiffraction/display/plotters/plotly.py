@@ -957,9 +957,9 @@ class PlotlyPlotter(PlotterBase):
 
         main_traces = (
             (
+                ('meas', plot_spec.y_meas),
                 ('bkg', plot_spec.y_bkg),
                 ('calc', plot_spec.y_calc),
-                ('meas', plot_spec.y_meas),
             )
             if plot_spec.y_bkg is not None
             else (

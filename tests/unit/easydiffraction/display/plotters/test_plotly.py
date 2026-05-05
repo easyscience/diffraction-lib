@@ -383,6 +383,11 @@ def test_plot_powder_meas_vs_calc_adds_background_curve(monkeypatch):
 
     fig = captured['fig']
     assert len(fig.data) == 5
+    assert [trace.name for trace in fig.data[:3]] == [
+        'Measured (Imeas)',
+        'Background (Ibkg)',
+        'Total calculated (Icalc)',
+    ]
     background_trace = next(trace for trace in fig.data if trace.name == 'Background (Ibkg)')
     meas_trace = next(trace for trace in fig.data if trace.name == 'Measured (Imeas)')
     calc_trace = next(trace for trace in fig.data if trace.name == 'Total calculated (Icalc)')
