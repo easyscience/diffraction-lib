@@ -1,5 +1,5 @@
 name: 'Upload coverage to Codecov'
-description: 'Generic wrapper for codecov/codecov-action@v6'
+description: 'Wrapper for codecov/codecov-action'
 
 inputs:
   name:

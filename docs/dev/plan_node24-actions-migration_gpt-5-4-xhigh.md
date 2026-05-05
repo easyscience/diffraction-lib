@@ -19,27 +19,28 @@ after the relevant actions are upgraded or replaced.
 
 ### Confirmed future warning sources in current workflow graph
 
-- `.github/workflows/pypi-publish.yml`: `pypa/gh-action-pypi-publish@release/v1`
-      is still the remaining blocker because its composite flow pulls
-      `actions/setup-python@v5.6.0`, which declares `node20`. Keep the
-      temporary force override here until upstream changes.
+- `.github/workflows/pypi-publish.yml`:
+  `pypa/gh-action-pypi-publish@release/v1` is still the remaining
+  blocker because its composite flow pulls
+  `actions/setup-python@v5.6.0`, which declares `node20`. Keep the
+  temporary force override here until upstream changes.
 
 ### Actions already aligned or not a Node warning risk
 
 - `actions/checkout@v6`: declares `node24`.
 - `prefix-dev/setup-pixi@v0.9.4`: declares `node24`.
 - `.github/actions/github-script` -> `actions/github-script@v9`:
-      declares `node24`.
-- `.github/actions/download-artifact` ->
-      `actions/download-artifact@v8`: declares `node24`.
+  declares `node24`.
+- `.github/actions/download-artifact` -> `actions/download-artifact@v8`:
+  declares `node24`.
 - `.github/actions/upload-artifact` -> `actions/upload-artifact@v7`:
-      declares `node24`.
+  declares `node24`.
 - `Mattraks/delete-workflow-runs@v2`: major tag currently resolves to
-      `node24`.
+  `node24`.
 - `trstringer/require-label-prefix@v1`: Docker action, not a Node
-      runtime warning source.
+  runtime warning source.
 - `github/codeql-action@v4`: composite stub at root; not part of the
-      reported warning set.
+  reported warning set.
 - `enhantica/drafterino@v2`: current `v2` tag now declares `node24`.
 - `softprops/action-gh-release@v3`: declares `node24`.
 
@@ -99,9 +100,9 @@ actual runs or an obvious safe upgrade path exists.
 ## Current Next Step
 
 - Verify whether `pypa/gh-action-pypi-publish@release/v1` has a safe
-      upstream path that removes the internal `actions/setup-python@v5.6.0`
-      (`node20`) dependency. Until then, keep the temporary force override
-      in `.github/workflows/pypi-publish.yml`.
+  upstream path that removes the internal `actions/setup-python@v5.6.0`
+  (`node20`) dependency. Until then, keep the temporary force override
+  in `.github/workflows/pypi-publish.yml`.
 
 ## Phase 1 — Implementation
 

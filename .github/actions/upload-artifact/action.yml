@@ -1,5 +1,5 @@
 name: 'Upload artifact'
-description: 'Generic wrapper for actions/upload-artifact'
+description: 'Wrapper for actions/upload-artifact'
 inputs:
   name:
     description: 'Artifact name'
