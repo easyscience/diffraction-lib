@@ -19,32 +19,37 @@ after the relevant actions are upgraded or replaced.
 
 ### Confirmed future warning sources in current workflow graph
 
-| Surface                               | Current reference                                     | Verified runtime status                     | Planned direction                          |
-| ------------------------------------- | ----------------------------------------------------- | ------------------------------------------- | ------------------------------------------ |
-| `.github/workflows/dashboard.yml`     | `peaceiris/actions-gh-pages@v4` (wrapped by `wretry`) | Declares `node20`                           | Replace with local shell/git publish logic |
-| `.github/workflows/release-notes.yml` | `enhantica/drafterino@v2`                             | Declares `node20`                           | Upgrade upstream or replace locally        |
-| `.github/workflows/release-notes.yml` | `softprops/action-gh-release@v2`                      | Declares `node20`; upstream `v3` is Node 24 | Upgrade to `@v3`                           |
+- `.github/workflows/pypi-publish.yml`: `pypa/gh-action-pypi-publish@release/v1`
+      is still the remaining blocker because its composite flow pulls
+      `actions/setup-python@v5.6.0`, which declares `node20`. Keep the
+      temporary force override here until upstream changes.
 
 ### Actions already aligned or not a Node warning risk
 
-| Reference                                                     | Status                                                       |
-| ------------------------------------------------------------- | ------------------------------------------------------------ |
-| `actions/checkout@v5`                                         | Declares `node24`                                            |
-| `prefix-dev/setup-pixi@v0.9.4`                                | Declares `node24`                                            |
-| `.github/actions/github-script` -> `actions/github-script@v8` | Declares `node24`                                            |
-| `Mattraks/delete-workflow-runs@v2`                            | Major tag currently resolves to `node24`                     |
-| `trstringer/require-label-prefix@v1`                          | Docker action, not a Node runtime warning source             |
-| `github/codeql-action@v4`                                     | Composite stub at root; not part of the reported warning set |
+- `actions/checkout@v6`: declares `node24`.
+- `prefix-dev/setup-pixi@v0.9.4`: declares `node24`.
+- `.github/actions/github-script` -> `actions/github-script@v9`:
+      declares `node24`.
+- `.github/actions/download-artifact` ->
+      `actions/download-artifact@v8`: declares `node24`.
+- `.github/actions/upload-artifact` -> `actions/upload-artifact@v7`:
+      declares `node24`.
+- `Mattraks/delete-workflow-runs@v2`: major tag currently resolves to
+      `node24`.
+- `trstringer/require-label-prefix@v1`: Docker action, not a Node
+      runtime warning source.
+- `github/codeql-action@v4`: composite stub at root; not part of the
+      reported warning set.
+- `enhantica/drafterino@v2`: current `v2` tag now declares `node24`.
+- `softprops/action-gh-release@v3`: declares `node24`.
 
 ### Watchlist
 
-These are not part of the quoted warnings, but their current upstream
-action manifests still declare `node20` and may need follow-up if GitHub
-starts flagging them in this repository's runs:
+These are not part of the resolved warning set, but their current
+upstream action manifests still declare `node20` and may need follow-up
+if GitHub starts flagging them in this repository's runs:
 
 - `actions/setup-python@v5`
-- `actions/upload-artifact@v4`
-- `actions/download-artifact@v4`
 
 Do not churn on these in this repo until they either start warning in
 actual runs or an obvious safe upgrade path exists.
@@ -85,14 +90,18 @@ actual runs or an obvious safe upgrade path exists.
 
 ## Open Questions
 
-- Should `enhantica/drafterino` be updated upstream as part of this
-  effort, or should this repository replace it locally to remove the
-  dependency?
 - Is it acceptable to replace the dashboard publish step with plain
   shell/git logic instead of third-party publish actions?
 - Should the watchlist actions be proactively replaced if warnings
   appear, or should we wait for upstream major releases from the action
   maintainers?
+
+## Current Next Step
+
+- Verify whether `pypa/gh-action-pypi-publish@release/v1` has a safe
+      upstream path that removes the internal `actions/setup-python@v5.6.0`
+      (`node20`) dependency. Until then, keep the temporary force override
+      in `.github/workflows/pypi-publish.yml`.
 
 ## Phase 1 — Implementation
 
@@ -108,10 +117,9 @@ actual runs or an obvious safe upgrade path exists.
       retry transient push failures.
 - [x] Upgrade `.github/workflows/release-notes.yml` from
       `softprops/action-gh-release@v2` to `@v3`.
-- [ ] Decide and implement one of the two Drafterino paths: update
-      `enhantica/drafterino` upstream to a Node 24-compatible release
-      and bump the dependency here, or replace it locally in this
-      repository.
+- [x] Update `enhantica/drafterino` upstream to a Node 24-compatible
+      release, then bump or repoint the dependency in
+      `.github/workflows/release-notes.yml`.
 - [x] Re-run the `.github/` action inventory after the above changes and
       remove `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24` only from workflows
       that no longer depend on Node 20 actions.
@@ -122,13 +130,12 @@ Stop after Phase 1 and ask for review before starting verification.
 
 ## Phase 2 — Verification
 
-- [ ] Validate workflow YAML after edits.
-- [ ] Re-scan `.github/workflows/` and `.github/actions/` for external
+- [x] Validate workflow YAML after edits.
+- [x] Re-scan `.github/workflows/` and `.github/actions/` for external
       action references and confirm the warning-causing refs are gone.
 - [ ] Trigger or re-run the affected workflows and inspect logs for Node
       20 deprecation messages: `coverage.yml`, reusable `dashboard.yml`,
-      `release-notes.yml`, and any workflow that uses
-      `.github/actions/setup-easyscience-bot`.
+      `release-notes.yml`, `test.yml`, and `pypi-publish.yml`.
 - [ ] If warnings remain, record the exact action refs and classify them
       as either upgradeable in-repo or blocked on upstream releases.
 - [ ] Remove the remaining `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24` entries
