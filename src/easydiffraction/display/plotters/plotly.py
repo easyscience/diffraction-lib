@@ -36,6 +36,7 @@ from easydiffraction.utils.environment import in_pycharm
 
 DEFAULT_COLORS = {
     'meas': 'rgb(31, 119, 180)',
+    'bkg': 'rgb(140, 140, 140)',
     'calc': 'rgb(214, 39, 40)',
     'resid': 'rgb(44, 160, 44)',
 }
@@ -375,7 +376,8 @@ class PlotlyPlotter(PlotterBase):
         y : object
             1D array- like of y-axis values.
         label : str
-            Series identifier (``'meas'``, ``'calc'``, or ``'resid'``).
+            Series identifier (``'meas'``, ``'bkg'``, ``'calc'``, or
+            ``'resid'``).
         customdata : object | None, default=None
             Optional per-point payload used by the hover template.
         hovertemplate : str | None, default=None
@@ -391,6 +393,12 @@ class PlotlyPlotter(PlotterBase):
         name = SERIES_CONFIG[label]['name']
         color = DEFAULT_COLORS[label]
         line = {'color': color}
+        legend_rank = {
+            'meas': 10,
+            'bkg': 20,
+            'calc': 30,
+            'resid': 40,
+        }[label]
 
         return go.Scatter(
             x=x,
@@ -398,6 +406,7 @@ class PlotlyPlotter(PlotterBase):
             line=line,
             mode=mode,
             name=name,
+            legendrank=legend_rank,
             customdata=customdata,
             hovertemplate=(
                 hovertemplate
@@ -414,22 +423,40 @@ class PlotlyPlotter(PlotterBase):
             if plot_spec.y_resid is not None
             else np.asarray(plot_spec.y_meas) - np.asarray(plot_spec.y_calc)
         )
+        if plot_spec.y_bkg is None:
+            return np.column_stack((
+                np.asarray(plot_spec.y_meas),
+                np.asarray(plot_spec.y_calc),
+                residual_values,
+            ))
+
         return np.column_stack((
             np.asarray(plot_spec.y_meas),
+            np.asarray(plot_spec.y_bkg),
             np.asarray(plot_spec.y_calc),
             residual_values,
         ))
 
     @staticmethod
-    def _powder_meas_vs_calc_hover_template() -> str:
+    def _powder_meas_vs_calc_hover_template(plot_spec: PowderMeasVsCalcSpec) -> str:
         """
         Return a shared hover template for composite powder traces.
         """
+        if plot_spec.y_bkg is None:
+            return (
+                'x: %{x:,.2f}<br>'
+                'Imeas: %{customdata[0]:,.2f}<br>'
+                'Icalc: %{customdata[1]:,.2f}<br>'
+                'Imeas - Icalc: %{customdata[2]:,.2f}'
+                '<extra></extra>'
+            )
+
         return (
             'x: %{x:,.2f}<br>'
             'Imeas: %{customdata[0]:,.2f}<br>'
-            'Icalc: %{customdata[1]:,.2f}<br>'
-            'Imeas - Icalc: %{customdata[2]:,.2f}'
+            'Ibkg: %{customdata[1]:,.2f}<br>'
+            'Icalc: %{customdata[2]:,.2f}<br>'
+            'Imeas - Icalc: %{customdata[3]:,.2f}'
             '<extra></extra>'
         )
 
@@ -918,7 +945,7 @@ class PlotlyPlotter(PlotterBase):
         main_y_min, main_y_max = self._get_main_intensity_range(plot_spec)
         residual_limit = None
         hover_data = self._powder_meas_vs_calc_hover_data(plot_spec)
-        hover_template = self._powder_meas_vs_calc_hover_template()
+        hover_template = self._powder_meas_vs_calc_hover_template(plot_spec)
 
         fig = make_subplots(
             rows=layout.row_count,
@@ -928,28 +955,30 @@ class PlotlyPlotter(PlotterBase):
             row_heights=layout.row_heights,
         )
 
-        fig.add_trace(
-            self._get_powder_trace(
-                plot_spec.x,
-                plot_spec.y_meas,
-                'meas',
-                customdata=hover_data,
-                hovertemplate=hover_template,
-            ),
-            row=1,
-            col=1,
+        main_traces = (
+            (
+                ('bkg', plot_spec.y_bkg),
+                ('calc', plot_spec.y_calc),
+                ('meas', plot_spec.y_meas),
+            )
+            if plot_spec.y_bkg is not None
+            else (
+                ('meas', plot_spec.y_meas),
+                ('calc', plot_spec.y_calc),
+            )
         )
-        fig.add_trace(
-            self._get_powder_trace(
-                plot_spec.x,
-                plot_spec.y_calc,
-                'calc',
-                customdata=hover_data,
-                hovertemplate=hover_template,
-            ),
-            row=1,
-            col=1,
-        )
+        for label, y_values in main_traces:
+            fig.add_trace(
+                self._get_powder_trace(
+                    plot_spec.x,
+                    y_values,
+                    label,
+                    customdata=hover_data,
+                    hovertemplate=hover_template,
+                ),
+                row=1,
+                col=1,
+            )
 
         if layout.bragg_row is not None:
             for idx, tick_set in enumerate(plot_spec.bragg_tick_sets):

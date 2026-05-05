@@ -1188,6 +1188,12 @@ class Plotter(RendererBase):
         y_calc = self._filtered_y_array(
             pattern.intensity_calc, ctx['x_array'], ctx['x_min'], ctx['x_max']
         )
+        y_bkg_raw = getattr(pattern, 'intensity_bkg', None)
+        y_bkg = (
+            self._filtered_y_array(y_bkg_raw, ctx['x_array'], ctx['x_min'], ctx['x_max'])
+            if y_bkg_raw is not None
+            else None
+        )
 
         if sample_form == SampleFormEnum.POWDER and scattering_type == ScatteringTypeEnum.BRAGG:
             self._plot_powder_bragg_meas_vs_calc(
@@ -1195,6 +1201,7 @@ class Plotter(RendererBase):
                 expt_name=expt_name,
                 ctx=ctx,
                 y_meas=y_meas,
+                y_bkg=y_bkg,
                 y_calc=y_calc,
                 plot_options=plot_options,
                 title=title,
@@ -1245,6 +1252,7 @@ class Plotter(RendererBase):
         expt_name: str,
         ctx: dict[str, object],
         y_meas: np.ndarray,
+        y_bkg: np.ndarray | None,
         y_calc: np.ndarray,
         plot_options: _MeasVsCalcPlotOptions,
         title: str,
@@ -1275,6 +1283,7 @@ class Plotter(RendererBase):
             residual_height_fraction=DEFAULT_RESID_HEIGHT,
             bragg_peaks_height_fraction=DEFAULT_BRAGG_ROW,
             height=self._composite_plot_height(),
+            y_bkg=y_bkg,
         )
         self._backend.plot_powder_meas_vs_calc(plot_spec=plot_spec)
 

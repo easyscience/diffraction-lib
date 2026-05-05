@@ -44,9 +44,9 @@ class PowderMeasVsCalcSpec:
     """
     Specification for one composite powder plot.
 
-    The plotting facade assembles the measured, calculated, residual,
-    and Bragg-tick data into this display-specific object before
-    delegating to a backend.
+    The plotting facade assembles the measured, background,
+    calculated, residual, and Bragg-tick data into this
+    display-specific object before delegating to a backend.
     """
 
     x: np.ndarray
@@ -59,6 +59,7 @@ class PowderMeasVsCalcSpec:
     residual_height_fraction: float
     bragg_peaks_height_fraction: float
     height: int | None = None
+    y_bkg: np.ndarray | None = None
 
 
 class XAxisType(StrEnum):
@@ -183,6 +184,10 @@ SERIES_CONFIG = {
     'calc': {
         'mode': 'lines',
         'name': 'Total calculated (Icalc)',
+    },
+    'bkg': {
+        'mode': 'lines',
+        'name': 'Background (Ibkg)',
     },
     'meas': {
         'mode': 'lines+markers',

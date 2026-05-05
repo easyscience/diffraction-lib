@@ -237,9 +237,9 @@ def test_get_bragg_tick_trace_includes_peak_metadata():
     assert trace.mode == 'markers'
     assert trace.marker.symbol == 'line-ns-open'
     assert trace.hovertemplate == '%{text}'
-    assert 'Bragg peaks: phase-a' in trace.text[0]
+    assert 'phase-a' in trace.text[0]
     assert 'Miller indices: (1 0 1)' in trace.text[0]
-    assert 'x: 1.5' in trace.text[0]
+    assert 'x: 1.50' in trace.text[0]
 
 
 def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch):
@@ -308,10 +308,10 @@ def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch)
     )
 
     expected_hovertemplate = (
-        'x: %{x}<br>'
-        'Imeas: %{customdata[0]}<br>'
-        'Icalc: %{customdata[1]}<br>'
-        'Imeas - Icalc: %{customdata[2]}'
+        'x: %{x:,.2f}<br>'
+        'Imeas: %{customdata[0]:,.2f}<br>'
+        'Icalc: %{customdata[1]:,.2f}<br>'
+        'Imeas - Icalc: %{customdata[2]:,.2f}'
         '<extra></extra>'
     )
     meas_trace = next(trace for trace in fig.data if trace.name == 'Measured (Imeas)')
@@ -338,7 +338,63 @@ def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch)
     assert fig.layout.yaxis3.zeroline is False
     assert fig.layout.xaxis3.title.text == '2θ (degree)'
     assert 'Miller indices: (1 0 1)' in bragg_traces[0].text[0]
-    assert 'Bragg peaks: phase-a' in bragg_traces[0].text[0]
+    assert 'phase-a' in bragg_traces[0].text[0]
+
+
+def test_plot_powder_meas_vs_calc_adds_background_curve(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    from easydiffraction.display.plotters.base import BraggTickSet
+    from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
+
+    captured = {}
+
+    def fake_show_figure(self, fig):
+        captured['fig'] = fig
+
+    monkeypatch.setattr(pp.PlotlyPlotter, '_show_figure', fake_show_figure)
+
+    plot_spec = PowderMeasVsCalcSpec(
+        x=np.array([1.0, 2.0, 3.0]),
+        y_meas=np.array([10.0, 12.0, 11.0]),
+        y_calc=np.array([9.0, 11.0, 10.5]),
+        y_resid=np.array([1.0, 1.0, 0.5]),
+        bragg_tick_sets=(
+            BraggTickSet(
+                phase_id='phase-a',
+                x=np.array([1.5]),
+                h=np.array([1]),
+                k=np.array([0]),
+                ell=np.array([1]),
+                f_squared_calc=np.array([100.0]),
+                f_calc=np.array([10.0]),
+            ),
+        ),
+        axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+        title='Powder',
+        residual_height_fraction=0.25,
+        bragg_peaks_height_fraction=0.10,
+        height=None,
+        y_bkg=np.array([1.5, 1.5, 1.5]),
+    )
+
+    plotter = pp.PlotlyPlotter()
+    plotter.plot_powder_meas_vs_calc(plot_spec=plot_spec)
+
+    fig = captured['fig']
+    assert len(fig.data) == 5
+    background_trace = next(trace for trace in fig.data if trace.name == 'Background (Ibkg)')
+    meas_trace = next(trace for trace in fig.data if trace.name == 'Measured (Imeas)')
+    calc_trace = next(trace for trace in fig.data if trace.name == 'Total calculated (Icalc)')
+    residual_trace = next(trace for trace in fig.data if trace.name == 'Residual (Imeas - Icalc)')
+    assert list(background_trace.y) == pytest.approx([1.5, 1.5, 1.5])
+    assert background_trace.mode == 'lines'
+    assert background_trace.line.color == pp.DEFAULT_COLORS['bkg']
+    assert meas_trace.legendrank < background_trace.legendrank < calc_trace.legendrank
+    assert residual_trace.legendrank > calc_trace.legendrank
+    for trace in (meas_trace, background_trace, calc_trace, residual_trace):
+        assert 'Ibkg: %{customdata[1]' in trace.hovertemplate
+        assert list(trace.customdata[0]) == pytest.approx([10.0, 1.5, 9.0, 1.0])
 
 
 def test_bragg_row_height_pixels_scale_linearly_with_phase_count():
