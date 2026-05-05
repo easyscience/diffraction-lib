@@ -1,8 +1,8 @@
 _project.id               beer
 _project.title            'Untitled Project'
 _project.description      ?
-_project.created          '05 May 2026 10:37:47'
-_project.last_modified    '05 May 2026 10:38:27'
+_project.created          '05 May 2026 11:44:50'
+_project.last_modified    '05 May 2026 11:45:30'
 
 _display.plotter_type plotly
 _display.tabler_type pandas
