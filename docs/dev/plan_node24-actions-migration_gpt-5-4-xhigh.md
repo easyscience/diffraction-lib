@@ -100,10 +100,10 @@ actual runs or an obvious safe upgrade path exists.
       `actions/create-github-app-token@v2` to `@v3`.
 - [x] Upgrade `.github/actions/upload-codecov/action.yml` from
       `codecov/codecov-action@v5` to `@v6`.
-- [ ] Replace the dashboard publish chain in
+- [x] Replace the dashboard publish chain in
       `.github/workflows/dashboard.yml` so it no longer depends on
       either `Wandalen/wretry.action` or `peaceiris/actions-gh-pages`.
-- [ ] Keep the replacement behaviorally equivalent: publish to the
+- [x] Keep the replacement behaviorally equivalent: publish to the
       external `dashboard` repository, preserve existing files, and
       retry transient push failures.
 - [x] Upgrade `.github/workflows/release-notes.yml` from
