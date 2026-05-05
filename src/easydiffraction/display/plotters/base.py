@@ -44,9 +44,9 @@ class PowderMeasVsCalcSpec:
     """
     Specification for one composite powder plot.
 
-    The plotting facade assembles the measured, background,
-    calculated, residual, and Bragg-tick data into this
-    display-specific object before delegating to a backend.
+    The plotting facade assembles the measured, background, calculated,
+    residual, and Bragg-tick data into this display-specific object
+    before delegating to a backend.
     """
 
     x: np.ndarray

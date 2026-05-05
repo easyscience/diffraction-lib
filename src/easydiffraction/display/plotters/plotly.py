@@ -41,6 +41,11 @@ DEFAULT_COLORS = {
     'resid': 'rgb(44, 160, 44)',
 }
 
+MEASURED_LINE_WIDTH = 2.0
+BACKGROUND_LINE_WIDTH = 1.0
+CALCULATED_LINE_WIDTH = 2.0
+RESIDUAL_LINE_WIDTH = 2.0
+
 BRAGG_TICK_COLORS = (
     'rgb(255, 127, 14)',
     'rgb(23, 190, 207)',
@@ -392,7 +397,13 @@ class PlotlyPlotter(PlotterBase):
         mode = SERIES_CONFIG[label]['mode']
         name = SERIES_CONFIG[label]['name']
         color = DEFAULT_COLORS[label]
-        line = {'color': color}
+        line_width = {
+            'meas': MEASURED_LINE_WIDTH,
+            'bkg': BACKGROUND_LINE_WIDTH,
+            'calc': CALCULATED_LINE_WIDTH,
+            'resid': RESIDUAL_LINE_WIDTH,
+        }[label]
+        line = {'color': color, 'width': line_width}
         legend_rank = {
             'meas': 10,
             'bkg': 20,

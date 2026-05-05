@@ -113,6 +113,7 @@ def test_get_trace_and_plot(monkeypatch):
     assert hasattr(trace, 'kwargs')
     assert trace.kwargs['x'] == x
     assert trace.kwargs['y'] == y
+    assert trace.kwargs['line']['width'] == pp.CALCULATED_LINE_WIDTH
 
     # Exercise plot_powder (non-PyCharm, display path)
     plotter.plot_powder(
@@ -320,6 +321,9 @@ def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch)
     assert meas_trace.hovertemplate == expected_hovertemplate
     assert calc_trace.hovertemplate == expected_hovertemplate
     assert residual_trace.hovertemplate == expected_hovertemplate
+    assert meas_trace.line.width == pp.MEASURED_LINE_WIDTH
+    assert calc_trace.line.width == pp.CALCULATED_LINE_WIDTH
+    assert residual_trace.line.width == pp.RESIDUAL_LINE_WIDTH
     assert list(meas_trace.customdata[0]) == pytest.approx([10.0, 9.0, 1.0])
     assert list(calc_trace.customdata[0]) == pytest.approx([10.0, 9.0, 1.0])
     assert list(residual_trace.customdata[0]) == pytest.approx([10.0, 9.0, 1.0])
@@ -395,6 +399,7 @@ def test_plot_powder_meas_vs_calc_adds_background_curve(monkeypatch):
     assert list(background_trace.y) == pytest.approx([1.5, 1.5, 1.5])
     assert background_trace.mode == 'lines'
     assert background_trace.line.color == pp.DEFAULT_COLORS['bkg']
+    assert background_trace.line.width == pp.BACKGROUND_LINE_WIDTH
     assert meas_trace.legendrank < background_trace.legendrank < calc_trace.legendrank
     assert residual_trace.legendrank > calc_trace.legendrank
     for trace in (meas_trace, background_trace, calc_trace, residual_trace):
