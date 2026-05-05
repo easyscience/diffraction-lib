@@ -937,6 +937,13 @@ class PlotlyPlotter(PlotterBase):
 
         return cls._nice_axis_limit(float(np.max(np.abs(y_resid))))
 
+    @staticmethod
+    def _composite_x_range(x_values: np.ndarray) -> tuple[float | None, float | None]:
+        """Return the explicit x-range for the composite powder plot."""
+        if x_values.size == 0:
+            return None, None
+        return float(np.min(x_values)), float(np.max(x_values))
+
     def plot_powder_meas_vs_calc(
         self,
         plot_spec: PowderMeasVsCalcSpec,
@@ -949,10 +956,7 @@ class PlotlyPlotter(PlotterBase):
         residual row is added only when residual data is requested.
         """
         layout = self._get_powder_composite_rows(plot_spec)
-        x_values = np.asarray(plot_spec.x)
-        has_x_values = x_values.size > 0
-        x_min = float(np.min(x_values)) if has_x_values else None
-        x_max = float(np.max(x_values)) if has_x_values else None
+        x_min, x_max = self._composite_x_range(np.asarray(plot_spec.x))
         main_y_min, main_y_max = self._get_main_intensity_range(plot_spec)
         residual_limit = None
         hover_data = self._powder_meas_vs_calc_hover_data(plot_spec)
@@ -1044,7 +1048,7 @@ class PlotlyPlotter(PlotterBase):
                 'tickformat': ',.6~g',
                 'separatethousands': True,
             }
-            if has_x_values:
+            if x_min is not None and x_max is not None:
                 x_axis_kwargs['range'] = [x_min, x_max]
             fig.update_xaxes(row=row_idx, col=1, **x_axis_kwargs)
             fig.update_yaxes(

@@ -81,6 +81,15 @@ class _MeasVsCalcPlotOptions:
     x: object | None = None
 
 
+@dataclass(frozen=True)
+class _PowderMeasVsCalcSeries:
+    """Filtered y-series for a composite powder plot."""
+
+    y_meas: np.ndarray
+    y_calc: np.ndarray
+    y_bkg: np.ndarray | None = None
+
+
 class Plotter(RendererBase):
     """User-facing plotting facade backed by concrete plotters."""
 
@@ -1195,14 +1204,18 @@ class Plotter(RendererBase):
             else None
         )
 
+        powder_series = _PowderMeasVsCalcSeries(
+            y_meas=y_meas,
+            y_calc=y_calc,
+            y_bkg=y_bkg,
+        )
+
         if sample_form == SampleFormEnum.POWDER and scattering_type == ScatteringTypeEnum.BRAGG:
             self._plot_powder_bragg_meas_vs_calc(
                 experiment=experiment,
                 expt_name=expt_name,
                 ctx=ctx,
-                y_meas=y_meas,
-                y_bkg=y_bkg,
-                y_calc=y_calc,
+                series=powder_series,
                 plot_options=plot_options,
                 title=title,
             )
@@ -1251,9 +1264,7 @@ class Plotter(RendererBase):
         experiment: object,
         expt_name: str,
         ctx: dict[str, object],
-        y_meas: np.ndarray,
-        y_bkg: np.ndarray | None,
-        y_calc: np.ndarray,
+        series: _PowderMeasVsCalcSeries,
         plot_options: _MeasVsCalcPlotOptions,
         title: str,
     ) -> None:
@@ -1261,7 +1272,7 @@ class Plotter(RendererBase):
         Render the composite powder Bragg measured-vs-calculated plot.
         """
         show_residual = True if plot_options.show_residual is None else plot_options.show_residual
-        y_resid = y_meas - y_calc if show_residual else None
+        y_resid = series.y_meas - series.y_calc if show_residual else None
         if np.asarray(ctx['x_filtered']).size == 0:
             bragg_tick_sets = ()
         else:
@@ -1274,8 +1285,8 @@ class Plotter(RendererBase):
             )
         plot_spec = PowderMeasVsCalcSpec(
             x=ctx['x_filtered'],
-            y_meas=y_meas,
-            y_calc=y_calc,
+            y_meas=series.y_meas,
+            y_calc=series.y_calc,
             y_resid=y_resid,
             bragg_tick_sets=bragg_tick_sets,
             axes_labels=ctx['axes_labels'],
@@ -1283,7 +1294,7 @@ class Plotter(RendererBase):
             residual_height_fraction=DEFAULT_RESID_HEIGHT,
             bragg_peaks_height_fraction=DEFAULT_BRAGG_ROW,
             height=self._composite_plot_height(),
-            y_bkg=y_bkg,
+            y_bkg=series.y_bkg,
         )
         self._backend.plot_powder_meas_vs_calc(plot_spec=plot_spec)
 
