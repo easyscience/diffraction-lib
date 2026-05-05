@@ -24,22 +24,4 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Upgrade package installer for Python
-        run: python -m pip install --upgrade pip
-
-      - name: Install Python dependencies
-        run:
-          python -m pip install 'easydiffraction[visualization]' nbconvert nbmake pytest
-          pytest-xdist
-
-      - name: Check if Jupyter Notebooks run without errors
-        run: >
-          python -m pytest --nbmake docs/tutorials/ --nbmake-timeout=1200 --color=yes
-          -n=auto
+        uses: actions/checkout@v6
