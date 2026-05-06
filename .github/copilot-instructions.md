@@ -171,10 +171,23 @@ When asked to create a plan:
 - Apply the two-phase workflow (Phase 1 implementation, Phase 2
   verification) to non-trivial plans. Stop after Phase 1 and ask the
   user to review before starting Phase 2.
-- Every completed implementation step ends with a local commit following
-  the rules in **Commits**. Keep commits atomic, single-purpose, and
-  aligned with plan steps.
+- The plan must explicitly state that, when an AI agent follows it,
+  every completed Phase 1 implementation step must be staged with
+  explicit paths and committed locally before moving to the next
+  implementation step or the Phase 1 review gate. Follow the rules in
+  **Commits**. Keep commits atomic, single-purpose, and aligned with
+  plan steps.
+- If implementation uncovers a serious requirement, risk, design issue,
+  or scope change not covered by the plan, stop and ask the user for
+  clarification or approval before proceeding. Record the unresolved
+  issue in the plan when useful.
 - The plan should be easy to maintain while working: include concrete
   files likely to change, decisions already made, open questions,
   verification commands for Phase 2, and a short suggested commit
   message or branch name when useful.
+- End every plan with a "Suggested Pull Request" section containing a
+  short PR title and a brief end-user-oriented description. Keep this
+  section non-technical enough for scientists and other users to
+  understand the benefit. Update it during implementation if extra
+  approved changes become important enough to mention in the PR title or
+  description.

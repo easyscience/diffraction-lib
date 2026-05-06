@@ -60,6 +60,7 @@ PLOTLY_HEIGHT_PER_UNIT = 24
 BRAGG_TICK_MARKER_SIZE = 12
 BRAGG_TICK_MARKER_LINE_WIDTH = 1
 BRAGG_TICK_SYMBOL_HEIGHT_SCALE = 1.4
+MAIN_INTENSITY_RANGE_MARGIN_FRACTION = 0.05
 COMPOSITE_VERTICAL_SPACING = 0.03
 COMPOSITE_MARGIN_RIGHT = 30
 COMPOSITE_MARGIN_TOP = 40
@@ -910,12 +911,20 @@ class PlotlyPlotter(PlotterBase):
         if min(y_meas.size, y_calc.size) == 0:
             return 0.0, 1.0
 
-        main_y_min = float(min(np.min(y_meas), np.min(y_calc)))
-        main_y_max = float(max(np.max(y_meas), np.max(y_calc)))
-        lower_limit = min(0.0, main_y_min)
-        if main_y_max <= lower_limit:
-            return lower_limit - 1.0, lower_limit + 1.0
-        return lower_limit, main_y_max
+        main_series = [y_meas, y_calc]
+        if plot_spec.y_bkg is not None:
+            y_bkg = np.asarray(plot_spec.y_bkg)
+            if y_bkg.size > 0:
+                main_series.append(y_bkg)
+
+        main_y_min = float(min(np.min(series) for series in main_series))
+        main_y_max = float(max(np.max(series) for series in main_series))
+        main_y_range = main_y_max - main_y_min
+        if main_y_range > 0.0:
+            main_y_margin = main_y_range * MAIN_INTENSITY_RANGE_MARGIN_FRACTION
+            return main_y_min - main_y_margin, main_y_max + main_y_margin
+
+        return main_y_min - 1.0, main_y_max + 1.0
 
     @classmethod
     def _get_residual_limit(cls, plot_spec: PowderMeasVsCalcSpec) -> float:

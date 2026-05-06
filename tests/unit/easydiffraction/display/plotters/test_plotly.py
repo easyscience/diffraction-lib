@@ -400,11 +400,38 @@ def test_plot_powder_meas_vs_calc_adds_background_curve(monkeypatch):
     assert background_trace.mode == 'lines'
     assert background_trace.line.color == pp.DEFAULT_COLORS['bkg']
     assert background_trace.line.width == pp.BACKGROUND_LINE_WIDTH
+    raw_min = 1.5
+    raw_max = 12.0
+    raw_range = raw_max - raw_min
+    margin = raw_range * pp.MAIN_INTENSITY_RANGE_MARGIN_FRACTION
+    assert fig.layout.yaxis.range[0] == pytest.approx(raw_min - margin)
+    assert fig.layout.yaxis.range[1] == pytest.approx(raw_max + margin)
     assert meas_trace.legendrank < background_trace.legendrank < calc_trace.legendrank
     assert residual_trace.legendrank > calc_trace.legendrank
     for trace in (meas_trace, background_trace, calc_trace, residual_trace):
         assert 'Ibkg: %{customdata[1]' in trace.hovertemplate
         assert list(trace.customdata[0]) == pytest.approx([10.0, 1.5, 9.0, 1.0])
+
+
+def test_get_main_intensity_range_uses_unit_padding_for_flat_series():
+    from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
+    from easydiffraction.display.plotters.plotly import PlotlyPlotter
+
+    plot_spec = PowderMeasVsCalcSpec(
+        x=np.array([1.0]),
+        y_meas=np.array([5.0]),
+        y_calc=np.array([5.0]),
+        y_resid=None,
+        bragg_tick_sets=(),
+        axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+        title='Powder',
+        residual_height_fraction=0.25,
+        bragg_peaks_height_fraction=0.10,
+        height=None,
+        y_bkg=np.array([5.0]),
+    )
+
+    assert PlotlyPlotter._get_main_intensity_range(plot_spec) == pytest.approx((4.0, 6.0))
 
 
 def test_bragg_row_height_pixels_scale_linearly_with_phase_count():
@@ -639,11 +666,17 @@ def test_plot_powder_meas_vs_calc_keeps_exact_residual_scale_match(monkeypatch):
     )
 
     fig = captured['fig']
-    expected_limit = 0.5 * (3600.0 - 0.0) * 0.25
+    raw_min = 180.0
+    raw_max = 3600.0
+    raw_range = raw_max - raw_min
+    margin = raw_range * pp.MAIN_INTENSITY_RANGE_MARGIN_FRACTION
+    expected_main_min = raw_min - margin
+    expected_main_max = raw_max + margin
+    expected_limit = 0.5 * (expected_main_max - expected_main_min) * 0.25
     assert fig.layout.yaxis2.scaleanchor == 'y'
     assert fig.layout.yaxis2.scaleratio == pytest.approx(1.0)
-    assert fig.layout.yaxis.range[0] == pytest.approx(0.0)
-    assert fig.layout.yaxis.range[1] == pytest.approx(3600.0)
+    assert fig.layout.yaxis.range[0] == pytest.approx(expected_main_min)
+    assert fig.layout.yaxis.range[1] == pytest.approx(expected_main_max)
     assert fig.layout.yaxis2.range[0] == pytest.approx(-expected_limit)
     assert fig.layout.yaxis2.range[1] == pytest.approx(expected_limit)
     plot_area_height = fig.layout.height - fig.layout.margin.t - fig.layout.margin.b
@@ -688,7 +721,11 @@ def test_plot_powder_meas_vs_calc_clips_large_residual_spikes(monkeypatch):
     )
 
     fig = captured['fig']
-    expected_limit = 0.5 * (3600.0 - 0.0) * 0.25
+    raw_min = 180.0
+    raw_max = 3600.0
+    raw_range = raw_max - raw_min
+    margin = raw_range * pp.MAIN_INTENSITY_RANGE_MARGIN_FRACTION
+    expected_limit = 0.5 * ((raw_max + margin) - (raw_min - margin)) * 0.25
     assert fig.layout.yaxis2.range[0] == pytest.approx(-expected_limit)
     assert fig.layout.yaxis2.range[1] == pytest.approx(expected_limit)
     assert list(fig.layout.yaxis2.tickvals) == pytest.approx([-400.0, 0.0, 400.0])
