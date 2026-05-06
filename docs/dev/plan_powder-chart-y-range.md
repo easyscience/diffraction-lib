@@ -1,13 +1,13 @@
 # Powder Chart Y-Range Fix Plan
 
-**Date:** 2026-05-06 **Status:** Planning complete — awaiting review
+**Date:** 2026-05-06 **Status:** Phase 2 verified — complete
 
 ---
 
 ## 1. Goal
 
-Fix the Plotly composite powder measured-vs-calculated chart so the
-main intensity row is not anchored to zero. The y-axis range should be
+Fix the Plotly composite powder measured-vs-calculated chart so the main
+intensity row is not anchored to zero. The y-axis range should be
 derived from all displayed main-row intensity series: measured
 (`Imeas`), calculated (`Icalc`), and background (`Ibkg`) when present.
 
@@ -49,14 +49,14 @@ padding below it.
 - Add a module-level constant in
   `src/easydiffraction/display/plotters/plotly.py`, likely
   `MAIN_INTENSITY_RANGE_MARGIN_FRACTION = 0.05`.
-- Update `_get_main_intensity_range()` to compute min/max over
-  `y_meas`, `y_calc`, and non-empty `y_bkg` when present.
+- Update `_get_main_intensity_range()` to compute min/max over `y_meas`,
+  `y_calc`, and non-empty `y_bkg` when present.
 - Apply symmetric visual padding outside the data range using the new
   constant.
 - Preserve the existing empty-filtered-range behavior: empty required
   series should still return a harmless fallback range.
-- Preserve residual scale matching by letting `_get_residual_limit()` use
-  the newly padded main range and the existing
+- Preserve residual scale matching by letting `_get_residual_limit()`
+  use the newly padded main range and the existing
   `residual_height_fraction`, so the residual row remains adjusted to
   the main row size as it is now.
 - Add/update focused unit tests for range calculation and affected
@@ -77,48 +77,48 @@ padding below it.
 
 - Use `min(Imeas, Icalc, Ibkg) - margin` for the lower y-axis bound and
   `max(Imeas, Icalc, Ibkg) + margin` for the upper y-axis bound.
-- Keep the residual plot scaled to the main intensity row, preserving the
-  current matched-scale behavior after the main range gains padding.
+- Keep the residual plot scaled to the main intensity row, preserving
+  the current matched-scale behavior after the main range gains padding.
 
 ---
 
 ## 5. Implementation Checklist
 
 - [ ] Create branch `feature/powder-chart-y-range` if requested.
-- [ ] In `src/easydiffraction/display/plotters/plotly.py`, add the
-  dedicated 5% y-range margin constant near the other Plotly layout
-  constants.
-- [ ] Update `_get_main_intensity_range()` so it includes background
-  intensity when available and uses the padded min/max range instead of
-  anchoring positive data to zero.
-- [ ] Keep zero-span data explicit and stable, using a small fallback
-  range around the datum because a percentage margin is undefined.
-- [ ] Confirm `_get_residual_limit()` continues to scale the residual
-  row from the updated main y-range and existing residual height
-  fraction.
-- [ ] Stop after Phase 1 and request review before adding or running
-  tests, following the repo workflow.
+- [x] In `src/easydiffraction/display/plotters/plotly.py`, add the
+      dedicated 5% y-range margin constant near the other Plotly layout
+      constants.
+- [x] Update `_get_main_intensity_range()` so it includes background
+      intensity when available and uses the padded min/max range instead
+      of anchoring positive data to zero.
+- [x] Keep zero-span data explicit and stable, using a small fallback
+      range around the datum because a percentage margin is undefined.
+- [x] Confirm `_get_residual_limit()` continues to scale the residual
+      row from the updated main y-range and existing residual height
+      fraction.
+- [x] Stop after Phase 1 and request review before adding or running
+      tests, following the repo workflow.
 
 ---
 
 ## 6. Phase 2 Verification Checklist
 
-- [ ] Add or update tests in
-  `tests/unit/easydiffraction/display/plotters/test_plotly.py` for:
+- [x] Add or update tests in
+      `tests/unit/easydiffraction/display/plotters/test_plotly.py` for:
   - positive-only `Imeas`/`Icalc` data no longer starting at zero;
   - `Ibkg` lowering or raising the main y-range when present;
   - 5% padding on both ends of the main row;
-  - residual scale-match expectations after padding changes the main
-    row span;
+  - residual scale-match expectations after padding changes the main row
+    span;
   - empty filtered arrays retaining the existing fallback behavior.
-- [ ] Keep the existing facade propagation test in
-  `tests/unit/easydiffraction/display/test_plotting.py` unless the
-  implementation reveals a missing background handoff case.
-- [ ] Run `pixi run fix`.
-- [ ] Run `pixi run check` until clean.
-- [ ] Run `pixi run unit-tests`.
-- [ ] Run `pixi run integration-tests`.
-- [ ] Run `pixi run script-tests`.
+- [x] Keep the existing facade propagation test in
+      `tests/unit/easydiffraction/display/test_plotting.py` unless the
+      implementation reveals a missing background handoff case.
+- [x] Run `pixi run fix`.
+- [x] Run `pixi run check` until clean.
+- [x] Run `pixi run unit-tests`.
+- [x] Run `pixi run integration-tests`.
+- [x] Run `pixi run script-tests`.
 
 ---
 
