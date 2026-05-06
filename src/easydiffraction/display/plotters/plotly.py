@@ -570,7 +570,9 @@ class PlotlyPlotter(PlotterBase):
 
     @staticmethod
     def _modebar_legend_toggle_post_script() -> str:
-        """Return client-side code for a legend-toggle modebar button."""
+        """
+        Return client-side code for a legend-toggle modebar button.
+        """
         return r"""
 const graphDiv = document.getElementById('{plot_id}');
 if (!graphDiv) {
@@ -611,8 +613,22 @@ const resolveLegendButtonFill = function (opacity) {
     const fontColor = graphDiv._fullLayout && graphDiv._fullLayout.font
         ? graphDiv._fullLayout.font.color
         : null;
-    const parsedColor = parseColor(referenceFill) || parseColor(fontColor) || {red: 68, green: 68, blue: 68};
-    return 'rgba(' + parsedColor.red + ', ' + parsedColor.green + ', ' + parsedColor.blue + ', ' + opacity + ')';
+    const parsedColor = (
+        parseColor(referenceFill)
+        || parseColor(fontColor)
+        || {red: 68, green: 68, blue: 68}
+    );
+    return (
+        'rgba('
+        + parsedColor.red
+        + ', '
+        + parsedColor.green
+        + ', '
+        + parsedColor.blue
+        + ', '
+        + opacity
+        + ')'
+    );
 };
 
 const updateLegendButtonAppearance = function (legendVisible) {
@@ -724,8 +740,12 @@ const installLegendToggleButton = function () {
         legendButton.setAttribute('role', 'button');
         legendButton.setAttribute('tabindex', '0');
         legendButton.innerHTML = [
-            '<svg viewBox="0 0 1000 1000" class="icon" height="1em" width="1em" aria-hidden="true">',
-            '<path d="M120 160H240V280H120z M120 440H240V560H120z M120 720H240V840H120z M320 200H880V240H320z M320 480H880V520H320z M320 760H880V800H320z"></path>',
+            '<svg viewBox="0 0 1000 1000"'
+            + ' class="icon" height="1em" width="1em"'
+            + ' aria-hidden="true">',
+            '<path d="M120 160H240V280H120z M120 440H240V560H120z '
+            + 'M120 720H240V840H120z M320 200H880V240H320z '
+            + 'M320 480H880V520H320z M320 760H880V800H320z"></path>',
             '</svg>',
         ].join('');
 

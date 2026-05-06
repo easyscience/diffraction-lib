@@ -217,13 +217,16 @@ def test_show_figure_adds_legend_toggle_script_to_html_output(monkeypatch):
     assert 'const applyLegendVisibility = function (legendVisible) {' in captured['post_script']
     assert "legend.style.display = legendVisible ? 'inline' : 'none';" in captured['post_script']
     assert 'const readLegendVisibility = function () {' in captured['post_script']
-    assert "if (graphDiv.layout && typeof graphDiv.layout.showlegend === 'boolean')" in captured['post_script']
-    assert 'legendButton.classList.toggle(\'active\', legendVisible);' in captured['post_script']
+    assert (
+        "if (graphDiv.layout && typeof graphDiv.layout.showlegend === 'boolean')"
+        in captured['post_script']
+    )
+    assert "legendButton.classList.toggle('active', legendVisible);" in captured['post_script']
     assert "graphDiv.on('plotly_relayout', function (eventData) {" in captured['post_script']
     assert 'legendButton.onclick = toggleLegend;' in captured['post_script']
     assert 'resolveLegendButtonFill(legendVisible ? 0.7 : 0.3)' in captured['post_script']
     assert "legendButtonGroup.className = 'modebar-group';" in captured['post_script']
-    assert "modebar.appendChild(legendButtonGroup);" in captured['post_script']
+    assert 'modebar.appendChild(legendButtonGroup);' in captured['post_script']
     assert 'legendButton.innerHTML' in captured['post_script']
     assert 'height="1em" width="1em"' in captured['post_script']
     assert captured['displayed_html'] == '<div>plot</div>'
