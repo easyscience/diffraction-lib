@@ -4583,8 +4583,8 @@ packages:
   requires_python: '>=3.5'
 - pypi: ./
   name: easydiffraction
-  version: 0.15.0+devdirty9
-  sha256: ea566085dad9a9e2b2a0916bd7af16841d1af477107460060da3446971d2c2ad
+  version: 0.16.0+devdirty1
+  sha256: a87b170e75562d3749cc132fd60066166588269bd3adca4f1aa0a771fb3d898f
   requires_dist:
   - asciichartpy
   - asteval
@@ -4596,7 +4596,6 @@ packages:
   - dfo-ls
   - diffpy-pdffit2
   - diffpy-utils
-  - essdiffraction
   - gemmi
   - lmfit
   - numpy
@@ -4615,6 +4614,7 @@ packages:
   - build ; extra == 'dev'
   - copier ; extra == 'dev'
   - docstripy ; extra == 'dev'
+  - essdiffraction ; extra == 'dev'
   - format-docstring ; extra == 'dev'
   - gitpython ; extra == 'dev'
   - interrogate ; extra == 'dev'
