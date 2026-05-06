@@ -550,6 +550,7 @@ class PlotlyPlotter(PlotterBase):
             A dict with display and mode bar settings.
         """
         return {
+            'displayModeBar': True,
             'displaylogo': False,
             'modeBarButtonsToRemove': [
                 'select2d',
