@@ -157,6 +157,13 @@ class PlotlyPlotter(PlotterBase):
             return 'rgba(110, 145, 190, 0.35)'
         return 'rgba(120, 140, 160, 0.28)'
 
+    @classmethod
+    def _legend_background_color(cls) -> str:
+        """Return a half-transparent legend background color."""
+        if cls._is_dark_mode():
+            return 'rgba(0, 0, 0, 0.5)'
+        return 'rgba(255, 255, 255, 0.5)'
+
     def plot_correlation_heatmap(
         self,
         corr_df: object,
@@ -840,8 +847,9 @@ window.requestAnimationFrame(installLegendToggleButton);
             )
             display(HTML(html_fig))
 
-    @staticmethod
+    @classmethod
     def _get_layout(
+        cls,
         title: str,
         axes_labels: object,
         shapes: list | None = None,
@@ -874,6 +882,7 @@ window.requestAnimationFrame(installLegendToggleButton);
                 'text': title,
             },
             legend={
+                'bgcolor': cls._legend_background_color(),
                 'xanchor': 'right',
                 'x': 1.0,
                 'yanchor': 'top',
@@ -1266,6 +1275,7 @@ window.requestAnimationFrame(installLegendToggleButton);
             },
             title={'text': plot_spec.title},
             legend={
+                'bgcolor': self._legend_background_color(),
                 'xanchor': 'right',
                 'x': 1.0,
                 'yanchor': 'top',

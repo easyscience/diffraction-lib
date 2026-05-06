@@ -49,6 +49,22 @@ def test_correlation_colorscale_uses_white_center_in_light_mode(monkeypatch):
     assert pp.PlotlyPlotter._correlation_colorscale()[1] == (0.5, '#f7f7f7')
 
 
+def test_legend_background_color_uses_light_overlay_in_light_mode(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    monkeypatch.setattr(pp.PlotlyPlotter, '_is_dark_mode', staticmethod(lambda: False))
+
+    assert pp.PlotlyPlotter._legend_background_color() == 'rgba(255, 255, 255, 0.5)'
+
+
+def test_legend_background_color_uses_dark_overlay_in_dark_mode(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    monkeypatch.setattr(pp.PlotlyPlotter, '_is_dark_mode', staticmethod(lambda: True))
+
+    assert pp.PlotlyPlotter._legend_background_color() == 'rgba(0, 0, 0, 0.5)'
+
+
 def test_get_trace_and_plot(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
 
