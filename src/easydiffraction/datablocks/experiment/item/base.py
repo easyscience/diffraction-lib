@@ -24,6 +24,7 @@ from easydiffraction.datablocks.experiment.categories.linked_phases.factory impo
     LinkedPhasesFactory,
 )
 from easydiffraction.datablocks.experiment.categories.peak.factory import PeakFactory
+from easydiffraction.datablocks.experiment.categories.refln.factory import ReflnFactory
 from easydiffraction.io.cif.parse import read_cif_str
 from easydiffraction.io.cif.serialize import experiment_to_cif
 from easydiffraction.utils.logging import console
@@ -34,6 +35,25 @@ from easydiffraction.utils.utils import render_table
 if TYPE_CHECKING:
     from easydiffraction.datablocks.experiment.categories.experiment_type import ExperimentType
     from easydiffraction.datablocks.structure.collection import Structures
+
+
+def intensity_category_for(experiment: object) -> object:
+    """Return the category exposing measured and calculated values."""
+    resolver = getattr(experiment, '_intensity_category', None)
+    if callable(resolver):
+        return resolver()
+
+    data = getattr(experiment, 'data', None)
+    if data is not None:
+        return data
+
+    refln = getattr(experiment, 'refln', None)
+    if refln is not None:
+        return refln
+
+    name = getattr(experiment, 'name', type(experiment).__name__)
+    msg = f"Experiment '{name}' has no intensity category."
+    raise AttributeError(msg)
 
 
 class ExperimentBase(DatablockItem):
@@ -199,7 +219,7 @@ class ExperimentBase(DatablockItem):
             console.print(tag)
 
     def _resolve_calculation(self) -> None:
-        """Auto-resolve the default calculator from data category."""
+        """Auto-resolve the default calculator from category support."""
         from easydiffraction.analysis.calculators.factory import CalculatorFactory  # noqa: PLC0415
 
         tag = self._default_calculator_tag()
@@ -214,18 +234,29 @@ class ExperimentBase(DatablockItem):
         """
         Return calculator tags supported by this experiment.
 
-        Intersects the data category's ``calculator_support`` with
-        calculators whose engines are importable.
+        Intersects the active support category's ``calculator_support``
+        with calculators whose engines are importable.
         """
         from easydiffraction.analysis.calculators.factory import CalculatorFactory  # noqa: PLC0415
 
         available = CalculatorFactory.supported_tags()
-        data = getattr(self, '_data', None)
-        if data is not None:
-            data_support = getattr(data, 'calculator_support', None)
+        support_category = self._calculator_support_category()
+        if support_category is not None:
+            data_support = getattr(support_category, 'calculator_support', None)
             if data_support and data_support.calculators:
                 return [t for t in available if t in data_support.calculators]
         return available
+
+    def _calculator_support_category(self) -> object | None:
+        """
+        Return the category that constrains calculator availability.
+        """
+        return getattr(self, '_data', None) or getattr(self, '_refln', None)
+
+    def _intensity_category(self) -> object:
+        """Return the experiment category exposing intensity arrays."""
+        msg = f"Experiment '{self.name}' has no intensity category."
+        raise AttributeError(msg)
 
 
 class ScExperimentBase(ExperimentBase):
@@ -249,12 +280,12 @@ class ScExperimentBase(ExperimentBase):
             sample_form=self.type.sample_form.value,
         )
         self._instrument = InstrumentFactory.create(self._instrument_type)
-        self._data_type: str = DataFactory.default_tag(
+        self._refln_type: str = ReflnFactory.default_tag(
             sample_form=self.type.sample_form.value,
             beam_mode=self.type.beam_mode.value,
             scattering_type=self.type.scattering_type.value,
         )
-        self._data = DataFactory.create(self._data_type)
+        self._refln = ReflnFactory.create(self._refln_type)
         self._resolve_calculation()
 
     @abstractmethod
@@ -347,14 +378,20 @@ class ScExperimentBase(ExperimentBase):
         """Active instrument model for this experiment."""
         return self._instrument
 
-    # ------------------------------------------------------------------
-    #  Data (fixed at creation)
-    # ------------------------------------------------------------------
-
     @property
-    def data(self) -> object:
-        """Data collection for this experiment."""
-        return self._data
+    def refln(self) -> object:
+        """Reflection collection for this experiment."""
+        return self._refln
+
+    def _calculator_support_category(self) -> object | None:
+        """
+        Return the reflection collection that constrains calculators.
+        """
+        return self._refln
+
+    def _intensity_category(self) -> object:
+        """Return the single-crystal reflection collection."""
+        return self._refln
 
 
 class PdExperimentBase(ExperimentBase):
@@ -457,6 +494,16 @@ class PdExperimentBase(ExperimentBase):
     @property
     def data(self) -> object:
         """Data collection for this experiment."""
+        return self._data
+
+    def _calculator_support_category(self) -> object | None:
+        """
+        Return the powder data collection that constrains calculators.
+        """
+        return self._data
+
+    def _intensity_category(self) -> object:
+        """Return the powder intensity data collection."""
         return self._data
 
     @property

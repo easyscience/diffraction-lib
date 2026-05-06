@@ -6,6 +6,7 @@ from __future__ import annotations
 
 from abc import ABC
 from abc import abstractmethod
+from dataclasses import dataclass
 from enum import StrEnum
 
 import numpy as np
@@ -17,6 +18,48 @@ from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 DEFAULT_HEIGHT = 25
 DEFAULT_MIN = -np.inf
 DEFAULT_MAX = np.inf
+
+
+@dataclass(frozen=True)
+class BraggTickSet:
+    """
+    Bragg tick data for one linked phase row.
+
+    The plotting facade converts experiment reflection-category data
+    into this display-specific container so plotting backends stay
+    decoupled from experiment datablock internals.
+    """
+
+    phase_id: str
+    x: np.ndarray
+    h: np.ndarray
+    k: np.ndarray
+    ell: np.ndarray
+    f_squared_calc: np.ndarray
+    f_calc: np.ndarray
+
+
+@dataclass(frozen=True)
+class PowderMeasVsCalcSpec:
+    """
+    Specification for one composite powder plot.
+
+    The plotting facade assembles the measured, background, calculated,
+    residual, and Bragg-tick data into this display-specific object
+    before delegating to a backend.
+    """
+
+    x: np.ndarray
+    y_meas: np.ndarray
+    y_calc: np.ndarray
+    y_resid: np.ndarray | None
+    bragg_tick_sets: tuple[BraggTickSet, ...]
+    axes_labels: list[str]
+    title: str
+    residual_height_fraction: float
+    bragg_peaks_height_fraction: float
+    height: int | None = None
+    y_bkg: np.ndarray | None = None
 
 
 class XAxisType(StrEnum):
@@ -142,6 +185,10 @@ SERIES_CONFIG = {
         'mode': 'lines',
         'name': 'Total calculated (Icalc)',
     },
+    'bkg': {
+        'mode': 'lines',
+        'name': 'Background (Ibkg)',
+    },
     'meas': {
         'mode': 'lines+markers',
         'name': 'Measured (Imeas)',
@@ -198,6 +245,20 @@ class PlotterBase(ABC):
             Figure title.
         height : int | None
             Backend-specific height (text rows or pixels).
+        """
+
+    @abstractmethod
+    def plot_powder_meas_vs_calc(
+        self,
+        plot_spec: PowderMeasVsCalcSpec,
+    ) -> None:
+        """
+        Render a composite powder plot with Bragg ticks and residual.
+
+        Parameters
+        ----------
+        plot_spec : PowderMeasVsCalcSpec
+            Composite powder-plot inputs and layout settings.
         """
 
     @abstractmethod

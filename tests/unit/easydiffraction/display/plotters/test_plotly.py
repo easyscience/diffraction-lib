@@ -1,6 +1,9 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+import numpy as np
+import pytest
+
 
 def test_module_import():
     import easydiffraction.display.plotters.plotly as MUT
@@ -46,6 +49,22 @@ def test_correlation_colorscale_uses_white_center_in_light_mode(monkeypatch):
     assert pp.PlotlyPlotter._correlation_colorscale()[1] == (0.5, '#f7f7f7')
 
 
+def test_legend_background_color_uses_light_overlay_in_light_mode(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    monkeypatch.setattr(pp.PlotlyPlotter, '_is_dark_mode', staticmethod(lambda: False))
+
+    assert pp.PlotlyPlotter._legend_background_color() == 'rgba(255, 255, 255, 0.5)'
+
+
+def test_legend_background_color_uses_dark_overlay_in_dark_mode(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    monkeypatch.setattr(pp.PlotlyPlotter, '_is_dark_mode', staticmethod(lambda: True))
+
+    assert pp.PlotlyPlotter._legend_background_color() == 'rgba(0, 0, 0, 0.5)'
+
+
 def test_get_trace_and_plot(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
 
@@ -84,7 +103,7 @@ def test_get_trace_and_plot(monkeypatch):
 
     class DummyPIO:
         @staticmethod
-        def to_html(fig, include_plotlyjs=None, full_html=None, config=None):
+        def to_html(fig, include_plotlyjs=None, full_html=None, config=None, post_script=None):
             return '<div>plot</div>'
 
     dummy_display_calls = {'count': 0}
@@ -110,6 +129,7 @@ def test_get_trace_and_plot(monkeypatch):
     assert hasattr(trace, 'kwargs')
     assert trace.kwargs['x'] == x
     assert trace.kwargs['y'] == y
+    assert trace.kwargs['line']['width'] == pp.CALCULATED_LINE_WIDTH
 
     # Exercise plot_powder (non-PyCharm, display path)
     plotter.plot_powder(
@@ -123,6 +143,139 @@ def test_get_trace_and_plot(monkeypatch):
 
     # One HTML display call expected
     assert dummy_display_calls['count'] == 1 or shown['count'] == 1
+
+
+def test_show_figure_adds_legend_toggle_script_to_html_output(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    monkeypatch.setattr(pp, 'in_pycharm', lambda: False)
+
+    captured = {}
+
+    class DummyFig:
+        def update_xaxes(self, **kwargs):
+            pass
+
+        def update_yaxes(self, **kwargs):
+            pass
+
+        def show(self, **kwargs):
+            captured['show_called'] = True
+
+    class DummyScatter:
+        def __init__(self, **kwargs):
+            self.kwargs = kwargs
+
+    class DummyGO:
+        class Scatter(DummyScatter):
+            pass
+
+        class Figure(DummyFig):
+            def __init__(self, data=None, layout=None):
+                self.data = data
+                self.layout = layout
+
+        class Layout:
+            def __init__(self, **kwargs):
+                self.kwargs = kwargs
+
+    class DummyPIO:
+        @staticmethod
+        def to_html(fig, include_plotlyjs=None, full_html=None, config=None, post_script=None):
+            captured['config'] = config
+            captured['post_script'] = post_script
+            return '<div>plot</div>'
+
+    def dummy_display(obj):
+        captured['displayed_html'] = obj.html
+
+    class DummyHTML:
+        def __init__(self, html):
+            self.html = html
+
+    monkeypatch.setattr(pp, 'go', DummyGO)
+    monkeypatch.setattr(pp, 'pio', DummyPIO)
+    monkeypatch.setattr(pp, 'display', dummy_display)
+    monkeypatch.setattr(pp, 'HTML', DummyHTML)
+
+    plotter = pp.PlotlyPlotter()
+    plotter.plot_powder(
+        [0, 1, 2],
+        y_series=[[1, 2, 3]],
+        labels=['calc'],
+        axes_labels=['x', 'y'],
+        title='t',
+        height=None,
+    )
+
+    assert captured.get('show_called') is not True
+    assert captured['config']['displayModeBar'] is True
+    assert captured['config']['displaylogo'] is False
+    assert 'data-legend-toggle="true"' in captured['post_script']
+    assert 'Toggle legend' in captured['post_script']
+    assert 'graphDiv.dataset.legendVisible' in captured['post_script']
+    assert 'const applyLegendVisibility = function (legendVisible) {' in captured['post_script']
+    assert "legend.style.display = legendVisible ? 'inline' : 'none';" in captured['post_script']
+    assert 'const readLegendVisibility = function () {' in captured['post_script']
+    assert (
+        "if (graphDiv.layout && typeof graphDiv.layout.showlegend === 'boolean')"
+        in captured['post_script']
+    )
+    assert "legendButton.classList.toggle('active', legendVisible);" in captured['post_script']
+    assert "graphDiv.on('plotly_relayout', function (eventData) {" in captured['post_script']
+    assert 'legendButton.onclick = toggleLegend;' in captured['post_script']
+    assert 'resolveLegendButtonFill(legendVisible ? 0.7 : 0.3)' in captured['post_script']
+    assert "legendButtonGroup.className = 'modebar-group';" in captured['post_script']
+    assert 'modebar.appendChild(legendButtonGroup);' in captured['post_script']
+    assert 'legendButton.innerHTML' in captured['post_script']
+    assert 'height="1em" width="1em"' in captured['post_script']
+    assert captured['displayed_html'] == '<div>plot</div>'
+
+
+def test_show_figure_skips_legend_toggle_script_without_legend(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    monkeypatch.setattr(pp, 'in_pycharm', lambda: False)
+
+    captured = {}
+
+    class DummyTrace:
+        def __init__(self, name=None, showlegend=None, visible=None):
+            self.name = name
+            self.showlegend = showlegend
+            self.visible = visible
+
+    class DummyFig:
+        def __init__(self):
+            self.data = [DummyTrace(name=None, showlegend=False)]
+            self.layout = type('DummyLayout', (), {'showlegend': None})()
+
+        def show(self, **kwargs):
+            captured['show_called'] = True
+
+    class DummyPIO:
+        @staticmethod
+        def to_html(fig, include_plotlyjs=None, full_html=None, config=None, post_script=None):
+            captured['post_script'] = post_script
+            return '<div>plot</div>'
+
+    def dummy_display(obj):
+        captured['displayed_html'] = obj.html
+
+    class DummyHTML:
+        def __init__(self, html):
+            self.html = html
+
+    monkeypatch.setattr(pp, 'pio', DummyPIO)
+    monkeypatch.setattr(pp, 'display', dummy_display)
+    monkeypatch.setattr(pp, 'HTML', DummyHTML)
+
+    plotter = pp.PlotlyPlotter()
+    plotter._show_figure(DummyFig())
+
+    assert captured.get('show_called') is not True
+    assert captured['post_script'] is None
+    assert captured['displayed_html'] == '<div>plot</div>'
 
 
 def test_plotly_single_crystal_trace_and_plot(monkeypatch):
@@ -162,7 +315,7 @@ def test_plotly_single_crystal_trace_and_plot(monkeypatch):
 
     class DummyPIO:
         @staticmethod
-        def to_html(fig, include_plotlyjs=None, full_html=None, config=None):
+        def to_html(fig, include_plotlyjs=None, full_html=None, config=None, post_script=None):
             return '<div>plot</div>'
 
     dummy_display_calls = {'count': 0}
@@ -209,3 +362,553 @@ def test_plotly_single_crystal_trace_and_plot(monkeypatch):
     )
     # One display call expected
     assert dummy_display_calls['count'] == 1 or shown['count'] == 1
+
+
+def test_get_bragg_tick_trace_includes_peak_metadata():
+    from easydiffraction.display.plotters.base import BraggTickSet
+    from easydiffraction.display.plotters.plotly import PlotlyPlotter
+
+    trace = PlotlyPlotter._get_bragg_tick_trace(
+        tick_set=BraggTickSet(
+            phase_id='phase-a',
+            x=np.array([1.5, 2.5]),
+            h=np.array([1, 2]),
+            k=np.array([0, 1]),
+            ell=np.array([1, 0]),
+            f_squared_calc=np.array([100.0, 80.0]),
+            f_calc=np.array([10.0, 9.0]),
+        ),
+        row_y=2.0,
+        color='#123456',
+    )
+
+    assert list(trace.x) == [1.5, 2.5]
+    assert list(trace.y) == [2.0, 2.0]
+    assert trace.mode == 'markers'
+    assert trace.marker.symbol == 'line-ns-open'
+    assert trace.hovertemplate == '%{text}'
+    assert 'phase-a' in trace.text[0]
+    assert 'Miller indices: (1 0 1)' in trace.text[0]
+    assert 'x: 1.50' in trace.text[0]
+
+
+def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    from easydiffraction.display.plotters.base import BraggTickSet
+    from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
+
+    captured = {}
+
+    def fake_show_figure(self, fig):
+        captured['fig'] = fig
+
+    monkeypatch.setattr(pp.PlotlyPlotter, '_show_figure', fake_show_figure)
+
+    plot_spec = PowderMeasVsCalcSpec(
+        x=np.array([1.0, 2.0, 3.0]),
+        y_meas=np.array([10.0, 12.0, 11.0]),
+        y_calc=np.array([9.0, 11.0, 10.5]),
+        y_resid=np.array([1.0, 1.0, 0.5]),
+        bragg_tick_sets=(
+            BraggTickSet(
+                phase_id='phase-a',
+                x=np.array([1.5]),
+                h=np.array([1]),
+                k=np.array([0]),
+                ell=np.array([1]),
+                f_squared_calc=np.array([100.0]),
+                f_calc=np.array([10.0]),
+            ),
+            BraggTickSet(
+                phase_id='phase-b',
+                x=np.array([2.5]),
+                h=np.array([2]),
+                k=np.array([1]),
+                ell=np.array([0]),
+                f_squared_calc=np.array([80.0]),
+                f_calc=np.array([9.0]),
+            ),
+        ),
+        axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+        title='Powder',
+        residual_height_fraction=0.25,
+        bragg_peaks_height_fraction=0.10,
+        height=None,
+    )
+
+    plotter = pp.PlotlyPlotter()
+    plotter.plot_powder_meas_vs_calc(plot_spec=plot_spec)
+
+    fig = captured['fig']
+    assert len(fig.data) == 5
+    assert fig.layout.xaxis.matches == 'x'
+    assert fig.layout.xaxis2.matches == 'x'
+    assert fig.layout.xaxis3.matches == 'x'
+    assert fig.layout.yaxis3.scaleanchor == 'y'
+    assert fig.layout.yaxis3.scaleratio == pytest.approx(1.0)
+
+    plot_area_height = fig.layout.height - fig.layout.margin.t - fig.layout.margin.b
+    main_height = fig.layout.yaxis.domain[1] - fig.layout.yaxis.domain[0]
+    bragg_height = fig.layout.yaxis2.domain[1] - fig.layout.yaxis2.domain[0]
+    residual_height = fig.layout.yaxis3.domain[1] - fig.layout.yaxis3.domain[0]
+    assert residual_height == pytest.approx(main_height * 0.25)
+    assert plot_area_height * bragg_height == pytest.approx(
+        2 * pp.PlotlyPlotter._bragg_tick_symbol_height_pixels()
+    )
+
+    expected_hovertemplate = (
+        'x: %{x:,.2f}<br>'
+        'Imeas: %{customdata[0]:,.2f}<br>'
+        'Icalc: %{customdata[1]:,.2f}<br>'
+        'Imeas - Icalc: %{customdata[2]:,.2f}'
+        '<extra></extra>'
+    )
+    meas_trace = next(trace for trace in fig.data if trace.name == 'Measured (Imeas)')
+    calc_trace = next(trace for trace in fig.data if trace.name == 'Total calculated (Icalc)')
+    residual_trace = next(trace for trace in fig.data if trace.name == 'Residual (Imeas - Icalc)')
+    assert meas_trace.hovertemplate == expected_hovertemplate
+    assert calc_trace.hovertemplate == expected_hovertemplate
+    assert residual_trace.hovertemplate == expected_hovertemplate
+    assert meas_trace.line.width == pp.MEASURED_LINE_WIDTH
+    assert calc_trace.line.width == pp.CALCULATED_LINE_WIDTH
+    assert residual_trace.line.width == pp.RESIDUAL_LINE_WIDTH
+    assert list(meas_trace.customdata[0]) == pytest.approx([10.0, 9.0, 1.0])
+    assert list(calc_trace.customdata[0]) == pytest.approx([10.0, 9.0, 1.0])
+    assert list(residual_trace.customdata[0]) == pytest.approx([10.0, 9.0, 1.0])
+
+    bragg_traces = [trace for trace in fig.data if trace.name.startswith('Bragg')]
+    assert [trace.name for trace in bragg_traces] == [
+        'Bragg peaks: phase-a',
+        'Bragg peaks: phase-b',
+    ]
+    assert list(bragg_traces[0].y) == [1.0]
+    assert list(bragg_traces[1].y) == [2.0]
+    assert list(fig.layout.yaxis2.ticktext) == ['phase-a', 'phase-b']
+    assert list(fig.layout.yaxis2.range) == [2.5, 0.5]
+    assert fig.layout.yaxis2.title.text is None
+    assert fig.layout.yaxis3.title.text is None
+    assert fig.layout.yaxis3.zeroline is False
+    assert fig.layout.xaxis3.title.text == '2θ (degree)'
+    assert 'Miller indices: (1 0 1)' in bragg_traces[0].text[0]
+    assert 'phase-a' in bragg_traces[0].text[0]
+
+
+def test_plot_powder_meas_vs_calc_adds_background_curve(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    from easydiffraction.display.plotters.base import BraggTickSet
+    from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
+
+    captured = {}
+
+    def fake_show_figure(self, fig):
+        captured['fig'] = fig
+
+    monkeypatch.setattr(pp.PlotlyPlotter, '_show_figure', fake_show_figure)
+
+    plot_spec = PowderMeasVsCalcSpec(
+        x=np.array([1.0, 2.0, 3.0]),
+        y_meas=np.array([10.0, 12.0, 11.0]),
+        y_calc=np.array([9.0, 11.0, 10.5]),
+        y_resid=np.array([1.0, 1.0, 0.5]),
+        bragg_tick_sets=(
+            BraggTickSet(
+                phase_id='phase-a',
+                x=np.array([1.5]),
+                h=np.array([1]),
+                k=np.array([0]),
+                ell=np.array([1]),
+                f_squared_calc=np.array([100.0]),
+                f_calc=np.array([10.0]),
+            ),
+        ),
+        axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+        title='Powder',
+        residual_height_fraction=0.25,
+        bragg_peaks_height_fraction=0.10,
+        height=None,
+        y_bkg=np.array([1.5, 1.5, 1.5]),
+    )
+
+    plotter = pp.PlotlyPlotter()
+    plotter.plot_powder_meas_vs_calc(plot_spec=plot_spec)
+
+    fig = captured['fig']
+    assert len(fig.data) == 5
+    assert [trace.name for trace in fig.data[:3]] == [
+        'Measured (Imeas)',
+        'Background (Ibkg)',
+        'Total calculated (Icalc)',
+    ]
+    background_trace = next(trace for trace in fig.data if trace.name == 'Background (Ibkg)')
+    meas_trace = next(trace for trace in fig.data if trace.name == 'Measured (Imeas)')
+    calc_trace = next(trace for trace in fig.data if trace.name == 'Total calculated (Icalc)')
+    residual_trace = next(trace for trace in fig.data if trace.name == 'Residual (Imeas - Icalc)')
+    assert list(background_trace.y) == pytest.approx([1.5, 1.5, 1.5])
+    assert background_trace.mode == 'lines'
+    assert background_trace.line.color == pp.DEFAULT_COLORS['bkg']
+    assert background_trace.line.width == pp.BACKGROUND_LINE_WIDTH
+    raw_min = 1.5
+    raw_max = 12.0
+    raw_range = raw_max - raw_min
+    margin = raw_range * pp.MAIN_INTENSITY_RANGE_MARGIN_FRACTION
+    assert fig.layout.yaxis.range[0] == pytest.approx(raw_min - margin)
+    assert fig.layout.yaxis.range[1] == pytest.approx(raw_max + margin)
+    assert meas_trace.legendrank < background_trace.legendrank < calc_trace.legendrank
+    assert residual_trace.legendrank > calc_trace.legendrank
+    for trace in (meas_trace, background_trace, calc_trace, residual_trace):
+        assert 'Ibkg: %{customdata[1]' in trace.hovertemplate
+        assert list(trace.customdata[0]) == pytest.approx([10.0, 1.5, 9.0, 1.0])
+
+
+def test_get_main_intensity_range_uses_unit_padding_for_flat_series():
+    from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
+    from easydiffraction.display.plotters.plotly import PlotlyPlotter
+
+    plot_spec = PowderMeasVsCalcSpec(
+        x=np.array([1.0]),
+        y_meas=np.array([5.0]),
+        y_calc=np.array([5.0]),
+        y_resid=None,
+        bragg_tick_sets=(),
+        axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+        title='Powder',
+        residual_height_fraction=0.25,
+        bragg_peaks_height_fraction=0.10,
+        height=None,
+        y_bkg=np.array([5.0]),
+    )
+
+    assert PlotlyPlotter._get_main_intensity_range(plot_spec) == pytest.approx((4.0, 6.0))
+
+
+def test_bragg_row_height_pixels_scale_linearly_with_phase_count():
+    from easydiffraction.display.plotters.base import BraggTickSet
+    from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
+    from easydiffraction.display.plotters.plotly import PlotlyPlotter
+
+    single_phase = PowderMeasVsCalcSpec(
+        x=np.array([1.0, 2.0]),
+        y_meas=np.array([1.0, 2.0]),
+        y_calc=np.array([1.0, 2.0]),
+        y_resid=np.array([0.0, 0.0]),
+        bragg_tick_sets=(
+            BraggTickSet(
+                phase_id='phase-a',
+                x=np.array([1.5]),
+                h=np.array([1]),
+                k=np.array([0]),
+                ell=np.array([1]),
+                f_squared_calc=np.array([100.0]),
+                f_calc=np.array([10.0]),
+            ),
+        ),
+        axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+        title='Powder',
+        residual_height_fraction=0.25,
+        bragg_peaks_height_fraction=0.10,
+        height=None,
+    )
+    two_phase = PowderMeasVsCalcSpec(
+        x=single_phase.x,
+        y_meas=single_phase.y_meas,
+        y_calc=single_phase.y_calc,
+        y_resid=single_phase.y_resid,
+        bragg_tick_sets=(
+            single_phase.bragg_tick_sets[0],
+            BraggTickSet(
+                phase_id='phase-b',
+                x=np.array([2.5]),
+                h=np.array([2]),
+                k=np.array([1]),
+                ell=np.array([0]),
+                f_squared_calc=np.array([80.0]),
+                f_calc=np.array([9.0]),
+            ),
+        ),
+        axes_labels=single_phase.axes_labels,
+        title=single_phase.title,
+        residual_height_fraction=single_phase.residual_height_fraction,
+        bragg_peaks_height_fraction=single_phase.bragg_peaks_height_fraction,
+        height=single_phase.height,
+    )
+
+    symbol_height = PlotlyPlotter._bragg_tick_symbol_height_pixels()
+    single_height = PlotlyPlotter._bragg_row_height_pixels(single_phase)
+    two_phase_height = PlotlyPlotter._bragg_row_height_pixels(two_phase)
+    assert single_height == pytest.approx(symbol_height)
+    assert two_phase_height == pytest.approx(2 * symbol_height)
+
+
+def test_plot_powder_meas_vs_calc_grows_total_height_for_many_phases(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    from easydiffraction.display.plotters.base import BraggTickSet
+    from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
+
+    captured = {}
+
+    def fake_show_figure(self, fig):
+        captured.setdefault('figures', []).append(fig)
+
+    monkeypatch.setattr(pp.PlotlyPlotter, '_show_figure', fake_show_figure)
+
+    def plot_spec(phase_count: int) -> PowderMeasVsCalcSpec:
+        bragg_tick_sets = tuple(
+            BraggTickSet(
+                phase_id=f'phase-{idx}',
+                x=np.array([1.0 + idx]),
+                h=np.array([idx + 1]),
+                k=np.array([0]),
+                ell=np.array([1]),
+                f_squared_calc=np.array([100.0 - idx]),
+                f_calc=np.array([10.0 - 0.1 * idx]),
+            )
+            for idx in range(phase_count)
+        )
+        return PowderMeasVsCalcSpec(
+            x=np.array([1.0, 2.0, 3.0]),
+            y_meas=np.array([10.0, 12.0, 11.0]),
+            y_calc=np.array([9.0, 11.0, 10.5]),
+            y_resid=np.array([1.0, 1.0, 0.5]),
+            bragg_tick_sets=bragg_tick_sets,
+            axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+            title='Powder',
+            residual_height_fraction=0.25,
+            bragg_peaks_height_fraction=0.10,
+            height=None,
+        )
+
+    plotter = pp.PlotlyPlotter()
+    plotter.plot_powder_meas_vs_calc(plot_spec=plot_spec(1))
+    plotter.plot_powder_meas_vs_calc(plot_spec=plot_spec(10))
+
+    single_fig, multi_fig = captured['figures']
+
+    def row_height_pixels(fig, axis_name: str) -> float:
+        axis = getattr(fig.layout, axis_name)
+        plot_area_height = fig.layout.height - fig.layout.margin.t - fig.layout.margin.b
+        return plot_area_height * (axis.domain[1] - axis.domain[0])
+
+    assert multi_fig.layout.height > single_fig.layout.height
+    assert row_height_pixels(multi_fig, 'yaxis') == pytest.approx(
+        row_height_pixels(single_fig, 'yaxis')
+    )
+    assert row_height_pixels(multi_fig, 'yaxis3') == pytest.approx(
+        row_height_pixels(single_fig, 'yaxis3')
+    )
+    assert row_height_pixels(multi_fig, 'yaxis2') == pytest.approx(
+        row_height_pixels(single_fig, 'yaxis2') * 10
+    )
+
+
+def test_plot_powder_meas_vs_calc_uses_explicit_plotly_height_as_pixels(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    from easydiffraction.display.plotters.base import BraggTickSet
+    from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
+
+    captured = {}
+
+    def fake_show_figure(self, fig):
+        captured['fig'] = fig
+
+    monkeypatch.setattr(pp.PlotlyPlotter, '_show_figure', fake_show_figure)
+
+    plotter = pp.PlotlyPlotter()
+    plotter.plot_powder_meas_vs_calc(
+        plot_spec=PowderMeasVsCalcSpec(
+            x=np.array([1.0, 2.0, 3.0]),
+            y_meas=np.array([10.0, 12.0, 11.0]),
+            y_calc=np.array([9.0, 11.0, 10.5]),
+            y_resid=None,
+            bragg_tick_sets=(
+                BraggTickSet(
+                    phase_id='phase-a',
+                    x=np.array([1.5]),
+                    h=np.array([1]),
+                    k=np.array([0]),
+                    ell=np.array([1]),
+                    f_squared_calc=np.array([100.0]),
+                    f_calc=np.array([10.0]),
+                ),
+            ),
+            axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+            title='Powder',
+            residual_height_fraction=0.25,
+            bragg_peaks_height_fraction=0.10,
+            height=800,
+        ),
+    )
+
+    assert captured['fig'].layout.height == 800
+
+
+def test_plot_powder_meas_vs_calc_skips_bragg_row_when_no_ticks(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
+
+    captured = {}
+
+    def fake_show_figure(self, fig):
+        captured['fig'] = fig
+
+    monkeypatch.setattr(pp.PlotlyPlotter, '_show_figure', fake_show_figure)
+
+    plotter = pp.PlotlyPlotter()
+    plotter.plot_powder_meas_vs_calc(
+        plot_spec=PowderMeasVsCalcSpec(
+            x=np.array([1.0, 2.0, 3.0]),
+            y_meas=np.array([10.0, 12.0, 11.0]),
+            y_calc=np.array([9.0, 11.0, 10.5]),
+            y_resid=np.array([1.0, 1.0, 0.5]),
+            bragg_tick_sets=(),
+            axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+            title='Powder',
+            residual_height_fraction=0.25,
+            bragg_peaks_height_fraction=0.15,
+            height=None,
+        ),
+    )
+
+    fig = captured['fig']
+    assert len(fig.data) == 3
+    assert fig.layout.xaxis.matches == 'x'
+    assert fig.layout.xaxis2.matches == 'x'
+    assert fig.layout.yaxis2.title.text is None
+    assert fig.layout.xaxis2.title.text == '2θ (degree)'
+    assert [trace.name for trace in fig.data] == [
+        'Measured (Imeas)',
+        'Total calculated (Icalc)',
+        'Residual (Imeas - Icalc)',
+    ]
+
+
+def test_plot_powder_meas_vs_calc_keeps_exact_residual_scale_match(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
+
+    captured = {}
+
+    def fake_show_figure(self, fig):
+        captured['fig'] = fig
+
+    monkeypatch.setattr(pp.PlotlyPlotter, '_show_figure', fake_show_figure)
+
+    plotter = pp.PlotlyPlotter()
+    plotter.plot_powder_meas_vs_calc(
+        plot_spec=PowderMeasVsCalcSpec(
+            x=np.array([1.0, 2.0, 3.0]),
+            y_meas=np.array([200.0, 3600.0, 220.0]),
+            y_calc=np.array([180.0, 3400.0, 210.0]),
+            y_resid=np.array([20.0, 200.0, 10.0]),
+            bragg_tick_sets=(),
+            axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+            title='Powder',
+            residual_height_fraction=0.25,
+            bragg_peaks_height_fraction=0.15,
+            height=None,
+        ),
+    )
+
+    fig = captured['fig']
+    raw_min = 180.0
+    raw_max = 3600.0
+    raw_range = raw_max - raw_min
+    margin = raw_range * pp.MAIN_INTENSITY_RANGE_MARGIN_FRACTION
+    expected_main_min = raw_min - margin
+    expected_main_max = raw_max + margin
+    expected_limit = 0.5 * (expected_main_max - expected_main_min) * 0.25
+    assert fig.layout.yaxis2.scaleanchor == 'y'
+    assert fig.layout.yaxis2.scaleratio == pytest.approx(1.0)
+    assert fig.layout.yaxis.range[0] == pytest.approx(expected_main_min)
+    assert fig.layout.yaxis.range[1] == pytest.approx(expected_main_max)
+    assert fig.layout.yaxis2.range[0] == pytest.approx(-expected_limit)
+    assert fig.layout.yaxis2.range[1] == pytest.approx(expected_limit)
+    plot_area_height = fig.layout.height - fig.layout.margin.t - fig.layout.margin.b
+    main_pixels = plot_area_height * (fig.layout.yaxis.domain[1] - fig.layout.yaxis.domain[0])
+    residual_pixels = plot_area_height * (
+        fig.layout.yaxis2.domain[1] - fig.layout.yaxis2.domain[0]
+    )
+    main_units_per_pixel = (fig.layout.yaxis.range[1] - fig.layout.yaxis.range[0]) / main_pixels
+    residual_units_per_pixel = (
+        fig.layout.yaxis2.range[1] - fig.layout.yaxis2.range[0]
+    ) / residual_pixels
+    assert residual_units_per_pixel == pytest.approx(main_units_per_pixel)
+    assert list(fig.layout.yaxis2.tickvals) == pytest.approx([-400.0, 0.0, 400.0])
+
+
+def test_plot_powder_meas_vs_calc_clips_large_residual_spikes(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
+
+    captured = {}
+
+    def fake_show_figure(self, fig):
+        captured['fig'] = fig
+
+    monkeypatch.setattr(pp.PlotlyPlotter, '_show_figure', fake_show_figure)
+
+    plotter = pp.PlotlyPlotter()
+    plotter.plot_powder_meas_vs_calc(
+        plot_spec=PowderMeasVsCalcSpec(
+            x=np.array([1.0, 2.0, 3.0]),
+            y_meas=np.array([200.0, 3600.0, 220.0]),
+            y_calc=np.array([180.0, 3400.0, 210.0]),
+            y_resid=np.array([20.0, 1200.0, 10.0]),
+            bragg_tick_sets=(),
+            axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+            title='Powder',
+            residual_height_fraction=0.25,
+            bragg_peaks_height_fraction=0.15,
+            height=None,
+        ),
+    )
+
+    fig = captured['fig']
+    raw_min = 180.0
+    raw_max = 3600.0
+    raw_range = raw_max - raw_min
+    margin = raw_range * pp.MAIN_INTENSITY_RANGE_MARGIN_FRACTION
+    expected_limit = 0.5 * ((raw_max + margin) - (raw_min - margin)) * 0.25
+    assert fig.layout.yaxis2.range[0] == pytest.approx(-expected_limit)
+    assert fig.layout.yaxis2.range[1] == pytest.approx(expected_limit)
+    assert list(fig.layout.yaxis2.tickvals) == pytest.approx([-400.0, 0.0, 400.0])
+
+
+def test_plot_powder_meas_vs_calc_accepts_empty_filtered_range(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
+
+    captured = {}
+
+    def fake_show_figure(self, fig):
+        captured['fig'] = fig
+
+    monkeypatch.setattr(pp.PlotlyPlotter, '_show_figure', fake_show_figure)
+
+    plotter = pp.PlotlyPlotter()
+    plotter.plot_powder_meas_vs_calc(
+        plot_spec=PowderMeasVsCalcSpec(
+            x=np.array([], dtype=float),
+            y_meas=np.array([], dtype=float),
+            y_calc=np.array([], dtype=float),
+            y_resid=np.array([], dtype=float),
+            bragg_tick_sets=(),
+            axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+            title='Powder',
+            residual_height_fraction=0.25,
+            bragg_peaks_height_fraction=0.15,
+            height=None,
+        ),
+    )
+
+    fig = captured['fig']
+    assert len(fig.data) == 3
+    assert fig.layout.yaxis2.range[0] == pytest.approx(-1.0)
+    assert fig.layout.yaxis2.range[1] == pytest.approx(1.0)

@@ -16,6 +16,7 @@ import numpy as np
 from easydiffraction.display.plotters.base import DEFAULT_HEIGHT
 from easydiffraction.display.plotters.base import SERIES_CONFIG
 from easydiffraction.display.plotters.base import PlotterBase
+from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
 from easydiffraction.utils.logging import console
 
 DEFAULT_COLORS = {
@@ -104,6 +105,34 @@ class AsciiPlotter(PlotterBase):
         padded = '\n'.join(' ' + line for line in chart.splitlines())
 
         print(padded)
+
+    def plot_powder_meas_vs_calc(
+        self,
+        plot_spec: PowderMeasVsCalcSpec,
+    ) -> None:
+        """
+        Render a composite powder plot in the terminal.
+
+        The ASCII backend falls back to the existing single-chart view
+        for measured, calculated, and residual series. Bragg tick rows
+        are announced but not rendered graphically.
+        """
+        y_series = [plot_spec.y_meas, plot_spec.y_calc]
+        labels = ['meas', 'calc']
+        if plot_spec.y_resid is not None:
+            y_series.append(plot_spec.y_resid)
+            labels.append('resid')
+
+        self.plot_powder(
+            x=plot_spec.x,
+            y_series=y_series,
+            labels=labels,
+            axes_labels=plot_spec.axes_labels,
+            title=plot_spec.title,
+            height=plot_spec.height,
+        )
+        if plot_spec.bragg_tick_sets:
+            console.print('Bragg peak subplot rows are available with the Plotly engine only.')
 
     @staticmethod
     def plot_single_crystal(

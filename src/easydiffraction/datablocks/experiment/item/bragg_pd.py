@@ -11,8 +11,10 @@ from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.datablocks.experiment.categories.background.factory import BackgroundFactory
 from easydiffraction.datablocks.experiment.categories.instrument.factory import InstrumentFactory
+from easydiffraction.datablocks.experiment.categories.refln.factory import ReflnFactory
 from easydiffraction.datablocks.experiment.item.base import PdExperimentBase
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.datablocks.experiment.item.factory import ExperimentFactory
@@ -62,6 +64,47 @@ class BraggPdExperiment(PdExperimentBase):
         self._instrument = InstrumentFactory.create(self._instrument_type)
         self._background_type: str = BackgroundFactory.default_tag()
         self._background = BackgroundFactory.create(self._background_type)
+        self._refln = None
+        self._sync_refln_category()
+
+    def _refln_collection_tag(self) -> str:
+        """
+        Return the reflection-collection tag for this beam mode.
+        """
+        return ReflnFactory.default_tag(
+            sample_form=self.type.sample_form.value,
+            beam_mode=self.type.beam_mode.value,
+            scattering_type=self.type.scattering_type.value,
+        )
+
+    def _refln_collection_type(self) -> type[object]:
+        """
+        Return the reflection-collection type for this beam mode.
+        """
+        refln_tag = self._refln_collection_tag()
+        return ReflnFactory._supported_map()[refln_tag]
+
+    def _sync_refln_category(self) -> None:
+        """Create or remove ``refln`` for the active calculator."""
+        calculator_type = self._calculator_type or self._default_calculator_tag()
+        refln_collection_type = self._refln_collection_type()
+        calculator = CalculatorEnum(calculator_type)
+        if refln_collection_type.calculator_support.supports(calculator):
+            if not isinstance(self._refln, refln_collection_type):
+                self._refln = ReflnFactory.create(self._refln_collection_tag())
+            return
+
+        self._refln = None
+
+    def _set_calculator_type(
+        self,
+        tag: str,
+        *,
+        announce: bool = True,
+    ) -> None:
+        """Switch calculator backend and sync ``refln`` availability."""
+        super()._set_calculator_type(tag, announce=announce)
+        self._sync_refln_category()
 
     def _load_ascii_data_to_experiment(
         self,
@@ -128,6 +171,11 @@ class BraggPdExperiment(PdExperimentBase):
     def instrument(self) -> object:
         """Active instrument model for this experiment."""
         return self._instrument
+
+    @property
+    def refln(self) -> object | None:
+        """Calculated reflection metadata when supported."""
+        return self._refln
 
     # ------------------------------------------------------------------
     #  Background (switchable-category pattern)

@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
 
 from easydiffraction.core.category import CategoryCollection
@@ -22,8 +24,12 @@ from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import tof_to_d
 from easydiffraction.utils.utils import twotheta_to_d
+
+if TYPE_CHECKING:
+    from easydiffraction.analysis.calculators.base import PowderReflnRecord
 
 # Uncertainty values below this threshold are replaced with 1.0
 _MIN_UNCERTAINTY = 0.0001
@@ -379,29 +385,89 @@ class PdDataBase(CategoryCollection):
         project = experiments._parent
         structures = project.structures
         calculator = experiment.calculation.calculator
+        refln = experiment.refln
 
-        initial_calc = np.zeros_like(self.x)
-        calc = initial_calc
+        calc, refln_records, missing_refln_records = self._phase_calculation_results(
+            experiment=experiment,
+            structures=structures,
+            calculator=calculator,
+            called_by_minimizer=called_by_minimizer,
+            collect_refln_records=refln is not None,
+        )
+        self._set_intensity_calc(calc + self.intensity_bkg)
+        if refln is None:
+            return
 
-        # TODO: refactor _get_valid_linked_phases to only be responsible
-        #  for returning list. Warning message should be defined here,
-        #  at least some of them.
-        # TODO: Adapt following the _update method in bragg_sc.py
+        if missing_refln_records:
+            refln._replace_from_records([])
+            log.warning(
+                'Calculated powder reflection metadata is unavailable for '
+                f"experiment '{experiment.name}' with calculator "
+                f"'{calculator.name}'. Clearing experiment.refln.",
+            )
+            return
+
+        refln._replace_from_records(refln_records)
+
+    def _phase_calculation_results(
+        self,
+        *,
+        experiment: object,
+        structures: object,
+        calculator: object,
+        called_by_minimizer: bool,
+        collect_refln_records: bool,
+    ) -> tuple[np.ndarray, list[PowderReflnRecord], bool]:
+        calc = np.zeros_like(self.x)
+        refln_records: list[PowderReflnRecord] = []
+        missing_refln_records = False
+
         for linked_phase in experiment._get_valid_linked_phases(structures):
             structure_id = linked_phase._identity.category_entry_name
-            structure_scale = linked_phase.scale.value
             structure = structures[structure_id]
-
-            structure_calc = calculator.calculate_pattern(
-                structure,
-                experiment,
+            structure_scaled_calc, structure_refln_records = self._phase_result(
+                structure=structure,
+                experiment=experiment,
+                calculator=calculator,
+                linked_phase=linked_phase,
                 called_by_minimizer=called_by_minimizer,
+                collect_refln_records=collect_refln_records,
             )
-
-            structure_scaled_calc = structure_scale * structure_calc
             calc += structure_scaled_calc
+            if not collect_refln_records:
+                continue
+            if structure_refln_records is None:
+                missing_refln_records = True
+                continue
+            refln_records.extend(structure_refln_records)
 
-        self._set_intensity_calc(calc + self.intensity_bkg)
+        return calc, refln_records, missing_refln_records
+
+    @staticmethod
+    def _phase_result(
+        *,
+        structure: object,
+        experiment: object,
+        calculator: object,
+        linked_phase: object,
+        called_by_minimizer: bool,
+        collect_refln_records: bool,
+    ) -> tuple[np.ndarray, list[PowderReflnRecord] | None]:
+        structure_calc = calculator.calculate_pattern(
+            structure,
+            experiment,
+            called_by_minimizer=called_by_minimizer,
+        )
+        structure_scaled_calc = linked_phase.scale.value * structure_calc
+        if not collect_refln_records:
+            return structure_scaled_calc, []
+
+        structure_refln_records = calculator.last_powder_refln_records(
+            structure,
+            experiment,
+            phase_id=linked_phase.id.value,
+        )
+        return structure_scaled_calc, structure_refln_records
 
     ###################
     # Public properties

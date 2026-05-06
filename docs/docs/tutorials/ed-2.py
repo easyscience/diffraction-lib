@@ -168,7 +168,7 @@ project.analysis.display.fit_results()
 project.display.plotter.plot_param_correlations()
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')
 
 # %% [markdown]
 # ## Step 5: Perform Analysis (with constraints)
@@ -205,7 +205,7 @@ project.analysis.display.fit_results()
 project.display.plotter.plot_param_correlations()
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')
 
 # %% [markdown]
 # ## Step 6: Switch calculator engine
@@ -226,4 +226,4 @@ project.analysis.display.fit_results()
 project.display.plotter.plot_param_correlations()
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')

@@ -15,7 +15,7 @@ from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import StringDescriptor
-from easydiffraction.datablocks.experiment.categories.data.factory import DataFactory
+from easydiffraction.datablocks.experiment.categories.refln.factory import ReflnFactory
 from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
@@ -236,7 +236,7 @@ class Refln(CategoryItem):
         return self._wavelength
 
 
-@DataFactory.register
+@ReflnFactory.register
 class ReflnData(CategoryCollection):
     """Collection of reflections for single crystal diffraction data."""
 

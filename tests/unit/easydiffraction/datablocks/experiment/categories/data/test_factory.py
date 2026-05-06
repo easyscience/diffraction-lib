@@ -16,11 +16,8 @@ def test_data_factory_default_and_errors():
     obj2 = DataFactory.create('bragg-pd-tof')
     assert obj2.__class__.__name__ == 'PdTofData'
 
-    obj3 = DataFactory.create('bragg-sc')
-    assert obj3.__class__.__name__ == 'ReflnData'
-
-    obj4 = DataFactory.create('total-pd')
-    assert obj4.__class__.__name__ == 'TotalData'
+    obj3 = DataFactory.create('total-pd')
+    assert obj3.__class__.__name__ == 'TotalData'
 
     # Unsupported tag should raise ValueError
     with pytest.raises(
@@ -60,13 +57,6 @@ def test_data_factory_default_tag_resolution():
     )
     assert tag == 'total-pd'
 
-    # Context-dependent default: single crystal
-    tag = DataFactory.default_tag(
-        sample_form=SampleFormEnum.SINGLE_CRYSTAL,
-        scattering_type=ScatteringTypeEnum.BRAGG,
-    )
-    assert tag == 'bragg-sc'
-
 
 def test_data_factory_supported_tags():
     # Ensure concrete classes are registered
@@ -75,5 +65,4 @@ def test_data_factory_supported_tags():
     tags = DataFactory.supported_tags()
     assert 'bragg-pd' in tags
     assert 'bragg-pd-tof' in tags
-    assert 'bragg-sc' in tags
     assert 'total-pd' in tags

@@ -10,10 +10,13 @@ renderer may be used depending on configuration.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 import darkdetect
 import numpy as np
 import plotly.graph_objects as go
 import plotly.io as pio
+from plotly.subplots import make_subplots
 
 try:
     from IPython.display import HTML
@@ -22,17 +25,56 @@ except ImportError:
     display = None
     HTML = None
 
+from easydiffraction.display.plotters.base import DEFAULT_HEIGHT
 from easydiffraction.display.plotters.base import SERIES_CONFIG
+from easydiffraction.display.plotters.base import BraggTickSet
 from easydiffraction.display.plotters.base import PlotterBase
+from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
 from easydiffraction.utils._vendored.theme_detect import is_dark
 from easydiffraction.utils.environment import in_jupyter
 from easydiffraction.utils.environment import in_pycharm
 
 DEFAULT_COLORS = {
     'meas': 'rgb(31, 119, 180)',
+    'bkg': 'rgb(140, 140, 140)',
     'calc': 'rgb(214, 39, 40)',
     'resid': 'rgb(44, 160, 44)',
 }
+
+MEASURED_LINE_WIDTH = 2.0
+BACKGROUND_LINE_WIDTH = 1.0
+CALCULATED_LINE_WIDTH = 2.0
+RESIDUAL_LINE_WIDTH = 2.0
+
+BRAGG_TICK_COLORS = (
+    'rgb(255, 127, 14)',
+    'rgb(23, 190, 207)',
+    'rgb(140, 140, 140)',
+    'rgb(188, 189, 34)',
+    'rgb(148, 103, 189)',
+)
+
+NICE_AXIS_FRACTIONS = (1.0, 2.0, 5.0, 10.0)
+DISPLAY_TICK_FRACTIONS = (1.0, 2.0, 2.5, 4.0, 5.0, 7.5, 10.0)
+PLOTLY_HEIGHT_PER_UNIT = 24
+BRAGG_TICK_MARKER_SIZE = 12
+BRAGG_TICK_MARKER_LINE_WIDTH = 1
+BRAGG_TICK_SYMBOL_HEIGHT_SCALE = 1.4
+MAIN_INTENSITY_RANGE_MARGIN_FRACTION = 0.05
+COMPOSITE_VERTICAL_SPACING = 0.03
+COMPOSITE_MARGIN_RIGHT = 30
+COMPOSITE_MARGIN_TOP = 40
+COMPOSITE_MARGIN_BOTTOM = 45
+
+
+@dataclass(frozen=True)
+class PowderCompositeRows:
+    """Resolved row layout for the composite powder figure."""
+
+    row_count: int
+    row_heights: list[float]
+    bragg_row: int | None
+    residual_row: int | None
 
 
 class PlotlyPlotter(PlotterBase):
@@ -114,6 +156,13 @@ class PlotlyPlotter(PlotterBase):
         if cls._is_dark_mode():
             return 'rgba(110, 145, 190, 0.35)'
         return 'rgba(120, 140, 160, 0.28)'
+
+    @classmethod
+    def _legend_background_color(cls) -> str:
+        """Return a half-transparent legend background color."""
+        if cls._is_dark_mode():
+            return 'rgba(0, 0, 0, 0.5)'
+        return 'rgba(255, 255, 255, 0.5)'
 
     def plot_correlation_heatmap(
         self,
@@ -326,6 +375,9 @@ class PlotlyPlotter(PlotterBase):
         x: object,
         y: object,
         label: str,
+        *,
+        customdata: object | None = None,
+        hovertemplate: str | None = None,
     ) -> object:
         """
         Create a Plotly trace for powder diffraction data.
@@ -337,7 +389,13 @@ class PlotlyPlotter(PlotterBase):
         y : object
             1D array- like of y-axis values.
         label : str
-            Series identifier (``'meas'``, ``'calc'``, or ``'resid'``).
+            Series identifier (``'meas'``, ``'bkg'``, ``'calc'``, or
+            ``'resid'``).
+        customdata : object | None, default=None
+            Optional per-point payload used by the hover template.
+        hovertemplate : str | None, default=None
+            Optional hover template overriding the default per-trace
+            one.
 
         Returns
         -------
@@ -347,7 +405,19 @@ class PlotlyPlotter(PlotterBase):
         mode = SERIES_CONFIG[label]['mode']
         name = SERIES_CONFIG[label]['name']
         color = DEFAULT_COLORS[label]
-        line = {'color': color}
+        line_width = {
+            'meas': MEASURED_LINE_WIDTH,
+            'bkg': BACKGROUND_LINE_WIDTH,
+            'calc': CALCULATED_LINE_WIDTH,
+            'resid': RESIDUAL_LINE_WIDTH,
+        }[label]
+        line = {'color': color, 'width': line_width}
+        legend_rank = {
+            'meas': 10,
+            'bkg': 20,
+            'calc': 30,
+            'resid': 40,
+        }[label]
 
         return go.Scatter(
             x=x,
@@ -355,6 +425,58 @@ class PlotlyPlotter(PlotterBase):
             line=line,
             mode=mode,
             name=name,
+            legendrank=legend_rank,
+            customdata=customdata,
+            hovertemplate=(
+                hovertemplate
+                if hovertemplate is not None
+                else f'{name}<br>x: %{{x}}<br>y: %{{y}}<extra></extra>'
+            ),
+        )
+
+    @staticmethod
+    def _powder_meas_vs_calc_hover_data(plot_spec: PowderMeasVsCalcSpec) -> np.ndarray:
+        """Return shared hover values for composite powder traces."""
+        residual_values = (
+            np.asarray(plot_spec.y_resid)
+            if plot_spec.y_resid is not None
+            else np.asarray(plot_spec.y_meas) - np.asarray(plot_spec.y_calc)
+        )
+        if plot_spec.y_bkg is None:
+            return np.column_stack((
+                np.asarray(plot_spec.y_meas),
+                np.asarray(plot_spec.y_calc),
+                residual_values,
+            ))
+
+        return np.column_stack((
+            np.asarray(plot_spec.y_meas),
+            np.asarray(plot_spec.y_bkg),
+            np.asarray(plot_spec.y_calc),
+            residual_values,
+        ))
+
+    @staticmethod
+    def _powder_meas_vs_calc_hover_template(plot_spec: PowderMeasVsCalcSpec) -> str:
+        """
+        Return a shared hover template for composite powder traces.
+        """
+        if plot_spec.y_bkg is None:
+            return (
+                'x: %{x:,.2f}<br>'
+                'Imeas: %{customdata[0]:,.2f}<br>'
+                'Icalc: %{customdata[1]:,.2f}<br>'
+                'Imeas - Icalc: %{customdata[2]:,.2f}'
+                '<extra></extra>'
+            )
+
+        return (
+            'x: %{x:,.2f}<br>'
+            'Imeas: %{customdata[0]:,.2f}<br>'
+            'Ibkg: %{customdata[1]:,.2f}<br>'
+            'Icalc: %{customdata[2]:,.2f}<br>'
+            'Imeas - Icalc: %{customdata[3]:,.2f}'
+            '<extra></extra>'
         )
 
     @staticmethod
@@ -435,6 +557,7 @@ class PlotlyPlotter(PlotterBase):
             A dict with display and mode bar settings.
         """
         return {
+            'displayModeBar': True,
             'displaylogo': False,
             'modeBarButtonsToRemove': [
                 'select2d',
@@ -444,6 +567,216 @@ class PlotlyPlotter(PlotterBase):
                 'autoScale2d',
             ],
         }
+
+    @staticmethod
+    def _modebar_legend_toggle_post_script() -> str:
+        """
+        Return client-side code for a legend-toggle modebar button.
+        """
+        return r"""
+const graphDiv = document.getElementById('{plot_id}');
+if (!graphDiv) {
+    return;
+}
+
+const parseColor = function (colorValue) {
+    if (!colorValue) {
+        return null;
+    }
+
+    const rgbMatch = colorValue.match(/^rgba?\(([^)]+)\)$/);
+    if (rgbMatch) {
+        const channels = rgbMatch[1].split(',').slice(0, 3).map((value) => Number(value.trim()));
+        if (channels.every((value) => Number.isFinite(value))) {
+            return {red: channels[0], green: channels[1], blue: channels[2]};
+        }
+    }
+
+    const hexMatch = colorValue.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+    if (!hexMatch) {
+        return null;
+    }
+
+    const normalizedHex = hexMatch[1].length === 3
+        ? hexMatch[1].split('').map((value) => value + value).join('')
+        : hexMatch[1];
+    return {
+        red: Number.parseInt(normalizedHex.slice(0, 2), 16),
+        green: Number.parseInt(normalizedHex.slice(2, 4), 16),
+        blue: Number.parseInt(normalizedHex.slice(4, 6), 16),
+    };
+};
+
+const resolveLegendButtonFill = function (opacity) {
+    const referencePath = graphDiv.querySelector('.modebar-btn path');
+    const referenceFill = referencePath ? window.getComputedStyle(referencePath).fill : null;
+    const fontColor = graphDiv._fullLayout && graphDiv._fullLayout.font
+        ? graphDiv._fullLayout.font.color
+        : null;
+    const parsedColor = (
+        parseColor(referenceFill)
+        || parseColor(fontColor)
+        || {red: 68, green: 68, blue: 68}
+    );
+    return (
+        'rgba('
+        + parsedColor.red
+        + ', '
+        + parsedColor.green
+        + ', '
+        + parsedColor.blue
+        + ', '
+        + opacity
+        + ')'
+    );
+};
+
+const updateLegendButtonAppearance = function (legendVisible) {
+    const legendButton = graphDiv.querySelector('[data-legend-toggle="true"]');
+    if (!legendButton) {
+        return;
+    }
+
+    const legendIconPath = legendButton.querySelector('path');
+    if (!legendIconPath) {
+        return;
+    }
+
+    legendButton.classList.toggle('active', legendVisible);
+    legendButton.setAttribute('aria-pressed', String(legendVisible));
+    legendIconPath.setAttribute(
+        'style',
+        'fill: ' + resolveLegendButtonFill(legendVisible ? 0.7 : 0.3) + ';',
+    );
+};
+
+const applyLegendVisibility = function (legendVisible) {
+    const legend = graphDiv.querySelector('.legend');
+    if (legend) {
+        legend.style.display = legendVisible ? 'inline' : 'none';
+        legend.style.visibility = legendVisible ? 'visible' : 'hidden';
+        legend.style.pointerEvents = legendVisible ? '' : 'none';
+    }
+
+    if (graphDiv.layout) {
+        graphDiv.layout.showlegend = legendVisible;
+    }
+
+    if (graphDiv._fullLayout) {
+        graphDiv._fullLayout.showlegend = legendVisible;
+    }
+};
+
+const readLegendVisibility = function () {
+    if (graphDiv.dataset.legendVisible === 'true') {
+        return true;
+    }
+
+    if (graphDiv.dataset.legendVisible === 'false') {
+        return false;
+    }
+
+    const legend = graphDiv.querySelector('.legend');
+    if (legend) {
+        return (
+            window.getComputedStyle(legend).display !== 'none'
+            && window.getComputedStyle(legend).visibility !== 'hidden'
+        );
+    }
+
+    if (graphDiv.layout && typeof graphDiv.layout.showlegend === 'boolean') {
+        return graphDiv.layout.showlegend;
+    }
+
+    if (graphDiv._fullLayout && typeof graphDiv._fullLayout.showlegend === 'boolean') {
+        return graphDiv._fullLayout.showlegend;
+    }
+
+    return true;
+};
+
+const syncLegendVisibility = function (legendVisible) {
+    const resolvedLegendVisible = typeof legendVisible === 'boolean'
+        ? legendVisible
+        : readLegendVisibility();
+    graphDiv.dataset.legendVisible = String(resolvedLegendVisible);
+    applyLegendVisibility(resolvedLegendVisible);
+    updateLegendButtonAppearance(resolvedLegendVisible);
+    return resolvedLegendVisible;
+};
+
+const toggleLegend = function (event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    const currentValue = readLegendVisibility();
+    const nextValue = !currentValue;
+    syncLegendVisibility(nextValue);
+};
+
+const installLegendToggleButton = function () {
+    const modebar = graphDiv.querySelector('.modebar');
+    if (!modebar) {
+        return;
+    }
+
+    if (!modebar.querySelector('.modebar-group')) {
+        return;
+    }
+
+    let legendButton = modebar.querySelector('[data-legend-toggle="true"]');
+    if (!legendButton) {
+        const legendButtonGroup = document.createElement('div');
+        legendButtonGroup.className = 'modebar-group';
+
+        legendButton = document.createElement('a');
+        legendButton.className = 'modebar-btn';
+        legendButton.href = 'javascript:void(0)';
+        legendButton.setAttribute('data-title', 'Toggle legend');
+        legendButton.setAttribute('data-legend-toggle', 'true');
+        legendButton.setAttribute('aria-label', 'Toggle legend');
+        legendButton.setAttribute('role', 'button');
+        legendButton.setAttribute('tabindex', '0');
+        legendButton.innerHTML = [
+            '<svg viewBox="0 0 1000 1000"'
+            + ' class="icon" height="1em" width="1em"'
+            + ' aria-hidden="true">',
+            '<path d="M120 160H240V280H120z M120 440H240V560H120z '
+            + 'M120 720H240V840H120z M320 200H880V240H320z '
+            + 'M320 480H880V520H320z M320 760H880V800H320z"></path>',
+            '</svg>',
+        ].join('');
+
+        legendButtonGroup.appendChild(legendButton);
+        modebar.appendChild(legendButtonGroup);
+    }
+
+    legendButton.onclick = toggleLegend;
+    legendButton.onkeydown = function (event) {
+        if (event.key === 'Enter' || event.key === ' ') {
+            toggleLegend(event);
+        }
+    };
+
+    syncLegendVisibility();
+};
+
+if (graphDiv.on) {
+    graphDiv.on('plotly_afterplot', installLegendToggleButton);
+    graphDiv.on('plotly_relayout', function (eventData) {
+        if (eventData && typeof eventData.showlegend === 'boolean') {
+            syncLegendVisibility(eventData.showlegend);
+            return;
+        }
+
+        syncLegendVisibility();
+    });
+}
+syncLegendVisibility();
+window.requestAnimationFrame(installLegendToggleButton);
+"""
 
     @staticmethod
     def _get_figure(
@@ -472,6 +805,36 @@ class PlotlyPlotter(PlotterBase):
         fig.update_yaxes(tickformat=',.6~g', separatethousands=True)
         return fig
 
+    @staticmethod
+    def _has_visible_legend(fig: object) -> bool:
+        """Return whether a figure exposes at least one legend entry."""
+
+        def _trace_value(trace: object, field_name: str) -> object:
+            value = getattr(trace, field_name, None)
+            if value is not None:
+                return value
+
+            trace_kwargs = getattr(trace, 'kwargs', None)
+            if isinstance(trace_kwargs, dict):
+                return trace_kwargs.get(field_name)
+
+            return None
+
+        layout = getattr(fig, 'layout', None)
+        layout_showlegend = getattr(layout, 'showlegend', None)
+        if layout_showlegend is False:
+            return False
+
+        for trace in getattr(fig, 'data', ()):
+            if _trace_value(trace, 'visible') is False:
+                continue
+            if _trace_value(trace, 'showlegend') is False:
+                continue
+            if _trace_value(trace, 'name'):
+                return True
+
+        return False
+
     def _show_figure(
         self,
         fig: object,
@@ -492,16 +855,21 @@ class PlotlyPlotter(PlotterBase):
         if in_pycharm() or display is None or HTML is None:
             fig.show(config=config)
         else:
+            post_script = None
+            if self._has_visible_legend(fig):
+                post_script = self._modebar_legend_toggle_post_script()
             html_fig = pio.to_html(
                 fig,
                 include_plotlyjs='cdn',
                 full_html=False,
                 config=config,
+                post_script=post_script,
             )
             display(HTML(html_fig))
 
-    @staticmethod
+    @classmethod
     def _get_layout(
+        cls,
         title: str,
         axes_labels: object,
         shapes: list | None = None,
@@ -534,6 +902,7 @@ class PlotlyPlotter(PlotterBase):
                 'text': title,
             },
             legend={
+                'bgcolor': cls._legend_background_color(),
                 'xanchor': 'right',
                 'x': 1.0,
                 'yanchor': 'top',
@@ -599,6 +968,406 @@ class PlotlyPlotter(PlotterBase):
         )
 
         fig = self._get_figure(data, layout)
+        self._show_figure(fig)
+
+    @staticmethod
+    def _get_bragg_tick_trace(
+        tick_set: BraggTickSet,
+        row_y: float,
+        color: str,
+    ) -> object:
+        """
+        Create a hover-capable Bragg tick trace for one linked phase.
+        """
+        y = np.full(tick_set.x.shape, row_y, dtype=float)
+        hover_text = []
+        for idx, x_value in enumerate(tick_set.x):
+            index_h = int(tick_set.h[idx])
+            index_k = int(tick_set.k[idx])
+            index_l = int(tick_set.ell[idx])
+            hover_text.append(
+                f'{tick_set.phase_id}<br>'
+                f'x: {float(x_value):,.2f}<br>'
+                f'Miller indices: ({index_h} {index_k} {index_l})<br>'
+                # f'F²cal:{float(tick_set.f_squared_calc[idx]):.6g}<br>'
+                # f'Fcalc:{float(tick_set.f_calc[idx]):.6g}'
+                '<extra></extra>'
+            )
+
+        return go.Scatter(
+            x=tick_set.x,
+            y=y,
+            mode='markers',
+            marker={
+                'symbol': 'line-ns-open',
+                'size': BRAGG_TICK_MARKER_SIZE,
+                'line': {'width': BRAGG_TICK_MARKER_LINE_WIDTH},
+                'color': color,
+            },
+            name=f'Bragg peaks: {tick_set.phase_id}',
+            text=hover_text,
+            hoverlabel={
+                'font': {'color': 'white'},
+                'bordercolor': 'white',
+            },
+            hovertemplate='%{text}',
+        )
+
+    @staticmethod
+    def _nice_axis_limit(raw_limit: float) -> float:
+        """Round a positive axis limit up to a readable value."""
+        if raw_limit <= 0:
+            return 1.0
+
+        exponent = float(np.floor(np.log10(raw_limit)))
+        base = 10.0**exponent
+        fraction = raw_limit / base
+
+        for nice_fraction in NICE_AXIS_FRACTIONS:
+            if fraction <= nice_fraction:
+                return nice_fraction * base
+        return NICE_AXIS_FRACTIONS[-1] * base
+
+    @staticmethod
+    def _get_display_tick_limit(raw_limit: float) -> float:
+        """Return a rounded positive tick limit within ``raw_limit``."""
+        if raw_limit <= 0:
+            return 1.0
+
+        exponent = float(np.floor(np.log10(raw_limit)))
+        base = 10.0**exponent
+        fraction = raw_limit / base
+
+        for nice_fraction in reversed(DISPLAY_TICK_FRACTIONS):
+            if fraction >= nice_fraction:
+                return nice_fraction * base
+        return DISPLAY_TICK_FRACTIONS[0] * base
+
+    @staticmethod
+    def _base_composite_height_pixels(plot_spec: PowderMeasVsCalcSpec) -> float:
+        """Return the baseline figure height for a single-phase plot."""
+        if plot_spec.height is None:
+            return float(DEFAULT_HEIGHT * PLOTLY_HEIGHT_PER_UNIT)
+        return float(plot_spec.height)
+
+    @staticmethod
+    def _composite_plot_area_height(full_height: float) -> float:
+        """
+        Return the drawable plot area height after vertical margins.
+        """
+        return max(full_height - COMPOSITE_MARGIN_TOP - COMPOSITE_MARGIN_BOTTOM, 1.0)
+
+    @staticmethod
+    def _subplot_available_height_fraction(row_count: int) -> float:
+        """
+        Return the fraction of plot height available for subplot rows.
+        """
+        return 1.0 - COMPOSITE_VERTICAL_SPACING * max(row_count - 1, 0)
+
+    @staticmethod
+    def _bragg_tick_symbol_height_pixels() -> float:
+        """Return rendered pixel height for one Bragg tick marker."""
+        return (
+            BRAGG_TICK_MARKER_SIZE * BRAGG_TICK_SYMBOL_HEIGHT_SCALE + BRAGG_TICK_MARKER_LINE_WIDTH
+        )
+
+    @staticmethod
+    def _bragg_row_height_pixels(plot_spec: PowderMeasVsCalcSpec) -> float:
+        """
+        Return the exact Bragg-row pixel height for the current phases.
+        """
+        return float(
+            len(plot_spec.bragg_tick_sets) * PlotlyPlotter._bragg_tick_symbol_height_pixels()
+        )
+
+    @classmethod
+    def _baseline_non_bragg_row_heights(
+        cls,
+        plot_spec: PowderMeasVsCalcSpec,
+        row_count: int,
+        *,
+        has_bragg_ticks: bool,
+        has_residual: bool,
+    ) -> tuple[float, float | None]:
+        """Return baseline main and residual row heights in pixels."""
+        baseline_height = cls._base_composite_height_pixels(plot_spec)
+        plot_area_height = cls._composite_plot_area_height(baseline_height)
+        available_row_pixels = plot_area_height * cls._subplot_available_height_fraction(row_count)
+        baseline_bragg_pixels = float(
+            cls._bragg_tick_symbol_height_pixels() if has_bragg_ticks else 0
+        )
+        non_bragg_pixels = max(available_row_pixels - baseline_bragg_pixels, 1.0)
+
+        if not has_residual:
+            return non_bragg_pixels, None
+
+        main_pixels = non_bragg_pixels / (1.0 + plot_spec.residual_height_fraction)
+        residual_pixels = main_pixels * plot_spec.residual_height_fraction
+        return main_pixels, residual_pixels
+
+    @staticmethod
+    def _get_powder_composite_rows(plot_spec: PowderMeasVsCalcSpec) -> PowderCompositeRows:
+        """Resolve subplot rows for the composite powder figure."""
+        has_bragg_ticks = bool(plot_spec.bragg_tick_sets)
+        has_residual = plot_spec.y_resid is not None
+        row_count = 1 + int(has_bragg_ticks) + int(has_residual)
+        main_row_height, residual_row_height = PlotlyPlotter._baseline_non_bragg_row_heights(
+            plot_spec=plot_spec,
+            row_count=row_count,
+            has_bragg_ticks=has_bragg_ticks,
+            has_residual=has_residual,
+        )
+        row_heights = [main_row_height]
+        bragg_row = None
+        residual_row = None
+        next_row = 2
+
+        if has_bragg_ticks:
+            bragg_row = next_row
+            next_row += 1
+            row_heights.append(PlotlyPlotter._bragg_row_height_pixels(plot_spec))
+        if has_residual:
+            residual_row = next_row
+            row_heights.append(residual_row_height if residual_row_height is not None else 1.0)
+
+        return PowderCompositeRows(
+            row_count=row_count,
+            row_heights=row_heights,
+            bragg_row=bragg_row,
+            residual_row=residual_row,
+        )
+
+    @classmethod
+    def _composite_figure_height(
+        cls,
+        plot_spec: PowderMeasVsCalcSpec,
+        layout: PowderCompositeRows,
+    ) -> float:
+        """Return figure height for Bragg row growth."""
+        base_pixels = cls._base_composite_height_pixels(plot_spec)
+        phase_count = len(plot_spec.bragg_tick_sets)
+        if phase_count <= 1:
+            return base_pixels
+
+        added_bragg_pixels = float((phase_count - 1) * cls._bragg_tick_symbol_height_pixels())
+        growth_pixels = added_bragg_pixels / cls._subplot_available_height_fraction(
+            layout.row_count
+        )
+        return base_pixels + growth_pixels
+
+    @classmethod
+    def _get_main_intensity_range(cls, plot_spec: PowderMeasVsCalcSpec) -> tuple[float, float]:
+        """
+        Return an explicit y-range for the main powder intensity row.
+        """
+        y_meas = np.asarray(plot_spec.y_meas)
+        y_calc = np.asarray(plot_spec.y_calc)
+        if min(y_meas.size, y_calc.size) == 0:
+            return 0.0, 1.0
+
+        main_series = [y_meas, y_calc]
+        if plot_spec.y_bkg is not None:
+            y_bkg = np.asarray(plot_spec.y_bkg)
+            if y_bkg.size > 0:
+                main_series.append(y_bkg)
+
+        main_y_min = float(min(np.min(series) for series in main_series))
+        main_y_max = float(max(np.max(series) for series in main_series))
+        main_y_range = main_y_max - main_y_min
+        if main_y_range > 0.0:
+            main_y_margin = main_y_range * MAIN_INTENSITY_RANGE_MARGIN_FRACTION
+            return main_y_min - main_y_margin, main_y_max + main_y_margin
+
+        return main_y_min - 1.0, main_y_max + 1.0
+
+    @classmethod
+    def _get_residual_limit(cls, plot_spec: PowderMeasVsCalcSpec) -> float:
+        """Return a symmetric residual limit matched to the main row."""
+        if plot_spec.y_resid is None:
+            return 1.0
+
+        y_meas = np.asarray(plot_spec.y_meas)
+        y_calc = np.asarray(plot_spec.y_calc)
+        y_resid = np.asarray(plot_spec.y_resid)
+        if min(y_meas.size, y_calc.size, y_resid.size) == 0:
+            return 1.0
+
+        main_y_min, main_y_max = cls._get_main_intensity_range(plot_spec)
+        main_y_range = max(main_y_max - main_y_min, 0.0)
+        scale_matched_half_range = 0.5 * main_y_range * plot_spec.residual_height_fraction
+        if scale_matched_half_range > 0.0:
+            return scale_matched_half_range
+
+        return cls._nice_axis_limit(float(np.max(np.abs(y_resid))))
+
+    @staticmethod
+    def _composite_x_range(x_values: np.ndarray) -> tuple[float | None, float | None]:
+        """Return the explicit x-range for the composite powder plot."""
+        if x_values.size == 0:
+            return None, None
+        return float(np.min(x_values)), float(np.max(x_values))
+
+    def plot_powder_meas_vs_calc(
+        self,
+        plot_spec: PowderMeasVsCalcSpec,
+    ) -> None:
+        """
+        Render a composite powder plot with optional Bragg ticks.
+
+        The main row shows measured and calculated intensities. The
+        Bragg row is added only when tick data is available. The
+        residual row is added only when residual data is requested.
+        """
+        layout = self._get_powder_composite_rows(plot_spec)
+        x_min, x_max = self._composite_x_range(np.asarray(plot_spec.x))
+        main_y_min, main_y_max = self._get_main_intensity_range(plot_spec)
+        residual_limit = None
+        hover_data = self._powder_meas_vs_calc_hover_data(plot_spec)
+        hover_template = self._powder_meas_vs_calc_hover_template(plot_spec)
+
+        fig = make_subplots(
+            rows=layout.row_count,
+            cols=1,
+            shared_xaxes=True,
+            vertical_spacing=COMPOSITE_VERTICAL_SPACING,
+            row_heights=layout.row_heights,
+        )
+
+        main_traces = (
+            (
+                ('meas', plot_spec.y_meas),
+                ('bkg', plot_spec.y_bkg),
+                ('calc', plot_spec.y_calc),
+            )
+            if plot_spec.y_bkg is not None
+            else (
+                ('meas', plot_spec.y_meas),
+                ('calc', plot_spec.y_calc),
+            )
+        )
+        for label, y_values in main_traces:
+            fig.add_trace(
+                self._get_powder_trace(
+                    plot_spec.x,
+                    y_values,
+                    label,
+                    customdata=hover_data,
+                    hovertemplate=hover_template,
+                ),
+                row=1,
+                col=1,
+            )
+
+        if layout.bragg_row is not None:
+            for idx, tick_set in enumerate(plot_spec.bragg_tick_sets):
+                color = BRAGG_TICK_COLORS[idx % len(BRAGG_TICK_COLORS)]
+                fig.add_trace(
+                    self._get_bragg_tick_trace(
+                        tick_set=tick_set,
+                        row_y=float(idx + 1),
+                        color=color,
+                    ),
+                    row=layout.bragg_row,
+                    col=1,
+                )
+
+        if layout.residual_row is not None and plot_spec.y_resid is not None:
+            residual_limit = self._get_residual_limit(plot_spec)
+            fig.add_trace(
+                self._get_powder_trace(
+                    plot_spec.x,
+                    plot_spec.y_resid,
+                    'resid',
+                    customdata=hover_data,
+                    hovertemplate=hover_template,
+                ),
+                row=layout.residual_row,
+                col=1,
+            )
+
+        fig.update_layout(
+            height=self._composite_figure_height(plot_spec, layout),
+            margin={
+                'autoexpand': True,
+                'r': COMPOSITE_MARGIN_RIGHT,
+                't': COMPOSITE_MARGIN_TOP,
+                'b': COMPOSITE_MARGIN_BOTTOM,
+            },
+            title={'text': plot_spec.title},
+            legend={
+                'bgcolor': self._legend_background_color(),
+                'xanchor': 'right',
+                'x': 1.0,
+                'yanchor': 'top',
+                'y': 1.0,
+            },
+        )
+
+        for row_idx in range(1, layout.row_count + 1):
+            x_axis_kwargs = {
+                'matches': 'x',
+                'showline': True,
+                'mirror': True,
+                'zeroline': False,
+                'tickformat': ',.6~g',
+                'separatethousands': True,
+            }
+            if x_min is not None and x_max is not None:
+                x_axis_kwargs['range'] = [x_min, x_max]
+            fig.update_xaxes(row=row_idx, col=1, **x_axis_kwargs)
+            fig.update_yaxes(
+                showline=True,
+                mirror=True,
+                zeroline=False,
+                tickformat=',.6~g',
+                separatethousands=True,
+                row=row_idx,
+                col=1,
+            )
+
+        fig.update_xaxes(showticklabels=(layout.row_count == 1), row=1, col=1)
+        fig.update_yaxes(
+            title_text=plot_spec.axes_labels[1],
+            range=[main_y_min, main_y_max],
+            row=1,
+            col=1,
+        )
+
+        if layout.bragg_row is not None:
+            fig.update_yaxes(
+                # title_text='Bragg peaks',
+                tickmode='array',
+                tickvals=[float(idx + 1) for idx in range(len(plot_spec.bragg_tick_sets))],
+                ticktext=[tick_set.phase_id for tick_set in plot_spec.bragg_tick_sets],
+                range=[float(len(plot_spec.bragg_tick_sets)) + 0.5, 0.5],
+                showgrid=False,
+                row=layout.bragg_row,
+                col=1,
+            )
+            fig.update_xaxes(
+                showticklabels=layout.residual_row is None,
+                row=layout.bragg_row,
+                col=1,
+            )
+
+        if layout.residual_row is not None and plot_spec.y_resid is not None:
+            residual_tick_limit = self._get_display_tick_limit(residual_limit)
+            fig.update_yaxes(
+                # title_text='Residual',
+                range=[-residual_limit, residual_limit],
+                tickmode='array',
+                tickvals=[-residual_tick_limit, 0.0, residual_tick_limit],
+                scaleanchor='y',
+                scaleratio=1,
+                zeroline=False,
+                row=layout.residual_row,
+                col=1,
+            )
+            fig.update_xaxes(title_text=plot_spec.axes_labels[0], row=layout.residual_row, col=1)
+        else:
+            terminal_row = layout.bragg_row if layout.bragg_row is not None else 1
+            fig.update_xaxes(title_text=plot_spec.axes_labels[0], row=terminal_row, col=1)
+
         self._show_figure(fig)
 
     def plot_single_crystal(
@@ -683,7 +1452,7 @@ class PlotlyPlotter(PlotterBase):
                 'array': sy,
                 'visible': True,
             },
-            hovertemplate='x: %{x}<br>y: %{y}<br><extra></extra>',
+            hovertemplate='x: %{x:,.2f}<br>y: %{y:,.2f}<br><extra></extra>',
         )
 
         layout = self._get_layout(

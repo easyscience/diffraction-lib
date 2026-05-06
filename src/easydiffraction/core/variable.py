@@ -355,8 +355,7 @@ class GenericParameter(GenericNumericDescriptor):
         )
         if validated and self._symmetry_fixed:
             log.warning(
-                f"Parameter '{self.unique_name}' is fixed by symmetry "
-                'and cannot be refined. Ignoring free=True.'
+                f"Parameter '{self.unique_name}' is fixed by symmetry. Ignoring free=True."
             )
             self._free = False
             return

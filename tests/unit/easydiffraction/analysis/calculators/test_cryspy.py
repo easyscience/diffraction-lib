@@ -3,6 +3,9 @@
 
 from types import SimpleNamespace
 
+import numpy as np
+import pytest
+
 
 def test_module_import():
     import easydiffraction.analysis.calculators.cryspy as MUT
@@ -81,9 +84,6 @@ def test_update_structure_zeroes_biso_for_anisotropic_atoms():
 
 
 def test_update_structure_restores_wyckoff_multiplicity_after_coordinate_wrapping():
-    import numpy as np
-    import pytest
-
     pytest.importorskip('cryspy')
 
     from easydiffraction.analysis.calculators.cryspy import CryspyCalculator
@@ -114,3 +114,62 @@ def test_update_structure_restores_wyckoff_multiplicity_after_coordinate_wrappin
 
     assert cryspy_model_dict['atom_fract_xyz'][1][0] == -0.20587714
     assert cryspy_model_dict['atom_multiplicity'][0] == 18
+
+
+def test_last_powder_refln_records_converts_cwl_two_theta_to_degrees():
+    from easydiffraction.analysis.calculators.cryspy import CryspyCalculator
+    from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+
+    calculator = CryspyCalculator()
+    calculator._last_powder_phase_blocks = {
+        'phase_exp': {
+            'index_hkl': np.array([[1], [0], [1]]),
+            'sthovl': np.array([0.25]),
+            'ttheta_hkl': np.array([np.pi / 2]),
+            'f_nucl': np.array([-3.0 + 4.0j]),
+        }
+    }
+    structure = SimpleNamespace(name='phase')
+    experiment = SimpleNamespace(
+        name='exp',
+        type=SimpleNamespace(beam_mode=SimpleNamespace(value=BeamModeEnum.CONSTANT_WAVELENGTH)),
+    )
+
+    records = calculator.last_powder_refln_records(structure, experiment, phase_id='phase-a')
+
+    assert len(records) == 1
+    assert records[0].phase_id == 'phase-a'
+    assert records[0].two_theta == pytest.approx(90.0)
+    assert records[0].d_spacing == pytest.approx(2.0)
+    assert records[0].f_calc == pytest.approx(5.0)
+    assert records[0].f_squared_calc == pytest.approx(25.0)
+
+
+def test_last_powder_refln_records_reads_tof_time_and_d_spacing():
+    from easydiffraction.analysis.calculators.cryspy import CryspyCalculator
+    from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+
+    calculator = CryspyCalculator()
+    calculator._last_powder_phase_blocks = {
+        'phase_exp': {
+            'index_hkl': np.array([[2], [1], [0]]),
+            'sthovl': np.array([0.1]),
+            'd_hkl': np.array([3.21]),
+            'time_hkl': np.array([1234.0]),
+            'f_nucl': np.array([6.0 + 0.0j]),
+        }
+    }
+    structure = SimpleNamespace(name='phase')
+    experiment = SimpleNamespace(
+        name='exp',
+        type=SimpleNamespace(beam_mode=SimpleNamespace(value=BeamModeEnum.TIME_OF_FLIGHT)),
+    )
+
+    records = calculator.last_powder_refln_records(structure, experiment, phase_id='phase-b')
+
+    assert len(records) == 1
+    assert records[0].phase_id == 'phase-b'
+    assert records[0].time_of_flight == pytest.approx(1234.0)
+    assert records[0].d_spacing == pytest.approx(3.21)
+    assert records[0].f_calc == pytest.approx(6.0)
+    assert records[0].f_squared_calc == pytest.approx(36.0)
