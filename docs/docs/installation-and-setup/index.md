@@ -244,9 +244,10 @@ once using the command line, as shown below.
 
 - Navigate to your existing Pixi project, created as described in the
   [Installing with Pixi](#installing-with-pixi) section.
-- Add JupyterLab and the Pixi kernel for Jupyter:
+- Add JupyterLab, Interactive Python shell and the Pixi kernel for
+  Jupyter:
   ```txt
-  pixi add --pypi jupyterlab pixi-kernel
+  pixi add --pypi jupyterlab ipython pixi-kernel
   ```
 - Download all the EasyDiffraction tutorials to the `tutorials/`
   directory:
@@ -263,9 +264,10 @@ once using the command line, as shown below.
 
 ### Classical Run Tutorials Locally
 
-- Install Jupyter Notebook and IPython kernel:
+- Install Jupyter Notebook, Interactive Python shell and the IPython
+  kernel:
   ```txt
-  pip install notebook ipykernel
+  pip install notebook ipython ipykernel
   ```
 - Add the virtual environment as a Jupyter kernel:
   ```txt
