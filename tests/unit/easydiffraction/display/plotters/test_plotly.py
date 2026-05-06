@@ -49,6 +49,22 @@ def test_correlation_colorscale_uses_white_center_in_light_mode(monkeypatch):
     assert pp.PlotlyPlotter._correlation_colorscale()[1] == (0.5, '#f7f7f7')
 
 
+def test_legend_background_color_uses_light_overlay_in_light_mode(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    monkeypatch.setattr(pp.PlotlyPlotter, '_is_dark_mode', staticmethod(lambda: False))
+
+    assert pp.PlotlyPlotter._legend_background_color() == 'rgba(255, 255, 255, 0.5)'
+
+
+def test_legend_background_color_uses_dark_overlay_in_dark_mode(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    monkeypatch.setattr(pp.PlotlyPlotter, '_is_dark_mode', staticmethod(lambda: True))
+
+    assert pp.PlotlyPlotter._legend_background_color() == 'rgba(0, 0, 0, 0.5)'
+
+
 def test_get_trace_and_plot(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
 
@@ -87,7 +103,7 @@ def test_get_trace_and_plot(monkeypatch):
 
     class DummyPIO:
         @staticmethod
-        def to_html(fig, include_plotlyjs=None, full_html=None, config=None):
+        def to_html(fig, include_plotlyjs=None, full_html=None, config=None, post_script=None):
             return '<div>plot</div>'
 
     dummy_display_calls = {'count': 0}
@@ -129,6 +145,139 @@ def test_get_trace_and_plot(monkeypatch):
     assert dummy_display_calls['count'] == 1 or shown['count'] == 1
 
 
+def test_show_figure_adds_legend_toggle_script_to_html_output(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    monkeypatch.setattr(pp, 'in_pycharm', lambda: False)
+
+    captured = {}
+
+    class DummyFig:
+        def update_xaxes(self, **kwargs):
+            pass
+
+        def update_yaxes(self, **kwargs):
+            pass
+
+        def show(self, **kwargs):
+            captured['show_called'] = True
+
+    class DummyScatter:
+        def __init__(self, **kwargs):
+            self.kwargs = kwargs
+
+    class DummyGO:
+        class Scatter(DummyScatter):
+            pass
+
+        class Figure(DummyFig):
+            def __init__(self, data=None, layout=None):
+                self.data = data
+                self.layout = layout
+
+        class Layout:
+            def __init__(self, **kwargs):
+                self.kwargs = kwargs
+
+    class DummyPIO:
+        @staticmethod
+        def to_html(fig, include_plotlyjs=None, full_html=None, config=None, post_script=None):
+            captured['config'] = config
+            captured['post_script'] = post_script
+            return '<div>plot</div>'
+
+    def dummy_display(obj):
+        captured['displayed_html'] = obj.html
+
+    class DummyHTML:
+        def __init__(self, html):
+            self.html = html
+
+    monkeypatch.setattr(pp, 'go', DummyGO)
+    monkeypatch.setattr(pp, 'pio', DummyPIO)
+    monkeypatch.setattr(pp, 'display', dummy_display)
+    monkeypatch.setattr(pp, 'HTML', DummyHTML)
+
+    plotter = pp.PlotlyPlotter()
+    plotter.plot_powder(
+        [0, 1, 2],
+        y_series=[[1, 2, 3]],
+        labels=['calc'],
+        axes_labels=['x', 'y'],
+        title='t',
+        height=None,
+    )
+
+    assert captured.get('show_called') is not True
+    assert captured['config']['displayModeBar'] is True
+    assert captured['config']['displaylogo'] is False
+    assert 'data-legend-toggle="true"' in captured['post_script']
+    assert 'Toggle legend' in captured['post_script']
+    assert 'graphDiv.dataset.legendVisible' in captured['post_script']
+    assert 'const applyLegendVisibility = function (legendVisible) {' in captured['post_script']
+    assert "legend.style.display = legendVisible ? 'inline' : 'none';" in captured['post_script']
+    assert 'const readLegendVisibility = function () {' in captured['post_script']
+    assert (
+        "if (graphDiv.layout && typeof graphDiv.layout.showlegend === 'boolean')"
+        in captured['post_script']
+    )
+    assert "legendButton.classList.toggle('active', legendVisible);" in captured['post_script']
+    assert "graphDiv.on('plotly_relayout', function (eventData) {" in captured['post_script']
+    assert 'legendButton.onclick = toggleLegend;' in captured['post_script']
+    assert 'resolveLegendButtonFill(legendVisible ? 0.7 : 0.3)' in captured['post_script']
+    assert "legendButtonGroup.className = 'modebar-group';" in captured['post_script']
+    assert 'modebar.appendChild(legendButtonGroup);' in captured['post_script']
+    assert 'legendButton.innerHTML' in captured['post_script']
+    assert 'height="1em" width="1em"' in captured['post_script']
+    assert captured['displayed_html'] == '<div>plot</div>'
+
+
+def test_show_figure_skips_legend_toggle_script_without_legend(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    monkeypatch.setattr(pp, 'in_pycharm', lambda: False)
+
+    captured = {}
+
+    class DummyTrace:
+        def __init__(self, name=None, showlegend=None, visible=None):
+            self.name = name
+            self.showlegend = showlegend
+            self.visible = visible
+
+    class DummyFig:
+        def __init__(self):
+            self.data = [DummyTrace(name=None, showlegend=False)]
+            self.layout = type('DummyLayout', (), {'showlegend': None})()
+
+        def show(self, **kwargs):
+            captured['show_called'] = True
+
+    class DummyPIO:
+        @staticmethod
+        def to_html(fig, include_plotlyjs=None, full_html=None, config=None, post_script=None):
+            captured['post_script'] = post_script
+            return '<div>plot</div>'
+
+    def dummy_display(obj):
+        captured['displayed_html'] = obj.html
+
+    class DummyHTML:
+        def __init__(self, html):
+            self.html = html
+
+    monkeypatch.setattr(pp, 'pio', DummyPIO)
+    monkeypatch.setattr(pp, 'display', dummy_display)
+    monkeypatch.setattr(pp, 'HTML', DummyHTML)
+
+    plotter = pp.PlotlyPlotter()
+    plotter._show_figure(DummyFig())
+
+    assert captured.get('show_called') is not True
+    assert captured['post_script'] is None
+    assert captured['displayed_html'] == '<div>plot</div>'
+
+
 def test_plotly_single_crystal_trace_and_plot(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
 
@@ -166,7 +315,7 @@ def test_plotly_single_crystal_trace_and_plot(monkeypatch):
 
     class DummyPIO:
         @staticmethod
-        def to_html(fig, include_plotlyjs=None, full_html=None, config=None):
+        def to_html(fig, include_plotlyjs=None, full_html=None, config=None, post_script=None):
             return '<div>plot</div>'
 
     dummy_display_calls = {'count': 0}

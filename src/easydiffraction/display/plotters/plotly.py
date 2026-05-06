@@ -157,6 +157,13 @@ class PlotlyPlotter(PlotterBase):
             return 'rgba(110, 145, 190, 0.35)'
         return 'rgba(120, 140, 160, 0.28)'
 
+    @classmethod
+    def _legend_background_color(cls) -> str:
+        """Return a half-transparent legend background color."""
+        if cls._is_dark_mode():
+            return 'rgba(0, 0, 0, 0.5)'
+        return 'rgba(255, 255, 255, 0.5)'
+
     def plot_correlation_heatmap(
         self,
         corr_df: object,
@@ -550,6 +557,7 @@ class PlotlyPlotter(PlotterBase):
             A dict with display and mode bar settings.
         """
         return {
+            'displayModeBar': True,
             'displaylogo': False,
             'modeBarButtonsToRemove': [
                 'select2d',
@@ -559,6 +567,216 @@ class PlotlyPlotter(PlotterBase):
                 'autoScale2d',
             ],
         }
+
+    @staticmethod
+    def _modebar_legend_toggle_post_script() -> str:
+        """
+        Return client-side code for a legend-toggle modebar button.
+        """
+        return r"""
+const graphDiv = document.getElementById('{plot_id}');
+if (!graphDiv) {
+    return;
+}
+
+const parseColor = function (colorValue) {
+    if (!colorValue) {
+        return null;
+    }
+
+    const rgbMatch = colorValue.match(/^rgba?\(([^)]+)\)$/);
+    if (rgbMatch) {
+        const channels = rgbMatch[1].split(',').slice(0, 3).map((value) => Number(value.trim()));
+        if (channels.every((value) => Number.isFinite(value))) {
+            return {red: channels[0], green: channels[1], blue: channels[2]};
+        }
+    }
+
+    const hexMatch = colorValue.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+    if (!hexMatch) {
+        return null;
+    }
+
+    const normalizedHex = hexMatch[1].length === 3
+        ? hexMatch[1].split('').map((value) => value + value).join('')
+        : hexMatch[1];
+    return {
+        red: Number.parseInt(normalizedHex.slice(0, 2), 16),
+        green: Number.parseInt(normalizedHex.slice(2, 4), 16),
+        blue: Number.parseInt(normalizedHex.slice(4, 6), 16),
+    };
+};
+
+const resolveLegendButtonFill = function (opacity) {
+    const referencePath = graphDiv.querySelector('.modebar-btn path');
+    const referenceFill = referencePath ? window.getComputedStyle(referencePath).fill : null;
+    const fontColor = graphDiv._fullLayout && graphDiv._fullLayout.font
+        ? graphDiv._fullLayout.font.color
+        : null;
+    const parsedColor = (
+        parseColor(referenceFill)
+        || parseColor(fontColor)
+        || {red: 68, green: 68, blue: 68}
+    );
+    return (
+        'rgba('
+        + parsedColor.red
+        + ', '
+        + parsedColor.green
+        + ', '
+        + parsedColor.blue
+        + ', '
+        + opacity
+        + ')'
+    );
+};
+
+const updateLegendButtonAppearance = function (legendVisible) {
+    const legendButton = graphDiv.querySelector('[data-legend-toggle="true"]');
+    if (!legendButton) {
+        return;
+    }
+
+    const legendIconPath = legendButton.querySelector('path');
+    if (!legendIconPath) {
+        return;
+    }
+
+    legendButton.classList.toggle('active', legendVisible);
+    legendButton.setAttribute('aria-pressed', String(legendVisible));
+    legendIconPath.setAttribute(
+        'style',
+        'fill: ' + resolveLegendButtonFill(legendVisible ? 0.7 : 0.3) + ';',
+    );
+};
+
+const applyLegendVisibility = function (legendVisible) {
+    const legend = graphDiv.querySelector('.legend');
+    if (legend) {
+        legend.style.display = legendVisible ? 'inline' : 'none';
+        legend.style.visibility = legendVisible ? 'visible' : 'hidden';
+        legend.style.pointerEvents = legendVisible ? '' : 'none';
+    }
+
+    if (graphDiv.layout) {
+        graphDiv.layout.showlegend = legendVisible;
+    }
+
+    if (graphDiv._fullLayout) {
+        graphDiv._fullLayout.showlegend = legendVisible;
+    }
+};
+
+const readLegendVisibility = function () {
+    if (graphDiv.dataset.legendVisible === 'true') {
+        return true;
+    }
+
+    if (graphDiv.dataset.legendVisible === 'false') {
+        return false;
+    }
+
+    const legend = graphDiv.querySelector('.legend');
+    if (legend) {
+        return (
+            window.getComputedStyle(legend).display !== 'none'
+            && window.getComputedStyle(legend).visibility !== 'hidden'
+        );
+    }
+
+    if (graphDiv.layout && typeof graphDiv.layout.showlegend === 'boolean') {
+        return graphDiv.layout.showlegend;
+    }
+
+    if (graphDiv._fullLayout && typeof graphDiv._fullLayout.showlegend === 'boolean') {
+        return graphDiv._fullLayout.showlegend;
+    }
+
+    return true;
+};
+
+const syncLegendVisibility = function (legendVisible) {
+    const resolvedLegendVisible = typeof legendVisible === 'boolean'
+        ? legendVisible
+        : readLegendVisibility();
+    graphDiv.dataset.legendVisible = String(resolvedLegendVisible);
+    applyLegendVisibility(resolvedLegendVisible);
+    updateLegendButtonAppearance(resolvedLegendVisible);
+    return resolvedLegendVisible;
+};
+
+const toggleLegend = function (event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    const currentValue = readLegendVisibility();
+    const nextValue = !currentValue;
+    syncLegendVisibility(nextValue);
+};
+
+const installLegendToggleButton = function () {
+    const modebar = graphDiv.querySelector('.modebar');
+    if (!modebar) {
+        return;
+    }
+
+    if (!modebar.querySelector('.modebar-group')) {
+        return;
+    }
+
+    let legendButton = modebar.querySelector('[data-legend-toggle="true"]');
+    if (!legendButton) {
+        const legendButtonGroup = document.createElement('div');
+        legendButtonGroup.className = 'modebar-group';
+
+        legendButton = document.createElement('a');
+        legendButton.className = 'modebar-btn';
+        legendButton.href = 'javascript:void(0)';
+        legendButton.setAttribute('data-title', 'Toggle legend');
+        legendButton.setAttribute('data-legend-toggle', 'true');
+        legendButton.setAttribute('aria-label', 'Toggle legend');
+        legendButton.setAttribute('role', 'button');
+        legendButton.setAttribute('tabindex', '0');
+        legendButton.innerHTML = [
+            '<svg viewBox="0 0 1000 1000"'
+            + ' class="icon" height="1em" width="1em"'
+            + ' aria-hidden="true">',
+            '<path d="M120 160H240V280H120z M120 440H240V560H120z '
+            + 'M120 720H240V840H120z M320 200H880V240H320z '
+            + 'M320 480H880V520H320z M320 760H880V800H320z"></path>',
+            '</svg>',
+        ].join('');
+
+        legendButtonGroup.appendChild(legendButton);
+        modebar.appendChild(legendButtonGroup);
+    }
+
+    legendButton.onclick = toggleLegend;
+    legendButton.onkeydown = function (event) {
+        if (event.key === 'Enter' || event.key === ' ') {
+            toggleLegend(event);
+        }
+    };
+
+    syncLegendVisibility();
+};
+
+if (graphDiv.on) {
+    graphDiv.on('plotly_afterplot', installLegendToggleButton);
+    graphDiv.on('plotly_relayout', function (eventData) {
+        if (eventData && typeof eventData.showlegend === 'boolean') {
+            syncLegendVisibility(eventData.showlegend);
+            return;
+        }
+
+        syncLegendVisibility();
+    });
+}
+syncLegendVisibility();
+window.requestAnimationFrame(installLegendToggleButton);
+"""
 
     @staticmethod
     def _get_figure(
@@ -587,6 +805,36 @@ class PlotlyPlotter(PlotterBase):
         fig.update_yaxes(tickformat=',.6~g', separatethousands=True)
         return fig
 
+    @staticmethod
+    def _has_visible_legend(fig: object) -> bool:
+        """Return whether a figure exposes at least one legend entry."""
+
+        def _trace_value(trace: object, field_name: str) -> object:
+            value = getattr(trace, field_name, None)
+            if value is not None:
+                return value
+
+            trace_kwargs = getattr(trace, 'kwargs', None)
+            if isinstance(trace_kwargs, dict):
+                return trace_kwargs.get(field_name)
+
+            return None
+
+        layout = getattr(fig, 'layout', None)
+        layout_showlegend = getattr(layout, 'showlegend', None)
+        if layout_showlegend is False:
+            return False
+
+        for trace in getattr(fig, 'data', ()):
+            if _trace_value(trace, 'visible') is False:
+                continue
+            if _trace_value(trace, 'showlegend') is False:
+                continue
+            if _trace_value(trace, 'name'):
+                return True
+
+        return False
+
     def _show_figure(
         self,
         fig: object,
@@ -607,16 +855,21 @@ class PlotlyPlotter(PlotterBase):
         if in_pycharm() or display is None or HTML is None:
             fig.show(config=config)
         else:
+            post_script = None
+            if self._has_visible_legend(fig):
+                post_script = self._modebar_legend_toggle_post_script()
             html_fig = pio.to_html(
                 fig,
                 include_plotlyjs='cdn',
                 full_html=False,
                 config=config,
+                post_script=post_script,
             )
             display(HTML(html_fig))
 
-    @staticmethod
+    @classmethod
     def _get_layout(
+        cls,
         title: str,
         axes_labels: object,
         shapes: list | None = None,
@@ -649,6 +902,7 @@ class PlotlyPlotter(PlotterBase):
                 'text': title,
             },
             legend={
+                'bgcolor': cls._legend_background_color(),
                 'xanchor': 'right',
                 'x': 1.0,
                 'yanchor': 'top',
@@ -1041,6 +1295,7 @@ class PlotlyPlotter(PlotterBase):
             },
             title={'text': plot_spec.title},
             legend={
+                'bgcolor': self._legend_background_color(),
                 'xanchor': 'right',
                 'x': 1.0,
                 'yanchor': 'top',
