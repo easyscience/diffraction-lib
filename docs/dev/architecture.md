@@ -338,7 +338,8 @@ per-key flags.
 
 ADP support covers four CIF-standard types: **Biso**, **Uiso**,
 **Bani**, **Uani**. The design uses **type-neutral parameter names** so
-that switching type is a one-line operation on `adp_type`.
+that switching type is a one-line operation on `adp_type`: parameter
+objects stay stable while their values and CIF output names change.
 
 **Two sibling collections.** Following CIF conventions (`_atom_site` and
 `_atom_site_aniso` are separate loops), isotropic and anisotropic data
@@ -346,10 +347,32 @@ live in separate collections on `Structure`. Every atom always has an
 entry in both collections; when `adp_type` is isotropic, the aniso
 parameters hold `0.0` and are ignored by calculators.
 
-**Type-neutral names.** `atom_site.adp_iso` is the type-neutral
-isotropic ADP parameter. Its physical meaning (B or U) is determined by
-`atom_site.adp_type`. Similarly, `atom_site_aniso.adp_11`…`adp_23` are
+```shell
+Structure
+├── cell              (CategoryItem)
+├── space_group       (CategoryItem)
+├── atom_sites        (CategoryCollection of AtomSite)
+└── atom_site_aniso   (CategoryCollection of AtomSiteAniso)
+```
+
+**Type-neutral names.** `atom_site.adp_iso` is the isotropic ADP
+parameter. Its physical meaning (B or U) is determined by
+`atom_site.adp_type`. Similarly, `atom_site_aniso.adp_11`...`adp_23` are
 type-neutral tensor components.
+
+| Parameter  | Location        | CIF names                                                |
+| ---------- | --------------- | -------------------------------------------------------- |
+| `adp_type` | `AtomSite`      | `_atom_site.adp_type`                                    |
+| `adp_iso`  | `AtomSite`      | `_atom_site.B_iso_or_equiv`, `_atom_site.U_iso_or_equiv` |
+| `adp_11`   | `AtomSiteAniso` | `_atom_site_aniso.B_11`, `_atom_site_aniso.U_11`         |
+| `adp_22`   | `AtomSiteAniso` | `_atom_site_aniso.B_22`, `_atom_site_aniso.U_22`         |
+| `adp_33`   | `AtomSiteAniso` | `_atom_site_aniso.B_33`, `_atom_site_aniso.U_33`         |
+| `adp_12`   | `AtomSiteAniso` | `_atom_site_aniso.B_12`, `_atom_site_aniso.U_12`         |
+| `adp_13`   | `AtomSiteAniso` | `_atom_site_aniso.B_13`, `_atom_site_aniso.U_13`         |
+| `adp_23`   | `AtomSiteAniso` | `_atom_site_aniso.B_23`, `_atom_site_aniso.U_23`         |
+
+`adp_type` is a `StringDescriptor` validated against `AdpTypeEnum`
+(`Biso`, `Uiso`, `Bani`, `Uani`).
 
 **Dual CIF names.** Each parameter's `CifHandler` carries both CIF name
 variants (e.g.
@@ -357,16 +380,63 @@ variants (e.g.
 tries each name until a match is found; writing uses `names[0]`. The
 `adp_type` setter reorders the list so the correct tag is emitted.
 
+For example, switching from `Biso` to `Uiso` makes
+`_atom_site.U_iso_or_equiv` the first CIF name on `adp_iso`; switching
+from `Bani` to `Uani` does the same for all six `_atom_site_aniso.U_*`
+tensor tags. No dynamic CIF handler is needed.
+
 **Auto-conversion.** Setting `adp_type` triggers value conversion: B ↔ U
 via `B = 8π²U`; iso → ani seeds the diagonal; ani → iso averages the
 diagonal.
 
+| Transition | Conversion rule                                                       |
+| ---------- | --------------------------------------------------------------------- |
+| B ↔ U      | `B = 8π²U`                                                            |
+| Iso → Ani  | `adp_11 = adp_22 = adp_33 = adp_iso`; off-diagonal terms become `0.0` |
+| Ani → Iso  | `adp_iso = (adp_11 + adp_22 + adp_33) / 3`                            |
+
 **Collection sync.** `Structure._update_categories()` reconciles the two
 collections: adds missing aniso entries, removes stale ones, and rekeys
-on label rename.
+on label rename. Sync follows the datablock dirty-flag pattern: category
+or parameter changes mark the structure as needing an update, and the
+next serialisation, plot, or fit call performs the reconciliation.
 
-See [`adp_implementation.md`](adp_implementation.md) for the full
-implementation plan.
+| Event                              | Sync action                                               |
+| ---------------------------------- | --------------------------------------------------------- |
+| Atom added to `atom_sites`         | Create matching `AtomSiteAniso` entry with `0.0` defaults |
+| Atom removed from `atom_sites`     | Remove matching `AtomSiteAniso` entry                     |
+| Atom label renamed in `atom_sites` | Rekey the matching `AtomSiteAniso` entry                  |
+
+**User-facing access.** ADP parameters follow the same two-level access
+pattern as other category parameters:
+
+```python
+structure.atom_sites['Si'].adp_type = 'Biso'
+structure.atom_sites['Si'].adp_iso = 0.47
+structure.atom_site_aniso['Si'].adp_11 = 0.05
+```
+
+Creating an atom uses `adp_iso`; the matching `atom_site_aniso` entry is
+created by `_update_categories()`:
+
+```python
+structure.atom_sites.create(
+    label='Si',
+    type_symbol='Si',
+    fract_x=0.0,
+    fract_y=0.0,
+    fract_z=0.0,
+    adp_type='Biso',
+    adp_iso=0.47,
+)
+```
+
+**Design rule.** ADP parameter names are type-neutral because
+type-specific names (`b_iso`, `u_iso`, etc.) would require replacing
+parameter objects when the ADP type changes, which would break
+constraints, free flags, and existing references. The always-present
+`atom_site_aniso` collection avoids conditional branches in
+serialisation, calculators, parameter tables, constraint wiring, and UI.
 
 ---
 
