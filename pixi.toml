@@ -1,27 +1,3 @@
-#######################
-# ENVIRONMENT VARIABLES
-#######################
-
-# Platform-independent
-
-[activation.env]
-PYTHONIOENCODING = 'utf-8'
-
-# Platform-specific
-
-# Ensures the main package is used from the source code during
-# development, even if main package is installed in editable mode
-# via uv. This is important because `pixi update` might replace
-# the installed version with the latest released version.
-
-# Unix/macOS
-[target.unix.activation.env]
-PYTHONPATH = "${PIXI_PROJECT_ROOT}/src${PYTHONPATH:+:${PYTHONPATH}}"
-
-# Windows
-[target.win.activation.env]
-PYTHONPATH = "${PIXI_PROJECT_ROOT}/src;%PYTHONPATH%"
-
 ###########
 # WORKSPACE
 ###########
@@ -34,47 +10,63 @@ platforms = ['win-64', 'linux-64', 'osx-arm64']
 # Channels for fetching packages
 channels = ['conda-forge']
 
-#####################
-# SYSTEM REQUIREMENTS
-#####################
+##########
+# FEATURES
+##########
+
+# Default features:
+
+[activation.env]
+PYTHONIOENCODING = 'utf-8'
 
 [system-requirements]
-
 # Set minimum supported version for macOS to be 14.0 to ensure packages
-# like `skipp` that only have wheels for macOS 14.0+ (macosx_14_0_arm64)
+# like `scipp` that only have wheels for macOS 14.0+ (macosx_14_0_arm64)
 # are used instead of building from source. This is a workaround for
 # Pixi, see https://github.com/prefix-dev/pixi/issues/5667
 macos = '14.0'
-
 # Set minimum supported version for glibc to be 2.35 to ensure packages
 # like `crysfml` that only have wheels for glibc 2.35+
 # (manylinux_2_35_x86_64) are used.
 #libc = { family = 'glibc', version = '2.35' }
 libc = '2.35'
 
-##########
-# FEATURES
-##########
+# Non-default features:
 
-# Default feature configuration
-
-[dependencies]
-nodejs = '*'      # Required for Prettier (non-Python formatting)
-jupyterlab = '*'  # Jupyter notebooks
-pixi-kernel = '*' # Pixi Jupyter kernel
-gsl = '*'         # GNU Scientific Library; required for diffpy.pdffit2
-
-[pypi-dependencies] # == [feature.default.pypi-dependencies]
-pip = '*' # Native package installer
-#pycrysfml = { version = ">=0.4.0", index = "https://easyscience.github.io/pypi/" }
-easydiffraction = { path = '.', editable = true, extras = ['dev'] }
-
-# Specific features: Set specific Python versions
+# Set specific Python versions to be used in CI testing.
 
 [feature.py-min.dependencies]
 python = '3.12.*'
+
 [feature.py-max.dependencies]
 python = '3.14.*'
+
+# Development dependencies for local development and testing with
+# editable installations.
+
+[feature.dev.dependencies]
+nodejs = '*'      # Required for Prettier (non-Python formatting)
+jupyterlab = '*'  # Jupyter notebooks
+ipython = '*'     # Interactive Python shell
+pixi-kernel = '*' # Pixi Jupyter kernel
+gsl = '*'         # GNU Scientific Library; required for diffpy.pdffit2
+
+[feature.dev.pypi-dependencies]
+pip = '*'
+#pycrysfml = { version = ">=0.4.0", index = "https://easyscience.github.io/pypi/" }
+easydiffraction = { path = '.', editable = true, extras = ['dev'] }
+
+# User-like behavior for testing with pip-installed dependencies instead
+# of editable installations.
+
+[feature.user.dependencies]
+jupyterlab = '*'  # Jupyter notebooks
+ipython = '*'     # Interactive Python shell
+pixi-kernel = '*' # Pixi Jupyter kernel
+
+[feature.user.pypi-dependencies]
+pip = '*'
+easydiffraction = '*'
 
 ##############
 # ENVIRONMENTS
@@ -84,12 +76,18 @@ python = '3.14.*'
 
 # The `default` feature is always included in all environments.
 # Additional features can be specified per environment.
-py-312-env = { features = ['py-min'] }
-py-314-env = { features = ['py-max'] }
 
-# The `default` environment is always created and includes the `default` feature.
-# It does not need to be specified explicitly unless non-default features are included.
-default = { features = ['py-max'] }
+# Specific environments for CI testing with different Python versions.
+py-312-env = { features = ['py-min', 'dev'] }
+py-314-env = { features = ['py-max', 'dev'] }
+
+# The `default` environment is developer-oriented for local development
+# and testing with editable installation of the current package.
+default = { features = ['py-max', 'dev'] }
+
+# The `user` environment allows testing with pip-installed dependencies
+# instead of editable installation of the current package.
+user = { features = ['py-max', 'user'] }
 
 #######
 # TASKS
