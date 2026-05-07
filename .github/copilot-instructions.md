@@ -77,7 +77,7 @@
 ## Testing
 
 - Every new module, class, or bug fix ships with tests. See
-  `docs/architecture/architecture.md` §10 for the full strategy.
+  `docs/dev/architecture.md` §10 for the full strategy.
 - Unit tests mirror the source tree:
   `src/easydiffraction/<pkg>/<mod>.py` →
   `tests/unit/easydiffraction/<pkg>/test_<mod>.py`. Verify with
@@ -102,8 +102,8 @@
 
 - Before any structural/design change (new categories, factories,
   switchable-category wiring, datablocks, CIF serialisation), read
-  `docs/architecture/architecture.md` and follow documented patterns.
-  Localised bug fixes or test updates need only this file.
+  `docs/dev/architecture.md` and follow documented patterns. Localised
+  bug fixes or test updates need only this file.
 - Project is in beta: no legacy shims, no deprecation warnings — update
   tests and tutorials to the current API.
 - Minimal diffs; don't reformat working code. Fix only what's asked;
