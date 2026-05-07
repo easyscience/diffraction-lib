@@ -125,7 +125,37 @@ class MinimizerBase(ABC):
         self._warn_boundary_parameters(parameters)
         self._warn_physical_limit_violations(parameters)
         success = self._check_success(raw_result)
-        self.result = FitResults(
+        self.result = self._build_fit_results(
+            parameters=parameters,
+            raw_result=raw_result,
+            success=success,
+        )
+        return self.result
+
+    def _build_fit_results(
+        self,
+        *,
+        parameters: list[object],
+        raw_result: object,
+        success: bool,
+    ) -> FitResults:
+        """Build the final fit-result object for this minimizer.
+
+        Parameters
+        ----------
+        parameters : list[object]
+            Parameters after the solver finished.
+        raw_result : object
+            Backend-specific solver output object.
+        success : bool
+            Whether the minimizer considers the run successful.
+
+        Returns
+        -------
+        FitResults
+            Aggregated outcome of the fit.
+        """
+        return FitResults(
             success=success,
             parameters=parameters,
             reduced_chi_square=self.tracker.best_chi2,
@@ -133,7 +163,6 @@ class MinimizerBase(ABC):
             starting_parameters=parameters,
             fitting_time=self.tracker.fitting_time,
         )
-        return self.result
 
     @staticmethod
     def _warn_boundary_parameters(parameters: list[object]) -> None:

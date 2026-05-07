@@ -6,9 +6,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+import arviz as az
 import numpy as np
 
 from easydiffraction.analysis.fit_helpers.reporting import FitResults
+
+R_HAT_CONVERGENCE_THRESHOLD = 1.01
+ESS_BULK_CONVERGENCE_THRESHOLD = 400.0
 
 
 @dataclass(slots=True)
@@ -34,7 +38,7 @@ class PosteriorParameterSummary:
     ess_bulk : float | None, default=None
         Bulk effective sample size when available.
     r_hat : float | None, default=None
-        Rank-normalized split-$\hat{R}$ when available.
+        Rank-normalized split-$\\hat{R}$ when available.
     """
 
     unique_name: str
@@ -154,7 +158,11 @@ class PosteriorSamples:
                 raise ValueError(msg)
             sample_stats = {'lp': np.transpose(log_posterior, (1, 0))}
 
-        return az.from_dict(posterior=posterior_dict, sample_stats=sample_stats)
+        data = {'posterior': posterior_dict}
+        if sample_stats is not None:
+            data['sample_stats'] = sample_stats
+
+        return az.from_dict(data)
 
 
 class BayesianFitResults(FitResults):
@@ -190,6 +198,10 @@ class BayesianFitResults(FitResults):
         Sampler settings recorded for reproducibility.
     convergence_diagnostics : dict[str, object] | None, default=None
         Convergence diagnostics and status metadata.
+    sampler_completed : bool, default=False
+        Whether the sampler completed a run and returned posterior data.
+    best_log_posterior : float | None, default=None
+        Best log-posterior value reported by the sampler.
     """
 
     def __init__(
@@ -209,6 +221,8 @@ class BayesianFitResults(FitResults):
         credible_interval_levels: tuple[float, ...] = (0.68, 0.95),
         sampler_settings: dict[str, object] | None = None,
         convergence_diagnostics: dict[str, object] | None = None,
+        sampler_completed: bool = False,
+        best_log_posterior: float | None = None,
     ) -> None:
         super().__init__(
             success=success,
@@ -232,3 +246,140 @@ class BayesianFitResults(FitResults):
         self.convergence_diagnostics = (
             convergence_diagnostics if convergence_diagnostics is not None else {}
         )
+        self.sampler_completed = sampler_completed
+        self.best_log_posterior = best_log_posterior
+
+
+def compute_convergence_diagnostics(posterior_samples: PosteriorSamples) -> dict[str, object]:
+    """Compute convergence diagnostics from posterior samples.
+
+    Parameters
+    ----------
+    posterior_samples : PosteriorSamples
+        Posterior samples container.
+
+    Returns
+    -------
+    dict[str, object]
+        Convergence metrics keyed by diagnostic name.
+    """
+    inference_data = posterior_samples.to_arviz()
+    rhat_dataset = az.rhat(inference_data)
+    ess_dataset = az.ess(inference_data, method='bulk')
+
+    r_hat_by_parameter = _dataset_to_scalar_dict(rhat_dataset)
+    ess_bulk_by_parameter = _dataset_to_scalar_dict(ess_dataset)
+
+    max_r_hat = max(r_hat_by_parameter.values(), default=None)
+    min_ess_bulk = min(ess_bulk_by_parameter.values(), default=None)
+
+    converged = True
+    if max_r_hat is not None and max_r_hat > R_HAT_CONVERGENCE_THRESHOLD:
+        converged = False
+    if min_ess_bulk is not None and min_ess_bulk < ESS_BULK_CONVERGENCE_THRESHOLD:
+        converged = False
+
+    return {
+        'converged': converged,
+        'r_hat_by_parameter': r_hat_by_parameter,
+        'ess_bulk_by_parameter': ess_bulk_by_parameter,
+        'max_r_hat': max_r_hat,
+        'min_ess_bulk': min_ess_bulk,
+        'n_draws': int(posterior_samples.parameter_samples.shape[0]),
+        'n_chains': int(posterior_samples.parameter_samples.shape[1]),
+        'n_parameters': len(posterior_samples.parameter_names),
+    }
+
+
+def summarize_posterior_parameters(
+    parameter_names: list[str],
+    posterior_samples: PosteriorSamples,
+    map_values: np.ndarray,
+    convergence_diagnostics: dict[str, object] | None = None,
+) -> list[PosteriorParameterSummary]:
+    """Build posterior parameter summaries in EasyDiffraction order.
+
+    Parameters
+    ----------
+    parameter_names : list[str]
+        Sampled parameter names in EasyDiffraction order.
+    posterior_samples : PosteriorSamples
+        Posterior sample container.
+    map_values : np.ndarray
+        MAP or best-sampled parameter values in the same order.
+    convergence_diagnostics : dict[str, object] | None, default=None
+        Optional convergence diagnostics keyed by parameter name.
+
+    Returns
+    -------
+    list[PosteriorParameterSummary]
+        Summary rows matching the input parameter order.
+
+    Raises
+    ------
+    ValueError
+        If the posterior sample array is incompatible with the
+        parameter name list.
+    """
+    flattened = posterior_samples.flattened()
+    if flattened.shape[1] != len(parameter_names):
+        msg = 'Posterior samples do not match the sampled parameter name list length.'
+        raise ValueError(msg)
+
+    r_hat_by_parameter = {}
+    ess_bulk_by_parameter = {}
+    if convergence_diagnostics is not None:
+        r_hat_by_parameter = convergence_diagnostics.get('r_hat_by_parameter', {})
+        ess_bulk_by_parameter = convergence_diagnostics.get('ess_bulk_by_parameter', {})
+
+    summaries: list[PosteriorParameterSummary] = []
+    for index, parameter_name in enumerate(parameter_names):
+        values = flattened[:, index]
+        interval_68 = tuple(np.quantile(values, [0.16, 0.84]).tolist())
+        interval_95 = tuple(np.quantile(values, [0.025, 0.975]).tolist())
+        summaries.append(
+            PosteriorParameterSummary(
+                unique_name=parameter_name,
+                display_name=parameter_name,
+                map_value=float(map_values[index]),
+                median=float(np.median(values)),
+                standard_deviation=float(np.std(values, ddof=1)),
+                interval_68=(float(interval_68[0]), float(interval_68[1])),
+                interval_95=(float(interval_95[0]), float(interval_95[1])),
+                ess_bulk=_maybe_scalar(ess_bulk_by_parameter.get(parameter_name)),
+                r_hat=_maybe_scalar(r_hat_by_parameter.get(parameter_name)),
+            )
+        )
+
+    return summaries
+
+
+def standard_deviations_from_summaries(
+    summaries: list[PosteriorParameterSummary],
+) -> np.ndarray:
+    """Return posterior standard deviations in summary order.
+
+    Parameters
+    ----------
+    summaries : list[PosteriorParameterSummary]
+        Posterior summaries in parameter order.
+
+    Returns
+    -------
+    np.ndarray
+        Standard deviations in the same order.
+    """
+    return np.array([summary.standard_deviation for summary in summaries], dtype=float)
+
+
+def _dataset_to_scalar_dict(dataset: object) -> dict[str, float]:
+    values: dict[str, float] = {}
+    for name, data_array in dataset.data_vars.items():
+        values[name] = float(np.asarray(data_array).reshape(-1)[0])
+    return values
+
+
+def _maybe_scalar(value: object) -> float | None:
+    if value is None:
+        return None
+    return float(value)
