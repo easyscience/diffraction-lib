@@ -9,7 +9,15 @@ from dataclasses import dataclass
 import arviz as az
 import numpy as np
 
+from easydiffraction.analysis.fit_helpers.metrics import calculate_r_factor
+from easydiffraction.analysis.fit_helpers.metrics import calculate_r_factor_squared
+from easydiffraction.analysis.fit_helpers.metrics import calculate_rb_factor
+from easydiffraction.analysis.fit_helpers.metrics import calculate_weighted_r_factor
+from easydiffraction.analysis.fit_helpers.reporting import _build_parameter_row
+from easydiffraction.analysis.fit_helpers.reporting import _format_optional_float
 from easydiffraction.analysis.fit_helpers.reporting import FitResults
+from easydiffraction.utils.logging import console
+from easydiffraction.utils.utils import render_table
 
 R_HAT_CONVERGENCE_THRESHOLD = 1.01
 ESS_BULK_CONVERGENCE_THRESHOLD = 400.0
@@ -249,6 +257,82 @@ class BayesianFitResults(FitResults):
         self.sampler_completed = sampler_completed
         self.best_log_posterior = best_log_posterior
 
+    def display_results(
+        self,
+        y_obs: list[float] | None = None,
+        y_calc: list[float] | None = None,
+        y_err: list[float] | None = None,
+        f_obs: list[float] | None = None,
+        f_calc: list[float] | None = None,
+    ) -> None:
+        """Render a Bayesian fit summary with posterior diagnostics.
+
+        Parameters
+        ----------
+        y_obs : list[float] | None, default=None
+            Observed intensities for pattern R-factor metrics.
+        y_calc : list[float] | None, default=None
+            Calculated intensities for pattern R-factor metrics.
+        y_err : list[float] | None, default=None
+            Standard deviations of observed intensities for wR.
+        f_obs : list[float] | None, default=None
+            Observed structure-factor magnitudes for Bragg R.
+        f_calc : list[float] | None, default=None
+            Calculated structure-factor magnitudes for Bragg R.
+        """
+        status_icon = '✅' if self.success else '❌'
+        rf = rf2 = wr = br = None
+        if y_obs is not None and y_calc is not None:
+            rf = calculate_r_factor(y_obs, y_calc) * 100
+            rf2 = calculate_r_factor_squared(y_obs, y_calc) * 100
+        if y_obs is not None and y_calc is not None and y_err is not None:
+            wr = calculate_weighted_r_factor(y_obs, y_calc, y_err) * 100
+        if f_obs is not None and f_calc is not None:
+            br = calculate_rb_factor(f_obs, f_calc) * 100
+
+        console.paragraph('Bayesian fit results')
+        console.print(f'{status_icon} Success: {self.success}')
+        if self.message:
+            console.print(f'ℹ️ Status: {self.message}')
+        console.print(f'🧪 Sampler: {self.sampler_name}')
+        console.print(f'🎯 Committed point estimate: {self.point_estimate_name}')
+        console.print(f'🔁 Sampler completed: {self.sampler_completed}')
+        console.print(f'⏱️ Fitting time: {_format_optional_float(self.fitting_time, suffix=" seconds")}')
+        console.print(
+            '📏 Goodness-of-fit (reduced χ²): '
+            f'{_format_optional_float(self.reduced_chi_square)}'
+        )
+        if self.best_log_posterior is not None:
+            console.print(f'📉 Best log-posterior: {self.best_log_posterior:.2f}')
+
+        sampler_settings = _format_sampler_settings(self.sampler_settings)
+        if sampler_settings is not None:
+            console.print(f'⚙️ Sampler settings: {sampler_settings}')
+
+        convergence_summary = _format_convergence_summary(self.convergence_diagnostics)
+        if convergence_summary is not None:
+            console.print(f'📊 Convergence: {convergence_summary}')
+
+        if rf is not None:
+            console.print(f'📏 R-factor (Rf): {rf:.2f}%')
+        if rf2 is not None:
+            console.print(f'📏 R-factor squared (Rf²): {rf2:.2f}%')
+        if wr is not None:
+            console.print(f'📏 Weighted R-factor (wR): {wr:.2f}%')
+        if br is not None:
+            console.print(f'📏 Bragg R-factor (BR): {br:.2f}%')
+
+        console.print('📈 Committed parameters:')
+        _render_committed_parameter_table(self.parameters)
+
+        console.print('📊 Posterior parameter summaries:')
+        _render_posterior_summary_table(
+            parameters=self.parameters,
+            posterior_parameter_summaries=self.posterior_parameter_summaries,
+        )
+
+        self._print_table_notes()
+
 
 def compute_convergence_diagnostics(posterior_samples: PosteriorSamples) -> dict[str, object]:
     """Compute convergence diagnostics from posterior samples.
@@ -383,3 +467,166 @@ def _maybe_scalar(value: object) -> float | None:
     if value is None:
         return None
     return float(value)
+
+
+def _format_sampler_settings(sampler_settings: dict[str, object]) -> str | None:
+    if not sampler_settings:
+        return None
+
+    parts: list[str] = []
+    for key in ('random_seed', 'steps', 'burn', 'thin', 'pop', 'samples'):
+        if key in sampler_settings:
+            parts.append(f'{key}={sampler_settings[key]}')
+    return ', '.join(parts) if parts else None
+
+
+def _format_convergence_summary(convergence_diagnostics: dict[str, object]) -> str | None:
+    if not convergence_diagnostics:
+        return None
+
+    parts: list[str] = []
+    converged = convergence_diagnostics.get('converged')
+    if converged is not None:
+        status = 'yes' if converged else '[yellow]check diagnostics[/yellow]'
+        parts.append(f'converged={status}')
+
+    max_r_hat = _maybe_scalar(convergence_diagnostics.get('max_r_hat'))
+    if max_r_hat is not None:
+        parts.append(f'max_r_hat={_format_r_hat(max_r_hat)}')
+
+    min_ess_bulk = _maybe_scalar(convergence_diagnostics.get('min_ess_bulk'))
+    if min_ess_bulk is not None:
+        parts.append(f'min_ess_bulk={_format_ess_bulk(min_ess_bulk)}')
+
+    n_draws = convergence_diagnostics.get('n_draws')
+    n_chains = convergence_diagnostics.get('n_chains')
+    if n_draws is not None and n_chains is not None:
+        parts.append(f'draws={n_draws}, chains={n_chains}')
+
+    return ', '.join(parts) if parts else None
+
+
+def _render_committed_parameter_table(parameters: list[object]) -> None:
+    headers = [
+        'datablock',
+        'category',
+        'entry',
+        'parameter',
+        'start',
+        'map',
+        'uncertainty',
+        'units',
+        'change',
+    ]
+    alignments = [
+        'left',
+        'left',
+        'left',
+        'left',
+        'right',
+        'right',
+        'right',
+        'left',
+        'right',
+    ]
+    rows = [_build_parameter_row(parameter) for parameter in parameters]
+    render_table(
+        columns_headers=headers,
+        columns_alignment=alignments,
+        columns_data=rows,
+    )
+
+
+def _render_posterior_summary_table(
+    *,
+    parameters: list[object],
+    posterior_parameter_summaries: list[PosteriorParameterSummary],
+) -> None:
+    if not posterior_parameter_summaries:
+        console.print('No posterior parameter summaries available.')
+        return
+
+    parameters_by_name = {parameter.unique_name: parameter for parameter in parameters}
+    headers = [
+        'datablock',
+        'category',
+        'entry',
+        'parameter',
+        'median',
+        'std',
+        '68% interval',
+        '95% interval',
+        'r_hat',
+        'ess_bulk',
+        'units',
+    ]
+    alignments = [
+        'left',
+        'left',
+        'left',
+        'left',
+        'right',
+        'right',
+        'right',
+        'right',
+        'right',
+        'right',
+        'left',
+    ]
+    rows = [
+        _build_posterior_summary_row(summary, parameters_by_name)
+        for summary in posterior_parameter_summaries
+    ]
+    render_table(
+        columns_headers=headers,
+        columns_alignment=alignments,
+        columns_data=rows,
+    )
+
+
+def _build_posterior_summary_row(
+    summary: PosteriorParameterSummary,
+    parameters_by_name: dict[str, object],
+) -> list[str]:
+    parameter = parameters_by_name.get(summary.unique_name)
+    identity = getattr(parameter, '_identity', None)
+    datablock = getattr(identity, 'datablock_entry_name', 'N/A')
+    category = getattr(identity, 'category_code', 'N/A')
+    entry = getattr(identity, 'category_entry_name', '') or ''
+    units = getattr(parameter, 'units', 'N/A')
+
+    return [
+        datablock,
+        category,
+        entry,
+        summary.display_name,
+        f'{summary.median:.4f}',
+        f'{summary.standard_deviation:.4f}',
+        _format_interval(summary.interval_68),
+        _format_interval(summary.interval_95),
+        _format_r_hat(summary.r_hat),
+        _format_ess_bulk(summary.ess_bulk),
+        units,
+    ]
+
+
+def _format_interval(interval: tuple[float, float]) -> str:
+    return f'[{interval[0]:.4f}, {interval[1]:.4f}]'
+
+
+def _format_r_hat(value: float | None) -> str:
+    if value is None:
+        return 'N/A'
+    formatted = f'{value:.3f}'
+    if value > R_HAT_CONVERGENCE_THRESHOLD:
+        return f'[yellow]{formatted}[/yellow]'
+    return formatted
+
+
+def _format_ess_bulk(value: float | None) -> str:
+    if value is None:
+        return 'N/A'
+    formatted = f'{value:.1f}'
+    if value < ESS_BULK_CONVERGENCE_THRESHOLD:
+        return f'[yellow]{formatted}[/yellow]'
+    return formatted

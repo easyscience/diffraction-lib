@@ -108,8 +108,11 @@ class FitResults:
 
         console.paragraph('Fit results')
         console.print(f'{status_icon} Success: {self.success}')
-        console.print(f'⏱️ Fitting time: {self.fitting_time:.2f} seconds')
-        console.print(f'📏 Goodness-of-fit (reduced χ²): {self.reduced_chi_square:.2f}')
+        console.print(f'⏱️ Fitting time: {_format_optional_float(self.fitting_time, suffix=" seconds")}')
+        console.print(
+            '📏 Goodness-of-fit (reduced χ²): '
+            f'{_format_optional_float(self.reduced_chi_square)}'
+        )
         if rf is not None:
             console.print(f'📏 R-factor (Rf): {rf:.2f}%')
         if rf2 is not None:
@@ -248,3 +251,28 @@ def _compute_relative_change(param: object) -> str:
     change = ((param.value - param._fit_start_value) / param._fit_start_value) * 100
     arrow = '↑' if change > 0 else '↓'
     return f'{abs(change):.2f} % {arrow}'
+
+
+def _format_optional_float(
+    value: float | None,
+    *,
+    suffix: str = '',
+) -> str:
+    """Format an optional float for console output.
+
+    Parameters
+    ----------
+    value : float | None
+        Value to format.
+    suffix : str, default=''
+        Optional suffix appended to formatted numeric values.
+
+    Returns
+    -------
+    str
+        ``'N/A'`` when the value is ``None``; otherwise a formatted
+        string with two decimal places.
+    """
+    if value is None:
+        return 'N/A'
+    return f'{value:.2f}{suffix}'
