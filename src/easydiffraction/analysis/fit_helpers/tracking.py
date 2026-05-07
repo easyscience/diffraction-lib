@@ -31,7 +31,7 @@ from easydiffraction.utils.logging import ConsoleManager
 SIGNIFICANT_CHANGE_THRESHOLD = 0.01  # 1% threshold
 SAMPLER_PROGRESS_UPDATE_SECONDS = 5.0
 SAMPLER_PROGRESS_STATUS = 'sampling...'
-DEFAULT_HEADERS = ['iteration', 'χ²', 'improvement [%]']
+DEFAULT_HEADERS = ['iteration', 'χ²', 'change / status']
 DEFAULT_ALIGNMENTS = ['center', 'center', 'center']
 
 
@@ -99,6 +99,7 @@ class FitProgressTracker:
         self._previous_chi2: float | None = None
         self._last_chi2: float | None = None
         self._last_iteration: int | None = None
+        self._last_reported_iteration: int | None = None
         self._best_chi2: float | None = None
         self._best_iteration: int | None = None
         self._fitting_time: float | None = None
@@ -115,6 +116,7 @@ class FitProgressTracker:
         self._previous_chi2 = None
         self._last_chi2 = None
         self._last_iteration = None
+        self._last_reported_iteration = None
         self._best_chi2 = None
         self._best_iteration = None
         self._fitting_time = None
@@ -242,8 +244,11 @@ class FitProgressTracker:
                 self._previous_chi2 = reduced_chi2
                 self._last_progress_time = elapsed_time
             elif (
+                iteration != self._last_reported_iteration
+                and (
                 self._last_progress_time is None
                 or elapsed_time - self._last_progress_time >= SAMPLER_PROGRESS_UPDATE_SECONDS
+                )
             ):
                 row = [
                     str(iteration),
@@ -325,6 +330,8 @@ class FitProgressTracker:
         row : list[str]
             Columns corresponding to DEFAULT_HEADERS.
         """
+        if row and row[0].isdigit():
+            self._last_reported_iteration = int(row[0])
         self._df_rows.append(row)
         if self._verbosity is not VerbosityEnum.FULL:
             return

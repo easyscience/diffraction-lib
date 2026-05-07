@@ -45,12 +45,14 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
         tracker: object,
         n_points: int,
         n_parameters: int,
-        n_chains: int,
+        total_generations: int,
+        burn_steps: int,
     ) -> None:
         self._tracker = tracker
         self._n_points = n_points
         self._n_parameters = n_parameters
-        self._n_chains = max(1, n_chains)
+        self._total_generations = max(1, total_generations)
+        self._burn_steps = max(0, burn_steps)
 
     def config_history(self, history: object) -> None:
         """Declare the history fields needed for progress updates."""
@@ -59,12 +61,13 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
     def __call__(self, history: object) -> None:
         """Forward sampler progress to the shared fit tracker."""
         step = int(history.step[0]) if history.step else 0
-        generation = max(1, step // self._n_chains)
+        generation = max(1, step)
         reduced_chi2 = self._reduced_chi_square_from_nllf(float(history.value[0]))
         self._tracker.track_sampler_progress(
             iteration=generation,
             reduced_chi2=reduced_chi2,
             elapsed_time=float(history.time[0]),
+            status=self._status_text(generation),
         )
 
     def final(self, history: object, best: dict[str, object]) -> None:
@@ -72,7 +75,7 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
         if not history.time or best.get('value') is None:
             return
         step = int(history.step[0]) if history.step else 0
-        generation = max(1, step // self._n_chains)
+        generation = max(1, step)
         reduced_chi2 = self._reduced_chi_square_from_nllf(float(best['value']))
         self._tracker.track_sampler_progress(
             iteration=generation,
@@ -80,6 +83,13 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
             elapsed_time=float(history.time[0]),
             status='',
         )
+
+    def _status_text(self, generation: int) -> str:
+        """Return a human-readable DREAM progress string."""
+        clamped_generation = min(generation, self._total_generations)
+        progress = 100.0 * clamped_generation / self._total_generations
+        phase = 'burn-in' if clamped_generation <= self._burn_steps else 'sampling'
+        return f'{phase} {progress:.1f}% ({clamped_generation}/{self._total_generations})'
 
     def _reduced_chi_square_from_nllf(self, nllf: float) -> float:
         """Convert DREAM's negative log-likelihood to reduced chi-square."""
@@ -189,12 +199,13 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         proposed_burn = max(DEFAULT_MIN_BURN, int(self.max_iterations * DEFAULT_BURN_FRACTION))
         burn = min(proposed_burn, max(self.max_iterations - 1, 0))
         samples = self.max_iterations * DEFAULT_POP * len(bumps_params)
-        n_chains = DEFAULT_POP * len(bumps_params)
+        total_generations = int(self.max_iterations + burn + 1)
         progress_monitor = _DreamProgressMonitor(
             tracker=self.tracker,
             n_points=fitness.numpoints(),
             n_parameters=len(bumps_params),
-            n_chains=n_chains,
+            total_generations=total_generations,
+            burn_steps=int(burn),
         )
         driver = FitDriver(
             fitclass=fitclass,
