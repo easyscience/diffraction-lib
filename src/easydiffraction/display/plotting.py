@@ -623,6 +623,40 @@ class Plotter(RendererBase):
             )
         )
 
+    def plot_posterior_pairs(
+        self,
+        parameters: list[object] | None = None,
+    ) -> None:
+        """Plot posterior pair relationships for sampled parameters.
+
+        Parameters
+        ----------
+        parameters : list[object] | None, default=None
+            Optional subset of sampled parameters to include. When
+            ``None``, all sampled parameters are shown.
+        """
+        plot = self._build_posterior_pairs_plot(parameters=parameters)
+        if plot is None:
+            return
+        plot.show()
+
+    def plot_param_distribution(
+        self,
+        param: object,
+    ) -> None:
+        """Plot the posterior distribution for one sampled parameter.
+
+        Parameters
+        ----------
+        param : object
+            Parameter descriptor whose posterior distribution should be
+            plotted.
+        """
+        plot = self._build_param_distribution_plot(param)
+        if plot is None:
+            return
+        plot.show()
+
     @staticmethod
     def _filter_correlation_dataframe(
         corr_df: pd.DataFrame,
@@ -777,6 +811,154 @@ class Plotter(RendererBase):
             'Use a minimizer that returns covariance information or posterior samples.'
         )
         return None
+
+    def _build_posterior_pairs_plot(
+        self,
+        *,
+        parameters: list[object] | None,
+    ) -> object | None:
+        """Build an ArviZ posterior pair-plot object.
+
+        Parameters
+        ----------
+        parameters : list[object] | None
+            Optional subset of sampled parameters to include.
+
+        Returns
+        -------
+        object | None
+            ArviZ plot object, or ``None`` when posterior plotting is
+            unavailable.
+        """
+        inference_data, fit_results = self._get_posterior_inference_data()
+        if inference_data is None or fit_results is None:
+            return None
+
+        parameter_names = self._resolve_posterior_parameter_names(
+            fit_results=fit_results,
+            parameters=parameters,
+        )
+        if parameter_names is None:
+            return None
+        if len(parameter_names) < 2:
+            log.warning('Posterior pair plots require at least two sampled parameters.')
+            return None
+
+        import arviz as az
+
+        plot = az.plot_pair(
+            inference_data,
+            var_names=parameter_names,
+            backend='plotly',
+            marginal=True,
+        )
+        if hasattr(plot, 'add_title'):
+            plot.add_title('Posterior pair plot')
+        return plot
+
+    def _build_param_distribution_plot(
+        self,
+        param: object,
+    ) -> object | None:
+        """Build an ArviZ posterior distribution plot for one parameter.
+
+        Parameters
+        ----------
+        param : object
+            Parameter descriptor to plot.
+
+        Returns
+        -------
+        object | None
+            ArviZ plot object, or ``None`` when posterior plotting is
+            unavailable.
+        """
+        inference_data, fit_results = self._get_posterior_inference_data()
+        if inference_data is None or fit_results is None:
+            return None
+
+        parameter_names = self._resolve_posterior_parameter_names(
+            fit_results=fit_results,
+            parameters=[param],
+        )
+        if parameter_names is None:
+            return None
+
+        import arviz as az
+
+        plot = az.plot_dist(
+            inference_data,
+            var_names=parameter_names,
+            backend='plotly',
+            point_estimate='median',
+        )
+        if hasattr(plot, 'add_title'):
+            plot.add_title(f'Posterior distribution: {parameter_names[0]}')
+        return plot
+
+    def _get_posterior_inference_data(
+        self,
+    ) -> tuple[object | None, object | None]:
+        """Return posterior inference data for the current Bayesian fit.
+
+        Returns
+        -------
+        tuple[object | None, object | None]
+            ``(inference_data, fit_results)`` when posterior samples are
+            available, otherwise ``(None, None)``.
+        """
+        if self.engine != PlotterEngineEnum.PLOTLY.value:
+            log.warning('Posterior plots currently require the Plotly plotting backend.')
+            return None, None
+
+        fit_results = self._get_fit_result_for_correlation()
+        if fit_results is None:
+            return None, None
+
+        posterior_samples = getattr(fit_results, 'posterior_samples', None)
+        if posterior_samples is None:
+            log.warning('Posterior samples are unavailable. Run a Bayesian fit first.')
+            return None, None
+
+        return posterior_samples.to_arviz(), fit_results
+
+    @staticmethod
+    def _resolve_posterior_parameter_names(
+        *,
+        fit_results: object,
+        parameters: list[object] | None,
+    ) -> list[str] | None:
+        """Resolve posterior parameter names from descriptors.
+
+        Parameters
+        ----------
+        fit_results : object
+            Bayesian fit result exposing posterior samples.
+        parameters : list[object] | None
+            Optional parameter subset.
+
+        Returns
+        -------
+        list[str] | None
+            Posterior parameter names in plotting order, or ``None`` if
+            the selection cannot be resolved.
+        """
+        posterior_samples = getattr(fit_results, 'posterior_samples', None)
+        available_names = getattr(posterior_samples, 'parameter_names', None)
+        if not available_names:
+            log.warning('Posterior samples do not expose parameter names.')
+            return None
+
+        if parameters is None:
+            return list(available_names)
+
+        requested_names = [getattr(parameter, 'unique_name', None) for parameter in parameters]
+        missing_names = [name for name in requested_names if name not in available_names]
+        if missing_names:
+            missing = ', '.join(str(name) for name in missing_names)
+            log.warning(f'Posterior samples do not contain the selected parameters: {missing}')
+            return None
+        return [str(name) for name in requested_names if name is not None]
 
     def _get_fit_result_for_correlation(
         self,
