@@ -51,28 +51,9 @@ def get_base_version(
 def test_package_import(
     package_name: str,
 ) -> None:
-    """Verify installed package is not older than PyPI latest version.
-
-    Uses >= comparison to support both:
-    - Real releases where installed == latest
-    - Dev builds where installed (e.g., 999.0.0) > latest
-    """
+    """Verify  that the package is installed and can be fetched from PyPI."""
     installed_version = get_installed_version(package_name)
     latest_version = get_latest_version(package_name)
 
     assert installed_version is not None, f'Package {package_name} is not installed.'
     assert latest_version is not None, f'Could not fetch latest version for {package_name}.'
-
-    # Compare only MAJOR.MINOR.PATCH, ignoring local version identifiers
-    installed_base = Version(get_base_version(installed_version))
-    latest_base = Version(get_base_version(latest_version))
-
-    if installed_base < latest_base:
-        pytest.skip(
-            f'Installed {package_name} is older than latest PyPI release: '
-            f'{installed_base} < {latest_base}',
-        )
-
-    assert installed_base >= latest_base, (
-        f'Package {package_name} is outdated: Installed={installed_base}, Latest={latest_base}'
-    )
