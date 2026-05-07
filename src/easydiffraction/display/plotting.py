@@ -739,10 +739,27 @@ class Plotter(RendererBase):
             Square correlation matrix labeled by parameter unique names,
             or ``None`` if unavailable.
         """
-        result = self._get_fit_result_for_correlation()
-        if result is None:
+        fit_results = self._get_fit_result_for_correlation()
+        if fit_results is None:
             return None
-        raw_result, var_names, fit_results = result
+
+        posterior_samples = getattr(fit_results, 'posterior_samples', None)
+        if posterior_samples is not None:
+            corr_df = self._correlation_from_posterior_samples(posterior_samples)
+            if corr_df is not None:
+                return corr_df
+
+        raw_result = getattr(fit_results, 'result', None)
+        if raw_result is None:
+            raw_result = getattr(fit_results, 'engine_result', None)
+        if raw_result is None:
+            log.warning('No raw fit result available. Correlation matrix cannot be plotted.')
+            return None
+
+        var_names = getattr(raw_result, 'var_names', None)
+        if not var_names:
+            log.warning('Fit result does not expose variable names for a correlation matrix.')
+            return None
 
         covar = getattr(raw_result, 'covar', None)
         if covar is not None:
@@ -757,21 +774,20 @@ class Plotter(RendererBase):
 
         log.warning(
             'Correlation matrix is unavailable for this fit. '
-            'Use the lmfit minimizer and ensure covariance estimation succeeds.'
+            'Use a minimizer that returns covariance information or posterior samples.'
         )
         return None
 
     def _get_fit_result_for_correlation(
         self,
-    ) -> tuple[object, list[str], object] | None:
+    ) -> object | None:
         """
-        Validate and return the raw fit result for correlation.
+        Validate and return the fit result for correlation.
 
         Returns
         -------
-        tuple[object, list[str], object] | None
-            A tuple of ``(raw_result, var_names, fit_results)`` when all
-            required data is present, or ``None`` otherwise.
+        object | None
+            Fit result object when available, or ``None`` otherwise.
         """
         if self._project is None:
             log.warning('Plotter is not attached to a project.')
@@ -781,18 +797,43 @@ class Plotter(RendererBase):
         if fit_results is None:
             log.warning('No fit results available. Run fit() first.')
             return None
+        return fit_results
 
-        raw_result = getattr(fit_results, 'engine_result', None)
-        if raw_result is None:
-            log.warning('No raw fit result available. Correlation matrix cannot be plotted.')
+    @staticmethod
+    def _correlation_from_posterior_samples(
+        posterior_samples: object,
+    ) -> pd.DataFrame | None:
+        """Convert posterior samples into a correlation DataFrame.
+
+        Parameters
+        ----------
+        posterior_samples : object
+            Posterior sample container exposing ``flattened()`` and
+            ``parameter_names``.
+
+        Returns
+        -------
+        pd.DataFrame | None
+            Correlation matrix labeled by posterior parameter names, or
+            ``None`` if the sample array is invalid.
+        """
+        parameter_names = getattr(posterior_samples, 'parameter_names', None)
+        if not parameter_names:
+            log.warning('Posterior samples do not expose parameter names.')
             return None
 
-        var_names = getattr(raw_result, 'var_names', None)
-        if not var_names:
-            log.warning('Fit result does not expose variable names for a correlation matrix.')
+        flattened = np.asarray(posterior_samples.flattened(), dtype=float)
+        if flattened.ndim != 2 or flattened.shape[1] != len(parameter_names):
+            log.warning('Posterior sample array has an invalid shape for correlations.')
+            return None
+        if flattened.shape[0] < 2:
+            log.warning('At least two posterior draws are required for correlations.')
             return None
 
-        return raw_result, var_names, fit_results
+        corr = np.corrcoef(flattened, rowvar=False)
+        corr = np.nan_to_num(corr, nan=0.0, posinf=0.0, neginf=0.0)
+        np.fill_diagonal(corr, 1.0)
+        return pd.DataFrame(corr, index=parameter_names, columns=parameter_names)
 
     @staticmethod
     def _correlation_from_covariance(
