@@ -47,6 +47,7 @@ dependencies = [
   'darkdetect',     # Detecting dark mode (system-level)
   'pandas',         # Displaying tables in Jupyter notebooks
   'plotly',         # Interactive plots
+  'arviz',          # Bayesian analysis summaries and posterior plotting
   'py3Dmol',        # Visualisation of crystal structures
 ]
 
