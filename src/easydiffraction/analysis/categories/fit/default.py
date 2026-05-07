@@ -148,6 +148,7 @@ class Fit(CategoryItem):
         verbosity: str | None = None,
         *,
         use_physical_limits: bool = False,
+        random_seed: int | None = None,
     ) -> None:
         """
         Execute fitting for the owning analysis.
@@ -158,6 +159,8 @@ class Fit(CategoryItem):
             Console output verbosity override.
         use_physical_limits : bool, default=False
             Whether to fall back to physical limits as fit bounds.
+        random_seed : int | None, default=None
+            Optional random seed passed to stochastic minimizers.
 
         Raises
         ------
@@ -168,16 +171,25 @@ class Fit(CategoryItem):
         if parent is None:
             msg = 'Fit category is not attached to an Analysis object.'
             raise RuntimeError(msg)
-        parent._run_fit(verbosity=verbosity, use_physical_limits=use_physical_limits)
+        parent._run_fit(
+            verbosity=verbosity,
+            use_physical_limits=use_physical_limits,
+            random_seed=random_seed,
+        )
 
     def __call__(
         self,
         verbosity: str | None = None,
         *,
         use_physical_limits: bool = False,
+        random_seed: int | None = None,
     ) -> None:
         """Execute :meth:`run` for convenience."""
-        self.run(verbosity=verbosity, use_physical_limits=use_physical_limits)
+        self.run(
+            verbosity=verbosity,
+            use_physical_limits=use_physical_limits,
+            random_seed=random_seed,
+        )
 
     def from_cif(self, block: object, idx: int = 0) -> None:
         """

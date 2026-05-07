@@ -41,6 +41,7 @@ class MinimizerBase(ABC):
         self._best_chi2: float | None = None
         self._best_iteration: int | None = None
         self._fitting_time: float | None = None
+        self._resolved_random_seed: int | None = None
         self.tracker: FitProgressTracker = FitProgressTracker()
 
     def _start_tracking(
@@ -231,6 +232,32 @@ class MinimizerBase(ABC):
     def _check_success(self, raw_result: object) -> bool:
         """Determine whether the fit was successful."""
 
+    def _resolve_random_seed(self, random_seed: int | None) -> int | None:
+        """Validate or normalize the random seed for this minimizer.
+
+        Parameters
+        ----------
+        random_seed : int | None
+            User-provided random seed.
+
+        Returns
+        -------
+        int | None
+            Seed accepted by the minimizer, or ``None`` when not used.
+
+        Raises
+        ------
+        ValueError
+            If this minimizer does not support ``random_seed``.
+        """
+        if random_seed is None:
+            self._resolved_random_seed = None
+            return None
+
+        minimizer_name = self.name or self.__class__.__name__
+        msg = f"Minimizer '{minimizer_name}' does not support random_seed."
+        raise ValueError(msg)
+
     def fit(
         self,
         parameters: list[object],
@@ -238,6 +265,7 @@ class MinimizerBase(ABC):
         verbosity: VerbosityEnum = VerbosityEnum.FULL,
         *,
         use_physical_limits: bool = False,
+        random_seed: int | None = None,
     ) -> FitResults:
         """
         Run the full minimization workflow.
@@ -255,6 +283,8 @@ class MinimizerBase(ABC):
             When ``True``, fall back to physical limits from the value
             spec for parameters whose ``fit_min``/``fit_max`` are
             unbounded.
+        random_seed : int | None, default=None
+            Optional random seed passed to stochastic minimizers.
 
         Returns
         -------
@@ -264,6 +294,8 @@ class MinimizerBase(ABC):
         if use_physical_limits:
             self._apply_physical_limits(parameters)
 
+        resolved_random_seed = self._resolve_random_seed(random_seed)
+
         minimizer_name = self.name or 'Unnamed Minimizer'
         if self.method is not None and f'({self.method})' not in minimizer_name:
             minimizer_name += f' ({self.method})'
@@ -271,6 +303,8 @@ class MinimizerBase(ABC):
         self._start_tracking(minimizer_name, verbosity=verbosity)
 
         solver_args = self._prepare_solver_args(parameters)
+        if resolved_random_seed is not None:
+            solver_args['random_seed'] = resolved_random_seed
         raw_result = self._run_solver(objective_function, **solver_args)
 
         self._stop_tracking()

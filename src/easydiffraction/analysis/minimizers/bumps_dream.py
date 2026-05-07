@@ -4,6 +4,8 @@
 
 from __future__ import annotations
 
+import numpy as np
+
 from easydiffraction.analysis.minimizers.bumps import BumpsMinimizer
 from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
@@ -33,3 +35,23 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             method=method,
             max_iterations=max_iterations,
         )
+
+    def _resolve_random_seed(self, random_seed: int | None) -> int:
+        """Return a user-provided or generated random seed.
+
+        Parameters
+        ----------
+        random_seed : int | None
+            User-provided random seed.
+
+        Returns
+        -------
+        int
+            Seed to use for the DREAM run.
+        """
+        if random_seed is None:
+            generator = np.random.default_rng()
+            random_seed = int(generator.integers(0, np.iinfo(np.int32).max))
+
+        self._resolved_random_seed = int(random_seed)
+        return self._resolved_random_seed
