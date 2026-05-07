@@ -4,6 +4,7 @@
 from easydiffraction.analysis.minimizers.bumps import BumpsMinimizer
 from easydiffraction.analysis.minimizers.bumps_amoeba import BumpsAmoebaMinimizer
 from easydiffraction.analysis.minimizers.bumps_de import BumpsDEMinimizer
+from easydiffraction.analysis.minimizers.bumps_dream import BumpsDreamMinimizer
 from easydiffraction.analysis.minimizers.bumps_lm import BumpsLmMinimizer
 from easydiffraction.analysis.minimizers.dfols import DfolsMinimizer
 from easydiffraction.analysis.minimizers.lmfit import LmfitMinimizer
