@@ -29,6 +29,8 @@ except ImportError:  # pragma: no cover - rich always available in app env
 from easydiffraction.utils.logging import ConsoleManager
 
 SIGNIFICANT_CHANGE_THRESHOLD = 0.01  # 1% threshold
+SAMPLER_PROGRESS_UPDATE_SECONDS = 5.0
+SAMPLER_PROGRESS_STATUS = 'sampling...'
 DEFAULT_HEADERS = ['iteration', 'χ²', 'improvement [%]']
 DEFAULT_ALIGNMENTS = ['center', 'center', 'center']
 
@@ -101,6 +103,7 @@ class FitProgressTracker:
         self._best_iteration: int | None = None
         self._fitting_time: float | None = None
         self._verbosity: VerbosityEnum = VerbosityEnum.FULL
+        self._last_progress_time: float | None = None
 
         self._df_rows: list[list[str]] = []
         self._display_handle: object | None = None
@@ -115,6 +118,7 @@ class FitProgressTracker:
         self._best_chi2 = None
         self._best_iteration = None
         self._fitting_time = None
+        self._last_progress_time = None
 
     def track(
         self,
@@ -184,6 +188,75 @@ class FitProgressTracker:
         self._last_iteration = self._iteration
 
         return residuals
+
+    def track_sampler_progress(
+        self,
+        *,
+        iteration: int,
+        reduced_chi2: float,
+        elapsed_time: float,
+        status: str = SAMPLER_PROGRESS_STATUS,
+    ) -> None:
+        """Update progress from a sampler monitor.
+
+        Parameters
+        ----------
+        iteration : int
+            Sampler iteration or generation index.
+        reduced_chi2 : float
+            Best reduced chi-square implied by the current best sample.
+        elapsed_time : float
+            Elapsed wall time in seconds.
+        status : str, default='sampling...'
+            Text shown for periodic progress rows without a chi-square
+            improvement.
+        """
+        self._iteration = iteration
+
+        row: list[str] = []
+        if self._previous_chi2 is None or self._best_chi2 is None:
+            self._previous_chi2 = reduced_chi2
+            self._best_chi2 = reduced_chi2
+            self._best_iteration = iteration
+            self._last_progress_time = elapsed_time
+            row = [
+                str(iteration),
+                f'{reduced_chi2:.2f}',
+                '',
+            ]
+        else:
+            if reduced_chi2 < self._best_chi2:
+                self._best_chi2 = reduced_chi2
+                self._best_iteration = iteration
+
+            change = 0.0
+            if self._previous_chi2 > 0:
+                change = (self._previous_chi2 - reduced_chi2) / self._previous_chi2
+
+            if change > SIGNIFICANT_CHANGE_THRESHOLD:
+                row = [
+                    str(iteration),
+                    f'{reduced_chi2:.2f}',
+                    f'{change * 100:.1f}% ↓',
+                ]
+                self._previous_chi2 = reduced_chi2
+                self._last_progress_time = elapsed_time
+            elif (
+                self._last_progress_time is None
+                or elapsed_time - self._last_progress_time >= SAMPLER_PROGRESS_UPDATE_SECONDS
+            ):
+                row = [
+                    str(iteration),
+                    f'{self._best_chi2:.2f}',
+                    status,
+                ]
+                self._last_progress_time = elapsed_time
+
+        if row:
+            self.add_tracking_info(row)
+
+        self._last_chi2 = reduced_chi2
+        self._last_iteration = iteration
 
     @property
     def best_chi2(self) -> float | None:
@@ -266,13 +339,14 @@ class FitProgressTracker:
 
     def finish_tracking(self) -> None:
         """Finalize progress display and print best result summary."""
-        # Add last iteration as last row
-        row: list[str] = [
-            str(self._last_iteration),
-            f'{self._last_chi2:.2f}' if self._last_chi2 is not None else '',
-            '',
-        ]
-        self.add_tracking_info(row)
+        if self._last_iteration is not None:
+            row: list[str] = [
+                str(self._last_iteration),
+                f'{self._last_chi2:.2f}' if self._last_chi2 is not None else '',
+                '',
+            ]
+            if not self._df_rows or self._df_rows[-1][:2] != row[:2]:
+                self.add_tracking_info(row)
 
         if self._verbosity is not VerbosityEnum.FULL:
             return

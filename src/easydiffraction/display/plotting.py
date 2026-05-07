@@ -883,7 +883,7 @@ class Plotter(RendererBase):
         *,
         parameters: list[object] | None,
     ) -> object | None:
-        """Build an ArviZ posterior pair-plot object.
+        """Build a Plotly posterior pair plot.
 
         Parameters
         ----------
@@ -893,11 +893,11 @@ class Plotter(RendererBase):
         Returns
         -------
         object | None
-            ArviZ plot object, or ``None`` when posterior plotting is
+            Plotly figure, or ``None`` when posterior plotting is
             unavailable.
         """
-        inference_data, fit_results = self._get_posterior_inference_data()
-        if inference_data is None or fit_results is None:
+        posterior_samples, fit_results = self._get_posterior_samples_and_fit_results()
+        if posterior_samples is None or fit_results is None:
             return None
 
         parameter_names = self._resolve_posterior_parameter_names(
@@ -910,23 +910,87 @@ class Plotter(RendererBase):
             log.warning('Posterior pair plots require at least two sampled parameters.')
             return None
 
-        import arviz as az
+        go = __import__('plotly.graph_objects', fromlist=['Figure', 'Histogram', 'Scattergl'])
+        make_subplots = __import__('plotly.subplots', fromlist=['make_subplots']).make_subplots
 
-        plot = az.plot_pair(
-            inference_data,
-            var_names=parameter_names,
-            backend='plotly',
-            marginal=True,
+        samples = self._selected_posterior_samples(posterior_samples, parameter_names)
+        if samples is None:
+            return None
+        samples = self._thin_posterior_samples(samples)
+        labels = self._posterior_plot_labels(fit_results, parameter_names)
+
+        n_parameters = len(parameter_names)
+        fig = make_subplots(
+            rows=n_parameters,
+            cols=n_parameters,
+            shared_xaxes='columns',
+            shared_yaxes='rows',
+            horizontal_spacing=0.03,
+            vertical_spacing=0.03,
         )
-        if hasattr(plot, 'add_title'):
-            plot.add_title('Posterior pair plot')
-        return plot
+
+        for row_index in range(n_parameters):
+            for col_index in range(n_parameters):
+                row = row_index + 1
+                col = col_index + 1
+                if col_index > row_index:
+                    fig.update_xaxes(visible=False, row=row, col=col)
+                    fig.update_yaxes(visible=False, row=row, col=col)
+                    continue
+
+                x_values = samples[:, col_index]
+                y_values = samples[:, row_index]
+                if row_index == col_index:
+                    fig.add_trace(
+                        go.Histogram(
+                            x=x_values,
+                            nbinsx=40,
+                            histnorm='probability density',
+                            marker={'color': 'rgb(99, 110, 250)'},
+                            showlegend=False,
+                            hovertemplate='%{x:.4f}<br>density=%{y:.4f}<extra></extra>',
+                        ),
+                        row=row,
+                        col=col,
+                    )
+                else:
+                    fig.add_trace(
+                        go.Scattergl(
+                            x=x_values,
+                            y=y_values,
+                            mode='markers',
+                            marker={
+                                'color': 'rgba(99, 110, 250, 0.18)',
+                                'size': 4,
+                            },
+                            showlegend=False,
+                            hovertemplate=(
+                                f'{labels[col_index]}: %{{x:.4f}}<br>'
+                                f'{labels[row_index]}: %{{y:.4f}}<extra></extra>'
+                            ),
+                        ),
+                        row=row,
+                        col=col,
+                    )
+
+                fig.update_xaxes(showticklabels=(row_index == n_parameters - 1), row=row, col=col)
+                fig.update_yaxes(showticklabels=(col_index == 0), row=row, col=col)
+                if row_index == n_parameters - 1:
+                    fig.update_xaxes(title_text=labels[col_index], row=row, col=col)
+                if col_index == 0 and row_index > 0:
+                    fig.update_yaxes(title_text=labels[row_index], row=row, col=col)
+
+        fig.update_layout(
+            title='Posterior pair plot',
+            bargap=0.05,
+        )
+        return fig
 
     def _build_param_distribution_plot(
         self,
         param: object,
     ) -> object | None:
-        """Build an ArviZ posterior distribution plot for one parameter.
+        """Build a Plotly posterior distribution plot for one parameter.
 
         Parameters
         ----------
@@ -936,11 +1000,11 @@ class Plotter(RendererBase):
         Returns
         -------
         object | None
-            ArviZ plot object, or ``None`` when posterior plotting is
+            Plotly figure, or ``None`` when posterior plotting is
             unavailable.
         """
-        inference_data, fit_results = self._get_posterior_inference_data()
-        if inference_data is None or fit_results is None:
+        posterior_samples, fit_results = self._get_posterior_samples_and_fit_results()
+        if posterior_samples is None or fit_results is None:
             return None
 
         parameter_names = self._resolve_posterior_parameter_names(
@@ -950,17 +1014,64 @@ class Plotter(RendererBase):
         if parameter_names is None:
             return None
 
-        import arviz as az
+        go = __import__('plotly.graph_objects', fromlist=['Figure', 'Histogram'])
 
-        plot = az.plot_dist(
-            inference_data,
-            var_names=parameter_names,
-            backend='plotly',
-            point_estimate='median',
+        parameter_name = parameter_names[0]
+        samples = self._selected_posterior_samples(posterior_samples, [parameter_name])
+        if samples is None:
+            return None
+        values = samples[:, 0]
+        label = self._posterior_plot_labels(fit_results, [parameter_name])[0]
+        summary = self._posterior_summary_by_name(fit_results).get(parameter_name)
+
+        fig = go.Figure()
+        if summary is not None:
+            fig.add_vrect(
+                x0=summary.interval_95[0],
+                x1=summary.interval_95[1],
+                fillcolor='rgba(99, 110, 250, 0.08)',
+                line_width=0,
+            )
+            fig.add_vrect(
+                x0=summary.interval_68[0],
+                x1=summary.interval_68[1],
+                fillcolor='rgba(99, 110, 250, 0.18)',
+                line_width=0,
+            )
+
+        fig.add_trace(
+            go.Histogram(
+                x=values,
+                nbinsx=50,
+                histnorm='probability density',
+                marker={'color': 'rgb(99, 110, 250)'},
+                opacity=0.85,
+                name='Posterior samples',
+            )
         )
-        if hasattr(plot, 'add_title'):
-            plot.add_title(f'Posterior distribution: {parameter_names[0]}')
-        return plot
+
+        median = float(np.median(values))
+        fig.add_vline(
+            x=median,
+            line={'color': 'rgb(99, 110, 250)', 'width': 2},
+            annotation_text='median',
+            annotation_position='top',
+        )
+        if summary is not None:
+            fig.add_vline(
+                x=summary.map_value,
+                line={'color': 'rgb(214, 39, 40)', 'width': 2, 'dash': 'dash'},
+                annotation_text='MAP',
+                annotation_position='top right',
+            )
+
+        fig.update_layout(
+            title=f'Posterior distribution: {label}',
+            xaxis_title=label,
+            yaxis_title='Probability density',
+            bargap=0.05,
+        )
+        return fig
 
     def _get_or_build_posterior_predictive_summary(
         self,
@@ -1165,6 +1276,25 @@ class Plotter(RendererBase):
 
         return posterior_samples.to_arviz(), fit_results
 
+    def _get_posterior_samples_and_fit_results(
+        self,
+    ) -> tuple[object | None, object | None]:
+        """Return posterior samples and fit results for plotting."""
+        if self.engine != PlotterEngineEnum.PLOTLY.value:
+            log.warning('Posterior plots currently require the Plotly plotting backend.')
+            return None, None
+
+        fit_results = self._get_fit_result_for_correlation()
+        if fit_results is None:
+            return None, None
+
+        posterior_samples = getattr(fit_results, 'posterior_samples', None)
+        if posterior_samples is None:
+            log.warning('Posterior samples are unavailable. Run a Bayesian fit first.')
+            return None, None
+
+        return posterior_samples, fit_results
+
     def _plot_posterior_predictive_band(
         self,
         *,
@@ -1174,7 +1304,7 @@ class Plotter(RendererBase):
         axes_labels: list[str],
     ) -> None:
         """Render a posterior predictive band plot using Plotly."""
-        import plotly.graph_objects as go
+        go = __import__('plotly.graph_objects', fromlist=['Figure', 'Scatter'])
 
         fig = go.Figure()
         fig.add_trace(
@@ -1233,7 +1363,7 @@ class Plotter(RendererBase):
         axes_labels: list[str],
     ) -> None:
         """Render posterior predictive draws using Plotly."""
-        import plotly.graph_objects as go
+        go = __import__('plotly.graph_objects', fromlist=['Figure', 'Scatter'])
 
         fig = go.Figure()
         draws = getattr(summary, 'draws', None)
@@ -1316,6 +1446,72 @@ class Plotter(RendererBase):
             log.warning(f'Posterior samples do not contain the selected parameters: {missing}')
             return None
         return [str(name) for name in requested_names if name is not None]
+
+    @staticmethod
+    def _selected_posterior_samples(
+        posterior_samples: object,
+        parameter_names: list[str],
+    ) -> np.ndarray | None:
+        """Return flattened posterior samples in the selected order."""
+        available_names = getattr(posterior_samples, 'parameter_names', None)
+        if not available_names:
+            return None
+
+        name_to_index = {name: index for index, name in enumerate(available_names)}
+        try:
+            indices = [name_to_index[name] for name in parameter_names]
+        except KeyError:
+            return None
+
+        flattened = np.asarray(posterior_samples.flattened(), dtype=float)
+        if flattened.ndim != 2:
+            return None
+        return flattened[:, indices]
+
+    @staticmethod
+    def _thin_posterior_samples(
+        samples: np.ndarray,
+        *,
+        max_points: int = 4000,
+    ) -> np.ndarray:
+        """Downsample posterior samples for interactive plotting."""
+        if samples.shape[0] <= max_points:
+            return samples
+
+        indices = np.linspace(0, samples.shape[0] - 1, num=max_points, dtype=int)
+        return samples[indices]
+
+    @staticmethod
+    def _posterior_plot_labels(
+        fit_results: object,
+        parameter_names: list[str],
+    ) -> list[str]:
+        """Return readable posterior plot labels for selected parameters."""
+        parameters_by_name = {
+            getattr(parameter, 'unique_name', ''): parameter for parameter in fit_results.parameters
+        }
+        labels: list[str] = []
+        for parameter_name in parameter_names:
+            parameter = parameters_by_name.get(parameter_name)
+            if parameter is None:
+                labels.append(parameter_name)
+                continue
+
+            entry_name = getattr(getattr(parameter, '_identity', None), 'category_entry_name', '')
+            short_name = getattr(parameter, 'name', parameter_name)
+            if entry_name:
+                labels.append(f'{entry_name} {short_name}')
+            else:
+                labels.append(short_name)
+        return labels
+
+    @staticmethod
+    def _posterior_summary_by_name(
+        fit_results: object,
+    ) -> dict[str, object]:
+        """Return posterior summaries keyed by unique parameter name."""
+        summaries = getattr(fit_results, 'posterior_parameter_summaries', [])
+        return {summary.unique_name: summary for summary in summaries}
 
     def _get_fit_result_for_correlation(
         self,

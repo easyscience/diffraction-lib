@@ -382,6 +382,7 @@ def summarize_posterior_parameters(
     parameter_names: list[str],
     posterior_samples: PosteriorSamples,
     map_values: np.ndarray,
+    parameter_display_names: list[str] | None = None,
     convergence_diagnostics: dict[str, object] | None = None,
 ) -> list[PosteriorParameterSummary]:
     """Build posterior parameter summaries in EasyDiffraction order.
@@ -394,6 +395,8 @@ def summarize_posterior_parameters(
         Posterior sample container.
     map_values : np.ndarray
         MAP or best-sampled parameter values in the same order.
+    parameter_display_names : list[str] | None, default=None
+        Human-readable parameter names in the same order.
     convergence_diagnostics : dict[str, object] | None, default=None
         Optional convergence diagnostics keyed by parameter name.
 
@@ -412,6 +415,9 @@ def summarize_posterior_parameters(
     if flattened.shape[1] != len(parameter_names):
         msg = 'Posterior samples do not match the sampled parameter name list length.'
         raise ValueError(msg)
+    if parameter_display_names is not None and len(parameter_display_names) != len(parameter_names):
+        msg = 'Posterior display-name list must match the sampled parameter name list length.'
+        raise ValueError(msg)
 
     r_hat_by_parameter = {}
     ess_bulk_by_parameter = {}
@@ -424,10 +430,15 @@ def summarize_posterior_parameters(
         values = flattened[:, index]
         interval_68 = tuple(np.quantile(values, [0.16, 0.84]).tolist())
         interval_95 = tuple(np.quantile(values, [0.025, 0.975]).tolist())
+        display_name = (
+            parameter_display_names[index]
+            if parameter_display_names is not None
+            else parameter_name
+        )
         summaries.append(
             PosteriorParameterSummary(
                 unique_name=parameter_name,
-                display_name=parameter_name,
+                display_name=display_name,
                 map_value=float(map_values[index]),
                 median=float(np.median(values)),
                 standard_deviation=float(np.std(values, ddof=1)),

@@ -65,7 +65,8 @@ COMPOSITE_VERTICAL_SPACING = 0.03
 COMPOSITE_MARGIN_RIGHT = 30
 COMPOSITE_MARGIN_TOP = 40
 COMPOSITE_MARGIN_BOTTOM = 45
-PREDICTIVE_BAND_COLOR = 'rgba(214, 39, 40, 0.18)'
+PREDICTIVE_BAND_COLOR = 'rgba(214, 39, 40, 0.26)'
+PREDICTIVE_BAND_EDGE_COLOR = 'rgba(214, 39, 40, 0.45)'
 
 
 @dataclass(frozen=True)
@@ -1392,7 +1393,7 @@ window.requestAnimationFrame(installLegendToggleButton);
             x=x,
             y=lower,
             mode='lines',
-            line={'color': 'rgba(0, 0, 0, 0)'},
+            line={'color': PREDICTIVE_BAND_EDGE_COLOR, 'width': 1},
             hoverinfo='skip',
             showlegend=False,
             legendgroup='predictive_band',
@@ -1401,7 +1402,7 @@ window.requestAnimationFrame(installLegendToggleButton);
             x=x,
             y=upper,
             mode='lines',
-            line={'color': 'rgba(0, 0, 0, 0)'},
+            line={'color': PREDICTIVE_BAND_EDGE_COLOR, 'width': 1},
             fill='tonexty',
             fillcolor=PREDICTIVE_BAND_COLOR,
             name='Posterior predictive 95% CI',

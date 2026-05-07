@@ -10,6 +10,7 @@ import numpy as np
 from bumps.fitproblem import FitProblem
 from bumps.fitters import FITTERS
 from bumps.fitters import FitDriver
+from bumps.fitters import monitor as bumps_monitor
 from scipy.optimize import OptimizeResult
 
 from easydiffraction.analysis.fit_helpers.bayesian import BayesianFitResults
@@ -33,6 +34,60 @@ DEFAULT_POP = 4
 DEFAULT_ALPHA = 0.0
 DEFAULT_OUTLIER_TEST = 'none'
 DEFAULT_TRIM = False
+
+
+class _DreamProgressMonitor(bumps_monitor.Monitor):
+    """Progress monitor translating DREAM updates into chi-square rows."""
+
+    def __init__(
+        self,
+        *,
+        tracker: object,
+        n_points: int,
+        n_parameters: int,
+        n_chains: int,
+    ) -> None:
+        self._tracker = tracker
+        self._n_points = n_points
+        self._n_parameters = n_parameters
+        self._n_chains = max(1, n_chains)
+
+    def config_history(self, history: object) -> None:
+        """Declare the history fields needed for progress updates."""
+        history.requires(time=1, step=1, value=1)
+
+    def __call__(self, history: object) -> None:
+        """Forward sampler progress to the shared fit tracker."""
+        step = int(history.step[0]) if history.step else 0
+        generation = max(1, step // self._n_chains)
+        reduced_chi2 = self._reduced_chi_square_from_nllf(float(history.value[0]))
+        self._tracker.track_sampler_progress(
+            iteration=generation,
+            reduced_chi2=reduced_chi2,
+            elapsed_time=float(history.time[0]),
+        )
+
+    def final(self, history: object, best: dict[str, object]) -> None:
+        """Record the final DREAM state in the shared fit tracker."""
+        if not history.time or best.get('value') is None:
+            return
+        step = int(history.step[0]) if history.step else 0
+        generation = max(1, step // self._n_chains)
+        reduced_chi2 = self._reduced_chi_square_from_nllf(float(best['value']))
+        self._tracker.track_sampler_progress(
+            iteration=generation,
+            reduced_chi2=reduced_chi2,
+            elapsed_time=float(history.time[0]),
+            status='',
+        )
+
+    def _reduced_chi_square_from_nllf(self, nllf: float) -> float:
+        """Convert DREAM's negative log-likelihood to reduced chi-square."""
+        dof = self._n_points - self._n_parameters
+        chi_square = 2.0 * nllf
+        if dof <= 0:
+            return chi_square
+        return chi_square / dof
 
 
 @MinimizerFactory.register
@@ -94,6 +149,9 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         """
         solver_args = super()._prepare_solver_args(parameters)
         solver_args['parameter_names'] = [parameter.unique_name for parameter in parameters]
+        solver_args['parameter_display_names'] = [
+            getattr(parameter, 'name', parameter.unique_name) for parameter in parameters
+        ]
         solver_args['parameter_uids'] = [parameter._minimizer_uid for parameter in parameters]
         solver_args['starting_uncertainties'] = [parameter.uncertainty for parameter in parameters]
         return solver_args
@@ -119,6 +177,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         """
         bumps_params = kwargs.get('bumps_params')
         parameter_names = kwargs.get('parameter_names')
+        parameter_display_names = kwargs.get('parameter_display_names')
         parameter_uids = kwargs.get('parameter_uids')
         random_seed = kwargs.get('random_seed')
         starting_uncertainties = kwargs.get('starting_uncertainties')
@@ -130,10 +189,17 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         proposed_burn = max(DEFAULT_MIN_BURN, int(self.max_iterations * DEFAULT_BURN_FRACTION))
         burn = min(proposed_burn, max(self.max_iterations - 1, 0))
         samples = self.max_iterations * DEFAULT_POP * len(bumps_params)
+        n_chains = DEFAULT_POP * len(bumps_params)
+        progress_monitor = _DreamProgressMonitor(
+            tracker=self.tracker,
+            n_points=fitness.numpoints(),
+            n_parameters=len(bumps_params),
+            n_chains=n_chains,
+        )
         driver = FitDriver(
             fitclass=fitclass,
             problem=problem,
-            monitors=[],
+            monitors=[progress_monitor],
             steps=self.max_iterations,
             burn=burn,
             thin=DEFAULT_THIN,
@@ -238,6 +304,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             parameter_names=parameter_names,
             posterior_samples=posterior_samples,
             map_values=map_values,
+            parameter_display_names=parameter_display_names,
             convergence_diagnostics=convergence_diagnostics,
         )
         posterior_standard_deviations = standard_deviations_from_summaries(
