@@ -2787,8 +2787,9 @@ once using the command line, as shown below.</p>
 <ul>
 <li>Navigate to your existing <abbr title="A modern package manager for Windows, macOS, and Linux.">Pixi</abbr> project, created as described in the
   <a href="#installing-with-pixi">Installing with <abbr title="A modern package manager for Windows, macOS, and Linux.">Pixi</abbr></a> section.</li>
-<li>Add <abbr title="Web-based interactive development environment for notebooks, code, and data.">JupyterLab</abbr> and the <abbr title="A modern package manager for Windows, macOS, and Linux.">Pixi</abbr> kernel for Jupyter:
-  <div class="language-text highlight"><pre><span></span><code>pixi add --pypi jupyterlab pixi-kernel
+<li>Add <abbr title="Web-based interactive development environment for notebooks, code, and data.">JupyterLab</abbr>, Interactive Python shell and the <abbr title="A modern package manager for Windows, macOS, and Linux.">Pixi</abbr> kernel for
+  Jupyter:
+  <div class="language-text highlight"><pre><span></span><code>pixi add --pypi jupyterlab ipython pixi-kernel
 </code></pre></div></li>
 <li>Download all the EasyDiffraction tutorials to the <code>tutorials/</code>
   directory:
@@ -2803,8 +2804,9 @@ once using the command line, as shown below.</p>
 </ul>
 <h3 id="classical-run-tutorials-locally">Classical Run Tutorials Locally</h3>
 <ul>
-<li>Install <abbr title="An open-source web application that allows you to create and share documents that contain live code, equations, visualizations, and narrative text.">Jupyter Notebook</abbr> and IPython kernel:
-  <div class="language-text highlight"><pre><span></span><code>pip install notebook ipykernel
+<li>Install <abbr title="An open-source web application that allows you to create and share documents that contain live code, equations, visualizations, and narrative text.">Jupyter Notebook</abbr>, Interactive Python shell and the IPython
+  kernel:
+  <div class="language-text highlight"><pre><span></span><code>pip install notebook ipython ipykernel
 </code></pre></div></li>
 <li>Add the virtual environment as a Jupyter kernel:
   <div class="language-text highlight"><pre><span></span><code>python -m ipykernel install --user --name=venv --display-name &quot;EasyDiffraction Python kernel&quot;
