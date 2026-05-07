@@ -182,6 +182,12 @@ project.analysis.display.free_params()
 project.analysis.fit.show_minimizer_types()
 project.analysis.fit.minimizer_type = 'bumps (dream)'
 
+dream = project.analysis.fit.minimizer
+dream.steps = 1000
+dream.burn = 200
+dream.thin = 1
+dream.pop = 4
+
 # %%
 project.analysis.fit()
 

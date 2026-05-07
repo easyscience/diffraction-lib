@@ -120,6 +120,48 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             method=method,
             max_iterations=max_iterations,
         )
+        self._burn: int | None = None
+        self._thin: int = DEFAULT_THIN
+        self._pop: int = DEFAULT_POP
+
+    @property
+    def steps(self) -> int:
+        """Number of DREAM generations retained after burn-in."""
+        return self._validated_positive_integer('steps', self.max_iterations)
+
+    @steps.setter
+    def steps(self, value: int) -> None:
+        self.max_iterations = self._validated_positive_integer('steps', value)
+
+    @property
+    def burn(self) -> int | None:
+        """Explicit DREAM burn-in generations or ``None`` for auto."""
+        return self._burn
+
+    @burn.setter
+    def burn(self, value: int | None) -> None:
+        if value is None:
+            self._burn = None
+            return
+        self._burn = self._validated_non_negative_integer('burn', value)
+
+    @property
+    def thin(self) -> int:
+        """DREAM thinning interval."""
+        return self._thin
+
+    @thin.setter
+    def thin(self, value: int) -> None:
+        self._thin = self._validated_positive_integer('thin', value)
+
+    @property
+    def pop(self) -> int:
+        """DREAM population multiplier."""
+        return self._pop
+
+    @pop.setter
+    def pop(self, value: int) -> None:
+        self._pop = self._validated_positive_integer('pop', value)
 
     def _resolve_random_seed(self, random_seed: int | None) -> int:
         """Return a user-provided or generated random seed.
@@ -166,6 +208,68 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         solver_args['starting_uncertainties'] = [parameter.uncertainty for parameter in parameters]
         return solver_args
 
+    @staticmethod
+    def _validated_positive_integer(name: str, value: int | float) -> int:
+        """Validate a DREAM setting that must be a positive integer."""
+        if isinstance(value, bool):
+            msg = f"DREAM setting '{name}' must be a positive integer."
+            raise ValueError(msg)
+
+        integer_value = int(value)
+        if integer_value != value or integer_value < 1:
+            msg = f"DREAM setting '{name}' must be a positive integer."
+            raise ValueError(msg)
+        return integer_value
+
+    @staticmethod
+    def _validated_non_negative_integer(name: str, value: int | float) -> int:
+        """Validate a DREAM setting that must be a non-negative integer."""
+        if isinstance(value, bool):
+            msg = f"DREAM setting '{name}' must be a non-negative integer."
+            raise ValueError(msg)
+
+        integer_value = int(value)
+        if integer_value != value or integer_value < 0:
+            msg = f"DREAM setting '{name}' must be a non-negative integer."
+            raise ValueError(msg)
+        return integer_value
+
+    def _resolved_burn(self, steps: int) -> int:
+        """Return the configured or automatic DREAM burn-in length."""
+        if self.burn is None:
+            proposed_burn = max(DEFAULT_MIN_BURN, int(steps * DEFAULT_BURN_FRACTION))
+            return min(proposed_burn, max(steps - 1, 0))
+
+        burn = self.burn
+        if burn >= steps:
+            msg = "DREAM setting 'burn' must be smaller than 'steps'."
+            raise ValueError(msg)
+        return burn
+
+    def _sampler_settings(
+        self,
+        *,
+        random_seed: int,
+        steps: int,
+        burn: int,
+        thin: int,
+        pop: int,
+        n_parameters: int,
+    ) -> dict[str, object]:
+        """Build the sampler settings dictionary recorded in results."""
+        samples = steps * pop * n_parameters
+        return {
+            'random_seed': int(random_seed),
+            'steps': int(steps),
+            'burn': int(burn),
+            'thin': int(thin),
+            'pop': int(pop),
+            'samples': int(samples),
+            'alpha': float(DEFAULT_ALPHA),
+            'outliers': DEFAULT_OUTLIER_TEST,
+            'trim': DEFAULT_TRIM,
+        }
+
     def _run_solver(
         self,
         objective_function: object,
@@ -196,10 +300,19 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         problem = FitProblem(fitness)
 
         fitclass = next(cls for cls in FITTERS if cls.id == self.method)
-        proposed_burn = max(DEFAULT_MIN_BURN, int(self.max_iterations * DEFAULT_BURN_FRACTION))
-        burn = min(proposed_burn, max(self.max_iterations - 1, 0))
-        samples = self.max_iterations * DEFAULT_POP * len(bumps_params)
-        total_generations = int(self.max_iterations + burn + 1)
+        steps = self.steps
+        burn = self._resolved_burn(steps)
+        thin = self.thin
+        pop = self.pop
+        sampler_settings = self._sampler_settings(
+            random_seed=int(random_seed),
+            steps=steps,
+            burn=burn,
+            thin=thin,
+            pop=pop,
+            n_parameters=len(bumps_params),
+        )
+        total_generations = int(steps + burn + 1)
         progress_monitor = _DreamProgressMonitor(
             tracker=self.tracker,
             n_points=fitness.numpoints(),
@@ -211,11 +324,11 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             fitclass=fitclass,
             problem=problem,
             monitors=[progress_monitor],
-            steps=self.max_iterations,
+            steps=steps,
             burn=burn,
-            thin=DEFAULT_THIN,
-            pop=DEFAULT_POP,
-            samples=samples,
+            thin=thin,
+            pop=pop,
+            samples=sampler_settings['samples'],
             alpha=DEFAULT_ALPHA,
             outliers=DEFAULT_OUTLIER_TEST,
             trim=DEFAULT_TRIM,
@@ -244,7 +357,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
                 posterior_samples=None,
                 posterior_parameter_summaries=[],
                 convergence_diagnostics={},
-                sampler_settings={'random_seed': int(random_seed)},
+                sampler_settings=sampler_settings,
                 sampler_completed=False,
                 raw_state=None,
                 best_log_posterior=None,
@@ -268,7 +381,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
                 posterior_samples=None,
                 posterior_parameter_summaries=[],
                 convergence_diagnostics={},
-                sampler_settings={'random_seed': int(random_seed)},
+                sampler_settings=sampler_settings,
                 sampler_completed=False,
                 raw_state=state,
                 best_log_posterior=None,
@@ -289,7 +402,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
                 posterior_samples=None,
                 posterior_parameter_summaries=[],
                 convergence_diagnostics={},
-                sampler_settings={'random_seed': int(random_seed)},
+                sampler_settings=sampler_settings,
                 sampler_completed=True,
                 raw_state=state,
                 best_log_posterior=None,
@@ -321,18 +434,6 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         posterior_standard_deviations = standard_deviations_from_summaries(
             posterior_parameter_summaries
         )
-
-        sampler_settings = {
-            'random_seed': int(random_seed),
-            'steps': int(self.max_iterations),
-            'burn': int(burn),
-            'thin': int(DEFAULT_THIN),
-            'pop': int(DEFAULT_POP),
-            'samples': int(samples),
-            'alpha': float(DEFAULT_ALPHA),
-            'outliers': DEFAULT_OUTLIER_TEST,
-            'trim': DEFAULT_TRIM,
-        }
 
         if not convergence_diagnostics.get('converged', True):
             log.warning(
@@ -436,6 +537,6 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             best_log_posterior=getattr(raw_result, 'best_log_posterior', None),
         )
         fit_results.message = getattr(raw_result, 'message', '')
-        fit_results.iterations = int(self.max_iterations)
+        fit_results.iterations = int(fit_results.sampler_settings.get('steps', self.steps))
         fit_results.result = raw_result
         return fit_results
