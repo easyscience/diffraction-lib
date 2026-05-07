@@ -924,7 +924,6 @@ class Plotter(RendererBase):
             rows=n_parameters,
             cols=n_parameters,
             shared_xaxes='columns',
-            shared_yaxes='rows',
             horizontal_spacing=0.03,
             vertical_spacing=0.03,
         )
