@@ -131,6 +131,8 @@ class AsciiPlotter(PlotterBase):
             title=plot_spec.title,
             height=plot_spec.height,
         )
+        if plot_spec.predictive_lower_95 is not None and plot_spec.predictive_upper_95 is not None:
+            console.print('Posterior predictive bands are available with the Plotly engine only.')
         if plot_spec.bragg_tick_sets:
             console.print('Bragg peak subplot rows are available with the Plotly engine only.')
 

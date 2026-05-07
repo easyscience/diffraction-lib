@@ -60,6 +60,8 @@ class PowderMeasVsCalcSpec:
     bragg_peaks_height_fraction: float
     height: int | None = None
     y_bkg: np.ndarray | None = None
+    predictive_lower_95: np.ndarray | None = None
+    predictive_upper_95: np.ndarray | None = None
 
 
 class XAxisType(StrEnum):

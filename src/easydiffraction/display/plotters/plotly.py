@@ -65,6 +65,7 @@ COMPOSITE_VERTICAL_SPACING = 0.03
 COMPOSITE_MARGIN_RIGHT = 30
 COMPOSITE_MARGIN_TOP = 40
 COMPOSITE_MARGIN_BOTTOM = 45
+PREDICTIVE_BAND_COLOR = 'rgba(214, 39, 40, 0.18)'
 
 
 @dataclass(frozen=True)
@@ -1233,6 +1234,15 @@ window.requestAnimationFrame(installLegendToggleButton);
             row_heights=layout.row_heights,
         )
 
+        if plot_spec.predictive_lower_95 is not None and plot_spec.predictive_upper_95 is not None:
+            lower_trace, upper_trace = self._get_predictive_band_traces(
+                x=plot_spec.x,
+                lower=plot_spec.predictive_lower_95,
+                upper=plot_spec.predictive_upper_95,
+            )
+            fig.add_trace(lower_trace, row=1, col=1)
+            fig.add_trace(upper_trace, row=1, col=1)
+
         main_traces = (
             (
                 ('meas', plot_spec.y_meas),
@@ -1369,6 +1379,36 @@ window.requestAnimationFrame(installLegendToggleButton);
             fig.update_xaxes(title_text=plot_spec.axes_labels[0], row=terminal_row, col=1)
 
         self._show_figure(fig)
+
+    @staticmethod
+    def _get_predictive_band_traces(
+        *,
+        x: np.ndarray,
+        lower: np.ndarray,
+        upper: np.ndarray,
+    ) -> tuple[go.Scatter, go.Scatter]:
+        """Return Plotly traces for a filled predictive interval band."""
+        lower_trace = go.Scatter(
+            x=x,
+            y=lower,
+            mode='lines',
+            line={'color': 'rgba(0, 0, 0, 0)'},
+            hoverinfo='skip',
+            showlegend=False,
+            legendgroup='predictive_band',
+        )
+        upper_trace = go.Scatter(
+            x=x,
+            y=upper,
+            mode='lines',
+            line={'color': 'rgba(0, 0, 0, 0)'},
+            fill='tonexty',
+            fillcolor=PREDICTIVE_BAND_COLOR,
+            name='Posterior predictive 95% CI',
+            hoverinfo='skip',
+            legendgroup='predictive_band',
+        )
+        return lower_trace, upper_trace
 
     def plot_single_crystal(
         self,

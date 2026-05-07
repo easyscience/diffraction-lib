@@ -68,6 +68,8 @@ class PosteriorPredictiveSummary:
     ----------
     experiment_name : str
         Experiment identifier.
+    x_axis_name : str
+        Name of the x-axis used for the predictive arrays.
     x : np.ndarray
         X-axis values for the predictive curves.
     map_prediction : np.ndarray
@@ -85,6 +87,7 @@ class PosteriorPredictiveSummary:
     """
 
     experiment_name: str
+    x_axis_name: str
     x: np.ndarray
     map_prediction: np.ndarray
     lower_95: np.ndarray | None = None

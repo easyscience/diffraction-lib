@@ -69,6 +69,8 @@ DEFAULT_RESIDUAL_HEIGHT_FRACTION = 0.25
 DEFAULT_BRAGG_PEAKS_HEIGHT_FRACTION = 0.10
 DEFAULT_RESID_HEIGHT = DEFAULT_RESIDUAL_HEIGHT_FRACTION
 DEFAULT_BRAGG_ROW = DEFAULT_BRAGG_PEAKS_HEIGHT_FRACTION
+DEFAULT_POSTERIOR_PREDICTIVE_DRAWS = 200
+DEFAULT_POSTERIOR_PREDICTIVE_DRAW_PLOT_CAP = 50
 
 
 @dataclass(frozen=True)
@@ -657,6 +659,70 @@ class Plotter(RendererBase):
             return
         plot.show()
 
+    def plot_posterior_predictive(
+        self,
+        expt_name: str,
+        style: str = 'band',
+    ) -> None:
+        """Plot posterior predictive curves for a powder experiment.
+
+        Parameters
+        ----------
+        expt_name : str
+            Experiment name to plot.
+        style : str, default='band'
+            Either ``'band'`` for a 95% credible interval or
+            ``'draws'`` for sampled predictive curves.
+        """
+        if style not in {'band', 'draws'}:
+            msg = "style must be either 'band' or 'draws'."
+            raise ValueError(msg)
+
+        if self._project is None:
+            log.warning('Plotter is not attached to a project.')
+            return
+
+        if self.engine != PlotterEngineEnum.PLOTLY.value:
+            log.warning('Posterior predictive plots currently require the Plotly backend.')
+            return
+
+        experiment = self._project.experiments[expt_name]
+        x_axis, _, sample_form, scattering_type, _ = self._resolve_x_axis(experiment.type, None)
+        if sample_form != SampleFormEnum.POWDER:
+            log.warning('Posterior predictive plots currently support powder experiments only.')
+            return
+
+        summary = self._get_or_build_posterior_predictive_summary(
+            experiment=experiment,
+            expt_name=expt_name,
+            x_axis=x_axis,
+        )
+        if summary is None:
+            return
+
+        pattern = intensity_category_for(experiment)
+        y_meas = getattr(pattern, 'intensity_meas', None)
+        if y_meas is None:
+            log.warning(f'No measured data available for experiment {expt_name}.')
+            return
+
+        axes_labels = self._get_axes_labels(sample_form, scattering_type, x_axis)
+        if style == 'band':
+            self._plot_posterior_predictive_band(
+                expt_name=expt_name,
+                summary=summary,
+                y_meas=np.asarray(y_meas, dtype=float),
+                axes_labels=axes_labels,
+            )
+            return
+
+        self._plot_posterior_predictive_draws(
+            expt_name=expt_name,
+            summary=summary,
+            y_meas=np.asarray(y_meas, dtype=float),
+            axes_labels=axes_labels,
+        )
+
     @staticmethod
     def _filter_correlation_dataframe(
         corr_df: pd.DataFrame,
@@ -896,6 +962,183 @@ class Plotter(RendererBase):
             plot.add_title(f'Posterior distribution: {parameter_names[0]}')
         return plot
 
+    def _get_or_build_posterior_predictive_summary(
+        self,
+        *,
+        experiment: object,
+        expt_name: str,
+        x_axis: object,
+    ) -> object | None:
+        """Return a cached or newly built posterior predictive summary."""
+        fit_results = self._get_fit_result_for_correlation()
+        if fit_results is None:
+            return None
+
+        posterior_predictive = getattr(fit_results, 'posterior_predictive', None)
+        posterior_samples = getattr(fit_results, 'posterior_samples', None)
+        if posterior_predictive is None or posterior_samples is None:
+            return None
+
+        x_axis_name = getattr(x_axis, 'value', x_axis)
+        cache_key = self._posterior_predictive_key(expt_name, str(x_axis_name))
+        summary = posterior_predictive.get(cache_key)
+        if summary is not None:
+            return summary
+
+        summary = self._build_posterior_predictive_summary(
+            fit_results=fit_results,
+            experiment=experiment,
+            expt_name=expt_name,
+            x_axis=x_axis,
+        )
+        if summary is None:
+            return None
+
+        posterior_predictive[cache_key] = summary
+        return summary
+
+    def _build_posterior_predictive_summary(
+        self,
+        *,
+        fit_results: object,
+        experiment: object,
+        expt_name: str,
+        x_axis: object,
+    ) -> object | None:
+        """Build posterior predictive summaries from posterior draws."""
+        from easydiffraction.analysis.fit_helpers.bayesian import PosteriorPredictiveSummary
+
+        posterior_samples = getattr(fit_results, 'posterior_samples', None)
+        if posterior_samples is None:
+            return None
+
+        flattened_samples = np.asarray(posterior_samples.flattened(), dtype=float)
+        parameter_names = getattr(posterior_samples, 'parameter_names', None)
+        if flattened_samples.ndim != 2 or not parameter_names:
+            log.warning('Posterior samples are unavailable for predictive summaries.')
+            return None
+
+        parameters_by_name = {
+            getattr(parameter, 'unique_name', ''): parameter for parameter in fit_results.parameters
+        }
+        sampled_parameters = []
+        for name in parameter_names:
+            parameter = parameters_by_name.get(name)
+            if parameter is None:
+                log.warning(
+                    'Posterior predictive summaries require matching fitted parameters for '
+                    f"'{name}'."
+                )
+                return None
+            sampled_parameters.append(parameter)
+
+        original_values = np.array([parameter.value for parameter in sampled_parameters], dtype=float)
+        original_uncertainties = [parameter.uncertainty for parameter in sampled_parameters]
+
+        map_prediction = None
+        x_values = None
+        predictive_draws: list[np.ndarray] = []
+        draw_indices = self._posterior_predictive_draw_indices(flattened_samples.shape[0])
+        try:
+            map_prediction, x_values = self._evaluate_posterior_predictive_state(
+                sampled_parameters=sampled_parameters,
+                values=original_values,
+                experiment=experiment,
+                expt_name=expt_name,
+                x_axis=x_axis,
+            )
+            if map_prediction is None or x_values is None:
+                return None
+
+            for index in draw_indices:
+                prediction, current_x = self._evaluate_posterior_predictive_state(
+                    sampled_parameters=sampled_parameters,
+                    values=flattened_samples[index],
+                    experiment=experiment,
+                    expt_name=expt_name,
+                    x_axis=x_axis,
+                )
+                if prediction is None or current_x is None:
+                    return None
+                if prediction.shape != map_prediction.shape or current_x.shape != x_values.shape:
+                    log.warning('Posterior predictive draws returned inconsistent array shapes.')
+                    return None
+                predictive_draws.append(prediction)
+        finally:
+            for parameter, value, uncertainty in zip(
+                sampled_parameters,
+                original_values,
+                original_uncertainties,
+                strict=True,
+            ):
+                parameter._set_value_from_minimizer(float(value))
+                parameter.uncertainty = uncertainty
+            self._update_project_categories(expt_name)
+
+        predictive_draw_array = np.asarray(predictive_draws, dtype=float)
+        lower_68, upper_68 = np.quantile(predictive_draw_array, [0.16, 0.84], axis=0)
+        lower_95, upper_95 = np.quantile(predictive_draw_array, [0.025, 0.975], axis=0)
+        x_axis_name = getattr(x_axis, 'value', x_axis)
+
+        return PosteriorPredictiveSummary(
+            experiment_name=expt_name,
+            x_axis_name=str(x_axis_name),
+            x=np.asarray(x_values, dtype=float),
+            map_prediction=np.asarray(map_prediction, dtype=float),
+            lower_95=np.asarray(lower_95, dtype=float),
+            upper_95=np.asarray(upper_95, dtype=float),
+            lower_68=np.asarray(lower_68, dtype=float),
+            upper_68=np.asarray(upper_68, dtype=float),
+            draws=predictive_draw_array,
+        )
+
+    def _evaluate_posterior_predictive_state(
+        self,
+        *,
+        sampled_parameters: list[object],
+        values: np.ndarray,
+        experiment: object,
+        expt_name: str,
+        x_axis: object,
+    ) -> tuple[np.ndarray | None, np.ndarray | None]:
+        """Evaluate one posterior predictive state for an experiment."""
+        for parameter, value in zip(sampled_parameters, values, strict=True):
+            parameter._set_value_from_minimizer(float(value))
+
+        self._update_project_categories(expt_name)
+        pattern = intensity_category_for(experiment)
+        x_name = getattr(x_axis, 'value', x_axis)
+        x_values = getattr(pattern, x_name, None)
+        y_calc = getattr(pattern, 'intensity_calc', None)
+        if x_values is None or y_calc is None:
+            log.warning(
+                f'Posterior predictive data is unavailable for experiment {expt_name}. '
+                'Ensure calculated intensities and the selected x axis are available.'
+            )
+            return None, None
+
+        return np.asarray(y_calc, dtype=float), np.asarray(x_values, dtype=float)
+
+    @staticmethod
+    def _posterior_predictive_draw_indices(n_draws: int) -> np.ndarray:
+        """Select evenly spaced posterior draws for predictive summaries."""
+        if n_draws <= DEFAULT_POSTERIOR_PREDICTIVE_DRAWS:
+            return np.arange(n_draws, dtype=int)
+
+        return np.unique(
+            np.linspace(
+                0,
+                n_draws - 1,
+                num=DEFAULT_POSTERIOR_PREDICTIVE_DRAWS,
+                dtype=int,
+            )
+        )
+
+    @staticmethod
+    def _posterior_predictive_key(expt_name: str, x_axis_name: str) -> str:
+        """Return the cache key for a posterior predictive summary."""
+        return f'{expt_name}:{x_axis_name}'
+
     def _get_posterior_inference_data(
         self,
     ) -> tuple[object | None, object | None]:
@@ -921,6 +1164,120 @@ class Plotter(RendererBase):
             return None, None
 
         return posterior_samples.to_arviz(), fit_results
+
+    def _plot_posterior_predictive_band(
+        self,
+        *,
+        expt_name: str,
+        summary: object,
+        y_meas: np.ndarray,
+        axes_labels: list[str],
+    ) -> None:
+        """Render a posterior predictive band plot using Plotly."""
+        import plotly.graph_objects as go
+
+        fig = go.Figure()
+        fig.add_trace(
+            go.Scatter(
+                x=summary.x,
+                y=summary.lower_95,
+                mode='lines',
+                line={'color': 'rgba(0, 0, 0, 0)'},
+                hoverinfo='skip',
+                showlegend=False,
+            )
+        )
+        fig.add_trace(
+            go.Scatter(
+                x=summary.x,
+                y=summary.upper_95,
+                mode='lines',
+                line={'color': 'rgba(0, 0, 0, 0)'},
+                fill='tonexty',
+                fillcolor='rgba(214, 39, 40, 0.18)',
+                name='Posterior predictive 95% CI',
+                hoverinfo='skip',
+            )
+        )
+        fig.add_trace(
+            go.Scatter(
+                x=summary.x,
+                y=summary.map_prediction,
+                mode='lines',
+                line={'color': 'rgb(214, 39, 40)', 'width': 2},
+                name='MAP prediction',
+            )
+        )
+        fig.add_trace(
+            go.Scatter(
+                x=summary.x,
+                y=y_meas,
+                mode='lines+markers',
+                line={'color': 'rgb(31, 119, 180)', 'width': 1.5},
+                name='Measured',
+            )
+        )
+        fig.update_layout(
+            title=f"Posterior predictive for experiment 🔬 '{expt_name}'",
+            xaxis_title=axes_labels[0],
+            yaxis_title=axes_labels[1],
+        )
+        fig.show()
+
+    def _plot_posterior_predictive_draws(
+        self,
+        *,
+        expt_name: str,
+        summary: object,
+        y_meas: np.ndarray,
+        axes_labels: list[str],
+    ) -> None:
+        """Render posterior predictive draws using Plotly."""
+        import plotly.graph_objects as go
+
+        fig = go.Figure()
+        draws = getattr(summary, 'draws', None)
+        if draws is None:
+            log.warning('Posterior predictive draws are unavailable for plotting.')
+            return
+
+        draw_cap = min(len(draws), DEFAULT_POSTERIOR_PREDICTIVE_DRAW_PLOT_CAP)
+        for index in range(draw_cap):
+            fig.add_trace(
+                go.Scatter(
+                    x=summary.x,
+                    y=draws[index],
+                    mode='lines',
+                    line={'color': 'rgba(120, 120, 120, 0.18)', 'width': 1},
+                    name='Posterior draw' if index == 0 else None,
+                    showlegend=index == 0,
+                )
+            )
+
+        fig.add_trace(
+            go.Scatter(
+                x=summary.x,
+                y=summary.map_prediction,
+                mode='lines',
+                line={'color': 'rgb(214, 39, 40)', 'width': 2},
+                name='MAP prediction',
+            )
+        )
+        fig.add_trace(
+            go.Scatter(
+                x=summary.x,
+                y=y_meas,
+                mode='lines+markers',
+                line={'color': 'rgb(31, 119, 180)', 'width': 1.5},
+                name='Measured',
+            )
+        )
+        fig.update_layout(
+            title=f"Posterior predictive draws for experiment 🔬 '{expt_name}'",
+            xaxis_title=axes_labels[0],
+            yaxis_title=axes_labels[1],
+        )
+        fig.show()
 
     @staticmethod
     def _resolve_posterior_parameter_names(
@@ -1506,6 +1863,28 @@ class Plotter(RendererBase):
                 x_min=ctx['x_min'],
                 x_max=ctx['x_max'],
             )
+
+        predictive_summary = self._get_or_build_posterior_predictive_summary(
+            experiment=experiment,
+            expt_name=expt_name,
+            x_axis=ctx['x_axis'],
+        )
+        predictive_lower_95 = None
+        predictive_upper_95 = None
+        if predictive_summary is not None:
+            predictive_lower_95 = self._filtered_y_array(
+                predictive_summary.lower_95,
+                predictive_summary.x,
+                ctx['x_min'],
+                ctx['x_max'],
+            )
+            predictive_upper_95 = self._filtered_y_array(
+                predictive_summary.upper_95,
+                predictive_summary.x,
+                ctx['x_min'],
+                ctx['x_max'],
+            )
+
         plot_spec = PowderMeasVsCalcSpec(
             x=ctx['x_filtered'],
             y_meas=series.y_meas,
@@ -1518,6 +1897,8 @@ class Plotter(RendererBase):
             bragg_peaks_height_fraction=DEFAULT_BRAGG_ROW,
             height=self._composite_plot_height(),
             y_bkg=series.y_bkg,
+            predictive_lower_95=predictive_lower_95,
+            predictive_upper_95=predictive_upper_95,
         )
         self._backend.plot_powder_meas_vs_calc(plot_spec=plot_spec)
 
