@@ -427,6 +427,75 @@ class GenericParameter(GenericNumericDescriptor):
             v, name=f'{self.unique_name}.fit_max', current=self._fit_max
         )
 
+    def set_fit_bounds_from_uncertainty(
+        self,
+        multiplier: float = 8.0,
+        *,
+        clip_to_limits: bool = True,
+    ) -> tuple[float, float]:
+        """Set fit bounds from the current standard uncertainty.
+
+        Parameters
+        ----------
+        multiplier : float, default=8.0
+            Positive finite factor applied symmetrically to the current
+            parameter uncertainty.
+        clip_to_limits : bool, default=True
+            Whether to clip the resolved fit bounds to the parameter's
+            physical lower and upper limits when those are finite.
+
+        Returns
+        -------
+        tuple[float, float]
+            The resolved ``(fit_min, fit_max)`` bounds.
+
+        Raises
+        ------
+        ValueError
+            If the current value, uncertainty, or multiplier is
+            missing, invalid, or produces non-increasing bounds.
+        """
+        name = self.unique_name
+        value = self.value
+        uncertainty = self.uncertainty
+
+        if value is None or not np.isfinite(float(value)):
+            msg = f'Cannot set fit bounds for {name}: current value is missing or invalid.'
+            raise ValueError(msg)
+
+        if isinstance(multiplier, bool) or not np.isfinite(float(multiplier)):
+            msg = 'multiplier must be a positive finite number.'
+            raise ValueError(msg)
+        if float(multiplier) <= 0:
+            msg = 'multiplier must be a positive finite number.'
+            raise ValueError(msg)
+
+        if uncertainty is None or uncertainty <= 0 or not np.isfinite(float(uncertainty)):
+            msg = f'Cannot set fit bounds for {name}: uncertainty is missing or invalid.'
+            raise ValueError(msg)
+
+        lower = float(value) - float(multiplier) * float(uncertainty)
+        upper = float(value) + float(multiplier) * float(uncertainty)
+
+        if clip_to_limits:
+            physical_lower = float(self._physical_lower_bound())
+            physical_upper = float(self._physical_upper_bound())
+            if np.isfinite(physical_lower):
+                lower = max(lower, physical_lower)
+            if np.isfinite(physical_upper):
+                upper = min(upper, physical_upper)
+
+        if lower >= upper:
+            msg = (
+                f'Cannot set fit bounds for {name}: resolved lower bound {lower} '
+                f'is not below upper bound {upper}.'
+            )
+            raise ValueError(msg)
+
+        self.fit_min = lower
+        self.fit_max = upper
+        return lower, upper
+
 
 # ======================================================================
 
