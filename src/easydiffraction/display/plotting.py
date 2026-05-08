@@ -916,7 +916,7 @@ class Plotter(RendererBase):
         samples = self._selected_posterior_samples(posterior_samples, parameter_names)
         if samples is None:
             return None
-        samples = self._thin_posterior_samples(samples)
+        samples = self._thin_posterior_samples(samples, max_points=1500)
         labels = self._posterior_plot_labels(fit_results, parameter_names)
 
         n_parameters = len(parameter_names)
@@ -940,18 +940,27 @@ class Plotter(RendererBase):
                 x_values = samples[:, col_index]
                 y_values = samples[:, row_index]
                 if row_index == col_index:
-                    fig.add_trace(
-                        go.Histogram(
-                            x=x_values,
-                            nbinsx=40,
-                            histnorm='probability density',
-                            marker={'color': 'rgb(99, 110, 250)'},
-                            showlegend=False,
-                            hovertemplate='%{x:.4f}<br>density=%{y:.4f}<extra></extra>',
-                        ),
-                        row=row,
-                        col=col,
+                    density_trace = self._posterior_density_trace(
+                        fit_results=fit_results,
+                        parameter_name=parameter_names[col_index],
+                        values=x_values,
+                        trace_name=labels[col_index],
                     )
+                    if density_trace is None:
+                        fig.add_trace(
+                            go.Histogram(
+                                x=x_values,
+                                nbinsx=40,
+                                histnorm='probability density',
+                                marker={'color': 'rgb(99, 110, 250)'},
+                                showlegend=False,
+                                hovertemplate='%{x:.4f}<br>density=%{y:.4f}<extra></extra>',
+                            ),
+                            row=row,
+                            col=col,
+                        )
+                    else:
+                        fig.add_trace(density_trace, row=row, col=col)
                 else:
                     fig.add_trace(
                         go.Scattergl(
@@ -959,8 +968,8 @@ class Plotter(RendererBase):
                             y=y_values,
                             mode='markers',
                             marker={
-                                'color': 'rgba(99, 110, 250, 0.18)',
-                                'size': 4,
+                                'color': 'rgba(99, 110, 250, 0.22)',
+                                'size': 3,
                             },
                             showlegend=False,
                             hovertemplate=(
@@ -1038,16 +1047,25 @@ class Plotter(RendererBase):
                 line_width=0,
             )
 
-        fig.add_trace(
-            go.Histogram(
-                x=values,
-                nbinsx=50,
-                histnorm='probability density',
-                marker={'color': 'rgb(99, 110, 250)'},
-                opacity=0.85,
-                name='Posterior samples',
-            )
+        density_trace = self._posterior_density_trace(
+            fit_results=fit_results,
+            parameter_name=parameter_name,
+            values=values,
+            trace_name='Posterior density',
         )
+        if density_trace is None:
+            fig.add_trace(
+                go.Histogram(
+                    x=values,
+                    nbinsx=50,
+                    histnorm='probability density',
+                    marker={'color': 'rgb(99, 110, 250)'},
+                    opacity=0.85,
+                    name='Posterior samples',
+                )
+            )
+        else:
+            fig.add_trace(density_trace)
 
         median = float(np.median(values))
         fig.add_vline(
@@ -1068,9 +1086,134 @@ class Plotter(RendererBase):
             title=f'Posterior distribution: {label}',
             xaxis_title=label,
             yaxis_title='Probability density',
-            bargap=0.05,
         )
         return fig
+
+    def _posterior_density_trace(
+        self,
+        *,
+        fit_results: object,
+        parameter_name: str,
+        values: np.ndarray,
+        trace_name: str,
+    ) -> object | None:
+        """Return a filled KDE trace for one posterior marginal."""
+        go = __import__('plotly.graph_objects', fromlist=['Scatter'])
+
+        lower_bound, upper_bound = self._posterior_parameter_bounds(
+            fit_results=fit_results,
+            parameter_name=parameter_name,
+        )
+        density_curve = self._posterior_density_curve(
+            values,
+            lower_bound=lower_bound,
+            upper_bound=upper_bound,
+        )
+        if density_curve is None:
+            return None
+
+        grid, density = density_curve
+        return go.Scatter(
+            x=grid,
+            y=density,
+            mode='lines',
+            line={'color': 'rgb(99, 110, 250)', 'width': 2},
+            fill='tozeroy',
+            fillcolor='rgba(99, 110, 250, 0.22)',
+            name=trace_name,
+            showlegend=False,
+            hovertemplate='%{x:.4f}<br>density=%{y:.4f}<extra></extra>',
+        )
+
+    @staticmethod
+    def _posterior_parameter_bounds(
+        *,
+        fit_results: object,
+        parameter_name: str,
+    ) -> tuple[float | None, float | None]:
+        """Return finite fit bounds for a posterior parameter when available."""
+        parameters_by_name = {
+            getattr(parameter, 'unique_name', ''): parameter for parameter in fit_results.parameters
+        }
+        parameter = parameters_by_name.get(parameter_name)
+        if parameter is None:
+            return None, None
+
+        lower_bound = getattr(parameter, 'fit_min', None)
+        upper_bound = getattr(parameter, 'fit_max', None)
+        lower = (
+            float(lower_bound)
+            if lower_bound is not None and np.isfinite(float(lower_bound))
+            else None
+        )
+        upper = (
+            float(upper_bound)
+            if upper_bound is not None and np.isfinite(float(upper_bound))
+            else None
+        )
+        return lower, upper
+
+    @classmethod
+    def _posterior_density_curve(
+        cls,
+        values: np.ndarray,
+        *,
+        lower_bound: float | None,
+        upper_bound: float | None,
+        grid_size: int = 256,
+    ) -> tuple[np.ndarray, np.ndarray] | None:
+        """Estimate a boundary-aware posterior density curve."""
+        gaussian_kde = __import__('scipy.stats', fromlist=['gaussian_kde']).gaussian_kde
+
+        data = np.asarray(values, dtype=float)
+        data = data[np.isfinite(data)]
+        if data.size < 2:
+            return None
+
+        data_min = float(np.min(data))
+        data_max = float(np.max(data))
+        data_range = data_max - data_min
+        padding = 0.05 * data_range if data_range > 0 else max(abs(data_min), 1.0) * 0.05
+        if padding == 0:
+            padding = 1e-6
+
+        grid_lower = lower_bound if lower_bound is not None else data_min - padding
+        grid_upper = upper_bound if upper_bound is not None else data_max + padding
+        if grid_upper <= grid_lower:
+            return None
+
+        grid = np.linspace(grid_lower, grid_upper, num=grid_size)
+        if np.allclose(data, data[0]):
+            bandwidth = max(abs(data[0]) * 0.01, 1e-6)
+            density = np.exp(-0.5 * ((grid - data[0]) / bandwidth) ** 2)
+            density /= bandwidth * np.sqrt(2.0 * np.pi)
+        else:
+            reflected_data = cls._reflected_density_samples(
+                data,
+                lower_bound=lower_bound,
+                upper_bound=upper_bound,
+            )
+            density = np.asarray(gaussian_kde(reflected_data)(grid), dtype=float)
+
+        area = np.trapezoid(density, grid)
+        if area <= 0:
+            return None
+        return grid, density / area
+
+    @staticmethod
+    def _reflected_density_samples(
+        values: np.ndarray,
+        *,
+        lower_bound: float | None,
+        upper_bound: float | None,
+    ) -> np.ndarray:
+        """Reflect posterior samples across finite bounds for KDE stability."""
+        reflected = [values]
+        if lower_bound is not None:
+            reflected.append(2.0 * lower_bound - values)
+        if upper_bound is not None:
+            reflected.append(2.0 * upper_bound - values)
+        return np.concatenate(reflected)
 
     def _get_or_build_posterior_predictive_summary(
         self,
