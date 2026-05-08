@@ -65,9 +65,11 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
         reduced_chi2 = self._reduced_chi_square_from_nllf(float(history.value[0]))
         self._tracker.track_sampler_progress(
             iteration=generation,
+            total_iterations=self._total_generations,
+            phase=self._phase_name(generation),
+            progress_percent=self._progress_percent(generation),
             reduced_chi2=reduced_chi2,
             elapsed_time=float(history.time[0]),
-            status=self._status_text(generation),
         )
 
     def final(self, history: object, best: dict[str, object]) -> None:
@@ -79,17 +81,24 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
         reduced_chi2 = self._reduced_chi_square_from_nllf(float(best['value']))
         self._tracker.track_sampler_progress(
             iteration=generation,
+            total_iterations=self._total_generations,
+            phase=self._phase_name(generation),
+            progress_percent=self._progress_percent(generation),
             reduced_chi2=reduced_chi2,
             elapsed_time=float(history.time[0]),
-            status='',
         )
 
-    def _status_text(self, generation: int) -> str:
-        """Return a human-readable DREAM progress string."""
+    def _phase_name(self, generation: int) -> str:
+        """Return the current sampler phase name."""
         clamped_generation = min(generation, self._total_generations)
-        progress = 100.0 * clamped_generation / self._total_generations
-        phase = 'burn-in' if clamped_generation <= self._burn_steps else 'sampling'
-        return f'{phase} {progress:.1f}% ({clamped_generation}/{self._total_generations})'
+        if clamped_generation <= self._burn_steps:
+            return 'burn-in'
+        return 'sampling'
+
+    def _progress_percent(self, generation: int) -> float:
+        """Return DREAM progress as a percentage."""
+        clamped_generation = min(generation, self._total_generations)
+        return 100.0 * clamped_generation / self._total_generations
 
     def _reduced_chi_square_from_nllf(self, nllf: float) -> float:
         """Convert DREAM's negative log-likelihood to reduced chi-square."""
@@ -182,6 +191,10 @@ class BumpsDreamMinimizer(BumpsMinimizer):
 
         self._resolved_random_seed = int(random_seed)
         return self._resolved_random_seed
+
+    def _tracking_mode(self) -> str:
+        """Use sampler-style progress reporting for DREAM runs."""
+        return 'sampling'
 
     def _prepare_solver_args(
         self,

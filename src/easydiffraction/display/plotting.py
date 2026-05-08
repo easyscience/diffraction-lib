@@ -71,6 +71,13 @@ DEFAULT_RESID_HEIGHT = DEFAULT_RESIDUAL_HEIGHT_FRACTION
 DEFAULT_BRAGG_ROW = DEFAULT_BRAGG_PEAKS_HEIGHT_FRACTION
 DEFAULT_POSTERIOR_PREDICTIVE_DRAWS = 200
 DEFAULT_POSTERIOR_PREDICTIVE_DRAW_PLOT_CAP = 50
+POSTERIOR_DENSITY_LINE_COLOR = 'rgb(99, 110, 250)'
+POSTERIOR_DENSITY_FILL_COLOR = 'rgba(99, 110, 250, 0.22)'
+POSTERIOR_MEDIAN_LINE_COLOR = 'rgb(140, 140, 140)'
+POSTERIOR_POINT_ESTIMATE_LINE_COLOR = 'rgb(214, 39, 40)'
+POSTERIOR_DRAW_LINE_COLOR = 'rgba(140, 140, 140, 0.18)'
+POSTERIOR_SCATTER_MARKER_COLOR = 'rgba(140, 140, 140, 0.20)'
+POSTERIOR_CONTOUR_LINE_COLOR = 'rgba(99, 110, 250, 0.50)'
 
 
 @dataclass(frozen=True)
@@ -662,7 +669,7 @@ class Plotter(RendererBase):
     def plot_posterior_predictive(
         self,
         expt_name: str,
-        style: str = 'band',
+        style: str = 'band+draws',
     ) -> None:
         """Plot posterior predictive curves for a powder experiment.
 
@@ -670,12 +677,13 @@ class Plotter(RendererBase):
         ----------
         expt_name : str
             Experiment name to plot.
-        style : str, default='band'
-            Either ``'band'`` for a 95% credible interval or
-            ``'draws'`` for sampled predictive curves.
+        style : str, default='band+draws'
+            ``'band'`` shows the 95% credible interval,
+            ``'draws'`` shows sampled predictive curves, and
+            ``'band+draws'`` shows both together.
         """
-        if style not in {'band', 'draws'}:
-            msg = "style must be either 'band' or 'draws'."
+        if style not in {'band', 'draws', 'band+draws'}:
+            msg = "style must be 'band', 'draws', or 'band+draws'."
             raise ValueError(msg)
 
         if self._project is None:
@@ -707,20 +715,13 @@ class Plotter(RendererBase):
             return
 
         axes_labels = self._get_axes_labels(sample_form, scattering_type, x_axis)
-        if style == 'band':
-            self._plot_posterior_predictive_band(
-                expt_name=expt_name,
-                summary=summary,
-                y_meas=np.asarray(y_meas, dtype=float),
-                axes_labels=axes_labels,
-            )
-            return
-
-        self._plot_posterior_predictive_draws(
+        self._plot_posterior_predictive_summary(
             expt_name=expt_name,
             summary=summary,
             y_meas=np.asarray(y_meas, dtype=float),
             axes_labels=axes_labels,
+            show_band=style in {'band', 'band+draws'},
+            show_draws=style in {'draws', 'band+draws'},
         )
 
     @staticmethod
@@ -949,6 +950,7 @@ class Plotter(RendererBase):
                         values=x_values,
                         trace_name=labels[col_index],
                     )
+                    diagonal_y_axis_range = None
                     if density_trace is None:
                         fig.add_trace(
                             go.Histogram(
@@ -964,6 +966,11 @@ class Plotter(RendererBase):
                         )
                     else:
                         fig.add_trace(density_trace, row=row, col=col)
+                        diagonal_y_axis_range = self._posterior_density_axis_range(
+                            np.asarray(density_trace.y)
+                        )
+                    if diagonal_y_axis_range is not None:
+                        fig.update_yaxes(range=list(diagonal_y_axis_range), row=row, col=col)
                 else:
                     contour_trace = self._posterior_contour_trace(
                         fit_results=fit_results,
@@ -980,7 +987,7 @@ class Plotter(RendererBase):
                             y=y_values,
                             mode='markers',
                             marker={
-                                'color': 'rgba(99, 110, 250, 0.22)',
+                                'color': POSTERIOR_SCATTER_MARKER_COLOR,
                                 'size': 3,
                             },
                             showlegend=False,
@@ -1040,13 +1047,20 @@ class Plotter(RendererBase):
             y=y_grid,
             z=density,
             contours={
-                'coloring': 'none',
+                'coloring': 'fill',
                 'showlabels': False,
                 'start': float(np.max(density) * 0.15),
                 'end': float(np.max(density) * 0.95),
                 'size': float(np.max(density) * 0.16),
             },
-            line={'color': 'rgba(99, 110, 250, 0.55)', 'width': 1.2},
+            colorscale=[
+                [0.0, 'rgba(99, 110, 250, 0.00)'],
+                [0.35, 'rgba(99, 110, 250, 0.00)'],
+                [0.60, 'rgba(99, 110, 250, 0.10)'],
+                [0.80, 'rgba(99, 110, 250, 0.18)'],
+                [1.0, 'rgba(99, 110, 250, 0.30)'],
+            ],
+            line={'color': POSTERIOR_CONTOUR_LINE_COLOR, 'width': 1.0},
             hoverinfo='skip',
             showscale=False,
             showlegend=False,
@@ -1111,40 +1125,62 @@ class Plotter(RendererBase):
             values=values,
             trace_name='Posterior density',
         )
+        y_axis_range = None
         if density_trace is None:
+            histogram_density, _ = np.histogram(values, bins=50, density=True)
+            y_axis_range = self._posterior_density_axis_range(histogram_density)
             fig.add_trace(
                 go.Histogram(
                     x=values,
                     nbinsx=50,
                     histnorm='probability density',
-                    marker={'color': 'rgb(99, 110, 250)'},
+                    marker={'color': POSTERIOR_DENSITY_LINE_COLOR},
                     opacity=0.85,
-                    name='Posterior samples',
+                    name='Posterior density',
                 )
             )
         else:
+            density_trace.name = 'Posterior density'
+            density_trace.showlegend = True
             fig.add_trace(density_trace)
+            y_axis_range = self._posterior_density_axis_range(np.asarray(density_trace.y))
 
         median = float(np.median(values))
-        fig.add_vline(
-            x=median,
-            line={'color': 'rgb(99, 110, 250)', 'width': 2},
-            annotation_text='median',
-            annotation_position='top',
-        )
-        if summary is not None:
-            fig.add_vline(
-                x=summary.map_value,
-                line={'color': 'rgb(214, 39, 40)', 'width': 2, 'dash': 'dash'},
-                annotation_text='MAP',
-                annotation_position='top right',
+        if y_axis_range is not None:
+            fig.add_trace(
+                self._posterior_reference_line_trace(
+                    x_value=median,
+                    y_axis_range=y_axis_range,
+                    trace_name='Median',
+                    color=POSTERIOR_MEDIAN_LINE_COLOR,
+                    dash='dash',
+                )
             )
+            if summary is not None:
+                fig.add_trace(
+                    self._posterior_reference_line_trace(
+                        x_value=summary.map_value,
+                        y_axis_range=y_axis_range,
+                        trace_name='Max posterior',
+                        color=POSTERIOR_POINT_ESTIMATE_LINE_COLOR,
+                        dash='dot',
+                    )
+                )
 
         fig.update_layout(
             title=f'Posterior distribution: {label}',
             xaxis_title=label,
             yaxis_title='Probability density',
+            legend={
+                'bgcolor': 'rgba(0, 0, 0, 0)',
+                'xanchor': 'right',
+                'x': 1.0,
+                'yanchor': 'top',
+                'y': 1.0,
+            },
         )
+        if y_axis_range is not None:
+            fig.update_yaxes(range=list(y_axis_range))
         return fig
 
     def _posterior_density_trace(
@@ -1175,12 +1211,52 @@ class Plotter(RendererBase):
             x=grid,
             y=density,
             mode='lines',
-            line={'color': 'rgb(99, 110, 250)', 'width': 2},
+            line={'color': POSTERIOR_DENSITY_LINE_COLOR, 'width': 2},
             fill='tozeroy',
-            fillcolor='rgba(99, 110, 250, 0.22)',
+            fillcolor=POSTERIOR_DENSITY_FILL_COLOR,
             name=trace_name,
             showlegend=False,
             hovertemplate='%{x:.4f}<br>density=%{y:.4f}<extra></extra>',
+        )
+
+    @staticmethod
+    def _posterior_density_axis_range(
+        density_values: np.ndarray,
+    ) -> tuple[float, float] | None:
+        """Return a padded y-axis range for posterior density plots."""
+        data = np.asarray(density_values, dtype=float)
+        data = data[np.isfinite(data)]
+        if data.size == 0:
+            return None
+
+        data_min = float(np.min(data))
+        data_max = float(np.max(data))
+        data_range = data_max - data_min
+        padding = 0.08 * data_range if data_range > 0 else max(abs(data_max), 1.0) * 0.05
+        if padding == 0:
+            padding = 1e-6
+        return data_min - padding, data_max + padding
+
+    @staticmethod
+    def _posterior_reference_line_trace(
+        *,
+        x_value: float,
+        y_axis_range: tuple[float, float],
+        trace_name: str,
+        color: str,
+        dash: str,
+    ) -> object:
+        """Return a named vertical reference line for posterior plots."""
+        go = __import__('plotly.graph_objects', fromlist=['Scatter'])
+
+        return go.Scatter(
+            x=[x_value, x_value],
+            y=[y_axis_range[0], y_axis_range[1]],
+            mode='lines',
+            line={'color': color, 'width': 2, 'dash': dash},
+            name=trace_name,
+            showlegend=True,
+            hovertemplate=f'{trace_name}: %{{x:.4f}}<extra></extra>',
         )
 
     @staticmethod
@@ -1587,56 +1663,70 @@ class Plotter(RendererBase):
 
         return posterior_samples, fit_results
 
-    def _plot_posterior_predictive_band(
+    def _plot_posterior_predictive_summary(
         self,
         *,
         expt_name: str,
         summary: object,
         y_meas: np.ndarray,
         axes_labels: list[str],
+        show_band: bool,
+        show_draws: bool,
     ) -> None:
-        """Render a posterior predictive band plot using Plotly."""
+        """Render posterior predictive summaries using Plotly."""
         go = __import__('plotly.graph_objects', fromlist=['Figure', 'Scatter'])
 
         fig = go.Figure()
-        fig.add_trace(
-            go.Scatter(
-                x=summary.x,
-                y=summary.lower_95,
-                mode='lines',
-                line={'color': 'rgba(0, 0, 0, 0)'},
-                hoverinfo='skip',
-                showlegend=False,
+        if show_band:
+            fig.add_trace(
+                go.Scatter(
+                    x=summary.x,
+                    y=summary.lower_95,
+                    mode='lines',
+                    line={'color': 'rgba(0, 0, 0, 0)'},
+                    hoverinfo='skip',
+                    showlegend=False,
+                )
             )
-        )
-        fig.add_trace(
-            go.Scatter(
-                x=summary.x,
-                y=summary.upper_95,
-                mode='lines',
-                line={'color': 'rgba(0, 0, 0, 0)'},
-                fill='tonexty',
-                fillcolor='rgba(214, 39, 40, 0.18)',
-                name='Posterior predictive 95% CI',
-                hoverinfo='skip',
+            fig.add_trace(
+                go.Scatter(
+                    x=summary.x,
+                    y=summary.upper_95,
+                    mode='lines',
+                    line={'color': 'rgba(0, 0, 0, 0)'},
+                    fill='tonexty',
+                    fillcolor='rgba(214, 39, 40, 0.18)',
+                    name='Posterior predictive 95% CI',
+                    hoverinfo='skip',
+                )
             )
-        )
+
+        if show_draws:
+            draws = getattr(summary, 'draws', None)
+            if draws is None:
+                log.warning('Posterior predictive draws are unavailable for plotting.')
+                return
+
+            draw_cap = min(len(draws), DEFAULT_POSTERIOR_PREDICTIVE_DRAW_PLOT_CAP)
+            for index in range(draw_cap):
+                fig.add_trace(
+                    go.Scatter(
+                        x=summary.x,
+                        y=draws[index],
+                        mode='lines',
+                        line={'color': POSTERIOR_DRAW_LINE_COLOR, 'width': 1},
+                        name='Posterior draw' if index == 0 else None,
+                        showlegend=index == 0,
+                    )
+                )
+
         fig.add_trace(
             go.Scatter(
                 x=summary.x,
                 y=summary.map_prediction,
                 mode='lines',
-                line={'color': 'rgb(214, 39, 40)', 'width': 2},
-                name='MAP prediction',
-            )
-        )
-        fig.add_trace(
-            go.Scatter(
-                x=summary.x,
-                y=y_meas,
-                mode='lines+markers',
-                line={'color': 'rgb(31, 119, 180)', 'width': 1.5},
-                name='Measured',
+                line={'color': POSTERIOR_POINT_ESTIMATE_LINE_COLOR, 'width': 2},
+                name='Max posterior prediction',
             )
         )
         fig.update_layout(
@@ -1644,47 +1734,6 @@ class Plotter(RendererBase):
             xaxis_title=axes_labels[0],
             yaxis_title=axes_labels[1],
         )
-        fig.show()
-
-    def _plot_posterior_predictive_draws(
-        self,
-        *,
-        expt_name: str,
-        summary: object,
-        y_meas: np.ndarray,
-        axes_labels: list[str],
-    ) -> None:
-        """Render posterior predictive draws using Plotly."""
-        go = __import__('plotly.graph_objects', fromlist=['Figure', 'Scatter'])
-
-        fig = go.Figure()
-        draws = getattr(summary, 'draws', None)
-        if draws is None:
-            log.warning('Posterior predictive draws are unavailable for plotting.')
-            return
-
-        draw_cap = min(len(draws), DEFAULT_POSTERIOR_PREDICTIVE_DRAW_PLOT_CAP)
-        for index in range(draw_cap):
-            fig.add_trace(
-                go.Scatter(
-                    x=summary.x,
-                    y=draws[index],
-                    mode='lines',
-                    line={'color': 'rgba(120, 120, 120, 0.18)', 'width': 1},
-                    name='Posterior draw' if index == 0 else None,
-                    showlegend=index == 0,
-                )
-            )
-
-        fig.add_trace(
-            go.Scatter(
-                x=summary.x,
-                y=summary.map_prediction,
-                mode='lines',
-                line={'color': 'rgb(214, 39, 40)', 'width': 2},
-                name='MAP prediction',
-            )
-        )
         fig.add_trace(
             go.Scatter(
                 x=summary.x,
@@ -1693,11 +1742,6 @@ class Plotter(RendererBase):
                 line={'color': 'rgb(31, 119, 180)', 'width': 1.5},
                 name='Measured',
             )
-        )
-        fig.update_layout(
-            title=f"Posterior predictive draws for experiment 🔬 '{expt_name}'",
-            xaxis_title=axes_labels[0],
-            yaxis_title=axes_labels[1],
         )
         fig.show()
 
@@ -2352,27 +2396,6 @@ class Plotter(RendererBase):
                 x_max=ctx['x_max'],
             )
 
-        predictive_summary = self._get_or_build_posterior_predictive_summary(
-            experiment=experiment,
-            expt_name=expt_name,
-            x_axis=ctx['x_axis'],
-        )
-        predictive_lower_95 = None
-        predictive_upper_95 = None
-        if predictive_summary is not None:
-            predictive_lower_95 = self._filtered_y_array(
-                predictive_summary.lower_95,
-                predictive_summary.x,
-                ctx['x_min'],
-                ctx['x_max'],
-            )
-            predictive_upper_95 = self._filtered_y_array(
-                predictive_summary.upper_95,
-                predictive_summary.x,
-                ctx['x_min'],
-                ctx['x_max'],
-            )
-
         plot_spec = PowderMeasVsCalcSpec(
             x=ctx['x_filtered'],
             y_meas=series.y_meas,
@@ -2385,8 +2408,6 @@ class Plotter(RendererBase):
             bragg_peaks_height_fraction=DEFAULT_BRAGG_ROW,
             height=self._composite_plot_height(),
             y_bkg=series.y_bkg,
-            predictive_lower_95=predictive_lower_95,
-            predictive_upper_95=predictive_upper_95,
         )
         self._backend.plot_powder_meas_vs_calc(plot_spec=plot_spec)
 

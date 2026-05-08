@@ -61,13 +61,17 @@ class MinimizerBase(ABC):
         """
         self.tracker.reset()
         self.tracker._verbosity = verbosity
-        self.tracker.start_tracking(minimizer_name)
+        self.tracker.start_tracking(minimizer_name, mode=self._tracking_mode())
         self.tracker.start_timer()
 
     def _stop_tracking(self) -> None:
         """Stop timer and finalize tracking."""
         self.tracker.stop_timer()
         self.tracker.finish_tracking()
+
+    def _tracking_mode(self) -> str:
+        """Return the tracker mode for the current minimizer."""
+        return 'fit'
 
     @abstractmethod
     def _prepare_solver_args(self, parameters: list[Any]) -> dict[str, Any]:
