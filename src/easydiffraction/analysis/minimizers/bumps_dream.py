@@ -62,12 +62,14 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
         """Forward sampler progress to the shared fit tracker."""
         step = int(history.step[0]) if history.step else 0
         generation = max(1, step)
-        reduced_chi2 = self._reduced_chi_square_from_nllf(float(history.value[0]))
+        nllf = float(history.value[0])
+        reduced_chi2 = self._reduced_chi_square_from_nllf(nllf)
         self._tracker.track_sampler_progress(
             iteration=generation,
             total_iterations=self._total_generations,
             phase=self._phase_name(generation),
             progress_percent=self._progress_percent(generation),
+            log_posterior=-nllf,
             reduced_chi2=reduced_chi2,
             elapsed_time=float(history.time[0]),
         )
@@ -78,12 +80,14 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
             return
         step = int(history.step[0]) if history.step else 0
         generation = max(1, step)
-        reduced_chi2 = self._reduced_chi_square_from_nllf(float(best['value']))
+        best_nllf = float(best['value'])
+        reduced_chi2 = self._reduced_chi_square_from_nllf(best_nllf)
         self._tracker.track_sampler_progress(
             iteration=generation,
             total_iterations=self._total_generations,
             phase=self._phase_name(generation),
             progress_percent=self._progress_percent(generation),
+            log_posterior=-best_nllf,
             reduced_chi2=reduced_chi2,
             elapsed_time=float(history.time[0]),
         )

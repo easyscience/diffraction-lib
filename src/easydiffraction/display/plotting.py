@@ -73,6 +73,8 @@ DEFAULT_POSTERIOR_PREDICTIVE_DRAWS = 200
 DEFAULT_POSTERIOR_PREDICTIVE_DRAW_PLOT_CAP = 50
 POSTERIOR_DENSITY_LINE_COLOR = 'rgb(99, 110, 250)'
 POSTERIOR_DENSITY_FILL_COLOR = 'rgba(99, 110, 250, 0.22)'
+POSTERIOR_INTERVAL_95_FILL_COLOR = 'rgba(140, 140, 140, 0.08)'
+POSTERIOR_INTERVAL_68_FILL_COLOR = 'rgba(140, 140, 140, 0.16)'
 POSTERIOR_MEDIAN_LINE_COLOR = 'rgb(140, 140, 140)'
 POSTERIOR_POINT_ESTIMATE_LINE_COLOR = 'rgb(214, 39, 40)'
 POSTERIOR_DRAW_LINE_COLOR = 'rgba(140, 140, 140, 0.18)'
@@ -670,6 +672,11 @@ class Plotter(RendererBase):
         self,
         expt_name: str,
         style: str = 'band+draws',
+        x_min: float | None = None,
+        x_max: float | None = None,
+        *,
+        show_residual: bool | None = None,
+        x: object | None = None,
     ) -> None:
         """Plot posterior predictive curves for a powder experiment.
 
@@ -681,6 +688,14 @@ class Plotter(RendererBase):
             ``'band'`` shows the 95% credible interval,
             ``'draws'`` shows sampled predictive curves, and
             ``'band+draws'`` shows both together.
+        x_min : float | None, default=None
+            Lower bound for the x-axis range.
+        x_max : float | None, default=None
+            Upper bound for the x-axis range.
+        show_residual : bool | None, default=None
+            Whether to include the residual row in the composite plot.
+        x : object | None, default=None
+            Optional explicit x-axis data to override stored values.
         """
         if style not in {'band', 'draws', 'band+draws'}:
             msg = "style must be 'band', 'draws', or 'band+draws'."
@@ -694,10 +709,28 @@ class Plotter(RendererBase):
             log.warning('Posterior predictive plots currently require the Plotly backend.')
             return
 
+        self._update_project_categories(expt_name)
         experiment = self._project.experiments[expt_name]
-        x_axis, _, sample_form, scattering_type, _ = self._resolve_x_axis(experiment.type, None)
+        x_axis, _, sample_form, scattering_type, _ = self._resolve_x_axis(experiment.type, x)
         if sample_form != SampleFormEnum.POWDER:
             log.warning('Posterior predictive plots currently support powder experiments only.')
+            return
+
+        plot_options = _MeasVsCalcPlotOptions(
+            x_min=x_min,
+            x_max=x_max,
+            show_residual=show_residual,
+            x=x,
+        )
+
+        if scattering_type == ScatteringTypeEnum.BRAGG:
+            self._plot_posterior_predictive_data(
+                experiment=experiment,
+                expt_name=expt_name,
+                plot_options=plot_options,
+                x_axis=x_axis,
+                style=style,
+            )
             return
 
         summary = self._get_or_build_posterior_predictive_summary(
@@ -1109,14 +1142,16 @@ class Plotter(RendererBase):
             fig.add_vrect(
                 x0=summary.interval_95[0],
                 x1=summary.interval_95[1],
-                fillcolor='rgba(99, 110, 250, 0.08)',
+                fillcolor=POSTERIOR_INTERVAL_95_FILL_COLOR,
                 line_width=0,
+                layer='below',
             )
             fig.add_vrect(
                 x0=summary.interval_68[0],
                 x1=summary.interval_68[1],
-                fillcolor='rgba(99, 110, 250, 0.18)',
+                fillcolor=POSTERIOR_INTERVAL_68_FILL_COLOR,
                 line_width=0,
+                layer='below',
             )
 
         density_trace = self._posterior_density_trace(
@@ -1723,6 +1758,15 @@ class Plotter(RendererBase):
         fig.add_trace(
             go.Scatter(
                 x=summary.x,
+                y=y_meas,
+                mode='lines+markers',
+                line={'color': 'rgb(31, 119, 180)', 'width': 1.5},
+                name='Measured',
+            )
+        )
+        fig.add_trace(
+            go.Scatter(
+                x=summary.x,
                 y=summary.map_prediction,
                 mode='lines',
                 line={'color': POSTERIOR_POINT_ESTIMATE_LINE_COLOR, 'width': 2},
@@ -1734,16 +1778,114 @@ class Plotter(RendererBase):
             xaxis_title=axes_labels[0],
             yaxis_title=axes_labels[1],
         )
-        fig.add_trace(
-            go.Scatter(
-                x=summary.x,
-                y=y_meas,
-                mode='lines+markers',
-                line={'color': 'rgb(31, 119, 180)', 'width': 1.5},
-                name='Measured',
-            )
-        )
         fig.show()
+
+    def _plot_posterior_predictive_data(
+        self,
+        *,
+        experiment: object,
+        expt_name: str,
+        plot_options: _MeasVsCalcPlotOptions,
+        x_axis: object,
+        style: str,
+    ) -> None:
+        """Render posterior predictive curves on the composite powder layout."""
+        pattern = intensity_category_for(experiment)
+        expt_type = experiment.type
+        ctx = self._prepare_powder_context(
+            pattern,
+            expt_name,
+            expt_type,
+            plot_options.x_min,
+            plot_options.x_max,
+            plot_options.x,
+        )
+        if ctx is None:
+            return
+
+        summary = self._get_or_build_posterior_predictive_summary(
+            experiment=experiment,
+            expt_name=expt_name,
+            x_axis=x_axis,
+        )
+        if summary is None:
+            return
+
+        y_meas = self._filtered_y_array(
+            pattern.intensity_meas,
+            ctx['x_array'],
+            ctx['x_min'],
+            ctx['x_max'],
+        )
+        y_bkg_raw = getattr(pattern, 'intensity_bkg', None)
+        y_bkg = (
+            self._filtered_y_array(y_bkg_raw, ctx['x_array'], ctx['x_min'], ctx['x_max'])
+            if y_bkg_raw is not None
+            else None
+        )
+        y_calc = self._filtered_y_array(summary.map_prediction, summary.x, ctx['x_min'], ctx['x_max'])
+        show_residual = True if plot_options.show_residual is None else plot_options.show_residual
+        y_resid = y_meas - y_calc if show_residual else None
+
+        predictive_lower_95 = None
+        predictive_upper_95 = None
+        if style in {'band', 'band+draws'}:
+            predictive_lower_95 = self._filtered_y_array(
+                summary.lower_95,
+                summary.x,
+                ctx['x_min'],
+                ctx['x_max'],
+            )
+            predictive_upper_95 = self._filtered_y_array(
+                summary.upper_95,
+                summary.x,
+                ctx['x_min'],
+                ctx['x_max'],
+            )
+
+        predictive_draws = None
+        if style in {'draws', 'band+draws'}:
+            draws = getattr(summary, 'draws', None)
+            if draws is None:
+                log.warning('Posterior predictive draws are unavailable for plotting.')
+                return
+            predictive_draws = np.asarray(
+                [
+                    self._filtered_y_array(draw, summary.x, ctx['x_min'], ctx['x_max'])
+                    for draw in draws
+                ],
+                dtype=float,
+            )
+
+        if np.asarray(ctx['x_filtered']).size == 0:
+            bragg_tick_sets = ()
+        else:
+            bragg_tick_sets = self._extract_bragg_tick_sets(
+                experiment=experiment,
+                expt_name=expt_name,
+                x_axis=ctx['x_axis'],
+                x_min=ctx['x_min'],
+                x_max=ctx['x_max'],
+            )
+
+        plot_spec = PowderMeasVsCalcSpec(
+            x=ctx['x_filtered'],
+            y_meas=y_meas,
+            y_calc=y_calc,
+            y_resid=y_resid,
+            bragg_tick_sets=bragg_tick_sets,
+            axes_labels=ctx['axes_labels'],
+            title=f"Posterior predictive for experiment 🔬 '{expt_name}'",
+            residual_height_fraction=DEFAULT_RESID_HEIGHT,
+            bragg_peaks_height_fraction=DEFAULT_BRAGG_ROW,
+            height=self._composite_plot_height(),
+            y_bkg=y_bkg,
+            predictive_lower_95=predictive_lower_95,
+            predictive_upper_95=predictive_upper_95,
+            predictive_draws=predictive_draws,
+            y_calc_name='Max posterior prediction',
+        )
+        self._backend.plot_powder_meas_vs_calc(plot_spec=plot_spec)
 
     @staticmethod
     def _resolve_posterior_parameter_names(

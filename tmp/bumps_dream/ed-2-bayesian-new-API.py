@@ -58,7 +58,7 @@ structure.atom_sites.create(
     fract_z=0,
     wyckoff_letter='a',
     adp_type='Biso',
-    adp_iso=0.5,
+    adp_iso=0.5151,
     occupancy=0.5,
 )
 structure.atom_sites.create(
@@ -69,7 +69,7 @@ structure.atom_sites.create(
     fract_z=0,
     wyckoff_letter='a',
     adp_type='Biso',
-    adp_iso=0.5,
+    adp_iso=0.5151,
     occupancy=0.5,
 )
 structure.atom_sites.create(
@@ -80,7 +80,7 @@ structure.atom_sites.create(
     fract_z=0.5,
     wyckoff_letter='b',
     adp_type='Biso',
-    adp_iso=0.5,
+    adp_iso=0.2190,
 )
 structure.atom_sites.create(
     label='O',
@@ -90,7 +90,7 @@ structure.atom_sites.create(
     fract_z=0.5,
     wyckoff_letter='c',
     adp_type='Biso',
-    adp_iso=0.5,
+    adp_iso=1.3916,
 )
 
 # %% [markdown]
@@ -130,7 +130,7 @@ experiment.background.create(id='5', x=165, y=174.2813)
 
 # %%
 experiment.excluded_regions.create(id='1', start=0, end=20)
-experiment.excluded_regions.create(id='2', start=160, end=180)
+experiment.excluded_regions.create(id='2', start=105, end=180)
 
 # %%
 experiment.linked_phases.create(id='lbco', scale=9.1351)
@@ -157,6 +157,9 @@ project.display.plotter.plot_param_correlations()
 
 # %%
 project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')
+
+# %%
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=100, x_max=102)
 
 # %% [markdown]
 # ## Step 5: Perform Bayesian Analysis
@@ -200,6 +203,9 @@ project.display.plotter.plot_param_correlations()
 project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')
 
 # %%
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=100, x_max=102)
+
+# %%
 project.display.plotter.plot_posterior_pairs()
 
 # %%
@@ -207,5 +213,4 @@ project.display.plotter.plot_param_distribution(structure.cell.length_a)
 project.display.plotter.plot_param_distribution(experiment.instrument.calib_twotheta_offset)
 
 # %%
-project.display.plotter.plot_posterior_predictive(expt_name='hrpt', style='band')
-project.display.plotter.plot_posterior_predictive(expt_name='hrpt', style='draws')
+project.display.plotter.plot_posterior_predictive(expt_name='hrpt')

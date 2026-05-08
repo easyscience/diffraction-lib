@@ -34,8 +34,8 @@ TRACKING_MODE_FIT = 'fit'
 TRACKING_MODE_SAMPLER = 'sampling'
 DEFAULT_HEADERS = ['iteration', 'χ²', 'change / status']
 DEFAULT_ALIGNMENTS = ['center', 'center', 'center']
-SAMPLER_HEADERS = ['iteration', 'progress', 'phase']
-SAMPLER_ALIGNMENTS = ['center', 'center', 'center']
+SAMPLER_HEADERS = ['iteration', 'progress', 'log posterior', 'phase']
+SAMPLER_ALIGNMENTS = ['center', 'center', 'center', 'center']
 
 
 class _TerminalLiveHandle:
@@ -112,6 +112,7 @@ class FitProgressTracker:
         self._sampler_total_iterations: int | None = None
         self._last_sampler_phase: str | None = None
         self._last_sampler_progress_percent: float | None = None
+        self._last_sampler_log_posterior: float | None = None
 
         self._df_rows: list[list[str]] = []
         self._display_handle: object | None = None
@@ -132,6 +133,7 @@ class FitProgressTracker:
         self._sampler_total_iterations = None
         self._last_sampler_phase = None
         self._last_sampler_progress_percent = None
+        self._last_sampler_log_posterior = None
 
     def track(
         self,
@@ -156,6 +158,16 @@ class FitProgressTracker:
         self._iteration += 1
 
         reduced_chi2 = calculate_reduced_chi_square(residuals, len(parameters))
+
+        if self._tracking_mode == TRACKING_MODE_SAMPLER:
+            if self._previous_chi2 is None:
+                self._previous_chi2 = reduced_chi2
+                self._best_chi2 = reduced_chi2
+            elif self._best_chi2 is None or reduced_chi2 < self._best_chi2:
+                self._best_chi2 = reduced_chi2
+
+            self._last_chi2 = reduced_chi2
+            return residuals
 
         row: list[str] = []
 
@@ -192,7 +204,7 @@ class FitProgressTracker:
             self.add_tracking_info(row)
 
         # Update best chi-square if better
-        if reduced_chi2 < self._best_chi2:
+        if self._best_chi2 is None or reduced_chi2 < self._best_chi2:
             self._best_chi2 = reduced_chi2
             self._best_iteration = self._iteration
 
@@ -209,6 +221,7 @@ class FitProgressTracker:
         total_iterations: int,
         phase: str,
         progress_percent: float,
+        log_posterior: float,
         reduced_chi2: float,
         elapsed_time: float,
     ) -> None:
@@ -224,6 +237,8 @@ class FitProgressTracker:
             Current sampler phase, e.g. ``'burn-in'`` or ``'sampling'``.
         progress_percent : float
             Completed fraction expressed in percent.
+        log_posterior : float
+            Current best log-posterior implied by the sampler state.
         reduced_chi2 : float
             Best reduced chi-square implied by the current best sample.
         elapsed_time : float
@@ -238,6 +253,7 @@ class FitProgressTracker:
         previous_phase = self._last_sampler_phase
         self._last_sampler_phase = phase
         self._last_sampler_progress_percent = clamped_progress
+        self._last_sampler_log_posterior = log_posterior
 
         row: list[str] = []
         if self._previous_chi2 is None or self._best_chi2 is None:
@@ -248,6 +264,7 @@ class FitProgressTracker:
             row = [
                 f'{clamped_iteration}/{self._sampler_total_iterations}',
                 f'{clamped_progress:.1f}%',
+                f'{log_posterior:.2f}',
                 phase,
             ]
         else:
@@ -267,6 +284,7 @@ class FitProgressTracker:
                 row = [
                     f'{clamped_iteration}/{self._sampler_total_iterations}',
                     f'{clamped_progress:.1f}%',
+                    f'{log_posterior:.2f}',
                     phase,
                 ]
                 self._last_progress_time = elapsed_time
@@ -317,14 +335,14 @@ class FitProgressTracker:
         mode : str, default='fit'
             Tracking mode for the run.
         """
+        self._tracking_mode = (
+            TRACKING_MODE_SAMPLER if mode == TRACKING_MODE_SAMPLER else TRACKING_MODE_FIT
+        )
+
         if self._verbosity is VerbosityEnum.SILENT:
             return
         if self._verbosity is VerbosityEnum.SHORT:
             return
-
-        self._tracking_mode = (
-            TRACKING_MODE_SAMPLER if mode == TRACKING_MODE_SAMPLER else TRACKING_MODE_FIT
-        )
 
         console.print(f"🚀 Starting fit process with '{minimizer_name}'...")
         if self._tracking_mode == TRACKING_MODE_SAMPLER:
@@ -383,6 +401,11 @@ class FitProgressTracker:
                     f'{min(self._last_iteration, self._sampler_total_iterations)}/'
                     f'{self._sampler_total_iterations}',
                     f'{final_progress:.1f}%',
+                    (
+                        f'{self._last_sampler_log_posterior:.2f}'
+                        if self._last_sampler_log_posterior is not None
+                        else ''
+                    ),
                     self._last_sampler_phase or 'sampling',
                 ]
                 if not self._df_rows or self._df_rows[-1] != row:

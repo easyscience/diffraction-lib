@@ -298,7 +298,9 @@ class BayesianFitResults(FitResults):
         if self.message:
             console.print(f'ℹ️ Status: {self.message}')
         console.print(f'🧪 Sampler: {self.sampler_name}')
-        console.print(f'🎯 Committed point estimate: {self.point_estimate_name}')
+        console.print(
+            f'🎯 Committed point estimate: {_format_point_estimate_name(self.point_estimate_name)}'
+        )
         console.print(f'🔁 Sampler completed: {self.sampler_completed}')
         console.print(f'⏱️ Fitting time: {_format_optional_float(self.fitting_time, suffix=" seconds")}')
         console.print(
@@ -494,6 +496,14 @@ def _format_sampler_settings(sampler_settings: dict[str, object]) -> str | None:
     return ', '.join(parts) if parts else None
 
 
+def _format_point_estimate_name(point_estimate_name: str) -> str:
+    """Return a user-facing label for the committed point estimate."""
+    normalized_name = point_estimate_name.strip().lower().replace('_', ' ')
+    if normalized_name == 'map':
+        return 'Max posterior'
+    return point_estimate_name.replace('_', ' ').title()
+
+
 def _format_convergence_summary(convergence_diagnostics: dict[str, object]) -> str | None:
     if not convergence_diagnostics:
         return None
@@ -527,7 +537,7 @@ def _render_committed_parameter_table(parameters: list[object]) -> None:
         'entry',
         'parameter',
         'start',
-        'map',
+        'max posterior',
         'uncertainty',
         'units',
         'change',

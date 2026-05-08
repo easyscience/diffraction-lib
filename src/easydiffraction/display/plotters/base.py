@@ -62,6 +62,8 @@ class PowderMeasVsCalcSpec:
     y_bkg: np.ndarray | None = None
     predictive_lower_95: np.ndarray | None = None
     predictive_upper_95: np.ndarray | None = None
+    predictive_draws: np.ndarray | None = None
+    y_calc_name: str | None = None
 
 
 class XAxisType(StrEnum):

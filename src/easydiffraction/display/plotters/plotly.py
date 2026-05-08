@@ -67,6 +67,8 @@ COMPOSITE_MARGIN_TOP = 40
 COMPOSITE_MARGIN_BOTTOM = 45
 PREDICTIVE_BAND_COLOR = 'rgba(214, 39, 40, 0.26)'
 PREDICTIVE_BAND_EDGE_COLOR = 'rgba(214, 39, 40, 0.45)'
+PREDICTIVE_DRAW_COLOR = 'rgba(140, 140, 140, 0.18)'
+PREDICTIVE_DRAW_PLOT_CAP = 50
 
 
 @dataclass(frozen=True)
@@ -463,12 +465,13 @@ class PlotlyPlotter(PlotterBase):
         """
         Return a shared hover template for composite powder traces.
         """
+        calc_label = plot_spec.y_calc_name or 'Icalc'
         if plot_spec.y_bkg is None:
             return (
                 'x: %{x:,.2f}<br>'
                 'Imeas: %{customdata[0]:,.2f}<br>'
-                'Icalc: %{customdata[1]:,.2f}<br>'
-                'Imeas - Icalc: %{customdata[2]:,.2f}'
+                f'{calc_label}: %{{customdata[1]:,.2f}}<br>'
+                f'Imeas - {calc_label}: %{{customdata[2]:,.2f}}'
                 '<extra></extra>'
             )
 
@@ -476,8 +479,8 @@ class PlotlyPlotter(PlotterBase):
             'x: %{x:,.2f}<br>'
             'Imeas: %{customdata[0]:,.2f}<br>'
             'Ibkg: %{customdata[1]:,.2f}<br>'
-            'Icalc: %{customdata[2]:,.2f}<br>'
-            'Imeas - Icalc: %{customdata[3]:,.2f}'
+            f'{calc_label}: %{{customdata[2]:,.2f}}<br>'
+            f'Imeas - {calc_label}: %{{customdata[3]:,.2f}}'
             '<extra></extra>'
         )
 
@@ -1172,6 +1175,18 @@ window.requestAnimationFrame(installLegendToggleButton);
             y_bkg = np.asarray(plot_spec.y_bkg)
             if y_bkg.size > 0:
                 main_series.append(y_bkg)
+        if plot_spec.predictive_lower_95 is not None:
+            lower_95 = np.asarray(plot_spec.predictive_lower_95)
+            if lower_95.size > 0:
+                main_series.append(lower_95)
+        if plot_spec.predictive_upper_95 is not None:
+            upper_95 = np.asarray(plot_spec.predictive_upper_95)
+            if upper_95.size > 0:
+                main_series.append(upper_95)
+        if plot_spec.predictive_draws is not None:
+            predictive_draws = np.asarray(plot_spec.predictive_draws)
+            if predictive_draws.ndim == 2 and predictive_draws.size > 0:
+                main_series.extend(predictive_draws)
 
         main_y_min = float(min(np.min(series) for series in main_series))
         main_y_max = float(max(np.max(series) for series in main_series))
@@ -1244,30 +1259,64 @@ window.requestAnimationFrame(installLegendToggleButton);
             fig.add_trace(lower_trace, row=1, col=1)
             fig.add_trace(upper_trace, row=1, col=1)
 
-        main_traces = (
-            (
-                ('meas', plot_spec.y_meas),
-                ('bkg', plot_spec.y_bkg),
-                ('calc', plot_spec.y_calc),
-            )
-            if plot_spec.y_bkg is not None
-            else (
-                ('meas', plot_spec.y_meas),
-                ('calc', plot_spec.y_calc),
-            )
+        fig.add_trace(
+            self._get_powder_trace(
+                plot_spec.x,
+                plot_spec.y_meas,
+                'meas',
+                customdata=hover_data,
+                hovertemplate=hover_template,
+            ),
+            row=1,
+            col=1,
         )
-        for label, y_values in main_traces:
+
+        if plot_spec.y_bkg is not None:
             fig.add_trace(
                 self._get_powder_trace(
                     plot_spec.x,
-                    y_values,
-                    label,
+                    plot_spec.y_bkg,
+                    'bkg',
                     customdata=hover_data,
                     hovertemplate=hover_template,
                 ),
                 row=1,
                 col=1,
             )
+
+        if plot_spec.predictive_draws is not None:
+            predictive_draws = np.asarray(plot_spec.predictive_draws)
+            if predictive_draws.ndim == 2 and predictive_draws.size > 0:
+                draw_cap = min(predictive_draws.shape[0], PREDICTIVE_DRAW_PLOT_CAP)
+                for index in range(draw_cap):
+                    fig.add_trace(
+                        go.Scatter(
+                            x=plot_spec.x,
+                            y=predictive_draws[index],
+                            mode='lines',
+                            line={'color': PREDICTIVE_DRAW_COLOR, 'width': 1},
+                            name='Posterior draw' if index == 0 else None,
+                            showlegend=index == 0,
+                            hovertemplate=(
+                                'Posterior draw<br>'
+                                'x: %{x:,.2f}<br>'
+                                'y: %{y:,.2f}<extra></extra>'
+                            ),
+                        ),
+                        row=1,
+                        col=1,
+                    )
+
+        calc_trace = self._get_powder_trace(
+            plot_spec.x,
+            plot_spec.y_calc,
+            'calc',
+            customdata=hover_data,
+            hovertemplate=hover_template,
+        )
+        if plot_spec.y_calc_name is not None:
+            calc_trace.name = plot_spec.y_calc_name
+        fig.add_trace(calc_trace, row=1, col=1)
 
         if layout.bragg_row is not None:
             for idx, tick_set in enumerate(plot_spec.bragg_tick_sets):
