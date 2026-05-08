@@ -81,13 +81,22 @@ POSTERIOR_MEDIAN_LINE_COLOR = 'rgb(80, 80, 80)'
 POSTERIOR_POINT_ESTIMATE_LINE_COLOR = 'rgb(214, 39, 40)'
 POSTERIOR_DRAW_LINE_COLOR = 'rgba(140, 140, 140, 0.18)'
 POSTERIOR_SCATTER_MARKER_COLOR = 'rgba(140, 140, 140, 0.20)'
-POSTERIOR_CONTOUR_LINE_COLOR = 'rgba(58, 86, 224, 0.96)'
 POSTERIOR_CONTOUR_FILL_COLORSCALE = [
     [0.0, 'rgba(224, 233, 255, 0.62)'],
     [0.35, 'rgba(183, 203, 255, 0.70)'],
     [0.60, 'rgba(138, 169, 252, 0.78)'],
     [0.82, 'rgba(96, 131, 242, 0.84)'],
     [1.0, 'rgba(58, 86, 224, 0.90)'],
+]
+POSTERIOR_CONTOUR_LINE_COLORSCALE = [
+    [0.0, 'rgba(183, 203, 255, 0.94)'],
+    [0.35, 'rgba(183, 203, 255, 0.94)'],
+    [0.35, 'rgba(138, 169, 252, 0.95)'],
+    [0.60, 'rgba(138, 169, 252, 0.95)'],
+    [0.60, 'rgba(96, 131, 242, 0.96)'],
+    [0.82, 'rgba(96, 131, 242, 0.96)'],
+    [0.82, 'rgba(58, 86, 224, 0.98)'],
+    [1.0, 'rgba(58, 86, 224, 0.98)'],
 ]
 PAIR_PLOT_CELL_SIZE_PIXELS = 190
 PAIR_PLOT_MIN_SIZE_PIXELS = 680
@@ -1045,14 +1054,6 @@ class Plotter(RendererBase):
                         x_values=x_density_values,
                         y_values=y_density_values,
                     )
-                    if contour_traces is not None:
-                        contour_traces[0].name = 'Posterior contours'
-                        contour_traces[0].legendgroup = 'posterior-contours'
-                        contour_traces[0].showlegend = show_contour_legend
-                        contour_traces[1].legendgroup = 'posterior-contours'
-                        contour_traces[1].showlegend = False
-                        fig.add_trace(contour_traces[0], row=row, col=col)
-                        show_contour_legend = False
                     fig.add_trace(
                         go.Scattergl(
                             x=x_scatter_values,
@@ -1075,7 +1076,14 @@ class Plotter(RendererBase):
                     )
                     show_scatter_legend = False
                     if contour_traces is not None:
+                        contour_traces[0].name = 'Posterior contours'
+                        contour_traces[0].legendgroup = 'posterior-contours'
+                        contour_traces[0].showlegend = show_contour_legend
+                        contour_traces[1].legendgroup = 'posterior-contours'
+                        contour_traces[1].showlegend = False
+                        fig.add_trace(contour_traces[0], row=row, col=col)
                         fig.add_trace(contour_traces[1], row=row, col=col)
+                        show_contour_legend = False
 
                 fig.update_xaxes(
                     showline=True,
@@ -1184,7 +1192,8 @@ class Plotter(RendererBase):
                 'end': contour_end,
                 'size': contour_size,
             },
-            line={'color': POSTERIOR_CONTOUR_LINE_COLOR, 'width': 1.4},
+            colorscale=POSTERIOR_CONTOUR_LINE_COLORSCALE,
+            line={'width': 0.9},
             hoverinfo='skip',
             showscale=False,
             showlegend=False,
