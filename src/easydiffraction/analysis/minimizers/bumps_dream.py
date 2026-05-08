@@ -357,6 +357,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         dict[str, object]
             BUMPS parameters plus EasyDiffraction parameter metadata.
         """
+        self._validate_sampled_parameter_bounds(parameters)
         solver_args = super()._prepare_solver_args(parameters)
         solver_args['parameter_names'] = [parameter.unique_name for parameter in parameters]
         solver_args['parameter_display_names'] = [
@@ -365,6 +366,80 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         solver_args['parameter_uids'] = [parameter._minimizer_uid for parameter in parameters]
         solver_args['starting_uncertainties'] = [parameter.uncertainty for parameter in parameters]
         return solver_args
+
+    @classmethod
+    def _validate_sampled_parameter_bounds(
+        cls,
+        parameters: list[object],
+    ) -> None:
+        """
+        Validate finite ordered bounds for sampled DREAM parameters.
+        """
+        issues: list[str] = []
+        for parameter in parameters:
+            parameter_name = cls._parameter_name_for_bound_validation(parameter)
+            parameter_issues = cls._parameter_bound_issues(parameter)
+            if parameter_issues:
+                issues.append(f'- {parameter_name}: {"; ".join(parameter_issues)}')
+
+        if not issues:
+            return
+
+        message = 'DREAM requires finite valid bounds for every sampled parameter:\n' + '\n'.join(
+            issues
+        )
+        raise ValueError(message)
+
+    @staticmethod
+    def _parameter_name_for_bound_validation(parameter: object) -> str:
+        """Return the user-facing name for DREAM bound validation."""
+        unique_name = getattr(parameter, 'unique_name', None)
+        if unique_name:
+            return str(unique_name)
+
+        parameter_name = getattr(parameter, 'name', None)
+        if parameter_name:
+            return str(parameter_name)
+        return '<unknown parameter>'
+
+    @classmethod
+    def _parameter_bound_issues(
+        cls,
+        parameter: object,
+    ) -> list[str]:
+        """Return bound-validation issues for one sampled parameter."""
+        lower_bound = getattr(parameter, 'fit_min', None)
+        upper_bound = getattr(parameter, 'fit_max', None)
+        value = getattr(parameter, 'value', None)
+        issues: list[str] = []
+
+        lower_is_finite = cls._is_finite_bound_value(lower_bound)
+        upper_is_finite = cls._is_finite_bound_value(upper_bound)
+        value_is_finite = cls._is_finite_bound_value(value)
+
+        if not lower_is_finite:
+            issues.append(f'fit_min must be finite (got {lower_bound!r})')
+        if not upper_is_finite:
+            issues.append(f'fit_max must be finite (got {upper_bound!r})')
+
+        bounds_are_ordered = lower_is_finite and upper_is_finite and lower_bound < upper_bound
+        if lower_is_finite and upper_is_finite and not bounds_are_ordered:
+            issues.append(f'fit_min ({lower_bound}) must be smaller than fit_max ({upper_bound})')
+
+        if not value_is_finite:
+            issues.append(f'starting value must be finite (got {value!r})')
+        elif bounds_are_ordered and not lower_bound <= value <= upper_bound:
+            issues.append(f'starting value {value} is outside [{lower_bound}, {upper_bound}]')
+
+        return issues
+
+    @staticmethod
+    def _is_finite_bound_value(value: object) -> bool:
+        """Return whether a bound-validation value is finite."""
+        try:
+            return bool(np.isfinite(value))
+        except TypeError:
+            return False
 
     @staticmethod
     def _validated_positive_integer(name: str, value: float) -> int:

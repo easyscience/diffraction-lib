@@ -7,9 +7,9 @@ branch:** `feature/bayesian-analysis` **Design doc:**
 ## Context
 
 This plan follows `.github/copilot-instructions.md`. The instructions
-refer to `docs/architecture/architecture.md`, but this checkout does not
-contain that file. The matching living architecture document used for
-this plan is `docs/dev/architecture.md`.
+refer to `docs/dev/architecture.md`, but this checkout does not contain
+that file. The matching living architecture document used for this plan
+is `docs/dev/architecture.md`.
 
 Relevant current seams:
 

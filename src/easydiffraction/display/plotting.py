@@ -741,8 +741,9 @@ class Plotter(RendererBase):
         Parameters
         ----------
         param : object
-            Parameter descriptor whose posterior distribution should be
-            plotted.
+            Parameter descriptor or string identifier selecting the
+            posterior to plot. Strings may be unique names or
+            user-facing labels.
         """
         plot = self._build_param_distribution_plot(param)
         if plot is None:
@@ -2700,13 +2701,128 @@ class Plotter(RendererBase):
         if parameters is None:
             return list(available_names)
 
-        requested_names = [getattr(parameter, 'unique_name', None) for parameter in parameters]
-        missing_names = [name for name in requested_names if name not in available_names]
-        if missing_names:
-            missing = ', '.join(str(name) for name in missing_names)
-            log.warning(f'Posterior samples do not contain the selected parameters: {missing}')
+        resolved_names: list[str] = []
+        for parameter in parameters:
+            resolved_name = Plotter._resolve_posterior_parameter_name(
+                fit_results=fit_results,
+                available_names=list(available_names),
+                parameter=parameter,
+            )
+            if resolved_name is None:
+                return None
+            resolved_names.append(resolved_name)
+        return resolved_names
+
+    @staticmethod
+    def _resolve_posterior_parameter_name(
+        *,
+        fit_results: object,
+        available_names: list[str],
+        parameter: object,
+    ) -> str | None:
+        """
+        Resolve one posterior parameter selection into a unique name.
+        """
+        if isinstance(parameter, str):
+            return Plotter._resolve_posterior_parameter_name_from_string(
+                fit_results=fit_results,
+                available_names=available_names,
+                selection=parameter,
+            )
+
+        unique_name = getattr(parameter, 'unique_name', None)
+        if unique_name is None:
+            log.warning(
+                'Posterior parameter selection expects parameter objects '
+                'or strings matching a unique name or label.'
+            )
             return None
-        return [str(name) for name in requested_names if name is not None]
+        if unique_name not in available_names:
+            log.warning(f'Posterior samples do not contain the selected parameter: {unique_name}')
+            return None
+        return str(unique_name)
+
+    @staticmethod
+    def _resolve_posterior_parameter_name_from_string(
+        *,
+        fit_results: object,
+        available_names: list[str],
+        selection: str,
+    ) -> str | None:
+        """Resolve a string posterior parameter selection."""
+        stripped_selection = selection.strip()
+        if not stripped_selection:
+            log.warning('Posterior parameter selection cannot use an empty string.')
+            return None
+        if stripped_selection in available_names:
+            return stripped_selection
+
+        selection_candidates = Plotter._posterior_parameter_selection_candidates(
+            fit_results=fit_results,
+            available_names=available_names,
+        )
+        matching_names = [
+            unique_name
+            for unique_name, candidates in selection_candidates.items()
+            if stripped_selection in candidates
+        ]
+        if len(matching_names) == 1:
+            return matching_names[0]
+        if len(matching_names) > 1:
+            matches = ', '.join(matching_names)
+            log.warning(
+                f"Posterior parameter selection '{stripped_selection}' is ambiguous. "
+                f'Matches: {matches}'
+            )
+            return None
+
+        log.warning(
+            f'Posterior samples do not contain the selected parameter or label: '
+            f'{stripped_selection}'
+        )
+        return None
+
+    @staticmethod
+    def _posterior_parameter_selection_candidates(
+        *,
+        fit_results: object,
+        available_names: list[str],
+    ) -> dict[str, set[str]]:
+        """
+        Return string identifiers accepted for posterior selection.
+        """
+        parameters_by_name = {
+            getattr(parameter, 'unique_name', ''): parameter
+            for parameter in fit_results.parameters
+        }
+        summaries_by_name = Plotter._posterior_summary_by_name(fit_results)
+        plot_labels = dict(
+            zip(
+                available_names,
+                Plotter._posterior_plot_labels(fit_results, available_names),
+                strict=True,
+            )
+        )
+        candidates_by_name: dict[str, set[str]] = {}
+        for unique_name in available_names:
+            candidates = {unique_name}
+            parameter = parameters_by_name.get(unique_name)
+            if parameter is not None:
+                parameter_name = getattr(parameter, 'name', None)
+                if isinstance(parameter_name, str) and parameter_name.strip():
+                    candidates.add(parameter_name.strip())
+
+            summary = summaries_by_name.get(unique_name)
+            summary_label = getattr(summary, 'display_name', None)
+            if isinstance(summary_label, str) and summary_label.strip():
+                candidates.add(summary_label.strip())
+
+            plot_label = plot_labels.get(unique_name)
+            if isinstance(plot_label, str) and plot_label.strip():
+                candidates.add(plot_label.strip())
+
+            candidates_by_name[unique_name] = candidates
+        return candidates_by_name
 
     @staticmethod
     def _selected_posterior_samples(

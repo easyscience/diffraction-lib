@@ -362,6 +362,78 @@ def test_build_param_distribution_plot_returns_plotly_figure():
     }
 
 
+def test_build_param_distribution_plot_accepts_unique_name_string():
+    plotter, _, _ = _make_bayesian_plotter_fixture()
+
+    figure = plotter._build_param_distribution_plot('length_a')
+
+    assert figure.layout.title.text == 'Posterior distribution: length_a'
+
+
+def test_build_param_distribution_plot_accepts_user_facing_label_string():
+    plotter, fit_results, _ = _make_bayesian_plotter_fixture()
+    fit_results.posterior_parameter_summaries[0].display_name = 'Cell a'
+
+    figure = plotter._build_param_distribution_plot('Cell a')
+
+    assert figure.layout.title.text == 'Posterior distribution: length_a'
+
+
+def test_resolve_posterior_parameter_names_warns_on_ambiguous_label(monkeypatch):
+    from easydiffraction.analysis.fit_helpers.bayesian import PosteriorParameterSummary
+    from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
+    from easydiffraction.display.plotting import Plotter
+
+    posterior_samples = PosteriorSamples(
+        parameter_names=['phase_a.length_a', 'phase_b.length_a'],
+        parameter_samples=np.ones((2, 2, 2), dtype=float),
+    )
+    fit_results = SimpleNamespace(
+        posterior_samples=posterior_samples,
+        posterior_parameter_summaries=[
+            PosteriorParameterSummary(
+                unique_name='phase_a.length_a',
+                display_name='length_a',
+                map_value=1.0,
+                median=1.0,
+                standard_deviation=0.1,
+                interval_68=(0.9, 1.1),
+                interval_95=(0.8, 1.2),
+            ),
+            PosteriorParameterSummary(
+                unique_name='phase_b.length_a',
+                display_name='length_a',
+                map_value=2.0,
+                median=2.0,
+                standard_deviation=0.1,
+                interval_68=(1.9, 2.1),
+                interval_95=(1.8, 2.2),
+            ),
+        ],
+        parameters=[
+            SimpleNamespace(unique_name='phase_a.length_a', name='length_a'),
+            SimpleNamespace(unique_name='phase_b.length_a', name='length_a'),
+        ],
+    )
+    warning_messages: list[str] = []
+
+    monkeypatch.setattr(
+        'easydiffraction.display.plotting.log.warning',
+        lambda message: warning_messages.append(message),
+    )
+
+    result = Plotter._resolve_posterior_parameter_names(
+        fit_results=fit_results,
+        parameters=['length_a'],
+    )
+
+    assert result is None
+    assert warning_messages
+    assert 'ambiguous' in warning_messages[0]
+    assert 'phase_a.length_a' in warning_messages[0]
+    assert 'phase_b.length_a' in warning_messages[0]
+
+
 def test_build_posterior_predictive_summary_restores_parameter_state(monkeypatch):
     from easydiffraction.analysis.fit_helpers.bayesian import PosteriorPredictiveSummary
     from easydiffraction.display.plotting import Plotter

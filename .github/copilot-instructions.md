@@ -146,13 +146,12 @@ Non-trivial changes use a two-phase workflow:
 
 Notes:
 
-- `pixi run fix` regenerates `docs/architecture/package-structure-*.md`
+- `pixi run fix` regenerates `docs/dev/package-structure-*.md`
   automatically — never edit those by hand. Don't review auto-fixes;
   accept and move on. Then `pixi run check` until clean.
 - Open issues / design questions / planned improvements live in
-  `docs/architecture/issues_open.md` (priority-ordered). On resolution,
-  move to `docs/architecture/issues_closed.md` and update
-  `architecture.md` if affected.
+  `docs/dev/issues_open.md` (priority-ordered). On resolution, move to
+  `docs/dev/issues_closed.md` and update `architecture.md` if affected.
 
 ### Planning
 

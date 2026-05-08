@@ -14,12 +14,22 @@ import pytest
 class FakeParam:
     """Minimal stand-in for an EasyDiffraction parameter."""
 
-    def __init__(self, uid: str, value: float, uncertainty: float | None = None) -> None:
+    def __init__(
+        self,
+        uid: str,
+        value: float,
+        uncertainty: float | None = None,
+        *,
+        fit_min: float | None = 0.0,
+        fit_max: float | None = 1.0,
+    ) -> None:
         self._minimizer_uid = uid
         self.unique_name = uid
         self.name = uid.upper()
         self.value = value
         self.uncertainty = uncertainty
+        self.fit_min = fit_min
+        self.fit_max = fit_max
 
     def _set_value_from_minimizer(self, value: float) -> None:
         self.value = value
@@ -113,6 +123,46 @@ def test_sampler_settings_include_init_and_sample_count():
     assert settings['random_seed'] == 7
     assert settings['init'] == 'lhs'
     assert settings['samples'] == 120
+
+
+@pytest.mark.parametrize(
+    ('fit_min', 'fit_max', 'value', 'message'),
+    [
+        (None, 1.0, 0.5, r'fit_min must be finite'),
+        (0.0, np.inf, 0.5, r'fit_max must be finite'),
+        (2.0, 1.0, 1.5, r'fit_min \(2\.0\) must be smaller than fit_max \(1\.0\)'),
+        (0.0, 1.0, 2.0, r'starting value 2\.0 is outside \[0\.0, 1\.0\]'),
+    ],
+)
+def test_prepare_solver_args_rejects_invalid_dream_bounds(
+    fit_min,
+    fit_max,
+    value,
+    message,
+):
+    from easydiffraction.analysis.minimizers.bumps_dream import BumpsDreamMinimizer
+
+    minimizer = BumpsDreamMinimizer()
+    parameter = FakeParam('alpha', value, fit_min=fit_min, fit_max=fit_max)
+
+    with pytest.raises(ValueError, match=message):
+        minimizer._prepare_solver_args([parameter])
+
+
+def test_prepare_solver_args_lists_all_offending_dream_parameters():
+    from easydiffraction.analysis.minimizers.bumps_dream import BumpsDreamMinimizer
+
+    minimizer = BumpsDreamMinimizer()
+    parameters = [
+        FakeParam('alpha', 2.0, fit_min=0.0, fit_max=1.0),
+        FakeParam('beta', 0.5, fit_min=None, fit_max=1.0),
+    ]
+
+    with pytest.raises(
+        ValueError,
+        match=r'alpha: .*outside \[0\.0, 1\.0\][\s\S]*beta: .*fit_min',
+    ):
+        minimizer._prepare_solver_args(parameters)
 
 
 def test_sync_result_to_parameters_restores_starting_values_on_failure():

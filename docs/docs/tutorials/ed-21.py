@@ -269,8 +269,8 @@ project.analysis.fit.show_minimizer_types()
 project.analysis.fit.minimizer_type = 'bumps (dream)'
 
 # %%
-project.analysis.fit.minimizer.steps = 200  # 1000
-project.analysis.fit.minimizer.burn = 40  # 200
+project.analysis.fit.minimizer.steps = 2000  # 1000
+project.analysis.fit.minimizer.burn = 400  # 200
 project.analysis.fit.minimizer.thin = 1
 project.analysis.fit.minimizer.pop = 4
 
