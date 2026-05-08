@@ -103,7 +103,6 @@ PAIR_PLOT_MIN_SIZE_PIXELS = 680
 PAIR_PLOT_MARGIN_PIXELS = 120
 PAIR_PLOT_SUBPLOT_SPACING = 0.015
 PAIR_PLOT_MAJOR_TICKS = 3
-POSTERIOR_PAIR_AXIS_LINE_COLOR = 'rgba(112, 129, 163, 0.88)'
 POSTERIOR_PAIR_AXIS_LINE_WIDTH = 1.2
 POSTERIOR_PAIR_Y_TITLE_XSHIFT_PIXELS = 56
 
@@ -994,6 +993,7 @@ class Plotter(RendererBase):
         show_density_legend = True
         show_scatter_legend = True
         show_contour_legend = True
+        axis_frame_color = self._plot_axis_frame_color()
 
         n_parameters = len(parameter_names)
         subplot_title_annotations: list[dict[str, object]] = []
@@ -1113,7 +1113,7 @@ class Plotter(RendererBase):
                     mirror=True,
                     zeroline=False,
                     layer='above traces',
-                    linecolor=POSTERIOR_PAIR_AXIS_LINE_COLOR,
+                    linecolor=axis_frame_color,
                     linewidth=POSTERIOR_PAIR_AXIS_LINE_WIDTH,
                     nticks=PAIR_PLOT_MAJOR_TICKS,
                     tickformat=',.6~g',
@@ -1126,7 +1126,7 @@ class Plotter(RendererBase):
                     mirror=True,
                     zeroline=False,
                     layer='above traces',
-                    linecolor=POSTERIOR_PAIR_AXIS_LINE_COLOR,
+                    linecolor=axis_frame_color,
                     linewidth=POSTERIOR_PAIR_AXIS_LINE_WIDTH,
                     nticks=PAIR_PLOT_MAJOR_TICKS,
                     tickformat=',.6~g',
@@ -1165,7 +1165,7 @@ class Plotter(RendererBase):
                         'y0': subplot.yaxis.domain[0],
                         'y1': subplot.yaxis.domain[1],
                         'line': {
-                            'color': POSTERIOR_PAIR_AXIS_LINE_COLOR,
+                            'color': axis_frame_color,
                             'width': POSTERIOR_PAIR_AXIS_LINE_WIDTH,
                         },
                         'fillcolor': 'rgba(0, 0, 0, 0)',
@@ -1194,6 +1194,13 @@ class Plotter(RendererBase):
             },
         )
         return fig
+
+    def _plot_axis_frame_color(self) -> str:
+        """Return the shared axis-frame color for Plotly-backed plots."""
+        axis_frame_color = getattr(self._backend, '_axis_frame_color', None)
+        if callable(axis_frame_color):
+            return axis_frame_color()
+        return PlotlyPlotter._axis_frame_color()
 
     def _posterior_contour_traces(
         self,

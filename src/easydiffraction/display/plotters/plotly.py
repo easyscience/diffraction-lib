@@ -162,6 +162,11 @@ class PlotlyPlotter(PlotterBase):
         return 'rgba(120, 140, 160, 0.28)'
 
     @classmethod
+    def _axis_frame_color(cls) -> str:
+        """Return the shared axis-frame color for Plotly figures."""
+        return cls._correlation_grid_color()
+
+    @classmethod
     def _legend_background_color(cls) -> str:
         """Return a half-transparent legend background color."""
         if cls._is_dark_mode():
@@ -916,12 +921,14 @@ window.requestAnimationFrame(installLegendToggleButton);
             xaxis={
                 'title_text': axes_labels[0],
                 'showline': True,
+                'linecolor': cls._axis_frame_color(),
                 'mirror': True,
                 'zeroline': False,
             },
             yaxis={
                 'title_text': axes_labels[1],
                 'showline': True,
+                'linecolor': cls._axis_frame_color(),
                 'mirror': True,
                 'zeroline': False,
             },
@@ -1367,6 +1374,7 @@ window.requestAnimationFrame(installLegendToggleButton);
             x_axis_kwargs = {
                 'matches': 'x',
                 'showline': True,
+                'linecolor': self._axis_frame_color(),
                 'mirror': True,
                 'zeroline': False,
                 'tickformat': ',.6~g',
@@ -1377,6 +1385,7 @@ window.requestAnimationFrame(installLegendToggleButton);
             fig.update_xaxes(row=row_idx, col=1, **x_axis_kwargs)
             fig.update_yaxes(
                 showline=True,
+                linecolor=self._axis_frame_color(),
                 mirror=True,
                 zeroline=False,
                 tickformat=',.6~g',
