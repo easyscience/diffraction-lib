@@ -82,6 +82,17 @@ POSTERIOR_POINT_ESTIMATE_LINE_COLOR = 'rgb(214, 39, 40)'
 POSTERIOR_DRAW_LINE_COLOR = 'rgba(140, 140, 140, 0.18)'
 POSTERIOR_SCATTER_MARKER_COLOR = 'rgba(140, 140, 140, 0.20)'
 POSTERIOR_CONTOUR_LINE_COLOR = 'rgba(65, 85, 225, 0.85)'
+POSTERIOR_CONTOUR_FILL_COLORSCALE = [
+    [0.0, 'rgba(68, 1, 84, 0.00)'],
+    [0.35, 'rgba(68, 1, 84, 0.00)'],
+    [0.58, 'rgba(59, 82, 139, 0.16)'],
+    [0.75, 'rgba(33, 145, 140, 0.28)'],
+    [0.88, 'rgba(94, 201, 98, 0.38)'],
+    [1.0, 'rgba(253, 231, 37, 0.48)'],
+]
+PAIR_PLOT_CELL_SIZE_PIXELS = 190
+PAIR_PLOT_MIN_SIZE_PIXELS = 680
+PAIR_PLOT_MARGIN_PIXELS = 120
 
 
 @dataclass(frozen=True)
@@ -967,6 +978,9 @@ class Plotter(RendererBase):
             return None
         scatter_samples = self._thin_posterior_samples(density_samples, max_points=1500)
         labels = self._posterior_plot_labels(fit_results, parameter_names)
+        show_density_legend = True
+        show_scatter_legend = True
+        show_contour_legend = True
 
         n_parameters = len(parameter_names)
         fig = make_subplots(
@@ -1012,7 +1026,11 @@ class Plotter(RendererBase):
                             col=col,
                         )
                     else:
+                        density_trace.name = 'Marginal density'
+                        density_trace.legendgroup = 'posterior-marginal-density'
+                        density_trace.showlegend = show_density_legend
                         fig.add_trace(density_trace, row=row, col=col)
+                        show_density_legend = False
                         diagonal_y_axis_range = self._posterior_density_axis_range(
                             np.asarray(density_trace.y)
                         )
@@ -1027,7 +1045,13 @@ class Plotter(RendererBase):
                         y_values=y_density_values,
                     )
                     if contour_traces is not None:
+                        contour_traces[0].name = 'Posterior contours'
+                        contour_traces[0].legendgroup = 'posterior-contours'
+                        contour_traces[0].showlegend = show_contour_legend
+                        contour_traces[1].legendgroup = 'posterior-contours'
+                        contour_traces[1].showlegend = False
                         fig.add_trace(contour_traces[0], row=row, col=col)
+                        show_contour_legend = False
                     fig.add_trace(
                         go.Scattergl(
                             x=x_scatter_values,
@@ -1037,7 +1061,9 @@ class Plotter(RendererBase):
                                 'color': POSTERIOR_SCATTER_MARKER_COLOR,
                                 'size': 3,
                             },
-                            showlegend=False,
+                            name='Posterior samples',
+                            legendgroup='posterior-samples',
+                            showlegend=show_scatter_legend,
                             hovertemplate=(
                                 f'{labels[col_index]}: %{{x:.4f}}<br>'
                                 f'{labels[row_index]}: %{{y:.4f}}<extra></extra>'
@@ -1046,9 +1072,28 @@ class Plotter(RendererBase):
                         row=row,
                         col=col,
                     )
+                    show_scatter_legend = False
                     if contour_traces is not None:
                         fig.add_trace(contour_traces[1], row=row, col=col)
 
+                fig.update_xaxes(
+                    showline=True,
+                    mirror=True,
+                    zeroline=False,
+                    tickformat=',.6~g',
+                    separatethousands=True,
+                    row=row,
+                    col=col,
+                )
+                fig.update_yaxes(
+                    showline=True,
+                    mirror=True,
+                    zeroline=False,
+                    tickformat=',.6~g',
+                    separatethousands=True,
+                    row=row,
+                    col=col,
+                )
                 fig.update_xaxes(showticklabels=(row_index == n_parameters - 1), row=row, col=col)
                 fig.update_yaxes(showticklabels=(col_index == 0), row=row, col=col)
                 if row_index == n_parameters - 1:
@@ -1056,9 +1101,23 @@ class Plotter(RendererBase):
                 if col_index == 0 and row_index > 0:
                     fig.update_yaxes(title_text=labels[row_index], row=row, col=col)
 
+        figure_size = max(
+            PAIR_PLOT_MIN_SIZE_PIXELS,
+            PAIR_PLOT_CELL_SIZE_PIXELS * n_parameters + PAIR_PLOT_MARGIN_PIXELS,
+        )
         fig.update_layout(
             title='Posterior pair plot',
             bargap=0.05,
+            width=figure_size,
+            height=figure_size,
+            legend={
+                'bgcolor': 'rgba(0, 0, 0, 0)',
+                'xanchor': 'right',
+                'x': 1.0,
+                'yanchor': 'top',
+                'y': 1.0,
+                'groupclick': 'togglegroup',
+            },
         )
         return fig
 
@@ -1106,13 +1165,7 @@ class Plotter(RendererBase):
                 'end': contour_end,
                 'size': contour_size,
             },
-            colorscale=[
-                [0.0, 'rgba(99, 110, 250, 0.00)'],
-                [0.35, 'rgba(99, 110, 250, 0.00)'],
-                [0.60, 'rgba(99, 110, 250, 0.12)'],
-                [0.80, 'rgba(99, 110, 250, 0.22)'],
-                [1.0, 'rgba(99, 110, 250, 0.34)'],
-            ],
+            colorscale=POSTERIOR_CONTOUR_FILL_COLORSCALE,
             hoverinfo='skip',
             showscale=False,
             showlegend=False,
