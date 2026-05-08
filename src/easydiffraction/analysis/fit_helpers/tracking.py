@@ -232,6 +232,7 @@ class FitProgressTracker:
         log_posterior: float,
         reduced_chi2: float,
         elapsed_time: float,
+        force_report: bool = False,
     ) -> None:
         """Update progress from a sampler monitor.
 
@@ -251,6 +252,8 @@ class FitProgressTracker:
             Best reduced chi-square implied by the current best sample.
         elapsed_time : float
             Elapsed wall time in seconds.
+        force_report : bool, default=False
+            Whether to render the row regardless of heartbeat timing.
         """
         self._iteration = iteration
         self._tracking_mode = TRACKING_MODE_SAMPLER
@@ -285,7 +288,8 @@ class FitProgressTracker:
             if (
                 iteration != self._last_reported_iteration
                 and (
-                    previous_phase != phase
+                    force_report
+                    or previous_phase != phase
                     or self._last_progress_time is None
                     or elapsed_time - self._last_progress_time >= SAMPLER_PROGRESS_UPDATE_SECONDS
                     or clamped_iteration >= self._sampler_total_iterations

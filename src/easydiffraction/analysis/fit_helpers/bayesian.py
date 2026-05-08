@@ -17,6 +17,7 @@ from easydiffraction.analysis.fit_helpers.reporting import _build_parameter_row
 from easydiffraction.analysis.fit_helpers.reporting import _format_optional_float
 from easydiffraction.analysis.fit_helpers.reporting import FitResults
 from easydiffraction.utils.logging import console
+from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_table
 
 R_HAT_CONVERGENCE_THRESHOLD = 1.01
@@ -338,6 +339,12 @@ class BayesianFitResults(FitResults):
 
         self._print_table_notes()
 
+    def _print_table_notes(self) -> None:
+        """Print parameter and posterior-diagnostic notes below tables."""
+        super()._print_table_notes()
+        for note in _posterior_table_notes(self.posterior_parameter_summaries):
+            log.warning(note)
+
 
 def compute_convergence_diagnostics(posterior_samples: PosteriorSamples) -> dict[str, object]:
     """Compute convergence diagnostics from posterior samples.
@@ -511,7 +518,7 @@ def _format_convergence_summary(convergence_diagnostics: dict[str, object]) -> s
     parts: list[str] = []
     converged = convergence_diagnostics.get('converged')
     if converged is not None:
-        status = 'yes' if converged else '[yellow]check diagnostics[/yellow]'
+        status = 'yes' if converged else '[red]failed[/red]'
         parts.append(f'converged={status}')
 
     max_r_hat = _maybe_scalar(convergence_diagnostics.get('max_r_hat'))
@@ -643,7 +650,7 @@ def _format_r_hat(value: float | None) -> str:
         return 'N/A'
     formatted = f'{value:.3f}'
     if value > R_HAT_CONVERGENCE_THRESHOLD:
-        return f'[yellow]{formatted}[/yellow]'
+        return f'[red]{formatted}[/red]'
     return formatted
 
 
@@ -652,5 +659,31 @@ def _format_ess_bulk(value: float | None) -> str:
         return 'N/A'
     formatted = f'{value:.1f}'
     if value < ESS_BULK_CONVERGENCE_THRESHOLD:
-        return f'[yellow]{formatted}[/yellow]'
+        return f'[red]{formatted}[/red]'
     return formatted
+
+
+def _posterior_table_notes(
+    posterior_parameter_summaries: list[PosteriorParameterSummary],
+) -> list[str]:
+    """Return warning notes for posterior summary diagnostics."""
+    if not posterior_parameter_summaries:
+        return []
+
+    has_failed_r_hat = any(
+        summary.r_hat is not None and summary.r_hat > R_HAT_CONVERGENCE_THRESHOLD
+        for summary in posterior_parameter_summaries
+    )
+    has_failed_ess_bulk = any(
+        summary.ess_bulk is not None and summary.ess_bulk < ESS_BULK_CONVERGENCE_THRESHOLD
+        for summary in posterior_parameter_summaries
+    )
+
+    if not has_failed_r_hat and not has_failed_ess_bulk:
+        return []
+
+    return [
+        '[red]Convergence warning:[/red] posterior diagnostics failed '
+        '(r_hat > 1.01 or ess_bulk < 400). Consider longer sampling, '
+        'tighter bounds, or reparameterization.'
+    ]

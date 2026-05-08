@@ -1168,6 +1168,18 @@ class Plotter(RendererBase):
                 line_width=0,
                 layer='below',
             )
+            fig.add_trace(
+                self._posterior_interval_legend_trace(
+                    trace_name='95% credible interval',
+                    color=POSTERIOR_INTERVAL_95_FILL_COLOR,
+                )
+            )
+            fig.add_trace(
+                self._posterior_interval_legend_trace(
+                    trace_name='68% credible interval',
+                    color=POSTERIOR_INTERVAL_68_FILL_COLOR,
+                )
+            )
 
         histogram_density, _ = np.histogram(values, bins=50, density=True)
         fig.add_trace(
@@ -1298,10 +1310,30 @@ class Plotter(RendererBase):
         data_min = float(np.min(data))
         data_max = float(np.max(data))
         data_range = data_max - data_min
-        padding = 0.08 * data_range if data_range > 0 else max(abs(data_max), 1.0) * 0.05
-        if padding == 0:
-            padding = 1e-6
-        return data_min - padding, data_max + padding
+        upper_padding = 0.08 * data_range if data_range > 0 else max(abs(data_max), 1.0) * 0.05
+        if upper_padding == 0:
+            upper_padding = 1e-6
+        lower = 0.0 if data_min >= 0.0 else data_min
+        return lower, data_max + upper_padding
+
+    @staticmethod
+    def _posterior_interval_legend_trace(
+        *,
+        trace_name: str,
+        color: str,
+    ) -> object:
+        """Return a legend-only proxy trace for a credible interval."""
+        go = __import__('plotly.graph_objects', fromlist=['Scatter'])
+
+        return go.Scatter(
+            x=[None],
+            y=[None],
+            mode='markers',
+            marker={'size': 12, 'symbol': 'square', 'color': color},
+            name=trace_name,
+            showlegend=True,
+            hoverinfo='skip',
+        )
 
     @staticmethod
     def _posterior_reference_line_trace(
@@ -1433,12 +1465,13 @@ class Plotter(RendererBase):
             density = np.exp(-0.5 * ((grid - data[0]) / bandwidth) ** 2)
             density /= bandwidth * np.sqrt(2.0 * np.pi)
         else:
-            reflected_data = cls._reflected_density_samples(
-                data,
+            kde = gaussian_kde(data)
+            density = cls._evaluate_reflected_1d_kde(
+                kde,
+                grid,
                 lower_bound=lower_bound,
                 upper_bound=upper_bound,
             )
-            density = np.asarray(gaussian_kde(reflected_data)(grid), dtype=float)
 
         area = np.trapezoid(density, grid)
         if area <= 0:
@@ -1469,43 +1502,81 @@ class Plotter(RendererBase):
         if np.allclose(x_data, x_data[0]) and np.allclose(y_data, y_data[0]):
             return None
 
-        reflected_x = cls._reflected_density_samples(
-            x_data,
-            lower_bound=x_bounds[0],
-            upper_bound=x_bounds[1],
-        )
-        reflected_y = cls._reflected_density_samples(
-            y_data,
-            lower_bound=y_bounds[0],
-            upper_bound=y_bounds[1],
-        )
-        if reflected_x.shape != reflected_y.shape:
-            return None
-
         x_grid = np.linspace(x_bounds[0], x_bounds[1], num=grid_size)
         y_grid = np.linspace(y_bounds[0], y_bounds[1], num=grid_size)
         mesh_x, mesh_y = np.meshgrid(x_grid, y_grid)
-        positions = np.vstack([mesh_x.ravel(), mesh_y.ravel()])
-        density = gaussian_kde(np.vstack([reflected_x, reflected_y]))(positions)
-        density = np.asarray(density, dtype=float).reshape(mesh_x.shape)
+        density = cls._evaluate_reflected_2d_kde(
+            gaussian_kde(np.vstack([x_data, y_data])),
+            mesh_x=mesh_x,
+            mesh_y=mesh_y,
+            x_bounds=x_bounds,
+            y_bounds=y_bounds,
+        )
         if not np.any(np.isfinite(density)):
             return None
         return x_grid, y_grid, density
 
     @staticmethod
-    def _reflected_density_samples(
+    def _reflection_positions_1d(
         values: np.ndarray,
         *,
         lower_bound: float | None,
         upper_bound: float | None,
-    ) -> np.ndarray:
-        """Reflect posterior samples across finite bounds for KDE stability."""
+    ) -> list[np.ndarray]:
+        """Return mirrored evaluation positions for boundary-corrected KDEs."""
         reflected = [values]
         if lower_bound is not None:
             reflected.append(2.0 * lower_bound - values)
         if upper_bound is not None:
             reflected.append(2.0 * upper_bound - values)
-        return np.concatenate(reflected)
+        return reflected
+
+    @classmethod
+    def _evaluate_reflected_1d_kde(
+        cls,
+        kde: object,
+        grid: np.ndarray,
+        *,
+        lower_bound: float | None,
+        upper_bound: float | None,
+    ) -> np.ndarray:
+        """Evaluate a 1D KDE using mirrored-boundary correction."""
+        density = np.zeros_like(grid, dtype=float)
+        for reflected_grid in cls._reflection_positions_1d(
+            grid,
+            lower_bound=lower_bound,
+            upper_bound=upper_bound,
+        ):
+            density += np.asarray(kde(reflected_grid), dtype=float)
+        return density
+
+    @classmethod
+    def _evaluate_reflected_2d_kde(
+        cls,
+        kde: object,
+        *,
+        mesh_x: np.ndarray,
+        mesh_y: np.ndarray,
+        x_bounds: tuple[float, float],
+        y_bounds: tuple[float, float],
+    ) -> np.ndarray:
+        """Evaluate a 2D KDE using mirrored-boundary correction."""
+        x_positions = cls._reflection_positions_1d(
+            mesh_x.ravel(),
+            lower_bound=x_bounds[0],
+            upper_bound=x_bounds[1],
+        )
+        y_positions = cls._reflection_positions_1d(
+            mesh_y.ravel(),
+            lower_bound=y_bounds[0],
+            upper_bound=y_bounds[1],
+        )
+        density = np.zeros(mesh_x.size, dtype=float)
+        for reflected_x in x_positions:
+            for reflected_y in y_positions:
+                positions = np.vstack([reflected_x, reflected_y])
+                density += np.asarray(kde(positions), dtype=float)
+        return density.reshape(mesh_x.shape)
 
     def _get_or_build_posterior_predictive_summary(
         self,

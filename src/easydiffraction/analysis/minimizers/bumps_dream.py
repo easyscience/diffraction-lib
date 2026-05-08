@@ -34,6 +34,8 @@ DEFAULT_POP = 4
 DEFAULT_ALPHA = 0.0
 DEFAULT_OUTLIER_TEST = 'none'
 DEFAULT_TRIM = False
+BURN_IN_PROGRESS_POINTS = 5
+SAMPLING_PROGRESS_POINTS = 20
 
 
 class _DreamProgressMonitor(bumps_monitor.Monitor):
@@ -53,6 +55,18 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
         self._n_parameters = n_parameters
         self._total_generations = max(1, total_generations)
         self._burn_steps = max(0, burn_steps)
+        self._burn_targets = self._progress_targets(
+            start=1,
+            stop=self._burn_steps,
+            target_count=BURN_IN_PROGRESS_POINTS,
+        )
+        self._sampling_targets = self._progress_targets(
+            start=self._burn_steps + 1,
+            stop=self._total_generations,
+            target_count=SAMPLING_PROGRESS_POINTS,
+        )
+        self._next_burn_target_index = 0
+        self._next_sampling_target_index = 0
 
     def config_history(self, history: object) -> None:
         """Declare the history fields needed for progress updates."""
@@ -62,6 +76,8 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
         """Forward sampler progress to the shared fit tracker."""
         step = int(history.step[0]) if history.step else 0
         generation = max(1, step)
+        if not self._should_report(generation):
+            return
         nllf = float(history.value[0])
         reduced_chi2 = self._reduced_chi_square_from_nllf(nllf)
         log_posterior = self._population_mean_log_posterior(history)
@@ -73,6 +89,7 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
             log_posterior=log_posterior,
             reduced_chi2=reduced_chi2,
             elapsed_time=float(history.time[0]),
+            force_report=True,
         )
 
     def final(self, history: object, best: dict[str, object]) -> None:
@@ -91,7 +108,60 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
             log_posterior=self._population_mean_log_posterior(history),
             reduced_chi2=reduced_chi2,
             elapsed_time=float(history.time[0]),
+            force_report=True,
         )
+
+    @staticmethod
+    def _progress_targets(
+        *,
+        start: int,
+        stop: int,
+        target_count: int,
+    ) -> list[int]:
+        """Return monotonically increasing reporting targets for one phase."""
+        if target_count < 1 or stop < start:
+            return []
+
+        targets = np.linspace(start, stop, num=target_count)
+        rounded = np.rint(targets).astype(int)
+        unique_targets = sorted(set(int(value) for value in rounded if start <= value <= stop))
+        if start not in unique_targets:
+            unique_targets.insert(0, start)
+        if stop not in unique_targets:
+            unique_targets.append(stop)
+        return unique_targets
+
+    def _should_report(self, generation: int) -> bool:
+        """Return whether the current generation should be rendered."""
+        clamped_generation = min(max(1, generation), self._total_generations)
+        if self._phase_name(clamped_generation) == 'burn-in':
+            return self._consume_progress_target(
+                clamped_generation,
+                phase_targets=self._burn_targets,
+                target_index_name='_next_burn_target_index',
+            )
+
+        return self._consume_progress_target(
+            clamped_generation,
+            phase_targets=self._sampling_targets,
+            target_index_name='_next_sampling_target_index',
+        )
+
+    def _consume_progress_target(
+        self,
+        generation: int,
+        *,
+        phase_targets: list[int],
+        target_index_name: str,
+    ) -> bool:
+        """Advance a phase target pointer when the generation reaches it."""
+        target_index = getattr(self, target_index_name)
+        should_report = False
+        while target_index < len(phase_targets) and generation >= phase_targets[target_index]:
+            target_index += 1
+            should_report = True
+        setattr(self, target_index_name, target_index)
+        return should_report
 
     def _phase_name(self, generation: int) -> str:
         """Return the current sampler phase name."""
