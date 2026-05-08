@@ -70,6 +70,7 @@ PREDICTIVE_BAND_EDGE_COLOR = 'rgba(214, 39, 40, 0.45)'
 PREDICTIVE_DRAW_COLOR = 'rgba(140, 140, 140, 0.18)'
 PREDICTIVE_DRAW_PLOT_CAP = 50
 PREDICTIVE_DRAW_ARRAY_NDIM = 2
+RESPONSIVE_PAIR_PLOT_META_KEY = 'responsive_pair_plot'
 
 
 @dataclass(frozen=True)
@@ -790,6 +791,134 @@ window.requestAnimationFrame(installLegendToggleButton);
 """
 
     @staticmethod
+    def _responsive_pair_plot_post_script() -> str:
+        """
+        Return client-side code for responsive posterior pair plots.
+        """
+        return r"""
+const graphDiv = document.getElementById('{plot_id}');
+if (!graphDiv || !window.Plotly || !graphDiv.layout || !graphDiv.layout.meta) {
+    return;
+}
+
+const responsivePairPlot = graphDiv.layout.meta.responsive_pair_plot;
+if (!responsivePairPlot) {
+    return;
+}
+
+const readPositiveNumber = function (value, fallback) {
+    const numberValue = Number(value);
+    return Number.isFinite(numberValue) && numberValue > 0 ? numberValue : fallback;
+};
+
+const nParameters = Math.max(
+    1,
+    Math.round(readPositiveNumber(responsivePairPlot.n_parameters, 1))
+);
+const marginPx = readPositiveNumber(responsivePairPlot.margin_px, 0);
+const minCellSizePx = readPositiveNumber(responsivePairPlot.min_cell_size_px, 90);
+const maxCellSizePx = readPositiveNumber(responsivePairPlot.max_cell_size_px, 190);
+
+let lastHeight = null;
+let resizeFrame = null;
+
+const applyResponsivePairPlotSize = function () {
+    const containerWidth = graphDiv.clientWidth || graphDiv.getBoundingClientRect().width;
+    if (!Number.isFinite(containerWidth) || containerWidth <= 0) {
+        return;
+    }
+
+    const plotWidth = Math.max(minCellSizePx, containerWidth - marginPx);
+    const cellSizePx = Math.min(maxCellSizePx, Math.max(minCellSizePx, plotWidth / nParameters));
+    const nextHeight = Math.round(cellSizePx * nParameters + marginPx);
+
+    if (lastHeight === nextHeight) {
+        window.Plotly.Plots.resize(graphDiv);
+        return;
+    }
+
+    lastHeight = nextHeight;
+    window.Plotly.relayout(graphDiv, {autosize: true, height: nextHeight});
+};
+
+const scheduleResponsivePairPlotSize = function () {
+    if (resizeFrame !== null) {
+        return;
+    }
+
+    resizeFrame = window.requestAnimationFrame(function () {
+        resizeFrame = null;
+        applyResponsivePairPlotSize();
+    });
+};
+
+if (typeof ResizeObserver === 'function') {
+    const resizeObserver = new ResizeObserver(scheduleResponsivePairPlotSize);
+    resizeObserver.observe(graphDiv);
+}
+else {
+    window.addEventListener('resize', scheduleResponsivePairPlotSize);
+}
+
+if (graphDiv.on) {
+    graphDiv.on('plotly_afterplot', scheduleResponsivePairPlotSize);
+}
+
+scheduleResponsivePairPlotSize();
+"""
+
+    @staticmethod
+    def _figure_meta(fig: object) -> dict[str, object] | None:
+        """Return figure layout metadata when available."""
+        layout = getattr(fig, 'layout', None)
+        if layout is None:
+            return None
+
+        meta = getattr(layout, 'meta', None)
+        if isinstance(meta, dict):
+            return meta
+
+        layout_kwargs = getattr(layout, 'kwargs', None)
+        if isinstance(layout_kwargs, dict):
+            meta = layout_kwargs.get('meta')
+            if isinstance(meta, dict):
+                return meta
+        return None
+
+    @classmethod
+    def _has_responsive_pair_plot(cls, fig: object) -> bool:
+        """
+        Return whether a figure requests responsive pair-plot sizing.
+        """
+        meta = cls._figure_meta(fig)
+        if not isinstance(meta, dict):
+            return False
+
+        responsive_pair_plot = meta.get(RESPONSIVE_PAIR_PLOT_META_KEY)
+        if not isinstance(responsive_pair_plot, dict):
+            return False
+        return bool(responsive_pair_plot.get('n_parameters'))
+
+    @classmethod
+    def _html_post_script(cls, fig: object) -> str | None:
+        """Return concatenated HTML post scripts for a Plotly figure."""
+        scripts: list[str] = []
+        if cls._has_visible_legend(fig):
+            scripts.append(cls._modebar_legend_toggle_post_script())
+        if cls._has_responsive_pair_plot(fig):
+            scripts.append(cls._responsive_pair_plot_post_script())
+        if not scripts:
+            return None
+        return '\n'.join(cls._scoped_html_post_script(script) for script in scripts)
+
+    @staticmethod
+    def _scoped_html_post_script(script: str) -> str:
+        """
+        Return one HTML post script wrapped in its own block scope.
+        """
+        return '{\n' + script.strip() + '\n}'
+
+    @staticmethod
     def _get_figure(
         data: object,
         layout: object,
@@ -866,9 +995,7 @@ window.requestAnimationFrame(installLegendToggleButton);
         if in_pycharm() or display is None or HTML is None:
             fig.show(config=config)
         else:
-            post_script = None
-            if self._has_visible_legend(fig):
-                post_script = self._modebar_legend_toggle_post_script()
+            post_script = self._html_post_script(fig)
             html_fig = pio.to_html(
                 fig,
                 include_plotlyjs='cdn',

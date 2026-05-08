@@ -103,8 +103,10 @@ POSTERIOR_CONTOUR_LINE_COLORSCALE = [
     [1.0, 'rgba(58, 86, 224, 0.98)'],
 ]
 PAIR_PLOT_CELL_SIZE_PIXELS = 190
+PAIR_PLOT_MIN_CELL_SIZE_PIXELS = 90
 PAIR_PLOT_MIN_SIZE_PIXELS = 680
 PAIR_PLOT_MARGIN_PIXELS = 120
+PAIR_PLOT_ESTIMATED_CONTAINER_WIDTH_PIXELS = 980
 PAIR_PLOT_SUBPLOT_SPACING = 0.015
 PAIR_PLOT_MAJOR_TICKS = 3
 POSTERIOR_PAIR_AXIS_LINE_WIDTH = 1.2
@@ -1424,8 +1426,8 @@ class Plotter(RendererBase):
             'layer': 'above',
         })
 
-    @staticmethod
     def _finalize_posterior_pairs_figure(
+        self,
         *,
         fig: object,
         context: _PosteriorPairsContext,
@@ -1433,18 +1435,16 @@ class Plotter(RendererBase):
         subplot_border_shapes: list[dict[str, object]],
     ) -> None:
         """Apply final layout settings to the posterior pair plot."""
-        figure_size = max(
-            PAIR_PLOT_MIN_SIZE_PIXELS,
-            PAIR_PLOT_CELL_SIZE_PIXELS * context.n_parameters + PAIR_PLOT_MARGIN_PIXELS,
-        )
+        figure_height = self._posterior_pair_figure_height_pixels(context.n_parameters)
         fig.update_layout(
+            autosize=True,
             margin={'autoexpand': True, 'r': 30, 't': 40, 'b': 45},
             title={'text': 'Posterior pair plot'},
             bargap=0.05,
-            width=figure_size,
-            height=figure_size,
+            height=figure_height,
             annotations=subplot_title_annotations,
             shapes=subplot_border_shapes,
+            meta=self._posterior_pair_layout_meta(context.n_parameters),
             legend={
                 'bgcolor': 'rgba(0, 0, 0, 0)',
                 'xanchor': 'right',
@@ -1453,6 +1453,56 @@ class Plotter(RendererBase):
                 'y': 1.0,
                 'groupclick': 'togglegroup',
             },
+        )
+
+    @staticmethod
+    def _posterior_pair_layout_meta(n_parameters: int) -> dict[str, object]:
+        """
+        Return responsive layout metadata for posterior pair plots.
+        """
+        return {
+            'responsive_pair_plot': {
+                'n_parameters': int(n_parameters),
+                'margin_px': PAIR_PLOT_MARGIN_PIXELS,
+                'min_cell_size_px': PAIR_PLOT_MIN_CELL_SIZE_PIXELS,
+                'max_cell_size_px': PAIR_PLOT_CELL_SIZE_PIXELS,
+            }
+        }
+
+    @staticmethod
+    def _posterior_pair_cell_size_pixels(
+        n_parameters: int,
+        *,
+        available_width_pixels: float,
+    ) -> int:
+        """Return an estimated square cell size for a pair plot."""
+        if n_parameters < 1:
+            return PAIR_PLOT_CELL_SIZE_PIXELS
+
+        plot_width = max(
+            PAIR_PLOT_MIN_CELL_SIZE_PIXELS,
+            available_width_pixels - PAIR_PLOT_MARGIN_PIXELS,
+        )
+        cell_size = plot_width / n_parameters
+        return round(
+            min(
+                PAIR_PLOT_CELL_SIZE_PIXELS,
+                max(PAIR_PLOT_MIN_CELL_SIZE_PIXELS, cell_size),
+            )
+        )
+
+    @classmethod
+    def _posterior_pair_figure_height_pixels(cls, n_parameters: int) -> int:
+        """
+        Return the initial figure height for a responsive pair plot.
+        """
+        cell_size = cls._posterior_pair_cell_size_pixels(
+            n_parameters,
+            available_width_pixels=PAIR_PLOT_ESTIMATED_CONTAINER_WIDTH_PIXELS,
+        )
+        return max(
+            PAIR_PLOT_MIN_SIZE_PIXELS,
+            cell_size * n_parameters + PAIR_PLOT_MARGIN_PIXELS,
         )
 
     def _plot_axis_frame_color(self) -> str:

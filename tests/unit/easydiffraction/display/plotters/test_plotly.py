@@ -278,6 +278,123 @@ def test_show_figure_skips_legend_toggle_script_without_legend(monkeypatch):
     assert captured['displayed_html'] == '<div>plot</div>'
 
 
+def test_show_figure_adds_responsive_pair_plot_script(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    monkeypatch.setattr(pp, 'in_pycharm', lambda: False)
+
+    captured = {}
+
+    class DummyLayout:
+        def __init__(self):
+            self.meta = {
+                'responsive_pair_plot': {
+                    'n_parameters': 4,
+                    'margin_px': 120,
+                    'min_cell_size_px': 90,
+                    'max_cell_size_px': 190,
+                }
+            }
+            self.showlegend = False
+
+    class DummyFig:
+        def __init__(self):
+            self.data = []
+            self.layout = DummyLayout()
+
+        def show(self, **kwargs):
+            captured['show_called'] = True
+
+    class DummyPIO:
+        @staticmethod
+        def to_html(fig, include_plotlyjs=None, full_html=None, config=None, post_script=None):
+            captured['post_script'] = post_script
+            return '<div>plot</div>'
+
+    def dummy_display(obj):
+        captured['displayed_html'] = obj.html
+
+    class DummyHTML:
+        def __init__(self, html):
+            self.html = html
+
+    monkeypatch.setattr(pp, 'pio', DummyPIO)
+    monkeypatch.setattr(pp, 'display', dummy_display)
+    monkeypatch.setattr(pp, 'HTML', DummyHTML)
+
+    plotter = pp.PlotlyPlotter()
+    plotter._show_figure(DummyFig())
+
+    assert captured.get('show_called') is not True
+    assert 'responsive_pair_plot' in captured['post_script']
+    assert 'ResizeObserver' in captured['post_script']
+    assert 'window.Plotly.relayout' in captured['post_script']
+    assert 'containerWidth' in captured['post_script']
+    assert captured['displayed_html'] == '<div>plot</div>'
+
+
+def test_show_figure_scopes_multiple_post_scripts(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    monkeypatch.setattr(pp, 'in_pycharm', lambda: False)
+
+    captured = {}
+
+    class DummyTrace:
+        def __init__(self):
+            self.name = 'Posterior samples'
+            self.showlegend = True
+            self.visible = True
+
+    class DummyLayout:
+        def __init__(self):
+            self.meta = {
+                'responsive_pair_plot': {
+                    'n_parameters': 4,
+                    'margin_px': 120,
+                    'min_cell_size_px': 90,
+                    'max_cell_size_px': 190,
+                }
+            }
+            self.showlegend = True
+
+    class DummyFig:
+        def __init__(self):
+            self.data = [DummyTrace()]
+            self.layout = DummyLayout()
+
+        def show(self, **kwargs):
+            captured['show_called'] = True
+
+    class DummyPIO:
+        @staticmethod
+        def to_html(fig, include_plotlyjs=None, full_html=None, config=None, post_script=None):
+            captured['post_script'] = post_script
+            return '<div>plot</div>'
+
+    def dummy_display(obj):
+        captured['displayed_html'] = obj.html
+
+    class DummyHTML:
+        def __init__(self, html):
+            self.html = html
+
+    monkeypatch.setattr(pp, 'pio', DummyPIO)
+    monkeypatch.setattr(pp, 'display', dummy_display)
+    monkeypatch.setattr(pp, 'HTML', DummyHTML)
+
+    plotter = pp.PlotlyPlotter()
+    plotter._show_figure(DummyFig())
+
+    assert captured.get('show_called') is not True
+    assert (
+        captured['post_script'].count("const graphDiv = document.getElementById('{plot_id}');")
+        == 2
+    )
+    assert '\n}\n{\n' in captured['post_script']
+    assert captured['displayed_html'] == '<div>plot</div>'
+
+
 def test_plotly_single_crystal_trace_and_plot(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
 
