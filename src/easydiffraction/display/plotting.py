@@ -573,6 +573,7 @@ class Plotter(RendererBase):
         self,
         threshold: float | None = DEFAULT_CORRELATION_THRESHOLD,
         precision: int = 2,
+        show_diagonal: bool = False,
     ) -> None:
         """
         Plot the parameter correlation matrix from the latest fit.
@@ -581,8 +582,10 @@ class Plotter(RendererBase):
         the active engine is Plotly, an interactive heatmap is shown.
         Otherwise, a rounded correlation table is rendered.
 
-        Only the lower triangle is shown (without the diagonal), since
-        the matrix is symmetric and diagonal values are always ``1``.
+        By default only the lower triangle is shown (without the
+        diagonal), since the matrix is symmetric and diagonal values are
+        always ``1``. Set ``show_diagonal=True`` to keep blank diagonal
+        cells for a square lower-triangle layout.
 
         Parameters
         ----------
@@ -594,6 +597,9 @@ class Plotter(RendererBase):
             matrix.
         precision : int, default=2
             Number of decimal places to show in the table fallback.
+        show_diagonal : bool, default=False
+            Whether to retain blank diagonal cells in the displayed
+            lower-triangle matrix.
         """
         corr_df = self._get_param_correlation_dataframe()
         if corr_df is None:
@@ -612,6 +618,7 @@ class Plotter(RendererBase):
         display_corr_df, row_numbers, col_numbers = self._trim_correlation_display_dataframe(
             corr_df,
             preserve_all_rows=not is_graphical,
+            show_diagonal=show_diagonal,
         )
 
         if is_graphical:
@@ -649,7 +656,7 @@ class Plotter(RendererBase):
         plot = self._build_posterior_pairs_plot(parameters=parameters)
         if plot is None:
             return
-        plot.show()
+        self._show_plot_figure(plot)
 
     def plot_param_distribution(
         self,
@@ -666,7 +673,7 @@ class Plotter(RendererBase):
         plot = self._build_param_distribution_plot(param)
         if plot is None:
             return
-        plot.show()
+        self._show_plot_figure(plot)
 
     def plot_posterior_predictive(
         self,
@@ -831,6 +838,7 @@ class Plotter(RendererBase):
         corr_df: pd.DataFrame,
         *,
         preserve_all_rows: bool,
+        show_diagonal: bool,
     ) -> tuple[pd.DataFrame, list[int], list[int]]:
         """
         Trim empty outer rows/columns from the lower-triangle view.
@@ -845,6 +853,8 @@ class Plotter(RendererBase):
         preserve_all_rows : bool
             Whether to keep the full row list so row labels continue to
             identify all numeric column headers in tabular output.
+        show_diagonal : bool
+            Whether blank diagonal cells should remain visible.
 
         Returns
         -------
@@ -856,7 +866,7 @@ class Plotter(RendererBase):
         row_numbers = list(range(1, num_rows + 1))
         col_numbers = list(range(1, num_cols + 1))
 
-        if min(num_rows, num_cols) <= 1:
+        if show_diagonal or min(num_rows, num_cols) <= 1:
             return corr_df, row_numbers, col_numbers
 
         if preserve_all_rows:
@@ -1136,8 +1146,13 @@ class Plotter(RendererBase):
         values = samples[:, 0]
         label = self._posterior_plot_labels(fit_results, [parameter_name])[0]
         summary = self._posterior_summary_by_name(fit_results).get(parameter_name)
+        title = f'Posterior distribution: {label}'
+        layout_factory = getattr(self._backend, '_get_layout', None)
+        if callable(layout_factory):
+            fig = go.Figure(layout=layout_factory(title, [label, 'Probability density']))
+        else:
+            fig = go.Figure()
 
-        fig = go.Figure()
         if summary is not None:
             fig.add_vrect(
                 x0=summary.interval_95[0],
@@ -1154,31 +1169,36 @@ class Plotter(RendererBase):
                 layer='below',
             )
 
+        histogram_density, _ = np.histogram(values, bins=50, density=True)
+        fig.add_trace(
+            go.Histogram(
+                x=values,
+                nbinsx=50,
+                histnorm='probability density',
+                marker={
+                    'color': 'rgba(140, 140, 140, 0.28)',
+                    'line': {'color': 'rgba(140, 140, 140, 0.18)', 'width': 1},
+                },
+                opacity=0.65,
+                name='Posterior histogram',
+                hovertemplate='sample=%{x:.4f}<br>density=%{y:.4f}<extra></extra>',
+            )
+        )
+
         density_trace = self._posterior_density_trace(
             fit_results=fit_results,
             parameter_name=parameter_name,
             values=values,
             trace_name='Posterior density',
         )
-        y_axis_range = None
-        if density_trace is None:
-            histogram_density, _ = np.histogram(values, bins=50, density=True)
-            y_axis_range = self._posterior_density_axis_range(histogram_density)
-            fig.add_trace(
-                go.Histogram(
-                    x=values,
-                    nbinsx=50,
-                    histnorm='probability density',
-                    marker={'color': POSTERIOR_DENSITY_LINE_COLOR},
-                    opacity=0.85,
-                    name='Posterior density',
-                )
-            )
-        else:
+        density_sources = [histogram_density]
+        if density_trace is not None:
             density_trace.name = 'Posterior density'
             density_trace.showlegend = True
             fig.add_trace(density_trace)
-            y_axis_range = self._posterior_density_axis_range(np.asarray(density_trace.y))
+            density_sources.append(np.asarray(density_trace.y, dtype=float))
+
+        y_axis_range = self._posterior_density_axis_range(np.concatenate(density_sources))
 
         median = float(np.median(values))
         if y_axis_range is not None:
@@ -1202,21 +1222,32 @@ class Plotter(RendererBase):
                     )
                 )
 
-        fig.update_layout(
-            title=f'Posterior distribution: {label}',
-            xaxis_title=label,
-            yaxis_title='Probability density',
-            legend={
-                'bgcolor': 'rgba(0, 0, 0, 0)',
-                'xanchor': 'right',
-                'x': 1.0,
-                'yanchor': 'top',
-                'y': 1.0,
-            },
-        )
+        if callable(layout_factory):
+            fig.update_layout(title={'text': title})
+        else:
+            fig.update_layout(
+                title=title,
+                xaxis_title=label,
+                yaxis_title='Probability density',
+                legend={
+                    'bgcolor': 'rgba(0, 0, 0, 0)',
+                    'xanchor': 'right',
+                    'x': 1.0,
+                    'yanchor': 'top',
+                    'y': 1.0,
+                },
+            )
         if y_axis_range is not None:
             fig.update_yaxes(range=list(y_axis_range))
         return fig
+
+    def _show_plot_figure(self, figure: object) -> None:
+        """Display a figure through the active backend when possible."""
+        show_figure = getattr(self._backend, '_show_figure', None)
+        if callable(show_figure):
+            show_figure(figure)
+            return
+        figure.show()
 
     def _posterior_density_trace(
         self,

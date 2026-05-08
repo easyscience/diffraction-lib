@@ -32,10 +32,10 @@ SIGNIFICANT_CHANGE_THRESHOLD = 0.01  # 1% threshold
 SAMPLER_PROGRESS_UPDATE_SECONDS = 5.0
 TRACKING_MODE_FIT = 'fit'
 TRACKING_MODE_SAMPLER = 'sampling'
-DEFAULT_HEADERS = ['iteration', 'χ²', 'change / status']
-DEFAULT_ALIGNMENTS = ['center', 'center', 'center']
-SAMPLER_HEADERS = ['iteration', 'progress', 'log posterior', 'phase']
-SAMPLER_ALIGNMENTS = ['center', 'center', 'center', 'center']
+DEFAULT_HEADERS = ['iteration', 'time (s)', 'χ²', 'change / status']
+DEFAULT_ALIGNMENTS = ['center', 'center', 'center', 'center']
+SAMPLER_HEADERS = ['iteration', 'progress', 'time (s)', 'log posterior', 'phase']
+SAMPLER_ALIGNMENTS = ['center', 'center', 'center', 'center', 'center']
 
 
 class _TerminalLiveHandle:
@@ -106,6 +106,8 @@ class FitProgressTracker:
         self._best_chi2: float | None = None
         self._best_iteration: int | None = None
         self._fitting_time: float | None = None
+        self._start_time: float | None = None
+        self._end_time: float | None = None
         self._verbosity: VerbosityEnum = VerbosityEnum.FULL
         self._last_progress_time: float | None = None
         self._tracking_mode: str = TRACKING_MODE_FIT
@@ -113,6 +115,7 @@ class FitProgressTracker:
         self._last_sampler_phase: str | None = None
         self._last_sampler_progress_percent: float | None = None
         self._last_sampler_log_posterior: float | None = None
+        self._last_sampler_elapsed_time: float | None = None
 
         self._df_rows: list[list[str]] = []
         self._display_handle: object | None = None
@@ -128,12 +131,15 @@ class FitProgressTracker:
         self._best_chi2 = None
         self._best_iteration = None
         self._fitting_time = None
+        self._start_time = None
+        self._end_time = None
         self._last_progress_time = None
         self._tracking_mode = TRACKING_MODE_FIT
         self._sampler_total_iterations = None
         self._last_sampler_phase = None
         self._last_sampler_progress_percent = None
         self._last_sampler_log_posterior = None
+        self._last_sampler_elapsed_time = None
 
     def track(
         self,
@@ -179,6 +185,7 @@ class FitProgressTracker:
 
             row = [
                 str(self._iteration),
+                self._format_elapsed_time(),
                 f'{reduced_chi2:.2f}',
                 '',
             ]
@@ -193,6 +200,7 @@ class FitProgressTracker:
 
                 row = [
                     str(self._iteration),
+                    self._format_elapsed_time(),
                     f'{reduced_chi2:.2f}',
                     f'{change_in_percent:.1f}% ↓',
                 ]
@@ -254,6 +262,7 @@ class FitProgressTracker:
         self._last_sampler_phase = phase
         self._last_sampler_progress_percent = clamped_progress
         self._last_sampler_log_posterior = log_posterior
+        self._last_sampler_elapsed_time = elapsed_time
 
         row: list[str] = []
         if self._previous_chi2 is None or self._best_chi2 is None:
@@ -264,6 +273,7 @@ class FitProgressTracker:
             row = [
                 f'{clamped_iteration}/{self._sampler_total_iterations}',
                 f'{clamped_progress:.1f}%',
+                self._format_elapsed_time(elapsed_time),
                 f'{log_posterior:.2f}',
                 phase,
             ]
@@ -284,6 +294,7 @@ class FitProgressTracker:
                 row = [
                     f'{clamped_iteration}/{self._sampler_total_iterations}',
                     f'{clamped_progress:.1f}%',
+                    self._format_elapsed_time(elapsed_time),
                     f'{log_posterior:.2f}',
                     phase,
                 ]
@@ -318,9 +329,13 @@ class FitProgressTracker:
     def start_timer(self) -> None:
         """Begin timing of a fit run."""
         self._start_time = time.perf_counter()
+        self._end_time = None
 
     def stop_timer(self) -> None:
         """Stop timing and store elapsed time for the run."""
+        if self._start_time is None:
+            self._fitting_time = None
+            return
         self._end_time = time.perf_counter()
         self._fitting_time = self._end_time - self._start_time
 
@@ -401,6 +416,11 @@ class FitProgressTracker:
                     f'{min(self._last_iteration, self._sampler_total_iterations)}/'
                     f'{self._sampler_total_iterations}',
                     f'{final_progress:.1f}%',
+                    self._format_elapsed_time(
+                        self._fitting_time
+                        if self._fitting_time is not None
+                        else self._last_sampler_elapsed_time
+                    ),
                     (
                         f'{self._last_sampler_log_posterior:.2f}'
                         if self._last_sampler_log_posterior is not None
@@ -408,15 +428,24 @@ class FitProgressTracker:
                     ),
                     self._last_sampler_phase or 'sampling',
                 ]
-                if not self._df_rows or self._df_rows[-1] != row:
+                if not self._df_rows:
+                    self.add_tracking_info(row)
+                elif self._rows_match_on_columns(self._df_rows[-1], row, (0, 1, 3, 4)):
+                    self._replace_last_tracking_row(row)
+                elif self._df_rows[-1] != row:
                     self.add_tracking_info(row)
         elif self._last_iteration is not None:
             row: list[str] = [
                 str(self._last_iteration),
+                self._format_elapsed_time(self._fitting_time),
                 f'{self._last_chi2:.2f}' if self._last_chi2 is not None else '',
                 '',
             ]
-            if not self._df_rows or self._df_rows[-1][:2] != row[:2]:
+            if not self._df_rows:
+                self.add_tracking_info(row)
+            elif self._rows_match_on_columns(self._df_rows[-1], row, (0, 2)):
+                self._replace_last_tracking_row(row)
+            elif self._df_rows[-1][:3] != row[:3]:
                 self.add_tracking_info(row)
 
         if self._verbosity is not VerbosityEnum.FULL:
@@ -449,3 +478,51 @@ class FitProgressTracker:
         if self._tracking_mode == TRACKING_MODE_SAMPLER:
             return SAMPLER_ALIGNMENTS
         return DEFAULT_ALIGNMENTS
+
+    def _current_elapsed_time(self) -> float | None:
+        """Return elapsed run time in seconds when timing is active."""
+        if self._start_time is None:
+            return None
+
+        end_time = self._end_time if self._end_time is not None else time.perf_counter()
+        return max(end_time - self._start_time, 0.0)
+
+    def _format_elapsed_time(self, elapsed_time: float | None = None) -> str:
+        """Format elapsed time in seconds with two decimal places."""
+        resolved_time = elapsed_time
+        if resolved_time is None:
+            resolved_time = self._current_elapsed_time()
+        if resolved_time is None:
+            return ''
+        return f'{resolved_time:.2f}'
+
+    @staticmethod
+    def _rows_match_on_columns(
+        current_row: list[str],
+        new_row: list[str],
+        column_indices: tuple[int, ...],
+    ) -> bool:
+        """Return whether two tracking rows match on selected columns."""
+        return all(
+            len(current_row) > index
+            and len(new_row) > index
+            and current_row[index] == new_row[index]
+            for index in column_indices
+        )
+
+    def _replace_last_tracking_row(self, row: list[str]) -> None:
+        """Replace the last rendered tracking row and refresh the view."""
+        if not self._df_rows:
+            self.add_tracking_info(row)
+            return
+
+        self._df_rows[-1] = row
+        if self._verbosity is not VerbosityEnum.FULL:
+            return
+
+        render_table(
+            columns_headers=self._headers(),
+            columns_alignment=self._alignments(),
+            columns_data=self._df_rows,
+            display_handle=self._display_handle,
+        )
