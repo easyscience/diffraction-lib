@@ -170,10 +170,10 @@ project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=83, x_max=85)
 project.analysis.display.free_params()
 
 # %%
-structure.cell.length_a.set_fit_bounds_from_uncertainty(multiplier=5)
-experiment.peak.broad_gauss_u.set_fit_bounds_from_uncertainty(multiplier=5)
-experiment.peak.broad_gauss_v.set_fit_bounds_from_uncertainty(multiplier=5)
-experiment.instrument.calib_twotheta_offset.set_fit_bounds_from_uncertainty(multiplier=5)
+structure.cell.length_a.set_fit_bounds_from_uncertainty(multiplier=4)
+experiment.peak.broad_gauss_u.set_fit_bounds_from_uncertainty(multiplier=4)
+experiment.peak.broad_gauss_v.set_fit_bounds_from_uncertainty(multiplier=4)
+experiment.instrument.calib_twotheta_offset.set_fit_bounds_from_uncertainty(multiplier=4)
 
 # %%
 project.analysis.display.free_params()
