@@ -8,6 +8,7 @@ from dataclasses import dataclass
 
 import arviz as az
 import numpy as np
+from rich.text import Text
 
 from easydiffraction.analysis.fit_helpers.metrics import calculate_r_factor
 from easydiffraction.analysis.fit_helpers.metrics import calculate_r_factor_squared
@@ -313,11 +314,11 @@ class BayesianFitResults(FitResults):
 
         sampler_settings = _format_sampler_settings(self.sampler_settings)
         if sampler_settings is not None:
-            console.print(f'⚙️ Sampler settings: {sampler_settings}')
+            console.print(Text(f'⚙️ Sampler settings: {sampler_settings}'))
 
         convergence_summary = _format_convergence_summary(self.convergence_diagnostics)
         if convergence_summary is not None:
-            console.print(f'📊 Convergence: {convergence_summary}')
+            console.print(Text.from_markup(f'📊 Convergence: {convergence_summary}'))
 
         if rf is not None:
             console.print(f'📏 R-factor (Rf): {rf:.2f}%')
