@@ -432,7 +432,7 @@ class GenericParameter(GenericNumericDescriptor):
         multiplier: float = 8.0,
         *,
         clip_to_limits: bool = True,
-    ) -> tuple[float, float]:
+    ) -> None:
         """Set fit bounds from the current standard uncertainty.
 
         Parameters
@@ -443,11 +443,6 @@ class GenericParameter(GenericNumericDescriptor):
         clip_to_limits : bool, default=True
             Whether to clip the resolved fit bounds to the parameter's
             physical lower and upper limits when those are finite.
-
-        Returns
-        -------
-        tuple[float, float]
-            The resolved ``(fit_min, fit_max)`` bounds.
 
         Raises
         ------
@@ -494,7 +489,6 @@ class GenericParameter(GenericNumericDescriptor):
 
         self.fit_min = lower
         self.fit_max = upper
-        return lower, upper
 
 
 # ======================================================================
