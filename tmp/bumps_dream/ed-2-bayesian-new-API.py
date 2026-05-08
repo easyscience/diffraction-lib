@@ -140,8 +140,7 @@ experiment.linked_phases.create(id='lbco', scale=9.1351)
 
 # %%
 structure.cell.length_a.free = True
-experiment.peak.broad_gauss_w.free = True
-experiment.linked_phases['lbco'].scale.free = True
+experiment.instrument.calib_twotheta_offset.free = True
 
 # %%
 project.analysis.fit.show_minimizer_types()
@@ -164,16 +163,16 @@ project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')
 
 # %%
 length_a = structure.cell.length_a.value
-structure.cell.length_a.fit_min = length_a - 0.01
-structure.cell.length_a.fit_max = length_a + 0.01
+length_a_sigma = structure.cell.length_a.uncertainty or 0.001
+length_a_window = max(8.0 * length_a_sigma, 0.001)
+structure.cell.length_a.fit_min = length_a - length_a_window
+structure.cell.length_a.fit_max = length_a + length_a_window
 
-scale = experiment.linked_phases['lbco'].scale.value
-experiment.linked_phases['lbco'].scale.fit_min = scale * 0.8
-experiment.linked_phases['lbco'].scale.fit_max = scale * 1.2
-
-broad_gauss_w = experiment.peak.broad_gauss_w.value
-experiment.peak.broad_gauss_w.fit_min = max(0.001, broad_gauss_w * 0.5)
-experiment.peak.broad_gauss_w.fit_max = broad_gauss_w * 1.5
+twotheta_offset = experiment.instrument.calib_twotheta_offset.value
+twotheta_offset_sigma = experiment.instrument.calib_twotheta_offset.uncertainty or 0.01
+twotheta_offset_window = max(8.0 * twotheta_offset_sigma, 0.01)
+experiment.instrument.calib_twotheta_offset.fit_min = twotheta_offset - twotheta_offset_window
+experiment.instrument.calib_twotheta_offset.fit_max = twotheta_offset + twotheta_offset_window
 
 # %%
 project.analysis.display.free_params()
@@ -205,8 +204,7 @@ project.display.plotter.plot_posterior_pairs()
 
 # %%
 project.display.plotter.plot_param_distribution(structure.cell.length_a)
-project.display.plotter.plot_param_distribution(experiment.linked_phases['lbco'].scale)
-project.display.plotter.plot_param_distribution(experiment.peak.broad_gauss_w)
+project.display.plotter.plot_param_distribution(experiment.instrument.calib_twotheta_offset)
 
 # %%
 project.display.plotter.plot_posterior_predictive(expt_name='hrpt', style='band')
