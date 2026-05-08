@@ -1054,6 +1054,10 @@ class Plotter(RendererBase):
                         x_values=x_density_values,
                         y_values=y_density_values,
                     )
+                    sample_hovertemplate = (
+                        f'{labels[col_index]}: %{{x:.4f}}<br>'
+                        f'{labels[row_index]}: %{{y:.4f}}<extra></extra>'
+                    )
                     fig.add_trace(
                         go.Scatter(
                             x=x_scatter_values,
@@ -1066,10 +1070,7 @@ class Plotter(RendererBase):
                             name='Posterior samples',
                             legendgroup='posterior-samples',
                             showlegend=show_scatter_legend,
-                            hovertemplate=(
-                                f'{labels[col_index]}: %{{x:.4f}}<br>'
-                                f'{labels[row_index]}: %{{y:.4f}}<extra></extra>'
-                            ),
+                            hoverinfo='skip',
                         ),
                         row=row,
                         col=col,
@@ -1084,6 +1085,21 @@ class Plotter(RendererBase):
                         fig.add_trace(contour_traces[0], row=row, col=col)
                         fig.add_trace(contour_traces[1], row=row, col=col)
                         show_contour_legend = False
+                    fig.add_trace(
+                        go.Scatter(
+                            x=x_scatter_values,
+                            y=y_scatter_values,
+                            mode='markers',
+                            marker={
+                                'color': 'rgba(0, 0, 0, 0)',
+                                'size': 6,
+                            },
+                            showlegend=False,
+                            hovertemplate=sample_hovertemplate,
+                        ),
+                        row=row,
+                        col=col,
+                    )
 
                 fig.update_xaxes(
                     showline=True,
