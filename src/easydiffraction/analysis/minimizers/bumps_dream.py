@@ -56,7 +56,7 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
 
     def config_history(self, history: object) -> None:
         """Declare the history fields needed for progress updates."""
-        history.requires(time=1, step=1, value=1)
+        history.requires(time=1, step=1, value=1, population_values=1)
 
     def __call__(self, history: object) -> None:
         """Forward sampler progress to the shared fit tracker."""
@@ -64,12 +64,13 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
         generation = max(1, step)
         nllf = float(history.value[0])
         reduced_chi2 = self._reduced_chi_square_from_nllf(nllf)
+        log_posterior = self._population_mean_log_posterior(history)
         self._tracker.track_sampler_progress(
             iteration=generation,
             total_iterations=self._total_generations,
             phase=self._phase_name(generation),
             progress_percent=self._progress_percent(generation),
-            log_posterior=-nllf,
+            log_posterior=log_posterior,
             reduced_chi2=reduced_chi2,
             elapsed_time=float(history.time[0]),
         )
@@ -87,7 +88,7 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
             total_iterations=self._total_generations,
             phase=self._phase_name(generation),
             progress_percent=self._progress_percent(generation),
-            log_posterior=-best_nllf,
+            log_posterior=self._population_mean_log_posterior(history),
             reduced_chi2=reduced_chi2,
             elapsed_time=float(history.time[0]),
         )
@@ -103,6 +104,19 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
         """Return DREAM progress as a percentage."""
         clamped_generation = min(generation, self._total_generations)
         return 100.0 * clamped_generation / self._total_generations
+
+    @staticmethod
+    def _population_mean_log_posterior(history: object) -> float:
+        """Return the current mean log-posterior across the walker population."""
+        population_values = history.population_values[0] if history.population_values else None
+        if population_values is None:
+            return -float(history.value[0])
+
+        nllf_values = np.asarray(population_values, dtype=float)
+        finite_mask = np.isfinite(nllf_values)
+        if not np.any(finite_mask):
+            return -float(history.value[0])
+        return float(np.mean(-nllf_values[finite_mask]))
 
     def _reduced_chi_square_from_nllf(self, nllf: float) -> float:
         """Convert DREAM's negative log-likelihood to reduced chi-square."""
@@ -491,12 +505,16 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         raw_result : object
             DREAM result object.
         """
-        if getattr(raw_result, 'success', False):
-            values = raw_result.x
-            uncertainties = getattr(raw_result, 'dx', None)
+        if hasattr(raw_result, 'x'):
+            if getattr(raw_result, 'success', False):
+                values = raw_result.x
+                uncertainties = getattr(raw_result, 'dx', None)
+            else:
+                values = getattr(raw_result, 'starting_values', raw_result.x)
+                uncertainties = getattr(raw_result, 'starting_uncertainties', None)
         else:
-            values = getattr(raw_result, 'starting_values', None)
-            uncertainties = getattr(raw_result, 'starting_uncertainties', None)
+            values = raw_result
+            uncertainties = None
 
         if values is None:
             return

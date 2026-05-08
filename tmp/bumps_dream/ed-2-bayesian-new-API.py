@@ -214,3 +214,8 @@ project.display.plotter.plot_param_distribution(experiment.instrument.calib_twot
 
 # %%
 project.display.plotter.plot_posterior_predictive(expt_name='hrpt')
+
+# %%
+project.display.plotter.plot_posterior_predictive(expt_name='hrpt', x_min=100, x_max=102)
+
+# %%
