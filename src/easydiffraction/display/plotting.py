@@ -1071,6 +1071,7 @@ class Plotter(RendererBase):
                             legendgroup='posterior-samples',
                             showlegend=show_scatter_legend,
                             hoverinfo='skip',
+                            zorder=0,
                         ),
                         row=row,
                         col=col,
@@ -1096,6 +1097,7 @@ class Plotter(RendererBase):
                             },
                             showlegend=False,
                             hovertemplate=sample_hovertemplate,
+                            zorder=3,
                         ),
                         row=row,
                         col=col,
@@ -1201,6 +1203,7 @@ class Plotter(RendererBase):
             hoverinfo='skip',
             showscale=False,
             showlegend=False,
+            zorder=1,
         )
         line_trace = go.Contour(
             x=x_grid,
@@ -1220,6 +1223,7 @@ class Plotter(RendererBase):
             hoverinfo='skip',
             showscale=False,
             showlegend=False,
+            zorder=2,
         )
         return fill_trace, line_trace
 
