@@ -103,6 +103,8 @@ PAIR_PLOT_MIN_SIZE_PIXELS = 680
 PAIR_PLOT_MARGIN_PIXELS = 120
 PAIR_PLOT_SUBPLOT_SPACING = 0.015
 PAIR_PLOT_MAJOR_TICKS = 3
+POSTERIOR_PAIR_AXIS_LINE_COLOR = 'rgba(112, 129, 163, 0.88)'
+POSTERIOR_PAIR_AXIS_LINE_WIDTH = 1.2
 
 
 @dataclass(frozen=True)
@@ -1108,6 +1110,8 @@ class Plotter(RendererBase):
                     mirror=True,
                     zeroline=False,
                     layer='above traces',
+                    linecolor=POSTERIOR_PAIR_AXIS_LINE_COLOR,
+                    linewidth=POSTERIOR_PAIR_AXIS_LINE_WIDTH,
                     nticks=PAIR_PLOT_MAJOR_TICKS,
                     tickformat=',.6~g',
                     separatethousands=True,
@@ -1119,6 +1123,8 @@ class Plotter(RendererBase):
                     mirror=True,
                     zeroline=False,
                     layer='above traces',
+                    linecolor=POSTERIOR_PAIR_AXIS_LINE_COLOR,
+                    linewidth=POSTERIOR_PAIR_AXIS_LINE_WIDTH,
                     nticks=PAIR_PLOT_MAJOR_TICKS,
                     tickformat=',.6~g',
                     separatethousands=True,
