@@ -1033,7 +1033,8 @@ class Plotter(RendererBase):
                 y_density_values = density_samples[:, row_index]
                 x_scatter_values = scatter_samples[:, col_index]
                 y_scatter_values = scatter_samples[:, row_index]
-                if row_index == col_index:
+                is_diagonal_subplot = row_index == col_index
+                if is_diagonal_subplot:
                     density_trace = self._posterior_density_trace(
                         fit_results=fit_results,
                         parameter_name=parameter_names[col_index],
@@ -1149,10 +1150,17 @@ class Plotter(RendererBase):
                     row=row,
                     col=col,
                 )
-                if row_index != col_index:
+                if not is_diagonal_subplot:
                     fig.update_yaxes(range=list(parameter_axis_ranges[row_index]), row=row, col=col)
                 fig.update_xaxes(showticklabels=(row_index == n_parameters - 1), row=row, col=col)
-                fig.update_yaxes(showticklabels=(col_index == 0), row=row, col=col)
+                fig.update_yaxes(
+                    showticklabels=(col_index == 0 and not is_diagonal_subplot),
+                    ticks='' if is_diagonal_subplot else None,
+                    row=row,
+                    col=col,
+                )
+                if row_index == 0 and col_index == 0:
+                    fig.update_yaxes(title_text='Probability density', row=row, col=col)
                 if row_index == n_parameters - 1:
                     fig.update_xaxes(title_text=labels[col_index], row=row, col=col)
 
