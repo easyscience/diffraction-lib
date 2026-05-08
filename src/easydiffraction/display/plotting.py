@@ -104,6 +104,7 @@ PAIR_PLOT_MARGIN_PIXELS = 120
 PAIR_PLOT_SUBPLOT_SPACING = 0.015
 PAIR_PLOT_MAJOR_TICKS = 3
 POSTERIOR_PAIR_AXIS_LINE_WIDTH = 1.2
+POSTERIOR_PAIR_AXIS_TITLE_FONT_SIZE = 14
 POSTERIOR_PAIR_Y_TITLE_XSHIFT_PIXELS = 56
 
 
@@ -1180,6 +1181,7 @@ class Plotter(RendererBase):
                             'yref': 'paper',
                             'yanchor': 'middle',
                             'text': labels[row_index],
+                            'font': {'size': POSTERIOR_PAIR_AXIS_TITLE_FONT_SIZE},
                             'textangle': -90,
                             'showarrow': False,
                         }
