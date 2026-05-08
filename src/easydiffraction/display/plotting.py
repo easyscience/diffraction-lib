@@ -1195,7 +1195,13 @@ class Plotter(RendererBase):
             PAIR_PLOT_CELL_SIZE_PIXELS * n_parameters + PAIR_PLOT_MARGIN_PIXELS,
         )
         fig.update_layout(
-            title='Posterior pair plot',
+            margin={
+                'autoexpand': True,
+                'r': 30,
+                't': 40,
+                'b': 45,
+            },
+            title={'text': 'Posterior pair plot'},
             bargap=0.05,
             width=figure_size,
             height=figure_size,
