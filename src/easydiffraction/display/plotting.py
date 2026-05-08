@@ -994,6 +994,20 @@ class Plotter(RendererBase):
         show_scatter_legend = True
         show_contour_legend = True
         axis_frame_color = self._plot_axis_frame_color()
+        parameter_axis_ranges = [
+            self._posterior_axis_bounds(
+                density_samples[:, index],
+                lower_bound=self._posterior_parameter_bounds(
+                    fit_results=fit_results,
+                    parameter_name=parameter_names[index],
+                )[0],
+                upper_bound=self._posterior_parameter_bounds(
+                    fit_results=fit_results,
+                    parameter_name=parameter_names[index],
+                )[1],
+            )
+            for index in range(len(parameter_names))
+        ]
 
         n_parameters = len(parameter_names)
         subplot_title_annotations: list[dict[str, object]] = []
@@ -1111,6 +1125,7 @@ class Plotter(RendererBase):
                 fig.update_xaxes(
                     showline=True,
                     mirror=True,
+                    range=list(parameter_axis_ranges[col_index]),
                     zeroline=False,
                     layer='above traces',
                     linecolor=axis_frame_color,
@@ -1134,6 +1149,8 @@ class Plotter(RendererBase):
                     row=row,
                     col=col,
                 )
+                if row_index != col_index:
+                    fig.update_yaxes(range=list(parameter_axis_ranges[row_index]), row=row, col=col)
                 fig.update_xaxes(showticklabels=(row_index == n_parameters - 1), row=row, col=col)
                 fig.update_yaxes(showticklabels=(col_index == 0), row=row, col=col)
                 if row_index == n_parameters - 1:
