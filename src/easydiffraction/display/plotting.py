@@ -979,7 +979,7 @@ class Plotter(RendererBase):
 
         go = __import__(
             'plotly.graph_objects',
-            fromlist=['Figure', 'Histogram', 'Scattergl', 'Contour'],
+            fromlist=['Figure', 'Histogram', 'Scatter', 'Contour'],
         )
         make_subplots = __import__('plotly.subplots', fromlist=['make_subplots']).make_subplots
 
@@ -1055,7 +1055,7 @@ class Plotter(RendererBase):
                         y_values=y_density_values,
                     )
                     fig.add_trace(
-                        go.Scattergl(
+                        go.Scatter(
                             x=x_scatter_values,
                             y=y_scatter_values,
                             mode='markers',
@@ -1164,10 +1164,12 @@ class Plotter(RendererBase):
         contour_start = float(np.max(density) * 0.20)
         contour_end = float(np.max(density) * 0.95)
         contour_size = float(np.max(density) * 0.15)
+        fill_density = np.array(density, copy=True)
+        fill_density[fill_density < contour_start] = np.nan
         fill_trace = go.Contour(
             x=x_grid,
             y=y_grid,
-            z=density,
+            z=fill_density,
             contours={
                 'coloring': 'fill',
                 'showlabels': False,
@@ -1177,6 +1179,9 @@ class Plotter(RendererBase):
                 'size': contour_size,
             },
             colorscale=POSTERIOR_CONTOUR_FILL_COLORSCALE,
+            zmin=contour_start,
+            zmax=contour_end,
+            connectgaps=False,
             hoverinfo='skip',
             showscale=False,
             showlegend=False,
@@ -1193,6 +1198,8 @@ class Plotter(RendererBase):
                 'size': contour_size,
             },
             colorscale=POSTERIOR_CONTOUR_LINE_COLORSCALE,
+            zmin=contour_start,
+            zmax=contour_end,
             line={'width': 0.9},
             hoverinfo='skip',
             showscale=False,
