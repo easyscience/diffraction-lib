@@ -47,7 +47,7 @@ structure.space_group.name_h_m = 'P m -3 m'
 structure.space_group.it_coordinate_system_code = '1'
 
 # %%
-structure.cell.length_a = 3.8909
+structure.cell.length_a = 3.88
 
 # %%
 structure.atom_sites.create(
@@ -113,11 +113,11 @@ experiment = project.experiments['hrpt']
 
 # %%
 experiment.instrument.setup_wavelength = 1.494
-experiment.instrument.calib_twotheta_offset = 0.6226
+experiment.instrument.calib_twotheta_offset = 0.0
 
 # %%
-experiment.peak.broad_gauss_u = 0.0816
-experiment.peak.broad_gauss_v = -0.1159
+experiment.peak.broad_gauss_u = 0.1
+experiment.peak.broad_gauss_v = -0.1
 experiment.peak.broad_gauss_w = 0.1204
 experiment.peak.broad_lorentz_y = 0.0844
 
@@ -130,7 +130,7 @@ experiment.background.create(id='5', x=165, y=174.2813)
 
 # %%
 experiment.excluded_regions.create(id='1', start=0, end=30)
-experiment.excluded_regions.create(id='2', start=90, end=180)
+experiment.excluded_regions.create(id='2', start=70, end=180)
 
 # %%
 experiment.linked_phases.create(id='lbco', scale=9.1351)
@@ -161,7 +161,7 @@ project.display.plotter.plot_param_correlations(show_diagonal=True)
 project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=83, x_max=85)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=65, x_max=68)
 
 # %% [markdown]
 # ## Step 5: Perform Bayesian Analysis
@@ -180,13 +180,15 @@ project.analysis.display.free_params()
 
 # %%
 project.analysis.fit.show_minimizer_types()
+
+# %%
 project.analysis.fit.minimizer_type = 'bumps (dream)'
 
-dream = project.analysis.fit.minimizer
-dream.steps = 200 #1000
-dream.burn = 50 #200
-dream.thin = 1
-dream.pop = 4
+# %%
+project.analysis.fit.minimizer.steps = 200 #1000
+project.analysis.fit.minimizer.burn = 40 #200
+project.analysis.fit.minimizer.thin = 1
+project.analysis.fit.minimizer.pop = 4
 
 # %%
 project.analysis.fit()
@@ -210,6 +212,6 @@ project.display.plotter.plot_param_distribution(experiment.instrument.calib_twot
 project.display.plotter.plot_posterior_predictive(expt_name='hrpt')
 
 # %%
-project.display.plotter.plot_posterior_predictive(expt_name='hrpt', x_min=83, x_max=85)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=65, x_max=68)
 
 # %%
