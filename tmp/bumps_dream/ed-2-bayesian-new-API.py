@@ -129,8 +129,8 @@ experiment.background.create(id='4', x=110, y=175.4006)
 experiment.background.create(id='5', x=165, y=174.2813)
 
 # %%
-experiment.excluded_regions.create(id='1', start=0, end=20)
-experiment.excluded_regions.create(id='2', start=105, end=180)
+experiment.excluded_regions.create(id='1', start=0, end=30)
+experiment.excluded_regions.create(id='2', start=90, end=180)
 
 # %%
 experiment.linked_phases.create(id='lbco', scale=9.1351)
@@ -140,6 +140,8 @@ experiment.linked_phases.create(id='lbco', scale=9.1351)
 
 # %%
 structure.cell.length_a.free = True
+experiment.peak.broad_gauss_u.free = True
+experiment.peak.broad_gauss_v.free = True
 experiment.instrument.calib_twotheta_offset.free = True
 
 # %%
@@ -153,29 +155,25 @@ project.analysis.fit()
 project.analysis.display.fit_results()
 
 # %%
-project.display.plotter.plot_param_correlations()
+project.display.plotter.plot_param_correlations(show_diagonal=True)
 
 # %%
 project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=100, x_max=102)
+project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=83, x_max=85)
 
 # %% [markdown]
 # ## Step 5: Perform Bayesian Analysis
 
 # %%
-length_a = structure.cell.length_a.value
-length_a_sigma = structure.cell.length_a.uncertainty or 0.001
-length_a_window = max(8.0 * length_a_sigma, 0.001)
-structure.cell.length_a.fit_min = length_a - length_a_window
-structure.cell.length_a.fit_max = length_a + length_a_window
+project.analysis.display.free_params()
 
-twotheta_offset = experiment.instrument.calib_twotheta_offset.value
-twotheta_offset_sigma = experiment.instrument.calib_twotheta_offset.uncertainty or 0.01
-twotheta_offset_window = max(8.0 * twotheta_offset_sigma, 0.01)
-experiment.instrument.calib_twotheta_offset.fit_min = twotheta_offset - twotheta_offset_window
-experiment.instrument.calib_twotheta_offset.fit_max = twotheta_offset + twotheta_offset_window
+# %%
+structure.cell.length_a.set_fit_bounds_from_uncertainty(multiplier=5)
+experiment.peak.broad_gauss_u.set_fit_bounds_from_uncertainty(multiplier=5)
+experiment.peak.broad_gauss_v.set_fit_bounds_from_uncertainty(multiplier=5)
+experiment.instrument.calib_twotheta_offset.set_fit_bounds_from_uncertainty(multiplier=5)
 
 # %%
 project.analysis.display.free_params()
@@ -185,8 +183,8 @@ project.analysis.fit.show_minimizer_types()
 project.analysis.fit.minimizer_type = 'bumps (dream)'
 
 dream = project.analysis.fit.minimizer
-dream.steps = 1000
-dream.burn = 200
+dream.steps = 200 #1000
+dream.burn = 50 #200
 dream.thin = 1
 dream.pop = 4
 
@@ -197,25 +195,21 @@ project.analysis.fit()
 project.analysis.display.fit_results()
 
 # %%
-project.display.plotter.plot_param_correlations()
-
-# %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')
-
-# %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=100, x_max=102)
+project.display.plotter.plot_param_correlations(show_diagonal=True)
 
 # %%
 project.display.plotter.plot_posterior_pairs()
 
 # %%
 project.display.plotter.plot_param_distribution(structure.cell.length_a)
+project.display.plotter.plot_param_distribution(experiment.peak.broad_gauss_u)
+project.display.plotter.plot_param_distribution(experiment.peak.broad_gauss_v)
 project.display.plotter.plot_param_distribution(experiment.instrument.calib_twotheta_offset)
 
 # %%
 project.display.plotter.plot_posterior_predictive(expt_name='hrpt')
 
 # %%
-project.display.plotter.plot_posterior_predictive(expt_name='hrpt', x_min=100, x_max=102)
+project.display.plotter.plot_posterior_predictive(expt_name='hrpt', x_min=83, x_max=85)
 
 # %%
