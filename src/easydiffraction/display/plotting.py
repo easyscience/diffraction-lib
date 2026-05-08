@@ -910,7 +910,10 @@ class Plotter(RendererBase):
             log.warning('Posterior pair plots require at least two sampled parameters.')
             return None
 
-        go = __import__('plotly.graph_objects', fromlist=['Figure', 'Histogram', 'Scattergl'])
+        go = __import__(
+            'plotly.graph_objects',
+            fromlist=['Figure', 'Histogram', 'Scattergl', 'Contour'],
+        )
         make_subplots = __import__('plotly.subplots', fromlist=['make_subplots']).make_subplots
 
         samples = self._selected_posterior_samples(posterior_samples, parameter_names)
@@ -962,6 +965,15 @@ class Plotter(RendererBase):
                     else:
                         fig.add_trace(density_trace, row=row, col=col)
                 else:
+                    contour_trace = self._posterior_contour_trace(
+                        fit_results=fit_results,
+                        x_parameter_name=parameter_names[col_index],
+                        y_parameter_name=parameter_names[row_index],
+                        x_values=x_values,
+                        y_values=y_values,
+                    )
+                    if contour_trace is not None:
+                        fig.add_trace(contour_trace, row=row, col=col)
                     fig.add_trace(
                         go.Scattergl(
                             x=x_values,
@@ -993,6 +1005,52 @@ class Plotter(RendererBase):
             bargap=0.05,
         )
         return fig
+
+    def _posterior_contour_trace(
+        self,
+        *,
+        fit_results: object,
+        x_parameter_name: str,
+        y_parameter_name: str,
+        x_values: np.ndarray,
+        y_values: np.ndarray,
+    ) -> object | None:
+        """Return a 2D KDE contour trace for posterior pair plots."""
+        go = __import__('plotly.graph_objects', fromlist=['Contour'])
+
+        bounds = self._posterior_pair_bounds(
+            fit_results=fit_results,
+            x_parameter_name=x_parameter_name,
+            y_parameter_name=y_parameter_name,
+            x_values=x_values,
+            y_values=y_values,
+        )
+        density_surface = self._posterior_pair_density_surface(
+            x_values=x_values,
+            y_values=y_values,
+            x_bounds=bounds[0],
+            y_bounds=bounds[1],
+        )
+        if density_surface is None:
+            return None
+
+        x_grid, y_grid, density = density_surface
+        return go.Contour(
+            x=x_grid,
+            y=y_grid,
+            z=density,
+            contours={
+                'coloring': 'none',
+                'showlabels': False,
+                'start': float(np.max(density) * 0.15),
+                'end': float(np.max(density) * 0.95),
+                'size': float(np.max(density) * 0.16),
+            },
+            line={'color': 'rgba(99, 110, 250, 0.55)', 'width': 1.2},
+            hoverinfo='skip',
+            showscale=False,
+            showlegend=False,
+        )
 
     def _build_param_distribution_plot(
         self,
@@ -1154,6 +1212,51 @@ class Plotter(RendererBase):
         return lower, upper
 
     @classmethod
+    def _posterior_pair_bounds(
+        cls,
+        *,
+        fit_results: object,
+        x_parameter_name: str,
+        y_parameter_name: str,
+        x_values: np.ndarray,
+        y_values: np.ndarray,
+    ) -> tuple[tuple[float, float], tuple[float, float]]:
+        """Return plotting bounds for a posterior pair panel."""
+        x_lower, x_upper = cls._posterior_parameter_bounds(
+            fit_results=fit_results,
+            parameter_name=x_parameter_name,
+        )
+        y_lower, y_upper = cls._posterior_parameter_bounds(
+            fit_results=fit_results,
+            parameter_name=y_parameter_name,
+        )
+        return (
+            cls._posterior_axis_bounds(x_values, lower_bound=x_lower, upper_bound=x_upper),
+            cls._posterior_axis_bounds(y_values, lower_bound=y_lower, upper_bound=y_upper),
+        )
+
+    @staticmethod
+    def _posterior_axis_bounds(
+        values: np.ndarray,
+        *,
+        lower_bound: float | None,
+        upper_bound: float | None,
+    ) -> tuple[float, float]:
+        """Return finite plotting bounds for one posterior axis."""
+        data = np.asarray(values, dtype=float)
+        data = data[np.isfinite(data)]
+        data_min = float(np.min(data))
+        data_max = float(np.max(data))
+        data_range = data_max - data_min
+        padding = 0.05 * data_range if data_range > 0 else max(abs(data_min), 1.0) * 0.05
+        if padding == 0:
+            padding = 1e-6
+
+        resolved_lower = lower_bound if lower_bound is not None else data_min - padding
+        resolved_upper = upper_bound if upper_bound is not None else data_max + padding
+        return float(resolved_lower), float(resolved_upper)
+
+    @classmethod
     def _posterior_density_curve(
         cls,
         values: np.ndarray,
@@ -1199,6 +1302,53 @@ class Plotter(RendererBase):
         if area <= 0:
             return None
         return grid, density / area
+
+    @classmethod
+    def _posterior_pair_density_surface(
+        cls,
+        *,
+        x_values: np.ndarray,
+        y_values: np.ndarray,
+        x_bounds: tuple[float, float],
+        y_bounds: tuple[float, float],
+        grid_size: int = 96,
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray] | None:
+        """Estimate a 2D KDE surface for a posterior pair panel."""
+        gaussian_kde = __import__('scipy.stats', fromlist=['gaussian_kde']).gaussian_kde
+
+        x_data = np.asarray(x_values, dtype=float)
+        y_data = np.asarray(y_values, dtype=float)
+        mask = np.isfinite(x_data) & np.isfinite(y_data)
+        x_data = x_data[mask]
+        y_data = y_data[mask]
+        if x_data.size < 2 or y_data.size < 2:
+            return None
+
+        if np.allclose(x_data, x_data[0]) and np.allclose(y_data, y_data[0]):
+            return None
+
+        reflected_x = cls._reflected_density_samples(
+            x_data,
+            lower_bound=x_bounds[0],
+            upper_bound=x_bounds[1],
+        )
+        reflected_y = cls._reflected_density_samples(
+            y_data,
+            lower_bound=y_bounds[0],
+            upper_bound=y_bounds[1],
+        )
+        if reflected_x.shape != reflected_y.shape:
+            return None
+
+        x_grid = np.linspace(x_bounds[0], x_bounds[1], num=grid_size)
+        y_grid = np.linspace(y_bounds[0], y_bounds[1], num=grid_size)
+        mesh_x, mesh_y = np.meshgrid(x_grid, y_grid)
+        positions = np.vstack([mesh_x.ravel(), mesh_y.ravel()])
+        density = gaussian_kde(np.vstack([reflected_x, reflected_y]))(positions)
+        density = np.asarray(density, dtype=float).reshape(mesh_x.shape)
+        if not np.any(np.isfinite(density)):
+            return None
+        return x_grid, y_grid, density
 
     @staticmethod
     def _reflected_density_samples(
