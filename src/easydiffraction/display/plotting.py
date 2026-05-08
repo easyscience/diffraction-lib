@@ -105,6 +105,7 @@ PAIR_PLOT_SUBPLOT_SPACING = 0.015
 PAIR_PLOT_MAJOR_TICKS = 3
 POSTERIOR_PAIR_AXIS_LINE_COLOR = 'rgba(112, 129, 163, 0.88)'
 POSTERIOR_PAIR_AXIS_LINE_WIDTH = 1.2
+POSTERIOR_PAIR_Y_TITLE_XSHIFT_PIXELS = 56
 
 
 @dataclass(frozen=True)
@@ -995,6 +996,7 @@ class Plotter(RendererBase):
         show_contour_legend = True
 
         n_parameters = len(parameter_names)
+        subplot_title_annotations: list[dict[str, object]] = []
         subplot_border_shapes: list[dict[str, object]] = []
         fig = make_subplots(
             rows=n_parameters,
@@ -1136,10 +1138,23 @@ class Plotter(RendererBase):
                 fig.update_yaxes(showticklabels=(col_index == 0), row=row, col=col)
                 if row_index == n_parameters - 1:
                     fig.update_xaxes(title_text=labels[col_index], row=row, col=col)
-                if col_index == 0 and row_index > 0:
-                    fig.update_yaxes(title_text=labels[row_index], row=row, col=col)
 
                 subplot = fig.get_subplot(row, col)
+                if col_index == 0 and row_index > 0:
+                    subplot_title_annotations.append(
+                        {
+                            'x': subplot.xaxis.domain[0],
+                            'xref': 'paper',
+                            'xanchor': 'right',
+                            'xshift': -POSTERIOR_PAIR_Y_TITLE_XSHIFT_PIXELS,
+                            'y': 0.5 * (subplot.yaxis.domain[0] + subplot.yaxis.domain[1]),
+                            'yref': 'paper',
+                            'yanchor': 'middle',
+                            'text': labels[row_index],
+                            'textangle': -90,
+                            'showarrow': False,
+                        }
+                    )
                 subplot_border_shapes.append(
                     {
                         'type': 'rect',
@@ -1167,6 +1182,7 @@ class Plotter(RendererBase):
             bargap=0.05,
             width=figure_size,
             height=figure_size,
+            annotations=subplot_title_annotations,
             shapes=subplot_border_shapes,
             legend={
                 'bgcolor': 'rgba(0, 0, 0, 0)',
