@@ -995,6 +995,7 @@ class Plotter(RendererBase):
         show_contour_legend = True
 
         n_parameters = len(parameter_names)
+        subplot_border_shapes: list[dict[str, object]] = []
         fig = make_subplots(
             rows=n_parameters,
             cols=n_parameters,
@@ -1138,6 +1139,25 @@ class Plotter(RendererBase):
                 if col_index == 0 and row_index > 0:
                     fig.update_yaxes(title_text=labels[row_index], row=row, col=col)
 
+                subplot = fig.get_subplot(row, col)
+                subplot_border_shapes.append(
+                    {
+                        'type': 'rect',
+                        'xref': 'paper',
+                        'yref': 'paper',
+                        'x0': subplot.xaxis.domain[0],
+                        'x1': subplot.xaxis.domain[1],
+                        'y0': subplot.yaxis.domain[0],
+                        'y1': subplot.yaxis.domain[1],
+                        'line': {
+                            'color': POSTERIOR_PAIR_AXIS_LINE_COLOR,
+                            'width': POSTERIOR_PAIR_AXIS_LINE_WIDTH,
+                        },
+                        'fillcolor': 'rgba(0, 0, 0, 0)',
+                        'layer': 'above',
+                    }
+                )
+
         figure_size = max(
             PAIR_PLOT_MIN_SIZE_PIXELS,
             PAIR_PLOT_CELL_SIZE_PIXELS * n_parameters + PAIR_PLOT_MARGIN_PIXELS,
@@ -1147,6 +1167,7 @@ class Plotter(RendererBase):
             bargap=0.05,
             width=figure_size,
             height=figure_size,
+            shapes=subplot_border_shapes,
             legend={
                 'bgcolor': 'rgba(0, 0, 0, 0)',
                 'xanchor': 'right',
