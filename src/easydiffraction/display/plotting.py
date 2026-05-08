@@ -73,13 +73,15 @@ DEFAULT_POSTERIOR_PREDICTIVE_DRAWS = 200
 DEFAULT_POSTERIOR_PREDICTIVE_DRAW_PLOT_CAP = 50
 POSTERIOR_DENSITY_LINE_COLOR = 'rgb(99, 110, 250)'
 POSTERIOR_DENSITY_FILL_COLOR = 'rgba(99, 110, 250, 0.22)'
+POSTERIOR_HISTOGRAM_FILL_COLOR = 'rgba(120, 120, 120, 0.38)'
+POSTERIOR_HISTOGRAM_LINE_COLOR = 'rgba(120, 120, 120, 0.24)'
 POSTERIOR_INTERVAL_95_FILL_COLOR = 'rgba(140, 140, 140, 0.08)'
 POSTERIOR_INTERVAL_68_FILL_COLOR = 'rgba(140, 140, 140, 0.16)'
-POSTERIOR_MEDIAN_LINE_COLOR = 'rgb(140, 140, 140)'
+POSTERIOR_MEDIAN_LINE_COLOR = 'rgb(80, 80, 80)'
 POSTERIOR_POINT_ESTIMATE_LINE_COLOR = 'rgb(214, 39, 40)'
 POSTERIOR_DRAW_LINE_COLOR = 'rgba(140, 140, 140, 0.18)'
 POSTERIOR_SCATTER_MARKER_COLOR = 'rgba(140, 140, 140, 0.20)'
-POSTERIOR_CONTOUR_LINE_COLOR = 'rgba(99, 110, 250, 0.50)'
+POSTERIOR_CONTOUR_LINE_COLOR = 'rgba(65, 85, 225, 0.85)'
 
 
 @dataclass(frozen=True)
@@ -960,10 +962,10 @@ class Plotter(RendererBase):
         )
         make_subplots = __import__('plotly.subplots', fromlist=['make_subplots']).make_subplots
 
-        samples = self._selected_posterior_samples(posterior_samples, parameter_names)
-        if samples is None:
+        density_samples = self._selected_posterior_samples(posterior_samples, parameter_names)
+        if density_samples is None:
             return None
-        samples = self._thin_posterior_samples(samples, max_points=1500)
+        scatter_samples = self._thin_posterior_samples(density_samples, max_points=1500)
         labels = self._posterior_plot_labels(fit_results, parameter_names)
 
         n_parameters = len(parameter_names)
@@ -984,20 +986,22 @@ class Plotter(RendererBase):
                     fig.update_yaxes(visible=False, row=row, col=col)
                     continue
 
-                x_values = samples[:, col_index]
-                y_values = samples[:, row_index]
+                x_density_values = density_samples[:, col_index]
+                y_density_values = density_samples[:, row_index]
+                x_scatter_values = scatter_samples[:, col_index]
+                y_scatter_values = scatter_samples[:, row_index]
                 if row_index == col_index:
                     density_trace = self._posterior_density_trace(
                         fit_results=fit_results,
                         parameter_name=parameter_names[col_index],
-                        values=x_values,
+                        values=x_density_values,
                         trace_name=labels[col_index],
                     )
                     diagonal_y_axis_range = None
                     if density_trace is None:
                         fig.add_trace(
                             go.Histogram(
-                                x=x_values,
+                                x=x_density_values,
                                 nbinsx=40,
                                 histnorm='probability density',
                                 marker={'color': 'rgb(99, 110, 250)'},
@@ -1015,19 +1019,19 @@ class Plotter(RendererBase):
                     if diagonal_y_axis_range is not None:
                         fig.update_yaxes(range=list(diagonal_y_axis_range), row=row, col=col)
                 else:
-                    contour_trace = self._posterior_contour_trace(
+                    contour_traces = self._posterior_contour_traces(
                         fit_results=fit_results,
                         x_parameter_name=parameter_names[col_index],
                         y_parameter_name=parameter_names[row_index],
-                        x_values=x_values,
-                        y_values=y_values,
+                        x_values=x_density_values,
+                        y_values=y_density_values,
                     )
-                    if contour_trace is not None:
-                        fig.add_trace(contour_trace, row=row, col=col)
+                    if contour_traces is not None:
+                        fig.add_trace(contour_traces[0], row=row, col=col)
                     fig.add_trace(
                         go.Scattergl(
-                            x=x_values,
-                            y=y_values,
+                            x=x_scatter_values,
+                            y=y_scatter_values,
                             mode='markers',
                             marker={
                                 'color': POSTERIOR_SCATTER_MARKER_COLOR,
@@ -1042,6 +1046,8 @@ class Plotter(RendererBase):
                         row=row,
                         col=col,
                     )
+                    if contour_traces is not None:
+                        fig.add_trace(contour_traces[1], row=row, col=col)
 
                 fig.update_xaxes(showticklabels=(row_index == n_parameters - 1), row=row, col=col)
                 fig.update_yaxes(showticklabels=(col_index == 0), row=row, col=col)
@@ -1056,7 +1062,7 @@ class Plotter(RendererBase):
         )
         return fig
 
-    def _posterior_contour_trace(
+    def _posterior_contour_traces(
         self,
         *,
         fit_results: object,
@@ -1064,8 +1070,8 @@ class Plotter(RendererBase):
         y_parameter_name: str,
         x_values: np.ndarray,
         y_values: np.ndarray,
-    ) -> object | None:
-        """Return a 2D KDE contour trace for posterior pair plots."""
+    ) -> tuple[object, object] | None:
+        """Return filled and line contour traces for posterior pair plots."""
         go = __import__('plotly.graph_objects', fromlist=['Contour'])
 
         bounds = self._posterior_pair_bounds(
@@ -1085,29 +1091,49 @@ class Plotter(RendererBase):
             return None
 
         x_grid, y_grid, density = density_surface
-        return go.Contour(
+        contour_start = float(np.max(density) * 0.20)
+        contour_end = float(np.max(density) * 0.95)
+        contour_size = float(np.max(density) * 0.15)
+        fill_trace = go.Contour(
             x=x_grid,
             y=y_grid,
             z=density,
             contours={
                 'coloring': 'fill',
                 'showlabels': False,
-                'start': float(np.max(density) * 0.15),
-                'end': float(np.max(density) * 0.95),
-                'size': float(np.max(density) * 0.16),
+                'showlines': False,
+                'start': contour_start,
+                'end': contour_end,
+                'size': contour_size,
             },
             colorscale=[
                 [0.0, 'rgba(99, 110, 250, 0.00)'],
                 [0.35, 'rgba(99, 110, 250, 0.00)'],
-                [0.60, 'rgba(99, 110, 250, 0.10)'],
-                [0.80, 'rgba(99, 110, 250, 0.18)'],
-                [1.0, 'rgba(99, 110, 250, 0.30)'],
+                [0.60, 'rgba(99, 110, 250, 0.12)'],
+                [0.80, 'rgba(99, 110, 250, 0.22)'],
+                [1.0, 'rgba(99, 110, 250, 0.34)'],
             ],
-            line={'color': POSTERIOR_CONTOUR_LINE_COLOR, 'width': 1.0},
             hoverinfo='skip',
             showscale=False,
             showlegend=False,
         )
+        line_trace = go.Contour(
+            x=x_grid,
+            y=y_grid,
+            z=density,
+            contours={
+                'coloring': 'lines',
+                'showlabels': False,
+                'start': contour_start,
+                'end': contour_end,
+                'size': contour_size,
+            },
+            line={'color': POSTERIOR_CONTOUR_LINE_COLOR, 'width': 1.4},
+            hoverinfo='skip',
+            showscale=False,
+            showlegend=False,
+        )
+        return fill_trace, line_trace
 
     def _build_param_distribution_plot(
         self,
@@ -1153,50 +1179,7 @@ class Plotter(RendererBase):
         else:
             fig = go.Figure()
 
-        if summary is not None:
-            fig.add_vrect(
-                x0=summary.interval_95[0],
-                x1=summary.interval_95[1],
-                fillcolor=POSTERIOR_INTERVAL_95_FILL_COLOR,
-                line_width=0,
-                layer='below',
-            )
-            fig.add_vrect(
-                x0=summary.interval_68[0],
-                x1=summary.interval_68[1],
-                fillcolor=POSTERIOR_INTERVAL_68_FILL_COLOR,
-                line_width=0,
-                layer='below',
-            )
-            fig.add_trace(
-                self._posterior_interval_legend_trace(
-                    trace_name='95% credible interval',
-                    color=POSTERIOR_INTERVAL_95_FILL_COLOR,
-                )
-            )
-            fig.add_trace(
-                self._posterior_interval_legend_trace(
-                    trace_name='68% credible interval',
-                    color=POSTERIOR_INTERVAL_68_FILL_COLOR,
-                )
-            )
-
         histogram_density, _ = np.histogram(values, bins=50, density=True)
-        fig.add_trace(
-            go.Histogram(
-                x=values,
-                nbinsx=50,
-                histnorm='probability density',
-                marker={
-                    'color': 'rgba(140, 140, 140, 0.28)',
-                    'line': {'color': 'rgba(140, 140, 140, 0.18)', 'width': 1},
-                },
-                opacity=0.65,
-                name='Posterior histogram',
-                hovertemplate='sample=%{x:.4f}<br>density=%{y:.4f}<extra></extra>',
-            )
-        )
-
         density_trace = self._posterior_density_trace(
             fit_results=fit_results,
             parameter_name=parameter_name,
@@ -1207,10 +1190,48 @@ class Plotter(RendererBase):
         if density_trace is not None:
             density_trace.name = 'Posterior density'
             density_trace.showlegend = True
-            fig.add_trace(density_trace)
             density_sources.append(np.asarray(density_trace.y, dtype=float))
 
         y_axis_range = self._posterior_density_axis_range(np.concatenate(density_sources))
+
+        if summary is not None and y_axis_range is not None:
+            fig.add_trace(
+                self._posterior_interval_band_trace(
+                    x0=summary.interval_95[0],
+                    x1=summary.interval_95[1],
+                    y_axis_range=y_axis_range,
+                    trace_name='95% credible interval',
+                    color=POSTERIOR_INTERVAL_95_FILL_COLOR,
+                )
+            )
+            fig.add_trace(
+                self._posterior_interval_band_trace(
+                    x0=summary.interval_68[0],
+                    x1=summary.interval_68[1],
+                    y_axis_range=y_axis_range,
+                    trace_name='68% credible interval',
+                    color=POSTERIOR_INTERVAL_68_FILL_COLOR,
+                )
+            )
+
+        fig.add_trace(
+            go.Histogram(
+                x=values,
+                nbinsx=50,
+                histnorm='probability density',
+                marker={
+                    'color': POSTERIOR_HISTOGRAM_FILL_COLOR,
+                    'line': {'color': POSTERIOR_HISTOGRAM_LINE_COLOR, 'width': 1},
+                },
+                opacity=0.82,
+                name='Posterior histogram',
+                hovertemplate='sample=%{x:.4f}<br>density=%{y:.4f}<extra></extra>',
+            )
+        )
+        if density_trace is not None:
+            density_trace.name = 'Posterior density'
+            density_trace.showlegend = True
+            fig.add_trace(density_trace)
 
         median = float(np.median(values))
         if y_axis_range is not None:
@@ -1317,19 +1338,24 @@ class Plotter(RendererBase):
         return lower, data_max + upper_padding
 
     @staticmethod
-    def _posterior_interval_legend_trace(
+    def _posterior_interval_band_trace(
         *,
+        x0: float,
+        x1: float,
+        y_axis_range: tuple[float, float],
         trace_name: str,
         color: str,
     ) -> object:
-        """Return a legend-only proxy trace for a credible interval."""
+        """Return a hideable credible-interval band trace."""
         go = __import__('plotly.graph_objects', fromlist=['Scatter'])
 
         return go.Scatter(
-            x=[None],
-            y=[None],
-            mode='markers',
-            marker={'size': 12, 'symbol': 'square', 'color': color},
+            x=[x0, x1, x1, x0, x0],
+            y=[y_axis_range[0], y_axis_range[0], y_axis_range[1], y_axis_range[1], y_axis_range[0]],
+            mode='lines',
+            fill='toself',
+            fillcolor=color,
+            line={'color': color, 'width': 0},
             name=trace_name,
             showlegend=True,
             hoverinfo='skip',
