@@ -81,18 +81,19 @@ POSTERIOR_MEDIAN_LINE_COLOR = 'rgb(80, 80, 80)'
 POSTERIOR_POINT_ESTIMATE_LINE_COLOR = 'rgb(214, 39, 40)'
 POSTERIOR_DRAW_LINE_COLOR = 'rgba(140, 140, 140, 0.18)'
 POSTERIOR_SCATTER_MARKER_COLOR = 'rgba(140, 140, 140, 0.20)'
-POSTERIOR_CONTOUR_LINE_COLOR = 'rgba(65, 85, 225, 0.85)'
+POSTERIOR_CONTOUR_LINE_COLOR = 'rgba(58, 86, 224, 0.96)'
 POSTERIOR_CONTOUR_FILL_COLORSCALE = [
-    [0.0, 'rgba(68, 1, 84, 0.00)'],
-    [0.35, 'rgba(68, 1, 84, 0.00)'],
-    [0.58, 'rgba(59, 82, 139, 0.16)'],
-    [0.75, 'rgba(33, 145, 140, 0.28)'],
-    [0.88, 'rgba(94, 201, 98, 0.38)'],
-    [1.0, 'rgba(253, 231, 37, 0.48)'],
+    [0.0, 'rgba(224, 233, 255, 0.62)'],
+    [0.35, 'rgba(183, 203, 255, 0.70)'],
+    [0.60, 'rgba(138, 169, 252, 0.78)'],
+    [0.82, 'rgba(96, 131, 242, 0.84)'],
+    [1.0, 'rgba(58, 86, 224, 0.90)'],
 ]
 PAIR_PLOT_CELL_SIZE_PIXELS = 190
 PAIR_PLOT_MIN_SIZE_PIXELS = 680
 PAIR_PLOT_MARGIN_PIXELS = 120
+PAIR_PLOT_SUBPLOT_SPACING = 0.015
+PAIR_PLOT_MAJOR_TICKS = 3
 
 
 @dataclass(frozen=True)
@@ -987,8 +988,8 @@ class Plotter(RendererBase):
             rows=n_parameters,
             cols=n_parameters,
             shared_xaxes='columns',
-            horizontal_spacing=0.03,
-            vertical_spacing=0.03,
+            horizontal_spacing=PAIR_PLOT_SUBPLOT_SPACING,
+            vertical_spacing=PAIR_PLOT_SUBPLOT_SPACING,
         )
 
         for row_index in range(n_parameters):
@@ -1080,6 +1081,7 @@ class Plotter(RendererBase):
                     showline=True,
                     mirror=True,
                     zeroline=False,
+                    nticks=PAIR_PLOT_MAJOR_TICKS,
                     tickformat=',.6~g',
                     separatethousands=True,
                     row=row,
@@ -1089,6 +1091,7 @@ class Plotter(RendererBase):
                     showline=True,
                     mirror=True,
                     zeroline=False,
+                    nticks=PAIR_PLOT_MAJOR_TICKS,
                     tickformat=',.6~g',
                     separatethousands=True,
                     row=row,
