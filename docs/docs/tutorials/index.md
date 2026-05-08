@@ -98,6 +98,15 @@ The tutorials are organized into the following categories:
 - [BEER McStas](ed-20.ipynb) – Rietveld refinement based on the data
   simulated with McStas for the BEER instrument at ESS.
 
+## Bayesian Analysis
+
+- [LBCO Bayesian](ed-21.ipynb) – Demonstrates how to perform a Bayesian
+  analysis of the La0.5Ba0.5CoO3 crystal structure using constant
+  wavelength neutron powder diffraction data from HRPT at PSI. This
+  tutorial covers the use of Markov Chain Monte Carlo (MCMC) sampling to
+  explore the posterior distribution of the refined parameters,
+  providing insights into parameter uncertainties and correlations.
+
 ## Workshops & Schools
 
 - [DMSC Summer School](ed-13.ipynb) – A workshop tutorial that

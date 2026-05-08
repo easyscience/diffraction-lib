@@ -214,6 +214,8 @@ nav:
       - Simulated Data:
           - LBCO+Si McStas: tutorials/ed-9.ipynb
           - BEER McStas: tutorials/ed-20.ipynb
+      - Bayesian Analysis:
+          - LBCO Bayesian: tutorials/ed-21.ipynb
       - Workshops & Schools:
           - DMSC Summer School: tutorials/ed-13.ipynb
   - API Reference:
