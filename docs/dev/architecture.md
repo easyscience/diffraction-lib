@@ -527,28 +527,28 @@ from .line_segment import LineSegmentBackground
 
 ### 5.5 All Factories
 
-| Factory | Domain | Tags resolve to |
-| --- | --- | --- |
-| `BackgroundFactory` | Background categories | `LineSegmentBackground`, `ChebyshevPolynomialBackground` |
-| `PeakFactory` | Peak profiles | `CwlPseudoVoigt`, `TofJorgensen`, `TofJorgensenVonDreele`, … |
-| `InstrumentFactory` | Instruments | `CwlPdInstrument`, `TofPdInstrument`, … |
-| `DataFactory` | Data collections | `PdCwlData`, `PdTofData`, `TotalData` |
-| `ReflnFactory` | Reflection collections | `ReflnData`, `PowderCwlReflnData`, `PowderTofReflnData` |
-| `ExtinctionFactory` | Extinction models | `BeckerCoppensExtinction` |
-| `LinkedCrystalFactory` | Linked-crystal refs | `LinkedCrystal` |
-| `ExcludedRegionsFactory` | Excluded regions | `ExcludedRegions` |
-| `LinkedPhasesFactory` | Linked phases | `LinkedPhases` |
-| `ExperimentTypeFactory` | Experiment descriptors | `ExperimentType` |
-| `CellFactory` | Unit cells | `Cell` |
-| `SpaceGroupFactory` | Space groups | `SpaceGroup` |
-| `AtomSitesFactory` | Atom sites | `AtomSites` |
-| `AtomSiteAnisoFactory` | Anisotropic ADPs | `AtomSiteAnisoCollection` |
-| `AliasesFactory` | Parameter aliases | `Aliases` |
-| `ConstraintsFactory` | Parameter constraints | `Constraints` |
-| `FitModeFactory` | Fit-mode category | `FitMode` |
-| `JointFitExperimentsFactory` | Joint-fit weights | `JointFitExperiments` |
-| `CalculatorFactory` | Calculation engines | `CryspyCalculator`, `CrysfmlCalculator`, `PdffitCalculator` |
-| `MinimizerFactory` | Minimisers | `LmfitMinimizer`, `LmfitLeastsqMinimizer`, `LmfitLeastSquaresMinimizer`, `DfolsMinimizer`, `BumpsMinimizer`, `BumpsLmMinimizer`, `BumpsDreamMinimizer`, `BumpsAmoebaMinimizer`, `BumpsDEMinimizer` |
+| Factory                      | Domain                 | Tags resolve to                                                                                                                                                                                    |
+| ---------------------------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `BackgroundFactory`          | Background categories  | `LineSegmentBackground`, `ChebyshevPolynomialBackground`                                                                                                                                           |
+| `PeakFactory`                | Peak profiles          | `CwlPseudoVoigt`, `TofJorgensen`, `TofJorgensenVonDreele`, …                                                                                                                                       |
+| `InstrumentFactory`          | Instruments            | `CwlPdInstrument`, `TofPdInstrument`, …                                                                                                                                                            |
+| `DataFactory`                | Data collections       | `PdCwlData`, `PdTofData`, `TotalData`                                                                                                                                                              |
+| `ReflnFactory`               | Reflection collections | `ReflnData`, `PowderCwlReflnData`, `PowderTofReflnData`                                                                                                                                            |
+| `ExtinctionFactory`          | Extinction models      | `BeckerCoppensExtinction`                                                                                                                                                                          |
+| `LinkedCrystalFactory`       | Linked-crystal refs    | `LinkedCrystal`                                                                                                                                                                                    |
+| `ExcludedRegionsFactory`     | Excluded regions       | `ExcludedRegions`                                                                                                                                                                                  |
+| `LinkedPhasesFactory`        | Linked phases          | `LinkedPhases`                                                                                                                                                                                     |
+| `ExperimentTypeFactory`      | Experiment descriptors | `ExperimentType`                                                                                                                                                                                   |
+| `CellFactory`                | Unit cells             | `Cell`                                                                                                                                                                                             |
+| `SpaceGroupFactory`          | Space groups           | `SpaceGroup`                                                                                                                                                                                       |
+| `AtomSitesFactory`           | Atom sites             | `AtomSites`                                                                                                                                                                                        |
+| `AtomSiteAnisoFactory`       | Anisotropic ADPs       | `AtomSiteAnisoCollection`                                                                                                                                                                          |
+| `AliasesFactory`             | Parameter aliases      | `Aliases`                                                                                                                                                                                          |
+| `ConstraintsFactory`         | Parameter constraints  | `Constraints`                                                                                                                                                                                      |
+| `FitModeFactory`             | Fit-mode category      | `FitMode`                                                                                                                                                                                          |
+| `JointFitExperimentsFactory` | Joint-fit weights      | `JointFitExperiments`                                                                                                                                                                              |
+| `CalculatorFactory`          | Calculation engines    | `CryspyCalculator`, `CrysfmlCalculator`, `PdffitCalculator`                                                                                                                                        |
+| `MinimizerFactory`           | Minimisers             | `LmfitMinimizer`, `LmfitLeastsqMinimizer`, `LmfitLeastSquaresMinimizer`, `DfolsMinimizer`, `BumpsMinimizer`, `BumpsLmMinimizer`, `BumpsDreamMinimizer`, `BumpsAmoebaMinimizer`, `BumpsDEMinimizer` |
 
 > **Note:** `ExperimentFactory` and `StructureFactory` are _builder_
 > factories with `from_cif_path`, `from_cif_str`, `from_data_path`, and

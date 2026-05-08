@@ -16,6 +16,7 @@ from enum import StrEnum
 import numpy as np
 import pandas as pd
 
+from easydiffraction.analysis.fit_helpers.bayesian import PosteriorPredictiveSummary
 from easydiffraction.datablocks.experiment.item.base import intensity_category_for
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
@@ -71,6 +72,9 @@ DEFAULT_RESID_HEIGHT = DEFAULT_RESIDUAL_HEIGHT_FRACTION
 DEFAULT_BRAGG_ROW = DEFAULT_BRAGG_PEAKS_HEIGHT_FRACTION
 DEFAULT_POSTERIOR_PREDICTIVE_DRAWS = 200
 DEFAULT_POSTERIOR_PREDICTIVE_DRAW_PLOT_CAP = 50
+POSTERIOR_FLATTENED_SAMPLE_NDIM = 2
+MIN_POSTERIOR_PARAMETER_COUNT = 2
+MIN_POSTERIOR_SAMPLE_COUNT = 2
 POSTERIOR_DENSITY_LINE_COLOR = 'rgb(99, 110, 250)'
 POSTERIOR_DENSITY_FILL_COLOR = 'rgba(99, 110, 250, 0.22)'
 POSTERIOR_HISTOGRAM_FILL_COLOR = 'rgba(120, 120, 120, 0.38)'
@@ -125,6 +129,45 @@ class _PowderMeasVsCalcSeries:
     y_meas: np.ndarray
     y_calc: np.ndarray
     y_bkg: np.ndarray | None = None
+
+
+@dataclass(frozen=True)
+class _PosteriorDistributionContext:
+    """Inputs needed to build a posterior distribution plot."""
+
+    fit_results: object
+    parameter_name: str
+    values: np.ndarray
+    label: str
+    title: str
+    summary: object | None
+
+
+@dataclass(frozen=True)
+class _PosteriorPairsContext:
+    """Inputs needed to build a posterior pair plot."""
+
+    fit_results: object
+    parameter_names: list[str]
+    labels: list[str]
+    density_samples: np.ndarray
+    scatter_samples: np.ndarray
+    axis_frame_color: str
+    axis_ranges: list[tuple[float, float]]
+
+    @property
+    def n_parameters(self) -> int:
+        """Return the number of plotted parameters."""
+        return len(self.parameter_names)
+
+
+@dataclass(slots=True)
+class _PosteriorPairsLegendState:
+    """Legend-visibility state for posterior pair plots."""
+
+    show_density: bool = True
+    show_scatter: bool = True
+    show_contour: bool = True
 
 
 class Plotter(RendererBase):
@@ -599,6 +642,7 @@ class Plotter(RendererBase):
         self,
         threshold: float | None = DEFAULT_CORRELATION_THRESHOLD,
         precision: int = 2,
+        *,
         show_diagonal: bool = False,
     ) -> None:
         """
@@ -671,7 +715,8 @@ class Plotter(RendererBase):
         self,
         parameters: list[object] | None = None,
     ) -> None:
-        """Plot posterior pair relationships for sampled parameters.
+        """
+        Plot posterior pair relationships for sampled parameters.
 
         Parameters
         ----------
@@ -688,7 +733,8 @@ class Plotter(RendererBase):
         self,
         param: object,
     ) -> None:
-        """Plot the posterior distribution for one sampled parameter.
+        """
+        Plot the posterior distribution for one sampled parameter.
 
         Parameters
         ----------
@@ -711,16 +757,17 @@ class Plotter(RendererBase):
         show_residual: bool | None = None,
         x: object | None = None,
     ) -> None:
-        """Plot posterior predictive curves for a powder experiment.
+        """
+        Plot posterior predictive curves for a powder experiment.
 
         Parameters
         ----------
         expt_name : str
             Experiment name to plot.
         style : str, default='band+draws'
-            ``'band'`` shows the 95% credible interval,
-            ``'draws'`` shows sampled predictive curves, and
-            ``'band+draws'`` shows both together.
+            ``'band'`` shows the 95% credible interval, ``'draws'``
+            shows sampled predictive curves, and ``'band+draws'`` shows
+            both together.
         x_min : float | None, default=None
             Lower bound for the x-axis range.
         x_max : float | None, default=None
@@ -729,6 +776,12 @@ class Plotter(RendererBase):
             Whether to include the residual row in the composite plot.
         x : object | None, default=None
             Optional explicit x-axis data to override stored values.
+
+        Raises
+        ------
+        ValueError
+            If ``style`` is not one of ``'band'``, ``'draws'``, or
+            ``'band+draws'``.
         """
         if style not in {'band', 'draws', 'band+draws'}:
             msg = "style must be 'band', 'draws', or 'band+draws'."
@@ -913,29 +966,15 @@ class Plotter(RendererBase):
         if fit_results is None:
             return None
 
-        posterior_samples = getattr(fit_results, 'posterior_samples', None)
-        if posterior_samples is not None:
-            corr_df = self._correlation_from_posterior_samples(posterior_samples)
-            if corr_df is not None:
-                return corr_df
+        corr_df = self._posterior_correlation_dataframe(fit_results)
+        if corr_df is not None:
+            return corr_df
 
-        raw_result = getattr(fit_results, 'result', None)
+        raw_result = self._raw_fit_result_for_correlation(fit_results)
         if raw_result is None:
-            raw_result = getattr(fit_results, 'engine_result', None)
-        if raw_result is None:
-            log.warning('No raw fit result available. Correlation matrix cannot be plotted.')
             return None
 
-        var_names = getattr(raw_result, 'var_names', None)
-        if not var_names:
-            log.warning('Fit result does not expose variable names for a correlation matrix.')
-            return None
-
-        covar = getattr(raw_result, 'covar', None)
-        if covar is not None:
-            return self._correlation_from_covariance(covar, var_names, fit_results.parameters)
-
-        corr_df = self._get_param_correlation_dataframe_from_engine_params(
+        corr_df = self._correlation_dataframe_from_engine_result(
             raw_result=raw_result,
             parameters=fit_results.parameters,
         )
@@ -948,12 +987,58 @@ class Plotter(RendererBase):
         )
         return None
 
+    def _posterior_correlation_dataframe(
+        self,
+        fit_results: object,
+    ) -> pd.DataFrame | None:
+        """Return posterior-sample correlations when available."""
+        posterior_samples = getattr(fit_results, 'posterior_samples', None)
+        if posterior_samples is None:
+            return None
+        return self._correlation_from_posterior_samples(posterior_samples)
+
+    @staticmethod
+    def _raw_fit_result_for_correlation(fit_results: object) -> object | None:
+        """Return raw fit results for correlation fallback."""
+        raw_result = getattr(fit_results, 'result', None)
+        if raw_result is None:
+            raw_result = getattr(fit_results, 'engine_result', None)
+        if raw_result is None:
+            log.warning('No raw fit result available. Correlation matrix cannot be plotted.')
+            return None
+
+        var_names = getattr(raw_result, 'var_names', None)
+        if not var_names:
+            log.warning('Fit result does not expose variable names for a correlation matrix.')
+            return None
+        return raw_result
+
+    def _correlation_dataframe_from_engine_result(
+        self,
+        *,
+        raw_result: object,
+        parameters: list[object],
+    ) -> pd.DataFrame | None:
+        """Return correlations derived from engine result fields."""
+        covar = getattr(raw_result, 'covar', None)
+        if covar is not None:
+            return self._correlation_from_covariance(
+                covar,
+                getattr(raw_result, 'var_names', None),
+                parameters,
+            )
+        return self._get_param_correlation_dataframe_from_engine_params(
+            raw_result=raw_result,
+            parameters=parameters,
+        )
+
     def _build_posterior_pairs_plot(
         self,
         *,
         parameters: list[object] | None,
     ) -> object | None:
-        """Build a Plotly posterior pair plot.
+        """
+        Build a Plotly posterior pair plot.
 
         Parameters
         ----------
@@ -966,6 +1051,47 @@ class Plotter(RendererBase):
             Plotly figure, or ``None`` when posterior plotting is
             unavailable.
         """
+        context = self._posterior_pairs_context(parameters)
+        if context is None:
+            return None
+
+        make_subplots = __import__('plotly.subplots', fromlist=['make_subplots']).make_subplots
+        subplot_title_annotations: list[dict[str, object]] = []
+        subplot_border_shapes: list[dict[str, object]] = []
+        legend_state = _PosteriorPairsLegendState()
+        fig = make_subplots(
+            rows=context.n_parameters,
+            cols=context.n_parameters,
+            shared_xaxes='columns',
+            horizontal_spacing=PAIR_PLOT_SUBPLOT_SPACING,
+            vertical_spacing=PAIR_PLOT_SUBPLOT_SPACING,
+        )
+
+        for row_index in range(context.n_parameters):
+            for col_index in range(context.n_parameters):
+                self._populate_posterior_pair_panel(
+                    fig=fig,
+                    context=context,
+                    row_index=row_index,
+                    col_index=col_index,
+                    legend_state=legend_state,
+                    subplot_title_annotations=subplot_title_annotations,
+                    subplot_border_shapes=subplot_border_shapes,
+                )
+
+        self._finalize_posterior_pairs_figure(
+            fig=fig,
+            context=context,
+            subplot_title_annotations=subplot_title_annotations,
+            subplot_border_shapes=subplot_border_shapes,
+        )
+        return fig
+
+    def _posterior_pairs_context(
+        self,
+        parameters: list[object] | None,
+    ) -> _PosteriorPairsContext | None:
+        """Return the resolved inputs for a posterior pair plot."""
         posterior_samples, fit_results = self._get_posterior_samples_and_fit_results()
         if posterior_samples is None or fit_results is None:
             return None
@@ -976,245 +1102,343 @@ class Plotter(RendererBase):
         )
         if parameter_names is None:
             return None
-        if len(parameter_names) < 2:
+        if len(parameter_names) < MIN_POSTERIOR_PARAMETER_COUNT:
             log.warning('Posterior pair plots require at least two sampled parameters.')
             return None
-
-        go = __import__(
-            'plotly.graph_objects',
-            fromlist=['Figure', 'Histogram', 'Scatter', 'Contour'],
-        )
-        make_subplots = __import__('plotly.subplots', fromlist=['make_subplots']).make_subplots
 
         density_samples = self._selected_posterior_samples(posterior_samples, parameter_names)
         if density_samples is None:
             return None
-        scatter_samples = self._thin_posterior_samples(density_samples, max_points=1500)
-        labels = self._posterior_plot_labels(fit_results, parameter_names)
-        show_density_legend = True
-        show_scatter_legend = True
-        show_contour_legend = True
-        axis_frame_color = self._plot_axis_frame_color()
-        parameter_axis_ranges = [
-            self._posterior_axis_bounds(
-                density_samples[:, index],
-                lower_bound=self._posterior_parameter_bounds(
-                    fit_results=fit_results,
-                    parameter_name=parameter_names[index],
-                )[0],
-                upper_bound=self._posterior_parameter_bounds(
-                    fit_results=fit_results,
-                    parameter_name=parameter_names[index],
-                )[1],
-            )
-            for index in range(len(parameter_names))
-        ]
 
-        n_parameters = len(parameter_names)
-        subplot_title_annotations: list[dict[str, object]] = []
-        subplot_border_shapes: list[dict[str, object]] = []
-        fig = make_subplots(
-            rows=n_parameters,
-            cols=n_parameters,
-            shared_xaxes='columns',
-            horizontal_spacing=PAIR_PLOT_SUBPLOT_SPACING,
-            vertical_spacing=PAIR_PLOT_SUBPLOT_SPACING,
+        return _PosteriorPairsContext(
+            fit_results=fit_results,
+            parameter_names=parameter_names,
+            labels=self._posterior_plot_labels(fit_results, parameter_names),
+            density_samples=density_samples,
+            scatter_samples=self._thin_posterior_samples(density_samples, max_points=1500),
+            axis_frame_color=self._plot_axis_frame_color(),
+            axis_ranges=self._posterior_pair_axis_ranges(
+                fit_results=fit_results,
+                parameter_names=parameter_names,
+                density_samples=density_samples,
+            ),
         )
 
-        for row_index in range(n_parameters):
-            for col_index in range(n_parameters):
-                row = row_index + 1
-                col = col_index + 1
-                if col_index > row_index:
-                    fig.update_xaxes(visible=False, row=row, col=col)
-                    fig.update_yaxes(visible=False, row=row, col=col)
-                    continue
-
-                x_density_values = density_samples[:, col_index]
-                y_density_values = density_samples[:, row_index]
-                x_scatter_values = scatter_samples[:, col_index]
-                y_scatter_values = scatter_samples[:, row_index]
-                is_diagonal_subplot = row_index == col_index
-                if is_diagonal_subplot:
-                    density_trace = self._posterior_density_trace(
-                        fit_results=fit_results,
-                        parameter_name=parameter_names[col_index],
-                        values=x_density_values,
-                        trace_name=labels[col_index],
-                    )
-                    diagonal_y_axis_range = None
-                    if density_trace is None:
-                        fig.add_trace(
-                            go.Histogram(
-                                x=x_density_values,
-                                nbinsx=40,
-                                histnorm='probability density',
-                                marker={'color': 'rgb(99, 110, 250)'},
-                                showlegend=False,
-                                hovertemplate='%{x:.4f}<br>density=%{y:.4f}<extra></extra>',
-                            ),
-                            row=row,
-                            col=col,
-                        )
-                    else:
-                        density_trace.name = 'Marginal density'
-                        density_trace.legendgroup = 'posterior-marginal-density'
-                        density_trace.showlegend = show_density_legend
-                        fig.add_trace(density_trace, row=row, col=col)
-                        show_density_legend = False
-                        diagonal_y_axis_range = self._posterior_density_axis_range(
-                            np.asarray(density_trace.y)
-                        )
-                    if diagonal_y_axis_range is not None:
-                        fig.update_yaxes(range=list(diagonal_y_axis_range), row=row, col=col)
-                else:
-                    contour_traces = self._posterior_contour_traces(
-                        fit_results=fit_results,
-                        x_parameter_name=parameter_names[col_index],
-                        y_parameter_name=parameter_names[row_index],
-                        x_values=x_density_values,
-                        y_values=y_density_values,
-                    )
-                    sample_hovertemplate = (
-                        f'{labels[col_index]}: %{{x:.4f}}<br>'
-                        f'{labels[row_index]}: %{{y:.4f}}<extra></extra>'
-                    )
-                    fig.add_trace(
-                        go.Scatter(
-                            x=x_scatter_values,
-                            y=y_scatter_values,
-                            mode='markers',
-                            marker={
-                                'color': POSTERIOR_SCATTER_MARKER_COLOR,
-                                'size': 3,
-                            },
-                            name='Posterior samples',
-                            legendgroup='posterior-samples',
-                            showlegend=show_scatter_legend,
-                            hoverinfo='skip',
-                            zorder=0,
-                        ),
-                        row=row,
-                        col=col,
-                    )
-                    show_scatter_legend = False
-                    if contour_traces is not None:
-                        contour_traces[0].name = 'Posterior contours'
-                        contour_traces[0].legendgroup = 'posterior-contours'
-                        contour_traces[0].showlegend = show_contour_legend
-                        contour_traces[1].legendgroup = 'posterior-contours'
-                        contour_traces[1].showlegend = False
-                        fig.add_trace(contour_traces[0], row=row, col=col)
-                        fig.add_trace(contour_traces[1], row=row, col=col)
-                        show_contour_legend = False
-                    fig.add_trace(
-                        go.Scatter(
-                            x=x_scatter_values,
-                            y=y_scatter_values,
-                            mode='markers',
-                            marker={
-                                'color': 'rgba(0, 0, 0, 0)',
-                                'size': 6,
-                            },
-                            showlegend=False,
-                            hovertemplate=sample_hovertemplate,
-                            zorder=3,
-                        ),
-                        row=row,
-                        col=col,
-                    )
-
-                fig.update_xaxes(
-                    showline=True,
-                    mirror=True,
-                    range=list(parameter_axis_ranges[col_index]),
-                    zeroline=False,
-                    layer='above traces',
-                    linecolor=axis_frame_color,
-                    linewidth=POSTERIOR_PAIR_AXIS_LINE_WIDTH,
-                    nticks=PAIR_PLOT_MAJOR_TICKS,
-                    tickformat=',.6~g',
-                    separatethousands=True,
-                    row=row,
-                    col=col,
+    def _posterior_pair_axis_ranges(
+        self,
+        *,
+        fit_results: object,
+        parameter_names: list[str],
+        density_samples: np.ndarray,
+    ) -> list[tuple[float, float]]:
+        """Return per-parameter axis ranges for a pair plot."""
+        axis_ranges: list[tuple[float, float]] = []
+        for index, parameter_name in enumerate(parameter_names):
+            lower_bound, upper_bound = self._posterior_parameter_bounds(
+                fit_results=fit_results,
+                parameter_name=parameter_name,
+            )
+            axis_ranges.append(
+                self._posterior_axis_bounds(
+                    density_samples[:, index],
+                    lower_bound=lower_bound,
+                    upper_bound=upper_bound,
                 )
-                fig.update_yaxes(
-                    showline=True,
-                    mirror=True,
-                    zeroline=False,
-                    layer='above traces',
-                    linecolor=axis_frame_color,
-                    linewidth=POSTERIOR_PAIR_AXIS_LINE_WIDTH,
-                    nticks=PAIR_PLOT_MAJOR_TICKS,
-                    tickformat=',.6~g',
-                    separatethousands=True,
-                    row=row,
-                    col=col,
-                )
-                if not is_diagonal_subplot:
-                    fig.update_yaxes(range=list(parameter_axis_ranges[row_index]), row=row, col=col)
-                fig.update_xaxes(showticklabels=(row_index == n_parameters - 1), row=row, col=col)
-                if is_diagonal_subplot:
-                    fig.update_yaxes(
-                        showticklabels=False,
-                        ticks='',
-                        ticklen=0,
-                        showgrid=False,
-                        title_text=None,
-                        row=row,
-                        col=col,
-                    )
-                else:
-                    fig.update_yaxes(showticklabels=(col_index == 0), row=row, col=col)
-                if row_index == n_parameters - 1:
-                    fig.update_xaxes(title_text=labels[col_index], row=row, col=col)
+            )
+        return axis_ranges
 
-                subplot = fig.get_subplot(row, col)
-                if col_index == 0:
-                    subplot_title_annotations.append(
-                        {
-                            'x': subplot.xaxis.domain[0],
-                            'xref': 'paper',
-                            'xanchor': 'right',
-                            'xshift': -POSTERIOR_PAIR_Y_TITLE_XSHIFT_PIXELS,
-                            'y': 0.5 * (subplot.yaxis.domain[0] + subplot.yaxis.domain[1]),
-                            'yref': 'paper',
-                            'yanchor': 'middle',
-                            'text': labels[row_index],
-                            'font': {'size': POSTERIOR_PAIR_AXIS_TITLE_FONT_SIZE},
-                            'textangle': -90,
-                            'showarrow': False,
-                        }
-                    )
-                subplot_border_shapes.append(
-                    {
-                        'type': 'rect',
-                        'xref': 'paper',
-                        'yref': 'paper',
-                        'x0': subplot.xaxis.domain[0],
-                        'x1': subplot.xaxis.domain[1],
-                        'y0': subplot.yaxis.domain[0],
-                        'y1': subplot.yaxis.domain[1],
-                        'line': {
-                            'color': axis_frame_color,
-                            'width': POSTERIOR_PAIR_AXIS_LINE_WIDTH,
-                        },
-                        'fillcolor': 'rgba(0, 0, 0, 0)',
-                        'layer': 'above',
-                    }
-                )
+    def _populate_posterior_pair_panel(
+        self,
+        *,
+        fig: object,
+        context: _PosteriorPairsContext,
+        row_index: int,
+        col_index: int,
+        legend_state: _PosteriorPairsLegendState,
+        subplot_title_annotations: list[dict[str, object]],
+        subplot_border_shapes: list[dict[str, object]],
+    ) -> None:
+        """Populate one panel in the posterior pair plot grid."""
+        row = row_index + 1
+        col = col_index + 1
+        if col_index > row_index:
+            self._hide_posterior_pair_panel(fig=fig, row=row, col=col)
+            return
 
+        if row_index == col_index:
+            self._add_posterior_pair_diagonal(
+                fig=fig,
+                context=context,
+                row=row,
+                col=col,
+                parameter_index=col_index,
+                legend_state=legend_state,
+            )
+        else:
+            self._add_posterior_pair_off_diagonal(
+                fig=fig,
+                context=context,
+                row=row,
+                col=col,
+                row_index=row_index,
+                col_index=col_index,
+                legend_state=legend_state,
+            )
+
+        self._configure_posterior_pair_panel_axes(
+            fig=fig,
+            context=context,
+            row=row,
+            col=col,
+            row_index=row_index,
+            col_index=col_index,
+        )
+        self._collect_posterior_pair_panel_decorations(
+            fig=fig,
+            context=context,
+            row_index=row_index,
+            col_index=col_index,
+            subplot_title_annotations=subplot_title_annotations,
+            subplot_border_shapes=subplot_border_shapes,
+        )
+
+    @staticmethod
+    def _hide_posterior_pair_panel(
+        *,
+        fig: object,
+        row: int,
+        col: int,
+    ) -> None:
+        """Hide an upper-triangle panel in the pair plot grid."""
+        fig.update_xaxes(visible=False, row=row, col=col)
+        fig.update_yaxes(visible=False, row=row, col=col)
+
+    def _add_posterior_pair_diagonal(
+        self,
+        *,
+        fig: object,
+        context: _PosteriorPairsContext,
+        row: int,
+        col: int,
+        parameter_index: int,
+        legend_state: _PosteriorPairsLegendState,
+    ) -> None:
+        """Add the diagonal marginal-density panel."""
+        go = __import__('plotly.graph_objects', fromlist=['Histogram'])
+        density_values = context.density_samples[:, parameter_index]
+        density_trace = self._posterior_density_trace(
+            fit_results=context.fit_results,
+            parameter_name=context.parameter_names[parameter_index],
+            values=density_values,
+            trace_name=context.labels[parameter_index],
+        )
+        if density_trace is None:
+            fig.add_trace(
+                go.Histogram(
+                    x=density_values,
+                    nbinsx=40,
+                    histnorm='probability density',
+                    marker={'color': 'rgb(99, 110, 250)'},
+                    showlegend=False,
+                    hovertemplate='%{x:.4f}<br>density=%{y:.4f}<extra></extra>',
+                ),
+                row=row,
+                col=col,
+            )
+            return
+
+        density_trace.name = 'Marginal density'
+        density_trace.legendgroup = 'posterior-marginal-density'
+        density_trace.showlegend = legend_state.show_density
+        fig.add_trace(density_trace, row=row, col=col)
+        legend_state.show_density = False
+        y_axis_range = self._posterior_density_axis_range(np.asarray(density_trace.y))
+        if y_axis_range is not None:
+            fig.update_yaxes(range=list(y_axis_range), row=row, col=col)
+
+    def _add_posterior_pair_off_diagonal(
+        self,
+        *,
+        fig: object,
+        context: _PosteriorPairsContext,
+        row: int,
+        col: int,
+        row_index: int,
+        col_index: int,
+        legend_state: _PosteriorPairsLegendState,
+    ) -> None:
+        """Add one off-diagonal pair-relationship panel."""
+        go = __import__('plotly.graph_objects', fromlist=['Scatter'])
+        x_density_values = context.density_samples[:, col_index]
+        y_density_values = context.density_samples[:, row_index]
+        x_scatter_values = context.scatter_samples[:, col_index]
+        y_scatter_values = context.scatter_samples[:, row_index]
+        contour_traces = self._posterior_contour_traces(
+            fit_results=context.fit_results,
+            x_parameter_name=context.parameter_names[col_index],
+            y_parameter_name=context.parameter_names[row_index],
+            x_values=x_density_values,
+            y_values=y_density_values,
+        )
+        sample_hovertemplate = (
+            f'{context.labels[col_index]}: %{{x:.4f}}<br>'
+            f'{context.labels[row_index]}: %{{y:.4f}}<extra></extra>'
+        )
+        fig.add_trace(
+            go.Scatter(
+                x=x_scatter_values,
+                y=y_scatter_values,
+                mode='markers',
+                marker={'color': POSTERIOR_SCATTER_MARKER_COLOR, 'size': 3},
+                name='Posterior samples',
+                legendgroup='posterior-samples',
+                showlegend=legend_state.show_scatter,
+                hoverinfo='skip',
+                zorder=0,
+            ),
+            row=row,
+            col=col,
+        )
+        legend_state.show_scatter = False
+        if contour_traces is not None:
+            contour_traces[0].name = 'Posterior contours'
+            contour_traces[0].legendgroup = 'posterior-contours'
+            contour_traces[0].showlegend = legend_state.show_contour
+            contour_traces[1].legendgroup = 'posterior-contours'
+            contour_traces[1].showlegend = False
+            fig.add_trace(contour_traces[0], row=row, col=col)
+            fig.add_trace(contour_traces[1], row=row, col=col)
+            legend_state.show_contour = False
+        fig.add_trace(
+            go.Scatter(
+                x=x_scatter_values,
+                y=y_scatter_values,
+                mode='markers',
+                marker={'color': 'rgba(0, 0, 0, 0)', 'size': 6},
+                showlegend=False,
+                hovertemplate=sample_hovertemplate,
+                zorder=3,
+            ),
+            row=row,
+            col=col,
+        )
+
+    @staticmethod
+    def _configure_posterior_pair_panel_axes(
+        *,
+        fig: object,
+        context: _PosteriorPairsContext,
+        row: int,
+        col: int,
+        row_index: int,
+        col_index: int,
+    ) -> None:
+        """Apply axis styling and labels to one pair-plot panel."""
+        is_diagonal = row_index == col_index
+        fig.update_xaxes(
+            showline=True,
+            mirror=True,
+            range=list(context.axis_ranges[col_index]),
+            zeroline=False,
+            layer='above traces',
+            linecolor=context.axis_frame_color,
+            linewidth=POSTERIOR_PAIR_AXIS_LINE_WIDTH,
+            nticks=PAIR_PLOT_MAJOR_TICKS,
+            tickformat=',.6~g',
+            separatethousands=True,
+            row=row,
+            col=col,
+        )
+        fig.update_yaxes(
+            showline=True,
+            mirror=True,
+            zeroline=False,
+            layer='above traces',
+            linecolor=context.axis_frame_color,
+            linewidth=POSTERIOR_PAIR_AXIS_LINE_WIDTH,
+            nticks=PAIR_PLOT_MAJOR_TICKS,
+            tickformat=',.6~g',
+            separatethousands=True,
+            row=row,
+            col=col,
+        )
+        if not is_diagonal:
+            fig.update_yaxes(range=list(context.axis_ranges[row_index]), row=row, col=col)
+        fig.update_xaxes(showticklabels=(row_index == context.n_parameters - 1), row=row, col=col)
+        if is_diagonal:
+            fig.update_yaxes(
+                showticklabels=False,
+                ticks='',
+                ticklen=0,
+                showgrid=False,
+                title_text=None,
+                row=row,
+                col=col,
+            )
+        else:
+            fig.update_yaxes(showticklabels=(col_index == 0), row=row, col=col)
+        if row_index == context.n_parameters - 1:
+            fig.update_xaxes(title_text=context.labels[col_index], row=row, col=col)
+
+    @staticmethod
+    def _collect_posterior_pair_panel_decorations(
+        *,
+        fig: object,
+        context: _PosteriorPairsContext,
+        row_index: int,
+        col_index: int,
+        subplot_title_annotations: list[dict[str, object]],
+        subplot_border_shapes: list[dict[str, object]],
+    ) -> None:
+        """Collect annotations and frame shapes for one pair panel."""
+        row = row_index + 1
+        col = col_index + 1
+        subplot = fig.get_subplot(row, col)
+        if col_index == 0:
+            subplot_title_annotations.append({
+                'x': subplot.xaxis.domain[0],
+                'xref': 'paper',
+                'xanchor': 'right',
+                'xshift': -POSTERIOR_PAIR_Y_TITLE_XSHIFT_PIXELS,
+                'y': 0.5 * (subplot.yaxis.domain[0] + subplot.yaxis.domain[1]),
+                'yref': 'paper',
+                'yanchor': 'middle',
+                'text': context.labels[row_index],
+                'font': {'size': POSTERIOR_PAIR_AXIS_TITLE_FONT_SIZE},
+                'textangle': -90,
+                'showarrow': False,
+            })
+        subplot_border_shapes.append({
+            'type': 'rect',
+            'xref': 'paper',
+            'yref': 'paper',
+            'x0': subplot.xaxis.domain[0],
+            'x1': subplot.xaxis.domain[1],
+            'y0': subplot.yaxis.domain[0],
+            'y1': subplot.yaxis.domain[1],
+            'line': {
+                'color': context.axis_frame_color,
+                'width': POSTERIOR_PAIR_AXIS_LINE_WIDTH,
+            },
+            'fillcolor': 'rgba(0, 0, 0, 0)',
+            'layer': 'above',
+        })
+
+    @staticmethod
+    def _finalize_posterior_pairs_figure(
+        *,
+        fig: object,
+        context: _PosteriorPairsContext,
+        subplot_title_annotations: list[dict[str, object]],
+        subplot_border_shapes: list[dict[str, object]],
+    ) -> None:
+        """Apply final layout settings to the posterior pair plot."""
         figure_size = max(
             PAIR_PLOT_MIN_SIZE_PIXELS,
-            PAIR_PLOT_CELL_SIZE_PIXELS * n_parameters + PAIR_PLOT_MARGIN_PIXELS,
+            PAIR_PLOT_CELL_SIZE_PIXELS * context.n_parameters + PAIR_PLOT_MARGIN_PIXELS,
         )
         fig.update_layout(
-            margin={
-                'autoexpand': True,
-                'r': 30,
-                't': 40,
-                'b': 45,
-            },
+            margin={'autoexpand': True, 'r': 30, 't': 40, 'b': 45},
             title={'text': 'Posterior pair plot'},
             bargap=0.05,
             width=figure_size,
@@ -1230,10 +1454,11 @@ class Plotter(RendererBase):
                 'groupclick': 'togglegroup',
             },
         )
-        return fig
 
     def _plot_axis_frame_color(self) -> str:
-        """Return the shared axis-frame color for Plotly-backed plots."""
+        """
+        Return the shared axis-frame color for Plotly-backed plots.
+        """
         axis_frame_color = getattr(self._backend, '_axis_frame_color', None)
         if callable(axis_frame_color):
             return axis_frame_color()
@@ -1248,7 +1473,9 @@ class Plotter(RendererBase):
         x_values: np.ndarray,
         y_values: np.ndarray,
     ) -> tuple[object, object] | None:
-        """Return filled and line contour traces for posterior pair plots."""
+        """
+        Return filled and line contour traces for posterior pair plots.
+        """
         go = __import__('plotly.graph_objects', fromlist=['Contour'])
 
         bounds = self._posterior_pair_bounds(
@@ -1320,7 +1547,8 @@ class Plotter(RendererBase):
         self,
         param: object,
     ) -> object | None:
-        """Build a Plotly posterior distribution plot for one parameter.
+        """
+        Build a Plotly posterior distribution plot for one parameter.
 
         Parameters
         ----------
@@ -1333,6 +1561,58 @@ class Plotter(RendererBase):
             Plotly figure, or ``None`` when posterior plotting is
             unavailable.
         """
+        context = self._posterior_distribution_context(param)
+        if context is None:
+            return None
+
+        go = __import__('plotly.graph_objects', fromlist=['Figure', 'Histogram'])
+        fig, layout_factory = self._posterior_distribution_figure(
+            go=go,
+            title=context.title,
+            label=context.label,
+        )
+        density_trace = self._posterior_density_trace(
+            fit_results=context.fit_results,
+            parameter_name=context.parameter_name,
+            values=context.values,
+            trace_name='Posterior density',
+        )
+        y_axis_range = self._posterior_distribution_y_axis_range(
+            values=context.values,
+            density_trace=density_trace,
+        )
+
+        self._add_posterior_distribution_interval_traces(
+            fig=fig,
+            summary=context.summary,
+            y_axis_range=y_axis_range,
+        )
+        self._add_posterior_distribution_histogram(
+            fig=fig,
+            go=go,
+            values=context.values,
+        )
+        self._add_posterior_distribution_density_trace(fig=fig, density_trace=density_trace)
+        self._add_posterior_distribution_reference_traces(
+            fig=fig,
+            summary=context.summary,
+            values=context.values,
+            y_axis_range=y_axis_range,
+        )
+        self._apply_posterior_distribution_layout(
+            fig=fig,
+            layout_factory=layout_factory,
+            title=context.title,
+            label=context.label,
+            y_axis_range=y_axis_range,
+        )
+        return fig
+
+    def _posterior_distribution_context(
+        self,
+        param: object,
+    ) -> _PosteriorDistributionContext | None:
+        """Return the context for a posterior distribution plot."""
         posterior_samples, fit_results = self._get_posterior_samples_and_fit_results()
         if posterior_samples is None or fit_results is None:
             return None
@@ -1344,57 +1624,86 @@ class Plotter(RendererBase):
         if parameter_names is None:
             return None
 
-        go = __import__('plotly.graph_objects', fromlist=['Figure', 'Histogram'])
-
         parameter_name = parameter_names[0]
         samples = self._selected_posterior_samples(posterior_samples, [parameter_name])
         if samples is None:
             return None
-        values = samples[:, 0]
-        label = self._posterior_plot_labels(fit_results, [parameter_name])[0]
-        summary = self._posterior_summary_by_name(fit_results).get(parameter_name)
-        title = f'Posterior distribution: {label}'
-        layout_factory = getattr(self._backend, '_get_layout', None)
-        if callable(layout_factory):
-            fig = go.Figure(layout=layout_factory(title, [label, 'Probability density']))
-        else:
-            fig = go.Figure()
 
-        histogram_density, _ = np.histogram(values, bins=50, density=True)
-        density_trace = self._posterior_density_trace(
+        label = self._posterior_plot_labels(fit_results, [parameter_name])[0]
+        return _PosteriorDistributionContext(
             fit_results=fit_results,
             parameter_name=parameter_name,
-            values=values,
-            trace_name='Posterior density',
+            values=samples[:, 0],
+            label=label,
+            title=f'Posterior distribution: {label}',
+            summary=self._posterior_summary_by_name(fit_results).get(parameter_name),
         )
+
+    def _posterior_distribution_figure(
+        self,
+        *,
+        go: object,
+        title: str,
+        label: str,
+    ) -> tuple[object, object | None]:
+        """Return the figure and optional backend layout factory."""
+        layout_factory = getattr(self._backend, '_get_layout', None)
+        if callable(layout_factory):
+            figure = go.Figure(layout=layout_factory(title, [label, 'Probability density']))
+            return figure, layout_factory
+        return go.Figure(), layout_factory
+
+    def _posterior_distribution_y_axis_range(
+        self,
+        *,
+        values: np.ndarray,
+        density_trace: object | None,
+    ) -> tuple[float, float] | None:
+        """Return the y-axis range for a posterior distribution plot."""
+        histogram_density, _ = np.histogram(values, bins=50, density=True)
         density_sources = [histogram_density]
         if density_trace is not None:
-            density_trace.name = 'Posterior density'
-            density_trace.showlegend = True
             density_sources.append(np.asarray(density_trace.y, dtype=float))
+        return self._posterior_density_axis_range(np.concatenate(density_sources))
 
-        y_axis_range = self._posterior_density_axis_range(np.concatenate(density_sources))
+    def _add_posterior_distribution_interval_traces(
+        self,
+        *,
+        fig: object,
+        summary: object | None,
+        y_axis_range: tuple[float, float] | None,
+    ) -> None:
+        """Add credible-interval bands to the distribution plot."""
+        if summary is None or y_axis_range is None:
+            return
 
-        if summary is not None and y_axis_range is not None:
-            fig.add_trace(
-                self._posterior_interval_band_trace(
-                    x0=summary.interval_95[0],
-                    x1=summary.interval_95[1],
-                    y_axis_range=y_axis_range,
-                    trace_name='95% credible interval',
-                    color=POSTERIOR_INTERVAL_95_FILL_COLOR,
-                )
+        fig.add_trace(
+            self._posterior_interval_band_trace(
+                x0=summary.interval_95[0],
+                x1=summary.interval_95[1],
+                y_axis_range=y_axis_range,
+                trace_name='95% credible interval',
+                color=POSTERIOR_INTERVAL_95_FILL_COLOR,
             )
-            fig.add_trace(
-                self._posterior_interval_band_trace(
-                    x0=summary.interval_68[0],
-                    x1=summary.interval_68[1],
-                    y_axis_range=y_axis_range,
-                    trace_name='68% credible interval',
-                    color=POSTERIOR_INTERVAL_68_FILL_COLOR,
-                )
+        )
+        fig.add_trace(
+            self._posterior_interval_band_trace(
+                x0=summary.interval_68[0],
+                x1=summary.interval_68[1],
+                y_axis_range=y_axis_range,
+                trace_name='68% credible interval',
+                color=POSTERIOR_INTERVAL_68_FILL_COLOR,
             )
+        )
 
+    @staticmethod
+    def _add_posterior_distribution_histogram(
+        *,
+        fig: object,
+        go: object,
+        values: np.ndarray,
+    ) -> None:
+        """Add the histogram trace for a posterior distribution plot."""
         fig.add_trace(
             go.Histogram(
                 x=values,
@@ -1409,33 +1718,65 @@ class Plotter(RendererBase):
                 hovertemplate='sample=%{x:.4f}<br>density=%{y:.4f}<extra></extra>',
             )
         )
-        if density_trace is not None:
-            density_trace.name = 'Posterior density'
-            density_trace.showlegend = True
-            fig.add_trace(density_trace)
 
-        median = float(np.median(values))
-        if y_axis_range is not None:
-            fig.add_trace(
-                self._posterior_reference_line_trace(
-                    x_value=median,
-                    y_axis_range=y_axis_range,
-                    trace_name='Median',
-                    color=POSTERIOR_MEDIAN_LINE_COLOR,
-                    dash='dash',
-                )
+    @staticmethod
+    def _add_posterior_distribution_density_trace(
+        *,
+        fig: object,
+        density_trace: object | None,
+    ) -> None:
+        """Add the KDE trace for a posterior distribution plot."""
+        if density_trace is None:
+            return
+
+        density_trace.name = 'Posterior density'
+        density_trace.showlegend = True
+        fig.add_trace(density_trace)
+
+    def _add_posterior_distribution_reference_traces(
+        self,
+        *,
+        fig: object,
+        summary: object | None,
+        values: np.ndarray,
+        y_axis_range: tuple[float, float] | None,
+    ) -> None:
+        """Add posterior median and MAP reference lines."""
+        if y_axis_range is None:
+            return
+
+        fig.add_trace(
+            self._posterior_reference_line_trace(
+                x_value=float(np.median(values)),
+                y_axis_range=y_axis_range,
+                trace_name='Median',
+                color=POSTERIOR_MEDIAN_LINE_COLOR,
+                dash='dash',
             )
-            if summary is not None:
-                fig.add_trace(
-                    self._posterior_reference_line_trace(
-                        x_value=summary.map_value,
-                        y_axis_range=y_axis_range,
-                        trace_name='Max posterior',
-                        color=POSTERIOR_POINT_ESTIMATE_LINE_COLOR,
-                        dash='dot',
-                    )
-                )
+        )
+        if summary is None:
+            return
 
+        fig.add_trace(
+            self._posterior_reference_line_trace(
+                x_value=summary.map_value,
+                y_axis_range=y_axis_range,
+                trace_name='Max posterior',
+                color=POSTERIOR_POINT_ESTIMATE_LINE_COLOR,
+                dash='dot',
+            )
+        )
+
+    @staticmethod
+    def _apply_posterior_distribution_layout(
+        *,
+        fig: object,
+        layout_factory: object | None,
+        title: str,
+        label: str,
+        y_axis_range: tuple[float, float] | None,
+    ) -> None:
+        """Apply layout settings to the distribution plot."""
         if callable(layout_factory):
             fig.update_layout(title={'text': title})
         else:
@@ -1453,7 +1794,6 @@ class Plotter(RendererBase):
             )
         if y_axis_range is not None:
             fig.update_yaxes(range=list(y_axis_range))
-        return fig
 
     def _show_plot_figure(self, figure: object) -> None:
         """Display a figure through the active backend when possible."""
@@ -1515,7 +1855,7 @@ class Plotter(RendererBase):
         upper_padding = 0.08 * data_range if data_range > 0 else max(abs(data_max), 1.0) * 0.05
         if upper_padding == 0:
             upper_padding = 1e-6
-        lower = 0.0 if data_min >= 0.0 else data_min
+        lower = min(0.0, data_min)
         return lower, data_max + upper_padding
 
     @staticmethod
@@ -1532,7 +1872,13 @@ class Plotter(RendererBase):
 
         return go.Scatter(
             x=[x0, x1, x1, x0, x0],
-            y=[y_axis_range[0], y_axis_range[0], y_axis_range[1], y_axis_range[1], y_axis_range[0]],
+            y=[
+                y_axis_range[0],
+                y_axis_range[0],
+                y_axis_range[1],
+                y_axis_range[1],
+                y_axis_range[0],
+            ],
             mode='lines',
             fill='toself',
             fillcolor=color,
@@ -1551,7 +1897,9 @@ class Plotter(RendererBase):
         color: str,
         dash: str,
     ) -> object:
-        """Return a named vertical reference line for posterior plots."""
+        """
+        Return a named vertical reference line for posterior plots.
+        """
         go = __import__('plotly.graph_objects', fromlist=['Scatter'])
 
         return go.Scatter(
@@ -1570,9 +1918,10 @@ class Plotter(RendererBase):
         fit_results: object,
         parameter_name: str,
     ) -> tuple[float | None, float | None]:
-        """Return finite fit bounds for a posterior parameter when available."""
+        """Return finite fit bounds for a posterior parameter."""
         parameters_by_name = {
-            getattr(parameter, 'unique_name', ''): parameter for parameter in fit_results.parameters
+            getattr(parameter, 'unique_name', ''): parameter
+            for parameter in fit_results.parameters
         }
         parameter = parameters_by_name.get(parameter_name)
         if parameter is None:
@@ -1651,7 +2000,7 @@ class Plotter(RendererBase):
 
         data = np.asarray(values, dtype=float)
         data = data[np.isfinite(data)]
-        if data.size < 2:
+        if data.size < MIN_POSTERIOR_SAMPLE_COUNT:
             return None
 
         data_min = float(np.min(data))
@@ -1703,7 +2052,7 @@ class Plotter(RendererBase):
         mask = np.isfinite(x_data) & np.isfinite(y_data)
         x_data = x_data[mask]
         y_data = y_data[mask]
-        if x_data.size < 2 or y_data.size < 2:
+        if x_data.size < MIN_POSTERIOR_SAMPLE_COUNT or y_data.size < MIN_POSTERIOR_SAMPLE_COUNT:
             return None
 
         if np.allclose(x_data, x_data[0]) and np.allclose(y_data, y_data[0]):
@@ -1730,7 +2079,7 @@ class Plotter(RendererBase):
         lower_bound: float | None,
         upper_bound: float | None,
     ) -> list[np.ndarray]:
-        """Return mirrored evaluation positions for boundary-corrected KDEs."""
+        """Return mirrored positions for boundary-corrected KDEs."""
         reflected = [values]
         if lower_bound is not None:
             reflected.append(2.0 * lower_bound - values)
@@ -1792,7 +2141,9 @@ class Plotter(RendererBase):
         expt_name: str,
         x_axis: object,
     ) -> object | None:
-        """Return a cached or newly built posterior predictive summary."""
+        """
+        Return a cached or newly built posterior predictive summary.
+        """
         fit_results = self._get_fit_result_for_correlation()
         if fit_results is None:
             return None
@@ -1829,22 +2180,73 @@ class Plotter(RendererBase):
         x_axis: object,
     ) -> object | None:
         """Build posterior predictive summaries from posterior draws."""
-        from easydiffraction.analysis.fit_helpers.bayesian import PosteriorPredictiveSummary
+        sampling_inputs = self._posterior_predictive_sampling_inputs(fit_results)
+        if sampling_inputs is None:
+            return None
 
+        flattened_samples, parameter_names = sampling_inputs
+        sampled_parameters = self._posterior_predictive_parameters(
+            fit_results=fit_results,
+            parameter_names=parameter_names,
+        )
+        if sampled_parameters is None:
+            return None
+
+        predictive_data = self._evaluate_posterior_predictive_draws(
+            flattened_samples=flattened_samples,
+            sampled_parameters=sampled_parameters,
+            experiment=experiment,
+            expt_name=expt_name,
+            x_axis=x_axis,
+        )
+        if predictive_data is None:
+            return None
+
+        map_prediction, x_values, predictive_draw_array = predictive_data
+        lower_68, upper_68 = np.quantile(predictive_draw_array, [0.16, 0.84], axis=0)
+        lower_95, upper_95 = np.quantile(predictive_draw_array, [0.025, 0.975], axis=0)
+        x_axis_name = getattr(x_axis, 'value', x_axis)
+
+        return PosteriorPredictiveSummary(
+            experiment_name=expt_name,
+            x_axis_name=str(x_axis_name),
+            x=np.asarray(x_values, dtype=float),
+            map_prediction=np.asarray(map_prediction, dtype=float),
+            lower_95=np.asarray(lower_95, dtype=float),
+            upper_95=np.asarray(upper_95, dtype=float),
+            lower_68=np.asarray(lower_68, dtype=float),
+            upper_68=np.asarray(upper_68, dtype=float),
+            draws=predictive_draw_array,
+        )
+
+    @staticmethod
+    def _posterior_predictive_sampling_inputs(
+        fit_results: object,
+    ) -> tuple[np.ndarray, list[str]] | None:
+        """Return predictive-sampling arrays and parameter names."""
         posterior_samples = getattr(fit_results, 'posterior_samples', None)
         if posterior_samples is None:
             return None
 
         flattened_samples = np.asarray(posterior_samples.flattened(), dtype=float)
         parameter_names = getattr(posterior_samples, 'parameter_names', None)
-        if flattened_samples.ndim != 2 or not parameter_names:
+        if flattened_samples.ndim != POSTERIOR_FLATTENED_SAMPLE_NDIM or not parameter_names:
             log.warning('Posterior samples are unavailable for predictive summaries.')
             return None
+        return flattened_samples, list(parameter_names)
 
+    @staticmethod
+    def _posterior_predictive_parameters(
+        *,
+        fit_results: object,
+        parameter_names: list[str],
+    ) -> list[object] | None:
+        """Return fitted parameters in posterior sample order."""
         parameters_by_name = {
-            getattr(parameter, 'unique_name', ''): parameter for parameter in fit_results.parameters
+            getattr(parameter, 'unique_name', ''): parameter
+            for parameter in fit_results.parameters
         }
-        sampled_parameters = []
+        sampled_parameters: list[object] = []
         for name in parameter_names:
             parameter = parameters_by_name.get(name)
             if parameter is None:
@@ -1854,14 +2256,26 @@ class Plotter(RendererBase):
                 )
                 return None
             sampled_parameters.append(parameter)
+        return sampled_parameters
 
-        original_values = np.array([parameter.value for parameter in sampled_parameters], dtype=float)
+    def _evaluate_posterior_predictive_draws(
+        self,
+        *,
+        flattened_samples: np.ndarray,
+        sampled_parameters: list[object],
+        experiment: object,
+        expt_name: str,
+        x_axis: object,
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray] | None:
+        """Return MAP and sampled predictive curves."""
+        original_values = np.array(
+            [parameter.value for parameter in sampled_parameters],
+            dtype=float,
+        )
         original_uncertainties = [parameter.uncertainty for parameter in sampled_parameters]
-
-        map_prediction = None
-        x_values = None
         predictive_draws: list[np.ndarray] = []
         draw_indices = self._posterior_predictive_draw_indices(flattened_samples.shape[0])
+
         try:
             map_prediction, x_values = self._evaluate_posterior_predictive_state(
                 sampled_parameters=sampled_parameters,
@@ -1888,32 +2302,37 @@ class Plotter(RendererBase):
                     return None
                 predictive_draws.append(prediction)
         finally:
-            for parameter, value, uncertainty in zip(
-                sampled_parameters,
-                original_values,
-                original_uncertainties,
-                strict=True,
-            ):
-                parameter._set_value_from_minimizer(float(value))
-                parameter.uncertainty = uncertainty
-            self._update_project_categories(expt_name)
+            self._restore_posterior_predictive_parameters(
+                sampled_parameters=sampled_parameters,
+                original_values=original_values,
+                original_uncertainties=original_uncertainties,
+                expt_name=expt_name,
+            )
 
-        predictive_draw_array = np.asarray(predictive_draws, dtype=float)
-        lower_68, upper_68 = np.quantile(predictive_draw_array, [0.16, 0.84], axis=0)
-        lower_95, upper_95 = np.quantile(predictive_draw_array, [0.025, 0.975], axis=0)
-        x_axis_name = getattr(x_axis, 'value', x_axis)
-
-        return PosteriorPredictiveSummary(
-            experiment_name=expt_name,
-            x_axis_name=str(x_axis_name),
-            x=np.asarray(x_values, dtype=float),
-            map_prediction=np.asarray(map_prediction, dtype=float),
-            lower_95=np.asarray(lower_95, dtype=float),
-            upper_95=np.asarray(upper_95, dtype=float),
-            lower_68=np.asarray(lower_68, dtype=float),
-            upper_68=np.asarray(upper_68, dtype=float),
-            draws=predictive_draw_array,
+        return (
+            np.asarray(map_prediction, dtype=float),
+            np.asarray(x_values, dtype=float),
+            np.asarray(predictive_draws, dtype=float),
         )
+
+    def _restore_posterior_predictive_parameters(
+        self,
+        *,
+        sampled_parameters: list[object],
+        original_values: np.ndarray,
+        original_uncertainties: list[float | None],
+        expt_name: str,
+    ) -> None:
+        """Restore parameter state after predictive sampling."""
+        for parameter, value, uncertainty in zip(
+            sampled_parameters,
+            original_values,
+            original_uncertainties,
+            strict=True,
+        ):
+            parameter._set_value_from_minimizer(float(value))
+            parameter.uncertainty = uncertainty
+        self._update_project_categories(expt_name)
 
     def _evaluate_posterior_predictive_state(
         self,
@@ -1944,7 +2363,9 @@ class Plotter(RendererBase):
 
     @staticmethod
     def _posterior_predictive_draw_indices(n_draws: int) -> np.ndarray:
-        """Select evenly spaced posterior draws for predictive summaries."""
+        """
+        Select evenly spaced posterior draws for predictive summaries.
+        """
         if n_draws <= DEFAULT_POSTERIOR_PREDICTIVE_DRAWS:
             return np.arange(n_draws, dtype=int)
 
@@ -1965,7 +2386,8 @@ class Plotter(RendererBase):
     def _get_posterior_inference_data(
         self,
     ) -> tuple[object | None, object | None]:
-        """Return posterior inference data for the current Bayesian fit.
+        """
+        Return posterior inference data for the current Bayesian fit.
 
         Returns
         -------
@@ -2007,8 +2429,8 @@ class Plotter(RendererBase):
 
         return posterior_samples, fit_results
 
+    @staticmethod
     def _plot_posterior_predictive_summary(
-        self,
         *,
         expt_name: str,
         summary: object,
@@ -2098,13 +2520,12 @@ class Plotter(RendererBase):
         x_axis: object,
         style: str,
     ) -> None:
-        """Render posterior predictive curves on the composite powder layout."""
+        """Render posterior predictive curves on the powder layout."""
         pattern = intensity_category_for(experiment)
-        expt_type = experiment.type
         ctx = self._prepare_powder_context(
             pattern,
             expt_name,
-            expt_type,
+            experiment.type,
             plot_options.x_min,
             plot_options.x_max,
             plot_options.x,
@@ -2132,7 +2553,9 @@ class Plotter(RendererBase):
             if y_bkg_raw is not None
             else None
         )
-        y_calc = self._filtered_y_array(summary.map_prediction, summary.x, ctx['x_min'], ctx['x_max'])
+        y_calc = self._filtered_y_array(
+            summary.map_prediction, summary.x, ctx['x_min'], ctx['x_max']
+        )
         show_residual = True if plot_options.show_residual is None else plot_options.show_residual
         y_resid = y_meas - y_calc if show_residual else None
 
@@ -2202,7 +2625,8 @@ class Plotter(RendererBase):
         fit_results: object,
         parameters: list[object] | None,
     ) -> list[str] | None:
-        """Resolve posterior parameter names from descriptors.
+        """
+        Resolve posterior parameter names from descriptors.
 
         Parameters
         ----------
@@ -2251,7 +2675,7 @@ class Plotter(RendererBase):
             return None
 
         flattened = np.asarray(posterior_samples.flattened(), dtype=float)
-        if flattened.ndim != 2:
+        if flattened.ndim != POSTERIOR_FLATTENED_SAMPLE_NDIM:
             return None
         return flattened[:, indices]
 
@@ -2273,9 +2697,12 @@ class Plotter(RendererBase):
         fit_results: object,
         parameter_names: list[str],
     ) -> list[str]:
-        """Return readable posterior plot labels for selected parameters."""
+        """
+        Return readable posterior plot labels for selected parameters.
+        """
         parameters_by_name = {
-            getattr(parameter, 'unique_name', ''): parameter for parameter in fit_results.parameters
+            getattr(parameter, 'unique_name', ''): parameter
+            for parameter in fit_results.parameters
         }
         labels: list[str] = []
         for parameter_name in parameter_names:
@@ -2325,7 +2752,8 @@ class Plotter(RendererBase):
     def _correlation_from_posterior_samples(
         posterior_samples: object,
     ) -> pd.DataFrame | None:
-        """Convert posterior samples into a correlation DataFrame.
+        """
+        Convert posterior samples into a correlation DataFrame.
 
         Parameters
         ----------
@@ -2345,10 +2773,12 @@ class Plotter(RendererBase):
             return None
 
         flattened = np.asarray(posterior_samples.flattened(), dtype=float)
-        if flattened.ndim != 2 or flattened.shape[1] != len(parameter_names):
+        if flattened.ndim != POSTERIOR_FLATTENED_SAMPLE_NDIM or flattened.shape[1] != len(
+            parameter_names
+        ):
             log.warning('Posterior sample array has an invalid shape for correlations.')
             return None
-        if flattened.shape[0] < 2:
+        if flattened.shape[0] < MIN_POSTERIOR_SAMPLE_COUNT:
             log.warning('At least two posterior draws are required for correlations.')
             return None
 

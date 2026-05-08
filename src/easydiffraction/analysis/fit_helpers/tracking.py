@@ -3,6 +3,7 @@
 
 import time
 from contextlib import suppress
+from dataclasses import dataclass
 
 import numpy as np
 
@@ -36,6 +37,22 @@ DEFAULT_HEADERS = ['iteration', 'time (s)', 'χ²', 'change / status']
 DEFAULT_ALIGNMENTS = ['center', 'center', 'center', 'center']
 SAMPLER_HEADERS = ['iteration', 'progress', 'time (s)', 'log posterior', 'phase']
 SAMPLER_ALIGNMENTS = ['center', 'center', 'center', 'center', 'center']
+
+
+@dataclass(frozen=True, slots=True)
+class SamplerProgressUpdate:
+    """
+    Normalized sampler progress payload forwarded by monitor hooks.
+    """
+
+    iteration: int
+    total_iterations: int
+    phase: str
+    progress_percent: float
+    log_posterior: float
+    reduced_chi2: float
+    elapsed_time: float
+    force_report: bool = False
 
 
 class _TerminalLiveHandle:
@@ -222,93 +239,45 @@ class FitProgressTracker:
 
         return residuals
 
-    def track_sampler_progress(
-        self,
-        *,
-        iteration: int,
-        total_iterations: int,
-        phase: str,
-        progress_percent: float,
-        log_posterior: float,
-        reduced_chi2: float,
-        elapsed_time: float,
-        force_report: bool = False,
-    ) -> None:
-        """Update progress from a sampler monitor.
+    def track_sampler_progress(self, update: SamplerProgressUpdate) -> None:
+        """
+        Update progress from a sampler monitor.
 
         Parameters
         ----------
-        iteration : int
-            Sampler iteration or generation index.
-        total_iterations : int
-            Total sampler generations configured for the run.
-        phase : str
-            Current sampler phase, e.g. ``'burn-in'`` or ``'sampling'``.
-        progress_percent : float
-            Completed fraction expressed in percent.
-        log_posterior : float
-            Current best log-posterior implied by the sampler state.
-        reduced_chi2 : float
-            Best reduced chi-square implied by the current best sample.
-        elapsed_time : float
-            Elapsed wall time in seconds.
-        force_report : bool, default=False
-            Whether to render the row regardless of heartbeat timing.
+        update : SamplerProgressUpdate
+            Sampler iteration, phase, timing, and fit-quality payload.
         """
-        self._iteration = iteration
+        self._iteration = update.iteration
         self._tracking_mode = TRACKING_MODE_SAMPLER
-        self._sampler_total_iterations = max(1, total_iterations)
+        self._sampler_total_iterations = max(1, update.total_iterations)
 
-        clamped_iteration = min(max(1, iteration), self._sampler_total_iterations)
-        clamped_progress = min(max(progress_percent, 0.0), 100.0)
+        clamped_iteration = min(max(1, update.iteration), self._sampler_total_iterations)
+        clamped_progress = min(max(update.progress_percent, 0.0), 100.0)
         previous_phase = self._last_sampler_phase
-        self._last_sampler_phase = phase
+        self._last_sampler_phase = update.phase
         self._last_sampler_progress_percent = clamped_progress
-        self._last_sampler_log_posterior = log_posterior
-        self._last_sampler_elapsed_time = elapsed_time
+        self._last_sampler_log_posterior = update.log_posterior
+        self._last_sampler_elapsed_time = update.elapsed_time
 
-        row: list[str] = []
-        if self._previous_chi2 is None or self._best_chi2 is None:
-            self._previous_chi2 = reduced_chi2
-            self._best_chi2 = reduced_chi2
-            self._best_iteration = iteration
-            self._last_progress_time = elapsed_time
-            row = [
-                f'{clamped_iteration}/{self._sampler_total_iterations}',
-                f'{clamped_progress:.1f}%',
-                self._format_elapsed_time(elapsed_time),
-                f'{log_posterior:.2f}',
-                phase,
-            ]
-        else:
-            if reduced_chi2 < self._best_chi2:
-                self._best_chi2 = reduced_chi2
-                self._best_iteration = iteration
-
-            if (
-                iteration != self._last_reported_iteration
-                and (
-                    force_report
-                    or previous_phase != phase
-                    or self._last_progress_time is None
-                    or elapsed_time - self._last_progress_time >= SAMPLER_PROGRESS_UPDATE_SECONDS
-                    or clamped_iteration >= self._sampler_total_iterations
-                )
-            ):
-                row = [
-                    f'{clamped_iteration}/{self._sampler_total_iterations}',
-                    f'{clamped_progress:.1f}%',
-                    self._format_elapsed_time(elapsed_time),
-                    f'{log_posterior:.2f}',
-                    phase,
-                ]
-                self._last_progress_time = elapsed_time
+        row = self._initial_sampler_progress_row(
+            update=update,
+            clamped_iteration=clamped_iteration,
+            clamped_progress=clamped_progress,
+        )
+        if not row:
+            row = self._continued_sampler_progress_row(
+                update=update,
+                previous_phase=previous_phase,
+                clamped_iteration=clamped_iteration,
+                clamped_progress=clamped_progress,
+            )
 
         if row:
             self.add_tracking_info(row)
 
-        self._last_chi2 = reduced_chi2
-        self._last_iteration = iteration
+        self._last_chi2 = update.reduced_chi2
+        self._last_iteration = update.iteration
 
     @property
     def best_chi2(self) -> float | None:
@@ -351,7 +320,7 @@ class FitProgressTracker:
         ----------
         minimizer_name : str
             Name of the minimizer used for the run.
-        mode : str, default='fit'
+        mode : str, default=TRACKING_MODE_FIT
             Tracking mode for the run.
         """
         self._tracking_mode = (
@@ -367,7 +336,7 @@ class FitProgressTracker:
         if self._tracking_mode == TRACKING_MODE_SAMPLER:
             console.print('📈 Bayesian sampling progress:')
         else:
-            console.print('📈 Fit progress:')
+            console.print('📈 Goodness-of-fit progress:')
 
         # Reset rows and create an environment-appropriate handle
         self._df_rows = []
@@ -409,62 +378,204 @@ class FitProgressTracker:
     def finish_tracking(self) -> None:
         """Finalize progress display and print best result summary."""
         if self._tracking_mode == TRACKING_MODE_SAMPLER:
-            if self._last_iteration is not None and self._sampler_total_iterations is not None:
-                final_progress = self._last_sampler_progress_percent
-                if final_progress is None:
-                    final_progress = 100.0 * min(
-                        self._last_iteration,
-                        self._sampler_total_iterations,
-                    ) / self._sampler_total_iterations
-                row = [
-                    f'{min(self._last_iteration, self._sampler_total_iterations)}/'
-                    f'{self._sampler_total_iterations}',
-                    f'{final_progress:.1f}%',
-                    self._format_elapsed_time(
-                        self._fitting_time
-                        if self._fitting_time is not None
-                        else self._last_sampler_elapsed_time
-                    ),
-                    (
-                        f'{self._last_sampler_log_posterior:.2f}'
-                        if self._last_sampler_log_posterior is not None
-                        else ''
-                    ),
-                    self._last_sampler_phase or 'sampling',
-                ]
-                if not self._df_rows:
-                    self.add_tracking_info(row)
-                elif self._rows_match_on_columns(self._df_rows[-1], row, (0, 1, 3, 4)):
-                    self._replace_last_tracking_row(row)
-                elif self._df_rows[-1] != row:
-                    self.add_tracking_info(row)
-        elif self._last_iteration is not None:
-            row: list[str] = [
-                str(self._last_iteration),
-                self._format_elapsed_time(self._fitting_time),
-                f'{self._last_chi2:.2f}' if self._last_chi2 is not None else '',
-                '',
-            ]
-            if not self._df_rows:
-                self.add_tracking_info(row)
-            elif self._rows_match_on_columns(self._df_rows[-1], row, (0, 2)):
-                self._replace_last_tracking_row(row)
-            elif self._df_rows[-1][:3] != row[:3]:
-                self.add_tracking_info(row)
+            self._finalize_sampler_tracking_row()
+        else:
+            self._finalize_fit_tracking_row()
 
         if self._verbosity is not VerbosityEnum.FULL:
             return
 
-        # Close terminal live if used
+        self._close_display_handle()
+        self._print_completion_summary()
+
+    def _initial_sampler_progress_row(
+        self,
+        *,
+        update: SamplerProgressUpdate,
+        clamped_iteration: int,
+        clamped_progress: float,
+    ) -> list[str]:
+        if self._previous_chi2 is not None and self._best_chi2 is not None:
+            return []
+
+        self._previous_chi2 = update.reduced_chi2
+        self._best_chi2 = update.reduced_chi2
+        self._best_iteration = update.iteration
+        self._last_progress_time = update.elapsed_time
+        return self._sampler_progress_row(
+            clamped_iteration=clamped_iteration,
+            clamped_progress=clamped_progress,
+            log_posterior=update.log_posterior,
+            phase=update.phase,
+            elapsed_time=update.elapsed_time,
+        )
+
+    def _continued_sampler_progress_row(
+        self,
+        *,
+        update: SamplerProgressUpdate,
+        previous_phase: str | None,
+        clamped_iteration: int,
+        clamped_progress: float,
+    ) -> list[str]:
+        if self._best_chi2 is not None and update.reduced_chi2 < self._best_chi2:
+            self._best_chi2 = update.reduced_chi2
+            self._best_iteration = update.iteration
+
+        if not self._should_render_sampler_row(
+            iteration=update.iteration,
+            previous_phase=previous_phase,
+            phase=update.phase,
+            elapsed_time=update.elapsed_time,
+            force_report=update.force_report,
+            clamped_iteration=clamped_iteration,
+        ):
+            return []
+
+        self._last_progress_time = update.elapsed_time
+        return self._sampler_progress_row(
+            clamped_iteration=clamped_iteration,
+            clamped_progress=clamped_progress,
+            log_posterior=update.log_posterior,
+            phase=update.phase,
+            elapsed_time=update.elapsed_time,
+        )
+
+    def _should_render_sampler_row(
+        self,
+        *,
+        iteration: int,
+        previous_phase: str | None,
+        phase: str,
+        elapsed_time: float,
+        force_report: bool,
+        clamped_iteration: int,
+    ) -> bool:
+        if iteration == self._last_reported_iteration:
+            return False
+
+        return (
+            force_report
+            or previous_phase != phase
+            or self._last_progress_time is None
+            or elapsed_time - self._last_progress_time >= SAMPLER_PROGRESS_UPDATE_SECONDS
+            or clamped_iteration >= self._sampler_total_iterations
+        )
+
+    def _sampler_progress_row(
+        self,
+        *,
+        clamped_iteration: int,
+        clamped_progress: float,
+        log_posterior: float,
+        phase: str,
+        elapsed_time: float,
+    ) -> list[str]:
+        return [
+            self._sampler_iteration_label(clamped_iteration),
+            f'{clamped_progress:.1f}%',
+            self._format_elapsed_time(elapsed_time),
+            f'{log_posterior:.2f}',
+            phase,
+        ]
+
+    def _finalize_sampler_tracking_row(self) -> None:
+        row = self._final_sampler_tracking_row()
+        if row is None:
+            return
+
+        if not self._df_rows:
+            self.add_tracking_info(row)
+            return
+
+        if self._rows_match_on_columns(self._df_rows[-1], row, (0, 1, 3, 4)):
+            self._replace_last_tracking_row(row)
+            return
+
+        if self._df_rows[-1] != row:
+            self.add_tracking_info(row)
+
+    def _final_sampler_tracking_row(self) -> list[str] | None:
+        if self._last_iteration is None or self._sampler_total_iterations is None:
+            return None
+
+        final_progress = self._resolved_final_sampler_progress()
+        elapsed_time = self._resolved_final_sampler_elapsed_time()
+        log_posterior = (
+            f'{self._last_sampler_log_posterior:.2f}'
+            if self._last_sampler_log_posterior is not None
+            else ''
+        )
+        return [
+            self._sampler_iteration_label(self._last_iteration),
+            f'{final_progress:.1f}%',
+            self._format_elapsed_time(elapsed_time),
+            log_posterior,
+            self._last_sampler_phase or 'sampling',
+        ]
+
+    def _finalize_fit_tracking_row(self) -> None:
+        row = self._final_fit_tracking_row()
+        if row is None:
+            return
+
+        if not self._df_rows:
+            self.add_tracking_info(row)
+            return
+
+        if self._rows_match_on_columns(self._df_rows[-1], row, (0, 2)):
+            self._replace_last_tracking_row(row)
+            return
+
+        if self._df_rows[-1][:3] != row[:3]:
+            self.add_tracking_info(row)
+
+    def _final_fit_tracking_row(self) -> list[str] | None:
+        if self._last_iteration is None:
+            return None
+
+        return [
+            str(self._last_iteration),
+            self._format_elapsed_time(self._fitting_time),
+            f'{self._last_chi2:.2f}' if self._last_chi2 is not None else '',
+            '',
+        ]
+
+    def _resolved_final_sampler_progress(self) -> float:
+        if self._last_sampler_progress_percent is not None:
+            return self._last_sampler_progress_percent
+
+        if self._last_iteration is None or self._sampler_total_iterations is None:
+            msg = 'Sampler progress is unavailable without final iteration counts.'
+            raise RuntimeError(msg)
+        return (
+            100.0
+            * min(self._last_iteration, self._sampler_total_iterations)
+            / self._sampler_total_iterations
+        )
+
+    def _resolved_final_sampler_elapsed_time(self) -> float | None:
+        if self._fitting_time is not None:
+            return self._fitting_time
+        return self._last_sampler_elapsed_time
+
+    def _sampler_iteration_label(self, iteration: int) -> str:
+        if self._sampler_total_iterations is None:
+            msg = 'Sampler iteration labels require a configured total iteration count.'
+            raise RuntimeError(msg)
+        clamped_iteration = min(iteration, self._sampler_total_iterations)
+        return f'{clamped_iteration}/{self._sampler_total_iterations}'
+
+    def _close_display_handle(self) -> None:
         if self._display_handle is not None and hasattr(self._display_handle, 'close'):
             with suppress(Exception):
                 self._display_handle.close()
 
+    def _print_completion_summary(self) -> None:
         if self._tracking_mode == TRACKING_MODE_SAMPLER:
             console.print('✅ Bayesian sampling complete.')
             return
 
-        # Print best result
         console.print(
             f'🏆 Best goodness-of-fit (reduced χ²) is {self._best_chi2:.2f} '
             f'at iteration {self._best_iteration}'
@@ -506,7 +617,9 @@ class FitProgressTracker:
         new_row: list[str],
         column_indices: tuple[int, ...],
     ) -> bool:
-        """Return whether two tracking rows match on selected columns."""
+        """
+        Return whether two tracking rows match on selected columns.
+        """
         return all(
             len(current_row) > index
             and len(new_row) > index
@@ -515,7 +628,9 @@ class FitProgressTracker:
         )
 
     def _replace_last_tracking_row(self, row: list[str]) -> None:
-        """Replace the last rendered tracking row and refresh the view."""
+        """
+        Replace the last rendered tracking row and refresh the view.
+        """
         if not self._df_rows:
             self.add_tracking_info(row)
             return

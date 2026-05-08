@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import random
+from dataclasses import dataclass
 
 import numpy as np
 from bumps.fitproblem import FitProblem
@@ -18,8 +19,9 @@ from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
 from easydiffraction.analysis.fit_helpers.bayesian import compute_convergence_diagnostics
 from easydiffraction.analysis.fit_helpers.bayesian import standard_deviations_from_summaries
 from easydiffraction.analysis.fit_helpers.bayesian import summarize_posterior_parameters
-from easydiffraction.analysis.minimizers.bumps import _EasyDiffractionFitness
+from easydiffraction.analysis.fit_helpers.tracking import SamplerProgressUpdate
 from easydiffraction.analysis.minimizers.bumps import BumpsMinimizer
+from easydiffraction.analysis.minimizers.bumps import _EasyDiffractionFitness
 from easydiffraction.analysis.minimizers.enums import DreamPopulationInitializationEnum
 from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
@@ -38,10 +40,39 @@ DEFAULT_OUTLIER_TEST = 'none'
 DEFAULT_TRIM = False
 BURN_IN_PROGRESS_POINTS = 5
 SAMPLING_PROGRESS_POINTS = 20
+DREAM_SAMPLE_ARRAY_NDIM = 3
+DREAM_DRIVER_FAILURES = (ArithmeticError, RuntimeError, TypeError, ValueError)
+
+
+@dataclass(slots=True)
+class _DreamRunContext:
+    """Prepared driver state and metadata for one DREAM run."""
+
+    driver: FitDriver
+    parameter_names: list[str]
+    parameter_display_names: list[str]
+    parameter_uids: list[str]
+    sampler_settings: dict[str, object]
+    starting_values: np.ndarray
+    starting_uncertainties: list[float | None]
+
+
+@dataclass(slots=True)
+class _DreamDriverResult:
+    """
+    Raw driver outcome captured before EasyDiffraction normalization.
+    """
+
+    best_values: object | None
+    best_nllf: float | None
+    raw_state: object | None
+    error: Exception | None = None
 
 
 class _DreamProgressMonitor(bumps_monitor.Monitor):
-    """Progress monitor translating DREAM updates into chi-square rows."""
+    """
+    Progress monitor translating DREAM updates into chi-square rows.
+    """
 
     def __init__(
         self,
@@ -70,7 +101,8 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
         self._next_burn_target_index = 0
         self._next_sampling_target_index = 0
 
-    def config_history(self, history: object) -> None:
+    @staticmethod
+    def config_history(history: object) -> None:
         """Declare the history fields needed for progress updates."""
         history.requires(time=1, step=1, value=1, population_values=1)
 
@@ -84,14 +116,16 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
         reduced_chi2 = self._reduced_chi_square_from_nllf(nllf)
         log_posterior = self._population_mean_log_posterior(history)
         self._tracker.track_sampler_progress(
-            iteration=generation,
-            total_iterations=self._total_generations,
-            phase=self._phase_name(generation),
-            progress_percent=self._progress_percent(generation),
-            log_posterior=log_posterior,
-            reduced_chi2=reduced_chi2,
-            elapsed_time=float(history.time[0]),
-            force_report=True,
+            SamplerProgressUpdate(
+                iteration=generation,
+                total_iterations=self._total_generations,
+                phase=self._phase_name(generation),
+                progress_percent=self._progress_percent(generation),
+                log_posterior=log_posterior,
+                reduced_chi2=reduced_chi2,
+                elapsed_time=float(history.time[0]),
+                force_report=True,
+            )
         )
 
     def final(self, history: object, best: dict[str, object]) -> None:
@@ -103,14 +137,16 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
         best_nllf = float(best['value'])
         reduced_chi2 = self._reduced_chi_square_from_nllf(best_nllf)
         self._tracker.track_sampler_progress(
-            iteration=generation,
-            total_iterations=self._total_generations,
-            phase=self._phase_name(generation),
-            progress_percent=self._progress_percent(generation),
-            log_posterior=self._population_mean_log_posterior(history),
-            reduced_chi2=reduced_chi2,
-            elapsed_time=float(history.time[0]),
-            force_report=True,
+            SamplerProgressUpdate(
+                iteration=generation,
+                total_iterations=self._total_generations,
+                phase=self._phase_name(generation),
+                progress_percent=self._progress_percent(generation),
+                log_posterior=self._population_mean_log_posterior(history),
+                reduced_chi2=reduced_chi2,
+                elapsed_time=float(history.time[0]),
+                force_report=True,
+            )
         )
 
     @staticmethod
@@ -120,13 +156,15 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
         stop: int,
         target_count: int,
     ) -> list[int]:
-        """Return monotonically increasing reporting targets for one phase."""
+        """
+        Return monotonically increasing reporting targets for one phase.
+        """
         if target_count < 1 or stop < start:
             return []
 
         targets = np.linspace(start, stop, num=target_count)
         rounded = np.rint(targets).astype(int)
-        unique_targets = sorted(set(int(value) for value in rounded if start <= value <= stop))
+        unique_targets = sorted({int(value) for value in rounded if start <= value <= stop})
         if start not in unique_targets:
             unique_targets.insert(0, start)
         if stop not in unique_targets:
@@ -156,7 +194,9 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
         phase_targets: list[int],
         target_index_name: str,
     ) -> bool:
-        """Advance a phase target pointer when the generation reaches it."""
+        """
+        Advance a phase target pointer when the generation reaches it.
+        """
         target_index = getattr(self, target_index_name)
         should_report = False
         while target_index < len(phase_targets) and generation >= phase_targets[target_index]:
@@ -179,7 +219,7 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
 
     @staticmethod
     def _population_mean_log_posterior(history: object) -> float:
-        """Return the current mean log-posterior across the walker population."""
+        """Return the mean log-posterior across the population."""
         population_values = history.population_values[0] if history.population_values else None
         if population_values is None:
             return -float(history.value[0])
@@ -191,7 +231,9 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
         return float(np.mean(-nllf_values[finite_mask]))
 
     def _reduced_chi_square_from_nllf(self, nllf: float) -> float:
-        """Convert DREAM's negative log-likelihood to reduced chi-square."""
+        """
+        Convert DREAM's negative log-likelihood to reduced chi-square.
+        """
         dof = self._n_points - self._n_parameters
         chi_square = 2.0 * nllf
         if dof <= 0:
@@ -273,7 +315,8 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         self._init = self._validated_init(value)
 
     def _resolve_random_seed(self, random_seed: int | None) -> int:
-        """Return a user-provided or generated random seed.
+        """
+        Return a user-provided or generated random seed.
 
         Parameters
         ----------
@@ -292,7 +335,8 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         self._resolved_random_seed = int(random_seed)
         return self._resolved_random_seed
 
-    def _tracking_mode(self) -> str:
+    @staticmethod
+    def _tracking_mode() -> str:
         """Use sampler-style progress reporting for DREAM runs."""
         return 'sampling'
 
@@ -300,7 +344,8 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         self,
         parameters: list[object],
     ) -> dict[str, object]:
-        """Prepare DREAM solver arguments in EasyDiffraction order.
+        """
+        Prepare DREAM solver arguments in EasyDiffraction order.
 
         Parameters
         ----------
@@ -322,11 +367,11 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         return solver_args
 
     @staticmethod
-    def _validated_positive_integer(name: str, value: int | float) -> int:
+    def _validated_positive_integer(name: str, value: float) -> int:
         """Validate a DREAM setting that must be a positive integer."""
         if isinstance(value, bool):
             msg = f"DREAM setting '{name}' must be a positive integer."
-            raise ValueError(msg)
+            raise TypeError(msg)
 
         integer_value = int(value)
         if integer_value != value or integer_value < 1:
@@ -335,11 +380,13 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         return integer_value
 
     @staticmethod
-    def _validated_non_negative_integer(name: str, value: int | float) -> int:
-        """Validate a DREAM setting that must be a non-negative integer."""
+    def _validated_non_negative_integer(name: str, value: float) -> int:
+        """
+        Validate a DREAM setting that must be a non-negative integer.
+        """
         if isinstance(value, bool):
             msg = f"DREAM setting '{name}' must be a non-negative integer."
-            raise ValueError(msg)
+            raise TypeError(msg)
 
         integer_value = int(value)
         if integer_value != value or integer_value < 0:
@@ -373,8 +420,8 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             raise ValueError(msg)
         return burn
 
+    @staticmethod
     def _sampler_settings(
-        self,
         *,
         random_seed: int,
         steps: int,
@@ -404,7 +451,8 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         objective_function: object,
         **kwargs: object,
     ) -> object:
-        """Run the DREAM sampler and normalize its posterior outputs.
+        """
+        Run the DREAM sampler and normalize its posterior outputs.
 
         Parameters
         ----------
@@ -418,47 +466,114 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         object
             Normalized DREAM result stored in an ``OptimizeResult``.
         """
+        context = self._prepare_run_context(objective_function=objective_function, kwargs=kwargs)
+        driver_result = self._execute_driver(
+            driver=context.driver,
+            random_seed=int(context.sampler_settings['random_seed']),
+        )
+        if driver_result.error is not None:
+            return self._failure_result(
+                context=context,
+                message=f'DREAM sampling failed: {driver_result.error}',
+                raw_state=driver_result.raw_state,
+                sampler_completed=False,
+            )
+        if driver_result.best_values is None or driver_result.raw_state is None:
+            return self._failure_result(
+                context=context,
+                message='DREAM sampling did not produce usable posterior samples.',
+                raw_state=driver_result.raw_state,
+                sampler_completed=False,
+            )
+
+        return self._build_success_result(
+            context=context,
+            raw_state=driver_result.raw_state,
+            best_nllf=driver_result.best_nllf,
+        )
+
+    def _prepare_run_context(
+        self,
+        *,
+        objective_function: object,
+        kwargs: dict[str, object],
+    ) -> _DreamRunContext:
+        """Prepare a driver and metadata for one DREAM solver run."""
         bumps_params = kwargs.get('bumps_params')
         parameter_names = kwargs.get('parameter_names')
         parameter_display_names = kwargs.get('parameter_display_names')
         parameter_uids = kwargs.get('parameter_uids')
-        random_seed = kwargs.get('random_seed')
+        random_seed = int(kwargs.get('random_seed'))
         starting_uncertainties = kwargs.get('starting_uncertainties')
+
         fitness = _EasyDiffractionFitness(bumps_params, objective_function)
         fitness.nllf()
-        problem = FitProblem(fitness)
-
         fitclass = next(cls for cls in FITTERS if cls.id == self.method)
         steps = self.steps
         burn = self._resolved_burn(steps)
-        thin = self.thin
-        pop = self.pop
         init = self.init
         sampler_settings = self._sampler_settings(
-            random_seed=int(random_seed),
+            random_seed=random_seed,
             steps=steps,
             burn=burn,
-            thin=thin,
-            pop=pop,
+            thin=self.thin,
+            pop=self.pop,
             init=init,
             n_parameters=len(bumps_params),
         )
+        driver = self._build_driver(
+            fitclass=fitclass,
+            fitness=fitness,
+            steps=steps,
+            burn=burn,
+            init=init,
+            sampler_settings=sampler_settings,
+            n_parameters=len(bumps_params),
+        )
+        starting_values = np.array([parameter.value for parameter in bumps_params], dtype=float)
+        resolved_uncertainties = (
+            list(starting_uncertainties)
+            if starting_uncertainties is not None
+            else [None] * len(bumps_params)
+        )
+        return _DreamRunContext(
+            driver=driver,
+            parameter_names=parameter_names,
+            parameter_display_names=parameter_display_names,
+            parameter_uids=parameter_uids,
+            sampler_settings=sampler_settings,
+            starting_values=starting_values,
+            starting_uncertainties=resolved_uncertainties,
+        )
+
+    def _build_driver(
+        self,
+        *,
+        fitclass: object,
+        fitness: object,
+        steps: int,
+        burn: int,
+        init: DreamPopulationInitializationEnum,
+        sampler_settings: dict[str, object],
+        n_parameters: int,
+    ) -> FitDriver:
+        """Build and clip the BUMPS DREAM driver."""
         total_generations = int(steps + burn + 1)
         progress_monitor = _DreamProgressMonitor(
             tracker=self.tracker,
             n_points=fitness.numpoints(),
-            n_parameters=len(bumps_params),
+            n_parameters=n_parameters,
             total_generations=total_generations,
             burn_steps=int(burn),
         )
         driver = FitDriver(
             fitclass=fitclass,
-            problem=problem,
+            problem=FitProblem(fitness),
             monitors=[progress_monitor],
             steps=steps,
             burn=burn,
-            thin=thin,
-            pop=pop,
+            thin=self.thin,
+            pop=self.pop,
             init=init.value,
             samples=sampler_settings['samples'],
             alpha=DEFAULT_ALPHA,
@@ -466,101 +581,105 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             trim=DEFAULT_TRIM,
         )
         driver.clip()
+        return driver
 
-        starting_values = np.array([parameter.value for parameter in bumps_params], dtype=float)
-        if starting_uncertainties is None:
-            starting_uncertainties = [None] * len(bumps_params)
-
-        numpy_state = np.random.get_state()
+    @staticmethod
+    def _execute_driver(*, driver: FitDriver, random_seed: int) -> _DreamDriverResult:
+        """
+        Run the DREAM driver under a deterministic RNG-state guard.
+        """
+        numpy_rng = np.random.mtrand._rand
+        numpy_state = numpy_rng.get_state()
         python_state = random.getstate()
-        np.random.seed(random_seed)
+        numpy_rng.seed(random_seed)
         random.seed(random_seed)
         try:
             best_values, best_nllf = driver.fit()
-        except Exception as error:  # pragma: no cover - defensive runtime path
-            return OptimizeResult(
-                x=starting_values,
-                dx=None,
-                fun=None,
-                success=False,
-                status=-1,
-                message=f'DREAM sampling failed: {error}',
-                var_names=parameter_names,
-                posterior_samples=None,
-                posterior_parameter_summaries=[],
-                convergence_diagnostics={},
-                sampler_settings=sampler_settings,
-                sampler_completed=False,
-                raw_state=None,
-                best_log_posterior=None,
-                starting_values=starting_values,
-                starting_uncertainties=starting_uncertainties,
+        except DREAM_DRIVER_FAILURES as error:  # pragma: no cover - backend-specific
+            return _DreamDriverResult(
+                best_values=None,
+                best_nllf=None,
+                raw_state=getattr(driver.fitter, 'state', None),
+                error=error,
             )
         finally:
-            np.random.set_state(numpy_state)
+            numpy_rng.set_state(numpy_state)
             random.setstate(python_state)
 
-        state = getattr(driver.fitter, 'state', None)
-        if best_values is None or state is None:
-            return OptimizeResult(
-                x=starting_values,
-                dx=None,
-                fun=None,
-                success=False,
-                status=-1,
-                message='DREAM sampling did not produce usable posterior samples.',
-                var_names=parameter_names,
-                posterior_samples=None,
-                posterior_parameter_summaries=[],
-                convergence_diagnostics={},
-                sampler_settings=sampler_settings,
-                sampler_completed=False,
-                raw_state=state,
-                best_log_posterior=None,
-                starting_values=starting_values,
-                starting_uncertainties=starting_uncertainties,
-            )
+        return _DreamDriverResult(
+            best_values=best_values,
+            best_nllf=float(best_nllf),
+            raw_state=getattr(driver.fitter, 'state', None),
+        )
 
-        draw_index, parameter_samples_array, log_posterior = state.chains()
-        if parameter_samples_array.ndim != 3 or parameter_samples_array.size == 0:
-            return OptimizeResult(
-                x=starting_values,
-                dx=None,
-                fun=None,
-                success=False,
-                status=-1,
+    @staticmethod
+    def _failure_result(
+        *,
+        context: _DreamRunContext,
+        message: str,
+        raw_state: object,
+        sampler_completed: bool,
+    ) -> OptimizeResult:
+        """
+        Build a normalized failure result for an incomplete DREAM run.
+        """
+        return OptimizeResult(
+            x=context.starting_values,
+            dx=None,
+            fun=None,
+            success=False,
+            status=-1,
+            message=message,
+            var_names=context.parameter_names,
+            posterior_samples=None,
+            posterior_parameter_summaries=[],
+            convergence_diagnostics={},
+            sampler_settings=context.sampler_settings,
+            sampler_completed=sampler_completed,
+            raw_state=raw_state,
+            best_log_posterior=None,
+            starting_values=context.starting_values,
+            starting_uncertainties=context.starting_uncertainties,
+        )
+
+    def _build_success_result(
+        self,
+        *,
+        context: _DreamRunContext,
+        raw_state: object,
+        best_nllf: float | None,
+    ) -> OptimizeResult:
+        """Normalize a completed DREAM run into an OptimizeResult."""
+        draw_index, parameter_samples_array, log_posterior = raw_state.chains()
+        if (
+            parameter_samples_array.ndim != DREAM_SAMPLE_ARRAY_NDIM
+            or parameter_samples_array.size == 0
+        ):
+            return self._failure_result(
+                context=context,
                 message='DREAM sampling did not return a usable posterior sample array.',
-                var_names=parameter_names,
-                posterior_samples=None,
-                posterior_parameter_summaries=[],
-                convergence_diagnostics={},
-                sampler_settings=sampler_settings,
+                raw_state=raw_state,
                 sampler_completed=True,
-                raw_state=state,
-                best_log_posterior=None,
-                starting_values=starting_values,
-                starting_uncertainties=starting_uncertainties,
             )
 
-        state_best_values, best_log_posterior = state.best()
-        best_by_name = dict(zip(state.labels, state_best_values, strict=True))
-        label_to_index = {label: index for index, label in enumerate(state.labels)}
-        ordered_indices = [label_to_index[uid] for uid in parameter_uids]
+        state_best_values, best_log_posterior = raw_state.best()
+        best_by_name = dict(zip(raw_state.labels, state_best_values, strict=True))
+        label_to_index = {label: index for index, label in enumerate(raw_state.labels)}
+        ordered_indices = [label_to_index[uid] for uid in context.parameter_uids]
         ordered_samples = np.asarray(parameter_samples_array, dtype=float)[:, :, ordered_indices]
-        map_values = np.array([best_by_name[uid] for uid in parameter_uids], dtype=float)
-
+        map_values = np.array([best_by_name[uid] for uid in context.parameter_uids], dtype=float)
         posterior_samples = PosteriorSamples(
-            parameter_names=parameter_names,
+            parameter_names=context.parameter_names,
             parameter_samples=ordered_samples,
             log_posterior=np.asarray(log_posterior, dtype=float),
             draw_index=np.asarray(draw_index, dtype=float),
         )
         convergence_diagnostics = compute_convergence_diagnostics(posterior_samples)
         posterior_parameter_summaries = summarize_posterior_parameters(
-            parameter_names=parameter_names,
+            parameter_names=context.parameter_names,
             posterior_samples=posterior_samples,
             map_values=map_values,
-            parameter_display_names=parameter_display_names,
+            parameter_display_names=context.parameter_display_names,
             convergence_diagnostics=convergence_diagnostics,
         )
         posterior_standard_deviations = standard_deviations_from_summaries(
@@ -580,24 +699,25 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             success=True,
             status=0,
             message='DREAM sampling completed',
-            var_names=parameter_names,
+            var_names=context.parameter_names,
             posterior_samples=posterior_samples,
             posterior_parameter_summaries=posterior_parameter_summaries,
             convergence_diagnostics=convergence_diagnostics,
-            sampler_settings=sampler_settings,
+            sampler_settings=context.sampler_settings,
             sampler_completed=True,
-            raw_state=state,
+            raw_state=raw_state,
             best_log_posterior=float(best_log_posterior),
-            starting_values=starting_values,
-            starting_uncertainties=starting_uncertainties,
+            starting_values=context.starting_values,
+            starting_uncertainties=context.starting_uncertainties,
         )
 
+    @staticmethod
     def _sync_result_to_parameters(
-        self,
         parameters: list[object],
         raw_result: object,
     ) -> None:
-        """Commit MAP values on success and restore starts on failure.
+        """
+        Commit MAP values on success and restore starts on failure.
 
         Parameters
         ----------
@@ -636,7 +756,8 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         raw_result: object,
         success: bool,
     ) -> BayesianFitResults:
-        """Build the Bayesian fit result container.
+        """
+        Build the Bayesian fit result container.
 
         Parameters
         ----------
@@ -662,9 +783,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             sampler_name='dream',
             point_estimate_name='map',
             posterior_samples=getattr(raw_result, 'posterior_samples', None),
-            posterior_parameter_summaries=getattr(
-                raw_result, 'posterior_parameter_summaries', []
-            ),
+            posterior_parameter_summaries=getattr(raw_result, 'posterior_parameter_summaries', []),
             posterior_predictive={},
             credible_interval_levels=(0.68, 0.95),
             sampler_settings=getattr(raw_result, 'sampler_settings', {}),

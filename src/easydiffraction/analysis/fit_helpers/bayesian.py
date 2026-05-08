@@ -14,22 +14,29 @@ from easydiffraction.analysis.fit_helpers.metrics import calculate_r_factor
 from easydiffraction.analysis.fit_helpers.metrics import calculate_r_factor_squared
 from easydiffraction.analysis.fit_helpers.metrics import calculate_rb_factor
 from easydiffraction.analysis.fit_helpers.metrics import calculate_weighted_r_factor
+from easydiffraction.analysis.fit_helpers.reporting import FitResults
 from easydiffraction.analysis.fit_helpers.reporting import _build_parameter_row
 from easydiffraction.analysis.fit_helpers.reporting import _format_optional_float
-from easydiffraction.analysis.fit_helpers.reporting import FitResults
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_table
 
 R_HAT_CONVERGENCE_THRESHOLD = 1.01
 ESS_BULK_CONVERGENCE_THRESHOLD = 400.0
+POSTERIOR_SAMPLE_NDIM = 3
+DEFAULT_CI_LEVELS = (0.68, 0.95)
+DEFAULT_CREDIBLE_INTERVAL_LEVELS = DEFAULT_CI_LEVELS
+IntervalLevels = tuple[float, ...]
+SettingsMap = dict[str, object] | None
+DiagnosticsMap = dict[str, object] | None
 
 
 @dataclass(slots=True)
 class PosteriorParameterSummary:
-    """Posterior summary statistics for one fitted parameter.
+    r"""
+    Posterior summary statistics for one fitted parameter.
 
-    Parameters
+    Attributes
     ----------
     unique_name : str
         Unique parameter name used across EasyDiffraction.
@@ -48,7 +55,7 @@ class PosteriorParameterSummary:
     ess_bulk : float | None, default=None
         Bulk effective sample size when available.
     r_hat : float | None, default=None
-        Rank-normalized split-$\\hat{R}$ when available.
+        Rank-normalized split-$\hat{R}$ when available.
     """
 
     unique_name: str
@@ -64,9 +71,10 @@ class PosteriorParameterSummary:
 
 @dataclass(slots=True)
 class PosteriorPredictiveSummary:
-    """Posterior predictive summaries for one experiment.
+    """
+    Posterior predictive summaries for one experiment.
 
-    Parameters
+    Attributes
     ----------
     experiment_name : str
         Experiment identifier.
@@ -101,9 +109,10 @@ class PosteriorPredictiveSummary:
 
 @dataclass(slots=True)
 class PosteriorSamples:
-    """Posterior samples and sample statistics from a Bayesian fit.
+    """
+    Posterior samples and sample statistics from a Bayesian fit.
 
-    Parameters
+    Attributes
     ----------
     parameter_names : list[str]
         Parameter names in the preserved EasyDiffraction order.
@@ -123,7 +132,8 @@ class PosteriorSamples:
     draw_index: np.ndarray | None = None
 
     def flattened(self) -> np.ndarray:
-        """Return flattened posterior samples by parameter.
+        """
+        Return flattened posterior samples by parameter.
 
         Returns
         -------
@@ -133,7 +143,8 @@ class PosteriorSamples:
         return np.asarray(self.parameter_samples).reshape(-1, len(self.parameter_names))
 
     def to_arviz(self) -> object:
-        """Convert posterior samples to an ArviZ ``InferenceData`` object.
+        """
+        Convert posterior samples to an ArviZ ``InferenceData`` object.
 
         Returns
         -------
@@ -146,10 +157,8 @@ class PosteriorSamples:
         ValueError
             If the stored arrays do not have the expected shapes.
         """
-        import arviz as az
-
         posterior_array = np.asarray(self.parameter_samples, dtype=float)
-        if posterior_array.ndim != 3:
+        if posterior_array.ndim != POSTERIOR_SAMPLE_NDIM:
             msg = 'Posterior sample array must have shape (n_draws, n_chains, n_parameters).'
             raise ValueError(msg)
 
@@ -178,10 +187,16 @@ class PosteriorSamples:
         return az.from_dict(data)
 
 
-class BayesianFitResults(FitResults):
-    """Container for Bayesian fit results and posterior summaries.
+SummaryList = list[PosteriorParameterSummary] | None
+PredictiveMap = dict[str, PosteriorPredictiveSummary] | None
 
-    Parameters
+
+@dataclass(kw_only=True)
+class BayesianFitResults(FitResults):
+    """
+    Container for Bayesian fit results and posterior summaries.
+
+    Attributes
     ----------
     success : bool, default=False
         Whether the Bayesian fit produced usable posterior results.
@@ -201,15 +216,15 @@ class BayesianFitResults(FitResults):
         Name of the point estimate committed back to the project.
     posterior_samples : PosteriorSamples | None, default=None
         Stored posterior samples.
-    posterior_parameter_summaries : list[PosteriorParameterSummary] | None, default=None
+    posterior_parameter_summaries : SummaryList, default=None
         Posterior summaries for each sampled parameter.
-    posterior_predictive : dict[str, PosteriorPredictiveSummary] | None, default=None
+    posterior_predictive : PredictiveMap, default=None
         Posterior predictive summaries keyed by experiment name.
-    credible_interval_levels : tuple[float, ...], default=(0.68, 0.95)
+    credible_interval_levels : IntervalLevels, default=DEFAULT_CI_LEVELS
         Interval levels available in the summaries.
-    sampler_settings : dict[str, object] | None, default=None
+    sampler_settings : SettingsMap, default=None
         Sampler settings recorded for reproducibility.
-    convergence_diagnostics : dict[str, object] | None, default=None
+    convergence_diagnostics : DiagnosticsMap, default=None
         Convergence diagnostics and status metadata.
     sampler_completed : bool, default=False
         Whether the sampler completed a run and returned posterior data.
@@ -217,50 +232,47 @@ class BayesianFitResults(FitResults):
         Best log-posterior value reported by the sampler.
     """
 
-    def __init__(
-        self,
-        *,
-        success: bool = False,
-        parameters: list[object] | None = None,
-        reduced_chi_square: float | None = None,
-        engine_result: object | None = None,
-        starting_parameters: list[object] | None = None,
-        fitting_time: float | None = None,
-        sampler_name: str = 'dream',
-        point_estimate_name: str = 'map',
-        posterior_samples: PosteriorSamples | None = None,
-        posterior_parameter_summaries: list[PosteriorParameterSummary] | None = None,
-        posterior_predictive: dict[str, PosteriorPredictiveSummary] | None = None,
-        credible_interval_levels: tuple[float, ...] = (0.68, 0.95),
-        sampler_settings: dict[str, object] | None = None,
-        convergence_diagnostics: dict[str, object] | None = None,
-        sampler_completed: bool = False,
-        best_log_posterior: float | None = None,
-    ) -> None:
+    success: bool = False
+    parameters: list[object] | None = None
+    reduced_chi_square: float | None = None
+    engine_result: object | None = None
+    starting_parameters: list[object] | None = None
+    fitting_time: float | None = None
+    sampler_name: str = 'dream'
+    point_estimate_name: str = 'map'
+    posterior_samples: PosteriorSamples | None = None
+    posterior_parameter_summaries: SummaryList = None
+    posterior_predictive: PredictiveMap = None
+    credible_interval_levels: IntervalLevels = DEFAULT_CI_LEVELS
+    sampler_settings: SettingsMap = None
+    convergence_diagnostics: DiagnosticsMap = None
+    sampler_completed: bool = False
+    best_log_posterior: float | None = None
+
+    def __post_init__(self) -> None:
+        """
+        Initialize inherited FitResults state and normalize containers.
+        """
         super().__init__(
-            success=success,
-            parameters=parameters,
-            reduced_chi_square=reduced_chi_square,
-            engine_result=engine_result,
-            starting_parameters=starting_parameters,
-            fitting_time=fitting_time,
+            success=self.success,
+            parameters=self.parameters,
+            reduced_chi_square=self.reduced_chi_square,
+            engine_result=self.engine_result,
+            starting_parameters=self.starting_parameters,
+            fitting_time=self.fitting_time,
         )
-        self.sampler_name = sampler_name
-        self.point_estimate_name = point_estimate_name
-        self.posterior_samples = posterior_samples
         self.posterior_parameter_summaries = (
-            posterior_parameter_summaries if posterior_parameter_summaries is not None else []
+            list(self.posterior_parameter_summaries)
+            if self.posterior_parameter_summaries is not None
+            else []
         )
         self.posterior_predictive = (
-            posterior_predictive if posterior_predictive is not None else {}
+            dict(self.posterior_predictive) if self.posterior_predictive is not None else {}
         )
-        self.credible_interval_levels = credible_interval_levels
-        self.sampler_settings = sampler_settings if sampler_settings is not None else {}
+        self.sampler_settings = dict(self.sampler_settings) if self.sampler_settings else {}
         self.convergence_diagnostics = (
-            convergence_diagnostics if convergence_diagnostics is not None else {}
+            dict(self.convergence_diagnostics) if self.convergence_diagnostics is not None else {}
         )
-        self.sampler_completed = sampler_completed
-        self.best_log_posterior = best_log_posterior
 
     def display_results(
         self,
@@ -270,7 +282,8 @@ class BayesianFitResults(FitResults):
         f_obs: list[float] | None = None,
         f_calc: list[float] | None = None,
     ) -> None:
-        """Render a Bayesian fit summary with posterior diagnostics.
+        """
+        Render a Bayesian fit summary with posterior diagnostics.
 
         Parameters
         ----------
@@ -285,49 +298,16 @@ class BayesianFitResults(FitResults):
         f_calc : list[float] | None, default=None
             Calculated structure-factor magnitudes for Bragg R.
         """
-        status_icon = '✅' if self.success else '❌'
-        rf = rf2 = wr = br = None
-        if y_obs is not None and y_calc is not None:
-            rf = calculate_r_factor(y_obs, y_calc) * 100
-            rf2 = calculate_r_factor_squared(y_obs, y_calc) * 100
-        if y_obs is not None and y_calc is not None and y_err is not None:
-            wr = calculate_weighted_r_factor(y_obs, y_calc, y_err) * 100
-        if f_obs is not None and f_calc is not None:
-            br = calculate_rb_factor(f_obs, f_calc) * 100
-
-        console.paragraph('Bayesian fit results')
-        console.print(f'{status_icon} Success: {self.success}')
-        if self.message:
-            console.print(f'ℹ️ Status: {self.message}')
-        console.print(f'🧪 Sampler: {self.sampler_name}')
-        console.print(
-            f'🎯 Committed point estimate: {_format_point_estimate_name(self.point_estimate_name)}'
+        metrics = _calculate_fit_quality_metrics(
+            y_obs=y_obs,
+            y_calc=y_calc,
+            y_err=y_err,
+            f_obs=f_obs,
+            f_calc=f_calc,
         )
-        console.print(f'🔁 Sampler completed: {self.sampler_completed}')
-        console.print(f'⏱️ Fitting time: {_format_optional_float(self.fitting_time, suffix=" seconds")}')
-        console.print(
-            '📏 Goodness-of-fit (reduced χ²): '
-            f'{_format_optional_float(self.reduced_chi_square)}'
-        )
-        if self.best_log_posterior is not None:
-            console.print(f'📉 Best log-posterior: {self.best_log_posterior:.2f}')
 
-        sampler_settings = _format_sampler_settings(self.sampler_settings)
-        if sampler_settings is not None:
-            console.print(Text(f'⚙️ Sampler settings: {sampler_settings}'))
-
-        convergence_summary = _format_convergence_summary(self.convergence_diagnostics)
-        if convergence_summary is not None:
-            console.print(Text.from_markup(f'📊 Convergence: {convergence_summary}'))
-
-        if rf is not None:
-            console.print(f'📏 R-factor (Rf): {rf:.2f}%')
-        if rf2 is not None:
-            console.print(f'📏 R-factor squared (Rf²): {rf2:.2f}%')
-        if wr is not None:
-            console.print(f'📏 Weighted R-factor (wR): {wr:.2f}%')
-        if br is not None:
-            console.print(f'📏 Bragg R-factor (BR): {br:.2f}%')
+        self._display_summary_header()
+        _print_fit_quality_metrics(metrics)
 
         console.print('📈 Committed parameters:')
         _render_committed_parameter_table(self.parameters)
@@ -341,14 +321,45 @@ class BayesianFitResults(FitResults):
         self._print_table_notes()
 
     def _print_table_notes(self) -> None:
-        """Print parameter and posterior-diagnostic notes below tables."""
+        """
+        Print parameter and posterior-diagnostic notes below tables.
+        """
         super()._print_table_notes()
         for note in _posterior_table_notes(self.posterior_parameter_summaries):
             log.warning(note)
 
+    def _display_summary_header(self) -> None:
+        """Render the high-level Bayesian fit summary."""
+        status_icon = '✅' if self.success else '❌'
+        fitting_time = _format_optional_float(self.fitting_time, suffix=' seconds')
+        goodness_of_fit = _format_optional_float(self.reduced_chi_square)
+
+        console.paragraph('Bayesian fit results')
+        console.print(f'{status_icon} Success: {self.success}')
+        if self.message:
+            console.print(f'i Status: {self.message}')
+        console.print(f'🧪 Sampler: {self.sampler_name}')
+        console.print(
+            f'🎯 Committed point estimate: {_format_point_estimate_name(self.point_estimate_name)}'
+        )
+        console.print(f'🔁 Sampler completed: {self.sampler_completed}')
+        console.print(f'⏱️ Fitting time: {fitting_time}')
+        console.print(f'📏 Goodness-of-fit (reduced χ²): {goodness_of_fit}')
+        if self.best_log_posterior is not None:
+            console.print(f'📉 Best log-posterior: {self.best_log_posterior:.2f}')
+
+        sampler_settings = _format_sampler_settings(self.sampler_settings)
+        if sampler_settings is not None:
+            console.print(Text(f'⚙️ Sampler settings: {sampler_settings}'))
+
+        convergence_summary = _format_convergence_summary(self.convergence_diagnostics)
+        if convergence_summary is not None:
+            console.print(Text.from_markup(f'📊 Convergence: {convergence_summary}'))
+
 
 def compute_convergence_diagnostics(posterior_samples: PosteriorSamples) -> dict[str, object]:
-    """Compute convergence diagnostics from posterior samples.
+    """
+    Compute convergence diagnostics from posterior samples.
 
     Parameters
     ----------
@@ -395,7 +406,8 @@ def summarize_posterior_parameters(
     parameter_display_names: list[str] | None = None,
     convergence_diagnostics: dict[str, object] | None = None,
 ) -> list[PosteriorParameterSummary]:
-    """Build posterior parameter summaries in EasyDiffraction order.
+    """
+    Build posterior parameter summaries in EasyDiffraction order.
 
     Parameters
     ----------
@@ -418,14 +430,16 @@ def summarize_posterior_parameters(
     Raises
     ------
     ValueError
-        If the posterior sample array is incompatible with the
-        parameter name list.
+        If the posterior sample array is incompatible with the parameter
+        name list.
     """
     flattened = posterior_samples.flattened()
     if flattened.shape[1] != len(parameter_names):
         msg = 'Posterior samples do not match the sampled parameter name list length.'
         raise ValueError(msg)
-    if parameter_display_names is not None and len(parameter_display_names) != len(parameter_names):
+    if parameter_display_names is not None and len(parameter_display_names) != len(
+        parameter_names
+    ):
         msg = 'Posterior display-name list must match the sampled parameter name list length.'
         raise ValueError(msg)
 
@@ -465,7 +479,8 @@ def summarize_posterior_parameters(
 def standard_deviations_from_summaries(
     summaries: list[PosteriorParameterSummary],
 ) -> np.ndarray:
-    """Return posterior standard deviations in summary order.
+    """
+    Return posterior standard deviations in summary order.
 
     Parameters
     ----------
@@ -497,11 +512,50 @@ def _format_sampler_settings(sampler_settings: dict[str, object]) -> str | None:
     if not sampler_settings:
         return None
 
-    parts: list[str] = []
-    for key in ('random_seed', 'steps', 'burn', 'thin', 'pop', 'samples'):
-        if key in sampler_settings:
-            parts.append(f'{key}={sampler_settings[key]}')
+    parts = [
+        f'{key}={sampler_settings[key]}'
+        for key in ('random_seed', 'steps', 'burn', 'thin', 'pop', 'samples')
+        if key in sampler_settings
+    ]
     return ', '.join(parts) if parts else None
+
+
+def _calculate_fit_quality_metrics(
+    *,
+    y_obs: list[float] | None,
+    y_calc: list[float] | None,
+    y_err: list[float] | None,
+    f_obs: list[float] | None,
+    f_calc: list[float] | None,
+) -> dict[str, float | None]:
+    """Compute optional fit-quality metrics for summary rendering."""
+    metrics: dict[str, float | None] = {
+        'rf': None,
+        'rf2': None,
+        'wr': None,
+        'br': None,
+    }
+    if y_obs is not None and y_calc is not None:
+        metrics['rf'] = calculate_r_factor(y_obs, y_calc) * 100
+        metrics['rf2'] = calculate_r_factor_squared(y_obs, y_calc) * 100
+    if y_obs is not None and y_calc is not None and y_err is not None:
+        metrics['wr'] = calculate_weighted_r_factor(y_obs, y_calc, y_err) * 100
+    if f_obs is not None and f_calc is not None:
+        metrics['br'] = calculate_rb_factor(f_obs, f_calc) * 100
+    return metrics
+
+
+def _print_fit_quality_metrics(metrics: dict[str, float | None]) -> None:
+    """Render any available fit-quality metrics."""
+    metric_labels = (
+        ('📏 R-factor (Rf)', metrics['rf']),
+        ('📏 R-factor squared (Rf²)', metrics['rf2']),
+        ('📏 Weighted R-factor (wR)', metrics['wr']),
+        ('📏 Bragg R-factor (BR)', metrics['br']),
+    )
+    for label, value in metric_labels:
+        if value is not None:
+            console.print(f'{label}: {value:.2f}%')
 
 
 def _format_point_estimate_name(point_estimate_name: str) -> str:

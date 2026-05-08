@@ -433,7 +433,8 @@ class GenericParameter(GenericNumericDescriptor):
         *,
         clip_to_limits: bool = True,
     ) -> None:
-        """Set fit bounds from the current standard uncertainty.
+        """
+        Set fit bounds from the current standard uncertainty.
 
         Parameters
         ----------
@@ -447,8 +448,8 @@ class GenericParameter(GenericNumericDescriptor):
         Raises
         ------
         ValueError
-            If the current value, uncertainty, or multiplier is
-            missing, invalid, or produces non-increasing bounds.
+            If the current value, uncertainty, or multiplier is missing,
+            invalid, or produces non-increasing bounds.
         """
         name = self.unique_name
         value = self.value

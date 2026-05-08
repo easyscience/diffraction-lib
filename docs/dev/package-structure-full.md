@@ -49,10 +49,16 @@
 │   │   └── 📄 __init__.py
 │   ├── 📁 fit_helpers
 │   │   ├── 📄 __init__.py
+│   │   ├── 📄 bayesian.py
+│   │   │   ├── 🏷️ class PosteriorParameterSummary
+│   │   │   ├── 🏷️ class PosteriorPredictiveSummary
+│   │   │   ├── 🏷️ class PosteriorSamples
+│   │   │   └── 🏷️ class BayesianFitResults
 │   │   ├── 📄 metrics.py
 │   │   ├── 📄 reporting.py
 │   │   │   └── 🏷️ class FitResults
 │   │   └── 📄 tracking.py
+│   │       ├── 🏷️ class SamplerProgressUpdate
 │   │       ├── 🏷️ class _TerminalLiveHandle
 │   │       └── 🏷️ class FitProgressTracker
 │   ├── 📁 minimizers
@@ -66,12 +72,18 @@
 │   │   │   └── 🏷️ class BumpsAmoebaMinimizer
 │   │   ├── 📄 bumps_de.py
 │   │   │   └── 🏷️ class BumpsDEMinimizer
+│   │   ├── 📄 bumps_dream.py
+│   │   │   ├── 🏷️ class _DreamRunContext
+│   │   │   ├── 🏷️ class _DreamDriverResult
+│   │   │   ├── 🏷️ class _DreamProgressMonitor
+│   │   │   └── 🏷️ class BumpsDreamMinimizer
 │   │   ├── 📄 bumps_lm.py
 │   │   │   └── 🏷️ class BumpsLmMinimizer
 │   │   ├── 📄 dfols.py
 │   │   │   └── 🏷️ class DfolsMinimizer
 │   │   ├── 📄 enums.py
-│   │   │   └── 🏷️ class MinimizerTypeEnum
+│   │   │   ├── 🏷️ class MinimizerTypeEnum
+│   │   │   └── 🏷️ class DreamPopulationInitializationEnum
 │   │   ├── 📄 factory.py
 │   │   │   └── 🏷️ class MinimizerFactory
 │   │   ├── 📄 lmfit.py
@@ -366,6 +378,9 @@
 │   │   ├── 🏷️ class PlotterEngineEnum
 │   │   ├── 🏷️ class _MeasVsCalcPlotOptions
 │   │   ├── 🏷️ class _PowderMeasVsCalcSeries
+│   │   ├── 🏷️ class _PosteriorDistributionContext
+│   │   ├── 🏷️ class _PosteriorPairsContext
+│   │   ├── 🏷️ class _PosteriorPairsLegendState
 │   │   ├── 🏷️ class Plotter
 │   │   └── 🏷️ class PlotterFactory
 │   ├── 📄 tables.py

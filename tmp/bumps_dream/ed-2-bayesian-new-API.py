@@ -191,6 +191,7 @@ experiment.linked_phases.create(id='lbco', scale=9.1351)
 structure.cell.length_a.free = True
 experiment.peak.broad_gauss_u.free = True
 experiment.peak.broad_gauss_v.free = True
+experiment.peak.broad_gauss_w.free = True
 experiment.instrument.calib_twotheta_offset.free = True
 
 # %% [markdown]
@@ -241,6 +242,7 @@ project.analysis.display.free_params()
 structure.cell.length_a.set_fit_bounds_from_uncertainty(multiplier=4)
 experiment.peak.broad_gauss_u.set_fit_bounds_from_uncertainty(multiplier=4)
 experiment.peak.broad_gauss_v.set_fit_bounds_from_uncertainty(multiplier=4)
+experiment.peak.broad_gauss_w.set_fit_bounds_from_uncertainty(multiplier=4)
 experiment.instrument.calib_twotheta_offset.set_fit_bounds_from_uncertainty(multiplier=4)
 
 # %% [markdown]
@@ -310,6 +312,7 @@ project.display.plotter.plot_posterior_pairs()
 project.display.plotter.plot_param_distribution(structure.cell.length_a)
 project.display.plotter.plot_param_distribution(experiment.peak.broad_gauss_u)
 project.display.plotter.plot_param_distribution(experiment.peak.broad_gauss_v)
+project.display.plotter.plot_param_distribution(experiment.peak.broad_gauss_w)
 project.display.plotter.plot_param_distribution(experiment.instrument.calib_twotheta_offset)
 
 # %% [markdown]

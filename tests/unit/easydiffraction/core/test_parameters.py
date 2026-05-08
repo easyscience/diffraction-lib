@@ -103,6 +103,71 @@ def test_parameter_fit_bounds_assign_and_read():
     assert np.isclose(p.fit_max, 10.0)
 
 
+def test_parameter_set_fit_bounds_from_uncertainty_sets_bounds_and_returns_none():
+    from easydiffraction.core.validation import AttributeSpec
+    from easydiffraction.core.variable import Parameter
+    from easydiffraction.io.cif.handler import CifHandler
+
+    p = Parameter(
+        name='d',
+        value_spec=AttributeSpec(default=0.0),
+        cif_handler=CifHandler(names=['_param.d']),
+    )
+    p.value = 2.0
+    p.uncertainty = 0.25
+
+    result = p.set_fit_bounds_from_uncertainty(multiplier=4)
+
+    assert result is None
+    assert np.isclose(p.fit_min, 1.0)
+    assert np.isclose(p.fit_max, 3.0)
+
+
+def test_parameter_set_fit_bounds_from_uncertainty_clips_to_physical_limits():
+    from easydiffraction.core.validation import AttributeSpec
+    from easydiffraction.core.validation import DataTypes
+    from easydiffraction.core.validation import RangeValidator
+    from easydiffraction.core.variable import Parameter
+    from easydiffraction.io.cif.handler import CifHandler
+
+    p = Parameter(
+        name='bounded',
+        value_spec=AttributeSpec(
+            data_type=DataTypes.NUMERIC,
+            default=1.0,
+            validator=RangeValidator(ge=0.5, le=1.5),
+        ),
+        cif_handler=CifHandler(names=['_param.bounded']),
+    )
+    p.value = 1.0
+    p.uncertainty = 0.3
+
+    p.set_fit_bounds_from_uncertainty(multiplier=4)
+
+    assert np.isclose(p.fit_min, 0.5)
+    assert np.isclose(p.fit_max, 1.5)
+
+
+def test_parameter_set_fit_bounds_from_uncertainty_requires_valid_uncertainty():
+    from easydiffraction.core.validation import AttributeSpec
+    from easydiffraction.core.variable import Parameter
+    from easydiffraction.io.cif.handler import CifHandler
+
+    p = Parameter(
+        name='invalid',
+        value_spec=AttributeSpec(default=0.0),
+        cif_handler=CifHandler(names=['_param.invalid']),
+    )
+    p.value = 2.0
+    p.uncertainty = None
+
+    with pytest.raises(
+        ValueError,
+        match=r'Cannot set fit bounds for invalid: uncertainty is missing or invalid\.',
+    ):
+        p.set_fit_bounds_from_uncertainty(multiplier=4)
+
+
 def _make_param() -> object:
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter

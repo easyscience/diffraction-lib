@@ -69,7 +69,8 @@ class MinimizerBase(ABC):
         self.tracker.stop_timer()
         self.tracker.finish_tracking()
 
-    def _tracking_mode(self) -> str:
+    @staticmethod
+    def _tracking_mode() -> str:
         """Return the tracker mode for the current minimizer."""
         return 'fit'
 
@@ -143,7 +144,8 @@ class MinimizerBase(ABC):
         raw_result: object,
         success: bool,
     ) -> FitResults:
-        """Build the final fit-result object for this minimizer.
+        """
+        Build the final fit-result object for this minimizer.
 
         Parameters
         ----------
@@ -266,7 +268,8 @@ class MinimizerBase(ABC):
         """Determine whether the fit was successful."""
 
     def _resolve_random_seed(self, random_seed: int | None) -> int | None:
-        """Validate or normalize the random seed for this minimizer.
+        """
+        Validate or normalize the random seed for this minimizer.
 
         Parameters
         ----------

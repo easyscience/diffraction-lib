@@ -108,11 +108,10 @@ class FitResults:
 
         console.paragraph('Fit results')
         console.print(f'{status_icon} Success: {self.success}')
-        console.print(f'⏱️ Fitting time: {_format_optional_float(self.fitting_time, suffix=" seconds")}')
-        console.print(
-            '📏 Goodness-of-fit (reduced χ²): '
-            f'{_format_optional_float(self.reduced_chi_square)}'
-        )
+        fitting_time = _format_optional_float(self.fitting_time, suffix=' seconds')
+        goodness_of_fit = _format_optional_float(self.reduced_chi_square)
+        console.print(f'⏱️ Fitting time: {fitting_time}')
+        console.print(f'📏 Goodness-of-fit (reduced χ²): {goodness_of_fit}')
         if rf is not None:
             console.print(f'📏 R-factor (Rf): {rf:.2f}%')
         if rf2 is not None:
@@ -258,7 +257,8 @@ def _format_optional_float(
     *,
     suffix: str = '',
 ) -> str:
-    """Format an optional float for console output.
+    """
+    Format an optional float for console output.
 
     Parameters
     ----------

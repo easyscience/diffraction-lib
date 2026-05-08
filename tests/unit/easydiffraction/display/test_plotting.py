@@ -2,6 +2,10 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import re
+from types import MethodType
+from types import SimpleNamespace
+
+import numpy as np
 
 import pytest
 
@@ -231,6 +235,170 @@ def test_extract_bragg_tick_sets_returns_empty_without_category():
     )
 
     assert tick_sets == ()
+
+
+def _make_bayesian_plotter_fixture():
+    from easydiffraction.analysis.fit_helpers.bayesian import PosteriorParameterSummary
+    from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
+    from easydiffraction.display.plotting import Plotter
+
+    samples = np.array(
+        [
+            [[3.8900, 0.0760, -0.1170, 0.6290], [3.8908, 0.0775, -0.1185, 0.6300]],
+            [[3.8912, 0.0785, -0.1190, 0.6310], [3.8916, 0.0790, -0.1200, 0.6320]],
+        ],
+        dtype=float,
+    )
+    parameter_names = ['length_a', 'broad_gauss_u', 'broad_gauss_v', 'twotheta_offset']
+    posterior_samples = PosteriorSamples(
+        parameter_names=parameter_names,
+        parameter_samples=samples,
+        log_posterior=np.array([[0.1, 0.2], [0.3, 0.4]], dtype=float),
+    )
+    parameters = [
+        SimpleNamespace(unique_name='length_a', name='length_a', fit_min=3.8895, fit_max=3.8920),
+        SimpleNamespace(
+            unique_name='broad_gauss_u', name='broad_gauss_u', fit_min=0.05, fit_max=0.11
+        ),
+        SimpleNamespace(
+            unique_name='broad_gauss_v', name='broad_gauss_v', fit_min=-0.14, fit_max=-0.10
+        ),
+        SimpleNamespace(
+            unique_name='twotheta_offset', name='twotheta_offset', fit_min=0.625, fit_max=0.64
+        ),
+    ]
+    summaries = [
+        PosteriorParameterSummary(
+            unique_name=name,
+            display_name=name,
+            map_value=float(samples[-1, -1, index]),
+            median=float(np.median(samples[:, :, index])),
+            standard_deviation=float(np.std(samples[:, :, index], ddof=1)),
+            interval_68=tuple(np.quantile(samples[:, :, index], [0.16, 0.84]).tolist()),
+            interval_95=tuple(np.quantile(samples[:, :, index], [0.025, 0.975]).tolist()),
+        )
+        for index, name in enumerate(parameter_names)
+    ]
+    fit_results = SimpleNamespace(
+        posterior_samples=posterior_samples,
+        posterior_parameter_summaries=summaries,
+        posterior_predictive={},
+        parameters=parameters,
+    )
+    plotter = Plotter()
+    plotter._get_posterior_samples_and_fit_results = MethodType(
+        lambda self: (posterior_samples, fit_results),
+        plotter,
+    )
+    plotter._get_fit_result_for_correlation = MethodType(lambda self: fit_results, plotter)
+    return plotter, fit_results, posterior_samples
+
+
+def test_correlation_from_posterior_samples_returns_labeled_dataframe():
+    from easydiffraction.display.plotting import Plotter
+
+    _, _, posterior_samples = _make_bayesian_plotter_fixture()
+
+    corr_df = Plotter()._correlation_from_posterior_samples(posterior_samples)
+
+    assert list(corr_df.index) == posterior_samples.parameter_names
+    assert list(corr_df.columns) == posterior_samples.parameter_names
+    np.testing.assert_allclose(np.diag(corr_df.to_numpy()), np.ones(len(corr_df)))
+
+
+def test_build_posterior_pairs_plot_hides_diagonal_ticks_and_uses_annotations():
+    plotter, _, _ = _make_bayesian_plotter_fixture()
+
+    figure = plotter._build_posterior_pairs_plot(parameters=None)
+
+    assert figure.layout.title.text == 'Posterior pair plot'
+    assert [annotation.text for annotation in figure.layout.annotations] == [
+        'length_a',
+        'broad_gauss_u',
+        'broad_gauss_v',
+        'twotheta_offset',
+    ]
+    subplot = figure.get_subplot(1, 1)
+    assert subplot.yaxis.showticklabels is False
+    assert subplot.yaxis.ticks == ''
+    assert subplot.yaxis.ticklen == 0
+    assert subplot.yaxis.title.text is None
+
+
+def test_build_param_distribution_plot_returns_plotly_figure():
+    plotter, fit_results, _ = _make_bayesian_plotter_fixture()
+    parameter = fit_results.parameters[0]
+
+    figure = plotter._build_param_distribution_plot(parameter)
+
+    assert figure.layout.title.text == 'Posterior distribution: length_a'
+    assert {trace.name for trace in figure.data} >= {
+        'Posterior histogram',
+        'Posterior density',
+        '68% credible interval',
+        '95% credible interval',
+        'Median',
+        'Max posterior',
+    }
+
+
+def test_build_posterior_predictive_summary_restores_parameter_state(monkeypatch):
+    from easydiffraction.analysis.fit_helpers.bayesian import PosteriorPredictiveSummary
+    from easydiffraction.display.plotting import Plotter
+
+    class FakePredictiveParameter:
+        def __init__(self, unique_name, value, uncertainty):
+            self.unique_name = unique_name
+            self.value = value
+            self.uncertainty = uncertainty
+
+        def _set_value_from_minimizer(self, value):
+            self.value = value
+
+    sampled_parameters = [
+        FakePredictiveParameter('a', 1.0, 0.1),
+        FakePredictiveParameter('b', 2.0, 0.2),
+    ]
+    posterior_samples = SimpleNamespace(
+        parameter_names=['a', 'b'],
+        flattened=lambda: np.array(
+            [
+                [1.0, 2.0],
+                [1.1, 2.1],
+                [0.9, 1.9],
+                [1.2, 2.2],
+            ],
+            dtype=float,
+        ),
+    )
+    fit_results = SimpleNamespace(
+        posterior_samples=posterior_samples,
+        parameters=sampled_parameters,
+    )
+    plotter = Plotter()
+
+    def fake_evaluate(self, *, sampled_parameters, values, experiment, expt_name, x_axis):
+        x = np.array([0.0, 1.0], dtype=float)
+        y = np.array([values[0] + values[1], values[0] - values[1]], dtype=float)
+        return y, x
+
+    monkeypatch.setattr(Plotter, '_evaluate_posterior_predictive_state', fake_evaluate)
+    monkeypatch.setattr(Plotter, '_update_project_categories', lambda self, expt_name: None)
+
+    summary = plotter._build_posterior_predictive_summary(
+        fit_results=fit_results,
+        experiment=object(),
+        expt_name='hrpt',
+        x_axis='two_theta',
+    )
+
+    assert isinstance(summary, PosteriorPredictiveSummary)
+    assert summary.experiment_name == 'hrpt'
+    assert summary.x_axis_name == 'two_theta'
+    assert summary.draws.shape == (4, 2)
+    np.testing.assert_allclose(summary.map_prediction, np.array([3.0, -1.0]))
+    np.testing.assert_allclose([parameter.value for parameter in sampled_parameters], [1.0, 2.0])
+    assert [parameter.uncertainty for parameter in sampled_parameters] == [0.1, 0.2]
 
 
 def test_extract_bragg_tick_sets_uses_derived_d_spacing_for_cwl_ticks():
