@@ -682,8 +682,15 @@ def _posterior_table_notes(
     if not has_failed_r_hat and not has_failed_ess_bulk:
         return []
 
-    return [
-        '[red]Convergence warning:[/red] posterior diagnostics failed '
-        '(r_hat > 1.01 or ess_bulk < 400). Consider longer sampling, '
-        'tighter bounds, or reparameterization.'
-    ]
+    notes: list[str] = []
+    if has_failed_r_hat:
+        notes.append(
+            f'[red]r_hat[/red]: exceeds {R_HAT_CONVERGENCE_THRESHOLD:.2f} '
+            '(consider longer sampling, tighter bounds, or reparameterization).'
+        )
+    if has_failed_ess_bulk:
+        notes.append(
+            f'[red]ess_bulk[/red]: less than {ESS_BULK_CONVERGENCE_THRESHOLD:.0f} '
+            '(consider longer sampling, tighter bounds, or reparameterization).'
+        )
+    return notes
