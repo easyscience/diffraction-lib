@@ -51,3 +51,12 @@ class MinimizerTypeEnum(StrEnum):
             MinimizerTypeEnum.BUMPS_DE: ('BUMPS library with differential evolution method'),
         }
         return descriptions.get(self, '')
+
+
+class DreamPopulationInitializationEnum(StrEnum):
+    """Supported DREAM population initializers."""
+
+    EPS = 'eps'
+    COV = 'cov'
+    LHS = 'lhs'
+    RANDOM = 'random'

@@ -20,6 +20,7 @@ from easydiffraction.analysis.fit_helpers.bayesian import standard_deviations_fr
 from easydiffraction.analysis.fit_helpers.bayesian import summarize_posterior_parameters
 from easydiffraction.analysis.minimizers.bumps import _EasyDiffractionFitness
 from easydiffraction.analysis.minimizers.bumps import BumpsMinimizer
+from easydiffraction.analysis.minimizers.enums import DreamPopulationInitializationEnum
 from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 from easydiffraction.core.metadata import TypeInfo
@@ -31,6 +32,7 @@ DEFAULT_BURN_FRACTION = 0.2
 DEFAULT_MIN_BURN = 50
 DEFAULT_THIN = 1
 DEFAULT_POP = 4
+DEFAULT_INIT = DreamPopulationInitializationEnum.EPS
 DEFAULT_ALPHA = 0.0
 DEFAULT_OUTLIER_TEST = 'none'
 DEFAULT_TRIM = False
@@ -220,6 +222,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         self._burn: int | None = None
         self._thin: int = DEFAULT_THIN
         self._pop: int = DEFAULT_POP
+        self._init: DreamPopulationInitializationEnum = DEFAULT_INIT
 
     @property
     def steps(self) -> int:
@@ -259,6 +262,15 @@ class BumpsDreamMinimizer(BumpsMinimizer):
     @pop.setter
     def pop(self, value: int) -> None:
         self._pop = self._validated_positive_integer('pop', value)
+
+    @property
+    def init(self) -> DreamPopulationInitializationEnum:
+        """DREAM population initializer."""
+        return self._init
+
+    @init.setter
+    def init(self, value: DreamPopulationInitializationEnum | str) -> None:
+        self._init = self._validated_init(value)
 
     def _resolve_random_seed(self, random_seed: int | None) -> int:
         """Return a user-provided or generated random seed.
@@ -335,6 +347,20 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             raise ValueError(msg)
         return integer_value
 
+    @staticmethod
+    def _validated_init(
+        value: DreamPopulationInitializationEnum | str,
+    ) -> DreamPopulationInitializationEnum:
+        """Validate a DREAM population initializer."""
+        try:
+            return DreamPopulationInitializationEnum(value)
+        except ValueError:
+            valid_values = ', '.join(
+                initialization.value for initialization in DreamPopulationInitializationEnum
+            )
+            msg = f"DREAM setting 'init' must be one of: {valid_values}."
+            raise ValueError(msg) from None
+
     def _resolved_burn(self, steps: int) -> int:
         """Return the configured or automatic DREAM burn-in length."""
         if self.burn is None:
@@ -355,6 +381,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         burn: int,
         thin: int,
         pop: int,
+        init: DreamPopulationInitializationEnum,
         n_parameters: int,
     ) -> dict[str, object]:
         """Build the sampler settings dictionary recorded in results."""
@@ -365,6 +392,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             'burn': int(burn),
             'thin': int(thin),
             'pop': int(pop),
+            'init': init.value,
             'samples': int(samples),
             'alpha': float(DEFAULT_ALPHA),
             'outliers': DEFAULT_OUTLIER_TEST,
@@ -405,12 +433,14 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         burn = self._resolved_burn(steps)
         thin = self.thin
         pop = self.pop
+        init = self.init
         sampler_settings = self._sampler_settings(
             random_seed=int(random_seed),
             steps=steps,
             burn=burn,
             thin=thin,
             pop=pop,
+            init=init,
             n_parameters=len(bumps_params),
         )
         total_generations = int(steps + burn + 1)
@@ -429,6 +459,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             burn=burn,
             thin=thin,
             pop=pop,
+            init=init.value,
             samples=sampler_settings['samples'],
             alpha=DEFAULT_ALPHA,
             outliers=DEFAULT_OUTLIER_TEST,

@@ -1153,19 +1153,23 @@ class Plotter(RendererBase):
                 if not is_diagonal_subplot:
                     fig.update_yaxes(range=list(parameter_axis_ranges[row_index]), row=row, col=col)
                 fig.update_xaxes(showticklabels=(row_index == n_parameters - 1), row=row, col=col)
-                fig.update_yaxes(
-                    showticklabels=(col_index == 0 and not is_diagonal_subplot),
-                    ticks='' if is_diagonal_subplot else None,
-                    row=row,
-                    col=col,
-                )
-                if row_index == 0 and col_index == 0:
-                    fig.update_yaxes(title_text='Probability density', row=row, col=col)
+                if is_diagonal_subplot:
+                    fig.update_yaxes(
+                        showticklabels=False,
+                        ticks='',
+                        ticklen=0,
+                        showgrid=False,
+                        title_text=None,
+                        row=row,
+                        col=col,
+                    )
+                else:
+                    fig.update_yaxes(showticklabels=(col_index == 0), row=row, col=col)
                 if row_index == n_parameters - 1:
                     fig.update_xaxes(title_text=labels[col_index], row=row, col=col)
 
                 subplot = fig.get_subplot(row, col)
-                if col_index == 0 and row_index > 0:
+                if col_index == 0:
                     subplot_title_annotations.append(
                         {
                             'x': subplot.xaxis.domain[0],
