@@ -70,7 +70,8 @@ PREDICTIVE_BAND_EDGE_COLOR = 'rgba(214, 39, 40, 0.45)'
 PREDICTIVE_DRAW_COLOR = 'rgba(140, 140, 140, 0.18)'
 PREDICTIVE_DRAW_PLOT_CAP = 50
 PREDICTIVE_DRAW_ARRAY_NDIM = 2
-RESPONSIVE_PAIR_PLOT_META_KEY = 'responsive_pair_plot'
+FIXED_ASPECT_WRAPPER_META_KEY = 'fixed_aspect_wrapper'
+FIXED_ASPECT_WRAPPER_CLASS_NAME = 'ed-fixed-aspect-plotly-wrapper'
 
 
 @dataclass(frozen=True)
@@ -790,82 +791,22 @@ syncLegendVisibility();
 window.requestAnimationFrame(installLegendToggleButton);
 """
 
+    @classmethod
+    def _html_post_script(cls, fig: object) -> str | None:
+        """Return concatenated HTML post scripts for a Plotly figure."""
+        scripts: list[str] = []
+        if cls._has_visible_legend(fig):
+            scripts.append(cls._modebar_legend_toggle_post_script())
+        if not scripts:
+            return None
+        return '\n'.join(cls._scoped_html_post_script(script) for script in scripts)
+
     @staticmethod
-    def _responsive_pair_plot_post_script() -> str:
+    def _scoped_html_post_script(script: str) -> str:
         """
-        Return client-side code for responsive posterior pair plots.
+        Return one HTML post script wrapped in its own block scope.
         """
-        return r"""
-const graphDiv = document.getElementById('{plot_id}');
-if (!graphDiv || !window.Plotly || !graphDiv.layout || !graphDiv.layout.meta) {
-    return;
-}
-
-const responsivePairPlot = graphDiv.layout.meta.responsive_pair_plot;
-if (!responsivePairPlot) {
-    return;
-}
-
-const readPositiveNumber = function (value, fallback) {
-    const numberValue = Number(value);
-    return Number.isFinite(numberValue) && numberValue > 0 ? numberValue : fallback;
-};
-
-const nParameters = Math.max(
-    1,
-    Math.round(readPositiveNumber(responsivePairPlot.n_parameters, 1))
-);
-const marginPx = readPositiveNumber(responsivePairPlot.margin_px, 0);
-const minCellSizePx = readPositiveNumber(responsivePairPlot.min_cell_size_px, 90);
-const maxCellSizePx = readPositiveNumber(responsivePairPlot.max_cell_size_px, 190);
-
-let lastHeight = null;
-let resizeFrame = null;
-
-const applyResponsivePairPlotSize = function () {
-    const containerWidth = graphDiv.clientWidth || graphDiv.getBoundingClientRect().width;
-    if (!Number.isFinite(containerWidth) || containerWidth <= 0) {
-        return;
-    }
-
-    const plotWidth = Math.max(minCellSizePx, containerWidth - marginPx);
-    const cellSizePx = Math.min(maxCellSizePx, Math.max(minCellSizePx, plotWidth / nParameters));
-    const nextHeight = Math.round(cellSizePx * nParameters + marginPx);
-
-    if (lastHeight === nextHeight) {
-        window.Plotly.Plots.resize(graphDiv);
-        return;
-    }
-
-    lastHeight = nextHeight;
-    window.Plotly.relayout(graphDiv, {autosize: true, height: nextHeight});
-};
-
-const scheduleResponsivePairPlotSize = function () {
-    if (resizeFrame !== null) {
-        return;
-    }
-
-    resizeFrame = window.requestAnimationFrame(function () {
-        resizeFrame = null;
-        applyResponsivePairPlotSize();
-    });
-};
-
-if (typeof ResizeObserver === 'function') {
-    const resizeObserver = new ResizeObserver(scheduleResponsivePairPlotSize);
-    resizeObserver.observe(graphDiv);
-}
-else {
-    window.addEventListener('resize', scheduleResponsivePairPlotSize);
-}
-
-if (graphDiv.on) {
-    graphDiv.on('plotly_afterplot', scheduleResponsivePairPlotSize);
-}
-
-scheduleResponsivePairPlotSize();
-"""
+        return '{\n' + script.strip() + '\n}'
 
     @staticmethod
     def _figure_meta(fig: object) -> dict[str, object] | None:
@@ -886,37 +827,53 @@ scheduleResponsivePairPlotSize();
         return None
 
     @classmethod
-    def _has_responsive_pair_plot(cls, fig: object) -> bool:
-        """
-        Return whether a figure requests responsive pair-plot sizing.
-        """
+    def _fixed_aspect_wrapper_aspect_ratio(cls, fig: object) -> str | None:
+        """Return the fixed aspect ratio requested for inline HTML."""
         meta = cls._figure_meta(fig)
         if not isinstance(meta, dict):
-            return False
+            return None
 
-        responsive_pair_plot = meta.get(RESPONSIVE_PAIR_PLOT_META_KEY)
-        if not isinstance(responsive_pair_plot, dict):
-            return False
-        return bool(responsive_pair_plot.get('n_parameters'))
+        wrapper = meta.get(FIXED_ASPECT_WRAPPER_META_KEY)
+        if not isinstance(wrapper, dict):
+            return None
+
+        aspect_ratio = wrapper.get('aspect_ratio')
+        if not isinstance(aspect_ratio, str):
+            return None
+
+        aspect_ratio = aspect_ratio.strip()
+        if not aspect_ratio:
+            return None
+        return aspect_ratio
 
     @classmethod
-    def _html_post_script(cls, fig: object) -> str | None:
-        """Return concatenated HTML post scripts for a Plotly figure."""
-        scripts: list[str] = []
-        if cls._has_visible_legend(fig):
-            scripts.append(cls._modebar_legend_toggle_post_script())
-        if cls._has_responsive_pair_plot(fig):
-            scripts.append(cls._responsive_pair_plot_post_script())
-        if not scripts:
-            return None
-        return '\n'.join(cls._scoped_html_post_script(script) for script in scripts)
+    def _wrap_html_figure(cls, fig: object, html_fig: str) -> str:
+        """Wrap inline Plotly HTML in a fixed-aspect container."""
+        aspect_ratio = cls._fixed_aspect_wrapper_aspect_ratio(fig)
+        if aspect_ratio is None:
+            return html_fig
 
-    @staticmethod
-    def _scoped_html_post_script(script: str) -> str:
-        """
-        Return one HTML post script wrapped in its own block scope.
-        """
-        return '{\n' + script.strip() + '\n}'
+        return (
+            '<style>\n'
+            f'.{FIXED_ASPECT_WRAPPER_CLASS_NAME} {{\n'
+            '    width: 100%;\n'
+            f'    aspect-ratio: {aspect_ratio};\n'
+            '}\n\n'
+            f'.{FIXED_ASPECT_WRAPPER_CLASS_NAME} > div,\n'
+            f'.{FIXED_ASPECT_WRAPPER_CLASS_NAME} .plotly-graph-div,\n'
+            f'.{FIXED_ASPECT_WRAPPER_CLASS_NAME} .js-plotly-plot,\n'
+            f'.{FIXED_ASPECT_WRAPPER_CLASS_NAME} .plotly,\n'
+            f'.{FIXED_ASPECT_WRAPPER_CLASS_NAME} .plot-container,\n'
+            f'.{FIXED_ASPECT_WRAPPER_CLASS_NAME} .svg-container {{\n'
+            '    display: block;\n'
+            '    width: 100% !important;\n'
+            '    height: 100% !important;\n'
+            '}\n'
+            '</style>\n\n'
+            f'<div class="{FIXED_ASPECT_WRAPPER_CLASS_NAME}">\n'
+            f'{html_fig}\n'
+            '</div>'
+        )
 
     @staticmethod
     def _get_figure(
@@ -1003,6 +960,7 @@ scheduleResponsivePairPlotSize();
                 config=config,
                 post_script=post_script,
             )
+            html_fig = self._wrap_html_figure(fig, html_fig)
             display(HTML(html_fig))
 
     @classmethod

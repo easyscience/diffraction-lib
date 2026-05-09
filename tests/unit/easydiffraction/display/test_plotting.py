@@ -307,33 +307,35 @@ def test_correlation_from_posterior_samples_returns_labeled_dataframe():
 
 
 def test_build_posterior_pairs_plot_hides_diagonal_ticks_and_uses_annotations():
-    from easydiffraction.display.plotting import PAIR_PLOT_CELL_SIZE_PIXELS
-    from easydiffraction.display.plotting import PAIR_PLOT_MARGIN_PIXELS
-
     plotter, _, _ = _make_bayesian_plotter_fixture()
 
     figure = plotter._build_posterior_pairs_plot(parameters=None)
 
-    assert figure.layout.title.text == 'Posterior pair plot'
+    assert figure.layout.title.text is None
     assert figure.layout.autosize is True
     assert figure.layout.width is None
-    assert figure.layout.meta['responsive_pair_plot']['n_parameters'] == 4
-    assert (
-        figure.layout.meta['responsive_pair_plot']['max_cell_size_px']
-        == PAIR_PLOT_CELL_SIZE_PIXELS
-    )
-    assert figure.layout.meta['responsive_pair_plot']['margin_px'] == PAIR_PLOT_MARGIN_PIXELS
+    assert figure.layout.height is None
+    assert figure.layout.meta['fixed_aspect_wrapper']['aspect_ratio'] == '1 / 1'
     assert [annotation.text for annotation in figure.layout.annotations] == [
+        'Posterior pair plot',
+        'length_a',
+        'broad_gauss_u',
+        'broad_gauss_v',
+        'twotheta_offset',
         'length_a',
         'broad_gauss_u',
         'broad_gauss_v',
         'twotheta_offset',
     ]
     subplot = figure.get_subplot(1, 1)
+    bottom_subplot = figure.get_subplot(4, 1)
     assert subplot.yaxis.showticklabels is False
     assert subplot.yaxis.ticks == ''
     assert subplot.yaxis.ticklen == 0
     assert subplot.yaxis.title.text is None
+    assert bottom_subplot.xaxis.showticklabels is False
+    assert bottom_subplot.xaxis.title.text is None
+    assert len(figure.layout.shapes) == 30
 
 
 def test_posterior_pair_figure_height_shrinks_cells_for_many_parameters():

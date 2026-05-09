@@ -13,62 +13,9 @@ def test_module_import():
     assert expected_module_name == actual_module_name
 
 
-def test_default_template_name_prefers_jupyter_theme(monkeypatch):
-    import easydiffraction.display.plotters.plotly as pp
-
-    monkeypatch.setattr(pp, 'in_jupyter', lambda: True)
-    monkeypatch.setattr(pp, 'is_dark', lambda: True)
-    monkeypatch.setattr(pp.darkdetect, 'isDark', lambda: False)
-
-    assert pp.PlotlyPlotter._default_template_name() == 'plotly_dark'
-
-
-def test_correlation_colorscale_uses_black_center_in_dark_mode(monkeypatch):
-    import easydiffraction.display.plotters.plotly as pp
-
-    monkeypatch.setattr(pp.PlotlyPlotter, '_is_dark_mode', staticmethod(lambda: True))
-
-    assert pp.PlotlyPlotter._correlation_colorscale()[1] == (0.5, '#000000')
-
-
-def test_default_template_name_uses_system_theme_outside_jupyter(monkeypatch):
-    import easydiffraction.display.plotters.plotly as pp
-
-    monkeypatch.setattr(pp, 'in_jupyter', lambda: False)
-    monkeypatch.setattr(pp, 'is_dark', lambda: False)
-    monkeypatch.setattr(pp.darkdetect, 'isDark', lambda: False)
-
-    assert pp.PlotlyPlotter._default_template_name() == 'plotly_white'
-
-
-def test_correlation_colorscale_uses_white_center_in_light_mode(monkeypatch):
-    import easydiffraction.display.plotters.plotly as pp
-
-    monkeypatch.setattr(pp.PlotlyPlotter, '_is_dark_mode', staticmethod(lambda: False))
-
-    assert pp.PlotlyPlotter._correlation_colorscale()[1] == (0.5, '#f7f7f7')
-
-
-def test_legend_background_color_uses_light_overlay_in_light_mode(monkeypatch):
-    import easydiffraction.display.plotters.plotly as pp
-
-    monkeypatch.setattr(pp.PlotlyPlotter, '_is_dark_mode', staticmethod(lambda: False))
-
-    assert pp.PlotlyPlotter._legend_background_color() == 'rgba(255, 255, 255, 0.5)'
-
-
-def test_legend_background_color_uses_dark_overlay_in_dark_mode(monkeypatch):
-    import easydiffraction.display.plotters.plotly as pp
-
-    monkeypatch.setattr(pp.PlotlyPlotter, '_is_dark_mode', staticmethod(lambda: True))
-
-    assert pp.PlotlyPlotter._legend_background_color() == 'rgba(0, 0, 0, 0.5)'
-
-
 def test_get_trace_and_plot(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
 
-    # Arrange: force non-PyCharm branch and stub fig.show/HTML/display so nothing opens
     monkeypatch.setattr(pp, 'in_pycharm', lambda: False)
 
     shown = {'count': 0}
@@ -83,7 +30,6 @@ def test_get_trace_and_plot(monkeypatch):
         def show(self, **kwargs):
             shown['count'] += 1
 
-    # Patch go.Scatter and go.Figure to minimal dummies
     class DummyScatter:
         def __init__(self, **kwargs):
             self.kwargs = kwargs
@@ -122,7 +68,6 @@ def test_get_trace_and_plot(monkeypatch):
 
     plotter = pp.PlotlyPlotter()
 
-    # Exercise _get_powder_trace
     x = [0, 1, 2]
     y = [1, 2, 3]
     trace = plotter._get_powder_trace(x, y, label='calc')
@@ -278,7 +223,7 @@ def test_show_figure_skips_legend_toggle_script_without_legend(monkeypatch):
     assert captured['displayed_html'] == '<div>plot</div>'
 
 
-def test_show_figure_adds_responsive_pair_plot_script(monkeypatch):
+def test_show_figure_wraps_fixed_aspect_html(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
 
     monkeypatch.setattr(pp, 'in_pycharm', lambda: False)
@@ -288,11 +233,8 @@ def test_show_figure_adds_responsive_pair_plot_script(monkeypatch):
     class DummyLayout:
         def __init__(self):
             self.meta = {
-                'responsive_pair_plot': {
-                    'n_parameters': 4,
-                    'margin_px': 120,
-                    'min_cell_size_px': 90,
-                    'max_cell_size_px': 190,
+                'fixed_aspect_wrapper': {
+                    'aspect_ratio': '1 / 1',
                 }
             }
             self.showlegend = False
@@ -326,73 +268,10 @@ def test_show_figure_adds_responsive_pair_plot_script(monkeypatch):
     plotter._show_figure(DummyFig())
 
     assert captured.get('show_called') is not True
-    assert 'responsive_pair_plot' in captured['post_script']
-    assert 'ResizeObserver' in captured['post_script']
-    assert 'window.Plotly.relayout' in captured['post_script']
-    assert 'containerWidth' in captured['post_script']
-    assert captured['displayed_html'] == '<div>plot</div>'
-
-
-def test_show_figure_scopes_multiple_post_scripts(monkeypatch):
-    import easydiffraction.display.plotters.plotly as pp
-
-    monkeypatch.setattr(pp, 'in_pycharm', lambda: False)
-
-    captured = {}
-
-    class DummyTrace:
-        def __init__(self):
-            self.name = 'Posterior samples'
-            self.showlegend = True
-            self.visible = True
-
-    class DummyLayout:
-        def __init__(self):
-            self.meta = {
-                'responsive_pair_plot': {
-                    'n_parameters': 4,
-                    'margin_px': 120,
-                    'min_cell_size_px': 90,
-                    'max_cell_size_px': 190,
-                }
-            }
-            self.showlegend = True
-
-    class DummyFig:
-        def __init__(self):
-            self.data = [DummyTrace()]
-            self.layout = DummyLayout()
-
-        def show(self, **kwargs):
-            captured['show_called'] = True
-
-    class DummyPIO:
-        @staticmethod
-        def to_html(fig, include_plotlyjs=None, full_html=None, config=None, post_script=None):
-            captured['post_script'] = post_script
-            return '<div>plot</div>'
-
-    def dummy_display(obj):
-        captured['displayed_html'] = obj.html
-
-    class DummyHTML:
-        def __init__(self, html):
-            self.html = html
-
-    monkeypatch.setattr(pp, 'pio', DummyPIO)
-    monkeypatch.setattr(pp, 'display', dummy_display)
-    monkeypatch.setattr(pp, 'HTML', DummyHTML)
-
-    plotter = pp.PlotlyPlotter()
-    plotter._show_figure(DummyFig())
-
-    assert captured.get('show_called') is not True
-    assert (
-        captured['post_script'].count("const graphDiv = document.getElementById('{plot_id}');")
-        == 2
-    )
-    assert '\n}\n{\n' in captured['post_script']
-    assert captured['displayed_html'] == '<div>plot</div>'
+    assert captured['post_script'] is None
+    assert 'aspect-ratio: 1 / 1;' in captured['displayed_html']
+    assert 'ed-fixed-aspect-plotly-wrapper' in captured['displayed_html']
+    assert '<div>plot</div>' in captured['displayed_html']
 
 
 def test_plotly_single_crystal_trace_and_plot(monkeypatch):

@@ -107,11 +107,20 @@ PAIR_PLOT_MIN_CELL_SIZE_PIXELS = 90
 PAIR_PLOT_MIN_SIZE_PIXELS = 680
 PAIR_PLOT_MARGIN_PIXELS = 120
 PAIR_PLOT_ESTIMATED_CONTAINER_WIDTH_PIXELS = 980
-PAIR_PLOT_SUBPLOT_SPACING = 0.015
-PAIR_PLOT_MAJOR_TICKS = 3
+PAIR_PLOT_SUBPLOT_SPACING = 0.01
 POSTERIOR_PAIR_AXIS_LINE_WIDTH = 1.2
 POSTERIOR_PAIR_AXIS_TITLE_FONT_SIZE = 14
-POSTERIOR_PAIR_Y_TITLE_XSHIFT_PIXELS = 56
+POSTERIOR_PAIR_TITLE_FONT_SIZE = 16
+POSTERIOR_PAIR_Y_TITLE_XSHIFT_PIXELS = 16
+POSTERIOR_PAIR_X_TITLE_YSHIFT_PIXELS = 10
+POSTERIOR_PAIR_TITLE_YSHIFT_PIXELS = 2
+POSTERIOR_PAIR_GUIDE_LINE_COLOR = 'rgba(125, 140, 173, 0.18)'
+POSTERIOR_PAIR_FIXED_ASPECT_RATIO = '1 / 1'
+POSTERIOR_PAIR_FIXED_ASPECT_META_KEY = 'fixed_aspect_wrapper'
+POSTERIOR_PAIR_LEFT_MARGIN_PIXELS = 58
+POSTERIOR_PAIR_RIGHT_MARGIN_PIXELS = 10
+POSTERIOR_PAIR_TOP_MARGIN_PIXELS = 26
+POSTERIOR_PAIR_BOTTOM_MARGIN_PIXELS = 42
 
 
 @dataclass(frozen=True)
@@ -1084,7 +1093,6 @@ class Plotter(RendererBase):
 
         self._finalize_posterior_pairs_figure(
             fig=fig,
-            context=context,
             subplot_title_annotations=subplot_title_annotations,
             subplot_border_shapes=subplot_border_shapes,
         )
@@ -1343,12 +1351,14 @@ class Plotter(RendererBase):
             mirror=True,
             range=list(context.axis_ranges[col_index]),
             zeroline=False,
+            showgrid=False,
             layer='above traces',
             linecolor=context.axis_frame_color,
             linewidth=POSTERIOR_PAIR_AXIS_LINE_WIDTH,
-            nticks=PAIR_PLOT_MAJOR_TICKS,
-            tickformat=',.6~g',
-            separatethousands=True,
+            ticks='',
+            ticklen=0,
+            tickwidth=0,
+            showticklabels=False,
             row=row,
             col=col,
         )
@@ -1356,32 +1366,26 @@ class Plotter(RendererBase):
             showline=True,
             mirror=True,
             zeroline=False,
+            showgrid=False,
             layer='above traces',
             linecolor=context.axis_frame_color,
             linewidth=POSTERIOR_PAIR_AXIS_LINE_WIDTH,
-            nticks=PAIR_PLOT_MAJOR_TICKS,
-            tickformat=',.6~g',
-            separatethousands=True,
+            ticks='',
+            ticklen=0,
+            tickwidth=0,
+            showticklabels=False,
             row=row,
             col=col,
         )
         if not is_diagonal:
             fig.update_yaxes(range=list(context.axis_ranges[row_index]), row=row, col=col)
-        fig.update_xaxes(showticklabels=(row_index == context.n_parameters - 1), row=row, col=col)
         if is_diagonal:
             fig.update_yaxes(
-                showticklabels=False,
-                ticks='',
-                ticklen=0,
-                showgrid=False,
                 title_text=None,
                 row=row,
                 col=col,
             )
-        else:
-            fig.update_yaxes(showticklabels=(col_index == 0), row=row, col=col)
-        if row_index == context.n_parameters - 1:
-            fig.update_xaxes(title_text=context.labels[col_index], row=row, col=col)
+        fig.update_xaxes(title_text=None, row=row, col=col)
 
     @staticmethod
     def _collect_posterior_pair_panel_decorations(
@@ -1397,6 +1401,8 @@ class Plotter(RendererBase):
         row = row_index + 1
         col = col_index + 1
         subplot = fig.get_subplot(row, col)
+        x_mid = 0.5 * (subplot.xaxis.domain[0] + subplot.xaxis.domain[1])
+        y_mid = 0.5 * (subplot.yaxis.domain[0] + subplot.yaxis.domain[1])
         if col_index == 0:
             subplot_title_annotations.append({
                 'x': subplot.xaxis.domain[0],
@@ -1411,64 +1417,125 @@ class Plotter(RendererBase):
                 'textangle': -90,
                 'showarrow': False,
             })
-        subplot_border_shapes.append({
-            'type': 'rect',
-            'xref': 'paper',
-            'yref': 'paper',
-            'x0': subplot.xaxis.domain[0],
-            'x1': subplot.xaxis.domain[1],
-            'y0': subplot.yaxis.domain[0],
-            'y1': subplot.yaxis.domain[1],
-            'line': {
-                'color': context.axis_frame_color,
-                'width': POSTERIOR_PAIR_AXIS_LINE_WIDTH,
+        if row_index == context.n_parameters - 1:
+            subplot_title_annotations.append({
+                'x': x_mid,
+                'xref': 'paper',
+                'xanchor': 'center',
+                'y': subplot.yaxis.domain[0],
+                'yref': 'paper',
+                'yanchor': 'top',
+                'yshift': -POSTERIOR_PAIR_X_TITLE_YSHIFT_PIXELS,
+                'text': context.labels[col_index],
+                'font': {'size': POSTERIOR_PAIR_AXIS_TITLE_FONT_SIZE},
+                'showarrow': False,
+            })
+        subplot_border_shapes.extend([
+            {
+                'type': 'line',
+                'xref': 'paper',
+                'yref': 'paper',
+                'x0': x_mid,
+                'x1': x_mid,
+                'y0': subplot.yaxis.domain[0],
+                'y1': subplot.yaxis.domain[1],
+                'line': {
+                    'color': POSTERIOR_PAIR_GUIDE_LINE_COLOR,
+                    'width': 1,
+                },
+                'layer': 'above',
             },
-            'fillcolor': 'rgba(0, 0, 0, 0)',
-            'layer': 'above',
-        })
+            {
+                'type': 'line',
+                'xref': 'paper',
+                'yref': 'paper',
+                'x0': subplot.xaxis.domain[0],
+                'x1': subplot.xaxis.domain[1],
+                'y0': y_mid,
+                'y1': y_mid,
+                'line': {
+                    'color': POSTERIOR_PAIR_GUIDE_LINE_COLOR,
+                    'width': 1,
+                },
+                'layer': 'above',
+            },
+            {
+                'type': 'rect',
+                'xref': 'paper',
+                'yref': 'paper',
+                'x0': subplot.xaxis.domain[0],
+                'x1': subplot.xaxis.domain[1],
+                'y0': subplot.yaxis.domain[0],
+                'y1': subplot.yaxis.domain[1],
+                'line': {
+                    'color': context.axis_frame_color,
+                    'width': POSTERIOR_PAIR_AXIS_LINE_WIDTH,
+                },
+                'fillcolor': 'rgba(0, 0, 0, 0)',
+                'layer': 'above',
+            },
+        ])
+
+    @staticmethod
+    def _posterior_pair_title_annotation() -> dict[str, object]:
+        """Return the outer title annotation for the pair plot."""
+        return {
+            'x': 0.0,
+            'xref': 'paper',
+            'xanchor': 'left',
+            'y': 1.0,
+            'yref': 'paper',
+            'yanchor': 'bottom',
+            'yshift': POSTERIOR_PAIR_TITLE_YSHIFT_PIXELS,
+            'text': 'Posterior pair plot',
+            'font': {'size': POSTERIOR_PAIR_TITLE_FONT_SIZE},
+            'showarrow': False,
+        }
+
+    @staticmethod
+    def _posterior_pair_layout_meta() -> dict[str, object]:
+        """Return layout metadata used by the Plotly HTML wrapper."""
+        return {
+            POSTERIOR_PAIR_FIXED_ASPECT_META_KEY: {
+                'aspect_ratio': POSTERIOR_PAIR_FIXED_ASPECT_RATIO,
+            }
+        }
 
     def _finalize_posterior_pairs_figure(
         self,
         *,
         fig: object,
-        context: _PosteriorPairsContext,
         subplot_title_annotations: list[dict[str, object]],
         subplot_border_shapes: list[dict[str, object]],
     ) -> None:
         """Apply final layout settings to the posterior pair plot."""
-        figure_height = self._posterior_pair_figure_height_pixels(context.n_parameters)
         fig.update_layout(
             autosize=True,
-            margin={'autoexpand': True, 'r': 30, 't': 40, 'b': 45},
-            title={'text': 'Posterior pair plot'},
+            margin={
+                'autoexpand': False,
+                'l': POSTERIOR_PAIR_LEFT_MARGIN_PIXELS,
+                'r': POSTERIOR_PAIR_RIGHT_MARGIN_PIXELS,
+                't': POSTERIOR_PAIR_TOP_MARGIN_PIXELS,
+                'b': POSTERIOR_PAIR_BOTTOM_MARGIN_PIXELS,
+            },
             bargap=0.05,
-            height=figure_height,
-            annotations=subplot_title_annotations,
+            annotations=[
+                self._posterior_pair_title_annotation(),
+                *subplot_title_annotations,
+            ],
             shapes=subplot_border_shapes,
-            meta=self._posterior_pair_layout_meta(context.n_parameters),
+            meta=self._posterior_pair_layout_meta(),
             legend={
                 'bgcolor': 'rgba(0, 0, 0, 0)',
                 'xanchor': 'right',
-                'x': 1.0,
+                'x': 0.995,
                 'yanchor': 'top',
-                'y': 1.0,
+                'y': 0.995,
                 'groupclick': 'togglegroup',
             },
+            paper_bgcolor='white',
+            plot_bgcolor='white',
         )
-
-    @staticmethod
-    def _posterior_pair_layout_meta(n_parameters: int) -> dict[str, object]:
-        """
-        Return responsive layout metadata for posterior pair plots.
-        """
-        return {
-            'responsive_pair_plot': {
-                'n_parameters': int(n_parameters),
-                'margin_px': PAIR_PLOT_MARGIN_PIXELS,
-                'min_cell_size_px': PAIR_PLOT_MIN_CELL_SIZE_PIXELS,
-                'max_cell_size_px': PAIR_PLOT_CELL_SIZE_PIXELS,
-            }
-        }
 
     @staticmethod
     def _posterior_pair_cell_size_pixels(
