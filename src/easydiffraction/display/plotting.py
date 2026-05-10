@@ -851,7 +851,7 @@ class Plotter(RendererBase):
         x_min : float | None, default=None
             Lower bound for the x-axis range.
         x_max : float | None, default=None
-            include_draws=style in {'draws', 'band+draws'},
+            Upper bound for the x-axis range.
         show_residual : bool | None, default=None
             Whether to include the residual row in the composite plot.
         x : object | None, default=None
@@ -3921,7 +3921,9 @@ class Plotter(RendererBase):
             Object with x-axis arrays (``two_theta``,
             ``time_of_flight``, ``d_spacing``) and ``meas`` array.
         expt_name : str
-            Experiment name for the title. *,
+            Experiment name for the title.
+        expt_type : object
+            Experiment type with scattering/beam enums.
         x_min : object, default=None
             Optional minimum x-axis limit.
         x_max : object, default=None
