@@ -158,6 +158,8 @@ POSTERIOR_PAIR_RIGHT_MARGIN_PIXELS = 10
 POSTERIOR_PAIR_TOP_MARGIN_PIXELS = 26
 POSTERIOR_PAIR_BOTTOM_MARGIN_PIXELS = 42
 POSTERIOR_PAIR_AXIS_TITLE_LINE_HEIGHT_PIXELS = 18
+POSTERIOR_PAIR_SAMPLE_MARKER_SIZE = 6
+POSTERIOR_PAIR_SAMPLE_HOVER_MARKER_SIZE = 6
 
 
 @dataclass(frozen=True)
@@ -1408,7 +1410,10 @@ class Plotter(RendererBase):
                 x=x_scatter_values,
                 y=y_scatter_values,
                 mode='markers',
-                marker={'color': POSTERIOR_SCATTER_MARKER_COLOR, 'size': 3},
+                marker={
+                    'color': POSTERIOR_SCATTER_MARKER_COLOR,
+                    'size': POSTERIOR_PAIR_SAMPLE_MARKER_SIZE,
+                },
                 name='Posterior samples',
                 legendgroup='posterior-samples',
                 showlegend=legend_state.show_scatter,
@@ -1433,7 +1438,10 @@ class Plotter(RendererBase):
                 x=x_scatter_values,
                 y=y_scatter_values,
                 mode='markers',
-                marker={'color': 'rgba(0, 0, 0, 0)', 'size': 6},
+                marker={
+                    'color': 'rgba(0, 0, 0, 0)',
+                    'size': POSTERIOR_PAIR_SAMPLE_HOVER_MARKER_SIZE,
+                },
                 showlegend=False,
                 hovertemplate=sample_hovertemplate,
                 zorder=3,
@@ -1656,8 +1664,6 @@ class Plotter(RendererBase):
                 'y': 0.995,
                 'groupclick': 'togglegroup',
             },
-            paper_bgcolor='white',
-            plot_bgcolor='white',
         )
 
     @staticmethod
@@ -3626,8 +3632,6 @@ class Plotter(RendererBase):
             shapes=subplot_border_shapes,
             meta=self._posterior_pair_layout_meta(),
             showlegend=False,
-            paper_bgcolor='white',
-            plot_bgcolor='white',
         )
         return fig
 
@@ -3918,8 +3922,6 @@ class Plotter(RendererBase):
             ``time_of_flight``, ``d_spacing``) and ``meas`` array.
         expt_name : str
             Experiment name for the title. *,
-        include_draws : bool,
-            Experiment type with scattering/beam enums.
         x_min : object, default=None
             Optional minimum x-axis limit.
         x_max : object, default=None

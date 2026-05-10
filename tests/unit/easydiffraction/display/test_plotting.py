@@ -307,6 +307,9 @@ def test_correlation_from_posterior_samples_returns_labeled_dataframe():
 
 
 def test_build_posterior_pairs_plot_hides_diagonal_ticks_and_uses_annotations():
+    from easydiffraction.display.plotting import POSTERIOR_PAIR_SAMPLE_HOVER_MARKER_SIZE
+    from easydiffraction.display.plotting import POSTERIOR_PAIR_SAMPLE_MARKER_SIZE
+
     plotter, _, _ = _make_bayesian_plotter_fixture()
 
     figure = plotter._build_posterior_pairs_plot(parameters=None)
@@ -341,8 +344,19 @@ def test_build_posterior_pairs_plot_hides_diagonal_ticks_and_uses_annotations():
     assert subplot.yaxis.title.text is None
     assert bottom_subplot.xaxis.showticklabels is False
     assert bottom_subplot.xaxis.title.text is None
+    assert figure.layout.paper_bgcolor is None
+    assert figure.layout.plot_bgcolor is None
     assert len(figure.layout.shapes) == 30
     assert any(trace.name == 'Posterior contours' for trace in figure.data)
+    sample_trace = next(trace for trace in figure.data if trace.name == 'Posterior samples')
+    hover_trace = next(
+        trace
+        for trace in figure.data
+        if getattr(trace, 'mode', None) == 'markers'
+        and getattr(trace.marker, 'color', None) == 'rgba(0, 0, 0, 0)'
+    )
+    assert sample_trace.marker.size == POSTERIOR_PAIR_SAMPLE_MARKER_SIZE
+    assert hover_trace.marker.size == POSTERIOR_PAIR_SAMPLE_HOVER_MARKER_SIZE
 
 
 def test_build_posterior_pairs_plot_fast_mode_skips_contours():
@@ -1359,6 +1373,8 @@ def test_plot_param_correlations_renders_plotly_heatmap(monkeypatch):
     assert fig.layout.yaxis.layer == 'above traces'
     assert fig.layout.yaxis.showticklabels is False
     assert fig.layout.yaxis.title.text is None
+    assert fig.layout.paper_bgcolor is None
+    assert fig.layout.plot_bgcolor is None
     assert len(fig.layout.shapes) == 3
     assert all(shape.type == 'rect' for shape in fig.layout.shapes)
     assert all(shape.xref == 'paper' for shape in fig.layout.shapes)
