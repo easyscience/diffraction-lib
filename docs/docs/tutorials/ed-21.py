@@ -161,7 +161,6 @@ experiment.background.create(id='1', x=10, y=168.5585)
 experiment.background.create(id='2', x=30, y=164.3357)
 experiment.background.create(id='3', x=50, y=166.8881)
 experiment.background.create(id='4', x=110, y=175.4006)
-#experiment.background.create(id='5', x=165, y=174.2813)
 
 # %%
 experiment.excluded_regions.create(id='1', start=0, end=10)
@@ -190,6 +189,7 @@ experiment.linked_phases.create(id='lbco', scale=9.1351)
 # %%
 structure.cell.length_a.free = True
 
+# %%
 experiment.linked_phases['lbco'].scale.free = True
 experiment.peak.broad_gauss_u.free = True
 experiment.peak.broad_gauss_v.free = True
@@ -219,7 +219,7 @@ project.analysis.display.fit_results()
 # region.
 
 # %%
-project.display.plotter.plot_param_correlations(show_diagonal=True)
+project.display.plotter.plot_param_correlations()
 
 # %%
 project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')
@@ -300,7 +300,7 @@ project.analysis.display.fit_results()
 #   posterior contours off-diagonal.
 
 # %%
-project.display.plotter.plot_param_correlations(threshold=0, show_diagonal=True)
+project.display.plotter.plot_param_correlations()
 
 # %%
 project.display.plotter.plot_posterior_pairs()

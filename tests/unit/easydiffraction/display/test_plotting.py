@@ -327,9 +327,12 @@ def test_build_posterior_pairs_plot_hides_diagonal_ticks_and_uses_annotations():
         'broad_gauss_v',
         'twotheta_offset',
     ]
-    assert figure.layout.annotations[0].xshift == -plotter._square_matrix_title_left_shift(
-        ['length_a', 'broad_gauss_u', 'broad_gauss_v', 'twotheta_offset']
-    )
+    assert figure.layout.annotations[0].xshift == -plotter._square_matrix_title_left_shift([
+        'length_a',
+        'broad_gauss_u',
+        'broad_gauss_v',
+        'twotheta_offset',
+    ])
     subplot = figure.get_subplot(1, 1)
     bottom_subplot = figure.get_subplot(4, 1)
     assert subplot.yaxis.showticklabels is False
@@ -365,9 +368,15 @@ def test_build_posterior_pairs_plot_sign_colors_contours_and_marginals():
 
     marginal_traces = [trace for trace in figure.data if trace.name == 'Marginal density']
     assert marginal_traces
-    assert all(trace.line.color == POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_COLOR for trace in marginal_traces)
-    assert all(trace.line.width == POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_WIDTH for trace in marginal_traces)
-    assert all(trace.fillcolor == POSTERIOR_PAIR_MARGINAL_DENSITY_FILL_COLOR for trace in marginal_traces)
+    assert all(
+        trace.line.color == POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_COLOR for trace in marginal_traces
+    )
+    assert all(
+        trace.line.width == POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_WIDTH for trace in marginal_traces
+    )
+    assert all(
+        trace.fillcolor == POSTERIOR_PAIR_MARGINAL_DENSITY_FILL_COLOR for trace in marginal_traces
+    )
 
     fill_contours = [
         trace
@@ -412,6 +421,35 @@ def test_build_posterior_pairs_plot_formats_dotted_axis_titles_multiline():
     assert all('None broad_gauss_u' not in text for text in annotation_texts)
     assert figure.layout.margin.l > POSTERIOR_PAIR_LEFT_MARGIN_PIXELS
     assert figure.layout.margin.b > POSTERIOR_PAIR_BOTTOM_MARGIN_PIXELS
+
+
+def test_build_posterior_pairs_plot_uses_full_names_in_hovertemplates():
+    plotter, fit_results, _ = _make_bayesian_plotter_fixture()
+    dotted_parameter_names = [
+        'lbco.cell.length_a',
+        'hrpt.peak.broad_gauss_u',
+        'hrpt.peak.broad_gauss_v',
+        'hrpt.instrument.twotheta_offset',
+    ]
+    fit_results.posterior_samples.parameter_names = dotted_parameter_names
+    for index, unique_name in enumerate(dotted_parameter_names):
+        fit_results.parameters[index].unique_name = unique_name
+        fit_results.posterior_parameter_summaries[index].unique_name = unique_name
+
+    figure = plotter._build_posterior_pairs_plot(parameters=None)
+
+    hovertemplates = {
+        trace.hovertemplate
+        for trace in figure.data
+        if getattr(trace, 'hovertemplate', None) is not None
+    }
+
+    assert (
+        'lbco.cell.length_a: %{x:.4f}<br>hrpt.peak.broad_gauss_u: %{y:.4f}<extra></extra>'
+    ) in hovertemplates
+    assert (
+        'hrpt.instrument.twotheta_offset: %{x:.4f}<br>density: %{y:.4f}<extra></extra>'
+    ) in hovertemplates
 
 
 def test_posterior_pair_figure_height_shrinks_cells_for_many_parameters():
@@ -1114,7 +1152,7 @@ def test_plot_param_correlations_renders_plotly_heatmap(monkeypatch):
     assert fig.data[0].showscale is False
     assert (
         fig.data[0].hovertemplate
-        == 'x: phase.scale<br>y: phase.cell.length_c<br>corr: %{z:.2f}<extra></extra>'
+        == 'phase.scale<br>phase.cell.length_c<br>correlation: %{z:.2f}<extra></extra>'
     )
     assert pytest.approx(fig.data[0].z[0][0], rel=1e-9) == -0.5
     assert fig.data[1].type == 'scatter'
@@ -1131,9 +1169,10 @@ def test_plot_param_correlations_renders_plotly_heatmap(monkeypatch):
         'phase.<br>scale',
         'phase.<br>cell.<br>length_c',
     ]
-    assert fig.layout.annotations[0].xshift == -Plotter._square_matrix_title_left_shift(
-        ['phase.<br>scale', 'phase.<br>cell.<br>length_c']
-    )
+    assert fig.layout.annotations[0].xshift == -Plotter._square_matrix_title_left_shift([
+        'phase.<br>scale',
+        'phase.<br>cell.<br>length_c',
+    ])
     assert fig.layout.meta['fixed_aspect_wrapper']['aspect_ratio'] == '1 / 1'
     assert fig.layout.xaxis.domain[1] < fig.layout.xaxis2.domain[0]
     assert fig.layout.xaxis.showline is False
@@ -1207,11 +1246,7 @@ def test_plot_param_correlations_plotly_labels_respect_threshold(monkeypatch):
 
     fig = captured['fig']
     heatmap_traces = [trace for trace in fig.data if trace.type == 'heatmap']
-    text_traces = [
-        trace
-        for trace in fig.data
-        if trace.type == 'scatter' and trace.mode == 'text'
-    ]
+    text_traces = [trace for trace in fig.data if trace.type == 'scatter' and trace.mode == 'text']
     assert len(heatmap_traces) == 10
     assert [trace.text[0] for trace in text_traces] == ['-0.91', '0.83', '-0.89', '0.82']
 

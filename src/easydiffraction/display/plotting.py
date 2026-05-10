@@ -1349,7 +1349,9 @@ class Plotter(RendererBase):
                     histnorm='probability density',
                     marker={'color': POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_COLOR},
                     showlegend=False,
-                    hovertemplate='%{x:.4f}<br>density=%{y:.4f}<extra></extra>',
+                    hovertemplate=self._posterior_pair_density_hovertemplate(
+                        context.parameter_names[parameter_index]
+                    ),
                 ),
                 row=row,
                 col=col,
@@ -1357,6 +1359,9 @@ class Plotter(RendererBase):
             return
 
         self._style_posterior_pair_marginal_density_trace(density_trace)
+        density_trace.hovertemplate = self._posterior_pair_density_hovertemplate(
+            context.parameter_names[parameter_index]
+        )
         density_trace.name = 'Marginal density'
         density_trace.legendgroup = 'posterior-marginal-density'
         density_trace.showlegend = legend_state.show_density
@@ -1393,9 +1398,9 @@ class Plotter(RendererBase):
                 y_values=y_density_values,
                 grid_size=context.contour_grid_size,
             )
-        sample_hovertemplate = (
-            f'{context.labels[col_index]}: %{{x:.4f}}<br>'
-            f'{context.labels[row_index]}: %{{y:.4f}}<extra></extra>'
+        sample_hovertemplate = self._posterior_pair_scatter_hovertemplate(
+            x_parameter_name=context.parameter_names[col_index],
+            y_parameter_name=context.parameter_names[row_index],
         )
         fig.add_trace(
             go.Scatter(
@@ -2042,7 +2047,7 @@ class Plotter(RendererBase):
                 },
                 opacity=0.82,
                 name='Posterior histogram',
-                hovertemplate='sample=%{x:.4f}<br>density=%{y:.4f}<extra></extra>',
+                hovertemplate='sample=%{x:.4f}<br>density: %{y:.2f}<extra></extra>',
             )
         )
 
@@ -2140,6 +2145,20 @@ class Plotter(RendererBase):
         density_trace.fillcolor = POSTERIOR_PAIR_MARGINAL_DENSITY_FILL_COLOR
 
     @staticmethod
+    def _posterior_pair_density_hovertemplate(parameter_name: str) -> str:
+        """Return the hover template for a marginal density trace."""
+        return f'{parameter_name}: %{{x:.4f}}<br>density: %{{y:.4f}}<extra></extra>'
+
+    @staticmethod
+    def _posterior_pair_scatter_hovertemplate(
+        *,
+        x_parameter_name: str,
+        y_parameter_name: str,
+    ) -> str:
+        """Return the hover template for pair-plot sample points."""
+        return f'{x_parameter_name}: %{{x:.4f}}<br>{y_parameter_name}: %{{y:.4f}}<extra></extra>'
+
+    @staticmethod
     def _posterior_pair_correlation_value(
         x_values: np.ndarray,
         y_values: np.ndarray,
@@ -2202,7 +2221,7 @@ class Plotter(RendererBase):
             fillcolor=POSTERIOR_DENSITY_FILL_COLOR,
             name=trace_name,
             showlegend=False,
-            hovertemplate='%{x:.4f}<br>density=%{y:.4f}<extra></extra>',
+            hovertemplate='%{x:.4f}<br>density: %{y:.2f}<extra></extra>',
         )
 
     @staticmethod
@@ -3552,9 +3571,9 @@ class Plotter(RendererBase):
         row = row_index + 1
         col = col_index + 1
         hovertemplate = (
-            f'x: {context.corr_df.columns[col_index]}<br>'
-            f'y: {context.corr_df.index[row_index]}<br>'
-            f'corr: %{{z:.{context.precision}f}}<extra></extra>'
+            f'{context.corr_df.columns[col_index]}<br>'
+            f'{context.corr_df.index[row_index]}<br>'
+            f'correlation: %{{z:.{context.precision}f}}<extra></extra>'
         )
         fig.add_trace(
             go.Heatmap(
