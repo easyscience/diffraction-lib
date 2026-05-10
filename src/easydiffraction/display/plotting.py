@@ -72,7 +72,7 @@ class PosteriorPairPlotStyleEnum(StrEnum):
     FULL = 'full'
 
 
-DEFAULT_CORRELATION_THRESHOLD = 0.7
+DEFAULT_CORRELATION_THRESHOLD = 0.0
 EXPECTED_COVAR_NDIM = 2
 DEFAULT_RESIDUAL_HEIGHT_FRACTION = 0.25
 DEFAULT_BRAGG_PEAKS_HEIGHT_FRACTION = 0.10
@@ -85,6 +85,9 @@ MIN_POSTERIOR_PARAMETER_COUNT = 2
 MIN_POSTERIOR_SAMPLE_COUNT = 2
 POSTERIOR_DENSITY_LINE_COLOR = 'rgb(99, 110, 250)'
 POSTERIOR_DENSITY_FILL_COLOR = 'rgba(99, 110, 250, 0.22)'
+POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_COLOR = 'rgb(44, 160, 44)'
+POSTERIOR_PAIR_MARGINAL_DENSITY_FILL_COLOR = 'rgba(44, 160, 44, 0.22)'
+POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_WIDTH = 1
 POSTERIOR_HISTOGRAM_FILL_COLOR = 'rgba(120, 120, 120, 0.38)'
 POSTERIOR_HISTOGRAM_LINE_COLOR = 'rgba(120, 120, 120, 0.24)'
 POSTERIOR_INTERVAL_95_FILL_COLOR = 'rgba(140, 140, 140, 0.08)'
@@ -100,6 +103,13 @@ POSTERIOR_CONTOUR_FILL_COLORSCALE = [
     [0.82, 'rgba(96, 131, 242, 0.84)'],
     [1.0, 'rgba(58, 86, 224, 0.90)'],
 ]
+POSTERIOR_NEGATIVE_CONTOUR_FILL_COLORSCALE = [
+    [0.0, 'rgba(255, 224, 224, 0.62)'],
+    [0.35, 'rgba(250, 188, 188, 0.70)'],
+    [0.60, 'rgba(245, 148, 148, 0.78)'],
+    [0.82, 'rgba(237, 104, 104, 0.84)'],
+    [1.0, 'rgba(215, 48, 39, 0.90)'],
+]
 POSTERIOR_CONTOUR_LINE_COLORSCALE = [
     [0.0, 'rgba(183, 203, 255, 0.94)'],
     [0.35, 'rgba(183, 203, 255, 0.94)'],
@@ -109,6 +119,16 @@ POSTERIOR_CONTOUR_LINE_COLORSCALE = [
     [0.82, 'rgba(96, 131, 242, 0.96)'],
     [0.82, 'rgba(58, 86, 224, 0.98)'],
     [1.0, 'rgba(58, 86, 224, 0.98)'],
+]
+POSTERIOR_NEGATIVE_CONTOUR_LINE_COLORSCALE = [
+    [0.0, 'rgba(250, 188, 188, 0.94)'],
+    [0.35, 'rgba(250, 188, 188, 0.94)'],
+    [0.35, 'rgba(245, 148, 148, 0.95)'],
+    [0.60, 'rgba(245, 148, 148, 0.95)'],
+    [0.60, 'rgba(237, 104, 104, 0.96)'],
+    [0.82, 'rgba(237, 104, 104, 0.96)'],
+    [0.82, 'rgba(215, 48, 39, 0.98)'],
+    [1.0, 'rgba(215, 48, 39, 0.98)'],
 ]
 POSTERIOR_PAIR_SCATTER_MAX_POINTS = 1500
 POSTERIOR_PAIR_MAX_DENSITY_SAMPLES = 4000
@@ -190,6 +210,27 @@ class _PosteriorPairsContext:
     def n_parameters(self) -> int:
         """Return the number of plotted parameters."""
         return len(self.parameter_names)
+
+
+@dataclass(frozen=True)
+class _CorrelationHeatmapContext:
+    """Inputs needed to build a correlation matrix plot."""
+
+    corr_df: pd.DataFrame
+    row_labels: list[str]
+    col_labels: list[str]
+    threshold: float | None
+    precision: int
+
+    @property
+    def n_rows(self) -> int:
+        """Return the number of displayed rows."""
+        return self.corr_df.shape[0]
+
+    @property
+    def n_cols(self) -> int:
+        """Return the number of displayed columns."""
+        return self.corr_df.shape[1]
 
 
 @dataclass(slots=True)
@@ -674,7 +715,7 @@ class Plotter(RendererBase):
         threshold: float | None = DEFAULT_CORRELATION_THRESHOLD,
         precision: int = 2,
         *,
-        show_diagonal: bool = False,
+        show_diagonal: bool = True,
     ) -> None:
         """
         Plot the parameter correlation matrix from the latest fit.
@@ -683,10 +724,9 @@ class Plotter(RendererBase):
         the active engine is Plotly, an interactive heatmap is shown.
         Otherwise, a rounded correlation table is rendered.
 
-        By default only the lower triangle is shown (without the
-        diagonal), since the matrix is symmetric and diagonal values are
-        always ``1``. Set ``show_diagonal=True`` to keep blank diagonal
-        cells for a square lower-triangle layout.
+        By default the lower triangle is shown with blank diagonal cells
+        so the grid stays square, like posterior pair plots. Set
+        ``show_diagonal=False`` to trim the empty outer row and column.
 
         Parameters
         ----------
@@ -698,7 +738,7 @@ class Plotter(RendererBase):
             matrix.
         precision : int, default=2
             Number of decimal places to show in the table fallback.
-        show_diagonal : bool, default=False
+        show_diagonal : bool, default=True
             Whether to retain blank diagonal cells in the displayed
             lower-triangle matrix.
         """
@@ -745,7 +785,7 @@ class Plotter(RendererBase):
     def plot_posterior_pairs(
         self,
         parameters: list[object] | None = None,
-        style: PosteriorPairPlotStyleEnum | str = PosteriorPairPlotStyleEnum.AUTO,
+        style: PosteriorPairPlotStyleEnum | str = 'auto',
     ) -> None:
         """
         Plot posterior pair relationships for sampled parameters.
@@ -756,9 +796,10 @@ class Plotter(RendererBase):
             Optional subset of sampled parameters to include. When
             ``None``, all sampled parameters are shown.
         style : PosteriorPairPlotStyleEnum | str, default='auto'
-            ``'auto'`` keeps contours for compact plots and disables
-            them for wide grids. ``'fast'`` always skips contours.
-            ``'full'`` always renders contours.
+            Pair-plot rendering mode. Defaults to ``'auto'``. ``'auto'``
+            keeps contours for compact plots and disables them for wide
+            grids. ``'fast'`` always skips contours. ``'full'`` always
+            renders contours.
         """
         plot = self._build_posterior_pairs_plot(parameters=parameters, style=style)
         if plot is None:
@@ -1073,7 +1114,7 @@ class Plotter(RendererBase):
         self,
         *,
         parameters: list[object] | None,
-        style: PosteriorPairPlotStyleEnum | str = PosteriorPairPlotStyleEnum.AUTO,
+        style: PosteriorPairPlotStyleEnum | str = 'auto',
     ) -> object | None:
         """
         Build a Plotly posterior pair plot.
@@ -1083,7 +1124,7 @@ class Plotter(RendererBase):
         parameters : list[object] | None
             Optional subset of sampled parameters to include.
         style : PosteriorPairPlotStyleEnum | str, default='auto'
-            Posterior pair-plot rendering mode.
+            Posterior pair-plot rendering mode. Defaults to ``'auto'``.
 
         Returns
         -------
@@ -1131,7 +1172,7 @@ class Plotter(RendererBase):
         self,
         parameters: list[object] | None,
         *,
-        style: PosteriorPairPlotStyleEnum | str = PosteriorPairPlotStyleEnum.AUTO,
+        style: PosteriorPairPlotStyleEnum | str = 'auto',
     ) -> _PosteriorPairsContext | None:
         """Return the resolved inputs for a posterior pair plot."""
         posterior_samples, fit_results = self._get_posterior_samples_and_fit_results()
@@ -1306,7 +1347,7 @@ class Plotter(RendererBase):
                     x=density_values,
                     nbinsx=40,
                     histnorm='probability density',
-                    marker={'color': 'rgb(99, 110, 250)'},
+                    marker={'color': POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_COLOR},
                     showlegend=False,
                     hovertemplate='%{x:.4f}<br>density=%{y:.4f}<extra></extra>',
                 ),
@@ -1315,6 +1356,7 @@ class Plotter(RendererBase):
             )
             return
 
+        self._style_posterior_pair_marginal_density_trace(density_trace)
         density_trace.name = 'Marginal density'
         density_trace.legendgroup = 'posterior-marginal-density'
         density_trace.showlegend = legend_state.show_density
@@ -1539,20 +1581,38 @@ class Plotter(RendererBase):
         ])
 
     @staticmethod
-    def _posterior_pair_title_annotation() -> dict[str, object]:
-        """Return the outer title annotation for the pair plot."""
+    def _square_matrix_title_annotation(
+        title: str,
+        annotation_labels: list[str],
+    ) -> dict[str, object]:
+        """Return a top-left title annotation for matrix plots."""
         return {
             'x': 0.0,
             'xref': 'paper',
             'xanchor': 'left',
+            'xshift': -Plotter._square_matrix_title_left_shift(annotation_labels),
             'y': 1.0,
             'yref': 'paper',
             'yanchor': 'bottom',
             'yshift': POSTERIOR_PAIR_TITLE_YSHIFT_PIXELS,
-            'text': 'Posterior pair plot',
+            'text': title,
             'font': {'size': POSTERIOR_PAIR_TITLE_FONT_SIZE},
             'showarrow': False,
         }
+
+    @staticmethod
+    def _posterior_pair_title_annotation(annotation_labels: list[str]) -> dict[str, object]:
+        """Return the outer title annotation for the pair plot."""
+        return Plotter._square_matrix_title_annotation(
+            'Posterior pair plot',
+            annotation_labels,
+        )
+
+    @staticmethod
+    def _square_matrix_title_left_shift(annotation_labels: list[str]) -> int:
+        """Return the title shift that cancels left margin."""
+        extra_margin = Plotter._posterior_pair_extra_axis_title_margin(annotation_labels)
+        return POSTERIOR_PAIR_LEFT_MARGIN_PIXELS + extra_margin
 
     @staticmethod
     def _posterior_pair_layout_meta() -> dict[str, object]:
@@ -1577,7 +1637,7 @@ class Plotter(RendererBase):
             margin=self._posterior_pair_layout_margin(context.annotation_labels),
             bargap=0.05,
             annotations=[
-                self._posterior_pair_title_annotation(),
+                self._posterior_pair_title_annotation(context.annotation_labels),
                 *subplot_title_annotations,
             ],
             shapes=subplot_border_shapes,
@@ -1613,8 +1673,7 @@ class Plotter(RendererBase):
             return 0
 
         max_line_count = max(
-            Plotter._posterior_pair_axis_title_line_count(label)
-            for label in annotation_labels
+            Plotter._posterior_pair_axis_title_line_count(label) for label in annotation_labels
         )
         return max(0, max_line_count - 1) * POSTERIOR_PAIR_AXIS_TITLE_LINE_HEIGHT_PIXELS
 
@@ -1701,10 +1760,7 @@ class Plotter(RendererBase):
             return PosteriorPairPlotStyleEnum(style)
         except ValueError as exc:
             supported_styles = ', '.join(item.value for item in PosteriorPairPlotStyleEnum)
-            msg = (
-                'style must be one of '
-                f'{supported_styles} for posterior pair plots.'
-            )
+            msg = f'style must be one of {supported_styles} for posterior pair plots.'
             raise ValueError(msg) from exc
 
     @staticmethod
@@ -1762,6 +1818,10 @@ class Plotter(RendererBase):
             return None
 
         x_grid, y_grid, density = density_surface
+        fill_colorscale, line_colorscale = self._posterior_pair_contour_colorscales(
+            x_values,
+            y_values,
+        )
         contour_start = float(np.max(density) * 0.20)
         contour_end = float(np.max(density) * 0.95)
         contour_size = float(np.max(density) * 0.15)
@@ -1779,7 +1839,7 @@ class Plotter(RendererBase):
                 'end': contour_end,
                 'size': contour_size,
             },
-            colorscale=POSTERIOR_CONTOUR_FILL_COLORSCALE,
+            colorscale=fill_colorscale,
             zmin=contour_start,
             zmax=contour_end,
             connectgaps=False,
@@ -1799,7 +1859,7 @@ class Plotter(RendererBase):
                 'end': contour_end,
                 'size': contour_size,
             },
-            colorscale=POSTERIOR_CONTOUR_LINE_COLORSCALE,
+            colorscale=line_colorscale,
             zmin=contour_start,
             zmax=contour_end,
             line={'width': 0.9},
@@ -2069,6 +2129,45 @@ class Plotter(RendererBase):
             show_figure(figure)
             return
         figure.show()
+
+    @staticmethod
+    def _style_posterior_pair_marginal_density_trace(density_trace: object) -> None:
+        """Apply pair-plot-specific styling to a marginal KDE trace."""
+        density_trace.line = {
+            'color': POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_COLOR,
+            'width': POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_WIDTH,
+        }
+        density_trace.fillcolor = POSTERIOR_PAIR_MARGINAL_DENSITY_FILL_COLOR
+
+    @staticmethod
+    def _posterior_pair_correlation_value(
+        x_values: np.ndarray,
+        y_values: np.ndarray,
+    ) -> float | None:
+        """Return the sample correlation for one contour panel."""
+        finite_mask = np.isfinite(x_values) & np.isfinite(y_values)
+        if np.count_nonzero(finite_mask) < MIN_POSTERIOR_SAMPLE_COUNT:
+            return None
+
+        correlation_matrix = np.corrcoef(x_values[finite_mask], y_values[finite_mask])
+        correlation_value = float(correlation_matrix[0, 1])
+        if not np.isfinite(correlation_value):
+            return None
+        return correlation_value
+
+    @staticmethod
+    def _posterior_pair_contour_colorscales(
+        x_values: np.ndarray,
+        y_values: np.ndarray,
+    ) -> tuple[list[list[float | str]], list[list[float | str]]]:
+        """Return sign-aware contour palettes for one panel."""
+        correlation_value = Plotter._posterior_pair_correlation_value(x_values, y_values)
+        if correlation_value is not None and correlation_value < 0:
+            return (
+                POSTERIOR_NEGATIVE_CONTOUR_FILL_COLORSCALE,
+                POSTERIOR_NEGATIVE_CONTOUR_LINE_COLORSCALE,
+            )
+        return POSTERIOR_CONTOUR_FILL_COLORSCALE, POSTERIOR_CONTOUR_LINE_COLORSCALE
 
     def _posterior_density_trace(
         self,
@@ -3320,7 +3419,7 @@ class Plotter(RendererBase):
         precision: int,
     ) -> None:
         """
-        Delegate correlation heatmap rendering to the backend.
+        Render a Plotly correlation matrix with pair-plot styling.
 
         Parameters
         ----------
@@ -3333,12 +3432,277 @@ class Plotter(RendererBase):
         precision : int
             Number of decimals to show in plot labels and hover text.
         """
-        self._backend.plot_correlation_heatmap(
+        figure = self._build_correlation_heatmap_plot(
             corr_df,
             title,
             threshold=threshold,
             precision=precision,
         )
+        self._show_plot_figure(figure)
+
+    def _build_correlation_heatmap_plot(
+        self,
+        corr_df: pd.DataFrame,
+        title: str,
+        *,
+        threshold: float | None,
+        precision: int,
+    ) -> object:
+        """Build a Plotly correlation matrix with pair-plot geometry."""
+        make_subplots = __import__('plotly.subplots', fromlist=['make_subplots']).make_subplots
+
+        context = _CorrelationHeatmapContext(
+            corr_df=corr_df,
+            row_labels=self._posterior_pair_axis_title_labels(corr_df.index.tolist()),
+            col_labels=self._posterior_pair_axis_title_labels(corr_df.columns.tolist()),
+            threshold=threshold,
+            precision=precision,
+        )
+        subplot_title_annotations: list[dict[str, object]] = []
+        subplot_border_shapes: list[dict[str, object]] = []
+        fig = make_subplots(
+            rows=context.n_rows,
+            cols=context.n_cols,
+            shared_xaxes='columns',
+            shared_yaxes='rows',
+            horizontal_spacing=PAIR_PLOT_SUBPLOT_SPACING,
+            vertical_spacing=PAIR_PLOT_SUBPLOT_SPACING,
+        )
+
+        for row_index in range(context.n_rows):
+            for col_index in range(context.n_cols):
+                self._populate_correlation_heatmap_panel(
+                    fig=fig,
+                    context=context,
+                    row_index=row_index,
+                    col_index=col_index,
+                    subplot_title_annotations=subplot_title_annotations,
+                    subplot_border_shapes=subplot_border_shapes,
+                )
+
+        fig.update_layout(
+            autosize=True,
+            margin=self._posterior_pair_layout_margin([
+                *context.row_labels,
+                *context.col_labels,
+            ]),
+            annotations=[
+                self._square_matrix_title_annotation(
+                    title,
+                    [*context.row_labels, *context.col_labels],
+                ),
+                *subplot_title_annotations,
+            ],
+            shapes=subplot_border_shapes,
+            meta=self._posterior_pair_layout_meta(),
+            showlegend=False,
+            paper_bgcolor='white',
+            plot_bgcolor='white',
+        )
+        return fig
+
+    def _populate_correlation_heatmap_panel(
+        self,
+        *,
+        fig: object,
+        context: _CorrelationHeatmapContext,
+        row_index: int,
+        col_index: int,
+        subplot_title_annotations: list[dict[str, object]],
+        subplot_border_shapes: list[dict[str, object]],
+    ) -> None:
+        """Populate one panel in the correlation-matrix grid."""
+        row = row_index + 1
+        col = col_index + 1
+        if col_index > row_index:
+            self._hide_posterior_pair_panel(fig=fig, row=row, col=col)
+            return
+
+        value = context.corr_df.iat[row_index, col_index]
+        if not pd.isna(value):
+            self._add_correlation_heatmap_value_panel(
+                fig=fig,
+                context=context,
+                row_index=row_index,
+                col_index=col_index,
+                value=float(value),
+            )
+
+        self._configure_correlation_heatmap_panel_axes(fig=fig, row=row, col=col)
+        self._collect_correlation_heatmap_panel_decorations(
+            fig=fig,
+            context=context,
+            row_index=row_index,
+            col_index=col_index,
+            subplot_title_annotations=subplot_title_annotations,
+            subplot_border_shapes=subplot_border_shapes,
+        )
+
+    def _add_correlation_heatmap_value_panel(
+        self,
+        *,
+        fig: object,
+        context: _CorrelationHeatmapContext,
+        row_index: int,
+        col_index: int,
+        value: float,
+    ) -> None:
+        """Add one colored cell and optional text label."""
+        go = __import__('plotly.graph_objects', fromlist=['Heatmap'])
+        row = row_index + 1
+        col = col_index + 1
+        hovertemplate = (
+            f'x: {context.corr_df.columns[col_index]}<br>'
+            f'y: {context.corr_df.index[row_index]}<br>'
+            f'corr: %{{z:.{context.precision}f}}<extra></extra>'
+        )
+        fig.add_trace(
+            go.Heatmap(
+                z=[[value]],
+                x=[0.0, 1.0],
+                y=[0.0, 1.0],
+                zmin=-1.0,
+                zmax=1.0,
+                zmid=0.0,
+                colorscale=self._plot_correlation_colorscale(),
+                showscale=False,
+                hoverongaps=False,
+                hovertemplate=hovertemplate,
+            ),
+            row=row,
+            col=col,
+        )
+
+        if (
+            context.threshold is not None
+            and context.threshold > 0
+            and abs(value) < context.threshold
+        ):
+            return
+
+        fig.add_trace(
+            go.Scatter(
+                x=[0.5],
+                y=[0.5],
+                mode='text',
+                text=[f'{value:.{context.precision}f}'],
+                textposition='middle center',
+                textfont={'color': PlotlyPlotter._correlation_label_color()},
+                hoverinfo='skip',
+                showlegend=False,
+            ),
+            row=row,
+            col=col,
+        )
+
+    @staticmethod
+    def _configure_correlation_heatmap_panel_axes(
+        *,
+        fig: object,
+        row: int,
+        col: int,
+    ) -> None:
+        """Hide ticks and titles for one correlation-matrix panel."""
+        fig.update_xaxes(
+            range=[0.0, 1.0],
+            showline=False,
+            mirror=False,
+            zeroline=False,
+            showgrid=False,
+            ticks='',
+            ticklen=0,
+            tickwidth=0,
+            showticklabels=False,
+            title_text=None,
+            layer='above traces',
+            row=row,
+            col=col,
+        )
+        fig.update_yaxes(
+            range=[1.0, 0.0],
+            showline=False,
+            mirror=False,
+            zeroline=False,
+            showgrid=False,
+            ticks='',
+            ticklen=0,
+            tickwidth=0,
+            showticklabels=False,
+            title_text=None,
+            layer='above traces',
+            row=row,
+            col=col,
+        )
+
+    def _collect_correlation_heatmap_panel_decorations(
+        self,
+        *,
+        fig: object,
+        context: _CorrelationHeatmapContext,
+        row_index: int,
+        col_index: int,
+        subplot_title_annotations: list[dict[str, object]],
+        subplot_border_shapes: list[dict[str, object]],
+    ) -> None:
+        """Collect labels and frames for one correlation cell."""
+        row = row_index + 1
+        col = col_index + 1
+        subplot = fig.get_subplot(row, col)
+        x_mid = 0.5 * (subplot.xaxis.domain[0] + subplot.xaxis.domain[1])
+        y_mid = 0.5 * (subplot.yaxis.domain[0] + subplot.yaxis.domain[1])
+
+        if col_index == 0:
+            subplot_title_annotations.append({
+                'x': subplot.xaxis.domain[0],
+                'xref': 'paper',
+                'xanchor': 'right',
+                'xshift': -POSTERIOR_PAIR_Y_TITLE_XSHIFT_PIXELS,
+                'y': y_mid,
+                'yref': 'paper',
+                'yanchor': 'middle',
+                'text': context.row_labels[row_index],
+                'align': 'center',
+                'font': {'size': POSTERIOR_PAIR_AXIS_TITLE_FONT_SIZE},
+                'textangle': -90,
+                'showarrow': False,
+            })
+        if row_index == context.n_rows - 1:
+            subplot_title_annotations.append({
+                'x': x_mid,
+                'xref': 'paper',
+                'xanchor': 'center',
+                'y': subplot.yaxis.domain[0],
+                'yref': 'paper',
+                'yanchor': 'top',
+                'yshift': -POSTERIOR_PAIR_X_TITLE_YSHIFT_PIXELS,
+                'text': context.col_labels[col_index],
+                'align': 'center',
+                'font': {'size': POSTERIOR_PAIR_AXIS_TITLE_FONT_SIZE},
+                'showarrow': False,
+            })
+
+        subplot_border_shapes.append({
+            'type': 'rect',
+            'xref': 'paper',
+            'yref': 'paper',
+            'x0': subplot.xaxis.domain[0],
+            'x1': subplot.xaxis.domain[1],
+            'y0': subplot.yaxis.domain[0],
+            'y1': subplot.yaxis.domain[1],
+            'line': {
+                'color': self._plot_axis_frame_color(),
+                'width': POSTERIOR_PAIR_AXIS_LINE_WIDTH,
+            },
+            'fillcolor': 'rgba(0, 0, 0, 0)',
+            'layer': 'above',
+        })
+
+    def _plot_correlation_colorscale(self) -> list[tuple[float, str]]:
+        """Return the active correlation colorscale."""
+        correlation_colorscale = getattr(self._backend, '_correlation_colorscale', None)
+        if callable(correlation_colorscale):
+            return correlation_colorscale()
+        return PlotlyPlotter._correlation_colorscale()
 
     @staticmethod
     def _format_correlation_table_dataframe(

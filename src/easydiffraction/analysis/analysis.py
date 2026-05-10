@@ -184,7 +184,11 @@ class AnalysisDisplay:
         """Print only currently free (varying) parameters."""
         project = self._analysis.project
         self._flush_structure_categories()
-        free_params = project.free_parameters
+        free_params = getattr(project, 'free_parameters', None)
+        if free_params is None:
+            structures_params = project.structures.free_parameters
+            experiments_params = project.experiments.free_parameters
+            free_params = structures_params + experiments_params
 
         if not free_params:
             log.warning('No free parameters found.')

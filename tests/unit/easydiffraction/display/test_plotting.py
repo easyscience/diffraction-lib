@@ -327,6 +327,9 @@ def test_build_posterior_pairs_plot_hides_diagonal_ticks_and_uses_annotations():
         'broad_gauss_v',
         'twotheta_offset',
     ]
+    assert figure.layout.annotations[0].xshift == -plotter._square_matrix_title_left_shift(
+        ['length_a', 'broad_gauss_u', 'broad_gauss_v', 'twotheta_offset']
+    )
     subplot = figure.get_subplot(1, 1)
     bottom_subplot = figure.get_subplot(4, 1)
     assert subplot.yaxis.showticklabels is False
@@ -345,6 +348,44 @@ def test_build_posterior_pairs_plot_fast_mode_skips_contours():
     figure = plotter._build_posterior_pairs_plot(parameters=None, style='fast')
 
     assert all(trace.name != 'Posterior contours' for trace in figure.data)
+
+
+def test_build_posterior_pairs_plot_sign_colors_contours_and_marginals():
+    from easydiffraction.display.plotting import POSTERIOR_CONTOUR_FILL_COLORSCALE
+    from easydiffraction.display.plotting import POSTERIOR_CONTOUR_LINE_COLORSCALE
+    from easydiffraction.display.plotting import POSTERIOR_NEGATIVE_CONTOUR_FILL_COLORSCALE
+    from easydiffraction.display.plotting import POSTERIOR_NEGATIVE_CONTOUR_LINE_COLORSCALE
+    from easydiffraction.display.plotting import POSTERIOR_PAIR_MARGINAL_DENSITY_FILL_COLOR
+    from easydiffraction.display.plotting import POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_COLOR
+    from easydiffraction.display.plotting import POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_WIDTH
+
+    plotter, _, _ = _make_bayesian_plotter_fixture()
+
+    figure = plotter._build_posterior_pairs_plot(parameters=None)
+
+    marginal_traces = [trace for trace in figure.data if trace.name == 'Marginal density']
+    assert marginal_traces
+    assert all(trace.line.color == POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_COLOR for trace in marginal_traces)
+    assert all(trace.line.width == POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_WIDTH for trace in marginal_traces)
+    assert all(trace.fillcolor == POSTERIOR_PAIR_MARGINAL_DENSITY_FILL_COLOR for trace in marginal_traces)
+
+    fill_contours = [
+        trace
+        for trace in figure.data
+        if trace.type == 'contour' and trace.contours.coloring == 'fill'
+    ]
+    line_contours = [
+        trace
+        for trace in figure.data
+        if trace.type == 'contour' and trace.contours.coloring == 'lines'
+    ]
+    fill_end_colors = {trace.colorscale[-1][1] for trace in fill_contours}
+    line_end_colors = {trace.colorscale[-1][1] for trace in line_contours}
+
+    assert POSTERIOR_CONTOUR_FILL_COLORSCALE[-1][1] in fill_end_colors
+    assert POSTERIOR_NEGATIVE_CONTOUR_FILL_COLORSCALE[-1][1] in fill_end_colors
+    assert POSTERIOR_CONTOUR_LINE_COLORSCALE[-1][1] in line_end_colors
+    assert POSTERIOR_NEGATIVE_CONTOUR_LINE_COLORSCALE[-1][1] in line_end_colors
 
 
 def test_build_posterior_pairs_plot_formats_dotted_axis_titles_multiline():
@@ -385,8 +426,12 @@ def test_posterior_pair_figure_height_shrinks_cells_for_many_parameters():
 def test_posterior_pair_density_budget_scales_with_parameter_count():
     from easydiffraction.display.plotting import Plotter
 
-    assert Plotter._posterior_pair_density_max_points(8) < Plotter._posterior_pair_density_max_points(4)
-    assert Plotter._posterior_pair_contour_grid_size(8) < Plotter._posterior_pair_contour_grid_size(4)
+    assert Plotter._posterior_pair_density_max_points(
+        8
+    ) < Plotter._posterior_pair_density_max_points(4)
+    assert Plotter._posterior_pair_contour_grid_size(
+        8
+    ) < Plotter._posterior_pair_contour_grid_size(4)
 
 
 def test_posterior_pairs_context_thins_kde_samples_and_preserves_axis_ranges():
@@ -1004,7 +1049,7 @@ def test_plot_param_correlations_renders_ascii_table(monkeypatch):
     p = Plotter()
     p.engine = 'asciichartpy'
     p._set_project(Project())
-    p.plot_param_correlations(threshold=0.1, precision=3)
+    p.plot_param_correlations(threshold=0.1, precision=3, show_diagonal=False)
 
     df = captured['df']
     assert [column.strip() for column in df.columns.get_level_values(0)] == [
@@ -1057,7 +1102,7 @@ def test_plot_param_correlations_renders_plotly_heatmap(monkeypatch):
     p = Plotter()
     p.engine = 'plotly'
     p._set_project(Project())
-    p.plot_param_correlations(threshold=0.1)
+    p.plot_param_correlations()
 
     fig = captured['fig']
     assert len(fig.data) == 2
@@ -1066,10 +1111,11 @@ def test_plot_param_correlations_renders_plotly_heatmap(monkeypatch):
     assert list(fig.data[0].y) == [0.0, 1.0]
     assert fig.data[0].xgap in (None, 0)
     assert fig.data[0].ygap in (None, 0)
-    assert fig.data[0].colorbar.lenmode == 'fraction'
-    assert fig.data[0].colorbar.len == 1.0
-    assert fig.data[0].colorbar.title.text == ''
-    assert fig.data[0].hovertemplate == 'x: %{x}<br>y: %{y}<br>corr: %{z:.2f}<extra></extra>'
+    assert fig.data[0].showscale is False
+    assert (
+        fig.data[0].hovertemplate
+        == 'x: phase.scale<br>y: phase.cell.length_c<br>corr: %{z:.2f}<extra></extra>'
+    )
     assert pytest.approx(fig.data[0].z[0][0], rel=1e-9) == -0.5
     assert fig.data[1].type == 'scatter'
     assert fig.data[1].mode == 'text'
@@ -1078,23 +1124,32 @@ def test_plot_param_correlations_renders_plotly_heatmap(monkeypatch):
     assert list(fig.data[1].text) == ['-0.50']
     assert fig.data[1].textposition == 'middle center'
     assert fig.data[1].hoverinfo == 'skip'
-    assert fig.layout.xaxis.side == 'bottom'
-    assert fig.layout.xaxis.tickangle < 0
-    assert list(fig.layout.xaxis.tickvals) == [0.5]
-    assert list(fig.layout.xaxis.ticktext) == ['phase.scale']
+    assert [annotation.text for annotation in fig.layout.annotations] == [
+        'Refined parameter correlation matrix',
+        'phase.<br>scale',
+        'phase.<br>cell.<br>length_c',
+        'phase.<br>scale',
+        'phase.<br>cell.<br>length_c',
+    ]
+    assert fig.layout.annotations[0].xshift == -Plotter._square_matrix_title_left_shift(
+        ['phase.<br>scale', 'phase.<br>cell.<br>length_c']
+    )
+    assert fig.layout.meta['fixed_aspect_wrapper']['aspect_ratio'] == '1 / 1'
+    assert fig.layout.xaxis.domain[1] < fig.layout.xaxis2.domain[0]
     assert fig.layout.xaxis.showline is False
     assert fig.layout.xaxis.mirror is False
     assert fig.layout.xaxis.layer == 'above traces'
-    assert list(fig.layout.yaxis.tickvals) == [0.5]
-    assert list(fig.layout.yaxis.ticktext) == ['phase.cell.length_c']
+    assert fig.layout.xaxis.showticklabels is False
+    assert fig.layout.xaxis.title.text is None
     assert fig.layout.yaxis.showline is False
     assert fig.layout.yaxis.mirror is False
     assert fig.layout.yaxis.layer == 'above traces'
-    assert fig.layout.yaxis.ticklabelstandoff == 8
-    assert len(fig.layout.shapes) == 1
-    assert fig.layout.shapes[-1].type == 'rect'
-    assert fig.layout.shapes[-1].xref == 'paper'
-    assert fig.layout.shapes[-1].yref == 'paper'
+    assert fig.layout.yaxis.showticklabels is False
+    assert fig.layout.yaxis.title.text is None
+    assert len(fig.layout.shapes) == 3
+    assert all(shape.type == 'rect' for shape in fig.layout.shapes)
+    assert all(shape.xref == 'paper' for shape in fig.layout.shapes)
+    assert all(shape.yref == 'paper' for shape in fig.layout.shapes)
 
 
 def test_plot_param_correlations_plotly_labels_respect_threshold(monkeypatch):
@@ -1148,17 +1203,20 @@ def test_plot_param_correlations_plotly_labels_respect_threshold(monkeypatch):
     p = Plotter()
     p.engine = 'plotly'
     p._set_project(Project())
-    p.plot_param_correlations()
+    p.plot_param_correlations(threshold=0.7)
 
     fig = captured['fig']
-    assert len(fig.data) == 2
-    assert fig.data[0].type == 'heatmap'
-    assert fig.data[1].type == 'scatter'
-    assert fig.data[1].mode == 'text'
-    assert list(fig.data[1].text) == ['-0.91', '0.83', '-0.89', '0.82']
+    heatmap_traces = [trace for trace in fig.data if trace.type == 'heatmap']
+    text_traces = [
+        trace
+        for trace in fig.data
+        if trace.type == 'scatter' and trace.mode == 'text'
+    ]
+    assert len(heatmap_traces) == 10
+    assert [trace.text[0] for trace in text_traces] == ['-0.91', '0.83', '-0.89', '0.82']
 
 
-def test_plot_param_correlations_filters_by_default_threshold(monkeypatch):
+def test_plot_param_correlations_shows_full_table_by_default(monkeypatch):
     from easydiffraction.display.plotting import Plotter
     from easydiffraction.display.tables import TableRenderer
 
@@ -1212,12 +1270,22 @@ def test_plot_param_correlations_filters_by_default_threshold(monkeypatch):
     assert [column.strip() for column in df.columns.get_level_values(0)] == [
         'parameter',
         '1',
+        '2',
+        '3',
     ]
-    assert list(df.index) == [0, 1]
+    assert list(df.index) == [0, 1, 2]
     assert df.iloc[0, 0] == 'phase.scale'
     assert df.iloc[0, 1] == ''
+    assert df.iloc[0, 2] == ''
+    assert df.iloc[0, 3] == ''
     assert df.iloc[1, 0] == 'phase.cell.length_a'
     assert _strip_markup(df.iloc[1, 1]).strip() == '0.82'
+    assert df.iloc[1, 2] == ''
+    assert df.iloc[1, 3] == ''
+    assert df.iloc[2, 0] == 'phase.background'
+    assert _strip_markup(df.iloc[2, 1]).strip() == '0.25'
+    assert _strip_markup(df.iloc[2, 2]).strip() == '0.00'
+    assert df.iloc[2, 3] == ''
 
 
 def test_plot_param_correlations_hides_subthreshold_table_values(monkeypatch):
@@ -1272,7 +1340,7 @@ def test_plot_param_correlations_hides_subthreshold_table_values(monkeypatch):
     p = Plotter()
     p.engine = 'asciichartpy'
     p._set_project(Project())
-    p.plot_param_correlations()
+    p.plot_param_correlations(threshold=0.7, show_diagonal=False)
 
     df = captured['df']
     assert [column.strip() for column in df.columns.get_level_values(0)] == [
