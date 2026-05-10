@@ -558,7 +558,10 @@ def test_build_param_distribution_plot_returns_plotly_figure():
     assert marginal_trace.hovertemplate == 'length_a: %{x:.4f}<br>density: %{y:.4f}<extra></extra>'
     assert histogram_trace.xbins.size is not None
     assert figure.layout.xaxis.range is not None
-    assert tuple(figure.layout.xaxis.range) == (float(marginal_trace.x[0]), float(marginal_trace.x[-1]))
+    assert tuple(figure.layout.xaxis.range) == (
+        float(marginal_trace.x[0]),
+        float(marginal_trace.x[-1]),
+    )
     assert figure.layout.yaxis.range is not None
 
 
@@ -693,6 +696,111 @@ def test_build_posterior_predictive_summary_restores_parameter_state(monkeypatch
     assert [parameter.uncertainty for parameter in sampled_parameters] == [0.1, 0.2]
 
 
+def test_build_posterior_predictive_summary_omits_draws_when_not_requested(monkeypatch):
+    from easydiffraction.display.plotting import Plotter
+
+    class FakePredictiveParameter:
+        def __init__(self, unique_name, value, uncertainty):
+            self.unique_name = unique_name
+            self.value = value
+            self.uncertainty = uncertainty
+
+        def _set_value_from_minimizer(self, value):
+            self.value = value
+
+    sampled_parameters = [
+        FakePredictiveParameter('a', 1.0, 0.1),
+        FakePredictiveParameter('b', 2.0, 0.2),
+    ]
+    posterior_samples = SimpleNamespace(
+        parameter_names=['a', 'b'],
+        flattened=lambda: np.array(
+            [
+                [1.0, 2.0],
+                [1.1, 2.1],
+                [0.9, 1.9],
+                [1.2, 2.2],
+            ],
+            dtype=float,
+        ),
+    )
+    fit_results = SimpleNamespace(
+        posterior_samples=posterior_samples,
+        parameters=sampled_parameters,
+    )
+    plotter = Plotter()
+
+    def fake_evaluate(self, *, sampled_parameters, values, experiment, expt_name, x_axis):
+        x = np.array([0.0, 1.0], dtype=float)
+        y = np.array([values[0] + values[1], values[0] - values[1]], dtype=float)
+        return y, x
+
+    monkeypatch.setattr(Plotter, '_evaluate_posterior_predictive_state', fake_evaluate)
+    monkeypatch.setattr(Plotter, '_update_project_categories', lambda self, expt_name: None)
+
+    summary = plotter._build_posterior_predictive_summary(
+        fit_results=fit_results,
+        experiment=object(),
+        expt_name='hrpt',
+        x_axis='two_theta',
+        include_draws=False,
+    )
+
+    assert summary is not None
+    assert summary.draws is None
+    np.testing.assert_allclose(summary.lower_95.shape, (2,))
+    np.testing.assert_allclose(summary.upper_95.shape, (2,))
+
+
+def test_get_or_build_posterior_predictive_summary_rebuilds_draws_after_band_cache(
+    monkeypatch,
+):
+    from easydiffraction.display.plotting import Plotter
+
+    fit_results = SimpleNamespace(
+        posterior_predictive={},
+        posterior_samples=object(),
+    )
+    band_summary = SimpleNamespace(draws=None)
+    draw_summary = SimpleNamespace(draws=np.ones((2, 2), dtype=float))
+    build_calls: list[bool] = []
+    plotter = Plotter()
+
+    monkeypatch.setattr(Plotter, '_get_fit_result_for_correlation', lambda self: fit_results)
+
+    def fake_build(
+        self,
+        *,
+        fit_results,
+        experiment,
+        expt_name,
+        x_axis,
+        include_draws=True,
+    ):
+        del fit_results, experiment, expt_name, x_axis
+        build_calls.append(include_draws)
+        return draw_summary if include_draws else band_summary
+
+    monkeypatch.setattr(Plotter, '_build_posterior_predictive_summary', fake_build)
+
+    summary_band = plotter._get_or_build_posterior_predictive_summary(
+        experiment=object(),
+        expt_name='hrpt',
+        x_axis='two_theta',
+        include_draws=False,
+    )
+    summary_draws = plotter._get_or_build_posterior_predictive_summary(
+        experiment=object(),
+        expt_name='hrpt',
+        x_axis='two_theta',
+        include_draws=True,
+    )
+
+    assert summary_band is band_summary
+    assert summary_draws is draw_summary
+    assert build_calls == [False, True]
+
+
 def test_plot_posterior_predictive_defaults_to_band_for_bragg(monkeypatch):
     from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
     from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
@@ -733,7 +841,9 @@ def test_plot_posterior_predictive_defaults_to_band_for_bragg(monkeypatch):
         captured['x_axis'] = x_axis
         captured['show_residual'] = plot_options.show_residual
 
-    monkeypatch.setattr(Plotter, '_plot_posterior_predictive_data', fake_plot_posterior_predictive_data)
+    monkeypatch.setattr(
+        Plotter, '_plot_posterior_predictive_data', fake_plot_posterior_predictive_data
+    )
 
     plotter.plot_posterior_predictive('hrpt')
 

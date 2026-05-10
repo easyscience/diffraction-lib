@@ -849,7 +849,7 @@ class Plotter(RendererBase):
         x_min : float | None, default=None
             Lower bound for the x-axis range.
         x_max : float | None, default=None
-            Upper bound for the x-axis range.
+            include_draws=style in {'draws', 'band+draws'},
         show_residual : bool | None, default=None
             Whether to include the residual row in the composite plot.
         x : object | None, default=None
@@ -901,6 +901,7 @@ class Plotter(RendererBase):
             experiment=experiment,
             expt_name=expt_name,
             x_axis=x_axis,
+            include_draws=style in {'draws', 'band+draws'},
         )
         if summary is None:
             return
@@ -2615,10 +2616,9 @@ class Plotter(RendererBase):
         experiment: object,
         expt_name: str,
         x_axis: object,
+        include_draws: bool = True,
     ) -> object | None:
-        """
-        Return a cached or newly built posterior predictive summary.
-        """
+        """Return a cached or built predictive summary."""
         fit_results = self._get_fit_result_for_correlation()
         if fit_results is None:
             return None
@@ -2629,8 +2629,20 @@ class Plotter(RendererBase):
             return None
 
         x_axis_name = getattr(x_axis, 'value', x_axis)
-        cache_key = self._posterior_predictive_key(expt_name, str(x_axis_name))
+        draw_cache_key = self._posterior_predictive_key(
+            expt_name,
+            str(x_axis_name),
+            include_draws=True,
+        )
+        band_cache_key = self._posterior_predictive_key(
+            expt_name,
+            str(x_axis_name),
+            include_draws=False,
+        )
+        cache_key = draw_cache_key if include_draws else band_cache_key
         summary = posterior_predictive.get(cache_key)
+        if summary is None and not include_draws:
+            summary = posterior_predictive.get(draw_cache_key)
         if summary is not None:
             return summary
 
@@ -2639,6 +2651,7 @@ class Plotter(RendererBase):
             experiment=experiment,
             expt_name=expt_name,
             x_axis=x_axis,
+            include_draws=include_draws,
         )
         if summary is None:
             return None
@@ -2653,6 +2666,7 @@ class Plotter(RendererBase):
         experiment: object,
         expt_name: str,
         x_axis: object,
+        include_draws: bool = True,
     ) -> object | None:
         """Build posterior predictive summaries from posterior draws."""
         sampling_inputs = self._posterior_predictive_sampling_inputs(fit_results)
@@ -2691,7 +2705,7 @@ class Plotter(RendererBase):
             upper_95=np.asarray(upper_95, dtype=float),
             lower_68=np.asarray(lower_68, dtype=float),
             upper_68=np.asarray(upper_68, dtype=float),
-            draws=predictive_draw_array,
+            draws=predictive_draw_array if include_draws else None,
         )
 
     @staticmethod
@@ -2854,9 +2868,15 @@ class Plotter(RendererBase):
         )
 
     @staticmethod
-    def _posterior_predictive_key(expt_name: str, x_axis_name: str) -> str:
+    def _posterior_predictive_key(
+        expt_name: str,
+        x_axis_name: str,
+        *,
+        include_draws: bool = True,
+    ) -> str:
         """Return the cache key for a posterior predictive summary."""
-        return f'{expt_name}:{x_axis_name}'
+        key_suffix = 'draws' if include_draws else 'band'
+        return f'{expt_name}:{x_axis_name}:{key_suffix}'
 
     def _get_posterior_inference_data(
         self,
@@ -3012,6 +3032,7 @@ class Plotter(RendererBase):
             experiment=experiment,
             expt_name=expt_name,
             x_axis=x_axis,
+            include_draws=style in {'draws', 'band+draws'},
         )
         if summary is None:
             return
@@ -3896,8 +3917,8 @@ class Plotter(RendererBase):
             Object with x-axis arrays (``two_theta``,
             ``time_of_flight``, ``d_spacing``) and ``meas`` array.
         expt_name : str
-            Experiment name for the title.
-        expt_type : object
+            Experiment name for the title. *,
+        include_draws : bool,
             Experiment type with scattering/beam enums.
         x_min : object, default=None
             Optional minimum x-axis limit.
