@@ -125,7 +125,7 @@ PAIR_PLOT_MARGIN_PIXELS = 120
 PAIR_PLOT_ESTIMATED_CONTAINER_WIDTH_PIXELS = 980
 PAIR_PLOT_SUBPLOT_SPACING = 0.01
 POSTERIOR_PAIR_AXIS_LINE_WIDTH = 1.2
-POSTERIOR_PAIR_AXIS_TITLE_FONT_SIZE = 14
+POSTERIOR_PAIR_AXIS_TITLE_FONT_SIZE = 12
 POSTERIOR_PAIR_TITLE_FONT_SIZE = 16
 POSTERIOR_PAIR_Y_TITLE_XSHIFT_PIXELS = 16
 POSTERIOR_PAIR_X_TITLE_YSHIFT_PIXELS = 10
@@ -137,6 +137,7 @@ POSTERIOR_PAIR_LEFT_MARGIN_PIXELS = 58
 POSTERIOR_PAIR_RIGHT_MARGIN_PIXELS = 10
 POSTERIOR_PAIR_TOP_MARGIN_PIXELS = 26
 POSTERIOR_PAIR_BOTTOM_MARGIN_PIXELS = 42
+POSTERIOR_PAIR_AXIS_TITLE_LINE_HEIGHT_PIXELS = 18
 
 
 @dataclass(frozen=True)
@@ -177,6 +178,7 @@ class _PosteriorPairsContext:
     fit_results: object
     parameter_names: list[str]
     labels: list[str]
+    annotation_labels: list[str]
     density_samples: np.ndarray
     scatter_samples: np.ndarray
     show_contours: bool
@@ -1119,6 +1121,7 @@ class Plotter(RendererBase):
 
         self._finalize_posterior_pairs_figure(
             fig=fig,
+            context=context,
             subplot_title_annotations=subplot_title_annotations,
             subplot_border_shapes=subplot_border_shapes,
         )
@@ -1176,6 +1179,7 @@ class Plotter(RendererBase):
             fit_results=fit_results,
             parameter_names=parameter_names,
             labels=self._posterior_plot_labels(fit_results, parameter_names),
+            annotation_labels=self._posterior_pair_axis_title_labels(parameter_names),
             density_samples=density_samples,
             scatter_samples=scatter_samples,
             show_contours=show_contours,
@@ -1468,7 +1472,8 @@ class Plotter(RendererBase):
                 'y': 0.5 * (subplot.yaxis.domain[0] + subplot.yaxis.domain[1]),
                 'yref': 'paper',
                 'yanchor': 'middle',
-                'text': context.labels[row_index],
+                'text': context.annotation_labels[row_index],
+                'align': 'center',
                 'font': {'size': POSTERIOR_PAIR_AXIS_TITLE_FONT_SIZE},
                 'textangle': -90,
                 'showarrow': False,
@@ -1482,7 +1487,8 @@ class Plotter(RendererBase):
                 'yref': 'paper',
                 'yanchor': 'top',
                 'yshift': -POSTERIOR_PAIR_X_TITLE_YSHIFT_PIXELS,
-                'text': context.labels[col_index],
+                'text': context.annotation_labels[col_index],
+                'align': 'center',
                 'font': {'size': POSTERIOR_PAIR_AXIS_TITLE_FONT_SIZE},
                 'showarrow': False,
             })
@@ -1561,19 +1567,14 @@ class Plotter(RendererBase):
         self,
         *,
         fig: object,
+        context: _PosteriorPairsContext,
         subplot_title_annotations: list[dict[str, object]],
         subplot_border_shapes: list[dict[str, object]],
     ) -> None:
         """Apply final layout settings to the posterior pair plot."""
         fig.update_layout(
             autosize=True,
-            margin={
-                'autoexpand': False,
-                'l': POSTERIOR_PAIR_LEFT_MARGIN_PIXELS,
-                'r': POSTERIOR_PAIR_RIGHT_MARGIN_PIXELS,
-                't': POSTERIOR_PAIR_TOP_MARGIN_PIXELS,
-                'b': POSTERIOR_PAIR_BOTTOM_MARGIN_PIXELS,
-            },
+            margin=self._posterior_pair_layout_margin(context.annotation_labels),
             bargap=0.05,
             annotations=[
                 self._posterior_pair_title_annotation(),
@@ -1592,6 +1593,37 @@ class Plotter(RendererBase):
             paper_bgcolor='white',
             plot_bgcolor='white',
         )
+
+    @staticmethod
+    def _posterior_pair_layout_margin(annotation_labels: list[str]) -> dict[str, int | bool]:
+        """Return outer margins sized for multiline pair-plot labels."""
+        extra_margin = Plotter._posterior_pair_extra_axis_title_margin(annotation_labels)
+        return {
+            'autoexpand': False,
+            'l': POSTERIOR_PAIR_LEFT_MARGIN_PIXELS + extra_margin,
+            'r': POSTERIOR_PAIR_RIGHT_MARGIN_PIXELS,
+            't': POSTERIOR_PAIR_TOP_MARGIN_PIXELS,
+            'b': POSTERIOR_PAIR_BOTTOM_MARGIN_PIXELS + extra_margin,
+        }
+
+    @staticmethod
+    def _posterior_pair_extra_axis_title_margin(annotation_labels: list[str]) -> int:
+        """Return extra margin needed for multiline axis labels."""
+        if not annotation_labels:
+            return 0
+
+        max_line_count = max(
+            Plotter._posterior_pair_axis_title_line_count(label)
+            for label in annotation_labels
+        )
+        return max(0, max_line_count - 1) * POSTERIOR_PAIR_AXIS_TITLE_LINE_HEIGHT_PIXELS
+
+    @staticmethod
+    def _posterior_pair_axis_title_line_count(label: str) -> int:
+        """Return the number of display lines in one axis title."""
+        if not label:
+            return 1
+        return label.count('<br>') + 1
 
     @staticmethod
     def _posterior_pair_cell_size_pixels(
@@ -3068,6 +3100,26 @@ class Plotter(RendererBase):
             else:
                 labels.append(short_name)
         return labels
+
+    @staticmethod
+    def _posterior_pair_axis_title_labels(
+        parameter_names: list[str],
+    ) -> list[str]:
+        """Return compact multiline labels for pair-plot axes."""
+        return [Plotter._posterior_pair_axis_title_label(name) for name in parameter_names]
+
+    @staticmethod
+    def _posterior_pair_axis_title_label(unique_name: str) -> str:
+        """Return one compact multiline axis title for a pair plot."""
+        normalized_name = unique_name.strip()
+        if not normalized_name or '.' not in normalized_name:
+            return normalized_name
+
+        name_parts = [part.strip() for part in normalized_name.split('.') if part.strip()]
+        if not name_parts:
+            return normalized_name
+
+        return '<br>'.join([*(f'{part}.' for part in name_parts[:-1]), name_parts[-1]])
 
     @staticmethod
     def _posterior_summary_by_name(

@@ -347,6 +347,32 @@ def test_build_posterior_pairs_plot_fast_mode_skips_contours():
     assert all(trace.name != 'Posterior contours' for trace in figure.data)
 
 
+def test_build_posterior_pairs_plot_formats_dotted_axis_titles_multiline():
+    from easydiffraction.display.plotting import POSTERIOR_PAIR_BOTTOM_MARGIN_PIXELS
+    from easydiffraction.display.plotting import POSTERIOR_PAIR_LEFT_MARGIN_PIXELS
+
+    plotter, fit_results, _ = _make_bayesian_plotter_fixture()
+    dotted_parameter_names = [
+        'lbco.cell.length_a',
+        'hrpt.peak.broad_gauss_u',
+        'hrpt.peak.broad_gauss_v',
+        'hrpt.instrument.twotheta_offset',
+    ]
+    fit_results.posterior_samples.parameter_names = dotted_parameter_names
+    for index, unique_name in enumerate(dotted_parameter_names):
+        fit_results.parameters[index].unique_name = unique_name
+        fit_results.posterior_parameter_summaries[index].unique_name = unique_name
+
+    figure = plotter._build_posterior_pairs_plot(parameters=None)
+
+    annotation_texts = [annotation.text for annotation in figure.layout.annotations]
+    assert 'hrpt.<br>peak.<br>broad_gauss_u' in annotation_texts
+    assert 'hrpt.<br>instrument.<br>twotheta_offset' in annotation_texts
+    assert all('None broad_gauss_u' not in text for text in annotation_texts)
+    assert figure.layout.margin.l > POSTERIOR_PAIR_LEFT_MARGIN_PIXELS
+    assert figure.layout.margin.b > POSTERIOR_PAIR_BOTTOM_MARGIN_PIXELS
+
+
 def test_posterior_pair_figure_height_shrinks_cells_for_many_parameters():
     from easydiffraction.display.plotting import PAIR_PLOT_CELL_SIZE_PIXELS
     from easydiffraction.display.plotting import Plotter

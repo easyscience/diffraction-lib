@@ -172,6 +172,11 @@ class Project(GuardedBase):
         return self.structures.parameters + self.experiments.parameters
 
     @property
+    def free_parameters(self) -> list:
+        """Return free parameters from structures and experiments."""
+        return self.structures.free_parameters + self.experiments.free_parameters
+
+    @property
     def as_cif(self) -> str:
         """Export whole project as CIF text."""
         # Concatenate sections using centralized CIF serializers

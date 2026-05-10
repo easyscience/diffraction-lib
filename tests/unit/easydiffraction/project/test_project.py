@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from types import SimpleNamespace
+
 
 def test_module_import():
     import easydiffraction.project.project as MUT
@@ -49,3 +51,15 @@ def test_project_verbosity_invalid():
     p = Project()
     with pytest.raises(ValueError, match="'verbose' is not a valid VerbosityEnum"):
         p.verbosity = 'verbose'
+
+
+def test_project_free_params_aggregate_structures_and_experiments():
+    from easydiffraction.project.project import Project
+
+    project = Project()
+    structure_param = object()
+    experiment_param = object()
+    project._structures = SimpleNamespace(free_parameters=[structure_param])
+    project._experiments = SimpleNamespace(free_parameters=[experiment_param])
+
+    assert project.free_parameters == [structure_param, experiment_param]
