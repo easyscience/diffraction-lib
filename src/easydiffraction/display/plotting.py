@@ -64,6 +64,14 @@ class PlotterEngineEnum(StrEnum):
         return ''
 
 
+class PosteriorPairPlotStyleEnum(StrEnum):
+    """Available posterior pair-plot rendering modes."""
+
+    AUTO = 'auto'
+    FAST = 'fast'
+    FULL = 'full'
+
+
 DEFAULT_CORRELATION_THRESHOLD = 0.7
 EXPECTED_COVAR_NDIM = 2
 DEFAULT_RESIDUAL_HEIGHT_FRACTION = 0.25
@@ -102,6 +110,14 @@ POSTERIOR_CONTOUR_LINE_COLORSCALE = [
     [0.82, 'rgba(58, 86, 224, 0.98)'],
     [1.0, 'rgba(58, 86, 224, 0.98)'],
 ]
+POSTERIOR_PAIR_SCATTER_MAX_POINTS = 1500
+POSTERIOR_PAIR_MAX_DENSITY_SAMPLES = 4000
+POSTERIOR_PAIR_MIN_DENSITY_SAMPLES = 800
+POSTERIOR_PAIR_TARGET_DENSITY_SAMPLE_BUDGET = 24000
+POSTERIOR_PAIR_MAX_CONTOUR_GRID_SIZE = 96
+POSTERIOR_PAIR_MIN_CONTOUR_GRID_SIZE = 56
+POSTERIOR_PAIR_TARGET_CONTOUR_GRID_POINT_BUDGET = 73728
+POSTERIOR_PAIR_AUTO_MAX_CONTOUR_PARAMETERS = 6
 PAIR_PLOT_CELL_SIZE_PIXELS = 190
 PAIR_PLOT_MIN_CELL_SIZE_PIXELS = 90
 PAIR_PLOT_MIN_SIZE_PIXELS = 680
@@ -163,6 +179,8 @@ class _PosteriorPairsContext:
     labels: list[str]
     density_samples: np.ndarray
     scatter_samples: np.ndarray
+    show_contours: bool
+    contour_grid_size: int
     axis_frame_color: str
     axis_ranges: list[tuple[float, float]]
 
@@ -725,6 +743,7 @@ class Plotter(RendererBase):
     def plot_posterior_pairs(
         self,
         parameters: list[object] | None = None,
+        style: PosteriorPairPlotStyleEnum | str = PosteriorPairPlotStyleEnum.AUTO,
     ) -> None:
         """
         Plot posterior pair relationships for sampled parameters.
@@ -734,8 +753,12 @@ class Plotter(RendererBase):
         parameters : list[object] | None, default=None
             Optional subset of sampled parameters to include. When
             ``None``, all sampled parameters are shown.
+        style : PosteriorPairPlotStyleEnum | str, default='auto'
+            ``'auto'`` keeps contours for compact plots and disables
+            them for wide grids. ``'fast'`` always skips contours.
+            ``'full'`` always renders contours.
         """
-        plot = self._build_posterior_pairs_plot(parameters=parameters)
+        plot = self._build_posterior_pairs_plot(parameters=parameters, style=style)
         if plot is None:
             return
         self._show_plot_figure(plot)
@@ -1048,6 +1071,7 @@ class Plotter(RendererBase):
         self,
         *,
         parameters: list[object] | None,
+        style: PosteriorPairPlotStyleEnum | str = PosteriorPairPlotStyleEnum.AUTO,
     ) -> object | None:
         """
         Build a Plotly posterior pair plot.
@@ -1056,6 +1080,8 @@ class Plotter(RendererBase):
         ----------
         parameters : list[object] | None
             Optional subset of sampled parameters to include.
+        style : PosteriorPairPlotStyleEnum | str, default='auto'
+            Posterior pair-plot rendering mode.
 
         Returns
         -------
@@ -1063,7 +1089,7 @@ class Plotter(RendererBase):
             Plotly figure, or ``None`` when posterior plotting is
             unavailable.
         """
-        context = self._posterior_pairs_context(parameters)
+        context = self._posterior_pairs_context(parameters, style=style)
         if context is None:
             return None
 
@@ -1101,11 +1127,15 @@ class Plotter(RendererBase):
     def _posterior_pairs_context(
         self,
         parameters: list[object] | None,
+        *,
+        style: PosteriorPairPlotStyleEnum | str = PosteriorPairPlotStyleEnum.AUTO,
     ) -> _PosteriorPairsContext | None:
         """Return the resolved inputs for a posterior pair plot."""
         posterior_samples, fit_results = self._get_posterior_samples_and_fit_results()
         if posterior_samples is None or fit_results is None:
             return None
+
+        plot_style = self._validated_posterior_pair_plot_style(style)
 
         parameter_names = self._resolve_posterior_parameter_names(
             fit_results=fit_results,
@@ -1117,21 +1147,44 @@ class Plotter(RendererBase):
             log.warning('Posterior pair plots require at least two sampled parameters.')
             return None
 
-        density_samples = self._selected_posterior_samples(posterior_samples, parameter_names)
-        if density_samples is None:
+        selected_samples = self._selected_posterior_samples(posterior_samples, parameter_names)
+        if selected_samples is None:
             return None
+
+        n_parameters = len(parameter_names)
+        show_contours = self._posterior_pair_show_contours(
+            n_parameters=n_parameters,
+            style=plot_style,
+        )
+        if plot_style is PosteriorPairPlotStyleEnum.AUTO and not show_contours:
+            log.warning(
+                'Posterior pair plot auto mode disabled contours for '
+                f'{n_parameters} parameters. Use style="full" to force '
+                'contours.'
+            )
+
+        density_samples = self._thin_posterior_samples(
+            selected_samples,
+            max_points=self._posterior_pair_density_max_points(n_parameters),
+        )
+        scatter_samples = self._thin_posterior_samples(
+            selected_samples,
+            max_points=POSTERIOR_PAIR_SCATTER_MAX_POINTS,
+        )
 
         return _PosteriorPairsContext(
             fit_results=fit_results,
             parameter_names=parameter_names,
             labels=self._posterior_plot_labels(fit_results, parameter_names),
             density_samples=density_samples,
-            scatter_samples=self._thin_posterior_samples(density_samples, max_points=1500),
+            scatter_samples=scatter_samples,
+            show_contours=show_contours,
+            contour_grid_size=self._posterior_pair_contour_grid_size(n_parameters),
             axis_frame_color=self._plot_axis_frame_color(),
             axis_ranges=self._posterior_pair_axis_ranges(
                 fit_results=fit_results,
                 parameter_names=parameter_names,
-                density_samples=density_samples,
+                density_samples=selected_samples,
             ),
         )
 
@@ -1284,13 +1337,16 @@ class Plotter(RendererBase):
         y_density_values = context.density_samples[:, row_index]
         x_scatter_values = context.scatter_samples[:, col_index]
         y_scatter_values = context.scatter_samples[:, row_index]
-        contour_traces = self._posterior_contour_traces(
-            fit_results=context.fit_results,
-            x_parameter_name=context.parameter_names[col_index],
-            y_parameter_name=context.parameter_names[row_index],
-            x_values=x_density_values,
-            y_values=y_density_values,
-        )
+        contour_traces = None
+        if context.show_contours:
+            contour_traces = self._posterior_contour_traces(
+                fit_results=context.fit_results,
+                x_parameter_name=context.parameter_names[col_index],
+                y_parameter_name=context.parameter_names[row_index],
+                x_values=x_density_values,
+                y_values=y_density_values,
+                grid_size=context.contour_grid_size,
+            )
         sample_hovertemplate = (
             f'{context.labels[col_index]}: %{{x:.4f}}<br>'
             f'{context.labels[row_index]}: %{{y:.4f}}<extra></extra>'
@@ -1573,6 +1629,65 @@ class Plotter(RendererBase):
             cell_size * n_parameters + PAIR_PLOT_MARGIN_PIXELS,
         )
 
+    @staticmethod
+    def _posterior_pair_contour_panel_count(n_parameters: int) -> int:
+        """Return the number of lower-triangle contour panels."""
+        if n_parameters < MIN_POSTERIOR_PARAMETER_COUNT:
+            return 1
+        return n_parameters * (n_parameters - 1) // 2
+
+    @classmethod
+    def _posterior_pair_density_max_points(cls, n_parameters: int) -> int:
+        """Return a KDE sample cap for interactive pair plots."""
+        panel_count = cls._posterior_pair_contour_panel_count(n_parameters)
+        estimated_limit = round(
+            POSTERIOR_PAIR_TARGET_DENSITY_SAMPLE_BUDGET / panel_count,
+        )
+        return max(
+            POSTERIOR_PAIR_MIN_DENSITY_SAMPLES,
+            min(POSTERIOR_PAIR_MAX_DENSITY_SAMPLES, estimated_limit),
+        )
+
+    @classmethod
+    def _posterior_pair_contour_grid_size(cls, n_parameters: int) -> int:
+        """Return contour grid size for current pair-plot width."""
+        panel_count = cls._posterior_pair_contour_panel_count(n_parameters)
+        estimated_grid_size = round(
+            np.sqrt(POSTERIOR_PAIR_TARGET_CONTOUR_GRID_POINT_BUDGET / panel_count),
+        )
+        return max(
+            POSTERIOR_PAIR_MIN_CONTOUR_GRID_SIZE,
+            min(POSTERIOR_PAIR_MAX_CONTOUR_GRID_SIZE, estimated_grid_size),
+        )
+
+    @staticmethod
+    def _validated_posterior_pair_plot_style(
+        style: PosteriorPairPlotStyleEnum | str,
+    ) -> PosteriorPairPlotStyleEnum:
+        """Return a validated posterior pair-plot rendering mode."""
+        try:
+            return PosteriorPairPlotStyleEnum(style)
+        except ValueError as exc:
+            supported_styles = ', '.join(item.value for item in PosteriorPairPlotStyleEnum)
+            msg = (
+                'style must be one of '
+                f'{supported_styles} for posterior pair plots.'
+            )
+            raise ValueError(msg) from exc
+
+    @staticmethod
+    def _posterior_pair_show_contours(
+        *,
+        n_parameters: int,
+        style: PosteriorPairPlotStyleEnum,
+    ) -> bool:
+        """Return whether contours should be rendered."""
+        if style is PosteriorPairPlotStyleEnum.FULL:
+            return True
+        if style is PosteriorPairPlotStyleEnum.FAST:
+            return False
+        return n_parameters <= POSTERIOR_PAIR_AUTO_MAX_CONTOUR_PARAMETERS
+
     def _plot_axis_frame_color(self) -> str:
         """
         Return the shared axis-frame color for Plotly-backed plots.
@@ -1590,6 +1705,7 @@ class Plotter(RendererBase):
         y_parameter_name: str,
         x_values: np.ndarray,
         y_values: np.ndarray,
+        grid_size: int,
     ) -> tuple[object, object] | None:
         """
         Return filled and line contour traces for posterior pair plots.
@@ -1608,6 +1724,7 @@ class Plotter(RendererBase):
             y_values=y_values,
             x_bounds=bounds[0],
             y_bounds=bounds[1],
+            grid_size=grid_size,
         )
         if density_surface is None:
             return None

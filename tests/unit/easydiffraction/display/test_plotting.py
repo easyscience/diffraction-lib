@@ -336,6 +336,15 @@ def test_build_posterior_pairs_plot_hides_diagonal_ticks_and_uses_annotations():
     assert bottom_subplot.xaxis.showticklabels is False
     assert bottom_subplot.xaxis.title.text is None
     assert len(figure.layout.shapes) == 30
+    assert any(trace.name == 'Posterior contours' for trace in figure.data)
+
+
+def test_build_posterior_pairs_plot_fast_mode_skips_contours():
+    plotter, _, _ = _make_bayesian_plotter_fixture()
+
+    figure = plotter._build_posterior_pairs_plot(parameters=None, style='fast')
+
+    assert all(trace.name != 'Posterior contours' for trace in figure.data)
 
 
 def test_posterior_pair_figure_height_shrinks_cells_for_many_parameters():
@@ -345,6 +354,72 @@ def test_posterior_pair_figure_height_shrinks_cells_for_many_parameters():
     cell_size = Plotter._posterior_pair_cell_size_pixels(8, available_width_pixels=980)
 
     assert cell_size < PAIR_PLOT_CELL_SIZE_PIXELS
+
+
+def test_posterior_pair_density_budget_scales_with_parameter_count():
+    from easydiffraction.display.plotting import Plotter
+
+    assert Plotter._posterior_pair_density_max_points(8) < Plotter._posterior_pair_density_max_points(4)
+    assert Plotter._posterior_pair_contour_grid_size(8) < Plotter._posterior_pair_contour_grid_size(4)
+
+
+def test_posterior_pairs_context_thins_kde_samples_and_preserves_axis_ranges():
+    from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
+    from easydiffraction.display.plotting import POSTERIOR_PAIR_SCATTER_MAX_POINTS
+    from easydiffraction.display.plotting import Plotter
+
+    parameter_count = 8
+    sample_count = 5000
+    parameter_names = [f'param_{index}' for index in range(parameter_count)]
+    samples = np.zeros((1, sample_count, parameter_count), dtype=float)
+    samples[0, 1, 0] = 100.0
+    samples[0, 2, 1] = -50.0
+    for index in range(2, parameter_count):
+        samples[0, :, index] = np.linspace(index, index + 1, sample_count, dtype=float)
+
+    posterior_samples = PosteriorSamples(
+        parameter_names=parameter_names,
+        parameter_samples=samples,
+        log_posterior=np.zeros((1, sample_count), dtype=float),
+    )
+    parameters = [
+        SimpleNamespace(unique_name=name, name=name, fit_min=None, fit_max=None)
+        for name in parameter_names
+    ]
+    fit_results = SimpleNamespace(
+        posterior_samples=posterior_samples,
+        posterior_parameter_summaries=[],
+        posterior_predictive={},
+        parameters=parameters,
+    )
+    plotter = Plotter()
+    plotter._get_posterior_samples_and_fit_results = MethodType(
+        lambda self: (posterior_samples, fit_results),
+        plotter,
+    )
+
+    context = plotter._posterior_pairs_context(parameters=None)
+
+    assert context is not None
+    assert context.density_samples.shape == (
+        Plotter._posterior_pair_density_max_points(parameter_count),
+        parameter_count,
+    )
+    assert context.scatter_samples.shape == (POSTERIOR_PAIR_SCATTER_MAX_POINTS, parameter_count)
+    assert context.show_contours is False
+    assert context.contour_grid_size == Plotter._posterior_pair_contour_grid_size(parameter_count)
+    assert context.axis_ranges[0][1] > 100.0
+    assert context.axis_ranges[1][0] < -50.0
+
+
+def test_build_posterior_pairs_plot_rejects_unknown_style():
+    plotter, _, _ = _make_bayesian_plotter_fixture()
+
+    with pytest.raises(
+        ValueError,
+        match=r'style must be one of auto, fast, full for posterior pair plots\.',
+    ):
+        plotter._build_posterior_pairs_plot(parameters=None, style='slow')
 
 
 def test_build_param_distribution_plot_returns_plotly_figure():
