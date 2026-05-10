@@ -161,11 +161,11 @@ experiment.background.create(id='1', x=10, y=168.5585)
 experiment.background.create(id='2', x=30, y=164.3357)
 experiment.background.create(id='3', x=50, y=166.8881)
 experiment.background.create(id='4', x=110, y=175.4006)
-experiment.background.create(id='5', x=165, y=174.2813)
+#experiment.background.create(id='5', x=165, y=174.2813)
 
 # %%
-experiment.excluded_regions.create(id='1', start=0, end=30)
-experiment.excluded_regions.create(id='2', start=70, end=180)
+experiment.excluded_regions.create(id='1', start=0, end=10)
+experiment.excluded_regions.create(id='2', start=100, end=180)
 
 # %% [markdown]
 # #### Link the Structural Phase to the Experiment
@@ -189,6 +189,8 @@ experiment.linked_phases.create(id='lbco', scale=9.1351)
 
 # %%
 structure.cell.length_a.free = True
+
+experiment.linked_phases['lbco'].scale.free = True
 experiment.peak.broad_gauss_u.free = True
 experiment.peak.broad_gauss_v.free = True
 experiment.instrument.calib_twotheta_offset.free = True
@@ -200,6 +202,8 @@ experiment.instrument.calib_twotheta_offset.free = True
 
 # %%
 project.analysis.fit.show_minimizer_types()
+
+# %%
 project.analysis.fit.minimizer_type = 'bumps (lm)'
 
 # %%
@@ -233,15 +237,16 @@ project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=65, x_max=68)
 # The helper method `set_fit_bounds_from_uncertainty` centers the bounds
 # on the current parameter value and expands them by a chosen multiple of
 # the reported uncertainty.
+#
+# Default multiplier is 8 to give a wide range for the sampler to
+# explore, but here we use 3 to speed up the tutorial.
 
 # %%
 project.analysis.display.free_params()
 
 # %%
-structure.cell.length_a.set_fit_bounds_from_uncertainty(multiplier=4)
-experiment.peak.broad_gauss_u.set_fit_bounds_from_uncertainty(multiplier=4)
-experiment.peak.broad_gauss_v.set_fit_bounds_from_uncertainty(multiplier=4)
-experiment.instrument.calib_twotheta_offset.set_fit_bounds_from_uncertainty(multiplier=4)
+for param in project.free_parameters:
+    param.set_fit_bounds_from_uncertainty(multiplier=3)
 
 # %% [markdown]
 # Displaying the free parameters again is a convenient way to confirm
@@ -258,9 +263,11 @@ project.analysis.display.free_params()
 #
 # The settings below are intentionally small so the tutorial runs
 # quickly. For production analysis you would usually increase the number
-# of steps and often the burn-in as well. When needed, the DREAM API
-# also lets you tune how chains are initialized through the `init`
-# setting.
+# of steps (`steps`) and often the burn-in (`burn`) as well. When
+# needed, the DREAM API also lets you tune how chains are initialized
+# through the `init` setting. Other sampler settings such as `thin` and
+# `pop` can be adjusted  as well, but here we keep them at their
+# defaults.
 
 # %%
 project.analysis.fit.show_minimizer_types()
@@ -269,10 +276,7 @@ project.analysis.fit.show_minimizer_types()
 project.analysis.fit.minimizer_type = 'bumps (dream)'
 
 # %%
-project.analysis.fit.minimizer.steps = 2000  # 1000
-project.analysis.fit.minimizer.burn = 400  # 200
-project.analysis.fit.minimizer.thin = 1
-project.analysis.fit.minimizer.pop = 4
+project.analysis.fit.minimizer.steps = 100  # 1000
 
 # %%
 project.analysis.fit()
@@ -296,7 +300,7 @@ project.analysis.display.fit_results()
 #   posterior contours off-diagonal.
 
 # %%
-project.display.plotter.plot_param_correlations(show_diagonal=True)
+project.display.plotter.plot_param_correlations(threshold=0, show_diagonal=True)
 
 # %%
 project.display.plotter.plot_posterior_pairs()
@@ -307,10 +311,8 @@ project.display.plotter.plot_posterior_pairs()
 # multimodality.
 
 # %%
-project.display.plotter.plot_param_distribution(structure.cell.length_a)
-project.display.plotter.plot_param_distribution(experiment.peak.broad_gauss_u)
-project.display.plotter.plot_param_distribution(experiment.peak.broad_gauss_v)
-project.display.plotter.plot_param_distribution(experiment.instrument.calib_twotheta_offset)
+for param in project.free_parameters:
+    project.display.plotter.plot_param_distribution(param)
 
 # %% [markdown]
 # Finally, the posterior predictive plot propagates the sampled parameter
@@ -327,4 +329,4 @@ project.display.plotter.plot_posterior_predictive(expt_name='hrpt')
 # after the Bayesian run.
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=65, x_max=68)
+project.display.plotter.plot_posterior_predictive(expt_name='hrpt', x_min=65, x_max=68)
