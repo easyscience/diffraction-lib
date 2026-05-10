@@ -693,6 +693,56 @@ def test_build_posterior_predictive_summary_restores_parameter_state(monkeypatch
     assert [parameter.uncertainty for parameter in sampled_parameters] == [0.1, 0.2]
 
 
+def test_plot_posterior_predictive_defaults_to_band_for_bragg(monkeypatch):
+    from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+    from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+    from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
+    from easydiffraction.display.plotting import Plotter
+
+    captured: dict[str, object] = {}
+
+    class ExptType:
+        sample_form = type('SF', (), {'value': SampleFormEnum.POWDER})()
+        scattering_type = type('S', (), {'value': ScatteringTypeEnum.BRAGG})()
+        beam_mode = type('B', (), {'value': BeamModeEnum.CONSTANT_WAVELENGTH})()
+
+    class Experiment:
+        type = ExptType()
+
+    class Project:
+        experiments = {'hrpt': Experiment()}
+
+    plotter = Plotter()
+    plotter.engine = 'plotly'
+    plotter._set_project(Project())
+
+    monkeypatch.setattr(Plotter, '_update_project_categories', lambda self, expt_name: None)
+
+    def fake_plot_posterior_predictive_data(
+        self,
+        *,
+        experiment,
+        expt_name,
+        plot_options,
+        x_axis,
+        style,
+    ):
+        captured['experiment'] = experiment
+        captured['expt_name'] = expt_name
+        captured['style'] = style
+        captured['x_axis'] = x_axis
+        captured['show_residual'] = plot_options.show_residual
+
+    monkeypatch.setattr(Plotter, '_plot_posterior_predictive_data', fake_plot_posterior_predictive_data)
+
+    plotter.plot_posterior_predictive('hrpt')
+
+    assert captured['experiment'] is Project.experiments['hrpt']
+    assert captured['expt_name'] == 'hrpt'
+    assert captured['style'] == 'band'
+    assert captured['show_residual'] is None
+
+
 def test_extract_bragg_tick_sets_uses_derived_d_spacing_for_cwl_ticks():
     import numpy as np
 

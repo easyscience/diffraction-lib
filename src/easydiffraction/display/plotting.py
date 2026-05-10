@@ -828,7 +828,7 @@ class Plotter(RendererBase):
     def plot_posterior_predictive(
         self,
         expt_name: str,
-        style: str = 'band+draws',
+        style: str = 'band',
         x_min: float | None = None,
         x_max: float | None = None,
         *,
@@ -842,7 +842,7 @@ class Plotter(RendererBase):
         ----------
         expt_name : str
             Experiment name to plot.
-        style : str, default='band+draws'
+        style : str, default='band'
             ``'band'`` shows the 95% credible interval, ``'draws'``
             shows sampled predictive curves, and ``'band+draws'`` shows
             both together.
