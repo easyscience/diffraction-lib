@@ -1903,15 +1903,27 @@ class Plotter(RendererBase):
             title=context.title,
             label=context.label,
         )
+        histogram_bin_edges = self._posterior_distribution_histogram_bin_edges(context.values)
         density_trace = self._posterior_density_trace(
             fit_results=context.fit_results,
             parameter_name=context.parameter_name,
             values=context.values,
-            trace_name='Posterior density',
+            trace_name='Marginal density',
+        )
+        if density_trace is not None:
+            self._style_posterior_pair_marginal_density_trace(density_trace)
+            density_trace.hovertemplate = self._posterior_pair_density_hovertemplate(
+                context.parameter_name
+            )
+        x_axis_range = self._posterior_distribution_x_axis_range(
+            values=context.values,
+            density_trace=density_trace,
+            histogram_bin_edges=histogram_bin_edges,
         )
         y_axis_range = self._posterior_distribution_y_axis_range(
             values=context.values,
             density_trace=density_trace,
+            histogram_bin_edges=histogram_bin_edges,
         )
 
         self._add_posterior_distribution_interval_traces(
@@ -1923,6 +1935,7 @@ class Plotter(RendererBase):
             fig=fig,
             go=go,
             values=context.values,
+            histogram_bin_edges=histogram_bin_edges,
         )
         self._add_posterior_distribution_density_trace(fig=fig, density_trace=density_trace)
         self._add_posterior_distribution_reference_traces(
@@ -1936,6 +1949,7 @@ class Plotter(RendererBase):
             layout_factory=layout_factory,
             title=context.title,
             label=context.label,
+            x_axis_range=x_axis_range,
             y_axis_range=y_axis_range,
         )
         return fig
@@ -1990,13 +2004,81 @@ class Plotter(RendererBase):
         *,
         values: np.ndarray,
         density_trace: object | None,
+        histogram_bin_edges: np.ndarray | None,
     ) -> tuple[float, float] | None:
         """Return the y-axis range for a posterior distribution plot."""
-        histogram_density, _ = np.histogram(values, bins=50, density=True)
-        density_sources = [histogram_density]
+        density_sources = []
+        histogram_density = self._posterior_distribution_histogram_density(
+            values,
+            histogram_bin_edges,
+        )
+        if histogram_density is not None:
+            density_sources.append(histogram_density)
         if density_trace is not None:
             density_sources.append(np.asarray(density_trace.y, dtype=float))
+        if not density_sources:
+            return None
         return self._posterior_density_axis_range(np.concatenate(density_sources))
+
+    def _posterior_distribution_x_axis_range(
+        self,
+        *,
+        values: np.ndarray,
+        density_trace: object | None,
+        histogram_bin_edges: np.ndarray | None,
+    ) -> tuple[float, float] | None:
+        """Return the x-axis range for a posterior distribution plot."""
+        if density_trace is not None:
+            return self._posterior_axis_bounds(
+                np.asarray(density_trace.x, dtype=float),
+                lower_bound=None,
+                upper_bound=None,
+            )
+
+        if histogram_bin_edges is not None:
+            return (
+                float(histogram_bin_edges[0]),
+                float(histogram_bin_edges[-1]),
+            )
+
+        finite_values = np.asarray(values, dtype=float)
+        finite_values = finite_values[np.isfinite(finite_values)]
+        if finite_values.size == 0:
+            return None
+        return self._posterior_axis_bounds(
+            finite_values,
+            lower_bound=None,
+            upper_bound=None,
+        )
+
+    @staticmethod
+    def _posterior_distribution_histogram_bin_edges(values: np.ndarray) -> np.ndarray | None:
+        """Return histogram bin edges used by the distribution plot."""
+        finite_values = np.asarray(values, dtype=float)
+        finite_values = finite_values[np.isfinite(finite_values)]
+        if finite_values.size == 0:
+            return None
+
+        bin_edges = np.histogram_bin_edges(finite_values, bins='auto')
+        if bin_edges.size >= MIN_POSTERIOR_SAMPLE_COUNT:
+            return np.asarray(bin_edges, dtype=float)
+        return None
+
+    @staticmethod
+    def _posterior_distribution_histogram_density(
+        values: np.ndarray,
+        histogram_bin_edges: np.ndarray | None,
+    ) -> np.ndarray | None:
+        """Return densities matching the rendered histogram bins."""
+        if histogram_bin_edges is None:
+            return None
+
+        histogram_density, _ = np.histogram(
+            np.asarray(values, dtype=float),
+            bins=histogram_bin_edges,
+            density=True,
+        )
+        return np.asarray(histogram_density, dtype=float)
 
     def _add_posterior_distribution_interval_traces(
         self,
@@ -2034,12 +2116,23 @@ class Plotter(RendererBase):
         fig: object,
         go: object,
         values: np.ndarray,
+        histogram_bin_edges: np.ndarray | None,
     ) -> None:
         """Add the histogram trace for a posterior distribution plot."""
+        histogram_kwargs: dict[str, object] = {}
+        if (
+            histogram_bin_edges is not None
+            and histogram_bin_edges.size >= MIN_POSTERIOR_SAMPLE_COUNT
+        ):
+            histogram_kwargs['xbins'] = {
+                'start': float(histogram_bin_edges[0]),
+                'end': float(histogram_bin_edges[-1]),
+                'size': float(histogram_bin_edges[1] - histogram_bin_edges[0]),
+            }
+
         fig.add_trace(
             go.Histogram(
                 x=values,
-                nbinsx=50,
                 histnorm='probability density',
                 marker={
                     'color': POSTERIOR_HISTOGRAM_FILL_COLOR,
@@ -2048,6 +2141,7 @@ class Plotter(RendererBase):
                 opacity=0.82,
                 name='Posterior histogram',
                 hovertemplate='sample=%{x:.4f}<br>density: %{y:.2f}<extra></extra>',
+                **histogram_kwargs,
             )
         )
 
@@ -2061,7 +2155,7 @@ class Plotter(RendererBase):
         if density_trace is None:
             return
 
-        density_trace.name = 'Posterior density'
+        density_trace.name = 'Marginal density'
         density_trace.showlegend = True
         fig.add_trace(density_trace)
 
@@ -2106,6 +2200,7 @@ class Plotter(RendererBase):
         layout_factory: object | None,
         title: str,
         label: str,
+        x_axis_range: tuple[float, float] | None,
         y_axis_range: tuple[float, float] | None,
     ) -> None:
         """Apply layout settings to the distribution plot."""
@@ -2124,6 +2219,8 @@ class Plotter(RendererBase):
                     'y': 1.0,
                 },
             )
+        if x_axis_range is not None:
+            fig.update_xaxes(range=list(x_axis_range))
         if y_axis_range is not None:
             fig.update_yaxes(range=list(y_axis_range))
 

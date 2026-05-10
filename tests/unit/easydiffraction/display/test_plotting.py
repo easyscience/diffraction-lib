@@ -532,6 +532,10 @@ def test_build_posterior_pairs_plot_rejects_unknown_style():
 
 
 def test_build_param_distribution_plot_returns_plotly_figure():
+    from easydiffraction.display.plotting import POSTERIOR_PAIR_MARGINAL_DENSITY_FILL_COLOR
+    from easydiffraction.display.plotting import POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_COLOR
+    from easydiffraction.display.plotting import POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_WIDTH
+
     plotter, fit_results, _ = _make_bayesian_plotter_fixture()
     parameter = fit_results.parameters[0]
 
@@ -540,12 +544,21 @@ def test_build_param_distribution_plot_returns_plotly_figure():
     assert figure.layout.title.text == 'Posterior distribution: length_a'
     assert {trace.name for trace in figure.data} >= {
         'Posterior histogram',
-        'Posterior density',
+        'Marginal density',
         '68% credible interval',
         '95% credible interval',
         'Median',
         'Max posterior',
     }
+    marginal_trace = next(trace for trace in figure.data if trace.name == 'Marginal density')
+    histogram_trace = next(trace for trace in figure.data if trace.name == 'Posterior histogram')
+    assert marginal_trace.line.color == POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_COLOR
+    assert marginal_trace.line.width == POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_WIDTH
+    assert marginal_trace.fillcolor == POSTERIOR_PAIR_MARGINAL_DENSITY_FILL_COLOR
+    assert marginal_trace.hovertemplate == 'length_a: %{x:.4f}<br>density: %{y:.4f}<extra></extra>'
+    assert histogram_trace.xbins.size is not None
+    assert figure.layout.xaxis.range is not None
+    assert figure.layout.yaxis.range is not None
 
 
 def test_build_param_distribution_plot_accepts_unique_name_string():

@@ -376,10 +376,12 @@
 │   │   └── 🏷️ class RendererFactoryBase
 │   ├── 📄 plotting.py
 │   │   ├── 🏷️ class PlotterEngineEnum
+│   │   ├── 🏷️ class PosteriorPairPlotStyleEnum
 │   │   ├── 🏷️ class _MeasVsCalcPlotOptions
 │   │   ├── 🏷️ class _PowderMeasVsCalcSeries
 │   │   ├── 🏷️ class _PosteriorDistributionContext
 │   │   ├── 🏷️ class _PosteriorPairsContext
+│   │   ├── 🏷️ class _CorrelationHeatmapContext
 │   │   ├── 🏷️ class _PosteriorPairsLegendState
 │   │   ├── 🏷️ class Plotter
 │   │   └── 🏷️ class PlotterFactory
