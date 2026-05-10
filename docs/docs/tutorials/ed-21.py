@@ -224,9 +224,6 @@ project.display.plotter.plot_param_correlations()
 # %%
 project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')
 
-# %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=65, x_max=68)
-
 # %% [markdown]
 # ## Step 5: Prepare for Bayesian Sampling
 #
@@ -238,7 +235,7 @@ project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=65, x_max=68)
 # on the current parameter value and expands them by a chosen multiple of
 # the reported uncertainty.
 #
-# Default multiplier is 8 to give a wide range for the sampler to
+# Default `multiplier` is 8 to give a wide range for the sampler to
 # explore, but here we use 3 to speed up the tutorial.
 
 # %%
@@ -268,6 +265,11 @@ project.analysis.display.free_params()
 # through the `init` setting. Other sampler settings such as `thin` and
 # `pop` can be adjusted  as well, but here we keep them at their
 # defaults.
+#
+# Default `steps` is 1000, which is often need to be increased for a
+# real analysis to ensure good convergence and sampling of the posterior
+# distribution. Here we use much smaller value to speed up the tutorial,
+# but this is not recommended for a real analysis.
 
 # %%
 project.analysis.fit.show_minimizer_types()
@@ -276,7 +278,7 @@ project.analysis.fit.show_minimizer_types()
 project.analysis.fit.minimizer_type = 'bumps (dream)'
 
 # %%
-project.analysis.fit.minimizer.steps = 100  # 1000
+project.analysis.fit.minimizer.steps = 50  # 1000
 
 # %%
 project.analysis.fit()
@@ -329,4 +331,4 @@ project.display.plotter.plot_posterior_predictive(expt_name='hrpt')
 # after the Bayesian run.
 
 # %%
-project.display.plotter.plot_posterior_predictive(expt_name='hrpt', x_min=65, x_max=68)
+project.display.plotter.plot_posterior_predictive(expt_name='hrpt', x_min=45.4, x_max=46.3)
