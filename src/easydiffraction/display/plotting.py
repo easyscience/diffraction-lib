@@ -2020,8 +2020,8 @@ class Plotter(RendererBase):
             return None
         return self._posterior_density_axis_range(np.concatenate(density_sources))
 
+    @staticmethod
     def _posterior_distribution_x_axis_range(
-        self,
         *,
         values: np.ndarray,
         density_trace: object | None,
@@ -2029,11 +2029,8 @@ class Plotter(RendererBase):
     ) -> tuple[float, float] | None:
         """Return the x-axis range for a posterior distribution plot."""
         if density_trace is not None:
-            return self._posterior_axis_bounds(
-                np.asarray(density_trace.x, dtype=float),
-                lower_bound=None,
-                upper_bound=None,
-            )
+            density_x = np.asarray(density_trace.x, dtype=float)
+            return float(density_x[0]), float(density_x[-1])
 
         if histogram_bin_edges is not None:
             return (
@@ -2045,11 +2042,7 @@ class Plotter(RendererBase):
         finite_values = finite_values[np.isfinite(finite_values)]
         if finite_values.size == 0:
             return None
-        return self._posterior_axis_bounds(
-            finite_values,
-            lower_bound=None,
-            upper_bound=None,
-        )
+        return float(np.min(finite_values)), float(np.max(finite_values))
 
     @staticmethod
     def _posterior_distribution_histogram_bin_edges(values: np.ndarray) -> np.ndarray | None:

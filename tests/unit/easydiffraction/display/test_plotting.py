@@ -558,6 +558,7 @@ def test_build_param_distribution_plot_returns_plotly_figure():
     assert marginal_trace.hovertemplate == 'length_a: %{x:.4f}<br>density: %{y:.4f}<extra></extra>'
     assert histogram_trace.xbins.size is not None
     assert figure.layout.xaxis.range is not None
+    assert tuple(figure.layout.xaxis.range) == (float(marginal_trace.x[0]), float(marginal_trace.x[-1]))
     assert figure.layout.yaxis.range is not None
 
 
