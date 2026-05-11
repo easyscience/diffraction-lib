@@ -248,10 +248,10 @@ jobs:
               exit 1
             fi
 
-            whl_url="file://$(python -c 'import os,sys; print(os.path.abspath(sys.argv[1]))' "${whl_path[0]}")"
+            whl_abs_path="$(python -c 'import os,sys; print(os.path.abspath(sys.argv[1]))' "${whl_path[0]}")"
 
-            echo "Adding easydiffraction from: $whl_url"
-            pixi add --pypi "easydiffraction[dev] @ ${whl_url}"
+            echo "Adding easydiffraction from: $whl_abs_path"
+            pixi add --pypi "easydiffraction[dev] @ ${whl_abs_path}"
 
             echo "Exiting pixi project directory"
             cd ..
