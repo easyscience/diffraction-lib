@@ -12,6 +12,8 @@ from bumps.fitproblem import FitProblem
 from bumps.fitters import FITTERS
 from bumps.fitters import FitDriver
 from bumps.fitters import monitor as bumps_monitor
+from bumps.mapper import MPMapper
+from bumps.mapper import can_pickle
 from scipy.optimize import OptimizeResult
 
 from easydiffraction.analysis.fit_helpers.bayesian import BayesianFitResults
@@ -34,6 +36,7 @@ DEFAULT_BURN_FRACTION = 0.2
 DEFAULT_MIN_BURN = 50
 DEFAULT_THIN = 1
 DEFAULT_POP = 4
+DEFAULT_PARALLEL = 0
 DEFAULT_INIT = DreamPopulationInitializationEnum.EPS
 DEFAULT_ALPHA = 0.0
 DEFAULT_OUTLIER_TEST = 'none'
@@ -264,6 +267,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         self._burn: int | None = None
         self._thin: int = DEFAULT_THIN
         self._pop: int = DEFAULT_POP
+        self._parallel: int = DEFAULT_PARALLEL
         self._init: DreamPopulationInitializationEnum = DEFAULT_INIT
 
     @property
@@ -304,6 +308,15 @@ class BumpsDreamMinimizer(BumpsMinimizer):
     @pop.setter
     def pop(self, value: int) -> None:
         self._pop = self._validated_positive_integer('pop', value)
+
+    @property
+    def parallel(self) -> int:
+        """DREAM parallel worker count; ``0`` uses all CPUs."""
+        return self._parallel
+
+    @parallel.setter
+    def parallel(self, value: int) -> None:
+        self._parallel = self._validated_non_negative_integer('parallel', value)
 
     @property
     def init(self) -> DreamPopulationInitializationEnum:
@@ -495,26 +508,24 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             raise ValueError(msg)
         return burn
 
-    @staticmethod
     def _sampler_settings(
+        self,
         *,
         random_seed: int,
         steps: int,
         burn: int,
-        thin: int,
-        pop: int,
-        init: DreamPopulationInitializationEnum,
         n_parameters: int,
     ) -> dict[str, object]:
         """Build the sampler settings dictionary recorded in results."""
-        samples = steps * pop * n_parameters
+        samples = steps * self.pop * n_parameters
         return {
             'random_seed': int(random_seed),
             'steps': int(steps),
             'burn': int(burn),
-            'thin': int(thin),
-            'pop': int(pop),
-            'init': init.value,
+            'thin': int(self.thin),
+            'pop': int(self.pop),
+            'parallel': int(self.parallel),
+            'init': self.init.value,
             'samples': int(samples),
             'alpha': float(DEFAULT_ALPHA),
             'outliers': DEFAULT_OUTLIER_TEST,
@@ -591,9 +602,6 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             random_seed=random_seed,
             steps=steps,
             burn=burn,
-            thin=self.thin,
-            pop=self.pop,
-            init=init,
             n_parameters=len(bumps_params),
         )
         driver = self._build_driver(
@@ -634,6 +642,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
     ) -> FitDriver:
         """Build and clip the BUMPS DREAM driver."""
         total_generations = int(steps + burn + 1)
+        problem = FitProblem(fitness)
         progress_monitor = _DreamProgressMonitor(
             tracker=self.tracker,
             n_points=fitness.numpoints(),
@@ -641,10 +650,12 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             total_generations=total_generations,
             burn_steps=int(burn),
         )
+        mapper = self._build_mapper(problem)
         driver = FitDriver(
             fitclass=fitclass,
-            problem=FitProblem(fitness),
+            problem=problem,
             monitors=[progress_monitor],
+            mapper=mapper,
             steps=steps,
             burn=burn,
             thin=self.thin,
@@ -657,6 +668,20 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         )
         driver.clip()
         return driver
+
+    def _build_mapper(self, problem: FitProblem) -> object | None:
+        """Return a DREAM mapper for the configured parallel setting."""
+        if self.parallel == 1:
+            return None
+
+        if not can_pickle(problem):
+            log.warning(
+                'DREAM parallel evaluation requires a picklable '
+                'problem; falling back to serial execution.'
+            )
+            return None
+
+        return MPMapper.start_mapper(problem, [], cpus=self.parallel)
 
     @staticmethod
     def _execute_driver(*, driver: FitDriver, random_seed: int) -> _DreamDriverResult:
@@ -678,6 +703,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
                 error=error,
             )
         finally:
+            MPMapper.stop_mapper()
             numpy_rng.set_state(numpy_state)
             random.setstate(python_state)
 
