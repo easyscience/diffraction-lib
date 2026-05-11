@@ -243,7 +243,7 @@ project.analysis.display.free_params()
 
 # %%
 for param in project.free_parameters:
-    param.set_fit_bounds_from_uncertainty(multiplier=3)
+    param.set_fit_bounds_from_uncertainty(multiplier=3.5)
 
 # %% [markdown]
 # Displaying the free parameters again is a convenient way to confirm
@@ -332,5 +332,3 @@ project.display.plotter.plot_posterior_predictive(expt_name='hrpt')
 
 # %%
 project.display.plotter.plot_posterior_predictive(expt_name='hrpt', x_min=92, x_max=93)
-
-# %%
