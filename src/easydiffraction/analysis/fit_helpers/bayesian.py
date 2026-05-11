@@ -758,12 +758,12 @@ def _posterior_table_notes(
     notes: list[str] = []
     if has_failed_r_hat:
         notes.append(
-            f'[red]r_hat[/red]: exceeds {R_HAT_CONVERGENCE_THRESHOLD:.2f} '
-            '(consider longer sampling, tighter bounds, or reparameterization).'
+            f'[red]r-hat[/red]: exceeds {R_HAT_CONVERGENCE_THRESHOLD:.2f} '
+            'Consider longer sampling, better initialization, or reparameterization.'
         )
     if has_failed_ess_bulk:
         notes.append(
-            f'[red]ess_bulk[/red]: less than {ESS_BULK_CONVERGENCE_THRESHOLD:.0f} '
-            '(consider longer sampling, tighter bounds, or reparameterization).'
+            f'[red]ess bulk[/red]: less than {ESS_BULK_CONVERGENCE_THRESHOLD:.0f} '
+            'Consider longer sampling or reparameterization.'
         )
     return notes

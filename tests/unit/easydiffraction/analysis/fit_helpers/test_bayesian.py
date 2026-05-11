@@ -247,17 +247,19 @@ def test_render_committed_parameter_table_places_units_after_parameter(monkeypat
         'right',
         'right',
     ]
-    assert captured['columns_data'] == [[
-        'db',
-        'cat',
-        'entry',
-        'a',
-        'arb',
-        '1.0000',
-        '1.2000',
-        '0.0500',
-        '20.00 % ↑',
-    ]]
+    assert captured['columns_data'] == [
+        [
+            'db',
+            'cat',
+            'entry',
+            'a',
+            'arb',
+            '1.0000',
+            '1.2000',
+            '0.0500',
+            '20.00 % ↑',
+        ]
+    ]
 
 
 def test_render_posterior_summary_table_places_units_after_parameter(monkeypatch):
@@ -312,17 +314,19 @@ def test_render_posterior_summary_table_places_units_after_parameter(monkeypatch
         'right',
         'right',
     ]
-    assert captured['columns_data'] == [[
-        'db',
-        'cat',
-        'entry',
-        'a',
-        'arb',
-        '1.1500',
-        '[1.0000, 1.3000]',
-        '[red]1.107[/red]',
-        '[red]125.9[/red]',
-    ]]
+    assert captured['columns_data'] == [
+        [
+            'db',
+            'cat',
+            'entry',
+            'a',
+            'arb',
+            '1.1500',
+            '[1.0000, 1.3000]',
+            '[red]1.107[/red]',
+            '[red]125.9[/red]',
+        ]
+    ]
 
 
 def test_posterior_table_notes_split_failed_diagnostics():

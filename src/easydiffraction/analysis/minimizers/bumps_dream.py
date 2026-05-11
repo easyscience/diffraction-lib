@@ -762,9 +762,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         )
 
         if not convergence_diagnostics.get('converged', True):
-            log.warning(
-                'Convergence diagnostics indicate the posterior may be poorly mixed.'
-            )
+            log.warning('Convergence diagnostics indicate the posterior may be poorly mixed.')
 
         return OptimizeResult(
             x=map_values,

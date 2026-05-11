@@ -577,7 +577,9 @@ def test_build_param_distribution_plot_returns_plotly_figure():
     }
     marginal_trace = next(trace for trace in figure.data if trace.name == 'Marginal density')
     histogram_trace = next(trace for trace in figure.data if trace.name == 'Posterior histogram')
-    interval_68_trace = next(trace for trace in figure.data if trace.name == '68% credible interval')
+    interval_68_trace = next(
+        trace for trace in figure.data if trace.name == '68% credible interval'
+    )
     interval_trace = next(trace for trace in figure.data if trace.name == '95% credible interval')
     max_posterior_trace = next(trace for trace in figure.data if trace.name == 'Max posterior')
     assert marginal_trace.line.color == POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_COLOR

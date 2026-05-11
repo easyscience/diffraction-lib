@@ -112,14 +112,16 @@ def test_fitresults_display_results_places_units_after_parameter(monkeypatch):
         'right',
         'right',
     ]
-    assert captured['columns_data'] == [[
-        'db',
-        'cat',
-        'entry',
-        'a',
-        'arb',
-        '1.0000',
-        '1.2000',
-        '0.0500',
-        '20.00 % ↑',
-    ]]
+    assert captured['columns_data'] == [
+        [
+            'db',
+            'cat',
+            'entry',
+            'a',
+            'arb',
+            '1.0000',
+            '1.2000',
+            '0.0500',
+            '20.00 % ↑',
+        ]
+    ]
