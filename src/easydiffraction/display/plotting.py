@@ -146,7 +146,7 @@ PAIR_PLOT_ESTIMATED_CONTAINER_WIDTH_PIXELS = 980
 PAIR_PLOT_SUBPLOT_SPACING = 0.01
 POSTERIOR_PAIR_AXIS_LINE_WIDTH = 1.2
 POSTERIOR_PAIR_AXIS_TITLE_FONT_SIZE = 12
-POSTERIOR_PAIR_TITLE_FONT_SIZE = 16
+POSTERIOR_PAIR_TITLE_FONT_SIZE = POSTERIOR_PAIR_AXIS_TITLE_FONT_SIZE
 POSTERIOR_PAIR_Y_TITLE_XSHIFT_PIXELS = 16
 POSTERIOR_PAIR_X_TITLE_YSHIFT_PIXELS = 10
 POSTERIOR_PAIR_TITLE_YSHIFT_PIXELS = 2
@@ -155,8 +155,8 @@ POSTERIOR_PAIR_FIXED_ASPECT_RATIO = '1 / 1'
 POSTERIOR_PAIR_FIXED_ASPECT_META_KEY = 'fixed_aspect_wrapper'
 POSTERIOR_PAIR_LEFT_MARGIN_PIXELS = 58
 POSTERIOR_PAIR_RIGHT_MARGIN_PIXELS = 10
-POSTERIOR_PAIR_TOP_MARGIN_PIXELS = 26
-POSTERIOR_PAIR_BOTTOM_MARGIN_PIXELS = 42
+POSTERIOR_PAIR_TOP_MARGIN_PIXELS = 40
+POSTERIOR_PAIR_BOTTOM_MARGIN_PIXELS = 24
 POSTERIOR_PAIR_AXIS_TITLE_LINE_HEIGHT_PIXELS = 18
 POSTERIOR_PAIR_SAMPLE_MARKER_SIZE = 6
 POSTERIOR_PAIR_SAMPLE_HOVER_MARKER_SIZE = 6
@@ -2219,6 +2219,8 @@ class Plotter(RendererBase):
                     'y': 1.0,
                 },
             )
+            fig.update_xaxes(title_font={'size': POSTERIOR_PAIR_AXIS_TITLE_FONT_SIZE})
+            fig.update_yaxes(title_font={'size': POSTERIOR_PAIR_AXIS_TITLE_FONT_SIZE})
         if x_axis_range is not None:
             fig.update_xaxes(range=list(x_axis_range))
         if y_axis_range is not None:
@@ -3010,6 +3012,8 @@ class Plotter(RendererBase):
             xaxis_title=axes_labels[0],
             yaxis_title=axes_labels[1],
         )
+        fig.update_xaxes(title_font={'size': POSTERIOR_PAIR_AXIS_TITLE_FONT_SIZE})
+        fig.update_yaxes(title_font={'size': POSTERIOR_PAIR_AXIS_TITLE_FONT_SIZE})
         fig.show()
 
     def _plot_posterior_predictive_data(

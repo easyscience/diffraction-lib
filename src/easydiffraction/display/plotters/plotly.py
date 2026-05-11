@@ -65,6 +65,7 @@ COMPOSITE_VERTICAL_SPACING = 0.03
 COMPOSITE_MARGIN_RIGHT = 30
 COMPOSITE_MARGIN_TOP = 40
 COMPOSITE_MARGIN_BOTTOM = 45
+AXIS_TITLE_FONT_SIZE = 12
 PREDICTIVE_BAND_COLOR = 'rgba(214, 39, 40, 0.26)'
 PREDICTIVE_BAND_EDGE_COLOR = 'rgba(214, 39, 40, 0.45)'
 PREDICTIVE_DRAW_COLOR = 'rgba(140, 140, 140, 0.18)'
@@ -1005,14 +1006,20 @@ window.requestAnimationFrame(installLegendToggleButton);
                 'y': 1.0,
             },
             xaxis={
-                'title_text': axes_labels[0],
+                'title': {
+                    'text': axes_labels[0],
+                    'font': {'size': AXIS_TITLE_FONT_SIZE},
+                },
                 'showline': True,
                 'linecolor': cls._axis_frame_color(),
                 'mirror': True,
                 'zeroline': False,
             },
             yaxis={
-                'title_text': axes_labels[1],
+                'title': {
+                    'text': axes_labels[1],
+                    'font': {'size': AXIS_TITLE_FONT_SIZE},
+                },
                 'showline': True,
                 'linecolor': cls._axis_frame_color(),
                 'mirror': True,
@@ -1574,6 +1581,7 @@ window.requestAnimationFrame(installLegendToggleButton);
         fig.update_xaxes(showticklabels=(layout.row_count == 1), row=1, col=1)
         fig.update_yaxes(
             title_text=plot_spec.axes_labels[1],
+            title_font={'size': AXIS_TITLE_FONT_SIZE},
             range=list(main_y_range),
             row=1,
             col=1,
@@ -1591,7 +1599,12 @@ window.requestAnimationFrame(installLegendToggleButton);
             return
 
         terminal_row = layout.bragg_row if layout.bragg_row is not None else 1
-        fig.update_xaxes(title_text=plot_spec.axes_labels[0], row=terminal_row, col=1)
+        fig.update_xaxes(
+            title_text=plot_spec.axes_labels[0],
+            title_font={'size': AXIS_TITLE_FONT_SIZE},
+            row=terminal_row,
+            col=1,
+        )
 
     def _configure_shared_composite_axes(
         self,
@@ -1667,7 +1680,12 @@ window.requestAnimationFrame(installLegendToggleButton);
             row=layout.residual_row,
             col=1,
         )
-        fig.update_xaxes(title_text=plot_spec.axes_labels[0], row=layout.residual_row, col=1)
+        fig.update_xaxes(
+            title_text=plot_spec.axes_labels[0],
+            title_font={'size': AXIS_TITLE_FONT_SIZE},
+            row=layout.residual_row,
+            col=1,
+        )
 
     @staticmethod
     def _get_predictive_band_traces(

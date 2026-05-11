@@ -763,8 +763,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
 
         if not convergence_diagnostics.get('converged', True):
             log.warning(
-                'DREAM sampling completed, but convergence diagnostics indicate '
-                'the posterior may be poorly mixed.'
+                'Convergence diagnostics indicate the posterior may be poorly mixed.'
             )
 
         return OptimizeResult(

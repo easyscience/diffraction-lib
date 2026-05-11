@@ -307,8 +307,11 @@ def test_correlation_from_posterior_samples_returns_labeled_dataframe():
 
 
 def test_build_posterior_pairs_plot_hides_diagonal_ticks_and_uses_annotations():
+    from easydiffraction.display.plotting import POSTERIOR_PAIR_BOTTOM_MARGIN_PIXELS
     from easydiffraction.display.plotting import POSTERIOR_PAIR_SAMPLE_HOVER_MARKER_SIZE
     from easydiffraction.display.plotting import POSTERIOR_PAIR_SAMPLE_MARKER_SIZE
+    from easydiffraction.display.plotting import POSTERIOR_PAIR_TITLE_FONT_SIZE
+    from easydiffraction.display.plotting import POSTERIOR_PAIR_TOP_MARGIN_PIXELS
 
     plotter, _, _ = _make_bayesian_plotter_fixture()
 
@@ -330,12 +333,15 @@ def test_build_posterior_pairs_plot_hides_diagonal_ticks_and_uses_annotations():
         'broad_gauss_v',
         'twotheta_offset',
     ]
+    assert figure.layout.annotations[0].font.size == POSTERIOR_PAIR_TITLE_FONT_SIZE
     assert figure.layout.annotations[0].xshift == -plotter._square_matrix_title_left_shift([
         'length_a',
         'broad_gauss_u',
         'broad_gauss_v',
         'twotheta_offset',
     ])
+    assert figure.layout.margin.t == POSTERIOR_PAIR_TOP_MARGIN_PIXELS
+    assert figure.layout.margin.b == POSTERIOR_PAIR_BOTTOM_MARGIN_PIXELS
     subplot = figure.get_subplot(1, 1)
     bottom_subplot = figure.get_subplot(4, 1)
     assert subplot.yaxis.showticklabels is False
@@ -1294,6 +1300,10 @@ def test_plot_param_correlations_renders_plotly_heatmap(monkeypatch):
     import numpy as np
 
     import easydiffraction.display.plotters.plotly as plotly_mod
+    from easydiffraction.display.plotting import POSTERIOR_PAIR_AXIS_TITLE_LINE_HEIGHT_PIXELS
+    from easydiffraction.display.plotting import POSTERIOR_PAIR_BOTTOM_MARGIN_PIXELS
+    from easydiffraction.display.plotting import POSTERIOR_PAIR_TITLE_FONT_SIZE
+    from easydiffraction.display.plotting import POSTERIOR_PAIR_TOP_MARGIN_PIXELS
     from easydiffraction.display.plotting import Plotter
 
     captured = {}
@@ -1357,10 +1367,15 @@ def test_plot_param_correlations_renders_plotly_heatmap(monkeypatch):
         'phase.<br>scale',
         'phase.<br>cell.<br>length_c',
     ]
+    assert fig.layout.annotations[0].font.size == POSTERIOR_PAIR_TITLE_FONT_SIZE
     assert fig.layout.annotations[0].xshift == -Plotter._square_matrix_title_left_shift([
         'phase.<br>scale',
         'phase.<br>cell.<br>length_c',
     ])
+    assert fig.layout.margin.t == POSTERIOR_PAIR_TOP_MARGIN_PIXELS
+    assert fig.layout.margin.b == (
+        POSTERIOR_PAIR_BOTTOM_MARGIN_PIXELS + 2 * POSTERIOR_PAIR_AXIS_TITLE_LINE_HEIGHT_PIXELS
+    )
     assert fig.layout.meta['fixed_aspect_wrapper']['aspect_ratio'] == '1 / 1'
     assert fig.layout.xaxis.domain[1] < fig.layout.xaxis2.domain[0]
     assert fig.layout.xaxis.showline is False
