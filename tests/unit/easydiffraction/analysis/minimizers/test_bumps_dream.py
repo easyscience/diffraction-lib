@@ -110,17 +110,19 @@ def test_sampler_settings_include_init_and_sample_count():
     from easydiffraction.analysis.minimizers.enums import DreamPopulationInitializationEnum
 
     minimizer = BumpsDreamMinimizer()
+    minimizer.thin = 1
+    minimizer.pop = 4
+    minimizer.init = DreamPopulationInitializationEnum.LHS
+
     settings = minimizer._sampler_settings(
         random_seed=7,
         steps=10,
         burn=2,
-        thin=1,
-        pop=4,
-        init=DreamPopulationInitializationEnum.LHS,
         n_parameters=3,
     )
 
     assert settings['random_seed'] == 7
+    assert settings['parallel'] == 0
     assert settings['init'] == 'lhs'
     assert settings['samples'] == 120
 

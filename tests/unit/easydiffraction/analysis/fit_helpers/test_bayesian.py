@@ -348,5 +348,5 @@ def test_posterior_table_notes_split_failed_diagnostics():
     ])
 
     assert len(notes) == 2
-    assert 'r_hat' in notes[0]
-    assert 'ess_bulk' in notes[1]
+    assert 'r-hat' in notes[0]
+    assert 'ess bulk' in notes[1]
