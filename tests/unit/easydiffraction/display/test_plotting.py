@@ -322,7 +322,18 @@ def test_build_posterior_pairs_plot_hides_diagonal_ticks_and_uses_annotations():
     assert figure.layout.autosize is True
     assert figure.layout.width is None
     assert figure.layout.height is None
-    assert figure.layout.meta['fixed_aspect_wrapper']['aspect_ratio'] == '1 / 1'
+    assert (
+        figure.layout.meta['fixed_aspect_wrapper']['aspect_ratio']
+        == plotter._square_matrix_layout_meta(
+            n_parameters=4,
+            annotation_labels=[
+                'length_a',
+                'broad_gauss_u',
+                'broad_gauss_v',
+                'twotheta_offset',
+            ],
+        )['fixed_aspect_wrapper']['aspect_ratio']
+    )
     assert [annotation.text for annotation in figure.layout.annotations] == [
         'Posterior pair plot',
         'length_a',
@@ -608,7 +619,9 @@ def test_plot_posterior_predictive_summary_uses_consistent_labels_and_styles(mon
     captured: dict[str, object] = {}
 
     plotter = Plotter()
-    plotter._backend = SimpleNamespace(_show_figure=lambda figure: captured.setdefault('fig', figure))
+    plotter._backend = SimpleNamespace(
+        _show_figure=lambda figure: captured.setdefault('fig', figure)
+    )
 
     plotter._plot_posterior_predictive_summary(
         expt_name='hrpt',
@@ -1561,25 +1574,26 @@ def test_plot_param_correlations_renders_plotly_heatmap(monkeypatch):
     p.plot_param_correlations()
 
     fig = captured['fig']
+    heatmap = fig.data[0]
+    text_trace = fig.data[1]
+    gap_width = Plotter._square_matrix_gap_data_width(2)
     assert len(fig.data) == 2
-    assert fig.data[0].type == 'heatmap'
-    assert list(fig.data[0].x) == [0.0, 1.0]
-    assert list(fig.data[0].y) == [0.0, 1.0]
-    assert fig.data[0].xgap in (None, 0)
-    assert fig.data[0].ygap in (None, 0)
-    assert fig.data[0].showscale is False
-    assert (
-        fig.data[0].hovertemplate
-        == 'phase.scale<br>phase.cell.length_c<br>correlation: %{z:.2f}<extra></extra>'
+    assert heatmap.type == 'heatmap'
+    assert list(heatmap.x) == pytest.approx([0.0, 1.0, 1.0 + gap_width, 2.0 + gap_width])
+    assert list(heatmap.y) == pytest.approx([0.0, 1.0, 1.0 + gap_width, 2.0 + gap_width])
+    assert heatmap.showscale is False
+    assert heatmap.hovertemplate == (
+        '%{customdata[0]}<br>%{customdata[1]}<br>correlation: %{z:.2f}<extra></extra>'
     )
-    assert pytest.approx(fig.data[0].z[0][0], rel=1e-9) == -0.5
-    assert fig.data[1].type == 'scatter'
-    assert fig.data[1].mode == 'text'
-    assert list(fig.data[1].x) == [0.5]
-    assert list(fig.data[1].y) == [0.5]
-    assert list(fig.data[1].text) == ['-0.50']
-    assert fig.data[1].textposition == 'middle center'
-    assert fig.data[1].hoverinfo == 'skip'
+    assert list(heatmap.customdata[2][0]) == ['phase.scale', 'phase.cell.length_c']
+    assert pytest.approx(np.nanmin(np.asarray(heatmap.z, dtype=float)), rel=1e-9) == -0.5
+    assert text_trace.type == 'scatter'
+    assert text_trace.mode == 'text'
+    assert list(text_trace.x) == [0.5]
+    assert list(text_trace.y) == pytest.approx([1.5 + gap_width])
+    assert list(text_trace.text) == ['-0.50']
+    assert text_trace.textposition == 'middle center'
+    assert text_trace.hoverinfo == 'skip'
     assert [annotation.text for annotation in fig.layout.annotations] == [
         'Refined parameter correlation matrix',
         'phase.<br>scale',
@@ -1597,24 +1611,30 @@ def test_plot_param_correlations_renders_plotly_heatmap(monkeypatch):
     assert fig.layout.margin.b == (
         POSTERIOR_PAIR_BOTTOM_MARGIN_PIXELS + 2 * POSTERIOR_PAIR_AXIS_TITLE_LINE_HEIGHT_PIXELS
     )
-    assert fig.layout.meta['fixed_aspect_wrapper']['aspect_ratio'] == '1 / 1'
-    assert fig.layout.xaxis.domain[1] < fig.layout.xaxis2.domain[0]
+    assert (
+        fig.layout.meta['fixed_aspect_wrapper']['aspect_ratio']
+        == Plotter._square_matrix_layout_meta(
+            n_parameters=2,
+            annotation_labels=[
+                'phase.<br>scale',
+                'phase.<br>cell.<br>length_c',
+                'phase.<br>scale',
+                'phase.<br>cell.<br>length_c',
+            ],
+        )['fixed_aspect_wrapper']['aspect_ratio']
+    )
     assert fig.layout.xaxis.showline is False
     assert fig.layout.xaxis.mirror is False
-    assert fig.layout.xaxis.layer == 'above traces'
-    assert fig.layout.xaxis.showticklabels is False
-    assert fig.layout.xaxis.title.text is None
     assert fig.layout.yaxis.showline is False
     assert fig.layout.yaxis.mirror is False
-    assert fig.layout.yaxis.layer == 'above traces'
+    assert fig.layout.xaxis.showticklabels is False
     assert fig.layout.yaxis.showticklabels is False
+    assert fig.layout.xaxis.title.text is None
     assert fig.layout.yaxis.title.text is None
     assert fig.layout.paper_bgcolor is None
     assert fig.layout.plot_bgcolor is None
     assert len(fig.layout.shapes) == 3
     assert all(shape.type == 'rect' for shape in fig.layout.shapes)
-    assert all(shape.xref == 'paper' for shape in fig.layout.shapes)
-    assert all(shape.yref == 'paper' for shape in fig.layout.shapes)
 
 
 def test_plot_param_correlations_plotly_labels_respect_threshold(monkeypatch):
@@ -1673,11 +1693,111 @@ def test_plot_param_correlations_plotly_labels_respect_threshold(monkeypatch):
     fig = captured['fig']
     heatmap_traces = [trace for trace in fig.data if trace.type == 'heatmap']
     text_traces = [trace for trace in fig.data if trace.type == 'scatter' and trace.mode == 'text']
-    assert len(heatmap_traces) == 10
-    assert [trace.text[0] for trace in text_traces] == ['-0.91', '0.83', '-0.89', '0.82']
+    assert len(heatmap_traces) == 1
+    assert len(text_traces) == 1
+    assert list(text_traces[0].text) == ['-0.91', '0.83', '-0.89', '0.82']
+    assert len(fig.layout.shapes) == 15
 
 
-def test_plot_param_correlations_shows_full_table_by_default(monkeypatch):
+def test_plot_param_correlations_limits_default_table_to_five_parameters(monkeypatch):
+    from easydiffraction.display.plotting import Plotter
+    from easydiffraction.display.tables import TableRenderer
+
+    captured = {}
+
+    class FakeTabler:
+        def render(self, df):
+            captured['df'] = df
+
+    monkeypatch.setattr(TableRenderer, 'get', staticmethod(lambda: FakeTabler()))
+
+    class Param:
+        def __init__(self, uid, unique_name):
+            self._minimizer_uid = uid
+            self.unique_name = unique_name
+
+    class RawResult:
+        covar = None
+        var_names = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6']
+
+        class ParamResult:
+            def __init__(self, correl):
+                self.correl = correl
+
+        params = {
+            'p1': ParamResult({'p2': 0.95}),
+            'p2': ParamResult({'p1': 0.95, 'p3': 0.94}),
+            'p3': ParamResult({'p2': 0.94, 'p4': 0.93}),
+            'p4': ParamResult({'p3': 0.93, 'p5': 0.92}),
+            'p5': ParamResult({'p4': 0.92, 'p6': 0.91}),
+            'p6': ParamResult({'p5': 0.91}),
+        }
+
+    class FitResults:
+        engine_result = RawResult()
+        parameters = [
+            Param('p1', 'phase.scale'),
+            Param('p2', 'phase.cell.length_a'),
+            Param('p3', 'phase.background'),
+            Param('p4', 'phase.profile.u'),
+            Param('p5', 'phase.profile.v'),
+            Param('p6', 'phase.profile.w'),
+        ]
+
+    class Analysis:
+        fit_results = FitResults()
+
+    class Project:
+        analysis = Analysis()
+
+    p = Plotter()
+    p.engine = 'asciichartpy'
+    p._set_project(Project())
+    p.plot_param_correlations()
+
+    df = captured['df']
+    assert [column.strip() for column in df.columns.get_level_values(0)] == [
+        'parameter',
+        '1',
+        '2',
+        '3',
+        '4',
+        '5',
+    ]
+    assert list(df.index) == [0, 1, 2, 3, 4]
+    assert df.iloc[0, 0] == 'phase.scale'
+    assert df.iloc[0, 1] == ''
+    assert df.iloc[0, 2] == ''
+    assert df.iloc[0, 3] == ''
+    assert df.iloc[0, 4] == ''
+    assert df.iloc[0, 5] == ''
+    assert df.iloc[1, 0] == 'phase.cell.length_a'
+    assert _strip_markup(df.iloc[1, 1]).strip() == '0.95'
+    assert df.iloc[1, 2] == ''
+    assert df.iloc[1, 3] == ''
+    assert df.iloc[1, 4] == ''
+    assert df.iloc[1, 5] == ''
+    assert df.iloc[2, 0] == 'phase.background'
+    assert df.iloc[2, 1] == ''
+    assert _strip_markup(df.iloc[2, 2]).strip() == '0.94'
+    assert df.iloc[2, 3] == ''
+    assert df.iloc[2, 4] == ''
+    assert df.iloc[2, 5] == ''
+    assert df.iloc[3, 0] == 'phase.profile.u'
+    assert df.iloc[3, 1] == ''
+    assert df.iloc[3, 2] == ''
+    assert _strip_markup(df.iloc[3, 3]).strip() == '0.93'
+    assert df.iloc[3, 4] == ''
+    assert df.iloc[3, 5] == ''
+    assert df.iloc[4, 0] == 'phase.profile.v'
+    assert df.iloc[4, 1] == ''
+    assert df.iloc[4, 2] == ''
+    assert df.iloc[4, 3] == ''
+    assert _strip_markup(df.iloc[4, 4]).strip() == '0.92'
+    assert df.iloc[4, 5] == ''
+
+
+def test_plot_param_correlations_shows_full_table_when_threshold_is_zero(monkeypatch):
     from easydiffraction.display.plotting import Plotter
     from easydiffraction.display.tables import TableRenderer
 
@@ -1725,7 +1845,7 @@ def test_plot_param_correlations_shows_full_table_by_default(monkeypatch):
     p = Plotter()
     p.engine = 'asciichartpy'
     p._set_project(Project())
-    p.plot_param_correlations()
+    p.plot_param_correlations(threshold=0)
 
     df = captured['df']
     assert [column.strip() for column in df.columns.get_level_values(0)] == [

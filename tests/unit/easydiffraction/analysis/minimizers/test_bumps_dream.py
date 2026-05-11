@@ -308,9 +308,13 @@ def test_build_driver_stops_mapper_when_driver_clip_fails():
 
     with (
         patch.object(minimizer, '_build_mapper', return_value='mapper'),
-        patch('easydiffraction.analysis.minimizers.bumps_dream.FitProblem', return_value='problem'),
+        patch(
+            'easydiffraction.analysis.minimizers.bumps_dream.FitProblem', return_value='problem'
+        ),
         patch('easydiffraction.analysis.minimizers.bumps_dream.FitDriver') as mock_driver_cls,
-        patch('easydiffraction.analysis.minimizers.bumps_dream.MPMapper.stop_mapper') as stop_mapper,
+        patch(
+            'easydiffraction.analysis.minimizers.bumps_dream.MPMapper.stop_mapper'
+        ) as stop_mapper,
     ):
         mock_driver_cls.return_value.clip.side_effect = RuntimeError('clip failed')
 
@@ -333,7 +337,9 @@ def test_execute_driver_stops_mapper_when_seed_is_invalid():
 
     driver = SimpleNamespace(fit=MagicMock(), fitter=SimpleNamespace(state=None))
 
-    with patch('easydiffraction.analysis.minimizers.bumps_dream.MPMapper.stop_mapper') as stop_mapper:
+    with patch(
+        'easydiffraction.analysis.minimizers.bumps_dream.MPMapper.stop_mapper'
+    ) as stop_mapper:
         result = BumpsDreamMinimizer._execute_driver(driver=driver, random_seed=-1)
 
     assert isinstance(result.error, ValueError)
