@@ -263,13 +263,14 @@ project.analysis.display.free_params()
 # of steps (`steps`) and often the burn-in (`burn`) as well. When
 # needed, the DREAM API also lets you tune how chains are initialized
 # through the `init` setting. Other sampler settings such as `thin` and
-# `pop` can be adjusted  as well, but here we keep them at their
-# defaults.
+# `pop` can be adjusted as well. The current EasyDiffraction default
+# also uses `parallel=0`, which tells BUMPS DREAM to use all available
+# CPUs for population evaluations.
 #
-# Default `steps` is 1000, which is often need to be increased for a
-# real analysis to ensure good convergence and sampling of the posterior
-# distribution. Here we use much smaller value to speed up the tutorial,
-# but this is not recommended for a real analysis.
+# The default `steps` value is 1000, and real analyses often need more
+# to achieve good convergence and posterior sampling. Here we use a much
+# smaller value to keep the tutorial fast, but this is not recommended
+# for production analysis.
 
 # %%
 project.analysis.fit.show_minimizer_types()
@@ -278,7 +279,7 @@ project.analysis.fit.show_minimizer_types()
 project.analysis.fit.minimizer_type = 'bumps (dream)'
 
 # %%
-project.analysis.fit.minimizer.steps = 100  # 1000
+project.analysis.fit.minimizer.steps = 100  # lower than the default 1000
 
 # %%
 project.analysis.fit()
