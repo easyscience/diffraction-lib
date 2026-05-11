@@ -72,6 +72,37 @@ def test_posterior_samples_to_arviz_validates_shapes():
         posterior_samples.to_arviz()
 
 
+def test_compute_convergence_diagnostics_treats_non_finite_values_as_not_converged(monkeypatch):
+    from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
+    from easydiffraction.analysis.fit_helpers.bayesian import compute_convergence_diagnostics
+
+    posterior_samples = PosteriorSamples(
+        parameter_names=['a'],
+        parameter_samples=np.ones((4, 2, 1), dtype=float),
+    )
+
+    fake_dataset = type('FakeDataset', (), {'data_vars': {'a': np.array([np.nan], dtype=float)}})
+
+    monkeypatch.setattr(
+        'easydiffraction.analysis.fit_helpers.bayesian.az.rhat',
+        lambda inference_data: fake_dataset,
+    )
+    monkeypatch.setattr(
+        'easydiffraction.analysis.fit_helpers.bayesian.az.ess',
+        lambda inference_data, method='bulk': type(
+            'FakeDataset', (), {'data_vars': {'a': np.array([4000.0], dtype=float)}}
+        ),
+    )
+
+    diagnostics = compute_convergence_diagnostics(posterior_samples)
+
+    assert diagnostics['converged'] is False
+    assert diagnostics['r_hat_by_parameter'] == {'a': None}
+    assert diagnostics['ess_bulk_by_parameter'] == {'a': 4000.0}
+    assert diagnostics['max_r_hat'] is None
+    assert diagnostics['min_ess_bulk'] == pytest.approx(4000.0)
+
+
 def test_summarize_posterior_parameters_preserves_order_and_display_names():
     from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
     from easydiffraction.analysis.fit_helpers.bayesian import summarize_posterior_parameters

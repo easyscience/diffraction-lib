@@ -41,6 +41,7 @@ DEFAULT_INIT = DreamPopulationInitializationEnum.EPS
 DEFAULT_ALPHA = 0.0
 DEFAULT_OUTLIER_TEST = 'none'
 DEFAULT_TRIM = False
+MAX_RANDOM_SEED = int(np.iinfo(np.uint32).max)
 BURN_IN_PROGRESS_POINTS = 5
 SAMPLING_PROGRESS_POINTS = 20
 DREAM_SAMPLE_ARRAY_NDIM = 3
@@ -345,8 +346,23 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             generator = np.random.default_rng()
             random_seed = int(generator.integers(0, np.iinfo(np.int32).max))
 
-        self._resolved_random_seed = int(random_seed)
+        integer_seed = self._validated_random_seed_value(random_seed)
+
+        self._resolved_random_seed = integer_seed
         return self._resolved_random_seed
+
+    @staticmethod
+    def _validated_random_seed_value(random_seed: object) -> int:
+        """Validate and normalize a DREAM random seed."""
+        if isinstance(random_seed, bool):
+            msg = f'DREAM random_seed must be an integer between 0 and {MAX_RANDOM_SEED}.'
+            raise TypeError(msg)
+
+        integer_seed = int(random_seed)
+        if integer_seed != random_seed or integer_seed < 0 or integer_seed > MAX_RANDOM_SEED:
+            msg = f'DREAM random_seed must be an integer between 0 and {MAX_RANDOM_SEED}.'
+            raise ValueError(msg)
+        return integer_seed
 
     @staticmethod
     def _tracking_mode() -> str:
@@ -651,23 +667,28 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             burn_steps=int(burn),
         )
         mapper = self._build_mapper(problem)
-        driver = FitDriver(
-            fitclass=fitclass,
-            problem=problem,
-            monitors=[progress_monitor],
-            mapper=mapper,
-            steps=steps,
-            burn=burn,
-            thin=self.thin,
-            pop=self.pop,
-            init=init.value,
-            samples=sampler_settings['samples'],
-            alpha=DEFAULT_ALPHA,
-            outliers=DEFAULT_OUTLIER_TEST,
-            trim=DEFAULT_TRIM,
-        )
-        driver.clip()
-        return driver
+        try:
+            driver = FitDriver(
+                fitclass=fitclass,
+                problem=problem,
+                monitors=[progress_monitor],
+                mapper=mapper,
+                steps=steps,
+                burn=burn,
+                thin=self.thin,
+                pop=self.pop,
+                init=init.value,
+                samples=sampler_settings['samples'],
+                alpha=DEFAULT_ALPHA,
+                outliers=DEFAULT_OUTLIER_TEST,
+                trim=DEFAULT_TRIM,
+            )
+            driver.clip()
+        except Exception:
+            MPMapper.stop_mapper()
+            raise
+        else:
+            return driver
 
     def _build_mapper(self, problem: FitProblem) -> object | None:
         """Return a DREAM mapper for the configured parallel setting."""
@@ -691,9 +712,10 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         numpy_rng = np.random.mtrand._rand
         numpy_state = numpy_rng.get_state()
         python_state = random.getstate()
-        numpy_rng.seed(random_seed)
-        random.seed(random_seed)
         try:
+            validated_seed = BumpsDreamMinimizer._validated_random_seed_value(random_seed)
+            numpy_rng.seed(validated_seed)
+            random.seed(validated_seed)
             best_values, best_nllf = driver.fit()
         except DREAM_DRIVER_FAILURES as error:  # pragma: no cover - backend-specific
             return _DreamDriverResult(

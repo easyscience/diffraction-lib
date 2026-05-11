@@ -84,6 +84,7 @@ DEFAULT_RESID_HEIGHT = DEFAULT_RESIDUAL_HEIGHT_FRACTION
 DEFAULT_BRAGG_ROW = DEFAULT_BRAGG_PEAKS_HEIGHT_FRACTION
 DEFAULT_POSTERIOR_PREDICTIVE_DRAWS = 200
 DEFAULT_POSTERIOR_PREDICTIVE_DRAW_PLOT_CAP = 50
+FULL_POSTERIOR_PAIR_COVARIANCE_RANK = 2
 POSTERIOR_FLATTENED_SAMPLE_NDIM = 2
 MIN_POSTERIOR_PARAMETER_COUNT = 2
 MIN_POSTERIOR_SAMPLE_COUNT = 2
@@ -906,6 +907,51 @@ class Plotter(RendererBase):
             )
             return
 
+        self._plot_non_bragg_posterior_predictive(
+            experiment=experiment,
+            expt_name=expt_name,
+            plot_options=plot_options,
+            x_axis=x_axis,
+            sample_form=sample_form,
+            scattering_type=scattering_type,
+            style=style,
+        )
+
+    def _plot_non_bragg_posterior_predictive(
+        self,
+        *,
+        experiment: object,
+        expt_name: str,
+        plot_options: _MeasVsCalcPlotOptions,
+        x_axis: object,
+        sample_form: object,
+        scattering_type: object,
+        style: str,
+    ) -> None:
+        """Render non-Bragg posterior predictive summaries."""
+        pattern = intensity_category_for(experiment)
+        y_meas = getattr(pattern, 'intensity_meas', None)
+        if y_meas is None:
+            log.warning(f'No measured data available for experiment {expt_name}.')
+            return
+
+        ctx = self._prepare_powder_context(
+            pattern,
+            expt_name,
+            experiment.type,
+            plot_options.x_min,
+            plot_options.x_max,
+            plot_options.x,
+        )
+        if ctx is None:
+            return
+
+        if plot_options.show_residual:
+            log.warning(
+                'Posterior predictive residuals are unavailable for non-Bragg '
+                'summary plots; ignoring show_residual=True.'
+            )
+
         summary = self._get_or_build_posterior_predictive_summary(
             experiment=experiment,
             expt_name=expt_name,
@@ -915,17 +961,31 @@ class Plotter(RendererBase):
         if summary is None:
             return
 
-        pattern = intensity_category_for(experiment)
-        y_meas = getattr(pattern, 'intensity_meas', None)
-        if y_meas is None:
-            log.warning(f'No measured data available for experiment {expt_name}.')
+        filtered_summary = self._filtered_posterior_predictive_summary(
+            summary=summary,
+            x_min=ctx['x_min'],
+            x_max=ctx['x_max'],
+            include_draws=style in {'draws', 'band+draws'},
+        )
+        if filtered_summary is None:
+            log.warning(
+                f'No posterior predictive data available within the requested x-range '
+                f'for experiment {expt_name}.'
+            )
             return
+
+        filtered_y_meas = self._filtered_y_array(
+            y_meas,
+            ctx['x_array'],
+            ctx['x_min'],
+            ctx['x_max'],
+        )
 
         axes_labels = self._get_axes_labels(sample_form, scattering_type, x_axis)
         self._plot_posterior_predictive_summary(
             expt_name=expt_name,
-            summary=summary,
-            y_meas=np.asarray(y_meas, dtype=float),
+            summary=filtered_summary,
+            y_meas=filtered_y_meas,
             axes_labels=axes_labels,
             show_band=style in {'band', 'band+draws'},
             show_draws=style in {'draws', 'band+draws'},
@@ -2557,16 +2617,24 @@ class Plotter(RendererBase):
         if np.allclose(x_data, x_data[0]) and np.allclose(y_data, y_data[0]):
             return None
 
+        pair_data = np.vstack([x_data, y_data])
+        covariance = np.cov(pair_data)
+        if np.linalg.matrix_rank(covariance) < FULL_POSTERIOR_PAIR_COVARIANCE_RANK:
+            return None
+
         x_grid = np.linspace(x_bounds[0], x_bounds[1], num=grid_size)
         y_grid = np.linspace(y_bounds[0], y_bounds[1], num=grid_size)
         mesh_x, mesh_y = np.meshgrid(x_grid, y_grid)
-        density = cls._evaluate_reflected_2d_kde(
-            gaussian_kde(np.vstack([x_data, y_data])),
-            mesh_x=mesh_x,
-            mesh_y=mesh_y,
-            x_bounds=x_bounds,
-            y_bounds=y_bounds,
-        )
+        try:
+            density = cls._evaluate_reflected_2d_kde(
+                gaussian_kde(pair_data),
+                mesh_x=mesh_x,
+                mesh_y=mesh_y,
+                x_bounds=x_bounds,
+                y_bounds=y_bounds,
+            )
+        except (np.linalg.LinAlgError, ValueError):
+            return None
         if not np.any(np.isfinite(density)):
             return None
         return x_grid, y_grid, density
@@ -2947,8 +3015,8 @@ class Plotter(RendererBase):
 
         return posterior_samples, fit_results
 
-    @staticmethod
     def _plot_posterior_predictive_summary(
+        self,
         *,
         expt_name: str,
         summary: object,
@@ -3040,7 +3108,55 @@ class Plotter(RendererBase):
         )
         fig.update_xaxes(title_font={'size': POSTERIOR_PAIR_AXIS_TITLE_FONT_SIZE})
         fig.update_yaxes(title_font={'size': POSTERIOR_PAIR_AXIS_TITLE_FONT_SIZE})
-        fig.show()
+        self._show_plot_figure(fig)
+
+    def _filtered_posterior_predictive_summary(
+        self,
+        *,
+        summary: PosteriorPredictiveSummary,
+        x_min: float,
+        x_max: float,
+        include_draws: bool,
+    ) -> PosteriorPredictiveSummary | None:
+        """Return a predictive summary filtered to an x-range."""
+        x_filtered = self._filtered_y_array(summary.x, summary.x, x_min, x_max)
+        if np.asarray(x_filtered).size == 0:
+            return None
+
+        draws = None
+        if include_draws and summary.draws is not None:
+            draws = np.asarray(
+                [self._filtered_y_array(draw, summary.x, x_min, x_max) for draw in summary.draws],
+                dtype=float,
+            )
+
+        return PosteriorPredictiveSummary(
+            experiment_name=summary.experiment_name,
+            x_axis_name=summary.x_axis_name,
+            x=x_filtered,
+            map_prediction=self._filtered_y_array(summary.map_prediction, summary.x, x_min, x_max),
+            lower_95=(
+                None
+                if summary.lower_95 is None
+                else self._filtered_y_array(summary.lower_95, summary.x, x_min, x_max)
+            ),
+            upper_95=(
+                None
+                if summary.upper_95 is None
+                else self._filtered_y_array(summary.upper_95, summary.x, x_min, x_max)
+            ),
+            lower_68=(
+                None
+                if summary.lower_68 is None
+                else self._filtered_y_array(summary.lower_68, summary.x, x_min, x_max)
+            ),
+            upper_68=(
+                None
+                if summary.upper_68 is None
+                else self._filtered_y_array(summary.upper_68, summary.x, x_min, x_max)
+            ),
+            draws=draws,
+        )
 
     def _plot_posterior_predictive_data(
         self,

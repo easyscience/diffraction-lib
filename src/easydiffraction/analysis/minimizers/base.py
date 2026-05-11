@@ -338,12 +338,13 @@ class MinimizerBase(ABC):
 
         self._start_tracking(minimizer_name, verbosity=verbosity)
 
-        solver_args = self._prepare_solver_args(parameters)
-        if resolved_random_seed is not None:
-            solver_args['random_seed'] = resolved_random_seed
-        raw_result = self._run_solver(objective_function, **solver_args)
-
-        self._stop_tracking()
+        try:
+            solver_args = self._prepare_solver_args(parameters)
+            if resolved_random_seed is not None:
+                solver_args['random_seed'] = resolved_random_seed
+            raw_result = self._run_solver(objective_function, **solver_args)
+        finally:
+            self._stop_tracking()
 
         return self._finalize_fit(parameters, raw_result)
 

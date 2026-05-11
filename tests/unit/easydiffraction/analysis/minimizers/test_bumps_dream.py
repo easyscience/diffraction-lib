@@ -87,6 +87,19 @@ def test_resolve_random_seed_returns_provided_or_generated(monkeypatch):
     assert minimizer._resolved_random_seed == 123456
 
 
+@pytest.mark.parametrize('seed', [-1, np.iinfo(np.uint32).max + 1])
+def test_resolve_random_seed_rejects_out_of_range_values(seed):
+    from easydiffraction.analysis.minimizers.bumps_dream import BumpsDreamMinimizer
+
+    minimizer = BumpsDreamMinimizer()
+
+    with pytest.raises(
+        ValueError,
+        match=r'DREAM random_seed must be an integer between 0 and 4294967295\.',
+    ):
+        minimizer._resolve_random_seed(seed)
+
+
 def test_resolved_burn_uses_auto_or_explicit_and_validates():
     from easydiffraction.analysis.minimizers.bumps_dream import BumpsDreamMinimizer
 
@@ -286,3 +299,43 @@ def test_run_solver_preserves_parameter_order_and_forwards_init():
     assert result.sampler_settings['init'] == 'lhs'
     assert result.sampler_settings['random_seed'] == 17
     assert summarize_mock.call_args.kwargs['parameter_names'] == ['beta', 'alpha']
+
+
+def test_build_driver_stops_mapper_when_driver_clip_fails():
+    from easydiffraction.analysis.minimizers.bumps_dream import BumpsDreamMinimizer
+
+    minimizer = BumpsDreamMinimizer()
+
+    with (
+        patch.object(minimizer, '_build_mapper', return_value='mapper'),
+        patch('easydiffraction.analysis.minimizers.bumps_dream.FitProblem', return_value='problem'),
+        patch('easydiffraction.analysis.minimizers.bumps_dream.FitDriver') as mock_driver_cls,
+        patch('easydiffraction.analysis.minimizers.bumps_dream.MPMapper.stop_mapper') as stop_mapper,
+    ):
+        mock_driver_cls.return_value.clip.side_effect = RuntimeError('clip failed')
+
+        with pytest.raises(RuntimeError, match='clip failed'):
+            minimizer._build_driver(
+                fitclass=object(),
+                fitness=SimpleNamespace(numpoints=lambda: 10),
+                steps=10,
+                burn=2,
+                init=minimizer.init,
+                sampler_settings={'samples': 40},
+                n_parameters=1,
+            )
+
+    stop_mapper.assert_called_once()
+
+
+def test_execute_driver_stops_mapper_when_seed_is_invalid():
+    from easydiffraction.analysis.minimizers.bumps_dream import BumpsDreamMinimizer
+
+    driver = SimpleNamespace(fit=MagicMock(), fitter=SimpleNamespace(state=None))
+
+    with patch('easydiffraction.analysis.minimizers.bumps_dream.MPMapper.stop_mapper') as stop_mapper:
+        result = BumpsDreamMinimizer._execute_driver(driver=driver, random_seed=-1)
+
+    assert isinstance(result.error, ValueError)
+    driver.fit.assert_not_called()
+    stop_mapper.assert_called_once()

@@ -383,10 +383,15 @@ def compute_convergence_diagnostics(posterior_samples: PosteriorSamples) -> dict
     r_hat_by_parameter = _dataset_to_scalar_dict(rhat_dataset)
     ess_bulk_by_parameter = _dataset_to_scalar_dict(ess_dataset)
 
-    max_r_hat = max(r_hat_by_parameter.values(), default=None)
-    min_ess_bulk = min(ess_bulk_by_parameter.values(), default=None)
+    finite_r_hat = [value for value in r_hat_by_parameter.values() if value is not None]
+    finite_ess_bulk = [value for value in ess_bulk_by_parameter.values() if value is not None]
 
-    converged = True
+    max_r_hat = max(finite_r_hat, default=None)
+    min_ess_bulk = min(finite_ess_bulk, default=None)
+
+    converged = len(finite_r_hat) == len(r_hat_by_parameter) and len(finite_ess_bulk) == len(
+        ess_bulk_by_parameter
+    )
     if max_r_hat is not None and max_r_hat > R_HAT_CONVERGENCE_THRESHOLD:
         converged = False
     if min_ess_bulk is not None and min_ess_bulk < ESS_BULK_CONVERGENCE_THRESHOLD:
@@ -500,17 +505,20 @@ def standard_deviations_from_summaries(
     return np.array([summary.standard_deviation for summary in summaries], dtype=float)
 
 
-def _dataset_to_scalar_dict(dataset: object) -> dict[str, float]:
-    values: dict[str, float] = {}
+def _dataset_to_scalar_dict(dataset: object) -> dict[str, float | None]:
+    values: dict[str, float | None] = {}
     for name, data_array in dataset.data_vars.items():
-        values[name] = float(np.asarray(data_array).reshape(-1)[0])
+        values[name] = _maybe_scalar(np.asarray(data_array).reshape(-1)[0])
     return values
 
 
 def _maybe_scalar(value: object) -> float | None:
     if value is None:
         return None
-    return float(value)
+    scalar = float(value)
+    if not np.isfinite(scalar):
+        return None
+    return scalar
 
 
 def _format_sampler_settings(sampler_settings: dict[str, object]) -> str | None:
@@ -719,7 +727,7 @@ def _format_interval(interval: tuple[float, float]) -> str:
 
 
 def _format_r_hat(value: float | None) -> str:
-    if value is None:
+    if value is None or not np.isfinite(value):
         return 'N/A'
     formatted = f'{value:.3f}'
     if value > R_HAT_CONVERGENCE_THRESHOLD:
@@ -728,7 +736,7 @@ def _format_r_hat(value: float | None) -> str:
 
 
 def _format_ess_bulk(value: float | None) -> str:
-    if value is None:
+    if value is None or not np.isfinite(value):
         return 'N/A'
     formatted = f'{value:.1f}'
     if value < ESS_BULK_CONVERGENCE_THRESHOLD:

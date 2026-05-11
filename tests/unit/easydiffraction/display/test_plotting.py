@@ -607,12 +607,10 @@ def test_plot_posterior_predictive_summary_uses_consistent_labels_and_styles(mon
 
     captured: dict[str, object] = {}
 
-    def fake_show(self):
-        captured['fig'] = self
+    plotter = Plotter()
+    plotter._backend = SimpleNamespace(_show_figure=lambda figure: captured.setdefault('fig', figure))
 
-    monkeypatch.setattr('plotly.graph_objects.Figure.show', fake_show)
-
-    Plotter._plot_posterior_predictive_summary(
+    plotter._plot_posterior_predictive_summary(
         expt_name='hrpt',
         summary=SimpleNamespace(
             x=np.array([1.0, 2.0, 3.0]),
@@ -637,6 +635,36 @@ def test_plot_posterior_predictive_summary_uses_consistent_labels_and_styles(mon
     assert measured_trace.legendrank == 10
     assert max_posterior_trace.legendrank == 20
     assert max_posterior_trace.line.dash == POSTERIOR_POINT_ESTIMATE_LINE_DASH
+
+
+@pytest.mark.parametrize(
+    ('x_values', 'y_values', 'x_bounds', 'y_bounds'),
+    [
+        (np.ones(8), np.arange(8, dtype=float), (0.5, 1.5), (0.0, 7.0)),
+        (
+            np.arange(8, dtype=float),
+            2.0 * np.arange(8, dtype=float) + 1.0,
+            (0.0, 7.0),
+            (1.0, 15.0),
+        ),
+    ],
+)
+def test_posterior_pair_density_surface_returns_none_for_rank_deficient_samples(
+    x_values,
+    y_values,
+    x_bounds,
+    y_bounds,
+):
+    from easydiffraction.display.plotting import Plotter
+
+    surface = Plotter._posterior_pair_density_surface(
+        x_values=np.asarray(x_values, dtype=float),
+        y_values=np.asarray(y_values, dtype=float),
+        x_bounds=x_bounds,
+        y_bounds=y_bounds,
+    )
+
+    assert surface is None
 
 
 def test_plot_posterior_predictive_data_uses_max_posterior_label_and_dash(monkeypatch):
@@ -982,6 +1010,86 @@ def test_plot_posterior_predictive_defaults_to_band_for_bragg(monkeypatch):
     assert captured['expt_name'] == 'hrpt'
     assert captured['style'] == 'band'
     assert captured['show_residual'] is None
+
+
+def test_plot_posterior_predictive_non_bragg_filters_x_range_and_warns_for_residual(
+    monkeypatch,
+):
+    from easydiffraction.analysis.fit_helpers.bayesian import PosteriorPredictiveSummary
+    from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+    from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+    from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
+    from easydiffraction.display.plotting import Plotter
+
+    captured: dict[str, object] = {}
+    warnings: list[str] = []
+
+    class ExptType:
+        sample_form = type('SF', (), {'value': SampleFormEnum.POWDER})()
+        scattering_type = type('S', (), {'value': ScatteringTypeEnum.TOTAL})()
+        beam_mode = type('B', (), {'value': BeamModeEnum.CONSTANT_WAVELENGTH})()
+
+    class Pattern:
+        x = np.array([1.0, 2.0, 3.0])
+        two_theta = np.array([1.0, 2.0, 3.0])
+        intensity_meas = np.array([10.0, 20.0, 30.0])
+
+    class Experiment:
+        type = ExptType()
+        data = Pattern()
+
+    class Project:
+        experiments = {'pdf': Experiment()}
+
+    plotter = Plotter()
+    plotter.engine = 'plotly'
+    plotter._set_project(Project())
+
+    monkeypatch.setattr(Plotter, '_update_project_categories', lambda self, expt_name: None)
+    monkeypatch.setattr(
+        Plotter,
+        '_get_or_build_posterior_predictive_summary',
+        lambda self, **kwargs: PosteriorPredictiveSummary(
+            experiment_name='pdf',
+            x_axis_name='two_theta',
+            x=np.array([1.0, 2.0, 3.0]),
+            map_prediction=np.array([9.0, 19.0, 29.0]),
+            lower_95=np.array([8.0, 18.0, 28.0]),
+            upper_95=np.array([10.0, 20.0, 30.0]),
+        ),
+    )
+    monkeypatch.setattr('easydiffraction.display.plotting.log.warning', warnings.append)
+
+    def fake_plot_summary(
+        self,
+        *,
+        expt_name,
+        summary,
+        y_meas,
+        axes_labels,
+        show_band,
+        show_draws,
+    ):
+        captured['expt_name'] = expt_name
+        captured['summary'] = summary
+        captured['y_meas'] = y_meas
+        captured['axes_labels'] = axes_labels
+        captured['show_band'] = show_band
+        captured['show_draws'] = show_draws
+
+    monkeypatch.setattr(Plotter, '_plot_posterior_predictive_summary', fake_plot_summary)
+
+    plotter.plot_posterior_predictive('pdf', x_min=1.5, x_max=2.5, show_residual=True)
+
+    assert captured['expt_name'] == 'pdf'
+    np.testing.assert_allclose(captured['summary'].x, np.array([2.0]))
+    np.testing.assert_allclose(captured['summary'].map_prediction, np.array([19.0]))
+    np.testing.assert_allclose(captured['summary'].lower_95, np.array([18.0]))
+    np.testing.assert_allclose(captured['summary'].upper_95, np.array([20.0]))
+    np.testing.assert_allclose(captured['y_meas'], np.array([20.0]))
+    assert captured['show_band'] is True
+    assert captured['show_draws'] is False
+    assert any('ignoring show_residual=True' in warning for warning in warnings)
 
 
 def test_extract_bragg_tick_sets_uses_derived_d_spacing_for_cwl_ticks():

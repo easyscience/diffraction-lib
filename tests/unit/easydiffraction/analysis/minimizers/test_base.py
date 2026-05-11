@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import numpy as np
+import pytest
 
 
 class _DummyParam:
@@ -119,3 +120,41 @@ def test_minimizer_base_create_objective_function_uses_compute_residuals():
     )
     out = f({})
     assert np.allclose(out, np.array([1.0, 2.0, 3.0]))
+
+
+def test_minimizer_base_fit_stops_tracking_when_solver_prep_fails():
+    from easydiffraction.analysis.minimizers.base import MinimizerBase
+
+    class M(MinimizerBase):
+        def __init__(self):
+            super().__init__(name='dummy', method='m', max_iterations=5)
+            self.started = False
+            self.stopped = False
+
+        def _start_tracking(self, minimizer_name, verbosity=None):
+            self.started = True
+
+        def _stop_tracking(self):
+            self.stopped = True
+
+        def _prepare_solver_args(self, parameters):
+            msg = 'prep failed'
+            raise ValueError(msg)
+
+        def _run_solver(self, objective_function, **kwargs):
+            msg = 'should not run solver'
+            raise AssertionError(msg)
+
+        def _sync_result_to_parameters(self, parameters, raw_result):
+            pass
+
+        def _check_success(self, raw_result):
+            return True
+
+    minimizer = M()
+
+    with pytest.raises(ValueError, match='prep failed'):
+        minimizer.fit(parameters=[_DummyParam(1.0)], objective_function=lambda _: np.array([0.0]))
+
+    assert minimizer.started is True
+    assert minimizer.stopped is True
