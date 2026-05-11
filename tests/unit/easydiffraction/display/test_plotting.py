@@ -557,6 +557,8 @@ def test_build_param_distribution_plot_returns_plotly_figure():
     from easydiffraction.display.plotting import POSTERIOR_PAIR_MARGINAL_DENSITY_FILL_COLOR
     from easydiffraction.display.plotting import POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_COLOR
     from easydiffraction.display.plotting import POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_WIDTH
+    from easydiffraction.display.plotting import POSTERIOR_INTERVAL_95_FILL_COLOR
+    from easydiffraction.display.plotting import POSTERIOR_POINT_ESTIMATE_LINE_DASH
 
     plotter, fit_results, _ = _make_bayesian_plotter_fixture()
     parameter = fit_results.parameters[0]
@@ -574,17 +576,119 @@ def test_build_param_distribution_plot_returns_plotly_figure():
     }
     marginal_trace = next(trace for trace in figure.data if trace.name == 'Marginal density')
     histogram_trace = next(trace for trace in figure.data if trace.name == 'Posterior histogram')
+    interval_trace = next(trace for trace in figure.data if trace.name == '95% credible interval')
+    max_posterior_trace = next(trace for trace in figure.data if trace.name == 'Max posterior')
     assert marginal_trace.line.color == POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_COLOR
     assert marginal_trace.line.width == POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_WIDTH
     assert marginal_trace.fillcolor == POSTERIOR_PAIR_MARGINAL_DENSITY_FILL_COLOR
     assert marginal_trace.hovertemplate == 'length_a: %{x:.4f}<br>density: %{y:.4f}<extra></extra>'
     assert histogram_trace.xbins.size is not None
+    assert interval_trace.fillcolor == POSTERIOR_INTERVAL_95_FILL_COLOR
+    assert max_posterior_trace.line.dash == POSTERIOR_POINT_ESTIMATE_LINE_DASH
     assert figure.layout.xaxis.range is not None
     assert tuple(figure.layout.xaxis.range) == (
         float(marginal_trace.x[0]),
         float(marginal_trace.x[-1]),
     )
     assert figure.layout.yaxis.range is not None
+
+
+def test_plot_posterior_predictive_summary_uses_consistent_labels_and_styles(monkeypatch):
+    from types import SimpleNamespace
+
+    from easydiffraction.display.plotting import POSTERIOR_INTERVAL_95_FILL_COLOR
+    from easydiffraction.display.plotting import POSTERIOR_POINT_ESTIMATE_LINE_DASH
+    from easydiffraction.display.plotting import Plotter
+
+    captured: dict[str, object] = {}
+
+    def fake_show(self):
+        captured['fig'] = self
+
+    monkeypatch.setattr('plotly.graph_objects.Figure.show', fake_show)
+
+    Plotter._plot_posterior_predictive_summary(
+        expt_name='hrpt',
+        summary=SimpleNamespace(
+            x=np.array([1.0, 2.0, 3.0]),
+            lower_95=np.array([8.0, 9.0, 10.0]),
+            upper_95=np.array([10.0, 11.0, 12.0]),
+            map_prediction=np.array([9.0, 10.0, 11.0]),
+        ),
+        y_meas=np.array([9.5, 10.5, 11.5]),
+        axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+        show_band=True,
+        show_draws=False,
+    )
+
+    fig = captured['fig']
+    upper_band_trace = fig.data[1]
+    measured_trace = next(trace for trace in fig.data if trace.name == 'Measured')
+    max_posterior_trace = next(trace for trace in fig.data if trace.name == 'Max posterior')
+
+    assert upper_band_trace.name == '95% interval'
+    assert upper_band_trace.fillcolor == POSTERIOR_INTERVAL_95_FILL_COLOR
+    assert upper_band_trace.legendrank == 30
+    assert measured_trace.legendrank == 10
+    assert max_posterior_trace.legendrank == 20
+    assert max_posterior_trace.line.dash == POSTERIOR_POINT_ESTIMATE_LINE_DASH
+
+
+def test_plot_posterior_predictive_data_uses_max_posterior_label_and_dash(monkeypatch):
+    from types import SimpleNamespace
+
+    from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+    from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+    from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
+    from easydiffraction.display.plotting import Plotter
+    from easydiffraction.display.plotting import XAxisType
+
+    captured: dict[str, object] = {}
+
+    class ExptType:
+        sample_form = type('SF', (), {'value': SampleFormEnum.POWDER})()
+        scattering_type = type('S', (), {'value': ScatteringTypeEnum.BRAGG})()
+        beam_mode = type('B', (), {'value': BeamModeEnum.CONSTANT_WAVELENGTH})()
+
+    class Pattern:
+        two_theta = np.array([1.0, 2.0, 3.0])
+        intensity_meas = np.array([10.0, 12.0, 11.0])
+        intensity_bkg = np.array([1.0, 1.0, 1.0])
+
+    class Experiment:
+        type = ExptType()
+        data = Pattern()
+
+    plotter = Plotter()
+    plotter.engine = 'plotly'
+    plotter._backend = SimpleNamespace(
+        plot_powder_meas_vs_calc=lambda *, plot_spec: captured.setdefault('plot_spec', plot_spec)
+    )
+
+    monkeypatch.setattr(
+        Plotter,
+        '_get_or_build_posterior_predictive_summary',
+        lambda self, **kwargs: SimpleNamespace(
+            x=np.array([1.0, 2.0, 3.0]),
+            lower_95=np.array([8.0, 9.0, 10.0]),
+            upper_95=np.array([10.0, 11.0, 12.0]),
+            map_prediction=np.array([9.0, 11.0, 10.5]),
+            draws=None,
+        ),
+    )
+    monkeypatch.setattr(Plotter, '_extract_bragg_tick_sets', lambda self, **kwargs: ())
+
+    plotter._plot_posterior_predictive_data(
+        experiment=Experiment(),
+        expt_name='hrpt',
+        plot_options=SimpleNamespace(x_min=None, x_max=None, show_residual=None, x=None),
+        x_axis=XAxisType.TWO_THETA,
+        style='band',
+    )
+
+    plot_spec = captured['plot_spec']
+    assert plot_spec.y_calc_name == 'Max posterior'
+    assert plot_spec.y_calc_line_dash == 'dot'
 
 
 def test_build_param_distribution_plot_accepts_unique_name_string():

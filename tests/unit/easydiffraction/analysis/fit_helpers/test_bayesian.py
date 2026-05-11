@@ -201,12 +201,128 @@ def test_build_posterior_summary_row_restores_identifier_columns():
         'cat',
         'entry',
         'a',
+        'arb',
         '1.1500',
         '[1.0000, 1.3000]',
         '[red]1.107[/red]',
         '[red]125.9[/red]',
-        'arb',
     ]
+
+
+def test_render_committed_parameter_table_places_units_after_parameter(monkeypatch):
+    from easydiffraction.analysis.fit_helpers import bayesian
+
+    captured: dict[str, object] = {}
+
+    def fake_render_table(*, columns_headers, columns_alignment, columns_data):
+        captured['columns_headers'] = columns_headers
+        captured['columns_alignment'] = columns_alignment
+        captured['columns_data'] = columns_data
+
+    monkeypatch.setattr(bayesian, 'render_table', fake_render_table)
+
+    bayesian._render_committed_parameter_table([
+        Param(unique_name='a', start=1.0, value=1.2, uncertainty=0.05)
+    ])
+
+    assert captured['columns_headers'] == [
+        'datablock',
+        'category',
+        'entry',
+        'parameter',
+        'units',
+        'start',
+        'max posterior',
+        'uncertainty',
+        'change',
+    ]
+    assert captured['columns_alignment'] == [
+        'left',
+        'left',
+        'left',
+        'left',
+        'left',
+        'right',
+        'right',
+        'right',
+        'right',
+    ]
+    assert captured['columns_data'] == [[
+        'db',
+        'cat',
+        'entry',
+        'a',
+        'arb',
+        '1.0000',
+        '1.2000',
+        '0.0500',
+        '20.00 % ↑',
+    ]]
+
+
+def test_render_posterior_summary_table_places_units_after_parameter(monkeypatch):
+    from easydiffraction.analysis.fit_helpers import bayesian
+    from easydiffraction.analysis.fit_helpers.bayesian import PosteriorParameterSummary
+
+    captured: dict[str, object] = {}
+
+    def fake_render_table(*, columns_headers, columns_alignment, columns_data):
+        captured['columns_headers'] = columns_headers
+        captured['columns_alignment'] = columns_alignment
+        captured['columns_data'] = columns_data
+
+    monkeypatch.setattr(bayesian, 'render_table', fake_render_table)
+
+    bayesian._render_posterior_summary_table(
+        parameters=[Param(unique_name='a', start=1.0, value=1.2, uncertainty=0.05)],
+        posterior_parameter_summaries=[
+            PosteriorParameterSummary(
+                unique_name='a',
+                display_name='a',
+                map_value=1.2,
+                median=1.15,
+                standard_deviation=0.05,
+                interval_68=(1.1, 1.2),
+                interval_95=(1.0, 1.3),
+                r_hat=1.107,
+                ess_bulk=125.9,
+            )
+        ],
+    )
+
+    assert captured['columns_headers'] == [
+        'datablock',
+        'category',
+        'entry',
+        'parameter',
+        'units',
+        'median',
+        '95% interval',
+        'r-hat',
+        'ess bulk',
+    ]
+    assert captured['columns_alignment'] == [
+        'left',
+        'left',
+        'left',
+        'left',
+        'left',
+        'right',
+        'right',
+        'right',
+        'right',
+    ]
+    assert captured['columns_data'] == [[
+        'db',
+        'cat',
+        'entry',
+        'a',
+        'arb',
+        '1.1500',
+        '[1.0000, 1.3000]',
+        '[red]1.107[/red]',
+        '[red]125.9[/red]',
+    ]]
 
 
 def test_posterior_table_notes_split_failed_diagnostics():

@@ -795,6 +795,49 @@ def test_plot_powder_meas_vs_calc_skips_bragg_row_when_no_ticks(monkeypatch):
     ]
 
 
+def test_plot_powder_meas_vs_calc_styles_predictive_max_posterior_and_band(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
+
+    captured = {}
+
+    def fake_show_figure(self, fig):
+        captured['fig'] = fig
+
+    monkeypatch.setattr(pp.PlotlyPlotter, '_show_figure', fake_show_figure)
+
+    plotter = pp.PlotlyPlotter()
+    plotter.plot_powder_meas_vs_calc(
+        plot_spec=PowderMeasVsCalcSpec(
+            x=np.array([1.0, 2.0, 3.0]),
+            y_meas=np.array([10.0, 12.0, 11.0]),
+            y_calc=np.array([9.0, 11.0, 10.5]),
+            y_resid=np.array([1.0, 1.0, 0.5]),
+            bragg_tick_sets=(),
+            axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+            title='Powder',
+            residual_height_fraction=0.25,
+            bragg_peaks_height_fraction=0.15,
+            height=None,
+            predictive_lower_95=np.array([8.0, 9.0, 10.0]),
+            predictive_upper_95=np.array([10.0, 11.0, 12.0]),
+            y_calc_name='Max posterior',
+            y_calc_line_dash='dot',
+        ),
+    )
+
+    fig = captured['fig']
+    predictive_band_trace = next(trace for trace in fig.data if trace.name == '95% interval')
+    max_posterior_trace = next(trace for trace in fig.data if trace.name == 'Max posterior')
+    residual_trace = next(trace for trace in fig.data if trace.name == 'Residual (Imeas - Icalc)')
+
+    assert predictive_band_trace.fillcolor == pp.PREDICTIVE_BAND_COLOR
+    assert predictive_band_trace.legendrank == 35
+    assert max_posterior_trace.line.dash == 'dot'
+    assert predictive_band_trace.legendrank < residual_trace.legendrank
+
+
 def test_plot_powder_meas_vs_calc_keeps_exact_residual_scale_match(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
 

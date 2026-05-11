@@ -127,10 +127,10 @@ class FitResults:
             'category',
             'entry',
             'parameter',
+            'units',
             'start',
             'fitted',
             'uncertainty',
-            'units',
             'change',
         ]
         alignments = [
@@ -138,10 +138,10 @@ class FitResults:
             'left',
             'left',
             'left',
-            'right',
-            'right',
-            'right',
             'left',
+            'right',
+            'right',
+            'right',
             'right',
         ]
 
@@ -223,10 +223,10 @@ def _build_parameter_row(param: object) -> list[str]:
         param._identity.category_code,
         param._identity.category_entry_name or '',
         name,
+        units,
         start,
         fitted,
         uncertainty,
-        units,
         relative_change,
     ]
 

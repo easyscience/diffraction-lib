@@ -621,10 +621,10 @@ def _render_committed_parameter_table(parameters: list[object]) -> None:
         'category',
         'entry',
         'parameter',
+        'units',
         'start',
         'max posterior',
         'uncertainty',
-        'units',
         'change',
     ]
     alignments = [
@@ -632,10 +632,10 @@ def _render_committed_parameter_table(parameters: list[object]) -> None:
         'left',
         'left',
         'left',
-        'right',
-        'right',
-        'right',
         'left',
+        'right',
+        'right',
+        'right',
         'right',
     ]
     rows = [_build_parameter_row(parameter) for parameter in parameters]
@@ -661,22 +661,22 @@ def _render_posterior_summary_table(
         'category',
         'entry',
         'parameter',
+        'units',
         'median',
         '95% interval',
-        'r_hat',
-        'ess_bulk',
-        'units',
+        'r-hat',
+        'ess bulk',
     ]
     alignments = [
         'left',
         'left',
         'left',
         'left',
-        'right',
-        'right',
-        'right',
-        'right',
         'left',
+        'right',
+        'right',
+        'right',
+        'right',
     ]
     rows = [
         _build_posterior_summary_row(summary, parameters_by_name)
@@ -706,11 +706,11 @@ def _build_posterior_summary_row(
         category,
         entry,
         parameter_name,
+        units,
         f'{summary.median:.4f}',
         _format_interval(summary.interval_95),
         _format_r_hat(summary.r_hat),
         _format_ess_bulk(summary.ess_bulk),
-        units,
     ]
 
 

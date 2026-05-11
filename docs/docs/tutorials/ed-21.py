@@ -331,4 +331,6 @@ project.display.plotter.plot_posterior_predictive(expt_name='hrpt')
 # after the Bayesian run.
 
 # %%
-project.display.plotter.plot_posterior_predictive(expt_name='hrpt', x_min=45.4, x_max=46.3)
+project.display.plotter.plot_posterior_predictive(expt_name='hrpt', x_min=92, x_max=93)
+
+# %%

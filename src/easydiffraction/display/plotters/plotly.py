@@ -1461,6 +1461,8 @@ window.requestAnimationFrame(installLegendToggleButton);
         )
         if plot_spec.y_calc_name is not None:
             calc_trace.name = plot_spec.y_calc_name
+        if plot_spec.y_calc_line_dash is not None:
+            calc_trace.line.dash = plot_spec.y_calc_line_dash
         fig.add_trace(calc_trace, row=1, col=1)
 
     def _add_predictive_draw_traces(
@@ -1718,9 +1720,10 @@ window.requestAnimationFrame(installLegendToggleButton);
             line={'color': PREDICTIVE_BAND_EDGE_COLOR, 'width': 1},
             fill='tonexty',
             fillcolor=PREDICTIVE_BAND_COLOR,
-            name='Posterior predictive 95% CI',
+            name='95% interval',
             hoverinfo='skip',
             legendgroup='predictive_band',
+            legendrank=35,
         )
         return lower_trace, upper_trace
 

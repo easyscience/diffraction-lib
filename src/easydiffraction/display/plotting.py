@@ -94,10 +94,13 @@ POSTERIOR_PAIR_MARGINAL_DENSITY_FILL_COLOR = 'rgba(44, 160, 44, 0.22)'
 POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_WIDTH = 1
 POSTERIOR_HISTOGRAM_FILL_COLOR = 'rgba(120, 120, 120, 0.38)'
 POSTERIOR_HISTOGRAM_LINE_COLOR = 'rgba(120, 120, 120, 0.24)'
-POSTERIOR_INTERVAL_95_FILL_COLOR = 'rgba(140, 140, 140, 0.08)'
+POSTERIOR_INTERVAL_95_FILL_COLOR = 'rgba(214, 39, 40, 0.26)'
 POSTERIOR_INTERVAL_68_FILL_COLOR = 'rgba(140, 140, 140, 0.16)'
 POSTERIOR_MEDIAN_LINE_COLOR = 'rgb(80, 80, 80)'
 POSTERIOR_POINT_ESTIMATE_LINE_COLOR = 'rgb(214, 39, 40)'
+POSTERIOR_POINT_ESTIMATE_TRACE_NAME = 'Max posterior'
+POSTERIOR_POINT_ESTIMATE_LINE_DASH = 'dot'
+POSTERIOR_PREDICTIVE_INTERVAL_TRACE_NAME = '95% interval'
 POSTERIOR_DRAW_LINE_COLOR = 'rgba(140, 140, 140, 0.18)'
 POSTERIOR_SCATTER_MARKER_COLOR = 'rgba(140, 140, 140, 0.20)'
 POSTERIOR_CONTOUR_FILL_COLORSCALE = [
@@ -2191,9 +2194,9 @@ class Plotter(RendererBase):
             self._posterior_reference_line_trace(
                 x_value=summary.map_value,
                 y_axis_range=y_axis_range,
-                trace_name='Max posterior',
+                trace_name=POSTERIOR_POINT_ESTIMATE_TRACE_NAME,
                 color=POSTERIOR_POINT_ESTIMATE_LINE_COLOR,
-                dash='dot',
+                dash=POSTERIOR_POINT_ESTIMATE_LINE_DASH,
             )
         )
 
@@ -2976,9 +2979,10 @@ class Plotter(RendererBase):
                     mode='lines',
                     line={'color': 'rgba(0, 0, 0, 0)'},
                     fill='tonexty',
-                    fillcolor='rgba(214, 39, 40, 0.18)',
-                    name='Posterior predictive 95% CI',
+                    fillcolor=POSTERIOR_INTERVAL_95_FILL_COLOR,
+                    name=POSTERIOR_PREDICTIVE_INTERVAL_TRACE_NAME,
                     hoverinfo='skip',
+                    legendrank=30,
                 )
             )
 
@@ -2998,6 +3002,7 @@ class Plotter(RendererBase):
                         line={'color': POSTERIOR_DRAW_LINE_COLOR, 'width': 1},
                         name='Posterior draw' if index == 0 else None,
                         showlegend=index == 0,
+                        legendrank=40,
                     )
                 )
 
@@ -3008,6 +3013,7 @@ class Plotter(RendererBase):
                 mode='lines+markers',
                 line={'color': 'rgb(31, 119, 180)', 'width': 1.5},
                 name='Measured',
+                legendrank=10,
             )
         )
         fig.add_trace(
@@ -3015,8 +3021,13 @@ class Plotter(RendererBase):
                 x=summary.x,
                 y=summary.map_prediction,
                 mode='lines',
-                line={'color': POSTERIOR_POINT_ESTIMATE_LINE_COLOR, 'width': 2},
-                name='Max posterior prediction',
+                line={
+                    'color': POSTERIOR_POINT_ESTIMATE_LINE_COLOR,
+                    'width': 2,
+                    'dash': POSTERIOR_POINT_ESTIMATE_LINE_DASH,
+                },
+                name=POSTERIOR_POINT_ESTIMATE_TRACE_NAME,
+                legendrank=20,
             )
         )
         fig.update_layout(
@@ -3136,7 +3147,8 @@ class Plotter(RendererBase):
             predictive_lower_95=predictive_lower_95,
             predictive_upper_95=predictive_upper_95,
             predictive_draws=predictive_draws,
-            y_calc_name='Max posterior prediction',
+            y_calc_name=POSTERIOR_POINT_ESTIMATE_TRACE_NAME,
+            y_calc_line_dash=POSTERIOR_POINT_ESTIMATE_LINE_DASH,
         )
         self._backend.plot_powder_meas_vs_calc(plot_spec=plot_spec)
 
