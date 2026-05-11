@@ -13,11 +13,12 @@ def test_module_import():
     assert expected_module_name == actual_module_name
 
 
-def test_get_layout_sets_axis_title_font_size():
+def test_get_layout_sets_title_and_axis_title_font_sizes():
     import easydiffraction.display.plotters.plotly as pp
 
     layout = pp.PlotlyPlotter._get_layout('Title', ['x axis', 'y axis'])
 
+    assert layout.title.font.size == pp.TITLE_FONT_SIZE
     assert layout.xaxis.title.font.size == pp.AXIS_TITLE_FONT_SIZE
     assert layout.yaxis.title.font.size == pp.AXIS_TITLE_FONT_SIZE
 
@@ -784,6 +785,7 @@ def test_plot_powder_meas_vs_calc_skips_bragg_row_when_no_ticks(monkeypatch):
     assert fig.layout.xaxis2.matches == 'x'
     assert fig.layout.yaxis2.title.text is None
     assert fig.layout.xaxis2.title.text == '2θ (degree)'
+    assert fig.layout.title.font.size == pp.TITLE_FONT_SIZE
     assert fig.layout.yaxis.title.font.size == pp.AXIS_TITLE_FONT_SIZE
     assert fig.layout.xaxis2.title.font.size == pp.AXIS_TITLE_FONT_SIZE
     assert [trace.name for trace in fig.data] == [

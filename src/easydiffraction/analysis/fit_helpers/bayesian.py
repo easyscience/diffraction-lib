@@ -330,19 +330,24 @@ class BayesianFitResults(FitResults):
 
     def _display_summary_header(self) -> None:
         """Render the high-level Bayesian fit summary."""
-        status_icon = '✅' if self.success else '❌'
+        status_icon, overall_status = _format_bayesian_overall_status(
+            success=self.success,
+            sampler_completed=self.sampler_completed,
+            convergence_diagnostics=self.convergence_diagnostics,
+        )
         fitting_time = _format_optional_float(self.fitting_time, suffix=' seconds')
         goodness_of_fit = _format_optional_float(self.reduced_chi_square)
 
         console.paragraph('Bayesian fit results')
-        console.print(f'{status_icon} Success: {self.success}')
+        console.print(f'{status_icon} Overall status: {overall_status}')
         if self.message:
-            console.print(f'i Status: {self.message}')
+            console.print(f'💬 Sampler status: {self.message}')
         console.print(f'🧪 Sampler: {self.sampler_name}')
         console.print(
             f'🎯 Committed point estimate: {_format_point_estimate_name(self.point_estimate_name)}'
         )
-        console.print(f'🔁 Sampler completed: {self.sampler_completed}')
+        sampler_completed = 'yes' if self.sampler_completed else 'no'
+        console.print(f'🔁 Sampler completed: {sampler_completed}')
         console.print(f'⏱️ Fitting time: {fitting_time}')
         console.print(f'📏 Goodness-of-fit (reduced χ²): {goodness_of_fit}')
         if self.best_log_posterior is not None:
@@ -566,6 +571,24 @@ def _format_point_estimate_name(point_estimate_name: str) -> str:
     return point_estimate_name.replace('_', ' ').title()
 
 
+def _format_bayesian_overall_status(
+    *,
+    success: bool,
+    sampler_completed: bool,
+    convergence_diagnostics: dict[str, object],
+) -> tuple[str, str]:
+    """Return icon and text for Bayesian run status."""
+    if not success:
+        return '❌', 'failed'
+
+    converged = convergence_diagnostics.get('converged')
+    if converged is False:
+        return '⚠️', 'completed with warnings'
+    if sampler_completed:
+        return '✅', 'completed'
+    return '✅', 'posterior available'
+
+
 def _format_convergence_summary(convergence_diagnostics: dict[str, object]) -> str | None:
     if not convergence_diagnostics:
         return None
@@ -573,8 +596,8 @@ def _format_convergence_summary(convergence_diagnostics: dict[str, object]) -> s
     parts: list[str] = []
     converged = convergence_diagnostics.get('converged')
     if converged is not None:
-        status = 'yes' if converged else '[red]failed[/red]'
-        parts.append(f'converged={status}')
+        status = 'passed' if converged else '[red]failed[/red]'
+        parts.append(f'status={status}')
 
     max_r_hat = _maybe_scalar(convergence_diagnostics.get('max_r_hat'))
     if max_r_hat is not None:
@@ -639,8 +662,6 @@ def _render_posterior_summary_table(
         'entry',
         'parameter',
         'median',
-        'std',
-        '68% interval',
         '95% interval',
         'r_hat',
         'ess_bulk',
@@ -651,8 +672,6 @@ def _render_posterior_summary_table(
         'left',
         'left',
         'left',
-        'right',
-        'right',
         'right',
         'right',
         'right',
@@ -679,16 +698,15 @@ def _build_posterior_summary_row(
     datablock = getattr(identity, 'datablock_entry_name', 'N/A')
     category = getattr(identity, 'category_code', 'N/A')
     entry = getattr(identity, 'category_entry_name', '') or ''
+    parameter_name = getattr(parameter, 'name', summary.display_name)
     units = getattr(parameter, 'units', 'N/A')
 
     return [
         datablock,
         category,
         entry,
-        summary.display_name,
+        parameter_name,
         f'{summary.median:.4f}',
-        f'{summary.standard_deviation:.4f}',
-        _format_interval(summary.interval_68),
         _format_interval(summary.interval_95),
         _format_r_hat(summary.r_hat),
         _format_ess_bulk(summary.ess_bulk),

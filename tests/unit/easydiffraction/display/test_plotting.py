@@ -311,6 +311,7 @@ def test_build_posterior_pairs_plot_hides_diagonal_ticks_and_uses_annotations():
     from easydiffraction.display.plotting import POSTERIOR_PAIR_SAMPLE_HOVER_MARKER_SIZE
     from easydiffraction.display.plotting import POSTERIOR_PAIR_SAMPLE_MARKER_SIZE
     from easydiffraction.display.plotting import POSTERIOR_PAIR_TITLE_FONT_SIZE
+    from easydiffraction.display.plotting import POSTERIOR_PAIR_TITLE_YSHIFT_PIXELS
     from easydiffraction.display.plotting import POSTERIOR_PAIR_TOP_MARGIN_PIXELS
 
     plotter, _, _ = _make_bayesian_plotter_fixture()
@@ -334,6 +335,7 @@ def test_build_posterior_pairs_plot_hides_diagonal_ticks_and_uses_annotations():
         'twotheta_offset',
     ]
     assert figure.layout.annotations[0].font.size == POSTERIOR_PAIR_TITLE_FONT_SIZE
+    assert figure.layout.annotations[0].yshift == POSTERIOR_PAIR_TITLE_YSHIFT_PIXELS
     assert figure.layout.annotations[0].xshift == -plotter._square_matrix_title_left_shift([
         'length_a',
         'broad_gauss_u',
@@ -1303,6 +1305,7 @@ def test_plot_param_correlations_renders_plotly_heatmap(monkeypatch):
     from easydiffraction.display.plotting import POSTERIOR_PAIR_AXIS_TITLE_LINE_HEIGHT_PIXELS
     from easydiffraction.display.plotting import POSTERIOR_PAIR_BOTTOM_MARGIN_PIXELS
     from easydiffraction.display.plotting import POSTERIOR_PAIR_TITLE_FONT_SIZE
+    from easydiffraction.display.plotting import POSTERIOR_PAIR_TITLE_YSHIFT_PIXELS
     from easydiffraction.display.plotting import POSTERIOR_PAIR_TOP_MARGIN_PIXELS
     from easydiffraction.display.plotting import Plotter
 
@@ -1368,6 +1371,7 @@ def test_plot_param_correlations_renders_plotly_heatmap(monkeypatch):
         'phase.<br>cell.<br>length_c',
     ]
     assert fig.layout.annotations[0].font.size == POSTERIOR_PAIR_TITLE_FONT_SIZE
+    assert fig.layout.annotations[0].yshift == POSTERIOR_PAIR_TITLE_YSHIFT_PIXELS
     assert fig.layout.annotations[0].xshift == -Plotter._square_matrix_title_left_shift([
         'phase.<br>scale',
         'phase.<br>cell.<br>length_c',

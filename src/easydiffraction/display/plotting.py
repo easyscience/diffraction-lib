@@ -31,6 +31,10 @@ from easydiffraction.display.plotters.base import DEFAULT_X_AXIS
 from easydiffraction.display.plotters.base import BraggTickSet
 from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
 from easydiffraction.display.plotters.base import XAxisType
+from easydiffraction.display.plotters.plotly import (
+    AXIS_TITLE_FONT_SIZE as PLOTLY_AXIS_TITLE_FONT_SIZE,
+)
+from easydiffraction.display.plotters.plotly import TITLE_FONT_SIZE as PLOTLY_TITLE_FONT_SIZE
 from easydiffraction.display.plotters.plotly import PlotlyPlotter
 from easydiffraction.display.tables import TableRenderer
 from easydiffraction.utils.environment import in_jupyter
@@ -145,17 +149,17 @@ PAIR_PLOT_MARGIN_PIXELS = 120
 PAIR_PLOT_ESTIMATED_CONTAINER_WIDTH_PIXELS = 980
 PAIR_PLOT_SUBPLOT_SPACING = 0.01
 POSTERIOR_PAIR_AXIS_LINE_WIDTH = 1.2
-POSTERIOR_PAIR_AXIS_TITLE_FONT_SIZE = 12
-POSTERIOR_PAIR_TITLE_FONT_SIZE = POSTERIOR_PAIR_AXIS_TITLE_FONT_SIZE
+POSTERIOR_PAIR_AXIS_TITLE_FONT_SIZE = PLOTLY_AXIS_TITLE_FONT_SIZE
+POSTERIOR_PAIR_TITLE_FONT_SIZE = PLOTLY_TITLE_FONT_SIZE
 POSTERIOR_PAIR_Y_TITLE_XSHIFT_PIXELS = 16
 POSTERIOR_PAIR_X_TITLE_YSHIFT_PIXELS = 10
-POSTERIOR_PAIR_TITLE_YSHIFT_PIXELS = 2
+POSTERIOR_PAIR_TITLE_YSHIFT_PIXELS = 8
 POSTERIOR_PAIR_GUIDE_LINE_COLOR = 'rgba(125, 140, 173, 0.18)'
 POSTERIOR_PAIR_FIXED_ASPECT_RATIO = '1 / 1'
 POSTERIOR_PAIR_FIXED_ASPECT_META_KEY = 'fixed_aspect_wrapper'
 POSTERIOR_PAIR_LEFT_MARGIN_PIXELS = 58
 POSTERIOR_PAIR_RIGHT_MARGIN_PIXELS = 10
-POSTERIOR_PAIR_TOP_MARGIN_PIXELS = 40
+POSTERIOR_PAIR_TOP_MARGIN_PIXELS = 26
 POSTERIOR_PAIR_BOTTOM_MARGIN_PIXELS = 24
 POSTERIOR_PAIR_AXIS_TITLE_LINE_HEIGHT_PIXELS = 18
 POSTERIOR_PAIR_SAMPLE_MARKER_SIZE = 6
@@ -2205,10 +2209,18 @@ class Plotter(RendererBase):
     ) -> None:
         """Apply layout settings to the distribution plot."""
         if callable(layout_factory):
-            fig.update_layout(title={'text': title})
+            fig.update_layout(
+                title={
+                    'text': title,
+                    'font': {'size': POSTERIOR_PAIR_TITLE_FONT_SIZE},
+                }
+            )
         else:
             fig.update_layout(
-                title=title,
+                title={
+                    'text': title,
+                    'font': {'size': POSTERIOR_PAIR_TITLE_FONT_SIZE},
+                },
                 xaxis_title=label,
                 yaxis_title='Probability density',
                 legend={
@@ -3008,7 +3020,10 @@ class Plotter(RendererBase):
             )
         )
         fig.update_layout(
-            title=f"Posterior predictive for experiment 🔬 '{expt_name}'",
+            title={
+                'text': f"Posterior predictive for experiment 🔬 '{expt_name}'",
+                'font': {'size': POSTERIOR_PAIR_TITLE_FONT_SIZE},
+            },
             xaxis_title=axes_labels[0],
             yaxis_title=axes_labels[1],
         )

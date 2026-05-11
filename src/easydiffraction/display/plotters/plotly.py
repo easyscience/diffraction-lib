@@ -65,6 +65,7 @@ COMPOSITE_VERTICAL_SPACING = 0.03
 COMPOSITE_MARGIN_RIGHT = 30
 COMPOSITE_MARGIN_TOP = 40
 COMPOSITE_MARGIN_BOTTOM = 45
+TITLE_FONT_SIZE = 14
 AXIS_TITLE_FONT_SIZE = 12
 PREDICTIVE_BAND_COLOR = 'rgba(214, 39, 40, 0.26)'
 PREDICTIVE_BAND_EDGE_COLOR = 'rgba(214, 39, 40, 0.45)'
@@ -997,6 +998,7 @@ window.requestAnimationFrame(installLegendToggleButton);
             },
             title={
                 'text': title,
+                'font': {'size': TITLE_FONT_SIZE},
             },
             legend={
                 'bgcolor': cls._legend_background_color(),
@@ -1552,7 +1554,10 @@ window.requestAnimationFrame(installLegendToggleButton);
                 't': COMPOSITE_MARGIN_TOP,
                 'b': COMPOSITE_MARGIN_BOTTOM,
             },
-            title={'text': plot_spec.title},
+            title={
+                'text': plot_spec.title,
+                'font': {'size': TITLE_FONT_SIZE},
+            },
             legend={
                 'bgcolor': self._legend_background_color(),
                 'xanchor': 'right',

@@ -150,19 +150,63 @@ def test_bayesian_fit_results_display_results_prints_sampler_and_convergence(cap
         ],
         best_log_posterior=-12.34,
     )
+    results.message = 'DREAM sampling completed'
 
     results.display_results(y_obs=[10.0, 20.0], y_calc=[9.5, 19.5])
 
     out = capsys.readouterr().out
     assert 'Bayesian fit results' in out
+    assert 'Overall status: completed with warnings' in out
+    assert 'Sampler status: DREAM sampling completed' in out
     assert 'Sampler: dream' in out
+    assert 'Sampler completed: yes' in out
     assert 'random_seed=1313900679' in out
     assert 'steps=200' in out
+    assert 'status=failed' in out
     assert 'max_r_hat=1.107' in out
     assert 'min_ess_bulk=125.9' in out
     assert 'Posterior parameter summaries:' in out
+    assert 'Success: True' not in out
+    assert 'datablock' in out
+    assert 'category' in out
+    assert 'entry' in out
+    assert '95% interval' in out
+    assert '68% interval' not in out
+    assert 'std' not in out
 
     monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.RAISE, raising=True)
+
+
+def test_build_posterior_summary_row_restores_identifier_columns():
+    from easydiffraction.analysis.fit_helpers.bayesian import PosteriorParameterSummary
+    from easydiffraction.analysis.fit_helpers.bayesian import _build_posterior_summary_row
+
+    parameter = Param(unique_name='a', start=1.0, value=1.2, uncertainty=0.05)
+    summary = PosteriorParameterSummary(
+        unique_name='a',
+        display_name='a',
+        map_value=1.2,
+        median=1.15,
+        standard_deviation=0.05,
+        interval_68=(1.1, 1.2),
+        interval_95=(1.0, 1.3),
+        r_hat=1.107,
+        ess_bulk=125.9,
+    )
+
+    row = _build_posterior_summary_row(summary, {'a': parameter})
+
+    assert row == [
+        'db',
+        'cat',
+        'entry',
+        'a',
+        '1.1500',
+        '[1.0000, 1.3000]',
+        '[red]1.107[/red]',
+        '[red]125.9[/red]',
+        'arb',
+    ]
 
 
 def test_posterior_table_notes_split_failed_diagnostics():
