@@ -887,7 +887,7 @@ class Plotter(RendererBase):
         """
         if multiplier is None:
             return 'Posterior pair plot'
-        return f'Posterior pair plot in ±{multiplier:g}×uncertainty region'
+        return f'Posterior pair plot in ±{multiplier:g} × uncertainty region'  # noqa: RUF001
 
     @staticmethod
     def _posterior_pair_uncertainty_multiplier(
