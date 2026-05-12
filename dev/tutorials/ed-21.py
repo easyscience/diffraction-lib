@@ -114,13 +114,16 @@ structure.atom_sites.create(
 # excluded regions.
 
 # %% [markdown]
-# #### Download the Measured Data
+# Download the measured data from the repository. Alternatively, you
+# could use your own data file by providing the path to it instead of
+# downloading from the repository.
 
 # %%
 data_path = ed.download_data(id=3, destination='data')
 
 # %% [markdown]
-# #### Create the Experiment Object
+# Create the experiment object and specify the sample form, beam mode,
+# and radiation probe.
 
 # %%
 project.experiments.add_from_data_path(
@@ -135,7 +138,13 @@ project.experiments.add_from_data_path(
 experiment = project.experiments['hrpt']
 
 # %% [markdown]
-# #### Set Instrument and Peak-Profile Parameters
+# Link the structural phase to the experiment.
+
+# %%
+experiment.linked_phases.create(id='lbco', scale=9.1351)
+
+# %% [markdown]
+# Set instrument and peak profile parameters.
 #
 # These values provide the initial instrument description for the local
 # refinement. Later, a subset of them will be refined.
@@ -151,7 +160,7 @@ experiment.peak.broad_gauss_w = 0.1204
 experiment.peak.broad_lorentz_y = 0.0844
 
 # %% [markdown]
-# #### Add Background Points and Excluded Regions
+# Add background points and excluded regions.
 #
 # The line-segment background is defined by a few anchor points. We also
 # exclude regions that are not intended to contribute to the fit.
@@ -165,12 +174,6 @@ experiment.background.create(id='4', x=110, y=175.4006)
 # %%
 experiment.excluded_regions.create(id='1', start=0, end=10)
 experiment.excluded_regions.create(id='2', start=100, end=180)
-
-# %% [markdown]
-# #### Link the Structural Phase to the Experiment
-
-# %%
-experiment.linked_phases.create(id='lbco', scale=9.1351)
 
 # %% [markdown]
 # ## Step 4: Run an Initial Local Refinement
@@ -235,15 +238,23 @@ project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')
 # on the current parameter value and expands them by a chosen multiple of
 # the reported uncertainty.
 #
-# Default `multiplier` is 8 to give a wide range for the sampler to
-# explore, but here we use 3 to speed up the tutorial.
+# The default `multiplier` is 4. If the local refinement is very tight,
+# or if you expect a broader posterior, increase it explicitly.
+#
+# Show unset fit bounds before setting them from the local refinement uncertainties.
 
 # %%
 project.analysis.display.free_params()
 
+# %% [markdown]
+# Set fit bounds for all free parameters using the default multiplier of
+# 4. In this tutorial that means the posterior pair plot will later
+# refer to a `±4 × uncertainty` region in its title. To use a different
+# region, pass another value, for example `multiplier=6`.
+
 # %%
 for param in project.free_parameters:
-    param.set_fit_bounds_from_uncertainty(multiplier=3.5)
+    param.set_fit_bounds_from_uncertainty()
 
 # %% [markdown]
 # Displaying the free parameters again is a convenient way to confirm
@@ -263,14 +274,15 @@ project.analysis.display.free_params()
 # of steps (`steps`) and often the burn-in (`burn`) as well. When
 # needed, the DREAM API also lets you tune how chains are initialized
 # through the `init` setting. Other sampler settings such as `thin` and
-# `pop` can be adjusted as well. The current EasyDiffraction default
-# also uses `parallel=0`, which tells BUMPS DREAM to use all available
-# CPUs for population evaluations.
+# `pop` can be adjusted as well. The current EasyDiffraction defaults
+# use `steps=3000`, `init='lhs'`, and `parallel=0`, which tells
+# BUMPS-DREAM to use all available CPUs for population evaluations.
 #
-# The default `steps` value is 1000, and real analyses often need more
-# to achieve good convergence and posterior sampling. Here we use a much
-# smaller value to keep the tutorial fast, but this is not recommended
-# for production analysis.
+# The `burn` setting is auto-resolved when left unset. With the default
+# `steps=3000` this gives `burn=600`, but if you override `steps` and
+# keep `burn=None`, the effective burn-in is recomputed automatically.
+# Here we use a much smaller step count to keep the tutorial fast, but
+# this is not recommended for production analysis.
 
 # %%
 project.analysis.fit.show_minimizer_types()
@@ -279,7 +291,7 @@ project.analysis.fit.show_minimizer_types()
 project.analysis.fit.minimizer_type = 'bumps (dream)'
 
 # %%
-project.analysis.fit.minimizer.steps = 100  # lower than the default 1000
+project.analysis.fit.minimizer.steps = 300  # lower than the default 3000
 
 # %%
 project.analysis.fit()
@@ -300,7 +312,10 @@ project.analysis.display.fit_results()
 # - `plot_param_correlations` summarizes pairwise structure in a compact
 #   matrix.
 # - `plot_posterior_pairs` shows marginal densities on the diagonal and
-#   posterior contours off-diagonal.
+#   posterior contours off-diagonal. In this tutorial its title also
+#   reminds you that the display region follows the `±4 × uncertainty`
+#   bounds defined above, while numeric subplot ranges are omitted to
+#   keep the grid readable.
 
 # %%
 project.display.plotter.plot_param_correlations()
@@ -332,4 +347,8 @@ project.display.plotter.plot_posterior_predictive(expt_name='hrpt')
 # after the Bayesian run.
 
 # %%
-project.display.plotter.plot_posterior_predictive(expt_name='hrpt', x_min=92, x_max=93)
+project.display.plotter.plot_posterior_predictive(
+    expt_name='hrpt',
+    x_min=92,
+    x_max=93,
+)
