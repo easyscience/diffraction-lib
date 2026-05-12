@@ -158,15 +158,16 @@ POSTERIOR_PAIR_AXIS_TITLE_FONT_SIZE = PLOTLY_AXIS_TITLE_FONT_SIZE
 POSTERIOR_PAIR_TITLE_FONT_SIZE = PLOTLY_TITLE_FONT_SIZE
 POSTERIOR_PAIR_Y_TITLE_XSHIFT_PIXELS = 16
 POSTERIOR_PAIR_X_TITLE_YSHIFT_PIXELS = 10
-POSTERIOR_PAIR_TITLE_YSHIFT_PIXELS = 12
+SQUARE_MATRIX_TITLE_YSHIFT_PIXELS = 12
 POSTERIOR_PAIR_GUIDE_LINE_COLOR = 'rgba(125, 140, 173, 0.18)'
-POSTERIOR_PAIR_FIXED_ASPECT_RATIO = '1 / 1'
-POSTERIOR_PAIR_FIXED_ASPECT_META_KEY = 'fixed_aspect_wrapper'
-POSTERIOR_PAIR_LEFT_MARGIN_PIXELS = 40
-POSTERIOR_PAIR_RIGHT_MARGIN_PIXELS = 24
-POSTERIOR_PAIR_TOP_MARGIN_PIXELS = 40
-POSTERIOR_PAIR_BOTTOM_MARGIN_PIXELS = 40
-POSTERIOR_PAIR_AXIS_TITLE_LINE_HEIGHT_PIXELS = 18
+SQUARE_MATRIX_FIXED_ASPECT_RATIO = '1 / 1'
+SQUARE_MATRIX_FIXED_ASPECT_META_KEY = 'fixed_aspect_wrapper'
+SQUARE_MATRIX_LEFT_MARGIN_PIXELS = 40
+SQUARE_MATRIX_RIGHT_MARGIN_PIXELS = 24
+SQUARE_MATRIX_TOP_MARGIN_PIXELS = 40
+SQUARE_MATRIX_BOTTOM_MARGIN_PIXELS = 40
+SQUARE_MATRIX_AXIS_TITLE_LINE_HEIGHT_PIXELS = 18
+SQUARE_MATRIX_TITLE_LEFT_PADDING_PIXELS = 14
 POSTERIOR_PAIR_SAMPLE_MARKER_SIZE = 6
 POSTERIOR_PAIR_SAMPLE_HOVER_MARKER_SIZE = 6
 
@@ -1505,7 +1506,7 @@ class Plotter(RendererBase):
             fit_results=fit_results,
             parameter_names=parameter_names,
             labels=self._posterior_plot_labels(fit_results, parameter_names),
-            annotation_labels=self._posterior_pair_axis_title_labels(parameter_names),
+            annotation_labels=self._square_matrix_axis_title_labels(parameter_names),
             title=self._correlation_filtered_title('Posterior pair plot', resolved_threshold),
             density_samples=density_samples,
             scatter_samples=scatter_samples,
@@ -1923,7 +1924,7 @@ class Plotter(RendererBase):
             'y': 1.0,
             'yref': 'paper',
             'yanchor': 'bottom',
-            'yshift': POSTERIOR_PAIR_TITLE_YSHIFT_PIXELS,
+            'yshift': SQUARE_MATRIX_TITLE_YSHIFT_PIXELS,
             'text': title,
             'font': {'size': POSTERIOR_PAIR_TITLE_FONT_SIZE},
             'showarrow': False,
@@ -1942,9 +1943,14 @@ class Plotter(RendererBase):
 
     @staticmethod
     def _square_matrix_title_left_shift(annotation_labels: list[str]) -> int:
-        """Return the title shift that cancels left margin."""
-        extra_margin = Plotter._posterior_pair_extra_axis_title_margin(annotation_labels)
-        return max(0, POSTERIOR_PAIR_LEFT_MARGIN_PIXELS + extra_margin - 14)
+        """Return the title shift relative to the shared left margin."""
+        extra_margin = Plotter._square_matrix_extra_axis_title_margin(annotation_labels)
+        return max(
+            0,
+            SQUARE_MATRIX_LEFT_MARGIN_PIXELS
+            + extra_margin
+            - SQUARE_MATRIX_TITLE_LEFT_PADDING_PIXELS,
+        )
 
     @staticmethod
     def _square_matrix_gap_data_width(n_parameters: int) -> float:
@@ -1980,12 +1986,12 @@ class Plotter(RendererBase):
         annotation_labels: list[str],
     ) -> dict[str, object]:
         """Return wrapper metadata for square matrix plots."""
-        margins = cls._posterior_pair_layout_margin(annotation_labels)
+        margins = cls._square_matrix_layout_margin(annotation_labels)
         plot_size = cls._square_matrix_target_plot_size_pixels(n_parameters)
         aspect_width = round(plot_size + int(margins['l']) + int(margins['r']))
         aspect_height = round(plot_size + int(margins['t']) + int(margins['b']))
         return {
-            POSTERIOR_PAIR_FIXED_ASPECT_META_KEY: {
+            SQUARE_MATRIX_FIXED_ASPECT_META_KEY: {
                 'aspect_ratio': f'{aspect_width} / {aspect_height}',
             }
         }
@@ -2001,7 +2007,7 @@ class Plotter(RendererBase):
         """Apply final layout settings to the posterior pair plot."""
         fig.update_layout(
             autosize=True,
-            margin=self._posterior_pair_layout_margin(context.annotation_labels),
+            margin=self._square_matrix_layout_margin(context.annotation_labels),
             bargap=0.05,
             annotations=[
                 self._posterior_pair_title_annotation(
@@ -2026,30 +2032,30 @@ class Plotter(RendererBase):
         )
 
     @staticmethod
-    def _posterior_pair_layout_margin(annotation_labels: list[str]) -> dict[str, int | bool]:
-        """Return outer margins sized for multiline pair-plot labels."""
-        extra_margin = Plotter._posterior_pair_extra_axis_title_margin(annotation_labels)
+    def _square_matrix_layout_margin(annotation_labels: list[str]) -> dict[str, int | bool]:
+        """Return outer margins sized for multiline matrix labels."""
+        extra_margin = Plotter._square_matrix_extra_axis_title_margin(annotation_labels)
         return {
             'autoexpand': False,
-            'l': POSTERIOR_PAIR_LEFT_MARGIN_PIXELS + extra_margin,
-            'r': POSTERIOR_PAIR_RIGHT_MARGIN_PIXELS,
-            't': POSTERIOR_PAIR_TOP_MARGIN_PIXELS,
-            'b': POSTERIOR_PAIR_BOTTOM_MARGIN_PIXELS + extra_margin,
+            'l': SQUARE_MATRIX_LEFT_MARGIN_PIXELS + extra_margin,
+            'r': SQUARE_MATRIX_RIGHT_MARGIN_PIXELS,
+            't': SQUARE_MATRIX_TOP_MARGIN_PIXELS,
+            'b': SQUARE_MATRIX_BOTTOM_MARGIN_PIXELS + extra_margin,
         }
 
     @staticmethod
-    def _posterior_pair_extra_axis_title_margin(annotation_labels: list[str]) -> int:
+    def _square_matrix_extra_axis_title_margin(annotation_labels: list[str]) -> int:
         """Return extra margin needed for multiline axis labels."""
         if not annotation_labels:
             return 0
 
         max_line_count = max(
-            Plotter._posterior_pair_axis_title_line_count(label) for label in annotation_labels
+            Plotter._square_matrix_axis_title_line_count(label) for label in annotation_labels
         )
-        return max(0, max_line_count - 1) * POSTERIOR_PAIR_AXIS_TITLE_LINE_HEIGHT_PIXELS
+        return max(0, max_line_count - 1) * SQUARE_MATRIX_AXIS_TITLE_LINE_HEIGHT_PIXELS
 
     @staticmethod
-    def _posterior_pair_axis_title_line_count(label: str) -> int:
+    def _square_matrix_axis_title_line_count(label: str) -> int:
         """Return the number of display lines in one axis title."""
         if not label:
             return 1
@@ -3862,15 +3868,15 @@ class Plotter(RendererBase):
         return labels
 
     @staticmethod
-    def _posterior_pair_axis_title_labels(
+    def _square_matrix_axis_title_labels(
         parameter_names: list[str],
     ) -> list[str]:
-        """Return compact multiline labels for pair-plot axes."""
-        return [Plotter._posterior_pair_axis_title_label(name) for name in parameter_names]
+        """Return compact multiline labels for square-matrix axes."""
+        return [Plotter._square_matrix_axis_title_label(name) for name in parameter_names]
 
     @staticmethod
-    def _posterior_pair_axis_title_label(unique_name: str) -> str:
-        """Return one compact multiline axis title for a pair plot."""
+    def _square_matrix_axis_title_label(unique_name: str) -> str:
+        """Return one compact multiline axis title."""
         normalized_name = unique_name.strip()
         if not normalized_name or '.' not in normalized_name:
             return normalized_name
@@ -4113,8 +4119,8 @@ class Plotter(RendererBase):
         go = __import__('plotly.graph_objects', fromlist=['Figure', 'Heatmap'])
         context = _CorrelationHeatmapContext(
             corr_df=corr_df,
-            row_labels=self._posterior_pair_axis_title_labels(corr_df.index.tolist()),
-            col_labels=self._posterior_pair_axis_title_labels(corr_df.columns.tolist()),
+            row_labels=self._square_matrix_axis_title_labels(corr_df.index.tolist()),
+            col_labels=self._square_matrix_axis_title_labels(corr_df.columns.tolist()),
             threshold=threshold,
             precision=precision,
         )
@@ -4155,7 +4161,7 @@ class Plotter(RendererBase):
 
         fig.update_layout(
             autosize=True,
-            margin=self._posterior_pair_layout_margin([
+            margin=self._square_matrix_layout_margin([
                 *context.row_labels,
                 *context.col_labels,
             ]),
