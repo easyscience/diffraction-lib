@@ -2059,6 +2059,13 @@ class Plotter(RendererBase):
             return axis_frame_color()
         return PlotlyPlotter._axis_frame_color()
 
+    def _plot_legend_background_color(self) -> str:
+        """Return the shared legend background for Plotly plots."""
+        legend_background_color = getattr(self._backend, '_legend_background_color', None)
+        if callable(legend_background_color):
+            return legend_background_color()
+        return PlotlyPlotter._legend_background_color()
+
     def _posterior_contour_traces(
         self,
         *,
@@ -3222,6 +3229,7 @@ class Plotter(RendererBase):
     ) -> None:
         """Render posterior predictive summaries using Plotly."""
         go = __import__('plotly.graph_objects', fromlist=['Figure', 'Scatter'])
+        axis_frame_color = self._plot_axis_frame_color()
 
         fig = go.Figure()
         if show_band:
@@ -3298,11 +3306,36 @@ class Plotter(RendererBase):
                 'text': f"Posterior predictive for experiment 🔬 '{expt_name}'",
                 'font': {'size': POSTERIOR_PAIR_TITLE_FONT_SIZE},
             },
+            margin={
+                'autoexpand': True,
+                'r': 30,
+                't': 40,
+                'b': 45,
+            },
+            legend={
+                'bgcolor': self._plot_legend_background_color(),
+                'xanchor': 'right',
+                'x': 1.0,
+                'yanchor': 'top',
+                'y': 1.0,
+            },
             xaxis_title=axes_labels[0],
             yaxis_title=axes_labels[1],
         )
-        fig.update_xaxes(title_font={'size': POSTERIOR_PAIR_AXIS_TITLE_FONT_SIZE})
-        fig.update_yaxes(title_font={'size': POSTERIOR_PAIR_AXIS_TITLE_FONT_SIZE})
+        fig.update_xaxes(
+            title_font={'size': POSTERIOR_PAIR_AXIS_TITLE_FONT_SIZE},
+            showline=True,
+            linecolor=axis_frame_color,
+            mirror=True,
+            zeroline=False,
+        )
+        fig.update_yaxes(
+            title_font={'size': POSTERIOR_PAIR_AXIS_TITLE_FONT_SIZE},
+            showline=True,
+            linecolor=axis_frame_color,
+            mirror=True,
+            zeroline=False,
+        )
         self._show_plot_figure(fig)
 
     def _filtered_posterior_predictive_summary(
