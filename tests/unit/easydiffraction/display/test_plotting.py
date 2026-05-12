@@ -615,6 +615,7 @@ def test_plot_posterior_predictive_summary_uses_consistent_labels_and_styles(mon
     from easydiffraction.display.plotting import POSTERIOR_INTERVAL_95_FILL_COLOR
     from easydiffraction.display.plotting import POSTERIOR_POINT_ESTIMATE_LINE_DASH
     from easydiffraction.display.plotting import Plotter
+    from easydiffraction.display.plotters.plotly import PlotlyPlotter
 
     captured: dict[str, object] = {}
 
@@ -648,6 +649,20 @@ def test_plot_posterior_predictive_summary_uses_consistent_labels_and_styles(mon
     assert measured_trace.legendrank == 10
     assert max_posterior_trace.legendrank == 20
     assert max_posterior_trace.line.dash == POSTERIOR_POINT_ESTIMATE_LINE_DASH
+    assert fig.layout.legend.x == 1.0
+    assert fig.layout.legend.y == 1.0
+    assert fig.layout.legend.bgcolor == PlotlyPlotter._legend_background_color()
+    assert fig.layout.margin.r == 30
+    assert fig.layout.margin.t == 40
+    assert fig.layout.margin.b == 45
+    assert fig.layout.xaxis.showline is True
+    assert fig.layout.xaxis.mirror is True
+    assert fig.layout.xaxis.zeroline is False
+    assert fig.layout.xaxis.linecolor == PlotlyPlotter._axis_frame_color()
+    assert fig.layout.yaxis.showline is True
+    assert fig.layout.yaxis.mirror is True
+    assert fig.layout.yaxis.zeroline is False
+    assert fig.layout.yaxis.linecolor == PlotlyPlotter._axis_frame_color()
 
 
 @pytest.mark.parametrize(

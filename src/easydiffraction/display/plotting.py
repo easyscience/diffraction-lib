@@ -835,7 +835,7 @@ class Plotter(RendererBase):
         """Return a validated parameter-count limit."""
         if not isinstance(max_parameters, int) or isinstance(max_parameters, bool):
             msg = 'max_parameters must be an integer.'
-            raise ValueError(msg)
+            raise TypeError(msg)
         if max_parameters < minimum:
             msg = f'max_parameters must be at least {minimum}.'
             raise ValueError(msg)
@@ -949,7 +949,7 @@ class Plotter(RendererBase):
         x: object | None = None,
     ) -> None:
         """
-        Plot posterior predictive curves for a powder experiment.
+        Plot posterior predictive checks for supported experiments.
 
         Parameters
         ----------
@@ -958,13 +958,15 @@ class Plotter(RendererBase):
         style : str, default='band'
             ``'band'`` shows the 95% credible interval, ``'draws'``
             shows sampled predictive curves, and ``'band+draws'`` shows
-            both together.
+            both together. Single-crystal plots currently render only
+            the interval-based reflection check.
         x_min : float | None, default=None
             Lower bound for the x-axis range.
         x_max : float | None, default=None
             Upper bound for the x-axis range.
         show_residual : bool | None, default=None
-            Whether to include the residual row in the composite plot.
+            Whether to include the residual row in supported powder
+            composite plots.
         x : object | None, default=None
             Optional explicit x-axis data to override stored values.
 
@@ -989,9 +991,6 @@ class Plotter(RendererBase):
         self._update_project_categories(expt_name)
         experiment = self._project.experiments[expt_name]
         x_axis, _, sample_form, scattering_type, _ = self._resolve_x_axis(experiment.type, x)
-        if sample_form != SampleFormEnum.POWDER:
-            log.warning('Posterior predictive plots currently support powder experiments only.')
-            return
 
         plot_options = _MeasVsCalcPlotOptions(
             x_min=x_min,
@@ -999,6 +998,21 @@ class Plotter(RendererBase):
             show_residual=show_residual,
             x=x,
         )
+
+        if sample_form == SampleFormEnum.SINGLE_CRYSTAL:
+            self._plot_single_crystal_posterior_predictive(
+                experiment=experiment,
+                expt_name=expt_name,
+                x_axis=x_axis,
+                scattering_type=scattering_type,
+                plot_options=plot_options,
+                style=style,
+            )
+            return
+
+        if sample_form != SampleFormEnum.POWDER:
+            log.warning('Posterior predictive plots currently support powder experiments only.')
+            return
 
         if scattering_type == ScatteringTypeEnum.BRAGG:
             self._plot_posterior_predictive_data(
@@ -1018,6 +1032,87 @@ class Plotter(RendererBase):
             sample_form=sample_form,
             scattering_type=scattering_type,
             style=style,
+        )
+
+    def _plot_single_crystal_posterior_predictive(
+        self,
+        *,
+        experiment: object,
+        expt_name: str,
+        x_axis: object,
+        scattering_type: object,
+        plot_options: _MeasVsCalcPlotOptions,
+        style: str,
+    ) -> None:
+        """Render a single-crystal posterior predictive scatter plot."""
+        if scattering_type != ScatteringTypeEnum.BRAGG:
+            log.warning(
+                'Single-crystal posterior predictive plots currently support '
+                'Bragg data only.'
+            )
+            return
+        if x_axis not in {XAxisType.INTENSITY_CALC, 'intensity_calc'}:
+            log.warning(
+                'Single-crystal posterior predictive plots currently support '
+                "x='intensity_calc' only."
+            )
+            return
+        if plot_options.show_residual:
+            log.warning(
+                'Posterior predictive residuals are unavailable for '
+                'single-crystal plots; ignoring show_residual=True.'
+            )
+        if style != 'band':
+            log.warning(
+                'Single-crystal posterior predictive plots currently support '
+                'style="band" only; rendering the 95% interval.'
+            )
+
+        summary = self._get_or_build_posterior_predictive_summary(
+            experiment=experiment,
+            expt_name=expt_name,
+            x_axis=x_axis,
+            include_draws=False,
+        )
+        if summary is None:
+            return
+
+        pattern = intensity_category_for(experiment)
+        y_meas_raw = getattr(pattern, 'intensity_meas', None)
+        if y_meas_raw is None:
+            log.warning(f'No measured data available for experiment {expt_name}.')
+            return
+        y_meas = np.asarray(y_meas_raw, dtype=float)
+        if y_meas.shape != np.asarray(summary.map_prediction).shape:
+            log.warning(
+                'Single-crystal posterior predictive values do not match the '
+                'measured reflection array shape.'
+            )
+            return
+
+        y_meas_su_raw = getattr(pattern, 'intensity_meas_su', None)
+        if y_meas_su_raw is None:
+            log.warning(f'No measurement uncertainties for experiment {expt_name}')
+            y_meas_su = np.zeros_like(y_meas)
+        else:
+            y_meas_su = np.asarray(y_meas_su_raw, dtype=float)
+            if y_meas_su.shape != y_meas.shape:
+                log.warning(
+                    'Single-crystal posterior predictive uncertainties do not '
+                    'match the measured reflection array shape.'
+                )
+                return
+
+        self._plot_single_crystal_posterior_predictive_summary(
+            expt_name=expt_name,
+            summary=summary,
+            y_meas=y_meas,
+            y_meas_su=y_meas_su,
+            axes_labels=self._get_axes_labels(
+                SampleFormEnum.SINGLE_CRYSTAL,
+                ScatteringTypeEnum.BRAGG,
+                XAxisType.INTENSITY_CALC,
+            ),
         )
 
     def _plot_non_bragg_posterior_predictive(
@@ -3335,6 +3430,63 @@ class Plotter(RendererBase):
             linecolor=axis_frame_color,
             mirror=True,
             zeroline=False,
+        )
+        self._show_plot_figure(fig)
+
+    def _plot_single_crystal_posterior_predictive_summary(
+        self,
+        *,
+        expt_name: str,
+        summary: PosteriorPredictiveSummary,
+        y_meas: np.ndarray,
+        y_meas_su: np.ndarray,
+        axes_labels: list[str],
+    ) -> None:
+        """Render single-crystal posterior predictive checks."""
+        if summary.lower_95 is None or summary.upper_95 is None:
+            log.warning(
+                'Single-crystal posterior predictive plots require 95% '
+                'predictive intervals.'
+            )
+            return
+
+        map_prediction = np.asarray(summary.map_prediction, dtype=float)
+        lower_95 = np.asarray(summary.lower_95, dtype=float)
+        upper_95 = np.asarray(summary.upper_95, dtype=float)
+        if lower_95.shape != map_prediction.shape or upper_95.shape != map_prediction.shape:
+            log.warning(
+                'Single-crystal posterior predictive interval arrays have '
+                'invalid shapes.'
+            )
+            return
+
+        go = __import__('plotly.graph_objects', fromlist=['Figure'])
+        trace = PlotlyPlotter._get_single_crystal_trace(
+            x_calc=map_prediction,
+            y_meas=y_meas,
+            y_meas_su=y_meas_su,
+        )
+        trace.error_x = {
+            'type': 'data',
+            'array': np.maximum(0.0, upper_95 - map_prediction),
+            'arrayminus': np.maximum(0.0, map_prediction - lower_95),
+            'visible': True,
+        }
+        trace.customdata = np.column_stack((lower_95, upper_95, y_meas_su))
+        trace.hovertemplate = (
+            'Predicted I²: %{x:,.2f}<br>'
+            '95% interval: [%{customdata[0]:,.2f}, %{customdata[1]:,.2f}]<br>'
+            'Measured I²: %{y:,.2f}<br>'
+            'su(I²meas): %{customdata[2]:,.2f}<extra></extra>'
+        )
+
+        fig = go.Figure(
+            data=[trace],
+            layout=PlotlyPlotter._get_layout(
+                f"Posterior predictive reflection check for experiment 🔬 '{expt_name}'",
+                axes_labels,
+                shapes=[PlotlyPlotter._get_diagonal_shape()],
+            ),
         )
         self._show_plot_figure(fig)
 
