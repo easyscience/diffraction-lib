@@ -809,13 +809,15 @@ class Plotter(RendererBase):
         corr_df: pd.DataFrame,
         *,
         threshold: float | None,
-        max_parameters: int = DEFAULT_CORRELATION_MAX_PARAMETERS,
+        max_parameters: int | None = DEFAULT_CORRELATION_MAX_PARAMETERS,
         min_parameters: int = 1,
     ) -> tuple[pd.DataFrame | None, float]:
         """Return a filtered matrix and effective threshold."""
         if threshold is not None:
             filtered_corr_df = cls._filter_correlation_dataframe(corr_df, threshold=threshold)
             return filtered_corr_df, float(threshold)
+        if max_parameters is None:
+            return corr_df, 0.0
         validated_max_parameters = cls._validated_max_parameter_count(
             max_parameters,
             minimum=min_parameters,
@@ -1383,7 +1385,7 @@ class Plotter(RendererBase):
         parameters: list[object] | None,
         style: PosteriorPairPlotStyleEnum | str = 'auto',
         threshold: float | None = DEFAULT_CORRELATION_THRESHOLD,
-        max_parameters: int = DEFAULT_CORRELATION_MAX_PARAMETERS,
+        max_parameters: int | None = None,
     ) -> object | None:
         """
         Build a Plotly posterior pair plot.
@@ -1396,8 +1398,9 @@ class Plotter(RendererBase):
             Posterior pair-plot rendering mode. Defaults to ``'auto'``.
         threshold : float | None, default=DEFAULT_CORRELATION_THRESHOLD
             Absolute-correlation cutoff for auto-selected parameters.
-        max_parameters : int, default=DEFAULT_CORRELATION_MAX_PARAMETERS
-            Maximum number of auto-selected parameters.
+        max_parameters : int | None, default=None
+            Maximum number of auto-selected parameters. ``None`` keeps
+            the full posterior parameter set.
 
         Returns
         -------
@@ -1452,7 +1455,7 @@ class Plotter(RendererBase):
         *,
         style: PosteriorPairPlotStyleEnum | str = 'auto',
         threshold: float | None = DEFAULT_CORRELATION_THRESHOLD,
-        max_parameters: int = DEFAULT_CORRELATION_MAX_PARAMETERS,
+        max_parameters: int | None = None,
     ) -> _PosteriorPairsContext | None:
         """Return the resolved inputs for a posterior pair plot."""
         posterior_samples, fit_results = self._get_posterior_samples_and_fit_results()
@@ -1522,7 +1525,7 @@ class Plotter(RendererBase):
         fit_results: object,
         parameters: list[object] | None,
         threshold: float | None,
-        max_parameters: int,
+        max_parameters: int | None,
     ) -> tuple[list[str] | None, float]:
         """Return pair-plot names and the effective cutoff."""
         parameter_names = self._resolve_posterior_parameter_names(

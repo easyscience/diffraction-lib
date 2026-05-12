@@ -1714,7 +1714,7 @@ def test_plot_param_correlations_plotly_labels_respect_threshold(monkeypatch):
     assert len(fig.layout.shapes) == 15
 
 
-def test_plot_param_correlations_limits_default_table_to_five_parameters(monkeypatch):
+def test_plot_param_correlations_limits_default_table_to_six_parameters(monkeypatch):
     from easydiffraction.display.plotting import Plotter
     from easydiffraction.display.tables import TableRenderer
 
@@ -1778,38 +1778,50 @@ def test_plot_param_correlations_limits_default_table_to_five_parameters(monkeyp
         '3',
         '4',
         '5',
+        '6',
     ]
-    assert list(df.index) == [0, 1, 2, 3, 4]
-    assert df.iloc[0, 0] == 'phase.scale'
+    assert list(df.index) == [0, 1, 2, 3, 4, 5]
+    assert list(df.iloc[:, 0]) == [
+        'phase.scale',
+        'phase.cell.length_a',
+        'phase.background',
+        'phase.profile.u',
+        'phase.profile.v',
+        'phase.profile.w',
+    ]
     assert df.iloc[0, 1] == ''
-    assert df.iloc[0, 2] == ''
-    assert df.iloc[0, 3] == ''
-    assert df.iloc[0, 4] == ''
-    assert df.iloc[0, 5] == ''
-    assert df.iloc[1, 0] == 'phase.cell.length_a'
     assert _strip_markup(df.iloc[1, 1]).strip() == '0.95'
-    assert df.iloc[1, 2] == ''
-    assert df.iloc[1, 3] == ''
-    assert df.iloc[1, 4] == ''
-    assert df.iloc[1, 5] == ''
-    assert df.iloc[2, 0] == 'phase.background'
-    assert df.iloc[2, 1] == ''
     assert _strip_markup(df.iloc[2, 2]).strip() == '0.94'
-    assert df.iloc[2, 3] == ''
-    assert df.iloc[2, 4] == ''
-    assert df.iloc[2, 5] == ''
-    assert df.iloc[3, 0] == 'phase.profile.u'
-    assert df.iloc[3, 1] == ''
-    assert df.iloc[3, 2] == ''
     assert _strip_markup(df.iloc[3, 3]).strip() == '0.93'
-    assert df.iloc[3, 4] == ''
-    assert df.iloc[3, 5] == ''
-    assert df.iloc[4, 0] == 'phase.profile.v'
-    assert df.iloc[4, 1] == ''
-    assert df.iloc[4, 2] == ''
-    assert df.iloc[4, 3] == ''
     assert _strip_markup(df.iloc[4, 4]).strip() == '0.92'
-    assert df.iloc[4, 5] == ''
+    assert _strip_markup(df.iloc[5, 5]).strip() == '0.91'
+    assert df.iloc[5, 6] == ''
+
+
+def test_plot_posterior_pairs_uses_default_max_parameter_limit(monkeypatch):
+    from easydiffraction.display.plotting import DEFAULT_CORRELATION_MAX_PARAMETERS
+    from easydiffraction.display.plotting import Plotter
+
+    captured: dict[str, object] = {}
+
+    plotter = Plotter()
+
+    def fake_build(self, *, parameters, style, threshold, max_parameters):
+        captured['parameters'] = parameters
+        captured['style'] = style
+        captured['threshold'] = threshold
+        captured['max_parameters'] = max_parameters
+        return object()
+
+    monkeypatch.setattr(Plotter, '_build_posterior_pairs_plot', fake_build)
+    monkeypatch.setattr(Plotter, '_show_plot_figure', lambda self, figure: None)
+
+    plotter.plot_posterior_pairs()
+
+    assert captured['parameters'] is None
+    assert captured['style'] == 'auto'
+    assert captured['threshold'] is None
+    assert captured['max_parameters'] == DEFAULT_CORRELATION_MAX_PARAMETERS
 
 
 def test_plot_param_correlations_shows_full_table_when_threshold_is_zero(monkeypatch):
