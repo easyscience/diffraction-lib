@@ -106,13 +106,13 @@ The tutorials are organized into the following categories:
   tutorial covers the use of Markov Chain Monte Carlo (MCMC) sampling to
   explore the posterior distribution of the refined parameters,
   providing insights into parameter uncertainties and correlations.
-- [Tb2TiO7 Bayesian](ed-22.ipynb) – Demonstrates how to perform a
-  Bayesian analysis of the Tb2TiO7 crystal structure using constant
-  wavelength neutron single crystal diffraction data from HEiDi at FRM
-  II. This tutorial covers the use of Markov Chain Monte Carlo (MCMC)
-  sampling to explore the posterior distribution of the refined
+- [Tb2TiO7 Bayesian](ed-22.ipynb) – Another example of a Bayesian
+  analysis. This tutorial focuses on the Tb2TiO7 crystal structure using
+  constant wavelength neutron single crystal diffraction data from HEiDi
+  at FRM II. Similar to the LBCO Bayesian tutorial, it covers the use of
+  MCMC sampling to explore the posterior distribution of the refined
   parameters, providing insights into parameter uncertainties and
-  correlations.
+  correlations in the context of single crystal diffraction data.
 
 ## Workshops & Schools
 

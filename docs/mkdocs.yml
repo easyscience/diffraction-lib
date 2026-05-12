@@ -218,7 +218,7 @@ nav:
           - BEER McStas: tutorials/ed-20.ipynb
       - Bayesian Analysis:
           - LBCO Bayesian: tutorials/ed-21.ipynb
-          - Co2SiO4 Bayesian: tutorials/ed-22.ipynb
+          - Tb2TiO7 Bayesian: tutorials/ed-22.ipynb
       - Workshops & Schools:
           - DMSC Summer School: tutorials/ed-13.ipynb
   - API Reference:
@@ -234,5 +234,5 @@ nav:
       - project: api-reference/project.md
       - summary: api-reference/summary.md
       - utils: api-reference/utils.md
-  - Command-Line Interface:
-      - Command-Line Interface: cli/index.md
+  - Command-Line:
+      - Command-Line: cli/index.md
