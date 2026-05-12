@@ -429,7 +429,7 @@ class GenericParameter(GenericNumericDescriptor):
 
     def set_fit_bounds_from_uncertainty(
         self,
-        multiplier: float = 8.0,
+        multiplier: float = 4.0,
         *,
         clip_to_limits: bool = True,
     ) -> None:
@@ -438,7 +438,7 @@ class GenericParameter(GenericNumericDescriptor):
 
         Parameters
         ----------
-        multiplier : float, default=8.0
+        multiplier : float, default=4.0
             Positive finite factor applied symmetrically to the current
             parameter uncertainty.
         clip_to_limits : bool, default=True

@@ -527,7 +527,7 @@ def _format_sampler_settings(sampler_settings: dict[str, object]) -> str | None:
 
     parts = [
         f'{key}={sampler_settings[key]}'
-        for key in ('random_seed', 'steps', 'burn', 'thin', 'pop', 'samples')
+        for key in ('steps', 'burn', 'thin', 'pop', 'init', 'samples')
         if key in sampler_settings
     ]
     return ', '.join(parts) if parts else None

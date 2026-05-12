@@ -49,8 +49,23 @@ def test_type_info_and_default_init():
     minimizer = BumpsDreamMinimizer()
 
     assert minimizer.type_info.tag == MinimizerTypeEnum.BUMPS_DREAM
-    assert minimizer.init is DreamPopulationInitializationEnum.EPS
+    assert minimizer.init is DreamPopulationInitializationEnum.LHS
     assert minimizer.steps == 1000
+
+
+def test_dream_progress_monitor_allocates_rows_by_phase_ratio():
+    from easydiffraction.analysis.minimizers.bumps_dream import _DreamProgressMonitor
+
+    monitor = _DreamProgressMonitor(
+        tracker=MagicMock(),
+        n_points=100,
+        n_parameters=3,
+        total_generations=100,
+        burn_steps=40,
+    )
+
+    assert len(monitor._burn_targets) == 10
+    assert len(monitor._sampling_targets) == 15
 
 
 def test_init_accepts_enum_or_string_and_rejects_invalid():

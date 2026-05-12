@@ -157,6 +157,7 @@ def test_bayesian_fit_results_display_results_prints_sampler_and_convergence(cap
             'burn': 50,
             'thin': 1,
             'pop': 4,
+            'init': 'lhs',
             'samples': 3200,
         },
         convergence_diagnostics={
@@ -191,8 +192,9 @@ def test_bayesian_fit_results_display_results_prints_sampler_and_convergence(cap
     assert 'Sampler status: DREAM sampling completed' in out
     assert 'Sampler: dream' in out
     assert 'Sampler completed: yes' in out
-    assert 'random_seed=1313900679' in out
     assert 'steps=200' in out
+    assert 'init=lhs' in out
+    assert 'random_seed=1313900679' not in out
     assert 'status=failed' in out
     assert 'max_r_hat=1.107' in out
     assert 'min_ess_bulk=125.9' in out

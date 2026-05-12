@@ -307,12 +307,12 @@ def test_correlation_from_posterior_samples_returns_labeled_dataframe():
 
 
 def test_build_posterior_pairs_plot_hides_diagonal_ticks_and_uses_annotations():
-    from easydiffraction.display.plotting import POSTERIOR_PAIR_BOTTOM_MARGIN_PIXELS
     from easydiffraction.display.plotting import POSTERIOR_PAIR_SAMPLE_HOVER_MARKER_SIZE
     from easydiffraction.display.plotting import POSTERIOR_PAIR_SAMPLE_MARKER_SIZE
     from easydiffraction.display.plotting import POSTERIOR_PAIR_TITLE_FONT_SIZE
-    from easydiffraction.display.plotting import POSTERIOR_PAIR_TITLE_YSHIFT_PIXELS
-    from easydiffraction.display.plotting import POSTERIOR_PAIR_TOP_MARGIN_PIXELS
+    from easydiffraction.display.plotting import SQUARE_MATRIX_BOTTOM_MARGIN_PIXELS
+    from easydiffraction.display.plotting import SQUARE_MATRIX_TITLE_YSHIFT_PIXELS
+    from easydiffraction.display.plotting import SQUARE_MATRIX_TOP_MARGIN_PIXELS
 
     plotter, _, _ = _make_bayesian_plotter_fixture()
 
@@ -346,15 +346,15 @@ def test_build_posterior_pairs_plot_hides_diagonal_ticks_and_uses_annotations():
         'twotheta_offset',
     ]
     assert figure.layout.annotations[0].font.size == POSTERIOR_PAIR_TITLE_FONT_SIZE
-    assert figure.layout.annotations[0].yshift == POSTERIOR_PAIR_TITLE_YSHIFT_PIXELS
+    assert figure.layout.annotations[0].yshift == SQUARE_MATRIX_TITLE_YSHIFT_PIXELS
     assert figure.layout.annotations[0].xshift == -plotter._square_matrix_title_left_shift([
         'length_a',
         'broad_gauss_u',
         'broad_gauss_v',
         'twotheta_offset',
     ])
-    assert figure.layout.margin.t == POSTERIOR_PAIR_TOP_MARGIN_PIXELS
-    assert figure.layout.margin.b == POSTERIOR_PAIR_BOTTOM_MARGIN_PIXELS
+    assert figure.layout.margin.t == SQUARE_MATRIX_TOP_MARGIN_PIXELS
+    assert figure.layout.margin.b == SQUARE_MATRIX_BOTTOM_MARGIN_PIXELS
     subplot = figure.get_subplot(1, 1)
     bottom_subplot = figure.get_subplot(4, 1)
     assert subplot.yaxis.showticklabels is False
@@ -431,8 +431,8 @@ def test_build_posterior_pairs_plot_sign_colors_contours_and_marginals():
 
 
 def test_build_posterior_pairs_plot_formats_dotted_axis_titles_multiline():
-    from easydiffraction.display.plotting import POSTERIOR_PAIR_BOTTOM_MARGIN_PIXELS
-    from easydiffraction.display.plotting import POSTERIOR_PAIR_LEFT_MARGIN_PIXELS
+    from easydiffraction.display.plotting import SQUARE_MATRIX_BOTTOM_MARGIN_PIXELS
+    from easydiffraction.display.plotting import SQUARE_MATRIX_LEFT_MARGIN_PIXELS
 
     plotter, fit_results, _ = _make_bayesian_plotter_fixture()
     dotted_parameter_names = [
@@ -452,8 +452,8 @@ def test_build_posterior_pairs_plot_formats_dotted_axis_titles_multiline():
     assert 'hrpt.<br>peak.<br>broad_gauss_u' in annotation_texts
     assert 'hrpt.<br>instrument.<br>twotheta_offset' in annotation_texts
     assert all('None broad_gauss_u' not in text for text in annotation_texts)
-    assert figure.layout.margin.l > POSTERIOR_PAIR_LEFT_MARGIN_PIXELS
-    assert figure.layout.margin.b > POSTERIOR_PAIR_BOTTOM_MARGIN_PIXELS
+    assert figure.layout.margin.l > SQUARE_MATRIX_LEFT_MARGIN_PIXELS
+    assert figure.layout.margin.b > SQUARE_MATRIX_BOTTOM_MARGIN_PIXELS
 
 
 def test_build_posterior_pairs_plot_uses_full_names_in_hovertemplates():
@@ -753,20 +753,28 @@ def test_plot_posterior_predictive_data_uses_max_posterior_label_and_dash(monkey
 
 
 def test_build_param_distribution_plot_accepts_unique_name_string():
-    plotter, _, _ = _make_bayesian_plotter_fixture()
+    plotter, fit_results, posterior_samples = _make_bayesian_plotter_fixture()
+    unique_name = 'phase.cell.length_a'
+    posterior_samples.parameter_names[0] = unique_name
+    fit_results.parameters[0].unique_name = unique_name
+    fit_results.posterior_parameter_summaries[0].unique_name = unique_name
 
-    figure = plotter._build_param_distribution_plot('length_a')
+    figure = plotter._build_param_distribution_plot(unique_name)
 
-    assert figure.layout.title.text == 'Posterior distribution: length_a'
+    assert figure.layout.title.text == f'Posterior distribution: {unique_name}'
 
 
 def test_build_param_distribution_plot_accepts_user_facing_label_string():
-    plotter, fit_results, _ = _make_bayesian_plotter_fixture()
+    plotter, fit_results, posterior_samples = _make_bayesian_plotter_fixture()
+    unique_name = 'phase.cell.length_a'
+    posterior_samples.parameter_names[0] = unique_name
+    fit_results.parameters[0].unique_name = unique_name
+    fit_results.posterior_parameter_summaries[0].unique_name = unique_name
     fit_results.posterior_parameter_summaries[0].display_name = 'Cell a'
 
     figure = plotter._build_param_distribution_plot('Cell a')
 
-    assert figure.layout.title.text == 'Posterior distribution: length_a'
+    assert figure.layout.title.text == f'Posterior distribution: {unique_name}'
 
 
 def test_resolve_posterior_parameter_names_warns_on_ambiguous_label(monkeypatch):
@@ -1547,12 +1555,12 @@ def test_plot_param_correlations_renders_plotly_heatmap(monkeypatch):
     import numpy as np
 
     import easydiffraction.display.plotters.plotly as plotly_mod
-    from easydiffraction.display.plotting import POSTERIOR_PAIR_AXIS_TITLE_LINE_HEIGHT_PIXELS
-    from easydiffraction.display.plotting import POSTERIOR_PAIR_BOTTOM_MARGIN_PIXELS
     from easydiffraction.display.plotting import POSTERIOR_PAIR_TITLE_FONT_SIZE
-    from easydiffraction.display.plotting import POSTERIOR_PAIR_TITLE_YSHIFT_PIXELS
-    from easydiffraction.display.plotting import POSTERIOR_PAIR_TOP_MARGIN_PIXELS
     from easydiffraction.display.plotting import Plotter
+    from easydiffraction.display.plotting import SQUARE_MATRIX_AXIS_TITLE_LINE_HEIGHT_PIXELS
+    from easydiffraction.display.plotting import SQUARE_MATRIX_BOTTOM_MARGIN_PIXELS
+    from easydiffraction.display.plotting import SQUARE_MATRIX_TITLE_YSHIFT_PIXELS
+    from easydiffraction.display.plotting import SQUARE_MATRIX_TOP_MARGIN_PIXELS
 
     captured = {}
 
@@ -1617,14 +1625,14 @@ def test_plot_param_correlations_renders_plotly_heatmap(monkeypatch):
         'phase.<br>cell.<br>length_c',
     ]
     assert fig.layout.annotations[0].font.size == POSTERIOR_PAIR_TITLE_FONT_SIZE
-    assert fig.layout.annotations[0].yshift == POSTERIOR_PAIR_TITLE_YSHIFT_PIXELS
+    assert fig.layout.annotations[0].yshift == SQUARE_MATRIX_TITLE_YSHIFT_PIXELS
     assert fig.layout.annotations[0].xshift == -Plotter._square_matrix_title_left_shift([
         'phase.<br>scale',
         'phase.<br>cell.<br>length_c',
     ])
-    assert fig.layout.margin.t == POSTERIOR_PAIR_TOP_MARGIN_PIXELS
+    assert fig.layout.margin.t == SQUARE_MATRIX_TOP_MARGIN_PIXELS
     assert fig.layout.margin.b == (
-        POSTERIOR_PAIR_BOTTOM_MARGIN_PIXELS + 2 * POSTERIOR_PAIR_AXIS_TITLE_LINE_HEIGHT_PIXELS
+        SQUARE_MATRIX_BOTTOM_MARGIN_PIXELS + 2 * SQUARE_MATRIX_AXIS_TITLE_LINE_HEIGHT_PIXELS
     )
     assert (
         fig.layout.meta['fixed_aspect_wrapper']['aspect_ratio']

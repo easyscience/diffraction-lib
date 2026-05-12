@@ -37,13 +37,12 @@ DEFAULT_MIN_BURN = 50
 DEFAULT_THIN = 1
 DEFAULT_POP = 4
 DEFAULT_PARALLEL = 0
-DEFAULT_INIT = DreamPopulationInitializationEnum.EPS
+DEFAULT_INIT = DreamPopulationInitializationEnum.LHS
 DEFAULT_ALPHA = 0.0
 DEFAULT_OUTLIER_TEST = 'none'
 DEFAULT_TRIM = False
 MAX_RANDOM_SEED = int(np.iinfo(np.uint32).max)
-BURN_IN_PROGRESS_POINTS = 5
-SAMPLING_PROGRESS_POINTS = 20
+TOTAL_PROGRESS_POINTS = 25
 DREAM_SAMPLE_ARRAY_NDIM = 3
 DREAM_DRIVER_FAILURES = (ArithmeticError, RuntimeError, TypeError, ValueError)
 
@@ -92,15 +91,19 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
         self._n_parameters = n_parameters
         self._total_generations = max(1, total_generations)
         self._burn_steps = max(0, burn_steps)
+        burn_target_count, sampling_target_count = self._phase_progress_point_counts(
+            total_generations=self._total_generations,
+            burn_steps=self._burn_steps,
+        )
         self._burn_targets = self._progress_targets(
             start=1,
             stop=self._burn_steps,
-            target_count=BURN_IN_PROGRESS_POINTS,
+            target_count=burn_target_count,
         )
         self._sampling_targets = self._progress_targets(
             start=self._burn_steps + 1,
             stop=self._total_generations,
-            target_count=SAMPLING_PROGRESS_POINTS,
+            target_count=sampling_target_count,
         )
         self._next_burn_target_index = 0
         self._next_sampling_target_index = 0
@@ -174,6 +177,34 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
         if stop not in unique_targets:
             unique_targets.append(stop)
         return unique_targets
+
+    @staticmethod
+    def _phase_progress_point_counts(
+        *,
+        total_generations: int,
+        burn_steps: int,
+    ) -> tuple[int, int]:
+        """Return proportional burn and sampling progress counts."""
+        total_points = min(TOTAL_PROGRESS_POINTS, max(1, total_generations))
+        burn_generations = min(max(0, burn_steps), total_generations)
+        sampling_generations = max(total_generations - burn_generations, 0)
+
+        if burn_generations == 0:
+            return 0, total_points
+        if sampling_generations == 0:
+            return total_points, 0
+
+        burn_target_count = round(total_points * burn_generations / total_generations)
+        burn_target_count = min(
+            max(burn_target_count, 1),
+            burn_generations,
+            total_points - 1,
+        )
+        sampling_target_count = min(
+            max(total_points - burn_target_count, 1),
+            sampling_generations,
+        )
+        return burn_target_count, sampling_target_count
 
     def _should_report(self, generation: int) -> bool:
         """Return whether the current generation should be rendered."""

@@ -2360,7 +2360,7 @@ class Plotter(RendererBase):
             parameter_name=parameter_name,
             values=samples[:, 0],
             label=label,
-            title=f'Posterior distribution: {label}',
+            title=f'Posterior distribution: {parameter_name}',
             summary=self._posterior_summary_by_name(fit_results).get(parameter_name),
         )
 

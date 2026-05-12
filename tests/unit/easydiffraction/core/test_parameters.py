@@ -123,6 +123,25 @@ def test_parameter_set_fit_bounds_from_uncertainty_sets_bounds_and_returns_none(
     assert np.isclose(p.fit_max, 3.0)
 
 
+def test_parameter_set_fit_bounds_from_uncertainty_uses_default_multiplier():
+    from easydiffraction.core.validation import AttributeSpec
+    from easydiffraction.core.variable import Parameter
+    from easydiffraction.io.cif.handler import CifHandler
+
+    p = Parameter(
+        name='default_multiplier',
+        value_spec=AttributeSpec(default=0.0),
+        cif_handler=CifHandler(names=['_param.default_multiplier']),
+    )
+    p.value = 2.0
+    p.uncertainty = 0.25
+
+    p.set_fit_bounds_from_uncertainty()
+
+    assert np.isclose(p.fit_min, 1.0)
+    assert np.isclose(p.fit_max, 3.0)
+
+
 def test_parameter_set_fit_bounds_from_uncertainty_clips_to_physical_limits():
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.validation import DataTypes
