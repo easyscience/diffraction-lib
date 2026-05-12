@@ -77,7 +77,7 @@ class PosteriorPairPlotStyleEnum(StrEnum):
 
 
 DEFAULT_CORRELATION_THRESHOLD: float | None = None
-DEFAULT_CORRELATION_MAX_PARAMETERS = 5
+DEFAULT_CORRELATION_MAX_PARAMETERS = 6
 EXPECTED_COVAR_NDIM = 2
 DEFAULT_RESIDUAL_HEIGHT_FRACTION = 0.25
 DEFAULT_BRAGG_PEAKS_HEIGHT_FRACTION = 0.10
@@ -210,6 +210,7 @@ class _PosteriorPairsContext:
     parameter_names: list[str]
     labels: list[str]
     annotation_labels: list[str]
+    title: str
     density_samples: np.ndarray
     scatter_samples: np.ndarray
     show_contours: bool
@@ -726,6 +727,7 @@ class Plotter(RendererBase):
         threshold: float | None = DEFAULT_CORRELATION_THRESHOLD,
         precision: int = 2,
         *,
+        max_parameters: int = DEFAULT_CORRELATION_MAX_PARAMETERS,
         show_diagonal: bool = True,
     ) -> None:
         """
@@ -744,11 +746,14 @@ class Plotter(RendererBase):
         threshold : float | None, default=DEFAULT_CORRELATION_THRESHOLD
             Minimum absolute off-diagonal correlation required for a
             parameter to be shown. When omitted, an automatic cutoff is
-            chosen so the displayed matrix stays at or below ``5 x 5``
-            parameters when possible. Set to ``0`` to show the full
-            matrix.
+            chosen so the displayed matrix stays at or below
+            ``max_parameters x max_parameters`` when possible. Set to
+            ``0`` to show the full matrix.
         precision : int, default=2
             Number of decimal places to show in the table fallback.
+        max_parameters : int, default=DEFAULT_CORRELATION_MAX_PARAMETERS
+            Maximum number of parameters to display when ``threshold``
+            is omitted. Ignored when ``threshold`` is provided.
         show_diagonal : bool, default=True
             Whether to retain blank diagonal cells in the displayed
             lower-triangle matrix.
@@ -760,14 +765,16 @@ class Plotter(RendererBase):
         corr_df, resolved_threshold = self._resolve_correlation_filter(
             corr_df,
             threshold=threshold,
+            max_parameters=max_parameters,
         )
         if corr_df is None:
             return
 
         corr_df = self._mask_correlation_lower_triangle(corr_df)
-        title = 'Refined parameter correlation matrix'
-        if resolved_threshold > 0:
-            title += f' with |correlation| >= {resolved_threshold:.2f}'
+        title = self._correlation_filtered_title(
+            'Refined parameter correlation matrix',
+            resolved_threshold,
+        )
 
         is_graphical = self._backend._supports_graphical_heatmap
         display_corr_df, row_numbers, col_numbers = self._trim_correlation_display_dataframe(
@@ -802,21 +809,44 @@ class Plotter(RendererBase):
         corr_df: pd.DataFrame,
         *,
         threshold: float | None,
+        max_parameters: int = DEFAULT_CORRELATION_MAX_PARAMETERS,
+        min_parameters: int = 1,
     ) -> tuple[pd.DataFrame | None, float]:
         """Return a filtered matrix and effective threshold."""
         if threshold is not None:
             filtered_corr_df = cls._filter_correlation_dataframe(corr_df, threshold=threshold)
             return filtered_corr_df, float(threshold)
+        validated_max_parameters = cls._validated_max_parameter_count(
+            max_parameters,
+            minimum=min_parameters,
+        )
         return cls._auto_filtered_correlation_dataframe(
             corr_df,
-            max_parameters=DEFAULT_CORRELATION_MAX_PARAMETERS,
+            max_parameters=validated_max_parameters,
+            min_parameters=min_parameters,
         )
+
+    @staticmethod
+    def _validated_max_parameter_count(
+        max_parameters: int,
+        *,
+        minimum: int,
+    ) -> int:
+        """Return a validated parameter-count limit."""
+        if not isinstance(max_parameters, int) or isinstance(max_parameters, bool):
+            msg = 'max_parameters must be an integer.'
+            raise ValueError(msg)
+        if max_parameters < minimum:
+            msg = f'max_parameters must be at least {minimum}.'
+            raise ValueError(msg)
+        return max_parameters
 
     @staticmethod
     def _auto_filtered_correlation_dataframe(
         corr_df: pd.DataFrame,
         *,
         max_parameters: int,
+        min_parameters: int = 1,
     ) -> tuple[pd.DataFrame, float]:
         """Return an auto-limited matrix for default display."""
         if corr_df.shape[0] <= max_parameters:
@@ -827,7 +857,7 @@ class Plotter(RendererBase):
         positive_values = np.unique(abs_corr[abs_corr > 0.0])
         for candidate in np.sort(positive_values):
             keep_mask = (abs_corr >= candidate).any(axis=0)
-            if 0 < int(keep_mask.sum()) <= max_parameters:
+            if min_parameters <= int(keep_mask.sum()) <= max_parameters:
                 labels = corr_df.index[keep_mask]
                 return corr_df.loc[labels, labels], float(candidate)
 
@@ -840,10 +870,20 @@ class Plotter(RendererBase):
         labels = corr_df.index[top_indices]
         return corr_df.loc[labels, labels], 0.0
 
+    @staticmethod
+    def _correlation_filtered_title(base_title: str, threshold: float) -> str:
+        """Return a plot title with a correlation cutoff."""
+        if threshold <= 0:
+            return base_title
+        return f'{base_title} with |correlation| ≥ {threshold:.2f}'
+
     def plot_posterior_pairs(
         self,
         parameters: list[object] | None = None,
         style: PosteriorPairPlotStyleEnum | str = 'auto',
+        *,
+        threshold: float | None = DEFAULT_CORRELATION_THRESHOLD,
+        max_parameters: int = DEFAULT_CORRELATION_MAX_PARAMETERS,
     ) -> None:
         """
         Plot posterior pair relationships for sampled parameters.
@@ -852,14 +892,29 @@ class Plotter(RendererBase):
         ----------
         parameters : list[object] | None, default=None
             Optional subset of sampled parameters to include. When
-            ``None``, all sampled parameters are shown.
+            provided, ``threshold`` and ``max_parameters`` are ignored.
         style : PosteriorPairPlotStyleEnum | str, default='auto'
             Pair-plot rendering mode. Defaults to ``'auto'``. ``'auto'``
             keeps contours for compact plots and disables them for wide
             grids. ``'fast'`` always skips contours. ``'full'`` always
             renders contours.
+        threshold : float | None, default=DEFAULT_CORRELATION_THRESHOLD
+            Minimum absolute off-diagonal correlation required for a
+            parameter to be auto-selected. When omitted, an automatic
+            cutoff keeps the plot at or below ``max_parameters``
+            parameters when possible. Set to ``0`` to show all sampled
+            parameters.
+        max_parameters : int, default=DEFAULT_CORRELATION_MAX_PARAMETERS
+            Maximum number of parameters to auto-select when
+            ``parameters`` is omitted and ``threshold`` is ``None``.
+            Must be at least ``2``.
         """
-        plot = self._build_posterior_pairs_plot(parameters=parameters, style=style)
+        plot = self._build_posterior_pairs_plot(
+            parameters=parameters,
+            style=style,
+            threshold=threshold,
+            max_parameters=max_parameters,
+        )
         if plot is None:
             return
         self._show_plot_figure(plot)
@@ -1233,6 +1288,8 @@ class Plotter(RendererBase):
         *,
         parameters: list[object] | None,
         style: PosteriorPairPlotStyleEnum | str = 'auto',
+        threshold: float | None = DEFAULT_CORRELATION_THRESHOLD,
+        max_parameters: int = DEFAULT_CORRELATION_MAX_PARAMETERS,
     ) -> object | None:
         """
         Build a Plotly posterior pair plot.
@@ -1243,6 +1300,10 @@ class Plotter(RendererBase):
             Optional subset of sampled parameters to include.
         style : PosteriorPairPlotStyleEnum | str, default='auto'
             Posterior pair-plot rendering mode. Defaults to ``'auto'``.
+        threshold : float | None, default=DEFAULT_CORRELATION_THRESHOLD
+            Absolute-correlation cutoff for auto-selected parameters.
+        max_parameters : int, default=DEFAULT_CORRELATION_MAX_PARAMETERS
+            Maximum number of auto-selected parameters.
 
         Returns
         -------
@@ -1250,7 +1311,12 @@ class Plotter(RendererBase):
             Plotly figure, or ``None`` when posterior plotting is
             unavailable.
         """
-        context = self._posterior_pairs_context(parameters, style=style)
+        context = self._posterior_pairs_context(
+            parameters,
+            style=style,
+            threshold=threshold,
+            max_parameters=max_parameters,
+        )
         if context is None:
             return None
 
@@ -1291,6 +1357,8 @@ class Plotter(RendererBase):
         parameters: list[object] | None,
         *,
         style: PosteriorPairPlotStyleEnum | str = 'auto',
+        threshold: float | None = DEFAULT_CORRELATION_THRESHOLD,
+        max_parameters: int = DEFAULT_CORRELATION_MAX_PARAMETERS,
     ) -> _PosteriorPairsContext | None:
         """Return the resolved inputs for a posterior pair plot."""
         posterior_samples, fit_results = self._get_posterior_samples_and_fit_results()
@@ -1299,9 +1367,11 @@ class Plotter(RendererBase):
 
         plot_style = self._validated_posterior_pair_plot_style(style)
 
-        parameter_names = self._resolve_posterior_parameter_names(
+        parameter_names, resolved_threshold = self._resolved_posterior_pair_parameter_names(
             fit_results=fit_results,
             parameters=parameters,
+            threshold=threshold,
+            max_parameters=max_parameters,
         )
         if parameter_names is None:
             return None
@@ -1339,6 +1409,7 @@ class Plotter(RendererBase):
             parameter_names=parameter_names,
             labels=self._posterior_plot_labels(fit_results, parameter_names),
             annotation_labels=self._posterior_pair_axis_title_labels(parameter_names),
+            title=self._correlation_filtered_title('Posterior pair plot', resolved_threshold),
             density_samples=density_samples,
             scatter_samples=scatter_samples,
             show_contours=show_contours,
@@ -1350,6 +1421,38 @@ class Plotter(RendererBase):
                 density_samples=selected_samples,
             ),
         )
+
+    def _resolved_posterior_pair_parameter_names(
+        self,
+        *,
+        fit_results: object,
+        parameters: list[object] | None,
+        threshold: float | None,
+        max_parameters: int,
+    ) -> tuple[list[str] | None, float]:
+        """Return pair-plot names and the effective cutoff."""
+        parameter_names = self._resolve_posterior_parameter_names(
+            fit_results=fit_results,
+            parameters=parameters,
+        )
+        if parameter_names is None:
+            return None, 0.0
+        if parameters is not None:
+            return parameter_names, 0.0
+
+        corr_df = self._posterior_correlation_dataframe(fit_results)
+        if corr_df is None:
+            return parameter_names, 0.0
+
+        filtered_corr_df, resolved_threshold = self._resolve_correlation_filter(
+            corr_df.loc[parameter_names, parameter_names],
+            threshold=threshold,
+            max_parameters=max_parameters,
+            min_parameters=MIN_POSTERIOR_PARAMETER_COUNT,
+        )
+        if filtered_corr_df is None:
+            return None, 0.0
+        return list(filtered_corr_df.index), resolved_threshold
 
     def _posterior_pair_axis_ranges(
         self,
@@ -1730,10 +1833,13 @@ class Plotter(RendererBase):
         }
 
     @staticmethod
-    def _posterior_pair_title_annotation(annotation_labels: list[str]) -> dict[str, object]:
+    def _posterior_pair_title_annotation(
+        title: str,
+        annotation_labels: list[str],
+    ) -> dict[str, object]:
         """Return the outer title annotation for the pair plot."""
         return Plotter._square_matrix_title_annotation(
-            'Posterior pair plot',
+            title,
             annotation_labels,
         )
 
@@ -1801,7 +1907,10 @@ class Plotter(RendererBase):
             margin=self._posterior_pair_layout_margin(context.annotation_labels),
             bargap=0.05,
             annotations=[
-                self._posterior_pair_title_annotation(context.annotation_labels),
+                self._posterior_pair_title_annotation(
+                    context.title,
+                    context.annotation_labels,
+                ),
                 *subplot_title_annotations,
             ],
             shapes=subplot_border_shapes,
