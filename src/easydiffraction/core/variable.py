@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 
 # ======================================================================
 
-FIT_BOUNDS_FROM_UNCERTAINTY_DEFAULT_MULTIPLIER = 4.0
+DEFAULT_FIT_BOUNDS_MULTIPLIER = 4.0
 
 
 class GenericDescriptorBase(GuardedBase):
@@ -441,7 +441,7 @@ class GenericParameter(GenericNumericDescriptor):
 
     def set_fit_bounds_from_uncertainty(
         self,
-        multiplier: float = FIT_BOUNDS_FROM_UNCERTAINTY_DEFAULT_MULTIPLIER,
+        multiplier: float = DEFAULT_FIT_BOUNDS_MULTIPLIER,
         *,
         clip_to_limits: bool = True,
     ) -> None:
@@ -450,7 +450,7 @@ class GenericParameter(GenericNumericDescriptor):
 
         Parameters
         ----------
-        multiplier : float, default=FIT_BOUNDS_FROM_UNCERTAINTY_DEFAULT_MULTIPLIER
+        multiplier : float, default=DEFAULT_FIT_BOUNDS_MULTIPLIER
             Positive finite factor applied symmetrically to the current
             parameter uncertainty.
         clip_to_limits : bool, default=True

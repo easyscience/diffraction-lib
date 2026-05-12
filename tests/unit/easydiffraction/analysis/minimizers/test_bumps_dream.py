@@ -50,7 +50,7 @@ def test_type_info_and_default_init():
 
     assert minimizer.type_info.tag == MinimizerTypeEnum.BUMPS_DREAM
     assert minimizer.init is DreamPopulationInitializationEnum.LHS
-    assert minimizer.steps == 1000
+    assert minimizer.steps == 3000
 
 
 def test_dream_progress_monitor_allocates_rows_by_phase_ratio():
