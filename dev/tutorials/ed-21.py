@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Deterministic and Bayesian Refinement: LBCO, HRPT
+# # Bayesian Analysis: LBCO, HRPT
 #
 # This tutorial demonstrates a practical two-stage workflow for powder
 # diffraction analysis with EasyDiffraction.
