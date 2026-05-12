@@ -2690,6 +2690,10 @@
 
 
 
+
+
+
+
 <div class="doc doc-object doc-module">
 
 
@@ -2712,8 +2716,6 @@
 
 
 <div class="doc doc-children">
-
-
 
 
 
@@ -3224,6 +3226,9 @@ fitted model, experiments, and analysis results.</p>
 
 
 
+
+
+
 <div class="doc doc-object doc-function">
 
 
@@ -3302,23 +3307,18 @@ fitted model, experiments, and analysis results.</p>
 
 </div>
 
-
-
-
-
-
 <div class="doc doc-object doc-function">
 
 
-<h4 id="easydiffraction.summary.summary.Summary.as_cif" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">as_cif</span><span class="p">()</span></code>
+<h4 id="easydiffraction.summary.summary.Summary.show_report" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">show_report</span><span class="p">()</span></code>
 
 </h4>
 
 
     <div class="doc doc-contents ">
 
-        <p>Export fitted data and analysis results as <abbr title="Crystallographic Information File.">CIF</abbr>.</p>
+        <p>Print a full project report covering all sections.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -3326,21 +3326,80 @@ fitted model, experiments, and analysis results.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/summary/summary.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">238</span>
-<span class="normal">239</span>
-<span class="normal">240</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Export fitted data and analysis results as CIF.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">summary_to_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_report</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Print a full project report covering all sections.&quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">show_project_info</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">show_crystallographic_data</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">show_experimental_data</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">show_fitting_details</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
 
 </div>
 
+<div class="doc doc-object doc-function">
 
 
+<h4 id="easydiffraction.summary.summary.Summary.show_project_info" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">show_project_info</span><span class="p">()</span></code>
+
+</h4>
 
 
+    <div class="doc doc-contents ">
+
+        <p>Print the project title and description.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/summary/summary.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_project_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Print the project title and description.&quot;&quot;&quot;</span>
+    <span class="n">console</span><span class="o">.</span><span class="n">section</span><span class="p">(</span><span class="s1">&#39;Project info&#39;</span><span class="p">)</span>
+
+    <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Title&#39;</span><span class="p">)</span>
+    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">description</span><span class="p">:</span>
+        <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Description&#39;</span><span class="p">)</span>
+        <span class="c1"># log.print(&#39;\n&#39;.join(wrap(self.project.info.description,</span>
+        <span class="c1"># width=80)))</span>
+        <span class="c1"># TODO: Fix the following lines</span>
+        <span class="c1"># Ensure description wraps with explicit newlines for tests</span>
+        <span class="n">desc_lines</span> <span class="o">=</span> <span class="n">wrap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+        <span class="c1"># Use plain print to avoid Left padding that would break</span>
+        <span class="c1"># newline adjacency checks</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">desc_lines</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
 
 <div class="doc doc-object doc-function">
 
@@ -3491,11 +3550,6 @@ fitted model, experiments, and analysis results.</p>
     </div>
 
 </div>
-
-
-
-
-
 
 <div class="doc doc-object doc-function">
 
@@ -3673,11 +3727,6 @@ fitted model, experiments, and analysis results.</p>
 
 </div>
 
-
-
-
-
-
 <div class="doc doc-object doc-function">
 
 
@@ -3744,23 +3793,18 @@ fitted model, experiments, and analysis results.</p>
 
 </div>
 
-
-
-
-
-
 <div class="doc doc-object doc-function">
 
 
-<h4 id="easydiffraction.summary.summary.Summary.show_project_info" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">show_project_info</span><span class="p">()</span></code>
+<h4 id="easydiffraction.summary.summary.Summary.as_cif" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">as_cif</span><span class="p">()</span></code>
 
 </h4>
 
 
     <div class="doc doc-contents ">
 
-        <p>Print the project title and description.</p>
+        <p>Export fitted data and analysis results as <abbr title="Crystallographic Information File.">CIF</abbr>.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -3768,86 +3812,16 @@ fitted model, experiments, and analysis results.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/summary/summary.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_project_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Print the project title and description.&quot;&quot;&quot;</span>
-    <span class="n">console</span><span class="o">.</span><span class="n">section</span><span class="p">(</span><span class="s1">&#39;Project info&#39;</span><span class="p">)</span>
-
-    <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Title&#39;</span><span class="p">)</span>
-    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">description</span><span class="p">:</span>
-        <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Description&#39;</span><span class="p">)</span>
-        <span class="c1"># log.print(&#39;\n&#39;.join(wrap(self.project.info.description,</span>
-        <span class="c1"># width=80)))</span>
-        <span class="c1"># TODO: Fix the following lines</span>
-        <span class="c1"># Ensure description wraps with explicit newlines for tests</span>
-        <span class="n">desc_lines</span> <span class="o">=</span> <span class="n">wrap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
-        <span class="c1"># Use plain print to avoid Left padding that would break</span>
-        <span class="c1"># newline adjacency checks</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">desc_lines</span><span class="p">))</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Export fitted data and analysis results as CIF.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">summary_to_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
 
 </div>
-
-
-
-
-
-
-<div class="doc doc-object doc-function">
-
-
-<h4 id="easydiffraction.summary.summary.Summary.show_report" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">show_report</span><span class="p">()</span></code>
-
-</h4>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Print a full project report covering all sections.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-
-
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>src/easydiffraction/summary/summary.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_report</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Print a full project report covering all sections.&quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">show_project_info</span><span class="p">()</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">show_crystallographic_data</span><span class="p">()</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">show_experimental_data</span><span class="p">()</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">show_fitting_details</span><span class="p">()</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
 
 
 
@@ -3860,21 +3834,11 @@ fitted model, experiments, and analysis results.</p>
 
 
 
-
-
-
-
-
-
-
-
   </div>
 
     </div>
 
 </div>
-
-
 
 
   </div>

@@ -2802,6 +2802,10 @@
 
 
 
+
+
+
+
 <div class="doc doc-object doc-module">
 
 
@@ -2824,6 +2828,10 @@
 
 
 <div class="doc doc-children">
+
+
+
+
 
 
 
@@ -2869,10 +2877,6 @@
 
 
 
-
-
-
-
 <div class="doc doc-object doc-module">
 
 
@@ -2900,16 +2904,6 @@
 
 
 <div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -3156,6 +3150,171 @@
 
 
 
+<div class="doc doc-object doc-attribute">
+
+
+
+<h6 id="easydiffraction.project.categories.display.default.Display.plotter_type" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">plotter_type</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Plot renderer backend type.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h6 id="easydiffraction.project.categories.display.default.Display.tabler_type" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">tabler_type</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Table renderer backend type.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h6 id="easydiffraction.project.categories.display.default.Display.plotter" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">plotter</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Live plotting facade bound to the owning project.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h6 id="easydiffraction.project.categories.display.default.Display.tabler" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">tabler</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Live table-rendering facade.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h6 id="easydiffraction.project.categories.display.default.Display.show_plotter_types" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">show_plotter_types</span><span class="p">()</span></code>
+
+</h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Print supported plot renderer backends.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/project/categories/display/default.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">94</span>
+<span class="normal">95</span>
+<span class="normal">96</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_plotter_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Print supported plot renderer backends.&quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">show_supported_engines</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h6 id="easydiffraction.project.categories.display.default.Display.show_tabler_types" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">show_tabler_types</span><span class="p">()</span></code>
+
+</h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Print supported table renderer backends.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/project/categories/display/default.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_tabler_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Print supported table renderer backends.&quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">tabler</span><span class="o">.</span><span class="n">show_supported_engines</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
 <div class="doc doc-object doc-function">
 
 
@@ -3214,191 +3373,7 @@
 
 
 
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h6 id="easydiffraction.project.categories.display.default.Display.plotter" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">plotter</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-  </span>
-
-</h6>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Live plotting facade bound to the owning project.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h6 id="easydiffraction.project.categories.display.default.Display.plotter_type" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">plotter_type</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
-
-</h6>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Plot renderer backend type.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-function">
-
-
-<h6 id="easydiffraction.project.categories.display.default.Display.show_plotter_types" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">show_plotter_types</span><span class="p">()</span></code>
-
-</h6>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Print supported plot renderer backends.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-
-
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>src/easydiffraction/project/categories/display/default.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">94</span>
-<span class="normal">95</span>
-<span class="normal">96</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_plotter_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Print supported plot renderer backends.&quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">show_supported_engines</span><span class="p">()</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-function">
-
-
-<h6 id="easydiffraction.project.categories.display.default.Display.show_tabler_types" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">show_tabler_types</span><span class="p">()</span></code>
-
-</h6>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Print supported table renderer backends.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-
-
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>src/easydiffraction/project/categories/display/default.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_tabler_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Print supported table renderer backends.&quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">tabler</span><span class="o">.</span><span class="n">show_supported_engines</span><span class="p">()</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h6 id="easydiffraction.project.categories.display.default.Display.tabler" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">tabler</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-  </span>
-
-</h6>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Live table-rendering facade.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h6 id="easydiffraction.project.categories.display.default.Display.tabler_type" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">tabler_type</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
-
-</h6>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Table renderer backend type.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
+  </div>
 
     </div>
 
@@ -3412,56 +3387,6 @@
     </div>
 
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  </div>
-
-    </div>
-
-</div>
-
-
-
-
-
 
 <div class="doc doc-object doc-module">
 
@@ -3490,6 +3415,8 @@
 
 
 <div class="doc doc-children">
+
+
 
 
 
@@ -3550,24 +3477,9 @@
 
 
 
-  </div>
-
-    </div>
-
-</div>
 
 
 
-
-
-
-
-
-  </div>
-
-    </div>
-
-</div>
 
 
 
@@ -3588,9 +3500,18 @@
 </div>
 
 
+  </div>
+
+    </div>
+
+</div>
 
 
+  </div>
 
+    </div>
+
+</div>
 
 <div class="doc doc-object doc-module">
 
@@ -3619,24 +3540,6 @@
 
 
 <div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -4522,63 +4425,12 @@
 
 
 
-<div class="doc doc-object doc-function">
-
-
-<h4 id="easydiffraction.project.project.Project.__str__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__str__</span><span class="p">()</span></code>
-
-</h4>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Human-readable representation.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-
-
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>src/easydiffraction/project/project.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Human-readable representation.&quot;&quot;&quot;</span>
-    <span class="n">class_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
-    <span class="n">project_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
-    <span class="n">structures_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">structures</span><span class="p">)</span>
-    <span class="n">experiments_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">experiments</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s2"> &#39;</span><span class="si">{</span><span class="n">project_name</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
-        <span class="sa">f</span><span class="s1">&#39;(</span><span class="si">{</span><span class="n">structures_count</span><span class="si">}</span><span class="s1"> structures, &#39;</span>
-        <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">experiments_count</span><span class="si">}</span><span class="s1"> experiments)&#39;</span>
-    <span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-
-
-
-
-
 <div class="doc doc-object doc-attribute">
 
 
 
-<h4 id="easydiffraction.project.project.Project.analysis" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">analysis</span></code>
+<h4 id="easydiffraction.project.project.Project.info" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">info</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
@@ -4589,7 +4441,7 @@
 
     <div class="doc doc-contents ">
 
-        <p>Analysis entry-point bound to the project.</p>
+        <p>Project metadata container.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -4597,280 +4449,13 @@
     </div>
 
 </div>
-
-
-
-
-
-
-<div class="doc doc-object doc-function">
-
-
-<h4 id="easydiffraction.project.project.Project.apply_params_from_csv" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">apply_params_from_csv</span><span class="p">(</span><span class="n">row_index</span><span class="p">)</span></code>
-
-</h4>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Load a single CSV row and apply its parameters to the project.</p>
-<p>Reads the row at <em>row_index</em> from <code>analysis/results.csv</code>,
-overrides parameter values in the live project, and (for
-sequential-fit results where <code>file_path</code> points to a real
-file) reloads the measured data into the template experiment.</p>
-<p>After calling this method,
-<code>display.plotter.plot_meas_vs_calc()</code> will fit for that
-specific dataset.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-
-
-<p><span class="doc-section-title">Parameters:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-          <th>Default</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>row_index</code>
-            </td>
-            <td>
-                  <code><span title="int">int</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Row index in the CSV file. Supports Python-style negative
-indexing (e.g. <code>-1</code> for the last row).</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<p><span class="doc-section-title">Raises:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="FileNotFoundError">FileNotFoundError</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>If <code>analysis/results.csv</code> does not exist.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="IndexError">IndexError</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>If <em>row_index</em> is out of range.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>src/easydiffraction/project/project.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">401</span>
-<span class="normal">402</span>
-<span class="normal">403</span>
-<span class="normal">404</span>
-<span class="normal">405</span>
-<span class="normal">406</span>
-<span class="normal">407</span>
-<span class="normal">408</span>
-<span class="normal">409</span>
-<span class="normal">410</span>
-<span class="normal">411</span>
-<span class="normal">412</span>
-<span class="normal">413</span>
-<span class="normal">414</span>
-<span class="normal">415</span>
-<span class="normal">416</span>
-<span class="normal">417</span>
-<span class="normal">418</span>
-<span class="normal">419</span>
-<span class="normal">420</span>
-<span class="normal">421</span>
-<span class="normal">422</span>
-<span class="normal">423</span>
-<span class="normal">424</span>
-<span class="normal">425</span>
-<span class="normal">426</span>
-<span class="normal">427</span>
-<span class="normal">428</span>
-<span class="normal">429</span>
-<span class="normal">430</span>
-<span class="normal">431</span>
-<span class="normal">432</span>
-<span class="normal">433</span>
-<span class="normal">434</span>
-<span class="normal">435</span>
-<span class="normal">436</span>
-<span class="normal">437</span>
-<span class="normal">438</span>
-<span class="normal">439</span>
-<span class="normal">440</span>
-<span class="normal">441</span>
-<span class="normal">442</span>
-<span class="normal">443</span>
-<span class="normal">444</span>
-<span class="normal">445</span>
-<span class="normal">446</span>
-<span class="normal">447</span>
-<span class="normal">448</span>
-<span class="normal">449</span>
-<span class="normal">450</span>
-<span class="normal">451</span>
-<span class="normal">452</span>
-<span class="normal">453</span>
-<span class="normal">454</span>
-<span class="normal">455</span>
-<span class="normal">456</span>
-<span class="normal">457</span>
-<span class="normal">458</span>
-<span class="normal">459</span>
-<span class="normal">460</span>
-<span class="normal">461</span>
-<span class="normal">462</span>
-<span class="normal">463</span>
-<span class="normal">464</span>
-<span class="normal">465</span>
-<span class="normal">466</span>
-<span class="normal">467</span>
-<span class="normal">468</span>
-<span class="normal">469</span>
-<span class="normal">470</span>
-<span class="normal">471</span>
-<span class="normal">472</span>
-<span class="normal">473</span>
-<span class="normal">474</span>
-<span class="normal">475</span>
-<span class="normal">476</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">apply_params_from_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Load a single CSV row and apply its parameters to the project.</span>
-
-<span class="sd">    Reads the row at *row_index* from ``analysis/results.csv``,</span>
-<span class="sd">    overrides parameter values in the live project, and (for</span>
-<span class="sd">    sequential-fit results where ``file_path`` points to a real</span>
-<span class="sd">    file) reloads the measured data into the template experiment.</span>
-
-<span class="sd">    After calling this method,</span>
-<span class="sd">    ``display.plotter.plot_meas_vs_calc()`` will fit for that</span>
-<span class="sd">    specific dataset.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    row_index : int</span>
-<span class="sd">        Row index in the CSV file. Supports Python-style negative</span>
-<span class="sd">        indexing (e.g. ``-1`` for the last row).</span>
-
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    FileNotFoundError</span>
-<span class="sd">        If ``analysis/results.csv`` does not exist.</span>
-<span class="sd">    IndexError</span>
-<span class="sd">        If *row_index* is out of range.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>  <span class="c1"># noqa: PLC0415</span>
-
-    <span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction.analysis.sequential</span><span class="w"> </span><span class="kn">import</span> <span class="n">_META_COLUMNS</span>  <span class="c1"># noqa: PLC0415</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction.core.variable</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span>  <span class="c1"># noqa: PLC0415</span>
-
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Project has no saved path. Save the project first.&#39;</span>
-        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-
-    <span class="n">csv_path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">path</span><span class="p">)</span> <span class="o">/</span> <span class="s1">&#39;analysis&#39;</span> <span class="o">/</span> <span class="s1">&#39;results.csv&#39;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">csv_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Results CSV not found: &#39;</span><span class="si">{</span><span class="n">csv_path</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
-        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-
-    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csv_path</span><span class="p">)</span>
-    <span class="n">n_rows</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-
-    <span class="c1"># Support Python-style negative indexing</span>
-    <span class="k">if</span> <span class="n">row_index</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">row_index</span> <span class="o">+=</span> <span class="n">n_rows</span>
-
-    <span class="k">if</span> <span class="n">row_index</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">row_index</span> <span class="o">&gt;=</span> <span class="n">n_rows</span><span class="p">:</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Row index </span><span class="si">{</span><span class="n">row_index</span><span class="si">}</span><span class="s1"> out of range (CSV has </span><span class="si">{</span><span class="n">n_rows</span><span class="si">}</span><span class="s1"> rows).&#39;</span>
-        <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-
-    <span class="n">row</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">row_index</span><span class="p">]</span>
-
-    <span class="c1"># 1. Reload data if file_path points to a real file</span>
-    <span class="n">file_path</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;file_path&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">file_path</span> <span class="ow">and</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
-        <span class="n">experiment</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
-        <span class="n">experiment</span><span class="o">.</span><span class="n">_load_ascii_data_to_experiment</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
-
-    <span class="c1"># 2. Override parameter values and uncertainties</span>
-    <span class="n">all_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">structures</span><span class="o">.</span><span class="n">parameters</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">parameters</span>
-    <span class="n">param_map</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="n">p</span><span class="o">.</span><span class="n">unique_name</span><span class="p">:</span> <span class="n">p</span>
-        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">all_params</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s1">&#39;unique_name&#39;</span><span class="p">)</span>
-    <span class="p">}</span>
-    <span class="n">_apply_csv_row_to_params</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">param_map</span><span class="p">,</span> <span class="nb">set</span><span class="p">(</span><span class="n">_META_COLUMNS</span><span class="p">))</span>
-
-    <span class="c1"># 4. Force recalculation: data was replaced directly (bypassing</span>
-    <span class="c1">#    value setters), so the dirty flag may not be set.</span>
-    <span class="k">for</span> <span class="n">structure</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">structures</span><span class="p">:</span>
-        <span class="n">structure</span><span class="o">.</span><span class="n">_need_categories_update</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="k">for</span> <span class="n">experiment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-        <span class="n">experiment</span><span class="o">.</span><span class="n">_need_categories_update</span> <span class="o">=</span> <span class="kc">True</span>
-
-    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Applied parameters from CSV row </span><span class="si">{</span><span class="n">row_index</span><span class="si">}</span><span class="s1"> (file: </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s1">).&#39;</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-
-
-
-
 
 <div class="doc doc-object doc-attribute">
 
 
 
-<h4 id="easydiffraction.project.project.Project.as_cif" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">as_cif</span></code>
+<h4 id="easydiffraction.project.project.Project.name" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">name</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
@@ -4881,7 +4466,7 @@ indexing (e.g. <code>-1</code> for the last row).</p>
 
     <div class="doc doc-contents ">
 
-        <p>Export whole project as <abbr title="Crystallographic Information File.">CIF</abbr> text.</p>
+        <p>Convenience property for the project name.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -4889,102 +4474,6 @@ indexing (e.g. <code>-1</code> for the last row).</p>
     </div>
 
 </div>
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h4 id="easydiffraction.project.project.Project.display" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">display</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-  </span>
-
-</h4>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Display configuration and facades bound to the project.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h4 id="easydiffraction.project.project.Project.experiments" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">experiments</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
-
-</h4>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Collection of experiments in the project.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h4 id="easydiffraction.project.project.Project.free_parameters" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">free_parameters</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-  </span>
-
-</h4>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Return free parameters from structures and experiments.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-
-    </div>
-
-</div>
-
-
-
-
-
 
 <div class="doc doc-object doc-attribute">
 
@@ -5037,17 +4526,64 @@ indexing (e.g. <code>-1</code> for the last row).</p>
 
 </div>
 
+<div class="doc doc-object doc-attribute">
 
 
 
+<h4 id="easydiffraction.project.project.Project.structures" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">structures</span></code>
 
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Collection of structures in the project.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
 
 <div class="doc doc-object doc-attribute">
 
 
 
-<h4 id="easydiffraction.project.project.Project.info" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">info</span></code>
+<h4 id="easydiffraction.project.project.Project.experiments" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">experiments</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Collection of experiments in the project.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="easydiffraction.project.project.Project.display" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">display</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
@@ -5058,7 +4594,7 @@ indexing (e.g. <code>-1</code> for the last row).</p>
 
     <div class="doc doc-contents ">
 
-        <p>Project metadata container.</p>
+        <p>Display configuration and facades bound to the project.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -5067,10 +4603,231 @@ indexing (e.g. <code>-1</code> for the last row).</p>
 
 </div>
 
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="easydiffraction.project.project.Project.analysis" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">analysis</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Analysis entry-point bound to the project.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="easydiffraction.project.project.Project.summary" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">summary</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Summary report builder bound to the project.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="easydiffraction.project.project.Project.parameters" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">parameters</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return parameters from all structures and experiments.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="easydiffraction.project.project.Project.free_parameters" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">free_parameters</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return free parameters from structures and experiments.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="easydiffraction.project.project.Project.as_cif" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">as_cif</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Export whole project as <abbr title="Crystallographic Information File.">CIF</abbr> text.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="easydiffraction.project.project.Project.verbosity" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">verbosity</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Project-wide console output verbosity.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>One of <code>'full'</code>, <code>'short'</code>, or <code>'silent'</code>.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+    </div>
+
+</div>
 
 
 
 
+<div class="doc doc-object doc-function">
+
+
+<h4 id="easydiffraction.project.project.Project.__str__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__str__</span><span class="p">()</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Human-readable representation.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/project/project.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Human-readable representation.&quot;&quot;&quot;</span>
+    <span class="n">class_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+    <span class="n">project_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+    <span class="n">structures_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">structures</span><span class="p">)</span>
+    <span class="n">experiments_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">experiments</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s2"> &#39;</span><span class="si">{</span><span class="n">project_name</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+        <span class="sa">f</span><span class="s1">&#39;(</span><span class="si">{</span><span class="n">structures_count</span><span class="si">}</span><span class="s1"> structures, &#39;</span>
+        <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">experiments_count</span><span class="si">}</span><span class="s1"> experiments)&#39;</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
 
 <div class="doc doc-object doc-function">
 
@@ -5355,71 +5112,6 @@ display configuration.</p>
 
 </div>
 
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h4 id="easydiffraction.project.project.Project.name" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">name</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-  </span>
-
-</h4>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Convenience property for the project name.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h4 id="easydiffraction.project.project.Project.parameters" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">parameters</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-  </span>
-
-</h4>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Return parameters from all structures and experiments.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-
-    </div>
-
-</div>
-
-
-
-
-
-
 <div class="doc doc-object doc-function">
 
 
@@ -5562,11 +5254,6 @@ display configuration.</p>
 
 </div>
 
-
-
-
-
-
 <div class="doc doc-object doc-function">
 
 
@@ -5615,96 +5302,66 @@ display configuration.</p>
 
 </div>
 
+<div class="doc doc-object doc-function">
 
 
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h4 id="easydiffraction.project.project.Project.structures" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">structures</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
+<h4 id="easydiffraction.project.project.Project.apply_params_from_csv" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">apply_params_from_csv</span><span class="p">(</span><span class="n">row_index</span><span class="p">)</span></code>
 
 </h4>
 
 
     <div class="doc doc-contents ">
 
-        <p>Collection of structures in the project.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h4 id="easydiffraction.project.project.Project.summary" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">summary</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-  </span>
-
-</h4>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Summary report builder bound to the project.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h4 id="easydiffraction.project.project.Project.verbosity" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">verbosity</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
-
-</h4>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Project-wide console output verbosity.</p>
+        <p>Load a single CSV row and apply its parameters to the project.</p>
+<p>Reads the row at <em>row_index</em> from <code>analysis/results.csv</code>,
+overrides parameter values in the live project, and (for
+sequential-fit results where <code>file_path</code> points to a real
+file) reloads the measured data into the template experiment.</p>
+<p>After calling this method,
+<code>display.plotter.plot_meas_vs_calc()</code> will fit for that
+specific dataset.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
 
 
-    <p><span class="doc-section-title">Returns:</span></p>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>row_index</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Row index in the CSV file. Supports Python-style negative
+indexing (e.g. <code>-1</code> for the last row).</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
     <table>
       <thead>
         <tr>
@@ -5715,11 +5372,24 @@ display configuration.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="str">str</span></code>
+                  <code><span title="FileNotFoundError">FileNotFoundError</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>One of <code>'full'</code>, <code>'short'</code>, or <code>'silent'</code>.</p>
+                <p>If <code>analysis/results.csv</code> does not exist.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="IndexError">IndexError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <em>row_index</em> is out of range.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -5729,10 +5399,165 @@ display configuration.</p>
       </tbody>
     </table>
 
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/project/project.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">401</span>
+<span class="normal">402</span>
+<span class="normal">403</span>
+<span class="normal">404</span>
+<span class="normal">405</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span>
+<span class="normal">417</span>
+<span class="normal">418</span>
+<span class="normal">419</span>
+<span class="normal">420</span>
+<span class="normal">421</span>
+<span class="normal">422</span>
+<span class="normal">423</span>
+<span class="normal">424</span>
+<span class="normal">425</span>
+<span class="normal">426</span>
+<span class="normal">427</span>
+<span class="normal">428</span>
+<span class="normal">429</span>
+<span class="normal">430</span>
+<span class="normal">431</span>
+<span class="normal">432</span>
+<span class="normal">433</span>
+<span class="normal">434</span>
+<span class="normal">435</span>
+<span class="normal">436</span>
+<span class="normal">437</span>
+<span class="normal">438</span>
+<span class="normal">439</span>
+<span class="normal">440</span>
+<span class="normal">441</span>
+<span class="normal">442</span>
+<span class="normal">443</span>
+<span class="normal">444</span>
+<span class="normal">445</span>
+<span class="normal">446</span>
+<span class="normal">447</span>
+<span class="normal">448</span>
+<span class="normal">449</span>
+<span class="normal">450</span>
+<span class="normal">451</span>
+<span class="normal">452</span>
+<span class="normal">453</span>
+<span class="normal">454</span>
+<span class="normal">455</span>
+<span class="normal">456</span>
+<span class="normal">457</span>
+<span class="normal">458</span>
+<span class="normal">459</span>
+<span class="normal">460</span>
+<span class="normal">461</span>
+<span class="normal">462</span>
+<span class="normal">463</span>
+<span class="normal">464</span>
+<span class="normal">465</span>
+<span class="normal">466</span>
+<span class="normal">467</span>
+<span class="normal">468</span>
+<span class="normal">469</span>
+<span class="normal">470</span>
+<span class="normal">471</span>
+<span class="normal">472</span>
+<span class="normal">473</span>
+<span class="normal">474</span>
+<span class="normal">475</span>
+<span class="normal">476</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">apply_params_from_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load a single CSV row and apply its parameters to the project.</span>
+
+<span class="sd">    Reads the row at *row_index* from ``analysis/results.csv``,</span>
+<span class="sd">    overrides parameter values in the live project, and (for</span>
+<span class="sd">    sequential-fit results where ``file_path`` points to a real</span>
+<span class="sd">    file) reloads the measured data into the template experiment.</span>
+
+<span class="sd">    After calling this method,</span>
+<span class="sd">    ``display.plotter.plot_meas_vs_calc()`` will fit for that</span>
+<span class="sd">    specific dataset.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    row_index : int</span>
+<span class="sd">        Row index in the CSV file. Supports Python-style negative</span>
+<span class="sd">        indexing (e.g. ``-1`` for the last row).</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    FileNotFoundError</span>
+<span class="sd">        If ``analysis/results.csv`` does not exist.</span>
+<span class="sd">    IndexError</span>
+<span class="sd">        If *row_index* is out of range.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>  <span class="c1"># noqa: PLC0415</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction.analysis.sequential</span><span class="w"> </span><span class="kn">import</span> <span class="n">_META_COLUMNS</span>  <span class="c1"># noqa: PLC0415</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">easydiffraction.core.variable</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span>  <span class="c1"># noqa: PLC0415</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Project has no saved path. Save the project first.&#39;</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="n">csv_path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">path</span><span class="p">)</span> <span class="o">/</span> <span class="s1">&#39;analysis&#39;</span> <span class="o">/</span> <span class="s1">&#39;results.csv&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">csv_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Results CSV not found: &#39;</span><span class="si">{</span><span class="n">csv_path</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csv_path</span><span class="p">)</span>
+    <span class="n">n_rows</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+
+    <span class="c1"># Support Python-style negative indexing</span>
+    <span class="k">if</span> <span class="n">row_index</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">row_index</span> <span class="o">+=</span> <span class="n">n_rows</span>
+
+    <span class="k">if</span> <span class="n">row_index</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">row_index</span> <span class="o">&gt;=</span> <span class="n">n_rows</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Row index </span><span class="si">{</span><span class="n">row_index</span><span class="si">}</span><span class="s1"> out of range (CSV has </span><span class="si">{</span><span class="n">n_rows</span><span class="si">}</span><span class="s1"> rows).&#39;</span>
+        <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="n">row</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">row_index</span><span class="p">]</span>
+
+    <span class="c1"># 1. Reload data if file_path points to a real file</span>
+    <span class="n">file_path</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;file_path&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">file_path</span> <span class="ow">and</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+        <span class="n">experiment</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+        <span class="n">experiment</span><span class="o">.</span><span class="n">_load_ascii_data_to_experiment</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+
+    <span class="c1"># 2. Override parameter values and uncertainties</span>
+    <span class="n">all_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">structures</span><span class="o">.</span><span class="n">parameters</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">parameters</span>
+    <span class="n">param_map</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">unique_name</span><span class="p">:</span> <span class="n">p</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">all_params</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s1">&#39;unique_name&#39;</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="n">_apply_csv_row_to_params</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">param_map</span><span class="p">,</span> <span class="nb">set</span><span class="p">(</span><span class="n">_META_COLUMNS</span><span class="p">))</span>
+
+    <span class="c1"># 4. Force recalculation: data was replaced directly (bypassing</span>
+    <span class="c1">#    value setters), so the dirty flag may not be set.</span>
+    <span class="k">for</span> <span class="n">structure</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">structures</span><span class="p">:</span>
+        <span class="n">structure</span><span class="o">.</span><span class="n">_need_categories_update</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">for</span> <span class="n">experiment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiments</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="n">experiment</span><span class="o">.</span><span class="n">_need_categories_update</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Applied parameters from CSV row </span><span class="si">{</span><span class="n">row_index</span><span class="si">}</span><span class="s1"> (file: </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s1">).&#39;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
     </div>
 
 </div>
-
 
 
 
@@ -5745,40 +5570,11 @@ display configuration.</p>
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   </div>
 
     </div>
 
 </div>
-
-
-
-
-
 
 <div class="doc doc-object doc-module">
 
@@ -5807,8 +5603,6 @@ display configuration.</p>
 
 
 <div class="doc doc-children">
-
-
 
 
 
@@ -6103,47 +5897,38 @@ display configuration.</p>
 
 
 
-<div class="doc doc-object doc-function">
+<div class="doc doc-object doc-attribute">
 
 
-<h4 id="easydiffraction.project.project_info.ProjectInfo.as_cif" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">as_cif</span><span class="p">()</span></code>
+
+<h4 id="easydiffraction.project.project_info.ProjectInfo.name" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">name</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
 
 </h4>
 
 
     <div class="doc doc-contents ">
 
-        <p>Export project metadata to <abbr title="Crystallographic Information File.">CIF</abbr>.</p>
+        <p>Return the project name.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
 
-
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>src/easydiffraction/project/project_info.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Export project metadata to CIF.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">project_info_to_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
     </div>
 
 </div>
-
-
-
-
-
 
 <div class="doc doc-object doc-attribute">
 
 
 
-<h4 id="easydiffraction.project.project_info.ProjectInfo.created" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">created</span></code>
+<h4 id="easydiffraction.project.project_info.ProjectInfo.unique_name" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">unique_name</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
@@ -6154,7 +5939,7 @@ display configuration.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return the creation timestamp.</p>
+        <p>Unique name for GuardedBase diagnostics.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -6163,10 +5948,31 @@ display configuration.</p>
 
 </div>
 
+<div class="doc doc-object doc-attribute">
 
 
 
+<h4 id="easydiffraction.project.project_info.ProjectInfo.title" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">title</span></code>
 
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the project title.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
 
 <div class="doc doc-object doc-attribute">
 
@@ -6194,10 +6000,56 @@ display configuration.</p>
 
 </div>
 
+<div class="doc doc-object doc-attribute">
 
 
 
+<h4 id="easydiffraction.project.project_info.ProjectInfo.path" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">path</span></code>
 
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the project path as a Path object.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="easydiffraction.project.project_info.ProjectInfo.created" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">created</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the creation timestamp.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
 
 <div class="doc doc-object doc-attribute">
 
@@ -6227,38 +6079,35 @@ display configuration.</p>
 
 
 
+<div class="doc doc-object doc-function">
 
 
-<div class="doc doc-object doc-attribute">
-
-
-
-<h4 id="easydiffraction.project.project_info.ProjectInfo.name" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">name</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
+<h4 id="easydiffraction.project.project_info.ProjectInfo.update_last_modified" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">update_last_modified</span><span class="p">()</span></code>
 
 </h4>
 
 
     <div class="doc doc-contents ">
 
-        <p>Return the project name.</p>
+        <p>Update the last modified timestamp.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
 
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/project/project_info.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">update_last_modified</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update the last modified timestamp.&quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_last_modified</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+            </details>
     </div>
 
 </div>
-
-
-
-
-
 
 <div class="doc doc-object doc-function">
 
@@ -6288,41 +6137,35 @@ display configuration.</p>
 
 </div>
 
+<div class="doc doc-object doc-function">
 
 
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h4 id="easydiffraction.project.project_info.ProjectInfo.path" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">path</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
+<h4 id="easydiffraction.project.project_info.ProjectInfo.as_cif" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">as_cif</span><span class="p">()</span></code>
 
 </h4>
 
 
     <div class="doc doc-contents ">
 
-        <p>Return the project path as a Path object.</p>
+        <p>Export project metadata to <abbr title="Crystallographic Information File.">CIF</abbr>.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
 
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/project/project_info.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Export project metadata to CIF.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">project_info_to_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
     </div>
 
 </div>
-
-
-
-
-
 
 <div class="doc doc-object doc-function">
 
@@ -6362,96 +6205,8 @@ display configuration.</p>
 
 
 
+  </div>
 
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h4 id="easydiffraction.project.project_info.ProjectInfo.title" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">title</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
-
-</h4>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Return the project title.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h4 id="easydiffraction.project.project_info.ProjectInfo.unique_name" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">unique_name</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-  </span>
-
-</h4>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Unique name for GuardedBase diagnostics.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-
-    </div>
-
-</div>
-
-
-
-
-
-
-<div class="doc doc-object doc-function">
-
-
-<h4 id="easydiffraction.project.project_info.ProjectInfo.update_last_modified" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">update_last_modified</span><span class="p">()</span></code>
-
-</h4>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Update the last modified timestamp.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-
-
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>src/easydiffraction/project/project_info.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">update_last_modified</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update the last modified timestamp.&quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_last_modified</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
-</code></pre></div></td></tr></table></div>
-            </details>
     </div>
 
 </div>
@@ -6464,25 +6219,6 @@ display configuration.</p>
     </div>
 
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-  </div>
-
-    </div>
-
-</div>
-
-
 
 
   </div>
