@@ -22,6 +22,8 @@ if TYPE_CHECKING:
 
 # ======================================================================
 
+FIT_BOUNDS_FROM_UNCERTAINTY_DEFAULT_MULTIPLIER = 4.0
+
 
 class GenericDescriptorBase(GuardedBase):
     """
@@ -280,6 +282,7 @@ class GenericParameter(GenericNumericDescriptor):
         self._fit_min = self._fit_min_spec.default
         self._fit_max_spec = AttributeSpec(data_type=DataTypes.NUMERIC, default=np.inf)
         self._fit_max = self._fit_max_spec.default
+        self._fit_bounds_uncertainty_multiplier: float | None = None
         self._start_value_spec = AttributeSpec(data_type=DataTypes.NUMERIC, default=0.0)
         self._start_value = self._start_value_spec.default
         self._constrained_spec = self._BOOL_SPEC_TEMPLATE
@@ -414,6 +417,7 @@ class GenericParameter(GenericNumericDescriptor):
         self._fit_min = self._fit_min_spec.validated(
             v, name=f'{self.unique_name}.fit_min', current=self._fit_min
         )
+        self._fit_bounds_uncertainty_multiplier = None
 
     @property
     def fit_max(self) -> float:
@@ -426,10 +430,18 @@ class GenericParameter(GenericNumericDescriptor):
         self._fit_max = self._fit_max_spec.validated(
             v, name=f'{self.unique_name}.fit_max', current=self._fit_max
         )
+        self._fit_bounds_uncertainty_multiplier = None
+
+    @property
+    def fit_bounds_uncertainty_multiplier(self) -> float | None:
+        """
+        Multiplier used for uncertainty-derived fit bounds, if known.
+        """
+        return self._fit_bounds_uncertainty_multiplier
 
     def set_fit_bounds_from_uncertainty(
         self,
-        multiplier: float = 4.0,
+        multiplier: float = FIT_BOUNDS_FROM_UNCERTAINTY_DEFAULT_MULTIPLIER,
         *,
         clip_to_limits: bool = True,
     ) -> None:
@@ -438,7 +450,7 @@ class GenericParameter(GenericNumericDescriptor):
 
         Parameters
         ----------
-        multiplier : float, default=4.0
+        multiplier : float, default=FIT_BOUNDS_FROM_UNCERTAINTY_DEFAULT_MULTIPLIER
             Positive finite factor applied symmetrically to the current
             parameter uncertainty.
         clip_to_limits : bool, default=True
@@ -459,10 +471,11 @@ class GenericParameter(GenericNumericDescriptor):
             msg = f'Cannot set fit bounds for {name}: current value is missing or invalid.'
             raise ValueError(msg)
 
-        if isinstance(multiplier, bool) or not np.isfinite(float(multiplier)):
+        resolved_multiplier = float(multiplier)
+        if isinstance(multiplier, bool) or not np.isfinite(resolved_multiplier):
             msg = 'multiplier must be a positive finite number.'
             raise ValueError(msg)
-        if float(multiplier) <= 0:
+        if resolved_multiplier <= 0:
             msg = 'multiplier must be a positive finite number.'
             raise ValueError(msg)
 
@@ -470,8 +483,8 @@ class GenericParameter(GenericNumericDescriptor):
             msg = f'Cannot set fit bounds for {name}: uncertainty is missing or invalid.'
             raise ValueError(msg)
 
-        lower = float(value) - float(multiplier) * float(uncertainty)
-        upper = float(value) + float(multiplier) * float(uncertainty)
+        lower = float(value) - resolved_multiplier * float(uncertainty)
+        upper = float(value) + resolved_multiplier * float(uncertainty)
 
         if clip_to_limits:
             physical_lower = float(self._physical_lower_bound())
@@ -490,6 +503,7 @@ class GenericParameter(GenericNumericDescriptor):
 
         self.fit_min = lower
         self.fit_max = upper
+        self._fit_bounds_uncertainty_multiplier = resolved_multiplier
 
 
 # ======================================================================

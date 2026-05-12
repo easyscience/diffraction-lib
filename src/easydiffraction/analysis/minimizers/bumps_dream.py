@@ -31,7 +31,7 @@ from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.utils.logging import log
 
 DEFAULT_METHOD = 'dream'
-DEFAULT_MAX_ITERATIONS = 1000
+DEFAULT_MAX_ITERATIONS = 3000
 DEFAULT_BURN_FRACTION = 0.2
 DEFAULT_MIN_BURN = 50
 DEFAULT_THIN = 1

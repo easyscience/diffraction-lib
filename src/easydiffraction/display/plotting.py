@@ -880,6 +880,47 @@ class Plotter(RendererBase):
             return base_title
         return f'{base_title} with |correlation| ≥ {threshold:.2f}'
 
+    @staticmethod
+    def _posterior_pair_title(multiplier: float | None) -> str:
+        """
+        Return the posterior pair title with its displayed bound scale.
+        """
+        if multiplier is None:
+            return 'Posterior pair plot'
+        return f'Posterior pair plot in ±{multiplier:g}×uncertainty region'
+
+    @staticmethod
+    def _posterior_pair_uncertainty_multiplier(
+        fit_results: object,
+        parameter_names: list[str],
+    ) -> float | None:
+        """
+        Return a shared uncertainty-bound multiplier for a pair plot.
+        """
+        parameters_by_name = {
+            getattr(parameter, 'unique_name', ''): parameter
+            for parameter in fit_results.parameters
+        }
+        multiplier: float | None = None
+
+        for parameter_name in parameter_names:
+            parameter = parameters_by_name.get(parameter_name)
+            if parameter is None:
+                return None
+
+            current = getattr(parameter, 'fit_bounds_uncertainty_multiplier', None)
+            if current is None or not np.isfinite(float(current)):
+                return None
+
+            current_value = float(current)
+            if multiplier is None:
+                multiplier = current_value
+                continue
+            if not np.isclose(multiplier, current_value):
+                return None
+
+        return multiplier
+
     def plot_posterior_pairs(
         self,
         parameters: list[object] | None = None,
@@ -1501,13 +1542,20 @@ class Plotter(RendererBase):
             selected_samples,
             max_points=POSTERIOR_PAIR_SCATTER_MAX_POINTS,
         )
+        uncertainty_multiplier = self._posterior_pair_uncertainty_multiplier(
+            fit_results,
+            parameter_names,
+        )
 
         return _PosteriorPairsContext(
             fit_results=fit_results,
             parameter_names=parameter_names,
             labels=self._posterior_plot_labels(fit_results, parameter_names),
             annotation_labels=self._square_matrix_axis_title_labels(parameter_names),
-            title=self._correlation_filtered_title('Posterior pair plot', resolved_threshold),
+            title=self._correlation_filtered_title(
+                self._posterior_pair_title(uncertainty_multiplier),
+                resolved_threshold,
+            ),
             density_samples=density_samples,
             scatter_samples=scatter_samples,
             show_contours=show_contours,
