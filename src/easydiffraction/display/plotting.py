@@ -1047,8 +1047,7 @@ class Plotter(RendererBase):
         """Render a single-crystal posterior predictive scatter plot."""
         if scattering_type != ScatteringTypeEnum.BRAGG:
             log.warning(
-                'Single-crystal posterior predictive plots currently support '
-                'Bragg data only.'
+                'Single-crystal posterior predictive plots currently support Bragg data only.'
             )
             return
         if x_axis not in {XAxisType.INTENSITY_CALC, 'intensity_calc'}:
@@ -3445,8 +3444,7 @@ class Plotter(RendererBase):
         """Render single-crystal posterior predictive checks."""
         if summary.lower_95 is None or summary.upper_95 is None:
             log.warning(
-                'Single-crystal posterior predictive plots require 95% '
-                'predictive intervals.'
+                'Single-crystal posterior predictive plots require 95% predictive intervals.'
             )
             return
 
@@ -3454,10 +3452,7 @@ class Plotter(RendererBase):
         lower_95 = np.asarray(summary.lower_95, dtype=float)
         upper_95 = np.asarray(summary.upper_95, dtype=float)
         if lower_95.shape != map_prediction.shape or upper_95.shape != map_prediction.shape:
-            log.warning(
-                'Single-crystal posterior predictive interval arrays have '
-                'invalid shapes.'
-            )
+            log.warning('Single-crystal posterior predictive interval arrays have invalid shapes.')
             return
 
         go = __import__('plotly.graph_objects', fromlist=['Figure'])

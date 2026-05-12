@@ -218,6 +218,7 @@ nav:
           - BEER McStas: tutorials/ed-20.ipynb
       - Bayesian Analysis:
           - LBCO Bayesian: tutorials/ed-21.ipynb
+          - Co2SiO4 Bayesian: tutorials/ed-22.ipynb
       - Workshops & Schools:
           - DMSC Summer School: tutorials/ed-13.ipynb
   - API Reference:
