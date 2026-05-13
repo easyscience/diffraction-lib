@@ -3,7 +3,15 @@
 
 from __future__ import annotations
 
+import re
+
 import pytest
+
+ANSI_ESCAPE_RE = re.compile(r'\x1b\[[0-?]*[ -/]*[@-~]')
+
+
+def _unstyled_output(text: str) -> str:
+    return ANSI_ESCAPE_RE.sub('', text)
 
 
 def _make_project():
@@ -210,7 +218,7 @@ def test_analysis_help_and_mode_switching(capsys):
     assert len(analysis.joint_fit_experiments) == 0
 
     analysis.help()
-    out = capsys.readouterr().out
+    out = _unstyled_output(capsys.readouterr().out)
     assert "Help for 'Analysis'" in out
     assert 'fit' in out
     assert 'display' in out

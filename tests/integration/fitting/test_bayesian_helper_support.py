@@ -3,8 +3,16 @@
 
 from __future__ import annotations
 
+import re
+
 import numpy as np
 import pytest
+
+ANSI_ESCAPE_RE = re.compile(r'\x1b\[[0-?]*[ -/]*[@-~]')
+
+
+def _unstyled_output(text: str) -> str:
+    return ANSI_ESCAPE_RE.sub('', text)
 
 
 class Identity:
@@ -329,7 +337,7 @@ def test_bayesian_fit_results_display_results_prints_sampler_and_convergence(cap
 
     results.display_results(y_obs=[10.0, 20.0], y_calc=[9.5, 19.5])
 
-    out = capsys.readouterr().out
+    out = _unstyled_output(capsys.readouterr().out)
     assert 'Bayesian fit results' in out
     assert 'Overall status: completed with warnings' in out
     assert 'Sampler status: DREAM sampling completed' in out
@@ -596,7 +604,7 @@ def test_fitresults_display_results_prints_and_table(capsys):
         f_calc=[5.1, 5.9],
     )
 
-    out = capsys.readouterr().out
+    out = _unstyled_output(capsys.readouterr().out)
     assert 'Fit results' in out
     assert 'Success: True' in out
     assert 'reduced χ²' in out
