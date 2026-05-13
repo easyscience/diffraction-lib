@@ -9347,7 +9347,13 @@ patterns.</p>
 <span class="normal">873</span>
 <span class="normal">874</span>
 <span class="normal">875</span>
-<span class="normal">876</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@CalculatorFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">876</span>
+<span class="normal">877</span>
+<span class="normal">878</span>
+<span class="normal">879</span>
+<span class="normal">880</span>
+<span class="normal">881</span>
+<span class="normal">882</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@CalculatorFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CryspyCalculator</span><span class="p">(</span><span class="n">CalculatorBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cryspy-based diffraction calculator.</span>
@@ -9621,13 +9627,19 @@ patterns.</p>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">phase_block</span><span class="p">[</span><span class="s1">&#39;index_hkl&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
             <span class="n">sin_theta_over_lambda</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">phase_block</span><span class="p">[</span><span class="s1">&#39;sthovl&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-            <span class="n">f_nucl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">phase_block</span><span class="p">[</span><span class="s1">&#39;f_nucl&#39;</span><span class="p">])</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
 
+        <span class="n">structure_factor</span> <span class="o">=</span> <span class="n">phase_block</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;f_nucl&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">structure_factor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">structure_factor</span> <span class="o">=</span> <span class="n">phase_block</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;f_charge&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">structure_factor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">structure_factor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">structure_factor</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">indices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">EXPECTED_HKL_INDEX_ROWS</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
-        <span class="k">return</span> <span class="n">indices</span><span class="p">,</span> <span class="n">sin_theta_over_lambda</span><span class="p">,</span> <span class="n">f_nucl</span>
+        <span class="k">return</span> <span class="n">indices</span><span class="p">,</span> <span class="n">sin_theta_over_lambda</span><span class="p">,</span> <span class="n">structure_factor</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_powder_refln_d_spacing</span><span class="p">(</span>
