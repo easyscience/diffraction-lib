@@ -185,15 +185,20 @@ class ProjectDisplay:
     ) -> None:
         """Show a pattern view for one experiment."""
         normalized_include = self._normalize_include(include)
+        statuses = self._pattern_option_statuses(expt_name)
 
         if normalized_include == ('auto',):
-            auto_options = self._pattern_option_statuses(expt_name)
-            if self._status_by_name(auto_options, 'uncertainty').available:
+            auto_include = self._auto_include(statuses)
+            if not auto_include:
+                msg = self._status_by_name(statuses, 'auto').reason
+                raise ValueError(msg)
+            if 'uncertainty' in auto_include:
                 self.posterior.predictive(
                     expt_name=expt_name,
                     style='band',
                     x_min=x_min,
                     x_max=x_max,
+                    show_residual=True if 'residual' in auto_include else None,
                     x=x,
                 )
                 return
@@ -201,28 +206,12 @@ class ProjectDisplay:
                 expt_name=expt_name,
                 x_min=x_min,
                 x_max=x_max,
-                include=('measured', 'calculated'),
+                include=auto_include,
                 x=x,
             )
             return
 
-        if normalized_include == ('measured',):
-            self._project.rendering.plotter.plot_meas(
-                expt_name=expt_name,
-                x_min=x_min,
-                x_max=x_max,
-                x=x,
-            )
-            return
-
-        if normalized_include == ('calculated',):
-            self._project.rendering.plotter.plot_calc(
-                expt_name=expt_name,
-                x_min=x_min,
-                x_max=x_max,
-                x=x,
-            )
-            return
+        self._validate_requested_include(statuses, normalized_include)
 
         if 'uncertainty' in normalized_include:
             self.posterior.predictive(
@@ -291,6 +280,66 @@ class ProjectDisplay:
         msg = f'Unknown pattern option: {option_name}.'
         raise ValueError(msg)
 
+    @classmethod
+    def _auto_include(
+        cls,
+        statuses: list[PatternOptionStatus],
+    ) -> tuple[str, ...]:
+        """Return the effective include tuple for ``include='auto'``."""
+        status_by_name = {status.name: status for status in statuses}
+        if status_by_name['uncertainty'].available:
+            include = ['measured', 'calculated', 'uncertainty']
+            if status_by_name['background'].available:
+                include.append('background')
+            if status_by_name['residual'].available:
+                include.append('residual')
+            if status_by_name['bragg'].available:
+                include.append('bragg')
+            return tuple(include)
+        if status_by_name['measured'].available and status_by_name['calculated'].available:
+            include = ['measured', 'calculated']
+            if status_by_name['background'].available:
+                include.append('background')
+            if status_by_name['residual'].available:
+                include.append('residual')
+            if status_by_name['bragg'].available:
+                include.append('bragg')
+            return tuple(include)
+        if status_by_name['measured'].available:
+            return ('measured',)
+        if status_by_name['calculated'].available:
+            return ('calculated',)
+        return ()
+
+    @classmethod
+    def _validate_requested_include(
+        cls,
+        statuses: list[PatternOptionStatus],
+        include: tuple[str, ...],
+    ) -> None:
+        """Raise a clear error when a requested include is unavailable."""
+        status_by_name = {status.name: status for status in statuses}
+        unavailable = [
+            option_name
+            for option_name in include
+            if option_name != 'auto' and not status_by_name[option_name].available
+        ]
+        if unavailable:
+            option_name = unavailable[0]
+            msg = status_by_name[option_name].reason
+            raise ValueError(msg)
+
+        include_set = set(include)
+        if 'background' in include_set and not {'measured', 'calculated'}.issubset(include_set):
+            msg = 'background requires both measured and calculated data in the same view.'
+            raise ValueError(msg)
+        if 'bragg' in include_set and not {'measured', 'calculated'}.issubset(include_set):
+            msg = 'bragg requires both measured and calculated data in the same view.'
+            raise ValueError(msg)
+        if 'residual' in include_set and not {'measured', 'calculated'}.issubset(include_set):
+            msg = 'residual requires both measured and calculated data in the same view.'
+            raise ValueError(msg)
+
     def _show_point_estimate_pattern(
         self,
         *,
@@ -301,6 +350,8 @@ class ProjectDisplay:
         x: object | None,
     ) -> None:
         """Dispatch a point-estimate pattern view to the live plotter."""
+        statuses = self._pattern_option_statuses(expt_name)
+        self._validate_requested_include(statuses, include)
         include_set = set(include)
         if include_set == {'measured'}:
             self._project.rendering.plotter.plot_meas(
@@ -343,9 +394,15 @@ class ProjectDisplay:
 
         measured_available = getattr(pattern, 'intensity_meas', None) is not None
         calculated_available = getattr(pattern, 'intensity_calc', None) is not None
-        background_available = getattr(pattern, 'intensity_bkg', None) is not None
+        background_available = (
+            measured_available
+            and calculated_available
+            and getattr(pattern, 'intensity_bkg', None) is not None
+        )
         bragg_available = (
-            sample_form == SampleFormEnum.POWDER.value
+            measured_available
+            and calculated_available
+            and sample_form == SampleFormEnum.POWDER.value
             and scattering_type == ScatteringTypeEnum.BRAGG.value
             and getattr(experiment, 'refln', None) is not None
         )
@@ -355,79 +412,146 @@ class ProjectDisplay:
             and calculated_available
         )
         excluded_regions = getattr(experiment, 'excluded_regions', None)
-        excluded_available = excluded_regions is not None and len(excluded_regions) > 0
-        uncertainty_available, uncertainty_reason = self._uncertainty_status()
+        has_excluded_regions = excluded_regions is not None and len(excluded_regions) > 0
+        excluded_available = False
+        uncertainty_available, uncertainty_reason = self._uncertainty_status(
+            measured_available=measured_available,
+            sample_form=sample_form,
+            scattering_type=scattering_type,
+        )
 
-        auto_uses_uncertainty = uncertainty_available
-        auto_measured = measured_available
-        auto_calculated = calculated_available
-        auto_background = background_available and calculated_available
-        auto_residual = residual_available
-        auto_bragg = bragg_available and measured_available and calculated_available
+        auto_include = self._auto_include(
+            [
+                PatternOptionStatus(
+                    name='measured',
+                    description=_PATTERN_OPTION_DESCRIPTIONS['measured'],
+                    available=measured_available,
+                    auto_included=False,
+                    reason='',
+                ),
+                PatternOptionStatus(
+                    name='calculated',
+                    description=_PATTERN_OPTION_DESCRIPTIONS['calculated'],
+                    available=calculated_available,
+                    auto_included=False,
+                    reason='',
+                ),
+                PatternOptionStatus(
+                    name='background',
+                    description=_PATTERN_OPTION_DESCRIPTIONS['background'],
+                    available=background_available,
+                    auto_included=False,
+                    reason='',
+                ),
+                PatternOptionStatus(
+                    name='residual',
+                    description=_PATTERN_OPTION_DESCRIPTIONS['residual'],
+                    available=residual_available,
+                    auto_included=False,
+                    reason='',
+                ),
+                PatternOptionStatus(
+                    name='bragg',
+                    description=_PATTERN_OPTION_DESCRIPTIONS['bragg'],
+                    available=bragg_available,
+                    auto_included=False,
+                    reason='',
+                ),
+                PatternOptionStatus(
+                    name='uncertainty',
+                    description=_PATTERN_OPTION_DESCRIPTIONS['uncertainty'],
+                    available=uncertainty_available,
+                    auto_included=False,
+                    reason='',
+                ),
+            ]
+        )
 
         return [
             PatternOptionStatus(
                 name='auto',
                 description=_PATTERN_OPTION_DESCRIPTIONS['auto'],
-                available=measured_available or calculated_available or uncertainty_available,
+                available=bool(auto_include),
                 auto_included=True,
-                reason='' if measured_available or calculated_available or uncertainty_available else (
-                    'No measured, calculated, or posterior predictive data is available.'
-                ),
+                reason='' if auto_include else 'No supported pattern content is available.',
             ),
             PatternOptionStatus(
                 name='measured',
                 description=_PATTERN_OPTION_DESCRIPTIONS['measured'],
                 available=measured_available,
-                auto_included=auto_measured,
+                auto_included='measured' in auto_include,
                 reason='' if measured_available else 'Measured intensities are unavailable.',
             ),
             PatternOptionStatus(
                 name='calculated',
                 description=_PATTERN_OPTION_DESCRIPTIONS['calculated'],
                 available=calculated_available,
-                auto_included=auto_calculated,
+                auto_included='calculated' in auto_include,
                 reason='' if calculated_available else 'Calculated intensities are unavailable.',
             ),
             PatternOptionStatus(
                 name='background',
                 description=_PATTERN_OPTION_DESCRIPTIONS['background'],
                 available=background_available,
-                auto_included=auto_background,
-                reason='' if background_available else 'Background intensities are unavailable.',
+                auto_included='background' in auto_include,
+                reason='' if background_available else (
+                    'Background display requires measured and calculated data plus background intensities.'
+                ),
             ),
             PatternOptionStatus(
                 name='residual',
                 description=_PATTERN_OPTION_DESCRIPTIONS['residual'],
                 available=residual_available,
-                auto_included=auto_residual,
-                reason='' if residual_available else 'Residuals currently require powder measured and calculated data.',
+                auto_included='residual' in auto_include,
+                reason='' if residual_available else (
+                    'Residuals currently require powder measured and calculated data.'
+                ),
             ),
             PatternOptionStatus(
                 name='bragg',
                 description=_PATTERN_OPTION_DESCRIPTIONS['bragg'],
                 available=bragg_available,
-                auto_included=auto_bragg,
-                reason='' if bragg_available else 'Bragg tick marks require powder Bragg reflection data.',
+                auto_included='bragg' in auto_include,
+                reason='' if bragg_available else (
+                    'Bragg tick marks require powder Bragg measured and calculated data with reflection rows.'
+                ),
             ),
             PatternOptionStatus(
                 name='excluded',
                 description=_PATTERN_OPTION_DESCRIPTIONS['excluded'],
                 available=excluded_available,
                 auto_included=False,
-                reason='' if excluded_available else 'No excluded regions are defined for this experiment.',
+                reason='Excluded-region overlays are not implemented in pattern() yet.'
+                if has_excluded_regions
+                else 'No excluded regions are defined for this experiment.',
             ),
             PatternOptionStatus(
                 name='uncertainty',
                 description=_PATTERN_OPTION_DESCRIPTIONS['uncertainty'],
                 available=uncertainty_available,
-                auto_included=auto_uses_uncertainty,
+                auto_included='uncertainty' in auto_include,
                 reason=uncertainty_reason,
             ),
         ]
 
-    def _uncertainty_status(self) -> tuple[bool, str]:
+    def _uncertainty_status(
+        self,
+        *,
+        measured_available: bool,
+        sample_form: str,
+        scattering_type: str,
+    ) -> tuple[bool, str]:
         """Return whether posterior predictive uncertainty is available."""
+        if not measured_available:
+            return False, 'Uncertainty bands require measured data.'
+
+        supported_sample_form = sample_form == SampleFormEnum.POWDER.value or (
+            sample_form == SampleFormEnum.SINGLE_CRYSTAL.value
+            and scattering_type == ScatteringTypeEnum.BRAGG.value
+        )
+        if not supported_sample_form:
+            return False, 'Posterior predictive pattern views are unavailable for this experiment type.'
+
         fit_results = getattr(self._project.analysis, 'fit_results', None)
         if fit_results is None:
             return False, 'No fit results are available.'
