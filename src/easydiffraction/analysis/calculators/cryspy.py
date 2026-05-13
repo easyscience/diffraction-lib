@@ -315,13 +315,19 @@ class CryspyCalculator(CalculatorBase):
         try:
             indices = np.asarray(phase_block['index_hkl'], dtype=int)
             sin_theta_over_lambda = np.asarray(phase_block['sthovl'], dtype=float)
-            f_nucl = np.asarray(phase_block['f_nucl'])
         except KeyError:
             return None
 
+        structure_factor = phase_block.get('f_nucl')
+        if structure_factor is None:
+            structure_factor = phase_block.get('f_charge')
+        if structure_factor is None:
+            return None
+        structure_factor = np.asarray(structure_factor)
+
         if indices.shape[0] != EXPECTED_HKL_INDEX_ROWS:
             return None
-        return indices, sin_theta_over_lambda, f_nucl
+        return indices, sin_theta_over_lambda, structure_factor
 
     @staticmethod
     def _powder_refln_d_spacing(
