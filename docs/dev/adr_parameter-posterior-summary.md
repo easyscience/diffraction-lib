@@ -22,20 +22,20 @@ fits use `FitResults`, while posterior-capable fits such as DREAM use
 
 The user-facing need is more local: when a posterior-capable fit has
 completed, each parameter should expose a compact Bayesian summary for
-inspection without forcing users to traverse `analysis.fit_results`.
-At the same time, `parameter.value` must remain the only scalar used by
-the live model, minimizer setup, constraints, and category updates.
+inspection without forcing users to traverse `analysis.fit_results`. At
+the same time, `parameter.value` must remain the only scalar used by the
+live model, minimizer setup, constraints, and category updates.
 
 There is also a staleness problem. After a manual parameter edit or a
-new fit, fit-derived helper data must be cleared or replaced as a
-group. Keeping old posterior summaries after the active parameter state
-changes would mislead users.
+new fit, fit-derived helper data must be cleared or replaced as a group.
+Keeping old posterior summaries after the active parameter state changes
+would mislead users.
 
 One more implementation constraint matters: minimizers currently apply
 final fitted values through `_set_value_from_minimizer(...)` and then
-write `param.uncertainty = ...` directly. If `uncertainty` and
-posterior metadata become read-only fit outputs and the public `value`
-setter starts clearing stale fit metadata on manual edits, fit-result
+write `param.uncertainty = ...` directly. If `uncertainty` and posterior
+metadata become read-only fit outputs and the public `value` setter
+starts clearing stale fit metadata on manual edits, fit-result
 application must move to a dedicated internal update path so that valid
 fit outputs are installed atomically instead of being cleared
 accidentally.
@@ -44,12 +44,12 @@ accidentally.
 
 ### 1. Add one optional posterior object to each parameter
 
-Each `GenericParameter` will gain a read-only
-`posterior` property whose default value is `None`.
+Each `GenericParameter` will gain a read-only `posterior` property whose
+default value is `None`.
 
 This property is convenience metadata only. It does not participate in
-calculations. `parameter.value` remains the only scalar used by the
-live model.
+calculations. `parameter.value` remains the only scalar used by the live
+model.
 
 ### 2. Reuse the existing Bayesian summary container
 
@@ -256,11 +256,10 @@ Fields:
 
 `fit_min` and `fit_max` are required for restored Bayesian plotting.
 `fit_bounds_uncertainty_multiplier` is required if restored plots should
-preserve the uncertainty-derived bound annotation exactly.
-`start_value` and `start_uncertainty` are required for clean
-cross-session undo. If omitted, restored fit reports may show `N/A` for
-`start` and `change`, and undo may need to clear uncertainty as a
-compatibility fallback.
+preserve the uncertainty-derived bound annotation exactly. `start_value`
+and `start_uncertainty` are required for clean cross-session undo. If
+omitted, restored fit reports may show `N/A` for `start` and `change`,
+and undo may need to clear uncertainty as a compatibility fallback.
 
 #### 11.2 `_bayesian_result` single item
 
@@ -313,9 +312,8 @@ loop described below.
 
 #### 11.5 `_bayesian_parameter_posterior` loop
 
-Stores one canonical posterior summary row per sampled parameter.
-These rows are the source used to rebuild `parameter.posterior` on
-load.
+Stores one canonical posterior summary row per sampled parameter. These
+rows are the source used to rebuild `parameter.posterior` on load.
 
 Fields:
 
@@ -514,8 +512,8 @@ layout is recommended rather than mandatory.
 Do not persist backend-specific runtime objects such as `engine_result`,
 the DREAM driver, or ArviZ `InferenceData`.
 
-Those objects can be rebuilt from canonical saved arrays when needed,
-or left unavailable after load.
+Those objects can be rebuilt from canonical saved arrays when needed, or
+left unavailable after load.
 
 ### 13. Restore flow and partial-availability policy
 
@@ -527,13 +525,12 @@ When `Project.save()` sees `analysis.fit_results` as a
 `BayesianFitResults` instance:
 
 1. It writes standard analysis configuration to `analysis/analysis.cif`.
-2. It appends `_fit_parameter`, `_bayesian_result`,
-  `_bayesian_sampler`, `_bayesian_convergence`, and
-  `_bayesian_parameter_posterior`.
+2. It appends `_fit_parameter`, `_bayesian_result`, `_bayesian_sampler`,
+   `_bayesian_convergence`, and `_bayesian_parameter_posterior`.
 3. If posterior predictive summaries are available, it also writes the
-  `_bayesian_predictive_dataset` manifest.
+   `_bayesian_predictive_dataset` manifest.
 4. If posterior sample arrays or predictive arrays are available, it
-  writes `analysis/bayesian_data.h5`.
+   writes `analysis/bayesian_data.h5`.
 
 #### 13.2 Load flow
 
@@ -541,20 +538,20 @@ When `Project.load()` restores `analysis/analysis.cif`:
 
 1. Standard analysis configuration is restored first.
 2. If `_fit_parameter` is present, fit bounds, bound provenance, and
-  optional pre-fit scalar snapshots are restored by matching
-  `param_unique_name` to live parameters.
+   optional pre-fit scalar snapshots are restored by matching
+   `param_unique_name` to live parameters.
 3. If Bayesian categories are present, a lightweight
-  `BayesianFitResults` instance is rebuilt from persisted metadata and
-  parameter summary rows.
+   `BayesianFitResults` instance is rebuilt from persisted metadata and
+   parameter summary rows.
 4. `parameter.posterior` is rebuilt by matching summary rows to live
-  parameters via `unique_name`.
+   parameters via `unique_name`.
 5. `parameter.value` and `parameter.uncertainty` continue to come from
-  the normal project serialization path; Bayesian restore does not
-  overwrite them.
+   the normal project serialization path; Bayesian restore does not
+   overwrite them.
 6. If `analysis/bayesian_data.h5` exists and matches the manifest,
-  `posterior_samples` and `posterior_predictive` are restored.
+   `posterior_samples` and `posterior_predictive` are restored.
 7. If the sidecar is missing or incomplete, the restore degrades to
-  summary-only mode without failing the whole project load.
+   summary-only mode without failing the whole project load.
 
 #### 13.3 Partial restore behavior
 
@@ -615,8 +612,8 @@ structure and experiment files would create multiple sources of truth.
   than mixed user-editable and fit-editable state.
 - `analysis.fit_results` remains the canonical source for full Bayesian
   state.
-- `analysis/analysis.cif` becomes the home for fit-control metadata
-  that does not belong in structure or experiment CIF files.
+- `analysis/analysis.cif` becomes the home for fit-control metadata that
+  does not belong in structure or experiment CIF files.
 - Bayesian save/load gains a clear split between text metadata in
   `analysis/analysis.cif` and bulk numerical arrays in
   `analysis/bayesian_data.h5`.
@@ -663,8 +660,8 @@ It still defers:
 
 ## Implementation Notes
 
-- The first implementation should only populate
-  `parameter.posterior` for DREAM.
+- The first implementation should only populate `parameter.posterior`
+  for DREAM.
 - Existing `PosteriorParameterSummary` instances should be reused rather
   than copied into a second summary type unless implementation reveals a
   concrete layering problem that cannot be resolved cleanly.

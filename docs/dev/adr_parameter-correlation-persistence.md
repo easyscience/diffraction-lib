@@ -15,8 +15,8 @@ unless the underlying runtime objects are rebuilt. For Bayesian fits,
 full posterior samples may not always be restored. For deterministic
 fits, engine covariance is typically not persisted at all.
 
-The correlation matrix is an analysis-owned summary, not model state.
-It therefore belongs in `analysis/analysis.cif`, not in structure or
+The correlation matrix is an analysis-owned summary, not model state. It
+therefore belongs in `analysis/analysis.cif`, not in structure or
 experiment CIF files.
 
 ## Decision

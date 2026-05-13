@@ -137,8 +137,7 @@ and Bayesian fitting.
 Fit-type-specific extensions are layered on top:
 
 - Bayesian persistence extends this with `_bayesian_*` categories and an
-  HDF5 sidecar, as described in
-  `adr_parameter-posterior-summary.md`.
+  HDF5 sidecar, as described in `adr_parameter-posterior-summary.md`.
 - Future fit-specific summaries should follow the same pattern: generic
   shared fields in `_fit_result`, specialized fields in separate
   categories.

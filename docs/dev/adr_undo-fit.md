@@ -8,17 +8,17 @@
 The new `_fit_parameter.start_value` and
 `_fit_parameter.start_uncertainty` fields in `analysis/analysis.cif`
 capture the last committed pre-fit scalar state for each fitted
-parameter. This is useful when a minimization run produces a poor
-result and the user wants to return to the state from immediately
-before the fit.
+parameter. This is useful when a minimization run produces a poor result
+and the user wants to return to the state from immediately before the
+fit.
 
 This need is especially important in command-line workflows, where the
 user may save a project after a bad fit and reopen it later expecting a
 simple way to roll back to the pre-fit state.
 
 However, these snapshots alone do not define undo semantics. The API
-owner, rollback scope, and interaction with fit-derived metadata must
-be explicit.
+owner, rollback scope, and interaction with fit-derived metadata must be
+explicit.
 
 ## Decision
 
@@ -88,8 +88,8 @@ If a parameter has no saved `start_value`, `undo_fit()` leaves that
 parameter unchanged.
 
 If a parameter has no saved `start_uncertainty`, `undo_fit()` may clear
-that parameter's uncertainty as a compatibility fallback for older
-saved projects.
+that parameter's uncertainty as a compatibility fallback for older saved
+projects.
 
 ### 6. Suggested user flow
 
@@ -118,8 +118,7 @@ This command should:
 
 - load the saved project from `PROJECT_DIR`
 - execute `project.analysis.undo_fit()`
-- save the recovered state back to the same project directory by
-  default
+- save the recovered state back to the same project directory by default
 - support `--dry` to perform the rollback in memory without overwriting
   project files
 - emit a clear message describing whether the latest fit snapshot was
@@ -142,8 +141,8 @@ nothing.
 - Users gain a simple recovery path after a poor fit.
 - The feature works naturally with saved projects and both Python and
   command-line workflows.
-- The initial scope stays small and does not require full historical
-  fit snapshots.
+- The initial scope stays small and does not require full historical fit
+  snapshots.
 
 ### Trade-offs
 
