@@ -9,12 +9,19 @@ def test_module_import():
 
 
 def test_enum_members():
+    from easydiffraction.analysis.minimizers.enums import DreamPopulationInitializationEnum
     from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 
     assert MinimizerTypeEnum.LMFIT == 'lmfit'
     assert MinimizerTypeEnum.LMFIT_LEASTSQ == 'lmfit (leastsq)'
     assert MinimizerTypeEnum.LMFIT_LEAST_SQUARES == 'lmfit (least_squares)'
     assert MinimizerTypeEnum.DFOLS == 'dfols'
+    assert MinimizerTypeEnum.BUMPS_DREAM == 'bumps (dream)'
+
+    assert DreamPopulationInitializationEnum.EPS == 'eps'
+    assert DreamPopulationInitializationEnum.COV == 'cov'
+    assert DreamPopulationInitializationEnum.LHS == 'lhs'
+    assert DreamPopulationInitializationEnum.RANDOM == 'random'
 
 
 def test_enum_default():

@@ -173,3 +173,32 @@ def test_last_powder_refln_records_reads_tof_time_and_d_spacing():
     assert records[0].d_spacing == pytest.approx(3.21)
     assert records[0].f_calc == pytest.approx(6.0)
     assert records[0].f_squared_calc == pytest.approx(36.0)
+
+
+def test_last_powder_refln_records_reads_xray_charge_structure_factor():
+    from easydiffraction.analysis.calculators.cryspy import CryspyCalculator
+    from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+
+    calculator = CryspyCalculator()
+    calculator._last_powder_phase_blocks = {
+        'phase_exp': {
+            'index_hkl': np.array([[1], [1], [1]]),
+            'sthovl': np.array([0.2]),
+            'ttheta_hkl': np.array([np.pi / 3]),
+            'f_charge': np.array([8.0 - 6.0j]),
+        }
+    }
+    structure = SimpleNamespace(name='phase')
+    experiment = SimpleNamespace(
+        name='exp',
+        type=SimpleNamespace(beam_mode=SimpleNamespace(value=BeamModeEnum.CONSTANT_WAVELENGTH)),
+    )
+
+    records = calculator.last_powder_refln_records(structure, experiment, phase_id='phase-x')
+
+    assert len(records) == 1
+    assert records[0].phase_id == 'phase-x'
+    assert records[0].two_theta == pytest.approx(60.0)
+    assert records[0].d_spacing == pytest.approx(2.5)
+    assert records[0].f_calc == pytest.approx(10.0)
+    assert records[0].f_squared_calc == pytest.approx(100.0)

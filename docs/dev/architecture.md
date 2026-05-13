@@ -527,28 +527,28 @@ from .line_segment import LineSegmentBackground
 
 ### 5.5 All Factories
 
-| Factory                      | Domain                 | Tags resolve to                                                                                                                                                             |
-| ---------------------------- | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `BackgroundFactory`          | Background categories  | `LineSegmentBackground`, `ChebyshevPolynomialBackground`                                                                                                                    |
-| `PeakFactory`                | Peak profiles          | `CwlPseudoVoigt`, `TofJorgensen`, `TofJorgensenVonDreele`, …                                                                                                                |
-| `InstrumentFactory`          | Instruments            | `CwlPdInstrument`, `TofPdInstrument`, …                                                                                                                                     |
-| `DataFactory`                | Data collections       | `PdCwlData`, `PdTofData`, `TotalData`                                                                                                                                       |
-| `ReflnFactory`               | Reflection collections | `ReflnData`, `PowderCwlReflnData`, `PowderTofReflnData`                                                                                                                     |
-| `ExtinctionFactory`          | Extinction models      | `BeckerCoppensExtinction`                                                                                                                                                   |
-| `LinkedCrystalFactory`       | Linked-crystal refs    | `LinkedCrystal`                                                                                                                                                             |
-| `ExcludedRegionsFactory`     | Excluded regions       | `ExcludedRegions`                                                                                                                                                           |
-| `LinkedPhasesFactory`        | Linked phases          | `LinkedPhases`                                                                                                                                                              |
-| `ExperimentTypeFactory`      | Experiment descriptors | `ExperimentType`                                                                                                                                                            |
-| `CellFactory`                | Unit cells             | `Cell`                                                                                                                                                                      |
-| `SpaceGroupFactory`          | Space groups           | `SpaceGroup`                                                                                                                                                                |
-| `AtomSitesFactory`           | Atom sites             | `AtomSites`                                                                                                                                                                 |
-| `AtomSiteAnisoFactory`       | Anisotropic ADPs       | `AtomSiteAnisoCollection`                                                                                                                                                   |
-| `AliasesFactory`             | Parameter aliases      | `Aliases`                                                                                                                                                                   |
-| `ConstraintsFactory`         | Parameter constraints  | `Constraints`                                                                                                                                                               |
-| `FitModeFactory`             | Fit-mode category      | `FitMode`                                                                                                                                                                   |
-| `JointFitExperimentsFactory` | Joint-fit weights      | `JointFitExperiments`                                                                                                                                                       |
-| `CalculatorFactory`          | Calculation engines    | `CryspyCalculator`, `CrysfmlCalculator`, `PdffitCalculator`                                                                                                                 |
-| `MinimizerFactory`           | Minimisers             | `LmfitMinimizer`, `LmfitLeastsqMinimizer`, `LmfitLeastSquaresMinimizer`, `DfolsMinimizer`, `BumpsMinimizer`, `BumpsLmMinimizer`, `BumpsAmoebaMinimizer`, `BumpsDEMinimizer` |
+| Factory                      | Domain                 | Tags resolve to                                                                                                                                                                                    |
+| ---------------------------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `BackgroundFactory`          | Background categories  | `LineSegmentBackground`, `ChebyshevPolynomialBackground`                                                                                                                                           |
+| `PeakFactory`                | Peak profiles          | `CwlPseudoVoigt`, `TofJorgensen`, `TofJorgensenVonDreele`, …                                                                                                                                       |
+| `InstrumentFactory`          | Instruments            | `CwlPdInstrument`, `TofPdInstrument`, …                                                                                                                                                            |
+| `DataFactory`                | Data collections       | `PdCwlData`, `PdTofData`, `TotalData`                                                                                                                                                              |
+| `ReflnFactory`               | Reflection collections | `ReflnData`, `PowderCwlReflnData`, `PowderTofReflnData`                                                                                                                                            |
+| `ExtinctionFactory`          | Extinction models      | `BeckerCoppensExtinction`                                                                                                                                                                          |
+| `LinkedCrystalFactory`       | Linked-crystal refs    | `LinkedCrystal`                                                                                                                                                                                    |
+| `ExcludedRegionsFactory`     | Excluded regions       | `ExcludedRegions`                                                                                                                                                                                  |
+| `LinkedPhasesFactory`        | Linked phases          | `LinkedPhases`                                                                                                                                                                                     |
+| `ExperimentTypeFactory`      | Experiment descriptors | `ExperimentType`                                                                                                                                                                                   |
+| `CellFactory`                | Unit cells             | `Cell`                                                                                                                                                                                             |
+| `SpaceGroupFactory`          | Space groups           | `SpaceGroup`                                                                                                                                                                                       |
+| `AtomSitesFactory`           | Atom sites             | `AtomSites`                                                                                                                                                                                        |
+| `AtomSiteAnisoFactory`       | Anisotropic ADPs       | `AtomSiteAnisoCollection`                                                                                                                                                                          |
+| `AliasesFactory`             | Parameter aliases      | `Aliases`                                                                                                                                                                                          |
+| `ConstraintsFactory`         | Parameter constraints  | `Constraints`                                                                                                                                                                                      |
+| `FitModeFactory`             | Fit-mode category      | `FitMode`                                                                                                                                                                                          |
+| `JointFitExperimentsFactory` | Joint-fit weights      | `JointFitExperiments`                                                                                                                                                                              |
+| `CalculatorFactory`          | Calculation engines    | `CryspyCalculator`, `CrysfmlCalculator`, `PdffitCalculator`                                                                                                                                        |
+| `MinimizerFactory`           | Minimisers             | `LmfitMinimizer`, `LmfitLeastsqMinimizer`, `LmfitLeastSquaresMinimizer`, `DfolsMinimizer`, `BumpsMinimizer`, `BumpsLmMinimizer`, `BumpsDreamMinimizer`, `BumpsAmoebaMinimizer`, `BumpsDEMinimizer` |
 
 > **Note:** `ExperimentFactory` and `StructureFactory` are _builder_
 > factories with `from_cif_path`, `from_cif_str`, `from_data_path`, and
@@ -675,6 +675,7 @@ the choice.
 | `dfols`                 | `DfolsMinimizer`             |
 | `bumps`                 | `BumpsMinimizer`             |
 | `bumps (lm)`            | `BumpsLmMinimizer`           |
+| `bumps (dream)`         | `BumpsDreamMinimizer`        |
 | `bumps (amoeba)`        | `BumpsAmoebaMinimizer`       |
 | `bumps (de)`            | `BumpsDEMinimizer`           |
 
@@ -825,13 +826,44 @@ workflow:
   only `single`; >1 → all three).
 - Joint-fit weights: `joint_fit_experiments` (`CategoryCollection` of
   per-experiment weight entries); sibling of `fit`, not a child.
+- Fit results: `analysis.fit_results` stores the latest runtime result
+  object. This is `FitResults` for deterministic fits and
+  `BayesianFitResults` for Bayesian DREAM runs.
 - Parameter tables: `show_all_params()`, `show_fittable_params()`,
   `show_free_params()`, `how_to_access_parameters()`
 - Fitting: `fit()` dispatches single/joint through the callable `fit`
   category; `fit_sequential()` handles sequential mode (sets `fit.mode`
-  to `'sequential'` internally). `display.fit_results()` shows results.
+  to `'sequential'` internally). `fit()` accepts optional `random_seed`
+  for stochastic minimizers; deterministic minimizers reject non-`None`
+  seeds. `display.fit_results()` dispatches through the active runtime
+  result object.
 - Aliases and constraints (single-type categories; no public `_type`
   getter or setter)
+
+#### 6.4.1 Bayesian DREAM Runtime Results
+
+Bayesian sampling is integrated as a normal minimizer selection with tag
+`'bumps (dream)'`. It does not create a parallel `Analysis` stack or a
+new persisted results category.
+
+- `BayesianFitResults` extends `FitResults` with runtime-only posterior
+  state such as `posterior_samples`, `posterior_parameter_summaries`,
+  `posterior_predictive`, `diagnostics`, and `sampler_settings`.
+- Posterior arrays and predictive caches remain runtime-only; they are
+  not serialized into CIF or project directories.
+- `sampler_settings` records the resolved stochastic settings actually
+  used for the run, including `random_seed`, `steps`, `burn`, `thin`,
+  `pop`, and `parallel`.
+- The current user-facing DREAM controls live on the active minimizer
+  object, for example `project.analysis.fit.minimizer.steps`, `burn`,
+  `thin`, `pop`, `parallel`, and `init`.
+- `plot_param_correlations()` uses posterior samples when available and
+  otherwise falls back to deterministic covariance or engine-derived
+  correlations.
+- Bayesian-only plotting methods are exposed explicitly rather than by
+  overloading deterministic plot calls: `plot_posterior_pairs()`,
+  `plot_param_distribution(param)`, and
+  `plot_posterior_predictive(expt_name, ...)`.
 
 ---
 
@@ -894,7 +926,9 @@ project_dir/
 saved project re-opens with the same display backends. Per-experiment
 calculator selection (`_calculation.calculator_type`) lives in each
 experiment file, and fit configuration (`_fit.minimizer_type`,
-`_fit.mode`) lives in `analysis/analysis.cif`.
+`_fit.mode`) lives in `analysis/analysis.cif`. Runtime fit outputs,
+including `analysis.fit_results`, posterior chains, posterior predictive
+summaries, and convergence diagnostics, are not serialized.
 
 ### 7.3 Verbosity
 
@@ -1050,6 +1084,27 @@ project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
 
 # Save
 project.save()
+```
+
+### 8.4.1 Bayesian Refinement
+
+```python
+# Deterministic pre-fit remains explicit
+project.analysis.fit.minimizer_type = 'bumps (lm)'
+project.analysis.fit()
+
+# Switch to Bayesian sampling using the same entry point
+project.analysis.fit.minimizer_type = 'bumps (dream)'
+project.analysis.fit.minimizer.steps = 1000
+project.analysis.fit.minimizer.parallel = 0
+project.analysis.fit(random_seed=11)
+
+# Runtime-only Bayesian summaries and plots
+project.analysis.display.fit_results()
+project.display.plotter.plot_param_correlations()
+project.display.plotter.plot_posterior_pairs()
+project.display.plotter.plot_param_distribution(param)
+project.display.plotter.plot_posterior_predictive(expt_name='hrpt')
 ```
 
 ### 8.5 TOF Experiment (tutorial ed-7)

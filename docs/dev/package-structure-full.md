@@ -6,6 +6,7 @@
 │   ├── 📁 calculators
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 base.py
+│   │   │   ├── 🏷️ class PowderReflnRecord
 │   │   │   └── 🏷️ class CalculatorBase
 │   │   ├── 📄 crysfml.py
 │   │   │   └── 🏷️ class CrysfmlCalculator
@@ -48,10 +49,16 @@
 │   │   └── 📄 __init__.py
 │   ├── 📁 fit_helpers
 │   │   ├── 📄 __init__.py
+│   │   ├── 📄 bayesian.py
+│   │   │   ├── 🏷️ class PosteriorParameterSummary
+│   │   │   ├── 🏷️ class PosteriorPredictiveSummary
+│   │   │   ├── 🏷️ class PosteriorSamples
+│   │   │   └── 🏷️ class BayesianFitResults
 │   │   ├── 📄 metrics.py
 │   │   ├── 📄 reporting.py
 │   │   │   └── 🏷️ class FitResults
 │   │   └── 📄 tracking.py
+│   │       ├── 🏷️ class SamplerProgressUpdate
 │   │       ├── 🏷️ class _TerminalLiveHandle
 │   │       └── 🏷️ class FitProgressTracker
 │   ├── 📁 minimizers
@@ -65,12 +72,18 @@
 │   │   │   └── 🏷️ class BumpsAmoebaMinimizer
 │   │   ├── 📄 bumps_de.py
 │   │   │   └── 🏷️ class BumpsDEMinimizer
+│   │   ├── 📄 bumps_dream.py
+│   │   │   ├── 🏷️ class _DreamRunContext
+│   │   │   ├── 🏷️ class _DreamDriverResult
+│   │   │   ├── 🏷️ class _DreamProgressMonitor
+│   │   │   └── 🏷️ class BumpsDreamMinimizer
 │   │   ├── 📄 bumps_lm.py
 │   │   │   └── 🏷️ class BumpsLmMinimizer
 │   │   ├── 📄 dfols.py
 │   │   │   └── 🏷️ class DfolsMinimizer
 │   │   ├── 📄 enums.py
-│   │   │   └── 🏷️ class MinimizerTypeEnum
+│   │   │   ├── 🏷️ class MinimizerTypeEnum
+│   │   │   └── 🏷️ class DreamPopulationInitializationEnum
 │   │   ├── 📄 factory.py
 │   │   │   └── 🏷️ class MinimizerFactory
 │   │   ├── 📄 lmfit.py
@@ -169,9 +182,6 @@
 │   │   │   │   │   ├── 🏷️ class PdDataBase
 │   │   │   │   │   ├── 🏷️ class PdCwlData
 │   │   │   │   │   └── 🏷️ class PdTofData
-│   │   │   │   ├── 📄 bragg_sc.py
-│   │   │   │   │   ├── 🏷️ class Refln
-│   │   │   │   │   └── 🏷️ class ReflnData
 │   │   │   │   ├── 📄 factory.py
 │   │   │   │   │   └── 🏷️ class DataFactory
 │   │   │   │   └── 📄 total_pd.py
@@ -257,6 +267,20 @@
 │   │   │   │   │   └── 🏷️ class TotalGaussianDampedSinc
 │   │   │   │   └── 📄 total_mixins.py
 │   │   │   │       └── 🏷️ class TotalBroadeningMixin
+│   │   │   ├── 📁 refln
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 bragg_pd.py
+│   │   │   │   │   ├── 🏷️ class PowderReflnBase
+│   │   │   │   │   ├── 🏷️ class PowderCwlRefln
+│   │   │   │   │   ├── 🏷️ class PowderTofRefln
+│   │   │   │   │   ├── 🏷️ class PowderReflnDataBase
+│   │   │   │   │   ├── 🏷️ class PowderCwlReflnData
+│   │   │   │   │   └── 🏷️ class PowderTofReflnData
+│   │   │   │   ├── 📄 bragg_sc.py
+│   │   │   │   │   ├── 🏷️ class Refln
+│   │   │   │   │   └── 🏷️ class ReflnData
+│   │   │   │   └── 📄 factory.py
+│   │   │   │       └── 🏷️ class ReflnFactory
 │   │   │   └── 📄 __init__.py
 │   │   ├── 📁 item
 │   │   │   ├── 📄 __init__.py
@@ -352,7 +376,13 @@
 │   │   └── 🏷️ class RendererFactoryBase
 │   ├── 📄 plotting.py
 │   │   ├── 🏷️ class PlotterEngineEnum
+│   │   ├── 🏷️ class PosteriorPairPlotStyleEnum
 │   │   ├── 🏷️ class _MeasVsCalcPlotOptions
+│   │   ├── 🏷️ class _PowderMeasVsCalcSeries
+│   │   ├── 🏷️ class _PosteriorDistributionContext
+│   │   ├── 🏷️ class _PosteriorPairsContext
+│   │   ├── 🏷️ class _CorrelationHeatmapContext
+│   │   ├── 🏷️ class _PosteriorPairsLegendState
 │   │   ├── 🏷️ class Plotter
 │   │   └── 🏷️ class PlotterFactory
 │   ├── 📄 tables.py

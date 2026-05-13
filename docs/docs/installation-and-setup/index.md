@@ -254,8 +254,8 @@ once using the command line, as shown below.
   ```txt
   pixi run easydiffraction download-all-tutorials
   ```
-- Start JupyterLab in the `tutorials/` directory to access the
-  notebooks:
+- Start the JupyterLab server in the `tutorials/` directory to access
+  the notebooks:
   ```txt
   pixi run jupyter lab tutorials/
   ```
@@ -278,13 +278,14 @@ once using the command line, as shown below.
   ```txt
   python -m easydiffraction download-all-tutorials
   ```
-- Launch the Jupyter Notebook server (opens browser automatically at
-  `http://localhost:8888/`):
+- Start the Jupyter Notebook server in the `tutorials/` directory to
+  access the notebooks:
   ```txt
   jupyter notebook tutorials/
   ```
-- Open one of the `*.ipynb` files and select the
-  `EasyDiffraction Python kernel` to get started.
+- Your web browser should open automatically. Click on one of the
+  `*.ipynb` files and select the `EasyDiffraction Python kernel` to get
+  started.
 
 ### Run Tutorials via Google Colab
 

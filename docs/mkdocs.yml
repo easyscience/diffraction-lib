@@ -148,8 +148,10 @@ plugins:
         python:
           paths: ['src'] # Change 'src' to your actual sources directory
           options:
+            annotations_path: source
             docstring_style: numpy
-            group_by_category: false
+            group_by_category: true
+            members_order: source
             heading_level: 1
             show_root_heading: true
             show_root_full_path: false
@@ -214,6 +216,9 @@ nav:
       - Simulated Data:
           - LBCO+Si McStas: tutorials/ed-9.ipynb
           - BEER McStas: tutorials/ed-20.ipynb
+      - Bayesian Analysis:
+          - LBCO Bayesian: tutorials/ed-21.ipynb
+          - Tb2TiO7 Bayesian: tutorials/ed-22.ipynb
       - Workshops & Schools:
           - DMSC Summer School: tutorials/ed-13.ipynb
   - API Reference:
@@ -229,5 +234,5 @@ nav:
       - project: api-reference/project.md
       - summary: api-reference/summary.md
       - utils: api-reference/utils.md
-  - Command-Line Interface:
-      - Command-Line Interface: cli/index.md
+  - Command-Line:
+      - Command-Line: cli/index.md

@@ -38,6 +38,18 @@ def test_default_max_iterations():
     assert m.max_iterations == 1000
 
 
+def test_bumps_minimizer_rejects_random_seed():
+    from easydiffraction.analysis.minimizers.bumps import BumpsMinimizer
+
+    m = BumpsMinimizer()
+
+    with pytest.raises(
+        ValueError,
+        match=r"Minimizer 'bumps' does not support random_seed\.",
+    ):
+        m._resolve_random_seed(17)
+
+
 def test_is_subclass_of_base():
     from easydiffraction.analysis.minimizers.base import MinimizerBase
     from easydiffraction.analysis.minimizers.bumps import BumpsMinimizer

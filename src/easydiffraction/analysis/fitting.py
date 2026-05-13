@@ -39,6 +39,7 @@ class Fitter:
         verbosity: VerbosityEnum = VerbosityEnum.FULL,
         *,
         use_physical_limits: bool = False,
+        random_seed: int | None = None,
     ) -> None:
         """
         Run the fitting process.
@@ -65,6 +66,8 @@ class Fitter:
             When ``True``, fall back to physical limits from the value
             spec for parameters whose ``fit_min``/``fit_max`` are
             unbounded.
+        random_seed : int | None, default=None
+            Optional random seed passed to stochastic minimizers.
         """
         # Enforce symmetry constraints (e.g. ADP) before collecting
         # free parameters so that components fixed by site symmetry are
@@ -118,6 +121,7 @@ class Fitter:
             objective_function,
             verbosity=verbosity,
             use_physical_limits=use_physical_limits,
+            random_seed=random_seed,
         )
 
     def _process_fit_results(

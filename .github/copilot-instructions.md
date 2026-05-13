@@ -77,7 +77,7 @@
 ## Testing
 
 - Every new module, class, or bug fix ships with tests. See
-  `docs/architecture/architecture.md` §10 for the full strategy.
+  `docs/dev/architecture.md` §10 for the full strategy.
 - Unit tests mirror the source tree:
   `src/easydiffraction/<pkg>/<mod>.py` →
   `tests/unit/easydiffraction/<pkg>/test_<mod>.py`. Verify with
@@ -102,8 +102,8 @@
 
 - Before any structural/design change (new categories, factories,
   switchable-category wiring, datablocks, CIF serialisation), read
-  `docs/architecture/architecture.md` and follow documented patterns.
-  Localised bug fixes or test updates need only this file.
+  `docs/dev/architecture.md` and follow documented patterns. Localised
+  bug fixes or test updates need only this file.
 - Project is in beta: no legacy shims, no deprecation warnings — update
   tests and tutorials to the current API.
 - Minimal diffs; don't reformat working code. Fix only what's asked;
@@ -146,13 +146,12 @@ Non-trivial changes use a two-phase workflow:
 
 Notes:
 
-- `pixi run fix` regenerates `docs/architecture/package-structure-*.md`
+- `pixi run fix` regenerates `docs/dev/package-structure-*.md`
   automatically — never edit those by hand. Don't review auto-fixes;
   accept and move on. Then `pixi run check` until clean.
 - Open issues / design questions / planned improvements live in
-  `docs/architecture/issues_open.md` (priority-ordered). On resolution,
-  move to `docs/architecture/issues_closed.md` and update
-  `architecture.md` if affected.
+  `docs/dev/issues_open.md` (priority-ordered). On resolution, move to
+  `docs/dev/issues_closed.md` and update `architecture.md` if affected.
 
 ### Planning
 

@@ -31,6 +31,7 @@
 │   │   └── 📄 __init__.py
 │   ├── 📁 fit_helpers
 │   │   ├── 📄 __init__.py
+│   │   ├── 📄 bayesian.py
 │   │   ├── 📄 metrics.py
 │   │   ├── 📄 reporting.py
 │   │   └── 📄 tracking.py
@@ -40,6 +41,7 @@
 │   │   ├── 📄 bumps.py
 │   │   ├── 📄 bumps_amoeba.py
 │   │   ├── 📄 bumps_de.py
+│   │   ├── 📄 bumps_dream.py
 │   │   ├── 📄 bumps_lm.py
 │   │   ├── 📄 dfols.py
 │   │   ├── 📄 enums.py
@@ -85,7 +87,6 @@
 │   │   │   ├── 📁 data
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 bragg_pd.py
-│   │   │   │   ├── 📄 bragg_sc.py
 │   │   │   │   ├── 📄 factory.py
 │   │   │   │   └── 📄 total_pd.py
 │   │   │   ├── 📁 diffrn
@@ -128,6 +129,11 @@
 │   │   │   │   ├── 📄 tof_mixins.py
 │   │   │   │   ├── 📄 total.py
 │   │   │   │   └── 📄 total_mixins.py
+│   │   │   ├── 📁 refln
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 bragg_pd.py
+│   │   │   │   ├── 📄 bragg_sc.py
+│   │   │   │   └── 📄 factory.py
 │   │   │   └── 📄 __init__.py
 │   │   ├── 📁 item
 │   │   │   ├── 📄 __init__.py

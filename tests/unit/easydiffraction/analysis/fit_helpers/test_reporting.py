@@ -59,3 +59,69 @@ def test_fitresults_display_results_prints_and_table(capsys, monkeypatch):
     assert 'Fitted parameters:' in out
     # Table border: accept common border glyphs from Rich/tabulate
     assert any(ch in out for ch in ('╒', '┌', '+', '─'))
+
+
+def test_fitresults_display_results_places_units_after_parameter(monkeypatch):
+    class Identity:
+        def __init__(self):
+            self.datablock_entry_name = 'db'
+            self.category_code = 'cat'
+            self.category_entry_name = 'entry'
+
+    class Param:
+        def __init__(self):
+            self._identity = Identity()
+            self._fit_start_value = 1.0
+            self.value = 1.2
+            self.uncertainty = 0.05
+            self.name = 'a'
+            self.units = 'arb'
+
+    from easydiffraction.analysis.fit_helpers import reporting
+
+    captured: dict[str, object] = {}
+
+    def fake_render_table(*, columns_headers, columns_alignment, columns_data):
+        captured['columns_headers'] = columns_headers
+        captured['columns_alignment'] = columns_alignment
+        captured['columns_data'] = columns_data
+
+    monkeypatch.setattr(reporting, 'render_table', fake_render_table)
+
+    reporting.FitResults(success=True, parameters=[Param()]).display_results()
+
+    assert captured['columns_headers'] == [
+        'datablock',
+        'category',
+        'entry',
+        'parameter',
+        'units',
+        'start',
+        'fitted',
+        'uncertainty',
+        'change',
+    ]
+    assert captured['columns_alignment'] == [
+        'left',
+        'left',
+        'left',
+        'left',
+        'left',
+        'right',
+        'right',
+        'right',
+        'right',
+    ]
+    assert captured['columns_data'] == [
+        [
+            'db',
+            'cat',
+            'entry',
+            'a',
+            'arb',
+            '1.0000',
+            '1.2000',
+            '0.0500',
+            '20.00 % ↑',
+        ]
+    ]

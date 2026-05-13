@@ -3,7 +3,7 @@
 
 """Generate project package structure markdown files.
 
-Outputs two docs under docs/architecture/:
+Outputs two docs under docs/dev/:
  - package-structure-short.md  (folders/files only)
  - package-structure-full.md   (folders/files and classes)
 
@@ -21,7 +21,7 @@ from typing import List
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SRC_ROOT = REPO_ROOT / 'src' / 'easydiffraction'
-DOCS_OUT_DIR = REPO_ROOT / 'docs' / 'architecture'
+DOCS_OUT_DIR = REPO_ROOT / 'docs' / 'dev'
 
 
 IGNORE_DIRS = {

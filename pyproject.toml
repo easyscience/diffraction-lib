@@ -47,6 +47,7 @@ dependencies = [
   'darkdetect',     # Detecting dark mode (system-level)
   'pandas',         # Displaying tables in Jupyter notebooks
   'plotly',         # Interactive plots
+  'arviz',          # Bayesian analysis summaries and posterior plotting
   'py3Dmol',        # Visualisation of crystal structures
 ]
 
@@ -63,7 +64,6 @@ dev = [
   'pytest',                          # Testing
   'pytest-cov',                      # Test coverage
   'pytest-xdist',                    # Enable parallel testing
-  'pytest-benchmark',                # Benchmarking tests
   'ruff',                            # Linting and formatting code
   'radon',                           # Code complexity and maintainability
   'validate-pyproject[all]',         # Validate pyproject.toml

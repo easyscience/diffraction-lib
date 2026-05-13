@@ -184,9 +184,11 @@ class AnalysisDisplay:
         """Print only currently free (varying) parameters."""
         project = self._analysis.project
         self._flush_structure_categories()
-        structures_params = project.structures.free_parameters
-        experiments_params = project.experiments.free_parameters
-        free_params = structures_params + experiments_params
+        free_params = getattr(project, 'free_parameters', None)
+        if free_params is None:
+            structures_params = project.structures.free_parameters
+            experiments_params = project.experiments.free_parameters
+            free_params = structures_params + experiments_params
 
         if not free_params:
             log.warning('No free parameters found.')
@@ -513,7 +515,13 @@ class Analysis:
         """Per-experiment weight collection for joint fitting."""
         return self._joint_fit_experiments
 
-    def _run_fit(self, verbosity: str | None = None, *, use_physical_limits: bool = False) -> None:
+    def _run_fit(
+        self,
+        verbosity: str | None = None,
+        *,
+        use_physical_limits: bool = False,
+        random_seed: int | None = None,
+    ) -> None:
         """
         Execute fitting for all experiments.
 
@@ -542,6 +550,8 @@ class Analysis:
             When ``True``, fall back to physical limits from the value
             spec for parameters whose ``fit_min``/``fit_max`` are
             unbounded.
+        random_seed : int | None, default=None
+            Optional random seed passed to stochastic minimizers.
         """
         verb = VerbosityEnum(verbosity if verbosity is not None else self.project.verbosity)
 
@@ -563,10 +573,20 @@ class Analysis:
         # Run the fitting process
         mode = FitModeEnum(self._fit.mode.value)
         if mode is FitModeEnum.JOINT:
-            self._fit_joint(verb, structures, experiments, use_physical_limits=use_physical_limits)
+            self._fit_joint(
+                verb,
+                structures,
+                experiments,
+                use_physical_limits=use_physical_limits,
+                random_seed=random_seed,
+            )
         elif mode is FitModeEnum.SINGLE:
             self._fit_single(
-                verb, structures, experiments, use_physical_limits=use_physical_limits
+                verb,
+                structures,
+                experiments,
+                use_physical_limits=use_physical_limits,
+                random_seed=random_seed,
             )
         elif mode is FitModeEnum.SEQUENTIAL:
             log.error(
@@ -585,6 +605,7 @@ class Analysis:
         experiments: object,
         *,
         use_physical_limits: bool,
+        random_seed: int | None,
     ) -> None:
         """
         Run joint fitting across all experiments with weights.
@@ -599,6 +620,8 @@ class Analysis:
             Project experiments collection.
         use_physical_limits : bool
             Whether to use physical limits as fit bounds.
+        random_seed : int | None
+            Optional random seed passed to stochastic minimizers.
         """
         mode = FitModeEnum.JOINT
         # Auto-populate joint_fit_experiments if empty
@@ -622,6 +645,7 @@ class Analysis:
             analysis=self,
             verbosity=verb,
             use_physical_limits=use_physical_limits,
+            random_seed=random_seed,
         )
 
         # After fitting, get the results
@@ -634,6 +658,7 @@ class Analysis:
         experiments: object,
         *,
         use_physical_limits: bool,
+        random_seed: int | None,
     ) -> None:
         """
         Run single-mode fitting for each experiment independently.
@@ -648,6 +673,8 @@ class Analysis:
             Project experiments collection.
         use_physical_limits : bool
             Whether to use physical limits as fit bounds.
+        random_seed : int | None
+            Optional random seed passed to stochastic minimizers.
         """
         mode = FitModeEnum.SINGLE
         expt_names = experiments.names
@@ -666,6 +693,7 @@ class Analysis:
                 analysis=self,
                 verbosity=verb,
                 use_physical_limits=use_physical_limits,
+                random_seed=random_seed,
             )
 
             # After fitting, snapshot parameter values before
