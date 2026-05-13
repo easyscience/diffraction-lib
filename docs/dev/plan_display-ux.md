@@ -107,7 +107,7 @@ and committed locally before moving to the next implementation step or
 the Phase 1 review gate. Use atomic commits, inspect the worktree before
 each commit, and stage only the files changed for that step.
 
-- [ ] Rename the serialized project display category to rendering.
+- [x] Rename the serialized project display category to rendering.
   - Move or recreate the category package as
     `src/easydiffraction/project/categories/rendering/`.
   - Rename user-facing settings from `plotter_type` and `tabler_type` to

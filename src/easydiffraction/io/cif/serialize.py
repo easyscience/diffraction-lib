@@ -334,9 +334,9 @@ def _as_cif_text(section: object) -> str:
 def project_config_to_cif(project: object) -> str:
     """Render project-level configuration to ``project.cif`` text."""
     lines: list[str] = [_as_cif_text(project.info)]
-    display = getattr(project, 'display', None)
-    if display is not None:
-        lines.extend(('', _as_cif_text(display)))
+    rendering = getattr(project, 'rendering', None)
+    if rendering is not None:
+        lines.extend(('', _as_cif_text(rendering)))
     return '\n'.join(lines)
 
 
@@ -455,9 +455,9 @@ def project_config_from_cif(project: object, cif_text: str) -> None:
 
     _populate_project_info_from_block(project.info, block)
 
-    display = getattr(project, 'display', None)
-    if display is not None:
-        display.from_cif(block)
+    rendering = getattr(project, 'rendering', None)
+    if rendering is not None:
+        rendering.from_cif(block)
 
 
 def analysis_from_cif(analysis: object, cif_text: str) -> None:
