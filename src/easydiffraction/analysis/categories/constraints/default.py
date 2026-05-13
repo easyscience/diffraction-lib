@@ -18,6 +18,9 @@ from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RegexValidator
 from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.utils.logging import console
+from easydiffraction.utils.logging import log
+from easydiffraction.utils.utils import render_table
 
 
 class Constraint(CategoryItem):
@@ -132,3 +135,19 @@ class Constraints(CategoryCollection):
         item.expression = expression
         self.add(item)
         self._enabled = True
+
+    def show(self) -> None:
+        """Print a table of all user-defined symbolic constraints."""
+        if not self._items:
+            log.warning('No constraints defined.')
+            return
+
+        rows = [[constraint.expression.value] for constraint in self]
+
+        console.paragraph('User defined constraints')
+        render_table(
+            columns_headers=['expression'],
+            columns_alignment=['left'],
+            columns_data=rows,
+        )
+        console.print(f'Constraints enabled: {self.enabled}')

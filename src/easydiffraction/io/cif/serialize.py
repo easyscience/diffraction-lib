@@ -350,7 +350,7 @@ def project_to_cif(project: object) -> str:
     if getattr(project, 'experiments', None):
         parts.append(_as_cif_text(project.experiments))
     if getattr(project, 'analysis', None):
-        parts.append(project.analysis.as_cif())
+        parts.append(_as_cif_text(project.analysis))
     if getattr(project, 'summary', None):
         parts.append(project.summary.as_cif())
     return '\n\n'.join([p for p in parts if p])

@@ -380,7 +380,7 @@ class Project(GuardedBase):
         analysis_dir = self._info.path / 'analysis'
         analysis_dir.mkdir(parents=True, exist_ok=True)
         with (analysis_dir / 'analysis.cif').open('w') as f:
-            f.write(self.analysis.as_cif())
+            f.write(self.analysis.as_cif)
             console.print('├── 📁 analysis/')
             console.print('│   └── 📄 analysis.cif')
 

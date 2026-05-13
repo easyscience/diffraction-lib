@@ -135,26 +135,26 @@ each commit, and stage only the files changed for that step.
   - Render a clear warning or error when a requested include is not
     available.
 
-- [ ] Move parameter table displays under `project.display.parameters`.
+- [x] Move parameter table displays under `project.display.parameters`.
   - Implement `all()`, `fittable()`, `free()`, `access()`, and
     `cif_uids()`.
   - Remove the primary public need for `project.analysis.display`.
 
-- [ ] Move fit displays under `project.display.fit`.
+- [x] Move fit displays under `project.display.fit`.
   - Implement `results()`.
   - Implement `correlations()`.
   - Implement `series(param, versus=...)`.
 
-- [ ] Move Bayesian displays under `project.display.posterior`.
+- [x] Move Bayesian displays under `project.display.posterior`.
   - Implement `pairs()`.
   - Implement `distribution(param)`.
   - Implement `predictive(expt_name=...)`.
 
-- [ ] Move constraint reporting to
+- [x] Move constraint reporting to
       `project.analysis.constraints.show()`.
   - Do not add `project.display.constraints()`.
 
-- [ ] Standardize CIF display helpers.
+- [x] Standardize CIF display helpers.
   - Convert `project.analysis.as_cif()` to a read-only
     `project.analysis.as_cif` property.
   - Ensure `project.analysis.show_as_cif()` pretty-prints CIF text with

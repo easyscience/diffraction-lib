@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 """Project metadata container used by Project."""
 
+from __future__ import annotations
+
 import datetime
 import pathlib
 
@@ -121,6 +123,7 @@ class ProjectInfo(GuardedBase):
         """List parameters (not implemented)."""
 
     # TODO: Consider moving to io.cif.serialize
+    @property
     def as_cif(self) -> str:
         """Export project metadata to CIF."""
         return project_info_to_cif(self)
@@ -129,6 +132,6 @@ class ProjectInfo(GuardedBase):
     def show_as_cif(self) -> None:
         """Pretty-print CIF via shared utilities."""
         paragraph_title: str = f"Project 📦 '{self.name}' info as CIF"
-        cif_text: str = self.as_cif()
+        cif_text: str = self.as_cif
         console.paragraph(paragraph_title)
         render_cif(cif_text)
