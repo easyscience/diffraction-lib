@@ -245,10 +245,10 @@ project.experiments.add(expt_n2)
 # #### Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='expt_s2')
+project.display.pattern(expt_name='expt_s2')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='expt_n2')
+project.display.pattern(expt_name='expt_n2')
 
 # %% [markdown]
 # ## Perform Analysis
@@ -268,7 +268,7 @@ project.analysis.fit.mode = 'joint'
 # #### Set Free Parameters
 
 # %%
-project.analysis.display.fittable_params()
+project.display.parameters.fittable()
 
 # %%
 ferrite.atom_sites['Fe'].adp_iso.free = True
@@ -347,8 +347,8 @@ project.analysis.fit()
 # Show fit results and parameter correlations.
 
 # %%
-project.analysis.display.fit_results()
-project.display.plotter.plot_param_correlations()
+project.display.fit.results()
+project.display.fit.correlations()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
@@ -356,16 +356,16 @@ project.display.plotter.plot_param_correlations()
 # Show full range in TOF.
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='expt_s2')
+project.display.pattern(expt_name='expt_s2')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='expt_n2')
+project.display.pattern(expt_name='expt_n2')
 
 # %% [markdown]
 # Show selected peaks in d-spacing.
 
 # %%
-project.display.plotter.plot_meas_vs_calc(
+project.display.pattern(
     expt_name='expt_s2',
     x='d_spacing',
     x_min=2.08,
@@ -373,7 +373,7 @@ project.display.plotter.plot_meas_vs_calc(
 )
 
 # %%
-project.display.plotter.plot_meas_vs_calc(
+project.display.pattern(
     expt_name='expt_n2',
     x='d_spacing',
     x_min=2.08,

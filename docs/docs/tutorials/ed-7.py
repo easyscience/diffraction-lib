@@ -140,8 +140,8 @@ project.experiments.add(expt)
 # #### Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='sepd')
-project.display.plotter.plot_meas_vs_calc(expt_name='sepd', x_min=23200, x_max=23700)
+project.display.pattern(expt_name='sepd')
+project.display.pattern(expt_name='sepd', x_min=23200, x_max=23700)
 
 # %% [markdown]
 # ### Perform Fit 1/5
@@ -158,23 +158,23 @@ expt.instrument.calib_d_to_tof_offset.free = True
 # Show free parameters after selection.
 
 # %%
-project.analysis.display.free_params()
+project.display.parameters.free()
 
 # %% [markdown]
 # #### Run Fitting
 
 # %%
 project.analysis.fit()
-project.analysis.display.fit_results()
+project.display.fit.results()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='sepd')
+project.display.pattern(expt_name='sepd')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='sepd', x_min=23200, x_max=23700)
+project.display.pattern(expt_name='sepd', x_min=23200, x_max=23700)
 
 # %% [markdown]
 # ### Perform Fit 2/5
@@ -189,23 +189,23 @@ for point in expt.background:
 # Show free parameters after selection.
 
 # %%
-project.analysis.display.free_params()
+project.display.parameters.free()
 
 # %% [markdown]
 # #### Run Fitting
 
 # %%
 project.analysis.fit()
-project.analysis.display.fit_results()
+project.display.fit.results()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='sepd')
+project.display.pattern(expt_name='sepd')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='sepd', x_min=23200, x_max=23700)
+project.display.pattern(expt_name='sepd', x_min=23200, x_max=23700)
 
 # %% [markdown]
 # ### Perform Fit 3/5
@@ -228,23 +228,23 @@ expt.peak.broad_gauss_sigma_2.free = True
 # Show free parameters after selection.
 
 # %%
-project.analysis.display.free_params()
+project.display.parameters.free()
 
 # %% [markdown]
 # #### Run Fitting
 
 # %%
 project.analysis.fit()
-project.analysis.display.fit_results()
+project.display.fit.results()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='sepd')
+project.display.pattern(expt_name='sepd')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='sepd', x_min=23200, x_max=23700)
+project.display.pattern(expt_name='sepd', x_min=23200, x_max=23700)
 
 # %% [markdown]
 # ### Perform Fit 4/5
@@ -262,32 +262,32 @@ expt.peak.exp_rise_alpha_1.free = True
 # Show free parameters after selection.
 
 # %%
-project.analysis.display.free_params()
+project.display.parameters.free()
 
 # %% [markdown]
 # #### Run Fitting
 
 # %%
 project.analysis.fit()
-project.analysis.display.fit_results()
+project.display.fit.results()
 
 # %% [markdown]
 # #### Show parameter correlations
 
 # %%
-project.display.plotter.plot_param_correlations()
+project.display.fit.correlations()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='sepd')
+project.display.pattern(expt_name='sepd')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='sepd', x_min=23200, x_max=23700)
+project.display.pattern(expt_name='sepd', x_min=23200, x_max=23700)
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='sepd', x='d_spacing')
+project.display.pattern(expt_name='sepd', x='d_spacing')
 
 
 # %% [markdown]
@@ -334,19 +334,19 @@ expt.peak.exp_rise_alpha_1.free = True
 
 # %%
 project.analysis.fit()
-project.analysis.display.fit_results()
+project.display.fit.results()
 
 # %% [markdown]
 # #### Show parameter correlations
 
 # %%
-project.display.plotter.plot_param_correlations()
+project.display.fit.correlations()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='sepd', x_min=23200, x_max=23700)
+project.display.pattern(expt_name='sepd', x_min=23200, x_max=23700)
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='sepd', x='d_spacing')
+project.display.pattern(expt_name='sepd', x='d_spacing')

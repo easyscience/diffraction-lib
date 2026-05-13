@@ -179,10 +179,10 @@ project.experiments.add(expt)
 # #### Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')
+project.display.pattern(expt_name='hrpt')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=48, x_max=51)
+project.display.pattern(expt_name='hrpt', x_min=48, x_max=51)
 
 # %% [markdown]
 # ### Perform Fit 1/4
@@ -200,7 +200,7 @@ expt.instrument.calib_twotheta_offset.free = True
 # Show free parameters after selection.
 
 # %%
-project.analysis.display.free_params()
+project.display.parameters.free()
 
 # %% [markdown]
 # #### Run Fitting
@@ -209,16 +209,16 @@ project.analysis.display.free_params()
 project.analysis.fit()
 
 # %%
-project.analysis.display.fit_results()
+project.display.fit.results()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')
+project.display.pattern(expt_name='hrpt')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=48, x_max=51)
+project.display.pattern(expt_name='hrpt', x_min=48, x_max=51)
 
 # %% [markdown]
 # ### Perform Fit 2/4
@@ -238,7 +238,7 @@ for point in expt.background:
 # Show free parameters after selection.
 
 # %%
-project.analysis.display.free_params()
+project.display.parameters.free()
 
 # %% [markdown]
 # #### Run Fitting
@@ -247,16 +247,16 @@ project.analysis.display.free_params()
 project.analysis.fit()
 
 # %%
-project.analysis.display.fit_results()
+project.display.fit.results()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')
+project.display.pattern(expt_name='hrpt')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=48, x_max=51)
+project.display.pattern(expt_name='hrpt', x_min=48, x_max=51)
 
 # %% [markdown]
 # ### Perform Fit 3/4
@@ -274,7 +274,7 @@ structure.atom_sites['H'].fract_z.free = True
 # Show free parameters after selection.
 
 # %%
-project.analysis.display.free_params()
+project.display.parameters.free()
 
 # %% [markdown]
 # #### Run Fitting
@@ -283,16 +283,16 @@ project.analysis.display.free_params()
 project.analysis.fit()
 
 # %%
-project.analysis.display.fit_results()
+project.display.fit.results()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')
+project.display.pattern(expt_name='hrpt')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=48, x_max=51)
+project.display.pattern(expt_name='hrpt', x_min=48, x_max=51)
 
 # %% [markdown]
 # ### Perform Fit 4/4
@@ -315,7 +315,7 @@ expt.peak.asym_empir_4.free = True
 # Show free parameters after selection.
 
 # %%
-project.analysis.display.free_params()
+project.display.parameters.free()
 
 # %% [markdown]
 # #### Run Fitting
@@ -324,19 +324,19 @@ project.analysis.display.free_params()
 project.analysis.fit()
 
 # %%
-project.analysis.display.fit_results()
+project.display.fit.results()
 
 # %%
-project.display.plotter.plot_param_correlations()
+project.display.fit.correlations()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')
+project.display.pattern(expt_name='hrpt')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=48, x_max=51)
+project.display.pattern(expt_name='hrpt', x_min=48, x_max=51)
 
 # %% [markdown]
 # ## Summary

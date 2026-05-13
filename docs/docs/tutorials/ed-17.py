@@ -280,13 +280,13 @@ project.analysis.fit()
 # #### Show parameter correlations
 
 # %%
-project.display.plotter.plot_param_correlations()
+project.display.fit.correlations()
 
 # %% [markdown]
 # #### Compare measured and calculated patterns for the first fit.
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='d20')
+project.display.pattern(expt_name='d20')
 
 # %% [markdown]
 # #### Run Sequential Fitting
@@ -329,7 +329,7 @@ project.analysis.fit_sequential(
 
 # %%
 project.apply_params_from_csv(row_index=0)
-project.display.plotter.plot_meas_vs_calc(expt_name='d20')
+project.display.pattern(expt_name='d20')
 
 # %% [markdown]
 #
@@ -337,7 +337,7 @@ project.display.plotter.plot_meas_vs_calc(expt_name='d20')
 
 # %%
 project.apply_params_from_csv(row_index=-1)
-project.display.plotter.plot_meas_vs_calc(expt_name='d20')
+project.display.pattern(expt_name='d20')
 
 # %% [markdown]
 # #### Plot Parameter Evolution
@@ -351,31 +351,31 @@ temperature = expt.diffrn.ambient_temperature
 # Plot unit cell parameters vs. temperature.
 
 # %%
-project.display.plotter.plot_param_series(structure.cell.length_a, versus=temperature)
-project.display.plotter.plot_param_series(structure.cell.length_b, versus=temperature)
-project.display.plotter.plot_param_series(structure.cell.length_c, versus=temperature)
+project.display.fit.series(structure.cell.length_a, versus=temperature)
+project.display.fit.series(structure.cell.length_b, versus=temperature)
+project.display.fit.series(structure.cell.length_c, versus=temperature)
 
 # %% [markdown]
 # Plot isotropic displacement parameters vs. temperature.
 
 # %%
-project.display.plotter.plot_param_series(
+project.display.fit.series(
     structure.atom_sites['Co1'].adp_iso,
     versus=temperature,
 )
-project.display.plotter.plot_param_series(
+project.display.fit.series(
     structure.atom_sites['Si'].adp_iso,
     versus=temperature,
 )
-project.display.plotter.plot_param_series(
+project.display.fit.series(
     structure.atom_sites['O1'].adp_iso,
     versus=temperature,
 )
-project.display.plotter.plot_param_series(
+project.display.fit.series(
     structure.atom_sites['O2'].adp_iso,
     versus=temperature,
 )
-project.display.plotter.plot_param_series(
+project.display.fit.series(
     structure.atom_sites['O3'].adp_iso,
     versus=temperature,
 )
@@ -384,23 +384,23 @@ project.display.plotter.plot_param_series(
 # Plot selected fractional coordinates vs. temperature.
 
 # %%
-project.display.plotter.plot_param_series(
+project.display.fit.series(
     structure.atom_sites['Co2'].fract_x,
     versus=temperature,
 )
-project.display.plotter.plot_param_series(
+project.display.fit.series(
     structure.atom_sites['Co2'].fract_z,
     versus=temperature,
 )
-project.display.plotter.plot_param_series(
+project.display.fit.series(
     structure.atom_sites['O1'].fract_z,
     versus=temperature,
 )
-project.display.plotter.plot_param_series(
+project.display.fit.series(
     structure.atom_sites['O2'].fract_z,
     versus=temperature,
 )
-project.display.plotter.plot_param_series(
+project.display.fit.series(
     structure.atom_sites['O3'].fract_z,
     versus=temperature,
 )

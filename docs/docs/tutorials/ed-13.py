@@ -144,11 +144,11 @@ project_1.experiments.add_from_data_path(
 # [documentation](https://docs.easydiffraction.org/lib/user-guide/analysis-workflow/experiment/#measured-data-category)
 # for more details about the measured data and its format.
 #
-# To visualize the measured data, we can use the `plot_meas` method of
-# the project.
+# To visualize the measured data, we can use the `pattern` method of
+# the project's `display` facade with `include='measured'`.
 
 # %%
-project_1.display.plotter.plot_meas(expt_name='sim_si')
+project_1.display.pattern(expt_name='sim_si', include='measured')
 
 # %% [markdown]
 # If you zoom in on the highest TOF peak (around 120,000 μs), you will
@@ -179,11 +179,11 @@ project_1.experiments['sim_si'].excluded_regions.create(id='2', start=105500, en
 
 # %% [markdown]
 # To visualize the effect of excluding the high TOF region, we can plot
-# the measured data again. The excluded region will be omitted from the
-# plot and is not used in the fitting process.
+# the measured data again. The excluded region will be highlighted on
+# the plot and is not used in the fitting process.
 
 # %%
-project_1.display.plotter.plot_meas(expt_name='sim_si')
+project_1.display.pattern(expt_name='sim_si', include=('measured', 'excluded'))
 
 # %% [markdown]
 # #### Set Instrument Parameters
@@ -594,7 +594,7 @@ project_1.experiments['sim_si'].peak.exp_rise_alpha_1.free = True
 # - show only free parameters of the project.
 
 # %%
-project_1.analysis.display.free_params()
+project_1.display.parameters.free()
 
 # %% [markdown]
 # #### Visualize Diffraction Patterns
@@ -603,11 +603,11 @@ project_1.analysis.display.free_params()
 # diffraction pattern with the calculated diffraction pattern based on
 # the initial parameters of the structure and the instrument. This
 # provides an indication of how well the initial parameters match the
-# measured data. The `plot_meas_vs_calc` method of the project allows
-# this comparison.
+# measured data. The `pattern` method of the project's `display`
+# facade allows this comparison.
 
 # %%
-project_1.display.plotter.plot_meas_vs_calc(expt_name='sim_si')
+project_1.display.pattern(expt_name='sim_si')
 
 # %% [markdown]
 # #### Run Fitting
@@ -622,7 +622,7 @@ project_1.display.plotter.plot_meas_vs_calc(expt_name='sim_si')
 
 # %%
 project_1.analysis.fit()
-project_1.analysis.display.fit_results()
+project_1.display.fit.results()
 
 # %% [markdown]
 # #### Check Fit Results
@@ -647,7 +647,7 @@ project_1.analysis.display.fit_results()
 # pattern is now based on the refined parameters.
 
 # %%
-project_1.display.plotter.plot_meas_vs_calc(expt_name='sim_si')
+project_1.display.pattern(expt_name='sim_si')
 
 # %% [markdown]
 # #### TOF vs d-spacing
@@ -673,12 +673,12 @@ project_1.display.plotter.plot_meas_vs_calc(expt_name='sim_si')
 # `quad` terms were not part of the data reduction and are therefore set
 # to 0 by default.
 #
-# The `plot_meas_vs_calc` method of the project allows us to plot the
-# measured and calculated diffraction patterns in the d-spacing axis by
-# setting the `d_spacing` parameter to `True`.
+# The `pattern` method of the project's `display` facade allows us to
+# plot the measured and calculated diffraction patterns in the
+# d-spacing axis by setting `x='d_spacing'`.
 
 # %%
-project_1.display.plotter.plot_meas_vs_calc(expt_name='sim_si', x='d_spacing')
+project_1.display.pattern(expt_name='sim_si', x='d_spacing')
 
 # %% [markdown]
 # As you can see, the calculated diffraction pattern now matches the
@@ -789,12 +789,12 @@ project_2.experiments.add_from_data_path(
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.display.plotter.plot_meas(expt_name='sim_lbco')
+project_2.display.pattern(expt_name='sim_lbco', include='measured')
 
 project_2.experiments['sim_lbco'].excluded_regions.create(id='1', start=0, end=55000)
 project_2.experiments['sim_lbco'].excluded_regions.create(id='2', start=105500, end=200000)
 
-project_2.display.plotter.plot_meas(expt_name='sim_lbco')
+project_2.display.pattern(expt_name='sim_lbco', include=('measured', 'excluded'))
 
 # %% [markdown]
 # #### Exercise 2.2: Set Instrument Parameters
@@ -1106,19 +1106,19 @@ for line_segment in project_2.experiments['sim_lbco'].background:
 # **Hint:**
 
 # %% [markdown] tags=["dmsc-school-hint"]
-# Use the `plot_meas_vs_calc` method of the project to visualize the
-# measured and calculated diffraction patterns before fitting. Then, use
-# the `fit` method of the `analysis` object of the project to perform
-# the fitting process.
+# Use the `pattern` method of the project's `display` facade to
+# visualize the measured and calculated diffraction patterns before
+# fitting. Then, use the `fit` method of the `analysis` object of the
+# project to perform the fitting process.
 
 # %% [markdown]
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.display.plotter.plot_meas_vs_calc(expt_name='sim_lbco')
+project_2.display.pattern(expt_name='sim_lbco')
 
 project_2.analysis.fit()
-project_2.analysis.display.fit_results()
+project_2.display.fit.results()
 
 # %% [markdown]
 # #### Exercise 5.3: Find the Misfit in the Fit
@@ -1160,7 +1160,7 @@ project_2.analysis.display.fit_results()
 # peak positions.
 
 # %% tags=["solution", "hide-input"]
-project_2.display.plotter.plot_meas_vs_calc(expt_name='sim_lbco')
+project_2.display.pattern(expt_name='sim_lbco')
 
 # %% [markdown]
 # #### Exercise 5.4: Refine the LBCO Lattice Parameter
@@ -1187,9 +1187,9 @@ project_2.display.plotter.plot_meas_vs_calc(expt_name='sim_lbco')
 project_2.structures['lbco'].cell.length_a.free = True
 
 project_2.analysis.fit()
-project_2.analysis.display.fit_results()
+project_2.display.fit.results()
 
-project_2.display.plotter.plot_meas_vs_calc(expt_name='sim_lbco')
+project_2.display.pattern(expt_name='sim_lbco')
 
 # %% [markdown]
 # One of the main goals of this study was to refine the lattice
@@ -1209,14 +1209,14 @@ project_2.display.plotter.plot_meas_vs_calc(expt_name='sim_lbco')
 # **Hint:**
 
 # %% [markdown] tags=["dmsc-school-hint"]
-# Use the `plot_meas_vs_calc` method of the project and set the
-# `d_spacing` parameter to `True`.
+# Use the `pattern` method of the project's `display` facade and set
+# `x='d_spacing'`.
 
 # %% [markdown]
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.display.plotter.plot_meas_vs_calc(expt_name='sim_lbco', x='d_spacing')
+project_2.display.pattern(expt_name='sim_lbco', x='d_spacing')
 
 # %% [markdown]
 # #### Exercise 5.6: Refine the Peak Profile Parameters
@@ -1233,7 +1233,7 @@ project_2.display.plotter.plot_meas_vs_calc(expt_name='sim_lbco', x='d_spacing')
 # perfectly describe the peak at about 1.38 Å, as can be seen below:
 
 # %%
-project_2.display.plotter.plot_meas_vs_calc(
+project_2.display.pattern(
     expt_name='sim_lbco', x='d_spacing', x_min=1.35, x_max=1.40
 )
 
@@ -1268,9 +1268,9 @@ project_2.experiments['sim_lbco'].peak.exp_rise_alpha_0.free = True
 project_2.experiments['sim_lbco'].peak.exp_rise_alpha_1.free = True
 
 project_2.analysis.fit()
-project_2.analysis.display.fit_results()
+project_2.display.fit.results()
 
-project_2.display.plotter.plot_meas_vs_calc(
+project_2.display.pattern(
     expt_name='sim_lbco', x='d_spacing', x_min=1.35, x_max=1.40
 )
 
@@ -1295,7 +1295,7 @@ project_2.display.plotter.plot_meas_vs_calc(
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.display.plotter.plot_meas_vs_calc(
+project_2.display.pattern(
     expt_name='sim_lbco', x='d_spacing', x_min=1.53, x_max=1.7
 )
 
@@ -1362,8 +1362,8 @@ project_2.display.plotter.plot_meas_vs_calc(
 # confirm this hypothesis.
 
 # %% tags=["solution", "hide-input"]
-project_1.display.plotter.plot_meas_vs_calc(expt_name='sim_si', x='d_spacing', x_min=1, x_max=1.7)
-project_2.display.plotter.plot_meas_vs_calc(
+project_1.display.pattern(expt_name='sim_si', x='d_spacing', x_min=1, x_max=1.7)
+project_2.display.pattern(
     expt_name='sim_lbco', x='d_spacing', x_min=1, x_max=1.7
 )
 
@@ -1420,10 +1420,10 @@ project_2.experiments['sim_lbco'].linked_phases.create(id='si', scale=1.0)
 # **Hint:**
 
 # %% [markdown] tags=["dmsc-school-hint"]
-# You can use the `plot_meas_vs_calc` method of the project to visualize
-# the patterns. Then, set the `free` attribute of the `scale` parameter
-# of the Si phase to `True` to allow the fitting process to adjust the
-# scale factor.
+# You can use the `pattern` method of the project's `display` facade to
+# visualize the patterns. Then, set the `free` attribute of the `scale`
+# parameter of the Si phase to `True` to allow the fitting process to
+# adjust the scale factor.
 
 # %% [markdown]
 # **Solution:**
@@ -1432,7 +1432,7 @@ project_2.experiments['sim_lbco'].linked_phases.create(id='si', scale=1.0)
 # Before optimizing the parameters, we can visualize the measured
 # diffraction pattern and the calculated diffraction pattern based on
 # the two phases: LBCO and Si.
-project_2.display.plotter.plot_meas_vs_calc(expt_name='sim_lbco')
+project_2.display.pattern(expt_name='sim_lbco')
 
 # As you can see, the calculated pattern is now the sum of both phases,
 # and Si peaks are visible in the calculated pattern. However, their
@@ -1442,14 +1442,14 @@ project_2.experiments['sim_lbco'].linked_phases['si'].scale.free = True
 
 # Now we can perform the fit with both phases included.
 project_2.analysis.fit()
-project_2.analysis.display.fit_results()
+project_2.display.fit.results()
 
 # Let's plot the measured diffraction pattern and the calculated
 # diffraction pattern both for the full range and for a zoomed-in region
 # around the previously unexplained peak near 95,000 μs. The calculated
 # pattern will be the sum of the two phases.
-project_2.display.plotter.plot_meas_vs_calc(expt_name='sim_lbco')
-project_2.display.plotter.plot_meas_vs_calc(expt_name='sim_lbco', x_min=88000, x_max=101000)
+project_2.display.pattern(expt_name='sim_lbco')
+project_2.display.pattern(expt_name='sim_lbco', x_min=88000, x_max=101000)
 
 # %% [markdown]
 # All previously unexplained peaks are now accounted for in the pattern,

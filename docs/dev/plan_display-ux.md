@@ -164,7 +164,7 @@ each commit, and stage only the files changed for that step.
   - Ensure `project.info.show_as_cif()` pretty-prints CIF text with a
     header.
 
-- [ ] Update docs, tutorials, and architecture text.
+- [x] Update docs, tutorials, and architecture text.
   - Replace old public display examples with the selected API.
   - Update `docs/dev/architecture.md`.
   - Update tutorial `.py` files only; regenerate notebooks in Phase 2 if
