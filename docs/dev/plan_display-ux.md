@@ -124,7 +124,7 @@ each commit, and stage only the files changed for that step.
   - Add `pattern(...)` and `show_pattern_options(...)`.
   - Add `parameters`, `fit`, and `posterior` namespace objects.
 
-- [ ] Implement `pattern(..., include='auto')`.
+- [x] Implement `pattern(..., include='auto')`.
   - Replace common user-facing calls to `plot_meas`, `plot_calc`, and
     `plot_meas_vs_calc` with one state-aware method.
   - Support explicit includes for `measured`, `calculated`,

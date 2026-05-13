@@ -189,16 +189,19 @@ class ProjectDisplay:
 
         if normalized_include == ('auto',):
             auto_include = self._auto_include(statuses)
+            if x is not None:
+                auto_include = tuple(option for option in auto_include if option != 'excluded')
             if not auto_include:
                 msg = self._status_by_name(statuses, 'auto').reason
                 raise ValueError(msg)
             if 'uncertainty' in auto_include:
-                self.posterior.predictive(
+                self._project.rendering.plotter.plot_posterior_predictive(
                     expt_name=expt_name,
                     style='band',
                     x_min=x_min,
                     x_max=x_max,
                     show_residual=True if 'residual' in auto_include else None,
+                    show_excluded='excluded' in auto_include,
                     x=x,
                 )
                 return
@@ -212,14 +215,18 @@ class ProjectDisplay:
             return
 
         self._validate_requested_include(statuses, normalized_include)
+        if x is not None and 'excluded' in normalized_include:
+            msg = "Excluded-region overlays currently require the experiment's default x-axis."
+            raise ValueError(msg)
 
         if 'uncertainty' in normalized_include:
-            self.posterior.predictive(
+            self._project.rendering.plotter.plot_posterior_predictive(
                 expt_name=expt_name,
                 style='band',
                 x_min=x_min,
                 x_max=x_max,
                 show_residual=True if 'residual' in normalized_include else None,
+                show_excluded='excluded' in normalized_include,
                 x=x,
             )
             return
@@ -295,6 +302,8 @@ class ProjectDisplay:
                 include.append('residual')
             if status_by_name['bragg'].available:
                 include.append('bragg')
+            if status_by_name['excluded'].available:
+                include.append('excluded')
             return tuple(include)
         if status_by_name['measured'].available and status_by_name['calculated'].available:
             include = ['measured', 'calculated']
@@ -304,11 +313,17 @@ class ProjectDisplay:
                 include.append('residual')
             if status_by_name['bragg'].available:
                 include.append('bragg')
+            if status_by_name['excluded'].available:
+                include.append('excluded')
             return tuple(include)
         if status_by_name['measured'].available:
-            return ('measured',)
+            return ('measured', 'excluded') if status_by_name['excluded'].available else ('measured',)
         if status_by_name['calculated'].available:
-            return ('calculated',)
+            return (
+                ('calculated', 'excluded')
+                if status_by_name['excluded'].available
+                else ('calculated',)
+            )
         return ()
 
     @classmethod
@@ -339,6 +354,11 @@ class ProjectDisplay:
         if 'residual' in include_set and not {'measured', 'calculated'}.issubset(include_set):
             msg = 'residual requires both measured and calculated data in the same view.'
             raise ValueError(msg)
+        if 'excluded' in include_set and not include_set.intersection(
+            {'measured', 'calculated', 'uncertainty'}
+        ):
+            msg = 'excluded requires measured, calculated, or uncertainty data in the same view.'
+            raise ValueError(msg)
 
     def _show_point_estimate_pattern(
         self,
@@ -359,6 +379,16 @@ class ProjectDisplay:
                 x_min=x_min,
                 x_max=x_max,
                 x=x,
+                show_excluded=False,
+            )
+            return
+        if include_set == {'measured', 'excluded'}:
+            self._project.rendering.plotter.plot_meas(
+                expt_name=expt_name,
+                x_min=x_min,
+                x_max=x_max,
+                x=x,
+                show_excluded=True,
             )
             return
         if include_set == {'calculated'}:
@@ -367,6 +397,16 @@ class ProjectDisplay:
                 x_min=x_min,
                 x_max=x_max,
                 x=x,
+                show_excluded=False,
+            )
+            return
+        if include_set == {'calculated', 'excluded'}:
+            self._project.rendering.plotter.plot_calc(
+                expt_name=expt_name,
+                x_min=x_min,
+                x_max=x_max,
+                x=x,
+                show_excluded=True,
             )
             return
         if {'measured', 'calculated'}.issubset(include_set):
@@ -375,6 +415,7 @@ class ProjectDisplay:
                 x_min=x_min,
                 x_max=x_max,
                 show_residual='residual' in include_set,
+                show_excluded='excluded' in include_set,
                 x=x,
             )
             return
@@ -413,7 +454,7 @@ class ProjectDisplay:
         )
         excluded_regions = getattr(experiment, 'excluded_regions', None)
         has_excluded_regions = excluded_regions is not None and len(excluded_regions) > 0
-        excluded_available = False
+        excluded_available = has_excluded_regions
         uncertainty_available, uncertainty_reason = self._uncertainty_status(
             measured_available=measured_available,
             sample_form=sample_form,
@@ -454,6 +495,13 @@ class ProjectDisplay:
                     name='bragg',
                     description=_PATTERN_OPTION_DESCRIPTIONS['bragg'],
                     available=bragg_available,
+                    auto_included=False,
+                    reason='',
+                ),
+                PatternOptionStatus(
+                    name='excluded',
+                    description=_PATTERN_OPTION_DESCRIPTIONS['excluded'],
+                    available=excluded_available,
                     auto_included=False,
                     reason='',
                 ),
@@ -520,10 +568,8 @@ class ProjectDisplay:
                 name='excluded',
                 description=_PATTERN_OPTION_DESCRIPTIONS['excluded'],
                 available=excluded_available,
-                auto_included=False,
-                reason='Excluded-region overlays are not implemented in pattern() yet.'
-                if has_excluded_regions
-                else 'No excluded regions are defined for this experiment.',
+                auto_included='excluded' in auto_include,
+                reason='' if excluded_available else 'No excluded regions are defined for this experiment.',
             ),
             PatternOptionStatus(
                 name='uncertainty',

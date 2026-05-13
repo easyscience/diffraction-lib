@@ -70,6 +70,7 @@ AXIS_TITLE_FONT_SIZE = 12
 PREDICTIVE_BAND_COLOR = 'rgba(214, 39, 40, 0.14)'
 PREDICTIVE_BAND_EDGE_COLOR = 'rgba(214, 39, 40, 0.45)'
 PREDICTIVE_DRAW_COLOR = 'rgba(140, 140, 140, 0.18)'
+EXCLUDED_REGION_FILL_COLOR = 'rgba(120, 120, 120, 0.16)'
 PREDICTIVE_DRAW_PLOT_CAP = 50
 PREDICTIVE_DRAW_ARRAY_NDIM = 2
 FIXED_ASPECT_WRAPPER_META_KEY = 'fixed_aspect_wrapper'
@@ -1038,6 +1039,7 @@ window.requestAnimationFrame(installLegendToggleButton);
         axes_labels: object,
         title: str,
         height: int | None = None,
+        excluded_ranges: tuple[tuple[float, float], ...] = (),
     ) -> None:
         """
         Render a line plot for powder diffraction data.
@@ -1075,7 +1077,32 @@ window.requestAnimationFrame(installLegendToggleButton);
         )
 
         fig = self._get_figure(data, layout)
+        self._add_excluded_region_vrects(fig=fig, excluded_ranges=excluded_ranges)
         self._show_figure(fig)
+
+    @staticmethod
+    def _add_excluded_region_vrects(
+        *,
+        fig: object,
+        excluded_ranges: tuple[tuple[float, float], ...],
+        row: object | None = None,
+        col: int | None = None,
+    ) -> None:
+        """Shade excluded x-ranges on a Plotly figure."""
+        for start, end in excluded_ranges:
+            add_kwargs = {
+                'x0': start,
+                'x1': end,
+                'fillcolor': EXCLUDED_REGION_FILL_COLOR,
+                'opacity': 1.0,
+                'line_width': 0,
+                'layer': 'below',
+            }
+            if row is not None:
+                add_kwargs['row'] = row
+            if col is not None:
+                add_kwargs['col'] = col
+            fig.add_vrect(**add_kwargs)
 
     @staticmethod
     def _get_bragg_tick_trace(
@@ -1385,6 +1412,12 @@ window.requestAnimationFrame(installLegendToggleButton);
             layout=layout,
             hover_data=hover_data,
             hover_template=hover_template,
+        )
+        self._add_excluded_region_vrects(
+            fig=fig,
+            excluded_ranges=plot_spec.excluded_ranges,
+            row='all',
+            col=1,
         )
         self._configure_powder_composite_layout(fig=fig, plot_spec=plot_spec, layout=layout)
         self._configure_powder_composite_axes(
