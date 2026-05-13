@@ -119,7 +119,7 @@ each commit, and stage only the files changed for that step.
   - Do not add legacy loading for `_display.plotter_type` or
     `_display.tabler_type`.
 
-- [ ] Add the new `project.display` facade.
+- [x] Add the new `project.display` facade.
   - Add a facade object that is not the serialized rendering category.
   - Add `pattern(...)` and `show_pattern_options(...)`.
   - Add `parameters`, `fit`, and `posterior` namespace objects.

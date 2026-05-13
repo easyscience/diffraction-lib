@@ -16,6 +16,7 @@ from easydiffraction.datablocks.experiment.collection import Experiments
 from easydiffraction.datablocks.structure.collection import Structures
 from easydiffraction.io.cif.serialize import project_config_to_cif
 from easydiffraction.io.cif.serialize import project_to_cif
+from easydiffraction.project.display import ProjectDisplay
 from easydiffraction.project.categories.rendering import Rendering
 from easydiffraction.project.categories.rendering import RenderingFactory
 from easydiffraction.project.project_info import ProjectInfo
@@ -84,7 +85,7 @@ class Project(GuardedBase):
         self._experiments = Experiments()
         self._rendering = RenderingFactory.create('default')
         self._rendering._parent = self
-        self._display = self._rendering
+        self._display = ProjectDisplay(self)
         self._analysis = Analysis(self)
         self._summary = Summary(self)
         self._saved = False
@@ -158,7 +159,7 @@ class Project(GuardedBase):
         return self._rendering
 
     @property
-    def display(self) -> Rendering:
+    def display(self) -> ProjectDisplay:
         """Current display entry-point bound to the project."""
         return self._display
 

@@ -99,10 +99,10 @@ def fit(
     if dry:
         project.info._path = None
     project.analysis.fit()
-    project.analysis.display.fit_results()
-    project.display.plotter.plot_param_correlations()
+    project.display.fit.results()
+    project.display.fit.correlations()
     for expt in project.experiments:
-        project.display.plotter.plot_meas_vs_calc(expt_name=expt.name, show_residual=True)
+        project.display.pattern(expt_name=expt.name)
     # project.summary.show_report()
 
 
