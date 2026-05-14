@@ -188,15 +188,17 @@ class AnalysisDisplay:
             'free',
         ]
 
-        console.paragraph('Fittable parameters for all structures (🧩 data blocks)')
-        df = Analysis._get_params_as_dataframe(structures_params)
-        filtered_df = df[filtered_headers]
-        tabler.render(filtered_df)
+        if structures_params:
+            console.paragraph('Fittable parameters for all structures (🧩 data blocks)')
+            df = Analysis._get_params_as_dataframe(structures_params)
+            filtered_df = df[filtered_headers]
+            tabler.render(filtered_df)
 
-        console.paragraph('Fittable parameters for all experiments (🔬 data blocks)')
-        df = Analysis._get_params_as_dataframe(experiments_params)
-        filtered_df = df[filtered_headers]
-        tabler.render(filtered_df)
+        if experiments_params:
+            console.paragraph('Fittable parameters for all experiments (🔬 data blocks)')
+            df = Analysis._get_params_as_dataframe(experiments_params)
+            filtered_df = df[filtered_headers]
+            tabler.render(filtered_df)
 
     def free_params(self) -> None:
         """Print only currently free (varying) parameters."""
@@ -491,7 +493,7 @@ class Analysis:
                 }
             if isinstance(param, Parameter):
                 record |= {
-                    ('fittable', 'left'): True,
+                    ('fittable', 'left'): not param.constrained and not param.symmetry_fixed,
                     ('free', 'left'): param.free,
                     ('min', 'right'): param.fit_min,
                     ('max', 'right'): param.fit_max,

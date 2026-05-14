@@ -76,6 +76,65 @@ def test_datablock_collection_add_and_filters_with_real_parameters():
     assert free_params == fittable
 
 
+def test_datablock_collection_fittable_excludes_symmetry_fixed_parameters():
+    from easydiffraction.core.category import CategoryItem
+    from easydiffraction.core.datablock import DatablockCollection
+    from easydiffraction.core.datablock import DatablockItem
+    from easydiffraction.core.validation import AttributeSpec
+    from easydiffraction.core.variable import Parameter
+    from easydiffraction.io.cif.handler import CifHandler
+
+    class Cat(CategoryItem):
+        def __init__(self):
+            super().__init__()
+            self._identity.category_code = 'cat'
+            self._identity.category_entry_name = 'e1'
+            self._free_param = Parameter(
+                name='free_param',
+                description='',
+                value_spec=AttributeSpec(default=0.0),
+                units='',
+                cif_handler=CifHandler(names=['_cat.free_param']),
+            )
+            self._fixed_param = Parameter(
+                name='fixed_param',
+                description='',
+                value_spec=AttributeSpec(default=0.0),
+                units='',
+                cif_handler=CifHandler(names=['_cat.fixed_param']),
+            )
+            self._free_param.value = 1.0
+            self._fixed_param.value = 2.0
+            self._free_param.free = True
+            self._fixed_param._set_symmetry_fixed(value=True)
+
+        @property
+        def free_param(self):
+            return self._free_param
+
+        @property
+        def fixed_param(self):
+            return self._fixed_param
+
+    class Block(DatablockItem):
+        def __init__(self, name):
+            super().__init__()
+            self._identity.datablock_entry_name = lambda: name
+            self._cat = Cat()
+
+        @property
+        def cat(self):
+            return self._cat
+
+    coll = DatablockCollection(item_type=Block)
+    coll.add(Block('A'))
+
+    fittable = coll.fittable_parameters
+
+    assert all(isinstance(p, Parameter) for p in fittable)
+    assert [p.name for p in fittable] == ['free_param']
+
+
 def test_datablock_item_help(capsys):
     from easydiffraction.core.category import CategoryItem
     from easydiffraction.core.datablock import DatablockItem

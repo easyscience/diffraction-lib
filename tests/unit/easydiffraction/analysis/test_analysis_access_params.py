@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 
-def _make_param(db, cat, entry, name, val):
+def _make_param(db, cat, entry, name, val, *, constrained=False, symmetry_fixed=False):
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
     from easydiffraction.io.cif.handler import CifHandler
@@ -19,6 +19,10 @@ def _make_param(db, cat, entry, name, val):
         param._identity.category_entry_name = lambda: entry
     else:
         param._identity.category_entry_name = lambda: ''
+    if constrained:
+        param._constrained = True
+    if symmetry_fixed:
+        param._set_symmetry_fixed(value=True)
     return param
 
 
@@ -188,3 +192,87 @@ def test_all_params_skips_large_loop_categories(monkeypatch):
     experiment_parameters = rendered[1][('parameter', 'left')].tolist()
     assert experiment_categories == ['instrument']
     assert experiment_parameters == ['wavelength']
+
+
+def test_all_params_marks_symmetry_fixed_parameters_not_fittable(monkeypatch):
+    import easydiffraction.analysis.analysis as analysis_mod
+    from easydiffraction.analysis.analysis import Analysis
+
+    refinable_param = _make_param('s1', 'cell', '', 'length_a', 4.0)
+    constrained_param = _make_param('s1', 'cell', '', 'length_b', 4.0, constrained=True)
+    symmetry_fixed_param = _make_param(
+        's1',
+        'cell',
+        '',
+        'length_c',
+        4.0,
+        symmetry_fixed=True,
+    )
+
+    class Coll:
+        def __init__(self, params):
+            self.parameters = params
+
+        def __iter__(self):
+            return iter(())
+
+    class Project:
+        def __init__(self):
+            self.structures = Coll([refinable_param, constrained_param, symmetry_fixed_param])
+            self.experiments = Coll([])
+
+    rendered = []
+
+    class FakeTableRenderer:
+        def render(self, df):
+            rendered.append(df)
+
+    monkeypatch.setattr(analysis_mod.TableRenderer, 'get', staticmethod(lambda: FakeTableRenderer()))
+    Analysis(Project()).display.all_params()
+
+    structure_df = rendered[0]
+    assert structure_df[('parameter', 'left')].tolist() == ['length_a', 'length_b', 'length_c']
+    assert structure_df[('fittable', 'left')].tolist() == [True, False, False]
+
+
+def test_fittable_params_excludes_symmetry_fixed_parameters(monkeypatch):
+    import easydiffraction.analysis.analysis as analysis_mod
+    from easydiffraction.analysis.analysis import Analysis
+
+    visible_param = _make_param('s1', 'cell', '', 'length_a', 4.0)
+    symmetry_fixed_param = _make_param(
+        's1',
+        'cell',
+        '',
+        'length_c',
+        4.0,
+        symmetry_fixed=True,
+    )
+
+    class Coll:
+        def __init__(self, params, fittable_params):
+            self.parameters = params
+            self.fittable_parameters = fittable_params
+
+        def __iter__(self):
+            return iter(())
+
+    class Project:
+        def __init__(self):
+            self.structures = Coll(
+                [visible_param, symmetry_fixed_param],
+                [visible_param],
+            )
+            self.experiments = Coll([], [])
+
+    rendered = []
+
+    class FakeTableRenderer:
+        def render(self, df):
+            rendered.append(df)
+
+    monkeypatch.setattr(analysis_mod.TableRenderer, 'get', staticmethod(lambda: FakeTableRenderer()))
+    Analysis(Project()).display.fittable_params()
+
+    structure_df = rendered[0]
+    assert structure_df[('parameter', 'left')].tolist() == ['length_a']

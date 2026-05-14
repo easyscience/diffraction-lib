@@ -187,8 +187,12 @@ class DatablockCollection(CollectionBase):
 
     @property
     def fittable_parameters(self) -> list:
-        """All non-constrained Parameters in this collection."""
-        return [p for p in self.parameters if isinstance(p, Parameter) and not p.constrained]
+        """All Parameters not blocked by constraints or symmetry."""
+        return [
+            p
+            for p in self.parameters
+            if isinstance(p, Parameter) and not p.constrained and not p.symmetry_fixed
+        ]
 
     @property
     def free_parameters(self) -> list:
