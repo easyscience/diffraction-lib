@@ -43,3 +43,37 @@ def test_tracker_terminal_flow_prints_and_updates_best(monkeypatch, capsys):
     out2 = capsys.readouterr().out
     assert 'Best goodness-of-fit' in out2
     assert tracker.best_iteration is not None
+
+
+def test_tracker_fit_adds_timed_rows_and_resets_counter(monkeypatch):
+    import easydiffraction.analysis.fit_helpers.tracking as tracking_mod
+    from easydiffraction.analysis.fit_helpers.tracking import FitProgressTracker
+
+    chi2_values = iter([5.0, 4.0, 3.97, 3.97, 3.97, 3.97])
+    perf_counter_values = iter([0.0, 0.0, 2.0, 6.9, 7.1, 11.9, 12.2])
+
+    monkeypatch.setattr(
+        tracking_mod,
+        'calculate_reduced_chi_square',
+        lambda residuals, n_parameters: next(chi2_values),
+    )
+    monkeypatch.setattr(
+        tracking_mod.time,
+        'perf_counter',
+        lambda: next(perf_counter_values),
+    )
+
+    tracker = FitProgressTracker()
+    tracker.start_timer()
+
+    for _ in range(6):
+        tracker.track(np.array([1.0]), parameters=[1.0])
+
+    assert tracker._df_rows == [
+        ['1', '0.00', '5.00', ''],
+        ['2', '2.00', '4.00', '20.0% ↓'],
+        ['4', '7.10', '3.97', ''],
+        ['6', '12.20', '3.97', ''],
+    ]
+    assert tracker._last_progress_time == 12.2
+    assert tracker._previous_chi2 == 4.0

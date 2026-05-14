@@ -10,7 +10,6 @@ from typing import TYPE_CHECKING
 from easydiffraction.analysis.fit_helpers.metrics import calculate_reduced_chi_square
 from easydiffraction.display.progress import ACTIVITY_LABEL_BURN_IN
 from easydiffraction.display.progress import ACTIVITY_LABEL_FITTING
-from easydiffraction.display.progress import ACTIVITY_LABEL_PROCESSING
 from easydiffraction.display.progress import ACTIVITY_LABEL_SAMPLING
 from easydiffraction.display.progress import ActivityIndicator
 from easydiffraction.display.progress import _TerminalLiveHandle as _SharedTerminalLiveHandle
@@ -23,6 +22,7 @@ if TYPE_CHECKING:
     import numpy as np
 
 SIGNIFICANT_CHANGE_THRESHOLD = 0.01  # 1% threshold
+FIT_PROGRESS_UPDATE_SECONDS = 5.0
 SAMPLER_PROGRESS_UPDATE_SECONDS = 5.0
 TRACKING_MODE_FIT = 'fit'
 TRACKING_MODE_SAMPLER = 'sampling'
@@ -147,15 +147,17 @@ class FitProgressTracker:
             return residuals
 
         row: list[str] = []
+        elapsed_time = self._current_elapsed_time()
 
         if self._previous_chi2 is None:
             self._previous_chi2 = reduced_chi2
             self._best_chi2 = reduced_chi2
             self._best_iteration = self._iteration
+            self._last_progress_time = elapsed_time
 
             row = [
                 str(self._iteration),
-                self._format_elapsed_time(),
+                self._format_elapsed_time(elapsed_time),
                 f'{reduced_chi2:.2f}',
                 '',
             ]
@@ -167,12 +169,21 @@ class FitProgressTracker:
 
                 row = [
                     str(self._iteration),
-                    self._format_elapsed_time(),
+                    self._format_elapsed_time(elapsed_time),
                     f'{reduced_chi2:.2f}',
                     f'{change_in_percent:.1f}% ↓',
                 ]
 
                 self._previous_chi2 = reduced_chi2
+                self._last_progress_time = elapsed_time
+            elif self._should_render_fit_row(elapsed_time):
+                row = [
+                    str(self._iteration),
+                    self._format_elapsed_time(elapsed_time),
+                    f'{reduced_chi2:.2f}',
+                    '',
+                ]
+                self._last_progress_time = elapsed_time
 
         if row:
             self.add_tracking_info(row)
@@ -537,6 +548,11 @@ class FitProgressTracker:
         if resolved_time is None:
             return ''
         return f'{resolved_time:.2f}'
+
+    def _should_render_fit_row(self, elapsed_time: float | None) -> bool:
+        if elapsed_time is None or self._last_progress_time is None:
+            return False
+        return elapsed_time - self._last_progress_time >= FIT_PROGRESS_UPDATE_SECONDS
 
     @staticmethod
     def _rows_match_on_columns(
