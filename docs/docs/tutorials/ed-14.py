@@ -157,3 +157,15 @@ project.display.pattern(expt_name='heidi')
 
 # %%
 structure.show_as_cif()
+
+# %%
+
+# %%
+
+# %%
+project.display.fit.correlations()
+
+# %%
+project.display.parameters.access()
+
+# %%

@@ -2,12 +2,12 @@
 
 ## Status
 
-Accepted.
+Accepted and implemented.
 
 ## Context
 
-The current user-facing display API mixes presentation actions, analysis
-reports, and renderer configuration:
+The previous user-facing display API mixed presentation actions,
+analysis reports, and renderer configuration:
 
 ```python
 project.display.plotter.plot_meas(expt_name='hrpt')
@@ -32,7 +32,7 @@ This has several UX problems:
 - `plot_meas`, `plot_calc`, and `plot_meas_vs_calc` force users to
   choose a plot state that the project can often infer.
 - Bayesian and deterministic chart names are not systematic.
-- The existing `project.display` category is serialized to CIF, so it
+- The previous `project.display` category was serialized to CIF, so it
   should not also become a broad transient display facade.
 
 EasyDiffraction is aimed at scientists, often non-programmers, so the
@@ -55,7 +55,7 @@ project.rendering.show_table_engines()
 project.rendering.show_config()
 ```
 
-Suggested CIF names:
+CIF names:
 
 - `_rendering.chart_engine`
 - `_rendering.table_engine`
@@ -87,7 +87,8 @@ project.display.show_pattern_options(expt_name='hrpt')
 ```
 
 `project.analysis.display` is removed from the primary public API. Its
-current responsibilities move to clearer homes:
+current responsibilities move to clearer homes, while the implementation
+may keep the existing helpers as internal delegation targets:
 
 | Current method               | New home                                                       |
 | ---------------------------- | -------------------------------------------------------------- |
@@ -100,7 +101,7 @@ current responsibilities move to clearer homes:
 | `constraints()`              | `project.analysis.constraints.show()`                          |
 | `as_cif()`                   | `project.analysis.as_cif` and `project.analysis.show_as_cif()` |
 
-`project.analysis` and `project.info` should follow the same CIF display
+`project.analysis` and `project.info` follow the same CIF display
 pattern as structures and experiments:
 
 - `as_cif` is a read-only property returning CIF text as a string.
@@ -119,13 +120,17 @@ By default, `pattern()` uses `include='auto'` and displays as much
 useful information as the project state supports:
 
 - measured data if present
-- calculated data if a model/calculation is available
-- background if defined and relevant
-- Bragg ticks if phases/reflections are available
+- calculated data if linked structure state and calculated intensities
+  are available
+- background if powder Bragg measured and calculated data plus defined
+  background points are available
+- Bragg ticks if powder Bragg measured and calculated data plus
+  reflection rows are available
 - residual if both measured and calculated data are available and the
   experiment type supports a residual panel
-- excluded regions if available
-- uncertainty bands where posterior predictive data exists
+- excluded regions if available on the experiment
+- uncertainty bands where posterior predictive data exists and the chart
+  engine supports them
 
 Specific subsets are selected with `include`:
 
@@ -156,11 +161,11 @@ Add discovery for supported pattern content:
 project.display.show_pattern_options(expt_name='hrpt')
 ```
 
-The table should show option name, description, availability for the
+The table shows option name, description, availability for the
 experiment, whether `include='auto'` includes it, and the reason an
 option is unavailable.
 
-Initial option names:
+Pattern option names:
 
 - `auto`
 - `measured`
@@ -171,9 +176,17 @@ Initial option names:
 - `excluded`
 - `uncertainty`
 
-`uncertainty` should be implemented immediately where posterior
-predictive data exists. It should be unavailable, with a clear reason,
-when no posterior predictive data is present.
+`uncertainty` is available where posterior predictive data exists for a
+supported experiment and the active chart engine can render bands. It is
+unavailable, with a clear reason, when no posterior predictive data is
+present.
+
+Explicit combinations are validated against the same project state used
+by `include='auto'`. `background`, `bragg`, and `residual` require both
+measured and calculated data in the same view. `excluded` requires
+measured, calculated, or uncertainty content in the same view, and
+excluded-region overlays currently require the experiment's default
+x-axis.
 
 ## Deterministic And Bayesian Consistency
 
@@ -223,5 +236,8 @@ they duplicate `pattern(..., include=...)`.
 - Constraints remain owned by the analysis constraints category.
 - There is no legacy CIF compatibility path for `_display.plotter_type`
   or `_display.tabler_type`.
-- `project.analysis` and `project.info` need CIF access cleanup for
+- `project.analysis` and `project.info` CIF access is standardized for
   consistency with structure and experiment objects.
+- Pattern option availability is computed from live project state,
+  linked structures, calculated intensities, and experiment-specific
+  content instead of placeholder arrays alone.
