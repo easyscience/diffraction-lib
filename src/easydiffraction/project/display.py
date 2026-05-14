@@ -10,9 +10,11 @@ from typing import TYPE_CHECKING
 from easydiffraction.datablocks.experiment.item.base import intensity_category_for
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
+from easydiffraction.display.progress import activity_indicator
 from easydiffraction.display.plotting import PlotterEngineEnum
 from easydiffraction.display.plotting import PosteriorPairPlotStyleEnum
 from easydiffraction.display.plotting import _MeasVsCalcPlotOptions
+from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.utils import render_object_help
 from easydiffraction.utils.utils import render_table
 
@@ -128,12 +130,13 @@ class PosteriorDisplay:
         max_parameters: int = 6,
     ) -> None:
         """Plot posterior pair relationships for sampled parameters."""
-        self._project.rendering.plotter.plot_posterior_pairs(
-            parameters=parameters,
-            style=style,
-            threshold=threshold,
-            max_parameters=max_parameters,
-        )
+        with activity_indicator('processing', verbosity=VerbosityEnum(self._project.verbosity)):
+            self._project.rendering.plotter.plot_posterior_pairs(
+                parameters=parameters,
+                style=style,
+                threshold=threshold,
+                max_parameters=max_parameters,
+            )
 
     def distribution(self, param: object) -> None:
         """Plot one sampled parameter's posterior distribution."""
@@ -150,14 +153,15 @@ class PosteriorDisplay:
         x: object | None = None,
     ) -> None:
         """Plot posterior predictive summaries for one experiment."""
-        self._project.rendering.plotter.plot_posterior_predictive(
-            expt_name=expt_name,
-            style=style,
-            x_min=x_min,
-            x_max=x_max,
-            show_residual=show_residual,
-            x=x,
-        )
+        with activity_indicator('processing', verbosity=VerbosityEnum(self._project.verbosity)):
+            self._project.rendering.plotter.plot_posterior_predictive(
+                expt_name=expt_name,
+                style=style,
+                x_min=x_min,
+                x_max=x_max,
+                show_residual=show_residual,
+                x=x,
+            )
 
     def help(self) -> None:
         """Print available posterior-display methods."""
@@ -213,19 +217,23 @@ class ProjectDisplay:
                 msg = self._status_by_name(statuses, 'auto').reason
                 raise ValueError(msg)
             if 'uncertainty' in auto_include:
-                self._project.rendering.plotter._plot_posterior_predictive_request(
-                    expt_name=expt_name,
-                    style='band',
-                    plot_options=_MeasVsCalcPlotOptions(
-                        x_min=x_min,
-                        x_max=x_max,
-                        show_residual=True if 'residual' in auto_include else None,
-                        show_background='background' in auto_include,
-                        show_bragg='bragg' in auto_include,
-                        show_excluded='excluded' in auto_include,
-                        x=x,
-                    ),
-                )
+                with activity_indicator(
+                    'processing',
+                    verbosity=VerbosityEnum(self._project.verbosity),
+                ):
+                    self._project.rendering.plotter._plot_posterior_predictive_request(
+                        expt_name=expt_name,
+                        style='band',
+                        plot_options=_MeasVsCalcPlotOptions(
+                            x_min=x_min,
+                            x_max=x_max,
+                            show_residual=True if 'residual' in auto_include else None,
+                            show_background='background' in auto_include,
+                            show_bragg='bragg' in auto_include,
+                            show_excluded='excluded' in auto_include,
+                            x=x,
+                        ),
+                    )
                 return
             self._show_point_estimate_pattern(
                 expt_name=expt_name,
@@ -243,19 +251,23 @@ class ProjectDisplay:
             raise ValueError(msg)
 
         if 'uncertainty' in normalized_include:
-            self._project.rendering.plotter._plot_posterior_predictive_request(
-                expt_name=expt_name,
-                style='band',
-                plot_options=_MeasVsCalcPlotOptions(
-                    x_min=x_min,
-                    x_max=x_max,
-                    show_residual=True if 'residual' in normalized_include else None,
-                    show_background='background' in normalized_include,
-                    show_bragg='bragg' in normalized_include,
-                    show_excluded='excluded' in normalized_include,
-                    x=x,
-                ),
-            )
+            with activity_indicator(
+                'processing',
+                verbosity=VerbosityEnum(self._project.verbosity),
+            ):
+                self._project.rendering.plotter._plot_posterior_predictive_request(
+                    expt_name=expt_name,
+                    style='band',
+                    plot_options=_MeasVsCalcPlotOptions(
+                        x_min=x_min,
+                        x_max=x_max,
+                        show_residual=True if 'residual' in normalized_include else None,
+                        show_background='background' in normalized_include,
+                        show_bragg='bragg' in normalized_include,
+                        show_excluded='excluded' in normalized_include,
+                        x=x,
+                    ),
+                )
             return
 
         self._show_point_estimate_pattern(
