@@ -828,7 +828,9 @@ def test_plot_powder_meas_vs_calc_styles_predictive_max_posterior_and_band(monke
     )
 
     fig = captured['fig']
-    predictive_band_trace = next(trace for trace in fig.data if trace.name == '95% interval')
+    predictive_band_trace = next(
+        trace for trace in fig.data if trace.name == '95% credible interval'
+    )
     max_posterior_trace = next(trace for trace in fig.data if trace.name == 'Max posterior')
     residual_trace = next(trace for trace in fig.data if trace.name == 'Residual (Imeas - Icalc)')
 

@@ -97,12 +97,11 @@ POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_WIDTH = 1
 POSTERIOR_HISTOGRAM_FILL_COLOR = 'rgba(120, 120, 120, 0.38)'
 POSTERIOR_HISTOGRAM_LINE_COLOR = 'rgba(120, 120, 120, 0.24)'
 POSTERIOR_INTERVAL_95_FILL_COLOR = 'rgba(214, 39, 40, 0.14)'
-POSTERIOR_INTERVAL_68_FILL_COLOR = 'rgba(214, 39, 40, 0.26)'
 POSTERIOR_MEDIAN_LINE_COLOR = 'rgb(80, 80, 80)'
 POSTERIOR_POINT_ESTIMATE_LINE_COLOR = 'rgb(214, 39, 40)'
 POSTERIOR_POINT_ESTIMATE_TRACE_NAME = 'Max posterior'
 POSTERIOR_POINT_ESTIMATE_LINE_DASH = 'dot'
-POSTERIOR_PREDICTIVE_INTERVAL_TRACE_NAME = '95% interval'
+POSTERIOR_PREDICTIVE_INTERVAL_TRACE_NAME = '95% credible interval'
 POSTERIOR_DRAW_LINE_COLOR = 'rgba(140, 140, 140, 0.18)'
 POSTERIOR_SCATTER_MARKER_COLOR = 'rgba(140, 140, 140, 0.20)'
 POSTERIOR_CONTOUR_FILL_COLORSCALE = [
@@ -2597,15 +2596,6 @@ class Plotter(RendererBase):
                 color=POSTERIOR_INTERVAL_95_FILL_COLOR,
             )
         )
-        fig.add_trace(
-            self._posterior_interval_band_trace(
-                x0=summary.interval_68[0],
-                x1=summary.interval_68[1],
-                y_axis_range=y_axis_range,
-                trace_name='68% credible interval',
-                color=POSTERIOR_INTERVAL_68_FILL_COLOR,
-            )
-        )
 
     @staticmethod
     def _add_posterior_distribution_histogram(
@@ -3614,7 +3604,7 @@ class Plotter(RendererBase):
         trace.customdata = np.column_stack((lower_95, upper_95, y_meas_su))
         trace.hovertemplate = (
             'Predicted I²: %{x:,.2f}<br>'
-            '95% interval: [%{customdata[0]:,.2f}, %{customdata[1]:,.2f}]<br>'
+            '95% credible interval: [%{customdata[0]:,.2f}, %{customdata[1]:,.2f}]<br>'
             'Measured I²: %{y:,.2f}<br>'
             'su(I²meas): %{customdata[2]:,.2f}<extra></extra>'
         )
