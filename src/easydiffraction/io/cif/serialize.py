@@ -715,11 +715,7 @@ def category_collection_from_cif(
     array = np.array(loop.values, dtype=str).reshape(num_rows, num_cols)
 
     # Pre-create default items in the collection
-    self._items = [self._item_type() for _ in range(num_rows)]
-
-    # Set parent for each item to enable identity resolution
-    for item in self._items:
-        object.__setattr__(item, '_parent', self)  # noqa: PLC2801
+    self._adopt_items([self._item_type() for _ in range(num_rows)])
 
     # Set those items' parameters, which are present in the loop
     for row_idx in range(num_rows):

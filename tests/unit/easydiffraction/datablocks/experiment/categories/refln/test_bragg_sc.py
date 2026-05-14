@@ -4,6 +4,18 @@
 import numpy as np
 
 
+def _experiment_stub(name='exp1'):
+    from easydiffraction.core.identity import Identity
+
+    class ExperimentStub:
+        def __init__(self):
+            self._parent = None
+            self._identity = Identity(owner=self)
+            self._identity.datablock_entry_name = lambda: name
+
+    return ExperimentStub()
+
+
 def test_refln_data_point_defaults():
     from easydiffraction.datablocks.experiment.categories.refln.bragg_sc import Refln
 
@@ -72,6 +84,23 @@ def test_refln_data_d_spacing_and_stol():
     stol = np.array([0.092, 0.184])
     coll._set_sin_theta_over_lambda(stol)
     np.testing.assert_array_almost_equal(coll.sin_theta_over_lambda, stol)
+
+
+def test_refln_items_resolve_experiment_datablock_name():
+    from easydiffraction.datablocks.experiment.categories.refln.bragg_sc import ReflnData
+
+    coll = ReflnData()
+    coll._parent = _experiment_stub('sc-exp')
+
+    coll._create_items_set_hkl_and_id(
+        np.array([1.0, 2.0]),
+        np.array([0.0, 0.0]),
+        np.array([0.0, 1.0]),
+    )
+
+    param = coll._items[0].intensity_meas
+    assert param._identity.datablock_entry_name == 'sc-exp'
+    assert param.unique_name == 'sc-exp.refln.1.intensity_meas'
 
 
 def test_refln_data_type_info():

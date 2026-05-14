@@ -79,6 +79,17 @@ class CollectionBase(GuardedBase):
         self._items.append(item)
         self._rebuild_index()
 
+    def _adopt_items(self, items: list[GuardedBase]) -> None:
+        """Replace collection items and link each child back to this collection."""
+        for item in self._items:
+            object.__setattr__(item, '_parent', None)
+
+        for item in items:
+            object.__setattr__(item, '_parent', self)
+
+        self._items = items
+        self._rebuild_index()
+
     def __delitem__(self, name: str) -> None:
         """Delete an item by key or raise ``KeyError`` if missing."""
         for i, item in enumerate(self._items):
