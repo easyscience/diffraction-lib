@@ -16,9 +16,9 @@ from easydiffraction.datablocks.experiment.collection import Experiments
 from easydiffraction.datablocks.structure.collection import Structures
 from easydiffraction.io.cif.serialize import project_config_to_cif
 from easydiffraction.io.cif.serialize import project_to_cif
-from easydiffraction.project.display import ProjectDisplay
 from easydiffraction.project.categories.rendering import Rendering
 from easydiffraction.project.categories.rendering import RenderingFactory
+from easydiffraction.project.display import ProjectDisplay
 from easydiffraction.project.project_info import ProjectInfo
 from easydiffraction.summary.summary import Summary
 from easydiffraction.utils.enums import VerbosityEnum

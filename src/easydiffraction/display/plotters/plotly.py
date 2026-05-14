@@ -1061,6 +1061,8 @@ window.requestAnimationFrame(installLegendToggleButton);
             Figure title.
         height : int | None, default=None
             Ignored; Plotly auto-sizes based on renderer.
+        excluded_ranges : tuple[tuple[float, float], ...], default=()
+            Excluded x-ranges to shade on the figure.
         """
         # Intentionally unused; accepted for API compatibility
         del height

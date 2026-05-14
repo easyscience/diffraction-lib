@@ -408,8 +408,20 @@
 │   │   │   │   └── 🏷️ class Display
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class DisplayFactory
+│   │   ├── 📁 rendering
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   └── 🏷️ class Rendering
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class RenderingFactory
 │   │   └── 📄 __init__.py
 │   ├── 📄 __init__.py
+│   ├── 📄 display.py
+│   │   ├── 🏷️ class PatternOptionStatus
+│   │   ├── 🏷️ class ParameterDisplay
+│   │   ├── 🏷️ class FitDisplay
+│   │   ├── 🏷️ class PosteriorDisplay
+│   │   └── 🏷️ class ProjectDisplay
 │   ├── 📄 project.py
 │   │   └── 🏷️ class Project
 │   └── 📄 project_info.py

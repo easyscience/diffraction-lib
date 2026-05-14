@@ -287,6 +287,19 @@ class ProjectDisplay:
         msg = f'Unknown pattern option: {option_name}.'
         raise ValueError(msg)
 
+    @staticmethod
+    def _with_available_options(
+        status_by_name: dict[str, PatternOptionStatus],
+        required: tuple[str, ...],
+        optional: tuple[str, ...],
+    ) -> tuple[str, ...]:
+        """Return required options plus available optional ones."""
+        include = list(required)
+        include.extend(
+            option_name for option_name in optional if status_by_name[option_name].available
+        )
+        return tuple(include)
+
     @classmethod
     def _auto_include(
         cls,
@@ -294,35 +307,31 @@ class ProjectDisplay:
     ) -> tuple[str, ...]:
         """Return the effective include tuple for ``include='auto'``."""
         status_by_name = {status.name: status for status in statuses}
+        optional_point_estimate = ('background', 'residual', 'bragg', 'excluded')
+
         if status_by_name['uncertainty'].available:
-            include = ['measured', 'calculated', 'uncertainty']
-            if status_by_name['background'].available:
-                include.append('background')
-            if status_by_name['residual'].available:
-                include.append('residual')
-            if status_by_name['bragg'].available:
-                include.append('bragg')
-            if status_by_name['excluded'].available:
-                include.append('excluded')
-            return tuple(include)
+            return cls._with_available_options(
+                status_by_name,
+                ('measured', 'calculated', 'uncertainty'),
+                optional_point_estimate,
+            )
         if status_by_name['measured'].available and status_by_name['calculated'].available:
-            include = ['measured', 'calculated']
-            if status_by_name['background'].available:
-                include.append('background')
-            if status_by_name['residual'].available:
-                include.append('residual')
-            if status_by_name['bragg'].available:
-                include.append('bragg')
-            if status_by_name['excluded'].available:
-                include.append('excluded')
-            return tuple(include)
+            return cls._with_available_options(
+                status_by_name,
+                ('measured', 'calculated'),
+                optional_point_estimate,
+            )
         if status_by_name['measured'].available:
-            return ('measured', 'excluded') if status_by_name['excluded'].available else ('measured',)
+            return cls._with_available_options(
+                status_by_name,
+                ('measured',),
+                ('excluded',),
+            )
         if status_by_name['calculated'].available:
-            return (
-                ('calculated', 'excluded')
-                if status_by_name['excluded'].available
-                else ('calculated',)
+            return cls._with_available_options(
+                status_by_name,
+                ('calculated',),
+                ('excluded',),
             )
         return ()
 
@@ -332,7 +341,9 @@ class ProjectDisplay:
         statuses: list[PatternOptionStatus],
         include: tuple[str, ...],
     ) -> None:
-        """Raise a clear error when a requested include is unavailable."""
+        """
+        Raise a clear error when a requested include is unavailable.
+        """
         status_by_name = {status.name: status for status in statuses}
         unavailable = [
             option_name
@@ -354,9 +365,11 @@ class ProjectDisplay:
         if 'residual' in include_set and not {'measured', 'calculated'}.issubset(include_set):
             msg = 'residual requires both measured and calculated data in the same view.'
             raise ValueError(msg)
-        if 'excluded' in include_set and not include_set.intersection(
-            {'measured', 'calculated', 'uncertainty'}
-        ):
+        if 'excluded' in include_set and not include_set.intersection({
+            'measured',
+            'calculated',
+            'uncertainty',
+        }):
             msg = 'excluded requires measured, calculated, or uncertainty data in the same view.'
             raise ValueError(msg)
 
@@ -369,7 +382,9 @@ class ProjectDisplay:
         include: tuple[str, ...],
         x: object | None,
     ) -> None:
-        """Dispatch a point-estimate pattern view to the live plotter."""
+        """
+        Dispatch a point-estimate pattern view to the live plotter.
+        """
         statuses = self._pattern_option_statuses(expt_name)
         self._validate_requested_include(statuses, include)
         include_set = set(include)
@@ -461,59 +476,57 @@ class ProjectDisplay:
             scattering_type=scattering_type,
         )
 
-        auto_include = self._auto_include(
-            [
-                PatternOptionStatus(
-                    name='measured',
-                    description=_PATTERN_OPTION_DESCRIPTIONS['measured'],
-                    available=measured_available,
-                    auto_included=False,
-                    reason='',
-                ),
-                PatternOptionStatus(
-                    name='calculated',
-                    description=_PATTERN_OPTION_DESCRIPTIONS['calculated'],
-                    available=calculated_available,
-                    auto_included=False,
-                    reason='',
-                ),
-                PatternOptionStatus(
-                    name='background',
-                    description=_PATTERN_OPTION_DESCRIPTIONS['background'],
-                    available=background_available,
-                    auto_included=False,
-                    reason='',
-                ),
-                PatternOptionStatus(
-                    name='residual',
-                    description=_PATTERN_OPTION_DESCRIPTIONS['residual'],
-                    available=residual_available,
-                    auto_included=False,
-                    reason='',
-                ),
-                PatternOptionStatus(
-                    name='bragg',
-                    description=_PATTERN_OPTION_DESCRIPTIONS['bragg'],
-                    available=bragg_available,
-                    auto_included=False,
-                    reason='',
-                ),
-                PatternOptionStatus(
-                    name='excluded',
-                    description=_PATTERN_OPTION_DESCRIPTIONS['excluded'],
-                    available=excluded_available,
-                    auto_included=False,
-                    reason='',
-                ),
-                PatternOptionStatus(
-                    name='uncertainty',
-                    description=_PATTERN_OPTION_DESCRIPTIONS['uncertainty'],
-                    available=uncertainty_available,
-                    auto_included=False,
-                    reason='',
-                ),
-            ]
-        )
+        auto_include = self._auto_include([
+            PatternOptionStatus(
+                name='measured',
+                description=_PATTERN_OPTION_DESCRIPTIONS['measured'],
+                available=measured_available,
+                auto_included=False,
+                reason='',
+            ),
+            PatternOptionStatus(
+                name='calculated',
+                description=_PATTERN_OPTION_DESCRIPTIONS['calculated'],
+                available=calculated_available,
+                auto_included=False,
+                reason='',
+            ),
+            PatternOptionStatus(
+                name='background',
+                description=_PATTERN_OPTION_DESCRIPTIONS['background'],
+                available=background_available,
+                auto_included=False,
+                reason='',
+            ),
+            PatternOptionStatus(
+                name='residual',
+                description=_PATTERN_OPTION_DESCRIPTIONS['residual'],
+                available=residual_available,
+                auto_included=False,
+                reason='',
+            ),
+            PatternOptionStatus(
+                name='bragg',
+                description=_PATTERN_OPTION_DESCRIPTIONS['bragg'],
+                available=bragg_available,
+                auto_included=False,
+                reason='',
+            ),
+            PatternOptionStatus(
+                name='excluded',
+                description=_PATTERN_OPTION_DESCRIPTIONS['excluded'],
+                available=excluded_available,
+                auto_included=False,
+                reason='',
+            ),
+            PatternOptionStatus(
+                name='uncertainty',
+                description=_PATTERN_OPTION_DESCRIPTIONS['uncertainty'],
+                available=uncertainty_available,
+                auto_included=False,
+                reason='',
+            ),
+        ])
 
         return [
             PatternOptionStatus(
@@ -542,8 +555,11 @@ class ProjectDisplay:
                 description=_PATTERN_OPTION_DESCRIPTIONS['background'],
                 available=background_available,
                 auto_included='background' in auto_include,
-                reason='' if background_available else (
-                    'Background display requires measured and calculated data plus background intensities.'
+                reason=''
+                if background_available
+                else (
+                    'Background display requires measured and calculated '
+                    'data plus background intensities.'
                 ),
             ),
             PatternOptionStatus(
@@ -551,17 +567,20 @@ class ProjectDisplay:
                 description=_PATTERN_OPTION_DESCRIPTIONS['residual'],
                 available=residual_available,
                 auto_included='residual' in auto_include,
-                reason='' if residual_available else (
-                    'Residuals currently require powder measured and calculated data.'
-                ),
+                reason=''
+                if residual_available
+                else ('Residuals currently require powder measured and calculated data.'),
             ),
             PatternOptionStatus(
                 name='bragg',
                 description=_PATTERN_OPTION_DESCRIPTIONS['bragg'],
                 available=bragg_available,
                 auto_included='bragg' in auto_include,
-                reason='' if bragg_available else (
-                    'Bragg tick marks require powder Bragg measured and calculated data with reflection rows.'
+                reason=''
+                if bragg_available
+                else (
+                    'Bragg tick marks require powder Bragg measured and '
+                    'calculated data with reflection rows.'
                 ),
             ),
             PatternOptionStatus(
@@ -569,7 +588,9 @@ class ProjectDisplay:
                 description=_PATTERN_OPTION_DESCRIPTIONS['excluded'],
                 available=excluded_available,
                 auto_included='excluded' in auto_include,
-                reason='' if excluded_available else 'No excluded regions are defined for this experiment.',
+                reason=''
+                if excluded_available
+                else ('No excluded regions are defined for this experiment.'),
             ),
             PatternOptionStatus(
                 name='uncertainty',
@@ -587,7 +608,9 @@ class ProjectDisplay:
         sample_form: str,
         scattering_type: str,
     ) -> tuple[bool, str]:
-        """Return whether posterior predictive uncertainty is available."""
+        """
+        Return whether posterior predictive uncertainty is available.
+        """
         if not measured_available:
             return False, 'Uncertainty bands require measured data.'
 
@@ -596,7 +619,10 @@ class ProjectDisplay:
             and scattering_type == ScatteringTypeEnum.BRAGG.value
         )
         if not supported_sample_form:
-            return False, 'Posterior predictive pattern views are unavailable for this experiment type.'
+            return (
+                False,
+                ('Posterior predictive pattern views are unavailable for this experiment type.'),
+            )
 
         fit_results = getattr(self._project.analysis, 'fit_results', None)
         if fit_results is None:

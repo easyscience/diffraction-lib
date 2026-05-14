@@ -282,6 +282,7 @@ def test_display_fit_results_calls_process_fit_results(monkeypatch):
 
 def test_analysis_display_as_cif_and_constraints(monkeypatch, capsys):
     import easydiffraction.analysis.analysis as analysis_mod
+    import easydiffraction.analysis.categories.constraints.default as constraints_mod
     from easydiffraction.analysis.analysis import Analysis
 
     analysis = Analysis(project=_make_project())
@@ -302,7 +303,7 @@ def test_analysis_display_as_cif_and_constraints(monkeypatch, capsys):
 
     analysis.constraints._items = [FakeConstraint()]
     captured: dict[str, object] = {}
-    monkeypatch.setattr(analysis_mod, 'render_table', lambda **kwargs: captured.update(kwargs))
+    monkeypatch.setattr(constraints_mod, 'render_table', lambda **kwargs: captured.update(kwargs))
     analysis.display.constraints()
     out = capsys.readouterr().out
     assert 'User defined constraints' in out

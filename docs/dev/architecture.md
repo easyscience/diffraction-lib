@@ -1248,11 +1248,11 @@ recognises three distinct selector families. They share a similar
 `<name>_type` shape so the user can inspect and set them uniformly, but
 their intent and ownership differ:
 
-| Family                             | User intent                     | Examples                                                                    | CIF                                                                            |
-| ---------------------------------- | ------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Family                             | User intent                     | Examples                                                                    | CIF                                                                              |
+| ---------------------------------- | ------------------------------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
 | Backend selector                   | Pick an execution backend       | `fit.minimizer_type`, `calculation.calculator_type`, `display.chart_engine` | `_fit.minimizer_type`, `_calculation.calculator_type`, `_rendering.chart_engine` |
-| Switchable-category impl. selector | Swap a category implementation  | `experiment.background_type`, `experiment.peak_profile_type`                | category-owned type tag such as `_peak.profile_type`                           |
-| Semantic value selector            | Pick a scientific/analysis mode | `fit.mode`                                                                  | `_fit.mode`                                                                    |
+| Switchable-category impl. selector | Swap a category implementation  | `experiment.background_type`, `experiment.peak_profile_type`                | category-owned type tag such as `_peak.profile_type`                             |
+| Semantic value selector            | Pick a scientific/analysis mode | `fit.mode`                                                                  | `_fit.mode`                                                                      |
 
 Backend selectors and semantic value selectors live on a dedicated
 configuration category (`fit`, `calculation`, `display`). Switchable-

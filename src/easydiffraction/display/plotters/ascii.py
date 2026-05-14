@@ -84,6 +84,8 @@ class AsciiPlotter(PlotterBase):
             Figure title printed above the chart.
         height : int | None, default=None
             Number of text rows to allocate for the chart.
+        excluded_ranges : tuple[tuple[float, float], ...], default=()
+            Excluded x-ranges to print below the selected x-range.
         """
         # Intentionally unused; kept for a consistent display API
         del axes_labels

@@ -95,16 +95,21 @@ def test_cli_fit_loads_and_fits(monkeypatch, tmp_path):
         analysis = _analysis()
 
         class _display:
-            class _plotter:
+            class _fit:
                 @staticmethod
-                def plot_param_correlations():
+                def results():
+                    calls.append('DISPLAY')
+
+                @staticmethod
+                def correlations():
                     calls.append('PLOT_CORR')
 
-                @staticmethod
-                def plot_meas_vs_calc(expt_name, *, show_residual=False):
-                    calls.append(f'PLOT_{expt_name}_{show_residual}')
+            fit = _fit()
 
-            plotter = _plotter()
+            @staticmethod
+            def pattern(expt_name, **kwargs):
+                del kwargs
+                calls.append(f'PLOT_{expt_name}_False')
 
         display = _display()
 
@@ -119,7 +124,7 @@ def test_cli_fit_loads_and_fits(monkeypatch, tmp_path):
 
     result = runner.invoke(main_mod.app, ['fit', str(proj_dir)])
     assert result.exit_code == 0
-    assert calls == ['FIT', 'DISPLAY', 'PLOT_CORR', 'PLOT_exp1_True']
+    assert calls == ['FIT', 'DISPLAY', 'PLOT_CORR', 'PLOT_exp1_False']
 
 
 def test_cli_fit_dry_clears_path(monkeypatch, tmp_path):
@@ -149,16 +154,20 @@ def test_cli_fit_dry_clears_path(monkeypatch, tmp_path):
         analysis = _analysis()
 
         class _display:
-            class _plotter:
+            class _fit:
                 @staticmethod
-                def plot_param_correlations():
+                def results():
                     pass
 
                 @staticmethod
-                def plot_meas_vs_calc(expt_name, *, show_residual=False):
+                def correlations():
                     pass
 
-            plotter = _plotter()
+            fit = _fit()
+
+            @staticmethod
+            def pattern(expt_name, **kwargs):
+                del expt_name, kwargs
 
         display = _display()
 

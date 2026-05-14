@@ -170,7 +170,7 @@ each commit, and stage only the files changed for that step.
   - Update tutorial `.py` files only; regenerate notebooks in Phase 2 if
     required.
 
-- [ ] Stop at the Phase 1 review gate.
+- [x] Stop at the Phase 1 review gate.
   - Summarize changed files and open questions.
   - Suggest next verification commands.
   - Wait for user approval before Phase 2.
@@ -190,16 +190,16 @@ Update display UX documentation
 
 After Phase 1 is reviewed and approved:
 
-- [ ] Add or update unit tests for the rendering category.
-- [ ] Add or update unit tests for the display facade namespaces.
-- [ ] Add or update plotting integration tests for `pattern(...)`.
-- [ ] Add or update analysis display integration tests for parameter and
+- [x] Add or update unit tests for the rendering category.
+- [x] Add or update unit tests for the display facade namespaces.
+- [x] Add or update plotting integration tests for `pattern(...)`.
+- [x] Add or update analysis display integration tests for parameter and
       fit report methods.
-- [ ] Regenerate tutorial notebooks if tutorial `.py` files changed.
-- [ ] Run formatting and checks.
-- [ ] Run unit tests.
-- [ ] Run integration tests.
-- [ ] Run script tests.
+- [x] Regenerate tutorial notebooks if tutorial `.py` files changed.
+- [x] Run formatting and checks.
+- [x] Run unit tests.
+- [x] Run integration tests.
+- [x] Run script tests.
 
 Verification commands:
 

@@ -129,19 +129,18 @@ parameters grouped in different categories. For example, you can use:
   parameters for the analysis step.
 - `project.display.parameters.fittable()` – to display only the
   parameters that can be fitted during the analysis.
-- `project.display.parameters.free()` – to display the parameters
-  that are currently free to be adjusted during the fitting process.
+- `project.display.parameters.free()` – to display the parameters that
+  are currently free to be adjusted during the fitting process.
 
-Finally, you can use the
-`project.display.parameters.access()` method to get a
-brief overview of how to access and modify parameters in the analysis
-step, along with their unique identifiers in the CIF format. This can be
-particularly useful for users who are new to the EasyDiffraction API or
-those who want to quickly understand how to work with parameters in
-their projects.
+Finally, you can use the `project.display.parameters.access()` method to
+get a brief overview of how to access and modify parameters in the
+analysis step, along with their unique identifiers in the CIF format.
+This can be particularly useful for users who are new to the
+EasyDiffraction API or those who want to quickly understand how to work
+with parameters in their projects.
 
-An example of the output for the
-`project.display.parameters.access()` method is:
+An example of the output for the `project.display.parameters.access()`
+method is:
 
 |     | Code variable                                       | Unique ID for CIF          |
 | --- | --------------------------------------------------- | -------------------------- |

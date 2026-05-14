@@ -1233,9 +1233,7 @@ project_2.display.pattern(expt_name='sim_lbco', x='d_spacing')
 # perfectly describe the peak at about 1.38 Å, as can be seen below:
 
 # %%
-project_2.display.pattern(
-    expt_name='sim_lbco', x='d_spacing', x_min=1.35, x_max=1.40
-)
+project_2.display.pattern(expt_name='sim_lbco', x='d_spacing', x_min=1.35, x_max=1.40)
 
 # %% [markdown]
 # The peak profile parameters are determined based on both the
@@ -1270,9 +1268,7 @@ project_2.experiments['sim_lbco'].peak.exp_rise_alpha_1.free = True
 project_2.analysis.fit()
 project_2.display.fit.results()
 
-project_2.display.pattern(
-    expt_name='sim_lbco', x='d_spacing', x_min=1.35, x_max=1.40
-)
+project_2.display.pattern(expt_name='sim_lbco', x='d_spacing', x_min=1.35, x_max=1.40)
 
 # %% [markdown]
 # #### Exercise 5.7: Find Undefined Features
@@ -1295,9 +1291,7 @@ project_2.display.pattern(
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.display.pattern(
-    expt_name='sim_lbco', x='d_spacing', x_min=1.53, x_max=1.7
-)
+project_2.display.pattern(expt_name='sim_lbco', x='d_spacing', x_min=1.53, x_max=1.7)
 
 # %% [markdown]
 # #### Exercise 5.8: Identify the Cause of the Unexplained Peaks
@@ -1363,9 +1357,7 @@ project_2.display.pattern(
 
 # %% tags=["solution", "hide-input"]
 project_1.display.pattern(expt_name='sim_si', x='d_spacing', x_min=1, x_max=1.7)
-project_2.display.pattern(
-    expt_name='sim_lbco', x='d_spacing', x_min=1, x_max=1.7
-)
+project_2.display.pattern(expt_name='sim_lbco', x='d_spacing', x_min=1, x_max=1.7)
 
 # %% [markdown]
 # #### Exercise 5.10: Create a Second Structure – Si as Impurity

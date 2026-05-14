@@ -104,7 +104,7 @@ class AnalysisDisplay:
     Accessed via ``analysis.display``.
     """
 
-    def __init__(self, analysis: 'Analysis') -> None:
+    def __init__(self, analysis: Analysis) -> None:
         self._analysis = analysis
 
     def _flush_structure_categories(self) -> None:
