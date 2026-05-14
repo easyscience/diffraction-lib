@@ -176,6 +176,8 @@ nav:
       - Introduction: introduction/index.md
   - Installation & Setup:
       - Installation & Setup: installation-and-setup/index.md
+  - Quick Reference:
+      - Quick Reference: quick-reference/index.md
   - User Guide:
       - User Guide: user-guide/index.md
       - Glossary: user-guide/glossary.md
@@ -221,6 +223,8 @@ nav:
           - Tb2TiO7 Bayesian: tutorials/ed-22.ipynb
       - Workshops & Schools:
           - DMSC Summer School: tutorials/ed-13.ipynb
+  - Command-Line:
+      - Command-Line: cli/index.md
   - API Reference:
       - API Reference: api-reference/index.md
       - analysis: api-reference/analysis.md
@@ -234,5 +238,3 @@ nav:
       - project: api-reference/project.md
       - summary: api-reference/summary.md
       - utils: api-reference/utils.md
-  - Command-Line:
-      - Command-Line: cli/index.md

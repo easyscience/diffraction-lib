@@ -187,16 +187,16 @@ execution order within a datablock (e.g. background before data).
 
 ### 2.4 DatablockItem and DatablockCollection
 
-| Aspect             | `DatablockItem`                             | `DatablockCollection`          |
-| ------------------ | ------------------------------------------- | ------------------------------ |
-| CIF analogy        | A single `data_` block                      | Collection of data blocks      |
-| Examples           | Structure, BraggPdExperiment                | Structures, Experiments        |
-| Category discovery | Scans `vars(self)` for categories           | N/A                            |
-| Update cascade     | `_update_categories()` — sorted by priority | N/A                            |
-| Parameters         | Aggregated from all categories              | Aggregated from all datablocks |
-| Fittable params    | N/A                                         | Non-constrained `Parameter`s   |
-| Free params        | N/A                                         | Fittable + `free == True`      |
-| Dirty flag         | `_need_categories_update`                   | N/A                            |
+| Aspect             | `DatablockItem`                             | `DatablockCollection`                                    |
+| ------------------ | ------------------------------------------- | -------------------------------------------------------- |
+| CIF analogy        | A single `data_` block                      | Collection of data blocks                                |
+| Examples           | Structure, BraggPdExperiment                | Structures, Experiments                                  |
+| Category discovery | Scans `vars(self)` for categories           | N/A                                                      |
+| Update cascade     | `_update_categories()` — sorted by priority | N/A                                                      |
+| Parameters         | Aggregated from all categories              | Aggregated from all datablocks                           |
+| Fittable params    | N/A                                         | `Parameter`s not blocked by user or symmetry constraints |
+| Free params        | N/A                                         | Fittable + `free == True`                                |
+| Dirty flag         | `_need_categories_update`                   | N/A                                                      |
 
 When any `Parameter.value` is set, it propagates
 `_need_categories_update = True` up to the owning `DatablockItem`.
@@ -210,7 +210,7 @@ GuardedBase
 └── GenericDescriptorBase               # name, value (validated via AttributeSpec), description
     ├── GenericStringDescriptor         # _value_type = DataTypes.STRING
     └── GenericNumericDescriptor        # _value_type = DataTypes.NUMERIC, + units
-        └── GenericParameter            # + free, uncertainty, fit_min, fit_max, constrained, symmetry_fixed
+        └── GenericParameter            # + free, uncertainty, fit_min, fit_max, user_constrained, symmetry_constrained
 ```
 
 CIF-bound concrete classes add a `CifHandler` for serialisation:
@@ -325,14 +325,15 @@ via the `crystallography` module during `_update_categories()`.
 
 Parameters that are fully determined by symmetry (e.g. `lattice_b` in
 cubic, `fract_y` of an atom on a 4-fold axis, off-diagonal ADPs forced
-to zero by site symmetry) are flagged as `symmetry_fixed = True` on the
-`Parameter`. This forces `free = False`; any subsequent attempt to set
-`free = True` on such a parameter is ignored with a warning. Flags are
-recomputed on every `_update_categories()` so that changing the space
-group, Wyckoff letter, or ADP type re-evaluates which parameters are
-fixed. Surface helpers `cell_symmetry_fixed_flags(...)` and
-`atom_site_symmetry_fixed_flags(...)` in `crystallography` expose the
-per-key flags.
+to zero by site symmetry) are flagged as `symmetry_constrained = True`
+on the `Parameter`. This forces `free = False`; any subsequent attempt
+to set `free = True` on such a parameter is ignored with a warning.
+Flags are recomputed on every `_update_categories()` so that changing
+the space group, Wyckoff letter, or ADP type re-evaluates which
+parameters are symmetry constrained. Surface helpers
+`cell_symmetry_constrained_flags(...)` and
+`atom_site_symmetry_constrained_flags(...)` in `crystallography` expose
+the per-key flags.
 
 ### 4.2 Atomic Displacement Parameters (ADP)
 
@@ -830,7 +831,10 @@ workflow:
   object. This is `FitResults` for deterministic fits and
   `BayesianFitResults` for Bayesian DREAM runs.
 - Parameter tables: `show_all_params()`, `show_fittable_params()`,
-  `show_free_params()`, `how_to_access_parameters()`
+  `show_free_params()`, `how_to_access_parameters()` Compact
+  summary-style parameter displays intentionally hide the large
+  loop-backed experiment categories `pd_data`, `total_data`, and `refln`
+  in `all()`, `access()`, and `cif_uids()` so the output stays readable.
 - Fitting: `fit()` dispatches single/joint through the callable `fit`
   category; `fit_sequential()` handles sequential mode (sets `fit.mode`
   to `'sequential'` internally). `fit()` accepts optional `random_seed`

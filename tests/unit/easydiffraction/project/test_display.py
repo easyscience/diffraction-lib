@@ -141,6 +141,41 @@ def test_parameter_display_delegates_to_analysis_display():
     ]
 
 
+def test_project_display_help_lists_namespaces_and_methods(capsys):
+    project, _calls = _make_project_stub()
+    display = ProjectDisplay(project)
+
+    display.help()
+    out = capsys.readouterr().out
+
+    assert "Help for 'ProjectDisplay'" in out
+    assert 'parameters' in out
+    assert 'fit' in out
+    assert 'posterior' in out
+    assert 'pattern()' in out
+    assert 'show_pattern_options()' in out
+
+
+def test_nested_project_display_help_lists_methods(capsys):
+    project, _calls = _make_project_stub()
+    display = ProjectDisplay(project)
+
+    display.parameters.help()
+    display.fit.help()
+    display.posterior.help()
+    out = capsys.readouterr().out
+
+    assert "Help for 'ParameterDisplay'" in out
+    assert 'all()' in out
+    assert 'access()' in out
+    assert "Help for 'FitDisplay'" in out
+    assert 'results()' in out
+    assert 'correlations()' in out
+    assert "Help for 'PosteriorDisplay'" in out
+    assert 'pairs()' in out
+    assert 'predictive()' in out
+
+
 def test_fit_display_delegates_to_analysis_and_rendering():
     project, calls = _make_project_stub()
     display = ProjectDisplay(project)

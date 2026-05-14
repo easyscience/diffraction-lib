@@ -4,6 +4,18 @@
 import numpy as np
 
 
+def _experiment_stub(name='exp1'):
+    from easydiffraction.core.identity import Identity
+
+    class ExperimentStub:
+        def __init__(self):
+            self._parent = None
+            self._identity = Identity(owner=self)
+            self._identity.datablock_entry_name = lambda: name
+
+    return ExperimentStub()
+
+
 def test_pd_cwl_data_point_defaults():
     from easydiffraction.datablocks.experiment.categories.data.bragg_pd import PdCwlDataPoint
 
@@ -93,6 +105,19 @@ def test_pd_tof_data_collection_create_and_properties():
     # Check point IDs are set
     assert coll._items[0].point_id.value == '1'
     assert coll._items[2].point_id.value == '3'
+
+
+def test_pd_data_items_resolve_experiment_datablock_name():
+    from easydiffraction.datablocks.experiment.categories.data.bragg_pd import PdCwlData
+
+    coll = PdCwlData()
+    coll._parent = _experiment_stub('hrpt')
+
+    coll._create_items_set_xcoord_and_id(np.array([10.0, 20.0]))
+
+    param = coll._items[0].intensity_meas
+    assert param._identity.datablock_entry_name == 'hrpt'
+    assert param.unique_name == 'hrpt.pd_data.1.intensity_meas'
 
 
 def test_pd_data_calc_status_exclusion():

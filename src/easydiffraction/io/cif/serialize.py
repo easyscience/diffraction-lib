@@ -87,7 +87,7 @@ def format_param_value(param: object) -> str:
     - Free parameter with uncertainty: value with esd in brackets,
       e.g. ``3.89(20)``
 
-    Constrained (dependent) parameters are always written without
+    User-constrained (dependent) parameters are always written without
     brackets, even if their ``free`` flag is ``True``, because they are
     not independently varied by the minimizer.
 
@@ -98,7 +98,7 @@ def format_param_value(param: object) -> str:
     ----------
     param : object
         A descriptor or parameter exposing ``.value`` and optionally
-        ``.free``, ``.constrained``, and ``.uncertainty``.
+        ``.free``, ``.user_constrained``, and ``.uncertainty``.
 
     Returns
     -------
@@ -108,10 +108,10 @@ def format_param_value(param: object) -> str:
     from easydiffraction.core.variable import Parameter  # noqa: PLC0415
 
     is_free = param.free if isinstance(param, Parameter) else False
-    is_constrained = param.constrained if isinstance(param, Parameter) else False
+    is_user_constrained = param.user_constrained if isinstance(param, Parameter) else False
     value = param.value  # type: ignore[attr-defined]
 
-    if not is_free or is_constrained or not isinstance(value, (int, float)):
+    if not is_free or is_user_constrained or not isinstance(value, (int, float)):
         return format_value(value)
 
     precision = 8
@@ -279,13 +279,21 @@ def datablock_item_to_cif(
     parts: list[str] = [header]
 
     # First categories
-    parts.extend(v.as_cif for v in vars(datablock).values() if isinstance(v, CategoryItem))
+    parts.extend(
+        cif_text
+        for cif_text in (v.as_cif for v in vars(datablock).values() if isinstance(v, CategoryItem))
+        if cif_text
+    )
 
     # Then collections
     parts.extend(
-        category_collection_to_cif(v, max_display=max_loop_display)
-        for v in vars(datablock).values()
-        if isinstance(v, CategoryCollection)
+        cif_text
+        for cif_text in (
+            category_collection_to_cif(v, max_display=max_loop_display)
+            for v in vars(datablock).values()
+            if isinstance(v, CategoryCollection)
+        )
+        if cif_text
     )
 
     return '\n\n'.join(parts)
@@ -715,11 +723,7 @@ def category_collection_from_cif(
     array = np.array(loop.values, dtype=str).reshape(num_rows, num_cols)
 
     # Pre-create default items in the collection
-    self._items = [self._item_type() for _ in range(num_rows)]
-
-    # Set parent for each item to enable identity resolution
-    for item in self._items:
-        object.__setattr__(item, '_parent', self)  # noqa: PLC2801
+    self._adopt_items([self._item_type() for _ in range(num_rows)])
 
     # Set those items' parameters, which are present in the loop
     for row_idx in range(num_rows):

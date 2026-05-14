@@ -67,6 +67,18 @@ def test_analysis_help(capsys):
     assert 'fit_sequential()' in out
 
 
+def test_analysis_display_help(capsys):
+    from easydiffraction.analysis.analysis import Analysis
+
+    a = Analysis(project=_make_project_with_names([]))
+    a.display.help()
+    out = capsys.readouterr().out
+    assert "Help for 'AnalysisDisplay'" in out
+    assert 'all_params()' in out
+    assert 'fit_results()' in out
+    assert 'how_to_access_parameters()' in out
+
+
 def test_display_fit_results_warns_when_no_results(capsys):
     """Test that display.fit_results logs a warning when fit() has not been run."""
     from easydiffraction.analysis.analysis import Analysis

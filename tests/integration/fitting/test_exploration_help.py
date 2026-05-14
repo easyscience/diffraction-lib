@@ -65,6 +65,27 @@ def test_experiment_show_as_cif(lbco_fitted_project):
     expt.show_as_cif()
 
 
+def test_experiment_show_as_cif_omits_empty_category_gaps(lbco_fitted_project, monkeypatch):
+    import re
+
+    import easydiffraction.datablocks.experiment.item.base as experiment_base
+
+    captured = {}
+
+    def fake_render_cif(cif_text):
+        captured['cif_text'] = cif_text
+
+    monkeypatch.setattr(experiment_base, 'render_cif', fake_render_cif)
+
+    project = lbco_fitted_project
+    expt = project.experiments['hrpt']
+    expt.show_as_cif()
+
+    cif_text = captured['cif_text']
+    assert re.search(r'_pd_phase_block\.scale\n[^\n]+\n\nloop_', cif_text) is not None
+    assert '\n\n\n' not in cif_text
+
+
 def test_experiment_as_cif(lbco_fitted_project):
     project = lbco_fitted_project
     expt = project.experiments['hrpt']

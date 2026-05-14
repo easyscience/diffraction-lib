@@ -91,25 +91,29 @@ class TestApplyCellSymmetryConstraints:
         assert result['angle_beta'] == 85.0
         assert result['angle_gamma'] == 75.0
 
-    def test_invalid_name_hm_returns_cell_unchanged(self):
+    def test_invalid_name_hm_returns_cell_unchanged(self, monkeypatch):
+        from easydiffraction.utils.logging import Logger
+
         cell = _make_cell()
         original = dict(cell)
+        monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.WARN, raising=True)
         result = apply_cell_symmetry_constraints(cell, 'NOT A REAL SG')
         assert result == original
+        monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.RAISE, raising=True)
 
 
 # ------------------------------------------------------------------
-# cell_symmetry_fixed_flags
+# cell_symmetry_constrained_flags
 # ------------------------------------------------------------------
 
 
-class TestCellSymmetryFixedFlags:
+class TestCellSymmetryConstrainedFlags:
     def test_cubic_only_a_is_free(self):
         from easydiffraction.crystallography.crystallography import (
-            cell_symmetry_fixed_flags,
+            cell_symmetry_constrained_flags,
         )
 
-        flags = cell_symmetry_fixed_flags('F m -3 m')
+        flags = cell_symmetry_constrained_flags('F m -3 m')
         assert flags == {
             'lattice_a': False,
             'lattice_b': True,
@@ -121,10 +125,10 @@ class TestCellSymmetryFixedFlags:
 
     def test_monoclinic_b_and_beta_free(self):
         from easydiffraction.crystallography.crystallography import (
-            cell_symmetry_fixed_flags,
+            cell_symmetry_constrained_flags,
         )
 
-        flags = cell_symmetry_fixed_flags('P 21/c')
+        flags = cell_symmetry_constrained_flags('P 21/c')
         assert flags['lattice_a'] is False
         assert flags['lattice_b'] is False
         assert flags['lattice_c'] is False
@@ -134,19 +138,19 @@ class TestCellSymmetryFixedFlags:
 
     def test_triclinic_all_free(self):
         from easydiffraction.crystallography.crystallography import (
-            cell_symmetry_fixed_flags,
+            cell_symmetry_constrained_flags,
         )
 
-        flags = cell_symmetry_fixed_flags('P 1')
+        flags = cell_symmetry_constrained_flags('P 1')
         assert all(v is False for v in flags.values())
 
     def test_invalid_returns_all_false(self, monkeypatch):
         from easydiffraction.crystallography.crystallography import (
-            cell_symmetry_fixed_flags,
+            cell_symmetry_constrained_flags,
         )
         from easydiffraction.utils.logging import Logger
 
         monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.WARN, raising=True)
-        flags = cell_symmetry_fixed_flags('NOT A REAL SG')
+        flags = cell_symmetry_constrained_flags('NOT A REAL SG')
         assert all(v is False for v in flags.values())
         monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.RAISE, raising=True)

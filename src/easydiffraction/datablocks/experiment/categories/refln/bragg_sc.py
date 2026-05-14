@@ -271,7 +271,7 @@ class ReflnData(CategoryCollection):
         # TODO: split into multiple methods
 
         # Create items
-        self._items = [self._item_type() for _ in range(indices_h.size)]
+        self._adopt_items([self._item_type() for _ in range(indices_h.size)])
 
         # Set indices
         for item, index_h, index_k, index_l in zip(

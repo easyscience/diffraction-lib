@@ -342,7 +342,7 @@ class Project(GuardedBase):
         console.print(self.info.path.resolve())
 
         # Apply constraints so dependent parameters are flagged
-        # before serialization (constrained params are written
+        # before serialization (user-constrained params are written
         # without brackets).
         self._analysis._update_categories()
 

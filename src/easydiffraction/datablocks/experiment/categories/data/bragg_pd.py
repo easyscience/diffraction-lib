@@ -572,7 +572,7 @@ class PdCwlData(PdDataBase):
         # TODO: split into multiple methods
 
         # Create items
-        self._items = [self._item_type() for _ in range(values.size)]
+        self._adopt_items([self._item_type() for _ in range(values.size)])
 
         # Set two-theta values
         for p, v in zip(self._items, values, strict=True):
@@ -651,7 +651,7 @@ class PdTofData(PdDataBase):
         # TODO: split into multiple methods
 
         # Create items
-        self._items = [self._item_type() for _ in range(values.size)]
+        self._adopt_items([self._item_type() for _ in range(values.size)])
 
         # Set time-of-flight values
         for p, v in zip(self._items, values, strict=True):

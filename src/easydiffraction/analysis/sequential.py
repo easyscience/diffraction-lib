@@ -452,7 +452,7 @@ def _build_template(project: object) -> SequentialFitTemplate:
     free_names: list[str] = []
     initial_params: dict[str, float] = {}
     for p in all_params:
-        if isinstance(p, Parameter) and not p.constrained and p.free:
+        if isinstance(p, Parameter) and not p.user_constrained and p.free:
             free_names.append(p.unique_name)
             initial_params[p.unique_name] = p.value
 
@@ -612,7 +612,9 @@ def _check_seq_preconditions(project: object) -> list[str]:
     from easydiffraction.core.variable import Parameter  # noqa: PLC0415
 
     free_params = [
-        p for p in project.parameters if isinstance(p, Parameter) and not p.constrained and p.free
+        p
+        for p in project.parameters
+        if isinstance(p, Parameter) and not p.user_constrained and p.free
     ]
     if not free_params:
         msg = 'No free parameters found. Mark at least one parameter as free.'

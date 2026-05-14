@@ -349,7 +349,7 @@ class TotalData(TotalDataBase):
         # TODO: split into multiple methods
 
         # Create items
-        self._items = [self._item_type() for _ in range(values.size)]
+        self._adopt_items([self._item_type() for _ in range(values.size)])
 
         # Set r values
         for p, v in zip(self._items, values, strict=True):

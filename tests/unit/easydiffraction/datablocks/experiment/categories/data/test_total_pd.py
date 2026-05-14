@@ -4,6 +4,18 @@
 import numpy as np
 
 
+def _experiment_stub(name='exp1'):
+    from easydiffraction.core.identity import Identity
+
+    class ExperimentStub:
+        def __init__(self):
+            self._parent = None
+            self._identity = Identity(owner=self)
+            self._identity.datablock_entry_name = lambda: name
+
+    return ExperimentStub()
+
+
 def test_total_data_point_defaults():
     from easydiffraction.datablocks.experiment.categories.data.total_pd import TotalDataPoint
 
@@ -89,3 +101,16 @@ def test_total_data_type_info():
 
     assert TotalData.type_info.tag == 'total-pd'
     assert TotalData.type_info.description == 'Total scattering (PDF) data'
+
+
+def test_total_data_items_resolve_experiment_datablock_name():
+    from easydiffraction.datablocks.experiment.categories.data.total_pd import TotalData
+
+    coll = TotalData()
+    coll._parent = _experiment_stub('pdf-exp')
+
+    coll._create_items_set_xcoord_and_id(np.array([1.0, 2.0]))
+
+    param = coll._items[0].g_r_meas
+    assert param._identity.datablock_entry_name == 'pdf-exp'
+    assert param.unique_name == 'pdf-exp.total_data.1.g_r_meas'
