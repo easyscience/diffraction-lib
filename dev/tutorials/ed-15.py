@@ -67,7 +67,7 @@ experiment.extinction.radius = 100.0
 # ## Step 4: Perform Analysis I (ADP iso)
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='senju')
+project.display.pattern(expt_name='senju')
 
 # %%
 experiment.linked_crystal.scale.free = True
@@ -86,7 +86,7 @@ project.analysis.fit()
 
 # %%
 # Show fit results summary
-project.analysis.display.fit_results()
+project.display.fit.results()
 
 # %%
 structure.show_as_cif()
@@ -95,7 +95,7 @@ structure.show_as_cif()
 project.experiments.show_names()
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='senju')
+project.display.pattern(expt_name='senju')
 
 # %% [markdown]
 # ## Step 5: Perform Analysis (ADP aniso)
@@ -114,19 +114,19 @@ for atom_site in structure.atom_site_aniso:
 structure.show_as_cif()
 
 # %%
-project.analysis.display.free_params()
+project.display.parameters.free()
 
 # %%
 project.analysis.fit()
 
 # %%
-project.analysis.display.fit_results()
+project.display.fit.results()
 
 # %%
-project.display.plotter.plot_param_correlations()
+project.display.fit.correlations()
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='senju')
+project.display.pattern(expt_name='senju')
 
 # %%
 structure.show_as_cif()

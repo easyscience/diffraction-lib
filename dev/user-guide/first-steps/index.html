@@ -2975,22 +2975,21 @@ descriptions, allowing you to choose the one that best fits your needs.</p>
 <p>EasyDiffraction provides several methods for showing the available
 parameters grouped in different categories. For example, you can use:</p>
 <ul>
-<li><code>project.analysis.display.all_params()</code> – to display all available
+<li><code>project.display.parameters.all()</code> – to display all available
   parameters for the analysis step.</li>
-<li><code>project.analysis.display.fittable_params()</code> – to display only the
+<li><code>project.display.parameters.fittable()</code> – to display only the
   parameters that can be fitted during the analysis.</li>
-<li><code>project.analysis.display.free_params()</code> – to display the parameters
-  that are currently free to be adjusted during the fitting process.</li>
+<li><code>project.display.parameters.free()</code> – to display the parameters that
+  are currently free to be adjusted during the fitting process.</li>
 </ul>
-<p>Finally, you can use the
-<code>project.analysis.display.how_to_access_parameters()</code> method to get a
-brief overview of how to access and modify parameters in the analysis
-step, along with their unique identifiers in the <abbr title="Crystallographic Information File.">CIF</abbr> format. This can be
-particularly useful for users who are new to the EasyDiffraction API or
-those who want to quickly understand how to work with parameters in
-their projects.</p>
-<p>An example of the output for the
-<code>project.analysis.display.how_to_access_parameters()</code> method is:</p>
+<p>Finally, you can use the <code>project.display.parameters.access()</code> method to
+get a brief overview of how to access and modify parameters in the
+analysis step, along with their unique identifiers in the <abbr title="Crystallographic Information File.">CIF</abbr> format.
+This can be particularly useful for users who are new to the
+EasyDiffraction API or those who want to quickly understand how to work
+with parameters in their projects.</p>
+<p>An example of the output for the <code>project.display.parameters.access()</code>
+method is:</p>
 <table>
 <thead>
 <tr>
@@ -3045,7 +3044,7 @@ their projects.</p>
 <h3 id="supported-plotters">Supported plotters</h3>
 <p>To see the available plotters, you can use the <code>display</code> category on the
 <code>Project</code> instance:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">show_plotter_types</span><span class="p">()</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">rendering</span><span class="o">.</span><span class="n">show_chart_engines</span><span class="p">()</span>
 </code></pre></div>
 <p>An example of the output is:</p>
 <table>

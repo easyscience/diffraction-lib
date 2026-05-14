@@ -47,10 +47,10 @@ project.analysis.fit()
 # ## Show Results
 
 # %%
-project.analysis.display.fit_results()
+project.display.fit.results()
 
 # %%
-project.display.plotter.plot_param_correlations()
+project.display.fit.correlations()
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')
+project.display.pattern(expt_name='hrpt')

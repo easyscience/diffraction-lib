@@ -141,7 +141,7 @@ project.analysis.fit()
 # estimated uncertainties.
 
 # %%
-project.analysis.display.fit_results()
+project.display.fit.results()
 
 # %% [markdown]
 # The correlation plot shows how strongly the refined parameters move
@@ -150,10 +150,10 @@ project.analysis.display.fit_results()
 # intensities.
 
 # %%
-project.display.plotter.plot_param_correlations()
+project.display.fit.correlations()
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='heidi')
+project.display.pattern(expt_name='heidi')
 
 # %% [markdown]
 # ## Step 5: Prepare for Bayesian Sampling
@@ -174,7 +174,7 @@ project.display.plotter.plot_meas_vs_calc(expt_name='heidi')
 # uncertainties.
 
 # %%
-project.analysis.display.free_params()
+project.display.parameters.free()
 
 # %% [markdown]
 # Set fit bounds for all free parameters using `multiplier=1.5`. In this
@@ -192,7 +192,7 @@ for param in project.free_parameters:
 # sampler.
 
 # %%
-project.analysis.display.free_params()
+project.display.parameters.free()
 
 # %% [markdown]
 # ## Step 6: Configure and Run DREAM
@@ -232,7 +232,7 @@ project.analysis.fit()
 # statistics.
 
 # %%
-project.analysis.display.fit_results()
+project.display.fit.results()
 
 # %% [markdown]
 # The correlation and posterior-pair plots are complementary:
@@ -246,10 +246,10 @@ project.analysis.display.fit_results()
 #   keep the grid readable.
 
 # %%
-project.display.plotter.plot_param_correlations()
+project.display.fit.correlations()
 
 # %%
-project.display.plotter.plot_posterior_pairs()
+project.display.posterior.pairs()
 
 # %% [markdown]
 # The one-dimensional posterior distributions below make it easier to
@@ -258,7 +258,7 @@ project.display.plotter.plot_posterior_pairs()
 
 # %%
 for param in project.free_parameters:
-    project.display.plotter.plot_param_distribution(param)
+    project.display.posterior.distribution(param)
 
 # %% [markdown]
 # Finally, the posterior predictive plot propagates the sampled
@@ -266,4 +266,4 @@ for param in project.free_parameters:
 # intensities.
 
 # %%
-project.display.plotter.plot_posterior_predictive(expt_name='heidi')
+project.display.posterior.predictive(expt_name='heidi')

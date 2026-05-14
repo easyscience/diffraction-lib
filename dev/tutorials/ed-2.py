@@ -162,13 +162,13 @@ experiment.linked_phases['lbco'].scale.free = True
 project.analysis.fit()
 
 # %%
-project.analysis.display.fit_results()
+project.display.fit.results()
 
 # %%
-project.display.plotter.plot_param_correlations()
+project.display.fit.correlations()
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')
+project.display.pattern(expt_name='hrpt')
 
 # %% [markdown]
 # ## Step 5: Perform Analysis (with constraints)
@@ -199,13 +199,13 @@ project.analysis.fit.minimizer_type = 'lmfit'
 project.analysis.fit()
 
 # %%
-project.analysis.display.fit_results()
+project.display.fit.results()
 
 # %%
-project.display.plotter.plot_param_correlations()
+project.display.fit.correlations()
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')
+project.display.pattern(expt_name='hrpt')
 
 # %% [markdown]
 # ## Step 6: Switch calculator engine
@@ -220,10 +220,10 @@ experiment.calculation.calculator_type = 'crysfml'
 project.analysis.fit()
 
 # %%
-project.analysis.display.fit_results()
+project.display.fit.results()
 
 # %%
-project.display.plotter.plot_param_correlations()
+project.display.fit.correlations()
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')
+project.display.pattern(expt_name='hrpt')
