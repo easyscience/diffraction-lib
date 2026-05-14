@@ -1174,7 +1174,7 @@ class Plotter(RendererBase):
         if style != 'band':
             log.warning(
                 'Single-crystal posterior predictive plots currently support '
-                'style="band" only; rendering the 95% interval.'
+                'style="band" only; rendering the 95% credible interval.'
             )
 
         summary = self._get_or_build_posterior_predictive_summary(

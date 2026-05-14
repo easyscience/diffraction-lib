@@ -152,10 +152,10 @@ class ActivityIndicator:
             return
 
         live = Live(
-            self._terminal_renderable(),
             console=ConsoleManager.get(),
             auto_refresh=True,
             refresh_per_second=1 / _SPINNER_FRAME_SECONDS,
+            get_renderable=self._terminal_renderable,
         )
         live.start()
         self._live = live
@@ -236,7 +236,7 @@ class ActivityIndicator:
 
         if self._live is not None:
             with suppress(Exception):
-                self._live.update(self._terminal_renderable(), refresh=True)
+                self._live.refresh()
 
     def _terminal_content(self) -> object | None:
         if self._content is None:
