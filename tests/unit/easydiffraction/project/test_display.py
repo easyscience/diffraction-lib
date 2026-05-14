@@ -367,7 +367,9 @@ def test_pattern_option_statuses_ignore_placeholder_arrays_without_usable_state(
     )
     display = ProjectDisplay(project)
 
-    monkeypatch.setattr('easydiffraction.project.display.intensity_category_for', lambda expt: pattern)
+    monkeypatch.setattr(
+        'easydiffraction.project.display.intensity_category_for', lambda expt: pattern
+    )
 
     statuses = {status.name: status for status in display._pattern_option_statuses('hrpt')}
 
@@ -377,6 +379,68 @@ def test_pattern_option_statuses_ignore_placeholder_arrays_without_usable_state(
     assert statuses['bragg'].available is False
     assert statuses['measured'].auto_included is True
     assert statuses['calculated'].auto_included is False
+
+
+def test_pattern_auto_routes_single_crystal_with_calculated_data(monkeypatch):
+    calls: list[tuple[str, tuple, dict]] = []
+
+    def record(name: str):
+        def _recorder(*args, **kwargs):
+            calls.append((name, args, kwargs))
+
+        return _recorder
+
+    pattern = SimpleNamespace(
+        intensity_meas=[10.0, 12.0],
+        intensity_calc=[9.5, 11.5],
+    )
+    experiment = SimpleNamespace(
+        type=SimpleNamespace(
+            sample_form=SimpleNamespace(value=SampleFormEnum.SINGLE_CRYSTAL.value),
+            scattering_type=SimpleNamespace(value=ScatteringTypeEnum.BRAGG.value),
+        ),
+        linked_crystal=SimpleNamespace(id=SimpleNamespace(value='si')),
+        excluded_regions=[],
+    )
+    project = SimpleNamespace(
+        experiments={'heidi': experiment},
+        structures=SimpleNamespace(names=['si']),
+        analysis=SimpleNamespace(fit_results=None),
+        rendering=SimpleNamespace(
+            plotter=SimpleNamespace(
+                _update_project_categories=lambda expt_name: None,
+                _plot_meas_vs_calc_request=record('_plot_meas_vs_calc_request'),
+            ),
+            chart_engine=SimpleNamespace(value='plotly'),
+        ),
+    )
+    display = ProjectDisplay(project)
+
+    monkeypatch.setattr(
+        'easydiffraction.project.display.intensity_category_for',
+        lambda expt: pattern,
+    )
+
+    display.pattern('heidi')
+
+    assert calls == [
+        (
+            '_plot_meas_vs_calc_request',
+            (),
+            {
+                'expt_name': 'heidi',
+                'plot_options': _MeasVsCalcPlotOptions(
+                    x_min=None,
+                    x_max=None,
+                    show_residual=False,
+                    show_background=False,
+                    show_bragg=False,
+                    show_excluded=False,
+                    x=None,
+                ),
+            },
+        )
+    ]
 
 
 def test_pattern_rejects_excluded_with_custom_x():

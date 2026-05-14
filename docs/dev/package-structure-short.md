@@ -198,10 +198,6 @@
 │   └── 📄 ascii.py
 ├── 📁 project
 │   ├── 📁 categories
-│   │   ├── 📁 display
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   └── 📄 factory.py
 │   │   ├── 📁 rendering
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py

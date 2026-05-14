@@ -3758,10 +3758,7 @@ class Plotter(RendererBase):
                 dtype=float,
             )
 
-        if (
-            np.asarray(ctx['x_filtered']).size == 0
-            or not self._show_bragg_enabled(plot_options)
-        ):
+        if np.asarray(ctx['x_filtered']).size == 0 or not self._show_bragg_enabled(plot_options):
             bragg_tick_sets = ()
         else:
             bragg_tick_sets = self._extract_bragg_tick_sets(
@@ -5037,10 +5034,7 @@ class Plotter(RendererBase):
         """
         show_residual = True if plot_options.show_residual is None else plot_options.show_residual
         y_resid = series.y_meas - series.y_calc if show_residual else None
-        if (
-            np.asarray(ctx['x_filtered']).size == 0
-            or not self._show_bragg_enabled(plot_options)
-        ):
+        if np.asarray(ctx['x_filtered']).size == 0 or not self._show_bragg_enabled(plot_options):
             bragg_tick_sets = ()
         else:
             bragg_tick_sets = self._extract_bragg_tick_sets(

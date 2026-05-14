@@ -402,12 +402,6 @@
 │   └── 📄 ascii.py
 ├── 📁 project
 │   ├── 📁 categories
-│   │   ├── 📁 display
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   │   └── 🏷️ class Display
-│   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class DisplayFactory
 │   │   ├── 📁 rendering
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
