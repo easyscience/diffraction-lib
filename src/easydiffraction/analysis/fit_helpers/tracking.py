@@ -87,6 +87,7 @@ class FitProgressTracker:
         self._df_rows: list[list[str]] = []
         self._activity_indicator: ActivityIndicator | None = None
         self._activity_label: str = ACTIVITY_LABEL_FITTING
+        self._shared_display_handle: object | None = None
 
     def reset(self) -> None:
         """Reset internal state before a new optimization run."""
@@ -567,7 +568,7 @@ class FitProgressTracker:
 
     def _default_activity_label(self) -> str:
         if self._tracking_mode == TRACKING_MODE_SAMPLER:
-            return ACTIVITY_LABEL_PROCESSING
+            return ACTIVITY_LABEL_SAMPLING
         return ACTIVITY_LABEL_FITTING
 
     @staticmethod
@@ -579,12 +580,16 @@ class FitProgressTracker:
             return ACTIVITY_LABEL_SAMPLING
         if normalized_phase:
             return normalized_phase
-        return ACTIVITY_LABEL_PROCESSING
+        return ACTIVITY_LABEL_SAMPLING
+
+    def _set_shared_display_handle(self, display_handle: object | None) -> None:
+        self._shared_display_handle = display_handle
 
     def _start_activity_indicator(self) -> None:
         self._activity_indicator = ActivityIndicator(
             self._activity_label,
             verbosity=self._verbosity,
+            display_handle=self._shared_display_handle,
         )
         self._activity_indicator.start()
         self._refresh_activity_indicator()

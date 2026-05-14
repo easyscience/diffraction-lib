@@ -30,7 +30,8 @@ def test_tracker_terminal_flow_prints_and_updates_best(monkeypatch, capsys):
     events: list[tuple[str, object]] = []
 
     class FakeIndicator:
-        def __init__(self, label, *, verbosity):
+        def __init__(self, label, *, verbosity, display_handle=None):
+            del display_handle
             events.append(('init', label, verbosity))
 
         def start(self):
@@ -74,7 +75,8 @@ def test_tracker_sampler_progress_renders_and_completes(monkeypatch, capsys):
     events: list[tuple[str, object]] = []
 
     class FakeIndicator:
-        def __init__(self, label, *, verbosity):
+        def __init__(self, label, *, verbosity, display_handle=None):
+            del display_handle
             events.append(('init', label, verbosity))
 
         def start(self):
@@ -137,7 +139,8 @@ def test_tracker_helper_error_paths_and_short_mode(monkeypatch):
     events: list[tuple[str, object]] = []
 
     class FakeIndicator:
-        def __init__(self, label, *, verbosity):
+        def __init__(self, label, *, verbosity, display_handle=None):
+            del display_handle
             events.append(('init', label, verbosity))
 
         def start(self):
@@ -165,9 +168,9 @@ def test_tracker_helper_error_paths_and_short_mode(monkeypatch):
 
     assert FitProgressTracker._rows_match_on_columns(['1', 'a'], ['1', 'b'], (0,)) is True
     assert events == [
-        ('init', tracking_mod.ACTIVITY_LABEL_PROCESSING, VerbosityEnum.SHORT),
+        ('init', tracking_mod.ACTIVITY_LABEL_SAMPLING, VerbosityEnum.SHORT),
         ('start', None),
-        ('update', tracking_mod.ACTIVITY_LABEL_PROCESSING),
+        ('update', tracking_mod.ACTIVITY_LABEL_SAMPLING),
         ('stop', None),
     ]
 
@@ -271,7 +274,7 @@ def test_tracker_final_rows_cover_fallbacks_and_activity_labels():
     tracker._fitting_time = 1.5
     assert tracker._final_fit_tracking_row() == ['8', '1.50', '', '']
     tracker._tracking_mode = tracking_mod.TRACKING_MODE_SAMPLER
-    assert tracker._default_activity_label() == tracking_mod.ACTIVITY_LABEL_PROCESSING
+    assert tracker._default_activity_label() == tracking_mod.ACTIVITY_LABEL_SAMPLING
     tracker._tracking_mode = tracking_mod.TRACKING_MODE_FIT
     assert tracker._default_activity_label() == tracking_mod.ACTIVITY_LABEL_FITTING
     assert (
@@ -282,7 +285,7 @@ def test_tracker_final_rows_cover_fallbacks_and_activity_labels():
         == tracking_mod.ACTIVITY_LABEL_SAMPLING
     )
     assert tracker._activity_label_for_sampler_phase('annealing') == 'annealing'
-    assert tracker._activity_label_for_sampler_phase('') == tracking_mod.ACTIVITY_LABEL_PROCESSING
+    assert tracker._activity_label_for_sampler_phase('') == tracking_mod.ACTIVITY_LABEL_SAMPLING
 
 
 def test_minimizer_base_fit_flow_and_finalize():

@@ -60,8 +60,21 @@ class _TerminalLiveHandle:
     and notebook handles through a single update-oriented interface.
     """
 
-    def __init__(self, live: object) -> None:
-        self._live = live
+    def __init__(self, *, console: object) -> None:
+        self._renderable: object = Text('')
+        self._live = Live(
+            console=console,
+            auto_refresh=True,
+            refresh_per_second=1 / _SPINNER_FRAME_SECONDS,
+            get_renderable=self._get_renderable,
+        )
+        self._live.start()
+
+    def _get_renderable(self) -> object:
+        renderable = self._renderable
+        if callable(renderable):
+            return renderable()
+        return renderable
 
     def update(self, renderable: object) -> None:
         """
@@ -72,7 +85,8 @@ class _TerminalLiveHandle:
         renderable : object
             A Rich-compatible renderable to display.
         """
-        self._live.update(renderable, refresh=True)
+        self._renderable = renderable
+        self._live.refresh()
 
     def close(self) -> None:
         """Stop the live display, suppressing any errors."""
@@ -96,9 +110,7 @@ def make_display_handle() -> object | None:
             handle.display(HTML(''))
         return handle
 
-    live = Live(console=ConsoleManager.get(), auto_refresh=True)
-    live.start()
-    return _TerminalLiveHandle(live)
+    return _TerminalLiveHandle(console=ConsoleManager.get())
 
 
 class ActivityIndicator:
@@ -111,6 +123,8 @@ class ActivityIndicator:
         User-facing activity label.
     verbosity : VerbosityEnum
         Output verbosity controlling whether live display is shown.
+    display_handle : object | None, default=None
+        Optional existing live display handle to reuse.
     """
 
     def __init__(
@@ -118,10 +132,12 @@ class ActivityIndicator:
         label: str = ACTIVITY_LABEL_PROCESSING,
         *,
         verbosity: VerbosityEnum,
+        display_handle: object | None = None,
     ) -> None:
         self._label = label
         self._verbosity = verbosity
         self._content: object | None = None
+        self._provided_display_handle = display_handle
         self._display_handle: object | None = None
         self._live: object | None = None
         self._running = False
@@ -143,6 +159,11 @@ class ActivityIndicator:
         self._running = True
         self._keep_stopped_label = False
         self._started_at = monotonic()
+
+        if self._provided_display_handle is not None:
+            self._display_handle = self._provided_display_handle
+            self._refresh()
+            return
 
         if in_jupyter() and DisplayHandle is not None and HTML is not None:
             handle = DisplayHandle()
@@ -231,12 +252,27 @@ class ActivityIndicator:
             return
 
         if self._display_handle is not None and HTML is not None:
-            with suppress(Exception):
-                self._display_handle.update(HTML(self._render_html()))
+            self._refresh_display_handle()
+            return
 
         if self._live is not None:
             with suppress(Exception):
                 self._live.refresh()
+
+    def _refresh_display_handle(self) -> None:
+        if self._display_handle is None:
+            return
+
+        if DisplayHandle is not None and isinstance(self._display_handle, DisplayHandle):
+            with suppress(Exception):
+                self._display_handle.update(HTML(self._render_html()))
+            return
+
+        renderable: object = self._terminal_renderable()
+        if isinstance(self._display_handle, _TerminalLiveHandle):
+            renderable = self._terminal_renderable
+        with suppress(Exception):
+            self._display_handle.update(renderable)
 
     def _terminal_content(self) -> object | None:
         if self._content is None:

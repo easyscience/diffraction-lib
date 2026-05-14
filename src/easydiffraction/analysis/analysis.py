@@ -614,37 +614,43 @@ class Analysis:
 
         short_display_handle = self._fit_single_print_header(verb, expt_names, mode)
         short_rows: list[list[str]] = []
+        self.fitter.minimizer.tracker._set_shared_display_handle(short_display_handle)
 
-        for expt_name in expt_names:
-            if verb is VerbosityEnum.FULL:
-                console.print(f"📋 Using experiment 🔬 '{expt_name}' for '{mode.value}' fitting")
+        try:
+            for expt_name in expt_names:
+                if verb is VerbosityEnum.FULL:
+                    console.print(
+                        f"📋 Using experiment 🔬 '{expt_name}' for '{mode.value}' fitting"
+                    )
 
-            experiment = experiments[expt_name]
-            self.fitter.fit(
-                structures,
-                [experiment],
-                analysis=self,
-                verbosity=verb,
-                use_physical_limits=use_physical_limits,
-                random_seed=random_seed,
-            )
-
-            # After fitting, snapshot parameter values before
-            # they get overwritten by the next experiment's fit
-            results = self.fitter.results
-            self._snapshot_params(expt_name, results)
-            self.fit_results = results
-
-            # Short mode: append one summary row and update in-place
-            if verb is VerbosityEnum.SHORT:
-                self._fit_single_update_short_table(
-                    short_rows, expt_name, results, short_display_handle
+                experiment = experiments[expt_name]
+                self.fitter.fit(
+                    structures,
+                    [experiment],
+                    analysis=self,
+                    verbosity=verb,
+                    use_physical_limits=use_physical_limits,
+                    random_seed=random_seed,
                 )
 
-        # Short mode: close the display handle
-        if short_display_handle is not None and hasattr(short_display_handle, 'close'):
-            with suppress(Exception):
-                short_display_handle.close()
+                # After fitting, snapshot parameter values before
+                # they get overwritten by the next experiment's fit
+                results = self.fitter.results
+                self._snapshot_params(expt_name, results)
+                self.fit_results = results
+
+                # Short mode: append one summary row and update in-place
+                if verb is VerbosityEnum.SHORT:
+                    self._fit_single_update_short_table(
+                        short_rows, expt_name, results, short_display_handle
+                    )
+        finally:
+            self.fitter.minimizer.tracker._set_shared_display_handle(None)
+
+            # Short mode: close the display handle
+            if short_display_handle is not None and hasattr(short_display_handle, 'close'):
+                with suppress(Exception):
+                    short_display_handle.close()
 
     @staticmethod
     def _fit_single_print_header(

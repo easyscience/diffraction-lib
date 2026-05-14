@@ -11,11 +11,23 @@ def test_make_display_handle_uses_terminal_live_when_available(monkeypatch):
     import easydiffraction.display.progress as progress_mod
 
     class FakeLive:
-        def __init__(self, *, console, auto_refresh):
+        def __init__(
+            self,
+            renderable=None,
+            *,
+            console,
+            auto_refresh,
+            refresh_per_second,
+            get_renderable=None,
+        ):
+            self.renderable = renderable
             self.console = console
             self.auto_refresh = auto_refresh
+            self.refresh_per_second = refresh_per_second
+            self.get_renderable = get_renderable
             self.started = False
             self.stopped = False
+            self.refresh_calls = 0
 
         def start(self):
             self.started = True
@@ -23,9 +35,8 @@ def test_make_display_handle_uses_terminal_live_when_available(monkeypatch):
         def stop(self):
             self.stopped = True
 
-        def update(self, renderable, *, refresh: bool | None = None):
-            del renderable
-            del refresh
+        def refresh(self):
+            self.refresh_calls += 1
 
     monkeypatch.setattr(progress_mod, 'in_jupyter', lambda: False)
     monkeypatch.setattr(progress_mod, 'Live', FakeLive)
@@ -36,7 +47,13 @@ def test_make_display_handle_uses_terminal_live_when_available(monkeypatch):
     assert isinstance(handle, progress_mod._TerminalLiveHandle)
     assert handle._live.console == 'console'
     assert handle._live.auto_refresh is True
+    assert handle._live.get_renderable is not None
     assert handle._live.started is True
+
+    handle.update('content')
+
+    assert handle._live.refresh_calls == 1
+    assert handle._live.get_renderable() == 'content'
 
     handle.close()
 
