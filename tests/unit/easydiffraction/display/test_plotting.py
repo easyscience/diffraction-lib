@@ -94,19 +94,43 @@ def test_plotter_error_paths_and_filtering(capsys, monkeypatch):
     p = Plotter()
 
     # Error paths (now log errors via console; messages are printed)
-    p._plot_meas_data(Ptn(two_theta=None, intensity_meas=None), 'E', ExptType())
+    p._plot_meas_data(
+        object(),
+        Ptn(two_theta=None, intensity_meas=None),
+        'E',
+        ExptType(),
+        _MeasVsCalcPlotOptions(),
+    )
     out = capsys.readouterr().out
     assert 'No two_theta data available for experiment E' in out
 
-    p._plot_meas_data(Ptn(two_theta=[1], intensity_meas=None), 'E', ExptType())
+    p._plot_meas_data(
+        object(),
+        Ptn(two_theta=[1], intensity_meas=None),
+        'E',
+        ExptType(),
+        _MeasVsCalcPlotOptions(),
+    )
     out = capsys.readouterr().out
     assert 'No measured data available for experiment E' in out
 
-    p._plot_calc_data(Ptn(two_theta=None, intensity_calc=None), 'E', ExptType())
+    p._plot_calc_data(
+        object(),
+        Ptn(two_theta=None, intensity_calc=None),
+        'E',
+        ExptType(),
+        _MeasVsCalcPlotOptions(),
+    )
     out = capsys.readouterr().out
     assert 'No two_theta data available for experiment E' in out
 
-    p._plot_calc_data(Ptn(two_theta=[1], intensity_calc=None), 'E', ExptType())
+    p._plot_calc_data(
+        object(),
+        Ptn(two_theta=[1], intensity_calc=None),
+        'E',
+        ExptType(),
+        _MeasVsCalcPlotOptions(),
+    )
     out = capsys.readouterr().out
     assert 'No calculated data available for experiment E' in out
 
@@ -154,13 +178,24 @@ def test_plotter_routes_to_ascii_plotter(monkeypatch):
     from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
     from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
     from easydiffraction.display.plotting import Plotter
+    from easydiffraction.display.plotting import _MeasVsCalcPlotOptions
 
     called = {}
 
-    def fake_plot_powder(self, x, y_series, labels, axes_labels, title, height=None):
+    def fake_plot_powder(
+        self,
+        x,
+        y_series,
+        labels,
+        axes_labels,
+        title,
+        height=None,
+        excluded_ranges=(),
+    ):
         called['labels'] = tuple(labels)
         called['axes'] = tuple(axes_labels)
         called['title'] = title
+        called['excluded_ranges'] = excluded_ranges
 
     monkeypatch.setattr(ascii_mod.AsciiPlotter, 'plot_powder', fake_plot_powder)
 
@@ -178,9 +213,16 @@ def test_plotter_routes_to_ascii_plotter(monkeypatch):
 
     p = Plotter()
     p.engine = 'asciichartpy'  # ensure AsciiPlotter
-    p._plot_meas_data(Ptn(), 'E', ExptType())
+    p._plot_meas_data(
+        object(),
+        Ptn(),
+        'E',
+        ExptType(),
+        _MeasVsCalcPlotOptions(),
+    )
     assert called['labels'] == ('meas',)
     assert 'Measured data' in called['title']
+    assert called['excluded_ranges'] == ()
 
 
 def test_extract_bragg_tick_sets_groups_and_filters():
@@ -742,7 +784,15 @@ def test_plot_posterior_predictive_data_uses_max_posterior_label_and_dash(monkey
     plotter._plot_posterior_predictive_data(
         experiment=Experiment(),
         expt_name='hrpt',
-        plot_options=SimpleNamespace(x_min=None, x_max=None, show_residual=None, x=None),
+        plot_options=SimpleNamespace(
+            x_min=None,
+            x_max=None,
+            show_residual=None,
+            show_background=None,
+            show_bragg=None,
+            show_excluded=False,
+            x=None,
+        ),
         x_axis=XAxisType.TWO_THETA,
         style='band',
     )
@@ -750,6 +800,73 @@ def test_plot_posterior_predictive_data_uses_max_posterior_label_and_dash(monkey
     plot_spec = captured['plot_spec']
     assert plot_spec.y_calc_name == 'Max posterior'
     assert plot_spec.y_calc_line_dash == 'dot'
+
+
+def test_plot_meas_vs_calc_request_respects_background_and_bragg_flags():
+    from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+    from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+    from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
+    from easydiffraction.display.plotting import Plotter
+    from easydiffraction.display.plotting import _MeasVsCalcPlotOptions
+
+    captured: dict[str, object] = {}
+
+    class FakeBackend:
+        def plot_powder_meas_vs_calc(self, *, plot_spec):
+            captured['plot_spec'] = plot_spec
+
+    class Pattern:
+        two_theta = np.array([1.0, 2.0, 3.0])
+        intensity_meas = np.array([10.0, 12.0, 11.0])
+        intensity_calc = np.array([9.0, 11.0, 10.5])
+        intensity_bkg = np.array([1.0, 1.0, 1.0])
+
+    class Refln:
+        phase_id = np.array(['phase-a'])
+        two_theta = np.array([2.0])
+        index_h = np.array([1])
+        index_k = np.array([0])
+        index_l = np.array([1])
+        f_squared_calc = np.array([50.0])
+        f_calc = np.array([7.0])
+
+    class ExptType:
+        sample_form = type('SF', (), {'value': SampleFormEnum.POWDER})()
+        scattering_type = type('S', (), {'value': ScatteringTypeEnum.BRAGG})()
+        beam_mode = type('B', (), {'value': BeamModeEnum.CONSTANT_WAVELENGTH})()
+
+    class Experiment:
+        data = Pattern()
+        type = ExptType()
+        refln = Refln()
+
+    plotter = Plotter()
+    plotter._backend = FakeBackend()
+    plotter._plot_meas_vs_calc_data(
+        experiment=Experiment(),
+        expt_name='E1',
+        plot_options=_MeasVsCalcPlotOptions(
+            show_background=False,
+            show_bragg=False,
+        ),
+    )
+
+    plot_spec = captured['plot_spec']
+    assert plot_spec.y_bkg is None
+    assert plot_spec.bragg_tick_sets == ()
+
+    plotter._plot_meas_vs_calc_data(
+        experiment=Experiment(),
+        expt_name='E1',
+        plot_options=_MeasVsCalcPlotOptions(
+            show_background=True,
+            show_bragg=True,
+        ),
+    )
+
+    plot_spec = captured['plot_spec']
+    assert np.allclose(plot_spec.y_bkg, np.array([1.0, 1.0, 1.0]))
+    assert len(plot_spec.bragg_tick_sets) == 1
 
 
 def test_build_param_distribution_plot_accepts_unique_name_string():
@@ -1105,6 +1222,7 @@ def test_plot_posterior_predictive_non_bragg_filters_x_range_and_warns_for_resid
         axes_labels,
         show_band,
         show_draws,
+        excluded_ranges,
     ):
         captured['expt_name'] = expt_name
         captured['summary'] = summary
@@ -1112,6 +1230,7 @@ def test_plot_posterior_predictive_non_bragg_filters_x_range_and_warns_for_resid
         captured['axes_labels'] = axes_labels
         captured['show_band'] = show_band
         captured['show_draws'] = show_draws
+        captured['excluded_ranges'] = excluded_ranges
 
     monkeypatch.setattr(Plotter, '_plot_posterior_predictive_summary', fake_plot_summary)
 
@@ -1125,6 +1244,7 @@ def test_plot_posterior_predictive_non_bragg_filters_x_range_and_warns_for_resid
     np.testing.assert_allclose(captured['y_meas'], np.array([20.0]))
     assert captured['show_band'] is True
     assert captured['show_draws'] is False
+    assert captured['excluded_ranges'] == ()
     assert any('ignoring show_residual=True' in warning for warning in warnings)
 
 

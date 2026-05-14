@@ -81,16 +81,16 @@ class TestLoadAnalysis:
 
         assert loaded.analysis.fit.mode.value == 'joint'
 
-    def test_round_trips_display_configuration(self, tmp_path):
+    def test_round_trips_rendering_configuration(self, tmp_path):
         original = Project(name='d1')
-        original.display.plotter_type = 'asciichartpy'
-        original.display.tabler_type = 'rich'
+        original.rendering.chart_engine = 'asciichartpy'
+        original.rendering.table_engine = 'rich'
         original.save_as(str(tmp_path / 'proj'))
 
         loaded = Project.load(str(tmp_path / 'proj'))
 
-        assert loaded.display.plotter_type.value == 'asciichartpy'
-        assert loaded.display.tabler_type.value == 'rich'
+        assert loaded.rendering.chart_engine.value == 'asciichartpy'
+        assert loaded.rendering.table_engine.value == 'rich'
 
     def test_round_trips_constraints(self, tmp_path):
         original = Project(name='c1')

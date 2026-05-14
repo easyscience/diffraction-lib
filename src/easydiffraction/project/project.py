@@ -16,8 +16,9 @@ from easydiffraction.datablocks.experiment.collection import Experiments
 from easydiffraction.datablocks.structure.collection import Structures
 from easydiffraction.io.cif.serialize import project_config_to_cif
 from easydiffraction.io.cif.serialize import project_to_cif
-from easydiffraction.project.categories.display import Display
-from easydiffraction.project.categories.display import DisplayFactory
+from easydiffraction.project.categories.rendering import Rendering
+from easydiffraction.project.categories.rendering import RenderingFactory
+from easydiffraction.project.display import ProjectDisplay
 from easydiffraction.project.project_info import ProjectInfo
 from easydiffraction.summary.summary import Summary
 from easydiffraction.utils.enums import VerbosityEnum
@@ -82,8 +83,9 @@ class Project(GuardedBase):
         self._info: ProjectInfo = ProjectInfo(name, title, description)
         self._structures = Structures()
         self._experiments = Experiments()
-        self._display = DisplayFactory.create('default')
-        self._display._parent = self
+        self._rendering = RenderingFactory.create('default')
+        self._rendering._parent = self
+        self._display = ProjectDisplay(self)
         self._analysis = Analysis(self)
         self._summary = Summary(self)
         self._saved = False
@@ -152,8 +154,13 @@ class Project(GuardedBase):
         self._experiments = experiments
 
     @property
-    def display(self) -> Display:
-        """Display configuration and facades bound to the project."""
+    def rendering(self) -> Rendering:
+        """Rendering configuration bound to the project."""
+        return self._rendering
+
+    @property
+    def display(self) -> ProjectDisplay:
+        """Current display entry-point bound to the project."""
         return self._display
 
     @property
@@ -373,7 +380,7 @@ class Project(GuardedBase):
         analysis_dir = self._info.path / 'analysis'
         analysis_dir.mkdir(parents=True, exist_ok=True)
         with (analysis_dir / 'analysis.cif').open('w') as f:
-            f.write(self.analysis.as_cif())
+            f.write(self.analysis.as_cif)
             console.print('├── 📁 analysis/')
             console.print('│   └── 📄 analysis.cif')
 

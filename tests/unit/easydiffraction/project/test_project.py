@@ -63,3 +63,14 @@ def test_project_free_params_aggregate_structures_and_experiments():
     project._experiments = SimpleNamespace(free_parameters=[experiment_param])
 
     assert project.free_parameters == [structure_param, experiment_param]
+
+
+def test_project_exposes_rendering_and_display_facades():
+    from easydiffraction.project.categories.rendering import Rendering
+    from easydiffraction.project.display import ProjectDisplay
+    from easydiffraction.project.project import Project
+
+    project = Project()
+
+    assert isinstance(project.rendering, Rendering)
+    assert isinstance(project.display, ProjectDisplay)

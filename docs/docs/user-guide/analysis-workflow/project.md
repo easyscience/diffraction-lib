@@ -115,8 +115,8 @@ data_<span class="red"><b>La0.5Ba0.5CoO3</b></span>
 <span class="blue"><b>_project</b>.title</span>       "La0.5Ba0.5CoO3 from neutron diffraction at HRPT@PSI"
 <span class="blue"><b>_project</b>.description</span> "neutrons, powder, constant wavelength, HRPT@PSI"
 
-<span class="blue"><b>_display</b>.plotter_type</span>  asciichartpy
-<span class="blue"><b>_display</b>.tabler_type</span>   rich
+<span class="blue"><b>_display</b>.chart_engine</span>  asciichartpy
+<span class="blue"><b>_display</b>.table_engine</span>   rich
 </pre>
 </div>
 

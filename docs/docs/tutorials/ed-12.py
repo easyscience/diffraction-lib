@@ -26,12 +26,12 @@ project = ed.Project()
 # %%
 # Keep the auto-selected engine. Alternatively, you can uncomment the
 # line below to explicitly set the engine to the required one.
-# project.display.plotter.engine = 'plotly'
+# project.rendering.chart_engine = 'plotly'
 
 # %%
 # Set global plot range for plots
-project.display.plotter.x_min = 2.0
-project.display.plotter.x_max = 30.0
+project.rendering.plotter.x_min = 2.0
+project.rendering.plotter.x_max = 30.0
 
 # %% [markdown]
 # ## Add Structure
@@ -113,11 +113,11 @@ project.experiments['xray_pdf'].peak.sharp_delta_2.free = True
 
 # %%
 project.analysis.fit()
-project.analysis.display.fit_results()
-project.display.plotter.plot_param_correlations()
+project.display.fit.results()
+project.display.fit.correlations()
 
 # %% [markdown]
 # ## Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='xray_pdf')
+project.display.pattern(expt_name='xray_pdf')

@@ -72,7 +72,7 @@ class TestAnalysisDisplayConstraints:
         assert 'No constraints' in out
 
     def test_constraints_with_items(self, capsys, monkeypatch):
-        import easydiffraction.analysis.analysis as mod
+        import easydiffraction.analysis.categories.constraints.default as constraints_mod
         from easydiffraction.analysis.analysis import Analysis
 
         a = Analysis(project=_make_project())
@@ -91,7 +91,7 @@ class TestAnalysisDisplayConstraints:
         def fake_render_table(**kwargs):
             captured.update(kwargs)
 
-        monkeypatch.setattr(mod, 'render_table', fake_render_table)
+        monkeypatch.setattr(constraints_mod, 'render_table', fake_render_table)
         a.display.constraints()
         out = capsys.readouterr().out
         assert 'User defined constraints' in out

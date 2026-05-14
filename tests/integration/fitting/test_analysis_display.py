@@ -1,53 +1,53 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
-"""Integration tests for Analysis display methods and CIF serialization."""
+"""Integration tests for project display reports and analysis CIF helpers."""
 
 
 def test_display_all_params(lbco_fitted_project):
     project = lbco_fitted_project
-    project.analysis.display.all_params()
+    project.display.parameters.all()
 
 
 def test_display_fittable_params(lbco_fitted_project):
     project = lbco_fitted_project
-    project.analysis.display.fittable_params()
+    project.display.parameters.fittable()
 
 
 def test_display_free_params(lbco_fitted_project):
     project = lbco_fitted_project
-    project.analysis.display.free_params()
+    project.display.parameters.free()
 
 
 def test_display_how_to_access_parameters(lbco_fitted_project):
     project = lbco_fitted_project
-    project.analysis.display.how_to_access_parameters()
+    project.display.parameters.access()
 
 
 def test_display_parameter_cif_uids(lbco_fitted_project):
     project = lbco_fitted_project
-    project.analysis.display.parameter_cif_uids()
+    project.display.parameters.cif_uids()
 
 
 def test_display_constraints_empty(lbco_fitted_project):
     project = lbco_fitted_project
-    project.analysis.display.constraints()
+    project.analysis.constraints.show()
 
 
 def test_display_fit_results(lbco_fitted_project):
     project = lbco_fitted_project
     assert project.analysis.fit_results is not None
-    project.analysis.display.fit_results()
+    project.display.fit.results()
 
 
 def test_display_as_cif(lbco_fitted_project):
     project = lbco_fitted_project
-    project.analysis.display.as_cif()
+    project.analysis.show_as_cif()
 
 
 def test_analysis_as_cif(lbco_fitted_project):
     project = lbco_fitted_project
-    cif_text = project.analysis.as_cif()
+    cif_text = project.analysis.as_cif
     assert isinstance(cif_text, str)
     assert len(cif_text) > 0
 

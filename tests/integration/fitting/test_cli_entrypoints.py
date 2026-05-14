@@ -92,16 +92,21 @@ def test_cli_fit_loads_and_fits(monkeypatch, tmp_path):
         analysis = _analysis()
 
         class _display:
-            class _plotter:
+            class _fit:
                 @staticmethod
-                def plot_param_correlations() -> None:
+                def results() -> None:
+                    calls.append('DISPLAY')
+
+                @staticmethod
+                def correlations() -> None:
                     calls.append('PLOT_CORR')
 
-                @staticmethod
-                def plot_meas_vs_calc(expt_name: str, *, show_residual: bool = False) -> None:
-                    calls.append(f'PLOT_{expt_name}_{show_residual}')
+            fit = _fit()
 
-            plotter = _plotter()
+            @staticmethod
+            def pattern(expt_name: str, **kwargs) -> None:
+                del kwargs
+                calls.append(f'PLOT_{expt_name}_False')
 
         display = _display()
 
@@ -116,7 +121,7 @@ def test_cli_fit_loads_and_fits(monkeypatch, tmp_path):
     result = runner.invoke(main_mod.app, ['fit', str(project_dir)])
 
     assert result.exit_code == 0
-    assert calls == ['FIT', 'DISPLAY', 'PLOT_CORR', 'PLOT_exp1_True']
+    assert calls == ['FIT', 'DISPLAY', 'PLOT_CORR', 'PLOT_exp1_False']
 
 
 def test_cli_fit_dry_clears_path(monkeypatch, tmp_path):
@@ -146,16 +151,20 @@ def test_cli_fit_dry_clears_path(monkeypatch, tmp_path):
         analysis = _analysis()
 
         class _display:
-            class _plotter:
+            class _fit:
                 @staticmethod
-                def plot_param_correlations() -> None:
+                def results() -> None:
                     return None
 
                 @staticmethod
-                def plot_meas_vs_calc(expt_name: str, *, show_residual: bool = False) -> None:
+                def correlations() -> None:
                     return None
 
-            plotter = _plotter()
+            fit = _fit()
+
+            @staticmethod
+            def pattern(expt_name: str, **kwargs) -> None:
+                del expt_name, kwargs
 
         display = _display()
 

@@ -179,6 +179,9 @@ class _MeasVsCalcPlotOptions:
     x_min: float | None = None
     x_max: float | None = None
     show_residual: bool | None = None
+    show_background: bool | None = None
+    show_bragg: bool | None = None
+    show_excluded: bool = False
     x: object | None = None
 
 
@@ -372,6 +375,18 @@ class Plotter(RendererBase):
         upper_bound = max(x_min, x_max)
         mask = (x_array >= lower_bound) & (x_array <= upper_bound)
         return y_array[mask]
+
+    def _filtered_optional_y_array(
+        self,
+        y_array: object | None,
+        x_array: object,
+        x_min: object,
+        x_max: object,
+    ) -> object | None:
+        """Filter an optional y-array by inclusive x-range limits."""
+        if y_array is None:
+            return None
+        return self._filtered_y_array(y_array, x_array, x_min, x_max)
 
     @staticmethod
     def _get_axes_labels(
@@ -574,6 +589,8 @@ class Plotter(RendererBase):
         x_min: float | None = None,
         x_max: float | None = None,
         x: object | None = None,
+        *,
+        show_excluded: bool = False,
     ) -> None:
         """
         Plot measured diffraction data for an experiment.
@@ -588,16 +605,23 @@ class Plotter(RendererBase):
             Upper bound for the x-axis range.
         x : object | None, default=None
             Optional explicit x-axis data to override stored values.
+        show_excluded : bool, default=False
+            Whether to show excluded fitting regions on supported plots.
         """
         self._update_project_categories(expt_name)
         experiment = self._project.experiments[expt_name]
+        plot_options = _MeasVsCalcPlotOptions(
+            x_min=x_min,
+            x_max=x_max,
+            show_excluded=show_excluded,
+            x=x,
+        )
         self._plot_meas_data(
+            experiment,
             intensity_category_for(experiment),
             expt_name,
             experiment.type,
-            x_min=x_min,
-            x_max=x_max,
-            x=x,
+            plot_options,
         )
 
     def plot_calc(
@@ -606,6 +630,8 @@ class Plotter(RendererBase):
         x_min: float | None = None,
         x_max: float | None = None,
         x: object | None = None,
+        *,
+        show_excluded: bool = False,
     ) -> None:
         """
         Plot calculated diffraction pattern for an experiment.
@@ -620,16 +646,23 @@ class Plotter(RendererBase):
             Upper bound for the x-axis range.
         x : object | None, default=None
             Optional explicit x-axis data to override stored values.
+        show_excluded : bool, default=False
+            Whether to show excluded fitting regions on supported plots.
         """
         self._update_project_categories(expt_name)
         experiment = self._project.experiments[expt_name]
+        plot_options = _MeasVsCalcPlotOptions(
+            x_min=x_min,
+            x_max=x_max,
+            show_excluded=show_excluded,
+            x=x,
+        )
         self._plot_calc_data(
+            experiment,
             intensity_category_for(experiment),
             expt_name,
             experiment.type,
-            x_min=x_min,
-            x_max=x_max,
-            x=x,
+            plot_options,
         )
 
     def plot_meas_vs_calc(
@@ -639,6 +672,7 @@ class Plotter(RendererBase):
         x_max: float | None = None,
         *,
         show_residual: bool | None = None,
+        show_excluded: bool = False,
         x: object | None = None,
     ) -> None:
         """
@@ -656,17 +690,29 @@ class Plotter(RendererBase):
             When ``None``, powder Bragg plots include the residual by
             default while other measured-vs-calculated plots keep the
             historical no-residual default.
+        show_excluded : bool, default=False
+            Whether to show excluded fitting regions on supported plots.
         x : object | None, default=None
             Optional explicit x-axis data to override stored values.
         """
-        self._update_project_categories(expt_name)
-        experiment = self._project.experiments[expt_name]
         plot_options = _MeasVsCalcPlotOptions(
             x_min=x_min,
             x_max=x_max,
             show_residual=show_residual,
+            show_excluded=show_excluded,
             x=x,
         )
+        self._plot_meas_vs_calc_request(expt_name=expt_name, plot_options=plot_options)
+
+    def _plot_meas_vs_calc_request(
+        self,
+        *,
+        expt_name: str,
+        plot_options: _MeasVsCalcPlotOptions,
+    ) -> None:
+        """Render a measured-vs-calculated request from plot options."""
+        self._update_project_categories(expt_name)
+        experiment = self._project.experiments[expt_name]
         self._plot_meas_vs_calc_data(
             experiment=experiment,
             expt_name=expt_name,
@@ -990,6 +1036,7 @@ class Plotter(RendererBase):
         x_max: float | None = None,
         *,
         show_residual: bool | None = None,
+        show_excluded: bool = False,
         x: object | None = None,
     ) -> None:
         """
@@ -1011,6 +1058,8 @@ class Plotter(RendererBase):
         show_residual : bool | None, default=None
             Whether to include the residual row in supported powder
             composite plots.
+        show_excluded : bool, default=False
+            Whether to show excluded fitting regions on supported plots.
         x : object | None, default=None
             Optional explicit x-axis data to override stored values.
 
@@ -1024,6 +1073,28 @@ class Plotter(RendererBase):
             msg = "style must be 'band', 'draws', or 'band+draws'."
             raise ValueError(msg)
 
+        plot_options = _MeasVsCalcPlotOptions(
+            x_min=x_min,
+            x_max=x_max,
+            show_residual=show_residual,
+            show_excluded=show_excluded,
+            x=x,
+        )
+
+        self._plot_posterior_predictive_request(
+            expt_name=expt_name,
+            style=style,
+            plot_options=plot_options,
+        )
+
+    def _plot_posterior_predictive_request(
+        self,
+        *,
+        expt_name: str,
+        style: str,
+        plot_options: _MeasVsCalcPlotOptions,
+    ) -> None:
+        """Render a posterior predictive request from plot options."""
         if self._project is None:
             log.warning('Plotter is not attached to a project.')
             return
@@ -1034,13 +1105,9 @@ class Plotter(RendererBase):
 
         self._update_project_categories(expt_name)
         experiment = self._project.experiments[expt_name]
-        x_axis, _, sample_form, scattering_type, _ = self._resolve_x_axis(experiment.type, x)
-
-        plot_options = _MeasVsCalcPlotOptions(
-            x_min=x_min,
-            x_max=x_max,
-            show_residual=show_residual,
-            x=x,
+        x_axis, _, sample_form, scattering_type, _ = self._resolve_x_axis(
+            experiment.type,
+            plot_options.x,
         )
 
         if sample_form == SampleFormEnum.SINGLE_CRYSTAL:
@@ -1221,6 +1288,15 @@ class Plotter(RendererBase):
             ctx['x_min'],
             ctx['x_max'],
         )
+        excluded_ranges = (
+            self._excluded_ranges(
+                experiment=experiment,
+                x_min=ctx['x_min'],
+                x_max=ctx['x_max'],
+            )
+            if plot_options.show_excluded
+            else ()
+        )
 
         axes_labels = self._get_axes_labels(sample_form, scattering_type, x_axis)
         self._plot_posterior_predictive_summary(
@@ -1230,6 +1306,7 @@ class Plotter(RendererBase):
             axes_labels=axes_labels,
             show_band=style in {'band', 'band+draws'},
             show_draws=style in {'draws', 'band+draws'},
+            excluded_ranges=excluded_ranges,
         )
 
     @staticmethod
@@ -3377,6 +3454,7 @@ class Plotter(RendererBase):
         axes_labels: list[str],
         show_band: bool,
         show_draws: bool,
+        excluded_ranges: tuple[tuple[float, float], ...] = (),
     ) -> None:
         """Render posterior predictive summaries using Plotly."""
         go = __import__('plotly.graph_objects', fromlist=['Figure', 'Scatter'])
@@ -3452,6 +3530,15 @@ class Plotter(RendererBase):
                 legendrank=20,
             )
         )
+        for start, end in excluded_ranges:
+            fig.add_vrect(
+                x0=start,
+                x1=end,
+                fillcolor='rgba(120, 120, 120, 0.16)',
+                opacity=1.0,
+                line_width=0,
+                layer='below',
+            )
         fig.update_layout(
             title={
                 'text': f"Posterior predictive for experiment 🔬 '{expt_name}'",
@@ -3627,12 +3714,14 @@ class Plotter(RendererBase):
             ctx['x_min'],
             ctx['x_max'],
         )
-        y_bkg_raw = getattr(pattern, 'intensity_bkg', None)
-        y_bkg = (
-            self._filtered_y_array(y_bkg_raw, ctx['x_array'], ctx['x_min'], ctx['x_max'])
-            if y_bkg_raw is not None
-            else None
+        y_bkg = self._filtered_optional_y_array(
+            getattr(pattern, 'intensity_bkg', None),
+            ctx['x_array'],
+            ctx['x_min'],
+            ctx['x_max'],
         )
+        if not self._show_background_enabled(plot_options, background_available=y_bkg is not None):
+            y_bkg = None
         y_calc = self._filtered_y_array(
             summary.map_prediction, summary.x, ctx['x_min'], ctx['x_max']
         )
@@ -3669,7 +3758,7 @@ class Plotter(RendererBase):
                 dtype=float,
             )
 
-        if np.asarray(ctx['x_filtered']).size == 0:
+        if np.asarray(ctx['x_filtered']).size == 0 or not self._show_bragg_enabled(plot_options):
             bragg_tick_sets = ()
         else:
             bragg_tick_sets = self._extract_bragg_tick_sets(
@@ -3679,6 +3768,15 @@ class Plotter(RendererBase):
                 x_min=ctx['x_min'],
                 x_max=ctx['x_max'],
             )
+        excluded_ranges = (
+            self._excluded_ranges(
+                experiment=experiment,
+                x_min=ctx['x_min'],
+                x_max=ctx['x_max'],
+            )
+            if plot_options.show_excluded
+            else ()
+        )
 
         plot_spec = PowderMeasVsCalcSpec(
             x=ctx['x_filtered'],
@@ -3697,6 +3795,7 @@ class Plotter(RendererBase):
             predictive_draws=predictive_draws,
             y_calc_name=POSTERIOR_POINT_ESTIMATE_TRACE_NAME,
             y_calc_line_dash=POSTERIOR_POINT_ESTIMATE_LINE_DASH,
+            excluded_ranges=excluded_ranges,
         )
         self._backend.plot_powder_meas_vs_calc(plot_spec=plot_spec)
 
@@ -4646,18 +4745,19 @@ class Plotter(RendererBase):
 
     def _plot_meas_data(
         self,
+        experiment: object,
         pattern: object,
         expt_name: str,
         expt_type: object,
-        x_min: object = None,
-        x_max: object = None,
-        x: object = None,
+        plot_options: _MeasVsCalcPlotOptions,
     ) -> None:
         """
         Plot measured pattern using the current engine.
 
         Parameters
         ----------
+        experiment : object
+            Experiment object used for excluded-range extraction.
         pattern : object
             Object with x-axis arrays (``two_theta``,
             ``time_of_flight``, ``d_spacing``) and ``meas`` array.
@@ -4665,20 +4765,16 @@ class Plotter(RendererBase):
             Experiment name for the title.
         expt_type : object
             Experiment type with scattering/beam enums.
-        x_min : object, default=None
-            Optional minimum x-axis limit.
-        x_max : object, default=None
-            Optional maximum x-axis limit.
-        x : object, default=None
-            X-axis type. If ``None``, auto-detected from beam mode.
+        plot_options : _MeasVsCalcPlotOptions
+            X-range, excluded-region, and x-axis selection options.
         """
         ctx = self._prepare_powder_context(
             pattern,
             expt_name,
             expt_type,
-            x_min,
-            x_max,
-            x,
+            plot_options.x_min,
+            plot_options.x_max,
+            plot_options.x,
         )
         if ctx is None:
             return
@@ -4689,6 +4785,15 @@ class Plotter(RendererBase):
         y_meas = self._filtered_y_array(
             pattern.intensity_meas, ctx['x_array'], ctx['x_min'], ctx['x_max']
         )
+        excluded_ranges = (
+            self._excluded_ranges(
+                experiment=experiment,
+                x_min=ctx['x_min'],
+                x_max=ctx['x_max'],
+            )
+            if plot_options.show_excluded
+            else ()
+        )
 
         self._backend.plot_powder(
             x=ctx['x_filtered'],
@@ -4697,22 +4802,24 @@ class Plotter(RendererBase):
             axes_labels=ctx['axes_labels'],
             title=f"Measured data for experiment 🔬 '{expt_name}'",
             height=self.height,
+            excluded_ranges=excluded_ranges,
         )
 
     def _plot_calc_data(
         self,
+        experiment: object,
         pattern: object,
         expt_name: str,
         expt_type: object,
-        x_min: object = None,
-        x_max: object = None,
-        x: object = None,
+        plot_options: _MeasVsCalcPlotOptions,
     ) -> None:
         """
         Plot calculated pattern using the current engine.
 
         Parameters
         ----------
+        experiment : object
+            Experiment object used for excluded-range extraction.
         pattern : object
             Object with x-axis arrays (``two_theta``,
             ``time_of_flight``, ``d_spacing``) and ``calc`` array.
@@ -4720,20 +4827,16 @@ class Plotter(RendererBase):
             Experiment name for the title.
         expt_type : object
             Experiment type with scattering/beam enums.
-        x_min : object, default=None
-            Optional minimum x-axis limit.
-        x_max : object, default=None
-            Optional maximum x-axis limit.
-        x : object, default=None
-            X-axis type. If ``None``, auto-detected from beam mode.
+        plot_options : _MeasVsCalcPlotOptions
+            X-range, excluded-region, and x-axis selection options.
         """
         ctx = self._prepare_powder_context(
             pattern,
             expt_name,
             expt_type,
-            x_min,
-            x_max,
-            x,
+            plot_options.x_min,
+            plot_options.x_max,
+            plot_options.x,
         )
         if ctx is None:
             return
@@ -4744,6 +4847,15 @@ class Plotter(RendererBase):
         y_calc = self._filtered_y_array(
             pattern.intensity_calc, ctx['x_array'], ctx['x_min'], ctx['x_max']
         )
+        excluded_ranges = (
+            self._excluded_ranges(
+                experiment=experiment,
+                x_min=ctx['x_min'],
+                x_max=ctx['x_max'],
+            )
+            if plot_options.show_excluded
+            else ()
+        )
 
         self._backend.plot_powder(
             x=ctx['x_filtered'],
@@ -4752,6 +4864,7 @@ class Plotter(RendererBase):
             axes_labels=ctx['axes_labels'],
             title=f"Calculated data for experiment 🔬 '{expt_name}'",
             height=self.height,
+            excluded_ranges=excluded_ranges,
         )
 
     def _plot_meas_vs_calc_data(
@@ -4837,11 +4950,22 @@ class Plotter(RendererBase):
             if y_bkg_raw is not None
             else None
         )
+        if not self._show_background_enabled(plot_options, background_available=y_bkg is not None):
+            y_bkg = None
 
         powder_series = _PowderMeasVsCalcSeries(
             y_meas=y_meas,
             y_calc=y_calc,
             y_bkg=y_bkg,
+        )
+        excluded_ranges = (
+            self._excluded_ranges(
+                experiment=experiment,
+                x_min=ctx['x_min'],
+                x_max=ctx['x_max'],
+            )
+            if plot_options.show_excluded
+            else ()
         )
 
         if sample_form == SampleFormEnum.POWDER and scattering_type == ScatteringTypeEnum.BRAGG:
@@ -4852,6 +4976,7 @@ class Plotter(RendererBase):
                 series=powder_series,
                 plot_options=plot_options,
                 title=title,
+                excluded_ranges=excluded_ranges,
             )
             return
 
@@ -4863,6 +4988,7 @@ class Plotter(RendererBase):
             if plot_options.show_residual is None
             else plot_options.show_residual,
             title=title,
+            excluded_ranges=excluded_ranges,
         )
 
     def _plot_single_crystal_meas_vs_calc(
@@ -4901,13 +5027,14 @@ class Plotter(RendererBase):
         series: _PowderMeasVsCalcSeries,
         plot_options: _MeasVsCalcPlotOptions,
         title: str,
+        excluded_ranges: tuple[tuple[float, float], ...],
     ) -> None:
         """
         Render the composite powder Bragg measured-vs-calculated plot.
         """
         show_residual = True if plot_options.show_residual is None else plot_options.show_residual
         y_resid = series.y_meas - series.y_calc if show_residual else None
-        if np.asarray(ctx['x_filtered']).size == 0:
+        if np.asarray(ctx['x_filtered']).size == 0 or not self._show_bragg_enabled(plot_options):
             bragg_tick_sets = ()
         else:
             bragg_tick_sets = self._extract_bragg_tick_sets(
@@ -4930,8 +5057,29 @@ class Plotter(RendererBase):
             bragg_peaks_height_fraction=DEFAULT_BRAGG_ROW,
             height=self._composite_plot_height(),
             y_bkg=series.y_bkg,
+            excluded_ranges=excluded_ranges,
         )
         self._backend.plot_powder_meas_vs_calc(plot_spec=plot_spec)
+
+    @staticmethod
+    def _show_background_enabled(
+        plot_options: object,
+        *,
+        background_available: bool,
+    ) -> bool:
+        """Return whether the background curve should be shown."""
+        show_background = getattr(plot_options, 'show_background', None)
+        if show_background is None:
+            return background_available
+        return show_background and background_available
+
+    @staticmethod
+    def _show_bragg_enabled(plot_options: object) -> bool:
+        """Return whether Bragg reflection rows should be shown."""
+        show_bragg = getattr(plot_options, 'show_bragg', None)
+        if show_bragg is None:
+            return True
+        return show_bragg
 
     def _plot_line_meas_vs_calc(
         self,
@@ -4941,6 +5089,7 @@ class Plotter(RendererBase):
         *,
         show_residual: bool,
         title: str,
+        excluded_ranges: tuple[tuple[float, float], ...] = (),
     ) -> None:
         """
         Render the non-composite line version of measured-vs-calculated.
@@ -4958,7 +5107,35 @@ class Plotter(RendererBase):
             axes_labels=ctx['axes_labels'],
             title=title,
             height=self.height,
+            excluded_ranges=excluded_ranges,
         )
+
+    @staticmethod
+    def _excluded_ranges(
+        *,
+        experiment: object,
+        x_min: float | None,
+        x_max: float | None,
+    ) -> tuple[tuple[float, float], ...]:
+        """Return excluded x-ranges clipped to the current view."""
+        excluded_regions = getattr(experiment, 'excluded_regions', None)
+        if excluded_regions is None:
+            return ()
+
+        clipped_ranges: list[tuple[float, float]] = []
+        lower_bound = -np.inf if x_min is None else float(x_min)
+        upper_bound = np.inf if x_max is None else float(x_max)
+
+        for region in excluded_regions:
+            start = float(region.start.value)
+            end = float(region.end.value)
+            clipped_start = max(start, lower_bound)
+            clipped_end = min(end, upper_bound)
+            if clipped_start > clipped_end:
+                continue
+            clipped_ranges.append((clipped_start, clipped_end))
+
+        return tuple(clipped_ranges)
 
     @staticmethod
     def _extract_bragg_tick_sets(

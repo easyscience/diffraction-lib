@@ -879,15 +879,16 @@ project = ed.Project(name='my_project')
 
 It owns and coordinates all components:
 
-| Property              | Type          | Description                              |
-| --------------------- | ------------- | ---------------------------------------- |
-| `project.info`        | `ProjectInfo` | Metadata: name, title, description, path |
-| `project.structures`  | `Structures`  | Collection of structure datablocks       |
-| `project.experiments` | `Experiments` | Collection of experiment datablocks      |
-| `project.display`     | `Display`     | Plot/table engine selection and facades  |
-| `project.analysis`    | `Analysis`    | Minimiser, fitting, aliases, constraints |
-| `project.summary`     | `Summary`     | Report generation                        |
-| `project.verbosity`   | `str`         | Console output level (full/short/silent) |
+| Property              | Type             | Description                              |
+| --------------------- | ---------------- | ---------------------------------------- |
+| `project.info`        | `ProjectInfo`    | Metadata: name, title, description, path |
+| `project.structures`  | `Structures`     | Collection of structure datablocks       |
+| `project.experiments` | `Experiments`    | Collection of experiment datablocks      |
+| `project.rendering`   | `Rendering`      | Plot/table engine selection              |
+| `project.display`     | `ProjectDisplay` | Pattern/report facade                    |
+| `project.analysis`    | `Analysis`       | Minimiser, fitting, aliases, constraints |
+| `project.summary`     | `Summary`        | Report generation                        |
+| `project.verbosity`   | `str`            | Console output level (full/short/silent) |
 
 ### 7.1 Data Flow
 
@@ -922,7 +923,7 @@ project_dir/
 ```
 
 `project.cif` carries both the `_project.*` metadata and the
-`_display.*` engine preferences (`plotter_type`, `tabler_type`), so a
+`_rendering.*` engine preferences (`chart_engine`, `table_engine`), so a
 saved project re-opens with the same display backends. Per-experiment
 calculator selection (`_calculation.calculator_type`) lives in each
 experiment file, and fit configuration (`_fit.minimizer_type`,
@@ -1064,7 +1065,7 @@ project.experiments['hrpt'].calculation.calculator_type = 'cryspy'
 project.analysis.fit.minimizer_type = 'lmfit'
 
 # Plot before fitting
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.pattern(expt_name='hrpt')
 
 # Select free parameters
 project.structures['lbco'].cell.length_a.free = True
@@ -1073,14 +1074,14 @@ project.experiments['hrpt'].instrument.calib_twotheta_offset.free = True
 project.experiments['hrpt'].background['10'].y.free = True
 
 # Inspect free parameters
-project.analysis.display.free_params()
+project.display.parameters.free()
 
 # Fit and show results
 project.analysis.fit()
-project.analysis.display.fit_results()
+project.display.fit.results()
 
 # Plot after fitting
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.pattern(expt_name='hrpt')
 
 # Save
 project.save()
@@ -1100,11 +1101,11 @@ project.analysis.fit.minimizer.parallel = 0
 project.analysis.fit(random_seed=11)
 
 # Runtime-only Bayesian summaries and plots
-project.analysis.display.fit_results()
-project.display.plotter.plot_param_correlations()
-project.display.plotter.plot_posterior_pairs()
-project.display.plotter.plot_param_distribution(param)
-project.display.plotter.plot_posterior_predictive(expt_name='hrpt')
+project.display.fit.results()
+project.display.fit.correlations()
+project.display.posterior.pairs()
+project.display.posterior.distribution(param)
+project.display.posterior.predictive(expt_name='hrpt')
 ```
 
 ### 8.5 TOF Experiment (tutorial ed-7)
@@ -1225,8 +1226,8 @@ that owns calculator selection —
 `experiment.calculation.calculator_type` and
 `experiment.calculation.show_calculator_types()` — instead of the
 selector being exposed at the experiment owner level. The same pattern
-applies to `display` on `Project`, which owns `plotter_type` and
-`tabler_type` (see §9.4.1).
+applies to `display` on `Project`, which owns `chart_engine` and
+`table_engine` (see §9.4.1).
 
 **Design decisions:**
 
@@ -1248,14 +1249,14 @@ recognises three distinct selector families. They share a similar
 `<name>_type` shape so the user can inspect and set them uniformly, but
 their intent and ownership differ:
 
-| Family                             | User intent                     | Examples                                                                    | CIF                                                                            |
-| ---------------------------------- | ------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| Backend selector                   | Pick an execution backend       | `fit.minimizer_type`, `calculation.calculator_type`, `display.plotter_type` | `_fit.minimizer_type`, `_calculation.calculator_type`, `_display.plotter_type` |
-| Switchable-category impl. selector | Swap a category implementation  | `experiment.background_type`, `experiment.peak_profile_type`                | category-owned type tag such as `_peak.profile_type`                           |
-| Semantic value selector            | Pick a scientific/analysis mode | `fit.mode`                                                                  | `_fit.mode`                                                                    |
+| Family                             | User intent                     | Examples                                                                      | CIF                                                                              |
+| ---------------------------------- | ------------------------------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| Backend selector                   | Pick an execution backend       | `fit.minimizer_type`, `calculation.calculator_type`, `rendering.chart_engine` | `_fit.minimizer_type`, `_calculation.calculator_type`, `_rendering.chart_engine` |
+| Switchable-category impl. selector | Swap a category implementation  | `experiment.background_type`, `experiment.peak_profile_type`                  | category-owned type tag such as `_peak.profile_type`                             |
+| Semantic value selector            | Pick a scientific/analysis mode | `fit.mode`                                                                    | `_fit.mode`                                                                      |
 
 Backend selectors and semantic value selectors live on a dedicated
-configuration category (`fit`, `calculation`, `display`). Switchable-
+configuration category (`fit`, `calculation`, `rendering`). Switchable-
 category implementation selectors are owned by the host (typically the
 experiment) because switching them replaces the category instance, as
 described in §9.3.
@@ -1272,8 +1273,8 @@ expt.calculation.show_calculator_types()
 expt.show_extinction_types()
 project.analysis.fit.show_minimizer_types()
 project.analysis.fit.show_modes()
-project.display.show_plotter_types()
-project.display.show_tabler_types()
+project.rendering.show_chart_engines()
+project.rendering.show_table_engines()
 ```
 
 Available calculators are filtered by `engine_imported` (whether the

@@ -65,6 +65,7 @@ class PowderMeasVsCalcSpec:
     predictive_draws: np.ndarray | None = None
     y_calc_name: str | None = None
     y_calc_line_dash: str | None = None
+    excluded_ranges: tuple[tuple[float, float], ...] = ()
 
 
 class XAxisType(StrEnum):
@@ -229,6 +230,7 @@ class PlotterBase(ABC):
         axes_labels: object,
         title: str,
         height: int | None,
+        excluded_ranges: tuple[tuple[float, float], ...] = (),
     ) -> None:
         """
         Render a line plot for powder diffraction data.
@@ -250,6 +252,8 @@ class PlotterBase(ABC):
             Figure title.
         height : int | None
             Backend-specific height (text rows or pixels).
+        excluded_ranges : tuple[tuple[float, float], ...], default=()
+            Closed x-intervals to highlight as excluded regions.
         """
 
     @abstractmethod

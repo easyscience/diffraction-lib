@@ -61,6 +61,7 @@ class AsciiPlotter(PlotterBase):
         axes_labels: object,
         title: str,
         height: int | None = None,
+        excluded_ranges: tuple[tuple[float, float], ...] = (),
     ) -> None:
         """
         Render a line plot for powder diffraction data.
@@ -83,6 +84,8 @@ class AsciiPlotter(PlotterBase):
             Figure title printed above the chart.
         height : int | None, default=None
             Number of text rows to allocate for the chart.
+        excluded_ranges : tuple[tuple[float, float], ...], default=()
+            Excluded x-ranges to print below the selected x-range.
         """
         # Intentionally unused; kept for a consistent display API
         del axes_labels
@@ -100,6 +103,11 @@ class AsciiPlotter(PlotterBase):
         console.print(
             f'Displaying data for selected x-range from {x[0]} to {x[-1]} ({len(x)} points)'
         )
+        if excluded_ranges:
+            formatted_ranges = ', '.join(
+                f'[{start:,.2f}, {end:,.2f}]' for start, end in excluded_ranges
+            )
+            console.print(f'Excluded regions: {formatted_ranges}')
         console.print(f'Legend:\n{legend}')
 
         padded = '\n'.join(' ' + line for line in chart.splitlines())
@@ -130,6 +138,7 @@ class AsciiPlotter(PlotterBase):
             axes_labels=plot_spec.axes_labels,
             title=plot_spec.title,
             height=plot_spec.height,
+            excluded_ranges=plot_spec.excluded_ranges,
         )
         if plot_spec.predictive_lower_95 is not None and plot_spec.predictive_upper_95 is not None:
             console.print('Posterior predictive bands are available with the Plotly engine only.')

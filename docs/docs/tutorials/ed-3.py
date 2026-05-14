@@ -68,13 +68,13 @@ project.save_as(dir_path='lbco_hrpt', temporary=True)
 # Show supported plotting engines.
 
 # %%
-project.display.plotter.show_supported_engines()
+project.rendering.show_chart_engines()
 
 # %% [markdown]
 # Show current plotting configuration.
 
 # %%
-project.display.plotter.show_config()
+project.rendering.show_config()
 
 # %% [markdown]
 # ## Step 2: Define Structure
@@ -219,7 +219,7 @@ project.experiments.show_names()
 # #### Show Measured Data
 
 # %%
-project.display.plotter.plot_meas(expt_name='hrpt')
+project.display.pattern(expt_name='hrpt', include='measured')
 
 # %% [markdown]
 # #### Set Instrument
@@ -328,16 +328,16 @@ project.experiments['hrpt'].calculation.calculator_type = 'cryspy'
 # #### Show Calculated Data
 
 # %%
-project.display.plotter.plot_calc(expt_name='hrpt')
+project.display.pattern(expt_name='hrpt', include='calculated')
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')
+project.display.pattern(expt_name='hrpt')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41)
+project.display.pattern(expt_name='hrpt', x_min=38, x_max=41)
 
 # %% [markdown]
 # #### Show Parameters
@@ -345,25 +345,25 @@ project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41)
 # Show all parameters of the project.
 
 # %%
-# project.analysis.display.all_params()
+# project.display.parameters.all()
 
 # %% [markdown]
 # Show all fittable parameters.
 
 # %%
-project.analysis.display.fittable_params()
+project.display.parameters.fittable()
 
 # %% [markdown]
 # Show only free parameters.
 
 # %%
-project.analysis.display.free_params()
+project.display.parameters.free()
 
 # %% [markdown]
 # Show how to access parameters in the code.
 
 # %%
-# project.analysis.display.how_to_access_parameters()
+# project.display.parameters.access()
 
 # %% [markdown]
 # #### Set Fit Mode
@@ -417,23 +417,23 @@ project.experiments['hrpt'].background['165'].y.free = True
 # Show free parameters after selection.
 
 # %%
-project.analysis.display.free_params()
+project.display.parameters.free()
 
 # %% [markdown]
 # #### Run Fitting
 
 # %%
 project.analysis.fit()
-project.analysis.display.fit_results()
+project.display.fit.results()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')
+project.display.pattern(expt_name='hrpt')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41)
+project.display.pattern(expt_name='hrpt', x_min=38, x_max=41)
 
 # %% [markdown]
 # #### Save Project State
@@ -456,23 +456,23 @@ project.experiments['hrpt'].peak.broad_lorentz_y.free = True
 # Show free parameters after selection.
 
 # %%
-project.analysis.display.free_params()
+project.display.parameters.free()
 
 # %% [markdown]
 # #### Run Fitting
 
 # %%
 project.analysis.fit()
-project.analysis.display.fit_results()
+project.display.fit.results()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')
+project.display.pattern(expt_name='hrpt')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41)
+project.display.pattern(expt_name='hrpt', x_min=38, x_max=41)
 
 # %% [markdown]
 # #### Save Project State
@@ -495,23 +495,23 @@ project.structures['lbco'].atom_sites['O'].adp_iso.free = True
 # Show free parameters after selection.
 
 # %%
-project.analysis.display.free_params()
+project.display.parameters.free()
 
 # %% [markdown]
 # #### Run Fitting
 
 # %%
 project.analysis.fit()
-project.analysis.display.fit_results()
+project.display.fit.results()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')
+project.display.pattern(expt_name='hrpt')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41)
+project.display.pattern(expt_name='hrpt', x_min=38, x_max=41)
 
 # %% [markdown]
 # #### Save Project State
@@ -546,29 +546,29 @@ project.analysis.constraints.create(expression='biso_Ba = biso_La')
 # Show defined constraints.
 
 # %%
-project.analysis.display.constraints()
+project.analysis.constraints.show()
 
 # %% [markdown]
 # Show free parameters.
 
 # %%
-project.analysis.display.free_params()
+project.display.parameters.free()
 
 # %% [markdown]
 # #### Run Fitting
 
 # %%
 project.analysis.fit()
-project.analysis.display.fit_results()
+project.display.fit.results()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')
+project.display.pattern(expt_name='hrpt')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41)
+project.display.pattern(expt_name='hrpt', x_min=38, x_max=41)
 
 # %% [markdown]
 # #### Save Project State
@@ -605,7 +605,7 @@ project.analysis.constraints.create(
 # Show defined constraints.
 
 # %%
-project.analysis.display.constraints()
+project.analysis.constraints.show()
 
 
 # %% [markdown]
@@ -618,24 +618,24 @@ project.structures['lbco'].atom_sites['La'].occupancy.free = True
 # Show free parameters after selection.
 
 # %%
-project.analysis.display.free_params()
+project.display.parameters.free()
 
 # %% [markdown]
 # #### Run Fitting
 
 # %%
 project.analysis.fit()
-project.analysis.display.fit_results()
-project.display.plotter.plot_param_correlations()
+project.display.fit.results()
+project.display.fit.correlations()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt')
+project.display.pattern(expt_name='hrpt')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', x_min=38, x_max=41)
+project.display.pattern(expt_name='hrpt', x_min=38, x_max=41)
 
 # %% [markdown]
 # #### Save Project State

@@ -24,8 +24,8 @@ def test_project_save_as_writes_core_files(tmp_path, monkeypatch):
     from easydiffraction.summary.summary import Summary
 
     # Monkeypatch as_cif producers to avoid heavy internals
-    monkeypatch.setattr(ProjectInfo, 'as_cif', lambda self: 'info')
-    monkeypatch.setattr(Analysis, 'as_cif', lambda self: 'analysis')
+    monkeypatch.setattr(ProjectInfo, 'as_cif', property(lambda self: 'info'))
+    monkeypatch.setattr(Analysis, 'as_cif', property(lambda self: 'analysis'))
     monkeypatch.setattr(Summary, 'as_cif', lambda self: 'summary')
 
     p = Project(name='p1')

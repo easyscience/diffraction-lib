@@ -247,11 +247,11 @@ Now, you can inspect the fitted parameters to see how they have changed
 during the refinement process, select more parameters to be refined, and
 perform additional fits as needed.
 
-To plot the measured vs calculated data after the fit, you can use the
-`plot_meas_vs_calc` method of the `analysis` object:
+To plot the measured and calculated data after the fit, you can use the
+`pattern` method of the `display` object:
 
 ```python
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.pattern(expt_name='hrpt')
 ```
 
 ## Constraints
@@ -319,7 +319,7 @@ To view the defined constraints, you can use the `show_constraints`
 method:
 
 ```python
-project.analysis.display.constraints()
+project.analysis.constraints.show()
 ```
 
 The example of the output is:

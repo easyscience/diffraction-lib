@@ -315,7 +315,7 @@ for term in expt2.background:
 # #### Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='npd', x_min=35.5, x_max=38.3)
+project.display.pattern(expt_name='npd', x_min=35.5, x_max=38.3)
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='xrd', x_min=29.0, x_max=30.4)
+project.display.pattern(expt_name='xrd', x_min=29.0, x_max=30.4)

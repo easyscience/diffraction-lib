@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from __future__ import annotations
+
 from contextlib import suppress
 
 import numpy as np
@@ -102,7 +104,7 @@ class AnalysisDisplay:
     Accessed via ``analysis.display``.
     """
 
-    def __init__(self, analysis: 'Analysis') -> None:
+    def __init__(self, analysis: Analysis) -> None:
         self._analysis = analysis
 
     def _flush_structure_categories(self) -> None:
@@ -342,20 +344,7 @@ class AnalysisDisplay:
 
     def constraints(self) -> None:
         """Print a table of all user-defined symbolic constraints."""
-        analysis = self._analysis
-        if not analysis.constraints._items:
-            log.warning('No constraints defined.')
-            return
-
-        rows = [[constraint.expression.value] for constraint in analysis.constraints]
-
-        console.paragraph('User defined constraints')
-        render_table(
-            columns_headers=['expression'],
-            columns_alignment=['left'],
-            columns_data=rows,
-        )
-        console.print(f'Constraints enabled: {analysis.constraints.enabled}')
+        self._analysis.constraints.show()
 
     def fit_results(self) -> None:
         """
@@ -381,10 +370,7 @@ class AnalysisDisplay:
 
     def as_cif(self) -> None:
         """Render the analysis section as CIF in console."""
-        cif_text: str = self._analysis.as_cif()
-        paragraph_title: str = 'Analysis 🧮 info as cif'
-        console.paragraph(paragraph_title)
-        render_cif(cif_text)
+        self._analysis.show_as_cif()
 
 
 class Analysis:
@@ -900,6 +886,7 @@ class Analysis:
             self.constraints_handler.set_constraints(self.constraints)
             self.constraints_handler.apply()
 
+    @property
     def as_cif(self) -> str:
         """
         Serialize the analysis section to a CIF string.
@@ -911,3 +898,8 @@ class Analysis:
         """
         self._update_categories()
         return analysis_to_cif(self)
+
+    def show_as_cif(self) -> None:
+        """Pretty-print the analysis section as CIF text."""
+        console.paragraph('Analysis info as CIF')
+        render_cif(self.as_cif)
