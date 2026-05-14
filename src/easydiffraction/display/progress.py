@@ -314,6 +314,7 @@ class ActivityIndicator:
             '.ed-activity-stack {'
             'display: flex;'
             'flex-direction: column;'
+            'align-items: flex-start;'
             'gap: 0.35rem;'
             'margin-top: 0.5rem;'
             '}'
