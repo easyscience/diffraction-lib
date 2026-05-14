@@ -347,8 +347,4 @@ project.display.posterior.predictive(expt_name='hrpt')
 # after the Bayesian run.
 
 # %%
-project.display.posterior.predictive(
-    expt_name='hrpt',
-    x_min=92,
-    x_max=93,
-)
+project.display.posterior.predictive(expt_name='hrpt', x_min=92, x_max=93)
