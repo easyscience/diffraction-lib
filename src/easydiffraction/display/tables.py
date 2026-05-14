@@ -75,6 +75,47 @@ class TableRenderer(RendererBase):
         console.paragraph('Current tabler configuration')
         TableRenderer.get().render(df)
 
+    @staticmethod
+    def _prepare_dataframe(df: object) -> tuple[object, object]:
+        """
+        Normalize input table data for backend consumption.
+
+        Parameters
+        ----------
+        df : object
+            DataFrame with a two-level column index where the second
+            level provides per-column alignment.
+
+        Returns
+        -------
+        tuple[object, object]
+            Normalized ``(alignments, dataframe)`` pair.
+        """
+        prepared_df = df.copy()
+        prepared_df.index += 1
+
+        alignments = prepared_df.columns.get_level_values(1)
+        prepared_df.columns = prepared_df.columns.get_level_values(0)
+        return alignments, prepared_df
+
+    def build_renderable(self, df: object) -> object:
+        """
+        Build a backend-native renderable without displaying it.
+
+        Parameters
+        ----------
+        df : object
+            DataFrame with a two-level column index where the second
+            level provides per-column alignment.
+
+        Returns
+        -------
+        object
+            Backend-native renderable, such as a Rich table or HTML.
+        """
+        alignments, prepared_df = self._prepare_dataframe(df)
+        return self._backend.build_renderable(alignments, prepared_df)
+
     def render(self, df: object, display_handle: object | None = None) -> object:
         """
         Render a DataFrame as a table using the active backend.
@@ -94,19 +135,8 @@ class TableRenderer(RendererBase):
         object
             Backend-specific return value (usually ``None``).
         """
-        # Work on a copy to avoid mutating the original DataFrame
-        df = df.copy()
-
-        # Force starting index from 1
-        df.index += 1
-
-        # Extract column alignments
-        alignments = df.columns.get_level_values(1)
-
-        # Remove alignments from df (Keep only the first index level)
-        df.columns = df.columns.get_level_values(0)
-
-        return self._backend.render(alignments, df, display_handle)
+        alignments, prepared_df = self._prepare_dataframe(df)
+        return self._backend.render(alignments, prepared_df, display_handle)
 
 
 class TableRendererFactory(RendererFactoryBase):
