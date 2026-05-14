@@ -5,10 +5,10 @@
 from __future__ import annotations
 
 import html
+from collections.abc import Iterator
 from contextlib import contextmanager
 from contextlib import suppress
 from time import monotonic
-from typing import Iterator
 
 try:
     from IPython.display import HTML
@@ -28,6 +28,13 @@ from rich.text import Text
 from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.environment import in_jupyter
 from easydiffraction.utils.logging import ConsoleManager
+
+ACTIVITY_LABEL_BURN_IN = 'Burn-in...'
+ACTIVITY_LABEL_FITTING = 'Fitting...'
+ACTIVITY_LABEL_PROCESSING = 'Processing...'
+ACTIVITY_LABEL_SAMPLING = 'Sampling...'
+ACTIVITY_ACCENT_COLOR = '#d97706'
+ACTIVITY_TERMINAL_STYLE = f'bold {ACTIVITY_ACCENT_COLOR}'
 
 SPINNER_FRAMES: tuple[str, ...] = (
     '⠋',
@@ -100,7 +107,7 @@ class ActivityIndicator:
 
     Parameters
     ----------
-    label : str, default='processing'
+    label : str, default=ACTIVITY_LABEL_PROCESSING
         User-facing activity label.
     verbosity : VerbosityEnum
         Output verbosity controlling whether live display is shown.
@@ -108,7 +115,7 @@ class ActivityIndicator:
 
     def __init__(
         self,
-        label: str = 'processing',
+        label: str = ACTIVITY_LABEL_PROCESSING,
         *,
         verbosity: VerbosityEnum,
     ) -> None:
@@ -184,8 +191,8 @@ class ActivityIndicator:
         Parameters
         ----------
         final_label : str | None, default=None
-            Optional final label to leave in place after stopping.
-            When omitted, only the current content remains visible.
+            Optional final label to leave in place after stopping. When
+            omitted, only the current content remains visible.
         """
         self._running = False
         self._keep_stopped_label = final_label is not None
@@ -250,9 +257,9 @@ class ActivityIndicator:
     def _terminal_indicator_line(self) -> Text | None:
         if self._running:
             frame = self._current_frame()
-            return Text(f'{frame} {self._label}')
+            return Text(f'{frame} {self._label}', style=ACTIVITY_TERMINAL_STYLE)
         if self._keep_stopped_label:
-            return Text(self._label)
+            return Text(self._label, style=ACTIVITY_TERMINAL_STYLE)
         return None
 
     def _current_frame(self) -> str:
@@ -322,8 +329,10 @@ class ActivityIndicator:
             'display: inline-flex;'
             'align-items: center;'
             'gap: 0.45rem;'
+            f'color: {ACTIVITY_ACCENT_COLOR};'
             'font-family: ui-monospace, SFMono-Regular, Menlo, monospace;'
             'font-size: 0.95rem;'
+            'font-weight: 600;'
             'line-height: 1.1;'
             '}'
             '.ed-activity-pre {'
@@ -344,7 +353,7 @@ class ActivityIndicator:
 
 @contextmanager
 def activity_indicator(
-    label: str = 'processing',
+    label: str = ACTIVITY_LABEL_PROCESSING,
     *,
     verbosity: VerbosityEnum,
 ) -> Iterator[ActivityIndicator]:
@@ -353,14 +362,14 @@ def activity_indicator(
 
     Parameters
     ----------
-    label : str, default='processing'
+    label : str, default=ACTIVITY_LABEL_PROCESSING
         User-facing activity label.
     verbosity : VerbosityEnum
         Output verbosity controlling whether live display is shown.
 
     Yields
     ------
-    ActivityIndicator
+    Iterator[ActivityIndicator]
         Started indicator that is stopped on block exit.
     """
     indicator = ActivityIndicator(label, verbosity=verbosity)

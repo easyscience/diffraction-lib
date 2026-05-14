@@ -4,7 +4,9 @@
 
 from __future__ import annotations
 
+import contextlib
 import csv
+from types import SimpleNamespace
 
 import pytest
 
@@ -14,6 +16,8 @@ from easydiffraction.analysis.sequential import _append_to_csv
 from easydiffraction.analysis.sequential import _build_csv_header
 from easydiffraction.analysis.sequential import _read_csv_for_recovery
 from easydiffraction.analysis.sequential import _write_csv_header
+from easydiffraction.display.progress import ACTIVITY_LABEL_FITTING
+from easydiffraction.utils.enums import VerbosityEnum
 
 
 # ------------------------------------------------------------------
@@ -300,3 +304,130 @@ class TestSequentialFitTemplate:
         assert template.diffrn_field_names == ['temp']
         assert template.minimizer_tag == 'lmfit'
         assert template.calculator_tag == 'cryspy'
+
+
+def test_fit_sequential_short_starts_and_stops_shared_indicator(monkeypatch, tmp_path):
+    import easydiffraction.analysis.sequential as sequential_mod
+
+    events: list[tuple[object, ...]] = []
+    template = _minimal_template()
+
+    class FakeIndicator:
+        def __init__(self, label, *, verbosity):
+            events.append(('init', label, verbosity))
+
+        def start(self):
+            events.append(('start',))
+
+        def update(self):
+            events.append(('update',))
+
+        def stop(self):
+            events.append(('stop',))
+
+    def fake_run_fit_loop(
+        pool_cm, chunks, template_arg, csv_info, extract_diffrn, verb, indicator
+    ):
+        del pool_cm, csv_info, extract_diffrn
+        assert chunks == [['scan_001.xye']]
+        assert template_arg == template
+        assert verb is VerbosityEnum.SHORT
+        assert indicator is not None
+        indicator.update()
+
+    monkeypatch.setattr(sequential_mod, 'ActivityIndicator', FakeIndicator)
+    monkeypatch.setattr(sequential_mod.mp, 'parent_process', lambda: None)
+    monkeypatch.setattr(sequential_mod, '_check_seq_preconditions', lambda project: None)
+    monkeypatch.setattr(
+        sequential_mod,
+        'extract_data_paths_from_dir',
+        lambda data_dir, file_pattern='*': ['scan_001.xye'],
+    )
+    monkeypatch.setattr(sequential_mod, '_build_template', lambda project: template)
+    monkeypatch.setattr(
+        sequential_mod,
+        '_setup_csv_and_recovery',
+        lambda project, template_arg, verb: (
+            tmp_path / 'results.csv',
+            ['file_path'],
+            set(),
+            template_arg,
+        ),
+    )
+    monkeypatch.setattr(sequential_mod, '_resolve_workers', lambda max_workers, chunk_size: (1, 1))
+    monkeypatch.setattr(
+        sequential_mod,
+        '_create_pool_context',
+        lambda max_workers: (contextlib.nullcontext(None), None, None, None),
+    )
+    monkeypatch.setattr(sequential_mod, '_run_fit_loop', fake_run_fit_loop)
+    monkeypatch.setattr(sequential_mod, '_restore_main_state', lambda *args: None)
+
+    analysis = SimpleNamespace(
+        project=SimpleNamespace(verbosity='short'),
+        fitter=SimpleNamespace(selection='lmfit'),
+    )
+
+    sequential_mod.fit_sequential(analysis, data_dir=str(tmp_path))
+
+    assert events == [
+        ('init', ACTIVITY_LABEL_FITTING, VerbosityEnum.SHORT),
+        ('start',),
+        ('update',),
+        ('stop',),
+    ]
+
+
+def test_fit_sequential_silent_does_not_start_indicator(monkeypatch, tmp_path):
+    import easydiffraction.analysis.sequential as sequential_mod
+
+    template = _minimal_template()
+
+    class FailingIndicator:
+        def __init__(self, *args, **kwargs):
+            message = 'silent mode should not create an activity indicator'
+            raise AssertionError(message)
+
+    def fake_run_fit_loop(
+        pool_cm, chunks, template_arg, csv_info, extract_diffrn, verb, indicator
+    ):
+        del pool_cm, csv_info, extract_diffrn
+        assert chunks == [['scan_001.xye']]
+        assert template_arg == template
+        assert verb is VerbosityEnum.SILENT
+        assert indicator is None
+
+    monkeypatch.setattr(sequential_mod, 'ActivityIndicator', FailingIndicator)
+    monkeypatch.setattr(sequential_mod.mp, 'parent_process', lambda: None)
+    monkeypatch.setattr(sequential_mod, '_check_seq_preconditions', lambda project: None)
+    monkeypatch.setattr(
+        sequential_mod,
+        'extract_data_paths_from_dir',
+        lambda data_dir, file_pattern='*': ['scan_001.xye'],
+    )
+    monkeypatch.setattr(sequential_mod, '_build_template', lambda project: template)
+    monkeypatch.setattr(
+        sequential_mod,
+        '_setup_csv_and_recovery',
+        lambda project, template_arg, verb: (
+            tmp_path / 'results.csv',
+            ['file_path'],
+            set(),
+            template_arg,
+        ),
+    )
+    monkeypatch.setattr(sequential_mod, '_resolve_workers', lambda max_workers, chunk_size: (1, 1))
+    monkeypatch.setattr(
+        sequential_mod,
+        '_create_pool_context',
+        lambda max_workers: (contextlib.nullcontext(None), None, None, None),
+    )
+    monkeypatch.setattr(sequential_mod, '_run_fit_loop', fake_run_fit_loop)
+    monkeypatch.setattr(sequential_mod, '_restore_main_state', lambda *args: None)
+
+    analysis = SimpleNamespace(
+        project=SimpleNamespace(verbosity='silent'),
+        fitter=SimpleNamespace(selection='lmfit'),
+    )
+
+    sequential_mod.fit_sequential(analysis, data_dir=str(tmp_path))

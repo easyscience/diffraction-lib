@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 from typing import Any
 
+from easydiffraction.display.progress import ACTIVITY_LABEL_FITTING
 from easydiffraction.display.progress import ActivityIndicator
 from easydiffraction.io.ascii import extract_data_paths_from_dir
 from easydiffraction.utils.enums import VerbosityEnum
@@ -884,7 +885,7 @@ def fit_sequential(
 
     indicator = None
     if verb is not VerbosityEnum.SILENT:
-        indicator = ActivityIndicator('fitting', verbosity=verb)
+        indicator = ActivityIndicator(ACTIVITY_LABEL_FITTING, verbosity=verb)
         indicator.start()
 
     pool_cm, main_mod, main_file_bak, main_spec_bak = _create_pool_context(max_workers)

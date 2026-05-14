@@ -80,6 +80,7 @@ class RichTableBackend(TableBackendBase):
             DataFrame-like object providing rows to render.
         alignments : object
             Iterable of text alignment values for columns.
+
         Returns
         -------
         object

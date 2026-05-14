@@ -5,16 +5,22 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass
-
-import numpy as np
+from typing import TYPE_CHECKING
 
 from easydiffraction.analysis.fit_helpers.metrics import calculate_reduced_chi_square
+from easydiffraction.display.progress import ACTIVITY_LABEL_BURN_IN
+from easydiffraction.display.progress import ACTIVITY_LABEL_FITTING
+from easydiffraction.display.progress import ACTIVITY_LABEL_PROCESSING
+from easydiffraction.display.progress import ACTIVITY_LABEL_SAMPLING
 from easydiffraction.display.progress import ActivityIndicator
 from easydiffraction.display.progress import _TerminalLiveHandle as _SharedTerminalLiveHandle
 from easydiffraction.display.progress import make_display_handle
 from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.utils import build_table_renderable
+
+if TYPE_CHECKING:
+    import numpy as np
 
 SIGNIFICANT_CHANGE_THRESHOLD = 0.01  # 1% threshold
 SAMPLER_PROGRESS_UPDATE_SECONDS = 5.0
@@ -24,10 +30,6 @@ DEFAULT_HEADERS = ['iteration', 'time (s)', 'χ²', 'change / status']
 DEFAULT_ALIGNMENTS = ['center', 'center', 'center', 'center']
 SAMPLER_HEADERS = ['iteration', 'progress', 'time (s)', 'log posterior', 'phase']
 SAMPLER_ALIGNMENTS = ['center', 'center', 'center', 'center', 'center']
-ACTIVITY_LABEL_BURN_IN = 'burn-in'
-ACTIVITY_LABEL_FITTING = 'fitting'
-ACTIVITY_LABEL_PROCESSING = 'processing'
-ACTIVITY_LABEL_SAMPLING = 'sampling'
 
 _TerminalLiveHandle = _SharedTerminalLiveHandle
 
@@ -440,7 +442,7 @@ class FitProgressTracker:
             f'{final_progress:.1f}%',
             self._format_elapsed_time(elapsed_time),
             log_posterior,
-            self._last_sampler_phase or ACTIVITY_LABEL_SAMPLING,
+            self._last_sampler_phase or TRACKING_MODE_SAMPLER,
         ]
 
     def _finalize_fit_tracking_row(self) -> None:
@@ -565,14 +567,15 @@ class FitProgressTracker:
 
     def _default_activity_label(self) -> str:
         if self._tracking_mode == TRACKING_MODE_SAMPLER:
-            return ACTIVITY_LABEL_SAMPLING
+            return ACTIVITY_LABEL_PROCESSING
         return ACTIVITY_LABEL_FITTING
 
-    def _activity_label_for_sampler_phase(self, phase: str) -> str:
+    @staticmethod
+    def _activity_label_for_sampler_phase(phase: str) -> str:
         normalized_phase = phase.strip().lower()
-        if normalized_phase == ACTIVITY_LABEL_BURN_IN:
+        if normalized_phase == 'burn-in':
             return ACTIVITY_LABEL_BURN_IN
-        if normalized_phase == ACTIVITY_LABEL_SAMPLING:
+        if normalized_phase == 'sampling':
             return ACTIVITY_LABEL_SAMPLING
         if normalized_phase:
             return normalized_phase

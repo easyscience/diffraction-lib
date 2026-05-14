@@ -10,10 +10,11 @@ from typing import TYPE_CHECKING
 from easydiffraction.datablocks.experiment.item.base import intensity_category_for
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
-from easydiffraction.display.progress import activity_indicator
 from easydiffraction.display.plotting import PlotterEngineEnum
 from easydiffraction.display.plotting import PosteriorPairPlotStyleEnum
 from easydiffraction.display.plotting import _MeasVsCalcPlotOptions
+from easydiffraction.display.progress import ACTIVITY_LABEL_PROCESSING
+from easydiffraction.display.progress import activity_indicator
 from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.utils import render_object_help
 from easydiffraction.utils.utils import render_table
@@ -130,7 +131,10 @@ class PosteriorDisplay:
         max_parameters: int = 6,
     ) -> None:
         """Plot posterior pair relationships for sampled parameters."""
-        with activity_indicator('processing', verbosity=VerbosityEnum(self._project.verbosity)):
+        with activity_indicator(
+            ACTIVITY_LABEL_PROCESSING,
+            verbosity=VerbosityEnum(self._project.verbosity),
+        ):
             self._project.rendering.plotter.plot_posterior_pairs(
                 parameters=parameters,
                 style=style,
@@ -153,7 +157,10 @@ class PosteriorDisplay:
         x: object | None = None,
     ) -> None:
         """Plot posterior predictive summaries for one experiment."""
-        with activity_indicator('processing', verbosity=VerbosityEnum(self._project.verbosity)):
+        with activity_indicator(
+            ACTIVITY_LABEL_PROCESSING,
+            verbosity=VerbosityEnum(self._project.verbosity),
+        ):
             self._project.rendering.plotter.plot_posterior_predictive(
                 expt_name=expt_name,
                 style=style,
@@ -218,7 +225,7 @@ class ProjectDisplay:
                 raise ValueError(msg)
             if 'uncertainty' in auto_include:
                 with activity_indicator(
-                    'processing',
+                    ACTIVITY_LABEL_PROCESSING,
                     verbosity=VerbosityEnum(self._project.verbosity),
                 ):
                     self._project.rendering.plotter._plot_posterior_predictive_request(
@@ -252,7 +259,7 @@ class ProjectDisplay:
 
         if 'uncertainty' in normalized_include:
             with activity_indicator(
-                'processing',
+                ACTIVITY_LABEL_PROCESSING,
                 verbosity=VerbosityEnum(self._project.verbosity),
             ):
                 self._project.rendering.plotter._plot_posterior_predictive_request(
