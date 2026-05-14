@@ -33,8 +33,8 @@ def test_datablock_collection_add_and_filters_with_real_parameters():
             # Set actual values via setter
             self._p1.value = 1.0
             self._p2.value = 2.0
-            # Make p2 constrained and not free
-            self._p2._constrained = True
+            # Make p2 user constrained and not free
+            self._p2._user_constrained = True
             self._p2._free = False
             # Mark p1 free to be included in free_parameters
             self._p1.free = True
@@ -67,7 +67,7 @@ def test_datablock_collection_add_and_filters_with_real_parameters():
     # parameters collection aggregates from both blocks (p1 & p2 each)
     params = coll.parameters
     assert len(params) == 4
-    # fittable excludes constrained parameters
+    # fittable excludes user-constrained parameters
     fittable = coll.fittable_parameters
     assert all(isinstance(p, Parameter) for p in fittable)
     assert len(fittable) == 2  # only p1 from each block
@@ -76,7 +76,7 @@ def test_datablock_collection_add_and_filters_with_real_parameters():
     assert free_params == fittable
 
 
-def test_datablock_collection_fittable_excludes_symmetry_fixed_parameters():
+def test_datablock_collection_fittable_excludes_symmetry_constrained_parameters():
     from easydiffraction.core.category import CategoryItem
     from easydiffraction.core.datablock import DatablockCollection
     from easydiffraction.core.datablock import DatablockItem
@@ -106,7 +106,7 @@ def test_datablock_collection_fittable_excludes_symmetry_fixed_parameters():
             self._free_param.value = 1.0
             self._fixed_param.value = 2.0
             self._free_param.free = True
-            self._fixed_param._set_symmetry_fixed(value=True)
+            self._fixed_param._set_symmetry_constrained(value=True)
 
         @property
         def free_param(self):

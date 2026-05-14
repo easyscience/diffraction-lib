@@ -191,7 +191,7 @@ class DatablockCollection(CollectionBase):
         return [
             p
             for p in self.parameters
-            if isinstance(p, Parameter) and not p.constrained and not p.symmetry_fixed
+            if isinstance(p, Parameter) and not p.user_constrained and not p.symmetry_constrained
         ]
 
     @property

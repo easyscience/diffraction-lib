@@ -285,10 +285,10 @@ class GenericParameter(GenericNumericDescriptor):
         self._fit_bounds_uncertainty_multiplier: float | None = None
         self._start_value_spec = AttributeSpec(data_type=DataTypes.NUMERIC, default=0.0)
         self._start_value = self._start_value_spec.default
-        self._constrained_spec = self._BOOL_SPEC_TEMPLATE
-        self._constrained = self._constrained_spec.default
-        self._symmetry_fixed_spec = self._BOOL_SPEC_TEMPLATE
-        self._symmetry_fixed = self._symmetry_fixed_spec.default
+        self._user_constrained_spec = self._BOOL_SPEC_TEMPLATE
+        self._user_constrained = self._user_constrained_spec.default
+        self._symmetry_constrained_spec = self._BOOL_SPEC_TEMPLATE
+        self._symmetry_constrained = self._symmetry_constrained_spec.default
 
     def _physical_lower_bound(self) -> float:
         """
@@ -325,22 +325,22 @@ class GenericParameter(GenericNumericDescriptor):
         return self.unique_name.replace('.', '__')
 
     @property
-    def constrained(self) -> bool:
+    def user_constrained(self) -> bool:
         """Whether this parameter is part of a constraint expression."""
-        return self._constrained
+        return self._user_constrained
 
-    def _set_value_constrained(self, v: object) -> None:
+    def _set_value_user_constrained(self, v: object) -> None:
         """
         Set the value from a constraint expression.
 
         Bypasses validation and marks the parent datablock dirty, like
         ``_set_value_from_minimizer``, because constraints are applied
         inside the minimizer loop where trial values may exceed
-        physical-range validators. Flags the parameter as constrained.
-        Used exclusively by ``ConstraintsHandler.apply()``.
+        physical-range validators. Flags the parameter as user
+        constrained. Used exclusively by ``ConstraintsHandler.apply()``.
         """
         self._value = v
-        self._constrained = True
+        self._user_constrained = True
         parent_datablock = self._datablock_item()
         if parent_datablock is not None:
             parent_datablock._need_categories_update = True
@@ -356,24 +356,25 @@ class GenericParameter(GenericNumericDescriptor):
         validated = self._free_spec.validated(
             v, name=f'{self.unique_name}.free', current=self._free
         )
-        if validated and self._symmetry_fixed:
+        if validated and self._symmetry_constrained:
             log.warning(
-                f"Parameter '{self.unique_name}' is fixed by symmetry. Ignoring free=True."
+                f"Parameter '{self.unique_name}' is constrained by symmetry. Ignoring free=True."
             )
             self._free = False
             return
         self._free = validated
 
     @property
-    def symmetry_fixed(self) -> bool:
+    def symmetry_constrained(self) -> bool:
         """
-        Whether this parameter is fixed by crystallographic symmetry.
+        Whether this parameter is constrained by crystallographic
+        symmetry.
         """
-        return self._symmetry_fixed
+        return self._symmetry_constrained
 
-    def _set_symmetry_fixed(self, *, value: bool) -> None:
+    def _set_symmetry_constrained(self, *, value: bool) -> None:
         """
-        Mark or unmark this parameter as fixed by symmetry.
+        Mark or unmark this parameter as constrained by symmetry.
 
         When set to True, ``free`` is forced to False and any subsequent
         attempt to set ``free = True`` is ignored with a warning. When
@@ -383,14 +384,14 @@ class GenericParameter(GenericNumericDescriptor):
         Parameters
         ----------
         value : bool
-            New symmetry-fixed state.
+            New symmetry-constrained state.
         """
-        validated = self._symmetry_fixed_spec.validated(
+        validated = self._symmetry_constrained_spec.validated(
             value,
-            name=f'{self.unique_name}.symmetry_fixed',
-            current=self._symmetry_fixed,
+            name=f'{self.unique_name}.symmetry_constrained',
+            current=self._symmetry_constrained,
         )
-        self._symmetry_fixed = validated
+        self._symmetry_constrained = validated
         if validated:
             self._free = False
 

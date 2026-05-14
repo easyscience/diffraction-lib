@@ -194,7 +194,7 @@ execution order within a datablock (e.g. background before data).
 | Category discovery | Scans `vars(self)` for categories           | N/A                            |
 | Update cascade     | `_update_categories()` — sorted by priority | N/A                            |
 | Parameters         | Aggregated from all categories              | Aggregated from all datablocks |
-| Fittable params    | N/A                                         | Non-constrained `Parameter`s   |
+| Fittable params    | N/A                                         | `Parameter`s not blocked by user or symmetry constraints |
 | Free params        | N/A                                         | Fittable + `free == True`      |
 | Dirty flag         | `_need_categories_update`                   | N/A                            |
 
@@ -210,7 +210,7 @@ GuardedBase
 └── GenericDescriptorBase               # name, value (validated via AttributeSpec), description
     ├── GenericStringDescriptor         # _value_type = DataTypes.STRING
     └── GenericNumericDescriptor        # _value_type = DataTypes.NUMERIC, + units
-        └── GenericParameter            # + free, uncertainty, fit_min, fit_max, constrained, symmetry_fixed
+        └── GenericParameter            # + free, uncertainty, fit_min, fit_max, user_constrained, symmetry_constrained
 ```
 
 CIF-bound concrete classes add a `CifHandler` for serialisation:
@@ -325,13 +325,13 @@ via the `crystallography` module during `_update_categories()`.
 
 Parameters that are fully determined by symmetry (e.g. `lattice_b` in
 cubic, `fract_y` of an atom on a 4-fold axis, off-diagonal ADPs forced
-to zero by site symmetry) are flagged as `symmetry_fixed = True` on the
+to zero by site symmetry) are flagged as `symmetry_constrained = True` on the
 `Parameter`. This forces `free = False`; any subsequent attempt to set
 `free = True` on such a parameter is ignored with a warning. Flags are
 recomputed on every `_update_categories()` so that changing the space
 group, Wyckoff letter, or ADP type re-evaluates which parameters are
-fixed. Surface helpers `cell_symmetry_fixed_flags(...)` and
-`atom_site_symmetry_fixed_flags(...)` in `crystallography` expose the
+symmetry constrained. Surface helpers `cell_symmetry_constrained_flags(...)` and
+`atom_site_symmetry_constrained_flags(...)` in `crystallography` expose the
 per-key flags.
 
 ### 4.2 Atomic Displacement Parameters (ADP)

@@ -689,11 +689,11 @@ the archived planning notes left two follow-up questions open:
 
 ---
 
-## 40. 🟢 Implement Resetting `.constrained` to `False`
+## 40. 🟢 Implement Resetting `.user_constrained` to `False`
 
 **Type:** Feature
 
-`ConstraintsHandler` has a TODO to implement changing the `.constrained`
+`ConstraintsHandler` has a TODO to implement changing the `.user_constrained`
 attribute back to `False` when constraints are removed.
 
 **TODOs:**
@@ -1518,7 +1518,7 @@ operation is possible (e.g. in automated pipelines or tests).
 | 37  | Rename experiment `.type` property               | 🟢 Low   | Naming           |
 | 38  | Fix `@typechecked`/gemmi in factories            | 🟡 Med   | Bug              |
 | 39  | Improve `_update_priority` handling              | 🟢 Low   | Design           |
-| 40  | Implement resetting `.constrained` to `False`    | 🟢 Low   | Feature          |
+| 40  | Implement resetting `.user_constrained` to `False`    | 🟢 Low   | Feature          |
 | 41  | Check `_mark_dirty` in `_set_value`              | 🟢 Low   | Cleanup          |
 | 42  | MkDocs type unpacking in validation              | 🟢 Low   | Docs             |
 | 43  | Fix summary display inconsistencies              | 🟢 Low   | UX               |

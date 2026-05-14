@@ -81,7 +81,7 @@ class Fitter:
             expt_free_params.extend(
                 p
                 for p in expt.parameters
-                if isinstance(p, Parameter) and not p.constrained and p.free
+                if isinstance(p, Parameter) and not p.user_constrained and p.free
             )
         params = structures.free_parameters + expt_free_params
 

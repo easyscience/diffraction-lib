@@ -29,7 +29,6 @@ from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_cif
 from easydiffraction.utils.utils import render_table
 
-
 _SUMMARY_HIDDEN_PARAMETER_CATEGORIES = frozenset({'pd_data', 'total_data', 'refln'})
 
 
@@ -493,7 +492,8 @@ class Analysis:
                 }
             if isinstance(param, Parameter):
                 record |= {
-                    ('fittable', 'left'): not param.constrained and not param.symmetry_fixed,
+                    ('fittable', 'left'): not param.user_constrained
+                    and not param.symmetry_constrained,
                     ('free', 'left'): param.free,
                     ('min', 'right'): param.fit_min,
                     ('max', 'right'): param.fit_max,
@@ -569,7 +569,7 @@ class Analysis:
             log.warning('No experiments found in the project. Cannot run fit.')
             return
 
-        # Apply constraints before fitting so that constrained
+        # Apply constraints before fitting so that user-constrained
         # parameters are marked and excluded from the free parameter
         # list built by the fitter.
         self._update_categories()

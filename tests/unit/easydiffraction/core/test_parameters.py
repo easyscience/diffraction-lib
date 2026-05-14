@@ -199,43 +199,43 @@ def _make_param() -> object:
     )
 
 
-def test_parameter_symmetry_fixed_default_is_false():
+def test_parameter_symmetry_constrained_default_is_false():
     p = _make_param()
-    assert p.symmetry_fixed is False
+    assert p.symmetry_constrained is False
 
 
-def test_parameter_set_symmetry_fixed_forces_free_false():
+def test_parameter_set_symmetry_constrained_forces_free_false():
     p = _make_param()
     p.free = True
     assert p.free is True
-    p._set_symmetry_fixed(value=True)
-    assert p.symmetry_fixed is True
+    p._set_symmetry_constrained(value=True)
+    assert p.symmetry_constrained is True
     assert p.free is False
 
 
-def test_parameter_free_true_ignored_when_symmetry_fixed(monkeypatch):
+def test_parameter_free_true_ignored_when_symmetry_constrained(monkeypatch):
     from easydiffraction.utils.logging import Logger
 
     p = _make_param()
-    p._set_symmetry_fixed(value=True)
+    p._set_symmetry_constrained(value=True)
     monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.WARN, raising=True)
     p.free = True
     assert p.free is False
-    assert p.symmetry_fixed is True
+    assert p.symmetry_constrained is True
     monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.RAISE, raising=True)
 
 
-def test_parameter_free_false_allowed_when_symmetry_fixed():
+def test_parameter_free_false_allowed_when_symmetry_constrained():
     p = _make_param()
-    p._set_symmetry_fixed(value=True)
+    p._set_symmetry_constrained(value=True)
     p.free = False  # should not warn or raise
     assert p.free is False
 
 
-def test_parameter_clearing_symmetry_fixed_allows_free_true():
+def test_parameter_clearing_symmetry_constrained_allows_free_true():
     p = _make_param()
-    p._set_symmetry_fixed(value=True)
-    p._set_symmetry_fixed(value=False)
+    p._set_symmetry_constrained(value=True)
+    p._set_symmetry_constrained(value=False)
     p.free = True
     assert p.free is True
-    assert p.symmetry_fixed is False
+    assert p.symmetry_constrained is False
