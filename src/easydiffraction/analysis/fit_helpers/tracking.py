@@ -334,7 +334,9 @@ class FitProgressTracker:
 
     @staticmethod
     def _cleanup_during_exception() -> bool:
-        """Return whether tracking cleanup runs while handling an error."""
+        """
+        Return whether cleanup runs during exception handling.
+        """
         return sys.exc_info()[0] is not None
 
     def _initial_sampler_progress_row(
