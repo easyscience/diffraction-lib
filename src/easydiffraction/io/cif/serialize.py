@@ -279,13 +279,21 @@ def datablock_item_to_cif(
     parts: list[str] = [header]
 
     # First categories
-    parts.extend(v.as_cif for v in vars(datablock).values() if isinstance(v, CategoryItem))
+    parts.extend(
+        cif_text
+        for cif_text in (v.as_cif for v in vars(datablock).values() if isinstance(v, CategoryItem))
+        if cif_text
+    )
 
     # Then collections
     parts.extend(
-        category_collection_to_cif(v, max_display=max_loop_display)
-        for v in vars(datablock).values()
-        if isinstance(v, CategoryCollection)
+        cif_text
+        for cif_text in (
+            category_collection_to_cif(v, max_display=max_loop_display)
+            for v in vars(datablock).values()
+            if isinstance(v, CategoryCollection)
+        )
+        if cif_text
     )
 
     return '\n\n'.join(parts)

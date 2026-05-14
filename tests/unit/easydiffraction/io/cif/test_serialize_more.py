@@ -40,6 +40,50 @@ def test_datablock_item_to_cif_includes_item_and_collection():
     assert '7' in out
 
 
+def test_datablock_item_to_cif_skips_empty_category_fragments():
+    import easydiffraction.io.cif.serialize as MUT
+    from easydiffraction.core.category import CategoryCollection
+    from easydiffraction.core.category import CategoryItem
+    from easydiffraction.io.cif.handler import CifHandler
+
+    class Item(CategoryItem):
+        def __init__(self, val):
+            super().__init__()
+            self._p = type('P', (), {})()
+            self._p._cif_handler = CifHandler(names=['_aa'])
+            self._p.value = val
+
+        @property
+        def parameters(self):
+            return [self._p]
+
+        @property
+        def as_cif(self) -> str:
+            return MUT.category_item_to_cif(self)
+
+    class EmptyItem(CategoryItem):
+        @property
+        def parameters(self):
+            return []
+
+        @property
+        def as_cif(self) -> str:
+            return ''
+
+    class DB:
+        def __init__(self):
+            self._identity = type('I', (), {'datablock_entry_name': 'block1'})()
+            self.item = Item(42)
+            self.empty_item = EmptyItem()
+            self.coll = CategoryCollection(item_type=Item)
+            self.coll['row1'] = Item(7)
+            self.empty_coll = CategoryCollection(item_type=Item)
+
+    out = MUT.datablock_item_to_cif(DB())
+    assert out == 'data_block1\n\n_aa 42.\n\nloop_\n_aa\n7.'
+    assert '\n\n\n' not in out
+
+
 def test_datablock_collection_to_cif_concatenates_blocks():
     import easydiffraction.io.cif.serialize as MUT
 
