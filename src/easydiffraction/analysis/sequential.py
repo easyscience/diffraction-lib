@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 from typing import Any
 
+from easydiffraction.display.progress import ActivityIndicator
 from easydiffraction.io.ascii import extract_data_paths_from_dir
 from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.logging import console
@@ -529,9 +530,11 @@ def _report_chunk_progress(
 
     if verbosity is VerbosityEnum.SHORT:
         status = '✅' if successful else '❌'
-        print(f'{status} Chunk {chunk_idx}/{total_chunks}: {num_files} files, avg χ² = {chi2_str}')
+        console.print(
+            f'{status} Chunk {chunk_idx}/{total_chunks}: {num_files} files, avg χ² = {chi2_str}'
+        )
     elif verbosity is VerbosityEnum.FULL:
-        print(
+        console.print(
             f'Chunk {chunk_idx}/{total_chunks}: '
             f'{num_files} files, {len(successful)} succeeded, '
             f'avg reduced χ² = {chi2_str}'
@@ -540,7 +543,7 @@ def _report_chunk_progress(
             status = '✅' if r.get('fit_success') else '❌'
             rchi2 = r.get('reduced_chi_squared')
             rchi2_str = f'{rchi2:.2f}' if rchi2 is not None else '—'
-            print(f'  {status} {Path(r["file_path"]).name}: χ² = {rchi2_str}')
+            console.print(f'  {status} {Path(r["file_path"]).name}: χ² = {rchi2_str}')
 
 
 def _apply_diffrn_metadata(
@@ -653,7 +656,7 @@ def _setup_csv_and_recovery(
         num_skipped = len(already_fitted)
         log.info(f'Resuming: {num_skipped} files already fitted, skipping.')
         if verb is not VerbosityEnum.SILENT:
-            print(f'📂 Resuming from CSV: {num_skipped} files already fitted.')
+            console.print(f'📂 Resuming from CSV: {num_skipped} files already fitted.')
         if recovered_params is not None:
             template = replace(template, initial_params=recovered_params)
     else:
@@ -755,6 +758,7 @@ def _run_fit_loop(
     csv_info: tuple[Path, list[str]],
     extract_diffrn: Callable | None,
     verb: VerbosityEnum,
+    indicator: ActivityIndicator | None,
 ) -> None:
     """
     Execute the chunk-based fitting loop.
@@ -773,6 +777,8 @@ def _run_fit_loop(
         User callback for diffrn metadata.
     verb : VerbosityEnum
         Output verbosity.
+    indicator : ActivityIndicator | None
+        Shared sequential-fit activity indicator.
     """
     csv_path, header = csv_info
     total_chunks = len(chunks)
@@ -789,6 +795,8 @@ def _run_fit_loop(
 
             _append_to_csv(csv_path, header, results)
             _report_chunk_progress(chunk_idx, total_chunks, results, verb)
+            if indicator is not None:
+                indicator.update()
 
             # Propagate last successful params
             last_ok = _find_last_successful(results)
@@ -860,7 +868,7 @@ def fit_sequential(
         remaining.reverse()
     if not remaining:
         if verb is not VerbosityEnum.SILENT:
-            print('✅ All files already fitted. Nothing to do.')
+            console.print('✅ All files already fitted. Nothing to do.')
         return
 
     max_workers, chunk_size = _resolve_workers(max_workers, chunk_size)
@@ -874,15 +882,30 @@ def fit_sequential(
         )
         console.print('📈 Goodness-of-fit (reduced χ²):')
 
+    indicator = None
+    if verb is not VerbosityEnum.SILENT:
+        indicator = ActivityIndicator('fitting', verbosity=verb)
+        indicator.start()
+
     pool_cm, main_mod, main_file_bak, main_spec_bak = _create_pool_context(max_workers)
     try:
-        _run_fit_loop(pool_cm, chunks, template, (csv_path, header), extract_diffrn, verb)
+        _run_fit_loop(
+            pool_cm,
+            chunks,
+            template,
+            (csv_path, header),
+            extract_diffrn,
+            verb,
+            indicator,
+        )
     finally:
+        if indicator is not None:
+            indicator.stop()
         _restore_main_state(main_mod, main_file_bak, main_spec_bak)
 
     if verb is not VerbosityEnum.SILENT:
-        print(
+        console.print(
             f'✅ Sequential fitting complete: '
             f'{len(already_fitted) + len(remaining)} files processed.'
         )
-        print(f'📄 Results saved to: {csv_path}')
+        console.print(f'📄 Results saved to: {csv_path}')
