@@ -61,6 +61,8 @@ def test_activity_indicator_html_style_prevents_stretching():
 
     assert 'align-items: flex-start;' in style
     assert progress_mod.ACTIVITY_ACCENT_COLOR in style
+    assert 'font-weight: 400;' in style
+    assert 'var(--jp-ui-font-family' in style
 
 
 def test_activity_indicator_terminal_line_uses_accent_style():
@@ -73,6 +75,7 @@ def test_activity_indicator_terminal_line_uses_accent_style():
 
     assert line is not None
     assert line.style == progress_mod.ACTIVITY_TERMINAL_STYLE
+    assert 'bold' not in str(line.style)
 
 
 def test_activity_indicator_render_html_uses_current_label():
