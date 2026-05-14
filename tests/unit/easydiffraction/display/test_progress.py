@@ -23,7 +23,7 @@ def test_make_display_handle_uses_terminal_live_when_available(monkeypatch):
         def stop(self):
             self.stopped = True
 
-        def update(self, renderable, refresh=False):
+        def update(self, renderable, *, refresh: bool | None = None):
             del renderable
             del refresh
 

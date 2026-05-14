@@ -5,10 +5,13 @@
 from __future__ import annotations
 
 import html
-from collections.abc import Iterator
-from contextlib import contextmanager
+from contextlib import AbstractContextManager
 from contextlib import suppress
 from time import monotonic
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from types import TracebackType
 
 try:
     from IPython.display import HTML
@@ -17,10 +20,7 @@ except ImportError:  # pragma: no cover - optional dependency
     HTML = None
     DisplayHandle = None
 
-from rich.console import Console
-from rich.console import ConsoleOptions
 from rich.console import Group
-from rich.console import RenderResult
 from rich.live import Live
 from rich.protocol import is_renderable
 from rich.text import Text
@@ -152,7 +152,7 @@ class ActivityIndicator:
             return
 
         live = Live(
-            self,
+            self._terminal_renderable(),
             console=ConsoleManager.get(),
             auto_refresh=True,
             refresh_per_second=1 / _SPINNER_FRAME_SECONDS,
@@ -207,15 +207,8 @@ class ActivityIndicator:
         self._live = None
         self._display_handle = None
 
-    def __rich_console__(
-        self,
-        console: Console,
-        options: ConsoleOptions,
-    ) -> RenderResult:
-        """Yield a Rich renderable for the current activity state."""
-        del console
-        del options
-
+    def _terminal_renderable(self) -> object:
+        """Return the terminal renderable for the current state."""
         renderables: list[object] = []
         content = self._terminal_content()
         if content is not None:
@@ -226,14 +219,12 @@ class ActivityIndicator:
             renderables.append(indicator_line)
 
         if not renderables:
-            yield Text('')
-            return
+            return Text('')
 
         if len(renderables) == 1:
-            yield renderables[0]
-            return
+            return renderables[0]
 
-        yield Group(*renderables)
+        return Group(*renderables)
 
     def _refresh(self) -> None:
         if self._verbosity is VerbosityEnum.SILENT:
@@ -245,7 +236,7 @@ class ActivityIndicator:
 
         if self._live is not None:
             with suppress(Exception):
-                self._live.refresh()
+                self._live.update(self._terminal_renderable(), refresh=True)
 
     def _terminal_content(self) -> object | None:
         if self._content is None:
@@ -303,11 +294,16 @@ class ActivityIndicator:
             )
 
         if self._keep_stopped_label:
-            return f'<div class="ed-activity"><span class="ed-activity-label">{safe_label}</span></div>'
+            return (
+                '<div class="ed-activity">'
+                f'<span class="ed-activity-label">{safe_label}</span>'
+                '</div>'
+            )
 
         return ''
 
-    def _html_style(self) -> str:
+    @staticmethod
+    def _html_style() -> str:
         keyframes = []
         total_frames = len(SPINNER_FRAMES)
         for index, frame in enumerate(SPINNER_FRAMES):
@@ -335,7 +331,8 @@ class ActivityIndicator:
             'line-height: 1.1;'
             '}'
             '.ed-activity-label {'
-            'font-family: var(--jp-ui-font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);'
+            'font-family: var(--jp-ui-font-family, -apple-system, BlinkMacSystemFont, '
+            '"Segoe UI", sans-serif);'
             '}'
             '.ed-activity-pre {'
             'margin: 0;'
@@ -356,12 +353,33 @@ class ActivityIndicator:
         )
 
 
-@contextmanager
+class _ActivityIndicatorContext(AbstractContextManager[ActivityIndicator]):
+    """Context manager wrapper for ``ActivityIndicator``."""
+
+    def __init__(self, *, label: str, verbosity: VerbosityEnum) -> None:
+        self._indicator = ActivityIndicator(label, verbosity=verbosity)
+
+    def __enter__(self) -> ActivityIndicator:
+        self._indicator.start()
+        return self._indicator
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
+        del exc_type
+        del exc_value
+        del traceback
+        self._indicator.stop()
+
+
 def activity_indicator(
     label: str = ACTIVITY_LABEL_PROCESSING,
     *,
     verbosity: VerbosityEnum,
-) -> Iterator[ActivityIndicator]:
+) -> AbstractContextManager[ActivityIndicator]:
     """
     Manage an activity indicator around a block of work.
 
@@ -372,14 +390,10 @@ def activity_indicator(
     verbosity : VerbosityEnum
         Output verbosity controlling whether live display is shown.
 
-    Yields
-    ------
-    Iterator[ActivityIndicator]
-        Started indicator that is stopped on block exit.
+    Returns
+    -------
+    AbstractContextManager[ActivityIndicator]
+        Context manager that starts the indicator on entry and stops it
+        on exit.
     """
-    indicator = ActivityIndicator(label, verbosity=verbosity)
-    indicator.start()
-    try:
-        yield indicator
-    finally:
-        indicator.stop()
+    return _ActivityIndicatorContext(label=label, verbosity=verbosity)

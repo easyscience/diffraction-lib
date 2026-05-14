@@ -59,7 +59,6 @@
 │   │   │   └── 🏷️ class FitResults
 │   │   └── 📄 tracking.py
 │   │       ├── 🏷️ class SamplerProgressUpdate
-│   │       ├── 🏷️ class _TerminalLiveHandle
 │   │       └── 🏷️ class FitProgressTracker
 │   ├── 📁 minimizers
 │   │   ├── 📄 __init__.py
@@ -385,6 +384,10 @@
 │   │   ├── 🏷️ class _PosteriorPairsLegendState
 │   │   ├── 🏷️ class Plotter
 │   │   └── 🏷️ class PlotterFactory
+│   ├── 📄 progress.py
+│   │   ├── 🏷️ class _TerminalLiveHandle
+│   │   ├── 🏷️ class ActivityIndicator
+│   │   └── 🏷️ class _ActivityIndicatorContext
 │   ├── 📄 tables.py
 │   │   ├── 🏷️ class TableEngineEnum
 │   │   ├── 🏷️ class TableRenderer

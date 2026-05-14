@@ -850,16 +850,15 @@ def fit_sequential(
     if mp.parent_process() is not None:
         return
 
-    project = analysis.project
-    verb = VerbosityEnum(project.verbosity)
+    verb = VerbosityEnum(analysis.project.verbosity)
 
-    _check_seq_preconditions(project)
+    _check_seq_preconditions(analysis.project)
 
     data_paths = extract_data_paths_from_dir(data_dir, file_pattern=file_pattern)
-    template = _build_template(project)
+    template = _build_template(analysis.project)
 
     csv_path, header, already_fitted, template = _setup_csv_and_recovery(
-        project,
+        analysis.project,
         template,
         verb,
     )

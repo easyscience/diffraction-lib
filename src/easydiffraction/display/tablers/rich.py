@@ -76,10 +76,10 @@ class RichTableBackend(TableBackendBase):
 
         Parameters
         ----------
-        df : object
-            DataFrame-like object providing rows to render.
         alignments : object
             Iterable of text alignment values for columns.
+        df : object
+            DataFrame-like object providing rows to render.
 
         Returns
         -------
