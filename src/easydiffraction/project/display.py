@@ -13,6 +13,7 @@ from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.display.plotting import PlotterEngineEnum
 from easydiffraction.display.plotting import PosteriorPairPlotStyleEnum
 from easydiffraction.display.plotting import _MeasVsCalcPlotOptions
+from easydiffraction.utils.utils import render_object_help
 from easydiffraction.utils.utils import render_table
 
 if TYPE_CHECKING:
@@ -68,6 +69,10 @@ class ParameterDisplay:
         """Show CIF unique identifiers for all parameters."""
         self._project.analysis.display.parameter_cif_uids()
 
+    def help(self) -> None:
+        """Print available parameter-display methods."""
+        render_object_help(self)
+
 
 class FitDisplay:
     """Fit-report namespace under ``project.display``."""
@@ -102,6 +107,10 @@ class FitDisplay:
     ) -> None:
         """Plot one fitted parameter across sequential results."""
         self._project.rendering.plotter.plot_param_series(param=param, versus=versus)
+
+    def help(self) -> None:
+        """Print available fit-display methods."""
+        render_object_help(self)
 
 
 class PosteriorDisplay:
@@ -150,6 +159,10 @@ class PosteriorDisplay:
             x=x,
         )
 
+    def help(self) -> None:
+        """Print available posterior-display methods."""
+        render_object_help(self)
+
 
 class ProjectDisplay:
     """Grouped display facade exposed as ``project.display``."""
@@ -174,6 +187,10 @@ class ProjectDisplay:
     def posterior(self) -> PosteriorDisplay:
         """Posterior-plot namespace."""
         return self._posterior
+
+    def help(self) -> None:
+        """Print display namespaces and methods."""
+        render_object_help(self)
 
     def pattern(
         self,

@@ -16,7 +16,6 @@ from easydiffraction.analysis.categories.fit import FitModeEnum
 from easydiffraction.analysis.categories.joint_fit_experiments import JointFitExperiments
 from easydiffraction.analysis.fit_helpers.tracking import _make_display_handle
 from easydiffraction.analysis.fitting import Fitter
-from easydiffraction.core.guard import GuardedBase
 from easydiffraction.core.singleton import ConstraintsHandler
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import Parameter
@@ -27,76 +26,10 @@ from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_cif
+from easydiffraction.utils.utils import render_object_help
 from easydiffraction.utils.utils import render_table
 
 _SUMMARY_HIDDEN_PARAMETER_CATEGORIES = frozenset({'pd_data', 'total_data', 'refln'})
-
-
-def _discover_property_rows(cls: type) -> list[list[str]]:
-    """
-    Discover public properties from the class MRO.
-
-    Parameters
-    ----------
-    cls : type
-        The class to inspect.
-
-    Returns
-    -------
-    list[list[str]]
-        Table rows with ``[index, name, writable, description]``.
-    """
-    seen: dict = {}
-    for base in cls.mro():
-        for key, attr in base.__dict__.items():
-            if key.startswith('_') or not isinstance(attr, property):
-                continue
-            if key not in seen:
-                seen[key] = attr
-
-    rows = []
-    for i, key in enumerate(sorted(seen), 1):
-        prop = seen[key]
-        writable = '✓' if prop.fset else '✗'
-        doc = GuardedBase._first_sentence(prop.fget.__doc__ if prop.fget else None)
-        rows.append([str(i), key, writable, doc])
-    return rows
-
-
-def _discover_method_rows(cls: type) -> list[list[str]]:
-    """
-    Discover public methods from the class MRO.
-
-    Parameters
-    ----------
-    cls : type
-        The class to inspect.
-
-    Returns
-    -------
-    list[list[str]]
-        Table rows with ``[index, name(), description]``.
-    """
-    seen_methods: set = set()
-    methods_list: list = []
-    for base in cls.mro():
-        for key, attr in base.__dict__.items():
-            if key.startswith('_') or key in seen_methods:
-                continue
-            if isinstance(attr, property):
-                continue
-            raw = attr
-            if isinstance(raw, (staticmethod, classmethod)):
-                raw = raw.__func__
-            if callable(raw):
-                seen_methods.add(key)
-                methods_list.append((key, raw))
-
-    rows = []
-    for i, (key, method) in enumerate(sorted(methods_list), 1):
-        doc = GuardedBase._first_sentence(getattr(method, '__doc__', None))
-        rows.append([str(i), f'{key}()', doc])
-    return rows
 
 
 class AnalysisDisplay:
@@ -108,6 +41,10 @@ class AnalysisDisplay:
 
     def __init__(self, analysis: Analysis) -> None:
         self._analysis = analysis
+
+    def help(self) -> None:
+        """Print available analysis-display methods."""
+        render_object_help(self)
 
     def _flush_structure_categories(self) -> None:
         """
@@ -429,27 +366,7 @@ class Analysis:
 
     def help(self) -> None:
         """Print a summary of analysis properties and methods."""
-        console.paragraph("Help for 'Analysis'")
-
-        cls = type(self)
-
-        prop_rows = _discover_property_rows(cls)
-        if prop_rows:
-            console.paragraph('Properties')
-            render_table(
-                columns_headers=['#', 'Name', 'Writable', 'Description'],
-                columns_alignment=['right', 'left', 'center', 'left'],
-                columns_data=prop_rows,
-            )
-
-        method_rows = _discover_method_rows(cls)
-        if method_rows:
-            console.paragraph('Methods')
-            render_table(
-                columns_headers=['#', 'Name', 'Description'],
-                columns_alignment=['right', 'left', 'left'],
-                columns_data=method_rows,
-            )
+        render_object_help(self)
 
     # ------------------------------------------------------------------
     #  Parameter helpers

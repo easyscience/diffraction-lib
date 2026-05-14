@@ -563,6 +563,91 @@ def render_table(
     tabler.render(df, display_handle=display_handle)
 
 
+def _help_first_sentence(docstring: str | None) -> str:
+    """Return the first paragraph of a docstring on one line."""
+    if not docstring:
+        return ''
+    first_para = docstring.strip().split('\n\n')[0]
+    return ' '.join(line.strip() for line in first_para.splitlines())
+
+
+def _help_property_rows(cls: type) -> list[list[str]]:
+    """Return public property rows for object help tables."""
+    seen: dict[str, property] = {}
+    for base in cls.mro():
+        for key, attr in base.__dict__.items():
+            if key.startswith('_') or not isinstance(attr, property):
+                continue
+            if key not in seen:
+                seen[key] = attr
+
+    rows = []
+    for i, key in enumerate(sorted(seen), 1):
+        prop = seen[key]
+        writable = '✓' if prop.fset else '✗'
+        doc = _help_first_sentence(prop.fget.__doc__ if prop.fget else None)
+        rows.append([str(i), key, writable, doc])
+    return rows
+
+
+def _help_method_rows(cls: type) -> list[list[str]]:
+    """Return public method rows for object help tables."""
+    seen: set[str] = set()
+    methods = []
+    for base in cls.mro():
+        for key, attr in base.__dict__.items():
+            if key.startswith('_') or key in seen:
+                continue
+            if isinstance(attr, property):
+                continue
+            raw = attr
+            if isinstance(raw, (staticmethod, classmethod)):
+                raw = raw.__func__
+            if callable(raw):
+                seen.add(key)
+                methods.append((key, raw))
+
+    rows = []
+    for i, (key, method) in enumerate(sorted(methods), 1):
+        doc = _help_first_sentence(getattr(method, '__doc__', None))
+        rows.append([str(i), f'{key}()', doc])
+    return rows
+
+
+def render_object_help(obj: object, title: str | None = None) -> None:
+    """
+    Print public properties and methods for a plain helper object.
+
+    Parameters
+    ----------
+    obj : object
+        Object whose public API should be summarized.
+    title : str | None, default=None
+        Optional display name. Uses the class name when omitted.
+    """
+    cls = type(obj)
+    display_title = title or cls.__name__
+    console.paragraph(f"Help for '{display_title}'")
+
+    prop_rows = _help_property_rows(cls)
+    if prop_rows:
+        console.paragraph('Properties')
+        render_table(
+            columns_headers=['#', 'Name', 'Writable', 'Description'],
+            columns_alignment=['right', 'left', 'center', 'left'],
+            columns_data=prop_rows,
+        )
+
+    method_rows = _help_method_rows(cls)
+    if method_rows:
+        console.paragraph('Methods')
+        render_table(
+            columns_headers=['#', 'Name', 'Description'],
+            columns_alignment=['right', 'left', 'left'],
+            columns_data=method_rows,
+        )
+
+
 def render_cif(cif_text: str) -> None:
     """
     Display CIF text as a formatted table in Jupyter or terminal.

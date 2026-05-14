@@ -1263,27 +1263,6 @@ deviate: e.g. `show_minimizer_types()` instead of
 
 ---
 
-## 77. 🟡 Add `help()` to `Project` and Enrich Existing `help()` Methods
-
-**Type:** API discoverability
-
-`help()` exists on `CategoryItem`, `CollectionBase`, `DatablockItem`,
-and `Analysis`, but **not on `Project`**. The user's primary entry point
-lacks discoverability. Additionally, each `help()` level should guide
-the user to the next level:
-
-1. `project.help()` → attributes: info, experiments, structures,
-   analysis, summary.
-2. `project.experiments.help()` → list experiments and how to select.
-3. `project.experiments['name'].help()` → list categories.
-4. `experiment.peak.help()` → list public attributes.
-5. `experiment.background.help()` → list items + array accessors.
-6. `experiment.background['id'].help()` → list attributes.
-
-**Depends on:** nothing.
-
----
-
 ## 79. 🟢 Verify Completeness of Analysis CIF Serialisation
 
 **Type:** Correctness
@@ -1518,7 +1497,7 @@ operation is possible (e.g. in automated pipelines or tests).
 | 37  | Rename experiment `.type` property               | 🟢 Low   | Naming           |
 | 38  | Fix `@typechecked`/gemmi in factories            | 🟡 Med   | Bug              |
 | 39  | Improve `_update_priority` handling              | 🟢 Low   | Design           |
-| 40  | Implement resetting `.user_constrained` to `False`    | 🟢 Low   | Feature          |
+| 40  | Reset `.user_constrained` to `False`             | 🟢 Low   | Feature          |
 | 41  | Check `_mark_dirty` in `_set_value`              | 🟢 Low   | Cleanup          |
 | 42  | MkDocs type unpacking in validation              | 🟢 Low   | Docs             |
 | 43  | Fix summary display inconsistencies              | 🟢 Low   | UX               |
@@ -1555,7 +1534,6 @@ operation is possible (e.g. in automated pipelines or tests).
 | 74  | Sync property type hints + custom lint rules     | 🟡 Med   | Tooling          |
 | 75  | `show_supported_calculators()` on Analysis       | 🟢 Low   | API completeness |
 | 76  | Consistent `_type` suffix in switchable APIs     | 🟡 Med   | Naming           |
-| 77  | Add `help()` to Project + enrich existing        | 🟡 Med   | Discoverability  |
 | 79  | Verify analysis CIF serialisation completeness   | 🟢 Low   | Correctness      |
 | 80  | Resolve `Any` vs `object` annotation policy      | 🟢 Low   | Code style       |
 | 81  | Enforce docstrings on all public methods         | 🟡 Med   | Code quality     |
