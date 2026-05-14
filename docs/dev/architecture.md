@@ -884,7 +884,8 @@ It owns and coordinates all components:
 | `project.info`        | `ProjectInfo` | Metadata: name, title, description, path |
 | `project.structures`  | `Structures`  | Collection of structure datablocks       |
 | `project.experiments` | `Experiments` | Collection of experiment datablocks      |
-| `project.display`     | `Display`     | Plot/table engine selection and facades  |
+| `project.rendering`   | `Rendering`   | Plot/table engine selection              |
+| `project.display`     | `ProjectDisplay` | Pattern/report facade                 |
 | `project.analysis`    | `Analysis`    | Minimiser, fitting, aliases, constraints |
 | `project.summary`     | `Summary`     | Report generation                        |
 | `project.verbosity`   | `str`         | Console output level (full/short/silent) |
@@ -1250,12 +1251,12 @@ their intent and ownership differ:
 
 | Family                             | User intent                     | Examples                                                                    | CIF                                                                              |
 | ---------------------------------- | ------------------------------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| Backend selector                   | Pick an execution backend       | `fit.minimizer_type`, `calculation.calculator_type`, `display.chart_engine` | `_fit.minimizer_type`, `_calculation.calculator_type`, `_rendering.chart_engine` |
+| Backend selector                   | Pick an execution backend       | `fit.minimizer_type`, `calculation.calculator_type`, `rendering.chart_engine` | `_fit.minimizer_type`, `_calculation.calculator_type`, `_rendering.chart_engine` |
 | Switchable-category impl. selector | Swap a category implementation  | `experiment.background_type`, `experiment.peak_profile_type`                | category-owned type tag such as `_peak.profile_type`                             |
 | Semantic value selector            | Pick a scientific/analysis mode | `fit.mode`                                                                  | `_fit.mode`                                                                      |
 
 Backend selectors and semantic value selectors live on a dedicated
-configuration category (`fit`, `calculation`, `display`). Switchable-
+configuration category (`fit`, `calculation`, `rendering`). Switchable-
 category implementation selectors are owned by the host (typically the
 experiment) because switching them replaces the category instance, as
 described in §9.3.

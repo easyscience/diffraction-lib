@@ -12,6 +12,7 @@ from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.display.plotting import PlotterEngineEnum
 from easydiffraction.display.plotting import PosteriorPairPlotStyleEnum
+from easydiffraction.display.plotting import _MeasVsCalcPlotOptions
 from easydiffraction.utils.utils import render_table
 
 if TYPE_CHECKING:
@@ -195,14 +196,18 @@ class ProjectDisplay:
                 msg = self._status_by_name(statuses, 'auto').reason
                 raise ValueError(msg)
             if 'uncertainty' in auto_include:
-                self._project.rendering.plotter.plot_posterior_predictive(
+                self._project.rendering.plotter._plot_posterior_predictive_request(
                     expt_name=expt_name,
                     style='band',
-                    x_min=x_min,
-                    x_max=x_max,
-                    show_residual=True if 'residual' in auto_include else None,
-                    show_excluded='excluded' in auto_include,
-                    x=x,
+                    plot_options=_MeasVsCalcPlotOptions(
+                        x_min=x_min,
+                        x_max=x_max,
+                        show_residual=True if 'residual' in auto_include else None,
+                        show_background='background' in auto_include,
+                        show_bragg='bragg' in auto_include,
+                        show_excluded='excluded' in auto_include,
+                        x=x,
+                    ),
                 )
                 return
             self._show_point_estimate_pattern(
@@ -210,6 +215,7 @@ class ProjectDisplay:
                 x_min=x_min,
                 x_max=x_max,
                 include=auto_include,
+                statuses=statuses,
                 x=x,
             )
             return
@@ -220,14 +226,18 @@ class ProjectDisplay:
             raise ValueError(msg)
 
         if 'uncertainty' in normalized_include:
-            self._project.rendering.plotter.plot_posterior_predictive(
+            self._project.rendering.plotter._plot_posterior_predictive_request(
                 expt_name=expt_name,
                 style='band',
-                x_min=x_min,
-                x_max=x_max,
-                show_residual=True if 'residual' in normalized_include else None,
-                show_excluded='excluded' in normalized_include,
-                x=x,
+                plot_options=_MeasVsCalcPlotOptions(
+                    x_min=x_min,
+                    x_max=x_max,
+                    show_residual=True if 'residual' in normalized_include else None,
+                    show_background='background' in normalized_include,
+                    show_bragg='bragg' in normalized_include,
+                    show_excluded='excluded' in normalized_include,
+                    x=x,
+                ),
             )
             return
 
@@ -236,6 +246,7 @@ class ProjectDisplay:
             x_min=x_min,
             x_max=x_max,
             include=normalized_include,
+            statuses=statuses,
             x=x,
         )
 
@@ -380,12 +391,12 @@ class ProjectDisplay:
         x_min: float | None,
         x_max: float | None,
         include: tuple[str, ...],
+        statuses: list[PatternOptionStatus],
         x: object | None,
     ) -> None:
         """
         Dispatch a point-estimate pattern view to the live plotter.
         """
-        statuses = self._pattern_option_statuses(expt_name)
         self._validate_requested_include(statuses, include)
         include_set = set(include)
         if include_set == {'measured'}:
@@ -425,13 +436,17 @@ class ProjectDisplay:
             )
             return
         if {'measured', 'calculated'}.issubset(include_set):
-            self._project.rendering.plotter.plot_meas_vs_calc(
+            self._project.rendering.plotter._plot_meas_vs_calc_request(
                 expt_name=expt_name,
-                x_min=x_min,
-                x_max=x_max,
-                show_residual='residual' in include_set,
-                show_excluded='excluded' in include_set,
-                x=x,
+                plot_options=_MeasVsCalcPlotOptions(
+                    x_min=x_min,
+                    x_max=x_max,
+                    show_residual='residual' in include_set,
+                    show_background='background' in include_set,
+                    show_bragg='bragg' in include_set,
+                    show_excluded='excluded' in include_set,
+                    x=x,
+                ),
             )
             return
 
@@ -443,33 +458,40 @@ class ProjectDisplay:
 
     def _pattern_option_statuses(self, expt_name: str) -> list[PatternOptionStatus]:
         """Return availability details for the requested experiment."""
+        self._project.rendering.plotter._update_project_categories(expt_name)
         experiment = self._project.experiments[expt_name]
         pattern = intensity_category_for(experiment)
         sample_form = experiment.type.sample_form.value
         scattering_type = experiment.type.scattering_type.value
+        has_valid_linked_phases = self._has_valid_linked_phases(experiment)
 
-        measured_available = getattr(pattern, 'intensity_meas', None) is not None
-        calculated_available = getattr(pattern, 'intensity_calc', None) is not None
+        measured_available = self._has_nonempty_value(getattr(pattern, 'intensity_meas', None))
+        calculated_available = has_valid_linked_phases and self._has_nonempty_value(
+            getattr(pattern, 'intensity_calc', None)
+        )
         background_available = (
-            measured_available
+            sample_form == SampleFormEnum.POWDER.value
+            and scattering_type == ScatteringTypeEnum.BRAGG.value
+            and measured_available
             and calculated_available
-            and getattr(pattern, 'intensity_bkg', None) is not None
+            and self._has_nonempty_value(getattr(experiment, 'background', None))
+            and self._has_nonempty_value(getattr(pattern, 'intensity_bkg', None))
         )
         bragg_available = (
             measured_available
             and calculated_available
             and sample_form == SampleFormEnum.POWDER.value
             and scattering_type == ScatteringTypeEnum.BRAGG.value
-            and getattr(experiment, 'refln', None) is not None
+            and self._has_nonempty_value(getattr(experiment, 'refln', None))
         )
         residual_available = (
             sample_form == SampleFormEnum.POWDER.value
             and measured_available
             and calculated_available
         )
-        excluded_regions = getattr(experiment, 'excluded_regions', None)
-        has_excluded_regions = excluded_regions is not None and len(excluded_regions) > 0
-        excluded_available = has_excluded_regions
+        has_excluded_regions = self._has_nonempty_value(
+            getattr(experiment, 'excluded_regions', None)
+        )
         uncertainty_available, uncertainty_reason = self._uncertainty_status(
             measured_available=measured_available,
             sample_form=sample_form,
@@ -515,7 +537,7 @@ class ProjectDisplay:
             PatternOptionStatus(
                 name='excluded',
                 description=_PATTERN_OPTION_DESCRIPTIONS['excluded'],
-                available=excluded_available,
+                available=has_excluded_regions,
                 auto_included=False,
                 reason='',
             ),
@@ -558,8 +580,9 @@ class ProjectDisplay:
                 reason=''
                 if background_available
                 else (
-                    'Background display requires measured and calculated '
-                    'data plus background intensities.'
+                    'Background display currently requires powder Bragg '
+                    'measured and calculated data plus defined '
+                    'background points.'
                 ),
             ),
             PatternOptionStatus(
@@ -586,10 +609,10 @@ class ProjectDisplay:
             PatternOptionStatus(
                 name='excluded',
                 description=_PATTERN_OPTION_DESCRIPTIONS['excluded'],
-                available=excluded_available,
+                available=has_excluded_regions,
                 auto_included='excluded' in auto_include,
                 reason=''
-                if excluded_available
+                if has_excluded_regions
                 else ('No excluded regions are defined for this experiment.'),
             ),
             PatternOptionStatus(
@@ -600,6 +623,32 @@ class ProjectDisplay:
                 reason=uncertainty_reason,
             ),
         ]
+
+    @staticmethod
+    def _has_nonempty_value(value: object | None) -> bool:
+        """Return whether a plotting input has content."""
+        if value is None:
+            return False
+
+        try:
+            return len(value) > 0
+        except TypeError:
+            return True
+
+    def _has_valid_linked_phases(self, experiment: object) -> bool:
+        """Return whether the experiment links to a known structure."""
+        linked_phases = getattr(experiment, 'linked_phases', None)
+        if not self._has_nonempty_value(linked_phases):
+            return False
+
+        structure_names = set(getattr(self._project.structures, 'names', ()))
+        for linked_phase in linked_phases:
+            identity = getattr(linked_phase, '_identity', None)
+            category_entry_name = getattr(identity, 'category_entry_name', None)
+            if category_entry_name in structure_names:
+                return True
+
+        return False
 
     def _uncertainty_status(
         self,

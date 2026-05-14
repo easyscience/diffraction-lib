@@ -788,6 +788,8 @@ def test_plot_posterior_predictive_data_uses_max_posterior_label_and_dash(monkey
             x_min=None,
             x_max=None,
             show_residual=None,
+            show_background=None,
+            show_bragg=None,
             show_excluded=False,
             x=None,
         ),
@@ -798,6 +800,73 @@ def test_plot_posterior_predictive_data_uses_max_posterior_label_and_dash(monkey
     plot_spec = captured['plot_spec']
     assert plot_spec.y_calc_name == 'Max posterior'
     assert plot_spec.y_calc_line_dash == 'dot'
+
+
+def test_plot_meas_vs_calc_request_respects_background_and_bragg_flags():
+    from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+    from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+    from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
+    from easydiffraction.display.plotting import Plotter
+    from easydiffraction.display.plotting import _MeasVsCalcPlotOptions
+
+    captured: dict[str, object] = {}
+
+    class FakeBackend:
+        def plot_powder_meas_vs_calc(self, *, plot_spec):
+            captured['plot_spec'] = plot_spec
+
+    class Pattern:
+        two_theta = np.array([1.0, 2.0, 3.0])
+        intensity_meas = np.array([10.0, 12.0, 11.0])
+        intensity_calc = np.array([9.0, 11.0, 10.5])
+        intensity_bkg = np.array([1.0, 1.0, 1.0])
+
+    class Refln:
+        phase_id = np.array(['phase-a'])
+        two_theta = np.array([2.0])
+        index_h = np.array([1])
+        index_k = np.array([0])
+        index_l = np.array([1])
+        f_squared_calc = np.array([50.0])
+        f_calc = np.array([7.0])
+
+    class ExptType:
+        sample_form = type('SF', (), {'value': SampleFormEnum.POWDER})()
+        scattering_type = type('S', (), {'value': ScatteringTypeEnum.BRAGG})()
+        beam_mode = type('B', (), {'value': BeamModeEnum.CONSTANT_WAVELENGTH})()
+
+    class Experiment:
+        data = Pattern()
+        type = ExptType()
+        refln = Refln()
+
+    plotter = Plotter()
+    plotter._backend = FakeBackend()
+    plotter._plot_meas_vs_calc_data(
+        experiment=Experiment(),
+        expt_name='E1',
+        plot_options=_MeasVsCalcPlotOptions(
+            show_background=False,
+            show_bragg=False,
+        ),
+    )
+
+    plot_spec = captured['plot_spec']
+    assert plot_spec.y_bkg is None
+    assert plot_spec.bragg_tick_sets == ()
+
+    plotter._plot_meas_vs_calc_data(
+        experiment=Experiment(),
+        expt_name='E1',
+        plot_options=_MeasVsCalcPlotOptions(
+            show_background=True,
+            show_bragg=True,
+        ),
+    )
+
+    plot_spec = captured['plot_spec']
+    assert np.allclose(plot_spec.y_bkg, np.array([1.0, 1.0, 1.0]))
+    assert len(plot_spec.bragg_tick_sets) == 1
 
 
 def test_build_param_distribution_plot_accepts_unique_name_string():

@@ -179,6 +179,8 @@ class _MeasVsCalcPlotOptions:
     x_min: float | None = None
     x_max: float | None = None
     show_residual: bool | None = None
+    show_background: bool | None = None
+    show_bragg: bool | None = None
     show_excluded: bool = False
     x: object | None = None
 
@@ -693,8 +695,6 @@ class Plotter(RendererBase):
         x : object | None, default=None
             Optional explicit x-axis data to override stored values.
         """
-        self._update_project_categories(expt_name)
-        experiment = self._project.experiments[expt_name]
         plot_options = _MeasVsCalcPlotOptions(
             x_min=x_min,
             x_max=x_max,
@@ -702,6 +702,17 @@ class Plotter(RendererBase):
             show_excluded=show_excluded,
             x=x,
         )
+        self._plot_meas_vs_calc_request(expt_name=expt_name, plot_options=plot_options)
+
+    def _plot_meas_vs_calc_request(
+        self,
+        *,
+        expt_name: str,
+        plot_options: _MeasVsCalcPlotOptions,
+    ) -> None:
+        """Render a measured-vs-calculated request from plot options."""
+        self._update_project_categories(expt_name)
+        experiment = self._project.experiments[expt_name]
         self._plot_meas_vs_calc_data(
             experiment=experiment,
             expt_name=expt_name,
@@ -1062,6 +1073,28 @@ class Plotter(RendererBase):
             msg = "style must be 'band', 'draws', or 'band+draws'."
             raise ValueError(msg)
 
+        plot_options = _MeasVsCalcPlotOptions(
+            x_min=x_min,
+            x_max=x_max,
+            show_residual=show_residual,
+            show_excluded=show_excluded,
+            x=x,
+        )
+
+        self._plot_posterior_predictive_request(
+            expt_name=expt_name,
+            style=style,
+            plot_options=plot_options,
+        )
+
+    def _plot_posterior_predictive_request(
+        self,
+        *,
+        expt_name: str,
+        style: str,
+        plot_options: _MeasVsCalcPlotOptions,
+    ) -> None:
+        """Render a posterior predictive request from plot options."""
         if self._project is None:
             log.warning('Plotter is not attached to a project.')
             return
@@ -1072,14 +1105,9 @@ class Plotter(RendererBase):
 
         self._update_project_categories(expt_name)
         experiment = self._project.experiments[expt_name]
-        x_axis, _, sample_form, scattering_type, _ = self._resolve_x_axis(experiment.type, x)
-
-        plot_options = _MeasVsCalcPlotOptions(
-            x_min=x_min,
-            x_max=x_max,
-            show_residual=show_residual,
-            show_excluded=show_excluded,
-            x=x,
+        x_axis, _, sample_form, scattering_type, _ = self._resolve_x_axis(
+            experiment.type,
+            plot_options.x,
         )
 
         if sample_form == SampleFormEnum.SINGLE_CRYSTAL:
@@ -3692,6 +3720,8 @@ class Plotter(RendererBase):
             ctx['x_min'],
             ctx['x_max'],
         )
+        if not self._show_background_enabled(plot_options, background_available=y_bkg is not None):
+            y_bkg = None
         y_calc = self._filtered_y_array(
             summary.map_prediction, summary.x, ctx['x_min'], ctx['x_max']
         )
@@ -3728,7 +3758,10 @@ class Plotter(RendererBase):
                 dtype=float,
             )
 
-        if np.asarray(ctx['x_filtered']).size == 0:
+        if (
+            np.asarray(ctx['x_filtered']).size == 0
+            or not self._show_bragg_enabled(plot_options)
+        ):
             bragg_tick_sets = ()
         else:
             bragg_tick_sets = self._extract_bragg_tick_sets(
@@ -4920,6 +4953,8 @@ class Plotter(RendererBase):
             if y_bkg_raw is not None
             else None
         )
+        if not self._show_background_enabled(plot_options, background_available=y_bkg is not None):
+            y_bkg = None
 
         powder_series = _PowderMeasVsCalcSeries(
             y_meas=y_meas,
@@ -5002,7 +5037,10 @@ class Plotter(RendererBase):
         """
         show_residual = True if plot_options.show_residual is None else plot_options.show_residual
         y_resid = series.y_meas - series.y_calc if show_residual else None
-        if np.asarray(ctx['x_filtered']).size == 0:
+        if (
+            np.asarray(ctx['x_filtered']).size == 0
+            or not self._show_bragg_enabled(plot_options)
+        ):
             bragg_tick_sets = ()
         else:
             bragg_tick_sets = self._extract_bragg_tick_sets(
@@ -5028,6 +5066,26 @@ class Plotter(RendererBase):
             excluded_ranges=excluded_ranges,
         )
         self._backend.plot_powder_meas_vs_calc(plot_spec=plot_spec)
+
+    @staticmethod
+    def _show_background_enabled(
+        plot_options: object,
+        *,
+        background_available: bool,
+    ) -> bool:
+        """Return whether the background curve should be shown."""
+        show_background = getattr(plot_options, 'show_background', None)
+        if show_background is None:
+            return background_available
+        return show_background and background_available
+
+    @staticmethod
+    def _show_bragg_enabled(plot_options: object) -> bool:
+        """Return whether Bragg reflection rows should be shown."""
+        show_bragg = getattr(plot_options, 'show_bragg', None)
+        if show_bragg is None:
+            return True
+        return show_bragg
 
     def _plot_line_meas_vs_calc(
         self,

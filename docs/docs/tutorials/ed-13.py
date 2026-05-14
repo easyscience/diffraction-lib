@@ -583,7 +583,7 @@ project_1.experiments['sim_si'].peak.exp_rise_alpha_1.free = True
 # #### Show Free Parameters
 #
 # We can check which parameters are free to be refined by calling the
-# `free_params` method of the `analysis.display` object of the project.
+# `free` method of the `display.parameters` object of the project.
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
