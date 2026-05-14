@@ -1,0 +1,321 @@
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
+# SPDX-License-Identifier: BSD-3-Clause
+"""Environment-aware activity indicator for long-running tasks."""
+
+from __future__ import annotations
+
+import html
+from contextlib import contextmanager
+from contextlib import suppress
+from time import monotonic
+from typing import Iterator
+
+try:
+    from IPython.display import HTML
+    from IPython.display import DisplayHandle
+except ImportError:  # pragma: no cover - optional dependency
+    HTML = None
+    DisplayHandle = None
+
+from rich.console import Console
+from rich.console import ConsoleOptions
+from rich.console import Group
+from rich.console import RenderResult
+from rich.live import Live
+from rich.protocol import is_renderable
+from rich.text import Text
+
+from easydiffraction.utils.enums import VerbosityEnum
+from easydiffraction.utils.environment import in_jupyter
+from easydiffraction.utils.logging import ConsoleManager
+
+SPINNER_FRAMES: tuple[str, ...] = (
+    '⠋',
+    '⠙',
+    '⠹',
+    '⠸',
+    '⠼',
+    '⠴',
+    '⠦',
+    '⠧',
+    '⠇',
+    '⠏',
+)
+_SPINNER_FRAME_SECONDS = 0.1
+_JUPYTER_SPINNER_SECONDS = 1.0
+
+
+class ActivityIndicator:
+    """
+    Render a live activity indicator for long-running work.
+
+    Parameters
+    ----------
+    label : str, default='processing'
+        User-facing activity label.
+    verbosity : VerbosityEnum
+        Output verbosity controlling whether live display is shown.
+    """
+
+    def __init__(
+        self,
+        label: str = 'processing',
+        *,
+        verbosity: VerbosityEnum,
+    ) -> None:
+        self._label = label
+        self._verbosity = verbosity
+        self._content: object | None = None
+        self._display_handle: object | None = None
+        self._live: object | None = None
+        self._running = False
+        self._keep_stopped_label = False
+        self._started_at = monotonic()
+
+    def start(self) -> None:
+        """
+        Start the live activity indicator.
+
+        Returns
+        -------
+        None
+            Starts live rendering unless verbosity is silent.
+        """
+        if self._verbosity is VerbosityEnum.SILENT or self._running:
+            return
+
+        self._running = True
+        self._keep_stopped_label = False
+        self._started_at = monotonic()
+
+        if in_jupyter() and DisplayHandle is not None and HTML is not None:
+            handle = DisplayHandle()
+            self._display_handle = handle
+            with suppress(Exception):
+                handle.display(HTML(self._render_html()))
+            return
+
+        live = Live(
+            self,
+            console=ConsoleManager.get(),
+            auto_refresh=True,
+            refresh_per_second=1 / _SPINNER_FRAME_SECONDS,
+        )
+        live.start()
+        self._live = live
+
+    def update(
+        self,
+        *,
+        label: str | None = None,
+        content: object | None = None,
+    ) -> None:
+        """
+        Refresh the current label and optional rendered content.
+
+        Parameters
+        ----------
+        label : str | None, default=None
+            Replacement activity label. When ``None``, keep the current
+            label.
+        content : object | None, default=None
+            Optional content rendered above the indicator. When
+            ``None``, keep the current content.
+        """
+        if label is not None:
+            self._label = label
+        if content is not None:
+            self._content = content
+        self._refresh()
+
+    def stop(self, *, final_label: str | None = None) -> None:
+        """
+        Stop live rendering and keep optional final content visible.
+
+        Parameters
+        ----------
+        final_label : str | None, default=None
+            Optional final label to leave in place after stopping.
+            When omitted, only the current content remains visible.
+        """
+        self._running = False
+        self._keep_stopped_label = final_label is not None
+        if final_label is not None:
+            self._label = final_label
+
+        self._refresh()
+
+        if self._live is not None:
+            with suppress(Exception):
+                self._live.stop()
+        self._live = None
+        self._display_handle = None
+
+    def __rich_console__(
+        self,
+        console: Console,
+        options: ConsoleOptions,
+    ) -> RenderResult:
+        """Yield a Rich renderable for the current activity state."""
+        del console
+        del options
+
+        renderables: list[object] = []
+        content = self._terminal_content()
+        if content is not None:
+            renderables.append(content)
+
+        indicator_line = self._terminal_indicator_line()
+        if indicator_line is not None:
+            renderables.append(indicator_line)
+
+        if not renderables:
+            yield Text('')
+            return
+
+        if len(renderables) == 1:
+            yield renderables[0]
+            return
+
+        yield Group(*renderables)
+
+    def _refresh(self) -> None:
+        if self._verbosity is VerbosityEnum.SILENT:
+            return
+
+        if self._display_handle is not None and HTML is not None:
+            with suppress(Exception):
+                self._display_handle.update(HTML(self._render_html()))
+
+        if self._live is not None:
+            with suppress(Exception):
+                self._live.refresh()
+
+    def _terminal_content(self) -> object | None:
+        if self._content is None:
+            return None
+        if is_renderable(self._content):
+            return self._content
+        return Text(str(self._content))
+
+    def _terminal_indicator_line(self) -> Text | None:
+        if self._running:
+            frame = self._current_frame()
+            return Text(f'{frame} {self._label}')
+        if self._keep_stopped_label:
+            return Text(self._label)
+        return None
+
+    def _current_frame(self) -> str:
+        elapsed = monotonic() - self._started_at
+        frame_index = int(elapsed / _SPINNER_FRAME_SECONDS) % len(SPINNER_FRAMES)
+        return SPINNER_FRAMES[frame_index]
+
+    def _render_html(self) -> str:
+        content_html = self._html_content()
+        indicator_html = self._html_indicator()
+
+        sections = [section for section in (content_html, indicator_html) if section]
+        if not sections:
+            return ''
+
+        body = ''.join(sections)
+        return f'{self._html_style()}<div class="ed-activity-stack">{body}</div>'
+
+    def _html_content(self) -> str:
+        if self._content is None:
+            return ''
+        if isinstance(self._content, str):
+            return self._content
+
+        data = getattr(self._content, 'data', None)
+        if isinstance(data, str):
+            return data
+
+        text = html.escape(str(self._content))
+        return f'<pre class="ed-activity-pre">{text}</pre>'
+
+    def _html_indicator(self) -> str:
+        safe_label = html.escape(self._label)
+
+        if self._running:
+            return (
+                '<div class="ed-activity">'
+                '<span class="ed-activity-spinner" aria-hidden="true"></span>'
+                f'<span class="ed-activity-label">{safe_label}</span>'
+                '</div>'
+            )
+
+        if self._keep_stopped_label:
+            return f'<div class="ed-activity"><span class="ed-activity-label">{safe_label}</span></div>'
+
+        return ''
+
+    def _html_style(self) -> str:
+        keyframes = []
+        total_frames = len(SPINNER_FRAMES)
+        for index, frame in enumerate(SPINNER_FRAMES):
+            percent = int(index * 100 / total_frames)
+            keyframes.append(f'{percent}% {{ content: "{frame}"; }}')
+        keyframes.append(f'100% {{ content: "{SPINNER_FRAMES[0]}"; }}')
+        keyframe_css = ' '.join(keyframes)
+
+        return (
+            '<style>'
+            '.ed-activity-stack {'
+            'display: flex;'
+            'flex-direction: column;'
+            'gap: 0.35rem;'
+            'margin-top: 0.5rem;'
+            '}'
+            '.ed-activity {'
+            'display: inline-flex;'
+            'align-items: center;'
+            'gap: 0.45rem;'
+            'font-family: ui-monospace, SFMono-Regular, Menlo, monospace;'
+            'font-size: 0.95rem;'
+            'line-height: 1.1;'
+            '}'
+            '.ed-activity-pre {'
+            'margin: 0;'
+            'font-family: ui-monospace, SFMono-Regular, Menlo, monospace;'
+            'white-space: pre-wrap;'
+            '}'
+            '.ed-activity-spinner::before {'
+            f'animation: ed-activity-frames {_JUPYTER_SPINNER_SECONDS}s steps(1) infinite;'
+            'content: "⠋";'
+            'display: inline-block;'
+            'width: 1ch;'
+            '}'
+            f'@keyframes ed-activity-frames {{ {keyframe_css} }}'
+            '</style>'
+        )
+
+
+@contextmanager
+def activity_indicator(
+    label: str = 'processing',
+    *,
+    verbosity: VerbosityEnum,
+) -> Iterator[ActivityIndicator]:
+    """
+    Manage an activity indicator around a block of work.
+
+    Parameters
+    ----------
+    label : str, default='processing'
+        User-facing activity label.
+    verbosity : VerbosityEnum
+        Output verbosity controlling whether live display is shown.
+
+    Yields
+    ------
+    ActivityIndicator
+        Started indicator that is stopped on block exit.
+    """
+    indicator = ActivityIndicator(label, verbosity=verbosity)
+    indicator.start()
+    try:
+        yield indicator
+    finally:
+        indicator.stop()
