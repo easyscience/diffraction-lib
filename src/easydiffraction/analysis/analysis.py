@@ -14,12 +14,12 @@ from easydiffraction.analysis.categories.fit import Fit
 from easydiffraction.analysis.categories.fit import FitFactory
 from easydiffraction.analysis.categories.fit import FitModeEnum
 from easydiffraction.analysis.categories.joint_fit_experiments import JointFitExperiments
-from easydiffraction.analysis.fit_helpers.tracking import _make_display_handle
 from easydiffraction.analysis.fitting import Fitter
 from easydiffraction.core.singleton import ConstraintsHandler
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import Parameter
 from easydiffraction.core.variable import StringDescriptor
+from easydiffraction.display.progress import make_display_handle
 from easydiffraction.display.tables import TableRenderer
 from easydiffraction.io.cif.serialize import analysis_to_cif
 from easydiffraction.utils.enums import VerbosityEnum
@@ -680,7 +680,7 @@ class Analysis:
         )
         console.print("🚀 Starting fit process with 'lmfit'...")
         console.print('📈 Goodness-of-fit (reduced χ²) per experiment:')
-        return _make_display_handle()
+        return make_display_handle()
 
     def _snapshot_params(self, expt_name: str, results: object) -> None:
         """

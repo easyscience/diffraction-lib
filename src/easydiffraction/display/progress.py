@@ -45,6 +45,55 @@ _SPINNER_FRAME_SECONDS = 0.1
 _JUPYTER_SPINNER_SECONDS = 1.0
 
 
+class _TerminalLiveHandle:
+    """
+    Adapter exposing update()/close() for terminal live updates.
+
+    Wraps a ``rich.live.Live`` instance so callers can treat terminal
+    and notebook handles through a single update-oriented interface.
+    """
+
+    def __init__(self, live: object) -> None:
+        self._live = live
+
+    def update(self, renderable: object) -> None:
+        """
+        Refresh the live display with a new renderable.
+
+        Parameters
+        ----------
+        renderable : object
+            A Rich-compatible renderable to display.
+        """
+        self._live.update(renderable, refresh=True)
+
+    def close(self) -> None:
+        """Stop the live display, suppressing any errors."""
+        with suppress(Exception):
+            self._live.stop()
+
+
+def make_display_handle() -> object | None:
+    """
+    Create a generic in-place display handle for the active environment.
+
+    Returns
+    -------
+    object | None
+        An IPython ``DisplayHandle`` in notebooks, a terminal live
+        handle in the console, or ``None`` if neither is available.
+    """
+    if in_jupyter() and DisplayHandle is not None and HTML is not None:
+        handle = DisplayHandle()
+        with suppress(Exception):
+            handle.display(HTML(''))
+        return handle
+
+    live = Live(console=ConsoleManager.get(), auto_refresh=True)
+    live.start()
+    return _TerminalLiveHandle(live)
+
+
 class ActivityIndicator:
     """
     Render a live activity indicator for long-running work.

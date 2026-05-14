@@ -10,6 +10,8 @@ import numpy as np
 
 from easydiffraction.analysis.fit_helpers.metrics import calculate_reduced_chi_square
 from easydiffraction.display.progress import ActivityIndicator
+from easydiffraction.display.progress import _TerminalLiveHandle as _SharedTerminalLiveHandle
+from easydiffraction.display.progress import make_display_handle
 from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.utils import build_table_renderable
@@ -26,6 +28,13 @@ ACTIVITY_LABEL_BURN_IN = 'burn-in'
 ACTIVITY_LABEL_FITTING = 'fitting'
 ACTIVITY_LABEL_PROCESSING = 'processing'
 ACTIVITY_LABEL_SAMPLING = 'sampling'
+
+_TerminalLiveHandle = _SharedTerminalLiveHandle
+
+
+def _make_display_handle() -> object | None:
+    """Return a backward-compatible generic live display handle."""
+    return make_display_handle()
 
 
 @dataclass(frozen=True, slots=True)
