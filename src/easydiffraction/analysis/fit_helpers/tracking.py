@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import sys
 import time
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
@@ -328,8 +329,13 @@ class FitProgressTracker:
             return
 
         self._stop_activity_indicator()
-        if self._verbosity is VerbosityEnum.FULL:
+        if self._verbosity is VerbosityEnum.FULL and not self._cleanup_during_exception():
             self._print_completion_summary()
+
+    @staticmethod
+    def _cleanup_during_exception() -> bool:
+        """Return whether tracking cleanup runs while handling an error."""
+        return sys.exc_info()[0] is not None
 
     def _initial_sampler_progress_row(
         self,
@@ -512,6 +518,9 @@ class FitProgressTracker:
     def _print_completion_summary(self) -> None:
         if self._tracking_mode == TRACKING_MODE_SAMPLER:
             console.print('✅ Bayesian sampling complete.')
+            return
+
+        if self._best_chi2 is None or self._best_iteration is None:
             return
 
         console.print(

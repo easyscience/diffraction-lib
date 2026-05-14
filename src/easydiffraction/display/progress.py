@@ -251,7 +251,7 @@ class ActivityIndicator:
         if self._verbosity is VerbosityEnum.SILENT:
             return
 
-        if self._display_handle is not None and HTML is not None:
+        if self._display_handle is not None:
             self._refresh_display_handle()
             return
 
@@ -263,7 +263,11 @@ class ActivityIndicator:
         if self._display_handle is None:
             return
 
-        if DisplayHandle is not None and isinstance(self._display_handle, DisplayHandle):
+        if (
+            HTML is not None
+            and DisplayHandle is not None
+            and isinstance(self._display_handle, DisplayHandle)
+        ):
             with suppress(Exception):
                 self._display_handle.update(HTML(self._render_html()))
             return

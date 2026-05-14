@@ -158,3 +158,46 @@ def test_minimizer_base_fit_stops_tracking_when_solver_prep_fails():
 
     assert minimizer.started is True
     assert minimizer.stopped is True
+
+
+def test_minimizer_base_fit_preserves_solver_prep_error_during_cleanup(monkeypatch):
+    import easydiffraction.analysis.fit_helpers.tracking as tracking_mod
+    from easydiffraction.analysis.minimizers.base import MinimizerBase
+
+    monkeypatch.setattr(
+        tracking_mod.FitProgressTracker,
+        '_start_activity_indicator',
+        lambda self: None,
+    )
+    monkeypatch.setattr(
+        tracking_mod.FitProgressTracker,
+        '_stop_activity_indicator',
+        lambda self: None,
+    )
+    monkeypatch.setattr(tracking_mod.console, 'print', lambda *args, **kwargs: None)
+
+    class M(MinimizerBase):
+        def __init__(self):
+            super().__init__(name='dummy', method='m', max_iterations=5)
+
+        def _prepare_solver_args(self, parameters):
+            del parameters
+            msg = 'prep failed'
+            raise ValueError(msg)
+
+        def _run_solver(self, objective_function, **kwargs):
+            del objective_function, kwargs
+            msg = 'should not run solver'
+            raise AssertionError(msg)
+
+        def _sync_result_to_parameters(self, parameters, raw_result):
+            del parameters, raw_result
+
+        def _check_success(self, raw_result):
+            del raw_result
+            return True
+
+    minimizer = M()
+
+    with pytest.raises(ValueError, match='prep failed'):
+        minimizer.fit(parameters=[_DummyParam(1.0)], objective_function=lambda _: np.array([0.0]))

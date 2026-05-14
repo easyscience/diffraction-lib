@@ -153,3 +153,58 @@ def test_activity_indicator_render_html_uses_current_label():
     html = indicator._render_html()
 
     assert 'Fitting...' in html
+
+
+def test_activity_indicator_updates_shared_terminal_handle_without_ipython(monkeypatch):
+    import easydiffraction.display.progress as progress_mod
+
+    class FakeLive:
+        def __init__(
+            self,
+            renderable=None,
+            *,
+            console,
+            auto_refresh,
+            refresh_per_second,
+            get_renderable=None,
+        ):
+            self.renderable = renderable
+            self.console = console
+            self.auto_refresh = auto_refresh
+            self.refresh_per_second = refresh_per_second
+            self.get_renderable = get_renderable
+            self.refresh_calls = 0
+            self.started = False
+
+        def start(self):
+            self.started = True
+
+        def stop(self):
+            self.started = False
+
+        def refresh(self):
+            self.refresh_calls += 1
+
+    monkeypatch.setattr(progress_mod, 'in_jupyter', lambda: False)
+    monkeypatch.setattr(progress_mod, 'HTML', None)
+    monkeypatch.setattr(progress_mod, 'DisplayHandle', None)
+    monkeypatch.setattr(progress_mod, 'Live', FakeLive)
+    monkeypatch.setattr(progress_mod.ConsoleManager, 'get', lambda: 'console')
+
+    handle = progress_mod.make_display_handle()
+    indicator = progress_mod.ActivityIndicator(
+        label='Fitting...',
+        verbosity=VerbosityEnum.FULL,
+        display_handle=handle,
+    )
+    indicator._current_frame = lambda: 'X'
+
+    indicator.start()
+
+    assert handle._live.refresh_calls == 1
+    assert handle._live.get_renderable().plain == 'X Fitting...'
+
+    indicator.update(label='Sampling...')
+
+    assert handle._live.refresh_calls == 2
+    assert handle._live.get_renderable().plain == 'X Sampling...'
