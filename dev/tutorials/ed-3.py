@@ -345,7 +345,7 @@ project.display.pattern(expt_name='hrpt', x_min=38, x_max=41)
 # Show all parameters of the project.
 
 # %%
-# project.display.parameters.all()
+project.display.parameters.all()
 
 # %% [markdown]
 # Show all fittable parameters.
@@ -363,7 +363,7 @@ project.display.parameters.free()
 # Show how to access parameters in the code.
 
 # %%
-# project.display.parameters.access()
+project.display.parameters.access()
 
 # %% [markdown]
 # #### Set Fit Mode
@@ -436,12 +436,6 @@ project.display.pattern(expt_name='hrpt')
 project.display.pattern(expt_name='hrpt', x_min=38, x_max=41)
 
 # %% [markdown]
-# #### Save Project State
-
-# %%
-project.save_as(dir_path='lbco_hrpt', temporary=True)
-
-# %% [markdown]
 # ### Perform Fit 2/5
 #
 # Set more parameters to be refined.
@@ -478,7 +472,7 @@ project.display.pattern(expt_name='hrpt', x_min=38, x_max=41)
 # #### Save Project State
 
 # %%
-project.save_as(dir_path='lbco_hrpt', temporary=True)
+project.save()
 
 # %% [markdown]
 # ### Perform Fit 3/5
@@ -512,12 +506,6 @@ project.display.pattern(expt_name='hrpt')
 
 # %%
 project.display.pattern(expt_name='hrpt', x_min=38, x_max=41)
-
-# %% [markdown]
-# #### Save Project State
-
-# %%
-project.save_as(dir_path='lbco_hrpt', temporary=True)
 
 # %% [markdown]
 # ### Perform Fit 4/5
@@ -569,12 +557,6 @@ project.display.pattern(expt_name='hrpt')
 
 # %%
 project.display.pattern(expt_name='hrpt', x_min=38, x_max=41)
-
-# %% [markdown]
-# #### Save Project State
-
-# %%
-project.save_as(dir_path='lbco_hrpt', temporary=True)
 
 # %% [markdown]
 # ### Perform Fit 5/5
@@ -641,7 +623,7 @@ project.display.pattern(expt_name='hrpt', x_min=38, x_max=41)
 # #### Save Project State
 
 # %%
-project.save_as(dir_path='lbco_hrpt', temporary=True)
+project.save()
 
 # %% [markdown]
 # ## Step 5: Summary
