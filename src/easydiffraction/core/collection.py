@@ -81,14 +81,13 @@ class CollectionBase(GuardedBase):
 
     def _adopt_items(self, items: list[GuardedBase]) -> None:
         """
-        Replace collection items and link each child back to this
-        collection.
+        Replace items and link each child to this collection.
         """
         for item in self._items:
-            object.__setattr__(item, '_parent', None)
+            item._parent = None
 
         for item in items:
-            object.__setattr__(item, '_parent', self)
+            item._parent = self
 
         self._items = items
         self._rebuild_index()

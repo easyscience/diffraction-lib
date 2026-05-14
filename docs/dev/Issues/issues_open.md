@@ -693,8 +693,9 @@ the archived planning notes left two follow-up questions open:
 
 **Type:** Feature
 
-`ConstraintsHandler` has a TODO to implement changing the `.user_constrained`
-attribute back to `False` when constraints are removed.
+`ConstraintsHandler` has a TODO to implement changing the
+`.user_constrained` attribute back to `False` when constraints are
+removed.
 
 **TODOs:**
 

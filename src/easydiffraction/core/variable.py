@@ -367,8 +367,7 @@ class GenericParameter(GenericNumericDescriptor):
     @property
     def symmetry_constrained(self) -> bool:
         """
-        Whether this parameter is constrained by crystallographic
-        symmetry.
+        Return whether symmetry constrains this parameter.
         """
         return self._symmetry_constrained
 

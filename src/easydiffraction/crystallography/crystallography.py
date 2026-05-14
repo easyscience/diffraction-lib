@@ -152,8 +152,7 @@ def _cell_constrained_axes(crystal_system: str) -> set[str]:
 
 def cell_symmetry_constrained_flags(name_hm: str) -> dict[str, bool]:
     """
-    Return per-key flags indicating which cell parameters are
-    constrained.
+    Return cell-parameter symmetry-constraint flags.
 
     Parameters
     ----------
@@ -221,8 +220,7 @@ def _get_wyckoff_exprs(
 
 def _fract_constrained_flags(parsed_exprs: list[Expr]) -> dict[str, bool]:
     """
-    Return per-axis flags marking coordinates constrained by site
-    symmetry.
+    Return fractional-coordinate symmetry-constraint flags.
 
     For each axis (x, y, z), the coordinate is considered constrained
     when the corresponding symbol does not appear as a free symbol in
@@ -320,8 +318,7 @@ def atom_site_symmetry_constrained_flags(
     wyckoff_letter: str,
 ) -> dict[str, bool]:
     """
-    Return per-axis flags marking coordinates constrained by site
-    symmetry.
+    Return atom-site symmetry-constraint flags.
 
     Parameters
     ----------

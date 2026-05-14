@@ -25,11 +25,23 @@ from easydiffraction.io.cif.serialize import analysis_to_cif
 from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
+from easydiffraction.utils.utils import _help_method_rows
+from easydiffraction.utils.utils import _help_property_rows
 from easydiffraction.utils.utils import render_cif
 from easydiffraction.utils.utils import render_object_help
 from easydiffraction.utils.utils import render_table
 
 _SUMMARY_HIDDEN_PARAMETER_CATEGORIES = frozenset({'pd_data', 'total_data', 'refln'})
+
+
+def _discover_property_rows(cls: type) -> list[list[str]]:
+    """Return public property rows for analysis help tables."""
+    return _help_property_rows(cls)
+
+
+def _discover_method_rows(cls: type) -> list[list[str]]:
+    """Return public method rows for analysis help tables."""
+    return _help_method_rows(cls)
 
 
 class AnalysisDisplay:

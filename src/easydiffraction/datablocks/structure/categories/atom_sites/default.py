@@ -596,8 +596,7 @@ class AtomSites(CategoryCollection):
     @staticmethod
     def _clear_fract_symmetry_constrained(atom: AtomSite) -> None:
         """
-        Reset the ``symmetry_constrained`` flag on all fract
-        coordinates.
+        Clear fractional-coordinate symmetry constraints.
         """
         for axis_param in (atom._fract_x, atom._fract_y, atom._fract_z):
             axis_param._set_symmetry_constrained(value=False)
