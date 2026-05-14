@@ -831,6 +831,10 @@ workflow:
   `BayesianFitResults` for Bayesian DREAM runs.
 - Parameter tables: `show_all_params()`, `show_fittable_params()`,
   `show_free_params()`, `how_to_access_parameters()`
+  Compact summary-style parameter displays intentionally hide the
+  large loop-backed experiment categories `pd_data`, `total_data`, and
+  `refln` in `all()`, `access()`, and `cif_uids()` so the output stays
+  readable.
 - Fitting: `fit()` dispatches single/joint through the callable `fit`
   category; `fit_sequential()` handles sequential mode (sets `fit.mode`
   to `'sequential'` internally). `fit()` accepts optional `random_seed`

@@ -30,6 +30,9 @@ from easydiffraction.utils.utils import render_cif
 from easydiffraction.utils.utils import render_table
 
 
+_SUMMARY_HIDDEN_PARAMETER_CATEGORIES = frozenset({'pd_data', 'total_data', 'refln'})
+
+
 def _discover_property_rows(cls: type) -> list[list[str]]:
     """
     Discover public properties from the class MRO.
@@ -116,12 +119,23 @@ class AnalysisDisplay:
             structure._need_categories_update = True
             structure._update_categories()
 
+    @staticmethod
+    def _summary_parameters(
+        params: list[StringDescriptor | NumericDescriptor | Parameter],
+    ) -> list[StringDescriptor | NumericDescriptor | Parameter]:
+        """Return parameters suitable for compact summary displays."""
+        return [
+            param
+            for param in params
+            if param._identity.category_code not in _SUMMARY_HIDDEN_PARAMETER_CATEGORIES
+        ]
+
     def all_params(self) -> None:
         """Print all parameters for structures and experiments."""
         project = self._analysis.project
         self._flush_structure_categories()
-        structures_params = project.structures.parameters
-        experiments_params = project.experiments.parameters
+        structures_params = self._summary_parameters(project.structures.parameters)
+        experiments_params = self._summary_parameters(project.experiments.parameters)
 
         if not structures_params and not experiments_params:
             log.warning('No parameters found.')
@@ -138,15 +152,17 @@ class AnalysisDisplay:
             'fittable',
         ]
 
-        console.paragraph('All parameters for all structures (🧩 data blocks)')
-        df = Analysis._get_params_as_dataframe(structures_params)
-        filtered_df = df[filtered_headers]
-        tabler.render(filtered_df)
+        if structures_params:
+            console.paragraph('All parameters for all structures (🧩 data blocks)')
+            df = Analysis._get_params_as_dataframe(structures_params)
+            filtered_df = df[filtered_headers]
+            tabler.render(filtered_df)
 
-        console.paragraph('All parameters for all experiments (🔬 data blocks)')
-        df = Analysis._get_params_as_dataframe(experiments_params)
-        filtered_df = df[filtered_headers]
-        tabler.render(filtered_df)
+        if experiments_params:
+            console.paragraph('All parameters for all experiments (🔬 data blocks)')
+            df = Analysis._get_params_as_dataframe(experiments_params)
+            filtered_df = df[filtered_headers]
+            tabler.render(filtered_df)
 
     def fittable_params(self) -> None:
         """Print all fittable parameters."""
@@ -225,14 +241,14 @@ class AnalysisDisplay:
         code.
         """
         project = self._analysis.project
-        structures_params = project.structures.parameters
-        experiments_params = project.experiments.parameters
+        structures_params = self._summary_parameters(project.structures.parameters)
+        experiments_params = self._summary_parameters(project.experiments.parameters)
         all_params = {
             'structures': structures_params,
             'experiments': experiments_params,
         }
 
-        if not all_params:
+        if not structures_params and not experiments_params:
             log.warning('No parameters found.')
             return
 
@@ -291,14 +307,14 @@ class AnalysisDisplay:
         creating CIF-based constraints.
         """
         project = self._analysis.project
-        structures_params = project.structures.parameters
-        experiments_params = project.experiments.parameters
+        structures_params = self._summary_parameters(project.structures.parameters)
+        experiments_params = self._summary_parameters(project.experiments.parameters)
         all_params = {
             'structures': structures_params,
             'experiments': experiments_params,
         }
 
-        if not all_params:
+        if not structures_params and not experiments_params:
             log.warning('No parameters found.')
             return
 
