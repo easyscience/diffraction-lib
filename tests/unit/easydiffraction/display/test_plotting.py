@@ -585,6 +585,7 @@ def test_posterior_pairs_context_thins_kde_samples_and_preserves_axis_ranges():
     context = plotter._posterior_pairs_context(parameters=None)
 
     assert context is not None
+    assert context.marginal_density_samples.shape == (sample_count, parameter_count)
     assert context.density_samples.shape == (
         Plotter._posterior_pair_density_max_points(parameter_count),
         parameter_count,
@@ -594,6 +595,74 @@ def test_posterior_pairs_context_thins_kde_samples_and_preserves_axis_ranges():
     assert context.contour_grid_size == Plotter._posterior_pair_contour_grid_size(parameter_count)
     assert context.axis_ranges[0][1] > 100.0
     assert context.axis_ranges[1][0] < -50.0
+
+
+def test_posterior_pair_diagonal_matches_standalone_distribution_when_thinned():
+    from easydiffraction.analysis.fit_helpers.bayesian import PosteriorParameterSummary
+    from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
+    from easydiffraction.display.plotting import Plotter
+
+    sample_count = 5001
+    angle = np.linspace(0.0, 12.0 * np.pi, sample_count, dtype=float)
+    sample_axis = np.linspace(-1.0, 1.0, sample_count, dtype=float)
+    samples = np.empty((1, sample_count, 2), dtype=float)
+    samples[0, :, 0] = 3.8913 + 0.00016 * np.sin(angle) + 0.00003 * np.cos(2.0 * angle)
+    samples[0, :, 1] = 0.0780 + 0.0024 * np.cos(0.5 * angle) + 0.0005 * sample_axis**2
+    parameter_names = ['length_a', 'broad_gauss_u']
+    posterior_samples = PosteriorSamples(
+        parameter_names=parameter_names,
+        parameter_samples=samples,
+        log_posterior=np.zeros((1, sample_count), dtype=float),
+    )
+    parameters = [
+        SimpleNamespace(unique_name='length_a', name='length_a', fit_min=3.8909, fit_max=3.8917),
+        SimpleNamespace(
+            unique_name='broad_gauss_u',
+            name='broad_gauss_u',
+            fit_min=0.074,
+            fit_max=0.082,
+        ),
+    ]
+    summaries = [
+        PosteriorParameterSummary(
+            unique_name=name,
+            display_name=name,
+            map_value=float(samples[0, -1, index]),
+            median=float(np.median(samples[:, :, index])),
+            standard_deviation=float(np.std(samples[:, :, index], ddof=1)),
+            interval_68=tuple(np.quantile(samples[:, :, index], [0.16, 0.84]).tolist()),
+            interval_95=tuple(np.quantile(samples[:, :, index], [0.025, 0.975]).tolist()),
+        )
+        for index, name in enumerate(parameter_names)
+    ]
+    fit_results = SimpleNamespace(
+        posterior_samples=posterior_samples,
+        posterior_parameter_summaries=summaries,
+        posterior_predictive={},
+        parameters=parameters,
+    )
+    plotter = Plotter()
+    plotter._get_posterior_samples_and_fit_results = MethodType(
+        lambda self: (posterior_samples, fit_results),
+        plotter,
+    )
+    plotter._get_fit_result_for_correlation = MethodType(lambda self: fit_results, plotter)
+
+    pair_figure = plotter._build_posterior_pairs_plot(parameters=parameters)
+    distribution_figure = plotter._build_param_distribution_plot(parameters[0])
+
+    pair_trace = next(
+        trace
+        for trace in pair_figure.data
+        if trace.name == 'Marginal density'
+        and trace.hovertemplate == 'length_a: %{x:.4f}<br>density: %{y:.4f}<extra></extra>'
+    )
+    distribution_trace = next(
+        trace for trace in distribution_figure.data if trace.name == 'Marginal density'
+    )
+
+    np.testing.assert_allclose(pair_trace.x, distribution_trace.x)
+    np.testing.assert_allclose(pair_trace.y, distribution_trace.y)
 
 
 def test_build_posterior_pairs_plot_rejects_unknown_style():
@@ -646,6 +715,34 @@ def test_build_param_distribution_plot_returns_plotly_figure():
     assert figure.layout.yaxis.range is not None
 
 
+def test_plot_param_distribution_routes_ascii_to_marginal_density(monkeypatch):
+    from types import SimpleNamespace
+
+    plotter, fit_results, posterior_samples = _make_bayesian_plotter_fixture()
+    captured: dict[str, object] = {}
+    plotter.engine = 'asciichartpy'
+    plotter._backend = SimpleNamespace(
+        plot_powder=lambda **kwargs: captured.setdefault('powder', kwargs)
+    )
+
+    plotter.plot_param_distribution(fit_results.parameters[0])
+
+    values = posterior_samples.flattened()[:, 0]
+    density_curve = plotter._posterior_density_curve(
+        values,
+        lower_bound=fit_results.parameters[0].fit_min,
+        upper_bound=fit_results.parameters[0].fit_max,
+    )
+
+    assert density_curve is not None
+    assert captured['powder']['labels'] == ['density']
+    assert captured['powder']['axes_labels'] == ['length_a', 'Probability density']
+    assert captured['powder']['title'] == 'Posterior distribution: length_a'
+    assert captured['powder']['height'] == plotter.height
+    np.testing.assert_allclose(captured['powder']['x'], density_curve[0])
+    np.testing.assert_allclose(captured['powder']['y_series'][0], density_curve[1])
+
+
 def test_plot_posterior_predictive_summary_uses_consistent_labels_and_styles(monkeypatch):
     from types import SimpleNamespace
 
@@ -657,6 +754,7 @@ def test_plot_posterior_predictive_summary_uses_consistent_labels_and_styles(mon
     captured: dict[str, object] = {}
 
     plotter = Plotter()
+    plotter.engine = 'plotly'
     plotter._backend = SimpleNamespace(
         _show_figure=lambda figure: captured.setdefault('fig', figure)
     )
@@ -795,6 +893,172 @@ def test_plot_posterior_predictive_data_uses_max_posterior_label_and_dash(monkey
     plot_spec = captured['plot_spec']
     assert plot_spec.y_calc_name == 'Max posterior'
     assert plot_spec.y_calc_line_dash == 'dot'
+
+
+def test_plot_posterior_predictive_request_allows_ascii_for_powder_bragg(monkeypatch):
+    from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+    from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+    from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
+    from easydiffraction.display.plotting import Plotter
+
+    captured: dict[str, object] = {}
+
+    class ExptType:
+        sample_form = type('SF', (), {'value': SampleFormEnum.POWDER})()
+        scattering_type = type('S', (), {'value': ScatteringTypeEnum.BRAGG})()
+        beam_mode = type('B', (), {'value': BeamModeEnum.CONSTANT_WAVELENGTH})()
+
+    class Experiment:
+        type = ExptType()
+
+    class Project:
+        experiments = {'hrpt': Experiment()}
+
+    plotter = Plotter()
+    plotter.engine = 'asciichartpy'
+    plotter._set_project(Project())
+
+    monkeypatch.setattr(Plotter, '_update_project_categories', lambda self, expt_name: None)
+
+    def fake_plot_posterior_predictive_data(
+        self,
+        *,
+        experiment,
+        expt_name,
+        plot_options,
+        x_axis,
+        style,
+    ):
+        captured['experiment'] = experiment
+        captured['expt_name'] = expt_name
+        captured['style'] = style
+        captured['x_axis'] = x_axis
+        captured['show_residual'] = plot_options.show_residual
+
+    monkeypatch.setattr(
+        Plotter, '_plot_posterior_predictive_data', fake_plot_posterior_predictive_data
+    )
+
+    plotter.plot_posterior_predictive('hrpt')
+
+    assert captured['experiment'] is Project.experiments['hrpt']
+    assert captured['expt_name'] == 'hrpt'
+    assert captured['style'] == 'band'
+    assert captured['show_residual'] is None
+
+
+def test_plot_posterior_predictive_summary_routes_ascii_to_measured_and_map(monkeypatch):
+    from types import SimpleNamespace
+
+    from easydiffraction.display.plotting import Plotter
+
+    captured: dict[str, object] = {}
+    plotter = Plotter()
+    plotter.engine = 'asciichartpy'
+    plotter._backend = SimpleNamespace(
+        plot_powder=lambda **kwargs: captured.setdefault('powder', kwargs)
+    )
+
+    plotter._plot_posterior_predictive_summary(
+        expt_name='pdf',
+        summary=SimpleNamespace(
+            x=np.array([1.0, 2.0, 3.0]),
+            map_prediction=np.array([9.0, 10.0, 11.0]),
+            lower_95=np.array([8.0, 9.0, 10.0]),
+            upper_95=np.array([10.0, 11.0, 12.0]),
+            draws=np.array([[8.5, 9.5, 10.5]]),
+        ),
+        y_meas=np.array([9.5, 10.5, 11.5]),
+        axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+        show_band=True,
+        show_draws=True,
+        excluded_ranges=((1.2, 1.4),),
+    )
+
+    assert captured['powder']['labels'] == ['meas', 'posterior']
+    np.testing.assert_allclose(captured['powder']['x'], np.array([1.0, 2.0, 3.0]))
+    np.testing.assert_allclose(
+        captured['powder']['y_series'][0],
+        np.array([9.5, 10.5, 11.5]),
+    )
+    np.testing.assert_allclose(
+        captured['powder']['y_series'][1],
+        np.array([9.0, 10.0, 11.0]),
+    )
+    assert captured['powder']['excluded_ranges'] == ((1.2, 1.4),)
+
+
+def test_plot_posterior_predictive_data_routes_ascii_to_line_plot_without_intervals(monkeypatch):
+    from types import SimpleNamespace
+
+    from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
+    from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
+    from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
+    from easydiffraction.display.plotting import Plotter
+    from easydiffraction.display.plotting import XAxisType
+
+    captured: dict[str, object] = {}
+
+    class ExptType:
+        sample_form = type('SF', (), {'value': SampleFormEnum.POWDER})()
+        scattering_type = type('S', (), {'value': ScatteringTypeEnum.BRAGG})()
+        beam_mode = type('B', (), {'value': BeamModeEnum.CONSTANT_WAVELENGTH})()
+
+    class Pattern:
+        two_theta = np.array([1.0, 2.0, 3.0])
+        intensity_meas = np.array([10.0, 12.0, 11.0])
+        intensity_bkg = np.array([1.0, 1.0, 1.0])
+
+    class Experiment:
+        type = ExptType()
+        data = Pattern()
+
+    plotter = Plotter()
+    plotter.engine = 'asciichartpy'
+    plotter._backend = SimpleNamespace(
+        plot_powder=lambda **kwargs: captured.setdefault('powder', kwargs),
+        plot_powder_meas_vs_calc=lambda **kwargs: captured.setdefault('composite', kwargs),
+    )
+
+    monkeypatch.setattr(
+        Plotter,
+        '_get_or_build_posterior_predictive_summary',
+        lambda self, **kwargs: SimpleNamespace(
+            x=np.array([1.0, 2.0, 3.0]),
+            lower_95=np.array([8.0, 9.0, 10.0]),
+            upper_95=np.array([10.0, 11.0, 12.0]),
+            map_prediction=np.array([9.0, 11.0, 10.5]),
+            draws=None,
+        ),
+    )
+
+    plotter._plot_posterior_predictive_data(
+        experiment=Experiment(),
+        expt_name='hrpt',
+        plot_options=SimpleNamespace(
+            x_min=None,
+            x_max=None,
+            show_residual=None,
+            show_background=None,
+            show_bragg=None,
+            show_excluded=False,
+            x=None,
+        ),
+        x_axis=XAxisType.TWO_THETA,
+        style='band+draws',
+    )
+
+    assert 'composite' not in captured
+    assert captured['powder']['labels'] == ['meas', 'posterior']
+    np.testing.assert_allclose(captured['powder']['x'], np.array([1.0, 2.0, 3.0]))
+    np.testing.assert_allclose(
+        captured['powder']['y_series'][0],
+        np.array([10.0, 12.0, 11.0]),
+    )
+    np.testing.assert_allclose(
+        captured['powder']['y_series'][1],
+        np.array([9.0, 11.0, 10.5]),
+    )
 
 
 def test_plot_meas_vs_calc_request_respects_background_and_bragg_flags():
@@ -1945,6 +2209,30 @@ def test_plot_posterior_pairs_uses_default_max_parameter_limit(monkeypatch):
     assert captured['style'] == 'auto'
     assert captured['threshold'] is None
     assert captured['max_parameters'] == DEFAULT_CORRELATION_MAX_PARAMETERS
+
+
+def test_plot_posterior_pairs_prints_title_before_ascii_backend_warning(monkeypatch):
+    import easydiffraction.display.plotting as plotting_mod
+
+    from easydiffraction.display.plotting import Plotter
+
+    events: list[tuple[str, str]] = []
+    plotter = Plotter()
+    plotter.engine = 'asciichartpy'
+
+    monkeypatch.setattr(
+        plotting_mod.console, 'paragraph', lambda text: events.append(('title', text))
+    )
+    monkeypatch.setattr(
+        plotting_mod.log, 'warning', lambda message: events.append(('warning', message))
+    )
+
+    plotter.plot_posterior_pairs()
+
+    assert events == [
+        ('title', 'Posterior pair plot'),
+        ('warning', 'Posterior plots currently require the Plotly plotting backend.'),
+    ]
 
 
 def test_plot_param_correlations_shows_full_table_when_threshold_is_zero(monkeypatch):

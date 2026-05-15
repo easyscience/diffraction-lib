@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING
 from easydiffraction.analysis.fit_helpers.metrics import calculate_reduced_chi_square
 from easydiffraction.display.progress import ACTIVITY_LABEL_BURN_IN
 from easydiffraction.display.progress import ACTIVITY_LABEL_FITTING
+from easydiffraction.display.progress import ACTIVITY_LABEL_PROCESSING
 from easydiffraction.display.progress import ACTIVITY_LABEL_SAMPLING
 from easydiffraction.display.progress import ActivityIndicator
 from easydiffraction.display.progress import _TerminalLiveHandle as _SharedTerminalLiveHandle
@@ -595,7 +596,7 @@ class FitProgressTracker:
 
     def _default_activity_label(self) -> str:
         if self._tracking_mode == TRACKING_MODE_SAMPLER:
-            return ACTIVITY_LABEL_SAMPLING
+            return ACTIVITY_LABEL_PROCESSING
         return ACTIVITY_LABEL_FITTING
 
     @staticmethod

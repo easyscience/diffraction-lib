@@ -329,8 +329,7 @@ project.display.posterior.pairs()
 # multimodality.
 
 # %%
-for param in project.free_parameters:
-    project.display.posterior.distribution(param)
+project.display.posterior.distribution()
 
 # %% [markdown]
 # Finally, the posterior predictive plot propagates the sampled parameter

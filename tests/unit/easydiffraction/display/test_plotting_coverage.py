@@ -254,11 +254,13 @@ class TestResolveDiffrnDescriptor:
 
 
 class TestAutoXRangeForAscii:
-    def test_narrows_range_for_ascii(self):
+    def test_narrows_range_for_ascii(self, monkeypatch):
+        from easydiffraction.display.plotters.ascii import AsciiPlotter
         from easydiffraction.display.plotting import Plotter
 
         p = Plotter()
         p.engine = 'asciichartpy'
+        monkeypatch.setattr(AsciiPlotter, '_chart_point_count', lambda: 80)
 
         class Ptn:
             intensity_meas = np.zeros(200)
@@ -266,8 +268,8 @@ class TestAutoXRangeForAscii:
         Ptn.intensity_meas[100] = 10.0  # max at index 100
         x_array = np.arange(200, dtype=float)
         x_min, x_max = p._auto_x_range_for_ascii(Ptn(), x_array, None, None)
-        assert x_min == 50.0
-        assert x_max == 150.0
+        assert x_min == 60.0
+        assert x_max == 139.0
 
     def test_no_narrowing_when_limits_provided(self):
         from easydiffraction.display.plotting import Plotter

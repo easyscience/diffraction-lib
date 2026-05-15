@@ -306,6 +306,18 @@ project.display.fit.correlations()
 project.display.pattern(expt_name='hrpt')
 ```
 
+After a Bayesian fit, inspect posterior displays:
+
+```python
+project.display.posterior.distribution(param)
+project.display.posterior.distribution()
+project.display.posterior.pairs()
+project.display.posterior.predictive(expt_name='hrpt')
+```
+
+Call `project.display.posterior.distribution()` without `param` to plot
+the marginal distribution for each free parameter one by one.
+
 ## Add Simple Constraints
 
 Create aliases from parameter objects, then define a constraint

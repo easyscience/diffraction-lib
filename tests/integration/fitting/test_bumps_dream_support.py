@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import threading
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 from unittest.mock import patch
@@ -31,6 +32,20 @@ class FakeParam:
 
     def _set_value_from_minimizer(self, value: float) -> None:
         self.value = value
+
+
+def _simulate_import_safe_spawn_main_module(monkeypatch) -> None:
+    import sys
+
+    monkeypatch.setattr(
+        'easydiffraction.analysis.minimizers.bumps_dream.multiprocessing.get_start_method',
+        lambda allow_none=True: 'spawn',
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        '__main__',
+        SimpleNamespace(__file__='pytest_runner.py', __spec__=object()),
+    )
 
 
 def test_type_info_and_default_init():
@@ -258,6 +273,7 @@ def test_build_mapper_falls_back_for_serial_and_unpicklable(monkeypatch):
 
     warnings: list[str] = []
     minimizer.parallel = 0
+    _simulate_import_safe_spawn_main_module(monkeypatch)
     monkeypatch.setattr(
         'easydiffraction.analysis.minimizers.bumps_dream.can_pickle', lambda problem: False
     )
@@ -267,7 +283,146 @@ def test_build_mapper_falls_back_for_serial_and_unpicklable(monkeypatch):
     )
 
     assert minimizer._build_mapper('problem') is None
-    assert any('falling back to serial execution' in message for message in warnings)
+    assert warnings == [
+        'DREAM parallel evaluation requires a picklable problem; falling back to serial execution.'
+    ]
+
+
+def test_build_mapper_temporarily_clears_shared_display_handle(monkeypatch):
+    from easydiffraction.analysis.minimizers.bumps_dream import BumpsDreamMinimizer
+
+    minimizer = BumpsDreamMinimizer()
+    minimizer.parallel = 0
+    _simulate_import_safe_spawn_main_module(monkeypatch)
+    handle = object()
+    activity_indicator = object()
+    observed_tracker_state: list[tuple[object | None, object | None]] = []
+
+    minimizer.tracker._set_shared_display_handle(handle)
+    minimizer.tracker._activity_indicator = activity_indicator
+    monkeypatch.setattr(
+        'easydiffraction.analysis.minimizers.bumps_dream.can_pickle',
+        lambda problem: (
+            observed_tracker_state.append((
+                minimizer.tracker._shared_display_handle,
+                minimizer.tracker._activity_indicator,
+            ))
+            or True
+        ),
+    )
+    monkeypatch.setattr(
+        'easydiffraction.analysis.minimizers.bumps_dream.MPMapper.start_mapper',
+        lambda problem, args, cpus: ('mapper', cpus),
+    )
+
+    mapper = minimizer._build_mapper('problem')
+
+    assert mapper == ('mapper', 0)
+    assert observed_tracker_state == [(None, None)]
+    assert minimizer.tracker._shared_display_handle is handle
+    assert minimizer.tracker._activity_indicator is activity_indicator
+
+
+def test_build_mapper_allows_real_can_pickle_with_live_tracker_state(monkeypatch):
+    from bumps.fitproblem import FitProblem
+    from bumps.parameter import Parameter as BumpsParameter
+
+    from easydiffraction.analysis.minimizers.bumps import _EasyDiffractionFitness
+    from easydiffraction.analysis.minimizers.bumps_dream import BumpsDreamMinimizer
+
+    minimizer = BumpsDreamMinimizer()
+    minimizer.parallel = 0
+    _simulate_import_safe_spawn_main_module(monkeypatch)
+    bumps_params = [BumpsParameter(value=1.0, name='alpha')]
+
+    def objective(values):
+        _ = minimizer.tracker._activity_indicator
+        return np.array([float(values[0])], dtype=float)
+
+    problem = FitProblem(_EasyDiffractionFitness(bumps_params, objective))
+    minimizer.tracker._set_shared_display_handle(threading.RLock())
+    minimizer.tracker._activity_indicator = SimpleNamespace(lock=threading.RLock())
+    monkeypatch.setattr(
+        'easydiffraction.analysis.minimizers.bumps_dream.MPMapper.start_mapper',
+        lambda problem, args, cpus: ('mapper', cpus),
+    )
+
+    assert minimizer._build_mapper(problem) == ('mapper', 0)
+
+
+def test_build_mapper_falls_back_for_spawn_bootstrap_runtime_error(monkeypatch):
+    from easydiffraction.analysis.minimizers.bumps_dream import BumpsDreamMinimizer
+
+    minimizer = BumpsDreamMinimizer()
+    minimizer.parallel = 0
+    warnings: list[str] = []
+    _simulate_import_safe_spawn_main_module(monkeypatch)
+
+    monkeypatch.setattr(
+        'easydiffraction.analysis.minimizers.bumps_dream.can_pickle', lambda problem: True
+    )
+    monkeypatch.setattr(
+        'easydiffraction.analysis.minimizers.bumps_dream.MPMapper.start_mapper',
+        lambda problem, args, cpus: (_ for _ in ()).throw(
+            RuntimeError('current process has finished its bootstrapping phase')
+        ),
+    )
+    monkeypatch.setattr(
+        'easydiffraction.analysis.minimizers.bumps_dream.log.warning',
+        lambda message: warnings.append(message),
+    )
+
+    assert minimizer._build_mapper('problem') is None
+    assert warnings == [
+        (
+            'DREAM parallel evaluation requires an import-safe main '
+            'module on spawn-based multiprocessing; falling back to '
+            'serial execution.'
+        )
+    ]
+
+
+def test_build_mapper_falls_back_before_starting_spawn_for_direct_script(monkeypatch):
+    import sys
+
+    from easydiffraction.analysis.minimizers.bumps_dream import BumpsDreamMinimizer
+
+    minimizer = BumpsDreamMinimizer()
+    minimizer.parallel = 0
+    warnings: list[str] = []
+    pickle_checks: list[object] = []
+
+    monkeypatch.setattr(
+        'easydiffraction.analysis.minimizers.bumps_dream.multiprocessing.get_start_method',
+        lambda allow_none=True: 'spawn',
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        '__main__',
+        SimpleNamespace(__file__='docs/docs/tutorials/ed-21.py', __spec__=None),
+    )
+    monkeypatch.setattr(
+        'easydiffraction.analysis.minimizers.bumps_dream.can_pickle',
+        lambda problem: pickle_checks.append(problem) or True,
+    )
+    monkeypatch.setattr(
+        'easydiffraction.analysis.minimizers.bumps_dream.MPMapper.start_mapper',
+        lambda problem, args, cpus: (_ for _ in ()).throw(AssertionError('unexpected mapper')),
+    )
+    monkeypatch.setattr(
+        'easydiffraction.analysis.minimizers.bumps_dream.log.warning',
+        lambda message: warnings.append(message),
+    )
+
+    assert minimizer._build_mapper('problem') is None
+    assert pickle_checks == []
+    assert warnings == [
+        (
+            'DREAM parallel evaluation requires an import-safe main '
+            'module on spawn-based multiprocessing; falling back to '
+            'serial execution.'
+        )
+    ]
 
 
 def test_run_solver_preserves_parameter_order_and_forwards_init():

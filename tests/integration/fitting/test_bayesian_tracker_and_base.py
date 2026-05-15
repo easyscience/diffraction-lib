@@ -127,6 +127,7 @@ def test_tracker_sampler_progress_renders_and_completes(monkeypatch, capsys):
     assert 'Bayesian sampling complete.' in out
     assert tracker.best_chi2 == pytest.approx(1.0)
     assert tracker.best_iteration == 10
+    assert ('init', tracking_mod.ACTIVITY_LABEL_PROCESSING, tracker._verbosity) in events
     assert ('update', tracking_mod.ACTIVITY_LABEL_BURN_IN) in events
     assert ('update', tracking_mod.ACTIVITY_LABEL_SAMPLING) in events
 
@@ -168,9 +169,9 @@ def test_tracker_helper_error_paths_and_short_mode(monkeypatch):
 
     assert FitProgressTracker._rows_match_on_columns(['1', 'a'], ['1', 'b'], (0,)) is True
     assert events == [
-        ('init', tracking_mod.ACTIVITY_LABEL_SAMPLING, VerbosityEnum.SHORT),
+        ('init', tracking_mod.ACTIVITY_LABEL_PROCESSING, VerbosityEnum.SHORT),
         ('start', None),
-        ('update', tracking_mod.ACTIVITY_LABEL_SAMPLING),
+        ('update', tracking_mod.ACTIVITY_LABEL_PROCESSING),
         ('stop', None),
     ]
 
@@ -274,7 +275,7 @@ def test_tracker_final_rows_cover_fallbacks_and_activity_labels():
     tracker._fitting_time = 1.5
     assert tracker._final_fit_tracking_row() == ['8', '1.50', '', '']
     tracker._tracking_mode = tracking_mod.TRACKING_MODE_SAMPLER
-    assert tracker._default_activity_label() == tracking_mod.ACTIVITY_LABEL_SAMPLING
+    assert tracker._default_activity_label() == tracking_mod.ACTIVITY_LABEL_PROCESSING
     tracker._tracking_mode = tracking_mod.TRACKING_MODE_FIT
     assert tracker._default_activity_label() == tracking_mod.ACTIVITY_LABEL_FITTING
     assert (

@@ -682,7 +682,7 @@ class ConsolePrinter:
         ----------
         title : str
             Heading text; substrings enclosed in single quotes are
-            rendered without the bold-blue style.
+            rendered without the bold deep_sky_blue3 style.
         """
         parts = re.split(r"('.*?')", title)
         text = Text()
@@ -690,7 +690,7 @@ class ConsolePrinter:
             if part.startswith("'") and part.endswith("'"):
                 text.append(part)
             else:
-                text.append(part, style='bold blue')
+                text.append(part, style='bold deep_sky_blue3')
         formatted = f'{text.markup}'
         if not in_jupyter():
             formatted = f'\n{formatted}'

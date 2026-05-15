@@ -57,7 +57,7 @@ def test_fitresults_display_results_prints_and_table(capsys, monkeypatch):
     assert 'Weighted R-factor (wR)' in out
     assert 'Bragg R-factor (BR)' in out
     assert 'Fitted parameters:' in out
-    # Table border: accept common border glyphs from Rich/tabulate
+    # Table border: accept common border glyphs from Rich
     assert any(ch in out for ch in ('╒', '┌', '+', '─'))
 
 
