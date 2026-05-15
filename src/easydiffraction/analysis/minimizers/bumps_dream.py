@@ -4,7 +4,9 @@
 
 from __future__ import annotations
 
+import multiprocessing
 import random
+import sys
 from dataclasses import dataclass
 
 import numpy as np
@@ -726,14 +728,63 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         if self.parallel == 1:
             return None
 
-        if not can_pickle(problem):
+        if self._requires_serial_mapper_for_spawn_main_module():
             log.warning(
-                'DREAM parallel evaluation requires a picklable '
-                'problem; falling back to serial execution.'
+                'DREAM parallel evaluation requires an import-safe main '
+                'module on spawn-based multiprocessing; falling back to '
+                'serial execution.'
             )
             return None
 
-        return MPMapper.start_mapper(problem, [], cpus=self.parallel)
+        shared_display_handle = getattr(self.tracker, '_shared_display_handle', None)
+        activity_indicator = getattr(self.tracker, '_activity_indicator', None)
+        if shared_display_handle is not None:
+            self.tracker._set_shared_display_handle(None)
+        if activity_indicator is not None:
+            self.tracker._activity_indicator = None
+
+        try:
+            if not can_pickle(problem):
+                log.warning(
+                    'DREAM parallel evaluation requires a picklable '
+                    'problem; falling back to serial execution.'
+                )
+                return None
+
+            return MPMapper.start_mapper(problem, [], cpus=self.parallel)
+        except RuntimeError as error:
+            message = str(error)
+            if 'bootstrapping phase' not in message:
+                raise
+            log.warning(
+                'DREAM parallel evaluation requires an import-safe main '
+                'module on spawn-based multiprocessing; falling back to '
+                'serial execution.'
+            )
+            return None
+        finally:
+            if activity_indicator is not None:
+                self.tracker._activity_indicator = activity_indicator
+            if shared_display_handle is not None:
+                self.tracker._set_shared_display_handle(shared_display_handle)
+
+    @staticmethod
+    def _requires_serial_mapper_for_spawn_main_module() -> bool:
+        """Return whether direct-script spawn startup should stay serial."""
+        start_method = multiprocessing.get_start_method(allow_none=True)
+        if start_method is None:
+            start_method = multiprocessing.get_start_method()
+        if start_method != 'spawn':
+            return False
+
+        main_module = sys.modules.get('__main__')
+        if main_module is None:
+            return False
+
+        return (
+            getattr(main_module, '__file__', None) is not None
+            and getattr(main_module, '__spec__', None) is None
+        )
 
     @staticmethod
     def _execute_driver(*, driver: FitDriver, random_seed: int) -> _DreamDriverResult:
