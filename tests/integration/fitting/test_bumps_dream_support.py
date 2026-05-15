@@ -284,8 +284,7 @@ def test_build_mapper_falls_back_for_serial_and_unpicklable(monkeypatch):
 
     assert minimizer._build_mapper('problem') is None
     assert warnings == [
-        'DREAM parallel evaluation requires a picklable '
-        'problem; falling back to serial execution.'
+        'DREAM parallel evaluation requires a picklable problem; falling back to serial execution.'
     ]
 
 
@@ -303,13 +302,13 @@ def test_build_mapper_temporarily_clears_shared_display_handle(monkeypatch):
     minimizer.tracker._activity_indicator = activity_indicator
     monkeypatch.setattr(
         'easydiffraction.analysis.minimizers.bumps_dream.can_pickle',
-        lambda problem: observed_tracker_state.append(
-            (
+        lambda problem: (
+            observed_tracker_state.append((
                 minimizer.tracker._shared_display_handle,
                 minimizer.tracker._activity_indicator,
-            )
-        )
-        or True,
+            ))
+            or True
+        ),
     )
     monkeypatch.setattr(
         'easydiffraction.analysis.minimizers.bumps_dream.MPMapper.start_mapper',

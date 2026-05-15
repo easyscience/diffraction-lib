@@ -10,6 +10,8 @@ a consistent API with other plotters.
 
 from __future__ import annotations
 
+import shutil
+
 import asciichartpy
 import numpy as np
 
@@ -26,10 +28,47 @@ DEFAULT_COLORS = {
     'density': asciichartpy.green,
     'resid': asciichartpy.green,
 }
+ASCII_CHART_OFFSET = 3
+ASCII_CHART_LEFT_PADDING = 15
+ASCII_CHART_FALLBACK_POINT_COUNT = 80
 
 
 class AsciiPlotter(PlotterBase):
     """Terminal-based plotter using ASCII art."""
+
+    @staticmethod
+    def _chart_point_count() -> int:
+        """Return the number of points that fit the current terminal."""
+        fallback_columns = (
+            ASCII_CHART_FALLBACK_POINT_COUNT
+            + ASCII_CHART_OFFSET
+            + ASCII_CHART_LEFT_PADDING
+        )
+        columns = shutil.get_terminal_size(
+            fallback=(fallback_columns, DEFAULT_HEIGHT)
+        ).columns
+        return max(2, columns - ASCII_CHART_OFFSET - ASCII_CHART_LEFT_PADDING)
+
+    @classmethod
+    def _resample_series_for_chart(
+        cls,
+        y_series: object,
+    ) -> list[list[float]]:
+        """Return y-series resampled to the available chart width."""
+        target_point_count = cls._chart_point_count()
+        resampled_series: list[list[float]] = []
+        for series in y_series:
+            series_array = np.ravel(np.asarray(series, dtype=float))
+            if series_array.size <= target_point_count or series_array.size < 2:
+                resampled_series.append(series_array.tolist())
+                continue
+
+            source_positions = np.linspace(0.0, 1.0, series_array.size)
+            target_positions = np.linspace(0.0, 1.0, target_point_count)
+            resampled_series.append(
+                np.interp(target_positions, source_positions, series_array).tolist()
+            )
+        return resampled_series
 
     @staticmethod
     def _get_legend_item(label: str) -> str:
@@ -96,8 +135,12 @@ class AsciiPlotter(PlotterBase):
         if height is None:
             height = DEFAULT_HEIGHT
         colors = [DEFAULT_COLORS[label] for label in labels]
-        config = {'height': height, 'colors': colors}
-        y_series = [y.tolist() for y in y_series]
+        config = {
+            'height': height,
+            'colors': colors,
+            'offset': ASCII_CHART_OFFSET,
+        }
+        y_series = self._resample_series_for_chart(y_series)
 
         chart = asciichartpy.plot(y_series, config)
 

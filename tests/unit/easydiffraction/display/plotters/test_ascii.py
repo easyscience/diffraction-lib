@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+import os
+
 import numpy as np
 
 
@@ -107,3 +109,65 @@ def test_ascii_plotter_plot_powder_meas_vs_calc_announces_plotly_only_bragg_row(
     assert 'Legend:' in out
     assert 'Residual (Imeas - Icalc)' in out
     assert 'Bragg peak subplot rows are available with the Plotly engine only.' in out
+
+
+def test_ascii_plotter_plot_resamples_to_detected_terminal_width(monkeypatch):
+    from easydiffraction.display.plotters import ascii as ascii_mod
+    from easydiffraction.display.plotters.ascii import AsciiPlotter
+
+    captured: dict[str, object] = {}
+
+    def fake_plot(series, config):
+        captured['call'] = (series, config)
+        return 'chart'
+
+    monkeypatch.setattr(
+        ascii_mod.shutil,
+        'get_terminal_size',
+        lambda fallback: os.terminal_size((44, 24)),
+    )
+    monkeypatch.setattr(ascii_mod.asciichartpy, 'plot', fake_plot)
+
+    AsciiPlotter().plot_powder(
+        x=np.arange(256, dtype=float),
+        y_series=[np.linspace(0.0, 1.0, 256)],
+        labels=['density'],
+        axes_labels=['x', 'y'],
+        title='Width test',
+        height=5,
+    )
+
+    series, config = captured['call']
+    assert len(series[0]) == 40
+    assert config['offset'] == 3
+
+
+def test_ascii_plotter_plot_uses_fallback_width_when_terminal_size_unavailable(monkeypatch):
+    from easydiffraction.display.plotters import ascii as ascii_mod
+    from easydiffraction.display.plotters.ascii import AsciiPlotter
+
+    captured: dict[str, object] = {}
+
+    def fake_plot(series, config):
+        captured['call'] = (series, config)
+        return 'chart'
+
+    monkeypatch.setattr(
+        ascii_mod.shutil,
+        'get_terminal_size',
+        lambda fallback: os.terminal_size(fallback),
+    )
+    monkeypatch.setattr(ascii_mod.asciichartpy, 'plot', fake_plot)
+
+    AsciiPlotter().plot_powder(
+        x=np.arange(256, dtype=float),
+        y_series=[np.linspace(0.0, 1.0, 256)],
+        labels=['density'],
+        axes_labels=['x', 'y'],
+        title='Fallback width test',
+        height=5,
+    )
+
+    series, config = captured['call']
+    assert len(series[0]) == 80
+    assert config['offset'] == 3
