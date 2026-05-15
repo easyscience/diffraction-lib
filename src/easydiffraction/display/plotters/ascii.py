@@ -31,6 +31,7 @@ DEFAULT_COLORS = {
 ASCII_CHART_OFFSET = 3
 ASCII_CHART_LEFT_PADDING = 15
 ASCII_CHART_FALLBACK_POINT_COUNT = 80
+ASCII_CHART_MIN_POINT_COUNT = 2
 
 
 class AsciiPlotter(PlotterBase):
@@ -43,7 +44,10 @@ class AsciiPlotter(PlotterBase):
             ASCII_CHART_FALLBACK_POINT_COUNT + ASCII_CHART_OFFSET + ASCII_CHART_LEFT_PADDING
         )
         columns = shutil.get_terminal_size(fallback=(fallback_columns, DEFAULT_HEIGHT)).columns
-        return max(2, columns - ASCII_CHART_OFFSET - ASCII_CHART_LEFT_PADDING)
+        return max(
+            ASCII_CHART_MIN_POINT_COUNT,
+            columns - ASCII_CHART_OFFSET - ASCII_CHART_LEFT_PADDING,
+        )
 
     @classmethod
     def _resample_series_for_chart(
@@ -55,7 +59,10 @@ class AsciiPlotter(PlotterBase):
         resampled_series: list[list[float]] = []
         for series in y_series:
             series_array = np.ravel(np.asarray(series, dtype=float))
-            if series_array.size <= target_point_count or series_array.size < 2:
+            if (
+                series_array.size <= target_point_count
+                or series_array.size < ASCII_CHART_MIN_POINT_COUNT
+            ):
                 resampled_series.append(series_array.tolist())
                 continue
 

@@ -113,6 +113,9 @@ def test_ascii_plotter_plot_powder_meas_vs_calc_announces_plotly_only_bragg_row(
 
 def test_ascii_plotter_plot_resamples_to_detected_terminal_width(monkeypatch):
     from easydiffraction.display.plotters import ascii as ascii_mod
+    from easydiffraction.display.plotters.ascii import ASCII_CHART_LEFT_PADDING
+    from easydiffraction.display.plotters.ascii import ASCII_CHART_MIN_POINT_COUNT
+    from easydiffraction.display.plotters.ascii import ASCII_CHART_OFFSET
     from easydiffraction.display.plotters.ascii import AsciiPlotter
 
     captured: dict[str, object] = {}
@@ -138,12 +141,17 @@ def test_ascii_plotter_plot_resamples_to_detected_terminal_width(monkeypatch):
     )
 
     series, config = captured['call']
-    assert len(series[0]) == 40
-    assert config['offset'] == 3
+    assert len(series[0]) == max(
+        ASCII_CHART_MIN_POINT_COUNT,
+        44 - ASCII_CHART_OFFSET - ASCII_CHART_LEFT_PADDING,
+    )
+    assert config['offset'] == ASCII_CHART_OFFSET
 
 
 def test_ascii_plotter_plot_uses_fallback_width_when_terminal_size_unavailable(monkeypatch):
     from easydiffraction.display.plotters import ascii as ascii_mod
+    from easydiffraction.display.plotters.ascii import ASCII_CHART_FALLBACK_POINT_COUNT
+    from easydiffraction.display.plotters.ascii import ASCII_CHART_OFFSET
     from easydiffraction.display.plotters.ascii import AsciiPlotter
 
     captured: dict[str, object] = {}
@@ -169,5 +177,5 @@ def test_ascii_plotter_plot_uses_fallback_width_when_terminal_size_unavailable(m
     )
 
     series, config = captured['call']
-    assert len(series[0]) == 80
-    assert config['offset'] == 3
+    assert len(series[0]) == ASCII_CHART_FALLBACK_POINT_COUNT
+    assert config['offset'] == ASCII_CHART_OFFSET

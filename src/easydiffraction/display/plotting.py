@@ -3835,8 +3835,7 @@ class Plotter(RendererBase):
             )
             return
 
-        show_residual = True if plot_options.show_residual is None else plot_options.show_residual
-        y_resid = y_meas - y_calc if show_residual else None
+        y_resid = y_meas - y_calc if plot_options.show_residual is not False else None
 
         predictive_lower_95 = None
         predictive_upper_95 = None
@@ -3856,14 +3855,13 @@ class Plotter(RendererBase):
 
         predictive_draws = None
         if show_draws:
-            draws = getattr(summary, 'draws', None)
-            if draws is None:
+            if summary.draws is None:
                 log.warning('Posterior predictive draws are unavailable for plotting.')
                 return
             predictive_draws = np.asarray(
                 [
                     self._filtered_y_array(draw, summary.x, ctx['x_min'], ctx['x_max'])
-                    for draw in draws
+                    for draw in summary.draws
                 ],
                 dtype=float,
             )
@@ -3878,26 +3876,27 @@ class Plotter(RendererBase):
                 x_min=ctx['x_min'],
                 x_max=ctx['x_max'],
             )
-        plot_spec = PowderMeasVsCalcSpec(
-            x=ctx['x_filtered'],
-            y_meas=y_meas,
-            y_calc=y_calc,
-            y_resid=y_resid,
-            bragg_tick_sets=bragg_tick_sets,
-            axes_labels=ctx['axes_labels'],
-            title=f"Posterior predictive for experiment 🔬 '{expt_name}'",
-            residual_height_fraction=DEFAULT_RESID_HEIGHT,
-            bragg_peaks_height_fraction=DEFAULT_BRAGG_ROW,
-            height=self._composite_plot_height(),
-            y_bkg=y_bkg,
-            predictive_lower_95=predictive_lower_95,
-            predictive_upper_95=predictive_upper_95,
-            predictive_draws=predictive_draws,
-            y_calc_name=POSTERIOR_POINT_ESTIMATE_TRACE_NAME,
-            y_calc_line_dash=POSTERIOR_POINT_ESTIMATE_LINE_DASH,
-            excluded_ranges=excluded_ranges,
+        self._backend.plot_powder_meas_vs_calc(
+            plot_spec=PowderMeasVsCalcSpec(
+                x=ctx['x_filtered'],
+                y_meas=y_meas,
+                y_calc=y_calc,
+                y_resid=y_resid,
+                bragg_tick_sets=bragg_tick_sets,
+                axes_labels=ctx['axes_labels'],
+                title=f"Posterior predictive for experiment 🔬 '{expt_name}'",
+                residual_height_fraction=DEFAULT_RESID_HEIGHT,
+                bragg_peaks_height_fraction=DEFAULT_BRAGG_ROW,
+                height=self._composite_plot_height(),
+                y_bkg=y_bkg,
+                predictive_lower_95=predictive_lower_95,
+                predictive_upper_95=predictive_upper_95,
+                predictive_draws=predictive_draws,
+                y_calc_name=POSTERIOR_POINT_ESTIMATE_TRACE_NAME,
+                y_calc_line_dash=POSTERIOR_POINT_ESTIMATE_LINE_DASH,
+                excluded_ranges=excluded_ranges,
+            )
         )
-        self._backend.plot_powder_meas_vs_calc(plot_spec=plot_spec)
 
     @staticmethod
     def _resolve_posterior_parameter_names(
