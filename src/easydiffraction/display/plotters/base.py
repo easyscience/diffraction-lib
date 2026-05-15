@@ -195,6 +195,10 @@ SERIES_CONFIG = {
         'mode': 'lines',
         'name': 'Max posterior',
     },
+    'density': {
+        'mode': 'lines',
+        'name': 'Marginal density',
+    },
     'bkg': {
         'mode': 'lines',
         'name': 'Background (Ibkg)',

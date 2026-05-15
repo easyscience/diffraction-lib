@@ -999,6 +999,9 @@ class Plotter(RendererBase):
             ``parameters`` is omitted and ``threshold`` is ``None``.
             Must be at least ``2``.
         """
+        if self.engine != PlotterEngineEnum.PLOTLY.value:
+            console.paragraph(self._posterior_pair_title(None))
+
         plot = self._build_posterior_pairs_plot(
             parameters=parameters,
             style=style,
@@ -1023,6 +1026,10 @@ class Plotter(RendererBase):
             posterior to plot. Strings may be unique names or
             user-facing labels.
         """
+        if self.engine == PlotterEngineEnum.ASCII.value:
+            self._plot_ascii_param_distribution(param)
+            return
+
         plot = self._build_param_distribution_plot(param)
         if plot is None:
             return
@@ -2467,13 +2474,52 @@ class Plotter(RendererBase):
         )
         return fig
 
+    def _plot_ascii_param_distribution(
+        self,
+        param: object,
+    ) -> None:
+        """Render one posterior marginal on the ASCII backend."""
+        context = self._posterior_distribution_context(param)
+        if context is None:
+            return
+
+        lower_bound, upper_bound = self._posterior_parameter_bounds(
+            fit_results=context.fit_results,
+            parameter_name=context.parameter_name,
+        )
+        density_curve = self._posterior_density_curve(
+            context.values,
+            lower_bound=lower_bound,
+            upper_bound=upper_bound,
+        )
+        if density_curve is None:
+            log.warning(
+                f'Posterior distribution is unavailable for parameter {context.parameter_name}.'
+            )
+            return
+
+        grid, density = density_curve
+        self._backend.plot_powder(
+            x=grid,
+            y_series=[density],
+            labels=['density'],
+            axes_labels=[context.label, 'Probability density'],
+            title=context.title,
+            height=self.height,
+        )
+
     def _posterior_distribution_context(
         self,
         param: object,
     ) -> _PosteriorDistributionContext | None:
         """Return the context for a posterior distribution plot."""
-        posterior_samples, fit_results = self._get_posterior_samples_and_fit_results()
-        if posterior_samples is None or fit_results is None:
+        fit_results = self._get_fit_result_for_correlation()
+        if fit_results is None:
+            return None
+
+        posterior_samples = getattr(fit_results, 'posterior_samples', None)
+        if posterior_samples is None:
+            log.warning('Posterior samples are unavailable. Run a Bayesian fit first.')
             return None
 
         parameter_names = self._resolve_posterior_parameter_names(

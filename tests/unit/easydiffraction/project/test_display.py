@@ -274,24 +274,17 @@ def test_posterior_distribution_without_param_plots_all_free_parameters():
     ]
 
 
-def test_posterior_distribution_without_param_warns_once_for_ascii(monkeypatch):
-    import easydiffraction.project.display as display_mod
-
+def test_posterior_distribution_without_param_plots_all_free_parameters_for_ascii():
     project, calls = _make_project_stub()
     project.free_parameters = ['a', 'b']
     project.rendering.plotter.engine = 'asciichartpy'
     display = ProjectDisplay(project)
-    warnings: list[str] = []
-
-    monkeypatch.setattr(display_mod.log, 'warning', warnings.append)
 
     display.posterior.distribution()
 
-    assert calls == []
-    assert warnings == [
-        'Posterior distribution plots require an explicit parameter '
-        'with the ASCII backend. Iterate over project.free_parameters '
-        'to render them one by one.'
+    assert calls == [
+        ('plot_param_distribution', ('a',), {}),
+        ('plot_param_distribution', ('b',), {}),
     ]
 
 

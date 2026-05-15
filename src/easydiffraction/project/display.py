@@ -155,14 +155,6 @@ class PosteriorDisplay:
             log.warning('No free parameters found.')
             return
 
-        if plotter.engine == PlotterEngineEnum.ASCII.value:
-            log.warning(
-                'Posterior distribution plots require an explicit parameter '
-                'with the ASCII backend. Iterate over project.free_parameters '
-                'to render them one by one.'
-            )
-            return
-
         for free_parameter in free_parameters:
             plotter.plot_param_distribution(free_parameter)
 

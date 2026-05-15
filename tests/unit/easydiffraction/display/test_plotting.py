@@ -715,6 +715,36 @@ def test_build_param_distribution_plot_returns_plotly_figure():
     assert figure.layout.yaxis.range is not None
 
 
+def test_plot_param_distribution_routes_ascii_to_marginal_density(monkeypatch):
+    from types import SimpleNamespace
+
+    from easydiffraction.display.plotting import Plotter
+
+    plotter, fit_results, posterior_samples = _make_bayesian_plotter_fixture()
+    captured: dict[str, object] = {}
+    plotter.engine = 'asciichartpy'
+    plotter._backend = SimpleNamespace(
+        plot_powder=lambda **kwargs: captured.setdefault('powder', kwargs)
+    )
+
+    plotter.plot_param_distribution(fit_results.parameters[0])
+
+    values = posterior_samples.flattened()[:, 0]
+    density_curve = plotter._posterior_density_curve(
+        values,
+        lower_bound=fit_results.parameters[0].fit_min,
+        upper_bound=fit_results.parameters[0].fit_max,
+    )
+
+    assert density_curve is not None
+    assert captured['powder']['labels'] == ['density']
+    assert captured['powder']['axes_labels'] == ['length_a', 'Probability density']
+    assert captured['powder']['title'] == 'Posterior distribution: length_a'
+    assert captured['powder']['height'] == plotter.height
+    np.testing.assert_allclose(captured['powder']['x'], density_curve[0])
+    np.testing.assert_allclose(captured['powder']['y_series'][0], density_curve[1])
+
+
 def test_plot_posterior_predictive_summary_uses_consistent_labels_and_styles(monkeypatch):
     from types import SimpleNamespace
 
@@ -2181,6 +2211,26 @@ def test_plot_posterior_pairs_uses_default_max_parameter_limit(monkeypatch):
     assert captured['style'] == 'auto'
     assert captured['threshold'] is None
     assert captured['max_parameters'] == DEFAULT_CORRELATION_MAX_PARAMETERS
+
+
+def test_plot_posterior_pairs_prints_title_before_ascii_backend_warning(monkeypatch):
+    import easydiffraction.display.plotting as plotting_mod
+
+    from easydiffraction.display.plotting import Plotter
+
+    events: list[tuple[str, str]] = []
+    plotter = Plotter()
+    plotter.engine = 'asciichartpy'
+
+    monkeypatch.setattr(plotting_mod.console, 'paragraph', lambda text: events.append(('title', text)))
+    monkeypatch.setattr(plotting_mod.log, 'warning', lambda message: events.append(('warning', message)))
+
+    plotter.plot_posterior_pairs()
+
+    assert events == [
+        ('title', 'Posterior pair plot'),
+        ('warning', 'Posterior plots currently require the Plotly plotting backend.'),
+    ]
 
 
 def test_plot_param_correlations_shows_full_table_when_threshold_is_zero(monkeypatch):

@@ -23,6 +23,7 @@ DEFAULT_COLORS = {
     'meas': asciichartpy.blue,
     'calc': asciichartpy.red,
     'posterior': asciichartpy.red,
+    'density': asciichartpy.green,
     'resid': asciichartpy.green,
 }
 
