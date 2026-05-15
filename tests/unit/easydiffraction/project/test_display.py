@@ -50,6 +50,7 @@ def _make_project_stub() -> tuple[SimpleNamespace, list[tuple[str, tuple, dict]]
     project = SimpleNamespace(
         analysis=SimpleNamespace(display=analysis_display),
         rendering=SimpleNamespace(plotter=plotter),
+        free_parameters=[],
         verbosity='full',
     )
     return project, calls
@@ -257,6 +258,56 @@ def test_posterior_display_delegates_to_rendering_plotter(monkeypatch):
         (ACTIVITY_LABEL_PROCESSING, VerbosityEnum.FULL),
         (ACTIVITY_LABEL_PROCESSING, VerbosityEnum.FULL),
     ]
+
+
+def test_posterior_distribution_without_param_plots_all_free_parameters():
+    project, calls = _make_project_stub()
+    project.free_parameters = ['a', 'b']
+    project.rendering.plotter.engine = 'plotly'
+    display = ProjectDisplay(project)
+
+    display.posterior.distribution()
+
+    assert calls == [
+        ('plot_param_distribution', ('a',), {}),
+        ('plot_param_distribution', ('b',), {}),
+    ]
+
+
+def test_posterior_distribution_without_param_warns_once_for_ascii(monkeypatch):
+    import easydiffraction.project.display as display_mod
+
+    project, calls = _make_project_stub()
+    project.free_parameters = ['a', 'b']
+    project.rendering.plotter.engine = 'asciichartpy'
+    display = ProjectDisplay(project)
+    warnings: list[str] = []
+
+    monkeypatch.setattr(display_mod.log, 'warning', warnings.append)
+
+    display.posterior.distribution()
+
+    assert calls == []
+    assert warnings == [
+        'Posterior distribution plots require an explicit parameter '
+        'with the ASCII backend. Iterate over project.free_parameters '
+        'to render them one by one.'
+    ]
+
+
+def test_posterior_distribution_without_param_warns_when_no_free_parameters(monkeypatch):
+    import easydiffraction.project.display as display_mod
+
+    project, calls = _make_project_stub()
+    display = ProjectDisplay(project)
+    warnings: list[str] = []
+
+    monkeypatch.setattr(display_mod.log, 'warning', warnings.append)
+
+    display.posterior.distribution()
+
+    assert calls == []
+    assert warnings == ['No free parameters found.']
 
 
 def test_pattern_auto_routes_measured_and_excluded_to_plot_meas():

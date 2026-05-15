@@ -16,6 +16,7 @@ from easydiffraction.display.plotting import _MeasVsCalcPlotOptions
 from easydiffraction.display.progress import ACTIVITY_LABEL_PROCESSING
 from easydiffraction.display.progress import activity_indicator
 from easydiffraction.utils.enums import VerbosityEnum
+from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_object_help
 from easydiffraction.utils.utils import render_table
 
@@ -142,9 +143,28 @@ class PosteriorDisplay:
                 max_parameters=max_parameters,
             )
 
-    def distribution(self, param: object) -> None:
-        """Plot one sampled parameter's posterior distribution."""
-        self._project.rendering.plotter.plot_param_distribution(param)
+    def distribution(self, param: object | None = None) -> None:
+        """Plot posterior distributions for one or all free parameters."""
+        plotter = self._project.rendering.plotter
+        if param is not None:
+            plotter.plot_param_distribution(param)
+            return
+
+        free_parameters = getattr(self._project, 'free_parameters', None)
+        if not free_parameters:
+            log.warning('No free parameters found.')
+            return
+
+        if plotter.engine == PlotterEngineEnum.ASCII.value:
+            log.warning(
+                'Posterior distribution plots require an explicit parameter '
+                'with the ASCII backend. Iterate over project.free_parameters '
+                'to render them one by one.'
+            )
+            return
+
+        for free_parameter in free_parameters:
+            plotter.plot_param_distribution(free_parameter)
 
     def predictive(
         self,
