@@ -144,7 +144,9 @@ class PosteriorDisplay:
             )
 
     def distribution(self, param: object | None = None) -> None:
-        """Plot posterior distributions for one or all free parameters."""
+        """
+        Plot posterior distributions for one or all free parameters.
+        """
         plotter = self._project.rendering.plotter
         if param is not None:
             plotter.plot_param_distribution(param)

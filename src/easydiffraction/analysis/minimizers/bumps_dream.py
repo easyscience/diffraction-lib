@@ -770,7 +770,9 @@ class BumpsDreamMinimizer(BumpsMinimizer):
 
     @staticmethod
     def _requires_serial_mapper_for_spawn_main_module() -> bool:
-        """Return whether direct-script spawn startup should stay serial."""
+        """
+        Return whether direct-script spawn startup should stay serial.
+        """
         start_method = multiprocessing.get_start_method(allow_none=True)
         if start_method is None:
             start_method = multiprocessing.get_start_method()

@@ -3502,7 +3502,9 @@ class Plotter(RendererBase):
         show_draws: bool,
         excluded_ranges: tuple[tuple[float, float], ...] = (),
     ) -> None:
-        """Render posterior predictive summaries using the active backend."""
+        """
+        Render posterior predictive summaries using the active backend.
+        """
         if self.engine == PlotterEngineEnum.ASCII.value:
             self._plot_ascii_posterior_predictive_lines(
                 expt_name=expt_name,
