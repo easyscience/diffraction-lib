@@ -374,9 +374,11 @@ def test_build_mapper_falls_back_for_spawn_bootstrap_runtime_error(monkeypatch):
 
     assert minimizer._build_mapper('problem') is None
     assert warnings == [
-        'DREAM parallel evaluation requires an import-safe main '
-        'module on spawn-based multiprocessing; falling back to '
-        'serial execution.'
+        (
+            'DREAM parallel evaluation requires an import-safe main '
+            'module on spawn-based multiprocessing; falling back to '
+            'serial execution.'
+        )
     ]
 
 
@@ -415,9 +417,11 @@ def test_build_mapper_falls_back_before_starting_spawn_for_direct_script(monkeyp
     assert minimizer._build_mapper('problem') is None
     assert pickle_checks == []
     assert warnings == [
-        'DREAM parallel evaluation requires an import-safe main '
-        'module on spawn-based multiprocessing; falling back to '
-        'serial execution.'
+        (
+            'DREAM parallel evaluation requires an import-safe main '
+            'module on spawn-based multiprocessing; falling back to '
+            'serial execution.'
+        )
     ]
 
 

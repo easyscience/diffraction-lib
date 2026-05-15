@@ -40,13 +40,9 @@ class AsciiPlotter(PlotterBase):
     def _chart_point_count() -> int:
         """Return the number of points that fit the current terminal."""
         fallback_columns = (
-            ASCII_CHART_FALLBACK_POINT_COUNT
-            + ASCII_CHART_OFFSET
-            + ASCII_CHART_LEFT_PADDING
+            ASCII_CHART_FALLBACK_POINT_COUNT + ASCII_CHART_OFFSET + ASCII_CHART_LEFT_PADDING
         )
-        columns = shutil.get_terminal_size(
-            fallback=(fallback_columns, DEFAULT_HEIGHT)
-        ).columns
+        columns = shutil.get_terminal_size(fallback=(fallback_columns, DEFAULT_HEIGHT)).columns
         return max(2, columns - ASCII_CHART_OFFSET - ASCII_CHART_LEFT_PADDING)
 
     @classmethod
