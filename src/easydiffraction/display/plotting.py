@@ -331,10 +331,11 @@ class Plotter(RendererBase):
             Tuple of ``(x_min, x_max)``, possibly narrowed.
         """
         if self._engine == 'asciichartpy' and (x_min is None or x_max is None):
-            max_intensity_pos = np.argmax(pattern.intensity_meas)
-            half_range = 50
-            start = max(0, max_intensity_pos - half_range)
-            end = min(len(x_array) - 1, max_intensity_pos + half_range)
+            max_intensity_pos = int(np.argmax(pattern.intensity_meas))
+            target_point_count = min(len(x_array), AsciiPlotter._chart_point_count())
+            start = max(0, max_intensity_pos - target_point_count // 2)
+            end = min(len(x_array) - 1, start + target_point_count - 1)
+            start = max(0, end - target_point_count + 1)
             x_min = x_array[start]
             x_max = x_array[end]
         return x_min, x_max
