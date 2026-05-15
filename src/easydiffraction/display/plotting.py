@@ -99,7 +99,7 @@ POSTERIOR_HISTOGRAM_LINE_COLOR = 'rgba(120, 120, 120, 0.24)'
 POSTERIOR_INTERVAL_95_FILL_COLOR = 'rgba(214, 39, 40, 0.14)'
 POSTERIOR_MEDIAN_LINE_COLOR = 'rgb(80, 80, 80)'
 POSTERIOR_POINT_ESTIMATE_LINE_COLOR = 'rgb(214, 39, 40)'
-POSTERIOR_POINT_ESTIMATE_TRACE_NAME = 'Max posterior'
+POSTERIOR_POINT_ESTIMATE_TRACE_NAME = 'Best posterior sample'
 POSTERIOR_POINT_ESTIMATE_LINE_DASH = 'dot'
 POSTERIOR_PREDICTIVE_INTERVAL_TRACE_NAME = '95% credible interval'
 POSTERIOR_DRAW_LINE_COLOR = 'rgba(140, 140, 140, 0.18)'
@@ -1205,7 +1205,7 @@ class Plotter(RendererBase):
             log.warning(f'No measured data available for experiment {expt_name}.')
             return
         y_meas = np.asarray(y_meas_raw, dtype=float)
-        if y_meas.shape != np.asarray(summary.map_prediction).shape:
+        if y_meas.shape != np.asarray(summary.best_sample_prediction).shape:
             log.warning(
                 'Single-crystal posterior predictive values do not match the '
                 'measured reflection array shape.'
@@ -2729,7 +2729,7 @@ class Plotter(RendererBase):
 
         fig.add_trace(
             self._posterior_reference_line_trace(
-                x_value=summary.map_value,
+                x_value=summary.best_sample_value,
                 y_axis_range=y_axis_range,
                 trace_name=POSTERIOR_POINT_ESTIMATE_TRACE_NAME,
                 color=POSTERIOR_POINT_ESTIMATE_LINE_COLOR,
@@ -3259,7 +3259,7 @@ class Plotter(RendererBase):
         if predictive_data is None:
             return None
 
-        map_prediction, x_values, predictive_draw_array = predictive_data
+        best_sample_prediction, x_values, predictive_draw_array = predictive_data
         lower_68, upper_68 = np.quantile(predictive_draw_array, [0.16, 0.84], axis=0)
         lower_95, upper_95 = np.quantile(predictive_draw_array, [0.025, 0.975], axis=0)
         x_axis_name = getattr(x_axis, 'value', x_axis)
@@ -3268,7 +3268,7 @@ class Plotter(RendererBase):
             experiment_name=expt_name,
             x_axis_name=str(x_axis_name),
             x=np.asarray(x_values, dtype=float),
-            map_prediction=np.asarray(map_prediction, dtype=float),
+            best_sample_prediction=np.asarray(best_sample_prediction, dtype=float),
             lower_95=np.asarray(lower_95, dtype=float),
             upper_95=np.asarray(upper_95, dtype=float),
             lower_68=np.asarray(lower_68, dtype=float),
@@ -3324,7 +3324,7 @@ class Plotter(RendererBase):
         expt_name: str,
         x_axis: object,
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray] | None:
-        """Return MAP and sampled predictive curves."""
+        """Return best-sample and sampled predictive curves."""
         original_values = np.array(
             [parameter.value for parameter in sampled_parameters],
             dtype=float,
@@ -3334,14 +3334,14 @@ class Plotter(RendererBase):
         draw_indices = self._posterior_predictive_draw_indices(flattened_samples.shape[0])
 
         try:
-            map_prediction, x_values = self._evaluate_posterior_predictive_state(
+            best_sample_prediction, x_values = self._evaluate_posterior_predictive_state(
                 sampled_parameters=sampled_parameters,
                 values=original_values,
                 experiment=experiment,
                 expt_name=expt_name,
                 x_axis=x_axis,
             )
-            if map_prediction is None or x_values is None:
+            if best_sample_prediction is None or x_values is None:
                 return None
 
             for index in draw_indices:
@@ -3354,7 +3354,10 @@ class Plotter(RendererBase):
                 )
                 if prediction is None or current_x is None:
                     return None
-                if prediction.shape != map_prediction.shape or current_x.shape != x_values.shape:
+                if (
+                    prediction.shape != best_sample_prediction.shape
+                    or current_x.shape != x_values.shape
+                ):
                     log.warning('Posterior predictive draws returned inconsistent array shapes.')
                     return None
                 predictive_draws.append(prediction)
@@ -3367,7 +3370,7 @@ class Plotter(RendererBase):
             )
 
         return (
-            np.asarray(map_prediction, dtype=float),
+            np.asarray(best_sample_prediction, dtype=float),
             np.asarray(x_values, dtype=float),
             np.asarray(predictive_draws, dtype=float),
         )
@@ -3511,7 +3514,7 @@ class Plotter(RendererBase):
                 expt_name=expt_name,
                 x=np.asarray(summary.x, dtype=float),
                 y_meas=np.asarray(y_meas, dtype=float),
-                y_calc=np.asarray(summary.map_prediction, dtype=float),
+                y_calc=np.asarray(summary.best_sample_prediction, dtype=float),
                 axes_labels=axes_labels,
                 excluded_ranges=excluded_ranges,
             )
@@ -3579,7 +3582,7 @@ class Plotter(RendererBase):
         fig.add_trace(
             go.Scatter(
                 x=summary.x,
-                y=summary.map_prediction,
+                y=summary.best_sample_prediction,
                 mode='lines',
                 line={
                     'color': POSTERIOR_POINT_ESTIMATE_LINE_COLOR,
@@ -3673,23 +3676,26 @@ class Plotter(RendererBase):
             )
             return
 
-        map_prediction = np.asarray(summary.map_prediction, dtype=float)
+        best_sample_prediction = np.asarray(summary.best_sample_prediction, dtype=float)
         lower_95 = np.asarray(summary.lower_95, dtype=float)
         upper_95 = np.asarray(summary.upper_95, dtype=float)
-        if lower_95.shape != map_prediction.shape or upper_95.shape != map_prediction.shape:
+        if (
+            lower_95.shape != best_sample_prediction.shape
+            or upper_95.shape != best_sample_prediction.shape
+        ):
             log.warning('Single-crystal posterior predictive interval arrays have invalid shapes.')
             return
 
         go = __import__('plotly.graph_objects', fromlist=['Figure'])
         trace = PlotlyPlotter._get_single_crystal_trace(
-            x_calc=map_prediction,
+            x_calc=best_sample_prediction,
             y_meas=y_meas,
             y_meas_su=y_meas_su,
         )
         trace.error_x = {
             'type': 'data',
-            'array': np.maximum(0.0, upper_95 - map_prediction),
-            'arrayminus': np.maximum(0.0, map_prediction - lower_95),
+            'array': np.maximum(0.0, upper_95 - best_sample_prediction),
+            'arrayminus': np.maximum(0.0, best_sample_prediction - lower_95),
             'visible': True,
         }
         trace.customdata = np.column_stack((lower_95, upper_95, y_meas_su))
@@ -3734,7 +3740,12 @@ class Plotter(RendererBase):
             experiment_name=summary.experiment_name,
             x_axis_name=summary.x_axis_name,
             x=x_filtered,
-            map_prediction=self._filtered_y_array(summary.map_prediction, summary.x, x_min, x_max),
+            best_sample_prediction=self._filtered_y_array(
+                summary.best_sample_prediction,
+                summary.x,
+                x_min,
+                x_max,
+            ),
             lower_95=(
                 None
                 if summary.lower_95 is None
@@ -3808,7 +3819,10 @@ class Plotter(RendererBase):
         if not self._show_background_enabled(plot_options, background_available=y_bkg is not None):
             y_bkg = None
         y_calc = self._filtered_y_array(
-            summary.map_prediction, summary.x, ctx['x_min'], ctx['x_max']
+            summary.best_sample_prediction,
+            summary.x,
+            ctx['x_min'],
+            ctx['x_max'],
         )
         excluded_ranges = (
             self._excluded_ranges(

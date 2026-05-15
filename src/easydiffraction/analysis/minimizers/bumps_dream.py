@@ -874,7 +874,10 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         label_to_index = {label: index for index, label in enumerate(raw_state.labels)}
         ordered_indices = [label_to_index[uid] for uid in context.parameter_uids]
         ordered_samples = np.asarray(parameter_samples_array, dtype=float)[:, :, ordered_indices]
-        map_values = np.array([best_by_name[uid] for uid in context.parameter_uids], dtype=float)
+        best_sample_values = np.array(
+            [best_by_name[uid] for uid in context.parameter_uids],
+            dtype=float,
+        )
         posterior_samples = PosteriorSamples(
             parameter_names=context.parameter_names,
             parameter_samples=ordered_samples,
@@ -885,7 +888,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         posterior_parameter_summaries = summarize_posterior_parameters(
             parameter_names=context.parameter_names,
             posterior_samples=posterior_samples,
-            map_values=map_values,
+            best_sample_values=best_sample_values,
             parameter_display_names=context.parameter_display_names,
             convergence_diagnostics=convergence_diagnostics,
         )
@@ -897,7 +900,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             log.warning('Convergence diagnostics indicate the posterior may be poorly mixed.')
 
         return OptimizeResult(
-            x=map_values,
+            x=best_sample_values,
             dx=posterior_standard_deviations,
             fun=float(best_nllf),
             success=True,
@@ -921,7 +924,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         raw_result: object,
     ) -> None:
         """
-        Commit MAP values on success and restore starts on failure.
+        Sync best posterior values or restore starts.
 
         Parameters
         ----------
@@ -985,7 +988,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             starting_parameters=parameters,
             fitting_time=self.tracker.fitting_time,
             sampler_name='dream',
-            point_estimate_name='map',
+            point_estimate_name='best_sample',
             posterior_samples=getattr(raw_result, 'posterior_samples', None),
             posterior_parameter_summaries=getattr(raw_result, 'posterior_parameter_summaries', []),
             posterior_predictive={},

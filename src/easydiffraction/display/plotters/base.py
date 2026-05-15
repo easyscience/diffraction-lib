@@ -193,7 +193,7 @@ SERIES_CONFIG = {
     },
     'posterior': {
         'mode': 'lines',
-        'name': 'Max posterior',
+        'name': 'Best posterior sample',
     },
     'density': {
         'mode': 'lines',

@@ -150,7 +150,7 @@ def test_summarize_posterior_parameters_preserves_order_and_display_names():
     summaries = summarize_posterior_parameters(
         parameter_names=['beta', 'alpha'],
         posterior_samples=posterior_samples,
-        map_values=np.array([2.05, 1.05]),
+        best_sample_values=np.array([2.05, 1.05]),
         parameter_display_names=['Beta width', 'Alpha shift'],
         convergence_diagnostics={
             'r_hat_by_parameter': {'beta': 1.02, 'alpha': 1.0},
@@ -182,7 +182,7 @@ def test_summarize_posterior_parameters_validates_display_name_length():
         summarize_posterior_parameters(
             parameter_names=['alpha'],
             posterior_samples=posterior_samples,
-            map_values=np.array([1.0]),
+            best_sample_values=np.array([1.0]),
             parameter_display_names=['Alpha', 'Extra'],
         )
 
@@ -195,7 +195,7 @@ def test_standard_deviations_from_summaries_returns_float_array():
         PosteriorParameterSummary(
             unique_name='a',
             display_name='A',
-            map_value=1.0,
+            best_sample_value=1.0,
             median=1.0,
             standard_deviation=0.2,
             interval_68=(0.9, 1.1),
@@ -204,7 +204,7 @@ def test_standard_deviations_from_summaries_returns_float_array():
         PosteriorParameterSummary(
             unique_name='b',
             display_name='B',
-            map_value=2.0,
+            best_sample_value=2.0,
             median=2.0,
             standard_deviation=0.3,
             interval_68=(1.9, 2.1),
@@ -240,8 +240,8 @@ def test_bayesian_format_helpers_cover_edge_cases():
         _format_sampler_settings({'steps': 10, 'burn': 2, 'samples': 40})
         == 'steps=10, burn=2, samples=40'
     )
-    assert _format_point_estimate_name('map') == 'Max posterior'
-    assert _format_point_estimate_name('best_sample') == 'Best Sample'
+    assert _format_point_estimate_name('map') == 'Best posterior sample'
+    assert _format_point_estimate_name('best_sample') == 'Best posterior sample'
     assert _format_bayesian_overall_status(
         success=False,
         sampler_completed=False,
@@ -322,7 +322,7 @@ def test_bayesian_fit_results_display_results_prints_sampler_and_convergence(cap
             PosteriorParameterSummary(
                 unique_name='a',
                 display_name='a',
-                map_value=1.2,
+                best_sample_value=1.2,
                 median=1.15,
                 standard_deviation=0.05,
                 interval_68=(1.1, 1.2),
@@ -377,7 +377,7 @@ def test_build_posterior_summary_row_restores_identifier_columns():
     summary = PosteriorParameterSummary(
         unique_name='a',
         display_name='a',
-        map_value=1.2,
+        best_sample_value=1.2,
         median=1.15,
         standard_deviation=0.05,
         interval_68=(1.1, 1.2),
@@ -424,7 +424,7 @@ def test_render_committed_parameter_table_places_units_after_parameter(monkeypat
         'parameter',
         'units',
         'start',
-        'max posterior',
+        'best posterior sample',
         'uncertainty',
         'change',
     ]
@@ -473,7 +473,7 @@ def test_render_posterior_summary_table_places_units_after_parameter(monkeypatch
             PosteriorParameterSummary(
                 unique_name='a',
                 display_name='a',
-                map_value=1.2,
+                best_sample_value=1.2,
                 median=1.15,
                 standard_deviation=0.05,
                 interval_68=(1.1, 1.2),
@@ -529,7 +529,7 @@ def test_posterior_table_notes_split_failed_diagnostics():
         PosteriorParameterSummary(
             unique_name='a',
             display_name='a',
-            map_value=1.0,
+            best_sample_value=1.0,
             median=1.0,
             standard_deviation=0.1,
             interval_68=(0.9, 1.1),
@@ -554,7 +554,7 @@ def test_bayesian_helpers_cover_non_warning_and_default_display_paths():
     summary = PosteriorParameterSummary(
         unique_name='missing',
         display_name='Missing',
-        map_value=1.0,
+        best_sample_value=1.0,
         median=1.0,
         standard_deviation=0.1,
         interval_68=(0.9, 1.1),

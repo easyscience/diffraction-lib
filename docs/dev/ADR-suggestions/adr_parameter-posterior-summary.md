@@ -54,7 +54,7 @@ model.
 ### 2. Reuse the existing Bayesian summary container
 
 Do not add separate flat parameter attributes such as `median`,
-`map_estimate`, `interval_95`, `r_hat`, or `ess_bulk`.
+`best_sample_value`, `interval_95`, `r_hat`, or `ess_bulk`.
 
 Instead, the parameter-level projection reuses the existing
 `PosteriorParameterSummary` object already produced for
@@ -63,7 +63,7 @@ inspection, and later persistence.
 
 The summary object currently provides the right level of detail:
 
-- `map_estimate`
+- `best_sample_value`
 - `median`
 - `uncertainty`
 - `interval_68`
@@ -87,7 +87,7 @@ The internal field names stay compact and code-oriented. User-facing
 tables, summaries, and plot annotations should use these friendly
 labels:
 
-- `map_estimate` -> `MAP estimate`
+- `best_sample_value` -> `Best posterior sample`
 - `median` -> `Median`
 - `uncertainty` -> `Standard uncertainty`
 - `interval_68` -> `68% credible interval`
@@ -109,7 +109,7 @@ current_value = param.value
 current_uncertainty = param.uncertainty
 
 if param.posterior is not None:
-  map_estimate = param.posterior.map_estimate
+  best_sample_value = param.posterior.best_sample_value
   median = param.posterior.median
   uncertainty = param.posterior.uncertainty
   low95, high95 = param.posterior.interval_95
@@ -187,15 +187,15 @@ The exact helper names can be refined during implementation, but the
 design requirement is fixed: manual user edits clear stale metadata,
 while internal fit application installs fresh metadata atomically.
 
-### 8. Commit MAP to `parameter.value` after Bayesian fits
+### 8. Commit best posterior sample to `parameter.value` after Bayesian fits
 
 After a posterior-capable fit, `parameter.value` is committed from the
-maximum-a-posteriori estimate.
+best posterior sample.
 
-MAP is chosen because it is a coherent joint point estimate across all
-free parameters. Marginal medians remain available on
-`parameter.posterior`, but they are summary data rather than the active
-live model state.
+The best posterior sample is chosen because it is a coherent joint point
+estimate across all free parameters. Marginal medians remain available
+on `parameter.posterior`, but they are summary data rather than the
+active live model state.
 
 ### 9. Keep `uncertainty` as a convenience scalar after Bayesian fits
 
@@ -279,7 +279,7 @@ Stores one saved Bayesian result header with these fields:
 - `has_posterior_predictive`
 - `sidecar_file`
 
-For the current design, `point_estimate_name` is always `map`.
+For the current design, `point_estimate_name` is always `best_sample`.
 
 #### 11.3 `_bayesian_sampler` single item
 
@@ -320,7 +320,7 @@ Fields:
 - `order_index`
 - `unique_name`
 - `display_name`
-- `map_estimate`
+- `best_sample_value`
 - `median`
 - `uncertainty`
 - `interval_68_lower`
@@ -342,7 +342,7 @@ Fields:
 - `experiment_name`
 - `x_axis_name`
 - `x_path`
-- `map_prediction_path`
+- `best_sample_prediction_path`
 - `lower_95_path`
 - `upper_95_path`
 - `lower_68_path`
@@ -382,7 +382,7 @@ cosio.atom_site.Co2.adp_iso 0.0000 0.1200 4.0 0.0312 0.0021
 
 _bayesian_result.schema_version 1
 _bayesian_result.sampler_name dream
-_bayesian_result.point_estimate_name map
+_bayesian_result.point_estimate_name best_sample
 _bayesian_result.success yes
 _bayesian_result.sampler_completed yes
 _bayesian_result.reduced_chi_square 1.031
@@ -413,7 +413,7 @@ loop_
 _bayesian_parameter_posterior.order_index
 _bayesian_parameter_posterior.unique_name
 _bayesian_parameter_posterior.display_name
-_bayesian_parameter_posterior.map_estimate
+_bayesian_parameter_posterior.best_sample_value
 _bayesian_parameter_posterior.median
 _bayesian_parameter_posterior.uncertainty
 _bayesian_parameter_posterior.interval_68_lower
@@ -429,7 +429,7 @@ loop_
 _bayesian_predictive_dataset.experiment_name
 _bayesian_predictive_dataset.x_axis_name
 _bayesian_predictive_dataset.x_path
-_bayesian_predictive_dataset.map_prediction_path
+_bayesian_predictive_dataset.best_sample_prediction_path
 _bayesian_predictive_dataset.lower_95_path
 _bayesian_predictive_dataset.upper_95_path
 _bayesian_predictive_dataset.lower_68_path
@@ -437,7 +437,7 @@ _bayesian_predictive_dataset.upper_68_path
 _bayesian_predictive_dataset.draws_path
 _bayesian_predictive_dataset.n_x
 _bayesian_predictive_dataset.n_draws_cached
-hrpt ttheta /predictive/hrpt/x /predictive/hrpt/map_prediction /predictive/hrpt/lower_95 /predictive/hrpt/upper_95 /predictive/hrpt/lower_68 /predictive/hrpt/upper_68 /predictive/hrpt/draws 2500 200
+hrpt ttheta /predictive/hrpt/x /predictive/hrpt/best_sample_prediction /predictive/hrpt/lower_95 /predictive/hrpt/upper_95 /predictive/hrpt/lower_68 /predictive/hrpt/upper_68 /predictive/hrpt/draws 2500 200
 ```
 
 ### 12. Persist bulk arrays in `analysis/bayesian_data.h5`
@@ -482,7 +482,7 @@ ordering.
 Recommended HDF5 dataset naming is:
 
 - `predictive__<experiment>__x`
-- `predictive__<experiment>__map_prediction`
+- `predictive__<experiment>__best_sample_prediction`
 - `predictive__<experiment>__lower_95`
 - `predictive__<experiment>__upper_95`
 - `predictive__<experiment>__lower_68`
@@ -497,7 +497,7 @@ Recommended HDF5 group layout is:
 - `/posterior/log_posterior`
 - `/posterior/draw_index`
 - `/predictive/<experiment>/x`
-- `/predictive/<experiment>/map_prediction`
+- `/predictive/<experiment>/best_sample_prediction`
 - `/predictive/<experiment>/lower_95`
 - `/predictive/<experiment>/upper_95`
 - `/predictive/<experiment>/lower_68`
@@ -573,7 +573,7 @@ param = project.phases['lbco'].cell.length_a
 posterior = param.posterior
 
 if posterior is not None:
-    print(posterior.map_estimate)
+  print(posterior.best_sample_value)
     print(posterior.uncertainty)
     print(posterior.interval_68)
 
@@ -673,7 +673,8 @@ It still defers:
 
 ## Chosen Defaults
 
-- `parameter.value` remains committed to MAP after posterior fits.
+- `parameter.value` remains committed to the best posterior sample after
+  posterior fits.
 - If a project is loaded without full posterior arrays, restoring only
   `parameter.posterior` is acceptable for table display and parameter
   inspection.

@@ -44,7 +44,7 @@ def test_ascii_plotter_plot_supports_max_posterior_legend(capsys):
 
     out = capsys.readouterr().out
     assert 'Measured (Imeas)' in out
-    assert 'Max posterior' in out
+    assert 'Best posterior sample' in out
 
 
 def test_ascii_plotter_plot_single_crystal(capsys):
