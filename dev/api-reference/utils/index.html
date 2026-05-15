@@ -8421,7 +8421,7 @@ etc.)</p>
 <span class="sd">        ----------</span>
 <span class="sd">        title : str</span>
 <span class="sd">            Heading text; substrings enclosed in single quotes are</span>
-<span class="sd">            rendered without the bold-blue style.</span>
+<span class="sd">            rendered without the bold deep_sky_blue3 style.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">parts</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(&#39;.*?&#39;)&quot;</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span>
         <span class="n">text</span> <span class="o">=</span> <span class="n">Text</span><span class="p">()</span>
@@ -8429,7 +8429,7 @@ etc.)</p>
             <span class="k">if</span> <span class="n">part</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">part</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">):</span>
                 <span class="n">text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">part</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">&#39;bold blue&#39;</span><span class="p">)</span>
+                <span class="n">text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">part</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">&#39;bold deep_sky_blue3&#39;</span><span class="p">)</span>
         <span class="n">formatted</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">text</span><span class="o">.</span><span class="n">markup</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">in_jupyter</span><span class="p">():</span>
             <span class="n">formatted</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="si">{</span><span class="n">formatted</span><span class="si">}</span><span class="s1">&#39;</span>
@@ -8603,7 +8603,7 @@ converted to   str().</li>
             <td>
               <div class="doc-md-description">
                 <p>Heading text; substrings enclosed in single quotes are
-rendered without the bold-blue style.</p>
+rendered without the bold deep_sky_blue3 style.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -8649,7 +8649,7 @@ rendered without the bold-blue style.</p>
 <span class="sd">    ----------</span>
 <span class="sd">    title : str</span>
 <span class="sd">        Heading text; substrings enclosed in single quotes are</span>
-<span class="sd">        rendered without the bold-blue style.</span>
+<span class="sd">        rendered without the bold deep_sky_blue3 style.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">parts</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(&#39;.*?&#39;)&quot;</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span>
     <span class="n">text</span> <span class="o">=</span> <span class="n">Text</span><span class="p">()</span>
@@ -8657,7 +8657,7 @@ rendered without the bold-blue style.</p>
         <span class="k">if</span> <span class="n">part</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">part</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">):</span>
             <span class="n">text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">part</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">&#39;bold blue&#39;</span><span class="p">)</span>
+            <span class="n">text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">part</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">&#39;bold deep_sky_blue3&#39;</span><span class="p">)</span>
     <span class="n">formatted</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">text</span><span class="o">.</span><span class="n">markup</span><span class="si">}</span><span class="s1">&#39;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">in_jupyter</span><span class="p">():</span>
         <span class="n">formatted</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="si">{</span><span class="n">formatted</span><span class="si">}</span><span class="s1">&#39;</span>

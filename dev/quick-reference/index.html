@@ -2978,6 +2978,14 @@ whether a parameter is writable, free, constrained, or has fit bounds:</p>
 <span class="n">project</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">fit</span><span class="o">.</span><span class="n">correlations</span><span class="p">()</span>
 <span class="n">project</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">pattern</span><span class="p">(</span><span class="n">expt_name</span><span class="o">=</span><span class="s1">&#39;hrpt&#39;</span><span class="p">)</span>
 </code></pre></div>
+<p>After a Bayesian fit, inspect posterior displays:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">posterior</span><span class="o">.</span><span class="n">distribution</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+<span class="n">project</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">posterior</span><span class="o">.</span><span class="n">distribution</span><span class="p">()</span>
+<span class="n">project</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">posterior</span><span class="o">.</span><span class="n">pairs</span><span class="p">()</span>
+<span class="n">project</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">posterior</span><span class="o">.</span><span class="n">predictive</span><span class="p">(</span><span class="n">expt_name</span><span class="o">=</span><span class="s1">&#39;hrpt&#39;</span><span class="p">)</span>
+</code></pre></div>
+<p>Call <code>project.display.posterior.distribution()</code> without <code>param</code> to plot
+the marginal distribution for each free parameter one by one.</p>
 <h2 id="add-simple-constraints">Add Simple Constraints</h2>
 <p>Create aliases from parameter objects, then define a constraint
 expression using those aliases:</p>
