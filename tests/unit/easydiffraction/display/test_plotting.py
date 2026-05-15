@@ -607,7 +607,6 @@ def test_build_posterior_pairs_plot_rejects_unknown_style():
 
 
 def test_build_param_distribution_plot_returns_plotly_figure():
-    from easydiffraction.display.plotting import POSTERIOR_INTERVAL_68_FILL_COLOR
     from easydiffraction.display.plotting import POSTERIOR_PAIR_MARGINAL_DENSITY_FILL_COLOR
     from easydiffraction.display.plotting import POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_COLOR
     from easydiffraction.display.plotting import POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_WIDTH
@@ -623,16 +622,12 @@ def test_build_param_distribution_plot_returns_plotly_figure():
     assert {trace.name for trace in figure.data} >= {
         'Posterior histogram',
         'Marginal density',
-        '68% credible interval',
         '95% credible interval',
         'Median',
         'Max posterior',
     }
     marginal_trace = next(trace for trace in figure.data if trace.name == 'Marginal density')
     histogram_trace = next(trace for trace in figure.data if trace.name == 'Posterior histogram')
-    interval_68_trace = next(
-        trace for trace in figure.data if trace.name == '68% credible interval'
-    )
     interval_trace = next(trace for trace in figure.data if trace.name == '95% credible interval')
     max_posterior_trace = next(trace for trace in figure.data if trace.name == 'Max posterior')
     assert marginal_trace.line.color == POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_COLOR
@@ -640,7 +635,7 @@ def test_build_param_distribution_plot_returns_plotly_figure():
     assert marginal_trace.fillcolor == POSTERIOR_PAIR_MARGINAL_DENSITY_FILL_COLOR
     assert marginal_trace.hovertemplate == 'length_a: %{x:.4f}<br>density: %{y:.4f}<extra></extra>'
     assert histogram_trace.xbins.size is not None
-    assert interval_68_trace.fillcolor == POSTERIOR_INTERVAL_68_FILL_COLOR
+    assert '68% credible interval' not in {trace.name for trace in figure.data}
     assert interval_trace.fillcolor == POSTERIOR_INTERVAL_95_FILL_COLOR
     assert max_posterior_trace.line.dash == POSTERIOR_POINT_ESTIMATE_LINE_DASH
     assert figure.layout.xaxis.range is not None
@@ -685,7 +680,7 @@ def test_plot_posterior_predictive_summary_uses_consistent_labels_and_styles(mon
     measured_trace = next(trace for trace in fig.data if trace.name == 'Measured')
     max_posterior_trace = next(trace for trace in fig.data if trace.name == 'Max posterior')
 
-    assert upper_band_trace.name == '95% interval'
+    assert upper_band_trace.name == '95% credible interval'
     assert upper_band_trace.fillcolor == POSTERIOR_INTERVAL_95_FILL_COLOR
     assert upper_band_trace.legendrank == 30
     assert measured_trace.legendrank == 10

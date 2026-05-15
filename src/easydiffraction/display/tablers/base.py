@@ -99,6 +99,29 @@ class TableBackendBase(ABC):
         return self._rich_to_hex(self._rich_border_color)
 
     @abstractmethod
+    def build_renderable(
+        self,
+        alignments: object,
+        df: object,
+    ) -> object:
+        """
+        Build a backend-native table representation.
+
+        Parameters
+        ----------
+        alignments : object
+            Iterable of column justifications (e.g., ``'left'`` or
+            ``'center'``) corresponding to the data columns.
+        df : object
+            Index-aware DataFrame with data to render.
+
+        Returns
+        -------
+        object
+            Backend-native renderable, such as a Rich table or HTML.
+        """
+
+    @abstractmethod
     def render(
         self,
         alignments: object,

@@ -13,13 +13,13 @@ class TestRichTableBackend:
 
         assert isinstance(RICH_TABLE_BOX, Box)
 
-    def test_build_table_returns_table(self):
+    def test_build_renderable_returns_table(self):
         from easydiffraction.display.tablers.rich import RichTableBackend
 
         backend = RichTableBackend()
         df = pd.DataFrame({'Col': [1.0, 2.0]})
         df.index += 1
-        table = backend._build_table(df, ['left'], 'grey35')
+        table = backend.build_renderable(['left'], df)
         assert isinstance(table, Table)
 
     def test_to_html_returns_string(self):
@@ -28,7 +28,7 @@ class TestRichTableBackend:
         backend = RichTableBackend()
         df = pd.DataFrame({'Col': [1.0]})
         df.index += 1
-        table = backend._build_table(df, ['left'], 'grey35')
+        table = backend.build_renderable(['left'], df)
         html = backend._to_html(table)
         assert isinstance(html, str)
         assert '<pre' in html

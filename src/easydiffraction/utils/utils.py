@@ -563,6 +563,38 @@ def render_table(
     tabler.render(df, display_handle=display_handle)
 
 
+def build_table_renderable(
+    columns_data: object,
+    columns_alignment: object,
+    columns_headers: object = None,
+) -> object:
+    """
+    Build a table renderable for the active display backend.
+
+    Parameters
+    ----------
+    columns_data : object
+        A list of rows, where each row is a list of cell values.
+    columns_alignment : object
+        A list of alignment strings (e.g. ``'left'``, ``'right'``,
+        ``'center'``) matching the number of columns.
+    columns_headers : object, default=None
+        Optional list of column header strings.
+
+    Returns
+    -------
+    object
+        Backend-native renderable, such as a Rich table or HTML.
+    """
+    headers = [
+        (col, align) for col, align in zip(columns_headers, columns_alignment, strict=False)
+    ]
+    df = pd.DataFrame(columns_data, columns=pd.MultiIndex.from_tuples(headers))
+
+    tabler = TableRenderer.get()
+    return tabler.build_renderable(df)
+
+
 def _help_first_sentence(docstring: str | None) -> str:
     """Return the first paragraph of a docstring on one line."""
     if not docstring:

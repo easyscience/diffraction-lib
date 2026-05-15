@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 """Tests for display/tables.py (TableEngineEnum, TableRenderer, TableRendererFactory)."""
 
+from types import SimpleNamespace
+
 import pandas as pd
 
 
@@ -58,4 +60,31 @@ class TestTableRenderer:
         assert len(out) > 0
 
         # Reset singleton to not leak state
+        monkeypatch.setattr(TableRenderer, '_instance', None)
+
+    def test_build_renderable_normalizes_dataframe(self, monkeypatch):
+        from easydiffraction.display.tables import TableRenderer
+
+        monkeypatch.setattr(TableRenderer, '_instance', None)
+
+        headers = [('Col', 'left')]
+        df = pd.DataFrame([['val']], columns=pd.MultiIndex.from_tuples(headers))
+        calls: dict[str, object] = {}
+
+        def fake_build_renderable(alignments, prepared_df):
+            calls['alignments'] = list(alignments)
+            calls['columns'] = list(prepared_df.columns)
+            calls['index'] = list(prepared_df.index)
+            return 'renderable'
+
+        renderer = TableRenderer.get()
+        renderer._backend = SimpleNamespace(build_renderable=fake_build_renderable)
+
+        assert renderer.build_renderable(df) == 'renderable'
+        assert calls == {
+            'alignments': ['left'],
+            'columns': ['Col'],
+            'index': [1],
+        }
+
         monkeypatch.setattr(TableRenderer, '_instance', None)

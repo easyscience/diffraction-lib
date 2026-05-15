@@ -27,7 +27,25 @@ def test_tracker_terminal_flow_prints_and_updates_best(monkeypatch, capsys):
     import easydiffraction.analysis.fit_helpers.tracking as tracking_mod
     from easydiffraction.analysis.fit_helpers.tracking import FitProgressTracker
 
-    monkeypatch.setattr(tracking_mod, 'in_jupyter', lambda: False)
+    events: list[tuple[str, object]] = []
+
+    class FakeIndicator:
+        def __init__(self, label, *, verbosity, display_handle=None):
+            del display_handle
+            events.append(('init', label, verbosity))
+
+        def start(self):
+            events.append(('start', None))
+
+        def update(self, *, label=None, content=None):
+            events.append(('update', label))
+            del content
+
+        def stop(self):
+            events.append(('stop', None))
+
+    monkeypatch.setattr(tracking_mod, 'ActivityIndicator', FakeIndicator)
+    monkeypatch.setattr(tracking_mod, 'build_table_renderable', lambda **kwargs: 'table')
 
     tracker = FitProgressTracker()
     tracker.start_tracking('dummy')
@@ -46,6 +64,7 @@ def test_tracker_terminal_flow_prints_and_updates_best(monkeypatch, capsys):
     out = capsys.readouterr().out
     assert 'Best goodness-of-fit' in out
     assert tracker.best_iteration is not None
+    assert ('init', tracking_mod.ACTIVITY_LABEL_FITTING, tracker._verbosity) in events
 
 
 def test_tracker_sampler_progress_renders_and_completes(monkeypatch, capsys):
@@ -53,7 +72,25 @@ def test_tracker_sampler_progress_renders_and_completes(monkeypatch, capsys):
     from easydiffraction.analysis.fit_helpers.tracking import FitProgressTracker
     from easydiffraction.analysis.fit_helpers.tracking import SamplerProgressUpdate
 
-    monkeypatch.setattr(tracking_mod, 'in_jupyter', lambda: False)
+    events: list[tuple[str, object]] = []
+
+    class FakeIndicator:
+        def __init__(self, label, *, verbosity, display_handle=None):
+            del display_handle
+            events.append(('init', label, verbosity))
+
+        def start(self):
+            events.append(('start', None))
+
+        def update(self, *, label=None, content=None):
+            events.append(('update', label))
+            del content
+
+        def stop(self):
+            events.append(('stop', None))
+
+    monkeypatch.setattr(tracking_mod, 'ActivityIndicator', FakeIndicator)
+    monkeypatch.setattr(tracking_mod, 'build_table_renderable', lambda **kwargs: 'table')
 
     tracker = FitProgressTracker()
     tracker.start_tracking('dream', mode='sampling')
@@ -90,6 +127,8 @@ def test_tracker_sampler_progress_renders_and_completes(monkeypatch, capsys):
     assert 'Bayesian sampling complete.' in out
     assert tracker.best_chi2 == pytest.approx(1.0)
     assert tracker.best_iteration == 10
+    assert ('update', tracking_mod.ACTIVITY_LABEL_BURN_IN) in events
+    assert ('update', tracking_mod.ACTIVITY_LABEL_SAMPLING) in events
 
 
 def test_tracker_helper_error_paths_and_short_mode(monkeypatch):
@@ -97,7 +136,24 @@ def test_tracker_helper_error_paths_and_short_mode(monkeypatch):
     from easydiffraction.analysis.fit_helpers.tracking import FitProgressTracker
     from easydiffraction.utils.enums import VerbosityEnum
 
-    monkeypatch.setattr(tracking_mod, 'in_jupyter', lambda: False)
+    events: list[tuple[str, object]] = []
+
+    class FakeIndicator:
+        def __init__(self, label, *, verbosity, display_handle=None):
+            del display_handle
+            events.append(('init', label, verbosity))
+
+        def start(self):
+            events.append(('start', None))
+
+        def update(self, *, label=None, content=None):
+            events.append(('update', label))
+            del content
+
+        def stop(self):
+            events.append(('stop', None))
+
+    monkeypatch.setattr(tracking_mod, 'ActivityIndicator', FakeIndicator)
 
     tracker = FitProgressTracker()
     tracker._verbosity = VerbosityEnum.SHORT
@@ -111,13 +167,16 @@ def test_tracker_helper_error_paths_and_short_mode(monkeypatch):
         FitProgressTracker()._sampler_iteration_label(1)
 
     assert FitProgressTracker._rows_match_on_columns(['1', 'a'], ['1', 'b'], (0,)) is True
+    assert events == [
+        ('init', tracking_mod.ACTIVITY_LABEL_SAMPLING, VerbosityEnum.SHORT),
+        ('start', None),
+        ('update', tracking_mod.ACTIVITY_LABEL_SAMPLING),
+        ('stop', None),
+    ]
 
 
-def test_tracker_final_sampler_row_replaces_last_row(monkeypatch):
-    import easydiffraction.analysis.fit_helpers.tracking as tracking_mod
+def test_tracker_final_sampler_row_replaces_last_row():
     from easydiffraction.analysis.fit_helpers.tracking import FitProgressTracker
-
-    monkeypatch.setattr(tracking_mod, 'render_table', lambda **kwargs: None)
 
     tracker = FitProgressTracker()
     tracker._tracking_mode = 'sampling'
@@ -137,44 +196,32 @@ def test_tracker_final_sampler_row_replaces_last_row(monkeypatch):
 def test_make_display_handle_uses_terminal_live_when_available(monkeypatch):
     import easydiffraction.analysis.fit_helpers.tracking as tracking_mod
 
-    class FakeLive:
-        def __init__(self, *, console, auto_refresh):
-            self.console = console
-            self.auto_refresh = auto_refresh
-            self.started = False
-            self.stopped = False
+    sentinel = object()
 
-        def start(self):
-            self.started = True
+    monkeypatch.setattr(tracking_mod, 'make_display_handle', lambda: sentinel)
 
-        def stop(self):
-            self.stopped = True
-
-    monkeypatch.setattr(tracking_mod, 'in_jupyter', lambda: False)
-    monkeypatch.setattr(tracking_mod, 'Live', FakeLive)
-    monkeypatch.setattr(tracking_mod.ConsoleManager, 'get', lambda: 'console')
-
-    handle = tracking_mod._make_display_handle()
-
-    assert isinstance(handle, tracking_mod._TerminalLiveHandle)
-    assert handle._live.console == 'console'
-    assert handle._live.auto_refresh is True
-    assert handle._live.started is True
-
-    handle.close()
-
-    assert handle._live.stopped is True
+    assert tracking_mod._make_display_handle() is sentinel
 
 
 def test_tracker_misc_helper_paths(monkeypatch):
     import easydiffraction.analysis.fit_helpers.tracking as tracking_mod
     from easydiffraction.analysis.fit_helpers.tracking import FitProgressTracker
+    from easydiffraction.utils.enums import VerbosityEnum
 
     render_calls: list[dict[str, object]] = []
-    monkeypatch.setattr(tracking_mod, 'render_table', lambda **kwargs: render_calls.append(kwargs))
+    update_calls: list[dict[str, object]] = []
     monkeypatch.setattr(
         tracking_mod, 'calculate_reduced_chi_square', lambda residuals, n_params: 3.0
     )
+    monkeypatch.setattr(
+        tracking_mod,
+        'build_table_renderable',
+        lambda **kwargs: render_calls.append(kwargs) or 'renderable',
+    )
+
+    class FakeIndicator:
+        def update(self, *, label=None, content=None):
+            update_calls.append({'label': label, 'content': content})
 
     tracker = FitProgressTracker()
     tracker._tracking_mode = tracking_mod.TRACKING_MODE_SAMPLER
@@ -197,13 +244,21 @@ def test_tracker_misc_helper_paths(monkeypatch):
     assert tracker._current_elapsed_time() is None
     assert tracker._format_elapsed_time() == ''
 
+    tracker._verbosity = VerbosityEnum.FULL
+    tracker._activity_indicator = FakeIndicator()
     tracker._replace_last_tracking_row(['1'])
 
     assert tracker._df_rows == [['1']]
     assert len(render_calls) == 1
+    assert update_calls == [
+        {
+            'label': tracking_mod.ACTIVITY_LABEL_FITTING,
+            'content': 'renderable',
+        }
+    ]
 
 
-def test_tracker_final_rows_cover_fallbacks_and_close_suppression():
+def test_tracker_final_rows_cover_fallbacks_and_activity_labels():
     import easydiffraction.analysis.fit_helpers.tracking as tracking_mod
     from easydiffraction.analysis.fit_helpers.tracking import FitProgressTracker
 
@@ -218,15 +273,19 @@ def test_tracker_final_rows_cover_fallbacks_and_close_suppression():
     tracker._tracking_mode = tracking_mod.TRACKING_MODE_FIT
     tracker._fitting_time = 1.5
     assert tracker._final_fit_tracking_row() == ['8', '1.50', '', '']
-
-    class BadHandle:
-        @staticmethod
-        def close() -> None:
-            message = 'boom'
-            raise RuntimeError(message)
-
-    tracker._display_handle = BadHandle()
-    tracker._close_display_handle()
+    tracker._tracking_mode = tracking_mod.TRACKING_MODE_SAMPLER
+    assert tracker._default_activity_label() == tracking_mod.ACTIVITY_LABEL_SAMPLING
+    tracker._tracking_mode = tracking_mod.TRACKING_MODE_FIT
+    assert tracker._default_activity_label() == tracking_mod.ACTIVITY_LABEL_FITTING
+    assert (
+        tracker._activity_label_for_sampler_phase('burn-in') == tracking_mod.ACTIVITY_LABEL_BURN_IN
+    )
+    assert (
+        tracker._activity_label_for_sampler_phase('sampling')
+        == tracking_mod.ACTIVITY_LABEL_SAMPLING
+    )
+    assert tracker._activity_label_for_sampler_phase('annealing') == 'annealing'
+    assert tracker._activity_label_for_sampler_phase('') == tracking_mod.ACTIVITY_LABEL_SAMPLING
 
 
 def test_minimizer_base_fit_flow_and_finalize():

@@ -186,6 +186,7 @@
 │   ├── 📄 __init__.py
 │   ├── 📄 base.py
 │   ├── 📄 plotting.py
+│   ├── 📄 progress.py
 │   ├── 📄 tables.py
 │   └── 📄 utils.py
 ├── 📁 io

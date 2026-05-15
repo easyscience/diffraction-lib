@@ -1755,7 +1755,7 @@ window.requestAnimationFrame(installLegendToggleButton);
             line={'color': PREDICTIVE_BAND_EDGE_COLOR, 'width': 1},
             fill='tonexty',
             fillcolor=PREDICTIVE_BAND_COLOR,
-            name='95% interval',
+            name='95% credible interval',
             hoverinfo='skip',
             legendgroup='predictive_band',
             legendrank=35,

@@ -241,6 +241,38 @@ class PandasTableBackend(TableBackendBase):
         object
             Backend-defined return value (commonly ``None``).
         """
-        color = self._pandas_border_color
-        styler = self._apply_styling(df, alignments, color)
+        styler = self._build_styler(alignments, df)
         self._update_display(styler, display_handle)
+
+    def build_renderable(
+        self,
+        alignments: object,
+        df: object,
+    ) -> object:
+        """
+        Build notebook HTML for the provided table.
+
+        Parameters
+        ----------
+        alignments : object
+            Iterable of column justifications (e.g. 'left').
+        df : object
+            Index-aware DataFrame whose index is shown as the first
+            column.
+
+        Returns
+        -------
+        object
+            HTML string representation of the styled table.
+        """
+        styler = self._build_styler(alignments, df)
+        return styler.to_html()
+
+    def _build_styler(
+        self,
+        alignments: object,
+        df: object,
+    ) -> object:
+        """Return a configured pandas Styler for the provided table."""
+        color = self._pandas_border_color
+        return self._apply_styling(df, alignments, color)

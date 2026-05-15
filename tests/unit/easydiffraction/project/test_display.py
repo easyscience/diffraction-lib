@@ -4,15 +4,18 @@
 
 from __future__ import annotations
 
+from contextlib import contextmanager
 from types import SimpleNamespace
 
 import pytest
 
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
+from easydiffraction.display.progress import ACTIVITY_LABEL_PROCESSING
 from easydiffraction.display.plotting import _MeasVsCalcPlotOptions
 from easydiffraction.project.display import PatternOptionStatus
 from easydiffraction.project.display import ProjectDisplay
+from easydiffraction.utils.enums import VerbosityEnum
 
 
 def _make_project_stub() -> tuple[SimpleNamespace, list[tuple[str, tuple, dict]]]:
@@ -47,6 +50,7 @@ def _make_project_stub() -> tuple[SimpleNamespace, list[tuple[str, tuple, dict]]
     project = SimpleNamespace(
         analysis=SimpleNamespace(display=analysis_display),
         rendering=SimpleNamespace(plotter=plotter),
+        verbosity='full',
     )
     return project, calls
 
@@ -207,9 +211,19 @@ def test_fit_display_delegates_to_analysis_and_rendering():
     )
 
 
-def test_posterior_display_delegates_to_rendering_plotter():
+def test_posterior_display_delegates_to_rendering_plotter(monkeypatch):
+    import easydiffraction.project.display as display_mod
+
     project, calls = _make_project_stub()
     display = ProjectDisplay(project)
+    indicator_calls: list[tuple[str, VerbosityEnum]] = []
+
+    @contextmanager
+    def fake_activity_indicator(label, *, verbosity):
+        indicator_calls.append((label, verbosity))
+        yield object()
+
+    monkeypatch.setattr(display_mod, 'activity_indicator', fake_activity_indicator)
 
     display.posterior.pairs(parameters=['a'], threshold=0.5, max_parameters=3)
     display.posterior.distribution('a')
@@ -239,6 +253,10 @@ def test_posterior_display_delegates_to_rendering_plotter():
             'x': 'd_spacing',
         },
     )
+    assert indicator_calls == [
+        (ACTIVITY_LABEL_PROCESSING, VerbosityEnum.FULL),
+        (ACTIVITY_LABEL_PROCESSING, VerbosityEnum.FULL),
+    ]
 
 
 def test_pattern_auto_routes_measured_and_excluded_to_plot_meas():
@@ -266,7 +284,9 @@ def test_pattern_auto_routes_measured_and_excluded_to_plot_meas():
     ]
 
 
-def test_pattern_uncertainty_routes_to_posterior_predictive():
+def test_pattern_uncertainty_routes_to_posterior_predictive(monkeypatch):
+    import easydiffraction.project.display as display_mod
+
     project, calls = _make_project_stub()
     display = ProjectDisplay(project)
     display._pattern_option_statuses = lambda expt_name: _make_statuses(
@@ -276,6 +296,14 @@ def test_pattern_uncertainty_routes_to_posterior_predictive():
         excluded=True,
         uncertainty=True,
     )
+    indicator_calls: list[tuple[str, VerbosityEnum]] = []
+
+    @contextmanager
+    def fake_activity_indicator(label, *, verbosity):
+        indicator_calls.append((label, verbosity))
+        yield object()
+
+    monkeypatch.setattr(display_mod, 'activity_indicator', fake_activity_indicator)
 
     display.pattern(
         'hrpt',
@@ -303,6 +331,7 @@ def test_pattern_uncertainty_routes_to_posterior_predictive():
             },
         )
     ]
+    assert indicator_calls == [(ACTIVITY_LABEL_PROCESSING, VerbosityEnum.FULL)]
 
 
 def test_pattern_measured_and_calculated_suppresses_background_and_bragg():

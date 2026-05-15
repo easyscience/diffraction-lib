@@ -33,3 +33,15 @@ class TestPandasTableBackend:
         df = pd.DataFrame({'A': [1.0], 'B': [2.0]})
         styler = backend._apply_styling(df, ['left', 'right'], '#aabbcc')
         assert hasattr(styler, 'to_html')
+
+    def test_build_renderable_returns_html(self):
+        from easydiffraction.display.tablers.pandas import PandasTableBackend
+
+        pytest.importorskip('jinja2')
+        backend = PandasTableBackend()
+        df = pd.DataFrame({'A': [1.0], 'B': [2.0]})
+
+        html = backend.build_renderable(['left', 'right'], df)
+
+        assert isinstance(html, str)
+        assert '<table' in html

@@ -66,24 +66,27 @@ class RichTableBackend(TableBackendBase):
             "<pre style='margin:0; font-size: 0.9em !important; ' ",
         )
 
-    def _build_table(self, df: object, alignments: object, color: str) -> Table:
+    def build_renderable(
+        self,
+        alignments: object,
+        df: object,
+    ) -> object:
         """
         Construct a Rich Table with formatted data and alignment.
 
         Parameters
         ----------
-        df : object
-            DataFrame-like object providing rows to render.
         alignments : object
             Iterable of text alignment values for columns.
-        color : str
-            Rich color name used for borders/index style.
+        df : object
+            DataFrame-like object providing rows to render.
 
         Returns
         -------
-        Table
+        object
             A :class:`~rich.table.Table` configured for display.
         """
+        color = self._rich_border_color
         table = Table(
             title=None,
             box=RICH_TABLE_BOX,
@@ -172,6 +175,5 @@ class RichTableBackend(TableBackendBase):
         object
             Backend-defined return value (commonly ``None``).
         """
-        color = self._rich_border_color
-        table = self._build_table(df, alignments, color)
+        table = self.build_renderable(alignments, df)
         self._update_display(table, display_handle)

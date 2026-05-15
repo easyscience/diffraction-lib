@@ -1,35 +1,29 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from __future__ import annotations
+
+import sys
 import time
-from contextlib import suppress
 from dataclasses import dataclass
-
-import numpy as np
-
-from easydiffraction.utils.logging import console
-
-try:
-    from IPython.display import HTML
-    from IPython.display import DisplayHandle
-    from IPython.display import display
-except ImportError:
-    display = None
-    clear_output = None
+from typing import TYPE_CHECKING
 
 from easydiffraction.analysis.fit_helpers.metrics import calculate_reduced_chi_square
+from easydiffraction.display.progress import ACTIVITY_LABEL_BURN_IN
+from easydiffraction.display.progress import ACTIVITY_LABEL_FITTING
+from easydiffraction.display.progress import ACTIVITY_LABEL_SAMPLING
+from easydiffraction.display.progress import ActivityIndicator
+from easydiffraction.display.progress import _TerminalLiveHandle as _SharedTerminalLiveHandle
+from easydiffraction.display.progress import make_display_handle
 from easydiffraction.utils.enums import VerbosityEnum
-from easydiffraction.utils.environment import in_jupyter
-from easydiffraction.utils.utils import render_table
+from easydiffraction.utils.logging import console
+from easydiffraction.utils.utils import build_table_renderable
 
-try:
-    from rich.live import Live
-except ImportError:  # pragma: no cover - rich always available in app env
-    Live = None  # type: ignore[assignment]
-
-from easydiffraction.utils.logging import ConsoleManager
+if TYPE_CHECKING:
+    import numpy as np
 
 SIGNIFICANT_CHANGE_THRESHOLD = 0.01  # 1% threshold
+FIT_PROGRESS_UPDATE_SECONDS = 5.0
 SAMPLER_PROGRESS_UPDATE_SECONDS = 5.0
 TRACKING_MODE_FIT = 'fit'
 TRACKING_MODE_SAMPLER = 'sampling'
@@ -37,6 +31,13 @@ DEFAULT_HEADERS = ['iteration', 'time (s)', 'χ²', 'change / status']
 DEFAULT_ALIGNMENTS = ['center', 'center', 'center', 'center']
 SAMPLER_HEADERS = ['iteration', 'progress', 'time (s)', 'log posterior', 'phase']
 SAMPLER_ALIGNMENTS = ['center', 'center', 'center', 'center', 'center']
+
+_TerminalLiveHandle = _SharedTerminalLiveHandle
+
+
+def _make_display_handle() -> object | None:
+    """Return a backward-compatible generic live display handle."""
+    return make_display_handle()
 
 
 @dataclass(frozen=True, slots=True)
@@ -53,56 +54,6 @@ class SamplerProgressUpdate:
     reduced_chi2: float
     elapsed_time: float
     force_report: bool = False
-
-
-class _TerminalLiveHandle:
-    """
-    Adapter that exposes update()/close() for terminal live updates.
-
-    Wraps a rich.live.Live instance but keeps the tracker decoupled from
-    the underlying UI mechanism.
-    """
-
-    def __init__(self, live: object) -> None:
-        self._live = live
-
-    def update(self, renderable: object) -> None:
-        """
-        Refresh the live display with a new renderable.
-
-        Parameters
-        ----------
-        renderable : object
-            A Rich-compatible renderable to display.
-        """
-        self._live.update(renderable, refresh=True)
-
-    def close(self) -> None:
-        """Stop the live display, suppressing any errors."""
-        with suppress(Exception):
-            self._live.stop()
-
-
-def _make_display_handle() -> object | None:
-    """
-    Create and initialize a display/update handle for the environment.
-
-    - In Jupyter, returns an IPython DisplayHandle and creates a
-    placeholder. - In terminal, returns a _TerminalLiveHandle backed by
-    rich Live. - If neither applies, returns None.
-    """
-    if in_jupyter() and display is not None and HTML is not None:
-        h = DisplayHandle()
-        # Create an empty placeholder area to update in place
-        h.display(HTML(''))
-        return h
-    if Live is not None:
-        # Reuse the shared Console to coordinate with logging output
-        # and keep consistent width
-        live = Live(console=ConsoleManager.get(), auto_refresh=True)
-        live.start()
-        return _TerminalLiveHandle(live)
-    return None
 
 
 class FitProgressTracker:
@@ -135,11 +86,13 @@ class FitProgressTracker:
         self._last_sampler_elapsed_time: float | None = None
 
         self._df_rows: list[list[str]] = []
-        self._display_handle: object | None = None
-        self._live: object | None = None
+        self._activity_indicator: ActivityIndicator | None = None
+        self._activity_label: str = ACTIVITY_LABEL_FITTING
+        self._shared_display_handle: object | None = None
 
     def reset(self) -> None:
         """Reset internal state before a new optimization run."""
+        self._stop_activity_indicator()
         self._iteration = 0
         self._previous_chi2 = None
         self._last_chi2 = None
@@ -157,6 +110,8 @@ class FitProgressTracker:
         self._last_sampler_progress_percent = None
         self._last_sampler_log_posterior = None
         self._last_sampler_elapsed_time = None
+        self._df_rows = []
+        self._activity_label = ACTIVITY_LABEL_FITTING
 
     def track(
         self,
@@ -193,47 +148,51 @@ class FitProgressTracker:
             return residuals
 
         row: list[str] = []
+        elapsed_time = self._current_elapsed_time()
 
-        # First iteration, initialize tracking
         if self._previous_chi2 is None:
             self._previous_chi2 = reduced_chi2
             self._best_chi2 = reduced_chi2
             self._best_iteration = self._iteration
+            self._last_progress_time = elapsed_time
 
             row = [
                 str(self._iteration),
-                self._format_elapsed_time(),
+                self._format_elapsed_time(elapsed_time),
                 f'{reduced_chi2:.2f}',
                 '',
             ]
-
-        # Subsequent iterations, check for significant changes
         else:
             change = (self._previous_chi2 - reduced_chi2) / self._previous_chi2
 
-            # Improvement check
             if change > SIGNIFICANT_CHANGE_THRESHOLD:
                 change_in_percent = change * 100
 
                 row = [
                     str(self._iteration),
-                    self._format_elapsed_time(),
+                    self._format_elapsed_time(elapsed_time),
                     f'{reduced_chi2:.2f}',
                     f'{change_in_percent:.1f}% ↓',
                 ]
 
                 self._previous_chi2 = reduced_chi2
+                self._last_progress_time = elapsed_time
+            elif self._should_render_fit_row(elapsed_time):
+                row = [
+                    str(self._iteration),
+                    self._format_elapsed_time(elapsed_time),
+                    f'{reduced_chi2:.2f}',
+                    '',
+                ]
+                self._last_progress_time = elapsed_time
 
-        # Output if there is something new to display
         if row:
             self.add_tracking_info(row)
 
-        # Update best chi-square if better
         if self._best_chi2 is None or reduced_chi2 < self._best_chi2:
             self._best_chi2 = reduced_chi2
             self._best_iteration = self._iteration
 
-        # Store last chi-square and iteration
         self._last_chi2 = reduced_chi2
         self._last_iteration = self._iteration
 
@@ -259,6 +218,7 @@ class FitProgressTracker:
         self._last_sampler_progress_percent = clamped_progress
         self._last_sampler_log_posterior = update.log_posterior
         self._last_sampler_elapsed_time = update.elapsed_time
+        self._set_activity_label(self._activity_label_for_sampler_phase(update.phase))
 
         row = self._initial_sampler_progress_row(
             update=update,
@@ -326,29 +286,20 @@ class FitProgressTracker:
         self._tracking_mode = (
             TRACKING_MODE_SAMPLER if mode == TRACKING_MODE_SAMPLER else TRACKING_MODE_FIT
         )
+        self._df_rows = []
+        self._activity_label = self._default_activity_label()
 
         if self._verbosity is VerbosityEnum.SILENT:
             return
-        if self._verbosity is VerbosityEnum.SHORT:
-            return
 
-        console.print(f"🚀 Starting fit process with '{minimizer_name}'...")
-        if self._tracking_mode == TRACKING_MODE_SAMPLER:
-            console.print('📈 Bayesian sampling progress:')
-        else:
-            console.print('📈 Goodness-of-fit progress:')
+        if self._verbosity is VerbosityEnum.FULL:
+            console.print(f"🚀 Starting fit process with '{minimizer_name}'...")
+            if self._tracking_mode == TRACKING_MODE_SAMPLER:
+                console.print('📈 Bayesian sampling progress:')
+            else:
+                console.print('📈 Goodness-of-fit progress:')
 
-        # Reset rows and create an environment-appropriate handle
-        self._df_rows = []
-        self._display_handle = _make_display_handle()
-
-        # Initial empty table; subsequent updates will reuse the handle
-        render_table(
-            columns_headers=self._headers(),
-            columns_alignment=self._alignments(),
-            columns_data=self._df_rows,
-            display_handle=self._display_handle,
-        )
+        self._start_activity_indicator()
 
     def add_tracking_info(self, row: list[str]) -> None:
         """
@@ -364,16 +315,8 @@ class FitProgressTracker:
             if iteration_cell.isdigit():
                 self._last_reported_iteration = int(iteration_cell)
         self._df_rows.append(row)
-        if self._verbosity is not VerbosityEnum.FULL:
-            return
-        # Append and update via the active handle (Jupyter or
-        # terminal live)
-        render_table(
-            columns_headers=self._headers(),
-            columns_alignment=self._alignments(),
-            columns_data=self._df_rows,
-            display_handle=self._display_handle,
-        )
+        if self._verbosity is VerbosityEnum.FULL:
+            self._refresh_activity_indicator()
 
     def finish_tracking(self) -> None:
         """Finalize progress display and print best result summary."""
@@ -382,11 +325,19 @@ class FitProgressTracker:
         else:
             self._finalize_fit_tracking_row()
 
-        if self._verbosity is not VerbosityEnum.FULL:
+        if self._verbosity is VerbosityEnum.SILENT:
             return
 
-        self._close_display_handle()
-        self._print_completion_summary()
+        self._stop_activity_indicator()
+        if self._verbosity is VerbosityEnum.FULL and not self._cleanup_during_exception():
+            self._print_completion_summary()
+
+    @staticmethod
+    def _cleanup_during_exception() -> bool:
+        """
+        Return whether cleanup runs during exception handling.
+        """
+        return sys.exc_info()[0] is not None
 
     def _initial_sampler_progress_row(
         self,
@@ -511,7 +462,7 @@ class FitProgressTracker:
             f'{final_progress:.1f}%',
             self._format_elapsed_time(elapsed_time),
             log_posterior,
-            self._last_sampler_phase or 'sampling',
+            self._last_sampler_phase or TRACKING_MODE_SAMPLER,
         ]
 
     def _finalize_fit_tracking_row(self) -> None:
@@ -566,14 +517,12 @@ class FitProgressTracker:
         clamped_iteration = min(iteration, self._sampler_total_iterations)
         return f'{clamped_iteration}/{self._sampler_total_iterations}'
 
-    def _close_display_handle(self) -> None:
-        if self._display_handle is not None and hasattr(self._display_handle, 'close'):
-            with suppress(Exception):
-                self._display_handle.close()
-
     def _print_completion_summary(self) -> None:
         if self._tracking_mode == TRACKING_MODE_SAMPLER:
             console.print('✅ Bayesian sampling complete.')
+            return
+
+        if self._best_chi2 is None or self._best_iteration is None:
             return
 
         console.print(
@@ -611,6 +560,11 @@ class FitProgressTracker:
             return ''
         return f'{resolved_time:.2f}'
 
+    def _should_render_fit_row(self, elapsed_time: float | None) -> bool:
+        if elapsed_time is None or self._last_progress_time is None:
+            return False
+        return elapsed_time - self._last_progress_time >= FIT_PROGRESS_UPDATE_SECONDS
+
     @staticmethod
     def _rows_match_on_columns(
         current_row: list[str],
@@ -636,12 +590,67 @@ class FitProgressTracker:
             return
 
         self._df_rows[-1] = row
-        if self._verbosity is not VerbosityEnum.FULL:
+        if self._verbosity is VerbosityEnum.FULL:
+            self._refresh_activity_indicator()
+
+    def _default_activity_label(self) -> str:
+        if self._tracking_mode == TRACKING_MODE_SAMPLER:
+            return ACTIVITY_LABEL_SAMPLING
+        return ACTIVITY_LABEL_FITTING
+
+    @staticmethod
+    def _activity_label_for_sampler_phase(phase: str) -> str:
+        normalized_phase = phase.strip().lower()
+        if normalized_phase == 'burn-in':
+            return ACTIVITY_LABEL_BURN_IN
+        if normalized_phase == 'sampling':
+            return ACTIVITY_LABEL_SAMPLING
+        if normalized_phase:
+            return normalized_phase
+        return ACTIVITY_LABEL_SAMPLING
+
+    def _set_shared_display_handle(self, display_handle: object | None) -> None:
+        self._shared_display_handle = display_handle
+
+    def _start_activity_indicator(self) -> None:
+        self._activity_indicator = ActivityIndicator(
+            self._activity_label,
+            verbosity=self._verbosity,
+            display_handle=self._shared_display_handle,
+        )
+        self._activity_indicator.start()
+        self._refresh_activity_indicator()
+
+    def _stop_activity_indicator(self) -> None:
+        if self._activity_indicator is None:
             return
 
-        render_table(
+        self._activity_indicator.stop()
+        self._activity_indicator = None
+
+    def _set_activity_label(self, label: str) -> None:
+        if label == self._activity_label:
+            return
+
+        self._activity_label = label
+        self._refresh_activity_indicator()
+
+    def _refresh_activity_indicator(self) -> None:
+        if self._activity_indicator is None:
+            return
+
+        if self._verbosity is VerbosityEnum.FULL:
+            self._activity_indicator.update(
+                label=self._activity_label,
+                content=self._table_renderable(),
+            )
+            return
+
+        self._activity_indicator.update(label=self._activity_label)
+
+    def _table_renderable(self) -> object:
+        return build_table_renderable(
             columns_headers=self._headers(),
             columns_alignment=self._alignments(),
             columns_data=self._df_rows,
-            display_handle=self._display_handle,
         )
