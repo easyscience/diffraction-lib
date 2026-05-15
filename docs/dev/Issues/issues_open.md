@@ -1424,6 +1424,31 @@ threaded because each step's output is the next step's input.
 
 ---
 
+## 95. 🟡 Re-Enable DREAM Multiprocessing in CLI Workflows
+
+**Type:** Performance / CLI robustness
+
+On macOS and other spawn-based platforms, running Bayesian scripts via
+direct CLI entry points such as `python script.py` can fail during BUMPS
+`MPMapper` startup because worker processes re-import `__main__` and
+re-execute top-level tutorial code. The current defensive workaround is
+to fall back to serial execution for these direct-script entry points,
+which avoids the crash but disables DREAM multiprocessing in terminal
+workflows.
+
+**Possible solution:** keep the existing tracker-state cleanup before
+pickling and mapper startup, but replace the blanket serial fallback
+with an EasyDiffraction-controlled multiprocessing context policy. For
+direct CLI script entry points, prefer a `fork` context when available
+so workers do not re-import the tutorial top level. Keep the existing
+behavior for import-safe module entry points and for platforms where
+`fork` is unavailable. Document the tradeoff clearly because `fork` on
+macOS is less conservative than `spawn`.
+
+**Depends on:** related to issue 89, but independent.
+
+---
+
 ## 90. 🟢 Show Experiment Number/Total During Sequential Fitting
 
 **Type:** UX
@@ -1546,6 +1571,7 @@ operation is possible (e.g. in automated pipelines or tests).
 | 87  | Redesign tutorial grouping/categorisation        | 🟢 Low   | Documentation    |
 | 88  | Fix Dataset 26 description (47 not 57)           | 🟢 Low   | Data             |
 | 89  | Parallel independent fits for single mode        | 🟡 Med   | Performance      |
+| 95  | Re-enable DREAM multiprocessing in CLI workflows | 🟡 Med   | Performance / CLI robustness |
 | 90  | Show experiment number during sequential fitting | 🟢 Low   | UX               |
 | 91  | Disable TODO checks in CodeFactor PRs            | 🟢 Low   | CI / Tooling     |
 | 92  | Make `save()` respect verbosity                  | 🟢 Low   | UX               |
