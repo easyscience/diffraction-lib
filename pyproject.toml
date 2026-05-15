@@ -24,8 +24,6 @@ classifiers = [
 requires-python = '>=3.12'
 dependencies = [
   'numpy',          # Numerical computing library
-  'colorama',       # Color terminal output
-  'tabulate',       # Pretty-print tabular data for terminal output
   'asciichartpy',   # ASCII charts for terminal output
   'pooch',          # Data downloader
   'typer',          # Command-line interface creation
