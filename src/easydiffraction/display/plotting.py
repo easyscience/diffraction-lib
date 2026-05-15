@@ -214,6 +214,7 @@ class _PosteriorPairsContext:
     labels: list[str]
     annotation_labels: list[str]
     title: str
+    marginal_density_samples: np.ndarray
     density_samples: np.ndarray
     scatter_samples: np.ndarray
     show_contours: bool
@@ -1632,6 +1633,7 @@ class Plotter(RendererBase):
                 self._posterior_pair_title(uncertainty_multiplier),
                 resolved_threshold,
             ),
+            marginal_density_samples=selected_samples,
             density_samples=density_samples,
             scatter_samples=scatter_samples,
             show_contours=show_contours,
@@ -1640,7 +1642,7 @@ class Plotter(RendererBase):
             axis_ranges=self._posterior_pair_axis_ranges(
                 fit_results=fit_results,
                 parameter_names=parameter_names,
-                density_samples=selected_samples,
+                samples=selected_samples,
             ),
         )
 
@@ -1681,7 +1683,7 @@ class Plotter(RendererBase):
         *,
         fit_results: object,
         parameter_names: list[str],
-        density_samples: np.ndarray,
+        samples: np.ndarray,
     ) -> list[tuple[float, float]]:
         """Return per-parameter axis ranges for a pair plot."""
         axis_ranges: list[tuple[float, float]] = []
@@ -1692,7 +1694,7 @@ class Plotter(RendererBase):
             )
             axis_ranges.append(
                 self._posterior_axis_bounds(
-                    density_samples[:, index],
+                    samples[:, index],
                     lower_bound=lower_bound,
                     upper_bound=upper_bound,
                 )
@@ -1777,7 +1779,7 @@ class Plotter(RendererBase):
     ) -> None:
         """Add the diagonal marginal-density panel."""
         go = __import__('plotly.graph_objects', fromlist=['Histogram'])
-        density_values = context.density_samples[:, parameter_index]
+        density_values = context.marginal_density_samples[:, parameter_index]
         density_trace = self._posterior_density_trace(
             fit_results=context.fit_results,
             parameter_name=context.parameter_names[parameter_index],

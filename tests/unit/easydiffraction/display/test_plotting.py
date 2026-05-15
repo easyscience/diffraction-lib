@@ -585,6 +585,7 @@ def test_posterior_pairs_context_thins_kde_samples_and_preserves_axis_ranges():
     context = plotter._posterior_pairs_context(parameters=None)
 
     assert context is not None
+    assert context.marginal_density_samples.shape == (sample_count, parameter_count)
     assert context.density_samples.shape == (
         Plotter._posterior_pair_density_max_points(parameter_count),
         parameter_count,
@@ -594,6 +595,74 @@ def test_posterior_pairs_context_thins_kde_samples_and_preserves_axis_ranges():
     assert context.contour_grid_size == Plotter._posterior_pair_contour_grid_size(parameter_count)
     assert context.axis_ranges[0][1] > 100.0
     assert context.axis_ranges[1][0] < -50.0
+
+
+def test_posterior_pair_diagonal_matches_standalone_distribution_when_thinned():
+    from easydiffraction.analysis.fit_helpers.bayesian import PosteriorParameterSummary
+    from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
+    from easydiffraction.display.plotting import Plotter
+
+    sample_count = 5001
+    angle = np.linspace(0.0, 12.0 * np.pi, sample_count, dtype=float)
+    sample_axis = np.linspace(-1.0, 1.0, sample_count, dtype=float)
+    samples = np.empty((1, sample_count, 2), dtype=float)
+    samples[0, :, 0] = 3.8913 + 0.00016 * np.sin(angle) + 0.00003 * np.cos(2.0 * angle)
+    samples[0, :, 1] = 0.0780 + 0.0024 * np.cos(0.5 * angle) + 0.0005 * sample_axis**2
+    parameter_names = ['length_a', 'broad_gauss_u']
+    posterior_samples = PosteriorSamples(
+        parameter_names=parameter_names,
+        parameter_samples=samples,
+        log_posterior=np.zeros((1, sample_count), dtype=float),
+    )
+    parameters = [
+        SimpleNamespace(unique_name='length_a', name='length_a', fit_min=3.8909, fit_max=3.8917),
+        SimpleNamespace(
+            unique_name='broad_gauss_u',
+            name='broad_gauss_u',
+            fit_min=0.074,
+            fit_max=0.082,
+        ),
+    ]
+    summaries = [
+        PosteriorParameterSummary(
+            unique_name=name,
+            display_name=name,
+            map_value=float(samples[0, -1, index]),
+            median=float(np.median(samples[:, :, index])),
+            standard_deviation=float(np.std(samples[:, :, index], ddof=1)),
+            interval_68=tuple(np.quantile(samples[:, :, index], [0.16, 0.84]).tolist()),
+            interval_95=tuple(np.quantile(samples[:, :, index], [0.025, 0.975]).tolist()),
+        )
+        for index, name in enumerate(parameter_names)
+    ]
+    fit_results = SimpleNamespace(
+        posterior_samples=posterior_samples,
+        posterior_parameter_summaries=summaries,
+        posterior_predictive={},
+        parameters=parameters,
+    )
+    plotter = Plotter()
+    plotter._get_posterior_samples_and_fit_results = MethodType(
+        lambda self: (posterior_samples, fit_results),
+        plotter,
+    )
+    plotter._get_fit_result_for_correlation = MethodType(lambda self: fit_results, plotter)
+
+    pair_figure = plotter._build_posterior_pairs_plot(parameters=parameters)
+    distribution_figure = plotter._build_param_distribution_plot(parameters[0])
+
+    pair_trace = next(
+        trace
+        for trace in pair_figure.data
+        if trace.name == 'Marginal density'
+        and trace.hovertemplate == 'length_a: %{x:.4f}<br>density: %{y:.4f}<extra></extra>'
+    )
+    distribution_trace = next(
+        trace for trace in distribution_figure.data if trace.name == 'Marginal density'
+    )
+
+    np.testing.assert_allclose(pair_trace.x, distribution_trace.x)
+    np.testing.assert_allclose(pair_trace.y, distribution_trace.y)
 
 
 def test_build_posterior_pairs_plot_rejects_unknown_style():
