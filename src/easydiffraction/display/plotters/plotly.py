@@ -38,6 +38,7 @@ DEFAULT_COLORS = {
     'meas': 'rgb(31, 119, 180)',
     'bkg': 'rgb(140, 140, 140)',
     'calc': 'rgb(214, 39, 40)',
+    'posterior': 'rgb(214, 39, 40)',
     'resid': 'rgb(44, 160, 44)',
 }
 

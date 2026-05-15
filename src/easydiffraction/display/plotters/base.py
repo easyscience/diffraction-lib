@@ -191,6 +191,10 @@ SERIES_CONFIG = {
         'mode': 'lines',
         'name': 'Total calculated (Icalc)',
     },
+    'posterior': {
+        'mode': 'lines',
+        'name': 'Max posterior',
+    },
     'bkg': {
         'mode': 'lines',
         'name': 'Background (Ibkg)',

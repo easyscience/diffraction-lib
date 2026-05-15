@@ -1049,8 +1049,10 @@ class Plotter(RendererBase):
         style : str, default='band'
             ``'band'`` shows the 95% credible interval, ``'draws'``
             shows sampled predictive curves, and ``'band+draws'`` shows
-            both together. Single-crystal plots currently render only
-            the interval-based reflection check.
+            both together. ASCII powder plots fall back to measured and
+            max-posterior lines without uncertainty bands or draws.
+            Single-crystal plots currently render only the interval-
+            based reflection check.
         x_min : float | None, default=None
             Lower bound for the x-axis range.
         x_max : float | None, default=None
@@ -1099,10 +1101,6 @@ class Plotter(RendererBase):
             log.warning('Plotter is not attached to a project.')
             return
 
-        if self.engine != PlotterEngineEnum.PLOTLY.value:
-            log.warning('Posterior predictive plots currently require the Plotly backend.')
-            return
-
         self._update_project_categories(expt_name)
         experiment = self._project.experiments[expt_name]
         x_axis, _, sample_form, scattering_type, _ = self._resolve_x_axis(
@@ -1111,6 +1109,12 @@ class Plotter(RendererBase):
         )
 
         if sample_form == SampleFormEnum.SINGLE_CRYSTAL:
+            if self.engine != PlotterEngineEnum.PLOTLY.value:
+                log.warning(
+                    'Single-crystal posterior predictive plots currently '
+                    'require the Plotly backend.'
+                )
+                return
             self._plot_single_crystal_posterior_predictive(
                 experiment=experiment,
                 expt_name=expt_name,
@@ -1237,6 +1241,10 @@ class Plotter(RendererBase):
         style: str,
     ) -> None:
         """Render non-Bragg posterior predictive summaries."""
+        show_draws = self.engine == PlotterEngineEnum.PLOTLY.value and style in {
+            'draws',
+            'band+draws',
+        }
         pattern = intensity_category_for(experiment)
         y_meas = getattr(pattern, 'intensity_meas', None)
         if y_meas is None:
@@ -1264,7 +1272,7 @@ class Plotter(RendererBase):
             experiment=experiment,
             expt_name=expt_name,
             x_axis=x_axis,
-            include_draws=style in {'draws', 'band+draws'},
+            include_draws=show_draws,
         )
         if summary is None:
             return
@@ -1273,7 +1281,7 @@ class Plotter(RendererBase):
             summary=summary,
             x_min=ctx['x_min'],
             x_max=ctx['x_max'],
-            include_draws=style in {'draws', 'band+draws'},
+            include_draws=show_draws,
         )
         if filtered_summary is None:
             log.warning(
@@ -3448,7 +3456,18 @@ class Plotter(RendererBase):
         show_draws: bool,
         excluded_ranges: tuple[tuple[float, float], ...] = (),
     ) -> None:
-        """Render posterior predictive summaries using Plotly."""
+        """Render posterior predictive summaries using the active backend."""
+        if self.engine == PlotterEngineEnum.ASCII.value:
+            self._plot_ascii_posterior_predictive_lines(
+                expt_name=expt_name,
+                x=np.asarray(summary.x, dtype=float),
+                y_meas=np.asarray(y_meas, dtype=float),
+                y_calc=np.asarray(summary.map_prediction, dtype=float),
+                axes_labels=axes_labels,
+                excluded_ranges=excluded_ranges,
+            )
+            return
+
         go = __import__('plotly.graph_objects', fromlist=['Figure', 'Scatter'])
         axis_frame_color = self._plot_axis_frame_color()
 
@@ -3568,6 +3587,27 @@ class Plotter(RendererBase):
         )
         self._show_plot_figure(fig)
 
+    def _plot_ascii_posterior_predictive_lines(
+        self,
+        *,
+        expt_name: str,
+        x: np.ndarray,
+        y_meas: np.ndarray,
+        y_calc: np.ndarray,
+        axes_labels: list[str],
+        excluded_ranges: tuple[tuple[float, float], ...] = (),
+    ) -> None:
+        """Render posterior predictive lines on the ASCII backend."""
+        self._backend.plot_powder(
+            x=x,
+            y_series=[y_meas, y_calc],
+            labels=['meas', 'posterior'],
+            axes_labels=axes_labels,
+            title=f"Posterior predictive for experiment 🔬 '{expt_name}'",
+            height=self.height,
+            excluded_ranges=excluded_ranges,
+        )
+
     def _plot_single_crystal_posterior_predictive_summary(
         self,
         *,
@@ -3679,6 +3719,10 @@ class Plotter(RendererBase):
         style: str,
     ) -> None:
         """Render posterior predictive curves on the powder layout."""
+        show_draws = self.engine == PlotterEngineEnum.PLOTLY.value and style in {
+            'draws',
+            'band+draws',
+        }
         pattern = intensity_category_for(experiment)
         ctx = self._prepare_powder_context(
             pattern,
@@ -3695,7 +3739,7 @@ class Plotter(RendererBase):
             experiment=experiment,
             expt_name=expt_name,
             x_axis=x_axis,
-            include_draws=style in {'draws', 'band+draws'},
+            include_draws=show_draws,
         )
         if summary is None:
             return
@@ -3717,6 +3761,31 @@ class Plotter(RendererBase):
         y_calc = self._filtered_y_array(
             summary.map_prediction, summary.x, ctx['x_min'], ctx['x_max']
         )
+        excluded_ranges = (
+            self._excluded_ranges(
+                experiment=experiment,
+                x_min=ctx['x_min'],
+                x_max=ctx['x_max'],
+            )
+            if plot_options.show_excluded
+            else ()
+        )
+        if self.engine == PlotterEngineEnum.ASCII.value:
+            if plot_options.show_residual:
+                log.warning(
+                    'Posterior predictive residuals are unavailable for '
+                    'ASCII summary plots; ignoring show_residual=True.'
+                )
+            self._plot_ascii_posterior_predictive_lines(
+                expt_name=expt_name,
+                x=np.asarray(ctx['x_filtered'], dtype=float),
+                y_meas=np.asarray(y_meas, dtype=float),
+                y_calc=np.asarray(y_calc, dtype=float),
+                axes_labels=list(ctx['axes_labels']),
+                excluded_ranges=excluded_ranges,
+            )
+            return
+
         show_residual = True if plot_options.show_residual is None else plot_options.show_residual
         y_resid = y_meas - y_calc if show_residual else None
 
@@ -3737,7 +3806,7 @@ class Plotter(RendererBase):
             )
 
         predictive_draws = None
-        if style in {'draws', 'band+draws'}:
+        if show_draws:
             draws = getattr(summary, 'draws', None)
             if draws is None:
                 log.warning('Posterior predictive draws are unavailable for plotting.')
@@ -3760,16 +3829,6 @@ class Plotter(RendererBase):
                 x_min=ctx['x_min'],
                 x_max=ctx['x_max'],
             )
-        excluded_ranges = (
-            self._excluded_ranges(
-                experiment=experiment,
-                x_min=ctx['x_min'],
-                x_max=ctx['x_max'],
-            )
-            if plot_options.show_excluded
-            else ()
-        )
-
         plot_spec = PowderMeasVsCalcSpec(
             x=ctx['x_filtered'],
             y_meas=y_meas,

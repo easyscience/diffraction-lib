@@ -22,6 +22,7 @@ from easydiffraction.utils.logging import console
 DEFAULT_COLORS = {
     'meas': asciichartpy.blue,
     'calc': asciichartpy.red,
+    'posterior': asciichartpy.red,
     'resid': asciichartpy.green,
 }
 

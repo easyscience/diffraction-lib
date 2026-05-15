@@ -23,6 +23,28 @@ def test_ascii_plotter_plot_minimal(capsys):
     assert 'Displaying data for selected x-range' in out
 
 
+def test_ascii_plotter_plot_supports_max_posterior_legend(capsys):
+    from easydiffraction.display.plotters.ascii import AsciiPlotter
+
+    x = np.array([0.0, 1.0, 2.0])
+    y_meas = np.array([1.0, 2.0, 3.0])
+    y_map = np.array([0.5, 1.5, 2.5])
+    plotter = AsciiPlotter()
+
+    plotter.plot_powder(
+        x=x,
+        y_series=[y_meas, y_map],
+        labels=['meas', 'posterior'],
+        axes_labels=['x', 'y'],
+        title='Posterior predictive',
+        height=5,
+    )
+
+    out = capsys.readouterr().out
+    assert 'Measured (Imeas)' in out
+    assert 'Max posterior' in out
+
+
 def test_ascii_plotter_plot_single_crystal(capsys):
     from easydiffraction.display.plotters.ascii import AsciiPlotter
 
