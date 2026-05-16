@@ -624,7 +624,6 @@ class Analysis:
             max_workers=max_workers,
             chunk_size=chunk_size,
             file_pattern=self._sequential_fit.file_pattern.value,
-            extract_diffrn=None,
             reverse=self._sequential_fit.reverse.value,
         )
 

@@ -299,16 +299,17 @@ project.verbosity = 'short'
 
 # %% [markdown]
 #
-# Define a callback that extracts the temperature from each data file.
+# Create a persisted extract rule that reads the temperature from each
+# data file.
 
 
 # %%
-def extract_diffrn(file_path):
-    temperature = ed.extract_metadata(
-        file_path=file_path,
-        pattern=r'^TEMP\s+([0-9.]+)',
-    )
-    return {'ambient_temperature': temperature}
+project.analysis.sequential_fit_extract.create(
+    id='temperature',
+    target='diffrn.ambient_temperature',
+    pattern=r'^TEMP\s+([0-9.]+)',
+    required=True,
+)
 
 
 # %% [markdown]
@@ -319,7 +320,6 @@ project.analysis.fitting_mode_type = 'sequential'
 project.analysis.sequential_fit.data_dir = data_dir
 project.analysis.sequential_fit.max_workers = 'auto'
 project.analysis.sequential_fit.reverse = True
-# TODO: Step 8 - rewrite extract_diffrn as sequential_fit_extract rules.
 project.analysis.fit()
 
 # %% [markdown]

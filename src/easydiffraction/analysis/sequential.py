@@ -9,12 +9,12 @@ from __future__ import annotations
 import contextlib
 import csv
 import multiprocessing as mp
+import re
 import sys
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from dataclasses import replace
 from pathlib import Path
-from typing import TYPE_CHECKING
 from typing import Any
 
 from easydiffraction.display.progress import ACTIVITY_LABEL_FITTING
@@ -24,12 +24,19 @@ from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 
-if TYPE_CHECKING:
-    from collections.abc import Callable
-
 # ------------------------------------------------------------------
 #  Template dataclass (picklable for ProcessPoolExecutor)
 # ------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class SequentialFitExtractRule:
+    """Picklable sequential-fit extract rule for worker execution."""
+
+    id: str
+    field_name: str
+    pattern: str
+    required: bool
 
 
 @dataclass(frozen=True)
@@ -50,6 +57,7 @@ class SequentialFitTemplate:
     constraints_enabled: bool
     minimizer_tag: str
     calculator_tag: str
+    diffrn_extract_rules: list[SequentialFitExtractRule]
     diffrn_field_names: list[str]
 
 
@@ -108,13 +116,16 @@ def _fit_worker(
         # 4. Replace data from the new data path
         expt._load_ascii_data_to_experiment(data_path)
 
-        # 5. Override parameter values from propagated starting values
+        # 5. Extract diffrn metadata from the data file
+        result.update(_extract_diffrn_values(expt, data_path, template.diffrn_extract_rules))
+
+        # 6. Override parameter values from propagated starting values
         _apply_param_overrides(project, template.initial_params)
 
-        # 6. Set free flags
+        # 7. Set free flags
         _set_free_params(project, template.free_param_unique_names)
 
-        # 7. Apply constraints
+        # 8. Apply constraints
         if template.constraints_enabled and template.alias_defs:
             _apply_constraints(
                 project,
@@ -122,14 +133,14 @@ def _fit_worker(
                 template.constraint_defs,
             )
 
-        # 8. Set calculator and minimizer
+        # 9. Set calculator and minimizer
         #    (internal, no console output)
         from easydiffraction.analysis.fitting import Fitter  # noqa: PLC0415
 
         expt._set_calculator_type(template.calculator_tag, announce=False)
         project.analysis.fitter = Fitter(template.minimizer_tag)
 
-        # 9. Fit
+        # 10. Fit
         original_verbosity = project.verbosity
         project.verbosity = 'silent'
         try:
@@ -137,7 +148,7 @@ def _fit_worker(
         finally:
             project.verbosity = original_verbosity
 
-        # 10. Collect results
+        # 11. Collect results
         result.update(_collect_results(project, template))
 
     except (
@@ -237,6 +248,83 @@ def _apply_constraints(
 
     for expr in constraint_defs:
         project.analysis.constraints.create(expression=expr)
+
+
+def _extract_diffrn_values(
+    experiment: object,
+    data_path: str,
+    extract_rules: list[SequentialFitExtractRule],
+) -> dict[str, float]:
+    """
+    Extract diffrn metadata from a single data file.
+
+    Parameters
+    ----------
+    experiment : object
+        The worker experiment whose diffrn descriptors are updated.
+    data_path : str
+        Path to the data file being fitted.
+    extract_rules : list[SequentialFitExtractRule]
+        Persisted extract rules resolved from analysis settings.
+
+    Returns
+    -------
+    dict[str, float]
+        Extracted ``diffrn.<field>`` values for the CSV row.
+
+    Raises
+    ------
+    ValueError
+        If a required rule does not match or captures a non-numeric
+        value.
+    """
+    if not extract_rules:
+        return {}
+
+    compiled_rules = [(rule, re.compile(rule.pattern)) for rule in extract_rules]
+    matched_rule_ids: set[str] = set()
+    extracted_values: dict[str, float] = {}
+
+    with Path(data_path).open(encoding='utf-8', errors='ignore') as handle:
+        for line in handle:
+            for rule, pattern in compiled_rules:
+                if rule.id in matched_rule_ids:
+                    continue
+
+                match = pattern.search(line)
+                if match is None:
+                    continue
+
+                try:
+                    extracted_value = float(match.group(1))
+                except (TypeError, ValueError) as error:
+                    msg = (
+                        f"Sequential extract rule '{rule.id}' captured a non-numeric value "
+                        f"for 'diffrn.{rule.field_name}' in {data_path!r}."
+                    )
+                    raise ValueError(msg) from error
+
+                descriptor = getattr(experiment.diffrn, rule.field_name)
+                descriptor.value = extracted_value
+                extracted_values[f'diffrn.{rule.field_name}'] = extracted_value
+                matched_rule_ids.add(rule.id)
+
+            if len(matched_rule_ids) == len(extract_rules):
+                break
+
+    missing_required = [
+        f"{rule.id} (diffrn.{rule.field_name})"
+        for rule in extract_rules
+        if rule.required and rule.id not in matched_rule_ids
+    ]
+    if missing_required:
+        msg = (
+            f'Sequential extract rules did not match {data_path!r}: '
+            f"{', '.join(missing_required)}."
+        )
+        raise ValueError(msg)
+
+    return extracted_values
 
 
 def _collect_results(
@@ -449,6 +537,7 @@ def _build_template(project: object) -> SequentialFitTemplate:
     SequentialFitTemplate
         A frozen, picklable snapshot.
     """
+    from easydiffraction.core.variable import NumericDescriptor  # noqa: PLC0415
     from easydiffraction.core.variable import Parameter  # noqa: PLC0415
 
     structure = next(iter(project.structures.values()))
@@ -477,12 +566,31 @@ def _build_template(project: object) -> SequentialFitTemplate:
         constraint.expression.value for constraint in project.analysis.constraints
     ]
 
-    # Collect diffrn field names from the experiment
+    # Validate and collect sequential diffrn extract rules against the
+    # template experiment before worker execution starts.
+    diffrn_extract_rules: list[SequentialFitExtractRule] = []
     diffrn_field_names: list[str] = []
-    if hasattr(experiment, 'diffrn'):
-        diffrn_field_names.extend(
-            p.name for p in experiment.diffrn.parameters if hasattr(p, 'name') and p.name != 'type'
+    for extract_rule in project.analysis.sequential_fit_extract:
+        target = extract_rule.target.value
+        field_name = target.split('.', maxsplit=1)[1]
+        descriptor = getattr(experiment.diffrn, field_name, None)
+        if not isinstance(descriptor, NumericDescriptor):
+            msg = (
+                f"Sequential extract target '{target}' must reference an existing numeric "
+                'diffrn descriptor on the template experiment.'
+            )
+            raise ValueError(msg)
+
+        diffrn_extract_rules.append(
+            SequentialFitExtractRule(
+                id=extract_rule.id.value,
+                field_name=field_name,
+                pattern=extract_rule.pattern.value,
+                required=extract_rule.required.value,
+            )
         )
+        if field_name not in diffrn_field_names:
+            diffrn_field_names.append(field_name)
 
     return SequentialFitTemplate(
         structure_cif=structure.as_cif,
@@ -494,6 +602,7 @@ def _build_template(project: object) -> SequentialFitTemplate:
         constraints_enabled=project.analysis.constraints.enabled,
         minimizer_tag=project.analysis.fitting.minimizer_type.value or 'lmfit',
         calculator_tag=experiment.calculation.calculator_type.value,
+        diffrn_extract_rules=diffrn_extract_rules,
         diffrn_field_names=diffrn_field_names,
     )
 
@@ -550,33 +659,6 @@ def _report_chunk_progress(
             rchi2 = r.get('reduced_chi_squared')
             rchi2_str = f'{rchi2:.2f}' if rchi2 is not None else '—'
             console.print(f'  {status} {Path(r["file_path"]).name}: χ² = {rchi2_str}')
-
-
-def _apply_diffrn_metadata(
-    results: list[dict[str, Any]],
-    extract_diffrn: Callable,
-) -> None:
-    """
-    Enrich result dicts with diffrn metadata from a user callback.
-
-    Calls *extract_diffrn* for each result and merges the returned
-    key/value pairs into the result dict under ``diffrn.<key>`` keys.
-    Failures are logged as warnings and do not interrupt processing.
-
-    Parameters
-    ----------
-    results : list[dict[str, Any]]
-        Worker result dicts (mutated in place).
-    extract_diffrn : Callable
-        User callback: ``f(file_path) → {field: value}``.
-    """
-    for result in results:
-        try:
-            diffrn_values = extract_diffrn(result['file_path'])
-            for key, val in diffrn_values.items():
-                result[f'diffrn.{key}'] = val
-        except (RuntimeError, ValueError, TypeError, KeyError, AttributeError, OSError) as exc:
-            log.warning(f'extract_diffrn failed for {result["file_path"]}: {exc}')
 
 
 # ------------------------------------------------------------------
@@ -762,7 +844,6 @@ def _run_fit_loop(
     chunks: list[list[str]],
     template: SequentialFitTemplate,
     csv_info: tuple[Path, list[str]],
-    extract_diffrn: Callable | None,
     verb: VerbosityEnum,
     indicator: ActivityIndicator | None,
 ) -> None:
@@ -779,8 +860,6 @@ def _run_fit_loop(
         Starting template (updated via propagation).
     csv_info : tuple[Path, list[str]]
         Tuple of ``(csv_path, header)``.
-    extract_diffrn : Callable | None
-        User callback for diffrn metadata.
     verb : VerbosityEnum
         Output verbosity.
     indicator : ActivityIndicator | None
@@ -795,9 +874,6 @@ def _run_fit_loop(
                 results = list(executor.map(_fit_worker, templates, chunk))
             else:
                 results = [_fit_worker(template, path) for path in chunk]
-
-            if extract_diffrn is not None:
-                _apply_diffrn_metadata(results, extract_diffrn)
 
             _append_to_csv(csv_path, header, results)
             _report_chunk_progress(chunk_idx, total_chunks, results, verb)
@@ -824,7 +900,6 @@ def fit_sequential(
     max_workers: int | str = 1,
     chunk_size: int | None = None,
     file_pattern: str = '*',
-    extract_diffrn: Callable | None = None,
     *,
     reverse: bool = False,
 ) -> None:
@@ -845,8 +920,6 @@ def fit_sequential(
         Files per chunk. Default ``None`` uses ``max_workers``.
     file_pattern : str, default='*'
         Glob pattern to filter files in *data_dir*.
-    extract_diffrn : Callable | None, default=None
-        User callback: ``f(file_path) → {diffrn_field: value}``.
     reverse : bool, default=False
         When ``True``, process data files in reverse order.  Useful when
         starting values are better matched to the last file (e.g.
@@ -899,7 +972,6 @@ def fit_sequential(
             chunks,
             template,
             (csv_path, header),
-            extract_diffrn,
             verb,
             indicator,
         )
