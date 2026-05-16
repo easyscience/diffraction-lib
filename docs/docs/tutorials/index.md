@@ -89,6 +89,9 @@ The tutorials are organized into the following categories:
 - [Co2SiO4 Temperature scan](ed-17.ipynb) – Sequential Rietveld
   refinement of Co2SiO4 using constant wavelength neutron powder
   diffraction data from D20 at ILL across a temperature scan.
+- [Co2SiO4 Temperature scan, resumed](ed-23.ipynb) – Continue a saved
+  sequential refinement of Co2SiO4 from an existing
+  `analysis/results.csv` after an incomplete previous run.
 
 ## Simulated Data
 

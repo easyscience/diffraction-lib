@@ -314,7 +314,6 @@ project.analysis.sequential_fit_extract.create(
     required=True,
 )
 
-
 # %% [markdown]
 # Set the sequential fitting parameters.
 
