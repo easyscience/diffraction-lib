@@ -48,6 +48,9 @@ def format_value(value: object) -> str:
     # None → CIF unknown marker
     if value is None:
         value = '?'
+    # Booleans use CIF true/false tokens
+    elif isinstance(value, bool):
+        value = 'true' if value else 'false'
     # Convert ints to floats
     elif isinstance(value, int):
         value = float(value)
@@ -68,6 +71,22 @@ def format_value(value: object) -> str:
         return value
     # Everything else: fallback
     return str(value)
+
+
+def _strip_optional_quotes(raw: str) -> str:
+    """Return an unquoted CIF token when it is wrapped in quotes."""
+    is_quoted = len(raw) >= _MIN_QUOTED_LEN and raw[0] == raw[-1] and raw[0] in {"'", '"'}
+    return raw[1:-1] if is_quoted else raw
+
+
+def _parse_bool_cif_value(raw: str) -> bool | str:
+    """Parse CIF boolean tokens, returning the raw token if invalid."""
+    token = _strip_optional_quotes(raw).lower()
+    if token == 'true':
+        return True
+    if token == 'false':
+        return False
+    return _strip_optional_quotes(raw)
 
 
 ##################
@@ -591,10 +610,10 @@ def param_from_cif(
 
     # If string, strip quotes if present
     elif self._value_type == DataTypes.STRING:
-        if len(raw) >= _MIN_QUOTED_LEN and raw[0] == raw[-1] and raw[0] in {"'", '"'}:
-            self.value = raw[1:-1]
-        else:
-            self.value = raw
+        self.value = _strip_optional_quotes(raw)
+
+    elif self._value_type == DataTypes.BOOL:
+        self.value = _parse_bool_cif_value(raw)
 
     # Other types are not supported
     else:
@@ -642,10 +661,11 @@ def _set_param_from_raw_cif_value(
                 param.uncertainty = u.s  # type: ignore[attr-defined]
 
     # If string, strip quotes if present
-    # TODO: Make a helper function for this
     elif param._value_type == DataTypes.STRING:
-        is_quoted = len(raw) >= _MIN_QUOTED_LEN and raw[0] == raw[-1] and raw[0] in {"'", '"'}
-        param.value = raw[1:-1] if is_quoted else raw
+        param.value = _strip_optional_quotes(raw)
+
+    elif param._value_type == DataTypes.BOOL:
+        param.value = _parse_bool_cif_value(raw)
 
     else:
         log.debug(f'Unrecognized type: {param._value_type}')
