@@ -12,26 +12,16 @@ import multiprocessing as mp
 import re
 import sys
 import time
-from concurrent.futures import FIRST_COMPLETED
 from concurrent.futures import ProcessPoolExecutor
-from concurrent.futures import wait
 from dataclasses import dataclass
 from dataclasses import replace
-from io import StringIO
 from pathlib import Path
 from typing import Any
 
-from rich.console import Console
-from rich.text import Text
-
 from easydiffraction.display.progress import ACTIVITY_LABEL_FITTING
-from easydiffraction.display.progress import SPINNER_FRAMES
 from easydiffraction.display.progress import ActivityIndicator
-from easydiffraction.display.progress import resolve_activity_terminal_style
 from easydiffraction.io.ascii import extract_data_paths_from_dir
 from easydiffraction.utils.enums import VerbosityEnum
-from easydiffraction.utils.environment import in_jupyter
-from easydiffraction.utils.logging import ConsoleManager
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import build_table_renderable
@@ -649,7 +639,6 @@ _SEQUENTIAL_CHUNK_PROGRESS_ALIGNMENTS = [
 ]
 _SEQUENTIAL_FILE_PROGRESS_HEADERS = ['file', 'progress', 'time (s)', 'χ²', 'iterations', 'status']
 _SEQUENTIAL_FILE_PROGRESS_ALIGNMENTS = ['left', 'right', 'right', 'right', 'right', 'center']
-_SEQUENTIAL_SPINNER_FRAME_SECONDS = 0.1
 
 
 @dataclass
@@ -667,7 +656,6 @@ class SequentialProgressContext:
     verbosity: VerbosityEnum
     state: SequentialProgressState | None
     indicator: ActivityIndicator | None = None
-    display_handle: object | None = None
 
 
 @dataclass(frozen=True)
@@ -796,96 +784,6 @@ def _build_progress_renderable(
     )
 
 
-class _TerminalSequentialDisplay:
-    """
-    Render a terminal-only sequential table with a spinner below it.
-    """
-
-    def __init__(
-        self,
-        *,
-        console: Console,
-        label: str,
-        renderable: object,
-    ) -> None:
-        self._console = console
-        self._label = label
-        self._renderable = renderable
-        self._frame_index = 0
-        self._region_height = 0
-        self._started = False
-        self._closed = False
-
-    def start(self) -> None:
-        """Print the initial table and spinner region."""
-        if self._started:
-            return
-        self._started = True
-        self._redraw(clear_existing=False)
-
-    def update(self, renderable: object) -> None:
-        """
-        Redraw the table region and keep the spinner on the last line.
-        """
-        self._renderable = renderable
-        if not self._started or self._closed:
-            return
-        self._redraw(clear_existing=True)
-
-    def advance(self) -> None:
-        """Advance the spinner frame without redrawing the table."""
-        if not self._started or self._closed:
-            return
-        self._frame_index = (self._frame_index + 1) % len(SPINNER_FRAMES)
-        self._write('\x1b[1A\r\x1b[2K')
-        self._write(self._spinner_line())
-        self._write('\n')
-
-    def close(self) -> None:
-        """Clear the spinner line and leave the final table visible."""
-        if not self._started or self._closed:
-            return
-        self._write('\x1b[1A\r\x1b[2K\n')
-        self._closed = True
-
-    def _redraw(self, *, clear_existing: bool) -> None:
-        lines = [*self._render_lines(self._renderable), self._spinner_line()]
-        if clear_existing and self._region_height > 0:
-            self._write(f'\x1b[{self._region_height}A\r\x1b[J')
-        self._region_height = len(lines)
-        self._write('\n'.join(lines))
-        self._write('\n')
-
-    def _spinner_line(self) -> str:
-        frame = SPINNER_FRAMES[self._frame_index]
-        style = resolve_activity_terminal_style(self._console)
-        return self._render_lines(Text(f'{frame} {self._label}', style=style))[0]
-
-    def _render_lines(self, renderable: object) -> list[str]:
-        buffer = StringIO()
-        width = getattr(self._console, 'width', 130)
-        color_system = getattr(self._console, 'color_system', None) or 'auto'
-        render_console = Console(
-            file=buffer,
-            width=width,
-            force_jupyter=False,
-            force_terminal=True,
-            color_system=color_system,
-            no_color=getattr(self._console, 'no_color', False),
-            legacy_windows=getattr(self._console, 'legacy_windows', False),
-        )
-        render_console.print(renderable)
-        rendered = buffer.getvalue().rstrip('\n')
-        if not rendered:
-            return ['']
-        return rendered.splitlines()
-
-    def _write(self, text: str) -> None:
-        output = getattr(self._console, 'file', sys.stdout)
-        output.write(text)
-        output.flush()
-
-
 def _create_progress_context(verbosity: VerbosityEnum) -> SequentialProgressContext:
     """Return a mutable progress context for the given verbosity."""
     if verbosity is VerbosityEnum.SILENT:
@@ -912,28 +810,11 @@ def _start_indicator_with_renderable(
 
 
 def _start_progress_display(progress: SequentialProgressContext) -> None:
-    """Start the terminal or notebook progress display for a run."""
+    """Start the progress display (Rich Live indicator) for a run."""
     if progress.verbosity is VerbosityEnum.SILENT or progress.state is None:
         return
 
     initial_renderable = _build_progress_renderable(progress.verbosity, progress.state)
-    if in_jupyter():
-        progress.indicator = _start_indicator_with_renderable(
-            progress.verbosity,
-            initial_renderable,
-        )
-        return
-
-    terminal_console = ConsoleManager.get()
-    if terminal_console.is_terminal and not terminal_console.is_dumb_terminal:
-        progress.display_handle = _TerminalSequentialDisplay(
-            console=terminal_console,
-            label=ACTIVITY_LABEL_FITTING,
-            renderable=initial_renderable,
-        )
-        progress.display_handle.start()
-        return
-
     progress.indicator = _start_indicator_with_renderable(
         progress.verbosity,
         initial_renderable,
@@ -941,13 +822,9 @@ def _start_progress_display(progress: SequentialProgressContext) -> None:
 
 
 def _stop_progress_display(progress: SequentialProgressContext) -> None:
-    """Stop and close any active sequential-fit progress displays."""
+    """Stop any active sequential-fit progress display."""
     if progress.indicator is not None:
         progress.indicator.stop()
-
-    if progress.display_handle is not None and hasattr(progress.display_handle, 'close'):
-        with contextlib.suppress(Exception):
-            progress.display_handle.close()
 
 
 def _print_sequential_header(
@@ -1096,10 +973,6 @@ def _report_chunk_progress(
         )
 
     renderable = _build_progress_renderable(progress.verbosity, progress.state)
-    if progress.display_handle is not None and hasattr(progress.display_handle, 'update'):
-        progress.display_handle.update(renderable)
-        return
-
     if progress.indicator is not None:
         progress.indicator.update(content=renderable)
 
@@ -1310,36 +1183,9 @@ def _run_fit_loop(
     total_files = sum(len(chunk) for chunk in chunks)
     completed_files = 0
     started_at = time.perf_counter()
-    display_handle = progress.display_handle
     with pool_cm as executor:
         for chunk_idx, chunk in enumerate(chunks, start=1):
-            if (
-                executor is not None
-                and display_handle is not None
-                and hasattr(display_handle, 'advance')
-            ):
-                future_to_index = {
-                    executor.submit(_fit_worker, template, path): index
-                    for index, path in enumerate(chunk)
-                }
-                pending = set(future_to_index)
-                ordered_results: list[dict[str, Any] | None] = [None] * len(chunk)
-
-                while pending:
-                    done, pending = wait(
-                        pending,
-                        timeout=_SEQUENTIAL_SPINNER_FRAME_SECONDS,
-                        return_when=FIRST_COMPLETED,
-                    )
-                    if not done:
-                        display_handle.advance()
-                        continue
-
-                    for future in done:
-                        ordered_results[future_to_index[future]] = future.result()
-
-                results = [result for result in ordered_results if result is not None]
-            elif executor is not None:
+            if executor is not None:
                 templates = [template] * len(chunk)
                 results = list(executor.map(_fit_worker, templates, chunk))
             else:

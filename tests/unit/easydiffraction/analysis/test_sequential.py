@@ -6,12 +6,9 @@ from __future__ import annotations
 
 import contextlib
 import csv
-from io import StringIO
 from types import SimpleNamespace
 
 import pytest
-from rich.console import Console
-from rich.table import Table
 
 from easydiffraction.analysis.sequential import SequentialFitTemplate
 from easydiffraction.analysis.sequential import _META_COLUMNS
@@ -74,39 +71,6 @@ class _RecordingConsole:
         self._events.append(('console_print', args, kwargs))
 
 
-class _RecordingDisplayHandle:
-    def __init__(self, events):
-        self._events = events
-
-    def start(self):
-        self._events.append(('display_start',))
-
-    def update(self, renderable):
-        self._events.append(('display_update', renderable))
-
-    def close(self):
-        self._events.append(('display_close',))
-
-
-def _make_terminal_display(events):
-    class RecordingTerminalDisplay:
-        def __init__(self, *, console, label, renderable):
-            del console
-            events.append(('display_init', label, renderable))
-            self._handle = _RecordingDisplayHandle(events)
-
-        def start(self):
-            self._handle.start()
-
-        def update(self, renderable):
-            self._handle.update(renderable)
-
-        def close(self):
-            self._handle.close()
-
-    return RecordingTerminalDisplay
-
-
 def _make_indicator(events):
     class RecordingIndicator:
         def __init__(self, label, *, verbosity, animated=True):
@@ -136,7 +100,6 @@ def _make_run_fit_loop(events, template, verbosity):
         events.append((
             'run_loop',
             progress.indicator is not None,
-            progress.display_handle is not None,
         ))
 
     return fake_run_fit_loop
@@ -178,21 +141,10 @@ def _run_non_silent_fit(monkeypatch, tmp_path, *, verbosity, is_jupyter):
         )(None, chunks, template_arg, csv_info, progress),
     )
     monkeypatch.setattr(sequential_mod, 'ActivityIndicator', _make_indicator(events))
-    monkeypatch.setattr(sequential_mod, 'in_jupyter', lambda: is_jupyter)
-    monkeypatch.setattr(
-        sequential_mod.ConsoleManager,
-        'get',
-        lambda: SimpleNamespace(
-            is_terminal=True,
-            is_dumb_terminal=False,
-        ),
-    )
-    monkeypatch.setattr(
-        sequential_mod, '_TerminalSequentialDisplay', _make_terminal_display(events)
-    )
     monkeypatch.setattr(
         sequential_mod, '_build_progress_renderable', _progress_renderable_snapshot
     )
+    del is_jupyter  # legacy parameter, no longer affects behavior
 
     analysis = SimpleNamespace(
         project=SimpleNamespace(verbosity=verbosity),
@@ -524,106 +476,38 @@ def test_report_chunk_progress_updates_indicator(monkeypatch, verbosity):
     assert updates == [('renderable', verbosity, expected_chunk_rows, expected_file_rows)]
 
 
-def test_report_chunk_progress_uses_display_handle_when_provided(monkeypatch):
-    import easydiffraction.analysis.sequential as sequential_mod
-
-    updates: list[object] = []
-    progress_state = sequential_mod.SequentialProgressState(chunk_rows=[], file_rows=[])
-
-    class FakeDisplayHandle:
-        def update(self, renderable):
-            updates.append(renderable)
-
-    monkeypatch.setattr(
-        sequential_mod, '_build_progress_renderable', _progress_renderable_snapshot
-    )
-
-    progress = sequential_mod.SequentialProgressContext(
-        verbosity=VerbosityEnum.FULL,
-        state=progress_state,
-        display_handle=FakeDisplayHandle(),
-    )
-
-    sequential_mod._report_chunk_progress(
-        1,
-        2,
-        [_TEST_SCAN_001],
-        [
-            {
-                'file_path': _TEST_SCAN_001,
-                'fit_success': True,
-                'reduced_chi_squared': 3.5,
-                'n_iterations': 12,
-            }
-        ],
-        progress,
-        1,
-        2,
-        3.50,
-    )
-
-    assert updates == [
-        ('renderable', VerbosityEnum.FULL, [], [['scan_001.xye', '100.0%', '3.50', '3.50', '12', '✅']])
-    ]
-
-
 @pytest.mark.parametrize(
-    ('verbosity', 'is_jupyter', 'expects_display_handle', 'expects_indicator'),
-    [
-        ('short', False, True, False),
-        ('full', False, True, False),
-        ('full', True, False, True),
-    ],
+    'verbosity',
+    ['short', 'full'],
 )
 def test_fit_sequential_non_silent_starts_indicator_with_progress_table(
     monkeypatch,
     tmp_path,
     verbosity,
-    is_jupyter,
-    expects_display_handle,
-    expects_indicator,
 ):
     events = _run_non_silent_fit(
         monkeypatch,
         tmp_path,
         verbosity=verbosity,
-        is_jupyter=is_jupyter,
+        is_jupyter=False,
     )
 
-    if expects_display_handle:
-        assert events == [
-            ('paragraph', 'Sequential fitting'),
-            ('console_print', ("🚀 Starting fit process with 'lmfit'...",), {}),
-            ('console_print', ('📋 1 files in 1 chunks (max_workers=1)',), {}),
-            ('console_print', ('📈 Goodness-of-fit progress:',), {}),
-            (
-                'display_init',
-                ACTIVITY_LABEL_FITTING,
-                ('renderable', VerbosityEnum(verbosity), [], []),
-            ),
-            ('display_start',),
-            ('run_loop', False, True),
-            ('display_close',),
-            ('console_print', ('✅ Sequential fitting complete: 1 files processed.',), {}),
-            ('console_print', (f'📄 Results saved to: {tmp_path / "results.csv"}',), {}),
-        ]
-    else:
-        assert events == [
-            ('paragraph', 'Sequential fitting'),
-            ('console_print', ("🚀 Starting fit process with 'lmfit'...",), {}),
-            ('console_print', ('📋 1 files in 1 chunks (max_workers=1)',), {}),
-            ('console_print', ('📈 Goodness-of-fit progress:',), {}),
-            ('init', ACTIVITY_LABEL_FITTING, VerbosityEnum(verbosity), True),
-            ('start',),
-            ('update', None, ('renderable', VerbosityEnum(verbosity), [], [])),
-            ('run_loop', True, False),
-            ('stop',),
-            ('console_print', ('✅ Sequential fitting complete: 1 files processed.',), {}),
-            ('console_print', (f'📄 Results saved to: {tmp_path / "results.csv"}',), {}),
-        ]
+    assert events == [
+        ('paragraph', 'Sequential fitting'),
+        ('console_print', ("🚀 Starting fit process with 'lmfit'...",), {}),
+        ('console_print', ('📋 1 files in 1 chunks (max_workers=1)',), {}),
+        ('console_print', ('📈 Goodness-of-fit progress:',), {}),
+        ('init', ACTIVITY_LABEL_FITTING, VerbosityEnum(verbosity), True),
+        ('start',),
+        ('update', None, ('renderable', VerbosityEnum(verbosity), [], [])),
+        ('run_loop', True),
+        ('stop',),
+        ('console_print', ('✅ Sequential fitting complete: 1 files processed.',), {}),
+        ('console_print', (f'📄 Results saved to: {tmp_path / "results.csv"}',), {}),
+    ]
 
 
-def test_run_fit_loop_advances_terminal_display_while_waiting(monkeypatch, tmp_path):
+def test_run_fit_loop_runs_chunks_sequentially_with_executor_map(monkeypatch, tmp_path):
     import easydiffraction.analysis.sequential as sequential_mod
 
     template = _minimal_template()
@@ -632,27 +516,21 @@ def test_run_fit_loop_advances_terminal_display_while_waiting(monkeypatch, tmp_p
     progress = sequential_mod.SequentialProgressContext(
         verbosity=VerbosityEnum.SHORT,
         state=sequential_mod.SequentialProgressState(chunk_rows=[], file_rows=[]),
-        display_handle=SimpleNamespace(advance=lambda: events.append(('advance',))),
     )
 
-    class FakeFuture:
-        def __init__(self, path):
-            self.path = path
-
-        def result(self):
-            return {
-                'file_path': self.path,
-                'fit_success': True,
-                'reduced_chi_squared': 1.0 if self.path.endswith('001.xye') else 2.0,
-                'n_iterations': 5,
-                'params': {'cell.a': 4.0},
-            }
-
     class FakeExecutor:
-        def submit(self, func, template_arg, path):
+        def map(self, func, templates, paths):
             assert func is sequential_mod._fit_worker
-            assert template_arg == template
-            return FakeFuture(path)
+            for template_arg in templates:
+                assert template_arg == template
+            for path in paths:
+                yield {
+                    'file_path': path,
+                    'fit_success': True,
+                    'reduced_chi_squared': 1.0,
+                    'n_iterations': 5,
+                    'params': {'cell.a': 4.0},
+                }
 
     class FakePool:
         def __enter__(self):
@@ -662,17 +540,6 @@ def test_run_fit_loop_advances_terminal_display_while_waiting(monkeypatch, tmp_p
             del exc_type, exc, tb
             return False
 
-    def fake_wait(pending, timeout, return_when):
-        assert timeout == sequential_mod._SEQUENTIAL_SPINNER_FRAME_SECONDS
-        assert return_when == sequential_mod.FIRST_COMPLETED
-        pending_by_path = {future.path: future for future in pending}
-        if _TEST_SCAN_001 in pending_by_path and _TEST_SCAN_002 in pending_by_path:
-            if not any(event[0] == 'advance' for event in events):
-                return set(), set(pending)
-            return {pending_by_path[_TEST_SCAN_001]}, {pending_by_path[_TEST_SCAN_002]}
-        return set(pending), set()
-
-    monkeypatch.setattr(sequential_mod, 'wait', fake_wait)
     monkeypatch.setattr(
         sequential_mod,
         '_append_to_csv',
@@ -698,37 +565,9 @@ def test_run_fit_loop_advances_terminal_display_while_waiting(monkeypatch, tmp_p
     )
 
     assert events == [
-        ('advance',),
         ('append', tmp_path / 'results.csv', header, [_TEST_SCAN_001, _TEST_SCAN_002]),
         ('report', [_TEST_SCAN_001, _TEST_SCAN_002]),
     ]
-
-
-def test_terminal_sequential_display_preserves_ansi_styles():
-    import easydiffraction.analysis.sequential as sequential_mod
-
-    terminal_console = Console(
-        file=StringIO(),
-        width=40,
-        force_jupyter=False,
-        force_terminal=True,
-        color_system='standard',
-    )
-    table = Table(border_style='red')
-    table.add_column('chunk')
-    table.add_row('1/2')
-
-    display = sequential_mod._TerminalSequentialDisplay(
-        console=terminal_console,
-        label='Fitting...',
-        renderable=table,
-    )
-
-    spinner_line = display._spinner_line()
-    table_lines = display._render_lines(table)
-
-    assert '\x1b[' in spinner_line
-    assert any('\x1b[' in line for line in table_lines)
 
 
 def test_fit_sequential_silent_does_not_start_indicator(monkeypatch, tmp_path):
@@ -754,7 +593,6 @@ def test_fit_sequential_silent_does_not_start_indicator(monkeypatch, tmp_path):
         assert progress.verbosity is VerbosityEnum.SILENT
         assert progress.state is None
         assert progress.indicator is None
-        assert progress.display_handle is None
 
     monkeypatch.setattr(sequential_mod, 'ActivityIndicator', FailingIndicator)
     monkeypatch.setattr(sequential_mod.mp, 'parent_process', lambda: None)
