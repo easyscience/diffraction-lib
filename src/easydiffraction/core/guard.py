@@ -14,6 +14,31 @@ if TYPE_CHECKING:
     from collections.abc import Generator
 
 
+def _apply_help_filter(
+    obj: object,
+    properties: list[str],
+    methods: list[str],
+) -> tuple[list[str], list[str]]:
+    """Apply an optional instance help filter that may only hide members."""
+    help_filter = getattr(obj, '_help_filter', None)
+    if not callable(help_filter):
+        return properties, methods
+
+    filtered_properties, filtered_methods = help_filter(list(properties), list(methods))
+    invalid_properties = sorted(set(filtered_properties) - set(properties))
+    invalid_methods = sorted(set(filtered_methods) - set(methods))
+    if invalid_properties or invalid_methods:
+        owner_name = type(obj).__name__
+        msg = f'{owner_name}._help_filter() may only hide discovered members.'
+        if invalid_properties:
+            msg += f' Invalid properties: {invalid_properties}.'
+        if invalid_methods:
+            msg += f' Invalid methods: {invalid_methods}.'
+        raise RuntimeError(msg)
+
+    return filtered_properties, filtered_methods
+
+
 class GuardedBase(ABC):
     """Base class enforcing controlled attribute access and linkage."""
 
@@ -208,8 +233,14 @@ class GuardedBase(ABC):
             if key not in seen:
                 seen[key] = prop
 
+        property_names = sorted(seen)
+
+        methods = dict(cls._iter_methods())
+        method_names = sorted(methods)
+        property_names, method_names = _apply_help_filter(self, property_names, method_names)
+
         prop_rows = []
-        for i, key in enumerate(sorted(seen), 1):
+        for i, key in enumerate(property_names, 1):
             prop = seen[key]
             writable = '✓' if prop.fset else '✗'
             doc = self._first_sentence(prop.fget.__doc__ if prop.fget else None)
@@ -223,9 +254,8 @@ class GuardedBase(ABC):
                 columns_data=prop_rows,
             )
 
-        methods = dict(cls._iter_methods())
         method_rows = []
-        for i, key in enumerate(sorted(methods), 1):
+        for i, key in enumerate(method_names, 1):
             doc = self._first_sentence(getattr(methods[key], '__doc__', None))
             method_rows.append([str(i), f'{key}()', doc])
 
