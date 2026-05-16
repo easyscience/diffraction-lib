@@ -114,20 +114,18 @@ The common `fitting` category owns configuration shared by all fit
 modes. Initially this includes:
 
 - `minimizer_type`
-- current selected mode, exposed as a **read-only** descriptor
-  (`fitting.mode`) that mirrors the owner-level selector
 
 Additional settings that apply to all fit modes can be added here later.
 Verbosity remains a call-level or project-level concern and does not
 need to be persisted in this category.
 
 **Single source of truth.** `Analysis.fitting_mode_type` is the only
-writable public surface for the active mode. `fitting.mode` is a
-read-only mirror used exclusively for CIF serialization and inspection.
-Internal mutation flows through a private `_set_mode(...)` on the
-`fitting` category, invoked by the `fitting_mode_type` setter. This
-matches the project convention that public attributes are either
-editable or read-only, never both.
+writable surface for the active mode, and the only place the mode is
+stored at runtime. The CIF field `_fitting.mode` (§8) is synthesized
+directly from `analysis.fitting_mode_type` at serialization time and
+applied back to the selector on load. There is no mirror descriptor on
+the `fitting` category. This keeps the runtime model free of duplicated
+state.
 
 ### 2. Add an owner-level fitting-mode selector
 
@@ -651,19 +649,21 @@ This would make `fitting` contain `data_dir`, `max_workers`, and
 joint-fit weights even when those fields do not apply to the active
 mode. It weakens help output and makes CIF harder to read.
 
-### Use `analysis.fitting.mode = 'sequential'` as the public selector
+### Use `analysis.fitting.mode` as the public selector
 
 Rejected for the public API.
 
-Although `_fitting.mode` is a good serialized field, the public selector
-should follow the existing switchable-category owner style:
+Although `_fitting.mode` is the CIF spelling, the public selector should
+follow the existing switchable-category owner style:
 
 ```python
 project.analysis.fitting_mode_type = 'sequential'
 ```
 
-The `fitting.mode` descriptor may exist internally or as a read-only
-mirror for CIF, but users should not be asked to set it directly.
+A separate `fitting.mode` descriptor on the runtime `fitting` category
+is also rejected: it would duplicate state already held by
+`fitting_mode_type`. `_fitting.mode` is synthesized at serialization
+time instead of being mirrored on a runtime object.
 
 ### Replace the `fitting` category object per fit mode
 
@@ -689,6 +689,98 @@ Rejected.
 Persisting inactive categories would make saved projects ambiguous for
 CLI workflows. The selected mode should determine which mode-specific
 category is authoritative.
+
+## Open Questions
+
+These questions are intentionally left unresolved in this ADR. Each
+must be settled during the implementation plan or in a follow-up ADR
+before code lands.
+
+### Architectural / API
+
+- **Active-sibling pattern formalization.** This ADR names the pattern
+  and documents the contract informally. Open: should the pattern be
+  promoted into `architecture.md` (or a dedicated ADR) so future
+  conditional-sibling categories follow the same naming and lifecycle
+  rules, or should it remain documented only here until a second use
+  case appears?
+- **Direct access to inactive mode categories.** \u00a77 specifies the
+  lenient behaviour: reading `analysis.sequential_fit` in `joint` mode
+  returns the underlying object, mutation does not raise, but values
+  are not serialized. Open: is this the right trade-off, or should
+  access raise a `ModeError` to prevent silent data loss on save?
+
+### Data model
+
+- **`joint_fit` and experiment lifecycle.** Stale rows raise at `fit()`
+  time. Open: should `joint_fit` also listen for experiment-collection
+  changes and prune (or warn) on experiment deletion, or remain
+  passive until execution?
+- **`joint_fit` weight bounds.** Default weight is `1.0`. Open: is
+  `weight = 0` allowed (effective exclusion), and what is the upper
+  bound, if any? Should weights share the validator used by free
+  parameters?
+- **`sequential_fit_extract` target scope.** Targets are initially
+  numeric descriptors under `experiment.diffrn`. Open:
+  - are nested descriptors (`diffrn.foo.bar`) allowed, or only one
+    level?
+  - is the same target reachable from two rules (last wins, error, or
+    merge)?
+  - how is the supported-prefix list extended when new
+    sample-environment categories appear?
+- **`sequential_fit_extract` failure aggregation.** A failed `required`
+  rule marks the file failed. Open: does one failure abort the whole
+  sequential run, just exclude that file from results, or apply a
+  max-failure threshold?
+- **Extraction caching.** Files may be re-read on resume or partial
+  replay. Open: is extraction re-run each time, or cached alongside
+  results in `analysis/results.csv`?
+
+### Persistence & CLI
+
+- **CIF round-trip for `auto` `max_workers`.** The on-disk value is the
+  token `auto`. Open: when CLI overrides resolve `auto` to a concrete
+  integer for one run, is that integer ever written back, or is the
+  token always preserved on disk regardless of runtime resolution?
+- **Serialization order for `_fitting.*`.** \u00a79 specifies
+  deserialization order. Open: pin serialization order too (mode first,
+  then `minimizer_type`, then mode-specific siblings) so generated
+  files are stable for diffing?
+- **Failure mid-sequential-run.** Open: if `fit()` fails partway
+  through a sequential scan, what is the state of
+  `analysis/results.csv` and the persisted `sequential_fit` \u2014
+  resumable, discarded, or left as-is for manual recovery?
+- **CLI override of `sequential_fit_extract`.** Overrides are listed
+  for `--fitting-mode`, `--data-dir`, `--max-workers`. Open: are
+  extraction rules overridable from the CLI (for example
+  `--extract id=temperature:target=...:pattern=...`), or only via the
+  project file?
+
+### Help & discovery
+
+- **Help-filter hook surface.** Deferred to implementation. Open at
+  ADR-review level: does the hook live on `GuardedBase`, on
+  `CategoryItem`, or both? Single hook or separate hooks for
+  properties and methods?
+- **`dir()` consistency.** The hook hides members from `help()` only.
+  Open: should `dir(analysis)` likewise hide inactive categories, or
+  always reflect the full class surface (affects tab completion)?
+
+### Scope
+
+- **`single` mode \"future-proofing.\"** \u00a73 leaves `single_fit` as
+  optional future work. Open: is there any current setting that would
+  qualify \u2014 for example, per-experiment selection when a project
+  contains multiple experiments and the user wants to run `single`
+  against one of them?
+- **Migration error timing.** Compatibility says loading old CIF
+  raises. Open: does \"raises\" mean at load of `project.cif`, or at
+  first access of `analysis`? This affects how users discover the
+  break and whether a project can be partially loaded for inspection.
+- **`extract_diffrn` Python hook.** \u00a76 notes a runtime-only Python
+  hook \"may still be useful.\" Open: is the callback removed entirely
+  in the same commit that introduces `sequential_fit_extract`, or
+  retained as an advanced escape hatch documented separately?
 
 ## Deferred Work
 
