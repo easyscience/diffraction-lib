@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import zipfile
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -13,6 +14,7 @@ from easydiffraction.io.ascii import extract_data_paths_from_dir
 from easydiffraction.io.ascii import extract_data_paths_from_zip
 from easydiffraction.io.ascii import extract_project_from_zip
 from easydiffraction.io.ascii import load_numeric_block
+from easydiffraction.project.project import Project
 
 
 class TestLoadNumericBlock:
@@ -182,6 +184,28 @@ class TestExtractDataPathsFromZip:
 
         assert len(paths) == 1
         assert dest.is_dir()
+
+    def test_relative_destination_uses_current_project_path(self, tmp_path):
+        """Relative destinations use the current saved project path."""
+        zip_path = tmp_path / 'test.zip'
+        with zipfile.ZipFile(zip_path, 'w') as zf:
+            zf.writestr('scan_001.dat', '1 2 3\n')
+
+        original_current_project = Project._current_project
+        try:
+            Project._loading = True
+            project = Project()
+        finally:
+            Project._loading = False
+
+        try:
+            project.save_as(str(tmp_path / 'project'))
+            paths = extract_data_paths_from_zip(zip_path, destination='data/d20_scan')
+        finally:
+            Project._current_project = original_current_project
+
+        assert len(paths) == 1
+        assert Path(paths[0]).parent == (tmp_path / 'project' / 'data' / 'd20_scan').resolve()
 
     def test_raises_file_not_found(self, tmp_path):
         """Raises FileNotFoundError for missing ZIP path."""

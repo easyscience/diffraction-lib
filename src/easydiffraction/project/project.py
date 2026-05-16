@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import pathlib
 import tempfile
+from typing import ClassVar
 
 from typeguard import typechecked
 from varname import varname
@@ -71,6 +72,7 @@ class Project(GuardedBase):
     # ------------------------------------------------------------------
     # Class-level sentinel: True while load() is constructing a project.
     _loading: bool = False
+    _current_project: ClassVar[Project | None] = None
 
     def __init__(
         self,
@@ -91,6 +93,15 @@ class Project(GuardedBase):
         self._saved = False
         self._varname = 'project' if type(self)._loading else varname()
         self._verbosity: VerbosityEnum = VerbosityEnum.FULL
+        type(self)._current_project = self
+
+    @classmethod
+    def current_project_path(cls) -> pathlib.Path | None:
+        """Return the saved path of the current project, if any."""
+        current_project = cls._current_project
+        if current_project is None:
+            return None
+        return current_project.info.path
 
     # ------------------------------------------------------------------
     # Dunder methods

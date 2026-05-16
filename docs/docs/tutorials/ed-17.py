@@ -26,7 +26,7 @@ project = ed.Project()
 # results can be written to `analysis/results.csv`.
 
 # %%
-project.save_as('data/cosio_project', temporary=False)
+project.save_as('projects/cosio', temporary=False)
 
 # %% [markdown]
 # ## Step 2: Define Crystal Structure
@@ -131,8 +131,8 @@ zip_path = ed.download_data(id=27, destination='data')
 # #### Extract Data Files
 
 # %%
-data_dir = 'data/d20_scan'
-data_paths = ed.extract_data_paths_from_zip(zip_path, destination=data_dir)
+scan_data_dir = 'experiments/d20_scan'
+data_paths = ed.extract_data_paths_from_zip(zip_path, destination=scan_data_dir)
 
 # %% [markdown]
 # #### Create Template Experiment from the First File
@@ -313,13 +313,18 @@ project.analysis.sequential_fit_extract.create(
 
 
 # %% [markdown]
-# Run the sequential fit over all data files in the scan directory.
+# Set the sequential fitting parameters.
 
 # %%
 project.analysis.fitting_mode_type = 'sequential'
-project.analysis.sequential_fit.data_dir = data_dir
+project.analysis.sequential_fit.data_dir = scan_data_dir
 project.analysis.sequential_fit.max_workers = 'auto'
 project.analysis.sequential_fit.reverse = True
+
+# %% [markdown]
+# Run the sequential fit over all data files in the scan directory.
+
+# %%
 project.analysis.fit()
 
 # %% [markdown]
