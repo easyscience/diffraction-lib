@@ -66,7 +66,7 @@ This plan follows the two-phase workflow from
       `fit()`
 - [ ] Step 10: Add the instance-aware help-filter hook on
       `GuardedBase` and wire `Analysis._help_filter`
-- [ ] Step 11: Update CIF serialization to synthesize `_fitting.mode`
+- [ ] Step 11: Update CIF serialization to synthesize `_fitting.mode_type`
       and serialize only the active mode-specific category
 - [ ] Step 12: Update CIF deserialization order and add the
       old-format error
@@ -86,7 +86,7 @@ revisit them:
 - The public selector is **`fitting_mode_type`**. Reject any
   alternative spelling.
 - `fitting.mode` does **not** exist as a runtime descriptor.
-  `_fitting.mode` in CIF is synthesised from
+  `_fitting.mode_type` in CIF is synthesised from
   `Analysis.fitting_mode_type` on save and applied back on load.
 - `fitting` is **not** callable. Calling
   `project.analysis.fitting(...)` must raise the standard
@@ -172,7 +172,7 @@ Add BoolDescriptor for CIF-bound boolean values
    `_fitting.minimizer_type` key-value line(s). Mirror the structure
    used by `Fit.as_cif` today but with the new prefix.
 6. Add a `Fitting.from_cif(block)` method that reads
-   `_fitting.minimizer_type`. It must ignore `_fitting.mode` (that
+   `_fitting.minimizer_type`. It must ignore `_fitting.mode_type` (that
    is consumed at the analysis level — see Step 12).
 7. Update package `__init__.py` to explicitly import the new
    class so the factory registers (per project rule: no
@@ -581,7 +581,7 @@ Add instance-aware help filter and hide inactive mode categories
 
 1. In `analysis_to_cif(analysis)`, emit sections in this fixed
    order:
-   1. `_fitting.mode <value>` — synthesized from
+   1. `_fitting.mode_type <value>` — synthesized from
       `analysis.fitting_mode_type`. Do **not** consult any runtime
       descriptor on `fitting`.
    2. `analysis.fitting.as_cif` — currently just
@@ -622,12 +622,12 @@ Serialize only active mode-specific analysis categories
       `_fit.minimizer_type`, `_fit.mode`,
       `_joint_fit_experiment.id`, or `_joint_fit_experiment.weight`,
       raise a single clear error pointing at the new names
-      (`_fitting.minimizer_type`, `_fitting.mode`,
+      (`_fitting.minimizer_type`, `_fitting.mode_type`,
       `_joint_fit.experiment_id`, `_joint_fit.weight`). Raise
       eagerly here; the project loader (`project.py`) already
       calls `analysis_from_cif` during analysis load, which
       satisfies the ADR's "first access of analysis" requirement.
-   2. Read `_fitting.mode` and call
+   2. Read `_fitting.mode_type` and call
       `analysis._set_fitting_mode_type(mode_value)`.
    3. Call `analysis.fitting.from_cif(block)` to restore
       `minimizer_type`.
@@ -640,7 +640,7 @@ Serialize only active mode-specific analysis categories
    5. Restore aliases.
    6. Restore constraints (and `analysis.constraints.enable()`
       if non-empty, as today).
-2. If `_fitting.mode` is absent, default to
+2. If `_fitting.mode_type` is absent, default to
    `FitModeEnum.default()`.
 3. If the active mode is `single` but joint or sequential rows are
    present, log a warning and skip them; do not error. Inactive

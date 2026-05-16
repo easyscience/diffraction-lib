@@ -121,7 +121,7 @@ need to be persisted in this category.
 
 **Single source of truth.** `Analysis.fitting_mode_type` is the only
 writable surface for the active mode, and the only place the mode is
-stored at runtime. The CIF field `_fitting.mode` (§8) is synthesized
+stored at runtime. The CIF field `_fitting.mode_type` (§8) is synthesized
 directly from `analysis.fitting_mode_type` at serialization time and
 applied back to the selector on load. There is no mirror descriptor on
 the `fitting` category. This keeps the runtime model free of duplicated
@@ -453,7 +453,7 @@ category name that matches the new Python category:
 
 ```cif
 _fitting.minimizer_type "lmfit (leastsq)"
-_fitting.mode sequential
+_fitting.mode_type sequential
 ```
 
 Persist only the active mode-specific category.
@@ -462,7 +462,7 @@ Sequential example:
 
 ```cif
 _fitting.minimizer_type "lmfit (leastsq)"
-_fitting.mode sequential
+_fitting.mode_type sequential
 
 _sequential_fit.data_dir "data/d20_scan"
 _sequential_fit.file_pattern "*.xye"
@@ -482,7 +482,7 @@ Joint example:
 
 ```cif
 _fitting.minimizer_type "lmfit (leastsq)"
-_fitting.mode joint
+_fitting.mode_type joint
 
 loop_
 _joint_fit.experiment_id
@@ -495,7 +495,7 @@ Single example:
 
 ```cif
 _fitting.minimizer_type "lmfit (leastsq)"
-_fitting.mode single
+_fitting.mode_type single
 ```
 
 Inactive mode-specific categories should not be serialized. This avoids
@@ -509,7 +509,7 @@ is `sequential`.
 Deserialization order must be:
 
 1. restore the common `fitting` category
-2. read `_fitting.mode`
+2. read `_fitting.mode_type`
 3. set `analysis.fitting_mode_type`
 4. restore the active mode-specific category, if present
 5. restore active child collections such as `sequential_fit_extract`
@@ -653,7 +653,7 @@ mode. It weakens help output and makes CIF harder to read.
 
 Rejected for the public API.
 
-Although `_fitting.mode` is the CIF spelling, the public selector should
+Although `_fitting.mode_type` is the CIF spelling, the public selector should
 follow the existing switchable-category owner style:
 
 ```python
@@ -662,7 +662,7 @@ project.analysis.fitting_mode_type = 'sequential'
 
 A separate `fitting.mode` descriptor on the runtime `fitting` category
 is also rejected: it would duplicate state already held by
-`fitting_mode_type`. `_fitting.mode` is synthesized at serialization
+`fitting_mode_type`. `_fitting.mode_type` is synthesized at serialization
 time instead of being mirrored on a runtime object.
 
 ### Replace the `fitting` category object per fit mode
