@@ -106,18 +106,20 @@ class FitDisplay:
 
     def series(
         self,
-        param: object,
+        param: object | None = None,
         versus: object | None = None,
     ) -> None:
-        """Plot one fitted parameter across sequential results."""
-        self._project.rendering.plotter.plot_param_series(param=param, versus=versus)
+        """
+        Plot fitted parameter(s) across sequential results.
 
-    def series_all(
-        self,
-        versus: object | None = None,
-    ) -> None:
-        """Plot every fitted parameter across sequential results."""
-        self._project.rendering.plotter.plot_all_param_series(versus=versus)
+        When *param* is provided, plot that single parameter.  When
+        *param* is ``None`` (default), plot every fitted parameter, one
+        after another.
+        """
+        if param is None:
+            self._project.rendering.plotter.plot_all_param_series(versus=versus)
+        else:
+            self._project.rendering.plotter.plot_param_series(param=param, versus=versus)
 
     def help(self) -> None:
         """Print available fit-display methods."""

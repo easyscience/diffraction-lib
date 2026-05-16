@@ -242,6 +242,28 @@ arguments so they can be used as mixins safely (e.g.
 | `MembershipValidator` | Value must be in an allowed set        |
 | `RegexValidator`      | Value must match a pattern             |
 
+### 2.7 String Paths vs Live Descriptors in Public APIs
+
+Public APIs reference parameters in one of two ways. The choice is not
+stylistic — it follows the call site's role:
+
+- **Setup-time / schema-level APIs use string paths** (CIF-style
+  `'category.attribute'`). The targeted descriptor may not yet exist on
+  any concrete object (e.g. an extraction rule applies uniformly to
+  files about to be loaded), and the value must round-trip through CIF.
+  Examples: `sequential_fit_extract.create(target='diffrn.ambient_temperature', ...)`,
+  alias/constraint definitions persisted in project CIF.
+- **Runtime / display / introspection APIs use live descriptors.** The
+  call needs the descriptor's `description`, `units`, and `unique_name`
+  (e.g. for axis labels or CSV column lookup), autocomplete is valuable
+  for interactive use, and exactly one concrete object is being
+  referenced. Examples:
+  `project.display.fit.series(param=structure.cell.length_a, versus=expt.diffrn.ambient_temperature)`.
+
+When adding a new public API, place it on one side of this rule rather
+than accepting both. Do not introduce a string-resolver in a runtime
+API, and do not require a live descriptor at setup time.
+
 ---
 
 ## 3. Experiment System
