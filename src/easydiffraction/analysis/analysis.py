@@ -452,11 +452,42 @@ class Analysis:
         if mode is FitModeEnum.SINGLE:
             self._run_single()
         elif mode is FitModeEnum.JOINT:
+            self._prepare_joint_fit()
             self._run_joint()
         elif mode is FitModeEnum.SEQUENTIAL:
             self._run_sequential()
         else:  # pragma: no cover
             raise ValueError(f'Unknown fit mode: {mode!r}')
+
+    def _prepare_joint_fit(self) -> None:
+        """Auto-populate and validate joint-fit rows before execution."""
+        experiments = self.project.experiments
+        if len(experiments) < 2:
+            msg = f'Joint fitting requires at least 2 experiments, found {len(experiments)}.'
+            raise ValueError(msg)
+
+        experiment_names = list(experiments.names)
+        experiment_name_set = set(experiment_names)
+        existing_ids = [item.experiment_id.value for item in self._joint_fit]
+
+        unexpected_ids = sorted({name for name in existing_ids if name not in experiment_name_set})
+        if unexpected_ids:
+            msg = (
+                'joint_fit contains experiment_id values not present in the project: '
+                f'{unexpected_ids}.'
+            )
+            raise ValueError(msg)
+
+        existing_id_set = set(existing_ids)
+        for experiment_id in experiment_names:
+            if experiment_id not in existing_id_set:
+                self._joint_fit.create(experiment_id=experiment_id, weight=1.0)
+                existing_id_set.add(experiment_id)
+
+        missing_ids = [name for name in experiment_names if name not in existing_id_set]
+        if missing_ids:
+            msg = f'joint_fit is missing rows for project experiments: {missing_ids}.'
+            raise ValueError(msg)
 
     @property
     def fitting(self) -> Fitting:
