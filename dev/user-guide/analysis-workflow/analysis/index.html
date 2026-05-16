@@ -1915,6 +1915,8 @@
       
         
       
+        
+      
     
     
     
@@ -2026,6 +2028,34 @@
     
   
     Co2SiO4 T-scan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/ed-23/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Co2SiO4 T-scan resumed
   
 
     
@@ -3241,7 +3271,7 @@ solving nonlinear least-squares minimization, without requiring
 derivatives of the objective.</p>
 <h3 id="set-minimizer">Set Minimizer</h3>
 <p>To show the supported minimizers:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fit</span><span class="o">.</span><span class="n">show_minimizer_types</span><span class="p">()</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fitting</span><span class="o">.</span><span class="n">show_minimizer_types</span><span class="p">()</span>
 </code></pre></div>
 <p>The example of the output is:</p>
 <p>Supported minimizers</p>
@@ -3272,7 +3302,7 @@ derivatives of the objective.</p>
 </tbody>
 </table>
 <p>To select the desired minimizer, e.g., 'lmfit':</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fit</span><span class="o">.</span><span class="n">minimizer_type</span> <span class="o">=</span> <span class="s1">&#39;lmfit&#39;</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fitting</span><span class="o">.</span><span class="n">minimizer_type</span> <span class="o">=</span> <span class="s1">&#39;lmfit&#39;</span>
 </code></pre></div>
 <h3 id="fit-mode">Fit Mode</h3>
 <p>In EasyDiffraction, you can set the <strong>fit mode</strong> to control how the
@@ -3298,11 +3328,11 @@ across all experiments.</p>
 </tr>
 </tbody>
 </table>
-<p>You can set the fit mode on the <code>fit</code> category:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fit</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;joint&#39;</span>
+<p>You can set the fit mode on the analysis owner:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fitting_mode_type</span> <span class="o">=</span> <span class="s1">&#39;joint&#39;</span>
 </code></pre></div>
 <p>To check the current fit mode:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fit</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fitting_mode_type</span><span class="p">)</span>
 </code></pre></div>
 <h3 id="perform-fit">Perform Fit</h3>
 <p>Refining the structure and experiment parameters against measured data
@@ -3431,13 +3461,13 @@ method:</p>
 </table>
 <h2 id="analysis-as-cif">Analysis as <abbr title="Crystallographic Information File.">CIF</abbr></h2>
 <p>To inspect an analysis configuration in <abbr title="Crystallographic Information File.">CIF</abbr> format, use:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="c1"># Show structure as CIF</span>
-<span class="n">project</span><span class="o">.</span><span class="n">structures</span><span class="p">[</span><span class="s1">&#39;lbco&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">show_as_cif</span><span class="p">()</span>
+<div class="language-python highlight"><pre><span></span><code><span class="c1"># Show analysis as CIF</span>
+<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">show_as_cif</span><span class="p">()</span>
 </code></pre></div>
 <p>Example output:</p>
 <div class="language-text highlight"><pre><span></span><code>╒════════════════════════════════════════════════╕
-│ _fit.minimizer_type          &quot;lmfit (leastsq)&quot; │
-│ _fit.mode                    single            │
+│ _fitting.minimizer_type      &quot;lmfit (leastsq)&quot; │
+│ _fitting.mode_type           single            │
 │                                                │
 │ loop_                                          │
 │ _alias.label                                   │

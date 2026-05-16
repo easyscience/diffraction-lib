@@ -1,0 +1,26 @@
+_fitting.mode_type sequential
+
+_fitting.minimizer_type "bumps (lm)"
+
+loop_
+_alias.label
+_alias.param_unique_name
+biso_Co1 cosio.atom_site.Co1.adp_iso
+biso_Co2 cosio.atom_site.Co2.adp_iso
+
+loop_
+_constraint.expression
+"biso_Co2 = biso_Co1"
+
+_sequential_fit.data_dir experiments/d20_scan
+_sequential_fit.file_pattern *
+_sequential_fit.max_workers auto
+_sequential_fit.chunk_size .
+_sequential_fit.reverse true
+
+loop_
+_sequential_fit_extract.id
+_sequential_fit_extract.target
+_sequential_fit_extract.pattern
+_sequential_fit_extract.required
+temperature diffrn.ambient_temperature ^TEMP\s+([0-9.]+) true

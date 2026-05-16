@@ -204,10 +204,10 @@ experiment.instrument.calib_twotheta_offset.free = True
 # and uncertainty estimates for the Bayesian run.
 
 # %%
-project.analysis.fit.show_minimizer_types()
+project.analysis.fitting.show_minimizer_types()
 
 # %%
-project.analysis.fit.minimizer_type = 'bumps (lm)'
+project.analysis.fitting.minimizer_type = 'bumps (lm)'
 
 # %%
 project.analysis.fit()
@@ -285,13 +285,13 @@ project.display.parameters.free()
 # this is not recommended for production analysis.
 
 # %%
-project.analysis.fit.show_minimizer_types()
+project.analysis.fitting.show_minimizer_types()
 
 # %%
-project.analysis.fit.minimizer_type = 'bumps (dream)'
+project.analysis.fitting.minimizer_type = 'bumps (dream)'
 
 # %%
-project.analysis.fit.minimizer.steps = 300  # lower than the default 3000
+project.analysis.fitting.minimizer.steps = 300  # lower than the default 3000
 
 # %%
 project.analysis.fit()

@@ -1648,6 +1648,8 @@
       
         
       
+        
+      
     
     
     
@@ -1759,6 +1761,34 @@
     
   
     Co2SiO4 T-scan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/ed-23/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Co2SiO4 T-scan resumed
   
 
     
@@ -2887,8 +2917,8 @@ output:</p>
 <span class="n">experiment</span><span class="o">.</span><span class="n">show_background_types</span><span class="p">()</span>
 <span class="n">experiment</span><span class="o">.</span><span class="n">calculation</span><span class="o">.</span><span class="n">show_calculator_types</span><span class="p">()</span>
 
-<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fit</span><span class="o">.</span><span class="n">show_modes</span><span class="p">()</span>
-<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fit</span><span class="o">.</span><span class="n">show_minimizer_types</span><span class="p">()</span>
+<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">show_fitting_mode_types</span><span class="p">()</span>
+<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fitting</span><span class="o">.</span><span class="n">show_minimizer_types</span><span class="p">()</span>
 
 <span class="n">project</span><span class="o">.</span><span class="n">rendering</span><span class="o">.</span><span class="n">show_chart_engines</span><span class="p">()</span>
 <span class="n">project</span><span class="o">.</span><span class="n">rendering</span><span class="o">.</span><span class="n">show_table_engines</span><span class="p">()</span>
@@ -2899,8 +2929,8 @@ output:</p>
 <span class="n">experiment</span><span class="o">.</span><span class="n">background_type</span> <span class="o">=</span> <span class="s1">&#39;line-segment&#39;</span>
 <span class="n">experiment</span><span class="o">.</span><span class="n">calculation</span><span class="o">.</span><span class="n">calculator_type</span> <span class="o">=</span> <span class="s1">&#39;cryspy&#39;</span>
 
-<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fit</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;single&#39;</span>
-<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fit</span><span class="o">.</span><span class="n">minimizer_type</span> <span class="o">=</span> <span class="s1">&#39;lmfit&#39;</span>
+<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fitting_mode_type</span> <span class="o">=</span> <span class="s1">&#39;single&#39;</span>
+<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fitting</span><span class="o">.</span><span class="n">minimizer_type</span> <span class="o">=</span> <span class="s1">&#39;lmfit&#39;</span>
 
 <span class="n">project</span><span class="o">.</span><span class="n">rendering</span><span class="o">.</span><span class="n">chart_engine</span> <span class="o">=</span> <span class="s1">&#39;plotly&#39;</span>
 <span class="n">project</span><span class="o">.</span><span class="n">rendering</span><span class="o">.</span><span class="n">table_engine</span> <span class="o">=</span> <span class="s1">&#39;rich&#39;</span>
@@ -2965,11 +2995,11 @@ whether a parameter is writable, free, constrained, or has fit bounds:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">experiment</span><span class="o">.</span><span class="n">calculation</span><span class="o">.</span><span class="n">show_calculator_types</span><span class="p">()</span>
 <span class="n">experiment</span><span class="o">.</span><span class="n">calculation</span><span class="o">.</span><span class="n">calculator_type</span> <span class="o">=</span> <span class="s1">&#39;cryspy&#39;</span>
 
-<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fit</span><span class="o">.</span><span class="n">show_modes</span><span class="p">()</span>
-<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fit</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;single&#39;</span>
+<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">show_fitting_mode_types</span><span class="p">()</span>
+<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fitting_mode_type</span> <span class="o">=</span> <span class="s1">&#39;single&#39;</span>
 
-<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fit</span><span class="o">.</span><span class="n">show_minimizer_types</span><span class="p">()</span>
-<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fit</span><span class="o">.</span><span class="n">minimizer_type</span> <span class="o">=</span> <span class="s1">&#39;lmfit&#39;</span>
+<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fitting</span><span class="o">.</span><span class="n">show_minimizer_types</span><span class="p">()</span>
+<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fitting</span><span class="o">.</span><span class="n">minimizer_type</span> <span class="o">=</span> <span class="s1">&#39;lmfit&#39;</span>
 </code></pre></div>
 <p>Run a fit and inspect the result:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
@@ -2978,6 +3008,33 @@ whether a parameter is writable, free, constrained, or has fit bounds:</p>
 <span class="n">project</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">fit</span><span class="o">.</span><span class="n">correlations</span><span class="p">()</span>
 <span class="n">project</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">pattern</span><span class="p">(</span><span class="n">expt_name</span><span class="o">=</span><span class="s1">&#39;hrpt&#39;</span><span class="p">)</span>
 </code></pre></div>
+<p>Run a sequential fit over a scan directory and plot parameter evolution:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="n">scan_data_dir</span> <span class="o">=</span> <span class="s1">&#39;path/to/scan-directory&#39;</span>
+<span class="n">temperature</span> <span class="o">=</span> <span class="s1">&#39;diffrn.ambient_temperature&#39;</span>
+
+<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">sequential_fit_extract</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+  <span class="nb">id</span><span class="o">=</span><span class="s1">&#39;temperature&#39;</span><span class="p">,</span>
+  <span class="n">target</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+  <span class="n">pattern</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;^TEMP\s+([0-9.]+)&#39;</span><span class="p">,</span>
+  <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fitting_mode_type</span> <span class="o">=</span> <span class="s1">&#39;sequential&#39;</span>
+<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">sequential_fit</span><span class="o">.</span><span class="n">data_dir</span> <span class="o">=</span> <span class="n">scan_data_dir</span>
+<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">sequential_fit</span><span class="o">.</span><span class="n">max_workers</span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span>
+
+<span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+<span class="n">project</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">fit</span><span class="o">.</span><span class="n">series</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">length_a</span><span class="p">,</span> <span class="n">versus</span><span class="o">=</span><span class="n">temperature</span><span class="p">)</span>
+<span class="n">project</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">fit</span><span class="o">.</span><span class="n">series</span><span class="p">(</span><span class="n">versus</span><span class="o">=</span><span class="n">temperature</span><span class="p">)</span>
+
+<span class="n">project</span><span class="o">.</span><span class="n">apply_params_from_csv</span><span class="p">(</span><span class="n">row_index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">project</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">pattern</span><span class="p">(</span><span class="n">expt_name</span><span class="o">=</span><span class="s1">&#39;d20&#39;</span><span class="p">)</span>
+</code></pre></div>
+<p>Use the same persisted <code>diffrn.*</code> path for both <code>target</code> and <code>versus</code>.
+<code>project.display.fit.series(versus=temperature)</code> plots every fitted
+parameter one after another. Sequential fitting writes per-dataset
+results to <code>analysis/results.csv</code>, so inspect them with <code>fit.series()</code>
+and <code>apply_params_from_csv()</code> rather than <code>display.fit.results()</code>.</p>
 <p>After a Bayesian fit, inspect posterior displays:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">posterior</span><span class="o">.</span><span class="n">distribution</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
 <span class="n">project</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">posterior</span><span class="o">.</span><span class="n">distribution</span><span class="p">()</span>

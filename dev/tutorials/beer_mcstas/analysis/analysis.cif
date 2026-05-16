@@ -1,5 +1,6 @@
-_fit.minimizer_type "lmfit (leastsq)"
-_fit.mode joint
+_fitting.mode_type joint
+
+_fitting.minimizer_type "lmfit (leastsq)"
 
 loop_
 _alias.label
@@ -15,7 +16,7 @@ _constraint.expression
 "n2_austenite_scale = s2_austenite_scale"
 
 loop_
-_joint_fit_experiment.id
-_joint_fit_experiment.weight
-expt_s2 0.5
-expt_n2 0.5
+_joint_fit.experiment_id
+_joint_fit.weight
+expt_s2 1.
+expt_n2 1.

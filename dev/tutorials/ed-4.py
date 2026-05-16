@@ -264,13 +264,13 @@ project.experiments.add(expt2)
 # #### Set Fit Mode
 
 # %%
-project.analysis.fit.mode = 'joint'
+project.analysis.fitting_mode_type = 'joint'
 
 # %% [markdown]
 # #### Set Minimizer
 
 # %%
-project.analysis.fit.minimizer_type = 'lmfit'
+project.analysis.fitting.minimizer_type = 'lmfit'
 
 # %% [markdown]
 # #### Set Fitting Parameters

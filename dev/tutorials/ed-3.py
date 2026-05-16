@@ -371,13 +371,13 @@ project.display.parameters.access()
 # Show supported fit modes.
 
 # %%
-project.analysis.fit.show_modes()
+project.analysis.show_fitting_mode_types()
 
 # %% [markdown]
 # Select desired fit mode.
 
 # %%
-project.analysis.fit.mode = 'single'
+project.analysis.fitting_mode_type = 'single'
 
 # %% [markdown]
 # #### Set Minimizer
@@ -385,13 +385,13 @@ project.analysis.fit.mode = 'single'
 # Show supported fitting engines.
 
 # %%
-project.analysis.fit.show_minimizer_types()
+project.analysis.fitting.show_minimizer_types()
 
 # %% [markdown]
 # Select desired fitting engine.
 
 # %%
-project.analysis.fit.minimizer_type = 'lmfit'
+project.analysis.fitting.minimizer_type = 'lmfit'
 
 # %% [markdown]
 # ### Perform Fit 1/5
