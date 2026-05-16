@@ -19,6 +19,9 @@ from easydiffraction.analysis.categories.fitting import FittingFactory
 from easydiffraction.analysis.categories.joint_fit import JointFitCollection
 from easydiffraction.analysis.categories.sequential_fit import SequentialFit
 from easydiffraction.analysis.categories.sequential_fit import SequentialFitFactory
+from easydiffraction.analysis.categories.sequential_fit_extract import (
+    SequentialFitExtractCollection,
+)
 from easydiffraction.analysis.fitting import Fitter
 from easydiffraction.core.singleton import ConstraintsHandler
 from easydiffraction.core.variable import NumericDescriptor
@@ -378,6 +381,7 @@ class Analysis:
             SequentialFitFactory.default_tag()
         )
         self._sequential_fit._parent = self
+        self._sequential_fit_extract = SequentialFitExtractCollection()
         self.fitter = Fitter(self._fitting.minimizer_type.value)
         self.fit_results = None
         self._parameter_snapshots: dict[str, dict[str, dict]] = {}
@@ -521,6 +525,11 @@ class Analysis:
     def sequential_fit(self) -> SequentialFit:
         """Persisted settings for sequential fitting."""
         return self._sequential_fit
+
+    @property
+    def sequential_fit_extract(self) -> SequentialFitExtractCollection:
+        """Persisted extract rules for sequential fitting."""
+        return self._sequential_fit_extract
 
     def _resolve_sequential_data_dir(self) -> Path:
         """Resolve the sequential-fit data directory to an absolute path."""
