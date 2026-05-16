@@ -405,17 +405,18 @@ class Analysis:
         filtered_property_rows = []
         for row in property_rows:
             if row[1] in filtered_property_names:
-                filtered_property_rows.append(
-                    [str(len(filtered_property_rows) + 1), row[1], row[2], row[3]]
-                )
+                filtered_property_rows.append([
+                    str(len(filtered_property_rows) + 1),
+                    row[1],
+                    row[2],
+                    row[3],
+                ])
 
         filtered_method_rows = []
         for row in method_rows:
             method_name = row[1][:-2]
             if method_name in filtered_method_names:
-                filtered_method_rows.append(
-                    [str(len(filtered_method_rows) + 1), row[1], row[2]]
-                )
+                filtered_method_rows.append([str(len(filtered_method_rows) + 1), row[1], row[2]])
 
         if filtered_property_rows:
             console.paragraph('Properties')
@@ -517,15 +518,20 @@ class Analysis:
         elif mode is FitModeEnum.SEQUENTIAL:
             self._run_sequential()
         else:  # pragma: no cover
-            raise ValueError(f'Unknown fit mode: {mode!r}')
+            msg = f'Unknown fit mode: {mode!r}'
+            raise ValueError(msg)
 
     def _prepare_joint_fit(self) -> None:
         """
         Auto-populate and validate joint-fit rows before execution.
         """
         experiments = self.project.experiments
-        if len(experiments) < 2:
-            msg = f'Joint fitting requires at least 2 experiments, found {len(experiments)}.'
+        minimum_joint_experiments = 2
+        if len(experiments) < minimum_joint_experiments:
+            msg = (
+                'Joint fitting requires at least '
+                f'{minimum_joint_experiments} experiments, found {len(experiments)}.'
+            )
             raise ValueError(msg)
 
         experiment_names = list(experiments.names)

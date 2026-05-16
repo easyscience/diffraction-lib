@@ -98,6 +98,11 @@ def make_display_handle(*, auto_refresh: bool = True) -> object | None:
     """
     Create a generic in-place display handle for the active environment.
 
+    Parameters
+    ----------
+    auto_refresh : bool, default=True
+        Whether a terminal live handle should refresh continuously.
+
     Returns
     -------
     object | None

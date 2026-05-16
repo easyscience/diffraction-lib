@@ -528,28 +528,28 @@ from .line_segment import LineSegmentBackground
 
 ### 5.5 All Factories
 
-| Factory                      | Domain                 | Tags resolve to                                                                                                                                                                                    |
-| ---------------------------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `BackgroundFactory`          | Background categories  | `LineSegmentBackground`, `ChebyshevPolynomialBackground`                                                                                                                                           |
-| `PeakFactory`                | Peak profiles          | `CwlPseudoVoigt`, `TofJorgensen`, `TofJorgensenVonDreele`, …                                                                                                                                       |
-| `InstrumentFactory`          | Instruments            | `CwlPdInstrument`, `TofPdInstrument`, …                                                                                                                                                            |
-| `DataFactory`                | Data collections       | `PdCwlData`, `PdTofData`, `TotalData`                                                                                                                                                              |
-| `ReflnFactory`               | Reflection collections | `ReflnData`, `PowderCwlReflnData`, `PowderTofReflnData`                                                                                                                                            |
-| `ExtinctionFactory`          | Extinction models      | `BeckerCoppensExtinction`                                                                                                                                                                          |
-| `LinkedCrystalFactory`       | Linked-crystal refs    | `LinkedCrystal`                                                                                                                                                                                    |
-| `ExcludedRegionsFactory`     | Excluded regions       | `ExcludedRegions`                                                                                                                                                                                  |
-| `LinkedPhasesFactory`        | Linked phases          | `LinkedPhases`                                                                                                                                                                                     |
-| `ExperimentTypeFactory`      | Experiment descriptors | `ExperimentType`                                                                                                                                                                                   |
-| `CellFactory`                | Unit cells             | `Cell`                                                                                                                                                                                             |
-| `SpaceGroupFactory`          | Space groups           | `SpaceGroup`                                                                                                                                                                                       |
-| `AtomSitesFactory`           | Atom sites             | `AtomSites`                                                                                                                                                                                        |
-| `AtomSiteAnisoFactory`       | Anisotropic ADPs       | `AtomSiteAnisoCollection`                                                                                                                                                                          |
-| `AliasesFactory`             | Parameter aliases      | `Aliases`                                                                                                                                                                                          |
-| `ConstraintsFactory`         | Parameter constraints  | `Constraints`                                                                                                                                                                                      |
-| `FitModeFactory`             | Fit-mode category      | `FitMode`                                                                                                                                                                                          |
-| `JointFitFactory`            | Joint-fit weights      | `JointFitCollection`                                                                                                                                                                               |
-| `CalculatorFactory`          | Calculation engines    | `CryspyCalculator`, `CrysfmlCalculator`, `PdffitCalculator`                                                                                                                                        |
-| `MinimizerFactory`           | Minimisers             | `LmfitMinimizer`, `LmfitLeastsqMinimizer`, `LmfitLeastSquaresMinimizer`, `DfolsMinimizer`, `BumpsMinimizer`, `BumpsLmMinimizer`, `BumpsDreamMinimizer`, `BumpsAmoebaMinimizer`, `BumpsDEMinimizer` |
+| Factory                  | Domain                 | Tags resolve to                                                                                                                                                                                    |
+| ------------------------ | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `BackgroundFactory`      | Background categories  | `LineSegmentBackground`, `ChebyshevPolynomialBackground`                                                                                                                                           |
+| `PeakFactory`            | Peak profiles          | `CwlPseudoVoigt`, `TofJorgensen`, `TofJorgensenVonDreele`, …                                                                                                                                       |
+| `InstrumentFactory`      | Instruments            | `CwlPdInstrument`, `TofPdInstrument`, …                                                                                                                                                            |
+| `DataFactory`            | Data collections       | `PdCwlData`, `PdTofData`, `TotalData`                                                                                                                                                              |
+| `ReflnFactory`           | Reflection collections | `ReflnData`, `PowderCwlReflnData`, `PowderTofReflnData`                                                                                                                                            |
+| `ExtinctionFactory`      | Extinction models      | `BeckerCoppensExtinction`                                                                                                                                                                          |
+| `LinkedCrystalFactory`   | Linked-crystal refs    | `LinkedCrystal`                                                                                                                                                                                    |
+| `ExcludedRegionsFactory` | Excluded regions       | `ExcludedRegions`                                                                                                                                                                                  |
+| `LinkedPhasesFactory`    | Linked phases          | `LinkedPhases`                                                                                                                                                                                     |
+| `ExperimentTypeFactory`  | Experiment descriptors | `ExperimentType`                                                                                                                                                                                   |
+| `CellFactory`            | Unit cells             | `Cell`                                                                                                                                                                                             |
+| `SpaceGroupFactory`      | Space groups           | `SpaceGroup`                                                                                                                                                                                       |
+| `AtomSitesFactory`       | Atom sites             | `AtomSites`                                                                                                                                                                                        |
+| `AtomSiteAnisoFactory`   | Anisotropic ADPs       | `AtomSiteAnisoCollection`                                                                                                                                                                          |
+| `AliasesFactory`         | Parameter aliases      | `Aliases`                                                                                                                                                                                          |
+| `ConstraintsFactory`     | Parameter constraints  | `Constraints`                                                                                                                                                                                      |
+| `FitModeFactory`         | Fit-mode category      | `FitMode`                                                                                                                                                                                          |
+| `JointFitFactory`        | Joint-fit weights      | `JointFitCollection`                                                                                                                                                                               |
+| `CalculatorFactory`      | Calculation engines    | `CryspyCalculator`, `CrysfmlCalculator`, `PdffitCalculator`                                                                                                                                        |
+| `MinimizerFactory`       | Minimisers             | `LmfitMinimizer`, `LmfitLeastsqMinimizer`, `LmfitLeastSquaresMinimizer`, `DfolsMinimizer`, `BumpsMinimizer`, `BumpsLmMinimizer`, `BumpsDreamMinimizer`, `BumpsAmoebaMinimizer`, `BumpsDEMinimizer` |
 
 > **Note:** `ExperimentFactory` and `StructureFactory` are _builder_
 > factories with `from_cif_path`, `from_cif_str`, `from_data_path`, and
@@ -724,41 +724,41 @@ line-segment points.
 
 #### CategoryCollections — factory-created (get all three)
 
-| Class                           | Factory                      |
-| ------------------------------- | ---------------------------- |
-| `LineSegmentBackground`         | `BackgroundFactory`          |
-| `ChebyshevPolynomialBackground` | `BackgroundFactory`          |
-| `PdCwlData`                     | `DataFactory`                |
-| `PdTofData`                     | `DataFactory`                |
-| `TotalData`                     | `DataFactory`                |
-| `ReflnData`                     | `ReflnFactory`               |
-| `PowderCwlReflnData`            | `ReflnFactory`               |
-| `PowderTofReflnData`            | `ReflnFactory`               |
-| `ExcludedRegions`               | `ExcludedRegionsFactory`     |
-| `LinkedPhases`                  | `LinkedPhasesFactory`        |
-| `AtomSites`                     | `AtomSitesFactory`           |
-| `AtomSiteAnisoCollection`       | `AtomSiteAnisoFactory`       |
-| `Aliases`                       | `AliasesFactory`             |
-| `Constraints`                   | `ConstraintsFactory`         |
-| `JointFitCollection`            | `JointFitFactory`            |
+| Class                           | Factory                  |
+| ------------------------------- | ------------------------ |
+| `LineSegmentBackground`         | `BackgroundFactory`      |
+| `ChebyshevPolynomialBackground` | `BackgroundFactory`      |
+| `PdCwlData`                     | `DataFactory`            |
+| `PdTofData`                     | `DataFactory`            |
+| `TotalData`                     | `DataFactory`            |
+| `ReflnData`                     | `ReflnFactory`           |
+| `PowderCwlReflnData`            | `ReflnFactory`           |
+| `PowderTofReflnData`            | `ReflnFactory`           |
+| `ExcludedRegions`               | `ExcludedRegionsFactory` |
+| `LinkedPhases`                  | `LinkedPhasesFactory`    |
+| `AtomSites`                     | `AtomSitesFactory`       |
+| `AtomSiteAnisoCollection`       | `AtomSiteAnisoFactory`   |
+| `Aliases`                       | `AliasesFactory`         |
+| `Constraints`                   | `ConstraintsFactory`     |
+| `JointFitCollection`            | `JointFitFactory`        |
 
 #### CategoryItems that are ONLY children of collections (NO metadata)
 
-| Class                | Parent collection               |
-| -------------------- | ------------------------------- |
-| `LineSegment`        | `LineSegmentBackground`         |
-| `PolynomialTerm`     | `ChebyshevPolynomialBackground` |
-| `AtomSite`           | `AtomSites`                     |
-| `AtomSiteAniso`      | `AtomSiteAnisoCollection`       |
-| `PdCwlDataPoint`     | `PdCwlData`                     |
-| `PdTofDataPoint`     | `PdTofData`                     |
-| `TotalDataPoint`     | `TotalData`                     |
-| `Refln`              | `ReflnData`                     |
-| `LinkedPhase`        | `LinkedPhases`                  |
-| `ExcludedRegion`     | `ExcludedRegions`               |
-| `Alias`              | `Aliases`                       |
-| `Constraint`         | `Constraints`                   |
-| `JointFitItem`       | `JointFitCollection`            |
+| Class            | Parent collection               |
+| ---------------- | ------------------------------- |
+| `LineSegment`    | `LineSegmentBackground`         |
+| `PolynomialTerm` | `ChebyshevPolynomialBackground` |
+| `AtomSite`       | `AtomSites`                     |
+| `AtomSiteAniso`  | `AtomSiteAnisoCollection`       |
+| `PdCwlDataPoint` | `PdCwlData`                     |
+| `PdTofDataPoint` | `PdTofData`                     |
+| `TotalDataPoint` | `TotalData`                     |
+| `Refln`          | `ReflnData`                     |
+| `LinkedPhase`    | `LinkedPhases`                  |
+| `ExcludedRegion` | `ExcludedRegions`               |
+| `Alias`          | `Aliases`                       |
+| `Constraint`     | `Constraints`                   |
+| `JointFitItem`   | `JointFitCollection`            |
 
 #### Non-category classes — factory-created (get `type_info` only)
 
@@ -825,8 +825,8 @@ workflow:
   or `'sequential'`. `fit.show_minimizer_types()` lists supported
   minimizers; `fit.show_modes()` filters modes by experiment count (≤1 →
   only `single`; >1 → all three).
-- Joint-fit weights: `joint_fit` (`CategoryCollection` of
-  per-experiment weight entries); sibling of `fit`, not a child.
+- Joint-fit weights: `joint_fit` (`CategoryCollection` of per-experiment
+  weight entries); sibling of `fit`, not a child.
 - Fit results: `analysis.fit_results` stores the latest runtime result
   object. This is `FitResults` for deterministic fits and
   `BayesianFitResults` for Bayesian DREAM runs.
@@ -859,8 +859,8 @@ new persisted results category.
   used for the run, including `random_seed`, `steps`, `burn`, `thin`,
   `pop`, and `parallel`.
 - The current user-facing DREAM controls live on the active minimizer
-  object, for example `project.analysis.fitting.minimizer.steps`, `burn`,
-  `thin`, `pop`, `parallel`, and `init`.
+  object, for example `project.analysis.fitting.minimizer.steps`,
+  `burn`, `thin`, `pop`, `parallel`, and `init`.
 - `plot_param_correlations()` uses posterior samples when available and
   otherwise falls back to deterministic covariance or engine-derived
   correlations.
@@ -931,9 +931,9 @@ project_dir/
 saved project re-opens with the same display backends. Per-experiment
 calculator selection (`_calculation.calculator_type`) lives in each
 experiment file, and fit configuration (`_fitting.minimizer_type`,
-`_fitting.mode_type`) lives in `analysis/analysis.cif`. Runtime fit outputs,
-including `analysis.fit_results`, posterior chains, posterior predictive
-summaries, and convergence diagnostics, are not serialized.
+`_fitting.mode_type`) lives in `analysis/analysis.cif`. Runtime fit
+outputs, including `analysis.fit_results`, posterior chains, posterior
+predictive summaries, and convergence diagnostics, are not serialized.
 
 ### 7.3 Verbosity
 
@@ -1259,20 +1259,20 @@ recognises three distinct selector families. They share a similar
 `<name>_type` shape so the user can inspect and set them uniformly, but
 their intent and ownership differ:
 
-| Family                             | User intent                     | Examples                                                                      | CIF                                                                              |
-| ---------------------------------- | ------------------------------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| Family                             | User intent                     | Examples                                                                          | CIF                                                                                  |
+| ---------------------------------- | ------------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
 | Backend selector                   | Pick an execution backend       | `fitting.minimizer_type`, `calculation.calculator_type`, `rendering.chart_engine` | `_fitting.minimizer_type`, `_calculation.calculator_type`, `_rendering.chart_engine` |
-| Switchable-category impl. selector | Swap a category implementation  | `experiment.background_type`, `experiment.peak_profile_type`                  | category-owned type tag such as `_peak.profile_type`                             |
-| Active-sibling selector            | Pick the active sibling surface | `analysis.fitting_mode_type`                                                  | owner-owned tag such as `_fitting.mode_type`                                     |
+| Switchable-category impl. selector | Swap a category implementation  | `experiment.background_type`, `experiment.peak_profile_type`                      | category-owned type tag such as `_peak.profile_type`                                 |
+| Active-sibling selector            | Pick the active sibling surface | `analysis.fitting_mode_type`                                                      | owner-owned tag such as `_fitting.mode_type`                                         |
 
-Backend selectors live on a dedicated configuration category
-(`fitting`, `calculation`, `rendering`). Switchable-category
-implementation selectors are owned by the host (typically the
-experiment) because switching them replaces the category instance, as
-described in §9.3. Active-sibling selectors are also owner-level, but
-they do not swap one category implementation for another. Instead, they
-select which sibling category family is authoritative while the shared
-configuration category keeps a stable shape.
+Backend selectors live on a dedicated configuration category (`fitting`,
+`calculation`, `rendering`). Switchable-category implementation
+selectors are owned by the host (typically the experiment) because
+switching them replaces the category instance, as described in §9.3.
+Active-sibling selectors are also owner-level, but they do not swap one
+category implementation for another. Instead, they select which sibling
+category family is authoritative while the shared configuration category
+keeps a stable shape.
 
 ### 9.5 Discoverable Supported Options
 
@@ -1353,11 +1353,10 @@ Owner
     └── CategoryB   ← WRONG: CategoryB is a child of CategoryA
 ```
 
-**Example — `fit` and `joint_fit`:** `fit` is a
-`CategoryItem` holding the active minimizer and fitting mode.
-`joint_fit` is a separate `CategoryCollection` holding
-per-experiment weights. Both are direct children of `Analysis`, not
-nested:
+**Example — `fit` and `joint_fit`:** `fit` is a `CategoryItem` holding
+the active minimizer and fitting mode. `joint_fit` is a separate
+`CategoryCollection` holding per-experiment weights. Both are direct
+children of `Analysis`, not nested:
 
 ```python
 # ✅ Correct — sibling categories on Analysis
@@ -1573,9 +1572,10 @@ Run `pixi run unit-tests-coverage` for a per-module report.
 
 ## 11. Issues
 
-- **Open:** [`issues_open.md`](Issues/issues_open.md) — prioritised backlog.
-- **Closed:** [`issues_closed.md`](Issues/issues_closed.md) — resolved items
-  for reference.
+- **Open:** [`issues_open.md`](Issues/issues_open.md) — prioritised
+  backlog.
+- **Closed:** [`issues_closed.md`](Issues/issues_closed.md) — resolved
+  items for reference.
 
 When a resolution affects the architecture described above, the relevant
 sections of this document are updated accordingly.

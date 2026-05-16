@@ -20,19 +20,20 @@ from io import StringIO
 from pathlib import Path
 from typing import Any
 
+from rich.console import Console
+from rich.text import Text
+
 from easydiffraction.display.progress import ACTIVITY_LABEL_FITTING
 from easydiffraction.display.progress import ACTIVITY_TERMINAL_STYLE
-from easydiffraction.display.progress import ActivityIndicator
 from easydiffraction.display.progress import SPINNER_FRAMES
+from easydiffraction.display.progress import ActivityIndicator
 from easydiffraction.io.ascii import extract_data_paths_from_dir
-from easydiffraction.utils.environment import in_jupyter
 from easydiffraction.utils.enums import VerbosityEnum
+from easydiffraction.utils.environment import in_jupyter
 from easydiffraction.utils.logging import ConsoleManager
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import build_table_renderable
-from rich.console import Console
-from rich.text import Text
 
 # ------------------------------------------------------------------
 #  Template dataclass (picklable for ProcessPoolExecutor)
@@ -323,14 +324,13 @@ def _extract_diffrn_values(
                 break
 
     missing_required = [
-        f"{rule.id} (diffrn.{rule.field_name})"
+        f'{rule.id} (diffrn.{rule.field_name})'
         for rule in extract_rules
         if rule.required and rule.id not in matched_rule_ids
     ]
     if missing_required:
         msg = (
-            f'Sequential extract rules did not match {data_path!r}: '
-            f"{', '.join(missing_required)}."
+            f'Sequential extract rules did not match {data_path!r}: {", ".join(missing_required)}.'
         )
         raise ValueError(msg)
 
@@ -546,6 +546,12 @@ def _build_template(project: object) -> SequentialFitTemplate:
     -------
     SequentialFitTemplate
         A frozen, picklable snapshot.
+
+    Raises
+    ------
+    TypeError
+        If a sequential extract target does not reference an existing
+        numeric ``diffrn`` descriptor on the template experiment.
     """
     from easydiffraction.core.variable import NumericDescriptor  # noqa: PLC0415
     from easydiffraction.core.variable import Parameter  # noqa: PLC0415
@@ -589,7 +595,7 @@ def _build_template(project: object) -> SequentialFitTemplate:
                 f"Sequential extract target '{target}' must reference an existing numeric "
                 'diffrn descriptor on the template experiment.'
             )
-            raise ValueError(msg)
+            raise TypeError(msg)
 
         diffrn_extract_rules.append(
             SequentialFitExtractRule(
@@ -643,6 +649,30 @@ class SequentialProgressState:
     file_rows: list[list[str]]
 
 
+@dataclass
+class SequentialProgressContext:
+    """Mutable sequential-fit progress handles and state."""
+
+    verbosity: VerbosityEnum
+    state: SequentialProgressState | None
+    indicator: ActivityIndicator | None = None
+    display_handle: object | None = None
+
+
+@dataclass(frozen=True)
+class SequentialRunPlan:
+    """Resolved sequential-fit inputs and bookkeeping."""
+
+    verbosity: VerbosityEnum
+    template: SequentialFitTemplate
+    csv_path: Path
+    header: list[str]
+    remaining: list[str]
+    chunks: list[list[str]]
+    max_workers: int
+    processed_count: int
+
+
 def _summarize_chunk_results(results: list[dict[str, Any]]) -> tuple[str, str]:
     """Return average reduced chi-square and status for a chunk."""
     num_files = len(results)
@@ -678,7 +708,9 @@ def _build_chunk_progress_row(
     chunk: list[str],
     results: list[dict[str, Any]],
 ) -> list[str]:
-    """Return one sequential-progress table row for a completed chunk."""
+    """
+    Return one sequential-progress table row for a completed chunk.
+    """
     chi2_str, status = _summarize_chunk_results(results)
     return [
         f'{chunk_idx}/{total_chunks}',
@@ -705,7 +737,7 @@ def _build_progress_renderable(
     verbosity: VerbosityEnum,
     progress_state: SequentialProgressState,
 ) -> object:
-    """Build the sequential progress table renderable for the given verbosity."""
+    """Build the sequential progress table renderable."""
     if verbosity is VerbosityEnum.FULL:
         return build_table_renderable(
             columns_headers=_SEQUENTIAL_FILE_PROGRESS_HEADERS,
@@ -721,7 +753,9 @@ def _build_progress_renderable(
 
 
 class _TerminalSequentialDisplay:
-    """Render a terminal-only sequential table with a spinner below it."""
+    """
+    Render a terminal-only sequential table with a spinner below it.
+    """
 
     def __init__(
         self,
@@ -746,7 +780,9 @@ class _TerminalSequentialDisplay:
         self._redraw(clear_existing=False)
 
     def update(self, renderable: object) -> None:
-        """Redraw the table region and keep the spinner on the last line."""
+        """
+        Redraw the table region and keep the spinner on the last line.
+        """
         self._renderable = renderable
         if not self._started or self._closed:
             return
@@ -805,15 +841,168 @@ class _TerminalSequentialDisplay:
         output.flush()
 
 
+def _create_progress_context(verbosity: VerbosityEnum) -> SequentialProgressContext:
+    """Return a mutable progress context for the given verbosity."""
+    if verbosity is VerbosityEnum.SILENT:
+        return SequentialProgressContext(verbosity=verbosity, state=None)
+
+    return SequentialProgressContext(
+        verbosity=verbosity,
+        state=SequentialProgressState(chunk_rows=[], file_rows=[]),
+    )
+
+
+def _start_indicator_with_renderable(
+    verbosity: VerbosityEnum,
+    renderable: object,
+) -> ActivityIndicator:
+    """Start an indicator and render the initial progress content."""
+    indicator = ActivityIndicator(
+        ACTIVITY_LABEL_FITTING,
+        verbosity=verbosity,
+    )
+    indicator.start()
+    indicator.update(content=renderable)
+    return indicator
+
+
+def _start_progress_display(progress: SequentialProgressContext) -> None:
+    """Start the terminal or notebook progress display for a run."""
+    if progress.verbosity is VerbosityEnum.SILENT or progress.state is None:
+        return
+
+    initial_renderable = _build_progress_renderable(progress.verbosity, progress.state)
+    if in_jupyter():
+        progress.indicator = _start_indicator_with_renderable(
+            progress.verbosity,
+            initial_renderable,
+        )
+        return
+
+    terminal_console = ConsoleManager.get()
+    if terminal_console.is_terminal and not terminal_console.is_dumb_terminal:
+        progress.display_handle = _TerminalSequentialDisplay(
+            console=terminal_console,
+            label=ACTIVITY_LABEL_FITTING,
+            renderable=initial_renderable,
+        )
+        progress.display_handle.start()
+        return
+
+    progress.indicator = _start_indicator_with_renderable(
+        progress.verbosity,
+        initial_renderable,
+    )
+
+
+def _stop_progress_display(progress: SequentialProgressContext) -> None:
+    """Stop and close any active sequential-fit progress displays."""
+    if progress.indicator is not None:
+        progress.indicator.stop()
+
+    if progress.display_handle is not None and hasattr(progress.display_handle, 'close'):
+        with contextlib.suppress(Exception):
+            progress.display_handle.close()
+
+
+def _print_sequential_header(
+    analysis: object,
+    verbosity: VerbosityEnum,
+    remaining: list[str],
+    chunks: list[list[str]],
+    max_workers: int,
+) -> None:
+    """Print the user-facing sequential-fit header."""
+    if verbosity is VerbosityEnum.SILENT:
+        return
+
+    console.paragraph('Sequential fitting')
+    console.print(f"🚀 Starting fit process with '{analysis.fitter.selection}'...")
+    console.print(f'📋 {len(remaining)} files in {len(chunks)} chunks (max_workers={max_workers})')
+    console.print('📈 Goodness-of-fit progress:')
+
+
+def _print_sequential_completion(
+    verbosity: VerbosityEnum,
+    processed_count: int,
+    csv_path: Path,
+) -> None:
+    """Print the final sequential-fit summary."""
+    if verbosity is VerbosityEnum.SILENT:
+        return
+
+    console.print(f'✅ Sequential fitting complete: {processed_count} files processed.')
+    console.print(f'📄 Results saved to: {csv_path}')
+
+
+def _prepare_sequential_run(
+    analysis: object,
+    data_dir: str,
+    max_workers: int | str,
+    chunk_size: int | None,
+    file_pattern: str,
+    *,
+    reverse: bool,
+) -> SequentialRunPlan | None:
+    """Resolve inputs and bookkeeping for one sequential-fit run."""
+    verbosity = VerbosityEnum(analysis.project.verbosity)
+
+    _check_seq_preconditions(analysis.project)
+
+    data_paths = extract_data_paths_from_dir(data_dir, file_pattern=file_pattern)
+    template = _build_template(analysis.project)
+    csv_path, header, already_fitted, template = _setup_csv_and_recovery(
+        analysis.project,
+        template,
+        verbosity,
+    )
+
+    remaining = [path for path in data_paths if path not in already_fitted]
+    if reverse:
+        remaining.reverse()
+    if not remaining:
+        if verbosity is not VerbosityEnum.SILENT:
+            console.print('✅ All files already fitted. Nothing to do.')
+        return None
+
+    resolved_workers, resolved_chunk_size = _resolve_workers(max_workers, chunk_size)
+    chunks = [
+        remaining[index : index + resolved_chunk_size]
+        for index in range(0, len(remaining), resolved_chunk_size)
+    ]
+    return SequentialRunPlan(
+        verbosity=verbosity,
+        template=template,
+        csv_path=csv_path,
+        header=header,
+        remaining=remaining,
+        chunks=chunks,
+        max_workers=resolved_workers,
+        processed_count=len(already_fitted) + len(remaining),
+    )
+
+
+def _run_fit_loop_with_pool(
+    max_workers: int,
+    chunks: list[list[str]],
+    template: SequentialFitTemplate,
+    csv_info: tuple[Path, list[str]],
+    progress: SequentialProgressContext,
+) -> None:
+    """Execute the fit loop inside a worker-pool context."""
+    pool_cm, main_mod, main_file_bak, main_spec_bak = _create_pool_context(max_workers)
+    try:
+        _run_fit_loop(pool_cm, chunks, template, csv_info, progress)
+    finally:
+        _restore_main_state(main_mod, main_file_bak, main_spec_bak)
+
+
 def _report_chunk_progress(
     chunk_idx: int,
     total_chunks: int,
     chunk: list[str],
     results: list[dict[str, Any]],
-    verbosity: VerbosityEnum,
-    progress_state: SequentialProgressState | None = None,
-    indicator: ActivityIndicator | None = None,
-    display_handle: object | None = None,
+    progress: SequentialProgressContext,
 ) -> None:
     """
     Report progress after a chunk completes.
@@ -828,35 +1017,31 @@ def _report_chunk_progress(
         File paths in the current chunk.
     results : list[dict[str, Any]]
         Results from the chunk.
-    verbosity : VerbosityEnum
-        Output verbosity.
-    progress_state : SequentialProgressState | None, default=None
-        Accumulated progress table rows.
-    indicator : ActivityIndicator | None, default=None
-        Shared activity indicator used for live progress rendering.
-    display_handle : object | None, default=None
-        Optional standalone display handle for the progress table.
+    progress : SequentialProgressContext
+        Mutable progress handles and accumulated table rows.
     """
-    if verbosity is VerbosityEnum.SILENT or progress_state is None:
+    if progress.verbosity is VerbosityEnum.SILENT or progress.state is None:
         return
 
-    if verbosity is VerbosityEnum.FULL:
-        progress_state.file_rows.extend(_build_file_progress_rows(results))
+    if progress.verbosity is VerbosityEnum.FULL:
+        progress.state.file_rows.extend(_build_file_progress_rows(results))
     else:
-        progress_state.chunk_rows.append(_build_chunk_progress_row(
-            chunk_idx,
-            total_chunks,
-            chunk,
-            results,
-        ))
+        progress.state.chunk_rows.append(
+            _build_chunk_progress_row(
+                chunk_idx,
+                total_chunks,
+                chunk,
+                results,
+            )
+        )
 
-    renderable = _build_progress_renderable(verbosity, progress_state)
-    if display_handle is not None and hasattr(display_handle, 'update'):
-        display_handle.update(renderable)
+    renderable = _build_progress_renderable(progress.verbosity, progress.state)
+    if progress.display_handle is not None and hasattr(progress.display_handle, 'update'):
+        progress.display_handle.update(renderable)
         return
 
-    if indicator is not None:
-        indicator.update(content=renderable)
+    if progress.indicator is not None:
+        progress.indicator.update(content=renderable)
 
 
 # ------------------------------------------------------------------
@@ -1042,10 +1227,7 @@ def _run_fit_loop(
     chunks: list[list[str]],
     template: SequentialFitTemplate,
     csv_info: tuple[Path, list[str]],
-    verb: VerbosityEnum,
-    indicator: ActivityIndicator | None,
-    progress_state: SequentialProgressState | None = None,
-    display_handle: object | None = None,
+    progress: SequentialProgressContext,
 ) -> None:
     """
     Execute the chunk-based fitting loop.
@@ -1060,20 +1242,19 @@ def _run_fit_loop(
         Starting template (updated via propagation).
     csv_info : tuple[Path, list[str]]
         Tuple of ``(csv_path, header)``.
-    verb : VerbosityEnum
-        Output verbosity.
-    indicator : ActivityIndicator | None
-        Shared sequential-fit activity indicator.
-    progress_state : SequentialProgressState | None, default=None
-        Accumulated progress table rows.
-    display_handle : object | None, default=None
-        Optional standalone display handle for the progress table.
+    progress : SequentialProgressContext
+        Mutable progress handles and accumulated table rows.
     """
     csv_path, header = csv_info
     total_chunks = len(chunks)
+    display_handle = progress.display_handle
     with pool_cm as executor:
         for chunk_idx, chunk in enumerate(chunks, start=1):
-            if executor is not None and display_handle is not None and hasattr(display_handle, 'advance'):
+            if (
+                executor is not None
+                and display_handle is not None
+                and hasattr(display_handle, 'advance')
+            ):
                 future_to_index = {
                     executor.submit(_fit_worker, template, path): index
                     for index, path in enumerate(chunk)
@@ -1107,10 +1288,7 @@ def _run_fit_loop(
                 total_chunks,
                 chunk,
                 results,
-                verb,
-                progress_state,
-                indicator,
-                display_handle,
+                progress,
             )
 
             # Propagate last successful params
@@ -1161,95 +1339,40 @@ def fit_sequential(
     if mp.parent_process() is not None:
         return
 
-    verb = VerbosityEnum(analysis.project.verbosity)
-
-    _check_seq_preconditions(analysis.project)
-
-    data_paths = extract_data_paths_from_dir(data_dir, file_pattern=file_pattern)
-    template = _build_template(analysis.project)
-
-    csv_path, header, already_fitted, template = _setup_csv_and_recovery(
-        analysis.project,
-        template,
-        verb,
+    plan = _prepare_sequential_run(
+        analysis,
+        data_dir,
+        max_workers,
+        chunk_size,
+        file_pattern,
+        reverse=reverse,
     )
-
-    remaining = [p for p in data_paths if p not in already_fitted]
-    if reverse:
-        remaining.reverse()
-    if not remaining:
-        if verb is not VerbosityEnum.SILENT:
-            console.print('✅ All files already fitted. Nothing to do.')
+    if plan is None:
         return
 
-    max_workers, chunk_size = _resolve_workers(max_workers, chunk_size)
-    chunks = [remaining[i : i + chunk_size] for i in range(0, len(remaining), chunk_size)]
+    _print_sequential_header(
+        analysis,
+        plan.verbosity,
+        plan.remaining,
+        plan.chunks,
+        plan.max_workers,
+    )
 
-    if verb is not VerbosityEnum.SILENT:
-        console.paragraph('Sequential fitting')
-        console.print(f"🚀 Starting fit process with '{analysis.fitter.selection}'...")
-        console.print(
-            f'📋 {len(remaining)} files in {len(chunks)} chunks (max_workers={max_workers})'
-        )
-        console.print('📈 Goodness-of-fit progress:')
-
-    indicator = None
-    progress_state: SequentialProgressState | None = None
-    if verb is VerbosityEnum.FULL:
-        progress_state = SequentialProgressState(chunk_rows=[], file_rows=[])
-    elif verb is VerbosityEnum.SHORT:
-        progress_state = SequentialProgressState(chunk_rows=[], file_rows=[])
-
-    progress_display_handle = None
-    if verb is not VerbosityEnum.SILENT:
-        initial_renderable = _build_progress_renderable(verb, progress_state)
-        if not in_jupyter():
-            terminal_console = ConsoleManager.get()
-            if terminal_console.is_terminal and not terminal_console.is_dumb_terminal:
-                progress_display_handle = _TerminalSequentialDisplay(
-                    console=terminal_console,
-                    label=ACTIVITY_LABEL_FITTING,
-                    renderable=initial_renderable,
-                )
-                progress_display_handle.start()
-            else:
-                indicator = ActivityIndicator(
-                    ACTIVITY_LABEL_FITTING,
-                    verbosity=verb,
-                )
-                indicator.start()
-                indicator.update(content=initial_renderable)
-        else:
-            indicator = ActivityIndicator(
-                ACTIVITY_LABEL_FITTING,
-                verbosity=verb,
-            )
-            indicator.start()
-            indicator.update(content=initial_renderable)
-
-    pool_cm, main_mod, main_file_bak, main_spec_bak = _create_pool_context(max_workers)
+    progress = _create_progress_context(plan.verbosity)
+    _start_progress_display(progress)
     try:
-        _run_fit_loop(
-            pool_cm,
-            chunks,
-            template,
-            (csv_path, header),
-            verb,
-            indicator,
-            progress_state,
-            progress_display_handle,
+        _run_fit_loop_with_pool(
+            plan.max_workers,
+            plan.chunks,
+            plan.template,
+            (plan.csv_path, plan.header),
+            progress,
         )
     finally:
-        if indicator is not None:
-            indicator.stop()
-        if progress_display_handle is not None and hasattr(progress_display_handle, 'close'):
-            with contextlib.suppress(Exception):
-                progress_display_handle.close()
-        _restore_main_state(main_mod, main_file_bak, main_spec_bak)
+        _stop_progress_display(progress)
 
-    if verb is not VerbosityEnum.SILENT:
-        console.print(
-            f'✅ Sequential fitting complete: '
-            f'{len(already_fitted) + len(remaining)} files processed.'
-        )
-        console.print(f'📄 Results saved to: {csv_path}')
+    _print_sequential_completion(
+        plan.verbosity,
+        plan.processed_count,
+        plan.csv_path,
+    )

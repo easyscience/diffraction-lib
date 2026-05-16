@@ -81,10 +81,10 @@ def _strip_optional_quotes(raw: str) -> str:
 
 def _parse_bool_cif_value(raw: str) -> bool | str:
     """Parse CIF boolean tokens, returning the raw token if invalid."""
-    token = _strip_optional_quotes(raw).lower()
-    if token == 'true':
+    normalized_value = _strip_optional_quotes(raw).lower()
+    if normalized_value == 'true':
         return True
-    if token == 'false':
+    if normalized_value == 'false':
         return False
     return _strip_optional_quotes(raw)
 
@@ -522,6 +522,24 @@ def analysis_from_cif(analysis: object, cif_text: str) -> None:
     doc = gemmi.cif.read_string(_wrap_in_data_block(cif_text, 'analysis'))
     block = doc.sole_block()
 
+    _raise_for_legacy_analysis_tags(block)
+    analysis._set_fitting_mode_type(_analysis_mode_from_cif_block(block))
+
+    # Restore fit configuration
+    analysis.fitting.from_cif(block)
+    _restore_mode_specific_analysis_sections(analysis, block)
+
+    # Restore aliases (loop)
+    analysis.aliases.from_cif(block)
+
+    # Restore constraints (loop)
+    analysis.constraints.from_cif(block)
+    if analysis.constraints._items:
+        analysis.constraints.enable()
+
+
+def _collect_legacy_analysis_tags(block: object) -> list[str]:
+    """Return deprecated analysis CIF tags present in a block."""
     legacy_tags: list[str] = []
     if _has_cif_value(block, '_fit.minimizer_type'):
         legacy_tags.append('_fit.minimizer_type')
@@ -531,32 +549,46 @@ def analysis_from_cif(analysis: object, cif_text: str) -> None:
         legacy_tags.append('_joint_fit_experiment.id')
     if _has_cif_loop(block, '_joint_fit_experiment.weight'):
         legacy_tags.append('_joint_fit_experiment.weight')
+    return legacy_tags
 
-    if legacy_tags:
-        msg = (
-            'Legacy analysis CIF tags are no longer supported: '
-            f'{legacy_tags}. Use _fitting.minimizer_type, _fitting.mode_type, '
-            '_joint_fit.experiment_id, and _joint_fit.weight.'
-        )
-        raise ValueError(msg)
 
+def _raise_for_legacy_analysis_tags(block: object) -> None:
+    """Raise when deprecated analysis CIF tags are present."""
+    legacy_tags = _collect_legacy_analysis_tags(block)
+    if not legacy_tags:
+        return
+
+    msg = (
+        'Legacy analysis CIF tags are no longer supported: '
+        f'{legacy_tags}. Use _fitting.minimizer_type, _fitting.mode_type, '
+        '_joint_fit.experiment_id, and _joint_fit.weight.'
+    )
+    raise ValueError(msg)
+
+
+def _analysis_mode_from_cif_block(block: object) -> str:
+    """Return the fitting mode stored in an analysis CIF block."""
     read_cif_string = _make_cif_string_reader(block)
     mode_value = read_cif_string('_fitting.mode_type')
-    if mode_value is None:
-        from easydiffraction.analysis.enums import FitModeEnum  # noqa: PLC0415
+    if mode_value is not None:
+        return mode_value
 
-        mode_value = FitModeEnum.default().value
+    from easydiffraction.analysis.enums import FitModeEnum  # noqa: PLC0415
 
-    analysis._set_fitting_mode_type(mode_value)
+    return FitModeEnum.default().value
 
-    # Restore fit configuration
-    analysis.fitting.from_cif(block)
 
-    has_joint_rows = _has_cif_loop(block, '_joint_fit.experiment_id') or _has_cif_loop(
+def _has_joint_fit_rows(block: object) -> bool:
+    """Return True when joint-fit rows are present."""
+    return _has_cif_loop(block, '_joint_fit.experiment_id') or _has_cif_loop(
         block,
         '_joint_fit.weight',
     )
-    has_sequential_settings = any(
+
+
+def _has_sequential_fit_settings(block: object) -> bool:
+    """Return True when sequential-fit scalar settings are present."""
+    return any(
         _has_cif_value(block, tag)
         for tag in (
             '_sequential_fit.data_dir',
@@ -566,34 +598,50 @@ def analysis_from_cif(analysis: object, cif_text: str) -> None:
             '_sequential_fit.reverse',
         )
     )
+
+
+def _warn_inactive_analysis_sections(
+    *,
+    has_joint_rows: bool,
+    has_sequential_settings: bool,
+    has_sequential_extract_rows: bool,
+) -> None:
+    """Warn when inactive analysis sections are skipped."""
+    skipped_sections: list[str] = []
+    if has_joint_rows:
+        skipped_sections.append('joint_fit')
+    if has_sequential_settings or has_sequential_extract_rows:
+        skipped_sections.append('sequential_fit')
+    log.warning(
+        'Skipping inactive analysis CIF sections while fitting_mode_type is single: '
+        f'{skipped_sections}.'
+    )
+
+
+def _restore_mode_specific_analysis_sections(analysis: object, block: object) -> None:
+    """Restore only the active mode-specific analysis sections."""
+    has_joint_rows = _has_joint_fit_rows(block)
+    has_sequential_settings = _has_sequential_fit_settings(block)
     has_sequential_extract_rows = _has_cif_loop(block, '_sequential_fit_extract.id')
 
     if analysis.fitting_mode_type == 'joint':
         if has_joint_rows:
             analysis.joint_fit.from_cif(block)
-    elif analysis.fitting_mode_type == 'sequential':
+        return
+
+    if analysis.fitting_mode_type == 'sequential':
         if has_sequential_settings:
             analysis.sequential_fit.from_cif(block)
         if has_sequential_extract_rows:
             analysis.sequential_fit_extract.from_cif(block)
-    elif has_joint_rows or has_sequential_settings or has_sequential_extract_rows:
-        skipped_sections: list[str] = []
-        if has_joint_rows:
-            skipped_sections.append('joint_fit')
-        if has_sequential_settings or has_sequential_extract_rows:
-            skipped_sections.append('sequential_fit')
-        log.warning(
-            'Skipping inactive analysis CIF sections while fitting_mode_type is single: '
-            f'{skipped_sections}.'
+        return
+
+    if has_joint_rows or has_sequential_settings or has_sequential_extract_rows:
+        _warn_inactive_analysis_sections(
+            has_joint_rows=has_joint_rows,
+            has_sequential_settings=has_sequential_settings,
+            has_sequential_extract_rows=has_sequential_extract_rows,
         )
-
-    # Restore aliases (loop)
-    analysis.aliases.from_cif(block)
-
-    # Restore constraints (loop)
-    analysis.constraints.from_cif(block)
-    if analysis.constraints._items:
-        analysis.constraints.enable()
 
 
 def _make_cif_string_reader(block: gemmi.cif.Block) -> object:

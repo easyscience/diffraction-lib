@@ -10,8 +10,6 @@ from easydiffraction.analysis.categories.joint_fit import JointFitCollection
 from easydiffraction.analysis.categories.joint_fit import JointFitItem
 from easydiffraction.analysis.categories.sequential_fit import SequentialFit
 from easydiffraction.analysis.categories.sequential_fit_extract import (
-	SequentialFitExtractCollection,
+    SequentialFitExtractCollection,
 )
-from easydiffraction.analysis.categories.sequential_fit_extract import (
-	SequentialFitExtractItem,
-)
+from easydiffraction.analysis.categories.sequential_fit_extract import SequentialFitExtractItem

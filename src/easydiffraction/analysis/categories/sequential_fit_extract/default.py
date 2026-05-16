@@ -24,12 +24,17 @@ from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.io.cif.handler import CifHandler
 
 _TARGET_SEGMENT_PATTERN = re.compile(r'^[A-Za-z_][A-Za-z0-9_]*$')
+_EXTRACT_TARGET_SEGMENTS = 2
 
 
 def _validate_extract_target_shape(value: str) -> None:
     """Validate the supported two-segment extract target form."""
     parts = value.split('.')
-    if len(parts) != 2 or parts[0] != 'diffrn' or not _TARGET_SEGMENT_PATTERN.fullmatch(parts[1]):
+    if (
+        len(parts) != _EXTRACT_TARGET_SEGMENTS
+        or parts[0] != 'diffrn'
+        or not _TARGET_SEGMENT_PATTERN.fullmatch(parts[1])
+    ):
         msg = (
             'sequential_fit_extract.target must use the form '
             "'diffrn.<name>' with exactly two segments."
@@ -98,7 +103,7 @@ class SequentialFitExtractItem(CategoryItem):
 
     @property
     def target(self) -> StringDescriptor:
-        """diffrn attribute updated by this extract rule."""
+        """Diffrn attribute updated by this extract rule."""
         return self._target
 
     @target.setter

@@ -58,8 +58,8 @@ least one `atom_site` has `adp_type` set to `Bani` or `Uani`. Its
 implementation is instructive because it deliberately does **not** hide
 the category from public discovery:
 
-- `Structure.atom_site_aniso` is always present as a property and
-  always appears in help output.
+- `Structure.atom_site_aniso` is always present as a property and always
+  appears in help output.
 - When inactive, the collection is simply empty.
 - A private `_sync_atom_site_aniso()` reconciles its contents from
   `atom_sites` whenever categories update: rows for anisotropic atoms
@@ -68,26 +68,26 @@ the category from public discovery:
   separate "serialize only when active" rule.
 
 This is a viable alternative pattern for fit modes, and it is
-intentionally rejected by this ADR (see *Alternatives Considered*).
-The key differences that motivate a new pattern for fit modes are:
+intentionally rejected by this ADR (see _Alternatives Considered_). The
+key differences that motivate a new pattern for fit modes are:
 
 - `atom_site_aniso` rows are **derived** from a per-atom selector
   (`atom_site.adp_type`). For fit modes, the selector is owner-level
   (`Analysis.fitting_mode_type`) and the mode-specific categories
   (`joint_fit`, `sequential_fit`, `sequential_fit_extract`) carry
-  independent, user-edited settings that cannot be derived from
-  anything else.
+  independent, user-edited settings that cannot be derived from anything
+  else.
 - `atom_site_aniso` has one conditional category. Fit modes introduce a
   family of mutually exclusive categories; showing all of them as
-  always-present empty surfaces would clutter `help()` output and
-  invite users to configure a mode that is not active.
+  always-present empty surfaces would clutter `help()` output and invite
+  users to configure a mode that is not active.
 - For sequential fitting, configuration must be authoritative for CLI
-  workflows. "Empty when inactive" is ambiguous on reload — was the
-  mode never used, or was it cleared on a previous run?
+  workflows. "Empty when inactive" is ambiguous on reload — was the mode
+  never used, or was it cleared on a previous run?
 
-Fit modes therefore call for an explicit **active-sibling** pattern
-(see §2 and §7) rather than the auto-synced always-present pattern
-used by `atom_site_aniso`.
+Fit modes therefore call for an explicit **active-sibling** pattern (see
+§2 and §7) rather than the auto-synced always-present pattern used by
+`atom_site_aniso`.
 
 This ADR intentionally does not preserve the existing public API as a
 compatibility surface. The follow-up migration plan may describe file,
@@ -121,11 +121,11 @@ need to be persisted in this category.
 
 **Single source of truth.** `Analysis.fitting_mode_type` is the only
 writable surface for the active mode, and the only place the mode is
-stored at runtime. The CIF field `_fitting.mode_type` (§8) is synthesized
-directly from `analysis.fitting_mode_type` at serialization time and
-applied back to the selector on load. There is no mirror descriptor on
-the `fitting` category. This keeps the runtime model free of duplicated
-state.
+stored at runtime. The CIF field `_fitting.mode_type` (§8) is
+synthesized directly from `analysis.fitting_mode_type` at serialization
+time and applied back to the selector on load. There is no mirror
+descriptor on the `fitting` category. This keeps the runtime model free
+of duplicated state.
 
 ### 2. Add an owner-level fitting-mode selector
 
@@ -160,13 +160,13 @@ mode-specific public categories are visible and serialized.
 
 Note that this is **not** the same mechanism as `peak_profile_type`.
 `peak_profile_type` swaps the concrete class behind a single category
-(`peak`); `fitting_mode_type` swaps which *sibling* category
+(`peak`); `fitting_mode_type` swaps which _sibling_ category
 (`joint_fit` / `sequential_fit`) is active and visible. The `fitting`
-category itself does not change shape. This is a new pattern —
-call it the **active-sibling selector** — and it is documented here as
-a first-class convention for owners that gate sibling categories on a
-run-time choice. Future categories with the same shape should follow
-the same naming and lifecycle rules.
+category itself does not change shape. This is a new pattern — call it
+the **active-sibling selector** — and it is documented here as a
+first-class convention for owners that gate sibling categories on a
+run-time choice. Future categories with the same shape should follow the
+same naming and lifecycle rules.
 
 ### 3. Keep mode-specific categories as flat Analysis siblings
 
@@ -256,15 +256,15 @@ Suggested defaults:
 - `chunk_size`: unset, resolved from `max_workers` at runtime
 - `reverse`: `false`
 
-`max_workers` accepts either a positive integer or the token `auto`.
-It is stored as a single descriptor and normalized to a positive
-integer by a runtime resolver before being passed to the worker pool;
-consumers never see the raw `auto` token. Whether the descriptor type
-is a dedicated union descriptor or a string descriptor with validation
-is an implementation detail.
+`max_workers` accepts either a positive integer or the token `auto`. It
+is stored as a single descriptor and normalized to a positive integer by
+a runtime resolver before being passed to the worker pool; consumers
+never see the raw `auto` token. Whether the descriptor type is a
+dedicated union descriptor or a string descriptor with validation is an
+implementation detail.
 
-`chunk_size` allows an unset value and serializes that unset value
-as CIF null (`.`).
+`chunk_size` allows an unset value and serializes that unset value as
+CIF null (`.`).
 
 Relative `data_dir` values are resolved relative to the project
 directory when the project has a saved path. For an unsaved project,
@@ -275,8 +275,8 @@ rejects the ambiguous CWD-dependent case explicitly.
 
 `reverse` is represented by a boolean descriptor. If the current
 descriptor layer has no dedicated boolean descriptor, one is introduced
-rather than storing boolean state as an arbitrary string. (Introducing
-a boolean descriptor is a small prerequisite for this ADR; the
+rather than storing boolean state as an arbitrary string. (Introducing a
+boolean descriptor is a small prerequisite for this ADR; the
 implementation plan should call it out separately.)
 
 Execution requirements for sequential fitting:
@@ -290,8 +290,8 @@ Execution requirements for sequential fitting:
 ### 6. Add a `sequential_fit_extract` category
 
 Sequential fits often need per-file metadata such as temperature,
-pressure, field strength, or other scan coordinates. This information
-is scientifically important and is also used by parameter-series plots.
+pressure, field strength, or other scan coordinates. This information is
+scientifically important and is also used by parameter-series plots.
 
 The current `extract_diffrn` callback solves this in Python notebooks,
 but a Python callable cannot be serialized in a portable way or invoked
@@ -339,12 +339,11 @@ adopt a timeout-based engine.
 
 `required` controls failure behavior. If `required` is false and the
 pattern is not found, the target value is left empty for that file. If
-`required` is true, the file result is marked failed with a clear
-error.
+`required` is true, the file result is marked failed with a clear error.
 
 Extracted values are written to `analysis/results.csv` under the column
-name `diffrn.<field>` (dots are preserved). Downstream consumers such
-as `display.fit.series(...)` must use that exact column name.
+name `diffrn.<field>` (dots are preserved). Downstream consumers such as
+`display.fit.series(...)` must use that exact column name.
 
 The corresponding CIF fragment is:
 
@@ -400,8 +399,8 @@ implementation, but the contract is:
   access to an inactive mode-specific category (e.g. reading
   `analysis.sequential_fit` while in `joint` mode) returns the
   underlying object unchanged. Mutating it does not raise, but its
-  values are not serialized while the mode is inactive (§8). This
-  avoids surprising errors in notebooks where a user is iterating on
+  values are not serialized while the mode is inactive (§8). This avoids
+  surprising errors in notebooks where a user is iterating on
   configuration before switching modes.
 
 This hook is useful beyond fitting. Any object with conditional workflow
@@ -500,9 +499,9 @@ _fitting.mode_type single
 
 Inactive mode-specific categories should not be serialized. This avoids
 stale settings from a previously selected mode affecting CLI behavior
-after reload. Because `sequential_fit_extract` is part of the
-sequential workflow, it is serialized only when the active fitting mode
-is `sequential`.
+after reload. Because `sequential_fit_extract` is part of the sequential
+workflow, it is serialized only when the active fitting mode is
+`sequential`.
 
 ### 9. Restore mode before mode-specific settings
 
@@ -532,8 +531,8 @@ case. Sequential mode can be run from CLI because its required settings
 are persisted in `analysis/analysis.cif`.
 
 CLI options may override saved configuration for one invocation, for
-example `--fitting-mode`, `--data-dir`, or `--max-workers`, but the
-core model is that the saved project contains the selected mode and its
+example `--fitting-mode`, `--data-dir`, or `--max-workers`, but the core
+model is that the saved project contains the selected mode and its
 mode-specific settings. CLI overrides are **per-invocation only** and
 are never written back to the project on disk. Persisting a new mode or
 new settings requires an explicit save step.
@@ -609,7 +608,8 @@ name (`peak_profile_type` for `peak`, `background_type` for
 
 ### Mirror `atom_site_aniso`: always present, auto-synced, empty when inactive
 
-Rejected for fit modes (see *Context \u2014 Precedent* for the comparison).
+Rejected for fit modes (see _Context \u2014 Precedent_ for the
+comparison).
 
 `atom_site_aniso` keeps the category always visible and derives its
 contents from a per-atom selector. Applying the same shape to fit modes
@@ -629,8 +629,8 @@ This is rejected because:
 
 The precedent is still informative: `atom_site_aniso` shows that the
 codebase accepts non-uniform category visibility patterns when they fit
-the underlying data model. The active-sibling pattern introduced here
-is the right tool for an owner-level mode selector.
+the underlying data model. The active-sibling pattern introduced here is
+the right tool for an owner-level mode selector.
 
 ### Keep `analysis.fit` as a callable category
 
@@ -653,8 +653,8 @@ mode. It weakens help output and makes CIF harder to read.
 
 Rejected for the public API.
 
-Although `_fitting.mode_type` is the CIF spelling, the public selector should
-follow the existing switchable-category owner style:
+Although `_fitting.mode_type` is the CIF spelling, the public selector
+should follow the existing switchable-category owner style:
 
 ```python
 project.analysis.fitting_mode_type = 'sequential'
@@ -662,8 +662,8 @@ project.analysis.fitting_mode_type = 'sequential'
 
 A separate `fitting.mode` descriptor on the runtime `fitting` category
 is also rejected: it would duplicate state already held by
-`fitting_mode_type`. `_fitting.mode_type` is synthesized at serialization
-time instead of being mirrored on a runtime object.
+`fitting_mode_type`. `_fitting.mode_type` is synthesized at
+serialization time instead of being mirrored on a runtime object.
 
 ### Replace the `fitting` category object per fit mode
 
@@ -692,9 +692,9 @@ category is authoritative.
 
 ## Open Questions
 
-These questions are intentionally left unresolved in this ADR. Each
-must be settled during the implementation plan or in a follow-up ADR
-before code lands.
+These questions are intentionally left unresolved in this ADR. Each must
+be settled during the implementation plan or in a follow-up ADR before
+code lands.
 
 ### Architectural / API
 
@@ -706,16 +706,16 @@ before code lands.
   case appears?
 - **Direct access to inactive mode categories.** \u00a77 specifies the
   lenient behaviour: reading `analysis.sequential_fit` in `joint` mode
-  returns the underlying object, mutation does not raise, but values
-  are not serialized. Open: is this the right trade-off, or should
-  access raise a `ModeError` to prevent silent data loss on save?
+  returns the underlying object, mutation does not raise, but values are
+  not serialized. Open: is this the right trade-off, or should access
+  raise a `ModeError` to prevent silent data loss on save?
 
 ### Data model
 
 - **`joint_fit` and experiment lifecycle.** Stale rows raise at `fit()`
   time. Open: should `joint_fit` also listen for experiment-collection
-  changes and prune (or warn) on experiment deletion, or remain
-  passive until execution?
+  changes and prune (or warn) on experiment deletion, or remain passive
+  until execution?
 - **`joint_fit` weight bounds.** Default weight is `1.0`. Open: is
   `weight = 0` allowed (effective exclusion), and what is the upper
   bound, if any? Should weights share the validator used by free
@@ -744,15 +744,15 @@ before code lands.
   token always preserved on disk regardless of runtime resolution?
 - **Serialization order for `_fitting.*`.** \u00a79 specifies
   deserialization order. Open: pin serialization order too (mode first,
-  then `minimizer_type`, then mode-specific siblings) so generated
-  files are stable for diffing?
-- **Failure mid-sequential-run.** Open: if `fit()` fails partway
-  through a sequential scan, what is the state of
-  `analysis/results.csv` and the persisted `sequential_fit` \u2014
-  resumable, discarded, or left as-is for manual recovery?
-- **CLI override of `sequential_fit_extract`.** Overrides are listed
-  for `--fitting-mode`, `--data-dir`, `--max-workers`. Open: are
-  extraction rules overridable from the CLI (for example
+  then `minimizer_type`, then mode-specific siblings) so generated files
+  are stable for diffing?
+- **Failure mid-sequential-run.** Open: if `fit()` fails partway through
+  a sequential scan, what is the state of `analysis/results.csv` and the
+  persisted `sequential_fit` \u2014 resumable, discarded, or left as-is
+  for manual recovery?
+- **CLI override of `sequential_fit_extract`.** Overrides are listed for
+  `--fitting-mode`, `--data-dir`, `--max-workers`. Open: are extraction
+  rules overridable from the CLI (for example
   `--extract id=temperature:target=...:pattern=...`), or only via the
   project file?
 
@@ -760,8 +760,8 @@ before code lands.
 
 - **Help-filter hook surface.** Deferred to implementation. Open at
   ADR-review level: does the hook live on `GuardedBase`, on
-  `CategoryItem`, or both? Single hook or separate hooks for
-  properties and methods?
+  `CategoryItem`, or both? Single hook or separate hooks for properties
+  and methods?
 - **`dir()` consistency.** The hook hides members from `help()` only.
   Open: should `dir(analysis)` likewise hide inactive categories, or
   always reflect the full class surface (affects tab completion)?
@@ -773,10 +773,10 @@ before code lands.
   qualify \u2014 for example, per-experiment selection when a project
   contains multiple experiments and the user wants to run `single`
   against one of them?
-- **Migration error timing.** Compatibility says loading old CIF
-  raises. Open: does \"raises\" mean at load of `project.cif`, or at
-  first access of `analysis`? This affects how users discover the
-  break and whether a project can be partially loaded for inspection.
+- **Migration error timing.** Compatibility says loading old CIF raises.
+  Open: does \"raises\" mean at load of `project.cif`, or at first
+  access of `analysis`? This affects how users discover the break and
+  whether a project can be partially loaded for inspection.
 - **`extract_diffrn` Python hook.** \u00a76 notes a runtime-only Python
   hook \"may still be useful.\" Open: is the callback removed entirely
   in the same commit that introduces `sequential_fit_extract`, or
@@ -789,5 +789,5 @@ before code lands.
 - A separate ADR for changing switchable category selectors globally
   from owner-level names such as `peak_profile_type` toward
   category-owned selectors such as `peak.profile_type`.
-- The implementation and migration plan for replacing the current
-  `fit` category and `fit_sequential(...)` method.
+- The implementation and migration plan for replacing the current `fit`
+  category and `fit_sequential(...)` method.

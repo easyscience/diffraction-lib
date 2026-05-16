@@ -33,7 +33,7 @@ def test_show_minimizer_types_prints(capsys):
     from easydiffraction.analysis.analysis import Analysis
 
     a = Analysis(project=_make_project_with_names([]))
-    a.fit.show_minimizer_types()
+    a.fitting.show_minimizer_types()
     out = capsys.readouterr().out
     assert 'Minimizer types' in out
     assert 'lmfit (leastsq)' in out
@@ -45,11 +45,11 @@ def test_fit_mode_category_and_joint_fit(monkeypatch, capsys):
     a = Analysis(project=_make_project_with_names(['e1', 'e2']))
 
     # Default fit mode is 'single'
-    assert a.fit.mode.value == 'single'
+    assert a.fitting_mode_type == 'single'
 
     # Switch to joint
-    a.fit.mode = 'joint'
-    assert a.fit.mode.value == 'joint'
+    a.fitting_mode_type = 'joint'
+    assert a.fitting_mode_type == 'joint'
 
     # joint_fit exists but is empty until fit() populates it
     assert len(a.joint_fit) == 0
@@ -66,7 +66,8 @@ def test_analysis_help(capsys):
     assert 'display' in out
     assert 'Properties' in out
     assert 'Methods' in out
-    assert 'fit_sequential()' in out
+    assert 'fit()' in out
+    assert 'show_fitting_mode_types()' in out
 
 
 def test_analysis_display_help(capsys):
@@ -269,8 +270,12 @@ def test_run_sequential_sets_mode_and_saves_project(monkeypatch, tmp_path):
         calls.append(('reverse', reverse))
 
     monkeypatch.setattr('easydiffraction.analysis.sequential.fit_sequential', fake_fit_sequential)
-    monkeypatch.setattr(analysis, '_update_categories', lambda: calls.append(('update_categories', None)))
-    monkeypatch.setattr(analysis, '_resolve_sequential_data_dir', lambda: tmp_path / 'resolved-scans')
+    monkeypatch.setattr(
+        analysis, '_update_categories', lambda: calls.append(('update_categories', None))
+    )
+    monkeypatch.setattr(
+        analysis, '_resolve_sequential_data_dir', lambda: tmp_path / 'resolved-scans'
+    )
 
     analysis._run_sequential()
 

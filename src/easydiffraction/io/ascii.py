@@ -14,7 +14,7 @@ import numpy as np
 
 
 def _resolve_extraction_destination(destination: str | Path | None) -> Path:
-    """Return an extraction directory, using the current project path when available."""
+    """Return an extraction directory for ZIP contents."""
     if destination is None:
         return Path(tempfile.mkdtemp(prefix='ed_zip_'))
 
@@ -109,8 +109,8 @@ def extract_data_paths_from_zip(
         Path to the ZIP archive.
     destination : str | Path | None, default=None
         Directory to extract files into.  When ``None``, a temporary
-        directory is created. Relative destinations are resolved
-        against the current saved project path when one exists.
+        directory is created. Relative destinations are resolved against
+        the current saved project path when one exists.
 
     Returns
     -------

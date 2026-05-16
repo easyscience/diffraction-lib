@@ -14,14 +14,14 @@ needed.
 
 **Type:** Fragility
 
-`joint_fit` is created once when `fit.mode` becomes
-`'joint'`. If experiments are added, removed, or renamed afterwards, the
-weight collection is stale. Joint fitting can fail with missing keys or
-run with incorrect weights.
+`joint_fit` is created once when `fit.mode` becomes `'joint'`. If
+experiments are added, removed, or renamed afterwards, the weight
+collection is stale. Joint fitting can fail with missing keys or run
+with incorrect weights.
 
-**Fix:** rebuild or validate `joint_fit` at the start of
-every joint fit. At minimum, `fit()` should assert that the weight keys
-exactly match `project.experiments.names`.
+**Fix:** rebuild or validate `joint_fit` at the start of every joint
+fit. At minimum, `fit()` should assert that the weight keys exactly
+match `project.experiments.names`.
 
 **Depends on:** nothing.
 
@@ -182,8 +182,8 @@ on save.
 
 **Type:** Fragility
 
-`joint_fit` is validated and auto-populated at `fit()` time, but it
-does not react when experiments are later renamed or removed.
+`joint_fit` is validated and auto-populated at `fit()` time, but it does
+not react when experiments are later renamed or removed.
 
 **Fix:** decide whether `joint_fit` should stay passive until execution,
 or listen for experiment lifecycle changes and prune or warn earlier.
