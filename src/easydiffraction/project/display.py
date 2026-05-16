@@ -107,14 +107,16 @@ class FitDisplay:
     def series(
         self,
         param: object | None = None,
-        versus: object | None = None,
+        versus: str | None = None,
     ) -> None:
         """
         Plot fitted parameter(s) across sequential results.
 
-        When *param* is provided, plot that single parameter.  When
-        *param* is ``None`` (default), plot every fitted parameter, one
-        after another.
+            Use a persisted diffrn path such as
+            ``'diffrn.ambient_temperature'`` for *versus*. When *param*
+            is provided, plot that single parameter. When *param* is
+            ``None`` (default), plot every fitted parameter, one after
+            another.
         """
         if param is None:
             self._project.rendering.plotter.plot_all_param_series(versus=versus)

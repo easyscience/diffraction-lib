@@ -370,7 +370,7 @@ Dataset replay should also apply `diffrn.*` values from
 `analysis/results.csv` back onto the template experiment. This keeps:
 
 ```python
-temperature = expt.diffrn.ambient_temperature
+temperature = 'diffrn.ambient_temperature'
 project.display.fit.series(param, versus=temperature)
 ```
 

@@ -304,9 +304,12 @@ project.verbosity = 'short'
 
 
 # %%
+temperature = 'diffrn.ambient_temperature'
+
+# %%
 project.analysis.sequential_fit_extract.create(
     id='temperature',
-    target='diffrn.ambient_temperature',
+    target=temperature,
     pattern=r'^TEMP\s+([0-9.]+)',
     required=True,
 )
@@ -347,10 +350,7 @@ project.display.pattern(expt_name='d20')
 # %% [markdown]
 # #### Plot Parameter Evolution
 #
-# Define the quantity to use as the x-axis in the following plots.
-
-# %%
-temperature = expt.diffrn.ambient_temperature
+# Reuse the extracted diffrn path as the x-axis in the following plots.
 
 # %% [markdown]
 # Plot unit cell parameters vs. temperature.

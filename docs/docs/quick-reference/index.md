@@ -306,6 +306,35 @@ project.display.fit.correlations()
 project.display.pattern(expt_name='hrpt')
 ```
 
+Run a sequential fit over a scan directory and plot parameter evolution:
+
+```python
+scan_data_dir = 'path/to/scan-directory'
+temperature = 'diffrn.ambient_temperature'
+
+project.analysis.sequential_fit_extract.create(
+  id='temperature',
+  target=temperature,
+  pattern=r'^TEMP\s+([0-9.]+)',
+  required=True,
+)
+
+project.analysis.fitting_mode_type = 'sequential'
+project.analysis.sequential_fit.data_dir = scan_data_dir
+project.analysis.sequential_fit.max_workers = 'auto'
+
+project.analysis.fit()
+project.display.fit.results()
+project.display.fit.series(structure.cell.length_a, versus=temperature)
+project.display.fit.series(versus=temperature)
+
+project.apply_params_from_csv(row_index=0)
+```
+
+Use the same persisted `diffrn.*` path for both `target` and `versus`.
+`project.display.fit.series(versus=temperature)` plots every fitted
+parameter one after another.
+
 After a Bayesian fit, inspect posterior displays:
 
 ```python

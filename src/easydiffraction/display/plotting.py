@@ -723,7 +723,7 @@ class Plotter(RendererBase):
     def plot_param_series(
         self,
         param: object,
-        versus: object | None = None,
+        versus: str | None = None,
     ) -> None:
         """
         Plot a parameter's value across sequential fit results.
@@ -738,11 +738,11 @@ class Plotter(RendererBase):
         param : object
             Parameter descriptor whose ``unique_name`` identifies the
             values to plot.
-        versus : object | None, default=None
-            A diffrn descriptor (e.g.
-            ``expt.diffrn.ambient_temperature``) whose value is used as
-            the x-axis for each experiment.  When ``None``, the
-            experiment sequence number is used instead.
+        versus : str | None, default=None
+            Persisted diffrn path (e.g.
+            ``'diffrn.ambient_temperature'``) whose sequential-results
+            column is used as the x-axis. When ``None``, the experiment
+            sequence number is used instead.
         """
         unique_name = param.unique_name
 
@@ -758,21 +758,20 @@ class Plotter(RendererBase):
                 csv_path=csv_path,
                 unique_name=unique_name,
                 param_descriptor=param,
-                versus_descriptor=versus,
+                versus_path=versus,
             )
         else:
             # Fallback: in-memory snapshots from fit() single mode
-            versus_name = versus.name if versus is not None else None
             self.plot_param_series_from_snapshots(
                 unique_name,
-                versus_name,
+                versus,
                 self._project.experiments,
                 self._project.analysis._parameter_snapshots,
             )
 
     def plot_all_param_series(
         self,
-        versus: object | None = None,
+        versus: str | None = None,
     ) -> None:
         """
         Plot every fitted parameter across sequential fit results.
@@ -783,11 +782,11 @@ class Plotter(RendererBase):
 
         Parameters
         ----------
-        versus : object | None, default=None
-            A diffrn descriptor (e.g.
-            ``expt.diffrn.ambient_temperature``) whose value is used as
-            the x-axis for each experiment.  When ``None``, the
-            experiment sequence number is used instead.
+        versus : str | None, default=None
+            Persisted diffrn path (e.g.
+            ``'diffrn.ambient_temperature'``) whose sequential-results
+            column is used as the x-axis. When ``None``, the experiment
+            sequence number is used instead.
         """
         unique_names = self._collect_fitted_param_unique_names()
         if not unique_names:
@@ -837,6 +836,54 @@ class Plotter(RendererBase):
         """Return descriptor map keyed by ``unique_name``."""
         all_params = self._project.structures.parameters + self._project.experiments.parameters
         return {p.unique_name: p for p in all_params if hasattr(p, 'unique_name')}
+
+    def _resolve_versus_descriptor_from_path(
+        self,
+        versus_path: str | None,
+    ) -> object | None:
+        """Return a template diffrn descriptor for a persisted path."""
+        field_name = self._versus_field_name(versus_path)
+        if field_name is None:
+            return None
+
+        project = getattr(self, '_project', None)
+        if project is None or getattr(project, 'experiments', None) is None:
+            return None
+
+        experiment = next(iter(project.experiments.values()), None)
+        if experiment is None:
+            return None
+
+        return self._resolve_diffrn_descriptor(experiment.diffrn, field_name)
+
+    @staticmethod
+    def _versus_field_name(versus_path: str | None) -> str | None:
+        """Return the diffrn field name from a persisted path."""
+        if versus_path is None:
+            return None
+        if versus_path.startswith('diffrn.'):
+            return versus_path.removeprefix('diffrn.')
+        return versus_path
+
+    @classmethod
+    def _versus_axis_label(
+        cls,
+        versus_path: str | None,
+        descriptor: object | None,
+    ) -> str:
+        """Return the x-axis label for a persisted diffrn path."""
+        if descriptor is not None:
+            label = getattr(descriptor, 'description', None) or getattr(descriptor, 'name', None)
+            units = getattr(descriptor, 'units', None)
+            if label is not None and units:
+                return f'{label} ({units})'
+            if label is not None:
+                return label
+
+        field_name = cls._versus_field_name(versus_path)
+        if field_name is None:
+            return 'Experiment No.'
+        return field_name.replace('_', ' ')
 
     def plot_param_correlations(
         self,
@@ -5487,20 +5534,20 @@ class Plotter(RendererBase):
         csv_path: str,
         unique_name: str,
         param_descriptor: object,
-        versus_descriptor: object | None = None,
+        versus_path: str | None = None,
     ) -> None:
         """
         Plot a parameter's value across sequential fit results.
 
         Reads data from the CSV file at *csv_path*.  The y-axis values
         come from the column named *unique_name*, uncertainties from
-        ``{unique_name}.uncertainty``.  When *versus_descriptor* is
-        provided, the x-axis uses the corresponding ``diffrn.{name}``
-        column; otherwise the row index is used.
+        ``{unique_name}.uncertainty``. When *versus_path* is provided,
+        the x-axis uses the corresponding ``diffrn.*`` CSV column;
+        otherwise the row index is used.
 
-        Axis labels are derived from the live descriptor objects
-        (*param_descriptor* and *versus_descriptor*), which carry
-        ``.description`` and ``.units`` attributes.
+        Axis labels use the live parameter descriptor and, when
+        available, a template diffrn descriptor resolved from
+        *versus_path*.
 
         Parameters
         ----------
@@ -5510,9 +5557,9 @@ class Plotter(RendererBase):
             Unique name of the parameter to plot (CSV column key).
         param_descriptor : object
             The live parameter descriptor (for axis label / units).
-        versus_descriptor : object | None, default=None
-            A diffrn descriptor whose ``.name`` maps to a
-            ``diffrn.{name}`` CSV column.  ``None`` → use row index.
+        versus_path : str | None, default=None
+            Persisted diffrn path whose matching CSV column provides the
+            x-axis values. ``None`` uses row index.
         """
         df = pd.read_csv(csv_path)
 
@@ -5528,14 +5575,12 @@ class Plotter(RendererBase):
         sy = df[uncert_col].astype(float).tolist() if uncert_col in df.columns else [0.0] * len(y)
 
         # X-axis: diffrn column or row index
-        versus_name = versus_descriptor.name if versus_descriptor is not None else None
-        diffrn_col = f'diffrn.{versus_name}' if versus_name else None
+        diffrn_col = versus_path
+        versus_descriptor = self._resolve_versus_descriptor_from_path(versus_path)
 
         if diffrn_col and diffrn_col in df.columns:
             x = pd.to_numeric(df[diffrn_col], errors='coerce').tolist()
-            x_label = getattr(versus_descriptor, 'description', None) or versus_name
-            if hasattr(versus_descriptor, 'units') and versus_descriptor.units:
-                x_label = f'{x_label} ({versus_descriptor.units})'
+            x_label = self._versus_axis_label(versus_path, versus_descriptor)
         else:
             x = list(range(1, len(y) + 1))
             x_label = 'Experiment No.'
@@ -5558,7 +5603,7 @@ class Plotter(RendererBase):
     def plot_param_series_from_snapshots(
         self,
         unique_name: str,
-        versus_name: str | None,
+        versus_path: str | None,
         experiments: object,
         parameter_snapshots: dict[str, dict[str, dict]],
     ) -> None:
@@ -5573,8 +5618,8 @@ class Plotter(RendererBase):
         ----------
         unique_name : str
             Unique name of the parameter to plot.
-        versus_name : str | None
-            Name of the diffrn descriptor for the x-axis.
+        versus_path : str | None
+            Persisted diffrn path for the x-axis.
         experiments : object
             Experiments collection for accessing diffrn conditions.
         parameter_snapshots : dict[str, dict[str, dict]]
@@ -5590,7 +5635,10 @@ class Plotter(RendererBase):
             experiment = experiments[expt_name]
             diffrn = experiment.diffrn
 
-            x_axis_param = self._resolve_diffrn_descriptor(diffrn, versus_name)
+            x_axis_param = self._resolve_diffrn_descriptor(
+                diffrn,
+                self._versus_field_name(versus_path),
+            )
 
             if x_axis_param is not None and x_axis_param.value is not None:
                 value = x_axis_param.value
@@ -5604,7 +5652,7 @@ class Plotter(RendererBase):
 
             if x_axis_param is not None:
                 axes_labels = [
-                    x_axis_param.description or x_axis_param.name,
+                    self._versus_axis_label(versus_path, x_axis_param),
                     f'Parameter value ({param_data["units"]})',
                 ]
             else:

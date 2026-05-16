@@ -77,7 +77,7 @@ project.display.parameters.cif_uids()
 
 project.display.fit.results()
 project.display.fit.correlations()
-project.display.fit.series(param, versus=temperature)
+project.display.fit.series(param, versus='diffrn.ambient_temperature')
 
 project.display.posterior.pairs()
 project.display.posterior.distribution(param)
@@ -197,7 +197,8 @@ Use these naming rules:
 - `fit.correlations()` shows parameter relationships from the latest
   fit.
 - `fit.series(param, versus=...)` shows fitted parameter values across a
-  sequence of fit results or experiments.
+  sequence of fit results or experiments, using a persisted `diffrn.*`
+  path for `versus`.
 - `posterior.*` names are used only when posterior samples are required.
 
 ## Rejected Alternatives
@@ -209,7 +210,7 @@ project.display.pattern(expt_name='hrpt')
 project.display.parameters(scope='free')
 project.display.fit_results()
 project.display.correlations()
-project.display.parameter_series(param, versus=temperature)
+project.display.parameter_series(param, versus='diffrn.ambient_temperature')
 project.display.posterior_pairs()
 project.display.posterior_distribution(param)
 project.display.posterior_predictive(expt_name='hrpt')

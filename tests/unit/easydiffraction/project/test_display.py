@@ -193,8 +193,8 @@ def test_fit_display_delegates_to_analysis_and_rendering():
         max_parameters=4,
         show_diagonal=False,
     )
-    display.fit.series(param='scale', versus='temperature')
-    display.fit.series(versus='temperature')
+    display.fit.series(param='scale', versus='diffrn.ambient_temperature')
+    display.fit.series(versus='diffrn.ambient_temperature')
 
     assert calls[0] == ('fit_results', (), {})
     assert calls[1] == (
@@ -210,12 +210,12 @@ def test_fit_display_delegates_to_analysis_and_rendering():
     assert calls[2] == (
         'plot_param_series',
         (),
-        {'param': 'scale', 'versus': 'temperature'},
+        {'param': 'scale', 'versus': 'diffrn.ambient_temperature'},
     )
     assert calls[3] == (
         'plot_all_param_series',
         (),
-        {'versus': 'temperature'},
+        {'versus': 'diffrn.ambient_temperature'},
     )
 
 

@@ -331,7 +331,7 @@ class TestPlotParamSeriesFromCsv:
 
         csv = tmp_path / 'results.csv'
         csv.write_text(
-            'my_param,my_param.uncertainty,diffrn.temperature\n1.0,0.1,300\n2.0,0.2,400\n'
+            'my_param,my_param.uncertainty,diffrn.ambient_temperature\n1.0,0.1,300\n2.0,0.2,400\n'
         )
 
         plot_calls = []
@@ -348,12 +348,12 @@ class TestPlotParamSeriesFromCsv:
             description = 'A param'
             units = 'Å'
 
-        class VersusDesc:
-            name = 'temperature'
-            description = 'Temperature'
-            units = 'K'
-
-        p._plot_param_series_from_csv(str(csv), 'my_param', ParamDesc(), VersusDesc())
+        p._plot_param_series_from_csv(
+            str(csv),
+            'my_param',
+            ParamDesc(),
+            'diffrn.ambient_temperature',
+        )
         assert len(plot_calls) == 1
         assert plot_calls[0]['x'] == [300.0, 400.0]
         assert plot_calls[0]['y'] == [1.0, 2.0]
@@ -416,7 +416,7 @@ class TestPlotParamSeriesFromSnapshots:
             },
         }
         p.plot_param_series_from_snapshots(
-            'param_a', 'ambient_temperature', experiments, snapshots
+            'param_a', 'diffrn.ambient_temperature', experiments, snapshots
         )
         assert len(plot_calls) == 1
         assert plot_calls[0]['y'] == [1.23]

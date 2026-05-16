@@ -254,16 +254,21 @@ stylistic — it follows the call site's role:
   Examples:
   `sequential_fit_extract.create(target='diffrn.ambient_temperature', ...)`,
   alias/constraint definitions persisted in project CIF.
-- **Runtime / display / introspection APIs use live descriptors.** The
-  call needs the descriptor's `description`, `units`, and `unique_name`
-  (e.g. for axis labels or CSV column lookup), autocomplete is valuable
-  for interactive use, and exactly one concrete object is being
-  referenced. Examples:
-  `project.display.fit.series(param=structure.cell.length_a, versus=expt.diffrn.ambient_temperature)`.
+- **Cross-experiment selectors use the same string paths at runtime.**
+  `project.display.fit.series(..., versus=...)` selects a persisted
+  `diffrn.*` column in `analysis/results.csv` and the matching field
+  across experiments; it does not use one experiment's current live
+  descriptor value. Example:
+  `project.display.fit.series(param=structure.cell.length_a, versus='diffrn.ambient_temperature')`.
+- **Concrete model parameters still use live descriptors.** The call
+  needs the parameter's `unique_name`, `description`, and `units`, and
+  it refers to one exact fitted quantity in the model. Example:
+  `param=structure.cell.length_a` in `project.display.fit.series(...)`.
 
 When adding a new public API, place it on one side of this rule rather
-than accepting both. Do not introduce a string-resolver in a runtime
-API, and do not require a live descriptor at setup time.
+than accepting both. Use string paths when the value names a persisted
+field or cross-experiment selector, and use live descriptors when the
+value names one concrete model parameter.
 
 ---
 
