@@ -630,8 +630,8 @@ def _build_template(project: object) -> SequentialFitTemplate:
 
 _SEQUENTIAL_CHUNK_PROGRESS_HEADERS = [
     'chunk',
-    'files range',
-    'files count',
+    'files',
+    'count',
     'average χ²',
     'status',
 ]
