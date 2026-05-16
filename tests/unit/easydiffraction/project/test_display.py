@@ -193,6 +193,7 @@ def test_fit_display_delegates_to_analysis_and_rendering():
         show_diagonal=False,
     )
     display.fit.series(param='scale', versus='temperature')
+    display.fit.series_all(versus='temperature')
 
     assert calls[0] == ('fit_results', (), {})
     assert calls[1] == (
@@ -209,6 +210,11 @@ def test_fit_display_delegates_to_analysis_and_rendering():
         'plot_param_series',
         (),
         {'param': 'scale', 'versus': 'temperature'},
+    )
+    assert calls[3] == (
+        'plot_all_param_series',
+        (),
+        {'versus': 'temperature'},
     )
 
 

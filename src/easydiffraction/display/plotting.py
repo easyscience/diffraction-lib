@@ -770,6 +770,77 @@ class Plotter(RendererBase):
                 self._project.analysis._parameter_snapshots,
             )
 
+    def plot_all_param_series(
+        self,
+        versus: object | None = None,
+    ) -> None:
+        """
+        Plot every fitted parameter across sequential fit results.
+
+        Iterates the fitted parameters recorded in ``results.csv`` (or,
+        when absent, in the in-memory parameter snapshots) and emits one
+        ``plot_param_series`` plot per parameter.
+
+        Parameters
+        ----------
+        versus : object | None, default=None
+            A diffrn descriptor (e.g.
+            ``expt.diffrn.ambient_temperature``) whose value is used as
+            the x-axis for each experiment.  When ``None``, the
+            experiment sequence number is used instead.
+        """
+        unique_names = self._collect_fitted_param_unique_names()
+        if not unique_names:
+            log.warning('No fitted parameters found to plot.')
+            return
+
+        descriptors_by_name = self._fitted_param_descriptors_by_unique_name()
+
+        for unique_name in unique_names:
+            descriptor = descriptors_by_name.get(unique_name)
+            if descriptor is None:
+                log.warning(
+                    f"Parameter '{unique_name}' not found in project; skipping plot."
+                )
+                continue
+            self.plot_param_series(param=descriptor, versus=versus)
+
+    def _collect_fitted_param_unique_names(self) -> list[str]:
+        """Return fitted parameter unique names from CSV or snapshots."""
+        from easydiffraction.analysis.sequential import _META_COLUMNS  # noqa: PLC0415
+
+        meta = set(_META_COLUMNS)
+
+        csv_path = None
+        if self._project.info.path is not None:
+            candidate = pathlib.Path(self._project.info.path) / 'analysis' / 'results.csv'
+            if candidate.is_file():
+                csv_path = str(candidate)
+
+        if csv_path is not None:
+            df = pd.read_csv(csv_path)
+            return [
+                column
+                for column in df.columns
+                if column not in meta
+                and not column.startswith('diffrn.')
+                and not column.endswith('.uncertainty')
+            ]
+
+        snapshots = self._project.analysis._parameter_snapshots
+        if not snapshots:
+            return []
+        first_snapshot = next(iter(snapshots.values()))
+        return list(first_snapshot.keys())
+
+    def _fitted_param_descriptors_by_unique_name(self) -> dict[str, object]:
+        """Return mapping from ``unique_name`` to live parameter descriptor."""
+        all_params = (
+            self._project.structures.parameters
+            + self._project.experiments.parameters
+        )
+        return {p.unique_name: p for p in all_params if hasattr(p, 'unique_name')}
+
     def plot_param_correlations(
         self,
         threshold: float | None = DEFAULT_CORRELATION_THRESHOLD,

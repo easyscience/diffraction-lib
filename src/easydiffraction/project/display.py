@@ -112,6 +112,13 @@ class FitDisplay:
         """Plot one fitted parameter across sequential results."""
         self._project.rendering.plotter.plot_param_series(param=param, versus=versus)
 
+    def series_all(
+        self,
+        versus: object | None = None,
+    ) -> None:
+        """Plot every fitted parameter across sequential results."""
+        self._project.rendering.plotter.plot_all_param_series(versus=versus)
+
     def help(self) -> None:
         """Print available fit-display methods."""
         render_object_help(self)
