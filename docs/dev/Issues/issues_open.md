@@ -161,6 +161,156 @@ is needed.
 
 ---
 
+## 15. 🟡 Decide Whether Inactive Fit-Mode Categories Stay Lenient
+
+**Type:** API design
+
+`Analysis` currently allows direct access to inactive mode-specific
+categories such as `joint_fit` or `sequential_fit`. The values remain
+editable, but inactive sections are hidden from help and dropped during
+serialization.
+
+**Fix:** confirm whether this lenient access is the long-term contract,
+or replace it with a dedicated mode error to prevent silent state loss
+on save.
+
+**Depends on:** nothing.
+
+---
+
+## 16. 🟡 Clarify `joint_fit` Lifecycle Outside Execution
+
+**Type:** Fragility
+
+`joint_fit` is validated and auto-populated at `fit()` time, but it
+does not react when experiments are later renamed or removed.
+
+**Fix:** decide whether `joint_fit` should stay passive until execution,
+or listen for experiment lifecycle changes and prune or warn earlier.
+
+**Depends on:** nothing.
+
+---
+
+## 17. 🟡 Define `joint_fit.weight` Bounds
+
+**Type:** Data model
+
+Joint-fit rows currently allow any non-negative weight, but the public
+contract is still unclear about whether `0` means exclusion and whether
+an upper bound should exist.
+
+**Fix:** define the supported range and validator semantics for
+`joint_fit.weight`.
+
+**Depends on:** nothing.
+
+---
+
+## 18. 🟡 Define `sequential_fit_extract` Target Scope
+
+**Type:** Data model
+
+Sequential extract rules currently target one numeric descriptor under
+`experiment.diffrn`. Open questions remain around nested targets,
+duplicate rules writing the same target, and how additional supported
+prefixes should be introduced when new environment categories appear.
+
+**Fix:** pin the allowed target grammar and duplicate-target behaviour
+in architecture and validation rules.
+
+**Depends on:** nothing.
+
+---
+
+## 19. 🟡 Decide Sequential Extraction Failure Policy
+
+**Type:** Runtime behaviour
+
+Today a failed required extract rule marks that file as failed and the
+run continues. The overall aggregation policy is still undefined.
+
+**Fix:** decide whether one failed file should abort the whole run,
+remain an isolated row-level failure, or count toward a configurable
+failure threshold.
+
+**Depends on:** nothing.
+
+---
+
+## 20. 🟢 Decide Whether Sequential Extraction Should Be Cached
+
+**Type:** Performance
+
+Sequential metadata extraction currently re-reads input files when the
+run is repeated or resumed.
+
+**Fix:** decide whether extracted `diffrn.*` values should be cached in
+`analysis/results.csv` only, or also in a dedicated reusable cache.
+
+**Depends on:** nothing.
+
+---
+
+## 21. 🟢 Decide How Mid-Run Sequential Failures Persist
+
+**Type:** Recovery design
+
+If a sequential fit fails partway through, the recovery and persistence
+contract for `analysis/results.csv` is not fully specified.
+
+**Fix:** define whether partial CSV output is authoritative for resume,
+left untouched for manual recovery, or replaced on the next run.
+
+**Depends on:** nothing.
+
+---
+
+## 22. 🟢 Decide Whether CLI Should Override Extract Rules
+
+**Type:** CLI design
+
+The CLI can override mode and worker settings, but persisted
+`sequential_fit_extract` rules are not yet overridable from the command
+line.
+
+**Fix:** decide whether extraction rules stay project-file-only or gain
+an explicit CLI override syntax.
+
+**Depends on:** nothing.
+
+---
+
+## 23. 🟢 Align `dir()` With Help Filtering
+
+**Type:** Discoverability
+
+`help()` now hides inactive analysis categories by fitting mode, while
+`dir()` and tab completion still expose the full class surface.
+
+**Fix:** decide whether `dir()` should mirror the help filter or remain
+an always-complete developer surface.
+
+**Depends on:** nothing.
+
+---
+
+## 24. 🟢 Decide Whether `single_fit` Needs a Future Category
+
+**Type:** Scope planning
+
+Single mode currently has no dedicated persisted category. Future
+single-mode settings could require one, but the threshold is not yet
+defined.
+
+**Fix:** decide what concrete single-mode behaviour would justify a
+`single_fit` category instead of keeping the mode configuration on the
+owner only.
+
+**Depends on:** nothing.
+
+---
+
 ## 15. 🟡 Validate Joint-Fit Weights Before Residual Normalisation
 
 **Type:** Correctness

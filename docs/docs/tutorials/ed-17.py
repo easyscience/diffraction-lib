@@ -4,7 +4,7 @@
 # This example demonstrates a Rietveld refinement of the Co2SiO4 crystal
 # structure using constant-wavelength neutron powder diffraction data
 # from D20 at ILL. A sequential refinement is performed against a
-# temperature scan using `fit_sequential`, which processes each data
+# temperature scan using sequential fitting, which processes each data
 # file independently without loading all datasets into memory at once.
 
 # %% [markdown]

@@ -520,7 +520,9 @@ class Analysis:
             raise ValueError(f'Unknown fit mode: {mode!r}')
 
     def _prepare_joint_fit(self) -> None:
-        """Auto-populate and validate joint-fit rows before execution."""
+        """
+        Auto-populate and validate joint-fit rows before execution.
+        """
         experiments = self.project.experiments
         if len(experiments) < 2:
             msg = f'Joint fitting requires at least 2 experiments, found {len(experiments)}.'
@@ -626,7 +628,9 @@ class Analysis:
         return self._sequential_fit_extract
 
     def _resolve_sequential_data_dir(self) -> Path:
-        """Resolve the sequential-fit data directory to an absolute path."""
+        """
+        Resolve the sequential-fit data directory to an absolute path.
+        """
         data_dir = Path(self._sequential_fit.data_dir.value)
         if data_dir.is_absolute():
             return data_dir
@@ -662,7 +666,9 @@ class Analysis:
         return verb, structures, experiments
 
     def _run_single(self) -> None:
-        """Execute single-mode fitting with current project verbosity."""
+        """
+        Execute single-mode fitting with current project verbosity.
+        """
         prepared = self._prepare_fit_run()
         if prepared is None:
             return
@@ -698,7 +704,9 @@ class Analysis:
             self.project.save()
 
     def _run_sequential(self) -> None:
-        """Execute sequential fitting from persisted sequential settings."""
+        """
+        Execute sequential fitting from persisted sequential settings.
+        """
         from easydiffraction.analysis.sequential import fit_sequential as _fit_seq  # noqa: PLC0415
 
         self._update_categories()

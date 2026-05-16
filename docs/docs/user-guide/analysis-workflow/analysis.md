@@ -134,7 +134,7 @@ derivatives of the objective.
 To show the supported minimizers:
 
 ```python
-project.analysis.fit.show_minimizer_types()
+project.analysis.fitting.show_minimizer_types()
 ```
 
 The example of the output is:
@@ -151,7 +151,7 @@ Supported minimizers
 To select the desired minimizer, e.g., 'lmfit':
 
 ```python
-project.analysis.fit.minimizer_type = 'lmfit'
+project.analysis.fitting.minimizer_type = 'lmfit'
 ```
 
 ### Fit Mode
@@ -168,16 +168,16 @@ The supported fit modes are:
 | single | Independent fitting of each experiment; no shared parameters        |
 | joint  | Simultaneous fitting of all experiments; some parameters are shared |
 
-You can set the fit mode on the `fit` category:
+You can set the fit mode on the analysis owner:
 
 ```python
-project.analysis.fit.mode = 'joint'
+project.analysis.fitting_mode_type = 'joint'
 ```
 
 To check the current fit mode:
 
 ```python
-print(project.analysis.fit.mode.value)
+print(project.analysis.fitting_mode_type)
 ```
 
 ### Perform Fit

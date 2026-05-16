@@ -835,12 +835,12 @@ workflow:
   summary-style parameter displays intentionally hide the large
   loop-backed experiment categories `pd_data`, `total_data`, and `refln`
   in `all()`, `access()`, and `cif_uids()` so the output stays readable.
-- Fitting: `fit()` dispatches single/joint through the callable `fit`
-  category; `fit_sequential()` handles sequential mode (sets `fit.mode`
-  to `'sequential'` internally). `fit()` accepts optional `random_seed`
-  for stochastic minimizers; deterministic minimizers reject non-`None`
-  seeds. `display.fit_results()` dispatches through the active runtime
-  result object.
+- Fitting: `fitting.minimizer_type` stores the shared minimizer
+  selection; `fitting_mode_type` stores the active mode on `Analysis`
+  itself; `fit()` dispatches to the current mode using the persisted
+  sibling categories `joint_fit`, `sequential_fit`, and
+  `sequential_fit_extract`. `display.fit_results()` dispatches through
+  the active runtime result object.
 - Aliases and constraints (single-type categories; no public `_type`
   getter or setter)
 
@@ -930,8 +930,8 @@ project_dir/
 `_rendering.*` engine preferences (`chart_engine`, `table_engine`), so a
 saved project re-opens with the same display backends. Per-experiment
 calculator selection (`_calculation.calculator_type`) lives in each
-experiment file, and fit configuration (`_fit.minimizer_type`,
-`_fit.mode`) lives in `analysis/analysis.cif`. Runtime fit outputs,
+experiment file, and fit configuration (`_fitting.minimizer_type`,
+`_fitting.mode_type`) lives in `analysis/analysis.cif`. Runtime fit outputs,
 including `analysis.fit_results`, posterior chains, posterior predictive
 summaries, and convergence diagnostics, are not serialized.
 
@@ -1222,13 +1222,18 @@ Single-type categories (no public `_type` property):
 - **Experiment:** `diffrn`, `linked_crystal`, `excluded_regions`,
   `linked_phases`.
 - **Structure:** `cell`, `space_group`, `atom_sites`, `atom_site_aniso`.
-- **Analysis:** `aliases`, `constraints`.
+- **Analysis:** `aliases`, `constraints`, `fitting`, `sequential_fit`.
 
-`fit` is a dedicated analysis category. Its public selector surface is
-`fit.minimizer_type` and `fit.mode`; there is no separate owner-level
-proxy API. Likewise, `calculation` is a dedicated experiment category
-that owns calculator selection —
-`experiment.calculation.calculator_type` and
+`fitting` is a dedicated analysis configuration category, but the fit
+mode selector lives on the owner as `analysis.fitting_mode_type`. This
+is the project's active-sibling selector pattern: the owner stores the
+authoritative mode and decides which sibling categories are active,
+shown in help, and serialized. `joint_fit`, `sequential_fit`, and
+`sequential_fit_extract` remain direct `Analysis` siblings even when
+inactive. See the fit-mode ADR for the full contract:
+[`adr_fit-mode-categories.md`](ADR-suggestions/adr_fit-mode-categories.md).
+Likewise, `calculation` is a dedicated experiment category that owns
+calculator selection — `experiment.calculation.calculator_type` and
 `experiment.calculation.show_calculator_types()` — instead of the
 selector being exposed at the experiment owner level. The same pattern
 applies to `display` on `Project`, which owns `chart_engine` and
@@ -1256,15 +1261,18 @@ their intent and ownership differ:
 
 | Family                             | User intent                     | Examples                                                                      | CIF                                                                              |
 | ---------------------------------- | ------------------------------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| Backend selector                   | Pick an execution backend       | `fit.minimizer_type`, `calculation.calculator_type`, `rendering.chart_engine` | `_fit.minimizer_type`, `_calculation.calculator_type`, `_rendering.chart_engine` |
+| Backend selector                   | Pick an execution backend       | `fitting.minimizer_type`, `calculation.calculator_type`, `rendering.chart_engine` | `_fitting.minimizer_type`, `_calculation.calculator_type`, `_rendering.chart_engine` |
 | Switchable-category impl. selector | Swap a category implementation  | `experiment.background_type`, `experiment.peak_profile_type`                  | category-owned type tag such as `_peak.profile_type`                             |
-| Semantic value selector            | Pick a scientific/analysis mode | `fit.mode`                                                                    | `_fit.mode`                                                                      |
+| Active-sibling selector            | Pick the active sibling surface | `analysis.fitting_mode_type`                                                  | owner-owned tag such as `_fitting.mode_type`                                     |
 
-Backend selectors and semantic value selectors live on a dedicated
-configuration category (`fit`, `calculation`, `rendering`). Switchable-
-category implementation selectors are owned by the host (typically the
+Backend selectors live on a dedicated configuration category
+(`fitting`, `calculation`, `rendering`). Switchable-category
+implementation selectors are owned by the host (typically the
 experiment) because switching them replaces the category instance, as
-described in §9.3.
+described in §9.3. Active-sibling selectors are also owner-level, but
+they do not swap one category implementation for another. Instead, they
+select which sibling category family is authoritative while the shared
+configuration category keeps a stable shape.
 
 ### 9.5 Discoverable Supported Options
 
@@ -1363,8 +1371,8 @@ project.analysis.fitting.joint_fit['npd'].weight = 0.7
 In CIF output, sibling categories appear as independent blocks:
 
 ```
-_fit.minimizer_type  lmfit
-_fit.mode            joint
+_fitting.mode_type       joint
+_fitting.minimizer_type  lmfit
 
 loop_
 _joint_fit.experiment_id
@@ -1565,8 +1573,8 @@ Run `pixi run unit-tests-coverage` for a per-module report.
 
 ## 11. Issues
 
-- **Open:** [`issues_open.md`](issues_open.md) — prioritised backlog.
-- **Closed:** [`issues_closed.md`](issues_closed.md) — resolved items
+- **Open:** [`issues_open.md`](Issues/issues_open.md) — prioritised backlog.
+- **Closed:** [`issues_closed.md`](Issues/issues_closed.md) — resolved items
   for reference.
 
 When a resolution affects the architecture described above, the relevant

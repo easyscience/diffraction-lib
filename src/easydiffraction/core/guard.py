@@ -19,7 +19,9 @@ def _apply_help_filter(
     properties: list[str],
     methods: list[str],
 ) -> tuple[list[str], list[str]]:
-    """Apply an optional instance help filter that may only hide members."""
+    """
+    Apply an optional instance help filter that may only hide members.
+    """
     help_filter = getattr(obj, '_help_filter', None)
     if not callable(help_filter):
         return properties, methods

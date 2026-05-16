@@ -179,8 +179,8 @@ experiment.show_peak_profile_types()
 experiment.show_background_types()
 experiment.calculation.show_calculator_types()
 
-project.analysis.fit.show_modes()
-project.analysis.fit.show_minimizer_types()
+project.analysis.show_fitting_mode_types()
+project.analysis.fitting.show_minimizer_types()
 
 project.rendering.show_chart_engines()
 project.rendering.show_table_engines()
@@ -194,8 +194,8 @@ experiment.peak_profile_type = 'pseudo-voigt'
 experiment.background_type = 'line-segment'
 experiment.calculation.calculator_type = 'cryspy'
 
-project.analysis.fit.mode = 'single'
-project.analysis.fit.minimizer_type = 'lmfit'
+project.analysis.fitting_mode_type = 'single'
+project.analysis.fitting.minimizer_type = 'lmfit'
 
 project.rendering.chart_engine = 'plotly'
 project.rendering.table_engine = 'rich'
@@ -289,11 +289,11 @@ Choose calculators and minimizers:
 experiment.calculation.show_calculator_types()
 experiment.calculation.calculator_type = 'cryspy'
 
-project.analysis.fit.show_modes()
-project.analysis.fit.mode = 'single'
+project.analysis.show_fitting_mode_types()
+project.analysis.fitting_mode_type = 'single'
 
-project.analysis.fit.show_minimizer_types()
-project.analysis.fit.minimizer_type = 'lmfit'
+project.analysis.fitting.show_minimizer_types()
+project.analysis.fitting.minimizer_type = 'lmfit'
 ```
 
 Run a fit and inspect the result:
