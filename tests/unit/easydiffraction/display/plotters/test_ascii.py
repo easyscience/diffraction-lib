@@ -280,3 +280,29 @@ def test_ascii_plotter_plot_scatter_uses_detected_terminal_width(monkeypatch):
         44 - ASCII_CHART_OFFSET - ASCII_CHART_LEFT_PADDING,
     )
     assert config['colors'] == [ascii_mod.asciichartpy.blue]
+
+
+def test_ascii_plotter_plot_scatter_sorts_by_x_before_resampling(monkeypatch):
+    from easydiffraction.display.plotters import ascii as ascii_mod
+    from easydiffraction.display.plotters.ascii import AsciiPlotter
+
+    captured: dict[str, object] = {}
+
+    def fake_plot(series, config):
+        captured['call'] = (series, config)
+        return 'chart'
+
+    monkeypatch.setattr(AsciiPlotter, '_chart_point_count', lambda: 4)
+    monkeypatch.setattr(ascii_mod.asciichartpy, 'plot', fake_plot)
+
+    AsciiPlotter().plot_scatter(
+        x=np.array([400.0, 300.0, 200.0, 100.0]),
+        y=np.array([4.0, 3.0, 2.0, 1.0]),
+        sy=np.array([0.1, 0.1, 0.1, 0.1]),
+        axes_labels=['Temperature', 'Parameter value'],
+        title='Scatter order test',
+        height=5,
+    )
+
+    series, _config = captured['call']
+    assert series[0] == [1.0, 2.0, 3.0, 4.0]

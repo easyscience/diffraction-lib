@@ -315,12 +315,18 @@ class AsciiPlotter(PlotterBase):
         height: int | None = None,
     ) -> None:
         """Render a scatter plot with error bars in ASCII."""
-        _ = x, sy  # ASCII backend does not use x ticks or error bars
+        _ = sy  # ASCII backend does not use error bars
 
         if height is None:
             height = DEFAULT_HEIGHT
 
-        y_series = self._resample_series_for_chart([y])
+        x_array = np.ravel(np.asarray(x, dtype=float))
+        y_array = np.ravel(np.asarray(y, dtype=float))
+        if x_array.size == y_array.size and x_array.size > 1:
+            order = np.argsort(x_array, kind='stable')
+            y_array = y_array[order]
+
+        y_series = self._resample_series_for_chart([y_array])
         config = {'height': height, 'colors': [asciichartpy.blue]}
         chart = asciichartpy.plot(y_series, config)
 
