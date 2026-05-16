@@ -698,7 +698,7 @@ def _chunk_file_range(chunk: list[str]) -> str:
     last_name = Path(chunk[-1]).name
     if first_name == last_name:
         return first_name
-    return f'{first_name}-{last_name}'
+    return f'{first_name} - {last_name}'
 
 
 def _format_progress_percent(completed_items: int, total_items: int) -> str:
