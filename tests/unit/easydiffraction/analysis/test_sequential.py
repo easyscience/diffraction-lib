@@ -16,6 +16,7 @@ from easydiffraction.analysis.sequential import _append_to_csv
 from easydiffraction.analysis.sequential import _build_csv_header
 from easydiffraction.analysis.sequential import _chunk_file_range
 from easydiffraction.analysis.sequential import _read_csv_for_recovery
+from easydiffraction.analysis.sequential import _relative_file_path_for_csv
 from easydiffraction.analysis.sequential import _write_csv_header
 from easydiffraction.display.progress import ACTIVITY_LABEL_FITTING
 from easydiffraction.utils.enums import VerbosityEnum
@@ -271,6 +272,26 @@ class TestCsvWriteAndAppend:
         with csv_path.open() as f:
             rows = list(csv.DictReader(f))
         assert rows[0]['file_path'] == 'experiments/d20_scan/scan_001.dat'
+
+    def test_relative_file_paths_use_posix_separators(self, tmp_path, monkeypatch):
+        import easydiffraction.analysis.sequential as sequential_mod
+
+        project_dir = tmp_path / 'project'
+        csv_path = project_dir / 'analysis' / 'results.csv'
+        csv_path.parent.mkdir(parents=True)
+        data_dir = project_dir / 'experiments' / 'scan'
+        data_dir.mkdir(parents=True)
+        data_path = data_dir / 'scan_001.dat'
+        data_path.write_text('1 2 3\n')
+        monkeypatch.setattr(
+            sequential_mod.os.path,
+            'relpath',
+            lambda _path, start: 'experiments\\scan\\scan_001.dat',
+        )
+
+        relative_path = _relative_file_path_for_csv(csv_path, str(data_path))
+
+        assert relative_path == 'experiments/scan/scan_001.dat'
 
     def test_append_ignores_extra_keys(self, tmp_path):
         csv_path = tmp_path / 'results.csv'

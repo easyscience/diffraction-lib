@@ -466,7 +466,8 @@ def _relative_file_path_for_csv(
     """Return *file_path* relative to the CSV-owning project."""
     project_path = csv_path.parent.parent.resolve()
     resolved_path = _resolve_project_file_path(project_path, file_path)
-    return os.path.relpath(resolved_path, start=project_path)
+    relative_path = os.path.relpath(resolved_path, start=project_path)
+    return relative_path.replace('\\', '/')
 
 
 def _resolve_csv_file_path(
