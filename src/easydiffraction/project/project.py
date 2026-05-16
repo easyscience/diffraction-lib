@@ -60,6 +60,37 @@ def _apply_csv_row_to_params(
             param_map[col_name].value = float(row[col_name])
 
 
+def _apply_csv_row_to_diffrn(
+    row: object,
+    columns: object,
+    experiment: object,
+) -> None:
+    """
+    Override ``experiment.diffrn`` values from a CSV row.
+
+    Parameters
+    ----------
+    row : object
+        A pandas Series representing one CSV row.
+    columns : object
+        The DataFrame column index.
+    experiment : object
+        Live experiment whose ``diffrn`` descriptors are updated.
+    """
+    import pandas as pd  # noqa: PLC0415
+
+    from easydiffraction.core.variable import NumericDescriptor  # noqa: PLC0415
+
+    for col_name in columns:
+        if not col_name.startswith('diffrn.') or pd.isna(row[col_name]):
+            continue
+
+        field_name = col_name.removeprefix('diffrn.')
+        descriptor = getattr(experiment.diffrn, field_name, None)
+        if isinstance(descriptor, NumericDescriptor):
+            descriptor.value = float(row[col_name])
+
+
 class Project(GuardedBase):
     """
     Central API for managing a diffraction data analysis project.
@@ -469,13 +500,17 @@ class Project(GuardedBase):
 
         row = df.iloc[row_index]
 
+        experiment = next(iter(self.experiments.values()))
+
         # 1. Reload data if file_path points to a real file
         file_path = row.get('file_path', '')
         if file_path and pathlib.Path(file_path).is_file():
-            experiment = next(iter(self.experiments.values()))
             experiment._load_ascii_data_to_experiment(file_path)
 
-        # 2. Override parameter values and uncertainties
+        # 2. Restore extracted diffrn metadata from the CSV row.
+        _apply_csv_row_to_diffrn(row, df.columns, experiment)
+
+        # 3. Override parameter values and uncertainties
         all_params = self.structures.parameters + self.experiments.parameters
         param_map = {
             p.unique_name: p

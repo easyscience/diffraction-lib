@@ -35,6 +35,7 @@ ACTIVITY_LABEL_PROCESSING = 'Processing...'
 ACTIVITY_LABEL_SAMPLING = 'Sampling...'
 ACTIVITY_ACCENT_COLOR = '#d97706'
 ACTIVITY_TERMINAL_STYLE = ACTIVITY_ACCENT_COLOR
+ACTIVITY_TERMINAL_FALLBACK_STYLE = 'bold yellow'
 
 SPINNER_FRAMES: tuple[str, ...] = (
     '⠋',
@@ -50,6 +51,27 @@ SPINNER_FRAMES: tuple[str, ...] = (
 )
 _SPINNER_FRAME_SECONDS = 0.1
 _JUPYTER_SPINNER_SECONDS = 1.0
+
+
+def resolve_activity_terminal_style(console: object | None = None) -> str:
+    """
+    Return a terminal-safe activity indicator style.
+
+    Parameters
+    ----------
+    console : object | None, default=None
+        Console-like object whose ``color_system`` determines whether
+        the accent color can be rendered directly.
+
+    Returns
+    -------
+    str
+        The preferred terminal style for the current console.
+    """
+    color_system = getattr(console, 'color_system', None)
+    if color_system in {'standard', 'windows'}:
+        return ACTIVITY_TERMINAL_FALLBACK_STYLE
+    return ACTIVITY_TERMINAL_STYLE
 
 
 class _TerminalLiveHandle:
@@ -295,13 +317,14 @@ class ActivityIndicator:
         return Text(str(self._content))
 
     def _terminal_indicator_line(self) -> Text | None:
+        style = resolve_activity_terminal_style(ConsoleManager.get())
         if self._running:
             if self._animated:
                 frame = self._current_frame()
-                return Text(f'{frame} {self._label}', style=ACTIVITY_TERMINAL_STYLE)
-            return Text(self._label, style=ACTIVITY_TERMINAL_STYLE)
+                return Text(f'{frame} {self._label}', style=style)
+            return Text(self._label, style=style)
         if self._keep_stopped_label:
-            return Text(self._label, style=ACTIVITY_TERMINAL_STYLE)
+            return Text(self._label, style=style)
         return None
 
     def _current_frame(self) -> str:

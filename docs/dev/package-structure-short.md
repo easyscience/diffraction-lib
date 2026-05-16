@@ -19,12 +19,19 @@
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
-│   │   ├── 📁 fit
+│   │   ├── 📁 fitting
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
-│   │   │   ├── 📄 enums.py
 │   │   │   └── 📄 factory.py
-│   │   ├── 📁 joint_fit_experiments
+│   │   ├── 📁 joint_fit
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   └── 📄 factory.py
+│   │   ├── 📁 sequential_fit
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   └── 📄 factory.py
+│   │   ├── 📁 sequential_fit_extract
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
@@ -51,6 +58,7 @@
 │   │   └── 📄 lmfit_leastsq.py
 │   ├── 📄 __init__.py
 │   ├── 📄 analysis.py
+│   ├── 📄 enums.py
 │   ├── 📄 fitting.py
 │   └── 📄 sequential.py
 ├── 📁 core

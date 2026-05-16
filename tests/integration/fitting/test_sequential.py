@@ -5,7 +5,6 @@
 from __future__ import annotations
 
 import csv
-import shutil
 import tempfile
 from pathlib import Path
 
@@ -20,7 +19,10 @@ from easydiffraction import download_data
 TEMP_DIR = tempfile.gettempdir()
 
 
-def _create_sequential_project(tmp_path: Path) -> tuple[Project, str]:
+def _create_sequential_project(
+    tmp_path: Path,
+    temperatures: dict[str, float] | None = None,
+) -> tuple[Project, str]:
     """
     Build a project for sequential fitting and save it.
 
@@ -110,8 +112,15 @@ def _create_sequential_project(tmp_path: Path) -> tuple[Project, str]:
     # Create a data directory with copies of the same data file
     data_dir = tmp_path / 'scan_data'
     data_dir.mkdir()
+    source_text = Path(data_path).read_text(encoding='utf-8')
     for i in range(3):
-        shutil.copy(data_path, data_dir / f'scan_{i + 1:03d}.xye')
+        file_name = f'scan_{i + 1:03d}.xye'
+        destination = data_dir / file_name
+        destination_text = source_text
+        if temperatures is not None:
+            temperature = temperatures[file_name]
+            destination_text = f'# ambient_temperature = {temperature}\n{source_text}'
+        destination.write_text(destination_text, encoding='utf-8')
 
     return project, str(data_dir)
 
@@ -217,19 +226,18 @@ def test_fit_sequential_parameter_propagation(tmp_path) -> None:
 # ------------------------------------------------------------------
 
 
-@pytest.mark.xfail(reason='Step 8 rewrites extract_diffrn as sequential_fit_extract rules')
-def test_fit_sequential_with_diffrn_callback(tmp_path) -> None:
-    """extract_diffrn callback populates diffrn columns in CSV."""
-    project, data_dir = _create_sequential_project(tmp_path)
-
+def test_fit_sequential_with_diffrn_extract_rules(tmp_path) -> None:
+    """Sequential extract rules populate diffrn columns in the CSV."""
     temperatures = {'scan_001.xye': 300.0, 'scan_002.xye': 350.0, 'scan_003.xye': 400.0}
+    project, data_dir = _create_sequential_project(tmp_path, temperatures=temperatures)
 
-    def extract_diffrn(file_path: str) -> dict[str, float]:
-        name = Path(file_path).name
-        return {'ambient_temperature': temperatures.get(name, 0.0)}
+    project.analysis.sequential_fit_extract.create(
+        id='temperature',
+        target='diffrn.ambient_temperature',
+        pattern=r'ambient_temperature\s*=\s*([0-9.]+)',
+        required=True,
+    )
 
-    # TODO: Step 8 - rewrite extract_diffrn callback coverage using
-    # sequential_fit_extract rules.
     _run_sequential_fit(project, data_dir)
 
     csv_path = project.info.path / 'analysis' / 'results.csv'
@@ -239,9 +247,9 @@ def test_fit_sequential_with_diffrn_callback(tmp_path) -> None:
     # Check that temperature column is present and populated
     for row in rows:
         name = Path(row['file_path']).name
-        if 'diffrn.ambient_temperature' in row:
-            expected = temperatures.get(name, 0.0)
-            assert_almost_equal(float(row['diffrn.ambient_temperature']), expected)
+        assert 'diffrn.ambient_temperature' in row
+        expected = temperatures[name]
+        assert_almost_equal(float(row['diffrn.ambient_temperature']), expected)
 
 
 # ------------------------------------------------------------------
@@ -324,7 +332,14 @@ def test_fit_sequential_parallel(tmp_path) -> None:
 
 def test_apply_params_from_csv_loads_data_and_params(tmp_path) -> None:
     """apply_params_from_csv overrides params and reloads data."""
-    project, data_dir = _create_sequential_project(tmp_path)
+    temperatures = {'scan_001.xye': 300.0, 'scan_002.xye': 350.0, 'scan_003.xye': 400.0}
+    project, data_dir = _create_sequential_project(tmp_path, temperatures=temperatures)
+    project.analysis.sequential_fit_extract.create(
+        id='temperature',
+        target='diffrn.ambient_temperature',
+        pattern=r'ambient_temperature\s*=\s*([0-9.]+)',
+        required=True,
+    )
 
     _run_sequential_fit(project, data_dir)
 
@@ -334,6 +349,10 @@ def test_apply_params_from_csv_loads_data_and_params(tmp_path) -> None:
 
     # Read the expected cell_length_a from CSV row 1
     expected_a = float(rows[1]['lbco.cell.length_a'])
+    expected_temperature = float(rows[1]['diffrn.ambient_temperature'])
+
+    expt = next(iter(project.experiments.values()))
+    expt.diffrn.ambient_temperature.value = None
 
     # Apply params from row 1
     project.apply_params_from_csv(row_index=1)
@@ -344,8 +363,8 @@ def test_apply_params_from_csv_loads_data_and_params(tmp_path) -> None:
 
     # Verify that the experiment has measured data loaded
     # (from the file_path in that CSV row)
-    expt = next(iter(project.experiments.values()))
     assert expt.data.intensity_meas is not None
+    assert_almost_equal(expt.diffrn.ambient_temperature.value, expected_temperature)
 
 
 def test_apply_params_from_csv_raises_on_missing_csv(tmp_path) -> None:

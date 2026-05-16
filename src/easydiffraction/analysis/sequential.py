@@ -24,9 +24,9 @@ from rich.console import Console
 from rich.text import Text
 
 from easydiffraction.display.progress import ACTIVITY_LABEL_FITTING
-from easydiffraction.display.progress import ACTIVITY_TERMINAL_STYLE
 from easydiffraction.display.progress import SPINNER_FRAMES
 from easydiffraction.display.progress import ActivityIndicator
+from easydiffraction.display.progress import resolve_activity_terminal_style
 from easydiffraction.io.ascii import extract_data_paths_from_dir
 from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.environment import in_jupyter
@@ -814,7 +814,8 @@ class _TerminalSequentialDisplay:
 
     def _spinner_line(self) -> str:
         frame = SPINNER_FRAMES[self._frame_index]
-        return self._render_lines(Text(f'{frame} {self._label}', style=ACTIVITY_TERMINAL_STYLE))[0]
+        style = resolve_activity_terminal_style(self._console)
+        return self._render_lines(Text(f'{frame} {self._label}', style=style))[0]
 
     def _render_lines(self, renderable: object) -> list[str]:
         buffer = StringIO()

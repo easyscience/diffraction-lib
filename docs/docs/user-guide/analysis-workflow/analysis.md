@@ -336,16 +336,16 @@ User defined constraints
 To inspect an analysis configuration in CIF format, use:
 
 ```python
-# Show structure as CIF
-project.structures['lbco'].show_as_cif()
+# Show analysis as CIF
+project.analysis.show_as_cif()
 ```
 
 Example output:
 
 ```
 ╒════════════════════════════════════════════════╕
-│ _fit.minimizer_type          "lmfit (leastsq)" │
-│ _fit.mode                    single            │
+│ _fitting.minimizer_type      "lmfit (leastsq)" │
+│ _fitting.mode_type           single            │
 │                                                │
 │ loop_                                          │
 │ _alias.label                                   │
