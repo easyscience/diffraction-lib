@@ -724,14 +724,21 @@ class Analysis:
         chunk_size_value = self._sequential_fit.chunk_size.value
         chunk_size = None if chunk_size_value == '.' else int(chunk_size_value)
 
-        _fit_seq(
-            analysis=self,
-            data_dir=str(self._resolve_sequential_data_dir()),
-            max_workers=max_workers,
-            chunk_size=chunk_size,
-            file_pattern=self._sequential_fit.file_pattern.value,
-            reverse=self._sequential_fit.reverse.value,
-        )
+        self.fit_results = None
+        self.fitter.results = None
+
+        try:
+            _fit_seq(
+                analysis=self,
+                data_dir=str(self._resolve_sequential_data_dir()),
+                max_workers=max_workers,
+                chunk_size=chunk_size,
+                file_pattern=self._sequential_fit.file_pattern.value,
+                reverse=self._sequential_fit.reverse.value,
+            )
+        finally:
+            self.fit_results = None
+            self.fitter.results = None
 
         if self.project.info.path is not None:
             self.project.save()

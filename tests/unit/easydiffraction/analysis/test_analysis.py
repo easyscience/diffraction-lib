@@ -276,6 +276,8 @@ def test_run_sequential_sets_mode_and_saves_project(monkeypatch, tmp_path):
     monkeypatch.setattr(
         analysis, '_resolve_sequential_data_dir', lambda: tmp_path / 'resolved-scans'
     )
+    analysis.fit_results = object()
+    analysis.fitter.results = object()
 
     analysis._run_sequential()
 
@@ -295,3 +297,5 @@ def test_run_sequential_sets_mode_and_saves_project(monkeypatch, tmp_path):
         ('update_categories', None),
     ]
     assert project.save_calls == 1
+    assert analysis.fit_results is None
+    assert analysis.fitter.results is None

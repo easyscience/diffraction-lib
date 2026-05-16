@@ -20,12 +20,9 @@ def _resolve_extraction_destination(destination: str | Path | None) -> Path:
 
     extract_dir = Path(destination)
     if not extract_dir.is_absolute():
-        from easydiffraction.project.project import Project  # noqa: PLC0415
+        extract_dir = Path.cwd() / extract_dir
 
-        project_path = Project.current_project_path()
-        if project_path is not None:
-            extract_dir = project_path / extract_dir
-
+    extract_dir = extract_dir.resolve()
     extract_dir.mkdir(parents=True, exist_ok=True)
     return extract_dir
 
@@ -110,7 +107,7 @@ def extract_data_paths_from_zip(
     destination : str | Path | None, default=None
         Directory to extract files into.  When ``None``, a temporary
         directory is created. Relative destinations are resolved against
-        the current saved project path when one exists.
+        the current working directory.
 
     Returns
     -------
