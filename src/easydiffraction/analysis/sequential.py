@@ -15,8 +15,11 @@ import time
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from dataclasses import replace
+from itertools import starmap
 from pathlib import Path
 from typing import Any
+
+from rich.cells import cell_len
 
 from easydiffraction.display.progress import ACTIVITY_LABEL_FITTING
 from easydiffraction.display.progress import ActivityIndicator
@@ -639,6 +642,18 @@ _SEQUENTIAL_CHUNK_PROGRESS_ALIGNMENTS = [
 ]
 _SEQUENTIAL_FILE_PROGRESS_HEADERS = ['file', 'progress', 'time (s)', 'χ²', 'iterations', 'status']
 _SEQUENTIAL_FILE_PROGRESS_ALIGNMENTS = ['left', 'right', 'right', 'right', 'right', 'center']
+# Single-bordered box, no internal column dividers - matches the
+# CUSTOM_BOX style used by RichTableBackend.
+_PROGRESS_BOX_HORIZ = '─'
+_PROGRESS_BOX_VERT = '│'
+_PROGRESS_BOX_TOP_LEFT = '┌'
+_PROGRESS_BOX_TOP_RIGHT = '┐'
+_PROGRESS_BOX_MID_LEFT = '├'
+_PROGRESS_BOX_MID_RIGHT = '┤'
+_PROGRESS_BOX_BOT_LEFT = '└'
+_PROGRESS_BOX_BOT_RIGHT = '┘'
+_PROGRESS_INDEX_HEADER = '#'
+_PROGRESS_INDEX_ALIGN = 'right'
 
 
 @dataclass
@@ -656,6 +671,10 @@ class SequentialProgressContext:
     verbosity: VerbosityEnum
     state: SequentialProgressState | None
     indicator: ActivityIndicator | None = None
+    column_widths: list[int] | None = None
+    column_headers: list[str] | None = None
+    column_alignments: list[str] | None = None
+    row_index: int = 0
 
 
 @dataclass(frozen=True)
@@ -752,16 +771,14 @@ def _build_file_progress_rows(
         chi2_str = f'{reduced_chi2:.2f}' if reduced_chi2 is not None else '—'
         iterations = str(result.get('n_iterations') or 0)
         status = '✅' if result.get('fit_success') else '❌'
-        rows.append(
-            [
-                Path(result['file_path']).name,
-                _format_progress_percent(completed_files_before + index, total_files),
-                time_str,
-                chi2_str,
-                iterations,
-                status,
-            ]
-        )
+        rows.append([
+            Path(result['file_path']).name,
+            _format_progress_percent(completed_files_before + index, total_files),
+            time_str,
+            chi2_str,
+            iterations,
+            status,
+        ])
     return rows
 
 
@@ -769,7 +786,7 @@ def _build_progress_renderable(
     verbosity: VerbosityEnum,
     progress_state: SequentialProgressState,
 ) -> object:
-    """Build the sequential progress table renderable."""
+    """Build the sequential progress table renderable (summary use)."""
     if verbosity is VerbosityEnum.FULL:
         return build_table_renderable(
             columns_headers=_SEQUENTIAL_FILE_PROGRESS_HEADERS,
@@ -784,47 +801,195 @@ def _build_progress_renderable(
     )
 
 
-def _create_progress_context(verbosity: VerbosityEnum) -> SequentialProgressContext:
+def _format_progress_line(
+    cells: list[str],
+    widths: list[int],
+    alignments: list[str],
+) -> str:
+    """Format a progress row as a single bordered text line."""
+    padded = list(starmap(_pad_progress_cell, zip(cells, widths, alignments, strict=True)))
+    interior = ' '.join(f' {block} ' for block in padded)
+    return f'{_PROGRESS_BOX_VERT}{interior}{_PROGRESS_BOX_VERT}'
+
+
+def _format_progress_border(
+    widths: list[int],
+    left: str,
+    right: str,
+) -> str:
+    """Format a top/middle/bottom border line for the progress table."""
+    segments = _PROGRESS_BOX_HORIZ.join(_PROGRESS_BOX_HORIZ * (width + 2) for width in widths)
+    return f'{left}{segments}{right}'
+
+
+def _pad_progress_cell(text: str, width: int, alignment: str) -> str:
+    """Pad ``text`` to ``width`` visual cells using ``cell_len``."""
+    actual = cell_len(text)
+    pad = max(width - actual, 0)
+    if alignment == 'right':
+        return ' ' * pad + text
+    if alignment == 'center':
+        left_pad = pad // 2
+        right_pad = pad - left_pad
+        return ' ' * left_pad + text + ' ' * right_pad
+    return text + ' ' * pad
+
+
+def _compute_chunk_progress_widths(chunks: list[list[str]]) -> list[int]:
+    """Return fixed column widths for the chunk-mode progress table."""
+    total = max(len(chunks), 1)
+    files_width = max(
+        (cell_len(_chunk_file_range(chunk)) for chunk in chunks),
+        default=0,
+    )
+    count_width = len(str(max((len(c) for c in chunks), default=1)))
+    by_header = {
+        'chunk': len(f'{total}/{total}'),
+        'progress': len('100.0%'),
+        'time (s)': len('00000.00'),
+        'files': files_width,
+        'count': count_width,
+        'average χ²': len('999.99'),
+        'status': 2,
+    }
+    return [
+        max(cell_len(header), by_header.get(header, 0))
+        for header in _SEQUENTIAL_CHUNK_PROGRESS_HEADERS
+    ]
+
+
+def _compute_file_progress_widths(remaining: list[str]) -> list[int]:
+    """Return fixed column widths for the file-mode progress table."""
+    file_width = max(
+        (cell_len(Path(path).name) for path in remaining),
+        default=0,
+    )
+    by_header = {
+        'file': file_width,
+        'progress': len('100.0%'),
+        'time (s)': len('00000.00'),
+        'χ²': len('999.99'),
+        'iterations': len('99999'),
+        'status': 2,
+    }
+    return [
+        max(cell_len(header), by_header.get(header, 0))
+        for header in _SEQUENTIAL_FILE_PROGRESS_HEADERS
+    ]
+
+
+def _prepend_index_column(
+    headers: list[str],
+    alignments: list[str],
+    widths: list[int],
+    total_rows: int,
+) -> tuple[list[str], list[str], list[int]]:
+    """
+    Prefix ``#`` index column metadata to header/alignment/width lists.
+    """
+    index_width = max(len(_PROGRESS_INDEX_HEADER), len(str(max(total_rows, 1))))
+    return (
+        [_PROGRESS_INDEX_HEADER, *headers],
+        [_PROGRESS_INDEX_ALIGN, *alignments],
+        [index_width, *widths],
+    )
+
+
+def _create_progress_context(
+    verbosity: VerbosityEnum,
+    plan: SequentialRunPlan,
+) -> SequentialProgressContext:
     """Return a mutable progress context for the given verbosity."""
     if verbosity is VerbosityEnum.SILENT:
         return SequentialProgressContext(verbosity=verbosity, state=None)
 
+    if verbosity is VerbosityEnum.FULL:
+        base_headers = list(_SEQUENTIAL_FILE_PROGRESS_HEADERS)
+        base_alignments = list(_SEQUENTIAL_FILE_PROGRESS_ALIGNMENTS)
+        base_widths = _compute_file_progress_widths(plan.remaining)
+        total_rows = len(plan.remaining)
+    else:
+        base_headers = list(_SEQUENTIAL_CHUNK_PROGRESS_HEADERS)
+        base_alignments = list(_SEQUENTIAL_CHUNK_PROGRESS_ALIGNMENTS)
+        base_widths = _compute_chunk_progress_widths(plan.chunks)
+        total_rows = len(plan.chunks)
+
+    headers, alignments, widths = _prepend_index_column(
+        base_headers,
+        base_alignments,
+        base_widths,
+        total_rows,
+    )
+
     return SequentialProgressContext(
         verbosity=verbosity,
         state=SequentialProgressState(chunk_rows=[], file_rows=[]),
+        column_widths=widths,
+        column_headers=headers,
+        column_alignments=alignments,
     )
-
-
-def _start_indicator_with_renderable(
-    verbosity: VerbosityEnum,
-    renderable: object,
-) -> ActivityIndicator:
-    """Start an indicator and render the initial progress content."""
-    indicator = ActivityIndicator(
-        ACTIVITY_LABEL_FITTING,
-        verbosity=verbosity,
-    )
-    indicator.start()
-    indicator.update(content=renderable)
-    return indicator
 
 
 def _start_progress_display(progress: SequentialProgressContext) -> None:
-    """Start the progress display (Rich Live indicator) for a run."""
-    if progress.verbosity is VerbosityEnum.SILENT or progress.state is None:
+    """
+    Print the bordered header and start a spinner-only live indicator.
+    """
+    if (
+        progress.verbosity is VerbosityEnum.SILENT
+        or progress.state is None
+        or progress.column_headers is None
+        or progress.column_widths is None
+        or progress.column_alignments is None
+    ):
         return
 
-    initial_renderable = _build_progress_renderable(progress.verbosity, progress.state)
-    progress.indicator = _start_indicator_with_renderable(
-        progress.verbosity,
-        initial_renderable,
+    console.print(
+        _format_progress_border(
+            progress.column_widths,
+            _PROGRESS_BOX_TOP_LEFT,
+            _PROGRESS_BOX_TOP_RIGHT,
+        )
     )
+    console.print(
+        _format_progress_line(
+            progress.column_headers,
+            progress.column_widths,
+            progress.column_alignments,
+        )
+    )
+    console.print(
+        _format_progress_border(
+            progress.column_widths,
+            _PROGRESS_BOX_MID_LEFT,
+            _PROGRESS_BOX_MID_RIGHT,
+        )
+    )
+
+    indicator = ActivityIndicator(
+        ACTIVITY_LABEL_FITTING,
+        verbosity=progress.verbosity,
+    )
+    indicator.start()
+    progress.indicator = indicator
 
 
 def _stop_progress_display(progress: SequentialProgressContext) -> None:
     """Stop any active sequential-fit progress display."""
     if progress.indicator is not None:
         progress.indicator.stop()
+    if (
+        progress.verbosity is VerbosityEnum.SILENT
+        or progress.state is None
+        or progress.column_widths is None
+    ):
+        return
+    console.print(
+        _format_progress_border(
+            progress.column_widths,
+            _PROGRESS_BOX_BOT_LEFT,
+            _PROGRESS_BOX_BOT_RIGHT,
+        )
+    )
 
 
 def _print_sequential_header(
@@ -951,16 +1116,15 @@ def _report_chunk_progress(
     completed_files = completed_files_before + len(results)
 
     if progress.verbosity is VerbosityEnum.FULL:
-        progress.state.file_rows.extend(
-            _build_file_progress_rows(
-                results,
-                completed_files_before,
-                total_files,
-                elapsed_time,
-            )
+        new_rows = _build_file_progress_rows(
+            results,
+            completed_files_before,
+            total_files,
+            elapsed_time,
         )
+        progress.state.file_rows.extend(new_rows)
     else:
-        progress.state.chunk_rows.append(
+        new_rows = [
             _build_chunk_progress_row(
                 chunk_idx,
                 total_chunks,
@@ -970,11 +1134,20 @@ def _report_chunk_progress(
                 total_files,
                 elapsed_time,
             )
-        )
+        ]
+        progress.state.chunk_rows.extend(new_rows)
 
-    renderable = _build_progress_renderable(progress.verbosity, progress.state)
-    if progress.indicator is not None:
-        progress.indicator.update(content=renderable)
+    if progress.column_widths is None or progress.column_alignments is None:
+        return
+
+    for row in new_rows:
+        progress.row_index += 1
+        line = _format_progress_line(
+            [str(progress.row_index), *row],
+            progress.column_widths,
+            progress.column_alignments,
+        )
+        console.print(line)
 
 
 # ------------------------------------------------------------------
@@ -1272,7 +1445,7 @@ def fit_sequential(
         plan.max_workers,
     )
 
-    progress = _create_progress_context(plan.verbosity)
+    progress = _create_progress_context(plan.verbosity, plan)
     _start_progress_display(progress)
     try:
         _run_fit_loop_with_pool(

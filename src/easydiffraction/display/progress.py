@@ -89,6 +89,7 @@ class _TerminalLiveHandle:
             auto_refresh=auto_refresh,
             refresh_per_second=1 / _SPINNER_FRAME_SECONDS,
             get_renderable=self._get_renderable,
+            vertical_overflow='visible',
         )
         self._live.start()
 
@@ -154,6 +155,10 @@ class ActivityIndicator:
         Optional existing live display handle to reuse.
     animated : bool, default=True
         Whether to animate the spinner label continuously.
+    refresh_per_second : float | None, default=None
+        Optional override for the Rich Live refresh rate. When ``None``,
+        defaults to one refresh per spinner frame. Lower values reduce
+        terminal flicker for multi-line live regions.
     """
 
     def __init__(
@@ -163,11 +168,15 @@ class ActivityIndicator:
         verbosity: VerbosityEnum,
         display_handle: object | None = None,
         animated: bool = True,
+        refresh_per_second: float | None = None,
     ) -> None:
         self._label = label
         self._verbosity = verbosity
         self._content: object | None = None
         self._provided_display_handle = display_handle
+        self._refresh_per_second = (
+            refresh_per_second if refresh_per_second is not None else 1 / _SPINNER_FRAME_SECONDS
+        )
         self._animated = animated
         self._display_handle: object | None = None
         self._live: object | None = None
@@ -206,8 +215,9 @@ class ActivityIndicator:
         live = Live(
             console=ConsoleManager.get(),
             auto_refresh=self._animated,
-            refresh_per_second=1 / _SPINNER_FRAME_SECONDS,
+            refresh_per_second=self._refresh_per_second,
             get_renderable=self._terminal_renderable,
+            vertical_overflow='visible',
         )
         live.start()
         self._live = live

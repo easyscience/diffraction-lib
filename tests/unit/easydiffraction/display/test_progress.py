@@ -19,6 +19,7 @@ def test_make_display_handle_uses_terminal_live_when_available(monkeypatch):
             auto_refresh,
             refresh_per_second,
             get_renderable=None,
+            vertical_overflow=None,
         ):
             self.renderable = renderable
             self.console = console
@@ -72,6 +73,7 @@ def test_make_display_handle_passes_auto_refresh(monkeypatch):
             auto_refresh,
             refresh_per_second,
             get_renderable=None,
+            vertical_overflow=None,
         ):
             self.auto_refresh = auto_refresh
             self.started = False
@@ -158,6 +160,7 @@ def test_activity_indicator_terminal_live_uses_dynamic_renderable(monkeypatch):
             auto_refresh,
             refresh_per_second,
             get_renderable=None,
+            vertical_overflow=None,
         ):
             self.renderable = renderable
             self.console = console
@@ -209,6 +212,7 @@ def test_activity_indicator_terminal_live_disables_auto_refresh_when_not_animate
             auto_refresh,
             refresh_per_second,
             get_renderable=None,
+            vertical_overflow=None,
         ):
             self.renderable = renderable
             self.console = console
@@ -267,6 +271,7 @@ def test_activity_indicator_updates_shared_terminal_handle_without_ipython(monke
             auto_refresh,
             refresh_per_second,
             get_renderable=None,
+            vertical_overflow=None,
         ):
             self.renderable = renderable
             self.console = console
