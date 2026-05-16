@@ -38,3 +38,27 @@ def test_project_save_as_writes_core_files(tmp_path, monkeypatch):
     assert (target / 'summary.cif').is_file()
     assert (target / 'structures').is_dir()
     assert (target / 'experiments').is_dir()
+
+
+def test_project_save_lists_existing_analysis_results_csv(tmp_path, monkeypatch, capsys):
+    from easydiffraction.analysis.analysis import Analysis
+    from easydiffraction.project.project import Project
+    from easydiffraction.project.project_info import ProjectInfo
+    from easydiffraction.summary.summary import Summary
+
+    monkeypatch.setattr(ProjectInfo, 'as_cif', property(lambda self: 'info'))
+    monkeypatch.setattr(Analysis, 'as_cif', property(lambda self: 'analysis'))
+    monkeypatch.setattr(Summary, 'as_cif', lambda self: 'summary')
+
+    target = tmp_path / 'proj_dir'
+    analysis_dir = target / 'analysis'
+    analysis_dir.mkdir(parents=True)
+    (analysis_dir / 'results.csv').write_text('file_path\nscan_001.xye\n')
+
+    p = Project(name='p1')
+    p.info.path = target
+    p.save()
+
+    out = capsys.readouterr().out
+    assert 'analysis.cif' in out
+    assert 'results.csv' in out

@@ -424,7 +424,13 @@ class Project(GuardedBase):
         with (analysis_dir / 'analysis.cif').open('w') as f:
             f.write(self.analysis.as_cif)
             console.print('├── 📁 analysis/')
-            console.print('│   └── 📄 analysis.cif')
+
+        analysis_file_names = sorted(
+            path.name for path in analysis_dir.iterdir() if path.is_file()
+        )
+        for index, file_name in enumerate(analysis_file_names):
+            branch = '└──' if index == len(analysis_file_names) - 1 else '├──'
+            console.print(f'│   {branch} 📄 {file_name}')
 
         # Save summary
         with (self._info.path / 'summary.cif').open('w') as f:
