@@ -13,6 +13,8 @@ from easydiffraction.analysis.categories.constraints.factory import ConstraintsF
 from easydiffraction.analysis.categories.fit import Fit
 from easydiffraction.analysis.categories.fit import FitFactory
 from easydiffraction.analysis.categories.fit import FitModeEnum
+from easydiffraction.analysis.categories.fitting import Fitting
+from easydiffraction.analysis.categories.fitting import FittingFactory
 from easydiffraction.analysis.categories.joint_fit_experiments import JointFitExperiments
 from easydiffraction.analysis.fitting import Fitter
 from easydiffraction.core.singleton import ConstraintsHandler
@@ -363,10 +365,13 @@ class Analysis:
         self._constraints_type: str = ConstraintsFactory.default_tag()
         self.constraints = ConstraintsFactory.create(self._constraints_type)
         self.constraints_handler = ConstraintsHandler.get()
+        self._fitting: Fitting = FittingFactory.create(FittingFactory.default_tag())
+        self._fitting._parent = self
+        self._fitting_mode_type: FitModeEnum = FitModeEnum.default()
         self._fit: Fit = FitFactory.create(FitFactory.default_tag())
         self._fit._parent = self
         self._joint_fit_experiments = JointFitExperiments()
-        self.fitter = Fitter(self._fit.minimizer_type.value)
+        self.fitter = Fitter(self._fitting.minimizer_type.value)
         self.fit_results = None
         self._parameter_snapshots: dict[str, dict[str, dict]] = {}
         self._display = AnalysisDisplay(self)
@@ -438,6 +443,63 @@ class Analysis:
     def fit(self) -> Fit:
         """Fit configuration and execution entry-point."""
         return self._fit
+
+    @property
+    def fitting(self) -> Fitting:
+        """Fitting configuration category."""
+        return self._fitting
+
+    @property
+    def fitting_mode_type(self) -> str:
+        """Currently selected fitting mode."""
+        return self._fitting_mode_type.value
+
+    @fitting_mode_type.setter
+    def fitting_mode_type(self, value: str) -> None:
+        supported = [mode.value for mode in FitModeEnum]
+
+        try:
+            new_mode = FitModeEnum(value)
+        except ValueError:
+            log.warning(
+                f"Unsupported fitting mode '{value}'. "
+                f'Supported fitting modes: {supported}. '
+                f"For more information, use 'show_fitting_mode_types()'",
+            )
+            return
+
+        self._fitting_mode_type = new_mode
+        console.paragraph('Fitting mode changed to')
+        console.print(self._fitting_mode_type.value)
+
+    def show_fitting_mode_types(self) -> None:
+        """Print supported fitting modes and mark the current type."""
+        columns_data = [
+            [
+                '*' if mode is self._fitting_mode_type else '',
+                mode.value,
+                mode.description(),
+            ]
+            for mode in FitModeEnum
+        ]
+        console.paragraph('Fitting mode types')
+        render_table(
+            columns_headers=['', 'Type', 'Description'],
+            columns_alignment=['left', 'left', 'left'],
+            columns_data=columns_data,
+        )
+
+    def _set_fitting_mode_type(self, value: str) -> None:
+        """Set the fitting mode without console output."""
+        supported = [mode.value for mode in FitModeEnum]
+
+        try:
+            self._fitting_mode_type = FitModeEnum(value)
+        except ValueError:
+            log.warning(
+                f"Unsupported fitting mode '{value}' in CIF. "
+                f'Supported: {supported}. Keeping default.',
+            )
 
     # ------------------------------------------------------------------
     #  Joint-fit experiments (category)
