@@ -859,7 +859,7 @@ new persisted results category.
   used for the run, including `random_seed`, `steps`, `burn`, `thin`,
   `pop`, and `parallel`.
 - The current user-facing DREAM controls live on the active minimizer
-  object, for example `project.analysis.fit.minimizer.steps`, `burn`,
+  object, for example `project.analysis.fitting.minimizer.steps`, `burn`,
   `thin`, `pop`, `parallel`, and `init`.
 - `plot_param_correlations()` uses posterior samples when available and
   otherwise falls back to deterministic covariance or engine-derived
@@ -954,18 +954,19 @@ project.verbosity = 'short'
 ```
 
 **Resolution order:** methods that produce console output (e.g.
-`analysis.fit()`, `experiments.add_from_data_path()`) accept an optional
-`verbosity` keyword argument. When the argument is `None` (the default),
-the method reads `project.verbosity`. When a string is passed, it
-overrides the project-level setting for that single call.
+`analysis.fit()`, `experiments.add_from_data_path()`) read
+`project.verbosity`.
 
 ```python
 # Use project-level default for all operations
 project.verbosity = 'short'
 project.analysis.fit()                         # → short mode
 
-# Override for a single call
-project.analysis.fit(verbosity='silent')       # → silent, project stays short
+# Override for one fit, then restore the project default
+original_verbosity = project.verbosity
+project.verbosity = 'silent'
+project.analysis.fit()                         # → silent
+project.verbosity = original_verbosity
 ```
 
 **Output styles per level:**
@@ -1066,7 +1067,7 @@ project.experiments['hrpt'].linked_phases.create(id='lbco', scale=10.0)
 # Calculator is auto-resolved per experiment; override if needed
 project.experiments['hrpt'].calculation.show_calculator_types()
 project.experiments['hrpt'].calculation.calculator_type = 'cryspy'
-project.analysis.fit.minimizer_type = 'lmfit'
+project.analysis.fitting.minimizer_type = 'lmfit'
 
 # Plot before fitting
 project.display.pattern(expt_name='hrpt')
@@ -1095,14 +1096,14 @@ project.save()
 
 ```python
 # Deterministic pre-fit remains explicit
-project.analysis.fit.minimizer_type = 'bumps (lm)'
+project.analysis.fitting.minimizer_type = 'bumps (lm)'
 project.analysis.fit()
 
 # Switch to Bayesian sampling using the same entry point
-project.analysis.fit.minimizer_type = 'bumps (dream)'
-project.analysis.fit.minimizer.steps = 1000
-project.analysis.fit.minimizer.parallel = 0
-project.analysis.fit(random_seed=11)
+project.analysis.fitting.minimizer_type = 'bumps (dream)'
+project.analysis.fitting.minimizer.steps = 1000
+project.analysis.fitting.minimizer.parallel = 0
+project.analysis.fit()
 
 # Runtime-only Bayesian summaries and plots
 project.display.fit.results()
@@ -1275,8 +1276,8 @@ expt.show_peak_profile_types()
 expt.show_background_types()
 expt.calculation.show_calculator_types()
 expt.show_extinction_types()
-project.analysis.fit.show_minimizer_types()
-project.analysis.fit.show_modes()
+project.analysis.fitting.show_minimizer_types()
+project.analysis.show_fitting_mode_types()
 project.rendering.show_chart_engines()
 project.rendering.show_table_engines()
 ```
@@ -1316,10 +1317,10 @@ but internal dispatch always uses the enum:
 
 ```python
 # ✅ Correct — compare with enum
-if self._fit.mode.value == FitModeEnum.JOINT:
+if self._fitting_mode_type is FitModeEnum.JOINT:
 
 # ❌ Wrong — compare with raw string
-if self._fit.mode.value == 'joint':
+if self._fitting_mode_type == 'joint':
 ```
 
 ### 9.7 Flat Category Structure — No Nested Categories
@@ -1352,11 +1353,11 @@ nested:
 
 ```python
 # ✅ Correct — sibling categories on Analysis
-project.analysis.fit.mode = 'joint'
+project.analysis.fitting_mode_type = 'joint'
 project.analysis.joint_fit['npd'].weight = 0.7
 
 # ❌ Wrong — joint_fit as a child of fit
-project.analysis.fit.joint_fit['npd'].weight = 0.7
+project.analysis.fitting.joint_fit['npd'].weight = 0.7
 ```
 
 In CIF output, sibling categories appear as independent blocks:

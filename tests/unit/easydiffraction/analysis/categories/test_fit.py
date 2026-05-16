@@ -1,31 +1,31 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Tests for the fit category."""
+"""Tests for the fitting category."""
 
 
 def test_module_import():
-    import easydiffraction.analysis.categories.fit as MUT
+    import easydiffraction.analysis.categories.fitting as MUT
 
-    expected_module_name = 'easydiffraction.analysis.categories.fit'
+    expected_module_name = 'easydiffraction.analysis.categories.fitting'
     actual_module_name = MUT.__name__
     assert expected_module_name == actual_module_name
 
 
 class TestFitModeEnum:
     def test_members(self):
-        from easydiffraction.analysis.categories.fit.enums import FitModeEnum
+        from easydiffraction.analysis.enums import FitModeEnum
 
         assert FitModeEnum.SINGLE == 'single'
         assert FitModeEnum.JOINT == 'joint'
         assert FitModeEnum.SEQUENTIAL == 'sequential'
 
     def test_default(self):
-        from easydiffraction.analysis.categories.fit.enums import FitModeEnum
+        from easydiffraction.analysis.enums import FitModeEnum
 
         assert FitModeEnum.default() is FitModeEnum.SINGLE
 
     def test_descriptions(self):
-        from easydiffraction.analysis.categories.fit.enums import FitModeEnum
+        from easydiffraction.analysis.enums import FitModeEnum
 
         for member in FitModeEnum:
             desc = member.description()
@@ -33,60 +33,53 @@ class TestFitModeEnum:
             assert len(desc) > 0
 
 
-class TestFitFactory:
+class TestFittingFactory:
     def test_supported_tags(self):
-        from easydiffraction.analysis.categories.fit.factory import FitFactory
+        from easydiffraction.analysis.categories.fitting.factory import FittingFactory
 
-        tags = FitFactory.supported_tags()
+        tags = FittingFactory.supported_tags()
         assert 'default' in tags
 
     def test_default_tag(self):
-        from easydiffraction.analysis.categories.fit.factory import FitFactory
+        from easydiffraction.analysis.categories.fitting.factory import FittingFactory
 
-        assert FitFactory.default_tag() == 'default'
+        assert FittingFactory.default_tag() == 'default'
 
     def test_create(self):
-        from easydiffraction.analysis.categories.fit.default import Fit
-        from easydiffraction.analysis.categories.fit.factory import FitFactory
+        from easydiffraction.analysis.categories.fitting.default import Fitting
+        from easydiffraction.analysis.categories.fitting.factory import FittingFactory
 
-        obj = FitFactory.create('default')
-        assert isinstance(obj, Fit)
+        obj = FittingFactory.create('default')
+        assert isinstance(obj, Fitting)
 
 
-class TestFit:
+class TestFitting:
     def test_instantiation(self):
-        from easydiffraction.analysis.categories.fit.default import Fit
+        from easydiffraction.analysis.categories.fitting.default import Fitting
 
-        fit = Fit()
-        assert fit is not None
+        fitting = Fitting()
+        assert fitting is not None
 
     def test_type_info(self):
-        from easydiffraction.analysis.categories.fit.default import Fit
+        from easydiffraction.analysis.categories.fitting.default import Fitting
 
-        assert Fit.type_info.tag == 'default'
+        assert Fitting.type_info.tag == 'default'
 
     def test_identity_category_code(self):
-        from easydiffraction.analysis.categories.fit.default import Fit
+        from easydiffraction.analysis.categories.fitting.default import Fitting
 
-        fit = Fit()
-        assert fit._identity.category_code == 'fit'
-
-    def test_mode_default(self):
-        from easydiffraction.analysis.categories.fit.default import Fit
-        from easydiffraction.analysis.categories.fit.enums import FitModeEnum
-
-        fit = Fit()
-        assert fit.mode.value == FitModeEnum.default().value
-
-    def test_mode_setter(self):
-        from easydiffraction.analysis.categories.fit.default import Fit
-
-        fit = Fit()
-        fit.mode = 'joint'
-        assert fit.mode.value == 'joint'
+        fitting = Fitting()
+        assert fitting._identity.category_code == 'fitting'
 
     def test_minimizer_default(self):
-        from easydiffraction.analysis.categories.fit.default import Fit
+        from easydiffraction.analysis.categories.fitting.default import Fitting
 
-        fit = Fit()
-        assert fit.minimizer_type.value == 'lmfit (leastsq)'
+        fitting = Fitting()
+        assert fitting.minimizer_type.value == 'lmfit (leastsq)'
+
+    def test_minimizer_type_setter(self):
+        from easydiffraction.analysis.categories.fitting.default import Fitting
+
+        fitting = Fitting()
+        fitting.minimizer_type = 'lmfit'
+        assert fitting.minimizer_type.value == 'lmfit'

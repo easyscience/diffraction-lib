@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Enumeration for fit-mode values."""
+"""Enumeration types used by analysis components."""
 
 from __future__ import annotations
 

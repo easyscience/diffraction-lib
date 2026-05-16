@@ -263,7 +263,7 @@ project.analysis.constraints.create(expression='biso_Co2 = biso_Co1')
 # #### Set Minimizer
 
 # %%
-project.analysis.fit.minimizer_type = 'bumps (lm)'
+project.analysis.fitting.minimizer_type = 'bumps (lm)'
 
 # %% [markdown]
 # #### Run Single Fitting
@@ -315,12 +315,12 @@ def extract_diffrn(file_path):
 # Run the sequential fit over all data files in the scan directory.
 
 # %%
-project.analysis.fit_sequential(
-    data_dir=data_dir,
-    extract_diffrn=extract_diffrn,
-    max_workers='auto',
-    reverse=True,
-)
+project.analysis.fitting_mode_type = 'sequential'
+project.analysis.sequential_fit.data_dir = data_dir
+project.analysis.sequential_fit.max_workers = 'auto'
+project.analysis.sequential_fit.reverse = True
+# TODO: Step 8 - rewrite extract_diffrn as sequential_fit_extract rules.
+project.analysis.fit()
 
 # %% [markdown]
 # #### Replay a Dataset

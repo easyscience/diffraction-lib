@@ -130,7 +130,12 @@ def _fit_worker(
         project.analysis.fitter = Fitter(template.minimizer_tag)
 
         # 9. Fit
-        project.analysis.fit(verbosity='silent')
+        original_verbosity = project.verbosity
+        project.verbosity = 'silent'
+        try:
+            project.analysis.fit()
+        finally:
+            project.verbosity = original_verbosity
 
         # 10. Collect results
         result.update(_collect_results(project, template))
@@ -487,7 +492,7 @@ def _build_template(project: object) -> SequentialFitTemplate:
         alias_defs=alias_defs,
         constraint_defs=constraint_defs,
         constraints_enabled=project.analysis.constraints.enabled,
-        minimizer_tag=project.analysis.fit.minimizer_type.value or 'lmfit',
+        minimizer_tag=project.analysis.fitting.minimizer_type.value or 'lmfit',
         calculator_tag=experiment.calculation.calculator_type.value,
         diffrn_field_names=diffrn_field_names,
     )

@@ -139,13 +139,15 @@ class TestConstraints:
 class TestFitting:
     def test_fit_produces_results(self):
         project = _make_fit_ready_project()
-        project.analysis.fit(verbosity='silent')
+        project.verbosity = 'silent'
+        project.analysis.fit()
         assert project.analysis.fit_results is not None
         assert project.analysis.fit_results.success is True
 
     def test_fit_improves_chi_squared(self):
         project = _make_fit_ready_project()
-        project.analysis.fit(verbosity='silent')
+        project.verbosity = 'silent'
+        project.analysis.fit()
         results = project.analysis.fit_results
         assert results.reduced_chi_square is not None
         # A well-configured fit should get reasonable chi-squared
@@ -154,7 +156,8 @@ class TestFitting:
     def test_fit_updates_parameter_values(self):
         project = _make_fit_ready_project()
         initial_a = project.structures['lbco'].cell.length_a.value
-        project.analysis.fit(verbosity='silent')
+        project.verbosity = 'silent'
+        project.analysis.fit()
         fitted_a = project.structures['lbco'].cell.length_a.value
         # Fitting should have adjusted the cell parameter
         assert fitted_a != pytest.approx(initial_a, abs=1e-6)
@@ -177,7 +180,8 @@ class TestFitting:
             expression='biso_Ba = biso_La',
         )
 
-        project.analysis.fit(verbosity='silent')
+        project.verbosity = 'silent'
+        project.analysis.fit()
         assert project.analysis.fit_results.success is True
         # Constrained params should be equal after fitting
         la_biso = s.atom_sites['La'].adp_iso.value

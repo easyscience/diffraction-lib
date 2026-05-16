@@ -392,7 +392,7 @@ def analysis_to_cif(analysis: object) -> str:
     """Render analysis metadata, aliases, and constraints to CIF."""
     lines: list[str] = []
     lines.extend((
-        analysis.fit.as_cif,
+        analysis.fitting.as_cif,
         '',
         analysis.aliases.as_cif,
         '',
@@ -507,7 +507,7 @@ def analysis_from_cif(analysis: object, cif_text: str) -> None:
     block = doc.sole_block()
 
     # Restore fit configuration
-    analysis.fit.from_cif(block)
+    analysis.fitting.from_cif(block)
 
     # Restore aliases (loop)
     analysis.aliases.from_cif(block)

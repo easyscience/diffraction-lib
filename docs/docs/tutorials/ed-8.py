@@ -298,8 +298,8 @@ project.experiments.add(expt47)
 # #### Set Fit Mode
 
 # %%
-project.analysis.fit.show_modes()
-project.analysis.fit.mode = 'joint'
+project.analysis.show_fitting_mode_types()
+project.analysis.fitting_mode_type = 'joint'
 
 # %% [markdown]
 # #### Set Free Parameters
