@@ -32,6 +32,7 @@ ASCII_CHART_OFFSET = 3
 ASCII_CHART_LEFT_PADDING = 15
 ASCII_CHART_FALLBACK_POINT_COUNT = 80
 ASCII_CHART_MIN_POINT_COUNT = 2
+ASCII_CHART_CROP_TRIGGER_MULTIPLIER = 2
 
 
 class AsciiPlotter(PlotterBase):
@@ -54,16 +55,24 @@ class AsciiPlotter(PlotterBase):
         cls,
         y_series: object,
     ) -> list[list[float]]:
-        """Return y-series resampled to the available chart width."""
+        """Return y-series adapted to the available chart width."""
         target_point_count = cls._chart_point_count()
+        series_arrays = [np.ravel(np.asarray(series, dtype=float)) for series in y_series]
+        if not series_arrays:
+            return []
+
+        reference_array = series_arrays[0]
+        if cls._should_crop_to_peak_window(reference_array.size):
+            start, end = cls._peak_window_bounds(reference_array)
+            return [series_array[start:end].tolist() for series_array in series_arrays]
+
         resampled_series: list[list[float]] = []
-        for series in y_series:
-            series_array = np.ravel(np.asarray(series, dtype=float))
-            if (
-                series_array.size <= target_point_count
-                or series_array.size < ASCII_CHART_MIN_POINT_COUNT
-            ):
-                resampled_series.append(series_array.tolist())
+        for series_array in series_arrays:
+            if series_array.size == 0:
+                resampled_series.append([0.0] * target_point_count)
+                continue
+            if series_array.size == 1:
+                resampled_series.append([float(series_array[0])] * target_point_count)
                 continue
 
             source_positions = np.linspace(0.0, 1.0, series_array.size)
@@ -72,6 +81,30 @@ class AsciiPlotter(PlotterBase):
                 np.interp(target_positions, source_positions, series_array).tolist()
             )
         return resampled_series
+
+    @classmethod
+    def _should_crop_to_peak_window(
+        cls,
+        point_count: int,
+    ) -> bool:
+        """Return whether a peak-centred viewport should be used."""
+        return point_count > cls._chart_point_count() * ASCII_CHART_CROP_TRIGGER_MULTIPLIER
+
+    @classmethod
+    def _peak_window_bounds(
+        cls,
+        y_array: np.ndarray,
+    ) -> tuple[int, int]:
+        """Return start/end indices for a peak-centred chart window."""
+        target_point_count = cls._chart_point_count()
+        if y_array.size <= target_point_count:
+            return 0, y_array.size
+
+        peak_index = int(np.argmax(np.nan_to_num(y_array, nan=float('-inf'))))
+        start = max(0, peak_index - target_point_count // 2)
+        end = min(y_array.size, start + target_point_count)
+        start = max(0, end - target_point_count)
+        return start, end
 
     @staticmethod
     def _get_legend_item(label: str) -> str:
@@ -193,8 +226,8 @@ class AsciiPlotter(PlotterBase):
         if plot_spec.bragg_tick_sets:
             console.print('Bragg peak subplot rows are available with the Plotly engine only.')
 
-    @staticmethod
     def plot_single_crystal(
+        self,
         x_calc: object,
         y_meas: object,
         y_meas_su: object,
@@ -229,7 +262,7 @@ class AsciiPlotter(PlotterBase):
 
         if height is None:
             height = DEFAULT_HEIGHT
-        width = 60  # TODO: Make width configurable
+        width = self._chart_point_count()
 
         # Determine axis limits
         vmin = float(min(np.min(y_meas), np.min(x_calc)))
@@ -272,8 +305,8 @@ class AsciiPlotter(PlotterBase):
         print(f'  {x_axis}')
         console.print(f'{" " * (width - 3)}{axes_labels[0]}')
 
-    @staticmethod
     def plot_scatter(
+        self,
         x: object,
         y: object,
         sy: object,
@@ -287,8 +320,9 @@ class AsciiPlotter(PlotterBase):
         if height is None:
             height = DEFAULT_HEIGHT
 
+        y_series = self._resample_series_for_chart([y])
         config = {'height': height, 'colors': [asciichartpy.blue]}
-        chart = asciichartpy.plot([list(y)], config)
+        chart = asciichartpy.plot(y_series, config)
 
         console.paragraph(f'{title}')
         console.print(f'{axes_labels[1]} vs {axes_labels[0]}')

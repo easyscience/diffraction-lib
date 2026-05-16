@@ -271,6 +271,40 @@ class TestAutoXRangeForAscii:
         assert x_min == 60.0
         assert x_max == 139.0
 
+    def test_keeps_full_range_when_series_is_within_crop_threshold(self, monkeypatch):
+        from easydiffraction.display.plotters.ascii import AsciiPlotter
+        from easydiffraction.display.plotting import Plotter
+
+        p = Plotter()
+        p.engine = 'asciichartpy'
+        monkeypatch.setattr(AsciiPlotter, '_chart_point_count', lambda: 80)
+
+        class Ptn:
+            intensity_meas = np.zeros(120)
+
+        Ptn.intensity_meas[60] = 10.0
+        x_array = np.arange(120, dtype=float)
+        x_min, x_max = p._auto_x_range_for_ascii(Ptn(), x_array, None, None)
+        assert x_min is None
+        assert x_max is None
+
+    def test_keeps_explicit_partial_limit_for_ascii(self, monkeypatch):
+        from easydiffraction.display.plotters.ascii import AsciiPlotter
+        from easydiffraction.display.plotting import Plotter
+
+        p = Plotter()
+        p.engine = 'asciichartpy'
+        monkeypatch.setattr(AsciiPlotter, '_chart_point_count', lambda: 80)
+
+        class Ptn:
+            intensity_meas = np.zeros(200)
+
+        Ptn.intensity_meas[100] = 10.0
+        x_array = np.arange(200, dtype=float)
+        x_min, x_max = p._auto_x_range_for_ascii(Ptn(), x_array, 20.0, None)
+        assert x_min == 20.0
+        assert x_max is None
+
     def test_no_narrowing_when_limits_provided(self):
         from easydiffraction.display.plotting import Plotter
 
