@@ -9,6 +9,7 @@ from __future__ import annotations
 import contextlib
 import csv
 import multiprocessing as mp
+import os
 import re
 import sys
 import time
@@ -451,7 +452,46 @@ def _append_to_csv(
     with csv_path.open('a', newline='', encoding='utf-8') as f:
         writer = csv.DictWriter(f, fieldnames=header, extrasaction='ignore')
         for result in results:
-            writer.writerow(result)
+            row = dict(result)
+            file_path = row.get('file_path')
+            if file_path:
+                row['file_path'] = _relative_file_path_for_csv(csv_path, str(file_path))
+            writer.writerow(row)
+
+
+def _relative_file_path_for_csv(
+    csv_path: Path,
+    file_path: str,
+) -> str:
+    """Return *file_path* relative to the CSV-owning project."""
+    project_path = csv_path.parent.parent.resolve()
+    resolved_path = _resolve_project_file_path(project_path, file_path)
+    return os.path.relpath(resolved_path, start=project_path)
+
+
+def _resolve_csv_file_path(
+    csv_path: Path,
+    file_path: str,
+) -> str:
+    """Resolve a stored CSV file path against the owning project."""
+    project_path = csv_path.parent.parent.resolve()
+    return str(_resolve_project_file_path(project_path, file_path))
+
+
+def _resolve_project_file_path(
+    project_path: Path,
+    file_path: str,
+) -> Path:
+    """Resolve a data file path to an absolute path near the project."""
+    path = Path(file_path)
+    if path.is_absolute():
+        return path.resolve()
+
+    cwd_relative_path = path.resolve()
+    if cwd_relative_path.is_relative_to(project_path):
+        return cwd_relative_path
+
+    return (project_path / path).resolve()
 
 
 def _extract_params_from_row(row: dict[str, str]) -> dict[str, float]:
@@ -509,7 +549,7 @@ def _read_csv_for_recovery(
         for row in reader:
             file_path = row.get('file_path', '')
             if file_path:
-                fitted.add(file_path)
+                fitted.add(_resolve_csv_file_path(csv_path, file_path))
             if row.get('fit_success', '').lower() == 'true':
                 params = _extract_params_from_row(row)
                 if params:

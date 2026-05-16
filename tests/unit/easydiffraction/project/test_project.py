@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from collections import UserList
+import csv
 from types import SimpleNamespace
 
 
@@ -74,3 +76,48 @@ def test_project_exposes_rendering_and_display_facades():
 
     assert isinstance(project.rendering, Rendering)
     assert isinstance(project.display, ProjectDisplay)
+
+
+def test_apply_params_from_csv_resolves_relative_file_paths(tmp_path):
+    from easydiffraction.project.project import Project
+
+    project = Project()
+    project.info.path = tmp_path / 'project'
+    analysis_dir = project.info.path / 'analysis'
+    analysis_dir.mkdir(parents=True)
+    data_dir = project.info.path / 'experiments' / 'scan'
+    data_dir.mkdir(parents=True)
+    data_path = data_dir / 'scan_001.dat'
+    data_path.write_text('1 2 3\n')
+
+    csv_path = analysis_dir / 'results.csv'
+    with csv_path.open('w', newline='', encoding='utf-8') as handle:
+        writer = csv.DictWriter(handle, fieldnames=['file_path'])
+        writer.writeheader()
+        writer.writerow({'file_path': 'experiments/scan/scan_001.dat'})
+
+    loaded_paths: list[str] = []
+
+    class Experiment:
+        diffrn = SimpleNamespace()
+
+        def _load_ascii_data_to_experiment(self, file_path):
+            loaded_paths.append(file_path)
+
+    class Structures(UserList):
+        parameters = []
+
+    class Experiments:
+        parameters = []
+
+        @staticmethod
+        def values():
+            return [experiment]
+
+    experiment = Experiment()
+    project._structures = Structures()
+    project._experiments = Experiments()
+
+    project.apply_params_from_csv(0)
+
+    assert loaded_paths == [str(data_path)]

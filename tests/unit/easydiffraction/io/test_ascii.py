@@ -269,6 +269,21 @@ class TestExtractDataPathsFromDir:
         assert 'scan_001.dat' in paths[0]
         assert 'scan_002.dat' in paths[1]
 
+    def test_lists_absolute_paths_for_relative_directory(self, tmp_path, monkeypatch):
+        """Returns absolute paths even when the input directory is relative."""
+        data_dir = tmp_path / 'scans'
+        data_dir.mkdir()
+        (data_dir / 'scan_002.dat').write_text('2\n')
+        (data_dir / 'scan_001.dat').write_text('1\n')
+        monkeypatch.chdir(tmp_path)
+
+        paths = extract_data_paths_from_dir('scans')
+
+        assert paths == [
+            str((data_dir / 'scan_001.dat').resolve()),
+            str((data_dir / 'scan_002.dat').resolve()),
+        ]
+
     def test_raises_for_missing_directory(self, tmp_path):
         """Raises FileNotFoundError for non-existent directory."""
         with pytest.raises(FileNotFoundError):

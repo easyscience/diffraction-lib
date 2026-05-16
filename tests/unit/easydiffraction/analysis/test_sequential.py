@@ -225,6 +225,53 @@ class TestCsvWriteAndAppend:
         assert rows[0]['file_path'] == 'a.dat'
         assert rows[1]['value'] == '2.0'
 
+    def test_append_stores_file_paths_relative_to_project(self, tmp_path):
+        project_dir = tmp_path / 'project'
+        csv_path = project_dir / 'analysis' / 'results.csv'
+        csv_path.parent.mkdir(parents=True)
+        data_dir = project_dir / 'experiments' / 'scan'
+        data_dir.mkdir(parents=True)
+        data_path = data_dir / 'scan_001.dat'
+        data_path.write_text('1 2 3\n')
+        header = ['file_path', 'value']
+        _write_csv_header(csv_path, header)
+
+        _append_to_csv(
+            csv_path,
+            header,
+            [
+                {'file_path': str(data_path), 'value': 1.0},
+            ],
+        )
+
+        with csv_path.open() as f:
+            rows = list(csv.DictReader(f))
+        assert rows[0]['file_path'] == 'experiments/scan/scan_001.dat'
+
+    def test_append_normalizes_repo_relative_project_paths(self, tmp_path, monkeypatch):
+        workspace_dir = tmp_path / 'workspace'
+        project_dir = workspace_dir / 'projects' / 'cosio'
+        csv_path = project_dir / 'analysis' / 'results.csv'
+        csv_path.parent.mkdir(parents=True)
+        monkeypatch.chdir(workspace_dir)
+        header = ['file_path', 'value']
+        _write_csv_header(csv_path, header)
+
+        _append_to_csv(
+            csv_path,
+            header,
+            [
+                {
+                    'file_path': 'projects/cosio/experiments/d20_scan/scan_001.dat',
+                    'value': 1.0,
+                },
+            ],
+        )
+
+        with csv_path.open() as f:
+            rows = list(csv.DictReader(f))
+        assert rows[0]['file_path'] == 'experiments/d20_scan/scan_001.dat'
+
     def test_append_ignores_extra_keys(self, tmp_path):
         csv_path = tmp_path / 'results.csv'
         header = ['file_path']
@@ -257,7 +304,9 @@ class TestReadCsvForRecovery:
         assert params is None
 
     def test_returns_fitted_file_paths(self, tmp_path):
-        csv_path = tmp_path / 'results.csv'
+        project_dir = tmp_path / 'project'
+        csv_path = project_dir / 'analysis' / 'results.csv'
+        csv_path.parent.mkdir(parents=True)
         header = [*_META_COLUMNS, 'cell.a', 'cell.a.uncertainty']
         _write_csv_header(csv_path, header)
         _append_to_csv(
@@ -265,7 +314,7 @@ class TestReadCsvForRecovery:
             header,
             [
                 {
-                    'file_path': '/data/a.dat',
+                    'file_path': str(project_dir / 'experiments' / 'a.dat'),
                     'fit_success': 'True',
                     'chi_squared': '5.0',
                     'reduced_chi_squared': '2.5',
@@ -274,7 +323,7 @@ class TestReadCsvForRecovery:
                     'cell.a.uncertainty': '0.01',
                 },
                 {
-                    'file_path': '/data/b.dat',
+                    'file_path': str(project_dir / 'experiments' / 'b.dat'),
                     'fit_success': 'False',
                     'chi_squared': '',
                     'reduced_chi_squared': '',
@@ -286,7 +335,36 @@ class TestReadCsvForRecovery:
         )
 
         fitted, _params = _read_csv_for_recovery(csv_path)
-        assert fitted == {'/data/a.dat', '/data/b.dat'}
+        assert fitted == {
+            str((project_dir / 'experiments' / 'a.dat').resolve()),
+            str((project_dir / 'experiments' / 'b.dat').resolve()),
+        }
+
+    def test_resolves_legacy_repo_relative_paths(self, tmp_path, monkeypatch):
+        workspace_dir = tmp_path / 'workspace'
+        project_dir = workspace_dir / 'projects' / 'cosio'
+        csv_path = project_dir / 'analysis' / 'results.csv'
+        csv_path.parent.mkdir(parents=True)
+        monkeypatch.chdir(workspace_dir)
+        header = [*_META_COLUMNS, 'cell.a', 'cell.a.uncertainty']
+
+        with csv_path.open('w', newline='', encoding='utf-8') as handle:
+            writer = csv.DictWriter(handle, fieldnames=header)
+            writer.writeheader()
+            writer.writerow({
+                'file_path': 'projects/cosio/experiments/d20_scan/scan_001.dat',
+                'fit_success': 'True',
+                'chi_squared': '5.0',
+                'reduced_chi_squared': '2.5',
+                'n_iterations': '10',
+                'cell.a': '3.89',
+                'cell.a.uncertainty': '0.01',
+            })
+
+        fitted, _params = _read_csv_for_recovery(csv_path)
+        assert fitted == {
+            str((project_dir / 'experiments' / 'd20_scan' / 'scan_001.dat').resolve())
+        }
 
     def test_returns_last_successful_params(self, tmp_path):
         csv_path = tmp_path / 'results.csv'

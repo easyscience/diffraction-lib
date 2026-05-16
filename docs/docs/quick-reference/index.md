@@ -324,16 +324,18 @@ project.analysis.sequential_fit.data_dir = scan_data_dir
 project.analysis.sequential_fit.max_workers = 'auto'
 
 project.analysis.fit()
-project.display.fit.results()
 project.display.fit.series(structure.cell.length_a, versus=temperature)
 project.display.fit.series(versus=temperature)
 
 project.apply_params_from_csv(row_index=0)
+project.display.pattern(expt_name='d20')
 ```
 
 Use the same persisted `diffrn.*` path for both `target` and `versus`.
 `project.display.fit.series(versus=temperature)` plots every fitted
-parameter one after another.
+parameter one after another. Sequential fitting writes per-dataset
+results to `analysis/results.csv`, so inspect them with `fit.series()`
+and `apply_params_from_csv()` rather than `display.fit.results()`.
 
 After a Bayesian fit, inspect posterior displays:
 

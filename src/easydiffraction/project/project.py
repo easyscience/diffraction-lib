@@ -91,6 +91,20 @@ def _apply_csv_row_to_diffrn(
             descriptor.value = float(row[col_name])
 
 
+def _resolve_data_path_from_results_csv(
+    project_path: pathlib.Path,
+    file_path: object,
+) -> pathlib.Path | None:
+    """Resolve a CSV-stored data path against the project path."""
+    if not isinstance(file_path, str) or not file_path:
+        return None
+
+    path = pathlib.Path(file_path)
+    if path.is_absolute():
+        return path
+    return project_path / path
+
+
 class Project(GuardedBase):
     """
     Central API for managing a diffraction data analysis project.
@@ -510,8 +524,9 @@ class Project(GuardedBase):
 
         # 1. Reload data if file_path points to a real file
         file_path = row.get('file_path', '')
-        if file_path and pathlib.Path(file_path).is_file():
-            experiment._load_ascii_data_to_experiment(file_path)
+        data_path = _resolve_data_path_from_results_csv(self.info.path, file_path)
+        if data_path is not None and data_path.is_file():
+            experiment._load_ascii_data_to_experiment(str(data_path))
 
         # 2. Restore extracted diffrn metadata from the CSV row.
         _apply_csv_row_to_diffrn(row, df.columns, experiment)

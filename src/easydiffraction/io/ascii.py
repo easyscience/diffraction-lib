@@ -173,7 +173,7 @@ def extract_data_paths_from_dir(
     ValueError
         If no matching data files are found.
     """
-    dir_path = Path(dir_path)
+    dir_path = Path(dir_path).resolve()
     if not dir_path.is_dir():
         msg = f'Directory not found: {dir_path}'
         raise FileNotFoundError(msg)
