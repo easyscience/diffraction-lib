@@ -522,8 +522,70 @@ def analysis_from_cif(analysis: object, cif_text: str) -> None:
     doc = gemmi.cif.read_string(_wrap_in_data_block(cif_text, 'analysis'))
     block = doc.sole_block()
 
+    legacy_tags: list[str] = []
+    if _has_cif_value(block, '_fit.minimizer_type'):
+        legacy_tags.append('_fit.minimizer_type')
+    if _has_cif_value(block, '_fit.mode'):
+        legacy_tags.append('_fit.mode')
+    if _has_cif_loop(block, '_joint_fit_experiment.id'):
+        legacy_tags.append('_joint_fit_experiment.id')
+    if _has_cif_loop(block, '_joint_fit_experiment.weight'):
+        legacy_tags.append('_joint_fit_experiment.weight')
+
+    if legacy_tags:
+        msg = (
+            'Legacy analysis CIF tags are no longer supported: '
+            f'{legacy_tags}. Use _fitting.minimizer_type, _fitting.mode_type, '
+            '_joint_fit.experiment_id, and _joint_fit.weight.'
+        )
+        raise ValueError(msg)
+
+    read_cif_string = _make_cif_string_reader(block)
+    mode_value = read_cif_string('_fitting.mode_type')
+    if mode_value is None:
+        from easydiffraction.analysis.enums import FitModeEnum  # noqa: PLC0415
+
+        mode_value = FitModeEnum.default().value
+
+    analysis._set_fitting_mode_type(mode_value)
+
     # Restore fit configuration
     analysis.fitting.from_cif(block)
+
+    has_joint_rows = _has_cif_loop(block, '_joint_fit.experiment_id') or _has_cif_loop(
+        block,
+        '_joint_fit.weight',
+    )
+    has_sequential_settings = any(
+        _has_cif_value(block, tag)
+        for tag in (
+            '_sequential_fit.data_dir',
+            '_sequential_fit.file_pattern',
+            '_sequential_fit.max_workers',
+            '_sequential_fit.chunk_size',
+            '_sequential_fit.reverse',
+        )
+    )
+    has_sequential_extract_rows = _has_cif_loop(block, '_sequential_fit_extract.id')
+
+    if analysis.fitting_mode_type == 'joint':
+        if has_joint_rows:
+            analysis.joint_fit.from_cif(block)
+    elif analysis.fitting_mode_type == 'sequential':
+        if has_sequential_settings:
+            analysis.sequential_fit.from_cif(block)
+        if has_sequential_extract_rows:
+            analysis.sequential_fit_extract.from_cif(block)
+    elif has_joint_rows or has_sequential_settings or has_sequential_extract_rows:
+        skipped_sections: list[str] = []
+        if has_joint_rows:
+            skipped_sections.append('joint_fit')
+        if has_sequential_settings or has_sequential_extract_rows:
+            skipped_sections.append('sequential_fit')
+        log.warning(
+            'Skipping inactive analysis CIF sections while fitting_mode_type is single: '
+            f'{skipped_sections}.'
+        )
 
     # Restore aliases (loop)
     analysis.aliases.from_cif(block)
@@ -532,9 +594,6 @@ def analysis_from_cif(analysis: object, cif_text: str) -> None:
     analysis.constraints.from_cif(block)
     if analysis.constraints._items:
         analysis.constraints.enable()
-
-    # Restore joint-fit weights (loop)
-    analysis._joint_fit.from_cif(block)
 
 
 def _make_cif_string_reader(block: gemmi.cif.Block) -> object:
@@ -567,6 +626,20 @@ def _make_cif_string_reader(block: gemmi.cif.Block) -> object:
         return raw
 
     return _read
+
+
+def _has_cif_value(block: gemmi.cif.Block, tag: str) -> bool:
+    """Return True when a scalar CIF tag is present in the block."""
+    return block.find_value(tag) is not None
+
+
+def _has_cif_loop(block: gemmi.cif.Block, tag: str) -> bool:
+    """Return True when a CIF loop column is present in the block."""
+    loop_ref = block.find_loop(tag)
+    if loop_ref is None:
+        return False
+    loop = loop_ref.get_loop() if hasattr(loop_ref, 'get_loop') else loop_ref
+    return loop is not None
 
 
 # TODO: Check the following methods:
