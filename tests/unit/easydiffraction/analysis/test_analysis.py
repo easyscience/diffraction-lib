@@ -39,7 +39,7 @@ def test_show_minimizer_types_prints(capsys):
     assert 'lmfit (leastsq)' in out
 
 
-def test_fit_mode_category_and_joint_fit_experiments(monkeypatch, capsys):
+def test_fit_mode_category_and_joint_fit(monkeypatch, capsys):
     from easydiffraction.analysis.analysis import Analysis
 
     a = Analysis(project=_make_project_with_names(['e1', 'e2']))
@@ -51,8 +51,8 @@ def test_fit_mode_category_and_joint_fit_experiments(monkeypatch, capsys):
     a.fit.mode = 'joint'
     assert a.fit.mode.value == 'joint'
 
-    # joint_fit_experiments exists but is empty until fit() populates it
-    assert len(a.joint_fit_experiments) == 0
+    # joint_fit exists but is empty until fit() populates it
+    assert len(a.joint_fit) == 0
 
 
 def test_analysis_help(capsys):

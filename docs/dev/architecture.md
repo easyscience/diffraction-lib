@@ -547,7 +547,7 @@ from .line_segment import LineSegmentBackground
 | `AliasesFactory`             | Parameter aliases      | `Aliases`                                                                                                                                                                                          |
 | `ConstraintsFactory`         | Parameter constraints  | `Constraints`                                                                                                                                                                                      |
 | `FitModeFactory`             | Fit-mode category      | `FitMode`                                                                                                                                                                                          |
-| `JointFitExperimentsFactory` | Joint-fit weights      | `JointFitExperiments`                                                                                                                                                                              |
+| `JointFitFactory`            | Joint-fit weights      | `JointFitCollection`                                                                                                                                                                               |
 | `CalculatorFactory`          | Calculation engines    | `CryspyCalculator`, `CrysfmlCalculator`, `PdffitCalculator`                                                                                                                                        |
 | `MinimizerFactory`           | Minimisers             | `LmfitMinimizer`, `LmfitLeastsqMinimizer`, `LmfitLeastSquaresMinimizer`, `DfolsMinimizer`, `BumpsMinimizer`, `BumpsLmMinimizer`, `BumpsDreamMinimizer`, `BumpsAmoebaMinimizer`, `BumpsDEMinimizer` |
 
@@ -740,7 +740,7 @@ line-segment points.
 | `AtomSiteAnisoCollection`       | `AtomSiteAnisoFactory`       |
 | `Aliases`                       | `AliasesFactory`             |
 | `Constraints`                   | `ConstraintsFactory`         |
-| `JointFitExperiments`           | `JointFitExperimentsFactory` |
+| `JointFitCollection`            | `JointFitFactory`            |
 
 #### CategoryItems that are ONLY children of collections (NO metadata)
 
@@ -758,7 +758,7 @@ line-segment points.
 | `ExcludedRegion`     | `ExcludedRegions`               |
 | `Alias`              | `Aliases`                       |
 | `Constraint`         | `Constraints`                   |
-| `JointFitExperiment` | `JointFitExperiments`           |
+| `JointFitItem`       | `JointFitCollection`            |
 
 #### Non-category classes — factory-created (get `type_info` only)
 
@@ -825,7 +825,7 @@ workflow:
   or `'sequential'`. `fit.show_minimizer_types()` lists supported
   minimizers; `fit.show_modes()` filters modes by experiment count (≤1 →
   only `single`; >1 → all three).
-- Joint-fit weights: `joint_fit_experiments` (`CategoryCollection` of
+- Joint-fit weights: `joint_fit` (`CategoryCollection` of
   per-experiment weight entries); sibling of `fit`, not a child.
 - Fit results: `analysis.fit_results` stores the latest runtime result
   object. This is `FitResults` for deterministic fits and
@@ -1344,19 +1344,19 @@ Owner
     └── CategoryB   ← WRONG: CategoryB is a child of CategoryA
 ```
 
-**Example — `fit` and `joint_fit_experiments`:** `fit` is a
+**Example — `fit` and `joint_fit`:** `fit` is a
 `CategoryItem` holding the active minimizer and fitting mode.
-`joint_fit_experiments` is a separate `CategoryCollection` holding
+`joint_fit` is a separate `CategoryCollection` holding
 per-experiment weights. Both are direct children of `Analysis`, not
 nested:
 
 ```python
 # ✅ Correct — sibling categories on Analysis
 project.analysis.fit.mode = 'joint'
-project.analysis.joint_fit_experiments['npd'].weight = 0.7
+project.analysis.joint_fit['npd'].weight = 0.7
 
-# ❌ Wrong — joint_fit_experiments as a child of fit
-project.analysis.fit.joint_fit_experiments['npd'].weight = 0.7
+# ❌ Wrong — joint_fit as a child of fit
+project.analysis.fit.joint_fit['npd'].weight = 0.7
 ```
 
 In CIF output, sibling categories appear as independent blocks:
@@ -1366,8 +1366,8 @@ _fit.minimizer_type  lmfit
 _fit.mode            joint
 
 loop_
-_joint_fit_experiment.id
-_joint_fit_experiment.weight
+_joint_fit.experiment_id
+_joint_fit.weight
 npd  0.7
 xrd  0.3
 ```

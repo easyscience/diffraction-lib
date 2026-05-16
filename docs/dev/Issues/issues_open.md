@@ -14,12 +14,12 @@ needed.
 
 **Type:** Fragility
 
-`joint_fit_experiments` is created once when `fit.mode` becomes
+`joint_fit` is created once when `fit.mode` becomes
 `'joint'`. If experiments are added, removed, or renamed afterwards, the
 weight collection is stale. Joint fitting can fail with missing keys or
 run with incorrect weights.
 
-**Fix:** rebuild or validate `joint_fit_experiments` at the start of
+**Fix:** rebuild or validate `joint_fit` at the start of
 every joint fit. At minimum, `fit()` should assert that the weight keys
 exactly match `project.experiments.names`.
 
@@ -32,7 +32,7 @@ exactly match `project.experiments.names`.
 **Type:** Consistency
 
 `Analysis` owns categories (`Aliases`, `Constraints`,
-`JointFitExperiments`) but does not extend `DatablockItem`. Its ad-hoc
+`JointFitCollection`) but does not extend `DatablockItem`. Its ad-hoc
 `_update_categories()` iterates over a hard-coded list and does not
 participate in standard category discovery, parameter enumeration, or
 CIF serialisation.
@@ -784,18 +784,18 @@ formatting for `StringDescriptor` values.
 
 ---
 
-## 46. 🟢 Rename `JointFitExperiments` ID and Improve Descriptions
+## 46. 🟢 Improve `JointFitItem` Descriptions
 
 **Type:** Naming
 
-`JointFitExperiments` uses `name='id'` with a TODO suggesting a better
-name, and two description fields are incomplete.
+`JointFitItem` uses `name='experiment_id'`, but two description fields
+are still incomplete.
 
 **TODOs:**
 
-- [default.py](src/easydiffraction/analysis/categories/joint_fit_experiments/default.py#L33)
-- [default.py](src/easydiffraction/analysis/categories/joint_fit_experiments/default.py#L34)
-- [default.py](src/easydiffraction/analysis/categories/joint_fit_experiments/default.py#L43)
+- [default.py](src/easydiffraction/analysis/categories/joint_fit/default.py#L31)
+- [default.py](src/easydiffraction/analysis/categories/joint_fit/default.py#L32)
+- [default.py](src/easydiffraction/analysis/categories/joint_fit/default.py#L41)
 
 **Depends on:** nothing.
 
@@ -1529,7 +1529,7 @@ operation is possible (e.g. in automated pipelines or tests).
 | 43  | Fix summary display inconsistencies              | 🟢 Low   | UX                           |
 | 44  | Merge parameter record construction              | 🟢 Low   | Cleanup                      |
 | 45  | Decide alias/constraint descriptor default       | 🟢 Low   | Design                       |
-| 46  | Rename `JointFitExperiments` id + descriptions   | 🟢 Low   | Naming                       |
+| 46  | Improve `JointFitItem` descriptions              | 🟢 Low   | Naming                       |
 | 47  | Improve error handling in crystallography        | 🟢 Low   | Diagnostics                  |
 | 48  | Fix CrysPy TOF instrument default                | 🟢 Low   | Bug workaround               |
 | 49  | Automate space group CIF name variants           | 🟢 Low   | Maintainability              |

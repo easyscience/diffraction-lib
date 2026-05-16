@@ -15,7 +15,7 @@ from easydiffraction.analysis.categories.fit import FitFactory
 from easydiffraction.analysis.categories.fit import FitModeEnum
 from easydiffraction.analysis.categories.fitting import Fitting
 from easydiffraction.analysis.categories.fitting import FittingFactory
-from easydiffraction.analysis.categories.joint_fit_experiments import JointFitExperiments
+from easydiffraction.analysis.categories.joint_fit import JointFitCollection
 from easydiffraction.analysis.fitting import Fitter
 from easydiffraction.core.singleton import ConstraintsHandler
 from easydiffraction.core.variable import NumericDescriptor
@@ -370,7 +370,7 @@ class Analysis:
         self._fitting_mode_type: FitModeEnum = FitModeEnum.default()
         self._fit: Fit = FitFactory.create(FitFactory.default_tag())
         self._fit._parent = self
-        self._joint_fit_experiments = JointFitExperiments()
+        self._joint_fit: JointFitCollection = JointFitCollection()
         self.fitter = Fitter(self._fitting.minimizer_type.value)
         self.fit_results = None
         self._parameter_snapshots: dict[str, dict[str, dict]] = {}
@@ -502,13 +502,13 @@ class Analysis:
             )
 
     # ------------------------------------------------------------------
-    #  Joint-fit experiments (category)
+    #  Joint-fit weights (category)
     # ------------------------------------------------------------------
 
     @property
-    def joint_fit_experiments(self) -> object:
+    def joint_fit(self) -> object:
         """Per-experiment weight collection for joint fitting."""
-        return self._joint_fit_experiments
+        return self._joint_fit
 
     def _run_fit(
         self,
@@ -619,19 +619,17 @@ class Analysis:
             Optional random seed passed to stochastic minimizers.
         """
         mode = FitModeEnum.JOINT
-        # Auto-populate joint_fit_experiments if empty
-        if not len(self._joint_fit_experiments):
-            for id in experiments.names:
-                self._joint_fit_experiments.create(id=id, weight=0.5)
+        # Auto-populate joint_fit if empty
+        if not len(self._joint_fit):
+            for experiment_id in experiments.names:
+                self._joint_fit.create(experiment_id=experiment_id, weight=0.5)
         if verb is not VerbosityEnum.SILENT:
             console.paragraph(
                 f"Using all experiments 🔬 {experiments.names} for '{mode.value}' fitting"
             )
         # Resolve weights to a plain numpy array
         experiments_list = list(experiments.values())
-        weights_list = [
-            self._joint_fit_experiments[name].weight.value for name in experiments.names
-        ]
+        weights_list = [self._joint_fit[name].weight.value for name in experiments.names]
         weights_array = np.array(weights_list, dtype=np.float64)
         self.fitter.fit(
             structures,

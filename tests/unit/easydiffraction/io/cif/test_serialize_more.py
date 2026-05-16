@@ -164,7 +164,7 @@ def test_experiment_to_cif_with_and_without_data():
 
 def test_analysis_to_cif_renders_all_sections():
     import easydiffraction.io.cif.serialize as MUT
-    from easydiffraction.analysis.categories.joint_fit_experiments import JointFitExperiments
+    from easydiffraction.analysis.categories.joint_fit import JointFitCollection
 
     class Obj:
         def __init__(self, t):
@@ -176,7 +176,7 @@ def test_analysis_to_cif_renders_all_sections():
 
     class A:
         fit = Obj('_fit.minimizer_type lmfit\n_fit.mode single')
-        joint_fit_experiments = JointFitExperiments()
+        joint_fit = JointFitCollection()
         aliases = Obj('ALIASES')
         constraints = Obj('CONSTRAINTS')
 

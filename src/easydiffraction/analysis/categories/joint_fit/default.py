@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 """
-Joint-fit experiment weighting configuration.
+Joint-fit weighting configuration.
 
 Stores per-experiment weights to be used when multiple experiments are
 fitted simultaneously.
@@ -9,9 +9,7 @@ fitted simultaneously.
 
 from __future__ import annotations
 
-from easydiffraction.analysis.categories.joint_fit_experiments.factory import (
-    JointFitExperimentsFactory,
-)
+from easydiffraction.analysis.categories.joint_fit.factory import JointFitFactory
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.metadata import TypeInfo
@@ -23,20 +21,20 @@ from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.io.cif.handler import CifHandler
 
 
-class JointFitExperiment(CategoryItem):
+class JointFitItem(CategoryItem):
     """A single joint-fit entry."""
 
     def __init__(self) -> None:
         super().__init__()
 
-        self._id: StringDescriptor = StringDescriptor(
-            name='id',  # TODO: need new name instead of id
+        self._experiment_id: StringDescriptor = StringDescriptor(
+            name='experiment_id',
             description='Experiment identifier',  # TODO
             value_spec=AttributeSpec(
                 default='_',
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(names=['_joint_fit_experiment.id']),
+            cif_handler=CifHandler(names=['_joint_fit.experiment_id']),
         )
         self._weight: NumericDescriptor = NumericDescriptor(
             name='weight',
@@ -45,18 +43,14 @@ class JointFitExperiment(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_joint_fit_experiment.weight']),
+            cif_handler=CifHandler(names=['_joint_fit.weight']),
         )
 
-        self._identity.category_code = 'joint_fit_experiment'
-        self._identity.category_entry_name = lambda: str(self.id.value)
-
-    # ------------------------------------------------------------------
-    #  Public properties
-    # ------------------------------------------------------------------
+        self._identity.category_code = 'joint_fit'
+        self._identity.category_entry_name = lambda: str(self.experiment_id.value)
 
     @property
-    def id(self) -> StringDescriptor:
+    def experiment_id(self) -> StringDescriptor:
         """
         Experiment identifier.
 
@@ -64,11 +58,11 @@ class JointFitExperiment(CategoryItem):
         ``StringDescriptor`` object. Assigning to it updates the
         parameter value.
         """
-        return self._id
+        return self._experiment_id
 
-    @id.setter
-    def id(self, value: str) -> None:
-        self._id.value = value
+    @experiment_id.setter
+    def experiment_id(self, value: str) -> None:
+        self._experiment_id.value = value
 
     @property
     def weight(self) -> NumericDescriptor:
@@ -86,9 +80,9 @@ class JointFitExperiment(CategoryItem):
         self._weight.value = value
 
 
-@JointFitExperimentsFactory.register
-class JointFitExperiments(CategoryCollection):
-    """Collection of :class:`JointFitExperiment` items."""
+@JointFitFactory.register
+class JointFitCollection(CategoryCollection):
+    """Collection of :class:`JointFitItem` items."""
 
     type_info = TypeInfo(
         tag='default',
@@ -96,5 +90,5 @@ class JointFitExperiments(CategoryCollection):
     )
 
     def __init__(self) -> None:
-        """Create an empty joint-fit experiments collection."""
-        super().__init__(item_type=JointFitExperiment)
+        """Create an empty joint-fit collection."""
+        super().__init__(item_type=JointFitItem)

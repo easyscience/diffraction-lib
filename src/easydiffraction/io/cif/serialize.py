@@ -398,9 +398,9 @@ def analysis_to_cif(analysis: object) -> str:
         '',
         analysis.constraints.as_cif,
     ))
-    jfe_cif = analysis.joint_fit_experiments.as_cif
-    if jfe_cif:
-        lines.extend(('', jfe_cif))
+    joint_fit_cif = analysis.joint_fit.as_cif
+    if joint_fit_cif:
+        lines.extend(('', joint_fit_cif))
     return '\n'.join(lines)
 
 
@@ -517,8 +517,8 @@ def analysis_from_cif(analysis: object, cif_text: str) -> None:
     if analysis.constraints._items:
         analysis.constraints.enable()
 
-    # Restore joint-fit experiment weights (loop)
-    analysis._joint_fit_experiments.from_cif(block)
+    # Restore joint-fit weights (loop)
+    analysis._joint_fit.from_cif(block)
 
 
 def _make_cif_string_reader(block: gemmi.cif.Block) -> object:

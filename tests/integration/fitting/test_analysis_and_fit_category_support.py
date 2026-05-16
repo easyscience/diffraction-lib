@@ -215,7 +215,7 @@ def test_analysis_help_and_mode_switching(capsys):
     assert analysis.fit.mode.value == 'single'
     analysis.fit.mode = 'joint'
     assert analysis.fit.mode.value == 'joint'
-    assert len(analysis.joint_fit_experiments) == 0
+    assert len(analysis.joint_fit) == 0
 
     analysis.help()
     out = _unstyled_output(capsys.readouterr().out)
