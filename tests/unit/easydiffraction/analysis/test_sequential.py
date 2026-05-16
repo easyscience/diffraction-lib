@@ -504,16 +504,19 @@ def test_report_chunk_progress_updates_indicator(monkeypatch, verbosity):
             },
         ],
         progress,
+        0,
+        3,
+        19.76,
     )
 
     if verbosity is VerbosityEnum.SHORT:
-        expected_chunk_rows = [['1/3', 'scan_001.xye-scan_002.xye', '2', '4.00', '⚠️']]
+        expected_chunk_rows = [['1/3', '66.7%', '19.76', 'scan_001.xye-scan_002.xye', '2', '4.00', '⚠️']]
         expected_file_rows = []
     else:
         expected_chunk_rows = []
         expected_file_rows = [
-            ['scan_001.xye', '4.00', '11', '✅'],
-            ['scan_002.xye', '—', '0', '❌'],
+            ['scan_001.xye', '33.3%', '19.76', '4.00', '11', '✅'],
+            ['scan_002.xye', '66.7%', '19.76', '—', '0', '❌'],
         ]
 
     assert progress_state.chunk_rows == expected_chunk_rows
@@ -554,10 +557,13 @@ def test_report_chunk_progress_uses_display_handle_when_provided(monkeypatch):
             }
         ],
         progress,
+        1,
+        2,
+        3.50,
     )
 
     assert updates == [
-        ('renderable', VerbosityEnum.FULL, [], [['scan_001.xye', '3.50', '12', '✅']])
+        ('renderable', VerbosityEnum.FULL, [], [['scan_001.xye', '100.0%', '3.50', '3.50', '12', '✅']])
     ]
 
 

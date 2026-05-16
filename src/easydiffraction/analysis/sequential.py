@@ -11,6 +11,7 @@ import csv
 import multiprocessing as mp
 import re
 import sys
+import time
 from concurrent.futures import FIRST_COMPLETED
 from concurrent.futures import ProcessPoolExecutor
 from concurrent.futures import wait
@@ -630,14 +631,24 @@ def _build_template(project: object) -> SequentialFitTemplate:
 
 _SEQUENTIAL_CHUNK_PROGRESS_HEADERS = [
     'chunk',
+    'progress',
+    'time (s)',
     'files',
     'count',
     'average χ²',
     'status',
 ]
-_SEQUENTIAL_CHUNK_PROGRESS_ALIGNMENTS = ['right', 'left', 'right', 'right', 'center']
-_SEQUENTIAL_FILE_PROGRESS_HEADERS = ['file', 'χ²', 'iterations', 'status']
-_SEQUENTIAL_FILE_PROGRESS_ALIGNMENTS = ['left', 'right', 'right', 'center']
+_SEQUENTIAL_CHUNK_PROGRESS_ALIGNMENTS = [
+    'right',
+    'right',
+    'right',
+    'left',
+    'right',
+    'right',
+    'center',
+]
+_SEQUENTIAL_FILE_PROGRESS_HEADERS = ['file', 'progress', 'time (s)', 'χ²', 'iterations', 'status']
+_SEQUENTIAL_FILE_PROGRESS_ALIGNMENTS = ['left', 'right', 'right', 'right', 'right', 'center']
 _SEQUENTIAL_SPINNER_FRAME_SECONDS = 0.1
 
 
@@ -702,11 +713,27 @@ def _chunk_file_range(chunk: list[str]) -> str:
     return f'{first_name}-{last_name}'
 
 
+def _format_progress_percent(completed_items: int, total_items: int) -> str:
+    """Return overall progress as a percentage string."""
+    if total_items < 1:
+        return '0.0%'
+    clamped_completed = min(max(completed_items, 0), total_items)
+    return f'{100.0 * clamped_completed / total_items:.1f}%'
+
+
+def _format_elapsed_seconds(elapsed_time: float) -> str:
+    """Return elapsed time in seconds with two decimal places."""
+    return f'{max(elapsed_time, 0.0):.2f}'
+
+
 def _build_chunk_progress_row(
     chunk_idx: int,
     total_chunks: int,
     chunk: list[str],
     results: list[dict[str, Any]],
+    completed_files: int,
+    total_files: int,
+    elapsed_time: float,
 ) -> list[str]:
     """
     Return one sequential-progress table row for a completed chunk.
@@ -714,6 +741,8 @@ def _build_chunk_progress_row(
     chi2_str, status = _summarize_chunk_results(results)
     return [
         f'{chunk_idx}/{total_chunks}',
+        _format_progress_percent(completed_files, total_files),
+        _format_elapsed_seconds(elapsed_time),
         _chunk_file_range(chunk),
         str(len(results)),
         chi2_str,
@@ -721,15 +750,30 @@ def _build_chunk_progress_row(
     ]
 
 
-def _build_file_progress_rows(results: list[dict[str, Any]]) -> list[list[str]]:
+def _build_file_progress_rows(
+    results: list[dict[str, Any]],
+    completed_files_before: int,
+    total_files: int,
+    elapsed_time: float,
+) -> list[list[str]]:
     """Return sequential-progress rows for individual file fits."""
     rows: list[list[str]] = []
-    for result in results:
+    time_str = _format_elapsed_seconds(elapsed_time)
+    for index, result in enumerate(results, start=1):
         reduced_chi2 = result.get('reduced_chi_squared')
         chi2_str = f'{reduced_chi2:.2f}' if reduced_chi2 is not None else '—'
         iterations = str(result.get('n_iterations') or 0)
         status = '✅' if result.get('fit_success') else '❌'
-        rows.append([Path(result['file_path']).name, chi2_str, iterations, status])
+        rows.append(
+            [
+                Path(result['file_path']).name,
+                _format_progress_percent(completed_files_before + index, total_files),
+                time_str,
+                chi2_str,
+                iterations,
+                status,
+            ]
+        )
     return rows
 
 
@@ -1004,6 +1048,9 @@ def _report_chunk_progress(
     chunk: list[str],
     results: list[dict[str, Any]],
     progress: SequentialProgressContext,
+    completed_files_before: int,
+    total_files: int,
+    elapsed_time: float,
 ) -> None:
     """
     Report progress after a chunk completes.
@@ -1024,8 +1071,17 @@ def _report_chunk_progress(
     if progress.verbosity is VerbosityEnum.SILENT or progress.state is None:
         return
 
+    completed_files = completed_files_before + len(results)
+
     if progress.verbosity is VerbosityEnum.FULL:
-        progress.state.file_rows.extend(_build_file_progress_rows(results))
+        progress.state.file_rows.extend(
+            _build_file_progress_rows(
+                results,
+                completed_files_before,
+                total_files,
+                elapsed_time,
+            )
+        )
     else:
         progress.state.chunk_rows.append(
             _build_chunk_progress_row(
@@ -1033,6 +1089,9 @@ def _report_chunk_progress(
                 total_chunks,
                 chunk,
                 results,
+                completed_files,
+                total_files,
+                elapsed_time,
             )
         )
 
@@ -1248,6 +1307,9 @@ def _run_fit_loop(
     """
     csv_path, header = csv_info
     total_chunks = len(chunks)
+    total_files = sum(len(chunk) for chunk in chunks)
+    completed_files = 0
+    started_at = time.perf_counter()
     display_handle = progress.display_handle
     with pool_cm as executor:
         for chunk_idx, chunk in enumerate(chunks, start=1):
@@ -1284,13 +1346,18 @@ def _run_fit_loop(
                 results = [_fit_worker(template, path) for path in chunk]
 
             _append_to_csv(csv_path, header, results)
+            elapsed_time = time.perf_counter() - started_at
             _report_chunk_progress(
                 chunk_idx,
                 total_chunks,
                 chunk,
                 results,
                 progress,
+                completed_files,
+                total_files,
+                elapsed_time,
             )
+            completed_files += len(results)
 
             # Propagate last successful params
             last_ok = _find_last_successful(results)
