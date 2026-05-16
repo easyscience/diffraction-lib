@@ -115,8 +115,8 @@
 │       ├── 🏷️ class SequentialFitTemplate
 │       ├── 🏷️ class SequentialProgressState
 │       ├── 🏷️ class SequentialProgressContext
-│       ├── 🏷️ class SequentialRunPlan
-│       └── 🏷️ class _TerminalSequentialDisplay
+│       ├── 🏷️ class _ChunkProgressMetrics
+│       └── 🏷️ class SequentialRunPlan
 ├── 📁 core
 │   ├── 📄 __init__.py
 │   ├── 📄 category.py

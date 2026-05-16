@@ -450,9 +450,11 @@ def test_report_chunk_progress_updates_indicator_with_renderable(monkeypatch, ve
             },
         ],
         progress,
-        0,
-        3,
-        19.76,
+        sequential_mod._ChunkProgressMetrics(
+            completed_files_before=0,
+            total_files=3,
+            elapsed_time=19.76,
+        ),
     )
 
     if verbosity is VerbosityEnum.SHORT:

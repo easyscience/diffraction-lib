@@ -799,14 +799,14 @@ class Plotter(RendererBase):
         for unique_name in unique_names:
             descriptor = descriptors_by_name.get(unique_name)
             if descriptor is None:
-                log.warning(
-                    f"Parameter '{unique_name}' not found in project; skipping plot."
-                )
+                log.warning(f"Parameter '{unique_name}' not found in project; skipping plot.")
                 continue
             self.plot_param_series(param=descriptor, versus=versus)
 
     def _collect_fitted_param_unique_names(self) -> list[str]:
-        """Return fitted parameter unique names from CSV or snapshots."""
+        """
+        Return fitted parameter unique names from CSV or snapshots.
+        """
         from easydiffraction.analysis.sequential import _META_COLUMNS  # noqa: PLC0415
 
         meta = set(_META_COLUMNS)
@@ -834,11 +834,8 @@ class Plotter(RendererBase):
         return list(first_snapshot.keys())
 
     def _fitted_param_descriptors_by_unique_name(self) -> dict[str, object]:
-        """Return mapping from ``unique_name`` to live parameter descriptor."""
-        all_params = (
-            self._project.structures.parameters
-            + self._project.experiments.parameters
-        )
+        """Return descriptor map keyed by ``unique_name``."""
+        all_params = self._project.structures.parameters + self._project.experiments.parameters
         return {p.unique_name: p for p in all_params if hasattr(p, 'unique_name')}
 
     def plot_param_correlations(

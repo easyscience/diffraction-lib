@@ -659,6 +659,15 @@ class SequentialProgressContext:
 
 
 @dataclass(frozen=True)
+class _ChunkProgressMetrics:
+    """File counts and elapsed time for a completed chunk."""
+
+    completed_files_before: int
+    total_files: int
+    elapsed_time: float
+
+
+@dataclass(frozen=True)
 class SequentialRunPlan:
     """Resolved sequential-fit inputs and bookkeeping."""
 
@@ -796,7 +805,9 @@ def _create_progress_context(
 
 
 def _start_progress_display(progress: SequentialProgressContext) -> None:
-    """Start the live progress indicator with an empty bordered table."""
+    """
+    Start the live progress indicator with an empty bordered table.
+    """
     if progress.verbosity is VerbosityEnum.SILENT or progress.state is None:
         return
 
@@ -916,9 +927,7 @@ def _report_chunk_progress(
     chunk: list[str],
     results: list[dict[str, Any]],
     progress: SequentialProgressContext,
-    completed_files_before: int,
-    total_files: int,
-    elapsed_time: float,
+    metrics: _ChunkProgressMetrics,
 ) -> None:
     """
     Report progress after a chunk completes.
@@ -935,18 +944,20 @@ def _report_chunk_progress(
         Results from the chunk.
     progress : SequentialProgressContext
         Mutable progress handles and accumulated table rows.
+    metrics : _ChunkProgressMetrics
+        File counts and elapsed time for the completed chunk.
     """
     if progress.verbosity is VerbosityEnum.SILENT or progress.state is None:
         return
 
-    completed_files = completed_files_before + len(results)
+    completed_files = metrics.completed_files_before + len(results)
 
     if progress.verbosity is VerbosityEnum.FULL:
         new_rows = _build_file_progress_rows(
             results,
-            completed_files_before,
-            total_files,
-            elapsed_time,
+            metrics.completed_files_before,
+            metrics.total_files,
+            metrics.elapsed_time,
         )
         progress.state.file_rows.extend(new_rows)
     else:
@@ -957,8 +968,8 @@ def _report_chunk_progress(
                 chunk,
                 results,
                 completed_files,
-                total_files,
-                elapsed_time,
+                metrics.total_files,
+                metrics.elapsed_time,
             )
         ]
         progress.state.chunk_rows.extend(new_rows)
@@ -1191,9 +1202,11 @@ def _run_fit_loop(
                 chunk,
                 results,
                 progress,
-                completed_files,
-                total_files,
-                elapsed_time,
+                _ChunkProgressMetrics(
+                    completed_files_before=completed_files,
+                    total_files=total_files,
+                    elapsed_time=elapsed_time,
+                ),
             )
             completed_files += len(results)
 

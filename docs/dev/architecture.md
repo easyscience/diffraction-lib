@@ -251,7 +251,8 @@ stylistic — it follows the call site's role:
   `'category.attribute'`). The targeted descriptor may not yet exist on
   any concrete object (e.g. an extraction rule applies uniformly to
   files about to be loaded), and the value must round-trip through CIF.
-  Examples: `sequential_fit_extract.create(target='diffrn.ambient_temperature', ...)`,
+  Examples:
+  `sequential_fit_extract.create(target='diffrn.ambient_temperature', ...)`,
   alias/constraint definitions persisted in project CIF.
 - **Runtime / display / introspection APIs use live descriptors.** The
   call needs the descriptor's `description`, `units`, and `unique_name`
