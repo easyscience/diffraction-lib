@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 from contextlib import suppress
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -16,6 +17,8 @@ from easydiffraction.analysis.categories.fit import FitModeEnum
 from easydiffraction.analysis.categories.fitting import Fitting
 from easydiffraction.analysis.categories.fitting import FittingFactory
 from easydiffraction.analysis.categories.joint_fit import JointFitCollection
+from easydiffraction.analysis.categories.sequential_fit import SequentialFit
+from easydiffraction.analysis.categories.sequential_fit import SequentialFitFactory
 from easydiffraction.analysis.fitting import Fitter
 from easydiffraction.core.singleton import ConstraintsHandler
 from easydiffraction.core.variable import NumericDescriptor
@@ -371,6 +374,10 @@ class Analysis:
         self._fit: Fit = FitFactory.create(FitFactory.default_tag())
         self._fit._parent = self
         self._joint_fit: JointFitCollection = JointFitCollection()
+        self._sequential_fit: SequentialFit = SequentialFitFactory.create(
+            SequentialFitFactory.default_tag()
+        )
+        self._sequential_fit._parent = self
         self.fitter = Fitter(self._fitting.minimizer_type.value)
         self.fit_results = None
         self._parameter_snapshots: dict[str, dict[str, dict]] = {}
@@ -509,6 +516,27 @@ class Analysis:
     def joint_fit(self) -> object:
         """Per-experiment weight collection for joint fitting."""
         return self._joint_fit
+
+    @property
+    def sequential_fit(self) -> SequentialFit:
+        """Persisted settings for sequential fitting."""
+        return self._sequential_fit
+
+    def _resolve_sequential_data_dir(self) -> Path:
+        """Resolve the sequential-fit data directory to an absolute path."""
+        data_dir = Path(self._sequential_fit.data_dir.value)
+        if data_dir.is_absolute():
+            return data_dir
+
+        project_path = self.project.info.path
+        if project_path is None:
+            msg = (
+                'Project must be saved before resolving a relative '
+                'sequential_fit.data_dir. Call save_as() first.'
+            )
+            raise ValueError(msg)
+
+        return project_path / data_dir
 
     def _run_fit(
         self,
