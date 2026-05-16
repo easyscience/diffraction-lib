@@ -11,18 +11,28 @@ import csv
 import multiprocessing as mp
 import re
 import sys
+from concurrent.futures import FIRST_COMPLETED
 from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import wait
 from dataclasses import dataclass
 from dataclasses import replace
+from io import StringIO
 from pathlib import Path
 from typing import Any
 
 from easydiffraction.display.progress import ACTIVITY_LABEL_FITTING
+from easydiffraction.display.progress import ACTIVITY_TERMINAL_STYLE
 from easydiffraction.display.progress import ActivityIndicator
+from easydiffraction.display.progress import SPINNER_FRAMES
 from easydiffraction.io.ascii import extract_data_paths_from_dir
+from easydiffraction.utils.environment import in_jupyter
 from easydiffraction.utils.enums import VerbosityEnum
+from easydiffraction.utils.logging import ConsoleManager
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
+from easydiffraction.utils.utils import build_table_renderable
+from rich.console import Console
+from rich.text import Text
 
 # ------------------------------------------------------------------
 #  Template dataclass (picklable for ProcessPoolExecutor)
@@ -612,11 +622,198 @@ def _build_template(project: object) -> SequentialFitTemplate:
 # ------------------------------------------------------------------
 
 
+_SEQUENTIAL_CHUNK_PROGRESS_HEADERS = [
+    'chunk',
+    'files range',
+    'files count',
+    'average χ²',
+    'status',
+]
+_SEQUENTIAL_CHUNK_PROGRESS_ALIGNMENTS = ['right', 'left', 'right', 'right', 'center']
+_SEQUENTIAL_FILE_PROGRESS_HEADERS = ['file', 'χ²', 'iterations', 'status']
+_SEQUENTIAL_FILE_PROGRESS_ALIGNMENTS = ['left', 'right', 'right', 'center']
+_SEQUENTIAL_SPINNER_FRAME_SECONDS = 0.1
+
+
+@dataclass
+class SequentialProgressState:
+    """Mutable live progress rows for sequential fitting."""
+
+    chunk_rows: list[list[str]]
+    file_rows: list[list[str]]
+
+
+def _summarize_chunk_results(results: list[dict[str, Any]]) -> tuple[str, str]:
+    """Return average reduced chi-square and status for a chunk."""
+    num_files = len(results)
+    successful = [r for r in results if r.get('fit_success')]
+    if successful:
+        avg_chi2 = sum(r['reduced_chi_squared'] for r in successful) / len(successful)
+        chi2_str = f'{avg_chi2:.2f}'
+    else:
+        chi2_str = '—'
+
+    if len(successful) == num_files:
+        status = '✅'
+    elif successful:
+        status = '⚠️'
+    else:
+        status = '❌'
+
+    return chi2_str, status
+
+
+def _chunk_file_range(chunk: list[str]) -> str:
+    """Return the inclusive file-name range for a chunk."""
+    first_name = Path(chunk[0]).name
+    last_name = Path(chunk[-1]).name
+    if first_name == last_name:
+        return first_name
+    return f'{first_name}-{last_name}'
+
+
+def _build_chunk_progress_row(
+    chunk_idx: int,
+    total_chunks: int,
+    chunk: list[str],
+    results: list[dict[str, Any]],
+) -> list[str]:
+    """Return one sequential-progress table row for a completed chunk."""
+    chi2_str, status = _summarize_chunk_results(results)
+    return [
+        f'{chunk_idx}/{total_chunks}',
+        _chunk_file_range(chunk),
+        str(len(results)),
+        chi2_str,
+        status,
+    ]
+
+
+def _build_file_progress_rows(results: list[dict[str, Any]]) -> list[list[str]]:
+    """Return sequential-progress rows for individual file fits."""
+    rows: list[list[str]] = []
+    for result in results:
+        reduced_chi2 = result.get('reduced_chi_squared')
+        chi2_str = f'{reduced_chi2:.2f}' if reduced_chi2 is not None else '—'
+        iterations = str(result.get('n_iterations') or 0)
+        status = '✅' if result.get('fit_success') else '❌'
+        rows.append([Path(result['file_path']).name, chi2_str, iterations, status])
+    return rows
+
+
+def _build_progress_renderable(
+    verbosity: VerbosityEnum,
+    progress_state: SequentialProgressState,
+) -> object:
+    """Build the sequential progress table renderable for the given verbosity."""
+    if verbosity is VerbosityEnum.FULL:
+        return build_table_renderable(
+            columns_headers=_SEQUENTIAL_FILE_PROGRESS_HEADERS,
+            columns_alignment=_SEQUENTIAL_FILE_PROGRESS_ALIGNMENTS,
+            columns_data=progress_state.file_rows,
+        )
+
+    return build_table_renderable(
+        columns_headers=_SEQUENTIAL_CHUNK_PROGRESS_HEADERS,
+        columns_alignment=_SEQUENTIAL_CHUNK_PROGRESS_ALIGNMENTS,
+        columns_data=progress_state.chunk_rows,
+    )
+
+
+class _TerminalSequentialDisplay:
+    """Render a terminal-only sequential table with a spinner below it."""
+
+    def __init__(
+        self,
+        *,
+        console: Console,
+        label: str,
+        renderable: object,
+    ) -> None:
+        self._console = console
+        self._label = label
+        self._renderable = renderable
+        self._frame_index = 0
+        self._region_height = 0
+        self._started = False
+        self._closed = False
+
+    def start(self) -> None:
+        """Print the initial table and spinner region."""
+        if self._started:
+            return
+        self._started = True
+        self._redraw(clear_existing=False)
+
+    def update(self, renderable: object) -> None:
+        """Redraw the table region and keep the spinner on the last line."""
+        self._renderable = renderable
+        if not self._started or self._closed:
+            return
+        self._redraw(clear_existing=True)
+
+    def advance(self) -> None:
+        """Advance the spinner frame without redrawing the table."""
+        if not self._started or self._closed:
+            return
+        self._frame_index = (self._frame_index + 1) % len(SPINNER_FRAMES)
+        self._write('\x1b[1A\r\x1b[2K')
+        self._write(self._spinner_line())
+        self._write('\n')
+
+    def close(self) -> None:
+        """Clear the spinner line and leave the final table visible."""
+        if not self._started or self._closed:
+            return
+        self._write('\x1b[1A\r\x1b[2K\n')
+        self._closed = True
+
+    def _redraw(self, *, clear_existing: bool) -> None:
+        lines = [*self._render_lines(self._renderable), self._spinner_line()]
+        if clear_existing and self._region_height > 0:
+            self._write(f'\x1b[{self._region_height}A\r\x1b[J')
+        self._region_height = len(lines)
+        self._write('\n'.join(lines))
+        self._write('\n')
+
+    def _spinner_line(self) -> str:
+        frame = SPINNER_FRAMES[self._frame_index]
+        return self._render_lines(Text(f'{frame} {self._label}', style=ACTIVITY_TERMINAL_STYLE))[0]
+
+    def _render_lines(self, renderable: object) -> list[str]:
+        buffer = StringIO()
+        width = getattr(self._console, 'width', 130)
+        color_system = getattr(self._console, 'color_system', None) or 'auto'
+        render_console = Console(
+            file=buffer,
+            width=width,
+            force_jupyter=False,
+            force_terminal=True,
+            color_system=color_system,
+            no_color=getattr(self._console, 'no_color', False),
+            legacy_windows=getattr(self._console, 'legacy_windows', False),
+        )
+        render_console.print(renderable)
+        rendered = buffer.getvalue().rstrip('\n')
+        if not rendered:
+            return ['']
+        return rendered.splitlines()
+
+    def _write(self, text: str) -> None:
+        output = getattr(self._console, 'file', sys.stdout)
+        output.write(text)
+        output.flush()
+
+
 def _report_chunk_progress(
     chunk_idx: int,
     total_chunks: int,
+    chunk: list[str],
     results: list[dict[str, Any]],
     verbosity: VerbosityEnum,
+    progress_state: SequentialProgressState | None = None,
+    indicator: ActivityIndicator | None = None,
+    display_handle: object | None = None,
 ) -> None:
     """
     Report progress after a chunk completes.
@@ -627,38 +824,39 @@ def _report_chunk_progress(
         1-based index of the current chunk.
     total_chunks : int
         Total number of chunks.
+    chunk : list[str]
+        File paths in the current chunk.
     results : list[dict[str, Any]]
         Results from the chunk.
     verbosity : VerbosityEnum
         Output verbosity.
+    progress_state : SequentialProgressState | None, default=None
+        Accumulated progress table rows.
+    indicator : ActivityIndicator | None, default=None
+        Shared activity indicator used for live progress rendering.
+    display_handle : object | None, default=None
+        Optional standalone display handle for the progress table.
     """
-    if verbosity is VerbosityEnum.SILENT:
+    if verbosity is VerbosityEnum.SILENT or progress_state is None:
         return
 
-    num_files = len(results)
-    successful = [r for r in results if r.get('fit_success')]
-    if successful:
-        avg_chi2 = sum(r['reduced_chi_squared'] for r in successful) / len(successful)
-        chi2_str = f'{avg_chi2:.2f}'
+    if verbosity is VerbosityEnum.FULL:
+        progress_state.file_rows.extend(_build_file_progress_rows(results))
     else:
-        chi2_str = '—'
+        progress_state.chunk_rows.append(_build_chunk_progress_row(
+            chunk_idx,
+            total_chunks,
+            chunk,
+            results,
+        ))
 
-    if verbosity is VerbosityEnum.SHORT:
-        status = '✅' if successful else '❌'
-        console.print(
-            f'{status} Chunk {chunk_idx}/{total_chunks}: {num_files} files, avg χ² = {chi2_str}'
-        )
-    elif verbosity is VerbosityEnum.FULL:
-        console.print(
-            f'Chunk {chunk_idx}/{total_chunks}: '
-            f'{num_files} files, {len(successful)} succeeded, '
-            f'avg reduced χ² = {chi2_str}'
-        )
-        for r in results:
-            status = '✅' if r.get('fit_success') else '❌'
-            rchi2 = r.get('reduced_chi_squared')
-            rchi2_str = f'{rchi2:.2f}' if rchi2 is not None else '—'
-            console.print(f'  {status} {Path(r["file_path"]).name}: χ² = {rchi2_str}')
+    renderable = _build_progress_renderable(verbosity, progress_state)
+    if display_handle is not None and hasattr(display_handle, 'update'):
+        display_handle.update(renderable)
+        return
+
+    if indicator is not None:
+        indicator.update(content=renderable)
 
 
 # ------------------------------------------------------------------
@@ -846,6 +1044,8 @@ def _run_fit_loop(
     csv_info: tuple[Path, list[str]],
     verb: VerbosityEnum,
     indicator: ActivityIndicator | None,
+    progress_state: SequentialProgressState | None = None,
+    display_handle: object | None = None,
 ) -> None:
     """
     Execute the chunk-based fitting loop.
@@ -864,21 +1064,54 @@ def _run_fit_loop(
         Output verbosity.
     indicator : ActivityIndicator | None
         Shared sequential-fit activity indicator.
+    progress_state : SequentialProgressState | None, default=None
+        Accumulated progress table rows.
+    display_handle : object | None, default=None
+        Optional standalone display handle for the progress table.
     """
     csv_path, header = csv_info
     total_chunks = len(chunks)
     with pool_cm as executor:
         for chunk_idx, chunk in enumerate(chunks, start=1):
-            if executor is not None:
+            if executor is not None and display_handle is not None and hasattr(display_handle, 'advance'):
+                future_to_index = {
+                    executor.submit(_fit_worker, template, path): index
+                    for index, path in enumerate(chunk)
+                }
+                pending = set(future_to_index)
+                ordered_results: list[dict[str, Any] | None] = [None] * len(chunk)
+
+                while pending:
+                    done, pending = wait(
+                        pending,
+                        timeout=_SEQUENTIAL_SPINNER_FRAME_SECONDS,
+                        return_when=FIRST_COMPLETED,
+                    )
+                    if not done:
+                        display_handle.advance()
+                        continue
+
+                    for future in done:
+                        ordered_results[future_to_index[future]] = future.result()
+
+                results = [result for result in ordered_results if result is not None]
+            elif executor is not None:
                 templates = [template] * len(chunk)
                 results = list(executor.map(_fit_worker, templates, chunk))
             else:
                 results = [_fit_worker(template, path) for path in chunk]
 
             _append_to_csv(csv_path, header, results)
-            _report_chunk_progress(chunk_idx, total_chunks, results, verb)
-            if indicator is not None:
-                indicator.update()
+            _report_chunk_progress(
+                chunk_idx,
+                total_chunks,
+                chunk,
+                results,
+                verb,
+                progress_state,
+                indicator,
+                display_handle,
+            )
 
             # Propagate last successful params
             last_ok = _find_last_successful(results)
@@ -958,12 +1191,41 @@ def fit_sequential(
         console.print(
             f'📋 {len(remaining)} files in {len(chunks)} chunks (max_workers={max_workers})'
         )
-        console.print('📈 Goodness-of-fit (reduced χ²):')
+        console.print('📈 Goodness-of-fit progress:')
 
     indicator = None
+    progress_state: SequentialProgressState | None = None
+    if verb is VerbosityEnum.FULL:
+        progress_state = SequentialProgressState(chunk_rows=[], file_rows=[])
+    elif verb is VerbosityEnum.SHORT:
+        progress_state = SequentialProgressState(chunk_rows=[], file_rows=[])
+
+    progress_display_handle = None
     if verb is not VerbosityEnum.SILENT:
-        indicator = ActivityIndicator(ACTIVITY_LABEL_FITTING, verbosity=verb)
-        indicator.start()
+        initial_renderable = _build_progress_renderable(verb, progress_state)
+        if not in_jupyter():
+            terminal_console = ConsoleManager.get()
+            if terminal_console.is_terminal and not terminal_console.is_dumb_terminal:
+                progress_display_handle = _TerminalSequentialDisplay(
+                    console=terminal_console,
+                    label=ACTIVITY_LABEL_FITTING,
+                    renderable=initial_renderable,
+                )
+                progress_display_handle.start()
+            else:
+                indicator = ActivityIndicator(
+                    ACTIVITY_LABEL_FITTING,
+                    verbosity=verb,
+                )
+                indicator.start()
+                indicator.update(content=initial_renderable)
+        else:
+            indicator = ActivityIndicator(
+                ACTIVITY_LABEL_FITTING,
+                verbosity=verb,
+            )
+            indicator.start()
+            indicator.update(content=initial_renderable)
 
     pool_cm, main_mod, main_file_bak, main_spec_bak = _create_pool_context(max_workers)
     try:
@@ -974,10 +1236,15 @@ def fit_sequential(
             (csv_path, header),
             verb,
             indicator,
+            progress_state,
+            progress_display_handle,
         )
     finally:
         if indicator is not None:
             indicator.stop()
+        if progress_display_handle is not None and hasattr(progress_display_handle, 'close'):
+            with contextlib.suppress(Exception):
+                progress_display_handle.close()
         _restore_main_state(main_mod, main_file_bak, main_spec_bak)
 
     if verb is not VerbosityEnum.SILENT:

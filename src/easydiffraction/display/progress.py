@@ -60,11 +60,11 @@ class _TerminalLiveHandle:
     and notebook handles through a single update-oriented interface.
     """
 
-    def __init__(self, *, console: object) -> None:
+    def __init__(self, *, console: object, auto_refresh: bool = True) -> None:
         self._renderable: object = Text('')
         self._live = Live(
             console=console,
-            auto_refresh=True,
+            auto_refresh=auto_refresh,
             refresh_per_second=1 / _SPINNER_FRAME_SECONDS,
             get_renderable=self._get_renderable,
         )
@@ -94,7 +94,7 @@ class _TerminalLiveHandle:
             self._live.stop()
 
 
-def make_display_handle() -> object | None:
+def make_display_handle(*, auto_refresh: bool = True) -> object | None:
     """
     Create a generic in-place display handle for the active environment.
 
@@ -110,7 +110,7 @@ def make_display_handle() -> object | None:
             handle.display(HTML(''))
         return handle
 
-    return _TerminalLiveHandle(console=ConsoleManager.get())
+    return _TerminalLiveHandle(console=ConsoleManager.get(), auto_refresh=auto_refresh)
 
 
 class ActivityIndicator:
@@ -125,6 +125,8 @@ class ActivityIndicator:
         Output verbosity controlling whether live display is shown.
     display_handle : object | None, default=None
         Optional existing live display handle to reuse.
+    animated : bool, default=True
+        Whether to animate the spinner label continuously.
     """
 
     def __init__(
@@ -133,11 +135,13 @@ class ActivityIndicator:
         *,
         verbosity: VerbosityEnum,
         display_handle: object | None = None,
+        animated: bool = True,
     ) -> None:
         self._label = label
         self._verbosity = verbosity
         self._content: object | None = None
         self._provided_display_handle = display_handle
+        self._animated = animated
         self._display_handle: object | None = None
         self._live: object | None = None
         self._running = False
@@ -174,7 +178,7 @@ class ActivityIndicator:
 
         live = Live(
             console=ConsoleManager.get(),
-            auto_refresh=True,
+            auto_refresh=self._animated,
             refresh_per_second=1 / _SPINNER_FRAME_SECONDS,
             get_renderable=self._terminal_renderable,
         )
@@ -287,8 +291,10 @@ class ActivityIndicator:
 
     def _terminal_indicator_line(self) -> Text | None:
         if self._running:
-            frame = self._current_frame()
-            return Text(f'{frame} {self._label}', style=ACTIVITY_TERMINAL_STYLE)
+            if self._animated:
+                frame = self._current_frame()
+                return Text(f'{frame} {self._label}', style=ACTIVITY_TERMINAL_STYLE)
+            return Text(self._label, style=ACTIVITY_TERMINAL_STYLE)
         if self._keep_stopped_label:
             return Text(self._label, style=ACTIVITY_TERMINAL_STYLE)
         return None
@@ -326,6 +332,12 @@ class ActivityIndicator:
         safe_label = html.escape(self._label)
 
         if self._running:
+            if not self._animated:
+                return (
+                    '<div class="ed-activity">'
+                    f'<span class="ed-activity-label">{safe_label}</span>'
+                    '</div>'
+                )
             return (
                 '<div class="ed-activity">'
                 '<span class="ed-activity-spinner" aria-hidden="true"></span>'
