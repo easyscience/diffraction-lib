@@ -709,6 +709,7 @@ class Analysis:
         """
         from easydiffraction.analysis.sequential import fit_sequential as _fit_seq  # noqa: PLC0415
 
+        self._set_fitting_mode_type(FitModeEnum.SEQUENTIAL.value)
         self._update_categories()
 
         max_workers_value = self._sequential_fit.max_workers.value
@@ -725,6 +726,9 @@ class Analysis:
             file_pattern=self._sequential_fit.file_pattern.value,
             reverse=self._sequential_fit.reverse.value,
         )
+
+        if self.project.info.path is not None:
+            self.project.save()
 
     def _fit_joint(
         self,

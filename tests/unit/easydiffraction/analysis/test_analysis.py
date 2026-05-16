@@ -227,3 +227,66 @@ def test_fit_single_short_reuses_tracker_display_handle(monkeypatch):
     assert tracker.display_handles == [handle, None]
     assert short_display_handles == [handle]
     assert handle.closed is True
+
+
+def test_run_sequential_sets_mode_and_saves_project(monkeypatch, tmp_path):
+    from easydiffraction.analysis.analysis import Analysis
+
+    project = SimpleNamespace(
+        info=SimpleNamespace(path=tmp_path),
+        save_calls=0,
+        _varname='proj',
+    )
+
+    def save() -> None:
+        project.save_calls += 1
+
+    project.save = save
+
+    analysis = Analysis(project=project)
+    analysis.sequential_fit.data_dir.value = 'scans'
+    analysis.sequential_fit.file_pattern.value = '*.xye'
+    analysis.sequential_fit.max_workers.value = 'auto'
+    analysis.sequential_fit.chunk_size.value = '.'
+    analysis.sequential_fit.reverse.value = True
+
+    calls: list[tuple[str, object]] = []
+
+    def fake_fit_sequential(
+        *,
+        analysis: object,
+        data_dir: str,
+        max_workers: int | str,
+        chunk_size: int | None,
+        file_pattern: str,
+        reverse: bool,
+    ) -> None:
+        calls.append(('analysis', analysis))
+        calls.append(('data_dir', data_dir))
+        calls.append(('max_workers', max_workers))
+        calls.append(('chunk_size', chunk_size))
+        calls.append(('file_pattern', file_pattern))
+        calls.append(('reverse', reverse))
+
+    monkeypatch.setattr('easydiffraction.analysis.sequential.fit_sequential', fake_fit_sequential)
+    monkeypatch.setattr(analysis, '_update_categories', lambda: calls.append(('update_categories', None)))
+    monkeypatch.setattr(analysis, '_resolve_sequential_data_dir', lambda: tmp_path / 'resolved-scans')
+
+    analysis._run_sequential()
+
+    assert analysis.fitting_mode_type == 'sequential'
+    analysis_cif = analysis.as_cif
+    assert '_fitting.mode_type sequential' in analysis_cif
+    assert '_sequential_fit.data_dir scans' in analysis_cif
+    assert '_sequential_fit.file_pattern *.xye' in analysis_cif
+    assert calls == [
+        ('update_categories', None),
+        ('analysis', analysis),
+        ('data_dir', str(tmp_path / 'resolved-scans')),
+        ('max_workers', 'auto'),
+        ('chunk_size', None),
+        ('file_pattern', '*.xye'),
+        ('reverse', True),
+        ('update_categories', None),
+    ]
+    assert project.save_calls == 1
