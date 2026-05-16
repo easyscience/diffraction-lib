@@ -77,12 +77,3 @@ temperature = 'diffrn.ambient_temperature'
 
 # %%
 project.display.fit.series(versus=temperature)
-
-# %% [markdown]
-# ## Save Project
-#
-# Save the updated project so the appended `analysis/results.csv` and
-# refreshed summary files remain on disk.
-
-# %%
-project.save()
