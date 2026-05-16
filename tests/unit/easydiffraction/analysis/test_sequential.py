@@ -414,45 +414,21 @@ class TestChunkFileRange:
 
 
 @pytest.mark.parametrize('verbosity', [VerbosityEnum.SHORT, VerbosityEnum.FULL])
-def test_report_chunk_progress_prints_rows_above_indicator(monkeypatch, verbosity):
+def test_report_chunk_progress_updates_indicator_with_renderable(monkeypatch, verbosity):
     import easydiffraction.analysis.sequential as sequential_mod
 
-    printed: list[str] = []
+    update_calls: list[object] = []
 
-    class RecordingConsole:
-        def print(self, *args, **kwargs):
-            del kwargs
-            assert len(args) == 1
-            printed.append(args[0])
-
-    monkeypatch.setattr(sequential_mod, 'console', RecordingConsole())
+    class RecordingIndicator:
+        def update(self, *, label=None, content=None):
+            del label
+            update_calls.append(content)
 
     progress_state = sequential_mod.SequentialProgressState(chunk_rows=[], file_rows=[])
-    if verbosity is VerbosityEnum.SHORT:
-        base_widths = [3, 6, 5, 27, 5, 10, 6]
-        base_alignments = list(sequential_mod._SEQUENTIAL_CHUNK_PROGRESS_ALIGNMENTS)
-        base_headers = list(sequential_mod._SEQUENTIAL_CHUNK_PROGRESS_HEADERS)
-        total_rows = 3
-    else:
-        base_widths = [12, 6, 5, 4, 10, 6]
-        base_alignments = list(sequential_mod._SEQUENTIAL_FILE_PROGRESS_ALIGNMENTS)
-        base_headers = list(sequential_mod._SEQUENTIAL_FILE_PROGRESS_HEADERS)
-        total_rows = 3
-
-    headers, alignments, widths = sequential_mod._prepend_index_column(
-        base_headers,
-        base_alignments,
-        base_widths,
-        total_rows,
-    )
-
     progress = sequential_mod.SequentialProgressContext(
         verbosity=verbosity,
         state=progress_state,
-        indicator=None,
-        column_widths=widths,
-        column_headers=headers,
-        column_alignments=alignments,
+        indicator=RecordingIndicator(),
     )
 
     sequential_mod._report_chunk_progress(
@@ -493,15 +469,8 @@ def test_report_chunk_progress_prints_rows_above_indicator(monkeypatch, verbosit
         assert progress_state.chunk_rows == []
         assert progress_state.file_rows == expected_rows
 
-    expected_lines = [
-        sequential_mod._format_progress_line(
-            [str(idx), *row],
-            widths,
-            alignments,
-        )
-        for idx, row in enumerate(expected_rows, start=1)
-    ]
-    assert printed == expected_lines
+    assert len(update_calls) == 1
+    assert update_calls[0] is not None
 
 
 @pytest.mark.parametrize(
@@ -513,8 +482,6 @@ def test_fit_sequential_non_silent_starts_indicator_with_progress_table(
     tmp_path,
     verbosity,
 ):
-    import easydiffraction.analysis.sequential as sequential_mod
-
     events = _run_non_silent_fit(
         monkeypatch,
         tmp_path,
@@ -523,54 +490,22 @@ def test_fit_sequential_non_silent_starts_indicator_with_progress_table(
     )
 
     verb_enum = VerbosityEnum(verbosity)
-    if verb_enum is VerbosityEnum.FULL:
-        base_headers = list(sequential_mod._SEQUENTIAL_FILE_PROGRESS_HEADERS)
-        base_alignments = list(sequential_mod._SEQUENTIAL_FILE_PROGRESS_ALIGNMENTS)
-        base_widths = sequential_mod._compute_file_progress_widths(['scan_001.xye'])
-        total_rows = 1
-    else:
-        base_headers = list(sequential_mod._SEQUENTIAL_CHUNK_PROGRESS_HEADERS)
-        base_alignments = list(sequential_mod._SEQUENTIAL_CHUNK_PROGRESS_ALIGNMENTS)
-        base_widths = sequential_mod._compute_chunk_progress_widths([['scan_001.xye']])
-        total_rows = 1
 
-    headers, alignments, widths = sequential_mod._prepend_index_column(
-        base_headers,
-        base_alignments,
-        base_widths,
-        total_rows,
-    )
-
-    top_border = sequential_mod._format_progress_border(
-        widths,
-        sequential_mod._PROGRESS_BOX_TOP_LEFT,
-        sequential_mod._PROGRESS_BOX_TOP_RIGHT,
-    )
-    header_line = sequential_mod._format_progress_line(headers, widths, alignments)
-    mid_border = sequential_mod._format_progress_border(
-        widths,
-        sequential_mod._PROGRESS_BOX_MID_LEFT,
-        sequential_mod._PROGRESS_BOX_MID_RIGHT,
-    )
-    bot_border = sequential_mod._format_progress_border(
-        widths,
-        sequential_mod._PROGRESS_BOX_BOT_LEFT,
-        sequential_mod._PROGRESS_BOX_BOT_RIGHT,
-    )
-
-    assert events == [
+    assert events[:4] == [
         ('paragraph', 'Sequential fitting'),
         ('console_print', ("🚀 Starting fit process with 'lmfit'...",), {}),
         ('console_print', ('📋 1 files in 1 chunks (max_workers=1)',), {}),
         ('console_print', ('📈 Goodness-of-fit progress:',), {}),
-        ('console_print', (top_border,), {}),
-        ('console_print', (header_line,), {}),
-        ('console_print', (mid_border,), {}),
-        ('init', ACTIVITY_LABEL_FITTING, verb_enum, True),
-        ('start',),
-        ('run_loop', True),
-        ('stop',),
-        ('console_print', (bot_border,), {}),
+    ]
+    assert events[4] == ('init', ACTIVITY_LABEL_FITTING, verb_enum, True)
+    assert events[5] == ('start',)
+    # Initial empty table renderable is pushed before the fit loop runs.
+    assert events[6][0] == 'update'
+    assert events[6][1] is None
+    assert events[6][2] is not None
+    assert events[7] == ('run_loop', True)
+    assert events[8] == ('stop',)
+    assert events[9:] == [
         ('console_print', ('✅ Sequential fitting complete: 1 files processed.',), {}),
         ('console_print', (f'📄 Results saved to: {tmp_path / "results.csv"}',), {}),
     ]
