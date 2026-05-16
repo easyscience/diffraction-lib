@@ -48,6 +48,7 @@ This plan follows the two-phase workflow from
 
 ### Phase 1 — Implementation
 
+- [ ] Step 0: Create the implementation branch
 - [ ] Step 1: Add `BoolDescriptor` to `core/variable.py`
 - [ ] Step 2: Introduce the `fitting` category (replaces `fit` config
       surface; non-callable, no `mode` field)
@@ -110,6 +111,23 @@ Each step lists: files to change, what to do, what to remove, and a
 suggested commit message. Stage with explicit paths and commit before
 moving to the next step.
 
+### Step 0: Create the implementation branch
+
+**Tasks**
+
+1. Verify the working tree is clean (`git status`). If there are
+   unrelated dirty files, stop and ask the user.
+2. Create and switch to the implementation branch:
+
+   ```bash
+   git switch -c feature/fit-mode-categories
+   ```
+
+3. Do not push the branch. All commits are local until the user
+   asks for a push.
+
+No commit for this step.
+
 ### Step 1: Add `BoolDescriptor`
 
 **Files**
@@ -120,24 +138,49 @@ moving to the next step.
 descriptor with CIF binding. Today the codebase only has
 `_BOOL_SPEC_TEMPLATE` used internally by `GenericParameter.free`.
 
+**Reference reading.** Open `src/easydiffraction/core/variable.py` and
+read, in order, `GenericDescriptorBase`, `GenericStringDescriptor`,
+and `StringDescriptor`. The two new classes are exact structural
+copies of these two, with `str` replaced by `bool` and
+`DataTypes.STR` replaced by `DataTypes.BOOL`. Do not invent any new
+validation hook — reuse what `GenericStringDescriptor` already calls.
+
 **Tasks**
 
-1. In `core/variable.py`, add a new `GenericBoolDescriptor` class
-   parallel to `GenericStringDescriptor`. It must:
-   - Use `DataTypes.BOOL`.
-   - Reuse `_BOOL_SPEC_TEMPLATE` semantics (default `False`).
-   - Accept `value_spec=AttributeSpec(default=...)` like the other
-     generic descriptors.
-   - Provide `value: bool` getter/setter with the same validation
-     entry point as the other generic descriptors.
-2. Add a CIF-bound `BoolDescriptor(GenericBoolDescriptor)` class with
-   `cif_handler: CifHandler`, mirroring `StringDescriptor`.
-3. Serialize `True` as the CIF token `true` and `False` as `false`.
-   Parse `true`/`false` case-insensitively. Reject any other token
-   with a clear validation error. The CIF null token `.` parses to
-   the descriptor default (`False`).
+1. Add `GenericBoolDescriptor(GenericDescriptorBase)` immediately
+   after `GenericStringDescriptor` in the same file. Implement only
+   the members that `GenericStringDescriptor` overrides; for every
+   other member, defer to the base class. Specifically:
+   - `__init__(self, name: str, description: str = '', value_spec:
+     AttributeSpec | None = None) -> None` — default
+     `value_spec` to `AttributeSpec(data_type=DataTypes.BOOL,
+     default=False)` if `None` is passed.
+   - `value` property (getter and setter) returning `bool`, using
+     the same `self._value_spec.validated(...)` call site as
+     `GenericStringDescriptor.value.setter` does (look for that
+     exact call in the file and copy it verbatim, swapping the
+     attribute name).
+2. Add `BoolDescriptor(GenericBoolDescriptor)` immediately after
+   `StringDescriptor`. Mirror `StringDescriptor` line-for-line,
+   only changing the parent class.
+3. Serialization contract:
+   - On write, emit `true` for `True` and `false` for `False`.
+   - On read, accept `true`, `True`, `TRUE`, `false`, `False`,
+     `FALSE` (case-insensitive). Treat the CIF null token `.` as
+     "keep the descriptor's current default" (i.e. do not raise).
+   - Any other token raises through the existing validator path
+     that `StringDescriptor` already uses for invalid values.
+   - If the existing `StringDescriptor` CIF round-trip is handled
+     by a shared helper rather than per-class code, route through
+     that same helper and add the bool coercion there. Do not
+     duplicate logic.
 4. Do **not** change existing `GenericParameter.free` handling. The
    new descriptor is additive.
+5. If, after reading the file, the structural copy turns out to
+   require more than a one-class addition (for example, the CIF
+   handler dispatch is type-keyed elsewhere and needs a new
+   branch), stop and ask the user before adding cross-cutting
+   changes.
 
 **Suggested commit**
 
@@ -154,8 +197,11 @@ Add BoolDescriptor for CIF-bound boolean values
   - `factory.py` (delegates to `FactoryBase`, mirroring
     `categories/fit/factory.py`)
   - `default.py`
-- `src/easydiffraction/analysis/categories/__init__.py` (or wherever
-  category packages are registered)
+- `src/easydiffraction/analysis/__init__.py` — the canonical place
+  where existing analysis categories are explicitly imported. Verify
+  this by reading the file and locating the existing
+  `from easydiffraction.analysis.categories.fit ...` import; add the
+  parallel `from ...categories.fitting ...` import next to it.
 
 **Tasks**
 
@@ -218,15 +264,17 @@ Add fitting category replacing fit configuration surface
    - `def _set_fitting_mode_type(self, value: str) -> None` —
      silent setter used by CIF restore; validates and sets without
      console output.
-4. Move `FitModeEnum` to a stable location if it's not already
-   importable without going through the soon-to-be-removed `fit`
-   package. Acceptable locations:
-   - keep at `src/easydiffraction/analysis/categories/fit/enums.py`
-     for now (it will move with Step 7),
-   - or copy into `src/easydiffraction/analysis/enums.py` if a
-     better long-term home exists. Pick the simpler option.
+4. **`FitModeEnum` location decision (locked).** Keep
+   `FitModeEnum` at
+   `src/easydiffraction/analysis/categories/fit/enums.py` for this
+   step (the old `fit` package still exists). In Step 7, move the
+   file to `src/easydiffraction/analysis/enums.py` as part of
+   removing the old package. Do not pre-move it here.
 5. Ensure `FitModeEnum.description()` returns a short, one-line
-   string per member; add it if missing.
+   string per member. If missing, add it using these exact texts:
+   - `single` — `'Fit one experiment at a time.'`
+   - `joint` — `'Fit several experiments together with shared parameters.'`
+   - `sequential` — `'Fit one experiment against a series of data files.'`
 
 **Do not** yet make `Analysis.fit()` a method. That happens in
 Step 7. The current `Analysis.fit` property still returns the old
@@ -247,9 +295,9 @@ Add fitting_mode_type selector and fitting accessor on Analysis
   → `src/easydiffraction/analysis/categories/joint_fit/`
 - inside, update class names:
   - `JointFitExperiment` → `JointFitItem`
-  - `JointFitExperiments` → `JointFitCollection` (or follow the
-    convention used by other collection classes — check
-    `AtomSiteAnisoCollection`)
+  - `JointFitExperiments` → `JointFitCollection` (locked; do not
+    rename to anything else, even if other collections in the
+    repo use a different suffix)
 - field rename inside `JointFitItem`:
   - `id` → `experiment_id`
   - CIF name `_joint_fit_experiment.id` →
@@ -310,18 +358,26 @@ Rename joint_fit_experiments category to joint_fit
      CIF: `_sequential_fit.data_dir`.
    - `file_pattern`: `StringDescriptor`, default `'*'`. CIF:
      `_sequential_fit.file_pattern`.
-   - `max_workers`: `StringDescriptor` with a
-     `MembershipValidator`-like check accepting `'auto'` or any
-     string that parses to a positive integer. Default `'1'`. CIF:
-     `_sequential_fit.max_workers`. The on-disk value is preserved
-     verbatim; resolution to an int happens only at runtime in
-     Step 8.
-   - `chunk_size`: `NumericDescriptor` allowing an unset value
-     serialized as CIF `.`. Default unset. CIF:
-     `_sequential_fit.chunk_size`. Use the existing convention for
-     nullable numeric descriptors (check
-     `RangeValidator(allow_none=True)` or equivalent — pick the
-     existing precedent).
+   - `max_workers`: `StringDescriptor` validated by
+     `RegexValidator(pattern=r'^(auto|[1-9]\d*)$')`. Default
+     `'1'`. CIF: `_sequential_fit.max_workers`. The on-disk value
+     is preserved verbatim; resolution to an int happens only at
+     runtime in Step 8.
+   - `chunk_size`: nullable integer field. CIF:
+     `_sequential_fit.chunk_size`. Before writing this field,
+     **investigate first**: grep for `allow_none` in
+     `src/easydiffraction/core/validation.py` and for nullable
+     descriptor precedents elsewhere in `src/easydiffraction/`.
+     - If a nullable numeric pattern already exists (for example
+       a `RangeValidator(allow_none=True)` or a dedicated
+       descriptor), reuse it.
+     - If no precedent exists, implement `chunk_size` as a
+       `StringDescriptor` validated by
+       `RegexValidator(pattern=r'^([1-9]\d*|\.)$')`, default
+       `'.'`, and convert to `int | None` at runtime in Step 8
+       (`.` → `None`). Note this fallback in the commit message.
+     Do not introduce a new nullable descriptor class as part of
+     this step — escalate to the user if you think one is needed.
    - `reverse`: `BoolDescriptor` (Step 1), default `False`. CIF:
      `_sequential_fit.reverse`.
 3. Add `SequentialFit.as_cif` and `SequentialFit.from_cif(block)`
@@ -338,9 +394,11 @@ Rename joint_fit_experiments category to joint_fit
    - returns `project_path / data_dir` if the project has a saved
      path and the value is relative,
    - **raises** with a clear message for an unsaved project with a
-     relative value. The exact exception type should match what
-     existing analysis errors raise (look at how
-     `fit_sequential` currently surfaces a missing project path).
+     relative value. Use the same exception path that the current
+     `fit_sequential(...)` uses when the project path is missing
+     — grep `src/easydiffraction/analysis/` for `project path` or
+     equivalent and reuse that exception type. Do not introduce a
+     new exception class.
 
 **Suggested commit**
 
@@ -369,20 +427,32 @@ Add sequential_fit category with persisted scan settings
      `_sequential_fit_extract.id`. Reuse the
      `RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$')`.
    - `target`: `StringDescriptor`. CIF:
-     `_sequential_fit_extract.target`. Validate at `create()` time
-     that the value is exactly two dotted segments, the first
-     segment is the literal `diffrn`, and the second segment is a
-     known numeric attribute on the template experiment's
-     `diffrn` category. Implement validation as a small helper
-     `_validate_extract_target(value: str) -> None` next to the
-     class. Nested targets beyond one level are an explicit open
-     question — reject them here.
+     `_sequential_fit_extract.target`. Structural validation at
+     `create()` time:
+     - exactly two dotted segments
+     - first segment is the literal `diffrn`
+     - second segment matches `^[A-Za-z_][A-Za-z0-9_]*$`
+     Implement structural validation as a small helper
+     `_validate_extract_target_shape(value: str) -> None` next to
+     the class. Do **not** validate that the second segment is a
+     real numeric attribute on a template experiment at
+     `create()` time — extraction rules may be created before any
+     experiment exists. Attribute-existence validation happens
+     instead in Step 8, immediately before sequential execution
+     starts (when a template experiment is guaranteed to exist).
+     Nested targets beyond one level are an explicit ADR open
+     question — reject them at the shape-check step.
    - `pattern`: `StringDescriptor`. CIF:
-     `_sequential_fit_extract.pattern`. Validate at `create()` time
-     that the regex compiles and has exactly one capture group.
-     Reject backreferences and nested quantifiers using a static
-     check (regex AST is not needed — a simple substring scan for
-     `\1`-`\9` and double quantifiers is sufficient).
+     `_sequential_fit_extract.pattern`. Validate at `create()`
+     time only that:
+     - the regex compiles via `re.compile(value)`,
+     - it has exactly one capture group
+       (`re.compile(value).groups == 1`).
+     Do **not** add the static check for backreferences or
+     nested quantifiers. Defending against ReDoS is an ADR open
+     question; the project trust boundary for CIF input is
+     already "user-controlled," so this is acceptable for v1.
+     Record this decision in the step's commit message body.
    - `required`: `BoolDescriptor` (Step 1), default `False`. CIF:
      `_sequential_fit_extract.required`.
 3. The collection's `create(...)` method validates `target` and
@@ -400,47 +470,113 @@ nested targets. Each is an explicit ADR open question.
 Add sequential_fit_extract category for scan metadata rules
 ```
 
-### Step 7: Make `Analysis.fit()` a real method
+### Step 7: Make `Analysis.fit()` a real method (entry-point only)
+
+**Scope of this step.** Step 7 only re-routes how fitting is
+invoked. It introduces `Analysis.fit()` and the private dispatch
+helpers, removes the old `fit` category and `fit_sequential(...)`
+entry point, and moves `FitModeEnum`. It does **not** yet rewrite
+`sequential.py` to consume `sequential_fit` / `sequential_fit_extract`
+— that is Step 8. The temporary contract between Steps 7 and 8 is
+that `_run_sequential` calls the existing sequential entry point
+from `sequential.py` with arguments read from
+`analysis.sequential_fit` (and `extract_diffrn=None`). The old
+sequential code path still accepts the callback parameter at the end
+of Step 7; Step 8 removes it.
+
+**Reference reading.** Before editing, open:
+- `src/easydiffraction/analysis/categories/fit/default.py` — read
+  `Fit.__call__` (line ~205) and `Fit.run(...)`. Note what `self`
+  members it reads (likely `self._project` or similar back-pointer)
+  and what other `Analysis`-level state it touches.
+- `src/easydiffraction/analysis/analysis.py` — read the existing
+  `fit_sequential(...)` (line ~745) and the current
+  `_run_fit(...)` (line ~451).
+These three call sites are the prior art for the new dispatch
+helpers.
 
 **Files**
 
 - `src/easydiffraction/analysis/analysis.py`
 - remove package:
   `src/easydiffraction/analysis/categories/fit/`
-- update `src/easydiffraction/io/cif/serialize.py` to remove
-  references to `analysis.fit` as a config category (writing of
-  `_fit.*` is replaced by `_fitting.*` from Step 11)
+- move `enums.py` from that package to
+  `src/easydiffraction/analysis/enums.py` and update imports
+- update `src/easydiffraction/io/cif/serialize.py` to drop
+  references to `analysis.fit` as a config category (the actual
+  `_fitting.*` write happens in Step 11)
 
 **Tasks**
 
-1. Delete the `categories/fit/` package and its imports. Use
-   `grep` across `src/`, `tests/`, `docs/`, `tutorials/`, `tools/`
-   to find every reference and replace it according to the new
-   API:
+1. Add three private methods on `Analysis` with these exact
+   signatures:
+
+   ```python
+   def _run_single(self) -> None: ...
+   def _run_joint(self) -> None: ...
+   def _run_sequential(self) -> None: ...
+   ```
+
+   - Copy the body of `Fit.__call__`'s single-mode branch into
+     `_run_single`, replacing references to `self` (the `Fit`
+     instance) with references to `self` (the `Analysis`
+     instance) and `self.fitting` for `minimizer_type`. If
+     `Fit.__call__` reads other `Analysis` state via a
+     back-pointer, switch to the direct `self.` form.
+   - Copy the joint-mode branch into `_run_joint` the same way.
+   - `_run_sequential` is the smallest method: it reads
+     `data_dir`, `file_pattern`, `max_workers`, `chunk_size`,
+     `reverse` from `self.sequential_fit`, resolves `data_dir`
+     via `self._resolve_sequential_data_dir()` (Step 5), and
+     calls the existing private entry point in
+     `src/easydiffraction/analysis/sequential.py` (the one that
+     `fit_sequential(...)` currently delegates to via
+     `_fit_seq`). Pass `extract_diffrn=None` for now — Step 8
+     removes that parameter from the callee.
+2. Define `Analysis.fit(self) -> None`:
+
+   ```python
+   def fit(self) -> None:
+       mode = self._fitting_mode_type
+       if mode is FitModeEnum.SINGLE:
+           self._run_single()
+       elif mode is FitModeEnum.JOINT:
+           self._run_joint()
+       elif mode is FitModeEnum.SEQUENTIAL:
+           self._run_sequential()
+       else:  # pragma: no cover — enum exhausted
+           raise ValueError(f'Unknown fit mode: {mode!r}')
+   ```
+
+   Use `is` against the enum members, not string comparison.
+3. Remove the existing `fit` property on `Analysis`. The new
+   `fit` method replaces it. Remove
+   `Analysis.fit_sequential(...)` entirely (no alias).
+4. Move `FitModeEnum` from
+   `analysis/categories/fit/enums.py` to
+   `analysis/enums.py`. Update every import.
+5. Delete the `categories/fit/` package.
+6. Repository-wide rewrite:
+
+   ```bash
+   grep -rIn 'analysis\.fit\.\|analysis\.fit_sequential\|categories\.fit\b' \
+       src/ tests/ docs/ tutorials/ tools/
+   ```
+
+   Apply these mechanical replacements:
    - `analysis.fit.minimizer_type` →
      `analysis.fitting.minimizer_type`
-   - `analysis.fit.mode = '...'` →
-     `analysis.fitting_mode_type = '...'`
-   - `analysis.fit()` continues to work, but it is now a method
-     defined directly on `Analysis`.
-2. Define `Analysis.fit(self) -> None` that dispatches on
-   `self._fitting_mode_type`:
-   - `single` → call the existing single-fit code path (the
-     internals previously used by the callable `Fit.__call__` for
-     single mode).
-   - `joint` → call the existing joint-fit code path.
-   - `sequential` → call the sequential entry point (Step 8).
-3. Move any shared run setup (constraints update, verbosity
-   handling, etc.) from the old `Fit.__call__` into private helpers
-   on `Analysis` (`_run_single`, `_run_joint`, `_run_sequential`).
-   These are method names mandated by the project rule against
-   string-based dispatch.
-4. Remove `Analysis.fit_sequential(...)` entirely. Per the ADR's
-   Compatibility section there is no runtime alias. Step 8 wires
-   sequential execution through `Analysis.fit()`.
-5. Remove the `extract_diffrn` callback parameter and the code path
-   that consumed it. The new persisted contract is
-   `sequential_fit_extract`.
+   - `analysis.fit.mode = '<x>'` →
+     `analysis.fitting_mode_type = '<x>'`
+   - `analysis.fit_sequential(data_dir=..., ...)` → set the
+     equivalent fields on `analysis.sequential_fit`, then call
+     `analysis.fit()`. For tutorials with an `extract_diffrn`
+     callback, leave a TODO comment pointing at Step 8 — do not
+     rewrite the callback into rules here; Step 8 owns that
+     migration.
+7. Do **not** touch `sequential.py` in this step beyond what is
+   necessary for the import path to compile. The callback
+   parameter still exists on the callee.
 
 **Suggested commit**
 
@@ -450,44 +586,70 @@ Replace fit category with Analysis.fit() method
 
 ### Step 8: Migrate sequential execution to persisted settings
 
+**Scope of this step.** Step 8 rewrites the body of
+`src/easydiffraction/analysis/sequential.py` so that all per-file
+metadata extraction comes from `analysis.sequential_fit_extract`
+instead of the Python `extract_diffrn` callback. After this step,
+`_run_sequential` (from Step 7) no longer passes
+`extract_diffrn=None`, and the callee no longer accepts that
+parameter.
+
 **Files**
 
 - `src/easydiffraction/analysis/analysis.py`
 - `src/easydiffraction/analysis/sequential.py`
+- any tutorial left with a `TODO: Step 8` marker from Step 7
 
 **Tasks**
 
-1. Rework the public entry point so sequential execution reads:
-   - `data_dir` from `Analysis._resolve_sequential_data_dir()`
-     (Step 5)
-   - `file_pattern`, `max_workers`, `chunk_size`, `reverse` from
-     `analysis.sequential_fit`
-2. In `sequential.py`, replace the `extract_diffrn` callback with a
-   loop that, for each data file:
-   - reads the file line by line
-   - applies each `analysis.sequential_fit_extract` row in order
-     via `re.search(pattern, line)` and stops at the first match
-     for that rule
-   - assigns the matched float to the worker experiment's target
-     descriptor (`diffrn.<field>`)
-   - records the value in the result row under the column
-     `diffrn.<field>` (dots preserved)
-3. Failure handling for `required` rules: if any required rule does
-   not match in a given file, mark that file's result as failed
-   with a clear error message and continue processing the remaining
-   files. **Do not** abort the whole run. (Whole-run abort and a
-   max-failure threshold are open questions; default to per-file
-   failure for v1.)
-4. Resolve `max_workers`:
+1. Remove the `extract_diffrn` parameter from the public entry
+   point in `sequential.py` (the function previously called
+   `_fit_seq` or similar). Adjust `_run_sequential` in
+   `analysis.py` accordingly.
+2. Just before launching the worker pool, validate every
+   `sequential_fit_extract` row's `target` against the template
+   experiment's `diffrn` category: the second segment must be an
+   existing numeric descriptor attribute on `experiment.diffrn`.
+   Raise a clear error if any rule references an unknown
+   attribute. This is the second half of the validation deferred
+   from Step 6.
+3. In the worker function (the one currently consuming
+   `extract_diffrn` near `sequential.py` line ~853), for each
+   data file:
+   - read the file line by line
+   - for each `sequential_fit_extract` row, apply
+     `re.search(pattern, line)` to each line in order; stop at
+     the first match for that rule
+   - if matched, convert the captured group to `float`; assign
+     it to `experiment.diffrn.<second-segment>` on the worker
+     experiment, and record the value in the result row under
+     the column name `diffrn.<second-segment>` (dots preserved)
+   - if not matched and the rule has `required=True`, mark the
+     file's result as failed with a clear error message and
+     continue with the next file. Do **not** abort the whole
+     run. (Whole-run abort and max-failure threshold are open
+     questions.)
+   - if not matched and `required=False`, leave the column
+     empty for that file.
+4. Resolve `max_workers` at runtime:
    - `'auto'` → `os.cpu_count() or 1`
    - any other valid string → `int(value)`
-   - The token on disk is unchanged regardless of runtime resolution.
-5. Apply `reverse` by reversing the sorted file list before
+   - The token on disk is unchanged regardless of runtime
+     resolution.
+5. Resolve `chunk_size` at runtime: if stored as a nullable
+   numeric, `None` means "let the executor decide". If stored as
+   a string per the Step 5 fallback, treat `'.'` as `None` and
+   any other value as `int(value)`.
+6. Apply `reverse` by reversing the sorted file list before
    chunking.
-6. Dataset replay (loading `analysis/results.csv` back onto the
+7. Dataset replay (loading `analysis/results.csv` back onto the
    template experiment for `display.fit.series(...)`) keeps its
-   existing logic but now reads `diffrn.*` columns produced by the
-   extract rules.
+   existing logic but now reads `diffrn.*` columns produced by
+   the extract rules.
+8. Rewrite tutorial `TODO: Step 8` markers from Step 7: convert
+   each `extract_diffrn` callback into one or more
+   `analysis.sequential_fit_extract.create(...)` calls before the
+   `analysis.fit()` call.
 
 **Out of scope (open questions, do not implement):**
 
@@ -540,17 +702,33 @@ Auto-populate joint_fit rows and validate before fitting
 - `src/easydiffraction/core/guard.py`
 - `src/easydiffraction/analysis/analysis.py`
 
+**Hook signature (locked).**
+
+```python
+def _help_filter(
+    self,
+    properties: list[str],
+    methods: list[str],
+) -> tuple[list[str], list[str]]:
+    ...
+```
+
+Both lists contain attribute names as strings. The hook returns a
+`(properties, methods)` tuple. Order in the returned lists is
+irrelevant — `GuardedBase.help()` re-sorts before rendering.
+
 **Tasks**
 
 1. In `GuardedBase.help()`, after class-MRO discovery produces the
-   property and method sets, call an optional
-   `self._help_filter(properties, methods)` hook **if defined on
-   the instance**. The hook receives the lists and returns
-   (possibly filtered) lists of the same shape. Default behaviour
-   (no hook): pass-through.
-2. The hook may only **hide** members; it must not append. Enforce
-   this with an assertion that the returned sets are subsets of
-   the inputs.
+   property-name list and method-name list, look up
+   `_help_filter` on the instance via `getattr(self,
+   '_help_filter', None)`. If callable, invoke it with the two
+   lists. Default behaviour (no hook): pass-through.
+2. The hook may only **hide** members; it must not append. After
+   invoking the hook, assert that `set(returned_properties) <=
+   set(input_properties)` and the same for methods. On violation,
+   raise `RuntimeError` with a clear message naming the offending
+   subclass.
 3. Implement `Analysis._help_filter(properties, methods)`:
    - Always keep: `fitting`, `display`, `aliases`, `constraints`,
      `joint_fit`, `sequential_fit`, `sequential_fit_extract`,
@@ -580,7 +758,23 @@ Add instance-aware help filter and hide inactive mode categories
 **Tasks**
 
 1. In `analysis_to_cif(analysis)`, emit sections in this fixed
-   order:
+   order. Concrete example for `sequential` mode with
+   `minimizer_type='lmfit (leastsq)'`:
+
+   ```cif
+   _fitting.mode_type sequential
+   _fitting.minimizer_type "lmfit (leastsq)"
+   ```
+
+   Construct the `_fitting.mode_type` line inline in
+   `analysis_to_cif` (single `f'_fitting.mode_type {value}\n'`
+   string); do not add it to `Fitting.as_cif`. Quote the value
+   only if it contains whitespace (it doesn't for the three enum
+   members, but apply the same quoting rule the rest of the
+   serializer uses).
+
+   Section order:
+
    1. `_fitting.mode_type <value>` — synthesized from
       `analysis.fitting_mode_type`. Do **not** consult any runtime
       descriptor on `fitting`.
@@ -618,15 +812,24 @@ Serialize only active mode-specific analysis categories
 
 1. In `analysis_from_cif(analysis, cif_text)`, follow this strict
    order:
-   1. Detect legacy markers. If the CIF block contains any of
-      `_fit.minimizer_type`, `_fit.mode`,
-      `_joint_fit_experiment.id`, or `_joint_fit_experiment.weight`,
-      raise a single clear error pointing at the new names
-      (`_fitting.minimizer_type`, `_fitting.mode_type`,
-      `_joint_fit.experiment_id`, `_joint_fit.weight`). Raise
-      eagerly here; the project loader (`project.py`) already
-      calls `analysis_from_cif` during analysis load, which
-      satisfies the ADR's "first access of analysis" requirement.
+   1. Detect legacy markers using `gemmi` block lookups, not raw
+      text search. For each legacy CIF name, call
+      `block.find_value(<name>)` (for key-value pairs) or
+      `block.find_loop(<name>)` (for loops). If any of the
+      following return a non-`None` / non-empty result, raise:
+      - `_fit.minimizer_type` (key)
+      - `_fit.mode` (key)
+      - `_joint_fit_experiment.id` (loop column)
+      - `_joint_fit_experiment.weight` (loop column)
+
+      Raise once with a single error message listing the new
+      names: `_fitting.minimizer_type`, `_fitting.mode_type`,
+      `_joint_fit.experiment_id`, `_joint_fit.weight`. Use the
+      same exception type the rest of `serialize.py` uses for
+      malformed input (grep for existing raises in the file).
+      The project loader (`project.py`) already calls
+      `analysis_from_cif` during analysis load, which satisfies
+      the ADR's "first access of analysis" requirement.
    2. Read `_fitting.mode_type` and call
       `analysis._set_fitting_mode_type(mode_value)`.
    3. Call `analysis.fitting.from_cif(block)` to restore
