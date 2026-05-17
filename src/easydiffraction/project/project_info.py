@@ -4,4 +4,6 @@
 
 from __future__ import annotations
 
-from easydiffraction.project.categories.info.default import ProjectInfo
+from easydiffraction.project.categories.info.default import ProjectInfo as _ProjectInfo
+
+ProjectInfo = _ProjectInfo

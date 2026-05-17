@@ -487,7 +487,7 @@ class Analysis(CategoryOwner):
         return filtered_properties, methods
 
     def _serializable_categories(self) -> list:
-        """Analysis categories that should be written for the active fit mode."""
+        """Serializable analysis categories for the active fit mode."""
         categories = [
             self.fitting,
             self.aliases,

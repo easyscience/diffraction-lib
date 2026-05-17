@@ -327,7 +327,7 @@ def datablock_item_to_cif(
     body = category_owner_to_cif(datablock, max_loop_display=max_loop_display)
     if not body:
         return header
-    return '\n\n'.join([header, body])
+    return f'{header}\n\n{body}'
 
 
 def datablock_collection_to_cif(collection: object) -> str:

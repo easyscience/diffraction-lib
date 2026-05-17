@@ -64,6 +64,7 @@
 ├── 📁 core
 │   ├── 📄 __init__.py
 │   ├── 📄 category.py
+│   ├── 📄 category_owner.py
 │   ├── 📄 collection.py
 │   ├── 📄 datablock.py
 │   ├── 📄 diagnostic.py
@@ -207,6 +208,10 @@
 │   └── 📄 ascii.py
 ├── 📁 project
 │   ├── 📁 categories
+│   │   ├── 📁 info
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   └── 📄 factory.py
 │   │   ├── 📁 rendering
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -215,6 +220,7 @@
 │   ├── 📄 __init__.py
 │   ├── 📄 display.py
 │   ├── 📄 project.py
+│   ├── 📄 project_config.py
 │   └── 📄 project_info.py
 ├── 📁 summary
 │   ├── 📄 __init__.py

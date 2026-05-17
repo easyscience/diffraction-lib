@@ -355,9 +355,9 @@ class GenericParameter(GenericNumericDescriptor):
         """
         Set the value from a constraint expression.
 
-        Bypasses validation and marks the parent category owner dirty, like
-        ``_set_value_from_minimizer``, because constraints are applied
-        inside the minimizer loop where trial values may exceed
+        Bypasses validation and marks the parent category owner dirty,
+        like ``_set_value_from_minimizer``, because constraints are
+        applied inside the minimizer loop where trial values may exceed
         physical-range validators. Flags the parameter as user
         constrained. Used exclusively by ``ConstraintsHandler.apply()``.
         """

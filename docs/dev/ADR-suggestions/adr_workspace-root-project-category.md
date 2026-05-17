@@ -159,12 +159,12 @@ _project.description
 
 After this decision, each layer has a clear rule:
 
-| Layer | Rule | Example |
-| --- | --- | --- |
-| Runtime root | working-session facade | `Workspace` |
-| Public category | semantic category name | `workspace.project` |
-| CIF category | semantic CIF category | `_project.*` |
-| Config file | workspace singleton categories | `workspace.cif` |
+| Layer           | Rule                           | Example             |
+| --------------- | ------------------------------ | ------------------- |
+| Runtime root    | working-session facade         | `Workspace`         |
+| Public category | semantic category name         | `workspace.project` |
+| CIF category    | semantic CIF category          | `_project.*`        |
+| Config file     | workspace singleton categories | `workspace.cif`     |
 
 This avoids one-off aliases such as `project.info` while preserving
 semantic CIF names.
@@ -175,12 +175,13 @@ semantic CIF names.
 
 - The root object and project-information category no longer share the
   same conceptual name.
-- Public category access becomes uniform:
-  `workspace.project`, `workspace.rendering`, `workspace.analysis`.
+- Public category access becomes uniform: `workspace.project`,
+  `workspace.rendering`, `workspace.analysis`.
 - CIF stays semantic and does not introduce `_meta.*`.
 - Project information can use short item names such as `id`, `title`,
   and `description`.
-- The top-level facade name better reflects active runtime orchestration.
+- The top-level facade name better reflects active runtime
+  orchestration.
 
 ### Negative
 
@@ -293,7 +294,7 @@ The high-level migration is:
 9. Rename saved singleton config file from `project.cif` to
    `workspace.cif`.
 10. Update code, tests, scripts, tutorials, docs, and architecture
-   references.
+    references.
 
 ## Post-Implementation ADR Update
 

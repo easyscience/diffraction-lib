@@ -17,7 +17,9 @@ class CategoryOwner(GuardedBase):
 
     @property
     def categories(self) -> list:
-        """All category objects owned by this object, sorted by priority."""
+        """
+        All category objects owned by this object, sorted by priority.
+        """
         categories = [
             value
             for value in vars(self).values()

@@ -191,14 +191,13 @@ execution order within a datablock (e.g. background before data).
 `CategoryOwner` is the shared base class for objects that own flat
 category siblings. It provides category discovery, category sorting by
 `_update_priority`, parameter aggregation, `_need_categories_update`
-tracking, and category-body CIF serialization without a `data_`
-header.
+tracking, and category-body CIF serialization without a `data_` header.
 
-`DatablockItem` extends `CategoryOwner` for real CIF `data_<id>`
-blocks. `Structure` and `ExperimentBase` subclasses are real
-datablocks. `Analysis` is also a `CategoryOwner`, but it serializes as
-a singleton section body in `analysis/analysis.cif` and does not emit a
-fake `data_analysis` header.
+`DatablockItem` extends `CategoryOwner` for real CIF `data_<id>` blocks.
+`Structure` and `ExperimentBase` subclasses are real datablocks.
+`Analysis` is also a `CategoryOwner`, but it serializes as a singleton
+section body in `analysis/analysis.cif` and does not emit a fake
+`data_analysis` header.
 
 | Aspect             | `DatablockItem`                             | `DatablockCollection`                                    |
 | ------------------ | ------------------------------------------- | -------------------------------------------------------- |
@@ -861,13 +860,13 @@ workflow:
 `Analysis` is bound to a `Project` and provides the high-level API:
 
 - Singleton section: `Analysis` is a `CategoryOwner`, not a
-  `DatablockItem`. It owns sibling categories and serializes as the
-  body of `analysis/analysis.cif` without a `data_` header.
-- Fit configuration: `fitting` (`CategoryItem` with
-  `minimizer_type`). `fitting.minimizer_type` selects the minimizer
-  backend. The active fitting mode lives on the owner as
-  `analysis.fitting_mode_type`, not as a nested child category field.
-  `fitting.show_minimizer_types()` lists supported minimizers.
+  `DatablockItem`. It owns sibling categories and serializes as the body
+  of `analysis/analysis.cif` without a `data_` header.
+- Fit configuration: `fitting` (`CategoryItem` with `minimizer_type`).
+  `fitting.minimizer_type` selects the minimizer backend. The active
+  fitting mode lives on the owner as `analysis.fitting_mode_type`, not
+  as a nested child category field. `fitting.show_minimizer_types()`
+  lists supported minimizers.
 - Joint-fit weights: `joint_fit` (`CategoryCollection` of per-experiment
   weight entries); sibling of `fitting`, not a child.
 - Fit results: `analysis.fit_results` stores the latest runtime result
@@ -938,10 +937,10 @@ It owns and coordinates all components:
 | `project.verbosity`   | `str`            | Console output level (full/short/silent) |
 
 Internally, `Project` keeps project-scoped singleton categories under a
-private `ProjectConfig(CategoryOwner)` object. That owner currently holds
-`project.info` (`ProjectInfo`) and `project.rendering` (`Rendering`),
-while the public access paths stay flat on `Project` for user
-discoverability.
+private `ProjectConfig(CategoryOwner)` object. That owner currently
+holds `project.info` (`ProjectInfo`) and `project.rendering`
+(`Rendering`), while the public access paths stay flat on `Project` for
+user discoverability.
 
 ### 7.1 Data Flow
 

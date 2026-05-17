@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import pathlib
 import tempfile
+from typing import TYPE_CHECKING
 from typing import ClassVar
 
 from typeguard import typechecked
@@ -17,14 +18,16 @@ from easydiffraction.datablocks.experiment.collection import Experiments
 from easydiffraction.datablocks.structure.collection import Structures
 from easydiffraction.io.cif.serialize import project_config_to_cif
 from easydiffraction.io.cif.serialize import project_to_cif
-from easydiffraction.project.categories.rendering import Rendering
 from easydiffraction.project.display import ProjectDisplay
-from easydiffraction.project.project_info import ProjectInfo
 from easydiffraction.project.project_config import ProjectConfig
 from easydiffraction.summary.summary import Summary
 from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
+
+if TYPE_CHECKING:
+    from easydiffraction.project.categories.rendering import Rendering
+    from easydiffraction.project.project_info import ProjectInfo
 
 
 def _apply_csv_row_to_params(

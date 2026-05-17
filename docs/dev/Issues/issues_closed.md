@@ -69,8 +69,8 @@ category owners. `DatablockItem` now extends `CategoryOwner`, keeping
 real `data_<id>` header behavior for structures and experiments.
 `Analysis` also extends `CategoryOwner`, reusing shared category
 discovery, parameter aggregation, and dirty tracking while remaining a
-singleton section without a `data_` header. CIF serialization now
-splits category-body rendering from datablock header rendering via
+singleton section without a `data_` header. CIF serialization now splits
+category-body rendering from datablock header rendering via
 `category_owner_to_cif()`.
 
 ---

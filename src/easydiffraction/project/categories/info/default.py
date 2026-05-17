@@ -37,8 +37,8 @@ class ProjectInfo(CategoryItem):
     ) -> None:
         super().__init__()
 
-        created = datetime.datetime.now()
-        last_modified = datetime.datetime.now()
+        created = datetime.datetime.now(tz=datetime.UTC)
+        last_modified = datetime.datetime.now(tz=datetime.UTC)
 
         self._project_id = StringDescriptor(
             name='id',
@@ -77,12 +77,21 @@ class ProjectInfo(CategoryItem):
     @staticmethod
     def _parse_timestamp(value: str) -> datetime.datetime:
         """Parse project timestamp text from CIF storage format."""
-        return datetime.datetime.strptime(value, _PROJECT_TIMESTAMP_FORMAT)
+        return datetime.datetime.strptime(value, _PROJECT_TIMESTAMP_FORMAT).replace(
+            tzinfo=datetime.UTC,
+        )
+
+    @staticmethod
+    def _normalize_timestamp(value: datetime.datetime) -> datetime.datetime:
+        """Return timestamps as UTC-aware datetimes."""
+        if value.tzinfo is None:
+            return value.replace(tzinfo=datetime.UTC)
+        return value.astimezone(datetime.UTC)
 
     @staticmethod
     def _format_timestamp(value: datetime.datetime) -> str:
         """Format a project timestamp for CIF storage."""
-        return value.strftime(_PROJECT_TIMESTAMP_FORMAT)
+        return ProjectInfo._normalize_timestamp(value).strftime(_PROJECT_TIMESTAMP_FORMAT)
 
     @property
     def unique_name(self) -> str:

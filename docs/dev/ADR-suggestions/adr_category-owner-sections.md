@@ -10,8 +10,8 @@ The current architecture has two real datablock families:
 - structures
 - experiments
 
-These are real datablocks because each instance maps to a CIF `data_<id>`
-block and has a datablock entry name. This is reflected in
+These are real datablocks because each instance maps to a CIF
+`data_<id>` block and has a datablock entry name. This is reflected in
 `DatablockItem`, `DatablockCollection`, and `datablock_item_to_cif()`.
 
 `Analysis` and project-level configuration are different. They own
@@ -85,8 +85,8 @@ GuardedBase
 
 ### 1. A real datablock must emit a CIF `data_<id>` header
 
-Only objects that serialize as independent CIF data blocks should inherit
-datablock-specific behavior.
+Only objects that serialize as independent CIF data blocks should
+inherit datablock-specific behavior.
 
 Current real datablocks:
 
@@ -216,8 +216,8 @@ Rejected.
 
 This would be the smallest code change, but it would make "datablock"
 mean both real CIF data blocks and singleton project sections. It would
-also encourage fake identities such as `datablock_entry_name =
-"analysis"`.
+also encourage fake identities such as
+`datablock_entry_name = "analysis"`.
 
 ### Add `emit_data_header = False` to `DatablockItem`
 
@@ -273,12 +273,12 @@ When implementation is complete:
 1. Change status from `Proposed` to `Accepted and implemented`.
 2. Update the date if the project convention requires the implementation
    date.
-3. Replace tentative wording such as "should" and "target hierarchy" with
-   the actual final design.
+3. Replace tentative wording such as "should" and "target hierarchy"
+   with the actual final design.
 4. Record any deviations from the migration plan.
 5. Link to the implementation PR or commit if available.
-6. Move this file from `docs/dev/ADR-suggestions/` to `docs/dev/ADRs/` if
-   that is the repository convention for accepted decisions.
+6. Move this file from `docs/dev/ADR-suggestions/` to `docs/dev/ADRs/`
+   if that is the repository convention for accepted decisions.
 7. Update `docs/dev/architecture.md`.
 8. Update or close the related issue in `docs/dev/Issues/issues_open.md`
    (move to `docs/dev/Issues/issues_closed.md` on full resolution).

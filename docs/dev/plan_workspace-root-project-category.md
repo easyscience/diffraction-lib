@@ -131,7 +131,8 @@ Use these decisions unless the user explicitly changes the ADR before
 implementation:
 
 - The public root class becomes `Workspace`.
-- The public root import becomes `from easydiffraction import Workspace`.
+- The public root import becomes
+  `from easydiffraction import Workspace`.
 - The public project-information category becomes `workspace.project`.
 - The public rendering category remains `workspace.rendering`.
 - The project-information category keeps semantic CIF tags `_project.*`.
@@ -299,7 +300,6 @@ Rename the top-level runtime facade and package from `project` to
    ```
 
    For every match, decide whether it refers to:
-
    - the old root object, which should become `Workspace`;
    - the project-information category, which should remain project;
    - historical text that should be updated in docs later.
@@ -389,8 +389,8 @@ instead of `workspace.info`.
    rg -n "\\.info\\b|categories/info|categories\\.info" src
    ```
 
-9. For every match, update it if it refers to project information.
-   Leave unrelated uses of the word "info" alone.
+9. For every match, update it if it refers to project information. Leave
+   unrelated uses of the word "info" alone.
 
 ### Stop Conditions
 
@@ -451,7 +451,6 @@ the workspace location and is not serialized project information.
    ```
 
    Apply this to:
-
    - `Workspace.__init__`
    - `WorkspaceConfig.__init__`
    - `ProjectInfo.__init__`
@@ -496,12 +495,12 @@ the workspace location and is not serialized project information.
 
 10. Run grep:
 
-   ```shell
-   rg -n "\\.name\\b|\\.path\\b|project_id|Project identifier" src/easydiffraction/workspace src/easydiffraction/io src/easydiffraction/display src/easydiffraction/summary
-   ```
+```shell
+rg -n "\\.name\\b|\\.path\\b|project_id|Project identifier" src/easydiffraction/workspace src/easydiffraction/io src/easydiffraction/display src/easydiffraction/summary
+```
 
-   Inspect each match manually. Do not blindly replace every `.name`;
-   structures and experiments still use `.name`.
+Inspect each match manually. Do not blindly replace every `.name`;
+structures and experiments still use `.name`.
 
 ### Stop Conditions
 
@@ -683,8 +682,8 @@ Update runtime references to Workspace
 
 ### Objective
 
-Update user-facing and developer-facing documentation to describe the new
-root object and project-information category.
+Update user-facing and developer-facing documentation to describe the
+new root object and project-information category.
 
 ### Files Likely To Change
 
@@ -797,7 +796,6 @@ paths unless the user approved compatibility.
    ```
 
 5. Any remaining match must be:
-
    - historical text that intentionally names the old API; or
    - a test that will be updated in Phase 2; or
    - a generated artifact that should not be edited manually.
@@ -812,7 +810,8 @@ Only do this if the user explicitly approved it.
    Project = Workspace
    ```
 
-2. Keep the alias undocumented unless the user asks for a migration note.
+2. Keep the alias undocumented unless the user asks for a migration
+   note.
 
 3. Add tests in Phase 2 proving both `Workspace` and `Project` construct
    the same root object.
@@ -838,7 +837,6 @@ After Phase 1 commits are complete:
 1. Run `git status --short`.
 2. Confirm only intended files are changed.
 3. Summarize:
-
    - whether `Project` was removed or aliased;
    - whether `workspace.cif` replaced `project.cif`;
    - any files intentionally left for Phase 2 test updates;
@@ -851,7 +849,8 @@ Phase 2.
 
 ## Phase 2: Verification And Tests
 
-Only start this phase after the user approves the Phase 1 implementation.
+Only start this phase after the user approves the Phase 1
+implementation.
 
 ### Test Updates
 

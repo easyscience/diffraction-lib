@@ -10,8 +10,8 @@ Two-phase workflow (see `.github/copilot-instructions.md`):
   Phase 0 baseline characterization tests below are an explicit
   exception (they describe pre-existing behavior so the refactor can be
   verified mechanically). Do not add new feature tests during Phase 1.
-- Phase 2 — Verification. Add the per-phase tests listed below, then
-  run the verification commands in the "Phase 2 Verification" section.
+- Phase 2 — Verification. Add the per-phase tests listed below, then run
+  the verification commands in the "Phase 2 Verification" section.
 
 Stop after Phase 1 and request review before starting Phase 2.
 
@@ -48,7 +48,8 @@ the **Commits** section of `.github/copilot-instructions.md`.
 
 - One commit per step. Atomic and single-purpose.
 - Stage explicit paths only — do not `git add .`.
-- Suggested commit messages (≤72 chars, imperative mood, no type prefix):
+- Suggested commit messages (≤72 chars, imperative mood, no type
+  prefix):
   - `Add baseline category-owner characterization tests`
   - `Add CategoryOwner base class`
   - `Make DatablockItem inherit CategoryOwner`
@@ -62,21 +63,22 @@ the **Commits** section of `.github/copilot-instructions.md`.
 
 ## Purpose
 
-This plan explains how to make `Analysis` and project-level configuration
-reuse the same category-management behavior as real datablocks without making
-them real datablocks.
+This plan explains how to make `Analysis` and project-level
+configuration reuse the same category-management behavior as real
+datablocks without making them real datablocks.
 
 The current code has two real datablock types:
 
 - `Structure`
 - `Experiment`
 
-Those are real datablocks because they represent CIF `data_<id>` blocks and
-have a user-defined block ID.
+Those are real datablocks because they represent CIF `data_<id>` blocks
+and have a user-defined block ID.
 
-`Analysis` and project-level configuration are different. They own CIF-like
-categories, but they are singleton project sections. They should not require a
-datablock ID and should not serialize as `data_analysis` or `data_project`.
+`Analysis` and project-level configuration are different. They own
+CIF-like categories, but they are singleton project sections. They
+should not require a datablock ID and should not serialize as
+`data_analysis` or `data_project`.
 
 The target design is:
 
@@ -94,31 +96,28 @@ GuardedBase
     `-- ProjectConfig    # optional follow-up
 ```
 
-`CategoryOwner` contains shared behavior for objects that own flat categories.
-`DatablockItem` keeps the additional behavior that only real CIF data blocks
-need.
+`CategoryOwner` contains shared behavior for objects that own flat
+categories. `DatablockItem` keeps the additional behavior that only real
+CIF data blocks need.
 
 ## Important Definitions
 
 Use these terms consistently during the migration.
 
-`DatablockItem`
-: A real CIF data block. It serializes with a `data_<id>` header. It has a
-  `datablock_entry_name`. Examples: `Structure`, `ExperimentBase`.
+`DatablockItem` : A real CIF data block. It serializes with a
+`data_<id>` header. It has a `datablock_entry_name`. Examples:
+`Structure`, `ExperimentBase`.
 
-`CategoryOwner`
-: An object that owns flat sibling categories and can update, enumerate, and
-  serialize those categories. It does not necessarily have a `data_` header.
-  Examples after migration: `DatablockItem`, `Analysis`, optional
-  `ProjectConfig`.
+`CategoryOwner` : An object that owns flat sibling categories and can
+update, enumerate, and serialize those categories. It does not
+necessarily have a `data_` header. Examples after migration:
+`DatablockItem`, `Analysis`, optional `ProjectConfig`.
 
-`CategoryItem`
-: A single category row. Example: `Cell`, `SpaceGroup`, `Fitting`,
-  `Rendering`.
+`CategoryItem` : A single category row. Example: `Cell`, `SpaceGroup`,
+`Fitting`, `Rendering`.
 
-`CategoryCollection`
-: A loop-style category collection. Example: `AtomSites`, `Aliases`,
-  `JointFitCollection`.
+`CategoryCollection` : A loop-style category collection. Example:
+`AtomSites`, `Aliases`, `JointFitCollection`.
 
 ## Non-Negotiable Rules
 
@@ -130,15 +129,16 @@ Follow these rules throughout the migration:
 4. Do not emit `data_project` in the saved `project.cif` file.
 5. Do not rename CIF tags during this migration.
 6. Do not change public access paths unless a phase explicitly says so.
-7. Keep `project.parameters` limited to fit-relevant structure and experiment
-   parameters unless a separate design decision changes that later.
-8. Keep inactive analysis categories accessible unless the fit-mode policy is
-   intentionally changed in a separate task.
+7. Keep `project.parameters` limited to fit-relevant structure and
+   experiment parameters unless a separate design decision changes that
+   later.
+8. Keep inactive analysis categories accessible unless the fit-mode
+   policy is intentionally changed in a separate task.
 
 ## Recommended Branching Strategy
 
-Use several small pull requests or commits. Each phase should be independently
-reviewable.
+Use several small pull requests or commits. Each phase should be
+independently reviewable.
 
 Suggested split:
 
@@ -151,13 +151,13 @@ Suggested split:
 7. Optional project-config cleanup.
 8. Documentation cleanup.
 
-Do not combine phases 4, 5, and 6 into one large change. If something breaks,
-small phases make the source of the break obvious.
+Do not combine phases 4, 5, and 6 into one large change. If something
+breaks, small phases make the source of the break obvious.
 
 ## Phase 0: Baseline Safety Tests
 
-Before changing production code, add or confirm tests that describe current
-behavior.
+Before changing production code, add or confirm tests that describe
+current behavior.
 
 ### Files To Read First
 
@@ -226,8 +226,8 @@ src/easydiffraction/core/category_owner.py
 
 ### Responsibility
 
-`CategoryOwner` should own the behavior currently shared by any object that has
-flat categories:
+`CategoryOwner` should own the behavior currently shared by any object
+that has flat categories:
 
 - category discovery
 - category sorting by `_update_priority`
@@ -305,12 +305,14 @@ Keep it simple:
 
 ### Tests For Phase 1
 
-Create fake category owner tests. Do not use `Structure` or `Analysis` yet.
+Create fake category owner tests. Do not use `Structure` or `Analysis`
+yet.
 
 Test:
 
 1. `CategoryOwner.categories` finds direct `CategoryItem` attributes.
-2. `CategoryOwner.categories` finds direct `CategoryCollection` attributes.
+2. `CategoryOwner.categories` finds direct `CategoryCollection`
+   attributes.
 3. Categories are sorted by `_update_priority`.
 4. `CategoryOwner.parameters` aggregates parameters from categories.
 5. `_update_categories()` calls category `_update()` methods.
@@ -381,8 +383,8 @@ pixi run unit-tests tests/unit/easydiffraction/datablocks
 pixi run unit-tests tests/unit/easydiffraction/io/cif
 ```
 
-If failures happen, check parent linkage first. Most failures in this phase are
-likely caused by categories not having the expected `_parent`.
+If failures happen, check parent linkage first. Most failures in this
+phase are likely caused by categories not having the expected `_parent`.
 
 ## Phase 3: Split CIF Body Serialization From Datablock Serialization
 
@@ -399,7 +401,8 @@ src/easydiffraction/io/cif/serialize.py
 1. Adds the `data_<id>` header.
 2. Serializes category content.
 
-Only real datablocks need job 1. `Analysis` and project config need job 2.
+Only real datablocks need job 1. `Analysis` and project config need
+job 2.
 
 ### Add `category_owner_to_cif()`
 
@@ -439,12 +442,13 @@ def category_owner_to_cif(
     return "\n\n".join([part for part in item_parts + collection_parts if part])
 ```
 
-Keep the current item-first, collection-second ordering unless a separate test
-and design decision changes it.
+Keep the current item-first, collection-second ordering unless a
+separate test and design decision changes it.
 
 ### Update `datablock_item_to_cif()`
 
-After adding `category_owner_to_cif()`, reduce `datablock_item_to_cif()` to:
+After adding `category_owner_to_cif()`, reduce `datablock_item_to_cif()`
+to:
 
 ```python
 header = f"data_{datablock._identity.datablock_entry_name}"
@@ -498,8 +502,9 @@ Call `super().__init__()` at the start of `Analysis.__init__()`.
 
 ### Parent Linkage
 
-Because `Analysis` will now be a `GuardedBase` subclass, private assignment of
-`GuardedBase` children should normally set `_parent` automatically.
+Because `Analysis` will now be a `GuardedBase` subclass, private
+assignment of `GuardedBase` children should normally set `_parent`
+automatically.
 
 Still verify these categories have `_parent is analysis`:
 
@@ -510,8 +515,8 @@ Still verify these categories have `_parent is analysis`:
 - `analysis.sequential_fit`
 - `analysis.sequential_fit_extract`
 
-Some are currently assigned manually and some may not be. Make the result
-consistent.
+Some are currently assigned manually and some may not be. Make the
+result consistent.
 
 ### Keep Existing Public API
 
@@ -527,9 +532,9 @@ project.analysis.sequential_fit_extract
 project.analysis.fitting_mode_type
 ```
 
-If direct public attributes currently exist without properties, convert them
-carefully. Less experienced agents should prefer a compatibility-preserving
-change:
+If direct public attributes currently exist without properties, convert
+them carefully. Less experienced agents should prefer a
+compatibility-preserving change:
 
 1. Keep the public access path.
 2. Add properties only when needed.
@@ -622,9 +627,9 @@ def _update_categories(
         self.constraints_handler.apply()
 ```
 
-If this changes behavior, use the existing constraint logic and leave a short
-comment explaining why shared category updates are intentionally skipped or
-ordered differently.
+If this changes behavior, use the existing constraint logic and leave a
+short comment explaining why shared category updates are intentionally
+skipped or ordered differently.
 
 ### Tests For Phase 4
 
@@ -632,7 +637,8 @@ Add tests for:
 
 1. `isinstance(analysis, CategoryOwner)`.
 2. `analysis.categories` includes analysis categories.
-3. `analysis.parameters` includes fitting and analysis config descriptors.
+3. `analysis.parameters` includes fitting and analysis config
+   descriptors.
 4. Parent links are set on all analysis categories.
 5. `analysis.as_cif` still does not start with `data_`.
 6. `analysis.as_cif` still includes `_fitting.mode_type`.
@@ -657,11 +663,11 @@ src/easydiffraction/core/variable.py
 
 ### Current Behavior
 
-Descriptors currently find a `DatablockItem` ancestor when marking an owner
-dirty after value changes.
+Descriptors currently find a `DatablockItem` ancestor when marking an
+owner dirty after value changes.
 
-That is too narrow after this migration. `Analysis` will also be a category
-owner.
+That is too narrow after this migration. `Analysis` will also be a
+category owner.
 
 ### Target Behavior
 
@@ -735,8 +741,8 @@ serializes via shared `CategoryOwner` helpers, and the public
 
 ### Low-Risk Version
 
-If converting `ProjectInfo` into a `CategoryItem` is too disruptive, do not do
-it immediately.
+If converting `ProjectInfo` into a `CategoryItem` is too disruptive, do
+not do it immediately.
 
 Instead:
 
@@ -769,10 +775,10 @@ timestamp in the `ProjectInfo` category.
 
 ### Save/Load Rule
 
-Even after this cleanup, saved `project.cif` should remain a section file
-without an explicit `data_` header. The loader currently wraps project config
-with `data_project` before parsing, and that can remain an implementation
-detail.
+Even after this cleanup, saved `project.cif` should remain a section
+file without an explicit `data_` header. The loader currently wraps
+project config with `data_project` before parsing, and that can remain
+an implementation detail.
 
 ## Phase 7: Documentation Updates
 
@@ -830,11 +836,11 @@ Explain that:
 When the migration is complete, update issue 5 in
 `docs/dev/Issues/issues_open.md`.
 
-If fully complete, remove the issue and add a note to closed issues if that is
-the project convention.
+If fully complete, remove the issue and add a note to closed issues if
+that is the project convention.
 
-If only `CategoryOwner` is introduced but `Analysis` is not migrated yet,
-change the issue text to reflect the remaining work.
+If only `CategoryOwner` is introduced but `Analysis` is not migrated
+yet, change the issue text to reflect the remaining work.
 
 ## Final Acceptance Criteria
 
@@ -852,7 +858,8 @@ The migration is done when all of these are true:
 10. Inactive analysis categories are not serialized.
 11. Dirty-flag marking works for structures, experiments, and analysis.
 12. Project save/load format remains compatible.
-13. Documentation distinguishes real datablocks from category-owning sections.
+13. Documentation distinguishes real datablocks from category-owning
+    sections.
 
 ## Common Mistakes To Avoid
 
@@ -864,8 +871,8 @@ Do not solve this by setting:
 self._identity.datablock_entry_name = lambda: "analysis"
 ```
 
-That makes parameter identities and CIF output imply that analysis is a real
-datablock. It is not.
+That makes parameter identities and CIF output imply that analysis is a
+real datablock. It is not.
 
 ### Mistake: Adding A Boolean Flag To `DatablockItem`
 
@@ -881,25 +888,26 @@ This works mechanically but weakens the model. The class name
 
 ### Mistake: Changing Fit Parameter Semantics
 
-Do not change `project.parameters` to include analysis parameters during this
-migration. Analysis parameters are configuration parameters, not model
-parameters for fitting.
+Do not change `project.parameters` to include analysis parameters during
+this migration. Analysis parameters are configuration parameters, not
+model parameters for fitting.
 
 ### Mistake: Refactoring Public API While Moving Base Classes
 
 Do not rename `fitting_mode_type`, `joint_fit`, `sequential_fit`,
-`rendering`, or `info` during this migration. Naming cleanup can happen later.
+`rendering`, or `info` during this migration. Naming cleanup can happen
+later.
 
 ### Mistake: Assuming `vars(owner)` Order Is A Design Contract
 
 If serialization order matters, write tests for it. Prefer explicit
-`_serializable_categories()` hooks for owners that need a specific active
-subset.
+`_serializable_categories()` hooks for owners that need a specific
+active subset.
 
 ## Minimal Agent Checklist
 
-The authoritative checklist lives in the **Status** section at the top of
-this document. Keep it updated as work progresses.
+The authoritative checklist lives in the **Status** section at the top
+of this document. Keep it updated as work progresses.
 
 ## Phase 2 Verification
 
@@ -936,22 +944,22 @@ and re-run `pixi run check` until clean.
 
 **Description (end-user oriented):**
 
-This change reorganizes how the library models the different pieces of
-a project that own CIF-like categories. Crystal structures and
-experiments stay "real" CIF data blocks — each one is saved with its
-own `data_<id>` header, exactly as before. The `Analysis` section
-(fitting mode, aliases, constraints, joint/sequential fit settings) and
-project-level configuration are now treated as singleton sections that
-share the same convenient features (category discovery, parameter
-listing, dirty tracking, `help()` tables) without pretending to be data
-blocks. As a result:
+This change reorganizes how the library models the different pieces of a
+project that own CIF-like categories. Crystal structures and experiments
+stay "real" CIF data blocks — each one is saved with its own `data_<id>`
+header, exactly as before. The `Analysis` section (fitting mode,
+aliases, constraints, joint/sequential fit settings) and project-level
+configuration are now treated as singleton sections that share the same
+convenient features (category discovery, parameter listing, dirty
+tracking, `help()` tables) without pretending to be data blocks. As a
+result:
 
 - Saved CIF files keep their current layout: structures and experiments
   start with `data_<name>`; analysis and project configuration stay as
   section files without a fake `data_` header.
-- `project.parameters`, `analysis.parameters`, and `structure.parameters`
-  behave consistently and discoverably.
+- `project.parameters`, `analysis.parameters`, and
+  `structure.parameters` behave consistently and discoverably.
 - Future project metadata cleanup can reuse the same base class.
 
-No user-facing API names change in this PR; existing tutorials,
-scripts, and saved projects continue to work.
+No user-facing API names change in this PR; existing tutorials, scripts,
+and saved projects continue to work.
