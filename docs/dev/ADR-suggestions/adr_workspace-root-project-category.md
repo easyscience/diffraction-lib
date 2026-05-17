@@ -73,6 +73,7 @@ workspace = ed.Workspace(project_id='lbco_hrpt')
 workspace.project.id
 workspace.project.title = 'La0.5Ba0.5CoO3 at HRPT@PSI'
 workspace.rendering.table_engine = 'rich'
+workspace.verbosity = 'short'
 workspace.structures
 workspace.experiments
 workspace.analysis
@@ -89,9 +90,29 @@ _project.last_modified
 
 _rendering.chart_engine
 _rendering.table_engine
+
+_verbosity.level
 ```
 
-Do not introduce `_meta.*` CIF tags.
+The saved directory is a workspace directory whose filesystem name is
+chosen by the user. The canonical layout is:
+
+```text
+<workspace-dir>/
+|-- workspace.cif
+|-- structures/
+|   `-- cosio.cif
+|-- experiments/
+|   `-- d20.cif
+|-- analysis/
+|   `-- analysis.cif
+`-- summary/
+    `-- summary.cif
+```
+
+Do not introduce `_meta.*` CIF tags. Do not use `project.cif`,
+`config.cif`, or `meta.cif` as the primary singleton configuration file
+in the target layout.
 
 The intended naming split is:
 
@@ -99,6 +120,7 @@ The intended naming split is:
 Workspace
 |-- project      # information about the scientific project
 |-- rendering    # rendering preferences
+|-- verbosity    # console/output verbosity preference
 |-- structures   # real structure datablocks
 |-- experiments  # real experiment datablocks
 |-- analysis     # analysis section
@@ -169,15 +191,25 @@ After this decision, each layer has a clear rule:
 This avoids one-off aliases such as `project.info` while preserving
 semantic CIF names.
 
+### `workspace.cif` is clearer than `project.cif`, `config.cif`, or `meta.cif`
+
+The file stores singleton settings owned by the workspace: scientific
+project information, rendering preferences, and verbosity. `project.cif`
+overloads the project name again, while `config.cif` and `meta.cif` are
+generic. `workspace.cif` names the owning layer and lets each category
+inside the file keep its domain-specific name.
+
 ## Consequences
 
 ### Positive
 
 - The root object and project-information category no longer share the
   same conceptual name.
-- Public category access becomes uniform: `workspace.project`,
-  `workspace.rendering`, `workspace.analysis`.
+- Public access becomes uniform: `workspace.project`,
+  `workspace.rendering`, `workspace.verbosity`, `workspace.analysis`.
 - CIF stays semantic and does not introduce `_meta.*`.
+- Workspace-level preferences such as rendering and verbosity are
+  saved with the workspace instead of being hidden runtime-only state.
 - Project information can use short item names such as `id`, `title`,
   and `description`.
 - The top-level facade name better reflects active runtime
@@ -190,6 +222,8 @@ semantic CIF names.
   updated from `Project` to `Workspace`.
 - Existing saved directories using `project.cif` must be migrated to
   `workspace.cif` if no compatibility loader is kept.
+- Existing code that expected verbosity to be runtime-only must account
+  for it round-tripping through `workspace.cif`.
 - Users familiar with `Project` must learn the new root name.
 - `Workspace` can be confused with a filesystem workspace in some
   ecosystems, so documentation must define it clearly as the active
@@ -254,6 +288,16 @@ This is readable, but it preserves a special-case category alias. The
 current goal is stronger consistency between public categories and CIF
 category concepts.
 
+### Use `project.cif`, `config.cif`, or `meta.cif` for singleton settings
+
+Rejected for the target layout.
+
+`project.cif` repeats the overloaded term that this migration removes.
+`config.cif` and `meta.cif` are too generic and do not say which layer
+owns the settings. `workspace.cif` is more explicit while still allowing
+semantic categories such as `_project`, `_rendering`, and `_verbosity`
+inside the file.
+
 ### Rename only internal files and keep public API unchanged
 
 Rejected for the target design.
@@ -293,7 +337,8 @@ The high-level migration is:
 8. Keep CIF tags `_project.*` and `_rendering.*`.
 9. Rename saved singleton config file from `project.cif` to
    `workspace.cif`.
-10. Update code, tests, scripts, tutorials, docs, and architecture
+10. Persist workspace verbosity in `workspace.cif` as `_verbosity.level`.
+11. Update code, tests, scripts, tutorials, docs, and architecture
     references.
 
 ## Post-Implementation ADR Update
@@ -323,6 +368,7 @@ This ADR is satisfied when:
 - the saved directory path is exposed as `workspace.path`.
 - the public rendering category is `workspace.rendering`.
 - saved singleton configuration lives in `workspace.cif`.
-- `workspace.cif` uses `_project.*` and `_rendering.*` tags.
+- `workspace.cif` uses `_project.*`, `_rendering.*`, and
+  `_verbosity.level` tags.
 - no `_meta.*` tags are introduced for project information.
 - tutorials and architecture documentation use `Workspace`.

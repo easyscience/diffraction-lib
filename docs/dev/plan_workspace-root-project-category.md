@@ -96,6 +96,7 @@ workspace = ed.Workspace(project_id='lbco_hrpt')
 workspace.project.id
 workspace.project.title = 'La0.5Ba0.5CoO3 at HRPT@PSI'
 workspace.rendering.table_engine = 'rich'
+workspace.verbosity = 'short'
 workspace.structures
 workspace.experiments
 workspace.analysis
@@ -121,9 +122,26 @@ _project.last_modified
 
 _rendering.chart_engine
 _rendering.table_engine
+
+_verbosity.level
 ```
 
 Do not introduce `_meta.*` tags.
+
+Target saved layout:
+
+```text
+<workspace-dir>/
+|-- workspace.cif
+|-- structures/
+|   `-- cosio.cif
+|-- experiments/
+|   `-- d20.cif
+|-- analysis/
+|   `-- analysis.cif
+`-- summary/
+    `-- summary.cif
+```
 
 ## Decisions Already Made
 
@@ -137,7 +155,12 @@ implementation:
 - The public rendering category remains `workspace.rendering`.
 - The project-information category keeps semantic CIF tags `_project.*`.
 - The rendering category keeps semantic CIF tags `_rendering.*`.
+- The verbosity preference is serialized as `_verbosity.level`.
 - The saved singleton config file becomes `workspace.cif`.
+- The saved root is a workspace directory with a user-chosen filesystem
+  name; do not use `project` as the conceptual root name in new docs.
+- Do not use `project.cif`, `config.cif`, or `meta.cif` as the primary
+  singleton config file in the target layout.
 - The storage directory path belongs to `Workspace.path`, not
   `workspace.project.path`.
 - The old `Project` public API is removed unless the user explicitly
@@ -185,7 +208,8 @@ src/easydiffraction/workspace/
 |-- display.py             # class WorkspaceDisplay
 `-- categories/
     |-- project/           # ProjectInfo category
-    `-- rendering/         # Rendering category
+    |-- rendering/         # Rendering category
+    `-- verbosity/         # Verbosity category
 ```
 
 Target public API:
@@ -194,6 +218,7 @@ Target public API:
 workspace = ed.Workspace(project_id='my_project')
 workspace.project.title
 workspace.rendering.table_engine
+workspace.verbosity = 'short'
 ```
 
 ## Out Of Scope
@@ -201,6 +226,8 @@ workspace.rendering.table_engine
 Do not do these in this migration:
 
 - Do not add `_meta.*` CIF tags.
+- Do not use `project.cif`, `config.cif`, or `meta.cif` as the target
+  singleton settings file.
 - Do not redesign structure or experiment datablocks.
 - Do not change analysis fit-mode semantics.
 - Do not change calculator behavior.
@@ -527,6 +554,8 @@ Rename the saved singleton configuration file from `project.cif` to
 
 - `src/easydiffraction/workspace/workspace.py`
 - `src/easydiffraction/io/cif/serialize.py`
+- `src/easydiffraction/workspace/workspace_config.py`
+- `src/easydiffraction/workspace/categories/verbosity/`
 - CLI entry points in `src/easydiffraction/__main__.py`
 - docs that describe saved project directories
 - test fixtures in Phase 2
@@ -556,24 +585,43 @@ Rename the saved singleton configuration file from `project.cif` to
    workspace.cif
    ```
 
-4. Do not add `project.cif` fallback unless the user approved a
-   compatibility loader.
+4. Do not add `project.cif`, `config.cif`, or `meta.cif` fallbacks
+   unless the user approved a compatibility loader.
 
-5. Keep the contents semantic:
+5. Move the public workspace verbosity preference into the workspace
+   singleton configuration. Keep the simple public access path:
+
+   ```python
+   workspace.verbosity = 'short'
+   ```
+
+   Serialize it as:
+
+   ```cif
+   _verbosity.level short
+   ```
+
+   A small `Verbosity` category under `WorkspaceConfig` is preferred if
+   it follows the local category-owner pattern cleanly. If that is too
+   much for this migration, use a focused serializer/deserializer helper
+   and document the reason.
+
+6. Keep the contents semantic:
 
    ```cif
    _project.id
    _project.title
    _rendering.table_engine
+   _verbosity.level
    ```
 
-6. Update logging and console output from `project.cif` to
+7. Update logging and console output from `project.cif` to
    `workspace.cif`.
 
-7. Run grep:
+8. Run grep:
 
    ```shell
-   rg -n "project\\.cif|project_config_to_cif|project_config_from_cif|project_to_cif" src docs tests
+   rg -n "project\\.cif|config\\.cif|meta\\.cif|project_config_to_cif|project_config_from_cif|project_to_cif|verbosity" src docs tests
    ```
 
    In Phase 1, update source and docs only. Test files are handled in
@@ -586,6 +634,8 @@ Stop and ask if:
 - repository fixtures or tutorials contain saved directories that must
   remain loadable without conversion;
 - the user wants a one-release compatibility loader.
+- the verbosity setting cannot be represented as a category without
+  weakening the public `workspace.verbosity` API.
 
 ### Commit
 
@@ -716,6 +766,7 @@ Do not edit these by hand:
    ```text
    workspace.project      ProjectInfo
    workspace.rendering    Rendering
+   workspace.verbosity    str
    workspace.display      WorkspaceDisplay
    ```
 
@@ -884,14 +935,17 @@ Add focused tests for:
 3. `workspace.project.title` round-trips through `workspace.cif`.
 4. `workspace.rendering.table_engine` round-trips through
    `workspace.cif`.
-5. `Workspace.save()` writes `workspace.cif`.
-6. `Workspace.load()` reads `workspace.cif`.
-7. `workspace.cif` contains `_project.id`, not `_meta.project_id`.
-8. `workspace.cif` contains `_rendering.table_engine`.
-9. `workspace.path` is set after `save_as()` and `load()`.
-10. `workspace.project` has no serialized path field.
-11. `project.cif` is not written unless compatibility was approved.
-12. `ed.Project` is absent unless compatibility was approved.
+5. `workspace.verbosity` round-trips through `workspace.cif`.
+6. `Workspace.save()` writes `workspace.cif`.
+7. `Workspace.load()` reads `workspace.cif`.
+8. `workspace.cif` contains `_project.id`, not `_meta.project_id`.
+9. `workspace.cif` contains `_rendering.table_engine`.
+10. `workspace.cif` contains `_verbosity.level`.
+11. `workspace.path` is set after `save_as()` and `load()`.
+12. `workspace.project` has no serialized path field.
+13. `project.cif`, `config.cif`, and `meta.cif` are not written unless
+    compatibility was approved.
+14. `ed.Project` is absent unless compatibility was approved.
 
 If compatibility alias was approved, add tests for:
 
@@ -952,7 +1006,13 @@ rg -n "_meta\\.|_project\\." src tests docs tools README.md CONTRIBUTING.md
 Saved config file should be `workspace.cif`:
 
 ```shell
-rg -n "project\\.cif|workspace\\.cif" src tests docs tools README.md CONTRIBUTING.md
+rg -n "project\\.cif|config\\.cif|meta\\.cif|workspace\\.cif" src tests docs tools README.md CONTRIBUTING.md
+```
+
+Workspace verbosity should serialize as a workspace-level category:
+
+```shell
+rg -n "_verbosity|verbosity" src tests docs tools README.md CONTRIBUTING.md
 ```
 
 Generated docs should not be manually edited:
@@ -999,6 +1059,17 @@ Incorrect:
 
 ```cif
 _meta.project_title
+```
+
+### Mistake: Keeping `project.cif` Or Switching To Generic File Names
+
+Do not use `project.cif`, `config.cif`, or `meta.cif` as the target
+singleton settings file. The file belongs to the workspace layer.
+
+Correct:
+
+```text
+workspace.cif
 ```
 
 ### Mistake: Blindly Replacing Every `project`
