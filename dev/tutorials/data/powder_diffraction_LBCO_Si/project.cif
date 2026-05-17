@@ -4,8 +4,8 @@ _project.description
 ;
 Fitting simulated powder diffraction pattern of La0.5Ba0.5CoO3.
 ;
-_project.created          '16 May 2026 23:24:34'
-_project.last_modified    '16 May 2026 23:24:34'
+_project.created          '17 May 2026 07:47:56'
+_project.last_modified    '17 May 2026 07:47:56'
 
 _rendering.chart_engine plotly
 _rendering.table_engine pandas
