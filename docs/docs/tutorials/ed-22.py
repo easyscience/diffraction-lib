@@ -131,7 +131,7 @@ experiment.extinction.radius.free = True
 # and uncertainty estimates for the Bayesian run.
 
 # %%
-project.analysis.fit.show_minimizer_types()
+project.analysis.fitting.show_minimizer_types()
 
 # %%
 project.analysis.fit()
@@ -213,13 +213,13 @@ project.display.parameters.free()
 # effective burn-in is recomputed automatically.
 
 # %%
-project.analysis.fit.show_minimizer_types()
+project.analysis.fitting.show_minimizer_types()
 
 # %%
-project.analysis.fit.minimizer_type = 'bumps (dream)'
+project.analysis.fitting.minimizer_type = 'bumps (dream)'
 
 # %%
-project.analysis.fit.minimizer.steps = 500  # lower than the default 3000
+project.analysis.fitting.minimizer.steps = 500  # lower than the default 3000
 
 # %%
 project.analysis.fit()

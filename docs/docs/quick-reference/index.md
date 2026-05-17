@@ -179,8 +179,8 @@ experiment.show_peak_profile_types()
 experiment.show_background_types()
 experiment.calculation.show_calculator_types()
 
-project.analysis.fit.show_modes()
-project.analysis.fit.show_minimizer_types()
+project.analysis.show_fitting_mode_types()
+project.analysis.fitting.show_minimizer_types()
 
 project.rendering.show_chart_engines()
 project.rendering.show_table_engines()
@@ -194,8 +194,8 @@ experiment.peak_profile_type = 'pseudo-voigt'
 experiment.background_type = 'line-segment'
 experiment.calculation.calculator_type = 'cryspy'
 
-project.analysis.fit.mode = 'single'
-project.analysis.fit.minimizer_type = 'lmfit'
+project.analysis.fitting_mode_type = 'single'
+project.analysis.fitting.minimizer_type = 'lmfit'
 
 project.rendering.chart_engine = 'plotly'
 project.rendering.table_engine = 'rich'
@@ -289,11 +289,11 @@ Choose calculators and minimizers:
 experiment.calculation.show_calculator_types()
 experiment.calculation.calculator_type = 'cryspy'
 
-project.analysis.fit.show_modes()
-project.analysis.fit.mode = 'single'
+project.analysis.show_fitting_mode_types()
+project.analysis.fitting_mode_type = 'single'
 
-project.analysis.fit.show_minimizer_types()
-project.analysis.fit.minimizer_type = 'lmfit'
+project.analysis.fitting.show_minimizer_types()
+project.analysis.fitting.minimizer_type = 'lmfit'
 ```
 
 Run a fit and inspect the result:
@@ -305,6 +305,37 @@ project.display.fit.results()
 project.display.fit.correlations()
 project.display.pattern(expt_name='hrpt')
 ```
+
+Run a sequential fit over a scan directory and plot parameter evolution:
+
+```python
+scan_data_dir = 'path/to/scan-directory'
+temperature = 'diffrn.ambient_temperature'
+
+project.analysis.sequential_fit_extract.create(
+  id='temperature',
+  target=temperature,
+  pattern=r'^TEMP\s+([0-9.]+)',
+  required=True,
+)
+
+project.analysis.fitting_mode_type = 'sequential'
+project.analysis.sequential_fit.data_dir = scan_data_dir
+project.analysis.sequential_fit.max_workers = 'auto'
+
+project.analysis.fit()
+project.display.fit.series(structure.cell.length_a, versus=temperature)
+project.display.fit.series(versus=temperature)
+
+project.apply_params_from_csv(row_index=0)
+project.display.pattern(expt_name='d20')
+```
+
+Use the same persisted `diffrn.*` path for both `target` and `versus`.
+`project.display.fit.series(versus=temperature)` plots every fitted
+parameter one after another. Sequential fitting writes per-dataset
+results to `analysis/results.csv`, so inspect them with `fit.series()`
+and `apply_params_from_csv()` rather than `display.fit.results()`.
 
 After a Bayesian fit, inspect posterior displays:
 

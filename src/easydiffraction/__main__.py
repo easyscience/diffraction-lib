@@ -99,8 +99,9 @@ def fit(
     if dry:
         project.info._path = None
     project.analysis.fit()
-    project.display.fit.results()
-    project.display.fit.correlations()
+    if getattr(project.analysis, 'fitting_mode_type', None) != 'sequential':
+        project.display.fit.results()
+        project.display.fit.correlations()
     for expt in project.experiments:
         project.display.pattern(expt_name=expt.name)
     # project.summary.show_report()

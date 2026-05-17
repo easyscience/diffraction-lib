@@ -313,7 +313,7 @@ def _make_bayesian_plotter_fixture():
         PosteriorParameterSummary(
             unique_name=name,
             display_name=name,
-            map_value=float(samples[-1, -1, index]),
+            best_sample_value=float(samples[-1, -1, index]),
             median=float(np.median(samples[:, :, index])),
             standard_deviation=float(np.std(samples[:, :, index], ddof=1)),
             interval_68=tuple(np.quantile(samples[:, :, index], [0.16, 0.84]).tolist()),
@@ -627,7 +627,7 @@ def test_posterior_pair_diagonal_matches_standalone_distribution_when_thinned():
         PosteriorParameterSummary(
             unique_name=name,
             display_name=name,
-            map_value=float(samples[0, -1, index]),
+            best_sample_value=float(samples[0, -1, index]),
             median=float(np.median(samples[:, :, index])),
             standard_deviation=float(np.std(samples[:, :, index], ddof=1)),
             interval_68=tuple(np.quantile(samples[:, :, index], [0.16, 0.84]).tolist()),
@@ -693,12 +693,14 @@ def test_build_param_distribution_plot_returns_plotly_figure():
         'Marginal density',
         '95% credible interval',
         'Median',
-        'Max posterior',
+        'Best posterior sample',
     }
     marginal_trace = next(trace for trace in figure.data if trace.name == 'Marginal density')
     histogram_trace = next(trace for trace in figure.data if trace.name == 'Posterior histogram')
     interval_trace = next(trace for trace in figure.data if trace.name == '95% credible interval')
-    max_posterior_trace = next(trace for trace in figure.data if trace.name == 'Max posterior')
+    max_posterior_trace = next(
+        trace for trace in figure.data if trace.name == 'Best posterior sample'
+    )
     assert marginal_trace.line.color == POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_COLOR
     assert marginal_trace.line.width == POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_WIDTH
     assert marginal_trace.fillcolor == POSTERIOR_PAIR_MARGINAL_DENSITY_FILL_COLOR
@@ -765,7 +767,7 @@ def test_plot_posterior_predictive_summary_uses_consistent_labels_and_styles(mon
             x=np.array([1.0, 2.0, 3.0]),
             lower_95=np.array([8.0, 9.0, 10.0]),
             upper_95=np.array([10.0, 11.0, 12.0]),
-            map_prediction=np.array([9.0, 10.0, 11.0]),
+            best_sample_prediction=np.array([9.0, 10.0, 11.0]),
         ),
         y_meas=np.array([9.5, 10.5, 11.5]),
         axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
@@ -776,7 +778,9 @@ def test_plot_posterior_predictive_summary_uses_consistent_labels_and_styles(mon
     fig = captured['fig']
     upper_band_trace = fig.data[1]
     measured_trace = next(trace for trace in fig.data if trace.name == 'Measured')
-    max_posterior_trace = next(trace for trace in fig.data if trace.name == 'Max posterior')
+    max_posterior_trace = next(
+        trace for trace in fig.data if trace.name == 'Best posterior sample'
+    )
 
     assert upper_band_trace.name == '95% credible interval'
     assert upper_band_trace.fillcolor == POSTERIOR_INTERVAL_95_FILL_COLOR
@@ -868,7 +872,7 @@ def test_plot_posterior_predictive_data_uses_max_posterior_label_and_dash(monkey
             x=np.array([1.0, 2.0, 3.0]),
             lower_95=np.array([8.0, 9.0, 10.0]),
             upper_95=np.array([10.0, 11.0, 12.0]),
-            map_prediction=np.array([9.0, 11.0, 10.5]),
+            best_sample_prediction=np.array([9.0, 11.0, 10.5]),
             draws=None,
         ),
     )
@@ -891,7 +895,7 @@ def test_plot_posterior_predictive_data_uses_max_posterior_label_and_dash(monkey
     )
 
     plot_spec = captured['plot_spec']
-    assert plot_spec.y_calc_name == 'Max posterior'
+    assert plot_spec.y_calc_name == 'Best posterior sample'
     assert plot_spec.y_calc_line_dash == 'dot'
 
 
@@ -963,7 +967,7 @@ def test_plot_posterior_predictive_summary_routes_ascii_to_measured_and_map(monk
         expt_name='pdf',
         summary=SimpleNamespace(
             x=np.array([1.0, 2.0, 3.0]),
-            map_prediction=np.array([9.0, 10.0, 11.0]),
+            best_sample_prediction=np.array([9.0, 10.0, 11.0]),
             lower_95=np.array([8.0, 9.0, 10.0]),
             upper_95=np.array([10.0, 11.0, 12.0]),
             draws=np.array([[8.5, 9.5, 10.5]]),
@@ -1027,7 +1031,7 @@ def test_plot_posterior_predictive_data_routes_ascii_to_line_plot_without_interv
             x=np.array([1.0, 2.0, 3.0]),
             lower_95=np.array([8.0, 9.0, 10.0]),
             upper_95=np.array([10.0, 11.0, 12.0]),
-            map_prediction=np.array([9.0, 11.0, 10.5]),
+            best_sample_prediction=np.array([9.0, 11.0, 10.5]),
             draws=None,
         ),
     )
@@ -1168,7 +1172,7 @@ def test_resolve_posterior_parameter_names_warns_on_ambiguous_label(monkeypatch)
             PosteriorParameterSummary(
                 unique_name='phase_a.length_a',
                 display_name='length_a',
-                map_value=1.0,
+                best_sample_value=1.0,
                 median=1.0,
                 standard_deviation=0.1,
                 interval_68=(0.9, 1.1),
@@ -1177,7 +1181,7 @@ def test_resolve_posterior_parameter_names_warns_on_ambiguous_label(monkeypatch)
             PosteriorParameterSummary(
                 unique_name='phase_b.length_a',
                 display_name='length_a',
-                map_value=2.0,
+                best_sample_value=2.0,
                 median=2.0,
                 standard_deviation=0.1,
                 interval_68=(1.9, 2.1),
@@ -1262,7 +1266,7 @@ def test_build_posterior_predictive_summary_restores_parameter_state(monkeypatch
     assert summary.experiment_name == 'hrpt'
     assert summary.x_axis_name == 'two_theta'
     assert summary.draws.shape == (4, 2)
-    np.testing.assert_allclose(summary.map_prediction, np.array([3.0, -1.0]))
+    np.testing.assert_allclose(summary.best_sample_prediction, np.array([3.0, -1.0]))
     np.testing.assert_allclose([parameter.value for parameter in sampled_parameters], [1.0, 2.0])
     assert [parameter.uncertainty for parameter in sampled_parameters] == [0.1, 0.2]
 
@@ -1465,7 +1469,7 @@ def test_plot_posterior_predictive_non_bragg_filters_x_range_and_warns_for_resid
             experiment_name='pdf',
             x_axis_name='two_theta',
             x=np.array([1.0, 2.0, 3.0]),
-            map_prediction=np.array([9.0, 19.0, 29.0]),
+            best_sample_prediction=np.array([9.0, 19.0, 29.0]),
             lower_95=np.array([8.0, 18.0, 28.0]),
             upper_95=np.array([10.0, 20.0, 30.0]),
         ),
@@ -1497,7 +1501,10 @@ def test_plot_posterior_predictive_non_bragg_filters_x_range_and_warns_for_resid
 
     assert captured['expt_name'] == 'pdf'
     np.testing.assert_allclose(captured['summary'].x, np.array([2.0]))
-    np.testing.assert_allclose(captured['summary'].map_prediction, np.array([19.0]))
+    np.testing.assert_allclose(
+        captured['summary'].best_sample_prediction,
+        np.array([19.0]),
+    )
     np.testing.assert_allclose(captured['summary'].lower_95, np.array([18.0]))
     np.testing.assert_allclose(captured['summary'].upper_95, np.array([20.0]))
     np.testing.assert_allclose(captured['y_meas'], np.array([20.0]))

@@ -4,7 +4,7 @@
 # This example demonstrates a Rietveld refinement of the Co2SiO4 crystal
 # structure using constant-wavelength neutron powder diffraction data
 # from D20 at ILL. A sequential refinement is performed against a
-# temperature scan using `fit_sequential`, which processes each data
+# temperature scan using sequential fitting, which processes each data
 # file independently without loading all datasets into memory at once.
 
 # %% [markdown]
@@ -26,7 +26,7 @@ project = ed.Project()
 # results can be written to `analysis/results.csv`.
 
 # %%
-project.save_as('data/cosio_project', temporary=False)
+project.save_as('projects/cosio', temporary=False)
 
 # %% [markdown]
 # ## Step 2: Define Crystal Structure
@@ -131,8 +131,11 @@ zip_path = ed.download_data(id=27, destination='data')
 # #### Extract Data Files
 
 # %%
-data_dir = 'data/d20_scan'
-data_paths = ed.extract_data_paths_from_zip(zip_path, destination=data_dir)
+scan_data_dir = 'experiments/d20_scan'
+data_paths = ed.extract_data_paths_from_zip(
+    zip_path,
+    destination=project.info.path / scan_data_dir,
+)
 
 # %% [markdown]
 # #### Create Template Experiment from the First File
@@ -263,7 +266,7 @@ project.analysis.constraints.create(expression='biso_Co2 = biso_Co1')
 # #### Set Minimizer
 
 # %%
-project.analysis.fit.minimizer_type = 'bumps (lm)'
+project.analysis.fitting.minimizer_type = 'bumps (lm)'
 
 # %% [markdown]
 # #### Run Single Fitting
@@ -299,28 +302,35 @@ project.verbosity = 'short'
 
 # %% [markdown]
 #
-# Define a callback that extracts the temperature from each data file.
+# Create a persisted extract rule that reads the temperature from each
+# data file.
 
 
 # %%
-def extract_diffrn(file_path):
-    temperature = ed.extract_metadata(
-        file_path=file_path,
-        pattern=r'^TEMP\s+([0-9.]+)',
-    )
-    return {'ambient_temperature': temperature}
+temperature = 'diffrn.ambient_temperature'
 
+# %%
+project.analysis.sequential_fit_extract.create(
+    id='temperature',
+    target=temperature,
+    pattern=r'^TEMP\s+([0-9.]+)',
+    required=True,
+)
+
+# %% [markdown]
+# Set the sequential fitting parameters.
+
+# %%
+project.analysis.fitting_mode_type = 'sequential'
+project.analysis.sequential_fit.data_dir = scan_data_dir
+project.analysis.sequential_fit.max_workers = 'auto'
+project.analysis.sequential_fit.reverse = True
 
 # %% [markdown]
 # Run the sequential fit over all data files in the scan directory.
 
 # %%
-project.analysis.fit_sequential(
-    data_dir=data_dir,
-    extract_diffrn=extract_diffrn,
-    max_workers='auto',
-    reverse=True,
-)
+project.analysis.fit()
 
 # %% [markdown]
 # #### Replay a Dataset
@@ -342,10 +352,7 @@ project.display.pattern(expt_name='d20')
 # %% [markdown]
 # #### Plot Parameter Evolution
 #
-# Define the quantity to use as the x-axis in the following plots.
-
-# %%
-temperature = expt.diffrn.ambient_temperature
+# Reuse the extracted diffrn path as the x-axis in the following plots.
 
 # %% [markdown]
 # Plot unit cell parameters vs. temperature.

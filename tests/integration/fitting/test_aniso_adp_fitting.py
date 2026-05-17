@@ -59,7 +59,8 @@ def test_iso_then_aniso_fit() -> None:
     e.extinction.radius.free = True
 
     # Fit isotropic
-    project.analysis.fit(verbosity='silent')
+    project.verbosity = 'silent'
+    project.analysis.fit()
     chi2_iso = project.analysis.fit_results.reduced_chi_square
     assert chi2_iso < 20.0
 
@@ -81,7 +82,7 @@ def test_iso_then_aniso_fit() -> None:
     s.atom_site_aniso['O1'].adp_23.free = True
 
     # Fit anisotropic
-    project.analysis.fit(verbosity='silent')
+    project.analysis.fit()
     chi2_aniso = project.analysis.fit_results.reduced_chi_square
 
     # Anisotropic fit should improve (or at least match) chi2

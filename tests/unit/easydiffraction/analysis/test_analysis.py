@@ -33,26 +33,26 @@ def test_show_minimizer_types_prints(capsys):
     from easydiffraction.analysis.analysis import Analysis
 
     a = Analysis(project=_make_project_with_names([]))
-    a.fit.show_minimizer_types()
+    a.fitting.show_minimizer_types()
     out = capsys.readouterr().out
     assert 'Minimizer types' in out
     assert 'lmfit (leastsq)' in out
 
 
-def test_fit_mode_category_and_joint_fit_experiments(monkeypatch, capsys):
+def test_fit_mode_category_and_joint_fit(monkeypatch, capsys):
     from easydiffraction.analysis.analysis import Analysis
 
     a = Analysis(project=_make_project_with_names(['e1', 'e2']))
 
     # Default fit mode is 'single'
-    assert a.fit.mode.value == 'single'
+    assert a.fitting_mode_type == 'single'
 
     # Switch to joint
-    a.fit.mode = 'joint'
-    assert a.fit.mode.value == 'joint'
+    a.fitting_mode_type = 'joint'
+    assert a.fitting_mode_type == 'joint'
 
-    # joint_fit_experiments exists but is empty until fit() populates it
-    assert len(a.joint_fit_experiments) == 0
+    # joint_fit exists but is empty until fit() populates it
+    assert len(a.joint_fit) == 0
 
 
 def test_analysis_help(capsys):
@@ -66,7 +66,8 @@ def test_analysis_help(capsys):
     assert 'display' in out
     assert 'Properties' in out
     assert 'Methods' in out
-    assert 'fit_sequential()' in out
+    assert 'fit()' in out
+    assert 'show_fitting_mode_types()' in out
 
 
 def test_analysis_display_help(capsys):
@@ -227,3 +228,74 @@ def test_fit_single_short_reuses_tracker_display_handle(monkeypatch):
     assert tracker.display_handles == [handle, None]
     assert short_display_handles == [handle]
     assert handle.closed is True
+
+
+def test_run_sequential_sets_mode_and_saves_project(monkeypatch, tmp_path):
+    from easydiffraction.analysis.analysis import Analysis
+
+    project = SimpleNamespace(
+        info=SimpleNamespace(path=tmp_path),
+        save_calls=0,
+        _varname='proj',
+    )
+
+    def save() -> None:
+        project.save_calls += 1
+
+    project.save = save
+
+    analysis = Analysis(project=project)
+    analysis.sequential_fit.data_dir.value = 'scans'
+    analysis.sequential_fit.file_pattern.value = '*.xye'
+    analysis.sequential_fit.max_workers.value = 'auto'
+    analysis.sequential_fit.chunk_size.value = '.'
+    analysis.sequential_fit.reverse.value = True
+
+    calls: list[tuple[str, object]] = []
+
+    def fake_fit_sequential(
+        *,
+        analysis: object,
+        data_dir: str,
+        max_workers: int | str,
+        chunk_size: int | None,
+        file_pattern: str,
+        reverse: bool,
+    ) -> None:
+        calls.append(('analysis', analysis))
+        calls.append(('data_dir', data_dir))
+        calls.append(('max_workers', max_workers))
+        calls.append(('chunk_size', chunk_size))
+        calls.append(('file_pattern', file_pattern))
+        calls.append(('reverse', reverse))
+
+    monkeypatch.setattr('easydiffraction.analysis.sequential.fit_sequential', fake_fit_sequential)
+    monkeypatch.setattr(
+        analysis, '_update_categories', lambda: calls.append(('update_categories', None))
+    )
+    monkeypatch.setattr(
+        analysis, '_resolve_sequential_data_dir', lambda: tmp_path / 'resolved-scans'
+    )
+    analysis.fit_results = object()
+    analysis.fitter.results = object()
+
+    analysis._run_sequential()
+
+    assert analysis.fitting_mode_type == 'sequential'
+    analysis_cif = analysis.as_cif
+    assert '_fitting.mode_type sequential' in analysis_cif
+    assert '_sequential_fit.data_dir scans' in analysis_cif
+    assert '_sequential_fit.file_pattern *.xye' in analysis_cif
+    assert calls == [
+        ('update_categories', None),
+        ('analysis', analysis),
+        ('data_dir', str(tmp_path / 'resolved-scans')),
+        ('max_workers', 'auto'),
+        ('chunk_size', None),
+        ('file_pattern', '*.xye'),
+        ('reverse', True),
+        ('update_categories', None),
+    ]
+    assert project.save_calls == 1
+    assert analysis.fit_results is None
+    assert analysis.fitter.results is None

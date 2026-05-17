@@ -271,6 +271,40 @@ class TestAutoXRangeForAscii:
         assert x_min == 60.0
         assert x_max == 139.0
 
+    def test_keeps_full_range_when_series_is_within_crop_threshold(self, monkeypatch):
+        from easydiffraction.display.plotters.ascii import AsciiPlotter
+        from easydiffraction.display.plotting import Plotter
+
+        p = Plotter()
+        p.engine = 'asciichartpy'
+        monkeypatch.setattr(AsciiPlotter, '_chart_point_count', lambda: 80)
+
+        class Ptn:
+            intensity_meas = np.zeros(120)
+
+        Ptn.intensity_meas[60] = 10.0
+        x_array = np.arange(120, dtype=float)
+        x_min, x_max = p._auto_x_range_for_ascii(Ptn(), x_array, None, None)
+        assert x_min is None
+        assert x_max is None
+
+    def test_keeps_explicit_partial_limit_for_ascii(self, monkeypatch):
+        from easydiffraction.display.plotters.ascii import AsciiPlotter
+        from easydiffraction.display.plotting import Plotter
+
+        p = Plotter()
+        p.engine = 'asciichartpy'
+        monkeypatch.setattr(AsciiPlotter, '_chart_point_count', lambda: 80)
+
+        class Ptn:
+            intensity_meas = np.zeros(200)
+
+        Ptn.intensity_meas[100] = 10.0
+        x_array = np.arange(200, dtype=float)
+        x_min, x_max = p._auto_x_range_for_ascii(Ptn(), x_array, 20.0, None)
+        assert x_min == 20.0
+        assert x_max is None
+
     def test_no_narrowing_when_limits_provided(self):
         from easydiffraction.display.plotting import Plotter
 
@@ -331,7 +365,7 @@ class TestPlotParamSeriesFromCsv:
 
         csv = tmp_path / 'results.csv'
         csv.write_text(
-            'my_param,my_param.uncertainty,diffrn.temperature\n1.0,0.1,300\n2.0,0.2,400\n'
+            'my_param,my_param.uncertainty,diffrn.ambient_temperature\n1.0,0.1,300\n2.0,0.2,400\n'
         )
 
         plot_calls = []
@@ -348,12 +382,12 @@ class TestPlotParamSeriesFromCsv:
             description = 'A param'
             units = 'Å'
 
-        class VersusDesc:
-            name = 'temperature'
-            description = 'Temperature'
-            units = 'K'
-
-        p._plot_param_series_from_csv(str(csv), 'my_param', ParamDesc(), VersusDesc())
+        p._plot_param_series_from_csv(
+            str(csv),
+            'my_param',
+            ParamDesc(),
+            'diffrn.ambient_temperature',
+        )
         assert len(plot_calls) == 1
         assert plot_calls[0]['x'] == [300.0, 400.0]
         assert plot_calls[0]['y'] == [1.0, 2.0]
@@ -416,7 +450,7 @@ class TestPlotParamSeriesFromSnapshots:
             },
         }
         p.plot_param_series_from_snapshots(
-            'param_a', 'ambient_temperature', experiments, snapshots
+            'param_a', 'diffrn.ambient_temperature', experiments, snapshots
         )
         assert len(plot_calls) == 1
         assert plot_calls[0]['y'] == [1.23]

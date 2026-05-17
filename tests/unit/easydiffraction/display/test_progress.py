@@ -19,6 +19,7 @@ def test_make_display_handle_uses_terminal_live_when_available(monkeypatch):
             auto_refresh,
             refresh_per_second,
             get_renderable=None,
+            vertical_overflow=None,
         ):
             self.renderable = renderable
             self.console = console
@@ -60,6 +61,42 @@ def test_make_display_handle_uses_terminal_live_when_available(monkeypatch):
     assert handle._live.stopped is True
 
 
+def test_make_display_handle_passes_auto_refresh(monkeypatch):
+    import easydiffraction.display.progress as progress_mod
+
+    class FakeLive:
+        def __init__(
+            self,
+            renderable=None,
+            *,
+            console,
+            auto_refresh,
+            refresh_per_second,
+            get_renderable=None,
+            vertical_overflow=None,
+        ):
+            self.auto_refresh = auto_refresh
+            self.started = False
+
+        def start(self):
+            self.started = True
+
+        def stop(self):
+            self.started = False
+
+        def refresh(self):
+            pass
+
+    monkeypatch.setattr(progress_mod, 'in_jupyter', lambda: False)
+    monkeypatch.setattr(progress_mod, 'Live', FakeLive)
+    monkeypatch.setattr(progress_mod.ConsoleManager, 'get', lambda: 'console')
+
+    handle = progress_mod.make_display_handle(auto_refresh=False)
+
+    assert isinstance(handle, progress_mod._TerminalLiveHandle)
+    assert handle._live.auto_refresh is False
+
+
 def test_activity_indicator_silent_does_not_create_handles():
     from easydiffraction.display.progress import ActivityIndicator
 
@@ -95,6 +132,22 @@ def test_activity_indicator_terminal_line_uses_accent_style():
     assert 'bold' not in str(line.style)
 
 
+def test_activity_indicator_terminal_line_is_static_when_not_animated():
+    import easydiffraction.display.progress as progress_mod
+
+    indicator = progress_mod.ActivityIndicator(
+        label='Fitting...',
+        verbosity=VerbosityEnum.FULL,
+        animated=False,
+    )
+    indicator._running = True
+
+    line = indicator._terminal_indicator_line()
+
+    assert line is not None
+    assert line.plain == 'Fitting...'
+
+
 def test_activity_indicator_terminal_live_uses_dynamic_renderable(monkeypatch):
     import easydiffraction.display.progress as progress_mod
 
@@ -107,6 +160,7 @@ def test_activity_indicator_terminal_live_uses_dynamic_renderable(monkeypatch):
             auto_refresh,
             refresh_per_second,
             get_renderable=None,
+            vertical_overflow=None,
         ):
             self.renderable = renderable
             self.console = console
@@ -144,6 +198,56 @@ def test_activity_indicator_terminal_live_uses_dynamic_renderable(monkeypatch):
     assert indicator._live.get_renderable().plain == 'X Sampling...'
 
 
+def test_activity_indicator_terminal_live_disables_auto_refresh_when_not_animated(
+    monkeypatch,
+):
+    import easydiffraction.display.progress as progress_mod
+
+    class FakeLive:
+        def __init__(
+            self,
+            renderable=None,
+            *,
+            console,
+            auto_refresh,
+            refresh_per_second,
+            get_renderable=None,
+            vertical_overflow=None,
+        ):
+            self.renderable = renderable
+            self.console = console
+            self.auto_refresh = auto_refresh
+            self.refresh_per_second = refresh_per_second
+            self.get_renderable = get_renderable
+            self.refresh_calls = 0
+            self.started = False
+
+        def start(self):
+            self.started = True
+
+        def stop(self):
+            self.started = False
+
+        def refresh(self):
+            self.refresh_calls += 1
+
+    monkeypatch.setattr(progress_mod, 'in_jupyter', lambda: False)
+    monkeypatch.setattr(progress_mod, 'Live', FakeLive)
+    monkeypatch.setattr(progress_mod.ConsoleManager, 'get', lambda: 'console')
+
+    indicator = progress_mod.ActivityIndicator(
+        label='Fitting...',
+        verbosity=VerbosityEnum.FULL,
+        animated=False,
+    )
+    indicator.start()
+
+    assert indicator._live is not None
+    assert indicator._live.auto_refresh is False
+    assert indicator._live.get_renderable is not None
+    assert indicator._live.get_renderable().plain == 'Fitting...'
+
+
 def test_activity_indicator_render_html_uses_current_label():
     from easydiffraction.display.progress import ActivityIndicator
 
@@ -167,6 +271,7 @@ def test_activity_indicator_updates_shared_terminal_handle_without_ipython(monke
             auto_refresh,
             refresh_per_second,
             get_renderable=None,
+            vertical_overflow=None,
         ):
             self.renderable = renderable
             self.console = console

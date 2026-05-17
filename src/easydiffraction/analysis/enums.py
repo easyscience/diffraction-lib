@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Enumeration for fit-mode values."""
+"""Enumeration types used by analysis components."""
 
 from __future__ import annotations
 
@@ -22,9 +22,9 @@ class FitModeEnum(StrEnum):
     def description(self) -> str:
         """Return a human-readable description of this fit mode."""
         if self is FitModeEnum.SINGLE:
-            return 'Independent fitting of each experiment'
+            return 'Fit one experiment at a time.'
         if self is FitModeEnum.JOINT:
-            return 'Simultaneous fitting of all experiments with weights'
+            return 'Fit several experiments together with shared parameters.'
         if self is FitModeEnum.SEQUENTIAL:
-            return 'Sequential fitting over data files in a directory'
+            return 'Fit one experiment against a series of data files.'
         return ''

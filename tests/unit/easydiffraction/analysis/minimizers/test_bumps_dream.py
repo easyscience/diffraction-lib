@@ -261,7 +261,7 @@ def test_run_solver_preserves_parameter_order_and_forwards_init():
                 PosteriorParameterSummary(
                     unique_name='beta',
                     display_name='Beta',
-                    map_value=22.0,
+                    best_sample_value=22.0,
                     median=21.0,
                     standard_deviation=0.4,
                     interval_68=(20.5, 21.5),
@@ -270,7 +270,7 @@ def test_run_solver_preserves_parameter_order_and_forwards_init():
                 PosteriorParameterSummary(
                     unique_name='alpha',
                     display_name='Alpha',
-                    map_value=11.0,
+                    best_sample_value=11.0,
                     median=10.5,
                     standard_deviation=0.3,
                     interval_68=(10.0, 11.0),

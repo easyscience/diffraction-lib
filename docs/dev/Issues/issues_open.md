@@ -14,14 +14,14 @@ needed.
 
 **Type:** Fragility
 
-`joint_fit_experiments` is created once when `fit.mode` becomes
-`'joint'`. If experiments are added, removed, or renamed afterwards, the
-weight collection is stale. Joint fitting can fail with missing keys or
-run with incorrect weights.
+`joint_fit` is created once when `fit.mode` becomes `'joint'`. If
+experiments are added, removed, or renamed afterwards, the weight
+collection is stale. Joint fitting can fail with missing keys or run
+with incorrect weights.
 
-**Fix:** rebuild or validate `joint_fit_experiments` at the start of
-every joint fit. At minimum, `fit()` should assert that the weight keys
-exactly match `project.experiments.names`.
+**Fix:** rebuild or validate `joint_fit` at the start of every joint
+fit. At minimum, `fit()` should assert that the weight keys exactly
+match `project.experiments.names`.
 
 **Depends on:** nothing.
 
@@ -32,7 +32,7 @@ exactly match `project.experiments.names`.
 **Type:** Consistency
 
 `Analysis` owns categories (`Aliases`, `Constraints`,
-`JointFitExperiments`) but does not extend `DatablockItem`. Its ad-hoc
+`JointFitCollection`) but does not extend `DatablockItem`. Its ad-hoc
 `_update_categories()` iterates over a hard-coded list and does not
 participate in standard category discovery, parameter enumeration, or
 CIF serialisation.
@@ -158,6 +158,156 @@ specific categories are dirty. Only implement when profiling proves it
 is needed.
 
 **Depends on:** nothing, but low priority.
+
+---
+
+## 15. 🟡 Decide Whether Inactive Fit-Mode Categories Stay Lenient
+
+**Type:** API design
+
+`Analysis` currently allows direct access to inactive mode-specific
+categories such as `joint_fit` or `sequential_fit`. The values remain
+editable, but inactive sections are hidden from help and dropped during
+serialization.
+
+**Fix:** confirm whether this lenient access is the long-term contract,
+or replace it with a dedicated mode error to prevent silent state loss
+on save.
+
+**Depends on:** nothing.
+
+---
+
+## 16. 🟡 Clarify `joint_fit` Lifecycle Outside Execution
+
+**Type:** Fragility
+
+`joint_fit` is validated and auto-populated at `fit()` time, but it does
+not react when experiments are later renamed or removed.
+
+**Fix:** decide whether `joint_fit` should stay passive until execution,
+or listen for experiment lifecycle changes and prune or warn earlier.
+
+**Depends on:** nothing.
+
+---
+
+## 17. 🟡 Define `joint_fit.weight` Bounds
+
+**Type:** Data model
+
+Joint-fit rows currently allow any non-negative weight, but the public
+contract is still unclear about whether `0` means exclusion and whether
+an upper bound should exist.
+
+**Fix:** define the supported range and validator semantics for
+`joint_fit.weight`.
+
+**Depends on:** nothing.
+
+---
+
+## 18. 🟡 Define `sequential_fit_extract` Target Scope
+
+**Type:** Data model
+
+Sequential extract rules currently target one numeric descriptor under
+`experiment.diffrn`. Open questions remain around nested targets,
+duplicate rules writing the same target, and how additional supported
+prefixes should be introduced when new environment categories appear.
+
+**Fix:** pin the allowed target grammar and duplicate-target behaviour
+in architecture and validation rules.
+
+**Depends on:** nothing.
+
+---
+
+## 19. 🟡 Decide Sequential Extraction Failure Policy
+
+**Type:** Runtime behaviour
+
+Today a failed required extract rule marks that file as failed and the
+run continues. The overall aggregation policy is still undefined.
+
+**Fix:** decide whether one failed file should abort the whole run,
+remain an isolated row-level failure, or count toward a configurable
+failure threshold.
+
+**Depends on:** nothing.
+
+---
+
+## 20. 🟢 Decide Whether Sequential Extraction Should Be Cached
+
+**Type:** Performance
+
+Sequential metadata extraction currently re-reads input files when the
+run is repeated or resumed.
+
+**Fix:** decide whether extracted `diffrn.*` values should be cached in
+`analysis/results.csv` only, or also in a dedicated reusable cache.
+
+**Depends on:** nothing.
+
+---
+
+## 21. 🟢 Decide How Mid-Run Sequential Failures Persist
+
+**Type:** Recovery design
+
+If a sequential fit fails partway through, the recovery and persistence
+contract for `analysis/results.csv` is not fully specified.
+
+**Fix:** define whether partial CSV output is authoritative for resume,
+left untouched for manual recovery, or replaced on the next run.
+
+**Depends on:** nothing.
+
+---
+
+## 22. 🟢 Decide Whether CLI Should Override Extract Rules
+
+**Type:** CLI design
+
+The CLI can override mode and worker settings, but persisted
+`sequential_fit_extract` rules are not yet overridable from the command
+line.
+
+**Fix:** decide whether extraction rules stay project-file-only or gain
+an explicit CLI override syntax.
+
+**Depends on:** nothing.
+
+---
+
+## 23. 🟢 Align `dir()` With Help Filtering
+
+**Type:** Discoverability
+
+`help()` now hides inactive analysis categories by fitting mode, while
+`dir()` and tab completion still expose the full class surface.
+
+**Fix:** decide whether `dir()` should mirror the help filter or remain
+an always-complete developer surface.
+
+**Depends on:** nothing.
+
+---
+
+## 24. 🟢 Decide Whether `single_fit` Needs a Future Category
+
+**Type:** Scope planning
+
+Single mode currently has no dedicated persisted category. Future
+single-mode settings could require one, but the threshold is not yet
+defined.
+
+**Fix:** decide what concrete single-mode behaviour would justify a
+`single_fit` category instead of keeping the mode configuration on the
+owner only.
+
+**Depends on:** nothing.
 
 ---
 
@@ -784,18 +934,18 @@ formatting for `StringDescriptor` values.
 
 ---
 
-## 46. 🟢 Rename `JointFitExperiments` ID and Improve Descriptions
+## 46. 🟢 Improve `JointFitItem` Descriptions
 
 **Type:** Naming
 
-`JointFitExperiments` uses `name='id'` with a TODO suggesting a better
-name, and two description fields are incomplete.
+`JointFitItem` uses `name='experiment_id'`, but two description fields
+are still incomplete.
 
 **TODOs:**
 
-- [default.py](src/easydiffraction/analysis/categories/joint_fit_experiments/default.py#L33)
-- [default.py](src/easydiffraction/analysis/categories/joint_fit_experiments/default.py#L34)
-- [default.py](src/easydiffraction/analysis/categories/joint_fit_experiments/default.py#L43)
+- [default.py](src/easydiffraction/analysis/categories/joint_fit/default.py#L31)
+- [default.py](src/easydiffraction/analysis/categories/joint_fit/default.py#L32)
+- [default.py](src/easydiffraction/analysis/categories/joint_fit/default.py#L41)
 
 **Depends on:** nothing.
 
@@ -1487,6 +1637,72 @@ operation is possible (e.g. in automated pipelines or tests).
 
 ---
 
+## 93. 🟡 Eliminate Flicker in Live Progress Tables
+
+**Type:** UX
+
+The shared `ActivityIndicator` / Rich `Live` region used by single fit,
+sequential fit, and DREAM sampling visibly flickers in terminals
+whenever the live renderable grows (new rows appended) or is updated at
+a moderate rate. The effect is most pronounced in sequential fit because
+rows are added more frequently than in single fit.
+
+**Findings from current investigation:**
+
+- Both single fit (`FitProgressTracker._refresh_activity_indicator`) and
+  sequential fit (`_report_chunk_progress`) push a fresh
+  `build_table_renderable(...)` into
+  `ActivityIndicator.update(content=...)` on each progress event. The
+  Rich `Table` instance is rebuilt from scratch every time.
+- `_TerminalLiveHandle` / `ActivityIndicator` start `rich.live.Live`
+  with `auto_refresh=True`,
+  `refresh_per_second=1/_SPINNER_FRAME_SECONDS` (≈10 Hz), and
+  `vertical_overflow='visible'`. At every refresh tick, Rich re-renders
+  the full multi-line region (table + spinner line), which on many
+  terminals causes a visible flicker that scales with row count.
+- Earlier attempts to mitigate this in sequential fit by switching to a
+  single-line spinner-only `Live` and printing rows above it (so Rich's
+  print-above-live mechanism handled them) removed flicker entirely, but
+  produced a different visual style from single fit and could not show
+  the closing border during the run. That approach was reverted for
+  consistency with single fit; flicker came back with it.
+- `vertical_overflow='visible'` is required so the growing table is not
+  clipped, but it also forces Rich to repaint the whole region rather
+  than scroll/append.
+- The spinner animation itself drives the refresh rate; lowering
+  `refresh_per_second` reduces flicker frequency but makes the spinner
+  feel sluggish.
+- Single fit appears smoother in practice mainly because content changes
+  are throttled (`FIT_PROGRESS_UPDATE_SECONDS = 5.0`) and rows grow
+  slowly; the underlying mechanism is the same and it still flickers
+  when many iterations are appended quickly.
+
+**Possible directions (not yet evaluated):**
+
+- Decouple spinner refresh from content refresh: drive `Live` at a low
+  `refresh_per_second` (e.g. 2–4 Hz) and update content explicitly only
+  when a new row arrives, while animating the spinner via the label
+  string rather than Rich's renderable diff.
+- Render the table once as static `console.print(...)` above a
+  single-line spinner-only `Live`, and re-print only the _new_ row(s) on
+  each update — restore the streaming approach but emit the bottom
+  border at the end (accept the trade-off that the closing border is not
+  visible during the run, or print it as part of every update with ANSI
+  cursor movement).
+- Use `rich.live.Live(transient=False, auto_refresh=False)` and call
+  `live.refresh()` manually only when content changes; let the spinner
+  animate via a separate background timer or label updates.
+- Investigate `rich.progress.Progress` with custom columns and a table
+  panel — Rich has optimised diff rendering there.
+- Evaluate the actual cause on macOS Terminal / iTerm2 / VS Code
+  terminal separately — flicker behaviour differs across emulators.
+
+**Depends on:** nothing. Affects single fit, sequential fit, and DREAM
+sampler progress displays — any fix should keep their visuals consistent
+(issue #93 should be solved for all three at once).
+
+---
+
 ## Summary
 
 | #   | Issue                                            | Severity | Type                         |
@@ -1529,7 +1745,7 @@ operation is possible (e.g. in automated pipelines or tests).
 | 43  | Fix summary display inconsistencies              | 🟢 Low   | UX                           |
 | 44  | Merge parameter record construction              | 🟢 Low   | Cleanup                      |
 | 45  | Decide alias/constraint descriptor default       | 🟢 Low   | Design                       |
-| 46  | Rename `JointFitExperiments` id + descriptions   | 🟢 Low   | Naming                       |
+| 46  | Improve `JointFitItem` descriptions              | 🟢 Low   | Naming                       |
 | 47  | Improve error handling in crystallography        | 🟢 Low   | Diagnostics                  |
 | 48  | Fix CrysPy TOF instrument default                | 🟢 Low   | Bug workaround               |
 | 49  | Automate space group CIF name variants           | 🟢 Low   | Maintainability              |
@@ -1575,3 +1791,4 @@ operation is possible (e.g. in automated pipelines or tests).
 | 90  | Show experiment number during sequential fitting | 🟢 Low   | UX                           |
 | 91  | Disable TODO checks in CodeFactor PRs            | 🟢 Low   | CI / Tooling                 |
 | 92  | Make `save()` respect verbosity                  | 🟢 Low   | UX                           |
+| 93  | Eliminate flicker in live progress tables        | 🟡 Med   | UX                           |

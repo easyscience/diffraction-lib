@@ -31,21 +31,32 @@
 │   │   │   │   └── 🏷️ class Constraints
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class ConstraintsFactory
-│   │   ├── 📁 fit
+│   │   ├── 📁 fitting
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
-│   │   │   │   └── 🏷️ class Fit
-│   │   │   ├── 📄 enums.py
-│   │   │   │   └── 🏷️ class FitModeEnum
+│   │   │   │   └── 🏷️ class Fitting
 │   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class FitFactory
-│   │   ├── 📁 joint_fit_experiments
+│   │   │       └── 🏷️ class FittingFactory
+│   │   ├── 📁 joint_fit
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
-│   │   │   │   ├── 🏷️ class JointFitExperiment
-│   │   │   │   └── 🏷️ class JointFitExperiments
+│   │   │   │   ├── 🏷️ class JointFitItem
+│   │   │   │   └── 🏷️ class JointFitCollection
 │   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class JointFitExperimentsFactory
+│   │   │       └── 🏷️ class JointFitFactory
+│   │   ├── 📁 sequential_fit
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   └── 🏷️ class SequentialFit
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class SequentialFitFactory
+│   │   ├── 📁 sequential_fit_extract
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   ├── 🏷️ class SequentialFitExtractItem
+│   │   │   │   └── 🏷️ class SequentialFitExtractCollection
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class SequentialFitExtractFactory
 │   │   └── 📄 __init__.py
 │   ├── 📁 fit_helpers
 │   │   ├── 📄 __init__.py
@@ -95,10 +106,17 @@
 │   ├── 📄 analysis.py
 │   │   ├── 🏷️ class AnalysisDisplay
 │   │   └── 🏷️ class Analysis
+│   ├── 📄 enums.py
+│   │   └── 🏷️ class FitModeEnum
 │   ├── 📄 fitting.py
 │   │   └── 🏷️ class Fitter
 │   └── 📄 sequential.py
-│       └── 🏷️ class SequentialFitTemplate
+│       ├── 🏷️ class SequentialFitExtractRule
+│       ├── 🏷️ class SequentialFitTemplate
+│       ├── 🏷️ class SequentialProgressState
+│       ├── 🏷️ class SequentialProgressContext
+│       ├── 🏷️ class _ChunkProgressMetrics
+│       └── 🏷️ class SequentialRunPlan
 ├── 📁 core
 │   ├── 📄 __init__.py
 │   ├── 📄 category.py
@@ -137,9 +155,11 @@
 │   └── 📄 variable.py
 │       ├── 🏷️ class GenericDescriptorBase
 │       ├── 🏷️ class GenericStringDescriptor
+│       ├── 🏷️ class GenericBoolDescriptor
 │       ├── 🏷️ class GenericNumericDescriptor
 │       ├── 🏷️ class GenericParameter
 │       ├── 🏷️ class StringDescriptor
+│       ├── 🏷️ class BoolDescriptor
 │       ├── 🏷️ class NumericDescriptor
 │       └── 🏷️ class Parameter
 ├── 📁 crystallography

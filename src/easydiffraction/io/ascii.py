@@ -13,6 +13,20 @@ from pathlib import Path
 import numpy as np
 
 
+def _resolve_extraction_destination(destination: str | Path | None) -> Path:
+    """Return an extraction directory for ZIP contents."""
+    if destination is None:
+        return Path(tempfile.mkdtemp(prefix='ed_zip_'))
+
+    extract_dir = Path(destination)
+    if not extract_dir.is_absolute():
+        extract_dir = Path.cwd() / extract_dir
+
+    extract_dir = extract_dir.resolve()
+    extract_dir.mkdir(parents=True, exist_ok=True)
+    return extract_dir
+
+
 def extract_project_from_zip(
     zip_path: str | Path,
     destination: str | Path | None = None,
@@ -92,7 +106,8 @@ def extract_data_paths_from_zip(
         Path to the ZIP archive.
     destination : str | Path | None, default=None
         Directory to extract files into.  When ``None``, a temporary
-        directory is created.
+        directory is created. Relative destinations are resolved against
+        the current working directory.
 
     Returns
     -------
@@ -111,12 +126,7 @@ def extract_data_paths_from_zip(
         msg = f'ZIP file not found: {zip_path}'
         raise FileNotFoundError(msg)
 
-    if destination is not None:
-        extract_dir = Path(destination)
-        extract_dir.mkdir(parents=True, exist_ok=True)
-    else:
-        # TODO: Unify mkdir with other uses in the code
-        extract_dir = Path(tempfile.mkdtemp(prefix='ed_zip_'))
+    extract_dir = _resolve_extraction_destination(destination)
 
     with zipfile.ZipFile(zip_path, 'r') as zf:
         zf.extractall(extract_dir)
@@ -163,7 +173,7 @@ def extract_data_paths_from_dir(
     ValueError
         If no matching data files are found.
     """
-    dir_path = Path(dir_path)
+    dir_path = Path(dir_path).resolve()
     if not dir_path.is_dir():
         msg = f'Directory not found: {dir_path}'
         raise FileNotFoundError(msg)

@@ -99,7 +99,7 @@ POSTERIOR_HISTOGRAM_LINE_COLOR = 'rgba(120, 120, 120, 0.24)'
 POSTERIOR_INTERVAL_95_FILL_COLOR = 'rgba(214, 39, 40, 0.14)'
 POSTERIOR_MEDIAN_LINE_COLOR = 'rgb(80, 80, 80)'
 POSTERIOR_POINT_ESTIMATE_LINE_COLOR = 'rgb(214, 39, 40)'
-POSTERIOR_POINT_ESTIMATE_TRACE_NAME = 'Max posterior'
+POSTERIOR_POINT_ESTIMATE_TRACE_NAME = 'Best posterior sample'
 POSTERIOR_POINT_ESTIMATE_LINE_DASH = 'dot'
 POSTERIOR_PREDICTIVE_INTERVAL_TRACE_NAME = '95% credible interval'
 POSTERIOR_DRAW_LINE_COLOR = 'rgba(140, 140, 140, 0.18)'
@@ -330,7 +330,12 @@ class Plotter(RendererBase):
         tuple
             Tuple of ``(x_min, x_max)``, possibly narrowed.
         """
-        if self._engine == 'asciichartpy' and (x_min is None or x_max is None):
+        if (
+            self._engine == 'asciichartpy'
+            and x_min is None
+            and x_max is None
+            and AsciiPlotter._should_crop_to_peak_window(len(x_array))
+        ):
             max_intensity_pos = int(np.argmax(pattern.intensity_meas))
             target_point_count = min(len(x_array), AsciiPlotter._chart_point_count())
             start = max(0, max_intensity_pos - target_point_count // 2)
@@ -723,7 +728,7 @@ class Plotter(RendererBase):
     def plot_param_series(
         self,
         param: object,
-        versus: object | None = None,
+        versus: str | None = None,
     ) -> None:
         """
         Plot a parameter's value across sequential fit results.
@@ -738,11 +743,11 @@ class Plotter(RendererBase):
         param : object
             Parameter descriptor whose ``unique_name`` identifies the
             values to plot.
-        versus : object | None, default=None
-            A diffrn descriptor (e.g.
-            ``expt.diffrn.ambient_temperature``) whose value is used as
-            the x-axis for each experiment.  When ``None``, the
-            experiment sequence number is used instead.
+        versus : str | None, default=None
+            Persisted diffrn path (e.g.
+            ``'diffrn.ambient_temperature'``) whose sequential-results
+            column is used as the x-axis. When ``None``, the experiment
+            sequence number is used instead.
         """
         unique_name = param.unique_name
 
@@ -758,17 +763,132 @@ class Plotter(RendererBase):
                 csv_path=csv_path,
                 unique_name=unique_name,
                 param_descriptor=param,
-                versus_descriptor=versus,
+                versus_path=versus,
             )
         else:
             # Fallback: in-memory snapshots from fit() single mode
-            versus_name = versus.name if versus is not None else None
             self.plot_param_series_from_snapshots(
                 unique_name,
-                versus_name,
+                versus,
                 self._project.experiments,
                 self._project.analysis._parameter_snapshots,
             )
+
+    def plot_all_param_series(
+        self,
+        versus: str | None = None,
+    ) -> None:
+        """
+        Plot every fitted parameter across sequential fit results.
+
+        Iterates the fitted parameters recorded in ``results.csv`` (or,
+        when absent, in the in-memory parameter snapshots) and emits one
+        ``plot_param_series`` plot per parameter.
+
+        Parameters
+        ----------
+        versus : str | None, default=None
+            Persisted diffrn path (e.g.
+            ``'diffrn.ambient_temperature'``) whose sequential-results
+            column is used as the x-axis. When ``None``, the experiment
+            sequence number is used instead.
+        """
+        unique_names = self._collect_fitted_param_unique_names()
+        if not unique_names:
+            log.warning('No fitted parameters found to plot.')
+            return
+
+        descriptors_by_name = self._fitted_param_descriptors_by_unique_name()
+
+        for unique_name in unique_names:
+            descriptor = descriptors_by_name.get(unique_name)
+            if descriptor is None:
+                log.warning(f"Parameter '{unique_name}' not found in project; skipping plot.")
+                continue
+            self.plot_param_series(param=descriptor, versus=versus)
+
+    def _collect_fitted_param_unique_names(self) -> list[str]:
+        """
+        Return fitted parameter unique names from CSV or snapshots.
+        """
+        from easydiffraction.analysis.sequential import _META_COLUMNS  # noqa: PLC0415
+
+        meta = set(_META_COLUMNS)
+
+        csv_path = None
+        if self._project.info.path is not None:
+            candidate = pathlib.Path(self._project.info.path) / 'analysis' / 'results.csv'
+            if candidate.is_file():
+                csv_path = str(candidate)
+
+        if csv_path is not None:
+            df = pd.read_csv(csv_path)
+            return [
+                column
+                for column in df.columns
+                if column not in meta
+                and not column.startswith('diffrn.')
+                and not column.endswith('.uncertainty')
+            ]
+
+        snapshots = self._project.analysis._parameter_snapshots
+        if not snapshots:
+            return []
+        first_snapshot = next(iter(snapshots.values()))
+        return list(first_snapshot.keys())
+
+    def _fitted_param_descriptors_by_unique_name(self) -> dict[str, object]:
+        """Return descriptor map keyed by ``unique_name``."""
+        all_params = self._project.structures.parameters + self._project.experiments.parameters
+        return {p.unique_name: p for p in all_params if hasattr(p, 'unique_name')}
+
+    def _resolve_versus_descriptor_from_path(
+        self,
+        versus_path: str | None,
+    ) -> object | None:
+        """Return a template diffrn descriptor for a persisted path."""
+        field_name = self._versus_field_name(versus_path)
+        if field_name is None:
+            return None
+
+        project = getattr(self, '_project', None)
+        if project is None or getattr(project, 'experiments', None) is None:
+            return None
+
+        experiment = next(iter(project.experiments.values()), None)
+        if experiment is None:
+            return None
+
+        return self._resolve_diffrn_descriptor(experiment.diffrn, field_name)
+
+    @staticmethod
+    def _versus_field_name(versus_path: str | None) -> str | None:
+        """Return the diffrn field name from a persisted path."""
+        if versus_path is None:
+            return None
+        if versus_path.startswith('diffrn.'):
+            return versus_path.removeprefix('diffrn.')
+        return versus_path
+
+    @classmethod
+    def _versus_axis_label(
+        cls,
+        versus_path: str | None,
+        descriptor: object | None,
+    ) -> str:
+        """Return the x-axis label for a persisted diffrn path."""
+        if descriptor is not None:
+            label = getattr(descriptor, 'description', None) or getattr(descriptor, 'name', None)
+            units = getattr(descriptor, 'units', None)
+            if label is not None and units:
+                return f'{label} ({units})'
+            if label is not None:
+                return label
+
+        field_name = cls._versus_field_name(versus_path)
+        if field_name is None:
+            return 'Experiment No.'
+        return field_name.replace('_', ' ')
 
     def plot_param_correlations(
         self,
@@ -1205,7 +1325,7 @@ class Plotter(RendererBase):
             log.warning(f'No measured data available for experiment {expt_name}.')
             return
         y_meas = np.asarray(y_meas_raw, dtype=float)
-        if y_meas.shape != np.asarray(summary.map_prediction).shape:
+        if y_meas.shape != np.asarray(summary.best_sample_prediction).shape:
             log.warning(
                 'Single-crystal posterior predictive values do not match the '
                 'measured reflection array shape.'
@@ -2729,7 +2849,7 @@ class Plotter(RendererBase):
 
         fig.add_trace(
             self._posterior_reference_line_trace(
-                x_value=summary.map_value,
+                x_value=summary.best_sample_value,
                 y_axis_range=y_axis_range,
                 trace_name=POSTERIOR_POINT_ESTIMATE_TRACE_NAME,
                 color=POSTERIOR_POINT_ESTIMATE_LINE_COLOR,
@@ -3259,7 +3379,7 @@ class Plotter(RendererBase):
         if predictive_data is None:
             return None
 
-        map_prediction, x_values, predictive_draw_array = predictive_data
+        best_sample_prediction, x_values, predictive_draw_array = predictive_data
         lower_68, upper_68 = np.quantile(predictive_draw_array, [0.16, 0.84], axis=0)
         lower_95, upper_95 = np.quantile(predictive_draw_array, [0.025, 0.975], axis=0)
         x_axis_name = getattr(x_axis, 'value', x_axis)
@@ -3268,7 +3388,7 @@ class Plotter(RendererBase):
             experiment_name=expt_name,
             x_axis_name=str(x_axis_name),
             x=np.asarray(x_values, dtype=float),
-            map_prediction=np.asarray(map_prediction, dtype=float),
+            best_sample_prediction=np.asarray(best_sample_prediction, dtype=float),
             lower_95=np.asarray(lower_95, dtype=float),
             upper_95=np.asarray(upper_95, dtype=float),
             lower_68=np.asarray(lower_68, dtype=float),
@@ -3324,7 +3444,7 @@ class Plotter(RendererBase):
         expt_name: str,
         x_axis: object,
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray] | None:
-        """Return MAP and sampled predictive curves."""
+        """Return best-sample and sampled predictive curves."""
         original_values = np.array(
             [parameter.value for parameter in sampled_parameters],
             dtype=float,
@@ -3334,14 +3454,14 @@ class Plotter(RendererBase):
         draw_indices = self._posterior_predictive_draw_indices(flattened_samples.shape[0])
 
         try:
-            map_prediction, x_values = self._evaluate_posterior_predictive_state(
+            best_sample_prediction, x_values = self._evaluate_posterior_predictive_state(
                 sampled_parameters=sampled_parameters,
                 values=original_values,
                 experiment=experiment,
                 expt_name=expt_name,
                 x_axis=x_axis,
             )
-            if map_prediction is None or x_values is None:
+            if best_sample_prediction is None or x_values is None:
                 return None
 
             for index in draw_indices:
@@ -3354,7 +3474,10 @@ class Plotter(RendererBase):
                 )
                 if prediction is None or current_x is None:
                     return None
-                if prediction.shape != map_prediction.shape or current_x.shape != x_values.shape:
+                if (
+                    prediction.shape != best_sample_prediction.shape
+                    or current_x.shape != x_values.shape
+                ):
                     log.warning('Posterior predictive draws returned inconsistent array shapes.')
                     return None
                 predictive_draws.append(prediction)
@@ -3367,7 +3490,7 @@ class Plotter(RendererBase):
             )
 
         return (
-            np.asarray(map_prediction, dtype=float),
+            np.asarray(best_sample_prediction, dtype=float),
             np.asarray(x_values, dtype=float),
             np.asarray(predictive_draws, dtype=float),
         )
@@ -3511,7 +3634,7 @@ class Plotter(RendererBase):
                 expt_name=expt_name,
                 x=np.asarray(summary.x, dtype=float),
                 y_meas=np.asarray(y_meas, dtype=float),
-                y_calc=np.asarray(summary.map_prediction, dtype=float),
+                y_calc=np.asarray(summary.best_sample_prediction, dtype=float),
                 axes_labels=axes_labels,
                 excluded_ranges=excluded_ranges,
             )
@@ -3579,7 +3702,7 @@ class Plotter(RendererBase):
         fig.add_trace(
             go.Scatter(
                 x=summary.x,
-                y=summary.map_prediction,
+                y=summary.best_sample_prediction,
                 mode='lines',
                 line={
                     'color': POSTERIOR_POINT_ESTIMATE_LINE_COLOR,
@@ -3673,23 +3796,26 @@ class Plotter(RendererBase):
             )
             return
 
-        map_prediction = np.asarray(summary.map_prediction, dtype=float)
+        best_sample_prediction = np.asarray(summary.best_sample_prediction, dtype=float)
         lower_95 = np.asarray(summary.lower_95, dtype=float)
         upper_95 = np.asarray(summary.upper_95, dtype=float)
-        if lower_95.shape != map_prediction.shape or upper_95.shape != map_prediction.shape:
+        if (
+            lower_95.shape != best_sample_prediction.shape
+            or upper_95.shape != best_sample_prediction.shape
+        ):
             log.warning('Single-crystal posterior predictive interval arrays have invalid shapes.')
             return
 
         go = __import__('plotly.graph_objects', fromlist=['Figure'])
         trace = PlotlyPlotter._get_single_crystal_trace(
-            x_calc=map_prediction,
+            x_calc=best_sample_prediction,
             y_meas=y_meas,
             y_meas_su=y_meas_su,
         )
         trace.error_x = {
             'type': 'data',
-            'array': np.maximum(0.0, upper_95 - map_prediction),
-            'arrayminus': np.maximum(0.0, map_prediction - lower_95),
+            'array': np.maximum(0.0, upper_95 - best_sample_prediction),
+            'arrayminus': np.maximum(0.0, best_sample_prediction - lower_95),
             'visible': True,
         }
         trace.customdata = np.column_stack((lower_95, upper_95, y_meas_su))
@@ -3734,7 +3860,12 @@ class Plotter(RendererBase):
             experiment_name=summary.experiment_name,
             x_axis_name=summary.x_axis_name,
             x=x_filtered,
-            map_prediction=self._filtered_y_array(summary.map_prediction, summary.x, x_min, x_max),
+            best_sample_prediction=self._filtered_y_array(
+                summary.best_sample_prediction,
+                summary.x,
+                x_min,
+                x_max,
+            ),
             lower_95=(
                 None
                 if summary.lower_95 is None
@@ -3808,7 +3939,10 @@ class Plotter(RendererBase):
         if not self._show_background_enabled(plot_options, background_available=y_bkg is not None):
             y_bkg = None
         y_calc = self._filtered_y_array(
-            summary.map_prediction, summary.x, ctx['x_min'], ctx['x_max']
+            summary.best_sample_prediction,
+            summary.x,
+            ctx['x_min'],
+            ctx['x_max'],
         )
         excluded_ranges = (
             self._excluded_ranges(
@@ -5405,20 +5539,20 @@ class Plotter(RendererBase):
         csv_path: str,
         unique_name: str,
         param_descriptor: object,
-        versus_descriptor: object | None = None,
+        versus_path: str | None = None,
     ) -> None:
         """
         Plot a parameter's value across sequential fit results.
 
         Reads data from the CSV file at *csv_path*.  The y-axis values
         come from the column named *unique_name*, uncertainties from
-        ``{unique_name}.uncertainty``.  When *versus_descriptor* is
-        provided, the x-axis uses the corresponding ``diffrn.{name}``
-        column; otherwise the row index is used.
+        ``{unique_name}.uncertainty``. When *versus_path* is provided,
+        the x-axis uses the corresponding ``diffrn.*`` CSV column;
+        otherwise the row index is used.
 
-        Axis labels are derived from the live descriptor objects
-        (*param_descriptor* and *versus_descriptor*), which carry
-        ``.description`` and ``.units`` attributes.
+        Axis labels use the live parameter descriptor and, when
+        available, a template diffrn descriptor resolved from
+        *versus_path*.
 
         Parameters
         ----------
@@ -5428,9 +5562,9 @@ class Plotter(RendererBase):
             Unique name of the parameter to plot (CSV column key).
         param_descriptor : object
             The live parameter descriptor (for axis label / units).
-        versus_descriptor : object | None, default=None
-            A diffrn descriptor whose ``.name`` maps to a
-            ``diffrn.{name}`` CSV column.  ``None`` → use row index.
+        versus_path : str | None, default=None
+            Persisted diffrn path whose matching CSV column provides the
+            x-axis values. ``None`` uses row index.
         """
         df = pd.read_csv(csv_path)
 
@@ -5446,14 +5580,12 @@ class Plotter(RendererBase):
         sy = df[uncert_col].astype(float).tolist() if uncert_col in df.columns else [0.0] * len(y)
 
         # X-axis: diffrn column or row index
-        versus_name = versus_descriptor.name if versus_descriptor is not None else None
-        diffrn_col = f'diffrn.{versus_name}' if versus_name else None
+        diffrn_col = versus_path
+        versus_descriptor = self._resolve_versus_descriptor_from_path(versus_path)
 
         if diffrn_col and diffrn_col in df.columns:
             x = pd.to_numeric(df[diffrn_col], errors='coerce').tolist()
-            x_label = getattr(versus_descriptor, 'description', None) or versus_name
-            if hasattr(versus_descriptor, 'units') and versus_descriptor.units:
-                x_label = f'{x_label} ({versus_descriptor.units})'
+            x_label = self._versus_axis_label(versus_path, versus_descriptor)
         else:
             x = list(range(1, len(y) + 1))
             x_label = 'Experiment No.'
@@ -5476,7 +5608,7 @@ class Plotter(RendererBase):
     def plot_param_series_from_snapshots(
         self,
         unique_name: str,
-        versus_name: str | None,
+        versus_path: str | None,
         experiments: object,
         parameter_snapshots: dict[str, dict[str, dict]],
     ) -> None:
@@ -5491,8 +5623,8 @@ class Plotter(RendererBase):
         ----------
         unique_name : str
             Unique name of the parameter to plot.
-        versus_name : str | None
-            Name of the diffrn descriptor for the x-axis.
+        versus_path : str | None
+            Persisted diffrn path for the x-axis.
         experiments : object
             Experiments collection for accessing diffrn conditions.
         parameter_snapshots : dict[str, dict[str, dict]]
@@ -5508,7 +5640,10 @@ class Plotter(RendererBase):
             experiment = experiments[expt_name]
             diffrn = experiment.diffrn
 
-            x_axis_param = self._resolve_diffrn_descriptor(diffrn, versus_name)
+            x_axis_param = self._resolve_diffrn_descriptor(
+                diffrn,
+                self._versus_field_name(versus_path),
+            )
 
             if x_axis_param is not None and x_axis_param.value is not None:
                 value = x_axis_param.value
@@ -5522,7 +5657,7 @@ class Plotter(RendererBase):
 
             if x_axis_param is not None:
                 axes_labels = [
-                    x_axis_param.description or x_axis_param.name,
+                    self._versus_axis_label(versus_path, x_axis_param),
                     f'Parameter value ({param_data["units"]})',
                 ]
             else:

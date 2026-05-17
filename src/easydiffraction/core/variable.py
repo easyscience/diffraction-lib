@@ -223,6 +223,28 @@ class GenericStringDescriptor(GenericDescriptorBase):
 # ======================================================================
 
 
+class GenericBoolDescriptor(GenericDescriptorBase):
+    """Base descriptor that constrains values to booleans."""
+
+    _value_type = DataTypes.BOOL
+
+    def __init__(
+        self,
+        *,
+        value_spec: AttributeSpec | None = None,
+        **kwargs: object,
+    ) -> None:
+        if value_spec is None:
+            value_spec = AttributeSpec(
+                data_type=DataTypes.BOOL,
+                default=False,
+            )
+        super().__init__(value_spec=value_spec, **kwargs)
+
+
+# ======================================================================
+
+
 class GenericNumericDescriptor(GenericDescriptorBase):
     """Base descriptor that constrains values to numbers."""
 
@@ -527,6 +549,33 @@ class StringDescriptor(GenericStringDescriptor):
             Object that tracks CIF identifiers.
         **kwargs : object
             Forwarded to GenericStringDescriptor.
+        """
+        super().__init__(**kwargs)
+        self._cif_handler = cif_handler
+        self._cif_handler.attach(self)
+
+
+# ======================================================================
+
+
+class BoolDescriptor(GenericBoolDescriptor):
+    """Boolean descriptor bound to a CIF handler."""
+
+    def __init__(
+        self,
+        *,
+        cif_handler: CifHandler,
+        **kwargs: object,
+    ) -> None:
+        """
+        Initialize a boolean descriptor bound to a CIF handler.
+
+        Parameters
+        ----------
+        cif_handler : CifHandler
+            Object that tracks CIF identifiers.
+        **kwargs : object
+            Forwarded to GenericBoolDescriptor.
         """
         super().__init__(**kwargs)
         self._cif_handler = cif_handler

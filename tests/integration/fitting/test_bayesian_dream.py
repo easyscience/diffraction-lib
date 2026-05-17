@@ -88,13 +88,27 @@ def _dream_parameters(project: Project) -> tuple[object, object, object]:
 
 
 def _configure_small_dream(project: Project) -> None:
-    project.analysis.fit.minimizer_type = 'bumps (dream)'
-    minimizer = project.analysis.fit.minimizer
+    project.analysis.fitting.minimizer_type = 'bumps (dream)'
+    minimizer = project.analysis.fitting.minimizer
     minimizer.steps = 20
     minimizer.burn = 5
     minimizer.thin = 1
     minimizer.pop = 4
     minimizer.init = 'lhs'
+
+
+def _run_single_fit(project: Project, *, random_seed: int | None = None) -> None:
+    project.verbosity = 'silent'
+    prepared = project.analysis._prepare_fit_run()
+    assert prepared is not None
+    verb, structures, experiments = prepared
+    project.analysis._fit_single(
+        verb,
+        structures,
+        experiments,
+        use_physical_limits=False,
+        random_seed=random_seed,
+    )
 
 
 def test_small_bounded_dream_refinement_produces_posterior_results():
@@ -111,7 +125,7 @@ def test_small_bounded_dream_refinement_produces_posterior_results():
     offset.fit_max = 1.0
 
     _configure_small_dream(project)
-    project.analysis.fit(verbosity='silent', random_seed=11)
+    _run_single_fit(project, random_seed=11)
 
     results = project.analysis.fit_results
     assert results.success is True
@@ -130,8 +144,8 @@ def test_lm_prefit_followed_by_dream_uses_uncertainty_based_bounds():
     for parameter in (length_a, scale, offset):
         parameter.free = True
 
-    project.analysis.fit.minimizer_type = 'bumps (lm)'
-    project.analysis.fit(verbosity='silent')
+    project.analysis.fitting.minimizer_type = 'bumps (lm)'
+    _run_single_fit(project)
 
     for parameter in (length_a, scale, offset):
         assert parameter.uncertainty is not None
@@ -140,7 +154,7 @@ def test_lm_prefit_followed_by_dream_uses_uncertainty_based_bounds():
         assert np.isfinite(parameter.fit_max)
 
     _configure_small_dream(project)
-    project.analysis.fit(verbosity='silent', random_seed=13)
+    _run_single_fit(project, random_seed=13)
 
     results = project.analysis.fit_results
     assert results.success is True
@@ -163,7 +177,7 @@ def test_bayesian_fit_results_are_runtime_only_after_save_load(tmp_path):
     offset.fit_max = 1.0
 
     _configure_small_dream(project)
-    project.analysis.fit(verbosity='silent', random_seed=17)
+    _run_single_fit(project, random_seed=17)
 
     assert project.analysis.fit_results.posterior_samples is not None
 

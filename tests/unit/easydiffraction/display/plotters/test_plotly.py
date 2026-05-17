@@ -822,7 +822,7 @@ def test_plot_powder_meas_vs_calc_styles_predictive_max_posterior_and_band(monke
             height=None,
             predictive_lower_95=np.array([8.0, 9.0, 10.0]),
             predictive_upper_95=np.array([10.0, 11.0, 12.0]),
-            y_calc_name='Max posterior',
+            y_calc_name='Best posterior sample',
             y_calc_line_dash='dot',
         ),
     )
@@ -831,7 +831,9 @@ def test_plot_powder_meas_vs_calc_styles_predictive_max_posterior_and_band(monke
     predictive_band_trace = next(
         trace for trace in fig.data if trace.name == '95% credible interval'
     )
-    max_posterior_trace = next(trace for trace in fig.data if trace.name == 'Max posterior')
+    max_posterior_trace = next(
+        trace for trace in fig.data if trace.name == 'Best posterior sample'
+    )
     residual_trace = next(trace for trace in fig.data if trace.name == 'Residual (Imeas - Icalc)')
 
     assert predictive_band_trace.fillcolor == pp.PREDICTIVE_BAND_COLOR

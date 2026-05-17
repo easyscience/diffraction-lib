@@ -42,8 +42,8 @@ class PosteriorParameterSummary:
         Unique parameter name used across EasyDiffraction.
     display_name : str
         Human-readable label used in plots and tables.
-    map_value : float
-        Maximum-a-posteriori or best-sampled parameter value.
+    best_sample_value : float
+        Highest-posterior sampled parameter value.
     median : float
         Posterior median value.
     standard_deviation : float
@@ -60,7 +60,7 @@ class PosteriorParameterSummary:
 
     unique_name: str
     display_name: str
-    map_value: float
+    best_sample_value: float
     median: float
     standard_deviation: float
     interval_68: tuple[float, float]
@@ -82,7 +82,7 @@ class PosteriorPredictiveSummary:
         Name of the x-axis used for the predictive arrays.
     x : np.ndarray
         X-axis values for the predictive curves.
-    map_prediction : np.ndarray
+    best_sample_prediction : np.ndarray
         Prediction corresponding to the committed point estimate.
     lower_95 : np.ndarray | None, default=None
         Lower bound of the 95% credible interval.
@@ -99,7 +99,7 @@ class PosteriorPredictiveSummary:
     experiment_name: str
     x_axis_name: str
     x: np.ndarray
-    map_prediction: np.ndarray
+    best_sample_prediction: np.ndarray
     lower_95: np.ndarray | None = None
     upper_95: np.ndarray | None = None
     lower_68: np.ndarray | None = None
@@ -212,7 +212,7 @@ class BayesianFitResults(FitResults):
         Total fitting time in seconds.
     sampler_name : str, default='dream'
         Sampler identifier.
-    point_estimate_name : str, default='map'
+    point_estimate_name : str, default='best_sample'
         Name of the point estimate committed back to the project.
     posterior_samples : PosteriorSamples | None, default=None
         Stored posterior samples.
@@ -239,7 +239,7 @@ class BayesianFitResults(FitResults):
     starting_parameters: list[object] | None = None
     fitting_time: float | None = None
     sampler_name: str = 'dream'
-    point_estimate_name: str = 'map'
+    point_estimate_name: str = 'best_sample'
     posterior_samples: PosteriorSamples | None = None
     posterior_parameter_summaries: SummaryList = None
     posterior_predictive: PredictiveMap = None
@@ -412,7 +412,7 @@ def compute_convergence_diagnostics(posterior_samples: PosteriorSamples) -> dict
 def summarize_posterior_parameters(
     parameter_names: list[str],
     posterior_samples: PosteriorSamples,
-    map_values: np.ndarray,
+    best_sample_values: np.ndarray,
     parameter_display_names: list[str] | None = None,
     convergence_diagnostics: dict[str, object] | None = None,
 ) -> list[PosteriorParameterSummary]:
@@ -425,8 +425,8 @@ def summarize_posterior_parameters(
         Sampled parameter names in EasyDiffraction order.
     posterior_samples : PosteriorSamples
         Posterior sample container.
-    map_values : np.ndarray
-        MAP or best-sampled parameter values in the same order.
+    best_sample_values : np.ndarray
+        Best posterior sample values in the same order.
     parameter_display_names : list[str] | None, default=None
         Human-readable parameter names in the same order.
     convergence_diagnostics : dict[str, object] | None, default=None
@@ -473,7 +473,7 @@ def summarize_posterior_parameters(
             PosteriorParameterSummary(
                 unique_name=parameter_name,
                 display_name=display_name,
-                map_value=float(map_values[index]),
+                best_sample_value=float(best_sample_values[index]),
                 median=float(np.median(values)),
                 standard_deviation=float(np.std(values, ddof=1)),
                 interval_68=(float(interval_68[0]), float(interval_68[1])),
@@ -574,8 +574,8 @@ def _print_fit_quality_metrics(metrics: dict[str, float | None]) -> None:
 def _format_point_estimate_name(point_estimate_name: str) -> str:
     """Return a user-facing label for the committed point estimate."""
     normalized_name = point_estimate_name.strip().lower().replace('_', ' ')
-    if normalized_name == 'map':
-        return 'Max posterior'
+    if normalized_name in {'best sample', 'map'}:
+        return 'Best posterior sample'
     return point_estimate_name.replace('_', ' ').title()
 
 
@@ -631,7 +631,7 @@ def _render_committed_parameter_table(parameters: list[object]) -> None:
         'parameter',
         'units',
         'start',
-        'max posterior',
+        'best posterior sample',
         'uncertainty',
         'change',
     ]

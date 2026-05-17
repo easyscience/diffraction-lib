@@ -127,6 +127,63 @@ def test_cli_fit_loads_and_fits(monkeypatch, tmp_path):
     assert calls == ['FIT', 'DISPLAY', 'PLOT_CORR', 'PLOT_exp1_False']
 
 
+def test_cli_fit_skips_fit_reports_for_sequential_mode(monkeypatch, tmp_path):
+    import easydiffraction.__main__ as main_mod
+    from easydiffraction.project.project import Project
+
+    calls = []
+
+    class FakeInfo:
+        _path = '/some/path'
+
+    class FakeExperiment:
+        name = 'exp1'
+
+    class FakeProject:
+        info = FakeInfo()
+        experiments = [FakeExperiment()]
+
+        class _analysis:
+            fitting_mode_type = 'sequential'
+
+            @staticmethod
+            def fit():
+                calls.append('FIT')
+
+        analysis = _analysis()
+
+        class _display:
+            class _fit:
+                @staticmethod
+                def results():
+                    calls.append('DISPLAY')
+
+                @staticmethod
+                def correlations():
+                    calls.append('PLOT_CORR')
+
+            fit = _fit()
+
+            @staticmethod
+            def pattern(expt_name, **kwargs):
+                del kwargs
+                calls.append(f'PLOT_{expt_name}_False')
+
+        display = _display()
+
+    fake_project = FakeProject()
+
+    proj_dir = tmp_path / 'proj'
+    proj_dir.mkdir()
+    (proj_dir / 'project.cif').write_text('_project.id test\n')
+
+    monkeypatch.setattr(Project, 'load', staticmethod(lambda dir_path: fake_project))
+
+    result = runner.invoke(main_mod.app, ['fit', str(proj_dir)])
+    assert result.exit_code == 0
+    assert calls == ['FIT', 'PLOT_exp1_False']
+
+
 def test_cli_fit_dry_clears_path(monkeypatch, tmp_path):
     import easydiffraction.__main__ as main_mod
     from easydiffraction.project.project import Project

@@ -122,8 +122,8 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     project.experiments.add(expt2)
 
     # Prepare for fitting
-    project.analysis.fit.minimizer_type = 'lmfit'
-    project.analysis.fit.mode = 'joint'
+    project.analysis.fitting.minimizer_type = 'lmfit'
+    project.analysis.fitting_mode_type = 'joint'
 
     # Select fitting parameters
     model.cell.length_a.free = True
@@ -255,7 +255,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     project.experiments.add(expt2)
 
     # Prepare for fitting
-    project.analysis.fit.minimizer_type = 'lmfit'
+    project.analysis.fitting.minimizer_type = 'lmfit'
 
     # Select fitting parameters
     model.cell.length_a.free = True
@@ -279,7 +279,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     # ------------ 2nd fitting ------------
 
     # Perform fit
-    project.analysis.fit.mode = 'joint'
+    project.analysis.fitting_mode_type = 'joint'
     project.analysis.fit()
 
     # Compare fit quality
@@ -292,8 +292,8 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     # ------------ 3rd fitting ------------
 
     # Perform fit
-    project.analysis.joint_fit_experiments['xrd'].weight = 0.5  # Default
-    project.analysis.joint_fit_experiments['npd'].weight = 0.5  # Default
+    project.analysis.joint_fit['xrd'].weight = 0.5  # Default
+    project.analysis.joint_fit['npd'].weight = 0.5  # Default
     project.analysis.fit()
 
     # Compare fit quality
@@ -306,8 +306,8 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     # ------------ 4th fitting ------------
 
     # Perform fit
-    project.analysis.joint_fit_experiments['xrd'].weight = 0.3
-    project.analysis.joint_fit_experiments['npd'].weight = 0.7
+    project.analysis.joint_fit['xrd'].weight = 0.3
+    project.analysis.joint_fit['npd'].weight = 0.7
     project.analysis.fit()
 
     # Compare fit quality

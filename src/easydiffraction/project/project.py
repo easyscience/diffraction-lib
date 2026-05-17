@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import pathlib
 import tempfile
+from typing import ClassVar
 
 from typeguard import typechecked
 from varname import varname
@@ -59,6 +60,51 @@ def _apply_csv_row_to_params(
             param_map[col_name].value = float(row[col_name])
 
 
+def _apply_csv_row_to_diffrn(
+    row: object,
+    columns: object,
+    experiment: object,
+) -> None:
+    """
+    Override ``experiment.diffrn`` values from a CSV row.
+
+    Parameters
+    ----------
+    row : object
+        A pandas Series representing one CSV row.
+    columns : object
+        The DataFrame column index.
+    experiment : object
+        Live experiment whose ``diffrn`` descriptors are updated.
+    """
+    import pandas as pd  # noqa: PLC0415
+
+    from easydiffraction.core.variable import NumericDescriptor  # noqa: PLC0415
+
+    for col_name in columns:
+        if not col_name.startswith('diffrn.') or pd.isna(row[col_name]):
+            continue
+
+        field_name = col_name.removeprefix('diffrn.')
+        descriptor = getattr(experiment.diffrn, field_name, None)
+        if isinstance(descriptor, NumericDescriptor):
+            descriptor.value = float(row[col_name])
+
+
+def _resolve_data_path_from_results_csv(
+    project_path: pathlib.Path,
+    file_path: object,
+) -> pathlib.Path | None:
+    """Resolve a CSV-stored data path against the project path."""
+    if not isinstance(file_path, str) or not file_path:
+        return None
+
+    path = pathlib.Path(file_path)
+    if path.is_absolute():
+        return path
+    return project_path / path
+
+
 class Project(GuardedBase):
     """
     Central API for managing a diffraction data analysis project.
@@ -71,6 +117,7 @@ class Project(GuardedBase):
     # ------------------------------------------------------------------
     # Class-level sentinel: True while load() is constructing a project.
     _loading: bool = False
+    _current_project: ClassVar[Project | None] = None
 
     def __init__(
         self,
@@ -91,6 +138,15 @@ class Project(GuardedBase):
         self._saved = False
         self._varname = 'project' if type(self)._loading else varname()
         self._verbosity: VerbosityEnum = VerbosityEnum.FULL
+        type(self)._current_project = self
+
+    @classmethod
+    def current_project_path(cls) -> pathlib.Path | None:
+        """Return the saved path of the current project, if any."""
+        current_project = cls._current_project
+        if current_project is None:
+            return None
+        return current_project.info.path
 
     # ------------------------------------------------------------------
     # Dunder methods
@@ -382,7 +438,13 @@ class Project(GuardedBase):
         with (analysis_dir / 'analysis.cif').open('w') as f:
             f.write(self.analysis.as_cif)
             console.print('├── 📁 analysis/')
-            console.print('│   └── 📄 analysis.cif')
+
+        analysis_file_names = sorted(
+            path.name for path in analysis_dir.iterdir() if path.is_file()
+        )
+        for index, file_name in enumerate(analysis_file_names):
+            branch = '└──' if index == len(analysis_file_names) - 1 else '├──'
+            console.print(f'│   {branch} 📄 {file_name}')
 
         # Save summary
         with (self._info.path / 'summary.cif').open('w') as f:
@@ -458,13 +520,18 @@ class Project(GuardedBase):
 
         row = df.iloc[row_index]
 
+        experiment = next(iter(self.experiments.values()))
+
         # 1. Reload data if file_path points to a real file
         file_path = row.get('file_path', '')
-        if file_path and pathlib.Path(file_path).is_file():
-            experiment = next(iter(self.experiments.values()))
-            experiment._load_ascii_data_to_experiment(file_path)
+        data_path = _resolve_data_path_from_results_csv(self.info.path, file_path)
+        if data_path is not None and data_path.is_file():
+            experiment._load_ascii_data_to_experiment(str(data_path))
 
-        # 2. Override parameter values and uncertainties
+        # 2. Restore extracted diffrn metadata from the CSV row.
+        _apply_csv_row_to_diffrn(row, df.columns, experiment)
+
+        # 3. Override parameter values and uncertainties
         all_params = self.structures.parameters + self.experiments.parameters
         param_map = {
             p.unique_name: p

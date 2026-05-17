@@ -48,6 +48,9 @@ def format_value(value: object) -> str:
     # None → CIF unknown marker
     if value is None:
         value = '?'
+    # Booleans use CIF true/false tokens
+    elif isinstance(value, bool):
+        value = 'true' if value else 'false'
     # Convert ints to floats
     elif isinstance(value, int):
         value = float(value)
@@ -68,6 +71,22 @@ def format_value(value: object) -> str:
         return value
     # Everything else: fallback
     return str(value)
+
+
+def _strip_optional_quotes(raw: str) -> str:
+    """Return an unquoted CIF token when it is wrapped in quotes."""
+    is_quoted = len(raw) >= _MIN_QUOTED_LEN and raw[0] == raw[-1] and raw[0] in {"'", '"'}
+    return raw[1:-1] if is_quoted else raw
+
+
+def _parse_bool_cif_value(raw: str) -> bool | str:
+    """Parse CIF boolean tokens, returning the raw token if invalid."""
+    normalized_value = _strip_optional_quotes(raw).lower()
+    if normalized_value == 'true':
+        return True
+    if normalized_value == 'false':
+        return False
+    return _strip_optional_quotes(raw)
 
 
 ##################
@@ -371,18 +390,34 @@ def experiment_to_cif(experiment: object) -> str:
 
 def analysis_to_cif(analysis: object) -> str:
     """Render analysis metadata, aliases, and constraints to CIF."""
-    lines: list[str] = []
-    lines.extend((
-        analysis.fit.as_cif,
-        '',
-        analysis.aliases.as_cif,
-        '',
-        analysis.constraints.as_cif,
-    ))
-    jfe_cif = analysis.joint_fit_experiments.as_cif
-    if jfe_cif:
-        lines.extend(('', jfe_cif))
-    return '\n'.join(lines)
+    parts: list[str] = [f'_fitting.mode_type {format_value(analysis.fitting_mode_type)}']
+
+    fitting_cif = analysis.fitting.as_cif
+    if fitting_cif:
+        parts.append(fitting_cif)
+
+    aliases_cif = analysis.aliases.as_cif
+    if aliases_cif:
+        parts.append(aliases_cif)
+
+    constraints_cif = analysis.constraints.as_cif
+    if constraints_cif:
+        parts.append(constraints_cif)
+
+    if analysis.fitting_mode_type == 'joint':
+        joint_fit_cif = analysis.joint_fit.as_cif
+        if joint_fit_cif:
+            parts.append(joint_fit_cif)
+    elif analysis.fitting_mode_type == 'sequential':
+        sequential_fit_cif = analysis.sequential_fit.as_cif
+        if sequential_fit_cif:
+            parts.append(sequential_fit_cif)
+
+        sequential_extract_cif = analysis.sequential_fit_extract.as_cif
+        if sequential_extract_cif:
+            parts.append(sequential_extract_cif)
+
+    return '\n\n'.join(parts)
 
 
 def summary_to_cif(_summary: object) -> str:
@@ -487,8 +522,12 @@ def analysis_from_cif(analysis: object, cif_text: str) -> None:
     doc = gemmi.cif.read_string(_wrap_in_data_block(cif_text, 'analysis'))
     block = doc.sole_block()
 
+    _raise_for_legacy_analysis_tags(block)
+    analysis._set_fitting_mode_type(_analysis_mode_from_cif_block(block))
+
     # Restore fit configuration
-    analysis.fit.from_cif(block)
+    analysis.fitting.from_cif(block)
+    _restore_mode_specific_analysis_sections(analysis, block)
 
     # Restore aliases (loop)
     analysis.aliases.from_cif(block)
@@ -498,8 +537,111 @@ def analysis_from_cif(analysis: object, cif_text: str) -> None:
     if analysis.constraints._items:
         analysis.constraints.enable()
 
-    # Restore joint-fit experiment weights (loop)
-    analysis._joint_fit_experiments.from_cif(block)
+
+def _collect_legacy_analysis_tags(block: object) -> list[str]:
+    """Return deprecated analysis CIF tags present in a block."""
+    legacy_tags: list[str] = []
+    if _has_cif_value(block, '_fit.minimizer_type'):
+        legacy_tags.append('_fit.minimizer_type')
+    if _has_cif_value(block, '_fit.mode'):
+        legacy_tags.append('_fit.mode')
+    if _has_cif_loop(block, '_joint_fit_experiment.id'):
+        legacy_tags.append('_joint_fit_experiment.id')
+    if _has_cif_loop(block, '_joint_fit_experiment.weight'):
+        legacy_tags.append('_joint_fit_experiment.weight')
+    return legacy_tags
+
+
+def _raise_for_legacy_analysis_tags(block: object) -> None:
+    """Raise when deprecated analysis CIF tags are present."""
+    legacy_tags = _collect_legacy_analysis_tags(block)
+    if not legacy_tags:
+        return
+
+    msg = (
+        'Legacy analysis CIF tags are no longer supported: '
+        f'{legacy_tags}. Use _fitting.minimizer_type, _fitting.mode_type, '
+        '_joint_fit.experiment_id, and _joint_fit.weight.'
+    )
+    raise ValueError(msg)
+
+
+def _analysis_mode_from_cif_block(block: object) -> str:
+    """Return the fitting mode stored in an analysis CIF block."""
+    read_cif_string = _make_cif_string_reader(block)
+    mode_value = read_cif_string('_fitting.mode_type')
+    if mode_value is not None:
+        return mode_value
+
+    from easydiffraction.analysis.enums import FitModeEnum  # noqa: PLC0415
+
+    return FitModeEnum.default().value
+
+
+def _has_joint_fit_rows(block: object) -> bool:
+    """Return True when joint-fit rows are present."""
+    return _has_cif_loop(block, '_joint_fit.experiment_id') or _has_cif_loop(
+        block,
+        '_joint_fit.weight',
+    )
+
+
+def _has_sequential_fit_settings(block: object) -> bool:
+    """Return True when sequential-fit scalar settings are present."""
+    return any(
+        _has_cif_value(block, tag)
+        for tag in (
+            '_sequential_fit.data_dir',
+            '_sequential_fit.file_pattern',
+            '_sequential_fit.max_workers',
+            '_sequential_fit.chunk_size',
+            '_sequential_fit.reverse',
+        )
+    )
+
+
+def _warn_inactive_analysis_sections(
+    *,
+    has_joint_rows: bool,
+    has_sequential_settings: bool,
+    has_sequential_extract_rows: bool,
+) -> None:
+    """Warn when inactive analysis sections are skipped."""
+    skipped_sections: list[str] = []
+    if has_joint_rows:
+        skipped_sections.append('joint_fit')
+    if has_sequential_settings or has_sequential_extract_rows:
+        skipped_sections.append('sequential_fit')
+    log.warning(
+        'Skipping inactive analysis CIF sections while fitting_mode_type is single: '
+        f'{skipped_sections}.'
+    )
+
+
+def _restore_mode_specific_analysis_sections(analysis: object, block: object) -> None:
+    """Restore only the active mode-specific analysis sections."""
+    has_joint_rows = _has_joint_fit_rows(block)
+    has_sequential_settings = _has_sequential_fit_settings(block)
+    has_sequential_extract_rows = _has_cif_loop(block, '_sequential_fit_extract.id')
+
+    if analysis.fitting_mode_type == 'joint':
+        if has_joint_rows:
+            analysis.joint_fit.from_cif(block)
+        return
+
+    if analysis.fitting_mode_type == 'sequential':
+        if has_sequential_settings:
+            analysis.sequential_fit.from_cif(block)
+        if has_sequential_extract_rows:
+            analysis.sequential_fit_extract.from_cif(block)
+        return
+
+    if has_joint_rows or has_sequential_settings or has_sequential_extract_rows:
+        _warn_inactive_analysis_sections(
+            has_joint_rows=has_joint_rows,
+            has_sequential_settings=has_sequential_settings,
+            has_sequential_extract_rows=has_sequential_extract_rows,
+        )
 
 
 def _make_cif_string_reader(block: gemmi.cif.Block) -> object:
@@ -532,6 +674,20 @@ def _make_cif_string_reader(block: gemmi.cif.Block) -> object:
         return raw
 
     return _read
+
+
+def _has_cif_value(block: gemmi.cif.Block, tag: str) -> bool:
+    """Return True when a scalar CIF tag is present in the block."""
+    return block.find_value(tag) is not None
+
+
+def _has_cif_loop(block: gemmi.cif.Block, tag: str) -> bool:
+    """Return True when a CIF loop column is present in the block."""
+    loop_ref = block.find_loop(tag)
+    if loop_ref is None:
+        return False
+    loop = loop_ref.get_loop() if hasattr(loop_ref, 'get_loop') else loop_ref
+    return loop is not None
 
 
 # TODO: Check the following methods:
@@ -591,10 +747,10 @@ def param_from_cif(
 
     # If string, strip quotes if present
     elif self._value_type == DataTypes.STRING:
-        if len(raw) >= _MIN_QUOTED_LEN and raw[0] == raw[-1] and raw[0] in {"'", '"'}:
-            self.value = raw[1:-1]
-        else:
-            self.value = raw
+        self.value = _strip_optional_quotes(raw)
+
+    elif self._value_type == DataTypes.BOOL:
+        self.value = _parse_bool_cif_value(raw)
 
     # Other types are not supported
     else:
@@ -642,10 +798,11 @@ def _set_param_from_raw_cif_value(
                 param.uncertainty = u.s  # type: ignore[attr-defined]
 
     # If string, strip quotes if present
-    # TODO: Make a helper function for this
     elif param._value_type == DataTypes.STRING:
-        is_quoted = len(raw) >= _MIN_QUOTED_LEN and raw[0] == raw[-1] and raw[0] in {"'", '"'}
-        param.value = raw[1:-1] if is_quoted else raw
+        param.value = _strip_optional_quotes(raw)
+
+    elif param._value_type == DataTypes.BOOL:
+        param.value = _parse_bool_cif_value(raw)
 
     else:
         log.debug(f'Unrecognized type: {param._value_type}')

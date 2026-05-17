@@ -35,6 +35,7 @@ ACTIVITY_LABEL_PROCESSING = 'Processing...'
 ACTIVITY_LABEL_SAMPLING = 'Sampling...'
 ACTIVITY_ACCENT_COLOR = '#d97706'
 ACTIVITY_TERMINAL_STYLE = ACTIVITY_ACCENT_COLOR
+ACTIVITY_TERMINAL_FALLBACK_STYLE = 'bold yellow'
 
 SPINNER_FRAMES: tuple[str, ...] = (
     '⠋',
@@ -52,6 +53,27 @@ _SPINNER_FRAME_SECONDS = 0.1
 _JUPYTER_SPINNER_SECONDS = 1.0
 
 
+def resolve_activity_terminal_style(console: object | None = None) -> str:
+    """
+    Return a terminal-safe activity indicator style.
+
+    Parameters
+    ----------
+    console : object | None, default=None
+        Console-like object whose ``color_system`` determines whether
+        the accent color can be rendered directly.
+
+    Returns
+    -------
+    str
+        The preferred terminal style for the current console.
+    """
+    color_system = getattr(console, 'color_system', None)
+    if color_system in {'standard', 'windows'}:
+        return ACTIVITY_TERMINAL_FALLBACK_STYLE
+    return ACTIVITY_TERMINAL_STYLE
+
+
 class _TerminalLiveHandle:
     """
     Adapter exposing update()/close() for terminal live updates.
@@ -60,13 +82,14 @@ class _TerminalLiveHandle:
     and notebook handles through a single update-oriented interface.
     """
 
-    def __init__(self, *, console: object) -> None:
+    def __init__(self, *, console: object, auto_refresh: bool = True) -> None:
         self._renderable: object = Text('')
         self._live = Live(
             console=console,
-            auto_refresh=True,
+            auto_refresh=auto_refresh,
             refresh_per_second=1 / _SPINNER_FRAME_SECONDS,
             get_renderable=self._get_renderable,
+            vertical_overflow='visible',
         )
         self._live.start()
 
@@ -94,9 +117,14 @@ class _TerminalLiveHandle:
             self._live.stop()
 
 
-def make_display_handle() -> object | None:
+def make_display_handle(*, auto_refresh: bool = True) -> object | None:
     """
     Create a generic in-place display handle for the active environment.
+
+    Parameters
+    ----------
+    auto_refresh : bool, default=True
+        Whether a terminal live handle should refresh continuously.
 
     Returns
     -------
@@ -110,7 +138,7 @@ def make_display_handle() -> object | None:
             handle.display(HTML(''))
         return handle
 
-    return _TerminalLiveHandle(console=ConsoleManager.get())
+    return _TerminalLiveHandle(console=ConsoleManager.get(), auto_refresh=auto_refresh)
 
 
 class ActivityIndicator:
@@ -125,6 +153,12 @@ class ActivityIndicator:
         Output verbosity controlling whether live display is shown.
     display_handle : object | None, default=None
         Optional existing live display handle to reuse.
+    animated : bool, default=True
+        Whether to animate the spinner label continuously.
+    refresh_per_second : float | None, default=None
+        Optional override for the Rich Live refresh rate. When ``None``,
+        defaults to one refresh per spinner frame. Lower values reduce
+        terminal flicker for multi-line live regions.
     """
 
     def __init__(
@@ -133,11 +167,17 @@ class ActivityIndicator:
         *,
         verbosity: VerbosityEnum,
         display_handle: object | None = None,
+        animated: bool = True,
+        refresh_per_second: float | None = None,
     ) -> None:
         self._label = label
         self._verbosity = verbosity
         self._content: object | None = None
         self._provided_display_handle = display_handle
+        self._refresh_per_second = (
+            refresh_per_second if refresh_per_second is not None else 1 / _SPINNER_FRAME_SECONDS
+        )
+        self._animated = animated
         self._display_handle: object | None = None
         self._live: object | None = None
         self._running = False
@@ -174,9 +214,10 @@ class ActivityIndicator:
 
         live = Live(
             console=ConsoleManager.get(),
-            auto_refresh=True,
-            refresh_per_second=1 / _SPINNER_FRAME_SECONDS,
+            auto_refresh=self._animated,
+            refresh_per_second=self._refresh_per_second,
             get_renderable=self._terminal_renderable,
+            vertical_overflow='visible',
         )
         live.start()
         self._live = live
@@ -286,11 +327,14 @@ class ActivityIndicator:
         return Text(str(self._content))
 
     def _terminal_indicator_line(self) -> Text | None:
+        style = resolve_activity_terminal_style(ConsoleManager.get())
         if self._running:
-            frame = self._current_frame()
-            return Text(f'{frame} {self._label}', style=ACTIVITY_TERMINAL_STYLE)
+            if self._animated:
+                frame = self._current_frame()
+                return Text(f'{frame} {self._label}', style=style)
+            return Text(self._label, style=style)
         if self._keep_stopped_label:
-            return Text(self._label, style=ACTIVITY_TERMINAL_STYLE)
+            return Text(self._label, style=style)
         return None
 
     def _current_frame(self) -> str:
@@ -326,6 +370,12 @@ class ActivityIndicator:
         safe_label = html.escape(self._label)
 
         if self._running:
+            if not self._animated:
+                return (
+                    '<div class="ed-activity">'
+                    f'<span class="ed-activity-label">{safe_label}</span>'
+                    '</div>'
+                )
             return (
                 '<div class="ed-activity">'
                 '<span class="ed-activity-spinner" aria-hidden="true"></span>'

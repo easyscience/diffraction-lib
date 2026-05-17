@@ -76,7 +76,7 @@ def lbco_fitted_project():
     project = Project()
     project.structures.add(model)
     project.experiments.add(expt)
-    project.analysis.fit.minimizer_type = 'lmfit'
+    project.analysis.fitting.minimizer_type = 'lmfit'
 
     model.cell.length_a.free = True
     expt.linked_phases['lbco'].scale.free = True
@@ -84,6 +84,7 @@ def lbco_fitted_project():
     expt.background['1'].y.free = True
     expt.background['2'].y.free = True
 
-    project.analysis.fit(verbosity='silent')
+    project.verbosity = 'silent'
+    project.analysis.fit()
 
     return project

@@ -117,7 +117,7 @@ You can also check the available minimizers using the
 `show_minimizer_types()` method:
 
 ```python
-project.analysis.fit.show_minimizer_types()
+project.analysis.fitting.show_minimizer_types()
 ```
 
 ### Available parameters

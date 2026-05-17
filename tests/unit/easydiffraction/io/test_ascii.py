@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import zipfile
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -13,6 +14,7 @@ from easydiffraction.io.ascii import extract_data_paths_from_dir
 from easydiffraction.io.ascii import extract_data_paths_from_zip
 from easydiffraction.io.ascii import extract_project_from_zip
 from easydiffraction.io.ascii import load_numeric_block
+from easydiffraction.project.project import Project
 
 
 class TestLoadNumericBlock:
@@ -183,6 +185,34 @@ class TestExtractDataPathsFromZip:
         assert len(paths) == 1
         assert dest.is_dir()
 
+    def test_relative_destination_does_not_depend_on_current_project(self, tmp_path, monkeypatch):
+        """Relative destinations are resolved from cwd, not project state."""
+        zip_path = tmp_path / 'test.zip'
+        with zipfile.ZipFile(zip_path, 'w') as zf:
+            zf.writestr('scan_001.dat', '1 2 3\n')
+
+        workspace = tmp_path / 'workspace'
+        workspace.mkdir()
+        monkeypatch.chdir(workspace)
+
+        original_current_project = Project._current_project
+        try:
+            Project._loading = True
+            project_one = Project()
+            project_two = Project()
+        finally:
+            Project._loading = False
+
+        try:
+            project_one.save_as(str(tmp_path / 'project-one'))
+            project_two.save_as(str(tmp_path / 'project-two'))
+            paths = extract_data_paths_from_zip(zip_path, destination='data/d20_scan')
+        finally:
+            Project._current_project = original_current_project
+
+        assert len(paths) == 1
+        assert Path(paths[0]).parent == (workspace / 'data' / 'd20_scan').resolve()
+
     def test_raises_file_not_found(self, tmp_path):
         """Raises FileNotFoundError for missing ZIP path."""
         with pytest.raises(FileNotFoundError):
@@ -238,6 +268,21 @@ class TestExtractDataPathsFromDir:
         assert len(paths) == 2
         assert 'scan_001.dat' in paths[0]
         assert 'scan_002.dat' in paths[1]
+
+    def test_lists_absolute_paths_for_relative_directory(self, tmp_path, monkeypatch):
+        """Returns absolute paths even when the input directory is relative."""
+        data_dir = tmp_path / 'scans'
+        data_dir.mkdir()
+        (data_dir / 'scan_002.dat').write_text('2\n')
+        (data_dir / 'scan_001.dat').write_text('1\n')
+        monkeypatch.chdir(tmp_path)
+
+        paths = extract_data_paths_from_dir('scans')
+
+        assert paths == [
+            str((data_dir / 'scan_001.dat').resolve()),
+            str((data_dir / 'scan_002.dat').resolve()),
+        ]
 
     def test_raises_for_missing_directory(self, tmp_path):
         """Raises FileNotFoundError for non-existent directory."""

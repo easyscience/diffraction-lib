@@ -70,16 +70,16 @@ class TestLoadAnalysis:
 
         loaded = Project.load(str(tmp_path / 'proj'))
 
-        assert loaded.analysis.fit.minimizer_type.value == 'lmfit (leastsq)'
+        assert loaded.analysis.fitting.minimizer_type.value == 'lmfit (leastsq)'
 
     def test_round_trips_fit_mode(self, tmp_path):
         original = Project(name='a2')
-        original.analysis.fit.mode = 'joint'
+        original.analysis.fitting_mode_type = 'joint'
         original.save_as(str(tmp_path / 'proj'))
 
         loaded = Project.load(str(tmp_path / 'proj'))
 
-        assert loaded.analysis.fit.mode.value == 'joint'
+        assert loaded.analysis.fitting_mode_type == 'joint'
 
     def test_round_trips_rendering_configuration(self, tmp_path):
         original = Project(name='d1')
@@ -136,7 +136,7 @@ class TestLoadAnalysisCifFallback:
         assert (tmp_path / 'proj' / 'analysis' / 'analysis.cif').is_file()
 
         loaded = Project.load(str(tmp_path / 'proj'))
-        assert loaded.analysis.fit.minimizer_type.value == 'lmfit (leastsq)'
+        assert loaded.analysis.fitting.minimizer_type.value == 'lmfit (leastsq)'
 
     def test_loads_analysis_from_root_fallback(self, tmp_path):
         """Old layout fallback: analysis.cif at project root."""
@@ -150,4 +150,4 @@ class TestLoadAnalysisCifFallback:
         analysis_dir.rmdir()
 
         loaded = Project.load(str(proj_dir))
-        assert loaded.analysis.fit.minimizer_type.value == 'lmfit (leastsq)'
+        assert loaded.analysis.fitting.minimizer_type.value == 'lmfit (leastsq)'

@@ -4,17 +4,24 @@
 from __future__ import annotations
 
 from contextlib import suppress
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
 from easydiffraction.analysis.categories.aliases.factory import AliasesFactory
 from easydiffraction.analysis.categories.constraints.factory import ConstraintsFactory
-from easydiffraction.analysis.categories.fit import Fit
-from easydiffraction.analysis.categories.fit import FitFactory
-from easydiffraction.analysis.categories.fit import FitModeEnum
-from easydiffraction.analysis.categories.joint_fit_experiments import JointFitExperiments
+from easydiffraction.analysis.categories.fitting import Fitting
+from easydiffraction.analysis.categories.fitting import FittingFactory
+from easydiffraction.analysis.categories.joint_fit import JointFitCollection
+from easydiffraction.analysis.categories.sequential_fit import SequentialFit
+from easydiffraction.analysis.categories.sequential_fit import SequentialFitFactory
+from easydiffraction.analysis.categories.sequential_fit_extract import (
+    SequentialFitExtractCollection,
+)
+from easydiffraction.analysis.enums import FitModeEnum
 from easydiffraction.analysis.fitting import Fitter
+from easydiffraction.core.guard import _apply_help_filter
 from easydiffraction.core.singleton import ConstraintsHandler
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import Parameter
@@ -363,10 +370,16 @@ class Analysis:
         self._constraints_type: str = ConstraintsFactory.default_tag()
         self.constraints = ConstraintsFactory.create(self._constraints_type)
         self.constraints_handler = ConstraintsHandler.get()
-        self._fit: Fit = FitFactory.create(FitFactory.default_tag())
-        self._fit._parent = self
-        self._joint_fit_experiments = JointFitExperiments()
-        self.fitter = Fitter(self._fit.minimizer_type.value)
+        self._fitting: Fitting = FittingFactory.create(FittingFactory.default_tag())
+        self._fitting._parent = self
+        self._fitting_mode_type: FitModeEnum = FitModeEnum.default()
+        self._joint_fit: JointFitCollection = JointFitCollection()
+        self._sequential_fit: SequentialFit = SequentialFitFactory.create(
+            SequentialFitFactory.default_tag()
+        )
+        self._sequential_fit._parent = self
+        self._sequential_fit_extract = SequentialFitExtractCollection()
+        self.fitter = Fitter(self._fitting.minimizer_type.value)
         self.fit_results = None
         self._parameter_snapshots: dict[str, dict[str, dict]] = {}
         self._display = AnalysisDisplay(self)
@@ -378,7 +391,67 @@ class Analysis:
 
     def help(self) -> None:
         """Print a summary of analysis properties and methods."""
-        render_object_help(self)
+        cls = type(self)
+        console.paragraph(f"Help for '{cls.__name__}'")
+
+        property_rows = _discover_property_rows(cls)
+        method_rows = _discover_method_rows(cls)
+        property_names = [row[1] for row in property_rows]
+        method_names = [row[1][:-2] for row in method_rows]
+        property_names, method_names = _apply_help_filter(self, property_names, method_names)
+
+        filtered_property_names = set(property_names)
+        filtered_method_names = set(method_names)
+        filtered_property_rows = []
+        for row in property_rows:
+            if row[1] in filtered_property_names:
+                filtered_property_rows.append([
+                    str(len(filtered_property_rows) + 1),
+                    row[1],
+                    row[2],
+                    row[3],
+                ])
+
+        filtered_method_rows = []
+        for row in method_rows:
+            method_name = row[1][:-2]
+            if method_name in filtered_method_names:
+                filtered_method_rows.append([str(len(filtered_method_rows) + 1), row[1], row[2]])
+
+        if filtered_property_rows:
+            console.paragraph('Properties')
+            render_table(
+                columns_headers=['#', 'Name', 'Writable', 'Description'],
+                columns_alignment=['right', 'left', 'center', 'left'],
+                columns_data=filtered_property_rows,
+            )
+
+        if filtered_method_rows:
+            console.paragraph('Methods')
+            render_table(
+                columns_headers=['#', 'Name', 'Description'],
+                columns_alignment=['right', 'left', 'left'],
+                columns_data=filtered_method_rows,
+            )
+
+    def _help_filter(
+        self,
+        properties: list[str],
+        methods: list[str],
+    ) -> tuple[list[str], list[str]]:
+        """Hide inactive mode-specific categories from analysis help."""
+        hidden_properties: set[str]
+        if self._fitting_mode_type is FitModeEnum.SINGLE:
+            hidden_properties = {'joint_fit', 'sequential_fit', 'sequential_fit_extract'}
+        elif self._fitting_mode_type is FitModeEnum.JOINT:
+            hidden_properties = {'sequential_fit', 'sequential_fit_extract'}
+        elif self._fitting_mode_type is FitModeEnum.SEQUENTIAL:
+            hidden_properties = {'joint_fit'}
+        else:  # pragma: no cover
+            hidden_properties = set()
+
+        filtered_properties = [name for name in properties if name not in hidden_properties]
+        return filtered_properties, methods
 
     # ------------------------------------------------------------------
     #  Parameter helpers
@@ -434,100 +507,239 @@ class Analysis:
         df.columns = pd.MultiIndex.from_tuples(df.columns)
         return df
 
+    def fit(self) -> None:
+        """Execute fitting for the currently selected fitting mode."""
+        mode = self._fitting_mode_type
+        if mode is FitModeEnum.SINGLE:
+            self._run_single()
+        elif mode is FitModeEnum.JOINT:
+            self._prepare_joint_fit()
+            self._run_joint()
+        elif mode is FitModeEnum.SEQUENTIAL:
+            self._run_sequential()
+        else:  # pragma: no cover
+            msg = f'Unknown fit mode: {mode!r}'
+            raise ValueError(msg)
+
+    def _prepare_joint_fit(self) -> None:
+        """
+        Auto-populate and validate joint-fit rows before execution.
+        """
+        experiments = self.project.experiments
+        minimum_joint_experiments = 2
+        if len(experiments) < minimum_joint_experiments:
+            msg = (
+                'Joint fitting requires at least '
+                f'{minimum_joint_experiments} experiments, found {len(experiments)}.'
+            )
+            raise ValueError(msg)
+
+        experiment_names = list(experiments.names)
+        experiment_name_set = set(experiment_names)
+        existing_ids = [item.experiment_id.value for item in self._joint_fit]
+
+        unexpected_ids = sorted({name for name in existing_ids if name not in experiment_name_set})
+        if unexpected_ids:
+            msg = (
+                'joint_fit contains experiment_id values not present in the project: '
+                f'{unexpected_ids}.'
+            )
+            raise ValueError(msg)
+
+        existing_id_set = set(existing_ids)
+        for experiment_id in experiment_names:
+            if experiment_id not in existing_id_set:
+                self._joint_fit.create(experiment_id=experiment_id, weight=1.0)
+                existing_id_set.add(experiment_id)
+
+        missing_ids = [name for name in experiment_names if name not in existing_id_set]
+        if missing_ids:
+            msg = f'joint_fit is missing rows for project experiments: {missing_ids}.'
+            raise ValueError(msg)
+
     @property
-    def fit(self) -> Fit:
-        """Fit configuration and execution entry-point."""
-        return self._fit
+    def fitting(self) -> Fitting:
+        """Fitting configuration category."""
+        return self._fitting
+
+    @property
+    def fitting_mode_type(self) -> str:
+        """Currently selected fitting mode."""
+        return self._fitting_mode_type.value
+
+    @fitting_mode_type.setter
+    def fitting_mode_type(self, value: str) -> None:
+        supported = [mode.value for mode in FitModeEnum]
+
+        try:
+            new_mode = FitModeEnum(value)
+        except ValueError:
+            log.warning(
+                f"Unsupported fitting mode '{value}'. "
+                f'Supported fitting modes: {supported}. '
+                f"For more information, use 'show_fitting_mode_types()'",
+            )
+            return
+
+        self._fitting_mode_type = new_mode
+        console.paragraph('Fitting mode changed to')
+        console.print(self._fitting_mode_type.value)
+
+    def show_fitting_mode_types(self) -> None:
+        """Print supported fitting modes and mark the current type."""
+        columns_data = [
+            [
+                '*' if mode is self._fitting_mode_type else '',
+                mode.value,
+                mode.description(),
+            ]
+            for mode in FitModeEnum
+        ]
+        console.paragraph('Fitting mode types')
+        render_table(
+            columns_headers=['', 'Type', 'Description'],
+            columns_alignment=['left', 'left', 'left'],
+            columns_data=columns_data,
+        )
+
+    def _set_fitting_mode_type(self, value: str) -> None:
+        """Set the fitting mode without console output."""
+        supported = [mode.value for mode in FitModeEnum]
+
+        try:
+            self._fitting_mode_type = FitModeEnum(value)
+        except ValueError:
+            log.warning(
+                f"Unsupported fitting mode '{value}' in CIF. "
+                f'Supported: {supported}. Keeping default.',
+            )
 
     # ------------------------------------------------------------------
-    #  Joint-fit experiments (category)
+    #  Joint-fit weights (category)
     # ------------------------------------------------------------------
 
     @property
-    def joint_fit_experiments(self) -> object:
+    def joint_fit(self) -> object:
         """Per-experiment weight collection for joint fitting."""
-        return self._joint_fit_experiments
+        return self._joint_fit
 
-    def _run_fit(
-        self,
-        verbosity: str | None = None,
-        *,
-        use_physical_limits: bool = False,
-        random_seed: int | None = None,
-    ) -> None:
+    @property
+    def sequential_fit(self) -> SequentialFit:
+        """Persisted settings for sequential fitting."""
+        return self._sequential_fit
+
+    @property
+    def sequential_fit_extract(self) -> SequentialFitExtractCollection:
+        """Persisted extract rules for sequential fitting."""
+        return self._sequential_fit_extract
+
+    def _resolve_sequential_data_dir(self) -> Path:
         """
-        Execute fitting for all experiments.
-
-        This method performs the optimization but does not display
-        results automatically. Call :meth:`display.fit_results` after
-        fitting to see a summary of the fit quality and parameter
-        values.
-
-        In 'single' mode, fits each experiment independently. In 'joint'
-        mode, performs a simultaneous fit across experiments with
-        weights. If mode is 'sequential', logs an error directing the
-        user to :meth:`fit_sequential` instead.
-
-        Sets :attr:`fit_results` on success, which can be accessed
-        programmatically (e.g.,
-        ``analysis.fit_results.reduced_chi_square``).
-
-        Parameters
-        ----------
-        verbosity : str | None, default=None
-            Console output verbosity: ``'full'`` for detailed per-
-            experiment progress, ``'short'`` for a
-            one-row-per-experiment summary table, or ``'silent'`` for no
-            output. When ``None``, uses ``project.verbosity``.
-        use_physical_limits : bool, default=False
-            When ``True``, fall back to physical limits from the value
-            spec for parameters whose ``fit_min``/``fit_max`` are
-            unbounded.
-        random_seed : int | None, default=None
-            Optional random seed passed to stochastic minimizers.
+        Resolve the sequential-fit data directory to an absolute path.
         """
-        verb = VerbosityEnum(verbosity if verbosity is not None else self.project.verbosity)
+        data_dir = Path(self._sequential_fit.data_dir.value)
+        if data_dir.is_absolute():
+            return data_dir
 
+        project_path = self.project.info.path
+        if project_path is None:
+            msg = (
+                'Project must be saved before resolving a relative '
+                'sequential_fit.data_dir. Call save_as() first.'
+            )
+            raise ValueError(msg)
+
+        return project_path / data_dir
+
+    def _prepare_fit_run(self) -> tuple[VerbosityEnum, object, object] | None:
+        """Resolve common inputs for single and joint fitting."""
+        verb = VerbosityEnum(self.project.verbosity)
         structures = self.project.structures
         if not structures:
             log.warning('No structures found in the project. Cannot run fit.')
-            return
+            return None
 
         experiments = self.project.experiments
         if not experiments:
             log.warning('No experiments found in the project. Cannot run fit.')
-            return
+            return None
 
         # Apply constraints before fitting so that user-constrained
         # parameters are marked and excluded from the free parameter
         # list built by the fitter.
         self._update_categories()
 
-        # Run the fitting process
-        mode = FitModeEnum(self._fit.mode.value)
-        if mode is FitModeEnum.JOINT:
-            self._fit_joint(
-                verb,
-                structures,
-                experiments,
-                use_physical_limits=use_physical_limits,
-                random_seed=random_seed,
-            )
-        elif mode is FitModeEnum.SINGLE:
-            self._fit_single(
-                verb,
-                structures,
-                experiments,
-                use_physical_limits=use_physical_limits,
-                random_seed=random_seed,
-            )
-        elif mode is FitModeEnum.SEQUENTIAL:
-            log.error(
-                "fit.mode is 'sequential'. Use fit_sequential(data_dir=...) instead of fit()."
-            )
+        return verb, structures, experiments
+
+    def _run_single(self) -> None:
+        """
+        Execute single-mode fitting with current project verbosity.
+        """
+        prepared = self._prepare_fit_run()
+        if prepared is None:
             return
 
-        # After fitting, save the project
+        verb, structures, experiments = prepared
+        self._fit_single(
+            verb,
+            structures,
+            experiments,
+            use_physical_limits=False,
+            random_seed=None,
+        )
+
+        if self.project.info.path is not None:
+            self.project.save()
+
+    def _run_joint(self) -> None:
+        """Execute joint-mode fitting with current project verbosity."""
+        prepared = self._prepare_fit_run()
+        if prepared is None:
+            return
+
+        verb, structures, experiments = prepared
+        self._fit_joint(
+            verb,
+            structures,
+            experiments,
+            use_physical_limits=False,
+            random_seed=None,
+        )
+
+        if self.project.info.path is not None:
+            self.project.save()
+
+    def _run_sequential(self) -> None:
+        """
+        Execute sequential fitting from persisted sequential settings.
+        """
+        from easydiffraction.analysis.sequential import fit_sequential as _fit_seq  # noqa: PLC0415
+
+        self._set_fitting_mode_type(FitModeEnum.SEQUENTIAL.value)
+        self._update_categories()
+
+        max_workers_value = self._sequential_fit.max_workers.value
+        max_workers = max_workers_value if max_workers_value == 'auto' else int(max_workers_value)
+
+        chunk_size_value = self._sequential_fit.chunk_size.value
+        chunk_size = None if chunk_size_value == '.' else int(chunk_size_value)
+
+        self.fit_results = None
+        self.fitter.results = None
+
+        try:
+            _fit_seq(
+                analysis=self,
+                data_dir=str(self._resolve_sequential_data_dir()),
+                max_workers=max_workers,
+                chunk_size=chunk_size,
+                file_pattern=self._sequential_fit.file_pattern.value,
+                reverse=self._sequential_fit.reverse.value,
+            )
+        finally:
+            self.fit_results = None
+            self.fitter.results = None
+
         if self.project.info.path is not None:
             self.project.save()
 
@@ -557,19 +769,17 @@ class Analysis:
             Optional random seed passed to stochastic minimizers.
         """
         mode = FitModeEnum.JOINT
-        # Auto-populate joint_fit_experiments if empty
-        if not len(self._joint_fit_experiments):
-            for id in experiments.names:
-                self._joint_fit_experiments.create(id=id, weight=0.5)
+        # Auto-populate joint_fit if empty
+        if not len(self._joint_fit):
+            for experiment_id in experiments.names:
+                self._joint_fit.create(experiment_id=experiment_id, weight=0.5)
         if verb is not VerbosityEnum.SILENT:
             console.paragraph(
                 f"Using all experiments 🔬 {experiments.names} for '{mode.value}' fitting"
             )
         # Resolve weights to a plain numpy array
         experiments_list = list(experiments.values())
-        weights_list = [
-            self._joint_fit_experiments[name].weight.value for name in experiments.names
-        ]
+        weights_list = [self._joint_fit[name].weight.value for name in experiments.names]
         weights_array = np.array(weights_list, dtype=np.float64)
         self.fitter.fit(
             structures,
@@ -741,79 +951,6 @@ class Analysis:
             columns_data=short_rows,
             display_handle=display_handle,
         )
-
-    def fit_sequential(
-        self,
-        data_dir: str,
-        max_workers: int | str = 1,
-        chunk_size: int | None = None,
-        file_pattern: str = '*',
-        extract_diffrn: object = None,
-        verbosity: str | None = None,
-        *,
-        reverse: bool = False,
-    ) -> None:
-        """
-        Run sequential fitting over all data files in a directory.
-
-        Fits each dataset independently using the current structure and
-        experiment as a template.  Results are written incrementally to
-        ``analysis/results.csv`` in the project directory.
-
-        The project must contain exactly one structure and one
-        experiment (the template), and must have been saved
-        (``save_as()``) before calling this method.
-
-        Parameters
-        ----------
-        data_dir : str
-            Path to directory containing data files.
-        max_workers : int | str, default=1
-            Number of parallel worker processes. ``1`` = sequential.
-            ``'auto'`` = physical CPU count. Uses
-            ``ProcessPoolExecutor`` with ``spawn`` context when > 1.
-        chunk_size : int | None, default=None
-            Files per chunk. Default ``None`` uses *max_workers*.
-        file_pattern : str, default='*'
-            Glob pattern to filter files in *data_dir*.
-        extract_diffrn : object, default=None
-            User callback ``f(file_path) → {diffrn_field: value}``.
-            Called per file after fitting. ``None`` = no diffrn
-            metadata.
-        verbosity : str | None, default=None
-            ``'full'``, ``'short'``, or ``'silent'``. Default: project
-            verbosity.
-        reverse : bool, default=False
-            When ``True``, process data files in reverse order.  Useful
-            when starting values are better matched to the last file
-            (e.g. highest-temperature dataset in a cooling scan).
-        """
-        from easydiffraction.analysis.sequential import fit_sequential as _fit_seq  # noqa: PLC0415
-
-        # Record the fit mode for CIF serialization
-        self._fit.mode = FitModeEnum.SEQUENTIAL.value
-
-        # Apply constraints before building the template
-        self._update_categories()
-
-        # Temporarily override project verbosity if caller provided one
-        original_verbosity = None
-        if verbosity is not None:
-            original_verbosity = self.project.verbosity
-            self.project.verbosity = verbosity
-        try:
-            _fit_seq(
-                analysis=self,
-                data_dir=data_dir,
-                max_workers=max_workers,
-                chunk_size=chunk_size,
-                file_pattern=file_pattern,
-                extract_diffrn=extract_diffrn,
-                reverse=reverse,
-            )
-        finally:
-            if original_verbosity is not None:
-                self.project.verbosity = original_verbosity
 
     def _update_categories(
         self,

@@ -121,7 +121,7 @@ def test_summarize_posterior_parameters_preserves_order_and_display_names():
     summaries = summarize_posterior_parameters(
         parameter_names=['beta', 'alpha'],
         posterior_samples=posterior_samples,
-        map_values=np.array([2.05, 1.05]),
+        best_sample_values=np.array([2.05, 1.05]),
         parameter_display_names=['Beta width', 'Alpha shift'],
         convergence_diagnostics={
             'r_hat_by_parameter': {'beta': 1.02, 'alpha': 1.0},
@@ -171,7 +171,7 @@ def test_bayesian_fit_results_display_results_prints_sampler_and_convergence(cap
             PosteriorParameterSummary(
                 unique_name='a',
                 display_name='a',
-                map_value=1.2,
+                best_sample_value=1.2,
                 median=1.15,
                 standard_deviation=0.05,
                 interval_68=(1.1, 1.2),
@@ -218,7 +218,7 @@ def test_build_posterior_summary_row_restores_identifier_columns():
     summary = PosteriorParameterSummary(
         unique_name='a',
         display_name='a',
-        map_value=1.2,
+        best_sample_value=1.2,
         median=1.15,
         standard_deviation=0.05,
         interval_68=(1.1, 1.2),
@@ -265,7 +265,7 @@ def test_render_committed_parameter_table_places_units_after_parameter(monkeypat
         'parameter',
         'units',
         'start',
-        'max posterior',
+        'best posterior sample',
         'uncertainty',
         'change',
     ]
@@ -314,7 +314,7 @@ def test_render_posterior_summary_table_places_units_after_parameter(monkeypatch
             PosteriorParameterSummary(
                 unique_name='a',
                 display_name='a',
-                map_value=1.2,
+                best_sample_value=1.2,
                 median=1.15,
                 standard_deviation=0.05,
                 interval_68=(1.1, 1.2),
@@ -370,7 +370,7 @@ def test_posterior_table_notes_split_failed_diagnostics():
         PosteriorParameterSummary(
             unique_name='a',
             display_name='a',
-            map_value=1.0,
+            best_sample_value=1.0,
             median=1.0,
             standard_deviation=0.1,
             interval_68=(0.9, 1.1),

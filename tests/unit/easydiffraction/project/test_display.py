@@ -38,6 +38,7 @@ def _make_project_stub() -> tuple[SimpleNamespace, list[tuple[str, tuple, dict]]
     plotter = SimpleNamespace(
         plot_param_correlations=record('plot_param_correlations'),
         plot_param_series=record('plot_param_series'),
+        plot_all_param_series=record('plot_all_param_series'),
         plot_posterior_pairs=record('plot_posterior_pairs'),
         plot_param_distribution=record('plot_param_distribution'),
         plot_posterior_predictive=record('plot_posterior_predictive'),
@@ -192,7 +193,8 @@ def test_fit_display_delegates_to_analysis_and_rendering():
         max_parameters=4,
         show_diagonal=False,
     )
-    display.fit.series(param='scale', versus='temperature')
+    display.fit.series(param='scale', versus='diffrn.ambient_temperature')
+    display.fit.series(versus='diffrn.ambient_temperature')
 
     assert calls[0] == ('fit_results', (), {})
     assert calls[1] == (
@@ -208,7 +210,12 @@ def test_fit_display_delegates_to_analysis_and_rendering():
     assert calls[2] == (
         'plot_param_series',
         (),
-        {'param': 'scale', 'versus': 'temperature'},
+        {'param': 'scale', 'versus': 'diffrn.ambient_temperature'},
+    )
+    assert calls[3] == (
+        'plot_all_param_series',
+        (),
+        {'versus': 'diffrn.ambient_temperature'},
     )
 
 
