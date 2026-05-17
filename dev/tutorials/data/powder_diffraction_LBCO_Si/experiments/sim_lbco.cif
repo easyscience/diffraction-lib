@@ -41,6 +41,18 @@ _excluded_region.end
 2 105500. 200000.
 
 loop_
+_pd_background.id
+_pd_background.line_segment_X
+_pd_background.line_segment_intensity
+1 50000. 0.278(28)
+2 60000. 0.2515(57)
+3 70000. 0.2518(38)
+4 80000. 0.2417(29)
+5 90000. 0.2426(21)
+6 100000. 0.2220(25)
+7 110000. 0.2388(86)
+
+loop_
 _pd_meas.time_of_flight
 _pd_data.point_id
 _pd_proc.d_spacing
@@ -949,18 +961,6 @@ _pd_data.refinement_status
 146562.3875 898 14.65623875 0.22219987 0.0225045 0. 0. excl
 146679.8723 899 14.66798723 0.2394537 0.02453412 0. 0. excl
 146797.3572 900 14.67973572 0.20064655 0.02004623 0. 0. excl
-
-loop_
-_pd_background.id
-_pd_background.line_segment_X
-_pd_background.line_segment_intensity
-1 50000. 0.278(28)
-2 60000. 0.2515(57)
-3 70000. 0.2518(38)
-4 80000. 0.2417(29)
-5 90000. 0.2426(21)
-6 100000. 0.2220(25)
-7 110000. 0.2388(86)
 
 loop_
 _refln.id

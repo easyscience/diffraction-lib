@@ -35,6 +35,25 @@ _excluded_region.end
 2 150. 180.
 
 loop_
+_pd_background.id
+_pd_background.line_segment_X
+_pd_background.line_segment_intensity
+1 8. 631(17)
+2 9. 589(12)
+3 10. 581(11)
+4 11. 562(11)
+5 12. 539.3(7.2)
+6 15. 510.4(4.1)
+7 25. 472.3(3.8)
+8 30. 461.4(2.9)
+9 50. 472.8(2.7)
+10 70. 459.4(2.5)
+11 90. 448.3(2.7)
+12 110. 395.4(2.5)
+13 130. 318.7(2.4)
+14 150. 263.1(3.5)
+
+loop_
 _pd_proc.2theta_scan
 _pd_data.point_id
 _pd_proc.d_spacing
@@ -1551,25 +1570,6 @@ _pd_data.refinement_status
 150.6953 1506 0. 494.234 9.967 0. 0. excl
 150.7953 1507 0. 0. 1. 0. 0. excl
 150.8953 1508 0. 0. 1. 0. 0. excl
-
-loop_
-_pd_background.id
-_pd_background.line_segment_X
-_pd_background.line_segment_intensity
-1 8. 631(17)
-2 9. 589(12)
-3 10. 581(11)
-4 11. 562(11)
-5 12. 539.3(7.2)
-6 15. 510.4(4.1)
-7 25. 472.3(3.8)
-8 30. 461.4(2.9)
-9 50. 472.8(2.7)
-10 70. 459.4(2.5)
-11 90. 448.3(2.7)
-12 110. 395.4(2.5)
-13 130. 318.7(2.4)
-14 150. 263.1(3.5)
 
 loop_
 _refln.id
