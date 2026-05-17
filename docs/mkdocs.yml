@@ -176,8 +176,6 @@ nav:
       - Introduction: introduction/index.md
   - Installation & Setup:
       - Installation & Setup: installation-and-setup/index.md
-  - Quick Reference:
-      - Quick Reference: quick-reference/index.md
   - User Guide:
       - User Guide: user-guide/index.md
       - Glossary: user-guide/glossary.md
@@ -239,3 +237,5 @@ nav:
       - project: api-reference/project.md
       - summary: api-reference/summary.md
       - utils: api-reference/utils.md
+  - Quick Reference:
+      - Quick Reference: quick-reference/index.md

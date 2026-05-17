@@ -701,6 +701,7 @@ The core design in this ADR is implemented. The questions below are
 follow-up design topics that may need future ADRs if behaviour changes.
 
 ### Architectural / API
+
 - **Direct access to inactive mode categories.** \u00a77 specifies the
   lenient behaviour: reading `analysis.sequential_fit` in `joint` mode
   returns the underlying object, mutation does not raise, but values are
@@ -754,6 +755,7 @@ follow-up design topics that may need future ADRs if behaviour changes.
   project file?
 
 ### Help & discovery
+
 - **`dir()` consistency.** The hook hides members from `help()` only.
   Open: should `dir(analysis)` likewise hide inactive categories, or
   always reflect the full class surface (affects tab completion)?
