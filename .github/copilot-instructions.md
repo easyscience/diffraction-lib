@@ -77,7 +77,7 @@
 ## Testing
 
 - Every new module, class, or bug fix ships with tests. See
-  `docs/dev/architecture.md` §10 for the full strategy.
+  `docs/dev/adrs/accepted/test-strategy.md` for the full strategy.
 - Unit tests mirror the source tree:
   `src/easydiffraction/<pkg>/<mod>.py` →
   `tests/unit/easydiffraction/<pkg>/test_<mod>.py`. Verify with
@@ -102,8 +102,11 @@
 
 - Before any structural/design change (new categories, factories,
   switchable-category wiring, datablocks, CIF serialisation), read
-  `docs/dev/architecture.md` and follow documented patterns. Localised
-  bug fixes or test updates need only this file.
+  `docs/dev/adrs/index.md` and the relevant accepted ADRs. Localised bug
+  fixes or test updates need only this file.
+- Development documentation lives under `docs/dev/`. Use
+  `docs/dev/adrs/index.md` as the architecture and decision navigation
+  surface; there is no separate `architecture.md` source of truth.
 - Project is in beta: no legacy shims, no deprecation warnings — update
   tests and tutorials to the current API.
 - Minimal diffs; don't reformat working code. Fix only what's asked;
@@ -137,21 +140,24 @@
 
 Non-trivial changes use a two-phase workflow:
 
-- **Phase 1 — Implementation.** Code, docs, and architecture updates
-  only. Do not create or run tests unless the user explicitly asks. When
-  done, present for review and iterate until approved.
+- **Phase 1 — Implementation.** Code and docs updates only. Update ADRs
+  when the change affects architecture or documented decisions. Do not
+  create or run tests unless the user explicitly asks. When done,
+  present for review and iterate until approved.
 - **Phase 2 — Verification.** Add/update tests, then run `pixi run fix`,
   `pixi run check`, `pixi run unit-tests`, `pixi run integration-tests`,
   `pixi run script-tests`.
 
 Notes:
 
-- `pixi run fix` regenerates `docs/dev/package-structure-*.md`
-  automatically — never edit those by hand. Don't review auto-fixes;
-  accept and move on. Then `pixi run check` until clean.
+- `pixi run fix` regenerates `docs/dev/package-structure/full.md` and
+  `docs/dev/package-structure/short.md` automatically — never edit those
+  by hand. Don't review auto-fixes; accept and move on. Then
+  `pixi run check` until clean.
 - Open issues / design questions / planned improvements live in
-  `docs/dev/issues_open.md` (priority-ordered). On resolution, move to
-  `docs/dev/issues_closed.md` and update `architecture.md` if affected.
+  `docs/dev/issues/open.md` (priority-ordered). On resolution, move to
+  `docs/dev/issues/closed.md` and update the relevant ADR or
+  `docs/dev/adrs/index.md` if affected.
 
 ### Planning
 
@@ -161,9 +167,9 @@ When asked to create a plan:
   all ambiguous or unclear questions in one concise batch; record
   unresolved questions in the plan if the user wants it saved before
   answering them.
-- Save plans as `docs/dev/plan_<feature-name>.md` (lowercase,
-  dash-separated, e.g. `plan_background-refactor.md`). Use the same
-  `<feature-name>` for the implementation branch
+- Save plans as `docs/dev/plans/<feature-name>.md` (lowercase,
+  dash-separated, e.g. `docs/dev/plans/background-refactor.md`). Use the
+  same `<feature-name>` for the implementation branch
   (`feature/<feature-name>`). Do not push the branch unless asked.
 - Include a status checklist with `[ ]` items; mark `[x]` as completed
   during implementation.

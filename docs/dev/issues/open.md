@@ -3,8 +3,8 @@
 Prioritised list of issues, improvements, and design questions to
 address. Items are ordered by a combination of user impact, blocking
 potential, and implementation readiness. When an item is fully
-implemented, remove it from this file and update `architecture.md` if
-needed.
+implemented, remove it from this file and update
+[`adrs/index.md`](../adrs/index.md) or the relevant ADR if needed.
 
 **Legend:** 🔴 High · 🟡 Medium · 🟢 Low
 
@@ -200,7 +200,7 @@ duplicate rules writing the same target, and how additional supported
 prefixes should be introduced when new environment categories appear.
 
 **Fix:** pin the allowed target grammar and duplicate-target behaviour
-in architecture and validation rules.
+in an ADR and validation rules.
 
 **Depends on:** nothing.
 
@@ -1452,8 +1452,8 @@ Two manual workflow steps are required between releases/changes:
 2. `pixi run notebook-prepare` — regenerate tutorial notebooks from
    scripts.
 
-Document these in `CONTRIBUTING.md` or the architecture doc so they are
-not forgotten.
+Document these in `CONTRIBUTING.md` or a relevant ADR so they are not
+forgotten.
 
 **Depends on:** nothing.
 
@@ -1600,7 +1600,7 @@ Should print:
 **Type:** CI / Tooling
 
 CodeFactor flags TODO comments as unresolved issues (rule C100) in PRs.
-Since TODOs are tracked in `issues_open.md`, the CodeFactor check adds
+Since TODOs are tracked in `issues/open.md`, the CodeFactor check adds
 noise. Disable the C100 rule or configure CodeFactor to ignore TODO
 comments.
 

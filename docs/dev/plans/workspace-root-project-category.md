@@ -7,13 +7,13 @@ Branch: `feature/workspace-root-project-category`
 ADR suggestion:
 
 ```text
-docs/dev/ADR-suggestions/adr_workspace-root-project-category.md
+docs/dev/adrs/suggestions/workspace-root-project-category.md
 ```
 
 Two-phase workflow from `.github/copilot-instructions.md`:
 
-- Phase 1 - Implementation. Code, docs, and architecture updates only.
-  Do not create or run tests unless the user explicitly asks.
+- Phase 1 - Implementation. Code and docs updates only. Do not create or
+  run tests unless the user explicitly asks.
 - Phase 2 - Verification. Add/update tests, then run the verification
   commands listed near the end of this plan.
 
@@ -737,31 +737,31 @@ new root object and project-information category.
 
 ### Files Likely To Change
 
-- `docs/dev/architecture.md`
-- `docs/dev/Issues/issues_open.md`
-- `docs/dev/ADRs/*.md`
-- `docs/dev/ADR-suggestions/*.md`
+- `docs/dev/adrs/index.md`
+- `docs/dev/issues/open.md`
+- `docs/dev/adrs/accepted/*.md`
+- `docs/dev/adrs/suggestions/*.md`
 - `docs/docs/tutorials/*.py`
 - `README.md`
 - `CONTRIBUTING.md` only if it contains API examples
 
 Do not edit these by hand:
 
-- `docs/dev/package-structure-full.md`
-- `docs/dev/package-structure-short.md`
+- `docs/dev/package-structure/full.md`
+- `docs/dev/package-structure/short.md`
 - generated tutorial notebooks
 - generated `docs/site/` files
 
 ### Steps
 
-1. Update architecture section 7:
+1. Update the relevant accepted ADRs:
 
    ```text
-   Project - The Top-Level Facade
-   -> Workspace - The Top-Level Facade
+   Project Facade and Persistence Layout
+   -> Workspace Facade and Persistence Layout
    ```
 
-2. Update the architecture table to use:
+2. Update the affected ADR examples to use:
 
    ```text
    workspace.project      ProjectInfo
@@ -1018,7 +1018,7 @@ rg -n "_verbosity|verbosity" src tests docs tools README.md CONTRIBUTING.md
 Generated docs should not be manually edited:
 
 ```shell
-git diff -- docs/site docs/dev/package-structure-full.md docs/dev/package-structure-short.md
+git diff -- docs/site docs/dev/package-structure/full.md docs/dev/package-structure/short.md
 ```
 
 If package-structure docs changed because of `pixi run fix`, that is

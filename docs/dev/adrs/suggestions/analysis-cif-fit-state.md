@@ -33,7 +33,7 @@ This separation matters because:
 - `analysis.fit_results` already changes by fit type, but its persisted
   projection should have a stable analysis-owned home
 
-The current architecture document still describes fit results as
+The accepted runtime-fit-results ADR describes fit results as
 runtime-only. This ADR proposes a narrower persisted projection of the
 latest fit state, not a direct dump of backend runtime objects.
 
@@ -137,7 +137,7 @@ and Bayesian fitting.
 Fit-type-specific extensions are layered on top:
 
 - Bayesian persistence extends this with `_bayesian_*` categories and an
-  HDF5 sidecar, as described in `adr_parameter-posterior-summary.md`.
+  HDF5 sidecar, as described in `parameter-posterior-summary.md`.
 - Future fit-specific summaries should follow the same pattern: generic
   shared fields in `_fit_result`, specialized fields in separate
   categories.
@@ -204,7 +204,7 @@ _fit_result.reduced_chi_square 1.031
 
 ### Trade-offs
 
-- The architecture document must be updated because fit state is no
+- The runtime fit-results ADR must be updated because fit state is no
   longer entirely runtime-only.
 - Analysis persistence becomes more stateful and must be kept in sync
   with live parameter objects.
@@ -214,7 +214,7 @@ _fit_result.reduced_chi_square 1.031
 ## Deferred Work
 
 - Bayesian-specific categories and HDF5 sidecar details remain in
-  `adr_parameter-posterior-summary.md`.
+  `parameter-posterior-summary.md`.
 - Undo semantics for `start_value` and `start_uncertainty` are defined
   in a separate ADR.
 - Correlation-matrix persistence is defined in a separate ADR.

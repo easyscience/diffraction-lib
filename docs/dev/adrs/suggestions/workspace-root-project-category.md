@@ -208,8 +208,8 @@ inside the file keep its domain-specific name.
 - Public access becomes uniform: `workspace.project`,
   `workspace.rendering`, `workspace.verbosity`, `workspace.analysis`.
 - CIF stays semantic and does not introduce `_meta.*`.
-- Workspace-level preferences such as rendering and verbosity are
-  saved with the workspace instead of being hidden runtime-only state.
+- Workspace-level preferences such as rendering and verbosity are saved
+  with the workspace instead of being hidden runtime-only state.
 - Project information can use short item names such as `id`, `title`,
   and `description`.
 - The top-level facade name better reflects active runtime
@@ -318,7 +318,7 @@ save/load, display, and analysis orchestration.
 The implementation should follow:
 
 ```text
-docs/dev/plan_workspace-root-project-category.md
+docs/dev/plans/workspace-root-project-category.md
 ```
 
 The high-level migration is:
@@ -337,9 +337,9 @@ The high-level migration is:
 8. Keep CIF tags `_project.*` and `_rendering.*`.
 9. Rename saved singleton config file from `project.cif` to
    `workspace.cif`.
-10. Persist workspace verbosity in `workspace.cif` as `_verbosity.level`.
-11. Update code, tests, scripts, tutorials, docs, and architecture
-    references.
+10. Persist workspace verbosity in `workspace.cif` as
+    `_verbosity.level`.
+11. Update code, tests, scripts, tutorials, docs, and ADR references.
 
 ## Post-Implementation ADR Update
 
@@ -352,10 +352,11 @@ When implementation is complete:
 3. Record whether a temporary or permanent `Project` compatibility alias
    was approved.
 4. Record any deviations from the migration plan.
-5. Move this file from `docs/dev/ADR-suggestions/` to `docs/dev/ADRs/`
-   if that is the repository convention for accepted decisions.
-6. Update `docs/dev/architecture.md`.
-7. Update or close related items in `docs/dev/Issues/issues_open.md`.
+5. Move this file from `docs/dev/adrs/suggestions/` to
+   `docs/dev/adrs/accepted/` if the decision is accepted.
+6. Update `docs/dev/adrs/index.md` and related accepted ADRs if the ADR
+   map changes.
+7. Update or close related items in `docs/dev/issues/open.md`.
 
 ## Acceptance Criteria
 
@@ -371,4 +372,4 @@ This ADR is satisfied when:
 - `workspace.cif` uses `_project.*`, `_rendering.*`, and
   `_verbosity.level` tags.
 - no `_meta.*` tags are introduced for project information.
-- tutorials and architecture documentation use `Workspace`.
+- tutorials and accepted ADRs use `Workspace`.
