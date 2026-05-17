@@ -21,7 +21,7 @@ Status checklist (mark `[x]` as completed):
 Phase 1 — Implementation
 [x] Phase 0: Add baseline characterization tests.
 [x] Phase 1: Add CategoryOwner in core/category_owner.py.
-[ ] Phase 2: Make DatablockItem inherit CategoryOwner.
+[x] Phase 2: Make DatablockItem inherit CategoryOwner.
 [ ] Phase 3: Split CIF body serialization (category_owner_to_cif).
 [ ] Phase 4: Move Analysis onto CategoryOwner.
 [ ] Phase 5: Update dirty-flag lookup to CategoryOwner.
