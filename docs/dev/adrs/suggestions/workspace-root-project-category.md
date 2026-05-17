@@ -338,7 +338,8 @@ The high-level migration is:
 9. Rename saved singleton config file from `project.cif` to
    `workspace.cif`.
 10. Persist workspace verbosity in `workspace.cif` as
-    `_verbosity.level`.
+    `_verbosity.level`, owned by a first-class `Verbosity` category
+    under `WorkspaceConfig` (parallel to `Rendering`).
 11. Update code, tests, scripts, tutorials, docs, and ADR references.
 
 ## Post-Implementation ADR Update
@@ -371,5 +372,9 @@ This ADR is satisfied when:
 - saved singleton configuration lives in `workspace.cif`.
 - `workspace.cif` uses `_project.*`, `_rendering.*`, and
   `_verbosity.level` tags.
+- workspace verbosity is owned by a registered `Verbosity` category
+  alongside `Rendering`.
+- `ProjectInfo.path` is removed; the saved directory path is exposed
+  only as `workspace.path`.
 - no `_meta.*` tags are introduced for project information.
 - tutorials and accepted ADRs use `Workspace`.
