@@ -24,7 +24,7 @@ Phase 1 — Implementation
 [x] Phase 2: Make DatablockItem inherit CategoryOwner.
 [x] Phase 3: Split CIF body serialization (category_owner_to_cif).
 [x] Phase 4: Move Analysis onto CategoryOwner.
-[ ] Phase 5: Update dirty-flag lookup to CategoryOwner.
+[x] Phase 5: Update dirty-flag lookup to CategoryOwner.
 [ ] Phase 6: (Optional) ProjectConfig cleanup.
 [ ] Phase 7: Update architecture.md and Issues/issues_open.md.
 [ ] Phase 1 review gate: present diff for approval.

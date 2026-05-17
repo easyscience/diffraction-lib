@@ -128,11 +128,11 @@ class GenericDescriptorBase(GuardedBase):
             obj = getattr(obj, '_parent', None)
         return None
 
-    def _datablock_item(self) -> object | None:
-        """Return the DatablockItem ancestor, if any."""
-        from easydiffraction.core.datablock import DatablockItem  # noqa: PLC0415
+    def _category_owner(self) -> object | None:
+        """Return the CategoryOwner ancestor, if any."""
+        from easydiffraction.core.category_owner import CategoryOwner  # noqa: PLC0415
 
-        return self._parent_of_type(DatablockItem)
+        return self._parent_of_type(CategoryOwner)
 
     @property
     def value(self) -> object:
@@ -153,18 +153,18 @@ class GenericDescriptorBase(GuardedBase):
             current=self._value,
         )
 
-        # Mark parent datablock as needing categories update
+        # Mark the owning category owner as needing an update
         # TODO: Check if it is actually in use?
-        parent_datablock = self._datablock_item()
-        if parent_datablock is not None:
-            parent_datablock._need_categories_update = True
+        parent_owner = self._category_owner()
+        if parent_owner is not None:
+            parent_owner._need_categories_update = True
 
     def _set_value_from_minimizer(self, v: object) -> None:
         """
         Set the value from a minimizer, bypassing validation.
 
         Writes ``_value`` directly — no type or range checks — but still
-        marks the owning :class:`DatablockItem` dirty so that
+        marks the owning category owner dirty so that
         ``_update_categories()`` knows work is needed.
 
         This exists because:
@@ -175,9 +175,9 @@ class GenericDescriptorBase(GuardedBase):
         evaluations.
         """
         self._value = v
-        parent_datablock = self._datablock_item()
-        if parent_datablock is not None:
-            parent_datablock._need_categories_update = True
+        parent_owner = self._category_owner()
+        if parent_owner is not None:
+            parent_owner._need_categories_update = True
 
     @property
     def description(self) -> str | None:
@@ -355,7 +355,7 @@ class GenericParameter(GenericNumericDescriptor):
         """
         Set the value from a constraint expression.
 
-        Bypasses validation and marks the parent datablock dirty, like
+        Bypasses validation and marks the parent category owner dirty, like
         ``_set_value_from_minimizer``, because constraints are applied
         inside the minimizer loop where trial values may exceed
         physical-range validators. Flags the parameter as user
@@ -363,9 +363,9 @@ class GenericParameter(GenericNumericDescriptor):
         """
         self._value = v
         self._user_constrained = True
-        parent_datablock = self._datablock_item()
-        if parent_datablock is not None:
-            parent_datablock._need_categories_update = True
+        parent_owner = self._category_owner()
+        if parent_owner is not None:
+            parent_owner._need_categories_update = True
 
     @property
     def free(self) -> bool:
