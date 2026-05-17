@@ -122,6 +122,8 @@
 │   ├── 📄 category.py
 │   │   ├── 🏷️ class CategoryItem
 │   │   └── 🏷️ class CategoryCollection
+│   ├── 📄 category_owner.py
+│   │   └── 🏷️ class CategoryOwner
 │   ├── 📄 collection.py
 │   │   └── 🏷️ class CollectionBase
 │   ├── 📄 datablock.py
@@ -425,6 +427,12 @@
 │   └── 📄 ascii.py
 ├── 📁 project
 │   ├── 📁 categories
+│   │   ├── 📁 info
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   └── 🏷️ class ProjectInfo
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class ProjectInfoFactory
 │   │   ├── 📁 rendering
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -441,8 +449,9 @@
 │   │   └── 🏷️ class ProjectDisplay
 │   ├── 📄 project.py
 │   │   └── 🏷️ class Project
+│   ├── 📄 project_config.py
+│   │   └── 🏷️ class ProjectConfig
 │   └── 📄 project_info.py
-│       └── 🏷️ class ProjectInfo
 ├── 📁 summary
 │   ├── 📄 __init__.py
 │   └── 📄 summary.py

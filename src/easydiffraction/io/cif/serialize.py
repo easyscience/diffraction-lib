@@ -268,6 +268,39 @@ def category_collection_to_cif(
     return '\n'.join(lines)
 
 
+def category_owner_to_cif(
+    owner: object,
+    max_loop_display: int | None = None,
+) -> str:
+    """Render a category-owning object without a ``data_`` header."""
+    from easydiffraction.core.category import CategoryCollection  # noqa: PLC0415
+    from easydiffraction.core.category import CategoryItem  # noqa: PLC0415
+
+    categories_getter = getattr(owner, '_serializable_categories', None)
+    if callable(categories_getter):
+        categories = categories_getter()
+    else:
+        categories = [
+            value
+            for value in vars(owner).values()
+            if isinstance(value, (CategoryItem, CategoryCollection))
+        ]
+
+    item_parts = [
+        category.as_cif
+        for category in categories
+        if isinstance(category, CategoryItem) and category.as_cif
+    ]
+
+    collection_parts = [
+        category_collection_to_cif(category, max_display=max_loop_display)
+        for category in categories
+        if isinstance(category, CategoryCollection)
+    ]
+
+    return '\n\n'.join([part for part in item_parts + collection_parts if part])
+
+
 def datablock_item_to_cif(
     datablock: object,
     max_loop_display: int | None = None,
@@ -290,32 +323,11 @@ def datablock_item_to_cif(
     str
         CIF text representing the datablock as a loop.
     """
-    # Local imports to avoid import-time cycles
-    from easydiffraction.core.category import CategoryCollection  # noqa: PLC0415
-    from easydiffraction.core.category import CategoryItem  # noqa: PLC0415
-
     header = f'data_{datablock._identity.datablock_entry_name}'
-    parts: list[str] = [header]
-
-    # First categories
-    parts.extend(
-        cif_text
-        for cif_text in (v.as_cif for v in vars(datablock).values() if isinstance(v, CategoryItem))
-        if cif_text
-    )
-
-    # Then collections
-    parts.extend(
-        cif_text
-        for cif_text in (
-            category_collection_to_cif(v, max_display=max_loop_display)
-            for v in vars(datablock).values()
-            if isinstance(v, CategoryCollection)
-        )
-        if cif_text
-    )
-
-    return '\n\n'.join(parts)
+    body = category_owner_to_cif(datablock, max_loop_display=max_loop_display)
+    if not body:
+        return header
+    return f'{header}\n\n{body}'
 
 
 def datablock_collection_to_cif(collection: object) -> str:
@@ -340,8 +352,8 @@ def project_info_to_cif(info: object) -> str:
     else:
         description = '?'
 
-    created = f"'{info._created.strftime('%d %b %Y %H:%M:%S')}'"
-    last_modified = f"'{info._last_modified.strftime('%d %b %Y %H:%M:%S')}'"
+    created = f"'{info.created.strftime('%d %b %Y %H:%M:%S')}'"
+    last_modified = f"'{info.last_modified.strftime('%d %b %Y %H:%M:%S')}'"
 
     return (
         f'_project.id               {name}\n'
@@ -360,6 +372,10 @@ def _as_cif_text(section: object) -> str:
 
 def project_config_to_cif(project: object) -> str:
     """Render project-level configuration to ``project.cif`` text."""
+    config = getattr(project, '_config', None)
+    if config is not None:
+        return category_owner_to_cif(config)
+
     lines: list[str] = [_as_cif_text(project.info)]
     rendering = getattr(project, 'rendering', None)
     if rendering is not None:
@@ -392,30 +408,28 @@ def analysis_to_cif(analysis: object) -> str:
     """Render analysis metadata, aliases, and constraints to CIF."""
     parts: list[str] = [f'_fitting.mode_type {format_value(analysis.fitting_mode_type)}']
 
-    fitting_cif = analysis.fitting.as_cif
-    if fitting_cif:
-        parts.append(fitting_cif)
+    body = category_owner_to_cif(analysis)
+    if not body:
+        fallback_sections = [
+            getattr(analysis, 'fitting', None),
+            getattr(analysis, 'aliases', None),
+            getattr(analysis, 'constraints', None),
+        ]
 
-    aliases_cif = analysis.aliases.as_cif
-    if aliases_cif:
-        parts.append(aliases_cif)
+        if analysis.fitting_mode_type == 'joint':
+            fallback_sections.append(getattr(analysis, 'joint_fit', None))
+        elif analysis.fitting_mode_type == 'sequential':
+            fallback_sections.extend([
+                getattr(analysis, 'sequential_fit', None),
+                getattr(analysis, 'sequential_fit_extract', None),
+            ])
 
-    constraints_cif = analysis.constraints.as_cif
-    if constraints_cif:
-        parts.append(constraints_cif)
+        body = '\n\n'.join([
+            _as_cif_text(section) for section in fallback_sections if section is not None
+        ])
 
-    if analysis.fitting_mode_type == 'joint':
-        joint_fit_cif = analysis.joint_fit.as_cif
-        if joint_fit_cif:
-            parts.append(joint_fit_cif)
-    elif analysis.fitting_mode_type == 'sequential':
-        sequential_fit_cif = analysis.sequential_fit.as_cif
-        if sequential_fit_cif:
-            parts.append(sequential_fit_cif)
-
-        sequential_extract_cif = analysis.sequential_fit_extract.as_cif
-        if sequential_extract_cif:
-            parts.append(sequential_extract_cif)
+    if body:
+        parts.append(body)
 
     return '\n\n'.join(parts)
 
@@ -449,6 +463,11 @@ def _populate_project_info_from_block(
     block: gemmi.cif.Block,
 ) -> None:
     """Populate ProjectInfo fields from a parsed CIF block."""
+    from_cif = getattr(info, 'from_cif', None)
+    if callable(from_cif):
+        from_cif(block)
+        return
+
     read_cif_string = _make_cif_string_reader(block)
 
     name = read_cif_string('_project.id')

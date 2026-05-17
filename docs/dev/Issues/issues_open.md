@@ -27,23 +27,6 @@ match `project.experiments.names`.
 
 ---
 
-## 5. 🟡 Make `Analysis` a `DatablockItem`
-
-**Type:** Consistency
-
-`Analysis` owns categories (`Aliases`, `Constraints`,
-`JointFitCollection`) but does not extend `DatablockItem`. Its ad-hoc
-`_update_categories()` iterates over a hard-coded list and does not
-participate in standard category discovery, parameter enumeration, or
-CIF serialisation.
-
-**Fix:** make `Analysis` extend `DatablockItem`, or extract a shared
-`_update_categories()` protocol.
-
-**Depends on:** nothing.
-
----
-
 ## 8. 🟡 Add Explicit `create()` Signatures on Collections
 
 **Type:** API safety
@@ -100,7 +83,7 @@ with joint-fit workflows.
 at minimum document the required update order. For joint fitting, all
 experiments should be updateable in a single call.
 
-**Depends on:** benefits from issue 5 (Analysis as DatablockItem).
+**Depends on:** benefits from the CategoryOwner migration.
 
 ---
 

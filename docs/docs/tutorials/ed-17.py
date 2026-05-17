@@ -26,7 +26,7 @@ project = ed.Project()
 # results can be written to `analysis/results.csv`.
 
 # %%
-project.save_as('projects/cosio', temporary=False)
+project.save_as(dir_path='projects/cosio', temporary=False)
 
 # %% [markdown]
 # ## Step 2: Define Crystal Structure

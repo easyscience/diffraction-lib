@@ -21,6 +21,7 @@ from easydiffraction.analysis.categories.sequential_fit_extract import (
 )
 from easydiffraction.analysis.enums import FitModeEnum
 from easydiffraction.analysis.fitting import Fitter
+from easydiffraction.core.category_owner import CategoryOwner
 from easydiffraction.core.guard import _apply_help_filter
 from easydiffraction.core.singleton import ConstraintsHandler
 from easydiffraction.core.variable import NumericDescriptor
@@ -346,7 +347,7 @@ class AnalysisDisplay:
         self._analysis.show_as_cif()
 
 
-class Analysis:
+class Analysis(CategoryOwner):
     """
     High-level orchestration of analysis tasks for a Project.
 
@@ -364,30 +365,62 @@ class Analysis:
         project : object
             The project that owns models and experiments.
         """
-        self.project = project
+        super().__init__()
+        self._project = project
         self._aliases_type: str = AliasesFactory.default_tag()
-        self.aliases = AliasesFactory.create(self._aliases_type)
+        self._aliases = AliasesFactory.create(self._aliases_type)
         self._constraints_type: str = ConstraintsFactory.default_tag()
-        self.constraints = ConstraintsFactory.create(self._constraints_type)
-        self.constraints_handler = ConstraintsHandler.get()
+        self._constraints = ConstraintsFactory.create(self._constraints_type)
+        self._constraints_handler = ConstraintsHandler.get()
         self._fitting: Fitting = FittingFactory.create(FittingFactory.default_tag())
-        self._fitting._parent = self
         self._fitting_mode_type: FitModeEnum = FitModeEnum.default()
         self._joint_fit: JointFitCollection = JointFitCollection()
         self._sequential_fit: SequentialFit = SequentialFitFactory.create(
             SequentialFitFactory.default_tag()
         )
-        self._sequential_fit._parent = self
         self._sequential_fit_extract = SequentialFitExtractCollection()
-        self.fitter = Fitter(self._fitting.minimizer_type.value)
-        self.fit_results = None
+        self._fitter = Fitter(self._fitting.minimizer_type.value)
+        self._fit_results = None
         self._parameter_snapshots: dict[str, dict[str, dict]] = {}
         self._display = AnalysisDisplay(self)
+
+    @property
+    def project(self) -> object:
+        """Project that owns this analysis section."""
+        return self._project
+
+    @property
+    def aliases(self) -> object:
+        """Alias mappings used by symbolic constraints and displays."""
+        return self._aliases
+
+    @property
+    def constraints(self) -> object:
+        """Symbolic constraints owned by this analysis section."""
+        return self._constraints
 
     @property
     def display(self) -> AnalysisDisplay:
         """Display helper for parameter tables, CIF, and fit results."""
         return self._display
+
+    @property
+    def fitter(self) -> Fitter:
+        """Fitting engine used by this analysis object."""
+        return self._fitter
+
+    @fitter.setter
+    def fitter(self, value: Fitter) -> None:
+        self._fitter = value
+
+    @property
+    def fit_results(self) -> object | None:
+        """Results from the most recent fit, if any."""
+        return self._fit_results
+
+    @fit_results.setter
+    def fit_results(self, value: object | None) -> None:
+        self._fit_results = value
 
     def help(self) -> None:
         """Print a summary of analysis properties and methods."""
@@ -452,6 +485,24 @@ class Analysis:
 
         filtered_properties = [name for name in properties if name not in hidden_properties]
         return filtered_properties, methods
+
+    def _serializable_categories(self) -> list:
+        """Serializable analysis categories for the active fit mode."""
+        categories = [
+            self.fitting,
+            self.aliases,
+            self.constraints,
+        ]
+
+        if self._fitting_mode_type is FitModeEnum.JOINT:
+            categories.append(self.joint_fit)
+        elif self._fitting_mode_type is FitModeEnum.SEQUENTIAL:
+            categories.extend([
+                self.sequential_fit,
+                self.sequential_fit_extract,
+            ])
+
+        return categories
 
     # ------------------------------------------------------------------
     #  Parameter helpers
@@ -968,13 +1019,13 @@ class Analysis:
         called_by_minimizer : bool, default=False
             Whether this is called during fitting.
         """
-        del called_by_minimizer
+        super()._update_categories(called_by_minimizer=called_by_minimizer)
 
         # Apply constraints to sync dependent parameters
         if self.constraints.enabled and self.constraints._items:
-            self.constraints_handler.set_aliases(self.aliases)
-            self.constraints_handler.set_constraints(self.constraints)
-            self.constraints_handler.apply()
+            self._constraints_handler.set_aliases(self.aliases)
+            self._constraints_handler.set_constraints(self.constraints)
+            self._constraints_handler.apply()
 
     @property
     def as_cif(self) -> str:

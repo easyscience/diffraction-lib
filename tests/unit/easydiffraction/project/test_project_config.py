@@ -1,0 +1,68 @@
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
+# SPDX-License-Identifier: BSD-3-Clause
+
+from __future__ import annotations
+
+import datetime
+
+
+def test_project_config_exposes_project_info_and_rendering_categories():
+    from easydiffraction.core.category_owner import CategoryOwner
+    from easydiffraction.project.project_config import ProjectConfig
+    from easydiffraction.project.project_info import ProjectInfo
+
+    config = ProjectConfig(name='beer', title='Beer title', description='Some description')
+
+    assert isinstance(config, CategoryOwner)
+    assert isinstance(config.info, ProjectInfo)
+    assert config.info._parent is config
+    assert config.rendering._parent is config
+    assert config.info.name == 'beer'
+    assert config.info.title == 'Beer title'
+    assert config.info.description == 'Some description'
+    assert config.info.path is None
+    assert isinstance(config.info.created, datetime.datetime)
+    assert isinstance(config.info.last_modified, datetime.datetime)
+    assert config.categories == [config.info, config.rendering]
+    assert config.parameters == config.info.parameters + config.rendering.parameters
+
+
+def test_project_config_as_cif_has_project_and_rendering_sections_without_data_header():
+    from easydiffraction.project.project_config import ProjectConfig
+
+    config = ProjectConfig(name='beer', title='Beer title', description='Some description')
+
+    cif_text = config.as_cif
+
+    assert not cif_text.startswith('data_')
+    assert '_project.id               beer' in cif_text
+    assert '_project.title' in cif_text
+    assert '_project.description' in cif_text
+    assert '_project.created' in cif_text
+    assert '_project.last_modified' in cif_text
+    assert '_rendering.chart_engine' in cif_text
+    assert '_rendering.table_engine' in cif_text
+
+
+def test_project_save_and_load_keep_project_config_section_format(tmp_path):
+    from easydiffraction.project.project import Project
+
+    project = Project(name='beer', title='Beer title', description='Some description')
+    project.rendering.chart_engine = 'asciichartpy'
+    project.rendering.table_engine = 'rich'
+    project.save_as(str(tmp_path / 'proj'))
+
+    project_cif = (tmp_path / 'proj' / 'project.cif').read_text()
+    assert not project_cif.startswith('data_')
+    assert '_project.id               beer' in project_cif
+    assert '_rendering.chart_engine asciichartpy' in project_cif
+    assert '_rendering.table_engine rich' in project_cif
+
+    loaded = Project.load(str(tmp_path / 'proj'))
+    assert loaded.info.name == 'beer'
+    assert loaded.info.title == 'Beer title'
+    assert loaded.info.description == 'Some description'
+    assert isinstance(loaded.info.created, datetime.datetime)
+    assert isinstance(loaded.info.last_modified, datetime.datetime)
+    assert loaded.rendering.chart_engine.value == 'asciichartpy'
+    assert loaded.rendering.table_engine.value == 'rich'

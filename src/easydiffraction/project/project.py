@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import pathlib
 import tempfile
+from typing import TYPE_CHECKING
 from typing import ClassVar
 
 from typeguard import typechecked
@@ -17,14 +18,16 @@ from easydiffraction.datablocks.experiment.collection import Experiments
 from easydiffraction.datablocks.structure.collection import Structures
 from easydiffraction.io.cif.serialize import project_config_to_cif
 from easydiffraction.io.cif.serialize import project_to_cif
-from easydiffraction.project.categories.rendering import Rendering
-from easydiffraction.project.categories.rendering import RenderingFactory
 from easydiffraction.project.display import ProjectDisplay
-from easydiffraction.project.project_info import ProjectInfo
+from easydiffraction.project.project_config import ProjectConfig
 from easydiffraction.summary.summary import Summary
 from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
+
+if TYPE_CHECKING:
+    from easydiffraction.project.categories.rendering import Rendering
+    from easydiffraction.project.project_info import ProjectInfo
 
 
 def _apply_csv_row_to_params(
@@ -127,11 +130,11 @@ class Project(GuardedBase):
     ) -> None:
         super().__init__()
 
-        self._info: ProjectInfo = ProjectInfo(name, title, description)
+        self._config = ProjectConfig(name, title, description)
+        object.__setattr__(self, '_info', self._config.info)
         self._structures = Structures()
         self._experiments = Experiments()
-        self._rendering = RenderingFactory.create('default')
-        self._rendering._parent = self
+        object.__setattr__(self, '_rendering', self._config.rendering)
         self._display = ProjectDisplay(self)
         self._analysis = Analysis(self)
         self._summary = Summary(self)
@@ -323,7 +326,7 @@ class Project(GuardedBase):
             cif_text = project_cif_path.read_text()
             project_config_from_cif(project, cif_text)
 
-        project._info.path = project_path
+        project.info.path = project_path
 
         # 2. Load structures
         structures_dir = project_path / 'structures'
@@ -390,7 +393,7 @@ class Project(GuardedBase):
 
     def save(self) -> None:
         """Save the project into the existing project directory."""
-        if self._info.path is None:
+        if self.info.path is None:
             log.error('Project path not specified. Use save_as() to define the path first.')
             return
 
@@ -403,15 +406,15 @@ class Project(GuardedBase):
         self._analysis._update_categories()
 
         # Ensure project directory exists
-        self._info.path.mkdir(parents=True, exist_ok=True)
+        self.info.path.mkdir(parents=True, exist_ok=True)
 
         # Save project-level configuration
-        with (self._info.path / 'project.cif').open('w') as f:
+        with (self.info.path / 'project.cif').open('w') as f:
             f.write(project_config_to_cif(self))
             console.print('├── 📄 project.cif')
 
         # Save structures
-        sm_dir = self._info.path / 'structures'
+        sm_dir = self.info.path / 'structures'
         sm_dir.mkdir(parents=True, exist_ok=True)
         console.print('├── 📁 structures/')
         for structure in self.structures.values():
@@ -422,7 +425,7 @@ class Project(GuardedBase):
                 console.print(f'│   └── 📄 {file_name}')
 
         # Save experiments
-        expt_dir = self._info.path / 'experiments'
+        expt_dir = self.info.path / 'experiments'
         expt_dir.mkdir(parents=True, exist_ok=True)
         console.print('├── 📁 experiments/')
         for experiment in self.experiments.values():
@@ -433,7 +436,7 @@ class Project(GuardedBase):
                 console.print(f'│   └── 📄 {file_name}')
 
         # Save analysis
-        analysis_dir = self._info.path / 'analysis'
+        analysis_dir = self.info.path / 'analysis'
         analysis_dir.mkdir(parents=True, exist_ok=True)
         with (analysis_dir / 'analysis.cif').open('w') as f:
             f.write(self.analysis.as_cif)
@@ -447,11 +450,11 @@ class Project(GuardedBase):
             console.print(f'│   {branch} 📄 {file_name}')
 
         # Save summary
-        with (self._info.path / 'summary.cif').open('w') as f:
+        with (self.info.path / 'summary.cif').open('w') as f:
             f.write(self.summary.as_cif())
             console.print('└── 📄 summary.cif')
 
-        self._info.update_last_modified()
+        self.info.update_last_modified()
         self._saved = True
 
     def save_as(
@@ -464,7 +467,7 @@ class Project(GuardedBase):
         if temporary:
             tmp: str = tempfile.gettempdir()
             dir_path = pathlib.Path(tmp) / dir_path
-        self._info.path = dir_path
+        self.info.path = dir_path
         self.save()
 
     def apply_params_from_csv(self, row_index: int) -> None:
