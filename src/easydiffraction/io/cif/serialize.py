@@ -352,8 +352,8 @@ def project_info_to_cif(info: object) -> str:
     else:
         description = '?'
 
-    created = f"'{info._created.strftime('%d %b %Y %H:%M:%S')}'"
-    last_modified = f"'{info._last_modified.strftime('%d %b %Y %H:%M:%S')}'"
+    created = f"'{info.created.strftime('%d %b %Y %H:%M:%S')}'"
+    last_modified = f"'{info.last_modified.strftime('%d %b %Y %H:%M:%S')}'"
 
     return (
         f'_project.id               {name}\n'
@@ -372,6 +372,10 @@ def _as_cif_text(section: object) -> str:
 
 def project_config_to_cif(project: object) -> str:
     """Render project-level configuration to ``project.cif`` text."""
+    config = getattr(project, '_config', None)
+    if config is not None:
+        return category_owner_to_cif(config)
+
     lines: list[str] = [_as_cif_text(project.info)]
     rendering = getattr(project, 'rendering', None)
     if rendering is not None:
@@ -459,6 +463,11 @@ def _populate_project_info_from_block(
     block: gemmi.cif.Block,
 ) -> None:
     """Populate ProjectInfo fields from a parsed CIF block."""
+    from_cif = getattr(info, 'from_cif', None)
+    if callable(from_cif):
+        from_cif(block)
+        return
+
     read_cif_string = _make_cif_string_reader(block)
 
     name = read_cif_string('_project.id')

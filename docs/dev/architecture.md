@@ -937,6 +937,12 @@ It owns and coordinates all components:
 | `project.summary`     | `Summary`        | Report generation                        |
 | `project.verbosity`   | `str`            | Console output level (full/short/silent) |
 
+Internally, `Project` keeps project-scoped singleton categories under a
+private `ProjectConfig(CategoryOwner)` object. That owner currently holds
+`project.info` (`ProjectInfo`) and `project.rendering` (`Rendering`),
+while the public access paths stay flat on `Project` for user
+discoverability.
+
 ### 7.1 Data Flow
 
 ```
@@ -959,7 +965,7 @@ Projects are saved as a directory of CIF files:
 
 ```shell
 project_dir/
-├── project.cif          # ProjectInfo + Display preferences
+├── project.cif          # ProjectConfig categories (info + rendering)
 ├── summary.cif          # Summary report
 ├── structures/
 │   └── lbco.cif         # One file per structure
@@ -969,14 +975,16 @@ project_dir/
     └── analysis.cif     # Analysis settings
 ```
 
-`project.cif` carries both the `_project.*` metadata and the
-`_rendering.*` engine preferences (`chart_engine`, `table_engine`), so a
-saved project re-opens with the same display backends. Per-experiment
-calculator selection (`_calculation.calculator_type`) lives in each
-experiment file, and fit configuration (`_fitting.minimizer_type`,
-`_fitting.mode_type`) lives in `analysis/analysis.cif`. Runtime fit
-outputs, including `analysis.fit_results`, posterior chains, posterior
-predictive summaries, and convergence diagnostics, are not serialized.
+`project.cif` serializes the private `ProjectConfig` owner without a
+`data_` header. It carries both the `_project.*` metadata category and
+the `_rendering.*` engine preferences (`chart_engine`, `table_engine`),
+so a saved project re-opens with the same display backends.
+Per-experiment calculator selection (`_calculation.calculator_type`)
+lives in each experiment file, and fit configuration
+(`_fitting.minimizer_type`, `_fitting.mode_type`) lives in
+`analysis/analysis.cif`. Runtime fit outputs, including
+`analysis.fit_results`, posterior chains, posterior predictive
+summaries, and convergence diagnostics, are not serialized.
 
 ### 7.3 Verbosity
 

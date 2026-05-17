@@ -83,9 +83,11 @@ class Rendering(CategoryItem):
     @property
     def plotter(self) -> Plotter:
         """Live plotting facade bound to the owning project."""
-        parent = getattr(self, '_parent', None)
-        if parent is not None:
-            self._plotter._set_project(parent)
+        owner = getattr(self, '_parent', None)
+        while owner is not None and not hasattr(owner, 'structures'):
+            owner = getattr(owner, '_parent', None)
+        if owner is not None:
+            self._plotter._set_project(owner)
         return self._plotter
 
     @property

@@ -25,7 +25,7 @@ Phase 1 — Implementation
 [x] Phase 3: Split CIF body serialization (category_owner_to_cif).
 [x] Phase 4: Move Analysis onto CategoryOwner.
 [x] Phase 5: Update dirty-flag lookup to CategoryOwner.
-[ ] Phase 6: (Optional) ProjectConfig cleanup.
+[x] Phase 6: (Optional) ProjectConfig cleanup.
 [x] Phase 7: Update architecture.md and Issues/issues_open.md.
 [x] Phase 1 review gate: present diff for approval.
 
@@ -724,9 +724,14 @@ The cleaner long-term shape is:
 ```text
 Project
 `-- ProjectConfig(CategoryOwner)
-    |-- ProjectInfo or ProjectMetadata
+    |-- ProjectInfo
     `-- Rendering
 ```
+
+This full version is now implemented. `ProjectInfo` is a real
+`CategoryItem` under `project/categories/info/`, `ProjectConfig`
+serializes via shared `CategoryOwner` helpers, and the public
+`project.info` / `project.rendering` access paths remain unchanged.
 
 ### Low-Risk Version
 
@@ -757,8 +762,10 @@ It should own descriptors for:
 - created timestamp
 - last modified timestamp
 
-This is more work because timestamps and path handling need care. Do not mix
-this with the `Analysis` migration.
+This is more work because timestamps and path handling need care. The
+implemented version keeps `path` as runtime-only state while storing the
+project id, title, description, created timestamp, and last-modified
+timestamp in the `ProjectInfo` category.
 
 ### Save/Load Rule
 
