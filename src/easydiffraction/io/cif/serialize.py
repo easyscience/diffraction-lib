@@ -268,6 +268,39 @@ def category_collection_to_cif(
     return '\n'.join(lines)
 
 
+def category_owner_to_cif(
+    owner: object,
+    max_loop_display: int | None = None,
+) -> str:
+    """Render a category-owning object without a ``data_`` header."""
+    from easydiffraction.core.category import CategoryCollection  # noqa: PLC0415
+    from easydiffraction.core.category import CategoryItem  # noqa: PLC0415
+
+    categories_getter = getattr(owner, '_serializable_categories', None)
+    if callable(categories_getter):
+        categories = categories_getter()
+    else:
+        categories = [
+            value
+            for value in vars(owner).values()
+            if isinstance(value, (CategoryItem, CategoryCollection))
+        ]
+
+    item_parts = [
+        category.as_cif
+        for category in categories
+        if isinstance(category, CategoryItem) and category.as_cif
+    ]
+
+    collection_parts = [
+        category_collection_to_cif(category, max_display=max_loop_display)
+        for category in categories
+        if isinstance(category, CategoryCollection)
+    ]
+
+    return '\n\n'.join([part for part in item_parts + collection_parts if part])
+
+
 def datablock_item_to_cif(
     datablock: object,
     max_loop_display: int | None = None,
@@ -290,32 +323,11 @@ def datablock_item_to_cif(
     str
         CIF text representing the datablock as a loop.
     """
-    # Local imports to avoid import-time cycles
-    from easydiffraction.core.category import CategoryCollection  # noqa: PLC0415
-    from easydiffraction.core.category import CategoryItem  # noqa: PLC0415
-
     header = f'data_{datablock._identity.datablock_entry_name}'
-    parts: list[str] = [header]
-
-    # First categories
-    parts.extend(
-        cif_text
-        for cif_text in (v.as_cif for v in vars(datablock).values() if isinstance(v, CategoryItem))
-        if cif_text
-    )
-
-    # Then collections
-    parts.extend(
-        cif_text
-        for cif_text in (
-            category_collection_to_cif(v, max_display=max_loop_display)
-            for v in vars(datablock).values()
-            if isinstance(v, CategoryCollection)
-        )
-        if cif_text
-    )
-
-    return '\n\n'.join(parts)
+    body = category_owner_to_cif(datablock, max_loop_display=max_loop_display)
+    if not body:
+        return header
+    return '\n\n'.join([header, body])
 
 
 def datablock_collection_to_cif(collection: object) -> str:
