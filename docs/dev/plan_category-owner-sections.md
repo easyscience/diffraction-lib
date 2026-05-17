@@ -30,12 +30,12 @@ Phase 1 — Implementation
 [x] Phase 1 review gate: present diff for approval.
 
 Phase 2 — Verification
-[ ] Add per-phase unit tests (see "Tests For Phase X" sections).
-[ ] pixi run fix
-[ ] pixi run check
-[ ] pixi run unit-tests
-[ ] pixi run integration-tests
-[ ] pixi run script-tests
+[x] Add per-phase unit tests (see "Tests For Phase X" sections).
+[x] pixi run fix
+[x] pixi run check
+[x] pixi run unit-tests
+[x] pixi run integration-tests
+[x] pixi run script-tests
 ```
 
 ## Commit Discipline
