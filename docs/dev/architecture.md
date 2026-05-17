@@ -53,7 +53,8 @@ GuardedBase                            # Controlled attribute access, parent lin
 ├── CollectionBase                     # Ordered name→item container
 │   ├── CategoryCollection             # CIF loop  (e.g. AtomSites, Background, Data)
 │   └── DatablockCollection            # Top-level container  (e.g. Structures, Experiments)
-└── DatablockItem                      # CIF data block  (e.g. Structure, Experiment)
+└── CategoryOwner                      # Flat category owner (e.g. Analysis, DatablockItem)
+  └── DatablockItem                  # Real CIF data block (e.g. Structure, Experiment)
 ```
 
 `CollectionBase` provides a unified dict-like API over an ordered item
@@ -185,7 +186,19 @@ design constraint. Categories are never nested inside other categories
 **Update priority:** lower values run first. This ensures correct
 execution order within a datablock (e.g. background before data).
 
-### 2.4 DatablockItem and DatablockCollection
+### 2.4 CategoryOwner, DatablockItem, and DatablockCollection
+
+`CategoryOwner` is the shared base class for objects that own flat
+category siblings. It provides category discovery, category sorting by
+`_update_priority`, parameter aggregation, `_need_categories_update`
+tracking, and category-body CIF serialization without a `data_`
+header.
+
+`DatablockItem` extends `CategoryOwner` for real CIF `data_<id>`
+blocks. `Structure` and `ExperimentBase` subclasses are real
+datablocks. `Analysis` is also a `CategoryOwner`, but it serializes as
+a singleton section body in `analysis/analysis.cif` and does not emit a
+fake `data_analysis` header.
 
 | Aspect             | `DatablockItem`                             | `DatablockCollection`                                    |
 | ------------------ | ------------------------------------------- | -------------------------------------------------------- |
@@ -199,7 +212,7 @@ execution order within a datablock (e.g. background before data).
 | Dirty flag         | `_need_categories_update`                   | N/A                                                      |
 
 When any `Parameter.value` is set, it propagates
-`_need_categories_update = True` up to the owning `DatablockItem`.
+`_need_categories_update = True` up to the owning `CategoryOwner`.
 Serialisation (`as_cif`) and plotting trigger `_update_categories()` if
 the flag is set.
 
@@ -847,14 +860,16 @@ workflow:
 
 `Analysis` is bound to a `Project` and provides the high-level API:
 
-- Fit configuration: `fit` (`CategoryItem` with `minimizer_type` and
-  `mode` descriptors). `fit.minimizer_type` selects the minimizer
-  backend. `fit.mode` stores whether fitting is `'single'`, `'joint'`,
-  or `'sequential'`. `fit.show_minimizer_types()` lists supported
-  minimizers; `fit.show_modes()` filters modes by experiment count (≤1 →
-  only `single`; >1 → all three).
+- Singleton section: `Analysis` is a `CategoryOwner`, not a
+  `DatablockItem`. It owns sibling categories and serializes as the
+  body of `analysis/analysis.cif` without a `data_` header.
+- Fit configuration: `fitting` (`CategoryItem` with
+  `minimizer_type`). `fitting.minimizer_type` selects the minimizer
+  backend. The active fitting mode lives on the owner as
+  `analysis.fitting_mode_type`, not as a nested child category field.
+  `fitting.show_minimizer_types()` lists supported minimizers.
 - Joint-fit weights: `joint_fit` (`CategoryCollection` of per-experiment
-  weight entries); sibling of `fit`, not a child.
+  weight entries); sibling of `fitting`, not a child.
 - Fit results: `analysis.fit_results` stores the latest runtime result
   object. This is `FitResults` for deterministic fits and
   `BayesianFitResults` for Bayesian DREAM runs.
@@ -927,7 +942,7 @@ It owns and coordinates all components:
 ```
 Parameter.value set
     → AttributeSpec validation (type + value)
-    → _need_categories_update = True (on parent DatablockItem)
+    → _need_categories_update = True (on parent CategoryOwner)
 
 Plot / CIF export / fit objective evaluation
     → _update_categories()
@@ -1362,12 +1377,12 @@ if self._fitting_mode_type == 'joint':
 ### 9.7 Flat Category Structure — No Nested Categories
 
 Following CIF conventions, categories are **flat siblings** within their
-owner (datablock or analysis object). A category must never be a child
-of another category of a different type. Categories can reference each
-other via IDs, but the ownership hierarchy is always:
+owner (`CategoryOwner`). A category must never be a child of another
+category of a different type. Categories can reference each other via
+IDs, but the ownership hierarchy is always:
 
 ```
-Owner (DatablockItem / Analysis)
+Owner (CategoryOwner)
 ├── CategoryA   (CategoryItem or CategoryCollection)
 ├── CategoryB   (CategoryItem or CategoryCollection)
 └── CategoryC   (CategoryItem or CategoryCollection)

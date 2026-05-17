@@ -26,8 +26,8 @@ Phase 1 — Implementation
 [x] Phase 4: Move Analysis onto CategoryOwner.
 [x] Phase 5: Update dirty-flag lookup to CategoryOwner.
 [ ] Phase 6: (Optional) ProjectConfig cleanup.
-[ ] Phase 7: Update architecture.md and Issues/issues_open.md.
-[ ] Phase 1 review gate: present diff for approval.
+[x] Phase 7: Update architecture.md and Issues/issues_open.md.
+[x] Phase 1 review gate: present diff for approval.
 
 Phase 2 — Verification
 [ ] Add per-phase unit tests (see "Tests For Phase X" sections).

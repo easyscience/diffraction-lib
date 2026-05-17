@@ -62,6 +62,19 @@ user-facing path and bypassed during fitting
 
 ---
 
+## Introduce CategoryOwner for Analysis and Datablocks
+
+Added `CategoryOwner` as the shared base class for flat CIF-like
+category owners. `DatablockItem` now extends `CategoryOwner`, keeping
+real `data_<id>` header behavior for structures and experiments.
+`Analysis` also extends `CategoryOwner`, reusing shared category
+discovery, parameter aggregation, and dirty tracking while remaining a
+singleton section without a `data_` header. CIF serialization now
+splits category-body rendering from datablock header rendering via
+`category_owner_to_cif()`.
+
+---
+
 ## Move Calculator from Global to Per-Experiment
 
 Each experiment owns its calculator, auto-resolved on first access from
