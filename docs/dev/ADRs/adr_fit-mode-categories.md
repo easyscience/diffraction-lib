@@ -1,7 +1,12 @@
 # ADR: Fit Mode Categories and Fit Execution API
 
-**Status:** Proposed  
-**Date:** 2026-05-16
+## Status
+
+Accepted and implemented.
+
+## Date
+
+2026-05-16
 
 ## Context
 
@@ -690,20 +695,12 @@ Persisting inactive categories would make saved projects ambiguous for
 CLI workflows. The selected mode should determine which mode-specific
 category is authoritative.
 
-## Open Questions
+## Follow-up Questions
 
-These questions are intentionally left unresolved in this ADR. Each must
-be settled during the implementation plan or in a follow-up ADR before
-code lands.
+The core design in this ADR is implemented. The questions below are
+follow-up design topics that may need future ADRs if behaviour changes.
 
 ### Architectural / API
-
-- **Active-sibling pattern formalization.** This ADR names the pattern
-  and documents the contract informally. Open: should the pattern be
-  promoted into `architecture.md` (or a dedicated ADR) so future
-  conditional-sibling categories follow the same naming and lifecycle
-  rules, or should it remain documented only here until a second use
-  case appears?
 - **Direct access to inactive mode categories.** \u00a77 specifies the
   lenient behaviour: reading `analysis.sequential_fit` in `joint` mode
   returns the underlying object, mutation does not raise, but values are
@@ -757,11 +754,6 @@ code lands.
   project file?
 
 ### Help & discovery
-
-- **Help-filter hook surface.** Deferred to implementation. Open at
-  ADR-review level: does the hook live on `GuardedBase`, on
-  `CategoryItem`, or both? Single hook or separate hooks for properties
-  and methods?
 - **`dir()` consistency.** The hook hides members from `help()` only.
   Open: should `dir(analysis)` likewise hide inactive categories, or
   always reflect the full class surface (affects tab completion)?
@@ -777,10 +769,6 @@ code lands.
   Open: does \"raises\" mean at load of `project.cif`, or at first
   access of `analysis`? This affects how users discover the break and
   whether a project can be partially loaded for inspection.
-- **`extract_diffrn` Python hook.** \u00a76 notes a runtime-only Python
-  hook \"may still be useful.\" Open: is the callback removed entirely
-  in the same commit that introduces `sequential_fit_extract`, or
-  retained as an advanced escape hatch documented separately?
 
 ## Deferred Work
 
@@ -789,5 +777,3 @@ code lands.
 - A separate ADR for changing switchable category selectors globally
   from owner-level names such as `peak_profile_type` toward
   category-owned selectors such as `peak.profile_type`.
-- The implementation and migration plan for replacing the current `fit`
-  category and `fit_sequential(...)` method.

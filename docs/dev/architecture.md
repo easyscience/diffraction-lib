@@ -1259,7 +1259,7 @@ authoritative mode and decides which sibling categories are active,
 shown in help, and serialized. `joint_fit`, `sequential_fit`, and
 `sequential_fit_extract` remain direct `Analysis` siblings even when
 inactive. See the fit-mode ADR for the full contract:
-[`adr_fit-mode-categories.md`](ADR-suggestions/adr_fit-mode-categories.md).
+[`adr_fit-mode-categories.md`](ADRs/adr_fit-mode-categories.md).
 Likewise, `calculation` is a dedicated experiment category that owns
 calculator selection — `experiment.calculation.calculator_type` and
 `experiment.calculation.show_calculator_types()` — instead of the
