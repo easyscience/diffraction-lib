@@ -404,30 +404,28 @@ def analysis_to_cif(analysis: object) -> str:
     """Render analysis metadata, aliases, and constraints to CIF."""
     parts: list[str] = [f'_fitting.mode_type {format_value(analysis.fitting_mode_type)}']
 
-    fitting_cif = analysis.fitting.as_cif
-    if fitting_cif:
-        parts.append(fitting_cif)
+    body = category_owner_to_cif(analysis)
+    if not body:
+        fallback_sections = [
+            getattr(analysis, 'fitting', None),
+            getattr(analysis, 'aliases', None),
+            getattr(analysis, 'constraints', None),
+        ]
 
-    aliases_cif = analysis.aliases.as_cif
-    if aliases_cif:
-        parts.append(aliases_cif)
+        if analysis.fitting_mode_type == 'joint':
+            fallback_sections.append(getattr(analysis, 'joint_fit', None))
+        elif analysis.fitting_mode_type == 'sequential':
+            fallback_sections.extend([
+                getattr(analysis, 'sequential_fit', None),
+                getattr(analysis, 'sequential_fit_extract', None),
+            ])
 
-    constraints_cif = analysis.constraints.as_cif
-    if constraints_cif:
-        parts.append(constraints_cif)
+        body = '\n\n'.join([
+            _as_cif_text(section) for section in fallback_sections if section is not None
+        ])
 
-    if analysis.fitting_mode_type == 'joint':
-        joint_fit_cif = analysis.joint_fit.as_cif
-        if joint_fit_cif:
-            parts.append(joint_fit_cif)
-    elif analysis.fitting_mode_type == 'sequential':
-        sequential_fit_cif = analysis.sequential_fit.as_cif
-        if sequential_fit_cif:
-            parts.append(sequential_fit_cif)
-
-        sequential_extract_cif = analysis.sequential_fit_extract.as_cif
-        if sequential_extract_cif:
-            parts.append(sequential_extract_cif)
+    if body:
+        parts.append(body)
 
     return '\n\n'.join(parts)
 
