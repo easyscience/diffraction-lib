@@ -368,13 +368,7 @@ class Project(GuardedBase):
         if not aliases._items:
             return
 
-        # Build unique_name → parameter map
-        all_params = self._structures.parameters + self._experiments.parameters
-        param_map: dict[str, object] = {}
-        for p in all_params:
-            uname = getattr(p, 'unique_name', None)
-            if uname is not None:
-                param_map[uname] = p
+        param_map = self._build_parameter_map()
 
         for alias in aliases:
             uname = alias.param_unique_name.value
@@ -385,6 +379,22 @@ class Project(GuardedBase):
                     f"Alias '{alias.label.value}' references unknown "
                     f"parameter '{uname}'. Reference not resolved."
                 )
+
+    def _build_parameter_map(self) -> dict[str, object]:
+        """
+        Return a ``unique_name`` to live parameter mapping.
+
+        The map combines structure and experiment parameters and is
+        reused by CIF restore steps that need to reconnect persisted
+        names to live parameter objects.
+        """
+        all_params = self._structures.parameters + self._experiments.parameters
+        param_map: dict[str, object] = {}
+        for param in all_params:
+            unique_name = getattr(param, 'unique_name', None)
+            if unique_name is not None:
+                param_map[unique_name] = param
+        return param_map
 
     def save(self) -> None:
         """Save the project into the existing project directory."""

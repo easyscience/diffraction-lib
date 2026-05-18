@@ -38,7 +38,7 @@ structure or experiment CIF files.
 - [x] Phase 1 step 3: add deterministic result category models.
 - [x] Phase 1 step 4: add Bayesian metadata category models.
 - [x] Phase 1 step 5: add Bayesian cache manifest category models.
-- [ ] Phase 1 step 6: wire analysis CIF save/load for fit state.
+- [x] Phase 1 step 6: wire analysis CIF save/load for fit state.
 - [ ] Phase 1 step 7: capture fit projections after fitting.
 - [ ] Phase 1 step 8: add HDF5 sidecar save/load.
 - [ ] Phase 1 step 9: restore result objects and display cache inputs.

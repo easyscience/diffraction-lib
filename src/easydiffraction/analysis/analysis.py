@@ -10,7 +10,30 @@ import numpy as np
 import pandas as pd
 
 from easydiffraction.analysis.categories.aliases.factory import AliasesFactory
+from easydiffraction.analysis.categories.bayesian_convergence import BayesianConvergence
+from easydiffraction.analysis.categories.bayesian_distribution_caches import (
+    BayesianDistributionCaches,
+)
+from easydiffraction.analysis.categories.bayesian_pair_caches import BayesianPairCaches
+from easydiffraction.analysis.categories.bayesian_parameter_posteriors import (
+    BayesianParameterPosteriors,
+)
+from easydiffraction.analysis.categories.bayesian_predictive_datasets import (
+    BayesianPredictiveDatasets,
+)
+from easydiffraction.analysis.categories.bayesian_result import BayesianResult
+from easydiffraction.analysis.categories.bayesian_sampler import BayesianSampler
 from easydiffraction.analysis.categories.constraints.factory import ConstraintsFactory
+from easydiffraction.analysis.categories.deterministic_parameter_results import (
+    DeterministicParameterResults,
+)
+from easydiffraction.analysis.categories.deterministic_result import DeterministicResult
+from easydiffraction.analysis.categories.fit_parameter_correlations import (
+    FitParameterCorrelations,
+)
+from easydiffraction.analysis.categories.fit_parameters import FitParameters
+from easydiffraction.analysis.categories.fit_result import FitResult
+from easydiffraction.analysis.categories.fit_state import FitState
 from easydiffraction.analysis.categories.fitting import Fitting
 from easydiffraction.analysis.categories.fitting import FittingFactory
 from easydiffraction.analysis.categories.joint_fit import JointFitCollection
@@ -19,6 +42,7 @@ from easydiffraction.analysis.categories.sequential_fit import SequentialFitFact
 from easydiffraction.analysis.categories.sequential_fit_extract import (
     SequentialFitExtractCollection,
 )
+from easydiffraction.analysis.enums import FitResultKindEnum
 from easydiffraction.analysis.enums import FitModeEnum
 from easydiffraction.analysis.fitting import Fitter
 from easydiffraction.core.category_owner import CategoryOwner
@@ -379,6 +403,20 @@ class Analysis(CategoryOwner):
             SequentialFitFactory.default_tag()
         )
         self._sequential_fit_extract = SequentialFitExtractCollection()
+        self._fit_state = FitState()
+        self._fit_parameters = FitParameters()
+        self._fit_result = FitResult()
+        self._fit_parameter_correlations = FitParameterCorrelations()
+        self._deterministic_result = DeterministicResult()
+        self._deterministic_parameter_results = DeterministicParameterResults()
+        self._bayesian_result = BayesianResult()
+        self._bayesian_sampler = BayesianSampler()
+        self._bayesian_convergence = BayesianConvergence()
+        self._bayesian_parameter_posteriors = BayesianParameterPosteriors()
+        self._bayesian_distribution_caches = BayesianDistributionCaches()
+        self._bayesian_pair_caches = BayesianPairCaches()
+        self._bayesian_predictive_datasets = BayesianPredictiveDatasets()
+        self._has_persisted_fit_state_data = False
         self._fitter = Fitter(self._fitting.minimizer_type.value)
         self._fit_results = None
         self._parameter_snapshots: dict[str, dict[str, dict]] = {}
@@ -501,6 +539,9 @@ class Analysis(CategoryOwner):
                 self.sequential_fit,
                 self.sequential_fit_extract,
             ])
+
+        if self._has_persisted_fit_state():
+            categories.extend(self._fit_state_categories())
 
         return categories
 
@@ -683,6 +724,116 @@ class Analysis(CategoryOwner):
     def sequential_fit_extract(self) -> SequentialFitExtractCollection:
         """Persisted extract rules for sequential fitting."""
         return self._sequential_fit_extract
+
+    @property
+    def fit_state(self) -> FitState:
+        """Persisted fit-state schema metadata."""
+        return self._fit_state
+
+    @property
+    def fit_parameters(self) -> FitParameters:
+        """Persisted fit-parameter control snapshots."""
+        return self._fit_parameters
+
+    @property
+    def fit_result(self) -> FitResult:
+        """Persisted common fit-result status metadata."""
+        return self._fit_result
+
+    @property
+    def fit_parameter_correlations(self) -> FitParameterCorrelations:
+        """Persisted fit-parameter correlation summaries."""
+        return self._fit_parameter_correlations
+
+    @property
+    def deterministic_result(self) -> DeterministicResult:
+        """Persisted deterministic fit-result metadata."""
+        return self._deterministic_result
+
+    @property
+    def deterministic_parameter_results(self) -> DeterministicParameterResults:
+        """Persisted deterministic parameter-result summaries."""
+        return self._deterministic_parameter_results
+
+    @property
+    def bayesian_result(self) -> BayesianResult:
+        """Persisted Bayesian fit-result metadata."""
+        return self._bayesian_result
+
+    @property
+    def bayesian_sampler(self) -> BayesianSampler:
+        """Persisted Bayesian sampler settings."""
+        return self._bayesian_sampler
+
+    @property
+    def bayesian_convergence(self) -> BayesianConvergence:
+        """Persisted Bayesian convergence diagnostics."""
+        return self._bayesian_convergence
+
+    @property
+    def bayesian_parameter_posteriors(self) -> BayesianParameterPosteriors:
+        """Persisted Bayesian parameter posterior summaries."""
+        return self._bayesian_parameter_posteriors
+
+    @property
+    def bayesian_distribution_caches(self) -> BayesianDistributionCaches:
+        """Persisted Bayesian distribution-cache manifests."""
+        return self._bayesian_distribution_caches
+
+    @property
+    def bayesian_pair_caches(self) -> BayesianPairCaches:
+        """Persisted Bayesian pair-cache manifests."""
+        return self._bayesian_pair_caches
+
+    @property
+    def bayesian_predictive_datasets(self) -> BayesianPredictiveDatasets:
+        """Persisted Bayesian predictive-dataset manifests."""
+        return self._bayesian_predictive_datasets
+
+    def _has_persisted_fit_state(self) -> bool:
+        """Return whether a persisted fit-state projection is present."""
+        return self._has_persisted_fit_state_data
+
+    def _set_has_persisted_fit_state(self, value: bool) -> None:
+        """Set the persisted fit-state presence flag for internal callers."""
+        self._has_persisted_fit_state_data = value
+
+    def _fit_state_categories(self) -> list[object]:
+        """Return fit-state categories for the current persisted result kind."""
+        categories: list[object] = [
+            self.fit_state,
+            self.fit_parameters,
+            self.fit_result,
+            self.fit_parameter_correlations,
+        ]
+
+        try:
+            result_kind = FitResultKindEnum(self.fit_result.result_kind.value)
+        except ValueError:
+            log.warning(
+                'Unsupported fit_result.result_kind while serializing analysis CIF: '
+                f"{self.fit_result.result_kind.value!r}. "
+                'Saving only common fit-state categories.',
+            )
+            return categories
+
+        if result_kind is FitResultKindEnum.DETERMINISTIC:
+            categories.extend([
+                self.deterministic_result,
+                self.deterministic_parameter_results,
+            ])
+            return categories
+
+        categories.extend([
+            self.bayesian_result,
+            self.bayesian_sampler,
+            self.bayesian_convergence,
+            self.bayesian_parameter_posteriors,
+            self.bayesian_distribution_caches,
+            self.bayesian_pair_caches,
+            self.bayesian_predictive_datasets,
+        ])
+        return categories
 
     def _resolve_sequential_data_dir(self) -> Path:
         """
