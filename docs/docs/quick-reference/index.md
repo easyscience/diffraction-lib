@@ -403,8 +403,16 @@ project = ed.Project.load('lbco_hrpt')
 Run a saved project from the command line:
 
 ```bash
-python -m easydiffraction fit lbco_hrpt
-python -m easydiffraction fit lbco_hrpt --dry
+python -m easydiffraction lbco_hrpt fit
+python -m easydiffraction lbco_hrpt fit --dry
+python -m easydiffraction lbco_hrpt display
+```
+
+Load a saved example project straight from `download_data()`:
+
+```python
+saved_project_dir = ed.download_data(id=30, destination='projects')
+project = ed.Project.load(saved_project_dir)
 ```
 
 ## Command-Line Reminders
@@ -412,8 +420,11 @@ python -m easydiffraction fit lbco_hrpt --dry
 ```bash
 python -m easydiffraction --help
 python -m easydiffraction --version
+python -m easydiffraction list-data
+python -m easydiffraction download-data 30 --destination projects
 python -m easydiffraction list-tutorials
 python -m easydiffraction download-tutorial 1 --destination tutorials
 python -m easydiffraction download-all-tutorials --destination tutorials
-python -m easydiffraction fit PROJECT_DIR
+python -m easydiffraction PROJECT_DIR fit
+python -m easydiffraction PROJECT_DIR display
 ```

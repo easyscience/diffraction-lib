@@ -14,7 +14,7 @@ contribution from multiple **structures**.
 EasyDiffraction allows you to:
 
 - **Manually create** a new project by specifying its metadata.
-- **Load an existing project** from a file (**CIF** format).
+- **Load an existing saved project** from its project directory.
 
 Below are instructions on how to set up a project in EasyDiffraction. It
 is assumed that you have already imported the `easydiffraction` package,
@@ -55,14 +55,15 @@ you can just call the `save`:
 project.save()
 ```
 
-## Loading a Project from CIF
+## Loading a Saved Project
 
-If you have an existing project, you can load it directly from a CIF
-file. This is useful for reusing previously defined projects or sharing
-them with others.
+If you have an existing saved project, load it from the project
+directory created by `project.save_as()` or `project.save()`. This is
+useful for continuing a previous session or reusing a downloaded saved
+project.
 
 ```python
-project.load('data/lbco_hrpt.cif')
+project = ed.Project.load('lbco_hrpt')
 ```
 
 ## Project Structure
@@ -82,9 +83,10 @@ The example below illustrates a typical **project structure** for a
 ├── 📁 experiments    - Folder with experiment settings and measured data.
 │   ├── 📄 <span class="orange"><b>hrpt.cif</b></span>   - Instrumental parameters, calculator selection and measured data from HRPT@PSI.
 │   └── ...
-├── 📄 <span class="orange"><b>analysis.cif</b></span>   - Settings for data analysis (minimizer, fit mode, etc.).
-└── 📁 summary
-    └── 📄 report.cif - Summary report after structure refinement.
+├── 📁 analysis       - Analysis settings and optional persisted Bayesian arrays.
+│   ├── 📄 <span class="orange"><b>analysis.cif</b></span> - Settings for data analysis (minimizer, fit mode, constraints, persisted fit state).
+│   └── 📄 <span class="orange"><b>results.h5</b></span>   - Optional Bayesian sidecar with posterior and predictive arrays.
+└── 📄 <span class="orange"><b>summary.cif</b></span>    - Summary report after structure refinement.
 </pre>
 </div>
 
@@ -110,13 +112,16 @@ This file stores project-level metadata and display configuration.
 
 <div class="cif">
 <pre>
-data_<span class="red"><b>La0.5Ba0.5CoO3</b></span>
-
+<span class="blue"><b>_project</b>.id</span>          lbco_hrpt
 <span class="blue"><b>_project</b>.title</span>       "La0.5Ba0.5CoO3 from neutron diffraction at HRPT@PSI"
 <span class="blue"><b>_project</b>.description</span> "neutrons, powder, constant wavelength, HRPT@PSI"
 
-<span class="blue"><b>_display</b>.chart_engine</span>  asciichartpy
-<span class="blue"><b>_display</b>.table_engine</span>   rich
+<span class="blue"><b>_project</b>.created</span>     "18 May 2026 10:15:00"
+<span class="blue"><b>_project</b>.last_modified</span> "18 May 2026 10:20:00"
+
+<span class="blue"><b>_rendering</b>.chart_engine</span> auto
+<span class="blue"><b>_rendering</b>.table_engine</span> auto
+<span class="blue"><b>_verbosity</b>.fit</span>         full
 </pre>
 </div>
 
@@ -233,7 +238,7 @@ loop_
 
 <!-- prettier-ignore-end -->
 
-### 4. <span class="orange">analysis.cif</span>
+### 4. analysis / <span class="orange">analysis.cif</span>
 
 This file contains settings used for data analysis, including the choice
 of **calculation** and **fitting** engines, as well as user defined
@@ -243,8 +248,8 @@ of **calculation** and **fitting** engines, as well as user defined
 
 <div class="cif">
 <pre>
-<span class="blue"><b>_fit</b>.minimizer_type</span>          "lmfit (leastsq)"
-<span class="blue"><b>_fit</b>.mode</span>                    single
+<span class="blue"><b>_fitting</b>.mode_type</span>              single
+<span class="blue"><b>_fitting</b>.minimizer_type</span>         lmfit
 
 loop_
 <span class="green"><b>_alias</b>.label</span>
@@ -262,6 +267,9 @@ loop_
 </div>
 
 <!-- prettier-ignore-end -->
+
+When a Bayesian fit stores persisted posterior or predictive arrays, the
+same `analysis/` directory also contains `results.h5`.
 
 <br>
 
