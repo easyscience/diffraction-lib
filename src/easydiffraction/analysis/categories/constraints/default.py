@@ -137,7 +137,7 @@ class Constraints(CategoryCollection):
         """Deactivate constraints without deleting them."""
         self._enabled = False
 
-    def create(self, *, expression: str) -> None:
+    def create(self, *, expression: str, id: str | None = None) -> None:
         """
         Create a constraint from an expression string.
 
@@ -148,10 +148,15 @@ class Constraints(CategoryCollection):
         expression : str
             Constraint equation, e.g. ``'biso_Co2 = biso_Co1'`` or
             ``'occ_Ba = 1 - occ_La'``.
+        id : str | None, optional
+            Explicit row identifier. When not ``None``, this value is
+            used as the collection key instead of the left-hand alias.
         """
         item = Constraint()
         item.expression = expression
-        if item.lhs_alias:
+        if id is not None:
+            item.id = id
+        elif item.lhs_alias:
             item.id = item.lhs_alias
         self.add(item)
         self._enabled = True

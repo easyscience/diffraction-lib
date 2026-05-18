@@ -22,6 +22,17 @@ def test_constraint_creation_and_collection():
     assert coll['a'].rhs_expr == 'b + c'
 
 
+def test_constraints_create_uses_explicit_id():
+    coll = Constraints()
+
+    coll.create(id='constraint_1', expression='a = b + c')
+
+    assert coll.names == ['constraint_1']
+    assert coll['constraint_1'].id.value == 'constraint_1'
+    assert coll['constraint_1'].lhs_alias == 'a'
+    assert coll['constraint_1'].rhs_expr == 'b + c'
+
+
 def test_constraints_from_cif_preserves_explicit_id_keys():
     doc = gemmi.cif.read_string(
         'data_constraints\n\n'
