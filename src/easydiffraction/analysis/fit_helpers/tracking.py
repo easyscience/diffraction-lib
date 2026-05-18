@@ -11,6 +11,8 @@ from typing import TYPE_CHECKING
 from easydiffraction.analysis.fit_helpers.metrics import calculate_reduced_chi_square
 from easydiffraction.display.progress import ACTIVITY_LABEL_BURN_IN
 from easydiffraction.display.progress import ACTIVITY_LABEL_FITTING
+from easydiffraction.display.progress import ACTIVITY_LABEL_POST_PROCESSING
+from easydiffraction.display.progress import ACTIVITY_LABEL_PRE_PROCESSING
 from easydiffraction.display.progress import ACTIVITY_LABEL_PROCESSING
 from easydiffraction.display.progress import ACTIVITY_LABEL_SAMPLING
 from easydiffraction.display.progress import ActivityIndicator
@@ -28,6 +30,8 @@ FIT_PROGRESS_UPDATE_SECONDS = 5.0
 SAMPLER_PROGRESS_UPDATE_SECONDS = 5.0
 TRACKING_MODE_FIT = 'fit'
 TRACKING_MODE_SAMPLER = 'sampling'
+SAMPLER_PHASE_POST_PROCESSING = 'post-processing'
+SAMPLER_PHASE_PRE_PROCESSING = 'pre-processing'
 DEFAULT_HEADERS = ['iteration', 'time (s)', 'χ²', 'change / status']
 DEFAULT_ALIGNMENTS = ['center', 'center', 'center', 'center']
 SAMPLER_HEADERS = ['iteration', 'progress', 'time (s)', 'log posterior', 'phase']
@@ -85,6 +89,7 @@ class FitProgressTracker:
         self._last_sampler_progress_percent: float | None = None
         self._last_sampler_log_posterior: float | None = None
         self._last_sampler_elapsed_time: float | None = None
+        self._sampler_pre_processing_pending: bool = False
 
         self._df_rows: list[list[str]] = []
         self._activity_indicator: ActivityIndicator | None = None
@@ -111,6 +116,7 @@ class FitProgressTracker:
         self._last_sampler_progress_percent = None
         self._last_sampler_log_posterior = None
         self._last_sampler_elapsed_time = None
+        self._sampler_pre_processing_pending = False
         self._df_rows = []
         self._activity_label = ACTIVITY_LABEL_FITTING
 
@@ -240,6 +246,37 @@ class FitProgressTracker:
         self._last_chi2 = update.reduced_chi2
         self._last_iteration = update.iteration
 
+    def start_sampler_pre_processing(self, *, total_iterations: int) -> None:
+        """Mark sampler setup so its status row appears on first progress update."""
+        self._tracking_mode = TRACKING_MODE_SAMPLER
+        self._sampler_total_iterations = max(1, total_iterations)
+        self._last_sampler_phase = SAMPLER_PHASE_PRE_PROCESSING
+        self._last_sampler_progress_percent = None
+        self._last_sampler_log_posterior = None
+        self._last_sampler_elapsed_time = None
+        self._sampler_pre_processing_pending = True
+        self._set_activity_label(ACTIVITY_LABEL_PRE_PROCESSING)
+
+    def start_sampler_post_processing(
+        self,
+        *,
+        log_posterior: float | None = None,
+    ) -> None:
+        """Switch the activity indicator to post-processing."""
+        if self._tracking_mode != TRACKING_MODE_SAMPLER:
+            return
+
+        if self._sampler_total_iterations is None:
+            self._sampler_total_iterations = max(1, self._last_iteration or 1)
+
+        elapsed_time = self._elapsed_since_start()
+        self._last_sampler_phase = SAMPLER_PHASE_POST_PROCESSING
+        self._last_sampler_progress_percent = 100.0
+        if log_posterior is not None:
+            self._last_sampler_log_posterior = float(log_posterior)
+        self._last_sampler_elapsed_time = elapsed_time
+        self._set_activity_label(ACTIVITY_LABEL_POST_PROCESSING)
+
     @property
     def best_chi2(self) -> float | None:
         """Best recorded reduced chi-square value or None."""
@@ -272,6 +309,14 @@ class FitProgressTracker:
             return
         self._end_time = time.perf_counter()
         self._fitting_time = self._end_time - self._start_time
+
+    def _elapsed_since_start(self) -> float | None:
+        """Return elapsed wall time using the active timer when available."""
+        if self._start_time is None:
+            return None
+        if self._end_time is not None:
+            return self._end_time - self._start_time
+        return time.perf_counter() - self._start_time
 
     def start_tracking(self, minimizer_name: str, *, mode: str = TRACKING_MODE_FIT) -> None:
         """
@@ -354,6 +399,12 @@ class FitProgressTracker:
         self._best_chi2 = update.reduced_chi2
         self._best_iteration = update.iteration
         self._last_progress_time = update.elapsed_time
+        if self._sampler_pre_processing_pending:
+            self._sampler_pre_processing_pending = False
+            return self._sampler_status_row(
+                phase=SAMPLER_PHASE_PRE_PROCESSING,
+                elapsed_time=update.elapsed_time,
+            )
         return self._sampler_progress_row(
             clamped_iteration=clamped_iteration,
             clamped_progress=clamped_progress,
@@ -431,6 +482,21 @@ class FitProgressTracker:
             phase,
         ]
 
+    def _sampler_status_row(
+        self,
+        *,
+        phase: str,
+        elapsed_time: float | None,
+    ) -> list[str]:
+        """Return a status-only sampler row without iteration metrics."""
+        return [
+            '',
+            '',
+            self._format_elapsed_time(elapsed_time),
+            '',
+            phase,
+        ]
+
     def _finalize_sampler_tracking_row(self) -> None:
         row = self._final_sampler_tracking_row()
         if row is None:
@@ -453,6 +519,12 @@ class FitProgressTracker:
 
         final_progress = self._resolved_final_sampler_progress()
         elapsed_time = self._resolved_final_sampler_elapsed_time()
+        if self._last_sampler_phase == SAMPLER_PHASE_POST_PROCESSING:
+            return self._sampler_status_row(
+                phase=SAMPLER_PHASE_POST_PROCESSING,
+                elapsed_time=elapsed_time,
+            )
+
         log_posterior = (
             f'{self._last_sampler_log_posterior:.2f}'
             if self._last_sampler_log_posterior is not None
@@ -596,14 +668,18 @@ class FitProgressTracker:
 
     def _default_activity_label(self) -> str:
         if self._tracking_mode == TRACKING_MODE_SAMPLER:
-            return ACTIVITY_LABEL_PROCESSING
+            return ACTIVITY_LABEL_PRE_PROCESSING
         return ACTIVITY_LABEL_FITTING
 
     @staticmethod
     def _activity_label_for_sampler_phase(phase: str) -> str:
         normalized_phase = phase.strip().lower()
+        if normalized_phase == SAMPLER_PHASE_PRE_PROCESSING:
+            return ACTIVITY_LABEL_PRE_PROCESSING
         if normalized_phase == 'burn-in':
             return ACTIVITY_LABEL_BURN_IN
+        if normalized_phase == SAMPLER_PHASE_POST_PROCESSING:
+            return ACTIVITY_LABEL_POST_PROCESSING
         if normalized_phase == 'sampling':
             return ACTIVITY_LABEL_SAMPLING
         if normalized_phase:

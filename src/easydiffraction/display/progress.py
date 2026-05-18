@@ -31,6 +31,8 @@ from easydiffraction.utils.logging import ConsoleManager
 
 ACTIVITY_LABEL_BURN_IN = 'Burn-in...'
 ACTIVITY_LABEL_FITTING = 'Fitting...'
+ACTIVITY_LABEL_POST_PROCESSING = 'Post-processing...'
+ACTIVITY_LABEL_PRE_PROCESSING = 'Pre-processing...'
 ACTIVITY_LABEL_PROCESSING = 'Processing...'
 ACTIVITY_LABEL_SAMPLING = 'Sampling...'
 ACTIVITY_ACCENT_COLOR = '#d97706'

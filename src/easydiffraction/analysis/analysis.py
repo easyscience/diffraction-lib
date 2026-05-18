@@ -1499,7 +1499,7 @@ class Analysis(CategoryOwner):
                 experiment=experiment,
                 expt_name=experiment_name,
                 x_axis=x_axis,
-                include_draws=True,
+                include_draws=False,
             )
             if summary is None:
                 continue
@@ -1510,13 +1510,6 @@ class Analysis(CategoryOwner):
                     summary.experiment_name,
                     str(x_axis_name),
                     include_draws=False,
-                )
-            ] = summary
-            results.posterior_predictive[
-                self._predictive_cache_key(
-                    summary.experiment_name,
-                    str(x_axis_name),
-                    include_draws=True,
                 )
             ] = summary
             predictive_payload[summary.experiment_name] = self._predictive_dataset_payload(
@@ -1602,6 +1595,33 @@ class Analysis(CategoryOwner):
         self.bayesian_result._set_has_pair_cache(bool(pair_payload))
         self.bayesian_result._set_has_posterior_predictive(bool(predictive_payload))
 
+    def _store_bayesian_posterior_sidecar_projection(
+        self,
+        results: BayesianFitResults,
+    ) -> None:
+        """Persist canonical posterior arrays while live samples are available."""
+        posterior_samples = results.posterior_samples
+        if posterior_samples is None:
+            self._persisted_fit_state_sidecar['posterior'] = {}
+            return
+
+        self._persisted_fit_state_sidecar['posterior'] = {
+            'parameter_samples': np.asarray(
+                posterior_samples.parameter_samples,
+                dtype=float,
+            ),
+            'log_posterior': (
+                None
+                if posterior_samples.log_posterior is None
+                else np.asarray(posterior_samples.log_posterior, dtype=float)
+            ),
+            'draw_index': (
+                None
+                if posterior_samples.draw_index is None
+                else np.asarray(posterior_samples.draw_index)
+            ),
+        }
+
     def _store_bayesian_result_projection(self, results: BayesianFitResults) -> None:
         """Store Bayesian fit-result projections into persisted categories."""
         credible_interval_inner = 0.68
@@ -1626,6 +1646,7 @@ class Analysis(CategoryOwner):
         self.bayesian_result._set_has_pair_cache(False)
         self.bayesian_result._set_has_posterior_predictive(False)
         self.bayesian_result._set_sidecar_file('results.h5')
+        self._store_bayesian_posterior_sidecar_projection(results)
 
         self.bayesian_sampler._set_steps(int(sampler_settings.get('steps', 0)))
         self.bayesian_sampler._set_burn(int(sampler_settings.get('burn', 0)))

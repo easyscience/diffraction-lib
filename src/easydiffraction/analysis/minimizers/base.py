@@ -343,8 +343,9 @@ class MinimizerBase(ABC):
             if resolved_random_seed is not None:
                 solver_args['random_seed'] = resolved_random_seed
             raw_result = self._run_solver(objective_function, **solver_args)
-        finally:
+        except Exception:
             self._stop_tracking()
+            raise
 
         return self._finalize_fit(parameters, raw_result)
 

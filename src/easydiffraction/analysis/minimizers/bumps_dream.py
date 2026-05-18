@@ -601,6 +601,8 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         object
             Normalized DREAM result stored in an ``OptimizeResult``.
         """
+        total_iterations = int(self.steps + self._resolved_burn(self.steps) + 1)
+        self.tracker.start_sampler_pre_processing(total_iterations=total_iterations)
         context = self._prepare_run_context(objective_function=objective_function, kwargs=kwargs)
         driver_result = self._execute_driver(
             driver=context.driver,
@@ -895,9 +897,6 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         posterior_standard_deviations = standard_deviations_from_summaries(
             posterior_parameter_summaries
         )
-
-        if not convergence_diagnostics.get('converged', True):
-            log.warning('Convergence diagnostics indicate the posterior may be poorly mixed.')
 
         return OptimizeResult(
             x=best_sample_values,

@@ -8,12 +8,14 @@ from typing import Any
 
 import numpy as np
 
+from easydiffraction.analysis.fit_helpers.bayesian import BayesianFitResults
 from easydiffraction.analysis.fit_helpers.metrics import get_reliability_inputs
 from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 from easydiffraction.core.variable import Parameter
 from easydiffraction.datablocks.experiment.item.base import intensity_category_for
 from easydiffraction.utils.enums import VerbosityEnum
+from easydiffraction.utils.logging import log
 
 if TYPE_CHECKING:
     from easydiffraction.analysis.fit_helpers.reporting import FitResults
@@ -175,16 +177,31 @@ class Fitter:
             random_seed=random_seed,
         )
 
-        if self.results is not None:
-            self.results.message = _resolve_fit_result_message(self.results)
-            self.results.iterations = _resolve_fit_result_iterations(self.results)
-            self.results.chi_square = _resolve_fit_result_chi_square(self.results)
-            if analysis is not None:
-                analysis._store_fit_result_projection(
-                    self.results,
-                    experiments=experiments,
-                    fitted_parameters=params,
-                )
+        warn_poorly_mixed = False
+        try:
+            if self.results is not None:
+                self.results.message = _resolve_fit_result_message(self.results)
+                self.results.iterations = _resolve_fit_result_iterations(self.results)
+                self.results.chi_square = _resolve_fit_result_chi_square(self.results)
+                if analysis is not None:
+                    if isinstance(self.results, BayesianFitResults):
+                        warn_poorly_mixed = not self.results.convergence_diagnostics.get(
+                            'converged',
+                            True,
+                        )
+                        self.minimizer.tracker.start_sampler_post_processing(
+                            log_posterior=self.results.best_log_posterior,
+                        )
+                    analysis._store_fit_result_projection(
+                        self.results,
+                        experiments=experiments,
+                        fitted_parameters=params,
+                    )
+        finally:
+            self.minimizer._stop_tracking()
+
+        if warn_poorly_mixed:
+            log.warning('Convergence diagnostics indicate the posterior may be poorly mixed.')
 
     def _process_fit_results(
         self,
