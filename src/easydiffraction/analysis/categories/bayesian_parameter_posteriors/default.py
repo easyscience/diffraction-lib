@@ -4,6 +4,8 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from easydiffraction.analysis.categories.bayesian_parameter_posteriors.factory import (
     BayesianParameterPosteriorsFactory,
 )
@@ -15,6 +17,9 @@ from easydiffraction.core.validation import RegexValidator
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.io.cif.handler import CifHandler
+
+if TYPE_CHECKING:
+    from easydiffraction.analysis.fit_helpers.bayesian import PosteriorParameterSummary
 
 
 class BayesianParameterPosteriorItem(CategoryItem):
@@ -212,56 +217,26 @@ class BayesianParameterPosteriors(CategoryCollection):
     def create(
         self,
         *,
-        unique_name: str,
-        display_name: str,
-        best_sample_value: float | None = None,
-        median: float | None = None,
-        uncertainty: float | None = None,
-        interval_68_lower: float | None = None,
-        interval_68_upper: float | None = None,
-        interval_95_lower: float | None = None,
-        interval_95_upper: float | None = None,
-        ess_bulk: float | None = None,
-        r_hat: float | None = None,
+        summary: PosteriorParameterSummary,
     ) -> None:
         """
         Create a persisted Bayesian parameter posterior summary row.
 
         Parameters
         ----------
-        unique_name : str
-            Unique EasyDiffraction parameter name.
-        display_name : str
-            Human-readable parameter label.
-        best_sample_value : int | float | None, default=None
-            Committed sampled parameter value.
-        median : int | float | None, default=None
-            Posterior median value.
-        uncertainty : int | float | None, default=None
-            Posterior standard deviation.
-        interval_68_lower : int | float | None, default=None
-            Lower bound of the 68% credible interval.
-        interval_68_upper : int | float | None, default=None
-            Upper bound of the 68% credible interval.
-        interval_95_lower : int | float | None, default=None
-            Lower bound of the 95% credible interval.
-        interval_95_upper : int | float | None, default=None
-            Upper bound of the 95% credible interval.
-        ess_bulk : int | float | None, default=None
-            Bulk effective sample size when available.
-        r_hat : int | float | None, default=None
-            Rank-normalized split-R-hat when available.
+        summary : PosteriorParameterSummary
+            Runtime posterior summary to persist.
         """
         item = BayesianParameterPosteriorItem()
-        item._set_unique_name(unique_name)
-        item._set_display_name(display_name)
-        item._set_best_sample_value(best_sample_value)
-        item._set_median(median)
-        item._set_uncertainty(uncertainty)
-        item._set_interval_68_lower(interval_68_lower)
-        item._set_interval_68_upper(interval_68_upper)
-        item._set_interval_95_lower(interval_95_lower)
-        item._set_interval_95_upper(interval_95_upper)
-        item._set_ess_bulk(ess_bulk)
-        item._set_r_hat(r_hat)
+        item._set_unique_name(summary.unique_name)
+        item._set_display_name(summary.display_name)
+        item._set_best_sample_value(summary.best_sample_value)
+        item._set_median(summary.median)
+        item._set_uncertainty(summary.standard_deviation)
+        item._set_interval_68_lower(summary.interval_68[0])
+        item._set_interval_68_upper(summary.interval_68[1])
+        item._set_interval_95_lower(summary.interval_95[0])
+        item._set_interval_95_upper(summary.interval_95[1])
+        item._set_ess_bulk(summary.ess_bulk)
+        item._set_r_hat(summary.r_hat)
         self.add(item)

@@ -1,8 +1,11 @@
-"""Read and write persisted Bayesian fit arrays in ``analysis/results.h5``."""
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
+# SPDX-License-Identifier: BSD-3-Clause
+"""Bayesian fit sidecar read/write helpers."""
 
 from __future__ import annotations
 
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 
 import numpy as np
 
@@ -11,6 +14,8 @@ from easydiffraction.utils.logging import log
 _POSTERIOR_PARAMETER_SAMPLES_PATH = '/posterior/parameter_samples'
 _POSTERIOR_LOG_POSTERIOR_PATH = '/posterior/log_posterior'
 _POSTERIOR_DRAW_INDEX_PATH = '/posterior/draw_index'
+_POSTERIOR_SAMPLE_NDIM = 3
+_PREDICTIVE_DRAWS_NDIM = 2
 
 
 def _normalized_hdf5_path(path: str) -> str:
@@ -36,7 +41,9 @@ def _sidecar_path(*, analysis: object, analysis_dir: Path) -> Path:
 
 
 def _should_use_sidecar(analysis: object) -> bool:
-    """Return whether the analysis currently expects a Bayesian sidecar."""
+    """
+    Return whether the analysis currently expects a Bayesian sidecar.
+    """
     has_fit_state = getattr(analysis, '_has_persisted_fit_state', None)
     if not callable(has_fit_state) or not has_fit_state():
         return False
@@ -44,18 +51,18 @@ def _should_use_sidecar(analysis: object) -> bool:
     if analysis.fit_result.result_kind.value != 'bayesian':
         return False
 
-    return any(
-        (
-            analysis.bayesian_result.has_posterior_samples.value,
-            len(analysis.bayesian_distribution_caches) > 0,
-            len(analysis.bayesian_pair_caches) > 0,
-            len(analysis.bayesian_predictive_datasets) > 0,
-        )
-    )
+    return any((
+        analysis.bayesian_result.has_posterior_samples.value,
+        len(analysis.bayesian_distribution_caches) > 0,
+        len(analysis.bayesian_pair_caches) > 0,
+        len(analysis.bayesian_predictive_datasets) > 0,
+    ))
 
 
 def _delete_stale_sidecar(sidecar_path: Path) -> None:
-    """Delete an existing sidecar when no persisted arrays should remain."""
+    """
+    Delete an existing sidecar when no persisted arrays should remain.
+    """
     if sidecar_path.is_file():
         sidecar_path.unlink()
 
@@ -79,7 +86,7 @@ def _read_dataset(handle: object, path: str) -> np.ndarray | None:
 
 
 def _posterior_payload_from_analysis(analysis: object) -> dict[str, np.ndarray | None]:
-    """Return canonical posterior arrays from runtime results or restored sidecar data."""
+    """Return posterior arrays from runtime or restored data."""
     fit_results = getattr(analysis, 'fit_results', None)
     posterior_samples = getattr(fit_results, 'posterior_samples', None)
     if posterior_samples is not None:
@@ -102,7 +109,7 @@ def _posterior_payload_from_analysis(analysis: object) -> dict[str, np.ndarray |
 
 
 def _distribution_cache_payload(analysis: object) -> dict[str, dict[str, np.ndarray]]:
-    """Return persisted distribution-cache arrays keyed by parameter name."""
+    """Return persisted distribution caches keyed by parameter name."""
     sidecar_data = getattr(analysis, '_persisted_fit_state_sidecar', {})
     return dict(sidecar_data.get('distribution_caches', {}))
 
@@ -150,7 +157,7 @@ def _validate_posterior_payload(
     analysis: object,
     payload: dict[str, np.ndarray | None],
 ) -> bool:
-    """Return whether canonical posterior arrays match manifest metadata."""
+    """Return whether posterior arrays match stored metadata."""
     parameter_samples = payload.get('parameter_samples')
     if parameter_samples is None:
         if analysis.bayesian_result.has_posterior_samples.value:
@@ -158,25 +165,58 @@ def _validate_posterior_payload(
         return False
 
     parameter_samples = np.asarray(parameter_samples, dtype=float)
-    if parameter_samples.ndim != 3:
+    if parameter_samples.ndim != _POSTERIOR_SAMPLE_NDIM:
         log.warning(
             'Posterior parameter samples must have shape (n_draws, n_chains, n_parameters).'
         )
         return False
 
     n_draws, n_chains, n_parameters = parameter_samples.shape
-    if analysis.bayesian_convergence.n_draws.value not in (0, n_draws):
+    if not _posterior_manifest_counts_match(
+        analysis,
+        n_draws=n_draws,
+        n_chains=n_chains,
+        n_parameters=n_parameters,
+    ):
+        return False
+
+    return _posterior_aux_shapes_match(
+        payload,
+        n_draws=n_draws,
+        n_chains=n_chains,
+    )
+
+
+def _posterior_manifest_counts_match(
+    analysis: object,
+    *,
+    n_draws: int,
+    n_chains: int,
+    n_parameters: int,
+) -> bool:
+    """Return whether manifest counts match the sample shape."""
+    if analysis.bayesian_convergence.n_draws.value not in {0, n_draws}:
         log.warning('Posterior sample draw count does not match bayesian_convergence.n_draws.')
         return False
-    if analysis.bayesian_convergence.n_chains.value not in (0, n_chains):
+    if analysis.bayesian_convergence.n_chains.value not in {0, n_chains}:
         log.warning('Posterior sample chain count does not match bayesian_convergence.n_chains.')
         return False
-    if analysis.bayesian_convergence.n_parameters.value not in (0, n_parameters):
+    if analysis.bayesian_convergence.n_parameters.value not in {0, n_parameters}:
         log.warning(
             'Posterior sample parameter count does not match bayesian_convergence.n_parameters.'
         )
         return False
 
+    return True
+
+
+def _posterior_aux_shapes_match(
+    payload: dict[str, np.ndarray | None],
+    *,
+    n_draws: int,
+    n_chains: int,
+) -> bool:
+    """Return whether auxiliary arrays match the sample shape."""
     log_posterior = payload.get('log_posterior')
     if log_posterior is not None and np.asarray(log_posterior).shape != (n_draws, n_chains):
         log.warning(
@@ -193,7 +233,7 @@ def _validate_posterior_payload(
 
 
 def _write_posterior_payload(handle: object, analysis: object) -> bool:
-    """Write canonical posterior arrays when they are available and valid."""
+    """Write canonical posterior arrays when they are available."""
     payload = _posterior_payload_from_analysis(analysis)
     if not _validate_posterior_payload(analysis, payload):
         return False
@@ -227,7 +267,7 @@ def _write_distribution_caches(handle: object, analysis: object) -> bool:
         if x_values.shape != (n_grid,) or density_values.shape != (n_grid,):
             log.warning(
                 'Skipping Bayesian distribution cache with shape mismatch for '
-                f"{cache.param_unique_name.value!r}."
+                f'{cache.param_unique_name.value!r}.'
             )
             continue
 
@@ -254,14 +294,17 @@ def _write_pair_caches(handle: object, analysis: object) -> bool:
         n_grid_x = int(cache.n_grid_x.value)
         n_grid_y = int(cache.n_grid_y.value)
 
-        valid_density_shape = density_values.shape in (
+        valid_density_shape = density_values.shape in {
             (n_grid_y, n_grid_x),
             (n_grid_x, n_grid_y),
-        )
-        if x_values.shape != (n_grid_x,) or y_values.shape != (n_grid_y,) or not valid_density_shape:
+        }
+        if (
+            x_values.shape != (n_grid_x,)
+            or y_values.shape != (n_grid_y,)
+            or not valid_density_shape
+        ):
             log.warning(
-                'Skipping Bayesian pair cache with shape mismatch for '
-                f"{cache.id.value!r}."
+                f'Skipping Bayesian pair cache with shape mismatch for {cache.id.value!r}.'
             )
             continue
 
@@ -289,7 +332,7 @@ def _write_predictive_datasets(handle: object, analysis: object) -> bool:
         if x_values.shape != (n_x,) or best_sample_prediction.shape != (n_x,):
             log.warning(
                 'Skipping Bayesian predictive dataset with shape mismatch for '
-                f"{dataset.experiment_name.value!r}."
+                f'{dataset.experiment_name.value!r}.'
             )
             continue
 
@@ -313,7 +356,7 @@ def _write_predictive_datasets(handle: object, analysis: object) -> bool:
             if values_array.shape != (n_x,):
                 log.warning(
                     'Skipping Bayesian predictive band with shape mismatch for '
-                    f"{dataset.experiment_name.value!r}:{field_name}."
+                    f'{dataset.experiment_name.value!r}:{field_name}.'
                 )
                 continue
             _create_dataset(handle, path_value, values_array)
@@ -321,19 +364,18 @@ def _write_predictive_datasets(handle: object, analysis: object) -> bool:
         draws = dataset_data.get('draws')
         if draws is not None and dataset.draws_path.value is not None:
             draws_array = np.asarray(draws)
-            if draws_array.ndim != 2 or draws_array.shape[1] != n_x:
+            if draws_array.ndim != _PREDICTIVE_DRAWS_NDIM or draws_array.shape[1] != n_x:
                 log.warning(
                     'Skipping Bayesian predictive draws with shape mismatch for '
-                    f"{dataset.experiment_name.value!r}."
+                    f'{dataset.experiment_name.value!r}.'
+                )
+            elif dataset.n_draws_cached.value not in {0, draws_array.shape[0]}:
+                log.warning(
+                    'Skipping Bayesian predictive draws whose draw count does not match '
+                    'the manifest metadata.'
                 )
             else:
-                if dataset.n_draws_cached.value not in (0, draws_array.shape[0]):
-                    log.warning(
-                        'Skipping Bayesian predictive draws whose draw count does not match '
-                        'the manifest metadata.'
-                    )
-                else:
-                    _create_dataset(handle, dataset.draws_path.value, draws_array)
+                _create_dataset(handle, dataset.draws_path.value, draws_array)
 
         wrote_any = True
 
@@ -351,10 +393,16 @@ def write_analysis_results_sidecar(
     Parameters
     ----------
     analysis : object
-        Analysis instance that owns fit-state categories and runtime
-        fit results.
+        Analysis instance that owns fit-state categories and runtime fit
+        results.
     analysis_dir : Path
         The project ``analysis/`` directory.
+
+    Raises
+    ------
+    Exception
+        Propagated when sidecar writing fails after temporary-file
+        cleanup.
     """
     sidecar_path = _sidecar_path(analysis=analysis, analysis_dir=analysis_dir)
     if not _should_use_sidecar(analysis):
@@ -362,17 +410,15 @@ def write_analysis_results_sidecar(
         return
 
     import h5py  # noqa: PLC0415
-    from tempfile import NamedTemporaryFile  # noqa: PLC0415
 
     analysis_dir.mkdir(parents=True, exist_ok=True)
-    temporary_file = NamedTemporaryFile(
+    with NamedTemporaryFile(
         delete=False,
         dir=analysis_dir,
         prefix=f'{sidecar_path.stem}.',
         suffix=sidecar_path.suffix,
-    )
-    temporary_path = Path(temporary_file.name)
-    temporary_file.close()
+    ) as temporary_file:
+        temporary_path = Path(temporary_file.name)
 
     try:
         with h5py.File(temporary_path, 'w') as handle:
@@ -414,7 +460,9 @@ def _read_posterior_payload(handle: object, analysis: object) -> dict[str, np.nd
     return payload
 
 
-def _read_distribution_caches(handle: object, analysis: object) -> dict[str, dict[str, np.ndarray]]:
+def _read_distribution_caches(
+    handle: object, analysis: object
+) -> dict[str, dict[str, np.ndarray]]:
     """Read cached posterior distribution arrays for manifest rows."""
     payload: dict[str, dict[str, np.ndarray]] = {}
     for cache in analysis.bayesian_distribution_caches:
@@ -427,7 +475,7 @@ def _read_distribution_caches(handle: object, analysis: object) -> dict[str, dic
         ):
             log.warning(
                 'Skipping restored Bayesian distribution cache with shape mismatch for '
-                f"{cache.param_unique_name.value!r}."
+                f'{cache.param_unique_name.value!r}.'
             )
             continue
         payload[cache.param_unique_name.value] = {
@@ -450,14 +498,18 @@ def _read_pair_caches(handle: object, analysis: object) -> dict[str, dict[str, n
 
         n_grid_x = int(cache.n_grid_x.value)
         n_grid_y = int(cache.n_grid_y.value)
-        valid_density_shape = density_values.shape in (
+        valid_density_shape = density_values.shape in {
             (n_grid_y, n_grid_x),
             (n_grid_x, n_grid_y),
-        )
-        if x_values.shape != (n_grid_x,) or y_values.shape != (n_grid_y,) or not valid_density_shape:
+        }
+        if (
+            x_values.shape != (n_grid_x,)
+            or y_values.shape != (n_grid_y,)
+            or not valid_density_shape
+        ):
             log.warning(
                 'Skipping restored Bayesian pair cache with shape mismatch for '
-                f"{cache.id.value!r}."
+                f'{cache.id.value!r}.'
             )
             continue
 
@@ -470,7 +522,9 @@ def _read_pair_caches(handle: object, analysis: object) -> dict[str, dict[str, n
     return payload
 
 
-def _read_predictive_datasets(handle: object, analysis: object) -> dict[str, dict[str, np.ndarray]]:
+def _read_predictive_datasets(
+    handle: object, analysis: object
+) -> dict[str, dict[str, np.ndarray]]:
     """Read cached posterior predictive arrays for manifest rows."""
     payload: dict[str, dict[str, np.ndarray]] = {}
     for dataset in analysis.bayesian_predictive_datasets:
@@ -483,7 +537,7 @@ def _read_predictive_datasets(handle: object, analysis: object) -> dict[str, dic
         if x_values.shape != (n_x,) or best_sample_prediction.shape != (n_x,):
             log.warning(
                 'Skipping restored Bayesian predictive dataset with shape mismatch for '
-                f"{dataset.experiment_name.value!r}."
+                f'{dataset.experiment_name.value!r}.'
             )
             continue
 
@@ -506,16 +560,16 @@ def _read_predictive_datasets(handle: object, analysis: object) -> dict[str, dic
                 continue
             values_array = np.asarray(values)
             if field_name == 'draws':
-                if values_array.ndim != 2 or values_array.shape[1] != n_x:
+                if values_array.ndim != _PREDICTIVE_DRAWS_NDIM or values_array.shape[1] != n_x:
                     log.warning(
                         'Skipping restored Bayesian predictive draws with shape mismatch for '
-                        f"{dataset.experiment_name.value!r}."
+                        f'{dataset.experiment_name.value!r}.'
                     )
                     continue
             elif values_array.shape != (n_x,):
                 log.warning(
                     'Skipping restored Bayesian predictive band with shape mismatch for '
-                    f"{dataset.experiment_name.value!r}:{field_name}."
+                    f'{dataset.experiment_name.value!r}:{field_name}.'
                 )
                 continue
             dataset_payload[field_name] = values_array

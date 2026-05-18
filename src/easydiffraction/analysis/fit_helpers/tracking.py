@@ -247,7 +247,7 @@ class FitProgressTracker:
         self._last_iteration = update.iteration
 
     def start_sampler_pre_processing(self, *, total_iterations: int) -> None:
-        """Mark sampler setup so its status row appears on first progress update."""
+        """Mark sampler setup so a status row appears on update."""
         self._tracking_mode = TRACKING_MODE_SAMPLER
         self._sampler_total_iterations = max(1, total_iterations)
         self._last_sampler_phase = SAMPLER_PHASE_PRE_PROCESSING
@@ -311,7 +311,9 @@ class FitProgressTracker:
         self._fitting_time = self._end_time - self._start_time
 
     def _elapsed_since_start(self) -> float | None:
-        """Return elapsed wall time using the active timer when available."""
+        """
+        Return elapsed wall time using the active timer when available.
+        """
         if self._start_time is None:
             return None
         if self._end_time is not None:
@@ -492,7 +494,9 @@ class FitProgressTracker:
         elapsed_time: float | None,
         log_posterior: float | None = None,
     ) -> list[str]:
-        """Return a status-only sampler row without iteration metrics."""
+        """
+        Return a status-only sampler row without iteration metrics.
+        """
         return [
             iteration_label,
             '',
@@ -672,7 +676,7 @@ class FitProgressTracker:
 
     def _default_activity_label(self) -> str:
         if self._tracking_mode == TRACKING_MODE_SAMPLER:
-            return ACTIVITY_LABEL_PRE_PROCESSING
+            return ACTIVITY_LABEL_PROCESSING
         return ACTIVITY_LABEL_FITTING
 
     @staticmethod

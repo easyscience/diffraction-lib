@@ -156,15 +156,15 @@ class FitParameters(CategoryCollection):
         ----------
         param_unique_name : str
             Unique name of the referenced live parameter.
-        fit_min : int | float
+        fit_min : float
             Persisted lower fit bound.
-        fit_max : int | float
+        fit_max : float
             Persisted upper fit bound.
-        fit_bounds_uncertainty_multiplier : int | float | None, default=None
+        fit_bounds_uncertainty_multiplier : float | None, default=None
             Multiplier used to derive fit bounds from uncertainty.
-        start_value : int | float | None, default=None
+        start_value : float | None, default=None
             Persisted pre-fit value snapshot.
-        start_uncertainty : int | float | None, default=None
+        start_uncertainty : float | None, default=None
             Persisted pre-fit uncertainty snapshot.
         """
         item = FitParameterItem()

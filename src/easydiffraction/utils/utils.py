@@ -123,6 +123,34 @@ def _existing_project_dir(extraction_dir: pathlib.Path) -> pathlib.Path | None:
     return project_files[0].parent.resolve()
 
 
+def _download_data_message(data_id: int | str, record: dict) -> str:
+    """Return the console message for one downloadable data record."""
+    description = record.get('description', '')
+    message = f'Data #{data_id}'
+    if description:
+        message += f': {description}'
+    return message
+
+
+def _download_data_targets(
+    data_id: int | str,
+    destination: str,
+    record: dict,
+) -> tuple[str, bool, pathlib.Path, pathlib.Path, pathlib.Path, str]:
+    """Return URL and filesystem targets for one download request."""
+    record_path = _record_path(record)
+    url = _build_data_url(record_path)
+    _validate_url(url)
+
+    fname = _filename_for_id_from_path(data_id, record_path)
+    is_project_archive = record.get('kind') == 'project' and fname.endswith('.zip')
+    dest_path = resolve_artifact_path(destination)
+    dest_path.mkdir(parents=True, exist_ok=True)
+    file_path = dest_path / fname
+    extraction_dir = dest_path / pathlib.Path(fname).stem
+    return url, is_project_archive, dest_path, file_path, extraction_dir, fname
+
+
 @functools.lru_cache(maxsize=1)
 def _fetch_tutorials_index() -> dict:
     """
@@ -172,8 +200,8 @@ def download_data(
         Numeric dataset id (e.g. 12).
     destination : str, default='data'
         Directory to save the downloaded file or extracted project into
-        (created if missing). Relative destinations are resolved
-        against the configured artifact root when
+        (created if missing). Relative destinations are resolved against
+        the configured artifact root when
         ``EASYDIFFRACTION_ARTIFACT_ROOT`` is set.
     overwrite : bool, default=False
         Whether to overwrite the file if it already exists.
@@ -201,21 +229,10 @@ def download_data(
         raise KeyError(msg)
 
     record = index[key]
-    record_path = _record_path(record)
-    url = _build_data_url(record_path)
-    _validate_url(url)
-    fname = _filename_for_id_from_path(id, record_path)
-    is_project_archive = record.get('kind') == 'project' and fname.endswith('.zip')
-
-    dest_path = resolve_artifact_path(destination)
-    dest_path.mkdir(parents=True, exist_ok=True)
-    file_path = dest_path / fname
-    extraction_dir = dest_path / pathlib.Path(fname).stem
-
-    description = record.get('description', '')
-    message = f'Data #{id}'
-    if description:
-        message += f': {description}'
+    url, is_project_archive, dest_path, file_path, extraction_dir, fname = _download_data_targets(
+        id, destination, record
+    )
+    message = _download_data_message(id, record)
 
     console.paragraph('Getting data...')
     console.print(f'{message}')
@@ -281,14 +298,12 @@ def list_data() -> None:
 
     for data_id in sorted(index, key=lambda value: int(value) if value.isdigit() else value):
         record = index[data_id]
-        columns_data.append(
-            [
-                data_id,
-                pathlib.PurePosixPath(_record_path(record)).name,
-                record.get('kind', ''),
-                record.get('description', ''),
-            ]
-        )
+        columns_data.append([
+            data_id,
+            pathlib.PurePosixPath(_record_path(record)).name,
+            record.get('kind', ''),
+            record.get('description', ''),
+        ])
 
     render_table(
         columns_headers=columns_headers,

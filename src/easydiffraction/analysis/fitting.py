@@ -76,6 +76,80 @@ class Fitter:
         self.minimizer = MinimizerFactory.create(selection)
         self.results: FitResults | None = None
 
+    @staticmethod
+    def _collect_fit_parameters(
+        structures: Structures,
+        experiments: list[ExperimentBase],
+    ) -> list[Parameter]:
+        """Return free parameters from structures and experiments."""
+        expt_free_params: list[Parameter] = []
+        for expt in experiments:
+            expt_free_params.extend(
+                p
+                for p in expt.parameters
+                if isinstance(p, Parameter) and not p.user_constrained and p.free
+            )
+        return structures.free_parameters + expt_free_params
+
+    def _build_objective_function(
+        self,
+        *,
+        params: list[Parameter],
+        structures: Structures,
+        experiments: list[ExperimentBase],
+        weights: np.ndarray | None,
+        analysis: object,
+    ) -> object:
+        """Return the residual function for the current fit context."""
+
+        def objective_function(engine_params: dict[str, Any]) -> np.ndarray:
+            """Evaluate residuals for the current minimizer state."""
+            return self._residual_function(
+                engine_params=engine_params,
+                parameters=params,
+                structures=structures,
+                experiments=experiments,
+                weights=weights,
+                analysis=analysis,
+            )
+
+        return objective_function
+
+    def _postprocess_fit_results(
+        self,
+        *,
+        analysis: object,
+        experiments: list[ExperimentBase],
+        fitted_parameters: list[Parameter],
+    ) -> bool:
+        """Populate result fields and persist fit projections."""
+        if self.results is None:
+            return False
+
+        self.results.message = _resolve_fit_result_message(self.results)
+        self.results.iterations = _resolve_fit_result_iterations(self.results)
+        self.results.chi_square = _resolve_fit_result_chi_square(self.results)
+
+        if analysis is None:
+            return False
+
+        warn_poorly_mixed = False
+        if isinstance(self.results, BayesianFitResults):
+            warn_poorly_mixed = not self.results.convergence_diagnostics.get(
+                'converged',
+                True,
+            )
+            self.minimizer.tracker.start_sampler_post_processing(
+                log_posterior=self.results.best_log_posterior,
+            )
+
+        analysis._store_fit_result_projection(
+            self.results,
+            experiments=experiments,
+            fitted_parameters=fitted_parameters,
+        )
+        return warn_poorly_mixed
+
     def fit(
         self,
         structures: Structures,
@@ -122,14 +196,7 @@ class Fitter:
             structure._need_categories_update = True
             structure._update_categories()
 
-        expt_free_params: list[Parameter] = []
-        for expt in experiments:
-            expt_free_params.extend(
-                p
-                for p in expt.parameters
-                if isinstance(p, Parameter) and not p.user_constrained and p.free
-            )
-        params = structures.free_parameters + expt_free_params
+        params = self._collect_fit_parameters(structures, experiments)
 
         if not params:
             if analysis is not None:
@@ -145,28 +212,13 @@ class Fitter:
         for param in params:
             param._fit_start_value = param.value
 
-        def objective_function(engine_params: dict[str, Any]) -> np.ndarray:
-            """
-            Evaluate the residual for the current minimizer parameters.
-
-            Parameters
-            ----------
-            engine_params : dict[str, Any]
-                Parameter values provided by the minimizer engine.
-
-            Returns
-            -------
-            np.ndarray
-                Residual array passed back to the minimizer.
-            """
-            return self._residual_function(
-                engine_params=engine_params,
-                parameters=params,
-                structures=structures,
-                experiments=experiments,
-                weights=weights,
-                analysis=analysis,
-            )
+        objective_function = self._build_objective_function(
+            params=params,
+            structures=structures,
+            experiments=experiments,
+            weights=weights,
+            analysis=analysis,
+        )
 
         # Perform fitting
         self.results = self.minimizer.fit(
@@ -177,26 +229,12 @@ class Fitter:
             random_seed=random_seed,
         )
 
-        warn_poorly_mixed = False
         try:
-            if self.results is not None:
-                self.results.message = _resolve_fit_result_message(self.results)
-                self.results.iterations = _resolve_fit_result_iterations(self.results)
-                self.results.chi_square = _resolve_fit_result_chi_square(self.results)
-                if analysis is not None:
-                    if isinstance(self.results, BayesianFitResults):
-                        warn_poorly_mixed = not self.results.convergence_diagnostics.get(
-                            'converged',
-                            True,
-                        )
-                        self.minimizer.tracker.start_sampler_post_processing(
-                            log_posterior=self.results.best_log_posterior,
-                        )
-                    analysis._store_fit_result_projection(
-                        self.results,
-                        experiments=experiments,
-                        fitted_parameters=params,
-                    )
+            warn_poorly_mixed = self._postprocess_fit_results(
+                analysis=analysis,
+                experiments=experiments,
+                fitted_parameters=params,
+            )
         finally:
             self.minimizer._stop_tracking()
 

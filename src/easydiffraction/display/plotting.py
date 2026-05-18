@@ -91,6 +91,7 @@ FULL_POSTERIOR_PAIR_COVARIANCE_RANK = 2
 POSTERIOR_FLATTENED_SAMPLE_NDIM = 2
 MIN_POSTERIOR_PARAMETER_COUNT = 2
 MIN_POSTERIOR_SAMPLE_COUNT = 2
+PAIR_DENSITY_SURFACE_NDIM = 2
 POSTERIOR_DENSITY_LINE_COLOR = 'rgb(99, 110, 250)'
 POSTERIOR_DENSITY_FILL_COLOR = 'rgba(99, 110, 250, 0.22)'
 POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_COLOR = 'rgb(44, 160, 44)'
@@ -1621,7 +1622,9 @@ class Plotter(RendererBase):
         self,
         fit_results: object,
     ) -> pd.DataFrame | None:
-        """Return correlations restored from persisted fit-state rows."""
+        """
+        Return correlations restored from persisted fit-state rows.
+        """
         if self._project is None:
             return None
 
@@ -1651,11 +1654,9 @@ class Plotter(RendererBase):
             ]
 
         for row in correlation_rows:
-            parameter_names.extend(
-                [row.param_unique_name_i.value, row.param_unique_name_j.value]
-            )
+            parameter_names.extend([row.param_unique_name_i.value, row.param_unique_name_j.value])
         parameter_names = list(dict.fromkeys(parameter_names))
-        if len(parameter_names) < 2:
+        if len(parameter_names) < MIN_POSTERIOR_PARAMETER_COUNT:
             return None
 
         correlation_values = np.eye(len(parameter_names), dtype=float)
@@ -2491,6 +2492,44 @@ class Plotter(RendererBase):
             return legend_background_color()
         return PlotlyPlotter._legend_background_color()
 
+    def _resolved_posterior_contour_surface(
+        self,
+        *,
+        fit_results: object,
+        x_parameter_name: str,
+        y_parameter_name: str,
+        x_values: np.ndarray,
+        y_values: np.ndarray,
+        grid_size: int,
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray | None] | None:
+        """Return cached or computed posterior contour surface data."""
+        cached_surface = self._cached_posterior_pair_surface(
+            x_parameter_name=x_parameter_name,
+            y_parameter_name=y_parameter_name,
+        )
+        if cached_surface is not None:
+            return cached_surface
+
+        bounds = self._posterior_pair_bounds(
+            fit_results=fit_results,
+            x_parameter_name=x_parameter_name,
+            y_parameter_name=y_parameter_name,
+            x_values=x_values,
+            y_values=y_values,
+        )
+        density_surface = self._posterior_pair_density_surface(
+            x_values=x_values,
+            y_values=y_values,
+            x_bounds=bounds[0],
+            y_bounds=bounds[1],
+            grid_size=grid_size,
+        )
+        if density_surface is None:
+            return None
+
+        x_grid, y_grid, density = density_surface
+        return x_grid, y_grid, density, None
+
     def _posterior_contour_traces(
         self,
         *,
@@ -2506,32 +2545,18 @@ class Plotter(RendererBase):
         """
         go = __import__('plotly.graph_objects', fromlist=['Contour'])
 
-        cached_surface = self._cached_posterior_pair_surface(
+        surface = self._resolved_posterior_contour_surface(
+            fit_results=fit_results,
             x_parameter_name=x_parameter_name,
             y_parameter_name=y_parameter_name,
+            x_values=x_values,
+            y_values=y_values,
+            grid_size=grid_size,
         )
-        contour_levels = None
-        if cached_surface is None:
-            bounds = self._posterior_pair_bounds(
-                fit_results=fit_results,
-                x_parameter_name=x_parameter_name,
-                y_parameter_name=y_parameter_name,
-                x_values=x_values,
-                y_values=y_values,
-            )
-            density_surface = self._posterior_pair_density_surface(
-                x_values=x_values,
-                y_values=y_values,
-                x_bounds=bounds[0],
-                y_bounds=bounds[1],
-                grid_size=grid_size,
-            )
-            if density_surface is None:
-                return None
+        if surface is None:
+            return None
 
-            x_grid, y_grid, density = density_surface
-        else:
-            x_grid, y_grid, density, contour_levels = cached_surface
+        x_grid, y_grid, density, contour_levels = surface
 
         fill_colorscale, line_colorscale = self._posterior_pair_contour_colorscales(
             x_values,
@@ -2592,7 +2617,9 @@ class Plotter(RendererBase):
         x_parameter_name: str,
         y_parameter_name: str,
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray | None] | None:
-        """Return a restored posterior pair-density surface when available."""
+        """
+        Return a restored posterior pair-density surface when available.
+        """
         if self._project is None:
             return None
 
@@ -2618,7 +2645,7 @@ class Plotter(RendererBase):
 
             if x_parameter_name != cache_x or y_parameter_name != cache_y:
                 x_grid, y_grid = y_grid, x_grid
-                if density.ndim == 2:
+                if density.ndim == PAIR_DENSITY_SURFACE_NDIM:
                     density = density.T
 
             expected_shape = (y_grid.size, x_grid.size)
@@ -2638,7 +2665,7 @@ class Plotter(RendererBase):
         density: np.ndarray,
         contour_levels: np.ndarray | None,
     ) -> tuple[float, float, float]:
-        """Return contour start, end, and step for one pair-density surface."""
+        """Return contour start, end, and step for pair density."""
         if contour_levels is not None and contour_levels.ndim == 1 and contour_levels.size > 0:
             finite_levels = contour_levels[np.isfinite(contour_levels)]
             if finite_levels.size > 0:
@@ -2777,7 +2804,9 @@ class Plotter(RendererBase):
         self,
         parameter_name: str,
     ) -> tuple[np.ndarray, np.ndarray] | None:
-        """Return a restored posterior density curve for one parameter."""
+        """
+        Return a restored posterior density curve for one parameter.
+        """
         if self._project is None:
             return None
 

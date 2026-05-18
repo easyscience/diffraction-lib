@@ -40,17 +40,17 @@ The tutorials are organized into the following categories:
 
 ## Load Project
 
-- [LBCO `quick` `load`](ed-18.ipynb) – The most minimal example showing
-  how to load a previously saved project from a directory and run
-  refinement. Useful when a project has already been set up and saved in
-  a prior session.
-- [Co2SiO4 Temperature scan, resumed](ed-23.ipynb) – Continue a saved
+- [LBCO Standard, continuation](ed-18.ipynb) – The most minimal example
+  showing how to load a previously saved project from a directory and
+  run refinement. Useful when a project has already been set up and
+  saved in a prior session.
+- [Co2SiO4 Sequential, resumed](ed-23.ipynb) – Continue a saved
   sequential refinement of Co2SiO4 from an existing
   `analysis/results.csv` after an incomplete previous run.
-- [LBCO Bayesian, saved project](ed-24.ipynb) – Shows how to load the
-  saved Bayesian LBCO project created in the previous tutorial and
-  inspect the persisted fit summary, correlation matrix, posterior
-  plots, and predictive checks without rerunning DREAM.
+- [LBCO Bayesian, display](ed-24.ipynb) – Shows how to load the saved
+  Bayesian LBCO project created in the previous tutorial and inspect the
+  persisted fit summary, correlation matrix, posterior plots, and
+  predictive checks without rerunning DREAM.
 
 ## Powder Diffraction
 

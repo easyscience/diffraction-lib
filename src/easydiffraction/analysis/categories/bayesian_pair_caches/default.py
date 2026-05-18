@@ -4,6 +4,8 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from easydiffraction.analysis.categories.bayesian_pair_caches.factory import (
     BayesianPairCachesFactory,
 )
@@ -25,6 +27,16 @@ def _normalized_parameter_pair(
     if param_unique_name_x <= param_unique_name_y:
         return param_unique_name_x, param_unique_name_y
     return param_unique_name_y, param_unique_name_x
+
+
+@dataclass(frozen=True, slots=True)
+class BayesianPairCachePaths:
+    """HDF5 dataset paths for one persisted pair cache."""
+
+    x_path: str
+    y_path: str
+    density_path: str
+    contour_level_path: str
 
 
 class BayesianPairCacheItem(CategoryItem):
@@ -211,14 +223,9 @@ class BayesianPairCaches(CategoryCollection):
     def create(
         self,
         *,
-        param_unique_name_x: str,
-        param_unique_name_y: str,
-        x_path: str,
-        y_path: str,
-        density_path: str,
-        contour_level_path: str,
-        n_grid_x: float,
-        n_grid_y: float,
+        parameter_names: tuple[str, str],
+        paths: BayesianPairCachePaths,
+        grid_shape: tuple[float, float],
         n_draws_cached: float,
         id: str | None = None,
     ) -> None:
@@ -227,39 +234,31 @@ class BayesianPairCaches(CategoryCollection):
 
         Parameters
         ----------
-        param_unique_name_x : str
-            First unique parameter name in the cached pair.
-        param_unique_name_y : str
-            Second unique parameter name in the cached pair.
-        x_path : str
-            HDF5 dataset path for the pair-cache x-grid.
-        y_path : str
-            HDF5 dataset path for the pair-cache y-grid.
-        density_path : str
-            HDF5 dataset path for the pair-cache density grid.
-        contour_level_path : str
-            HDF5 dataset path for cached contour levels.
-        n_grid_x : int | float
-            Number of x-grid points in the cached pair.
-        n_grid_y : int | float
-            Number of y-grid points in the cached pair.
-        n_draws_cached : int | float
+        parameter_names : tuple[str, str]
+            Unique parameter names for the cached pair.
+        paths : BayesianPairCachePaths
+            HDF5 dataset paths for the cached pair payloads.
+        grid_shape : tuple[float, float]
+            Number of x-grid and y-grid points in the cached pair.
+        n_draws_cached : float
             Number of draws summarized into the cached pair.
         id : str | None, default=None
-            Explicit persisted row id. When omitted, a simple
-            sequential identifier is generated.
+            Explicit persisted row id. When omitted, a simple sequential
+            identifier is generated.
         """
+        param_unique_name_x, param_unique_name_y = parameter_names
         normalized_x, normalized_y = _normalized_parameter_pair(
             param_unique_name_x,
             param_unique_name_y,
         )
+        n_grid_x, n_grid_y = grid_shape
         item = BayesianPairCacheItem()
         item._set_param_unique_name_x(normalized_x)
         item._set_param_unique_name_y(normalized_y)
-        item._set_x_path(x_path)
-        item._set_y_path(y_path)
-        item._set_density_path(density_path)
-        item._set_contour_level_path(contour_level_path)
+        item._set_x_path(paths.x_path)
+        item._set_y_path(paths.y_path)
+        item._set_density_path(paths.density_path)
+        item._set_contour_level_path(paths.contour_level_path)
         item._set_n_grid_x(n_grid_x)
         item._set_n_grid_y(n_grid_y)
         item._set_n_draws_cached(n_draws_cached)

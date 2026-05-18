@@ -4,6 +4,8 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from easydiffraction.analysis.categories.bayesian_predictive_datasets.factory import (
     BayesianPredictiveDatasetsFactory,
 )
@@ -14,6 +16,19 @@ from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.io.cif.handler import CifHandler
+
+
+@dataclass(frozen=True, slots=True)
+class BayesianPredictiveDatasetPaths:
+    """HDF5 dataset paths for one predictive dataset."""
+
+    x_path: str
+    best_sample_prediction_path: str
+    lower_95_path: str | None = None
+    upper_95_path: str | None = None
+    lower_68_path: str | None = None
+    upper_68_path: str | None = None
+    draws_path: str | None = None
 
 
 class BayesianPredictiveDatasetItem(CategoryItem):
@@ -210,13 +225,7 @@ class BayesianPredictiveDatasets(CategoryCollection):
         *,
         experiment_name: str,
         x_axis_name: str,
-        x_path: str,
-        best_sample_prediction_path: str,
-        lower_95_path: str | None = None,
-        upper_95_path: str | None = None,
-        lower_68_path: str | None = None,
-        upper_68_path: str | None = None,
-        draws_path: str | None = None,
+        paths: BayesianPredictiveDatasetPaths,
         n_x: float,
         n_draws_cached: float,
     ) -> None:
@@ -229,35 +238,23 @@ class BayesianPredictiveDatasets(CategoryCollection):
             Experiment name for the cached predictive dataset.
         x_axis_name : str
             Name of the predictive dataset x-axis.
-        x_path : str
-            HDF5 dataset path for the predictive x-axis values.
-        best_sample_prediction_path : str
-            HDF5 dataset path for the committed predictive curve.
-        lower_95_path : str | None, default=None
-            HDF5 dataset path for the lower 95% predictive band.
-        upper_95_path : str | None, default=None
-            HDF5 dataset path for the upper 95% predictive band.
-        lower_68_path : str | None, default=None
-            HDF5 dataset path for the lower 68% predictive band.
-        upper_68_path : str | None, default=None
-            HDF5 dataset path for the upper 68% predictive band.
-        draws_path : str | None, default=None
-            HDF5 dataset path for cached predictive draws.
-        n_x : int | float
+        paths : BayesianPredictiveDatasetPaths
+            HDF5 dataset paths for the predictive dataset payloads.
+        n_x : float
             Number of x-axis points in the cached predictive dataset.
-        n_draws_cached : int | float
+        n_draws_cached : float
             Number of cached predictive draws.
         """
         item = BayesianPredictiveDatasetItem()
         item._set_experiment_name(experiment_name)
         item._set_x_axis_name(x_axis_name)
-        item._set_x_path(x_path)
-        item._set_best_sample_prediction_path(best_sample_prediction_path)
-        item._set_lower_95_path(lower_95_path)
-        item._set_upper_95_path(upper_95_path)
-        item._set_lower_68_path(lower_68_path)
-        item._set_upper_68_path(upper_68_path)
-        item._set_draws_path(draws_path)
+        item._set_x_path(paths.x_path)
+        item._set_best_sample_prediction_path(paths.best_sample_prediction_path)
+        item._set_lower_95_path(paths.lower_95_path)
+        item._set_upper_95_path(paths.upper_95_path)
+        item._set_lower_68_path(paths.lower_68_path)
+        item._set_upper_68_path(paths.upper_68_path)
+        item._set_draws_path(paths.draws_path)
         item._set_n_x(n_x)
         item._set_n_draws_cached(n_draws_cached)
         self.add(item)

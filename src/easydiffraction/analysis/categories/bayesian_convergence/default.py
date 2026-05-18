@@ -71,7 +71,7 @@ class BayesianConvergence(CategoryItem):
         """Whether the Bayesian fit met convergence criteria."""
         return self._converged
 
-    def _set_converged(self, value: bool) -> None:
+    def _set_converged(self, *, value: bool) -> None:
         """Set the convergence flag for internal callers."""
         self._converged.value = value
 

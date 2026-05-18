@@ -16,8 +16,12 @@ from easydiffraction.analysis.analysis import Analysis
 from easydiffraction.core.guard import GuardedBase
 from easydiffraction.datablocks.experiment.collection import Experiments
 from easydiffraction.datablocks.structure.collection import Structures
+from easydiffraction.io.cif.serialize import analysis_from_cif
+from easydiffraction.io.cif.serialize import project_config_from_cif
 from easydiffraction.io.cif.serialize import project_config_to_cif
 from easydiffraction.io.cif.serialize import project_to_cif
+from easydiffraction.io.results_sidecar import read_analysis_results_sidecar
+from easydiffraction.io.results_sidecar import write_analysis_results_sidecar
 from easydiffraction.project.display import ProjectDisplay
 from easydiffraction.project.project_config import ProjectConfig
 from easydiffraction.summary.summary import Summary
@@ -27,6 +31,8 @@ from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from easydiffraction.project.categories.rendering import Rendering
     from easydiffraction.project.categories.verbosity import Verbosity
     from easydiffraction.project.project_info import ProjectInfo
@@ -108,6 +114,63 @@ def _resolve_data_path_from_results_csv(
     if path.is_absolute():
         return path
     return project_path / path
+
+
+def _load_cif_directory(
+    cif_dir: pathlib.Path,
+    add_from_cif_path: Callable[[str], None],
+) -> None:
+    """Load all CIF files from one directory using the given loader."""
+    if not cif_dir.is_dir():
+        return
+
+    for cif_file in sorted(cif_dir.glob('*.cif')):
+        add_from_cif_path(str(cif_file))
+
+
+def _create_loading_project(project_cls: type[Project]) -> Project:
+    """Create a project instance while suppressing varname lookup."""
+    project_cls._loading = True
+    try:
+        return project_cls()
+    finally:
+        project_cls._loading = False
+
+
+def _load_project_info(project: Project, project_path: pathlib.Path) -> None:
+    """
+    Restore project configuration from ``project.cif`` when present.
+    """
+    project_cif_path = project_path / 'project.cif'
+    if project_cif_path.is_file():
+        project_config_from_cif(project, project_cif_path.read_text())
+
+
+def _resolved_analysis_cif_path(project_path: pathlib.Path) -> pathlib.Path | None:
+    """Return the preferred analysis CIF path for a saved project."""
+    analysis_cif_path = project_path / 'analysis' / 'analysis.cif'
+    if analysis_cif_path.is_file():
+        return analysis_cif_path
+
+    analysis_cif_path = project_path / 'analysis.cif'
+    if analysis_cif_path.is_file():
+        return analysis_cif_path
+    return None
+
+
+def _load_project_analysis(project: Project, project_path: pathlib.Path) -> None:
+    """Restore analysis categories and sidecar state from disk."""
+    analysis_cif_path = _resolved_analysis_cif_path(project_path)
+    if analysis_cif_path is None:
+        return
+
+    analysis_from_cif(project._analysis, analysis_cif_path.read_text())
+    read_analysis_results_sidecar(
+        analysis=project._analysis,
+        analysis_dir=analysis_cif_path.parent,
+    )
+    if project._analysis._has_persisted_fit_state():
+        project._analysis._restore_live_parameter_state(project._build_parameter_map())
 
 
 class Project(GuardedBase):
@@ -298,57 +361,19 @@ class Project(GuardedBase):
         FileNotFoundError
             If *dir_path* does not exist.
         """
-        from easydiffraction.io.cif.serialize import analysis_from_cif  # noqa: PLC0415
-        from easydiffraction.io.cif.serialize import project_config_from_cif  # noqa: PLC0415
-        from easydiffraction.io.results_sidecar import read_analysis_results_sidecar  # noqa: PLC0415
-
         project_path = pathlib.Path(dir_path)
         if not project_path.is_dir():
             msg = f"Project directory not found: '{dir_path}'"
             raise FileNotFoundError(msg)
 
-        # Create a minimal project.
-        # Use _loading sentinel to skip varname() inside __init__.
-        cls._loading = True
-        try:
-            project = cls()
-        finally:
-            cls._loading = False
+        project = _create_loading_project(cls)
         project._saved = True
 
-        # 1. Load project info
-        project_cif_path = project_path / 'project.cif'
-        if project_cif_path.is_file():
-            cif_text = project_cif_path.read_text()
-            project_config_from_cif(project, cif_text)
-
+        _load_project_info(project, project_path)
         project.info.path = project_path
-
-        # 2. Load structures
-        structures_dir = project_path / 'structures'
-        if structures_dir.is_dir():
-            for cif_file in sorted(structures_dir.glob('*.cif')):
-                project._structures.add_from_cif_path(str(cif_file))
-
-        # 3. Load experiments
-        experiments_dir = project_path / 'experiments'
-        if experiments_dir.is_dir():
-            for cif_file in sorted(experiments_dir.glob('*.cif')):
-                project._experiments.add_from_cif_path(str(cif_file))
-
-        # 4. Load analysis
-        #    Check analysis/analysis.cif first (future layout), then
-        #    fall back to analysis.cif at root (current layout).
-        analysis_cif_path = project_path / 'analysis' / 'analysis.cif'
-        if not analysis_cif_path.is_file():
-            analysis_cif_path = project_path / 'analysis.cif'
-        if analysis_cif_path.is_file():
-            cif_text = analysis_cif_path.read_text()
-            analysis_from_cif(project._analysis, cif_text)
-            read_analysis_results_sidecar(
-                analysis=project._analysis,
-                analysis_dir=analysis_cif_path.parent,
-            )
+        _load_cif_directory(project_path / 'structures', project._structures.add_from_cif_path)
+        _load_cif_directory(project_path / 'experiments', project._experiments.add_from_cif_path)
+        _load_project_analysis(project, project_path)
 
         # 5. Resolve alias param references
         project._resolve_alias_references()
@@ -403,8 +428,6 @@ class Project(GuardedBase):
 
     def save(self) -> None:
         """Save the project into the existing project directory."""
-        from easydiffraction.io.results_sidecar import write_analysis_results_sidecar  # noqa: PLC0415
-
         if self.info.path is None:
             log.error('Project path not specified. Use save_as() to define the path first.')
             return

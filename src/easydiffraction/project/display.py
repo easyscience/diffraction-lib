@@ -140,7 +140,9 @@ class PosteriorDisplay:
         *,
         parameters: list[object] | None,
     ) -> bool:
-        """Return whether posterior pair plotting still needs processing."""
+        """
+        Return whether posterior pair plotting still needs processing.
+        """
         if parameters is not None:
             return True
 
@@ -160,7 +162,7 @@ class PosteriorDisplay:
         style: str,
         x: object | None,
     ) -> bool:
-        """Return whether posterior predictive plotting still needs processing."""
+        """Return whether predictive plotting still needs processing."""
         analysis = self._project.analysis
         sidecar_data = getattr(analysis, '_persisted_fit_state_sidecar', {})
         predictive_datasets = sidecar_data.get('predictive_datasets', {})
@@ -174,10 +176,10 @@ class PosteriorDisplay:
         experiment = self._project.experiments[expt_name]
         plotter = self._project.rendering.plotter
         _, x_axis_name, _, _, _ = plotter._resolve_x_axis(experiment.type, x)
-        require_draws = (
-            plotter.engine == PlotterEngineEnum.PLOTLY.value
-            and style in {'draws', 'band+draws'}
-        )
+        require_draws = plotter.engine == PlotterEngineEnum.PLOTLY.value and style in {
+            'draws',
+            'band+draws',
+        }
 
         matching_rows = [
             row

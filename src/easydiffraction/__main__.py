@@ -16,6 +16,7 @@ import easydiffraction as ed
 
 app = typer.Typer(add_completion=False)
 
+_MIN_PROJECT_FIRST_ARG_COUNT = 2
 _PROJECT_COMMAND_NAMES = frozenset({'fit', 'display', 'undo'})
 _GLOBAL_COMMAND_NAMES = frozenset({
     'list-data',
@@ -29,7 +30,7 @@ _GLOBAL_COMMAND_NAMES = frozenset({
 
 def _normalized_cli_args(args: list[str]) -> list[str]:
     """Return CLI args rewritten to support project-first commands."""
-    if len(args) < 2:
+    if len(args) < _MIN_PROJECT_FIRST_ARG_COUNT:
         return args
 
     first_arg = args[0]
@@ -93,7 +94,9 @@ def _display_project_outputs(project: object) -> None:
 
 
 def run_cli(args: list[str] | None = None) -> None:
-    """Run the EasyDiffraction CLI with project-first argument support."""
+    """
+    Run the EasyDiffraction CLI with project-first argument support.
+    """
     cli_args = list(sys.argv[1:] if args is None else args)
     app(args=_normalized_cli_args(cli_args))
 
@@ -230,7 +233,7 @@ def undo(
         help='Path to the project directory (must contain project.cif).',
     ),
 ) -> None:
-    """Undo the last fit for a saved project when fit-history support exists."""
+    """Undo the last fit when fit-history support exists."""
     _load_project(project_dir)
     typer.echo('Undo is not implemented yet. See undo-fit.md ADR.')
     raise typer.Exit(code=1)

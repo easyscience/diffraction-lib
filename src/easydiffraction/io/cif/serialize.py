@@ -589,10 +589,7 @@ def _has_persisted_fit_state_sections(block: object) -> bool:
 
 
 def _restore_common_fit_state(analysis: object, block: object) -> None:
-    """
-    Restore fit-state categories shared by deterministic and Bayesian
-    fits.
-    """
+    """Restore fit-state categories shared by both fit kinds."""
     analysis.fit_parameters.from_cif(block)
     analysis.fit_result.from_cif(block)
     analysis.fit_parameter_correlations.from_cif(block)
@@ -621,7 +618,7 @@ def _restore_persisted_fit_state(analysis: object, block: object) -> None:
     """
     from easydiffraction.analysis.enums import FitResultKindEnum  # noqa: PLC0415
 
-    analysis._set_has_persisted_fit_state(True)
+    analysis._set_has_persisted_fit_state(value=True)
     _restore_common_fit_state(analysis, block)
 
     result_kind_value = analysis.fit_result.result_kind.value
@@ -831,45 +828,9 @@ def param_from_cif(
     if not found_values:
         return
 
-    # If found, pick the one at the given index
+    # If found, pick the one at the given index.
     raw = found_values[idx]
-
-    # CIF unknown / inapplicable markers → keep default
-    if raw in {'?', '.'}:
-        return
-
-    # If numeric, parse with uncertainty if present
-    if self._value_type == DataTypes.INTEGER:
-        numeric_value = str_to_ufloat(raw).n
-        integer_value = int(round(numeric_value))
-        if not np.isclose(numeric_value, integer_value):
-            log.warning(
-                f'Ignoring non-integer CIF value {raw!r} for integer field '
-                f'{self.unique_name}.'
-            )
-            return
-        self.value = integer_value
-
-    # If numeric, parse with uncertainty if present
-    elif self._value_type == DataTypes.NUMERIC:
-        has_brackets = '(' in raw
-        u = str_to_ufloat(raw)
-        self.value = u.n
-        if has_brackets and hasattr(self, 'free'):
-            self.free = True  # type: ignore[attr-defined]
-            if not np.isnan(u.s) and hasattr(self, 'uncertainty'):
-                self.uncertainty = u.s  # type: ignore[attr-defined]
-
-    # If string, strip quotes if present
-    elif self._value_type == DataTypes.STRING:
-        self.value = _strip_optional_quotes(raw)
-
-    elif self._value_type == DataTypes.BOOL:
-        self.value = _parse_bool_cif_value(raw)
-
-    # Other types are not supported
-    else:
-        log.debug(f'Unrecognized type: {self._value_type}')
+    _set_param_from_raw_cif_value(self, raw)
 
 
 def category_item_from_cif(
@@ -905,11 +866,10 @@ def _set_param_from_raw_cif_value(
 
     if param._value_type == DataTypes.INTEGER:
         numeric_value = str_to_ufloat(raw).n
-        integer_value = int(round(numeric_value))
+        integer_value = round(numeric_value)
         if not np.isclose(numeric_value, integer_value):
             log.warning(
-                f'Ignoring non-integer CIF value {raw!r} for integer field '
-                f'{param.unique_name}.'
+                f'Ignoring non-integer CIF value {raw!r} for integer field {param.unique_name}.'
             )
             return
         param.value = integer_value

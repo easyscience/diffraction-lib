@@ -24,6 +24,54 @@
 │   │   │   │   └── 🏷️ class Aliases
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class AliasesFactory
+│   │   ├── 📁 bayesian_convergence
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   └── 🏷️ class BayesianConvergence
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class BayesianConvergenceFactory
+│   │   ├── 📁 bayesian_distribution_caches
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   ├── 🏷️ class BayesianDistributionCacheItem
+│   │   │   │   └── 🏷️ class BayesianDistributionCaches
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class BayesianDistributionCachesFactory
+│   │   ├── 📁 bayesian_pair_caches
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   ├── 🏷️ class BayesianPairCachePaths
+│   │   │   │   ├── 🏷️ class BayesianPairCacheItem
+│   │   │   │   └── 🏷️ class BayesianPairCaches
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class BayesianPairCachesFactory
+│   │   ├── 📁 bayesian_parameter_posteriors
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   ├── 🏷️ class BayesianParameterPosteriorItem
+│   │   │   │   └── 🏷️ class BayesianParameterPosteriors
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class BayesianParameterPosteriorsFactory
+│   │   ├── 📁 bayesian_predictive_datasets
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   ├── 🏷️ class BayesianPredictiveDatasetPaths
+│   │   │   │   ├── 🏷️ class BayesianPredictiveDatasetItem
+│   │   │   │   └── 🏷️ class BayesianPredictiveDatasets
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class BayesianPredictiveDatasetsFactory
+│   │   ├── 📁 bayesian_result
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   └── 🏷️ class BayesianResult
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class BayesianResultFactory
+│   │   ├── 📁 bayesian_sampler
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   └── 🏷️ class BayesianSampler
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class BayesianSamplerFactory
 │   │   ├── 📁 constraints
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -31,6 +79,45 @@
 │   │   │   │   └── 🏷️ class Constraints
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class ConstraintsFactory
+│   │   ├── 📁 deterministic_parameter_results
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   ├── 🏷️ class DeterministicParameterResultItem
+│   │   │   │   └── 🏷️ class DeterministicParameterResults
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class DeterministicParameterResultsFactory
+│   │   ├── 📁 deterministic_result
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   └── 🏷️ class DeterministicResult
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class DeterministicResultFactory
+│   │   ├── 📁 fit_parameter_correlations
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   ├── 🏷️ class FitParameterCorrelationItem
+│   │   │   │   └── 🏷️ class FitParameterCorrelations
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class FitParameterCorrelationsFactory
+│   │   ├── 📁 fit_parameters
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   ├── 🏷️ class FitParameterItem
+│   │   │   │   └── 🏷️ class FitParameters
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class FitParametersFactory
+│   │   ├── 📁 fit_result
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   └── 🏷️ class FitResult
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class FitResultFactory
+│   │   ├── 📁 fit_state
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   └── 🏷️ class FitState
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class FitStateFactory
 │   │   ├── 📁 fitting
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -105,9 +192,13 @@
 │   ├── 📄 __init__.py
 │   ├── 📄 analysis.py
 │   │   ├── 🏷️ class AnalysisDisplay
+│   │   ├── 🏷️ class _AnalysisOwnerAccessorsMixin
+│   │   ├── 🏷️ class _AnalysisPersistedCategoryAccessorsMixin
 │   │   └── 🏷️ class Analysis
 │   ├── 📄 enums.py
-│   │   └── 🏷️ class FitModeEnum
+│   │   ├── 🏷️ class FitModeEnum
+│   │   ├── 🏷️ class FitResultKindEnum
+│   │   └── 🏷️ class FitCorrelationSourceEnum
 │   ├── 📄 fitting.py
 │   │   └── 🏷️ class Fitter
 │   └── 📄 sequential.py
@@ -159,10 +250,12 @@
 │       ├── 🏷️ class GenericStringDescriptor
 │       ├── 🏷️ class GenericBoolDescriptor
 │       ├── 🏷️ class GenericNumericDescriptor
+│       ├── 🏷️ class GenericIntegerDescriptor
 │       ├── 🏷️ class GenericParameter
 │       ├── 🏷️ class StringDescriptor
 │       ├── 🏷️ class BoolDescriptor
 │       ├── 🏷️ class NumericDescriptor
+│       ├── 🏷️ class IntegerDescriptor
 │       └── 🏷️ class Parameter
 ├── 📁 crystallography
 │   ├── 📄 __init__.py
@@ -424,7 +517,8 @@
 │   │   ├── 📄 parse.py
 │   │   └── 📄 serialize.py
 │   ├── 📄 __init__.py
-│   └── 📄 ascii.py
+│   ├── 📄 ascii.py
+│   └── 📄 results_sidecar.py
 ├── 📁 project
 │   ├── 📁 categories
 │   │   ├── 📁 info

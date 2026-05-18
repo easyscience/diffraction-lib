@@ -71,7 +71,11 @@ def test_fitter_fit_does_not_call_process_fit_results(monkeypatch):
         parameters = []
 
     class MockFitResults:
-        pass
+        def __init__(self):
+            self.message = ''
+            self.iterations = 0
+            self.chi_square = None
+            self.engine_result = object()
 
     class DummyMin:
         tracker = type('T', (), {'track': staticmethod(lambda a, b: a)})()
@@ -81,6 +85,9 @@ def test_fitter_fit_does_not_call_process_fit_results(monkeypatch):
 
         def _sync_result_to_parameters(self, params, engine_params):
             pass
+
+        def _stop_tracking(self):
+            return None
 
     f = Fitter()
     f.minimizer = DummyMin()

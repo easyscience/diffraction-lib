@@ -87,7 +87,8 @@ def test_minimizer_base_fit_flow_and_finalize():
     assert minim.synced is True
     assert isinstance(result.parameters, list)
     assert result.parameters[0].value == 42
-    # Fitting time should be a positive float
+    # Successful fits are finalized by the caller after any post-processing.
+    minim._stop_tracking()
     assert minim.tracker.fitting_time is not None
     assert minim.tracker.fitting_time >= 0.0
 

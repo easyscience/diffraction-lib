@@ -125,7 +125,7 @@ class BayesianResult(CategoryItem):
         """
         return self._success
 
-    def _set_success(self, value: bool) -> None:
+    def _set_success(self, *, value: bool) -> None:
         """Set the success flag for internal callers."""
         self._success.value = value
 
@@ -134,7 +134,7 @@ class BayesianResult(CategoryItem):
         """Whether the sampler completed and returned posterior data."""
         return self._sampler_completed
 
-    def _set_sampler_completed(self, value: bool) -> None:
+    def _set_sampler_completed(self, *, value: bool) -> None:
         """Set the sampler-completed flag for internal callers."""
         self._sampler_completed.value = value
 
@@ -174,7 +174,7 @@ class BayesianResult(CategoryItem):
         """Whether posterior samples were persisted."""
         return self._has_posterior_samples
 
-    def _set_has_posterior_samples(self, value: bool) -> None:
+    def _set_has_posterior_samples(self, *, value: bool) -> None:
         """Set the posterior-samples flag for internal callers."""
         self._has_posterior_samples.value = value
 
@@ -183,7 +183,7 @@ class BayesianResult(CategoryItem):
         """Whether distribution-cache manifests were persisted."""
         return self._has_distribution_cache
 
-    def _set_has_distribution_cache(self, value: bool) -> None:
+    def _set_has_distribution_cache(self, *, value: bool) -> None:
         """Set the distribution-cache flag for internal callers."""
         self._has_distribution_cache.value = value
 
@@ -192,7 +192,7 @@ class BayesianResult(CategoryItem):
         """Whether pair-cache manifests were persisted."""
         return self._has_pair_cache
 
-    def _set_has_pair_cache(self, value: bool) -> None:
+    def _set_has_pair_cache(self, *, value: bool) -> None:
         """Set the pair-cache flag for internal callers."""
         self._has_pair_cache.value = value
 
@@ -201,7 +201,7 @@ class BayesianResult(CategoryItem):
         """Whether posterior predictive manifests were persisted."""
         return self._has_posterior_predictive
 
-    def _set_has_posterior_predictive(self, value: bool) -> None:
+    def _set_has_posterior_predictive(self, *, value: bool) -> None:
         """Set the posterior-predictive flag for internal callers."""
         self._has_posterior_predictive.value = value
 

@@ -34,7 +34,7 @@ def test_datablock_item_to_cif_includes_item_and_collection():
 
     out = MUT.datablock_item_to_cif(DB())
     assert out.startswith('data_block1')
-    assert '_aa 42.' in out
+    assert '_aa 42' in out
     assert 'loop_' in out
     assert '_aa' in out
     assert '7' in out
@@ -80,7 +80,7 @@ def test_datablock_item_to_cif_skips_empty_category_fragments():
             self.empty_coll = CategoryCollection(item_type=Item)
 
     out = MUT.datablock_item_to_cif(DB())
-    assert out == 'data_block1\n\n_aa 42.\n\nloop_\n_aa\n7.'
+    assert out == 'data_block1\n\n_aa 42\n\nloop_\n_aa\n7'
     assert '\n\n\n' not in out
 
 
@@ -159,7 +159,7 @@ def test_experiment_to_cif_with_and_without_data():
 
     out_without = MUT.experiment_to_cif(Exp(''))
     assert out_without.startswith('data_expA')
-    assert out_without.endswith('1.')
+    assert out_without.endswith('1')
 
 
 def test_analysis_to_cif_renders_all_sections():

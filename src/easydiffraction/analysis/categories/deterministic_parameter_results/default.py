@@ -92,7 +92,7 @@ class DeterministicParameterResultItem(CategoryItem):
         """Whether the parameter finished at the lower fit bound."""
         return self._at_lower_bound
 
-    def _set_at_lower_bound(self, value: bool) -> None:
+    def _set_at_lower_bound(self, *, value: bool) -> None:
         """Set the lower-bound flag for internal callers."""
         self._at_lower_bound.value = value
 
@@ -101,7 +101,7 @@ class DeterministicParameterResultItem(CategoryItem):
         """Whether the parameter finished at the upper fit bound."""
         return self._at_upper_bound
 
-    def _set_at_upper_bound(self, value: bool) -> None:
+    def _set_at_upper_bound(self, *, value: bool) -> None:
         """Set the upper-bound flag for internal callers."""
         self._at_upper_bound.value = value
 
@@ -134,9 +134,9 @@ class DeterministicParameterResults(CategoryCollection):
         ----------
         param_unique_name : str
             Unique name of the persisted parameter result row.
-        final_value : int | float | None, default=None
+        final_value : float | None, default=None
             Final fitted value for the persisted parameter result.
-        final_uncertainty : int | float | None, default=None
+        final_uncertainty : float | None, default=None
             Final uncertainty for the persisted parameter result.
         at_lower_bound : bool, default=False
             Whether the parameter finished at the lower fit bound.
@@ -147,6 +147,6 @@ class DeterministicParameterResults(CategoryCollection):
         item._set_param_unique_name(param_unique_name)
         item._set_final_value(final_value)
         item._set_final_uncertainty(final_uncertainty)
-        item._set_at_lower_bound(at_lower_bound)
-        item._set_at_upper_bound(at_upper_bound)
+        item._set_at_lower_bound(value=at_lower_bound)
+        item._set_at_upper_bound(value=at_upper_bound)
         self.add(item)

@@ -47,10 +47,23 @@ def _make_project_stub() -> tuple[SimpleNamespace, list[tuple[str, tuple, dict]]
         plot_calc=record('plot_calc'),
         plot_meas_vs_calc=record('plot_meas_vs_calc'),
         _plot_meas_vs_calc_request=record('_plot_meas_vs_calc_request'),
+        engine='plotly',
+        _resolve_x_axis=lambda expt_type, x: ('two_theta', 'two_theta', None, None, None),
     )
     project = SimpleNamespace(
-        analysis=SimpleNamespace(display=analysis_display),
+        analysis=SimpleNamespace(
+            display=analysis_display,
+            fit_results=SimpleNamespace(posterior_predictive={}),
+            bayesian_result=SimpleNamespace(
+                has_pair_cache=SimpleNamespace(value=False),
+                has_posterior_predictive=SimpleNamespace(value=False),
+            ),
+            bayesian_pair_caches=[],
+            bayesian_predictive_datasets=[],
+            _persisted_fit_state_sidecar={},
+        ),
         rendering=SimpleNamespace(plotter=plotter),
+        experiments={'hrpt': SimpleNamespace(type=SimpleNamespace())},
         free_parameters=[],
         verbosity=SimpleNamespace(fit=SimpleNamespace(value='full')),
     )
@@ -265,6 +278,67 @@ def test_posterior_display_delegates_to_rendering_plotter(monkeypatch):
         (ACTIVITY_LABEL_PROCESSING, VerbosityEnum.FULL),
         (ACTIVITY_LABEL_PROCESSING, VerbosityEnum.FULL),
     ]
+
+
+def test_posterior_predictive_skips_processing_indicator_for_restored_cache(monkeypatch):
+    import easydiffraction.project.display as display_mod
+
+    project, calls = _make_project_stub()
+    project.analysis = SimpleNamespace(
+        fit_results=object(),
+        bayesian_result=SimpleNamespace(has_posterior_predictive=SimpleNamespace(value=True)),
+        bayesian_predictive_datasets=[
+            SimpleNamespace(
+                experiment_name=SimpleNamespace(value='hrpt'),
+                x_axis_name=SimpleNamespace(value='two_theta'),
+                draws_path=SimpleNamespace(value=None),
+            )
+        ],
+        _persisted_fit_state_sidecar={
+            'predictive_datasets': {
+                'hrpt': {
+                    'x': [1.0, 2.0],
+                    'best_sample_prediction': [3.0, 4.0],
+                }
+            }
+        },
+    )
+    project.experiments = {'hrpt': SimpleNamespace(type=SimpleNamespace())}
+    project.rendering.plotter.engine = 'plotly'
+    project.rendering.plotter._resolve_x_axis = lambda expt_type, x: (
+        'two_theta',
+        'two_theta',
+        None,
+        None,
+        None,
+    )
+    display = ProjectDisplay(project)
+    indicator_calls: list[tuple[str, VerbosityEnum]] = []
+
+    @contextmanager
+    def fake_activity_indicator(label, *, verbosity):
+        indicator_calls.append((label, verbosity))
+        yield object()
+
+    monkeypatch.setattr(display_mod, 'activity_indicator', fake_activity_indicator)
+
+    display.posterior.predictive('hrpt')
+
+    assert calls == [
+        (
+            'plot_posterior_predictive',
+            (),
+            {
+                'expt_name': 'hrpt',
+                'style': 'band',
+                'x_min': None,
+                'x_max': None,
+                'show_residual': None,
+                'x': None,
+            },
+        )
+    ]
+    assert indicator_calls == []
 
 
 def test_posterior_distribution_without_param_plots_all_free_parameters():

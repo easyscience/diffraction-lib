@@ -44,6 +44,14 @@ def test_cli_subcommands_call_utils(monkeypatch):
     import easydiffraction.__main__ as main_mod
 
     logs = []
+    monkeypatch.setattr(ed, 'list_data', lambda: logs.append('LIST_DATA'))
+    monkeypatch.setattr(
+        ed,
+        'download_data',
+        lambda id, destination='data', overwrite=False: logs.append(
+            f'DATA_{id}_{destination}_{overwrite}'
+        ),
+    )
     monkeypatch.setattr(ed, 'list_tutorials', lambda: logs.append('LIST'))
     monkeypatch.setattr(
         ed,
@@ -56,14 +64,25 @@ def test_cli_subcommands_call_utils(monkeypatch):
         lambda id, destination='tutorials', overwrite=False: logs.append(f'DOWNLOAD_{id}'),
     )
 
-    res1 = runner.invoke(main_mod.app, ['list-tutorials'])
-    res2 = runner.invoke(main_mod.app, ['download-all-tutorials'])
-    res3 = runner.invoke(main_mod.app, ['download-tutorial', '1'])
+    res0 = runner.invoke(main_mod.app, ['list-data'])
+    res1 = runner.invoke(main_mod.app, ['download-data', '30', '--destination', 'projects'])
+    res2 = runner.invoke(main_mod.app, ['list-tutorials'])
+    res3 = runner.invoke(main_mod.app, ['download-all-tutorials'])
+    res4 = runner.invoke(main_mod.app, ['download-tutorial', '1'])
 
+    assert res0.exit_code == 0
     assert res1.exit_code == 0
     assert res2.exit_code == 0
     assert res3.exit_code == 0
-    assert logs == ['LIST', 'DOWNLOAD_ALL', 'DOWNLOAD_1']
+    assert res4.exit_code == 0
+    assert logs == ['LIST_DATA', 'DATA_30_projects_False', 'LIST', 'DOWNLOAD_ALL', 'DOWNLOAD_1']
+
+
+def test_cli_project_first_argument_normalization_supports_global_data_commands():
+    import easydiffraction.__main__ as main_mod
+
+    assert main_mod._normalized_cli_args(['list-data']) == ['list-data']
+    assert main_mod._normalized_cli_args(['download-data', '30']) == ['download-data', '30']
 
 
 def test_cli_fit_loads_and_fits(monkeypatch, tmp_path):

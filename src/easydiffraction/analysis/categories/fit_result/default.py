@@ -88,7 +88,7 @@ class FitResult(CategoryItem):
         """
         return self._success
 
-    def _set_success(self, value: bool) -> None:
+    def _set_success(self, *, value: bool) -> None:
         """Set the success flag for internal callers."""
         self._success.value = value
 

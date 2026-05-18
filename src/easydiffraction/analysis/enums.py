@@ -4,7 +4,6 @@
 
 from __future__ import annotations
 
-from enum import Enum
 from enum import StrEnum
 
 
@@ -31,7 +30,7 @@ class FitModeEnum(StrEnum):
         return ''
 
 
-class FitResultKindEnum(str, Enum):
+class FitResultKindEnum(StrEnum):
     """Persisted kind of the latest fit-result projection."""
 
     DETERMINISTIC = 'deterministic'
@@ -43,7 +42,7 @@ class FitResultKindEnum(str, Enum):
         return cls.DETERMINISTIC
 
 
-class FitCorrelationSourceEnum(str, Enum):
+class FitCorrelationSourceEnum(StrEnum):
     """Source of a persisted fit-parameter correlation summary."""
 
     DETERMINISTIC = 'deterministic'

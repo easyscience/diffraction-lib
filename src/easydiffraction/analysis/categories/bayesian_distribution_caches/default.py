@@ -137,9 +137,9 @@ class BayesianDistributionCaches(CategoryCollection):
             HDF5 dataset path for the distribution x-grid.
         density_path : str
             HDF5 dataset path for the cached density values.
-        n_grid : int | float
+        n_grid : float
             Number of grid points in the cached distribution.
-        n_draws_cached : int | float
+        n_draws_cached : float
             Number of draws summarized into the cached distribution.
         """
         item = BayesianDistributionCacheItem()

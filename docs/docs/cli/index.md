@@ -50,15 +50,13 @@ python -m easydiffraction list-tutorials
 
 ### List Example Data
 
-List all available example data files and downloadable project
-archives:
+List all available example data files and downloadable project archives:
 
 ```bash
 python -m easydiffraction list-data
 ```
 
-The table includes the data ID, file name, record kind, and
-description.
+The table includes the data ID, file name, record kind, and description.
 
 ### Download Example Data
 

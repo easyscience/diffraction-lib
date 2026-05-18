@@ -887,6 +887,8 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             draw_index=np.asarray(draw_index, dtype=float),
         )
         convergence_diagnostics = compute_convergence_diagnostics(posterior_samples)
+        if not convergence_diagnostics.get('converged', True):
+            log.warning('Convergence diagnostics indicate the posterior may be poorly mixed.')
         posterior_parameter_summaries = summarize_posterior_parameters(
             parameter_names=context.parameter_names,
             posterior_samples=posterior_samples,

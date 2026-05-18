@@ -347,8 +347,8 @@ arrays large enough to make CIF unwieldy are stored in:
 
 - `analysis/results.h5`
 
-The reference implementation uses a direct `h5py` dependency to read
-and write this sidecar.
+The reference implementation uses a direct `h5py` dependency to read and
+write this sidecar.
 
 Required canonical posterior arrays, when available:
 

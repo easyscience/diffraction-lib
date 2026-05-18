@@ -141,10 +141,7 @@ class DeterministicResult(CategoryItem):
 
     @property
     def n_parameters(self) -> NumericDescriptor:
-        """
-        Number of parameters considered in the persisted deterministic
-        fit.
-        """
+        """Number of parameters considered in the persisted fit."""
         return self._n_parameters
 
     def _set_n_parameters(self, value: float) -> None:
@@ -173,24 +170,18 @@ class DeterministicResult(CategoryItem):
 
     @property
     def covariance_available(self) -> BoolDescriptor:
-        """
-        Whether covariance was available for the persisted deterministic
-        fit.
-        """
+        """Whether covariance was available for the persisted fit."""
         return self._covariance_available
 
-    def _set_covariance_available(self, value: bool) -> None:
+    def _set_covariance_available(self, *, value: bool) -> None:
         """Set the covariance-available flag for internal callers."""
         self._covariance_available.value = value
 
     @property
     def correlation_available(self) -> BoolDescriptor:
-        """
-        Whether correlations were available for the persisted
-        deterministic fit.
-        """
+        """Whether correlations were available for the persisted fit."""
         return self._correlation_available
 
-    def _set_correlation_available(self, value: bool) -> None:
+    def _set_correlation_available(self, *, value: bool) -> None:
         """Set the correlation-available flag for internal callers."""
         self._correlation_available.value = value

@@ -62,3 +62,15 @@ def test_project_save_lists_existing_analysis_results_csv(tmp_path, monkeypatch,
     out = capsys.readouterr().out
     assert 'analysis.cif' in out
     assert 'results.csv' in out
+
+
+def test_project_save_omits_empty_fit_state_sections(tmp_path):
+    from easydiffraction.project.project import Project
+
+    project = Project(name='no_fit_state')
+    project.save_as(str(tmp_path / 'proj'))
+
+    analysis_cif = (tmp_path / 'proj' / 'analysis' / 'analysis.cif').read_text()
+
+    assert '_fit_parameter.param_unique_name' not in analysis_cif
+    assert '_fit_result.result_kind' not in analysis_cif

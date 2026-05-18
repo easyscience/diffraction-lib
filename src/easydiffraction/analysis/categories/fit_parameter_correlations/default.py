@@ -164,7 +164,7 @@ class FitParameterCorrelations(CategoryCollection):
             First unique parameter name in the pair.
         param_unique_name_j : str
             Second unique parameter name in the pair.
-        correlation : int | float
+        correlation : float
             Correlation coefficient for the parameter pair.
         id : str | None, default=None
             Explicit persisted row identifier. When omitted, a simple
