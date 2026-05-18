@@ -95,3 +95,35 @@ def test_project_save_and_load_keep_project_config_section_format(tmp_path):
     assert loaded.rendering.chart_engine.value == 'asciichartpy'
     assert loaded.rendering.table_engine.value == 'rich'
     assert loaded.verbosity.fit.value == 'full'
+
+
+def test_project_save_wraps_long_description_as_cif_text_field(tmp_path):
+    from easydiffraction.project.project import Project
+
+    description = (
+        'This is the most minimal example of using EasyDiffraction. '
+        'It shows how to load a previously saved project from a directory '
+        'and run refinement in just a few lines of code.'
+    )
+    project = Project(name='beer', title='Beer title', description=description)
+    project.save_as(str(tmp_path / 'proj'))
+
+    project_cif = (tmp_path / 'proj' / 'project.cif').read_text()
+
+    assert '_project.description' in project_cif
+    description_tail = project_cif.split('_project.description', maxsplit=1)[1].lstrip(' ')
+    assert description_tail.startswith('\n;\n')
+    assert '\n;\n_project.created' in project_cif
+    description_block = description_tail.split('\n;\n', maxsplit=1)[1]
+    description_block = description_block.split('\n;\n_project.created', maxsplit=1)[0]
+    description_lines = description_block.splitlines()
+
+    assert len(description_lines) > 1
+    assert all(not line.startswith(';') for line in description_lines)
+    assert all(not line.endswith(';') for line in description_lines)
+    assert description_lines[0].startswith('This is the most minimal example')
+    assert description_lines[-1].endswith('lines of code.')
+
+    loaded = Project.load(str(tmp_path / 'proj'))
+
+    assert loaded.info.description == description

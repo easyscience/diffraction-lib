@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import textwrap
 from typing import TYPE_CHECKING
 from typing import Any
 
@@ -21,14 +22,14 @@ if TYPE_CHECKING:
     from easydiffraction.core.category import CategoryItem
     from easydiffraction.core.variable import GenericDescriptorBase
 
-# Maximum CIF description length before using semicolon-delimited block
-_CIF_DESCRIPTION_WRAP_LEN = 60
-
 # Minimum string length to check for surrounding quotes
 _MIN_QUOTED_LEN = 2
 
 # Number of significant digits kept for CIF uncertainty notation
 _CIF_UNCERTAINTY_SIG_DIGITS = 2
+
+# Maximum CIF description length before using semicolon-delimited block
+_CIF_DESCRIPTION_WRAP_LEN = 60
 
 
 def format_value(value: object) -> str:
@@ -77,6 +78,13 @@ def _strip_optional_quotes(raw: str) -> str:
     """Return an unquoted CIF token when it is wrapped in quotes."""
     is_quoted = len(raw) >= _MIN_QUOTED_LEN and raw[0] == raw[-1] and raw[0] in {"'", '"'}
     return raw[1:-1] if is_quoted else raw
+
+
+def _strip_cif_text_field_delimiters(raw: str) -> str:
+    """Return CIF text-field content without delimiter lines."""
+    if raw.startswith(';\n') and raw.endswith('\n;'):
+        return raw[2:-2].strip()
+    return raw
 
 
 def _parse_bool_cif_value(raw: str) -> bool | str:
@@ -335,6 +343,26 @@ def datablock_collection_to_cif(collection: object) -> str:
     return '\n\n'.join([block.as_cif for block in collection.values()])
 
 
+def _format_project_description(description: str) -> str:
+    """Format project descriptions as CIF text."""
+    normalized_description = ' '.join(description.split())
+    if not normalized_description:
+        return '?'
+
+    if len(normalized_description) > _CIF_DESCRIPTION_WRAP_LEN:
+        wrapped_description = '\n'.join(
+            textwrap.wrap(
+                normalized_description,
+                width=_CIF_DESCRIPTION_WRAP_LEN,
+                break_long_words=False,
+                break_on_hyphens=False,
+            )
+        )
+        return f'\n;\n{wrapped_description}\n;'
+
+    return format_value(normalized_description)
+
+
 def project_info_to_cif(info: object) -> str:
     """Render ProjectInfo to CIF text (id, title, description)."""
     name = f'{info.name}'
@@ -343,14 +371,7 @@ def project_info_to_cif(info: object) -> str:
     if ' ' in title:
         title = format_value(info.title)
 
-    if len(info.description) > _CIF_DESCRIPTION_WRAP_LEN:
-        description = f'\n;\n{info.description}\n;'
-    elif info.description:
-        description = f'{info.description}'
-        if ' ' in description:
-            description = format_value(info.description)
-    else:
-        description = '?'
+    description = _format_project_description(info.description)
 
     created = format_value(info.created.strftime('%d %b %Y %H:%M:%S'))
     last_modified = format_value(info.last_modified.strftime('%d %b %Y %H:%M:%S'))
@@ -458,6 +479,13 @@ def _wrap_in_data_block(cif_text: str, block_name: str = '_') -> str:
     return f'data_{block_name}\n\n{cif_text}'
 
 
+def _project_block_from_cif_text(cif_text: str) -> gemmi.cif.Block:
+    """Parse project CIF text."""
+    import gemmi  # noqa: PLC0415
+
+    return gemmi.cif.read_string(_wrap_in_data_block(cif_text, 'project')).sole_block()
+
+
 def _populate_project_info_from_block(
     info: object,
     block: gemmi.cif.Block,
@@ -487,9 +515,7 @@ def project_info_from_cif(info: object, cif_text: str) -> None:
     """
     Populate a ProjectInfo instance from CIF text.
 
-    Reads ``_project.id``, ``_project.title``, and
-    ``_project.description`` from the given CIF string and sets them on
-    the *info* object.
+    Reads the core project metadata fields from CIF text.
 
     Parameters
     ----------
@@ -498,10 +524,7 @@ def project_info_from_cif(info: object, cif_text: str) -> None:
     cif_text : str
         CIF text content of ``project.cif``.
     """
-    import gemmi  # noqa: PLC0415
-
-    doc = gemmi.cif.read_string(_wrap_in_data_block(cif_text, 'project'))
-    block = doc.sole_block()
+    block = _project_block_from_cif_text(cif_text)
 
     _populate_project_info_from_block(info, block)
 
@@ -510,10 +533,7 @@ def project_config_from_cif(project: object, cif_text: str) -> None:
     """
     Populate project-level configuration from ``project.cif`` text.
     """
-    import gemmi  # noqa: PLC0415
-
-    doc = gemmi.cif.read_string(_wrap_in_data_block(cif_text, 'project'))
-    block = doc.sole_block()
+    block = _project_block_from_cif_text(cif_text)
 
     _populate_project_info_from_block(project.info, block)
 
@@ -767,10 +787,8 @@ def _make_cif_string_reader(block: gemmi.cif.Block) -> object:
         # CIF unknown / inapplicable markers
         if raw in {'?', '.'}:
             return None
-        # Strip surrounding quotes
-        if len(raw) >= _MIN_QUOTED_LEN and raw[0] == raw[-1] and raw[0] in {"'", '"'}:
-            raw = raw[1:-1]
-        return raw
+        raw = _strip_cif_text_field_delimiters(raw)
+        return _strip_optional_quotes(raw)
 
     return _read
 
@@ -859,6 +877,8 @@ def _set_param_from_raw_cif_value(
     raw : str
         The raw string from the CIF loop cell.
     """
+    raw = _strip_cif_text_field_delimiters(raw)
+
     # CIF unknown / inapplicable markers → keep default
     if raw in {'?', '.'}:
         return

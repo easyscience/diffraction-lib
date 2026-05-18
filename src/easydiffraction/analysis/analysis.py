@@ -607,15 +607,20 @@ class Analysis(
             return
 
         steps = int(self.bayesian_sampler.steps.value)
-        thin = int(self.bayesian_sampler.thin.value)
-        pop = int(self.bayesian_sampler.pop.value)
-        if steps <= 0 or thin <= 0 or pop <= 0:
+        if steps <= 0:
             return
 
         minimizer.steps = steps
         minimizer.burn = int(self.bayesian_sampler.burn.value)
-        minimizer.thin = thin
-        minimizer.pop = pop
+
+        thin = int(self.bayesian_sampler.thin.value)
+        if thin > 0:
+            minimizer.thin = thin
+
+        pop = int(self.bayesian_sampler.pop.value)
+        if pop > 0:
+            minimizer.pop = pop
+
         minimizer.parallel = int(self.bayesian_sampler.parallel.value)
 
         init_value = str(self.bayesian_sampler.init.value)
