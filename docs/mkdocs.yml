@@ -193,10 +193,13 @@ nav:
   - Tutorials:
       - Tutorials: tutorials/index.md
       - Getting Started:
-          - LBCO quick load: tutorials/ed-18.ipynb
           - LBCO quick code: tutorials/ed-2.ipynb
           - LBCO basic load: tutorials/ed-1.ipynb
           - LBCO complete: tutorials/ed-3.ipynb
+      - Load Project:
+        - LBCO quick load: tutorials/ed-18.ipynb
+        - Co2SiO4 T-scan resumed: tutorials/ed-23.ipynb
+        - LBCO Bayesian, saved project: tutorials/ed-24.ipynb
       - Powder Diffraction:
           - Co2SiO4 pd-neut-cwl: tutorials/ed-5.ipynb
           - HS pd-neut-cwl: tutorials/ed-6.ipynb
@@ -213,7 +216,6 @@ nav:
           - PbSO4 NPD+XRD: tutorials/ed-4.ipynb
           - Si Bragg+PDF: tutorials/ed-16.ipynb
           - Co2SiO4 T-scan: tutorials/ed-17.ipynb
-          - Co2SiO4 T-scan resumed: tutorials/ed-23.ipynb
       - Simulated Data:
           - LBCO+Si McStas: tutorials/ed-9.ipynb
           - BEER McStas: tutorials/ed-20.ipynb

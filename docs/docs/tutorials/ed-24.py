@@ -27,8 +27,6 @@ import easydiffraction as ed
 # %%
 project_dir = Path('../../../tmp/tutorials/projects/lbco_hrpt_bayesian')
 
-# %%
-
 # %% [markdown]
 # ## Load the Saved Bayesian Project
 #
