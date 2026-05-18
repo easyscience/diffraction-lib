@@ -40,7 +40,7 @@ structure or experiment CIF files.
 - [x] Phase 1 step 5: add Bayesian cache manifest category models.
 - [x] Phase 1 step 6: wire analysis CIF save/load for fit state.
 - [x] Phase 1 step 7: capture fit projections after fitting.
-- [ ] Phase 1 step 8: add HDF5 sidecar save/load.
+- [x] Phase 1 step 8: add HDF5 sidecar save/load.
 - [ ] Phase 1 step 9: restore result objects and display cache inputs.
 - [ ] Phase 1 review gate: stop for human review.
 - [ ] Phase 2 step 1: add unit tests for new categories.
@@ -465,7 +465,8 @@ Capture persisted fit-state projections
 
 ### Step 8: Add HDF5 Sidecar Save And Load
 
-The HDF5 dependency decision is approved: add `h5py` directly.
+The HDF5 dependency decision is approved and already satisfied:
+`pyproject.toml` already lists `h5py` directly.
 
 Files likely to change:
 
@@ -477,7 +478,8 @@ Files likely to change:
 
 Actions:
 
-1. Add `h5py` as a direct dependency.
+1. Confirm `h5py` remains a direct dependency; no edit is needed while
+   it is already present.
 2. Add a small sidecar module for `analysis/results.h5`; keep imports
    local if the package is heavy.
 3. Write canonical posterior arrays when available:

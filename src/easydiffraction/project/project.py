@@ -300,6 +300,7 @@ class Project(GuardedBase):
         """
         from easydiffraction.io.cif.serialize import analysis_from_cif  # noqa: PLC0415
         from easydiffraction.io.cif.serialize import project_config_from_cif  # noqa: PLC0415
+        from easydiffraction.io.results_sidecar import read_analysis_results_sidecar  # noqa: PLC0415
 
         project_path = pathlib.Path(dir_path)
         if not project_path.is_dir():
@@ -344,6 +345,10 @@ class Project(GuardedBase):
         if analysis_cif_path.is_file():
             cif_text = analysis_cif_path.read_text()
             analysis_from_cif(project._analysis, cif_text)
+            read_analysis_results_sidecar(
+                analysis=project._analysis,
+                analysis_dir=analysis_cif_path.parent,
+            )
 
         # 5. Resolve alias param references
         project._resolve_alias_references()
@@ -398,6 +403,8 @@ class Project(GuardedBase):
 
     def save(self) -> None:
         """Save the project into the existing project directory."""
+        from easydiffraction.io.results_sidecar import write_analysis_results_sidecar  # noqa: PLC0415
+
         if self.info.path is None:
             log.error('Project path not specified. Use save_as() to define the path first.')
             return
@@ -446,6 +453,10 @@ class Project(GuardedBase):
         with (analysis_dir / 'analysis.cif').open('w') as f:
             f.write(self.analysis.as_cif)
             console.print('├── 📁 analysis/')
+        write_analysis_results_sidecar(
+            analysis=self.analysis,
+            analysis_dir=analysis_dir,
+        )
 
         analysis_file_names = sorted(
             path.name for path in analysis_dir.iterdir() if path.is_file()

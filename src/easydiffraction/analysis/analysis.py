@@ -420,6 +420,7 @@ class Analysis(CategoryOwner):
         self._bayesian_pair_caches = BayesianPairCaches()
         self._bayesian_predictive_datasets = BayesianPredictiveDatasets()
         self._has_persisted_fit_state_data = False
+        self._persisted_fit_state_sidecar: dict[str, object] = {}
         self._fitter = Fitter(self._fitting.minimizer_type.value)
         self._fit_results = None
         self._parameter_snapshots: dict[str, dict[str, dict]] = {}
@@ -861,6 +862,7 @@ class Analysis(CategoryOwner):
         self._bayesian_pair_caches = BayesianPairCaches()
         self._bayesian_predictive_datasets = BayesianPredictiveDatasets()
         self._set_has_persisted_fit_state(False)
+        self._persisted_fit_state_sidecar = {}
 
     def _capture_fit_parameter_state(self, parameters: list[Parameter]) -> None:
         """Capture pre-fit parameter state into persisted fit-state categories."""
