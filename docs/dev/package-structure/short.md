@@ -216,6 +216,10 @@
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
+│   │   ├── 📁 verbosity
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   └── 📄 factory.py
 │   │   └── 📄 __init__.py
 │   ├── 📄 __init__.py
 │   ├── 📄 display.py

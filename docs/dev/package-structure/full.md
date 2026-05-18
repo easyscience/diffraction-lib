@@ -439,6 +439,12 @@
 │   │   │   │   └── 🏷️ class Rendering
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class RenderingFactory
+│   │   ├── 📁 verbosity
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   └── 🏷️ class Verbosity
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class VerbosityFactory
 │   │   └── 📄 __init__.py
 │   ├── 📄 __init__.py
 │   ├── 📄 display.py

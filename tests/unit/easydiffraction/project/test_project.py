@@ -30,7 +30,7 @@ def test_project_verbosity_default():
     from easydiffraction.project.project import Project
 
     p = Project()
-    assert p.verbosity == 'full'
+    assert p.verbosity.fit.value == 'full'
 
 
 def test_project_verbosity_setter():
@@ -38,11 +38,11 @@ def test_project_verbosity_setter():
 
     p = Project()
     p.verbosity = 'short'
-    assert p.verbosity == 'short'
+    assert p.verbosity.fit.value == 'short'
     p.verbosity = 'silent'
-    assert p.verbosity == 'silent'
+    assert p.verbosity.fit.value == 'silent'
     p.verbosity = 'full'
-    assert p.verbosity == 'full'
+    assert p.verbosity.fit.value == 'full'
 
 
 def test_project_verbosity_invalid():

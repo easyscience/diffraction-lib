@@ -137,7 +137,7 @@ def _run_non_silent_fit(monkeypatch, tmp_path, *, verbosity, is_jupyter):
     del is_jupyter  # legacy parameter, no longer affects behavior
 
     analysis = SimpleNamespace(
-        project=SimpleNamespace(verbosity=verbosity),
+        project=SimpleNamespace(verbosity=SimpleNamespace(fit=SimpleNamespace(value=verbosity))),
         fitter=SimpleNamespace(selection='lmfit'),
     )
 
@@ -728,7 +728,7 @@ def test_fit_sequential_silent_does_not_start_indicator(monkeypatch, tmp_path):
     monkeypatch.setattr(sequential_mod, '_restore_main_state', lambda *args: None)
 
     analysis = SimpleNamespace(
-        project=SimpleNamespace(verbosity='silent'),
+        project=SimpleNamespace(verbosity=SimpleNamespace(fit=SimpleNamespace(value='silent'))),
         fitter=SimpleNamespace(selection='lmfit'),
     )
 

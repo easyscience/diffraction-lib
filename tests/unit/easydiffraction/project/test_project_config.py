@@ -23,8 +23,12 @@ def test_project_config_exposes_project_info_and_rendering_categories():
     assert config.info.path is None
     assert isinstance(config.info.created, datetime.datetime)
     assert isinstance(config.info.last_modified, datetime.datetime)
-    assert config.categories == [config.info, config.rendering]
-    assert config.parameters == config.info.parameters + config.rendering.parameters
+    assert config.verbosity._parent is config
+    assert config.verbosity.fit.value == 'full'
+    assert config.categories == [config.info, config.rendering, config.verbosity]
+    assert config.parameters == (
+        config.info.parameters + config.rendering.parameters + config.verbosity.parameters
+    )
 
 
 def test_project_config_as_cif_has_project_and_rendering_sections_without_data_header():
@@ -44,6 +48,7 @@ def test_project_config_as_cif_has_project_and_rendering_sections_without_data_h
     assert '_rendering.table_engine' in cif_text
     assert '_rendering.chart_engine auto' in cif_text
     assert '_rendering.table_engine auto' in cif_text
+    assert '_verbosity.fit full' in cif_text
 
 
 def test_project_save_and_load_use_auto_rendering_defaults_when_unset(tmp_path):
@@ -57,11 +62,13 @@ def test_project_save_and_load_use_auto_rendering_defaults_when_unset(tmp_path):
     assert not project_cif.startswith('data_')
     assert '_rendering.chart_engine auto' in project_cif
     assert '_rendering.table_engine auto' in project_cif
+    assert '_verbosity.fit full' in project_cif
 
     loaded = Project.load(str(tmp_path / 'proj'))
 
     assert loaded.rendering.chart_engine.value == 'auto'
     assert loaded.rendering.table_engine.value == 'auto'
+    assert loaded.verbosity.fit.value == 'full'
 
 
 def test_project_save_and_load_keep_project_config_section_format(tmp_path):
@@ -77,6 +84,7 @@ def test_project_save_and_load_keep_project_config_section_format(tmp_path):
     assert '_project.id               beer' in project_cif
     assert '_rendering.chart_engine asciichartpy' in project_cif
     assert '_rendering.table_engine rich' in project_cif
+    assert '_verbosity.fit full' in project_cif
 
     loaded = Project.load(str(tmp_path / 'proj'))
     assert loaded.info.name == 'beer'
@@ -86,3 +94,4 @@ def test_project_save_and_load_keep_project_config_section_format(tmp_path):
     assert isinstance(loaded.info.last_modified, datetime.datetime)
     assert loaded.rendering.chart_engine.value == 'asciichartpy'
     assert loaded.rendering.table_engine.value == 'rich'
+    assert loaded.verbosity.fit.value == 'full'

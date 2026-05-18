@@ -111,15 +111,15 @@ For every new category package in Phase 1:
 Complexity guardrails:
 
 - Steps 7 and 9 are broad. Start with the smallest central hook, then
-   edit individual minimizers or display helpers only when the required
-   data is not available through that central hook.
+  edit individual minimizers or display helpers only when the required
+  data is not available through that central hook.
 - If one step needs more than six source files, more than one new public
-   class family beyond the planned categories, or a public API change not
-   named in this plan, stop and ask to split the step.
+  class family beyond the planned categories, or a public API change not
+  named in this plan, stop and ask to split the step.
 - When auditing usages or renaming symbols, search code, tests,
-   tutorials, and docs with `git grep -n` before editing.
+  tutorials, and docs with `git grep -n` before editing.
 - Do not fix unrelated lint, formatting, typing, or test failures while
-   implementing this plan. Mention them at the review gate instead.
+  implementing this plan. Mention them at the review gate instead.
 
 Required commit discipline for any AI agent following this plan:
 
@@ -454,7 +454,7 @@ Actions:
    the result object says otherwise.
 9. Store upper-triangle parameter correlations only.
 10. Clear stale fit-state categories at the start of a new fit so old
-   cache manifests cannot survive a new result.
+    cache manifests cannot survive a new result.
 11. Update this plan checklist for Step 7.
 
 Suggested commit message:
@@ -524,8 +524,8 @@ Actions:
 4. Make `analysis.display.fit_results()` work from the restored result
    projection.
 5. First restore non-plotting result behavior and correlation summaries.
-   Only then add cache-aware posterior distribution, pair, and predictive
-   plotting.
+   Only then add cache-aware posterior distribution, pair, and
+   predictive plotting.
 6. Update correlation plotting so it can use
    `_fit_parameter_correlation` when raw covariance or posterior samples
    are not available.
@@ -536,7 +536,7 @@ Actions:
 9. If a requested cache is unavailable or invalid, warn clearly and use
    the existing recomputation path only when enough runtime data exists.
 10. Do not make display methods recompute KDE, contours, or predictive
-   bands when valid cache arrays were restored.
+    bands when valid cache arrays were restored.
 11. If cache-aware display requires a new helper object or cache API not
     named in this plan, stop and ask before adding it.
 12. Update this plan checklist for Step 9.

@@ -52,7 +52,7 @@ def _make_project_stub() -> tuple[SimpleNamespace, list[tuple[str, tuple, dict]]
         analysis=SimpleNamespace(display=analysis_display),
         rendering=SimpleNamespace(plotter=plotter),
         free_parameters=[],
-        verbosity='full',
+        verbosity=SimpleNamespace(fit=SimpleNamespace(value='full')),
     )
     return project, calls
 

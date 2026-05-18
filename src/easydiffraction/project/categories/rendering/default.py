@@ -41,7 +41,7 @@ class Rendering(CategoryItem):
         self._plotter = Plotter()
         self._tabler = TableRenderer.get()
 
-        # Persist symbolic "auto" so project.cif stays portable across environments.
+        # Persist symbolic "auto" so project.cif stays portable.
         self._chart_engine = StringDescriptor(
             name='chart_engine',
             description='Chart renderer backend type',
@@ -65,12 +65,14 @@ class Rendering(CategoryItem):
             cif_handler=CifHandler(names=['_rendering.table_engine']),
         )
 
-    def _resolved_chart_engine(self, value: str) -> str:
+    @staticmethod
+    def _resolved_chart_engine(value: str) -> str:
         if value == AUTO_ENGINE:
             return PlotterEngineEnum.default().value
         return value
 
-    def _resolved_table_engine(self, value: str) -> str:
+    @staticmethod
+    def _resolved_table_engine(value: str) -> str:
         if value == AUTO_ENGINE:
             return TableEngineEnum.default().value
         return value
