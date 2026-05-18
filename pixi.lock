@@ -8150,6 +8150,7 @@ packages:
   - diffpy-pdffit2
   - diffpy-utils
   - gemmi
+  - h5py
   - lmfit
   - numpy
   - pandas
