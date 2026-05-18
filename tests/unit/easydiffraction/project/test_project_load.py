@@ -132,6 +132,8 @@ class TestLoadAnalysis:
         structure.space_group.name_h_m = 'P m -3 m'
         structure.cell.length_a = 3.88
         parameter = structure.cell.length_a
+        parameter.free = True
+        parameter.uncertainty = 0.07
         parameter.fit_min = 3.8
         parameter.fit_max = 3.9
         parameter._set_fit_bounds_uncertainty_multiplier(4.0)
@@ -154,13 +156,6 @@ class TestLoadAnalysis:
         original.analysis.fit_result._set_reduced_chi_square(1.031)
         original.analysis.deterministic_result._set_optimizer_name('lmfit')
         original.analysis.deterministic_result._set_method_name('leastsq')
-        original.analysis.deterministic_parameter_results.create(
-            param_unique_name=parameter.unique_name,
-            final_value=9.99,
-            final_uncertainty=0.07,
-            at_lower_bound=False,
-            at_upper_bound=False,
-        )
         original.analysis._set_has_persisted_fit_state(value=True)
         original.save_as(str(tmp_path / 'proj'))
 

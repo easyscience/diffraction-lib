@@ -37,15 +37,6 @@ from easydiffraction.analysis.categories.bayesian_result import BayesianResult
 from easydiffraction.analysis.categories.bayesian_result import BayesianResultFactory
 from easydiffraction.analysis.categories.bayesian_sampler import BayesianSampler
 from easydiffraction.analysis.categories.bayesian_sampler import BayesianSamplerFactory
-from easydiffraction.analysis.categories.deterministic_parameter_results import (
-    DeterministicParameterResultItem,
-)
-from easydiffraction.analysis.categories.deterministic_parameter_results import (
-    DeterministicParameterResults,
-)
-from easydiffraction.analysis.categories.deterministic_parameter_results import (
-    DeterministicParameterResultsFactory,
-)
 from easydiffraction.analysis.categories.deterministic_result import DeterministicResult
 from easydiffraction.analysis.categories.deterministic_result import DeterministicResultFactory
 from easydiffraction.analysis.categories.fit_parameter_correlations import (

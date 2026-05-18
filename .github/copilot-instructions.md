@@ -160,6 +160,12 @@ Notes:
   `docs/dev/package-structure/short.md` automatically — never edit those
   by hand. Don't review auto-fixes; accept and move on. Then
   `pixi run check` until clean.
+- When a check command needs saved output for analysis, capture the log
+  and preserve the command exit code with a zsh-safe variable name:
+  `pixi run check > /tmp/easydiffraction-check.log 2>&1; check_exit_code=$?; tail -n 200 /tmp/easydiffraction-check.log; exit $check_exit_code`.
+  Never assign to `status` in zsh; it is readonly. Use task-specific
+  names such as `check_exit_code`, `unit_tests_exit_code`, or
+  `script_tests_exit_code`.
 - Open issues / design questions / planned improvements live in
   `docs/dev/issues/open.md` (priority-ordered). On resolution, move to
   `docs/dev/issues/closed.md` and update the relevant ADR or
@@ -204,6 +210,9 @@ When asked to create a plan:
   files likely to change, decisions already made, open questions,
   verification commands for Phase 2, and a short suggested commit
   message or branch name when useful.
+- Verification commands in plans must include the zsh-safe log-capture
+  pattern from **Workflow** whenever saved output is needed for later
+  analysis.
 - Before saving a plan, verify that referenced files, directories,
   scripts, and task names exist locally when that is practical. If a
   referenced tool is optional or missing, include an available fallback.

@@ -107,11 +107,10 @@ def test_project_info_to_cif_contains_core_fields():
     info = ProjectInfo(name='p1', title='My Title', description='Some description text')
     out = MUT.project_info_to_cif(info)
     assert '_project.id               p1' in out
-    assert '_project.title' in out
-    assert 'My Title' in out
-    assert '_project.description' in out
-    assert '_project.created' in out
-    assert '_project.last_modified' in out
+    assert '_project.title            "My Title"' in out
+    assert '_project.description      "Some description text"' in out
+    assert '_project.created          "' in out
+    assert '_project.last_modified    "' in out
 
 
 def test_experiment_to_cif_with_and_without_data():

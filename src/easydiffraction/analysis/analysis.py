@@ -29,9 +29,6 @@ from easydiffraction.analysis.categories.bayesian_predictive_datasets.default im
 from easydiffraction.analysis.categories.bayesian_result import BayesianResult
 from easydiffraction.analysis.categories.bayesian_sampler import BayesianSampler
 from easydiffraction.analysis.categories.constraints.factory import ConstraintsFactory
-from easydiffraction.analysis.categories.deterministic_parameter_results import (
-    DeterministicParameterResults,
-)
 from easydiffraction.analysis.categories.deterministic_result import DeterministicResult
 from easydiffraction.analysis.categories.fit_parameter_correlations import FitParameterCorrelations
 from easydiffraction.analysis.categories.fit_parameters import FitParameters
@@ -53,7 +50,6 @@ from easydiffraction.analysis.fit_helpers.bayesian import PosteriorPredictiveSum
 from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
 from easydiffraction.analysis.fit_helpers.reporting import FitResults
 from easydiffraction.analysis.fitting import Fitter
-from easydiffraction.analysis.minimizers.base import BOUNDARY_PROXIMITY_FRACTION
 from easydiffraction.core.category_owner import CategoryOwner
 from easydiffraction.core.guard import _apply_help_filter
 from easydiffraction.core.singleton import ConstraintsHandler
@@ -449,11 +445,6 @@ class _AnalysisPersistedCategoryAccessorsMixin:
         return self._deterministic_result
 
     @property
-    def deterministic_parameter_results(self) -> DeterministicParameterResults:
-        """Persisted deterministic parameter-result summaries."""
-        return self._deterministic_parameter_results
-
-    @property
     def bayesian_result(self) -> BayesianResult:
         """Persisted Bayesian fit-result metadata."""
         return self._bayesian_result
@@ -529,7 +520,6 @@ class Analysis(
         self._fit_result = FitResult()
         self._fit_parameter_correlations = FitParameterCorrelations()
         self._deterministic_result = DeterministicResult()
-        self._deterministic_parameter_results = DeterministicParameterResults()
         self._bayesian_result = BayesianResult()
         self._bayesian_sampler = BayesianSampler()
         self._bayesian_convergence = BayesianConvergence()
@@ -573,10 +563,6 @@ class Analysis(
             if posterior_rows:
                 return [row.unique_name.value for row in posterior_rows]
 
-        deterministic_rows = list(self.deterministic_parameter_results)
-        if deterministic_rows:
-            return [row.param_unique_name.value for row in deterministic_rows]
-
         return [row.param_unique_name.value for row in self.fit_parameters]
 
     def _restore_live_parameter_state(self, param_map: dict[str, Parameter]) -> None:
@@ -597,12 +583,6 @@ class Analysis(
             )
             parameter._fit_start_value = row.start_value.value
             parameter._fit_start_uncertainty = row.start_uncertainty.value
-
-        for row in self.deterministic_parameter_results:
-            parameter = param_map.get(row.param_unique_name.value)
-            if parameter is None or row.final_uncertainty.value is None:
-                continue
-            parameter.uncertainty = float(row.final_uncertainty.value)
 
         for row in self.bayesian_parameter_posteriors:
             parameter = param_map.get(row.unique_name.value)
@@ -1110,10 +1090,7 @@ class Analysis(
             return categories
 
         if result_kind is FitResultKindEnum.DETERMINISTIC:
-            categories.extend([
-                self.deterministic_result,
-                self.deterministic_parameter_results,
-            ])
+            categories.append(self.deterministic_result)
             return categories
 
         categories.extend([
@@ -1133,7 +1110,6 @@ class Analysis(
         self._fit_result = FitResult()
         self._fit_parameter_correlations = FitParameterCorrelations()
         self._deterministic_result = DeterministicResult()
-        self._deterministic_parameter_results = DeterministicParameterResults()
         self._bayesian_result = BayesianResult()
         self._bayesian_sampler = BayesianSampler()
         self._bayesian_convergence = BayesianConvergence()
@@ -1159,28 +1135,6 @@ class Analysis(
             )
 
         self._set_has_persisted_fit_state(value=True)
-
-    @staticmethod
-    def _parameter_is_at_fit_bound(
-        param: Parameter,
-        *,
-        use_upper_bound: bool,
-    ) -> bool:
-        """Return whether a parameter finished near a fit bound."""
-        value = param.value
-        if value is None:
-            return False
-
-        bound = param.fit_max if use_upper_bound else param.fit_min
-        if not np.isfinite(bound):
-            return False
-
-        span = param.fit_max - param.fit_min
-        if np.isfinite(span) and span > 0:
-            tolerance = BOUNDARY_PROXIMITY_FRACTION * span
-        else:
-            tolerance = BOUNDARY_PROXIMITY_FRACTION * max(abs(bound), 1.0)
-        return abs(value - bound) <= tolerance
 
     def _selected_parameters_for_fit(self, experiments: list[object]) -> list[Parameter]:
         """
@@ -1336,21 +1290,6 @@ class Analysis(
         self.deterministic_result._set_degrees_of_freedom(degrees_of_freedom)
         self.deterministic_result._set_covariance_available(value=covariance is not None)
         self.deterministic_result._set_correlation_available(value=correlation_matrix is not None)
-
-        for param in fitted_parameters:
-            self.deterministic_parameter_results.create(
-                param_unique_name=param.unique_name,
-                final_value=param.value,
-                final_uncertainty=param.uncertainty,
-                at_lower_bound=self._parameter_is_at_fit_bound(
-                    param,
-                    use_upper_bound=False,
-                ),
-                at_upper_bound=self._parameter_is_at_fit_bound(
-                    param,
-                    use_upper_bound=True,
-                ),
-            )
 
         if correlation_matrix is not None:
             self._store_correlation_projection(

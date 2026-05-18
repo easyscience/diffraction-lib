@@ -341,19 +341,19 @@ def project_info_to_cif(info: object) -> str:
 
     title = f'{info.title}'
     if ' ' in title:
-        title = f"'{title}'"
+        title = format_value(info.title)
 
     if len(info.description) > _CIF_DESCRIPTION_WRAP_LEN:
         description = f'\n;\n{info.description}\n;'
     elif info.description:
         description = f'{info.description}'
         if ' ' in description:
-            description = f"'{description}'"
+            description = format_value(info.description)
     else:
         description = '?'
 
-    created = f"'{info.created.strftime('%d %b %Y %H:%M:%S')}'"
-    last_modified = f"'{info.last_modified.strftime('%d %b %Y %H:%M:%S')}'"
+    created = format_value(info.created.strftime('%d %b %Y %H:%M:%S'))
+    last_modified = format_value(info.last_modified.strftime('%d %b %Y %H:%M:%S'))
 
     return (
         f'_project.id               {name}\n'
@@ -576,7 +576,6 @@ def _has_persisted_fit_state_sections(block: object) -> bool:
     loop_tags = (
         '_fit_parameter.param_unique_name',
         '_fit_parameter_correlation.param_unique_name_i',
-        '_deterministic_parameter_result.param_unique_name',
         '_bayesian_parameter_posterior.unique_name',
         '_bayesian_distribution_cache.param_unique_name',
         '_bayesian_pair_cache.param_unique_name_x',
@@ -598,7 +597,6 @@ def _restore_common_fit_state(analysis: object, block: object) -> None:
 def _restore_deterministic_fit_state(analysis: object, block: object) -> None:
     """Restore deterministic-only persisted fit-state categories."""
     analysis.deterministic_result.from_cif(block)
-    analysis.deterministic_parameter_results.from_cif(block)
 
 
 def _restore_bayesian_fit_state(analysis: object, block: object) -> None:
