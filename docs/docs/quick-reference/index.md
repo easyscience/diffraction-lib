@@ -39,9 +39,14 @@ ed.show_version()
 Download a dataset by ID into a local directory:
 
 ```python
+ed.list_data()
+
 structure_path = ed.download_data(id=1, destination='data')
 data_path = ed.download_data(id=3, destination='data')
 ```
+
+Project archives are extracted automatically, and `download_data()`
+returns the extracted project directory path.
 
 For tutorial notebooks:
 

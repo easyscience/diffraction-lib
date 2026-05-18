@@ -48,6 +48,43 @@ List all available tutorial notebooks:
 python -m easydiffraction list-tutorials
 ```
 
+### List Example Data
+
+List all available example data files and downloadable project
+archives:
+
+```bash
+python -m easydiffraction list-data
+```
+
+The table includes the data ID, file name, record kind, and
+description.
+
+### Download Example Data
+
+Download a specific example data record by ID:
+
+```bash
+python -m easydiffraction download-data 3
+```
+
+For downloadable saved projects, the ZIP archive is extracted
+automatically, the ZIP file is removed, and the extracted project path
+is reported:
+
+```bash
+python -m easydiffraction download-data 30
+```
+
+This makes it possible to go straight from download to a project-first
+CLI command such as:
+
+```bash
+python -m easydiffraction EXTRACTED_PROJECT_DIR display
+```
+
+Use the extracted path printed by `download-data`.
+
 ### Download Tutorials
 
 Download a specific tutorial by ID:
@@ -65,6 +102,10 @@ python -m easydiffraction download-all-tutorials
 Both commands accept `--destination` (`-d`) to specify the output
 directory (default: `tutorials/`) and `--overwrite` (`-o`) to replace
 existing files.
+
+`download-data` also accepts `--destination` (`-d`) and `--overwrite`
+(`-o`). For project archives, `--overwrite` replaces the extracted
+project directory before downloading and unpacking a fresh copy.
 
 ### Fit a Project
 

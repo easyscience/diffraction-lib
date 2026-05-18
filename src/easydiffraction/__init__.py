@@ -14,5 +14,6 @@ from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import download_all_tutorials
 from easydiffraction.utils.utils import download_data
 from easydiffraction.utils.utils import download_tutorial
+from easydiffraction.utils.utils import list_data
 from easydiffraction.utils.utils import list_tutorials
 from easydiffraction.utils.utils import show_version

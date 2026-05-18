@@ -18,6 +18,8 @@ app = typer.Typer(add_completion=False)
 
 _PROJECT_COMMAND_NAMES = frozenset({'fit', 'display', 'undo'})
 _GLOBAL_COMMAND_NAMES = frozenset({
+    'list-data',
+    'download-data',
     'list-tutorials',
     'download-tutorial',
     'download-all-tutorials',
@@ -122,6 +124,32 @@ def main(
 def list_tutorials() -> None:
     """List available tutorial notebooks."""
     ed.list_tutorials()
+
+
+@app.command('list-data')
+def list_data() -> None:
+    """List available example data and project archives."""
+    ed.list_data()
+
+
+@app.command('download-data')
+def download_data(
+    id: int = typer.Argument(..., help='Data ID to download.'),
+    destination: str = typer.Option(
+        'data',
+        '--destination',
+        '-d',
+        help='Directory to save the data or extracted project into.',
+    ),
+    overwrite: bool = typer.Option(  # noqa: FBT001
+        False,  # noqa: FBT003
+        '--overwrite',
+        '-o',
+        help='Overwrite an existing file or extracted project if present.',
+    ),
+) -> None:
+    """Download one example data record by ID."""
+    ed.download_data(id=id, destination=destination, overwrite=overwrite)
 
 
 @app.command('download-tutorial')
