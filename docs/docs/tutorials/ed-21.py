@@ -33,9 +33,15 @@ import easydiffraction as ed
 # The project object keeps structures, experiments, fit settings, and
 # plotting utilities together in a single place. We will build the full
 # workflow inside this object.
+#
+# Save the project to a directory early on so that you can easily reload
+# it later if needed.
 
 # %%
 project = ed.Project()
+
+# %%
+project.save_as('projects/lbco_hrpt_bayesian')
 
 # %% [markdown]
 # ## Step 2: Build the Structural Model
