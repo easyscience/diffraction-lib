@@ -123,16 +123,16 @@ def main(
     # Otherwise, let the chosen subcommand execute.
 
 
-@app.command('list-tutorials')
-def list_tutorials() -> None:
-    """List available tutorial notebooks."""
-    ed.list_tutorials()
-
-
 @app.command('list-data')
 def list_data() -> None:
     """List available example data and project archives."""
     ed.list_data()
+
+
+@app.command('list-tutorials')
+def list_tutorials() -> None:
+    """List available tutorial notebooks."""
+    ed.list_tutorials()
 
 
 @app.command('download-data')
@@ -194,6 +194,18 @@ def download_all_tutorials(
     ed.download_all_tutorials(destination=destination, overwrite=overwrite)
 
 
+@app.command('display')
+def display(
+    project_dir: str = typer.Argument(
+        ...,
+        help='Path to the project directory (must contain project.cif).',
+    ),
+) -> None:
+    """Display the typical outputs for a saved project state."""
+    project = _load_project(project_dir)
+    _display_project_outputs(project)
+
+
 @app.command('fit')
 def fit(
     project_dir: str = typer.Argument(
@@ -212,18 +224,6 @@ def fit(
         project.info._path = None
     project.analysis.fit()
     _display_fit_outputs(project)
-
-
-@app.command('display')
-def display(
-    project_dir: str = typer.Argument(
-        ...,
-        help='Path to the project directory (must contain project.cif).',
-    ),
-) -> None:
-    """Display the typical outputs for a saved project state."""
-    project = _load_project(project_dir)
-    _display_project_outputs(project)
 
 
 @app.command('undo')
