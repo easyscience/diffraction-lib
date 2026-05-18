@@ -119,21 +119,27 @@ def _predictive_payload(analysis: object) -> dict[str, dict[str, np.ndarray]]:
     posterior_predictive = getattr(fit_results, 'posterior_predictive', None)
     if posterior_predictive:
         payload: dict[str, dict[str, np.ndarray]] = {}
-        for experiment_name, summary in posterior_predictive.items():
-            payload[experiment_name] = {
-                'x': np.asarray(summary.x, dtype=float),
-                'best_sample_prediction': np.asarray(summary.best_sample_prediction, dtype=float),
-            }
+        for runtime_key, summary in posterior_predictive.items():
+            experiment_name = getattr(summary, 'experiment_name', None)
+            if not isinstance(experiment_name, str) or not experiment_name.strip():
+                experiment_name = runtime_key
+
+            dataset_payload = payload.setdefault(experiment_name, {})
+            dataset_payload['x'] = np.asarray(summary.x, dtype=float)
+            dataset_payload['best_sample_prediction'] = np.asarray(
+                summary.best_sample_prediction,
+                dtype=float,
+            )
             if summary.lower_95 is not None:
-                payload[experiment_name]['lower_95'] = np.asarray(summary.lower_95, dtype=float)
+                dataset_payload['lower_95'] = np.asarray(summary.lower_95, dtype=float)
             if summary.upper_95 is not None:
-                payload[experiment_name]['upper_95'] = np.asarray(summary.upper_95, dtype=float)
+                dataset_payload['upper_95'] = np.asarray(summary.upper_95, dtype=float)
             if summary.lower_68 is not None:
-                payload[experiment_name]['lower_68'] = np.asarray(summary.lower_68, dtype=float)
+                dataset_payload['lower_68'] = np.asarray(summary.lower_68, dtype=float)
             if summary.upper_68 is not None:
-                payload[experiment_name]['upper_68'] = np.asarray(summary.upper_68, dtype=float)
+                dataset_payload['upper_68'] = np.asarray(summary.upper_68, dtype=float)
             if summary.draws is not None:
-                payload[experiment_name]['draws'] = np.asarray(summary.draws, dtype=float)
+                dataset_payload['draws'] = np.asarray(summary.draws, dtype=float)
         return payload
 
     sidecar_data = getattr(analysis, '_persisted_fit_state_sidecar', {})

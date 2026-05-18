@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 from contextlib import suppress
+from itertools import combinations
 from pathlib import Path
 
 import numpy as np
@@ -514,7 +515,7 @@ class Analysis(CategoryOwner):
 
             parameter.fit_min = row.fit_min.value
             parameter.fit_max = row.fit_max.value
-            parameter.fit_bounds_uncertainty_multiplier = (
+            parameter._set_fit_bounds_uncertainty_multiplier(
                 row.fit_bounds_uncertainty_multiplier.value
             )
             parameter._fit_start_value = row.start_value.value
@@ -607,13 +608,15 @@ class Analysis(CategoryOwner):
         restored_predictive: dict[str, PosteriorPredictiveSummary] = {}
         predictive_data = self._persisted_fit_state_sidecar.get('predictive_datasets', {})
         for row in self.bayesian_predictive_datasets:
-            dataset = predictive_data.get(row.experiment_name.value)
+            experiment_name = str(row.experiment_name.value)
+            x_axis_name = str(row.x_axis_name.value)
+            dataset = predictive_data.get(experiment_name)
             if dataset is None:
                 continue
 
             summary = PosteriorPredictiveSummary(
-                experiment_name=row.experiment_name.value,
-                x_axis_name=row.x_axis_name.value,
+                experiment_name=experiment_name,
+                x_axis_name=x_axis_name,
                 x=np.asarray(dataset['x'], dtype=float),
                 best_sample_prediction=np.asarray(
                     dataset['best_sample_prediction'],
@@ -645,19 +648,19 @@ class Analysis(CategoryOwner):
                     else np.asarray(dataset['draws'], dtype=float)
                 ),
             )
-            restored_predictive[row.experiment_name.value] = summary
+            restored_predictive[experiment_name] = summary
             restored_predictive[
                 self._predictive_cache_key(
-                    row.experiment_name.value,
-                    row.x_axis_name.value,
+                    experiment_name,
+                    x_axis_name,
                     include_draws=False,
                 )
             ] = summary
             if summary.draws is not None:
                 restored_predictive[
                     self._predictive_cache_key(
-                        row.experiment_name.value,
-                        row.x_axis_name.value,
+                        experiment_name,
+                        x_axis_name,
                         include_draws=True,
                     )
                 ] = summary
@@ -1338,6 +1341,252 @@ class Analysis(CategoryOwner):
                 source_kind=FitCorrelationSourceEnum.DETERMINISTIC,
             )
 
+    def _store_bayesian_distribution_cache_projection(
+        self,
+        *,
+        plotter: object,
+        results: BayesianFitResults,
+        flattened_samples: np.ndarray,
+        parameter_names: list[str],
+    ) -> dict[str, dict[str, np.ndarray]]:
+        """Store cached posterior density curves into persisted manifests."""
+        payload: dict[str, dict[str, np.ndarray]] = {}
+        for parameter_index, parameter_name in enumerate(parameter_names):
+            lower_bound, upper_bound = plotter._posterior_parameter_bounds(
+                fit_results=results,
+                parameter_name=parameter_name,
+            )
+            density_curve = plotter._posterior_density_curve(
+                flattened_samples[:, parameter_index],
+                lower_bound=lower_bound,
+                upper_bound=upper_bound,
+            )
+            if density_curve is None:
+                continue
+
+            x_values, density_values = density_curve
+            x_array = np.asarray(x_values, dtype=float)
+            density_array = np.asarray(density_values, dtype=float)
+            cache_index = len(payload)
+            self.bayesian_distribution_caches.create(
+                param_unique_name=parameter_name,
+                x_path=f'/posterior/distribution/{cache_index}/x',
+                density_path=f'/posterior/distribution/{cache_index}/density',
+                n_grid=float(x_array.size),
+                n_draws_cached=float(np.isfinite(flattened_samples[:, parameter_index]).sum()),
+            )
+            payload[parameter_name] = {
+                'x': x_array,
+                'density': density_array,
+            }
+        return payload
+
+    @staticmethod
+    def _posterior_pair_contour_levels(density: np.ndarray) -> np.ndarray:
+        """Return default contour levels for a cached posterior pair surface."""
+        density_max = float(np.max(density))
+        if not np.isfinite(density_max) or density_max <= 0:
+            return np.asarray([], dtype=float)
+        return density_max * np.asarray([0.20, 0.35, 0.50, 0.65, 0.80, 0.95], dtype=float)
+
+    def _store_bayesian_pair_cache_projection(
+        self,
+        *,
+        plotter: object,
+        results: BayesianFitResults,
+        flattened_samples: np.ndarray,
+        parameter_names: list[str],
+    ) -> dict[str, dict[str, np.ndarray]]:
+        """Store cached posterior pair-density surfaces into persisted manifests."""
+        n_parameters = len(parameter_names)
+        if n_parameters <= 1:
+            return {}
+
+        density_samples = plotter._thin_posterior_samples(
+            flattened_samples,
+            max_points=plotter._posterior_pair_density_max_points(n_parameters),
+        )
+        contour_grid_size = plotter._posterior_pair_contour_grid_size(n_parameters)
+        payload: dict[str, dict[str, np.ndarray]] = {}
+        for first_index, second_index in combinations(range(n_parameters), 2):
+            x_index = first_index
+            y_index = second_index
+            x_name = parameter_names[x_index]
+            y_name = parameter_names[y_index]
+            if x_name > y_name:
+                x_index, y_index = y_index, x_index
+                x_name, y_name = y_name, x_name
+
+            x_values = density_samples[:, x_index]
+            y_values = density_samples[:, y_index]
+            x_bounds, y_bounds = plotter._posterior_pair_bounds(
+                fit_results=results,
+                x_parameter_name=x_name,
+                y_parameter_name=y_name,
+                x_values=x_values,
+                y_values=y_values,
+            )
+            density_surface = plotter._posterior_pair_density_surface(
+                x_values=x_values,
+                y_values=y_values,
+                x_bounds=x_bounds,
+                y_bounds=y_bounds,
+                grid_size=contour_grid_size,
+            )
+            if density_surface is None:
+                continue
+
+            x_grid, y_grid, density = density_surface
+            x_grid_array = np.asarray(x_grid, dtype=float)
+            y_grid_array = np.asarray(y_grid, dtype=float)
+            density_array = np.asarray(density, dtype=float)
+            contour_levels = self._posterior_pair_contour_levels(density_array)
+            pair_id = str(len(payload) + 1)
+            self.bayesian_pair_caches.create(
+                id=pair_id,
+                param_unique_name_x=x_name,
+                param_unique_name_y=y_name,
+                x_path=f'/posterior/pairs/{pair_id}/x',
+                y_path=f'/posterior/pairs/{pair_id}/y',
+                density_path=f'/posterior/pairs/{pair_id}/density',
+                contour_level_path=f'/posterior/pairs/{pair_id}/contour_levels',
+                n_grid_x=float(x_grid_array.size),
+                n_grid_y=float(y_grid_array.size),
+                n_draws_cached=float(density_samples.shape[0]),
+            )
+            payload[pair_id] = {
+                'x': x_grid_array,
+                'y': y_grid_array,
+                'density': density_array,
+                'contour_levels': contour_levels,
+            }
+        return payload
+
+    @staticmethod
+    def _predictive_dataset_payload(
+        summary: PosteriorPredictiveSummary,
+    ) -> dict[str, np.ndarray]:
+        """Return persisted predictive arrays for one summary."""
+        payload: dict[str, np.ndarray] = {
+            'x': np.asarray(summary.x, dtype=float),
+            'best_sample_prediction': np.asarray(summary.best_sample_prediction, dtype=float),
+        }
+        if summary.lower_95 is not None:
+            payload['lower_95'] = np.asarray(summary.lower_95, dtype=float)
+        if summary.upper_95 is not None:
+            payload['upper_95'] = np.asarray(summary.upper_95, dtype=float)
+        if summary.lower_68 is not None:
+            payload['lower_68'] = np.asarray(summary.lower_68, dtype=float)
+        if summary.upper_68 is not None:
+            payload['upper_68'] = np.asarray(summary.upper_68, dtype=float)
+        if summary.draws is not None:
+            payload['draws'] = np.asarray(summary.draws, dtype=float)
+        return payload
+
+    def _store_bayesian_predictive_projection(
+        self,
+        *,
+        plotter: object,
+        results: BayesianFitResults,
+    ) -> dict[str, dict[str, np.ndarray]]:
+        """Store posterior predictive summaries into persisted manifests."""
+        predictive_payload: dict[str, dict[str, np.ndarray]] = {}
+        for experiment_name in self.project.experiments.names:
+            experiment = self.project.experiments[experiment_name]
+            x_axis, x_axis_name, _, _, _ = plotter._resolve_x_axis(experiment.type, None)
+            summary = plotter._get_or_build_posterior_predictive_summary(
+                experiment=experiment,
+                expt_name=experiment_name,
+                x_axis=x_axis,
+                include_draws=True,
+            )
+            if summary is None:
+                continue
+
+            results.posterior_predictive[summary.experiment_name] = summary
+            predictive_payload[summary.experiment_name] = self._predictive_dataset_payload(
+                summary,
+            )
+            predictive_root = f'/predictive/{summary.experiment_name}'
+            self.bayesian_predictive_datasets.create(
+                experiment_name=summary.experiment_name,
+                x_axis_name=str(x_axis_name),
+                x_path=f'{predictive_root}/x',
+                best_sample_prediction_path=(
+                    f'{predictive_root}/best_sample_prediction'
+                ),
+                lower_95_path=(
+                    None if summary.lower_95 is None else f'{predictive_root}/lower_95'
+                ),
+                upper_95_path=(
+                    None if summary.upper_95 is None else f'{predictive_root}/upper_95'
+                ),
+                lower_68_path=(
+                    None if summary.lower_68 is None else f'{predictive_root}/lower_68'
+                ),
+                upper_68_path=(
+                    None if summary.upper_68 is None else f'{predictive_root}/upper_68'
+                ),
+                draws_path=(None if summary.draws is None else f'{predictive_root}/draws'),
+                n_x=float(np.asarray(summary.x).size),
+                n_draws_cached=(
+                    0.0 if summary.draws is None else float(np.asarray(summary.draws).shape[0])
+                ),
+            )
+        return predictive_payload
+
+    def _store_bayesian_plot_cache_projection(self, results: BayesianFitResults) -> None:
+        """Populate persisted Bayesian plot caches from live posterior results."""
+        posterior_samples = results.posterior_samples
+        if posterior_samples is None:
+            self._persisted_fit_state_sidecar['distribution_caches'] = {}
+            self._persisted_fit_state_sidecar['pair_caches'] = {}
+            self._persisted_fit_state_sidecar['predictive_datasets'] = {}
+            self.bayesian_result._set_has_distribution_cache(False)
+            self.bayesian_result._set_has_pair_cache(False)
+            self.bayesian_result._set_has_posterior_predictive(False)
+            return
+
+        flattened_samples = np.asarray(posterior_samples.flattened(), dtype=float)
+        parameter_names = list(posterior_samples.parameter_names)
+        if (
+            flattened_samples.ndim != 2
+            or not parameter_names
+            or flattened_samples.shape[1] != len(parameter_names)
+        ):
+            self._persisted_fit_state_sidecar['distribution_caches'] = {}
+            self._persisted_fit_state_sidecar['pair_caches'] = {}
+            self._persisted_fit_state_sidecar['predictive_datasets'] = {}
+            self.bayesian_result._set_has_distribution_cache(False)
+            self.bayesian_result._set_has_pair_cache(False)
+            self.bayesian_result._set_has_posterior_predictive(False)
+            return
+
+        plotter = self.project.rendering.plotter
+        distribution_payload = self._store_bayesian_distribution_cache_projection(
+            plotter=plotter,
+            results=results,
+            flattened_samples=flattened_samples,
+            parameter_names=parameter_names,
+        )
+        pair_payload = self._store_bayesian_pair_cache_projection(
+            plotter=plotter,
+            results=results,
+            flattened_samples=flattened_samples,
+            parameter_names=parameter_names,
+        )
+        predictive_payload = self._store_bayesian_predictive_projection(
+            plotter=plotter,
+            results=results,
+        )
+
+        self._persisted_fit_state_sidecar['distribution_caches'] = distribution_payload
+        self._persisted_fit_state_sidecar['pair_caches'] = pair_payload
+        self._persisted_fit_state_sidecar['predictive_datasets'] = predictive_payload
+        self.bayesian_result._set_has_distribution_cache(bool(distribution_payload))
+        self.bayesian_result._set_has_pair_cache(bool(pair_payload))
+        self.bayesian_result._set_has_posterior_predictive(bool(predictive_payload))
+
     def _store_bayesian_result_projection(self, results: BayesianFitResults) -> None:
         """Store Bayesian fit-result projections into persisted categories."""
         credible_interval_inner = 0.68
@@ -1360,7 +1609,7 @@ class Analysis(CategoryOwner):
         self.bayesian_result._set_has_posterior_samples(results.posterior_samples is not None)
         self.bayesian_result._set_has_distribution_cache(False)
         self.bayesian_result._set_has_pair_cache(False)
-        self.bayesian_result._set_has_posterior_predictive(bool(results.posterior_predictive))
+        self.bayesian_result._set_has_posterior_predictive(False)
         self.bayesian_result._set_sidecar_file('results.h5')
 
         self.bayesian_sampler._set_steps(int(sampler_settings.get('steps', 0)))
@@ -1409,6 +1658,7 @@ class Analysis(CategoryOwner):
             correlation_matrix=correlation_matrix,
             source_kind=FitCorrelationSourceEnum.POSTERIOR,
         )
+        self._store_bayesian_plot_cache_projection(results)
 
     def _store_fit_result_projection(
         self,

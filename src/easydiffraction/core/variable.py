@@ -461,6 +461,10 @@ class GenericParameter(GenericNumericDescriptor):
         """
         return self._fit_bounds_uncertainty_multiplier
 
+    def _set_fit_bounds_uncertainty_multiplier(self, value: float | None) -> None:
+        """Set the cached uncertainty-derived fit-bounds multiplier."""
+        self._fit_bounds_uncertainty_multiplier = value
+
     def set_fit_bounds_from_uncertainty(
         self,
         multiplier: float = DEFAULT_FIT_BOUNDS_MULTIPLIER,

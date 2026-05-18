@@ -109,6 +109,10 @@ The tutorials are organized into the following categories:
   tutorial covers the use of Markov Chain Monte Carlo (MCMC) sampling to
   explore the posterior distribution of the refined parameters,
   providing insights into parameter uncertainties and correlations.
+- [LBCO Bayesian, saved project](ed-24.ipynb) – Shows how to load the
+  saved Bayesian LBCO project created in the previous tutorial and
+  inspect the persisted fit summary, correlation matrix, posterior
+  plots, and predictive checks without rerunning DREAM.
 - [Tb2TiO7 Bayesian](ed-22.ipynb) – Another example of a Bayesian
   analysis. This tutorial focuses on the Tb2TiO7 crystal structure using
   constant wavelength neutron single crystal diffraction data from HEiDi
