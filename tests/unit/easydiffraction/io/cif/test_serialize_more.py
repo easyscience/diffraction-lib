@@ -113,7 +113,7 @@ def test_project_info_to_cif_contains_core_fields():
     assert '_project.last_modified    "' in out
 
 
-def test_project_info_to_cif_keeps_long_description_as_scalar_string():
+def test_project_info_to_cif_wraps_long_description_as_text_field():
     import easydiffraction.io.cif.serialize as MUT
     from easydiffraction.project.project_info import ProjectInfo
 
@@ -122,8 +122,9 @@ def test_project_info_to_cif_keeps_long_description_as_scalar_string():
 
     out = MUT.project_info_to_cif(info)
 
-    assert f'_project.description      "{description}"' in out
-    assert '\n;\n' not in out
+    assert '_project.description      ' in out
+    assert '\n;\n' in out
+    assert 'long long long long long long long long long long long long' in out
 
 
 def test_experiment_to_cif_with_and_without_data():
