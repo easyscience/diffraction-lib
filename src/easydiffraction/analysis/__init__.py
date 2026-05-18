@@ -1,6 +1,23 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from easydiffraction.analysis.categories.bayesian_convergence import BayesianConvergence
+from easydiffraction.analysis.categories.bayesian_convergence import (
+    BayesianConvergenceFactory,
+)
+from easydiffraction.analysis.categories.bayesian_parameter_posteriors import (
+    BayesianParameterPosteriorItem,
+)
+from easydiffraction.analysis.categories.bayesian_parameter_posteriors import (
+    BayesianParameterPosteriors,
+)
+from easydiffraction.analysis.categories.bayesian_parameter_posteriors import (
+    BayesianParameterPosteriorsFactory,
+)
+from easydiffraction.analysis.categories.bayesian_result import BayesianResult
+from easydiffraction.analysis.categories.bayesian_result import BayesianResultFactory
+from easydiffraction.analysis.categories.bayesian_sampler import BayesianSampler
+from easydiffraction.analysis.categories.bayesian_sampler import BayesianSamplerFactory
 from easydiffraction.analysis.categories.deterministic_parameter_results import (
     DeterministicParameterResultItem,
 )

@@ -3,6 +3,15 @@
 
 from easydiffraction.analysis.categories.aliases import Alias
 from easydiffraction.analysis.categories.aliases import Aliases
+from easydiffraction.analysis.categories.bayesian_convergence import BayesianConvergence
+from easydiffraction.analysis.categories.bayesian_parameter_posteriors import (
+    BayesianParameterPosteriorItem,
+)
+from easydiffraction.analysis.categories.bayesian_parameter_posteriors import (
+    BayesianParameterPosteriors,
+)
+from easydiffraction.analysis.categories.bayesian_result import BayesianResult
+from easydiffraction.analysis.categories.bayesian_sampler import BayesianSampler
 from easydiffraction.analysis.categories.constraints import Constraint
 from easydiffraction.analysis.categories.constraints import Constraints
 from easydiffraction.analysis.categories.deterministic_parameter_results import (
