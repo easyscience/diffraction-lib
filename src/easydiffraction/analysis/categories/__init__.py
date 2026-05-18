@@ -5,6 +5,13 @@ from easydiffraction.analysis.categories.aliases import Alias
 from easydiffraction.analysis.categories.aliases import Aliases
 from easydiffraction.analysis.categories.constraints import Constraint
 from easydiffraction.analysis.categories.constraints import Constraints
+from easydiffraction.analysis.categories.deterministic_parameter_results import (
+    DeterministicParameterResultItem,
+)
+from easydiffraction.analysis.categories.deterministic_parameter_results import (
+    DeterministicParameterResults,
+)
+from easydiffraction.analysis.categories.deterministic_result import DeterministicResult
 from easydiffraction.analysis.categories.fit_parameter_correlations import (
     FitParameterCorrelationItem,
 )
