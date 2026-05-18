@@ -1,8 +1,6 @@
 # ADR: Analysis CIF Fit State
 
-**Status:** Proposed
-**Date:** 2026-05-13
-**Updated:** 2026-05-18
+**Status:** Proposed **Date:** 2026-05-13 **Updated:** 2026-05-18
 
 ## Context
 
@@ -90,8 +88,8 @@ _fit_state.schema_version 1
 
 This version applies to the fit-state CIF categories and any HDF5
 sidecar manifests they reference. It is not the EasyDiffraction package
-version. Individual result categories should not repeat
-`schema_version` unless they later need independent evolution.
+version. Individual result categories should not repeat `schema_version`
+unless they later need independent evolution.
 
 ### 3. Add `_fit_parameter` for per-parameter fit controls
 
@@ -280,8 +278,8 @@ sampled parameter:
 
 `order_index` defines the parameter column order in posterior sample
 arrays stored in the HDF5 sidecar. `parameter.posterior` is rebuilt from
-this loop on load; posterior summary data is not duplicated in
-structure or experiment CIF files.
+this loop on load; posterior summary data is not duplicated in structure
+or experiment CIF files.
 
 ### 8. Store plot-ready Bayesian caches in explicit manifest categories
 
@@ -299,8 +297,7 @@ caches therefore have their own manifest categories in
 - `n_grid`
 - `n_draws_cached`
 
-`_bayesian_pair_cache` supports
-`project.display.posterior.pairs(...)`:
+`_bayesian_pair_cache` supports `project.display.posterior.pairs(...)`:
 
 - `param_unique_name_x`
 - `param_unique_name_y`
@@ -333,8 +330,8 @@ the manifest remains valid.
 
 ### 9. Store bulk Bayesian arrays in `analysis/results.h5`
 
-`analysis/analysis.cif` remains the text metadata entry point.
-Numerical arrays large enough to make CIF unwieldy are stored in:
+`analysis/analysis.cif` remains the text metadata entry point. Numerical
+arrays large enough to make CIF unwieldy are stored in:
 
 - `analysis/results.h5`
 
@@ -396,9 +393,9 @@ During this step, EasyDiffraction should prepare:
 For saved projects, `project.analysis.fit()` already triggers a save at
 the end of fitting. In that case the post-processing step should run
 before the automatic save writes `analysis/analysis.cif` and
-`analysis/results.h5`. For unsaved projects, the same prepared
-data remains in memory and is written on the next `project.save_as(...)`
-or `project.save()`.
+`analysis/results.h5`. For unsaved projects, the same prepared data
+remains in memory and is written on the next `project.save_as(...)` or
+`project.save()`.
 
 The display methods should then prefer persisted plot caches:
 

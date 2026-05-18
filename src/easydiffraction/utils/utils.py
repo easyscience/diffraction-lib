@@ -20,6 +20,7 @@ from uncertainties import ufloat
 from uncertainties import ufloat_fromstr
 
 from easydiffraction.display.tables import TableRenderer
+from easydiffraction.utils.environment import resolve_artifact_path
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 
@@ -160,7 +161,9 @@ def download_data(
     id : int | str
         Numeric dataset id (e.g. 12).
     destination : str, default='data'
-        Directory to save the file into (created if missing).
+        Directory to save the file into (created if missing). Relative
+        destinations are resolved against the configured artifact root
+        when ``EASYDIFFRACTION_ARTIFACT_ROOT`` is set.
     overwrite : bool, default=False
         Whether to overwrite the file if it already exists.
 
@@ -191,7 +194,7 @@ def download_data(
     _validate_url(url)
     fname = _filename_for_id_from_path(id, record_path)
 
-    dest_path = pathlib.Path(destination)
+    dest_path = resolve_artifact_path(destination)
     dest_path.mkdir(parents=True, exist_ok=True)
     file_path = dest_path / fname
 

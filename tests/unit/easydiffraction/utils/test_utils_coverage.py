@@ -433,6 +433,42 @@ def test_download_data_no_description(monkeypatch, tmp_path, capsys):
     assert 'Data #1' in out
 
 
+def test_download_data_uses_tutorial_artifact_root_fallback(monkeypatch, tmp_path):
+    import easydiffraction.utils.environment as env
+    import easydiffraction.utils.utils as MUT
+
+    repo_root = tmp_path / 'repo'
+    tutorials_dir = repo_root / 'docs' / 'docs' / 'tutorials'
+    tutorials_dir.mkdir(parents=True)
+
+    fake_index = {
+        '1': {
+            'path': 'data.xye',
+            'hash': None,
+            'description': 'Test data',
+        }
+    }
+    monkeypatch.setattr(MUT, '_fetch_data_index', lambda: fake_index)
+    monkeypatch.setattr(env, '_repo_root', lambda: repo_root)
+    monkeypatch.delenv('EASYDIFFRACTION_ARTIFACT_ROOT', raising=False)
+    monkeypatch.delenv('PIXI_PROJECT_ROOT', raising=False)
+    monkeypatch.chdir(tutorials_dir)
+
+    def fake_retrieve(url, known_hash, fname, path):
+        import pathlib
+
+        pathlib.Path(path, fname).write_text('x y e')
+        return str(pathlib.Path(path, fname))
+
+    monkeypatch.setattr(MUT.pooch, 'retrieve', fake_retrieve)
+
+    result = MUT.download_data(id=1, destination='data')
+
+    expected_path = repo_root / 'tmp' / 'tutorials' / 'data' / 'ed-1.xye'
+    assert result == str(expected_path)
+    assert expected_path.exists()
+
+
 # --- download_tutorial with overwrite=True ------------------------------------
 
 

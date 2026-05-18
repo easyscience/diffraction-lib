@@ -1,7 +1,6 @@
 # ADR: Parameter-Level Posterior Projection
 
-**Status:** Proposed
-**Date:** 2026-05-13
+**Status:** Proposed **Date:** 2026-05-13
 
 ## Context
 
@@ -223,8 +222,8 @@ projection is available.
 
 Two restore levels matter for the parameter API:
 
-- summary-only restore can populate `parameter.posterior` and
-  fit-result tables
+- summary-only restore can populate `parameter.posterior` and fit-result
+  tables
 - full restore can also support posterior plots and predictive plots
 
 If the saved project has no analysis-level posterior summary for a

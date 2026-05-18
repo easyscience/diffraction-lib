@@ -1,7 +1,6 @@
 # ADR: Fit Output Files and Data Exports
 
-**Status:** Proposed
-**Date:** 2026-05-18
+**Status:** Proposed **Date:** 2026-05-18
 
 ## Context
 
@@ -10,8 +9,8 @@ Different fit modes produce different kinds of reusable output:
 - sequential deterministic fits produce a rectangular parameter
   evolution table, currently saved as `analysis/results.csv`
 - Bayesian fits produce posterior samples, diagnostics, predictive
-  arrays, and plot caches, which are too large and structured for CIF
-  or CSV
+  arrays, and plot caches, which are too large and structured for CIF or
+  CSV
 - deterministic single and joint fits produce fitted model state,
   calculated data, reflection tables, residuals, and optional
   covariance/correlation summaries
@@ -97,22 +96,22 @@ analysis/
 
 ## Fit-Type Mapping
 
-| Fit type                 | Canonical fit state                  | Tabular results                 | Large arrays / caches       | Optional data archive | Optional exports              |
-| ------------------------ | ------------------------------------ | ------------------------------- | --------------------------- | --------------------- | ----------------------------- |
-| single deterministic     | `analysis/analysis.cif`              | open question                   | none initially              | none initially        | `analysis/exports/*.csv`      |
-| joint deterministic      | `analysis/analysis.cif`              | open question                   | none initially              | none initially        | `analysis/exports/*.csv`      |
-| sequential deterministic | `analysis/analysis.cif`              | `analysis/results.csv`          | none initially              | `analysis/data.h5`    | `analysis/exports/*.csv`      |
-| single Bayesian          | `analysis/analysis.cif` manifest     | optional summary export only    | `analysis/results.h5`       | none initially        | optional summary/predictive CSV |
+| Fit type                 | Canonical fit state              | Tabular results              | Large arrays / caches | Optional data archive | Optional exports                |
+| ------------------------ | -------------------------------- | ---------------------------- | --------------------- | --------------------- | ------------------------------- |
+| single deterministic     | `analysis/analysis.cif`          | open question                | none initially        | none initially        | `analysis/exports/*.csv`        |
+| joint deterministic      | `analysis/analysis.cif`          | open question                | none initially        | none initially        | `analysis/exports/*.csv`        |
+| sequential deterministic | `analysis/analysis.cif`          | `analysis/results.csv`       | none initially        | `analysis/data.h5`    | `analysis/exports/*.csv`        |
+| single Bayesian          | `analysis/analysis.cif` manifest | optional summary export only | `analysis/results.h5` | none initially        | optional summary/predictive CSV |
 
 ## Open Questions
 
 - Should single and joint deterministic fits write a one-row
   `analysis/results.csv`, or is their result projection in
   `analysis/analysis.cif` enough?
-- Should CSV exports be written automatically after fit/save, or only
-  by an explicit export command?
-- What exact CSV column schemas should be used for measured,
-  calculated, residual, and reflection exports?
+- Should CSV exports be written automatically after fit/save, or only by
+  an explicit export command?
+- What exact CSV column schemas should be used for measured, calculated,
+  residual, and reflection exports?
 - Should exported `refln` CSVs mirror CIF tag names exactly, or use
   shorter user-facing column names?
 - Should sequential measured data archival in `analysis/data.h5` be

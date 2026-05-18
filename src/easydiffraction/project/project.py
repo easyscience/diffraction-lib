@@ -22,6 +22,7 @@ from easydiffraction.project.display import ProjectDisplay
 from easydiffraction.project.project_config import ProjectConfig
 from easydiffraction.summary.summary import Summary
 from easydiffraction.utils.enums import VerbosityEnum
+from easydiffraction.utils.environment import resolve_artifact_path
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 
@@ -467,6 +468,8 @@ class Project(GuardedBase):
         if temporary:
             tmp: str = tempfile.gettempdir()
             dir_path = pathlib.Path(tmp) / dir_path
+        else:
+            dir_path = resolve_artifact_path(dir_path)
         self.info.path = dir_path
         self.save()
 
