@@ -47,7 +47,6 @@
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
-│   │   ├── 📁 deterministic_parameter_results
 │   │   ├── 📁 deterministic_result
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -65,9 +64,6 @@
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
 │   │   ├── 📁 fit_state
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   └── 📄 factory.py
 │   │   ├── 📁 fitting
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py

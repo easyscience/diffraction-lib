@@ -233,9 +233,11 @@ def undo(
         help='Path to the project directory (must contain project.cif).',
     ),
 ) -> None:
-    """Undo the last fit when fit-history support exists (not yet implemented)."""
+    """
+    Undo the last fit when fit-history support exists (not implemented).
+    """
     _load_project(project_dir)
-    typer.echo('Undo is not yet implemented. This command is a placeholder for future fit history support.')
+    typer.echo('Undo is not yet implemented.')
     raise typer.Exit(code=1)
 
 

@@ -159,8 +159,8 @@ def test_fitter_fit_defers_minimizer_tracking_until_postprocessing(monkeypatch):
     analysis_events: list[str] = []
     analysis = SimpleNamespace(
         _capture_fit_parameter_state=lambda params: analysis_events.append('capture'),
-        _store_fit_result_projection=lambda results, experiments, fitted_parameters: analysis_events.append(
-            'store'
+        _store_fit_result_projection=lambda results, experiments, fitted_parameters: (
+            analysis_events.append('store')
         ),
     )
 

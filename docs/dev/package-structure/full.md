@@ -79,7 +79,6 @@
 │   │   │   │   └── 🏷️ class Constraints
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class ConstraintsFactory
-│   │   ├── 📁 deterministic_parameter_results
 │   │   ├── 📁 deterministic_result
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -107,11 +106,6 @@
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class FitResultFactory
 │   │   ├── 📁 fit_state
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   │   └── 🏷️ class FitState
-│   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class FitStateFactory
 │   │   ├── 📁 fitting
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
