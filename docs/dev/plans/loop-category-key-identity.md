@@ -40,13 +40,13 @@ Phase 1 - Implementation
 [ ] Phase 1 review gate: present diff for approval.
 
 Phase 2 - Verification
-[ ] Add tests for the base declarative identity behavior.
-[ ] Add parametrized tests for current loop category identity declarations.
-[ ] Update constraints tests.
-[ ] Update existing round-trip tests that compare constraints CIF.
-[ ] Run formatting.
-[ ] Run targeted unit tests.
-[ ] Run broader checks.
+[x] Add tests for the base declarative identity behavior.
+[x] Add parametrized tests for current loop category identity declarations.
+[x] Update constraints tests.
+[x] Update existing round-trip tests that compare constraints CIF.
+[x] Run formatting.
+[x] Run targeted unit tests.
+[x] Run broader checks.
 ```
 
 ## Commit Discipline

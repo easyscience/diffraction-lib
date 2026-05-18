@@ -78,10 +78,14 @@ class TestAnalysisDisplayConstraints:
         a = Analysis(project=_make_project())
 
         # Create a fake constraint with expression
+        class FakeId:
+            value = 'constraint_1'
+
         class FakeExpr:
             value = 'x = y + 1'
 
         class FakeConstraint:
+            id = FakeId()
             expression = FakeExpr()
 
         a.constraints._items = [FakeConstraint()]
@@ -95,8 +99,9 @@ class TestAnalysisDisplayConstraints:
         a.display.constraints()
         out = capsys.readouterr().out
         assert 'User defined constraints' in out
+        assert captured['columns_headers'] == ['id', 'expression']
         assert 'columns_data' in captured
-        assert captured['columns_data'][0][0] == 'x = y + 1'
+        assert captured['columns_data'][0] == ['constraint_1', 'x = y + 1']
 
 
 # ------------------------------------------------------------------

@@ -205,6 +205,9 @@ def test_save_load_round_trip_preserves_parameters(tmp_path) -> None:
     # Compare constraints
     assert len(loaded.analysis.constraints) == len(original.analysis.constraints)
     for i, orig_c in enumerate(original.analysis.constraints):
+        loaded_constraint = loaded.analysis.constraints[orig_c.id.value]
+        assert loaded_constraint.id.value == orig_c.id.value
+        assert loaded_constraint.expression.value == orig_c.expression.value
         assert loaded.analysis.constraints[i].expression.value == orig_c.expression.value
     assert loaded.analysis.constraints.enabled is True
 

@@ -157,9 +157,12 @@ class Constraints(CategoryCollection):
         self._enabled = True
 
     def _after_from_cif(self) -> None:
-        """Backfill explicit ids when loading older CIF constraint loops."""
+        """
+        Backfill explicit ids when loading older CIF constraint loops.
+        """
         for item in self:
-            if item.id.value.strip() or not item.lhs_alias:
+            constraint_id = item.id.value.strip()
+            if constraint_id not in {'', '_', '?'} or not item.lhs_alias:
                 continue
             item.id = item.lhs_alias
 
