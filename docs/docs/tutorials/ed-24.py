@@ -68,7 +68,7 @@ project.display.pattern(expt_name='hrpt')
 # region of the diffraction pattern.
 
 # %%
-project.display.posterior.predictive(expt_name='hrpt', x_min=92, x_max=93)
+project.display.pattern(expt_name='hrpt', x_min=92, x_max=93)
 
 # %% [markdown]
 # ## Inspect Posterior Densities and Pair Structure
