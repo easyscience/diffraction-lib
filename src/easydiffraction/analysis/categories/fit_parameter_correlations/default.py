@@ -30,20 +30,6 @@ def _normalized_parameter_pair(
     return param_unique_name_j, param_unique_name_i
 
 
-def _default_correlation_id(
-    *,
-    source_kind: str,
-    param_unique_name_i: str,
-    param_unique_name_j: str,
-) -> str:
-    """Return the default persisted id for a correlation row."""
-    normalized_i, normalized_j = _normalized_parameter_pair(
-        param_unique_name_i,
-        param_unique_name_j,
-    )
-    return f'{source_kind}:{normalized_i}:{normalized_j}'
-
-
 class FitParameterCorrelationItem(CategoryItem):
     """Single persisted fit-parameter correlation row."""
 
@@ -181,8 +167,8 @@ class FitParameterCorrelations(CategoryCollection):
         correlation : int | float
             Correlation coefficient for the parameter pair.
         id : str | None, default=None
-            Explicit persisted row identifier. When omitted, a stable id
-            is derived from the normalized parameter pair.
+            Explicit persisted row identifier. When omitted, a simple
+            sequential identifier is generated.
         """
         normalized_i, normalized_j = _normalized_parameter_pair(
             param_unique_name_i,
@@ -193,10 +179,6 @@ class FitParameterCorrelations(CategoryCollection):
         item._set_param_unique_name_i(normalized_i)
         item._set_param_unique_name_j(normalized_j)
         item._set_correlation(correlation)
-        resolved_id = id or _default_correlation_id(
-            source_kind=source_kind,
-            param_unique_name_i=normalized_i,
-            param_unique_name_j=normalized_j,
-        )
+        resolved_id = id or str(len(self) + 1)
         item._set_id(resolved_id)
         self.add(item)

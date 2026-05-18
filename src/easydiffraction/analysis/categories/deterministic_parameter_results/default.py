@@ -26,12 +26,6 @@ class DeterministicParameterResultItem(CategoryItem):
 
     def __init__(self) -> None:
         super().__init__()
-        self._order_index = NumericDescriptor(
-            name='order_index',
-            description='Display and array order for the persisted parameter result.',
-            value_spec=AttributeSpec(default=0),
-            cif_handler=CifHandler(names=['_deterministic_parameter_result.order_index']),
-        )
         self._param_unique_name = StringDescriptor(
             name='param_unique_name',
             description='Unique name of the persisted parameter result row.',
@@ -65,17 +59,6 @@ class DeterministicParameterResultItem(CategoryItem):
             value_spec=AttributeSpec(default=False),
             cif_handler=CifHandler(names=['_deterministic_parameter_result.at_upper_bound']),
         )
-
-    @property
-    def order_index(self) -> NumericDescriptor:
-        """
-        Display and array order for the persisted parameter result.
-        """
-        return self._order_index
-
-    def _set_order_index(self, value: float) -> None:
-        """Set the order index for internal callers."""
-        self._order_index.value = value
 
     @property
     def param_unique_name(self) -> StringDescriptor:
@@ -138,7 +121,6 @@ class DeterministicParameterResults(CategoryCollection):
     def create(
         self,
         *,
-        order_index: float,
         param_unique_name: str,
         final_value: float | None = None,
         final_uncertainty: float | None = None,
@@ -150,8 +132,6 @@ class DeterministicParameterResults(CategoryCollection):
 
         Parameters
         ----------
-        order_index : int | float
-            Display and array order for the persisted parameter result.
         param_unique_name : str
             Unique name of the persisted parameter result row.
         final_value : int | float | None, default=None
@@ -164,7 +144,6 @@ class DeterministicParameterResults(CategoryCollection):
             Whether the parameter finished at the upper fit bound.
         """
         item = DeterministicParameterResultItem()
-        item._set_order_index(order_index)
         item._set_param_unique_name(param_unique_name)
         item._set_final_value(final_value)
         item._set_final_uncertainty(final_uncertainty)

@@ -27,19 +27,6 @@ def _normalized_parameter_pair(
     return param_unique_name_y, param_unique_name_x
 
 
-def _default_pair_cache_id(
-    *,
-    param_unique_name_x: str,
-    param_unique_name_y: str,
-) -> str:
-    """Return the default persisted id for a pair-cache row."""
-    normalized_x, normalized_y = _normalized_parameter_pair(
-        param_unique_name_x,
-        param_unique_name_y,
-    )
-    return f'{normalized_x}:{normalized_y}'
-
-
 class BayesianPairCacheItem(CategoryItem):
     """Single persisted Bayesian pair-cache manifest row."""
 
@@ -259,8 +246,8 @@ class BayesianPairCaches(CategoryCollection):
         n_draws_cached : int | float
             Number of draws summarized into the cached pair.
         id : str | None, default=None
-            Explicit persisted row id. When omitted, a stable id is
-            derived from the normalized parameter pair.
+            Explicit persisted row id. When omitted, a simple
+            sequential identifier is generated.
         """
         normalized_x, normalized_y = _normalized_parameter_pair(
             param_unique_name_x,
@@ -276,9 +263,6 @@ class BayesianPairCaches(CategoryCollection):
         item._set_n_grid_x(n_grid_x)
         item._set_n_grid_y(n_grid_y)
         item._set_n_draws_cached(n_draws_cached)
-        resolved_id = id or _default_pair_cache_id(
-            param_unique_name_x=normalized_x,
-            param_unique_name_y=normalized_y,
-        )
+        resolved_id = id or str(len(self) + 1)
         item._set_id(resolved_id)
         self.add(item)

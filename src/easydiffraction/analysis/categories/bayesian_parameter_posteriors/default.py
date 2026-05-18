@@ -25,12 +25,6 @@ class BayesianParameterPosteriorItem(CategoryItem):
 
     def __init__(self) -> None:
         super().__init__()
-        self._order_index = NumericDescriptor(
-            name='order_index',
-            description='Parameter column order in posterior sample arrays.',
-            value_spec=AttributeSpec(default=0),
-            cif_handler=CifHandler(names=['_bayesian_parameter_posterior.order_index']),
-        )
         self._unique_name = StringDescriptor(
             name='unique_name',
             description='Unique EasyDiffraction parameter name.',
@@ -100,15 +94,6 @@ class BayesianParameterPosteriorItem(CategoryItem):
             value_spec=AttributeSpec(default=None, allow_none=True),
             cif_handler=CifHandler(names=['_bayesian_parameter_posterior.r_hat']),
         )
-
-    @property
-    def order_index(self) -> NumericDescriptor:
-        """Parameter column order in posterior sample arrays."""
-        return self._order_index
-
-    def _set_order_index(self, value: float) -> None:
-        """Set the order index for internal callers."""
-        self._order_index.value = value
 
     @property
     def unique_name(self) -> StringDescriptor:
@@ -227,7 +212,6 @@ class BayesianParameterPosteriors(CategoryCollection):
     def create(
         self,
         *,
-        order_index: float,
         unique_name: str,
         display_name: str,
         best_sample_value: float | None = None,
@@ -245,8 +229,6 @@ class BayesianParameterPosteriors(CategoryCollection):
 
         Parameters
         ----------
-        order_index : int | float
-            Parameter column order in posterior sample arrays.
         unique_name : str
             Unique EasyDiffraction parameter name.
         display_name : str
@@ -271,7 +253,6 @@ class BayesianParameterPosteriors(CategoryCollection):
             Rank-normalized split-R-hat when available.
         """
         item = BayesianParameterPosteriorItem()
-        item._set_order_index(order_index)
         item._set_unique_name(unique_name)
         item._set_display_name(display_name)
         item._set_best_sample_value(best_sample_value)

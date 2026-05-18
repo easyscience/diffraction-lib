@@ -567,7 +567,6 @@ def analysis_from_cif(analysis: object, cif_text: str) -> None:
 def _has_persisted_fit_state_sections(block: object) -> bool:
     """Return True when any persisted fit-state section is present."""
     scalar_tags = (
-        '_fit_state.schema_version',
         '_fit_result.result_kind',
         '_deterministic_result.optimizer_name',
         '_bayesian_result.sampler_name',
@@ -589,25 +588,11 @@ def _has_persisted_fit_state_sections(block: object) -> bool:
     )
 
 
-def _warn_for_unsupported_fit_state_schema(analysis: object) -> None:
-    """
-    Warn when the persisted fit-state schema version is unsupported.
-    """
-    schema_version = analysis.fit_state.schema_version.value
-    if schema_version != 1:
-        log.warning(
-            'Unsupported _fit_state.schema_version in analysis CIF: '
-            f'{schema_version}. Attempting best-effort restore for schema version 1.',
-        )
-
-
 def _restore_common_fit_state(analysis: object, block: object) -> None:
     """
     Restore fit-state categories shared by deterministic and Bayesian
     fits.
     """
-    analysis.fit_state.from_cif(block)
-    _warn_for_unsupported_fit_state_schema(analysis)
     analysis.fit_parameters.from_cif(block)
     analysis.fit_result.from_cif(block)
     analysis.fit_parameter_correlations.from_cif(block)

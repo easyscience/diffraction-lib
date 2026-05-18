@@ -8,7 +8,6 @@ from easydiffraction.analysis.categories.bayesian_sampler.factory import Bayesia
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
-from easydiffraction.core.variable import BoolDescriptor
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.io.cif.handler import CifHandler
@@ -51,10 +50,10 @@ class BayesianSampler(CategoryItem):
             value_spec=AttributeSpec(default=0),
             cif_handler=CifHandler(names=['_bayesian_sampler.pop']),
         )
-        self._parallel = BoolDescriptor(
+        self._parallel = NumericDescriptor(
             name='parallel',
-            description='Whether sampling ran in parallel.',
-            value_spec=AttributeSpec(default=False),
+            description='Resolved DREAM worker count; 0 uses all CPUs.',
+            value_spec=AttributeSpec(default=0),
             cif_handler=CifHandler(names=['_bayesian_sampler.parallel']),
         )
         self._init = StringDescriptor(
@@ -107,12 +106,12 @@ class BayesianSampler(CategoryItem):
         self._pop.value = value
 
     @property
-    def parallel(self) -> BoolDescriptor:
-        """Whether sampling ran in parallel."""
+    def parallel(self) -> NumericDescriptor:
+        """Resolved DREAM worker count; 0 uses all CPUs."""
         return self._parallel
 
-    def _set_parallel(self, value: bool) -> None:
-        """Set the parallel flag for internal callers."""
+    def _set_parallel(self, value: float) -> None:
+        """Set the DREAM worker count for internal callers."""
         self._parallel.value = value
 
     @property

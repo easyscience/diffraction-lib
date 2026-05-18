@@ -31,7 +31,6 @@ from easydiffraction.analysis.categories.deterministic_result import Determinist
 from easydiffraction.analysis.categories.fit_parameter_correlations import FitParameterCorrelations
 from easydiffraction.analysis.categories.fit_parameters import FitParameters
 from easydiffraction.analysis.categories.fit_result import FitResult
-from easydiffraction.analysis.categories.fit_state import FitState
 from easydiffraction.analysis.categories.fitting import Fitting
 from easydiffraction.analysis.categories.fitting import FittingFactory
 from easydiffraction.analysis.categories.joint_fit import JointFitCollection
@@ -409,7 +408,6 @@ class Analysis(CategoryOwner):
             SequentialFitFactory.default_tag()
         )
         self._sequential_fit_extract = SequentialFitExtractCollection()
-        self._fit_state = FitState()
         self._fit_parameters = FitParameters()
         self._fit_result = FitResult()
         self._fit_parameter_correlations = FitParameterCorrelations()
@@ -493,17 +491,11 @@ class Analysis(CategoryOwner):
     def _ordered_restored_parameter_names(self) -> list[str]:
         """Return persisted parameter names in display and array order."""
         if self.fit_result.result_kind.value == FitResultKindEnum.BAYESIAN.value:
-            posterior_rows = sorted(
-                list(self.bayesian_parameter_posteriors),
-                key=lambda row: int(row.order_index.value),
-            )
+            posterior_rows = list(self.bayesian_parameter_posteriors)
             if posterior_rows:
                 return [row.unique_name.value for row in posterior_rows]
 
-        deterministic_rows = sorted(
-            list(self.deterministic_parameter_results),
-            key=lambda row: int(row.order_index.value),
-        )
+        deterministic_rows = list(self.deterministic_parameter_results)
         if deterministic_rows:
             return [row.param_unique_name.value for row in deterministic_rows]
 
@@ -559,10 +551,7 @@ class Analysis(CategoryOwner):
         if parameter_samples is None:
             return None
 
-        posterior_rows = sorted(
-            list(self.bayesian_parameter_posteriors),
-            key=lambda row: int(row.order_index.value),
-        )
+        posterior_rows = list(self.bayesian_parameter_posteriors)
         parameter_names = [row.unique_name.value for row in posterior_rows]
         if not parameter_names:
             parameter_names = [row.param_unique_name.value for row in self.fit_parameters]
@@ -591,11 +580,7 @@ class Analysis(CategoryOwner):
     def _restored_posterior_summaries(self) -> list[PosteriorParameterSummary]:
         """Return posterior summary rows as runtime summary objects."""
         restored_summaries: list[PosteriorParameterSummary] = []
-        posterior_rows = sorted(
-            list(self.bayesian_parameter_posteriors),
-            key=lambda row: int(row.order_index.value),
-        )
-        for row in posterior_rows:
+        for row in self.bayesian_parameter_posteriors:
             restored_summaries.append(
                 PosteriorParameterSummary(
                     unique_name=row.unique_name.value,
@@ -710,7 +695,7 @@ class Analysis(CategoryOwner):
                     'burn': int(self.bayesian_sampler.burn.value),
                     'thin': int(self.bayesian_sampler.thin.value),
                     'pop': int(self.bayesian_sampler.pop.value),
-                    'parallel': bool(self.bayesian_sampler.parallel.value),
+                    'parallel': int(self.bayesian_sampler.parallel.value),
                     'init': self.bayesian_sampler.init.value,
                     'random_seed': self.bayesian_sampler.random_seed.value,
                 },
@@ -1019,11 +1004,6 @@ class Analysis(CategoryOwner):
         return self._sequential_fit_extract
 
     @property
-    def fit_state(self) -> FitState:
-        """Persisted fit-state schema metadata."""
-        return self._fit_state
-
-    @property
     def fit_parameters(self) -> FitParameters:
         """Persisted fit-parameter control snapshots."""
         return self._fit_parameters
@@ -1101,7 +1081,6 @@ class Analysis(CategoryOwner):
         kind.
         """
         categories: list[object] = [
-            self.fit_state,
             self.fit_parameters,
             self.fit_result,
             self.fit_parameter_correlations,
@@ -1137,7 +1116,6 @@ class Analysis(CategoryOwner):
 
     def _clear_persisted_fit_state(self) -> None:
         """Reset all persisted fit-state categories before a new fit."""
-        self._fit_state = FitState()
         self._fit_parameters = FitParameters()
         self._fit_result = FitResult()
         self._fit_parameter_correlations = FitParameterCorrelations()
@@ -1156,7 +1134,6 @@ class Analysis(CategoryOwner):
     def _capture_fit_parameter_state(self, parameters: list[Parameter]) -> None:
         """Capture pre-fit parameter state into persisted fit-state categories."""
         self._clear_persisted_fit_state()
-        self.fit_state._set_schema_version(1)
 
         for param in parameters:
             self.fit_parameters.create(
@@ -1273,7 +1250,6 @@ class Analysis(CategoryOwner):
         result_kind: FitResultKindEnum,
     ) -> None:
         """Store fields shared by deterministic and Bayesian fit results."""
-        self.fit_state._set_schema_version(1)
         self.fit_result._set_result_kind(result_kind.value)
         self.fit_result._set_success(results.success)
         self.fit_result._set_message(results.message)
@@ -1340,9 +1316,8 @@ class Analysis(CategoryOwner):
         self.deterministic_result._set_covariance_available(covariance is not None)
         self.deterministic_result._set_correlation_available(correlation_matrix is not None)
 
-        for order_index, param in enumerate(fitted_parameters):
+        for param in fitted_parameters:
             self.deterministic_parameter_results.create(
-                order_index=order_index,
                 param_unique_name=param.unique_name,
                 final_value=param.value,
                 final_uncertainty=param.uncertainty,
@@ -1392,7 +1367,7 @@ class Analysis(CategoryOwner):
         self.bayesian_sampler._set_burn(int(sampler_settings.get('burn', 0)))
         self.bayesian_sampler._set_thin(int(sampler_settings.get('thin', 0)))
         self.bayesian_sampler._set_pop(int(sampler_settings.get('pop', 0)))
-        self.bayesian_sampler._set_parallel(bool(sampler_settings.get('parallel', False)))
+        self.bayesian_sampler._set_parallel(int(sampler_settings.get('parallel', 0)))
         self.bayesian_sampler._set_init(str(sampler_settings.get('init', '')))
         random_seed = sampler_settings.get('random_seed')
         self.bayesian_sampler._set_random_seed(
@@ -1406,9 +1381,8 @@ class Analysis(CategoryOwner):
         self.bayesian_convergence._set_n_chains(int(convergence.get('n_chains', 0)))
         self.bayesian_convergence._set_n_parameters(int(convergence.get('n_parameters', 0)))
 
-        for order_index, summary in enumerate(results.posterior_parameter_summaries):
+        for summary in results.posterior_parameter_summaries:
             self.bayesian_parameter_posteriors.create(
-                order_index=order_index,
                 unique_name=summary.unique_name,
                 display_name=summary.display_name,
                 best_sample_value=summary.best_sample_value,

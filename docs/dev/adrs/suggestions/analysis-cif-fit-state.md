@@ -54,7 +54,6 @@ Existing categories remain responsible for existing configuration:
 
 New common fit-state categories are:
 
-- `_fit_state`
 - `_fit_parameter`
 - `_fit_result`
 - `_fit_parameter_correlation`
@@ -77,19 +76,11 @@ Bayesian-specific categories are:
 Bulk arrays referenced by Bayesian categories live in
 `analysis/results.h5`.
 
-### 2. Add `_fit_state` for schema versioning
+### 2. Do not add a dedicated `_fit_state` schema category
 
-`_fit_state` is a single-item category for the persisted fit-state
-schema:
-
-```cif
-_fit_state.schema_version 1
-```
-
-This version applies to the fit-state CIF categories and any HDF5
-sidecar manifests they reference. It is not the EasyDiffraction package
-version. Individual result categories should not repeat `schema_version`
-unless they later need independent evolution.
+Persisted fit state is detected from the presence of `_fit_result` and
+the related fit-state loops. Do not add a dedicated `_fit_state`
+category or a standalone `schema_version` tag for this feature.
 
 ### 3. Add `_fit_parameter` for per-parameter fit controls
 
@@ -167,7 +158,7 @@ _fit_parameter_correlation.source_kind
 _fit_parameter_correlation.param_unique_name_i
 _fit_parameter_correlation.param_unique_name_j
 _fit_parameter_correlation.correlation
-"posterior:lbco.cell.length_a:hrpt.peak.broad_gauss_u" posterior lbco.cell.length_a hrpt.peak.broad_gauss_u 0.87
+1 posterior lbco.cell.length_a hrpt.peak.broad_gauss_u 0.87
 ```
 
 Fields:
@@ -180,9 +171,8 @@ Fields:
 
 Rows are keyed by the persisted `id` field so each correlation pair has
 stable collection identity in both Python and CIF. When a caller does
-not provide an explicit `id`, implementations should derive one from
-the normalized `source_kind`, `param_unique_name_i`, and
-`param_unique_name_j` values.
+not provide an explicit `id`, implementations should generate a simple
+sequential numeric identifier such as `1`, `2`, `3`, and so on.
 
 Only the upper triangle excluding the diagonal is stored. Correlation
 heatmaps can be restored from this loop alone. Posterior pair plots
@@ -210,12 +200,14 @@ categories for optimizer details and parameter-result display state.
 `_deterministic_parameter_result` stores one row per parameter varied in
 the latest deterministic fit:
 
-- `order_index`
 - `param_unique_name`
 - `final_value`
 - `final_uncertainty`
 - `at_lower_bound`
 - `at_upper_bound`
+
+Loop order is the display order for restored deterministic parameter
+results.
 
 `final_value` and `final_uncertainty` are a result projection for
 display and consistency checks. The calculation source of truth remains
@@ -259,6 +251,9 @@ Bayesian categories in `analysis/analysis.cif`.
 - `init`
 - `random_seed`
 
+`parallel` stores the resolved non-negative DREAM worker count. `0`
+means use all CPUs.
+
 `_bayesian_convergence` stores top-level diagnostics and shapes:
 
 - `converged`
@@ -271,7 +266,6 @@ Bayesian categories in `analysis/analysis.cif`.
 `_bayesian_parameter_posterior` stores one posterior summary row per
 sampled parameter:
 
-- `order_index`
 - `unique_name`
 - `display_name`
 - `best_sample_value`
@@ -284,10 +278,10 @@ sampled parameter:
 - `ess_bulk`
 - `r_hat`
 
-`order_index` defines the parameter column order in posterior sample
-arrays stored in the HDF5 sidecar. `parameter.posterior` is rebuilt from
-this loop on load; posterior summary data is not duplicated in structure
-or experiment CIF files.
+Loop order defines the parameter column order in posterior sample arrays
+stored in the HDF5 sidecar. `parameter.posterior` is rebuilt from this
+loop on load; posterior summary data is not duplicated in structure or
+experiment CIF files.
 
 ### 8. Store plot-ready Bayesian caches in explicit manifest categories
 
@@ -321,8 +315,8 @@ caches therefore have their own manifest categories in
 `_bayesian_pair_cache` rows are keyed by the persisted `id` field so
 each cached parameter pair has stable identity in both Python and CIF.
 When a caller does not provide an explicit `id`, implementations should
-derive one from the normalized `param_unique_name_x` and
-`param_unique_name_y` values.
+generate a simple sequential numeric identifier such as `1`, `2`, `3`,
+and so on.
 
 `_bayesian_predictive_dataset` supports
 `project.display.posterior.predictive(...)`:
@@ -437,14 +431,13 @@ Load order should be:
 1. standard analysis configuration
 2. aliases and constraints
 3. active mode-specific settings
-4. `_fit_state`
-5. `_fit_parameter`
-6. `_fit_result`
-7. `_fit_parameter_correlation`
-8. deterministic metadata categories when `result_kind` is
+4. `_fit_parameter`
+5. `_fit_result`
+6. `_fit_parameter_correlation`
+7. deterministic metadata categories when `result_kind` is
    `deterministic`
-9. Bayesian metadata categories when `result_kind` is `bayesian`
-10. Bayesian HDF5 sidecar arrays and plot caches
+8. Bayesian metadata categories when `result_kind` is `bayesian`
+9. Bayesian HDF5 sidecar arrays and plot caches
 
 This ensures bounds and live parameter references are available before
 fit-specific summaries and cached plot data are attached.
@@ -456,8 +449,6 @@ Suggested deterministic `analysis/analysis.cif` fragment:
 ```cif
 _fitting.mode_type single
 _fitting.minimizer_type "lmfit (leastsq)"
-
-_fit_state.schema_version 1
 
 loop_
 _fit_parameter.param_unique_name
@@ -488,21 +479,21 @@ _deterministic_result.covariance_available true
 _deterministic_result.correlation_available true
 
 loop_
-_deterministic_parameter_result.order_index
 _deterministic_parameter_result.param_unique_name
 _deterministic_parameter_result.final_value
 _deterministic_parameter_result.final_uncertainty
 _deterministic_parameter_result.at_lower_bound
 _deterministic_parameter_result.at_upper_bound
-0 lbco.cell.length_a 3.89091 0.0003 false false
-1 hrpt.peak.broad_gauss_u 0.08 0.007 false false
+lbco.cell.length_a 3.89091 0.0003 false false
+hrpt.peak.broad_gauss_u 0.08 0.007 false false
 
 loop_
+_fit_parameter_correlation.id
 _fit_parameter_correlation.source_kind
 _fit_parameter_correlation.param_unique_name_i
 _fit_parameter_correlation.param_unique_name_j
 _fit_parameter_correlation.correlation
-deterministic lbco.cell.length_a hrpt.peak.broad_gauss_u 0.42
+1 deterministic lbco.cell.length_a hrpt.peak.broad_gauss_u 0.42
 ```
 
 Suggested Bayesian `analysis/analysis.cif` fragment:
@@ -510,8 +501,6 @@ Suggested Bayesian `analysis/analysis.cif` fragment:
 ```cif
 _fitting.mode_type single
 _fitting.minimizer_type "bumps (dream)"
-
-_fit_state.schema_version 1
 
 loop_
 _fit_parameter.param_unique_name
@@ -559,7 +548,6 @@ _bayesian_convergence.n_chains 20
 _bayesian_convergence.n_parameters 2
 
 loop_
-_bayesian_parameter_posterior.order_index
 _bayesian_parameter_posterior.unique_name
 _bayesian_parameter_posterior.display_name
 _bayesian_parameter_posterior.best_sample_value
@@ -571,7 +559,7 @@ _bayesian_parameter_posterior.interval_95_lower
 _bayesian_parameter_posterior.interval_95_upper
 _bayesian_parameter_posterior.ess_bulk
 _bayesian_parameter_posterior.r_hat
-0 lbco.cell.length_a "length_a" 3.89091 3.89090 0.0003 3.8906 3.8912 3.8903 3.8915 812.4 1.01
+lbco.cell.length_a "length_a" 3.89091 3.89090 0.0003 3.8906 3.8912 3.8903 3.8915 812.4 1.01
 
 loop_
 _bayesian_distribution_cache.param_unique_name

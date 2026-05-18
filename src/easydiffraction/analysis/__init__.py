@@ -60,8 +60,6 @@ from easydiffraction.analysis.categories.fit_parameters import FitParameters
 from easydiffraction.analysis.categories.fit_parameters import FitParametersFactory
 from easydiffraction.analysis.categories.fit_result import FitResult
 from easydiffraction.analysis.categories.fit_result import FitResultFactory
-from easydiffraction.analysis.categories.fit_state import FitState
-from easydiffraction.analysis.categories.fit_state import FitStateFactory
 from easydiffraction.analysis.categories.fitting import Fitting
 from easydiffraction.analysis.categories.fitting import FittingFactory
 from easydiffraction.analysis.categories.joint_fit import JointFitCollection
