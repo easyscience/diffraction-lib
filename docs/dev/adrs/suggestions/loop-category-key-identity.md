@@ -124,9 +124,12 @@ Jupyter, CLI output, and saved CIF files.
 ## Implementation Notes
 
 The current `category_entry_name` mechanism can stay, but it should be
-made easier to audit. A future implementation should add metadata that
-identifies the key descriptor for each `CategoryCollection`, or at least
-tests that the resolved key comes from a serialized descriptor.
+made easier to audit. The implementation now uses class-level
+`_category_code` and `_category_entry_name` declarations on concrete
+`CategoryItem` subclasses. `CategoryItem` resolves the declared
+`_category_entry_name` lazily from the named public attribute, and
+`Identity` exposes the resolved value through
+`item._identity.category_entry_name`.
 
 For constraints, add a descriptor-backed `id` property serialized as
 `_constraint.id`, and change `category_entry_name` to resolve from that
@@ -134,8 +137,8 @@ descriptor. Keep `_constraint.expression` for the full equation. Keep
 `lhs_alias` and `rhs_expr` as derived convenience properties.
 
 When reading older CIF files that only contain `_constraint.expression`,
-derive a deterministic fallback `id` from the old `lhs_alias` key, then
-write `_constraint.id` on the next save.
+derive a deterministic fallback `id` from the old `lhs_alias` key after
+row values are loaded, then write `_constraint.id` on the next save.
 
 ## Consequences
 

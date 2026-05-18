@@ -36,7 +36,7 @@ Phase 1 - Implementation
 [x] Preserve default constraints.create(expression=...) behavior by using lhs_alias as the default id.
 [x] Add backward-compatible loading for old CIF loops without _constraint.id.
 [x] Update constraints display.
-[ ] Update loop-category-key-identity.md if implementation details differ from the ADR.
+[x] Update loop-category-key-identity.md if implementation details differ from the ADR.
 [ ] Phase 1 review gate: present diff for approval.
 
 Phase 2 - Verification
