@@ -19,7 +19,6 @@ from easydiffraction.project.categories.rendering.factory import RenderingFactor
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.utils import render_table
 
-
 AUTO_ENGINE = 'auto'
 CHART_ENGINE_OPTIONS = [AUTO_ENGINE, *[member.value for member in PlotterEngineEnum]]
 TABLE_ENGINE_OPTIONS = [AUTO_ENGINE, *[member.value for member in TableEngineEnum]]
