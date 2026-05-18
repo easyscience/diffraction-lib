@@ -145,7 +145,7 @@ class PosteriorDisplay:
         """Plot posterior pair relationships for sampled parameters."""
         with activity_indicator(
             ACTIVITY_LABEL_PROCESSING,
-            verbosity=VerbosityEnum(self._project.verbosity),
+            verbosity=VerbosityEnum(self._project.verbosity.fit.value),
         ):
             self._project.rendering.plotter.plot_posterior_pairs(
                 parameters=parameters,
@@ -184,7 +184,7 @@ class PosteriorDisplay:
         """Plot posterior predictive summaries for one experiment."""
         with activity_indicator(
             ACTIVITY_LABEL_PROCESSING,
-            verbosity=VerbosityEnum(self._project.verbosity),
+            verbosity=VerbosityEnum(self._project.verbosity.fit.value),
         ):
             self._project.rendering.plotter.plot_posterior_predictive(
                 expt_name=expt_name,
@@ -251,7 +251,7 @@ class ProjectDisplay:
             if 'uncertainty' in auto_include:
                 with activity_indicator(
                     ACTIVITY_LABEL_PROCESSING,
-                    verbosity=VerbosityEnum(self._project.verbosity),
+                    verbosity=VerbosityEnum(self._project.verbosity.fit.value),
                 ):
                     self._project.rendering.plotter._plot_posterior_predictive_request(
                         expt_name=expt_name,
@@ -285,7 +285,7 @@ class ProjectDisplay:
         if 'uncertainty' in normalized_include:
             with activity_indicator(
                 ACTIVITY_LABEL_PROCESSING,
-                verbosity=VerbosityEnum(self._project.verbosity),
+                verbosity=VerbosityEnum(self._project.verbosity.fit.value),
             ):
                 self._project.rendering.plotter._plot_posterior_predictive_request(
                     expt_name=expt_name,

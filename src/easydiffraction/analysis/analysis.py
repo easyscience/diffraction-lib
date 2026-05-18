@@ -704,7 +704,7 @@ class Analysis(CategoryOwner):
 
     def _prepare_fit_run(self) -> tuple[VerbosityEnum, object, object] | None:
         """Resolve common inputs for single and joint fitting."""
-        verb = VerbosityEnum(self.project.verbosity)
+        verb = VerbosityEnum(self.project.verbosity.fit.value)
         structures = self.project.structures
         if not structures:
             log.warning('No structures found in the project. Cannot run fit.')

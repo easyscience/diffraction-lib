@@ -28,6 +28,7 @@ from easydiffraction.utils.logging import log
 
 if TYPE_CHECKING:
     from easydiffraction.project.categories.rendering import Rendering
+    from easydiffraction.project.categories.verbosity import Verbosity
     from easydiffraction.project.project_info import ProjectInfo
 
 
@@ -136,12 +137,12 @@ class Project(GuardedBase):
         self._structures = Structures()
         self._experiments = Experiments()
         object.__setattr__(self, '_rendering', self._config.rendering)
+        object.__setattr__(self, '_verbosity', self._config.verbosity)
         self._display = ProjectDisplay(self)
         self._analysis = Analysis(self)
         self._summary = Summary(self)
         self._saved = False
         self._varname = 'project' if type(self)._loading else varname()
-        self._verbosity: VerbosityEnum = VerbosityEnum.FULL
         type(self)._current_project = self
 
     @classmethod
@@ -250,21 +251,14 @@ class Project(GuardedBase):
         return project_to_cif(self)
 
     @property
-    def verbosity(self) -> str:
-        """
-        Project-wide console output verbosity.
-
-        Returns
-        -------
-        str
-            One of ``'full'``, ``'short'``, or ``'silent'``.
-        """
-        return self._verbosity.value
+    def verbosity(self) -> Verbosity:
+        """Verbosity configuration bound to the project."""
+        return self._verbosity
 
     @verbosity.setter
     def verbosity(self, value: str) -> None:
         """
-        Set project-wide console output verbosity.
+        Set fitting process output verbosity.
 
         Parameters
         ----------
@@ -272,7 +266,7 @@ class Project(GuardedBase):
             ``'full'`` for multi-line output, ``'short'`` for one-line
             status messages, or ``'silent'`` for no output.
         """
-        self._verbosity = VerbosityEnum(value)
+        self._verbosity.fit = VerbosityEnum(value).value
 
     # ------------------------------------------
     #  Project File I/O

@@ -24,7 +24,7 @@ one-to-one correspondence for project-owned singleton categories:
 ```text
 project.info.title        -> project.cif: _info.title
 project.rendering.engine  -> project.cif: _rendering.engine
-project.verbosity.level   -> project.cif: _verbosity.level
+project.verbosity.fit     -> project.cif: _verbosity.fit
 ```
 
 The design question is whether this rule should be applied only to
@@ -55,7 +55,7 @@ to objects reached from the current `Project` root, for example
 | Current Python surface              | Current saved location   | Current CIF block form | Notes                                                                               |
 | ----------------------------------- | ------------------------ | ---------------------- | ----------------------------------------------------------------------------------- |
 | `project.info`, `project.rendering` | `project.cif`            | bare categories        | Project-level singleton config.                                                     |
-| `project.verbosity`                 | not persisted            | none                   | Runtime-only string property backed by `VerbosityEnum`; no `_verbosity` category.   |
+| `project.verbosity`                 | `project.cif`            | bare category          | Project-owned fit-output verbosity category backed by `VerbosityEnum`.              |
 | `project.structures[name]`          | `structures/<name>.cif`  | `data_<name>`          | Each structure is one CIF data block.                                               |
 | `project.experiments[name]`         | `experiments/<name>.cif` | `data_<name>`          | Each experiment is one CIF data block.                                              |
 | `project.analysis`                  | `analysis/analysis.cif`  | bare categories        | Loader also accepts legacy root-level `analysis.cif`.                               |
@@ -75,7 +75,7 @@ to objects reached from the current `Project` root, for example
 | `project.info.path`              | none                      | No     | Runtime storage path, not a CIF field.                                                                                          |
 | `project.rendering.chart_engine` | `_rendering.chart_engine` | Yes    | Direct category and field mapping.                                                                                              |
 | `project.rendering.table_engine` | `_rendering.table_engine` | Yes    | Direct category and field mapping.                                                                                              |
-| `project.verbosity`              | none                      | No     | Runtime-only string convenience property; current code has no `project.verbosity.level` category and no `_verbosity.level` tag. |
+| `project.verbosity.fit`          | `_verbosity.fit`          | Yes    | Direct category and field mapping for fitting process output verbosity.                                       |
 
 ### Analysis Configuration
 
@@ -233,8 +233,8 @@ project.info.<field> -> project.cif: _project.<field>
 
 Future one-to-one correspondence work may still discuss whether the
 public identity field should be `name` or `id`, whether verbosity should
-persist as `_verbosity.level`, and whether rendering should keep
-separate chart and table engine fields.
+gain additional coverage-specific fields, and whether rendering should
+keep separate chart and table engine fields.
 
 Possible strict-correspondence target if a future ADR explicitly changes
 the accepted `_project.*` baseline:
@@ -248,7 +248,7 @@ the accepted `_project.*` baseline:
 | `project.info.last_modified`     | `_info.last_modified`     | Currently `_project.last_modified`.        |
 | `project.rendering.chart_engine` | `_rendering.chart_engine` | Already matches.                           |
 | `project.rendering.table_engine` | `_rendering.table_engine` | Already matches.                           |
-| `project.verbosity.level`        | `_verbosity.level`        | Currently no persisted verbosity category. |
+| `project.verbosity.fit`          | `_verbosity.fit`          | Implemented direct fit-output verbosity mapping. |
 
 Alternative target if the project identity field should be called `id`
 rather than `name`:
@@ -272,8 +272,9 @@ repository can optimize them for API/persistence symmetry.
 ### `project.cif` Scopes Generic Categories
 
 `_info.title` is generic in isolation, but inside `project.cif` it reads
-as project information. This is similar to `_verbosity.level`: the file
-scope tells the reader this is project-level verbosity.
+as project information. This is similar to `_verbosity.fit`: the file
+scope tells the reader this is project-level verbosity, and the field
+name identifies the fitting-process coverage.
 
 ### The Current `Project` Root Already Matches User Language
 
@@ -318,9 +319,9 @@ unless a separate ADR changes the underlying API pattern.
 - `_info.*` is less self-describing if copied out of `project.cif`.
 - Existing `_project.*` project files would need migration or a
   deliberate compatibility decision.
-- If verbosity is persisted, `project.verbosity` would either need to
-  become a category object or remain as a convenience alias for a new
-  `project.verbosity.level` field.
+- Persisted verbosity is now a category object. The initial field is
+  `project.verbosity.fit`, leaving room for future coverage-specific
+  verbosity fields.
 - Collapsing rendering to `project.rendering.engine` would simplify the
   API, but only if chart and table renderers are intended to share one
   backend choice.
@@ -333,5 +334,5 @@ unless a separate ADR changes the underlying API pattern.
   `project.rendering.table_engine` remain separate, or should the public
   API and CIF collapse to one `engine` field?
 - Should `project.verbosity = 'short'` remain as a convenience alias for
-  `project.verbosity.level = 'short'`, or should strict correspondence
+  `project.verbosity.fit = 'short'`, or should strict correspondence
   remove the alias?

@@ -148,7 +148,7 @@ class Constraints(CategoryCollection):
         expression : str
             Constraint equation, e.g. ``'biso_Co2 = biso_Co1'`` or
             ``'occ_Ba = 1 - occ_La'``.
-        id : str | None, optional
+        id : str | None, default=None
             Explicit row identifier. When not ``None``, this value is
             used as the collection key instead of the left-hand alias.
         """

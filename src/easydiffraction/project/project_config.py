@@ -9,6 +9,8 @@ from easydiffraction.project.categories.info import ProjectInfo
 from easydiffraction.project.categories.info import ProjectInfoFactory
 from easydiffraction.project.categories.rendering import Rendering
 from easydiffraction.project.categories.rendering import RenderingFactory
+from easydiffraction.project.categories.verbosity import Verbosity
+from easydiffraction.project.categories.verbosity import VerbosityFactory
 
 
 class ProjectConfig(CategoryOwner):
@@ -28,6 +30,7 @@ class ProjectConfig(CategoryOwner):
             description=description,
         )
         self._rendering = RenderingFactory.create(RenderingFactory.default_tag())
+        self._verbosity = VerbosityFactory.create(VerbosityFactory.default_tag())
 
     @property
     def info(self) -> ProjectInfo:
@@ -38,6 +41,11 @@ class ProjectConfig(CategoryOwner):
     def rendering(self) -> Rendering:
         """Rendering configuration category."""
         return self._rendering
+
+    @property
+    def verbosity(self) -> Verbosity:
+        """Verbosity configuration category."""
+        return self._verbosity
 
     @property
     def as_cif(self) -> str:

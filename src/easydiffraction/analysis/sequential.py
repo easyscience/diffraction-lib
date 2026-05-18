@@ -144,12 +144,12 @@ def _fit_worker(
         project.analysis.fitter = Fitter(template.minimizer_tag)
 
         # 10. Fit
-        original_verbosity = project.verbosity
-        project.verbosity = 'silent'
+        original_verbosity = project.verbosity.fit.value
+        project.verbosity.fit = 'silent'
         try:
             project.analysis.fit()
         finally:
-            project.verbosity = original_verbosity
+            project.verbosity.fit = original_verbosity
 
         # 11. Collect results
         result.update(_collect_results(project, template))
@@ -910,7 +910,7 @@ def _prepare_sequential_run(
     reverse: bool,
 ) -> SequentialRunPlan | None:
     """Resolve inputs and bookkeeping for one sequential-fit run."""
-    verbosity = VerbosityEnum(analysis.project.verbosity)
+    verbosity = VerbosityEnum(analysis.project.verbosity.fit.value)
 
     _check_seq_preconditions(analysis.project)
 

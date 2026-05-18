@@ -521,6 +521,10 @@ def project_config_from_cif(project: object, cif_text: str) -> None:
     if rendering is not None:
         rendering.from_cif(block)
 
+    verbosity = getattr(project, 'verbosity', None)
+    if verbosity is not None:
+        verbosity.from_cif(block)
+
 
 def analysis_from_cif(analysis: object, cif_text: str) -> None:
     """
