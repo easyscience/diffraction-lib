@@ -31,6 +31,13 @@ The design question is whether this rule should be applied only to
 project-level configuration, or more broadly across analysis,
 experiments, structures, and calculated data.
 
+The accepted project-facade decision keeps `Project` as the public root
+and keeps `project.cif` as the singleton project configuration file. It
+also keeps `_project.*` as the semantic CIF category for scientific
+project information and rejects `_meta.*` for that purpose. This ADR
+therefore must not reintroduce the rejected `Workspace` rename,
+`workspace.cif`, or `_meta.project_*` tags as incidental cleanup.
+
 ## Scope Of Comparison
 
 The comparison below is category-level and public-API oriented. It lists
@@ -218,7 +225,19 @@ This ADR does not propose renaming the public root object. The current
 root object is already `Project`; the proposal is about category and tag
 correspondence inside project-owned singleton configuration.
 
-Target project-level mappings if the current Python names are kept:
+The accepted baseline is:
+
+```text
+project.info.<field> -> project.cif: _project.<field>
+```
+
+Future one-to-one correspondence work may still discuss whether the
+public identity field should be `name` or `id`, whether verbosity should
+persist as `_verbosity.level`, and whether rendering should keep
+separate chart and table engine fields.
+
+Possible strict-correspondence target if a future ADR explicitly changes
+the accepted `_project.*` baseline:
 
 | Python path                      | Target CIF path           | Current state                              |
 | -------------------------------- | ------------------------- | ------------------------------------------ |
@@ -259,9 +278,17 @@ scope tells the reader this is project-level verbosity.
 ### The Current `Project` Root Already Matches User Language
 
 The current public root object is already `Project`. Keeping it avoids a
-user-facing `workspace.project.*` nesting and aligns with scientific
-workflows where a project is the container for structures, experiments,
-analysis, and saved files.
+broad user-facing root rename and aligns with scientific workflows where
+a project is the container for structures, experiments, analysis, and
+saved files.
+
+### `_project.*` Is More Semantic Than `_meta.*`
+
+The project-information category stores the scientific project identity,
+title, description, and timestamps. `_project.id` and `_project.title`
+say that directly, while `_meta.project_id` and `_meta.project_title`
+make the CIF less domain-oriented and repeat the concept in every item
+name.
 
 ### Scientific CIF/Domain Categories Should Stay Domain-Oriented
 
@@ -302,13 +329,9 @@ unless a separate ADR changes the underlying API pattern.
 
 - Should the project identity remain `project.info.name`, or should it
   become `project.info.id` to mirror the saved identifier field?
-- Should project metadata move from `_project.*` to `_info.*`, or is
-  `_project.*` clearer even inside `project.cif`?
 - Should `project.rendering.chart_engine` and
   `project.rendering.table_engine` remain separate, or should the public
   API and CIF collapse to one `engine` field?
-- Should `_project.*` be accepted as a read-only legacy fallback when
-  loading older saved projects?
 - Should `project.verbosity = 'short'` remain as a convenience alias for
   `project.verbosity.level = 'short'`, or should strict correspondence
   remove the alias?
