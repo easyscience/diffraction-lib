@@ -39,9 +39,7 @@ class DeterministicParameterResultItem(CategoryItem):
                 default='_',
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_.]*$'),
             ),
-            cif_handler=CifHandler(
-                names=['_deterministic_parameter_result.param_unique_name']
-            ),
+            cif_handler=CifHandler(names=['_deterministic_parameter_result.param_unique_name']),
         )
         self._final_value = NumericDescriptor(
             name='final_value',
@@ -53,33 +51,29 @@ class DeterministicParameterResultItem(CategoryItem):
             name='final_uncertainty',
             description='Final uncertainty for the persisted parameter result.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(
-                names=['_deterministic_parameter_result.final_uncertainty']
-            ),
+            cif_handler=CifHandler(names=['_deterministic_parameter_result.final_uncertainty']),
         )
         self._at_lower_bound = BoolDescriptor(
             name='at_lower_bound',
             description='Whether the parameter finished at the lower fit bound.',
             value_spec=AttributeSpec(default=False),
-            cif_handler=CifHandler(
-                names=['_deterministic_parameter_result.at_lower_bound']
-            ),
+            cif_handler=CifHandler(names=['_deterministic_parameter_result.at_lower_bound']),
         )
         self._at_upper_bound = BoolDescriptor(
             name='at_upper_bound',
             description='Whether the parameter finished at the upper fit bound.',
             value_spec=AttributeSpec(default=False),
-            cif_handler=CifHandler(
-                names=['_deterministic_parameter_result.at_upper_bound']
-            ),
+            cif_handler=CifHandler(names=['_deterministic_parameter_result.at_upper_bound']),
         )
 
     @property
     def order_index(self) -> NumericDescriptor:
-        """Display and array order for the persisted parameter result."""
+        """
+        Display and array order for the persisted parameter result.
+        """
         return self._order_index
 
-    def _set_order_index(self, value: int | float) -> None:
+    def _set_order_index(self, value: float) -> None:
         """Set the order index for internal callers."""
         self._order_index.value = value
 
@@ -97,7 +91,7 @@ class DeterministicParameterResultItem(CategoryItem):
         """Final fitted value for the persisted parameter result."""
         return self._final_value
 
-    def _set_final_value(self, value: int | float | None) -> None:
+    def _set_final_value(self, value: float | None) -> None:
         """Set the final fitted value for internal callers."""
         self._final_value.value = value
 
@@ -106,7 +100,7 @@ class DeterministicParameterResultItem(CategoryItem):
         """Final uncertainty for the persisted parameter result."""
         return self._final_uncertainty
 
-    def _set_final_uncertainty(self, value: int | float | None) -> None:
+    def _set_final_uncertainty(self, value: float | None) -> None:
         """Set the final uncertainty for internal callers."""
         self._final_uncertainty.value = value
 
@@ -144,10 +138,10 @@ class DeterministicParameterResults(CategoryCollection):
     def create(
         self,
         *,
-        order_index: int | float,
+        order_index: float,
         param_unique_name: str,
-        final_value: int | float | None = None,
-        final_uncertainty: int | float | None = None,
+        final_value: float | None = None,
+        final_uncertainty: float | None = None,
         at_lower_bound: bool = False,
         at_upper_bound: bool = False,
     ) -> None:

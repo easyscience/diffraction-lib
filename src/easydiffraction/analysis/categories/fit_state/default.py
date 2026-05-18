@@ -37,6 +37,6 @@ class FitState(CategoryItem):
         """Persisted fit-state schema version."""
         return self._schema_version
 
-    def _set_schema_version(self, value: int | float) -> None:
+    def _set_schema_version(self, value: float) -> None:
         """Set the fit-state schema version for internal callers."""
         self._schema_version.value = value

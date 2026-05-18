@@ -81,17 +81,13 @@ class DeterministicResult(CategoryItem):
             name='covariance_available',
             description='Whether covariance was available for the persisted deterministic fit.',
             value_spec=AttributeSpec(default=False),
-            cif_handler=CifHandler(
-                names=['_deterministic_result.covariance_available']
-            ),
+            cif_handler=CifHandler(names=['_deterministic_result.covariance_available']),
         )
         self._correlation_available = BoolDescriptor(
             name='correlation_available',
             description='Whether correlations were available for the persisted deterministic fit.',
             value_spec=AttributeSpec(default=False),
-            cif_handler=CifHandler(
-                names=['_deterministic_result.correlation_available']
-            ),
+            cif_handler=CifHandler(names=['_deterministic_result.correlation_available']),
         )
 
     @property
@@ -114,7 +110,9 @@ class DeterministicResult(CategoryItem):
 
     @property
     def objective_name(self) -> StringDescriptor:
-        """Objective function name for the persisted deterministic fit."""
+        """
+        Objective function name for the persisted deterministic fit.
+        """
         return self._objective_name
 
     def _set_objective_name(self, value: str) -> None:
@@ -126,34 +124,41 @@ class DeterministicResult(CategoryItem):
         """Objective value for the persisted deterministic fit."""
         return self._objective_value
 
-    def _set_objective_value(self, value: int | float | None) -> None:
+    def _set_objective_value(self, value: float | None) -> None:
         """Set the objective value for internal callers."""
         self._objective_value.value = value
 
     @property
     def n_data_points(self) -> NumericDescriptor:
-        """Number of data points used in the persisted deterministic fit."""
+        """
+        Number of data points used in the persisted deterministic fit.
+        """
         return self._n_data_points
 
-    def _set_n_data_points(self, value: int | float) -> None:
+    def _set_n_data_points(self, value: float) -> None:
         """Set the data-point count for internal callers."""
         self._n_data_points.value = value
 
     @property
     def n_parameters(self) -> NumericDescriptor:
-        """Number of parameters considered in the persisted deterministic fit."""
+        """
+        Number of parameters considered in the persisted deterministic
+        fit.
+        """
         return self._n_parameters
 
-    def _set_n_parameters(self, value: int | float) -> None:
+    def _set_n_parameters(self, value: float) -> None:
         """Set the parameter count for internal callers."""
         self._n_parameters.value = value
 
     @property
     def n_free_parameters(self) -> NumericDescriptor:
-        """Number of free parameters in the persisted deterministic fit."""
+        """
+        Number of free parameters in the persisted deterministic fit.
+        """
         return self._n_free_parameters
 
-    def _set_n_free_parameters(self, value: int | float) -> None:
+    def _set_n_free_parameters(self, value: float) -> None:
         """Set the free-parameter count for internal callers."""
         self._n_free_parameters.value = value
 
@@ -162,13 +167,16 @@ class DeterministicResult(CategoryItem):
         """Degrees of freedom for the persisted deterministic fit."""
         return self._degrees_of_freedom
 
-    def _set_degrees_of_freedom(self, value: int | float) -> None:
+    def _set_degrees_of_freedom(self, value: float) -> None:
         """Set the degrees of freedom for internal callers."""
         self._degrees_of_freedom.value = value
 
     @property
     def covariance_available(self) -> BoolDescriptor:
-        """Whether covariance was available for the persisted deterministic fit."""
+        """
+        Whether covariance was available for the persisted deterministic
+        fit.
+        """
         return self._covariance_available
 
     def _set_covariance_available(self, value: bool) -> None:
@@ -177,7 +185,10 @@ class DeterministicResult(CategoryItem):
 
     @property
     def correlation_available(self) -> BoolDescriptor:
-        """Whether correlations were available for the persisted deterministic fit."""
+        """
+        Whether correlations were available for the persisted
+        deterministic fit.
+        """
         return self._correlation_available
 
     def _set_correlation_available(self, value: bool) -> None:

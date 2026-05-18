@@ -82,7 +82,9 @@ class FitResult(CategoryItem):
 
     @property
     def success(self) -> BoolDescriptor:
-        """Whether the latest persisted fit-result projection succeeded."""
+        """
+        Whether the latest persisted fit-result projection succeeded.
+        """
         return self._success
 
     def _set_success(self, value: bool) -> None:
@@ -91,7 +93,9 @@ class FitResult(CategoryItem):
 
     @property
     def message(self) -> StringDescriptor:
-        """Status message for the latest persisted fit-result projection."""
+        """
+        Status message for the latest persisted fit-result projection.
+        """
         return self._message
 
     def _set_message(self, value: str) -> None:
@@ -100,19 +104,23 @@ class FitResult(CategoryItem):
 
     @property
     def iterations(self) -> NumericDescriptor:
-        """Iteration count for the latest persisted fit-result projection."""
+        """
+        Iteration count for the latest persisted fit-result projection.
+        """
         return self._iterations
 
-    def _set_iterations(self, value: int | float) -> None:
+    def _set_iterations(self, value: float) -> None:
         """Set the iteration count for internal callers."""
         self._iterations.value = value
 
     @property
     def fitting_time(self) -> NumericDescriptor:
-        """Fitting time in seconds for the latest persisted projection."""
+        """
+        Fitting time in seconds for the latest persisted projection.
+        """
         return self._fitting_time
 
-    def _set_fitting_time(self, value: int | float | None) -> None:
+    def _set_fitting_time(self, value: float | None) -> None:
         """Set the fitting time for internal callers."""
         self._fitting_time.value = value
 
@@ -121,6 +129,6 @@ class FitResult(CategoryItem):
         """Reduced chi-square for the latest persisted projection."""
         return self._reduced_chi_square
 
-    def _set_reduced_chi_square(self, value: int | float | None) -> None:
+    def _set_reduced_chi_square(self, value: float | None) -> None:
         """Set the reduced chi-square for internal callers."""
         self._reduced_chi_square.value = value

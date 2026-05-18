@@ -141,7 +141,7 @@ class FitParameterCorrelationItem(CategoryItem):
         """Persisted correlation coefficient for the parameter pair."""
         return self._correlation
 
-    def _set_correlation(self, value: int | float) -> None:
+    def _set_correlation(self, value: float) -> None:
         """Set the correlation coefficient for internal callers."""
         self._correlation.value = value
 
@@ -164,7 +164,7 @@ class FitParameterCorrelations(CategoryCollection):
         source_kind: str,
         param_unique_name_i: str,
         param_unique_name_j: str,
-        correlation: int | float,
+        correlation: float,
         id: str | None = None,
     ) -> None:
         """

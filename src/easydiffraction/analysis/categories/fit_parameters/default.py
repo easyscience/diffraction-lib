@@ -50,9 +50,7 @@ class FitParameterItem(CategoryItem):
             name='fit_bounds_uncertainty_multiplier',
             description='Multiplier used to derive fit bounds from uncertainty.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(
-                names=['_fit_parameter.fit_bounds_uncertainty_multiplier']
-            ),
+            cif_handler=CifHandler(names=['_fit_parameter.fit_bounds_uncertainty_multiplier']),
         )
         self._start_value = NumericDescriptor(
             name='start_value',
@@ -73,7 +71,9 @@ class FitParameterItem(CategoryItem):
         return self._param_unique_name
 
     def _set_param_unique_name(self, value: str) -> None:
-        """Set the referenced parameter unique name for internal callers."""
+        """
+        Set the referenced parameter unique name for internal callers.
+        """
         self._param_unique_name.value = value
 
     @property
@@ -81,7 +81,7 @@ class FitParameterItem(CategoryItem):
         """Persisted lower fit bound."""
         return self._fit_min
 
-    def _set_fit_min(self, value: int | float) -> None:
+    def _set_fit_min(self, value: float) -> None:
         """Set the persisted lower fit bound for internal callers."""
         self._fit_min.value = value
 
@@ -90,7 +90,7 @@ class FitParameterItem(CategoryItem):
         """Persisted upper fit bound."""
         return self._fit_max
 
-    def _set_fit_max(self, value: int | float) -> None:
+    def _set_fit_max(self, value: float) -> None:
         """Set the persisted upper fit bound for internal callers."""
         self._fit_max.value = value
 
@@ -101,9 +101,11 @@ class FitParameterItem(CategoryItem):
 
     def _set_fit_bounds_uncertainty_multiplier(
         self,
-        value: int | float | None,
+        value: float | None,
     ) -> None:
-        """Set the fit-bounds uncertainty multiplier for internal callers."""
+        """
+        Set the fit-bounds uncertainty multiplier for internal callers.
+        """
         self._fit_bounds_uncertainty_multiplier.value = value
 
     @property
@@ -111,7 +113,7 @@ class FitParameterItem(CategoryItem):
         """Persisted pre-fit value snapshot."""
         return self._start_value
 
-    def _set_start_value(self, value: int | float | None) -> None:
+    def _set_start_value(self, value: float | None) -> None:
         """Set the pre-fit value snapshot for internal callers."""
         self._start_value.value = value
 
@@ -120,7 +122,7 @@ class FitParameterItem(CategoryItem):
         """Persisted pre-fit uncertainty snapshot."""
         return self._start_uncertainty
 
-    def _set_start_uncertainty(self, value: int | float | None) -> None:
+    def _set_start_uncertainty(self, value: float | None) -> None:
         """Set the pre-fit uncertainty snapshot for internal callers."""
         self._start_uncertainty.value = value
 
@@ -141,11 +143,11 @@ class FitParameters(CategoryCollection):
         self,
         *,
         param_unique_name: str,
-        fit_min: int | float,
-        fit_max: int | float,
-        fit_bounds_uncertainty_multiplier: int | float | None = None,
-        start_value: int | float | None = None,
-        start_uncertainty: int | float | None = None,
+        fit_min: float,
+        fit_max: float,
+        fit_bounds_uncertainty_multiplier: float | None = None,
+        start_value: float | None = None,
+        start_uncertainty: float | None = None,
     ) -> None:
         """
         Create a persisted fit-parameter control snapshot row.

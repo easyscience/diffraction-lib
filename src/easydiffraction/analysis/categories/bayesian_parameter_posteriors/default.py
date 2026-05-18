@@ -50,9 +50,7 @@ class BayesianParameterPosteriorItem(CategoryItem):
             name='best_sample_value',
             description='Committed sampled parameter value.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(
-                names=['_bayesian_parameter_posterior.best_sample_value']
-            ),
+            cif_handler=CifHandler(names=['_bayesian_parameter_posterior.best_sample_value']),
         )
         self._median = NumericDescriptor(
             name='median',
@@ -70,33 +68,25 @@ class BayesianParameterPosteriorItem(CategoryItem):
             name='interval_68_lower',
             description='Lower bound of the 68% credible interval.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(
-                names=['_bayesian_parameter_posterior.interval_68_lower']
-            ),
+            cif_handler=CifHandler(names=['_bayesian_parameter_posterior.interval_68_lower']),
         )
         self._interval_68_upper = NumericDescriptor(
             name='interval_68_upper',
             description='Upper bound of the 68% credible interval.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(
-                names=['_bayesian_parameter_posterior.interval_68_upper']
-            ),
+            cif_handler=CifHandler(names=['_bayesian_parameter_posterior.interval_68_upper']),
         )
         self._interval_95_lower = NumericDescriptor(
             name='interval_95_lower',
             description='Lower bound of the 95% credible interval.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(
-                names=['_bayesian_parameter_posterior.interval_95_lower']
-            ),
+            cif_handler=CifHandler(names=['_bayesian_parameter_posterior.interval_95_lower']),
         )
         self._interval_95_upper = NumericDescriptor(
             name='interval_95_upper',
             description='Upper bound of the 95% credible interval.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(
-                names=['_bayesian_parameter_posterior.interval_95_upper']
-            ),
+            cif_handler=CifHandler(names=['_bayesian_parameter_posterior.interval_95_upper']),
         )
         self._ess_bulk = NumericDescriptor(
             name='ess_bulk',
@@ -116,7 +106,7 @@ class BayesianParameterPosteriorItem(CategoryItem):
         """Parameter column order in posterior sample arrays."""
         return self._order_index
 
-    def _set_order_index(self, value: int | float) -> None:
+    def _set_order_index(self, value: float) -> None:
         """Set the order index for internal callers."""
         self._order_index.value = value
 
@@ -143,7 +133,7 @@ class BayesianParameterPosteriorItem(CategoryItem):
         """Committed sampled parameter value."""
         return self._best_sample_value
 
-    def _set_best_sample_value(self, value: int | float | None) -> None:
+    def _set_best_sample_value(self, value: float | None) -> None:
         """Set the best sampled parameter value for internal callers."""
         self._best_sample_value.value = value
 
@@ -152,7 +142,7 @@ class BayesianParameterPosteriorItem(CategoryItem):
         """Posterior median value."""
         return self._median
 
-    def _set_median(self, value: int | float | None) -> None:
+    def _set_median(self, value: float | None) -> None:
         """Set the posterior median for internal callers."""
         self._median.value = value
 
@@ -161,7 +151,7 @@ class BayesianParameterPosteriorItem(CategoryItem):
         """Posterior standard deviation."""
         return self._uncertainty
 
-    def _set_uncertainty(self, value: int | float | None) -> None:
+    def _set_uncertainty(self, value: float | None) -> None:
         """Set the posterior uncertainty for internal callers."""
         self._uncertainty.value = value
 
@@ -170,7 +160,7 @@ class BayesianParameterPosteriorItem(CategoryItem):
         """Lower bound of the 68% credible interval."""
         return self._interval_68_lower
 
-    def _set_interval_68_lower(self, value: int | float | None) -> None:
+    def _set_interval_68_lower(self, value: float | None) -> None:
         """Set the 68% interval lower bound for internal callers."""
         self._interval_68_lower.value = value
 
@@ -179,7 +169,7 @@ class BayesianParameterPosteriorItem(CategoryItem):
         """Upper bound of the 68% credible interval."""
         return self._interval_68_upper
 
-    def _set_interval_68_upper(self, value: int | float | None) -> None:
+    def _set_interval_68_upper(self, value: float | None) -> None:
         """Set the 68% interval upper bound for internal callers."""
         self._interval_68_upper.value = value
 
@@ -188,7 +178,7 @@ class BayesianParameterPosteriorItem(CategoryItem):
         """Lower bound of the 95% credible interval."""
         return self._interval_95_lower
 
-    def _set_interval_95_lower(self, value: int | float | None) -> None:
+    def _set_interval_95_lower(self, value: float | None) -> None:
         """Set the 95% interval lower bound for internal callers."""
         self._interval_95_lower.value = value
 
@@ -197,7 +187,7 @@ class BayesianParameterPosteriorItem(CategoryItem):
         """Upper bound of the 95% credible interval."""
         return self._interval_95_upper
 
-    def _set_interval_95_upper(self, value: int | float | None) -> None:
+    def _set_interval_95_upper(self, value: float | None) -> None:
         """Set the 95% interval upper bound for internal callers."""
         self._interval_95_upper.value = value
 
@@ -206,7 +196,7 @@ class BayesianParameterPosteriorItem(CategoryItem):
         """Bulk effective sample size when available."""
         return self._ess_bulk
 
-    def _set_ess_bulk(self, value: int | float | None) -> None:
+    def _set_ess_bulk(self, value: float | None) -> None:
         """Set the ESS bulk value for internal callers."""
         self._ess_bulk.value = value
 
@@ -215,14 +205,16 @@ class BayesianParameterPosteriorItem(CategoryItem):
         """Rank-normalized split-R-hat when available."""
         return self._r_hat
 
-    def _set_r_hat(self, value: int | float | None) -> None:
+    def _set_r_hat(self, value: float | None) -> None:
         """Set the R-hat value for internal callers."""
         self._r_hat.value = value
 
 
 @BayesianParameterPosteriorsFactory.register
 class BayesianParameterPosteriors(CategoryCollection):
-    """Collection of persisted Bayesian parameter posterior summaries."""
+    """
+    Collection of persisted Bayesian parameter posterior summaries.
+    """
 
     type_info = TypeInfo(
         tag='default',
@@ -235,18 +227,18 @@ class BayesianParameterPosteriors(CategoryCollection):
     def create(
         self,
         *,
-        order_index: int | float,
+        order_index: float,
         unique_name: str,
         display_name: str,
-        best_sample_value: int | float | None = None,
-        median: int | float | None = None,
-        uncertainty: int | float | None = None,
-        interval_68_lower: int | float | None = None,
-        interval_68_upper: int | float | None = None,
-        interval_95_lower: int | float | None = None,
-        interval_95_upper: int | float | None = None,
-        ess_bulk: int | float | None = None,
-        r_hat: int | float | None = None,
+        best_sample_value: float | None = None,
+        median: float | None = None,
+        uncertainty: float | None = None,
+        interval_68_lower: float | None = None,
+        interval_68_upper: float | None = None,
+        interval_95_lower: float | None = None,
+        interval_95_upper: float | None = None,
+        ess_bulk: float | None = None,
+        r_hat: float | None = None,
     ) -> None:
         """
         Create a persisted Bayesian parameter posterior summary row.

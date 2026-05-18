@@ -186,7 +186,7 @@ class BayesianPairCacheItem(CategoryItem):
         """Number of x-grid points in the cached pair."""
         return self._n_grid_x
 
-    def _set_n_grid_x(self, value: int | float) -> None:
+    def _set_n_grid_x(self, value: float) -> None:
         """Set the x-grid size for internal callers."""
         self._n_grid_x.value = value
 
@@ -195,7 +195,7 @@ class BayesianPairCacheItem(CategoryItem):
         """Number of y-grid points in the cached pair."""
         return self._n_grid_y
 
-    def _set_n_grid_y(self, value: int | float) -> None:
+    def _set_n_grid_y(self, value: float) -> None:
         """Set the y-grid size for internal callers."""
         self._n_grid_y.value = value
 
@@ -204,7 +204,7 @@ class BayesianPairCacheItem(CategoryItem):
         """Number of draws summarized into the cached pair."""
         return self._n_draws_cached
 
-    def _set_n_draws_cached(self, value: int | float) -> None:
+    def _set_n_draws_cached(self, value: float) -> None:
         """Set the cached-draw count for internal callers."""
         self._n_draws_cached.value = value
 
@@ -230,9 +230,9 @@ class BayesianPairCaches(CategoryCollection):
         y_path: str,
         density_path: str,
         contour_level_path: str,
-        n_grid_x: int | float,
-        n_grid_y: int | float,
-        n_draws_cached: int | float,
+        n_grid_x: float,
+        n_grid_y: float,
+        n_draws_cached: float,
         id: str | None = None,
     ) -> None:
         """

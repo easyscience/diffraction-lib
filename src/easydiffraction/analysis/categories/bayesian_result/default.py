@@ -120,7 +120,9 @@ class BayesianResult(CategoryItem):
 
     @property
     def success(self) -> BoolDescriptor:
-        """Whether the persisted Bayesian fit produced usable results."""
+        """
+        Whether the persisted Bayesian fit produced usable results.
+        """
         return self._success
 
     def _set_success(self, value: bool) -> None:
@@ -141,7 +143,7 @@ class BayesianResult(CategoryItem):
         """Best log-posterior value reported by the sampler."""
         return self._best_log_posterior
 
-    def _set_best_log_posterior(self, value: int | float | None) -> None:
+    def _set_best_log_posterior(self, value: float | None) -> None:
         """Set the best log-posterior for internal callers."""
         self._best_log_posterior.value = value
 
@@ -150,8 +152,10 @@ class BayesianResult(CategoryItem):
         """Inner credible-interval level used in summaries."""
         return self._credible_interval_inner
 
-    def _set_credible_interval_inner(self, value: int | float) -> None:
-        """Set the inner credible-interval level for internal callers."""
+    def _set_credible_interval_inner(self, value: float) -> None:
+        """
+        Set the inner credible-interval level for internal callers.
+        """
         self._credible_interval_inner.value = value
 
     @property
@@ -159,8 +163,10 @@ class BayesianResult(CategoryItem):
         """Outer credible-interval level used in summaries."""
         return self._credible_interval_outer
 
-    def _set_credible_interval_outer(self, value: int | float) -> None:
-        """Set the outer credible-interval level for internal callers."""
+    def _set_credible_interval_outer(self, value: float) -> None:
+        """
+        Set the outer credible-interval level for internal callers.
+        """
         self._credible_interval_outer.value = value
 
     @property

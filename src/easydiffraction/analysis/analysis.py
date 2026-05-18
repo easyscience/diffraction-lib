@@ -28,9 +28,7 @@ from easydiffraction.analysis.categories.deterministic_parameter_results import 
     DeterministicParameterResults,
 )
 from easydiffraction.analysis.categories.deterministic_result import DeterministicResult
-from easydiffraction.analysis.categories.fit_parameter_correlations import (
-    FitParameterCorrelations,
-)
+from easydiffraction.analysis.categories.fit_parameter_correlations import FitParameterCorrelations
 from easydiffraction.analysis.categories.fit_parameters import FitParameters
 from easydiffraction.analysis.categories.fit_result import FitResult
 from easydiffraction.analysis.categories.fit_state import FitState
@@ -42,8 +40,8 @@ from easydiffraction.analysis.categories.sequential_fit import SequentialFitFact
 from easydiffraction.analysis.categories.sequential_fit_extract import (
     SequentialFitExtractCollection,
 )
-from easydiffraction.analysis.enums import FitResultKindEnum
 from easydiffraction.analysis.enums import FitModeEnum
+from easydiffraction.analysis.enums import FitResultKindEnum
 from easydiffraction.analysis.fitting import Fitter
 from easydiffraction.core.category_owner import CategoryOwner
 from easydiffraction.core.guard import _apply_help_filter
@@ -791,15 +789,22 @@ class Analysis(CategoryOwner):
         return self._bayesian_predictive_datasets
 
     def _has_persisted_fit_state(self) -> bool:
-        """Return whether a persisted fit-state projection is present."""
+        """
+        Return whether a persisted fit-state projection is present.
+        """
         return self._has_persisted_fit_state_data
 
     def _set_has_persisted_fit_state(self, value: bool) -> None:
-        """Set the persisted fit-state presence flag for internal callers."""
+        """
+        Set the persisted fit-state presence flag for internal callers.
+        """
         self._has_persisted_fit_state_data = value
 
     def _fit_state_categories(self) -> list[object]:
-        """Return fit-state categories for the current persisted result kind."""
+        """
+        Return fit-state categories for the current persisted result
+        kind.
+        """
         categories: list[object] = [
             self.fit_state,
             self.fit_parameters,
@@ -812,7 +817,7 @@ class Analysis(CategoryOwner):
         except ValueError:
             log.warning(
                 'Unsupported fit_result.result_kind while serializing analysis CIF: '
-                f"{self.fit_result.result_kind.value!r}. "
+                f'{self.fit_result.result_kind.value!r}. '
                 'Saving only common fit-state categories.',
             )
             return categories

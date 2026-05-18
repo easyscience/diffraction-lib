@@ -79,7 +79,7 @@ class BayesianConvergence(CategoryItem):
         """Maximum rank-normalized split-R-hat across parameters."""
         return self._max_r_hat
 
-    def _set_max_r_hat(self, value: int | float | None) -> None:
+    def _set_max_r_hat(self, value: float | None) -> None:
         """Set the maximum R-hat for internal callers."""
         self._max_r_hat.value = value
 
@@ -88,7 +88,7 @@ class BayesianConvergence(CategoryItem):
         """Minimum bulk effective sample size across parameters."""
         return self._min_ess_bulk
 
-    def _set_min_ess_bulk(self, value: int | float | None) -> None:
+    def _set_min_ess_bulk(self, value: float | None) -> None:
         """Set the minimum ESS bulk for internal callers."""
         self._min_ess_bulk.value = value
 
@@ -97,7 +97,7 @@ class BayesianConvergence(CategoryItem):
         """Number of stored posterior draws."""
         return self._n_draws
 
-    def _set_n_draws(self, value: int | float) -> None:
+    def _set_n_draws(self, value: float) -> None:
         """Set the draw count for internal callers."""
         self._n_draws.value = value
 
@@ -106,7 +106,7 @@ class BayesianConvergence(CategoryItem):
         """Number of stored posterior chains."""
         return self._n_chains
 
-    def _set_n_chains(self, value: int | float) -> None:
+    def _set_n_chains(self, value: float) -> None:
         """Set the chain count for internal callers."""
         self._n_chains.value = value
 
@@ -115,6 +115,6 @@ class BayesianConvergence(CategoryItem):
         """Number of sampled parameters."""
         return self._n_parameters
 
-    def _set_n_parameters(self, value: int | float) -> None:
+    def _set_n_parameters(self, value: float) -> None:
         """Set the sampled-parameter count for internal callers."""
         self._n_parameters.value = value

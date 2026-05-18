@@ -179,7 +179,7 @@ class BayesianPredictiveDatasetItem(CategoryItem):
         """Number of x-axis points in the cached predictive dataset."""
         return self._n_x
 
-    def _set_n_x(self, value: int | float) -> None:
+    def _set_n_x(self, value: float) -> None:
         """Set the predictive x-axis size for internal callers."""
         self._n_x.value = value
 
@@ -188,7 +188,7 @@ class BayesianPredictiveDatasetItem(CategoryItem):
         """Number of cached predictive draws."""
         return self._n_draws_cached
 
-    def _set_n_draws_cached(self, value: int | float) -> None:
+    def _set_n_draws_cached(self, value: float) -> None:
         """Set the cached predictive-draw count for internal callers."""
         self._n_draws_cached.value = value
 
@@ -217,8 +217,8 @@ class BayesianPredictiveDatasets(CategoryCollection):
         lower_68_path: str | None = None,
         upper_68_path: str | None = None,
         draws_path: str | None = None,
-        n_x: int | float,
-        n_draws_cached: int | float,
+        n_x: float,
+        n_draws_cached: float,
     ) -> None:
         """
         Create a persisted Bayesian predictive-dataset manifest row.

@@ -10,16 +10,14 @@ from easydiffraction.analysis.categories.bayesian_distribution_caches import (
 from easydiffraction.analysis.categories.bayesian_distribution_caches import (
     BayesianDistributionCaches,
 )
+from easydiffraction.analysis.categories.bayesian_pair_caches import BayesianPairCacheItem
+from easydiffraction.analysis.categories.bayesian_pair_caches import BayesianPairCaches
 from easydiffraction.analysis.categories.bayesian_parameter_posteriors import (
     BayesianParameterPosteriorItem,
 )
 from easydiffraction.analysis.categories.bayesian_parameter_posteriors import (
     BayesianParameterPosteriors,
 )
-from easydiffraction.analysis.categories.bayesian_pair_caches import (
-    BayesianPairCacheItem,
-)
-from easydiffraction.analysis.categories.bayesian_pair_caches import BayesianPairCaches
 from easydiffraction.analysis.categories.bayesian_predictive_datasets import (
     BayesianPredictiveDatasetItem,
 )
@@ -40,9 +38,7 @@ from easydiffraction.analysis.categories.deterministic_result import Determinist
 from easydiffraction.analysis.categories.fit_parameter_correlations import (
     FitParameterCorrelationItem,
 )
-from easydiffraction.analysis.categories.fit_parameter_correlations import (
-    FitParameterCorrelations,
-)
+from easydiffraction.analysis.categories.fit_parameter_correlations import FitParameterCorrelations
 from easydiffraction.analysis.categories.fit_parameters import FitParameterItem
 from easydiffraction.analysis.categories.fit_parameters import FitParameters
 from easydiffraction.analysis.categories.fit_result import FitResult

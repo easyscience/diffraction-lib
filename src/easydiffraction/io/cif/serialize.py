@@ -590,7 +590,9 @@ def _has_persisted_fit_state_sections(block: object) -> bool:
 
 
 def _warn_for_unsupported_fit_state_schema(analysis: object) -> None:
-    """Warn when the persisted fit-state schema version is unsupported."""
+    """
+    Warn when the persisted fit-state schema version is unsupported.
+    """
     schema_version = analysis.fit_state.schema_version.value
     if schema_version != 1:
         log.warning(
@@ -600,7 +602,10 @@ def _warn_for_unsupported_fit_state_schema(analysis: object) -> None:
 
 
 def _restore_common_fit_state(analysis: object, block: object) -> None:
-    """Restore fit-state categories shared by deterministic and Bayesian fits."""
+    """
+    Restore fit-state categories shared by deterministic and Bayesian
+    fits.
+    """
     analysis.fit_state.from_cif(block)
     _warn_for_unsupported_fit_state_schema(analysis)
     analysis.fit_parameters.from_cif(block)
@@ -626,7 +631,9 @@ def _restore_bayesian_fit_state(analysis: object, block: object) -> None:
 
 
 def _restore_persisted_fit_state(analysis: object, block: object) -> None:
-    """Restore persisted fit-state categories after analysis configuration."""
+    """
+    Restore persisted fit-state categories after analysis configuration.
+    """
     from easydiffraction.analysis.enums import FitResultKindEnum  # noqa: PLC0415
 
     analysis._set_has_persisted_fit_state(True)

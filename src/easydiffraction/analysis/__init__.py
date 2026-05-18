@@ -2,9 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 from easydiffraction.analysis.categories.bayesian_convergence import BayesianConvergence
-from easydiffraction.analysis.categories.bayesian_convergence import (
-    BayesianConvergenceFactory,
-)
+from easydiffraction.analysis.categories.bayesian_convergence import BayesianConvergenceFactory
 from easydiffraction.analysis.categories.bayesian_distribution_caches import (
     BayesianDistributionCacheItem,
 )
@@ -14,6 +12,9 @@ from easydiffraction.analysis.categories.bayesian_distribution_caches import (
 from easydiffraction.analysis.categories.bayesian_distribution_caches import (
     BayesianDistributionCachesFactory,
 )
+from easydiffraction.analysis.categories.bayesian_pair_caches import BayesianPairCacheItem
+from easydiffraction.analysis.categories.bayesian_pair_caches import BayesianPairCaches
+from easydiffraction.analysis.categories.bayesian_pair_caches import BayesianPairCachesFactory
 from easydiffraction.analysis.categories.bayesian_parameter_posteriors import (
     BayesianParameterPosteriorItem,
 )
@@ -22,13 +23,6 @@ from easydiffraction.analysis.categories.bayesian_parameter_posteriors import (
 )
 from easydiffraction.analysis.categories.bayesian_parameter_posteriors import (
     BayesianParameterPosteriorsFactory,
-)
-from easydiffraction.analysis.categories.bayesian_pair_caches import (
-    BayesianPairCacheItem,
-)
-from easydiffraction.analysis.categories.bayesian_pair_caches import BayesianPairCaches
-from easydiffraction.analysis.categories.bayesian_pair_caches import (
-    BayesianPairCachesFactory,
 )
 from easydiffraction.analysis.categories.bayesian_predictive_datasets import (
     BayesianPredictiveDatasetItem,
@@ -53,17 +47,11 @@ from easydiffraction.analysis.categories.deterministic_parameter_results import 
     DeterministicParameterResultsFactory,
 )
 from easydiffraction.analysis.categories.deterministic_result import DeterministicResult
-from easydiffraction.analysis.categories.deterministic_result import (
-    DeterministicResultFactory,
-)
-from easydiffraction.analysis.categories.fitting import Fitting
-from easydiffraction.analysis.categories.fitting import FittingFactory
+from easydiffraction.analysis.categories.deterministic_result import DeterministicResultFactory
 from easydiffraction.analysis.categories.fit_parameter_correlations import (
     FitParameterCorrelationItem,
 )
-from easydiffraction.analysis.categories.fit_parameter_correlations import (
-    FitParameterCorrelations,
-)
+from easydiffraction.analysis.categories.fit_parameter_correlations import FitParameterCorrelations
 from easydiffraction.analysis.categories.fit_parameter_correlations import (
     FitParameterCorrelationsFactory,
 )
@@ -74,6 +62,8 @@ from easydiffraction.analysis.categories.fit_result import FitResult
 from easydiffraction.analysis.categories.fit_result import FitResultFactory
 from easydiffraction.analysis.categories.fit_state import FitState
 from easydiffraction.analysis.categories.fit_state import FitStateFactory
+from easydiffraction.analysis.categories.fitting import Fitting
+from easydiffraction.analysis.categories.fitting import FittingFactory
 from easydiffraction.analysis.categories.joint_fit import JointFitCollection
 from easydiffraction.analysis.categories.joint_fit import JointFitFactory
 from easydiffraction.analysis.categories.joint_fit import JointFitItem

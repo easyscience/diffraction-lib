@@ -91,7 +91,7 @@ class BayesianDistributionCacheItem(CategoryItem):
         """Number of grid points in the cached distribution."""
         return self._n_grid
 
-    def _set_n_grid(self, value: int | float) -> None:
+    def _set_n_grid(self, value: float) -> None:
         """Set the grid-size count for internal callers."""
         self._n_grid.value = value
 
@@ -100,7 +100,7 @@ class BayesianDistributionCacheItem(CategoryItem):
         """Number of draws summarized into the cached distribution."""
         return self._n_draws_cached
 
-    def _set_n_draws_cached(self, value: int | float) -> None:
+    def _set_n_draws_cached(self, value: float) -> None:
         """Set the cached-draw count for internal callers."""
         self._n_draws_cached.value = value
 
@@ -123,8 +123,8 @@ class BayesianDistributionCaches(CategoryCollection):
         param_unique_name: str,
         x_path: str,
         density_path: str,
-        n_grid: int | float,
-        n_draws_cached: int | float,
+        n_grid: float,
+        n_draws_cached: float,
     ) -> None:
         """
         Create a persisted Bayesian distribution-cache manifest row.

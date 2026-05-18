@@ -75,7 +75,7 @@ class BayesianSampler(CategoryItem):
         """Resolved number of sampler steps."""
         return self._steps
 
-    def _set_steps(self, value: int | float) -> None:
+    def _set_steps(self, value: float) -> None:
         """Set the step count for internal callers."""
         self._steps.value = value
 
@@ -84,7 +84,7 @@ class BayesianSampler(CategoryItem):
         """Resolved burn-in count."""
         return self._burn
 
-    def _set_burn(self, value: int | float) -> None:
+    def _set_burn(self, value: float) -> None:
         """Set the burn-in count for internal callers."""
         self._burn.value = value
 
@@ -93,7 +93,7 @@ class BayesianSampler(CategoryItem):
         """Resolved thinning interval."""
         return self._thin
 
-    def _set_thin(self, value: int | float) -> None:
+    def _set_thin(self, value: float) -> None:
         """Set the thinning interval for internal callers."""
         self._thin.value = value
 
@@ -102,7 +102,7 @@ class BayesianSampler(CategoryItem):
         """Resolved population size."""
         return self._pop
 
-    def _set_pop(self, value: int | float) -> None:
+    def _set_pop(self, value: float) -> None:
         """Set the population size for internal callers."""
         self._pop.value = value
 
@@ -129,6 +129,6 @@ class BayesianSampler(CategoryItem):
         """Resolved random seed used by the sampler."""
         return self._random_seed
 
-    def _set_random_seed(self, value: int | float | None) -> None:
+    def _set_random_seed(self, value: float | None) -> None:
         """Set the random seed for internal callers."""
         self._random_seed.value = value
