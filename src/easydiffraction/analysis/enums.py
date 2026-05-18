@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+from enum import Enum
 from enum import StrEnum
 
 
@@ -28,3 +29,27 @@ class FitModeEnum(StrEnum):
         if self is FitModeEnum.SEQUENTIAL:
             return 'Fit one experiment against a series of data files.'
         return ''
+
+
+class FitResultKindEnum(str, Enum):
+    """Persisted kind of the latest fit-result projection."""
+
+    DETERMINISTIC = 'deterministic'
+    BAYESIAN = 'bayesian'
+
+    @classmethod
+    def default(cls) -> FitResultKindEnum:
+        """Return the default persisted fit-result kind."""
+        return cls.DETERMINISTIC
+
+
+class FitCorrelationSourceEnum(str, Enum):
+    """Source of a persisted fit-parameter correlation summary."""
+
+    DETERMINISTIC = 'deterministic'
+    POSTERIOR = 'posterior'
+
+    @classmethod
+    def default(cls) -> FitCorrelationSourceEnum:
+        """Return the default persisted correlation source."""
+        return cls.DETERMINISTIC

@@ -34,7 +34,7 @@ structure or experiment CIF files.
 - [x] Confirm public surface: expose read-only `Analysis` properties.
 - [x] Confirm predictive cache identity: key by `experiment_name`.
 - [x] Phase 1 step 1: update the ADR suggestion with clarifications.
-- [ ] Phase 1 step 2: add common fit-state category models.
+- [x] Phase 1 step 2: add common fit-state category models.
 - [ ] Phase 1 step 3: add deterministic result category models.
 - [ ] Phase 1 step 4: add Bayesian metadata category models.
 - [ ] Phase 1 step 5: add Bayesian cache manifest category models.
