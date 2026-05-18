@@ -739,9 +739,8 @@ class ProjectDisplay:
         if fit_results is None:
             return False, 'No fit results are available.'
 
-        posterior_samples = getattr(fit_results, 'posterior_samples', None)
         posterior_predictive = getattr(fit_results, 'posterior_predictive', None)
-        if posterior_samples is None or posterior_predictive is None:
+        if not posterior_predictive:
             return False, 'Posterior predictive data is unavailable.'
 
         active_chart_engine = getattr(self._project.rendering.plotter, 'engine', None)

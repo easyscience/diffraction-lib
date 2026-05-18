@@ -16,6 +16,8 @@ from enum import StrEnum
 import numpy as np
 import pandas as pd
 
+from easydiffraction.analysis.enums import FitCorrelationSourceEnum
+from easydiffraction.analysis.enums import FitResultKindEnum
 from easydiffraction.analysis.fit_helpers.bayesian import PosteriorPredictiveSummary
 from easydiffraction.datablocks.experiment.item.base import intensity_category_for
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
@@ -1573,13 +1575,15 @@ class Plotter(RendererBase):
             return corr_df
 
         raw_result = self._raw_fit_result_for_correlation(fit_results)
-        if raw_result is None:
-            return None
+        if raw_result is not None:
+            corr_df = self._correlation_dataframe_from_engine_result(
+                raw_result=raw_result,
+                parameters=fit_results.parameters,
+            )
+            if corr_df is not None:
+                return corr_df
 
-        corr_df = self._correlation_dataframe_from_engine_result(
-            raw_result=raw_result,
-            parameters=fit_results.parameters,
-        )
+        corr_df = self._correlation_dataframe_from_persisted_projection(fit_results)
         if corr_df is not None:
             return corr_df
 
@@ -1606,14 +1610,70 @@ class Plotter(RendererBase):
         if raw_result is None:
             raw_result = getattr(fit_results, 'engine_result', None)
         if raw_result is None:
-            log.warning('No raw fit result available. Correlation matrix cannot be plotted.')
             return None
 
         var_names = getattr(raw_result, 'var_names', None)
         if not var_names:
-            log.warning('Fit result does not expose variable names for a correlation matrix.')
             return None
         return raw_result
+
+    def _correlation_dataframe_from_persisted_projection(
+        self,
+        fit_results: object,
+    ) -> pd.DataFrame | None:
+        """Return correlations restored from persisted fit-state rows."""
+        if self._project is None:
+            return None
+
+        analysis = self._project.analysis
+        source_kind = (
+            FitCorrelationSourceEnum.POSTERIOR.value
+            if analysis.fit_result.result_kind.value == FitResultKindEnum.BAYESIAN.value
+            else FitCorrelationSourceEnum.DETERMINISTIC.value
+        )
+        correlation_rows = [
+            row
+            for row in analysis.fit_parameter_correlations
+            if row.source_kind.value == source_kind
+        ]
+        if not correlation_rows:
+            return None
+
+        parameter_names = [
+            getattr(parameter, 'unique_name', '')
+            for parameter in getattr(fit_results, 'parameters', [])
+            if getattr(parameter, 'unique_name', None)
+        ]
+        if not parameter_names:
+            parameter_names = [
+                summary.unique_name
+                for summary in getattr(fit_results, 'posterior_parameter_summaries', [])
+            ]
+
+        for row in correlation_rows:
+            parameter_names.extend(
+                [row.param_unique_name_i.value, row.param_unique_name_j.value]
+            )
+        parameter_names = list(dict.fromkeys(parameter_names))
+        if len(parameter_names) < 2:
+            return None
+
+        correlation_values = np.eye(len(parameter_names), dtype=float)
+        corr_df = pd.DataFrame(
+            correlation_values,
+            index=parameter_names,
+            columns=parameter_names,
+        )
+        wrote_any = False
+        for row in correlation_rows:
+            i_name = row.param_unique_name_i.value
+            j_name = row.param_unique_name_j.value
+            if i_name not in corr_df.index or j_name not in corr_df.index:
+                continue
+            corr_df.loc[i_name, j_name] = float(row.correlation.value)
+            corr_df.loc[j_name, i_name] = float(row.correlation.value)
+            wrote_any = True
+        return corr_df if wrote_any else None
 
     def _correlation_dataframe_from_engine_result(
         self,
@@ -2446,31 +2506,41 @@ class Plotter(RendererBase):
         """
         go = __import__('plotly.graph_objects', fromlist=['Contour'])
 
-        bounds = self._posterior_pair_bounds(
-            fit_results=fit_results,
+        cached_surface = self._cached_posterior_pair_surface(
             x_parameter_name=x_parameter_name,
             y_parameter_name=y_parameter_name,
-            x_values=x_values,
-            y_values=y_values,
         )
-        density_surface = self._posterior_pair_density_surface(
-            x_values=x_values,
-            y_values=y_values,
-            x_bounds=bounds[0],
-            y_bounds=bounds[1],
-            grid_size=grid_size,
-        )
-        if density_surface is None:
-            return None
+        contour_levels = None
+        if cached_surface is None:
+            bounds = self._posterior_pair_bounds(
+                fit_results=fit_results,
+                x_parameter_name=x_parameter_name,
+                y_parameter_name=y_parameter_name,
+                x_values=x_values,
+                y_values=y_values,
+            )
+            density_surface = self._posterior_pair_density_surface(
+                x_values=x_values,
+                y_values=y_values,
+                x_bounds=bounds[0],
+                y_bounds=bounds[1],
+                grid_size=grid_size,
+            )
+            if density_surface is None:
+                return None
 
-        x_grid, y_grid, density = density_surface
+            x_grid, y_grid, density = density_surface
+        else:
+            x_grid, y_grid, density, contour_levels = cached_surface
+
         fill_colorscale, line_colorscale = self._posterior_pair_contour_colorscales(
             x_values,
             y_values,
         )
-        contour_start = float(np.max(density) * 0.20)
-        contour_end = float(np.max(density) * 0.95)
-        contour_size = float(np.max(density) * 0.15)
+        contour_start, contour_end, contour_size = self._posterior_contour_levels(
+            density=density,
+            contour_levels=contour_levels,
+        )
         fill_density = np.array(density, copy=True)
         fill_density[fill_density < contour_start] = np.nan
         fill_trace = go.Contour(
@@ -2515,6 +2585,78 @@ class Plotter(RendererBase):
             zorder=2,
         )
         return fill_trace, line_trace
+
+    def _cached_posterior_pair_surface(
+        self,
+        *,
+        x_parameter_name: str,
+        y_parameter_name: str,
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray | None] | None:
+        """Return a restored posterior pair-density surface when available."""
+        if self._project is None:
+            return None
+
+        analysis = self._project.analysis
+        sidecar_data = getattr(analysis, '_persisted_fit_state_sidecar', {})
+        pair_caches = sidecar_data.get('pair_caches', {})
+        for cache in analysis.bayesian_pair_caches:
+            cache_x = cache.param_unique_name_x.value
+            cache_y = cache.param_unique_name_y.value
+            if {cache_x, cache_y} != {x_parameter_name, y_parameter_name}:
+                continue
+
+            cache_data = pair_caches.get(cache.id.value)
+            if cache_data is None:
+                return None
+
+            x_grid = np.asarray(cache_data.get('x'), dtype=float)
+            y_grid = np.asarray(cache_data.get('y'), dtype=float)
+            density = np.asarray(cache_data.get('density'), dtype=float)
+            contour_levels = cache_data.get('contour_levels')
+            if contour_levels is not None:
+                contour_levels = np.asarray(contour_levels, dtype=float)
+
+            if x_parameter_name != cache_x or y_parameter_name != cache_y:
+                x_grid, y_grid = y_grid, x_grid
+                if density.ndim == 2:
+                    density = density.T
+
+            expected_shape = (y_grid.size, x_grid.size)
+            if x_grid.ndim != 1 or y_grid.ndim != 1 or density.shape != expected_shape:
+                log.warning(
+                    'Persisted posterior pair cache is invalid for '
+                    f'{x_parameter_name!r} and {y_parameter_name!r}.'
+                )
+                return None
+            return x_grid, y_grid, density, contour_levels
+
+        return None
+
+    @staticmethod
+    def _posterior_contour_levels(
+        *,
+        density: np.ndarray,
+        contour_levels: np.ndarray | None,
+    ) -> tuple[float, float, float]:
+        """Return contour start, end, and step for one pair-density surface."""
+        if contour_levels is not None and contour_levels.ndim == 1 and contour_levels.size > 0:
+            finite_levels = contour_levels[np.isfinite(contour_levels)]
+            if finite_levels.size > 0:
+                start = float(finite_levels[0])
+                end = float(finite_levels[-1])
+                if finite_levels.size > 1:
+                    size = float(np.min(np.diff(finite_levels)))
+                else:
+                    size = max(end - start, abs(end) * 0.15, 1e-6)
+                if end > start and size > 0:
+                    return start, end, size
+
+        density_max = float(np.max(density))
+        return (
+            density_max * 0.20,
+            density_max * 0.95,
+            density_max * 0.15,
+        )
 
     def _build_param_distribution_plot(
         self,
@@ -2608,11 +2750,13 @@ class Plotter(RendererBase):
             fit_results=context.fit_results,
             parameter_name=context.parameter_name,
         )
-        density_curve = self._posterior_density_curve(
-            context.values,
-            lower_bound=lower_bound,
-            upper_bound=upper_bound,
-        )
+        density_curve = self._cached_posterior_density_curve(context.parameter_name)
+        if density_curve is None:
+            density_curve = self._posterior_density_curve(
+                context.values,
+                lower_bound=lower_bound,
+                upper_bound=upper_bound,
+            )
         if density_curve is None:
             log.warning(
                 f'Posterior distribution is unavailable for parameter {context.parameter_name}.'
@@ -2628,6 +2772,28 @@ class Plotter(RendererBase):
             title=context.title,
             height=self.height,
         )
+
+    def _cached_posterior_density_curve(
+        self,
+        parameter_name: str,
+    ) -> tuple[np.ndarray, np.ndarray] | None:
+        """Return a restored posterior density curve for one parameter."""
+        if self._project is None:
+            return None
+
+        sidecar_data = getattr(self._project.analysis, '_persisted_fit_state_sidecar', {})
+        cache_data = sidecar_data.get('distribution_caches', {}).get(parameter_name)
+        if cache_data is None:
+            return None
+
+        x_values = np.asarray(cache_data.get('x'), dtype=float)
+        density_values = np.asarray(cache_data.get('density'), dtype=float)
+        if x_values.ndim != 1 or density_values.shape != x_values.shape:
+            log.warning(
+                f'Persisted posterior distribution cache is invalid for {parameter_name!r}.'
+            )
+            return None
+        return x_values, density_values
 
     def _posterior_distribution_context(
         self,
@@ -2974,11 +3140,13 @@ class Plotter(RendererBase):
             fit_results=fit_results,
             parameter_name=parameter_name,
         )
-        density_curve = self._posterior_density_curve(
-            values,
-            lower_bound=lower_bound,
-            upper_bound=upper_bound,
-        )
+        density_curve = self._cached_posterior_density_curve(parameter_name)
+        if density_curve is None:
+            density_curve = self._posterior_density_curve(
+                values,
+                lower_bound=lower_bound,
+                upper_bound=upper_bound,
+            )
         if density_curve is None:
             return None
 
@@ -3312,8 +3480,7 @@ class Plotter(RendererBase):
             return None
 
         posterior_predictive = getattr(fit_results, 'posterior_predictive', None)
-        posterior_samples = getattr(fit_results, 'posterior_samples', None)
-        if posterior_predictive is None or posterior_samples is None:
+        if posterior_predictive is None:
             return None
 
         x_axis_name = getattr(x_axis, 'value', x_axis)
@@ -3331,8 +3498,17 @@ class Plotter(RendererBase):
         summary = posterior_predictive.get(cache_key)
         if summary is None and not include_draws:
             summary = posterior_predictive.get(draw_cache_key)
+        if summary is None:
+            summary = posterior_predictive.get(expt_name)
+            summary_x_axis = getattr(summary, 'x_axis_name', None)
+            if summary is not None and str(summary_x_axis) != str(x_axis_name):
+                summary = None
         if summary is not None:
             return summary
+
+        posterior_samples = getattr(fit_results, 'posterior_samples', None)
+        if posterior_samples is None:
+            return None
 
         summary = self._build_posterior_predictive_summary(
             fit_results=fit_results,

@@ -41,7 +41,7 @@ structure or experiment CIF files.
 - [x] Phase 1 step 6: wire analysis CIF save/load for fit state.
 - [x] Phase 1 step 7: capture fit projections after fitting.
 - [x] Phase 1 step 8: add HDF5 sidecar save/load.
-- [ ] Phase 1 step 9: restore result objects and display cache inputs.
+- [x] Phase 1 step 9: restore result objects and display cache inputs.
 - [ ] Phase 1 review gate: stop for human review.
 - [ ] Phase 2 step 1: add unit tests for new categories.
 - [ ] Phase 2 step 2: add CIF and project save/load tests.

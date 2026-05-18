@@ -41,6 +41,9 @@ from easydiffraction.analysis.categories.sequential_fit_extract import (
     SequentialFitExtractCollection,
 )
 from easydiffraction.analysis.fit_helpers.bayesian import BayesianFitResults
+from easydiffraction.analysis.fit_helpers.bayesian import PosteriorParameterSummary
+from easydiffraction.analysis.fit_helpers.bayesian import PosteriorPredictiveSummary
+from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
 from easydiffraction.analysis.fit_helpers.reporting import FitResults
 from easydiffraction.analysis.enums import FitCorrelationSourceEnum
 from easydiffraction.analysis.enums import FitModeEnum
@@ -458,11 +461,297 @@ class Analysis(CategoryOwner):
     @property
     def fit_results(self) -> object | None:
         """Results from the most recent fit, if any."""
+        if self._fit_results is None and self._has_persisted_fit_state():
+            self._restore_fit_results_from_projection()
         return self._fit_results
 
     @fit_results.setter
     def fit_results(self, value: object | None) -> None:
         self._fit_results = value
+        self._fitter.results = value
+
+    @staticmethod
+    def _predictive_cache_key(
+        experiment_name: str,
+        x_axis_name: str,
+        *,
+        include_draws: bool = True,
+    ) -> str:
+        """Return the runtime cache key for one predictive summary."""
+        key_suffix = 'draws' if include_draws else 'band'
+        return f'{experiment_name}:{x_axis_name}:{key_suffix}'
+
+    def _live_parameter_map(self) -> dict[str, Parameter]:
+        """Return live structure and experiment parameters keyed by unique name."""
+        all_parameters = self.project.structures.parameters + self.project.experiments.parameters
+        return {
+            param.unique_name: param
+            for param in all_parameters
+            if isinstance(param, Parameter) and hasattr(param, 'unique_name')
+        }
+
+    def _ordered_restored_parameter_names(self) -> list[str]:
+        """Return persisted parameter names in display and array order."""
+        if self.fit_result.result_kind.value == FitResultKindEnum.BAYESIAN.value:
+            posterior_rows = sorted(
+                list(self.bayesian_parameter_posteriors),
+                key=lambda row: int(row.order_index.value),
+            )
+            if posterior_rows:
+                return [row.unique_name.value for row in posterior_rows]
+
+        deterministic_rows = sorted(
+            list(self.deterministic_parameter_results),
+            key=lambda row: int(row.order_index.value),
+        )
+        if deterministic_rows:
+            return [row.param_unique_name.value for row in deterministic_rows]
+
+        return [row.param_unique_name.value for row in self.fit_parameters]
+
+    def _restore_live_parameter_state(self, param_map: dict[str, Parameter]) -> None:
+        """Restore persisted fit metadata onto live parameter objects."""
+        for row in self.fit_parameters:
+            parameter = param_map.get(row.param_unique_name.value)
+            if parameter is None:
+                log.warning(
+                    'Persisted fit-state references unknown parameter '
+                    f"{row.param_unique_name.value!r}."
+                )
+                continue
+
+            parameter.fit_min = row.fit_min.value
+            parameter.fit_max = row.fit_max.value
+            parameter.fit_bounds_uncertainty_multiplier = (
+                row.fit_bounds_uncertainty_multiplier.value
+            )
+            parameter._fit_start_value = row.start_value.value
+            parameter._fit_start_uncertainty = row.start_uncertainty.value
+
+        for row in self.deterministic_parameter_results:
+            parameter = param_map.get(row.param_unique_name.value)
+            if parameter is None or row.final_uncertainty.value is None:
+                continue
+            parameter.uncertainty = float(row.final_uncertainty.value)
+
+        for row in self.bayesian_parameter_posteriors:
+            parameter = param_map.get(row.unique_name.value)
+            if parameter is None or row.uncertainty.value is None:
+                continue
+            parameter.uncertainty = float(row.uncertainty.value)
+
+    def _restored_fit_parameters(self, param_map: dict[str, Parameter]) -> list[Parameter]:
+        """Return live parameters in the persisted fit-result order."""
+        restored_parameters: list[Parameter] = []
+        for unique_name in self._ordered_restored_parameter_names():
+            parameter = param_map.get(unique_name)
+            if parameter is not None:
+                restored_parameters.append(parameter)
+        return restored_parameters
+
+    def _restored_posterior_samples(self) -> PosteriorSamples | None:
+        """Return restored posterior samples from the HDF5 sidecar."""
+        if not self.bayesian_result.has_posterior_samples.value:
+            return None
+
+        posterior_data = self._persisted_fit_state_sidecar.get('posterior', {})
+        parameter_samples = posterior_data.get('parameter_samples')
+        if parameter_samples is None:
+            return None
+
+        posterior_rows = sorted(
+            list(self.bayesian_parameter_posteriors),
+            key=lambda row: int(row.order_index.value),
+        )
+        parameter_names = [row.unique_name.value for row in posterior_rows]
+        if not parameter_names:
+            parameter_names = [row.param_unique_name.value for row in self.fit_parameters]
+
+        parameter_sample_array = np.asarray(parameter_samples, dtype=float)
+        if parameter_sample_array.ndim != 3:
+            log.warning('Persisted posterior samples have an invalid shape for restore.')
+            return None
+        if parameter_sample_array.shape[2] != len(parameter_names):
+            log.warning(
+                'Persisted posterior samples do not match restored posterior parameter names.'
+            )
+            return None
+
+        log_posterior = posterior_data.get('log_posterior')
+        draw_index = posterior_data.get('draw_index')
+        return PosteriorSamples(
+            parameter_names=parameter_names,
+            parameter_samples=parameter_sample_array,
+            log_posterior=(
+                None if log_posterior is None else np.asarray(log_posterior, dtype=float)
+            ),
+            draw_index=None if draw_index is None else np.asarray(draw_index),
+        )
+
+    def _restored_posterior_summaries(self) -> list[PosteriorParameterSummary]:
+        """Return posterior summary rows as runtime summary objects."""
+        restored_summaries: list[PosteriorParameterSummary] = []
+        posterior_rows = sorted(
+            list(self.bayesian_parameter_posteriors),
+            key=lambda row: int(row.order_index.value),
+        )
+        for row in posterior_rows:
+            restored_summaries.append(
+                PosteriorParameterSummary(
+                    unique_name=row.unique_name.value,
+                    display_name=row.display_name.value,
+                    best_sample_value=float(row.best_sample_value.value),
+                    median=float(row.median.value),
+                    standard_deviation=float(row.uncertainty.value),
+                    interval_68=(
+                        float(row.interval_68_lower.value),
+                        float(row.interval_68_upper.value),
+                    ),
+                    interval_95=(
+                        float(row.interval_95_lower.value),
+                        float(row.interval_95_upper.value),
+                    ),
+                    ess_bulk=row.ess_bulk.value,
+                    r_hat=row.r_hat.value,
+                )
+            )
+        return restored_summaries
+
+    def _restored_predictive_summaries(self) -> dict[str, PosteriorPredictiveSummary]:
+        """Return restored posterior predictive summaries keyed for runtime reuse."""
+        restored_predictive: dict[str, PosteriorPredictiveSummary] = {}
+        predictive_data = self._persisted_fit_state_sidecar.get('predictive_datasets', {})
+        for row in self.bayesian_predictive_datasets:
+            dataset = predictive_data.get(row.experiment_name.value)
+            if dataset is None:
+                continue
+
+            summary = PosteriorPredictiveSummary(
+                experiment_name=row.experiment_name.value,
+                x_axis_name=row.x_axis_name.value,
+                x=np.asarray(dataset['x'], dtype=float),
+                best_sample_prediction=np.asarray(
+                    dataset['best_sample_prediction'],
+                    dtype=float,
+                ),
+                lower_95=(
+                    None
+                    if dataset.get('lower_95') is None
+                    else np.asarray(dataset['lower_95'], dtype=float)
+                ),
+                upper_95=(
+                    None
+                    if dataset.get('upper_95') is None
+                    else np.asarray(dataset['upper_95'], dtype=float)
+                ),
+                lower_68=(
+                    None
+                    if dataset.get('lower_68') is None
+                    else np.asarray(dataset['lower_68'], dtype=float)
+                ),
+                upper_68=(
+                    None
+                    if dataset.get('upper_68') is None
+                    else np.asarray(dataset['upper_68'], dtype=float)
+                ),
+                draws=(
+                    None
+                    if dataset.get('draws') is None
+                    else np.asarray(dataset['draws'], dtype=float)
+                ),
+            )
+            restored_predictive[row.experiment_name.value] = summary
+            restored_predictive[
+                self._predictive_cache_key(
+                    row.experiment_name.value,
+                    row.x_axis_name.value,
+                    include_draws=False,
+                )
+            ] = summary
+            if summary.draws is not None:
+                restored_predictive[
+                    self._predictive_cache_key(
+                        row.experiment_name.value,
+                        row.x_axis_name.value,
+                        include_draws=True,
+                    )
+                ] = summary
+        return restored_predictive
+
+    def _restore_fit_results_from_projection(self) -> object | None:
+        """Rebuild a lightweight runtime fit-result object from persisted state."""
+        if not self._has_persisted_fit_state():
+            return None
+
+        param_map = self._live_parameter_map()
+        self._restore_live_parameter_state(param_map)
+        restored_parameters = self._restored_fit_parameters(param_map)
+        fitting_time = self.fit_result.fitting_time.value
+        reduced_chi_square = self.fit_result.reduced_chi_square.value
+
+        if self.fit_result.result_kind.value == FitResultKindEnum.BAYESIAN.value:
+            restored_results = BayesianFitResults(
+                success=bool(self.fit_result.success.value),
+                parameters=restored_parameters,
+                reduced_chi_square=reduced_chi_square,
+                starting_parameters=list(restored_parameters),
+                fitting_time=fitting_time,
+                sampler_name=self.bayesian_result.sampler_name.value,
+                point_estimate_name=self.bayesian_result.point_estimate_name.value,
+                posterior_samples=self._restored_posterior_samples(),
+                posterior_parameter_summaries=self._restored_posterior_summaries(),
+                posterior_predictive=self._restored_predictive_summaries(),
+                credible_interval_levels=(
+                    float(self.bayesian_result.credible_interval_inner.value),
+                    float(self.bayesian_result.credible_interval_outer.value),
+                ),
+                sampler_settings={
+                    'steps': int(self.bayesian_sampler.steps.value),
+                    'burn': int(self.bayesian_sampler.burn.value),
+                    'thin': int(self.bayesian_sampler.thin.value),
+                    'pop': int(self.bayesian_sampler.pop.value),
+                    'parallel': bool(self.bayesian_sampler.parallel.value),
+                    'init': self.bayesian_sampler.init.value,
+                    'random_seed': self.bayesian_sampler.random_seed.value,
+                },
+                convergence_diagnostics={
+                    'converged': bool(self.bayesian_convergence.converged.value),
+                    'max_r_hat': self.bayesian_convergence.max_r_hat.value,
+                    'min_ess_bulk': self.bayesian_convergence.min_ess_bulk.value,
+                    'n_draws': int(self.bayesian_convergence.n_draws.value),
+                    'n_chains': int(self.bayesian_convergence.n_chains.value),
+                    'n_parameters': int(self.bayesian_convergence.n_parameters.value),
+                },
+                sampler_completed=bool(self.bayesian_result.sampler_completed.value),
+                best_log_posterior=self.bayesian_result.best_log_posterior.value,
+            )
+            restored_results.message = self.fit_result.message.value
+            restored_results.iterations = int(self.fit_result.iterations.value)
+            self.fit_results = restored_results
+            return restored_results
+
+        restored_results = FitResults(
+            success=bool(self.fit_result.success.value),
+            parameters=restored_parameters,
+            reduced_chi_square=reduced_chi_square,
+            starting_parameters=list(restored_parameters),
+            fitting_time=fitting_time,
+            optimizer_name=self.deterministic_result.optimizer_name.value,
+            method_name=self.deterministic_result.method_name.value,
+            objective_name=self.deterministic_result.objective_name.value,
+            objective_value=self.deterministic_result.objective_value.value,
+            n_data_points=int(self.deterministic_result.n_data_points.value),
+            n_parameters=int(self.deterministic_result.n_parameters.value),
+            n_free_parameters=int(self.deterministic_result.n_free_parameters.value),
+            degrees_of_freedom=int(self.deterministic_result.degrees_of_freedom.value),
+            covariance_available=bool(self.deterministic_result.covariance_available.value),
+            correlation_available=bool(self.deterministic_result.correlation_available.value),
+        )
+        restored_results.message = self.fit_result.message.value
+        restored_results.iterations = int(self.fit_result.iterations.value)
+        restored_results.chi_square = self.deterministic_result.objective_value.value
+        self.fit_results = restored_results
+        return restored_results
 
     def help(self) -> None:
         """Print a summary of analysis properties and methods."""
