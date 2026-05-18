@@ -58,6 +58,9 @@ def _validate_extract_pattern(value: str) -> None:
 class SequentialFitExtractItem(CategoryItem):
     """A single sequential-fit extract rule."""
 
+    _category_code = 'sequential_fit_extract'
+    _category_entry_name = 'id'
+
     def __init__(self) -> None:
         super().__init__()
 
@@ -88,9 +91,6 @@ class SequentialFitExtractItem(CategoryItem):
             value_spec=AttributeSpec(default=False),
             cif_handler=CifHandler(names=['_sequential_fit_extract.required']),
         )
-
-        self._identity.category_code = 'sequential_fit_extract'
-        self._identity.category_entry_name = lambda: str(self.id.value)
 
     @property
     def id(self) -> StringDescriptor:

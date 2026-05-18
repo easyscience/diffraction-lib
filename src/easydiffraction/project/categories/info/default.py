@@ -24,6 +24,8 @@ _PROJECT_TIMESTAMP_FORMAT = '%d %b %Y %H:%M:%S'
 class ProjectInfo(CategoryItem):
     """Project metadata category."""
 
+    _category_code = 'project'
+
     type_info = TypeInfo(
         tag='default',
         description='Project metadata category',
@@ -71,8 +73,6 @@ class ProjectInfo(CategoryItem):
             cif_handler=CifHandler(names=['_project.last_modified']),
         )
         self._path: pathlib.Path | None = None
-
-        self._identity.category_code = 'project'
 
     @staticmethod
     def _parse_timestamp(value: str) -> datetime.datetime:

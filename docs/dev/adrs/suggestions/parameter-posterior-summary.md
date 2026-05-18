@@ -12,8 +12,8 @@ single scalar used by calculations.
 Bayesian DREAM currently keeps posterior state only on
 `analysis.fit_results` via `BayesianFitResults`, including
 `posterior_samples`, `posterior_parameter_summaries`,
-`posterior_predictive`, diagnostics, and sampler settings. The current
-architecture document describes this state as runtime-only and not
+`posterior_predictive`, diagnostics, and sampler settings. The accepted
+runtime-fit-results ADR describes this state as runtime-only and not
 serialized.
 
 `analysis.fit_results` already changes by analysis type: deterministic

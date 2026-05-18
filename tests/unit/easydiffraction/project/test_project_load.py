@@ -120,6 +120,8 @@ class TestLoadAnalysis:
         assert loaded.analysis.aliases['b_param'].param is not None
 
         assert len(loaded.analysis.constraints) == 1
+        assert loaded.analysis.constraints['b_param'].id.value == 'b_param'
+        assert loaded.analysis.constraints['b_param'].expression.value == 'b_param = a_param'
         assert loaded.analysis.constraints[0].expression.value == 'b_param = a_param'
         assert loaded.analysis.constraints.enabled is True
 

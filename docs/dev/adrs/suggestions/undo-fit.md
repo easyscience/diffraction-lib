@@ -82,7 +82,7 @@ and is deferred.
 The minimum persisted state required for clean cross-session undo is the
 pair of `_fit_parameter.start_value` and
 `_fit_parameter.start_uncertainty` defined in
-`adr_analysis-cif-fit-state.md`.
+`analysis-cif-fit-state.md`.
 
 If a parameter has no saved `start_value`, `undo_fit()` leaves that
 parameter unchanged.

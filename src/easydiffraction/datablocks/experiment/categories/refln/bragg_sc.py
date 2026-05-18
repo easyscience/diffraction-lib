@@ -28,6 +28,9 @@ from easydiffraction.utils.utils import sin_theta_over_lambda_to_d_spacing
 class Refln(CategoryItem):
     """Single reflection for single-crystal diffraction data."""
 
+    _category_code = 'refln'
+    _category_entry_name = 'id'
+
     def __init__(self) -> None:
         super().__init__()
 
@@ -127,9 +130,6 @@ class Refln(CategoryItem):
             ),
             cif_handler=CifHandler(names=['_refln.wavelength']),
         )
-
-        self._identity.category_code = 'refln'
-        self._identity.category_entry_name = lambda: str(self.id.value)
 
     # ------------------------------------------------------------------
     #  Public properties

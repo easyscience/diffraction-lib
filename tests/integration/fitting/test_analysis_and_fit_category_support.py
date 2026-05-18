@@ -267,10 +267,14 @@ def test_analysis_display_as_cif_and_constraints(monkeypatch, capsys):
     analysis.display.constraints()
     assert 'No constraints' in capsys.readouterr().out
 
+    class FakeId:
+        value = 'constraint_1'
+
     class FakeExpr:
         value = 'x = y + 1'
 
     class FakeConstraint:
+        id = FakeId()
         expression = FakeExpr()
 
     analysis.constraints._items = [FakeConstraint()]
@@ -279,7 +283,8 @@ def test_analysis_display_as_cif_and_constraints(monkeypatch, capsys):
     analysis.display.constraints()
     out = capsys.readouterr().out
     assert 'User defined constraints' in out
-    assert captured['columns_data'][0][0] == 'x = y + 1'
+    assert captured['columns_headers'] == ['id', 'expression']
+    assert captured['columns_data'][0] == ['constraint_1', 'x = y + 1']
 
 
 def test_discover_helpers_and_snapshot_params():

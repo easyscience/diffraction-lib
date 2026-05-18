@@ -23,6 +23,8 @@ from easydiffraction.io.cif.handler import CifHandler
 class LinkedCrystal(CategoryItem):
     """Linked crystal reference for single-crystal diffraction."""
 
+    _category_code = 'linked_crystal'
+
     type_info = TypeInfo(
         tag='default',
         description='Crystal reference with id and scale factor',
@@ -52,8 +54,6 @@ class LinkedCrystal(CategoryItem):
             ),
             cif_handler=CifHandler(names=['_sc_crystal_block.scale']),
         )
-
-        self._identity.category_code = 'linked_crystal'
 
     # ------------------------------------------------------------------
     #  Public properties

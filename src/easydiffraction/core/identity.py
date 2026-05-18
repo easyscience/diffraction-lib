@@ -41,6 +41,13 @@ class Identity:
         if isinstance(value, str):
             return value
 
+        if attr == 'category_entry':
+            resolver = getattr(self._owner, '_resolve_category_entry_name', None)
+            if callable(resolver):
+                resolved = resolver()
+                if resolved is not None:
+                    return resolved
+
         # Climb to parent if available
         parent = getattr(self._owner, '__dict__', {}).get('_parent')
         if parent and hasattr(parent, '_identity'):

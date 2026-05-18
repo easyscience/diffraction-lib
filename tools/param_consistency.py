@@ -8,8 +8,8 @@ Usage::
     python param_consistency.py --fix
     python param_consistency.py src/mypackage/ --check
 
-Template (see architecture.md §9.8 for the full spec)
-------------------------------------------------------
+Template (see docs/dev/adrs/accepted/property-docstring-template.md)
+-----------------------------------------------------------------------
 Given ``description='Length of the a axis of the unit
 cell.'``, ``units='Å'``, and type ``Parameter``:
 

@@ -30,6 +30,8 @@ class SpaceGroup(CategoryItem):
     to the first allowed value for the new group.
     """
 
+    _category_code = 'space_group'
+
     type_info = TypeInfo(
         tag='default',
         description='Space group symmetry',
@@ -76,8 +78,6 @@ class SpaceGroup(CategoryItem):
                 ]
             ),
         )
-
-        self._identity.category_code = 'space_group'
 
     # ------------------------------------------------------------------
     #  Private helper methods

@@ -33,6 +33,9 @@ class TotalDataPoint(CategoryItem):
     original measurement was CWL or TOF.
     """
 
+    _category_code = 'total_data'
+    _category_entry_name = 'point_id'
+
     def __init__(self) -> None:
         super().__init__()
 
@@ -113,9 +116,6 @@ class TotalDataPoint(CategoryItem):
                 ]
             ),
         )
-
-        self._identity.category_code = 'total_data'
-        self._identity.category_entry_name = lambda: str(self.point_id.value)
 
     # ------------------------------------------------------------------
     #  Public properties

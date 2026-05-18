@@ -23,6 +23,9 @@ from easydiffraction.io.cif.handler import CifHandler
 class LinkedPhase(CategoryItem):
     """Link to a phase by id with a scale factor."""
 
+    _category_code = 'linked_phases'
+    _category_entry_name = 'id'
+
     def __init__(self) -> None:
         super().__init__()
 
@@ -44,9 +47,6 @@ class LinkedPhase(CategoryItem):
             ),
             cif_handler=CifHandler(names=['_pd_phase_block.scale']),
         )
-
-        self._identity.category_code = 'linked_phases'
-        self._identity.category_entry_name = lambda: str(self.id.value)
 
     # ------------------------------------------------------------------
     #  Public properties

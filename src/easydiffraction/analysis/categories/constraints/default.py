@@ -26,9 +26,21 @@ from easydiffraction.utils.utils import render_table
 class Constraint(CategoryItem):
     """Single constraint item stored as ``lhs = rhs`` expression."""
 
+    _category_code = 'constraint'
+    _category_entry_name = 'id'
+
     def __init__(self) -> None:
         super().__init__()
 
+        self._id = StringDescriptor(
+            name='id',
+            description='Explicit identifier for this constraint row.',
+            value_spec=AttributeSpec(
+                default='_',
+                validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
+            ),
+            cif_handler=CifHandler(names=['_constraint.id']),
+        )
         self._expression = StringDescriptor(
             name='expression',
             description='Constraint equation, e.g. "occ_Ba = 1 - occ_La".',
@@ -39,12 +51,18 @@ class Constraint(CategoryItem):
             cif_handler=CifHandler(names=['_constraint.expression']),
         )
 
-        self._identity.category_code = 'constraint'
-        self._identity.category_entry_name = lambda: self.lhs_alias
-
     # ------------------------------------------------------------------
     #  Public properties
     # ------------------------------------------------------------------
+
+    @property
+    def id(self) -> StringDescriptor:
+        """Explicit identifier for this constraint row."""
+        return self._id
+
+    @id.setter
+    def id(self, value: str) -> None:
+        self._id.value = value
 
     @property
     def expression(self) -> StringDescriptor:
@@ -133,8 +151,20 @@ class Constraints(CategoryCollection):
         """
         item = Constraint()
         item.expression = expression
+        if item.lhs_alias:
+            item.id = item.lhs_alias
         self.add(item)
         self._enabled = True
+
+    def _after_from_cif(self) -> None:
+        """
+        Backfill explicit ids when loading older CIF constraint loops.
+        """
+        for item in self:
+            constraint_id = item.id.value.strip()
+            if constraint_id not in {'', '_', '?'} or not item.lhs_alias:
+                continue
+            item.id = item.lhs_alias
 
     def show(self) -> None:
         """Print a table of all user-defined symbolic constraints."""
@@ -142,12 +172,12 @@ class Constraints(CategoryCollection):
             log.warning('No constraints defined.')
             return
 
-        rows = [[constraint.expression.value] for constraint in self]
+        rows = [[constraint.id.value, constraint.expression.value] for constraint in self]
 
         console.paragraph('User defined constraints')
         render_table(
-            columns_headers=['expression'],
-            columns_alignment=['left'],
+            columns_headers=['id', 'expression'],
+            columns_alignment=['left', 'left'],
             columns_data=rows,
         )
         console.print(f'Constraints enabled: {self.enabled}')

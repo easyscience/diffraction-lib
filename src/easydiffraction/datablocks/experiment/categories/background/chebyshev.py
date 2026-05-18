@@ -41,6 +41,9 @@ class PolynomialTerm(CategoryItem):
     not break immediately. Tests should migrate to the short names.
     """
 
+    _category_code = 'background'
+    _category_entry_name = 'id'
+
     def __init__(self) -> None:
         super().__init__()
 
@@ -74,9 +77,6 @@ class PolynomialTerm(CategoryItem):
             ),
             cif_handler=CifHandler(names=['_pd_background.Chebyshev_coef']),
         )
-
-        self._identity.category_code = 'background'
-        self._identity.category_entry_name = lambda: str(self._id.value)
 
     # ------------------------------------------------------------------
     #  Public properties

@@ -52,6 +52,7 @@ def test_real_analysis_as_cif_includes_aliases_and_constraints_when_present() ->
 
     assert '_alias.label' in analysis_cif
     assert '_alias.param_unique_name' in analysis_cif
+    assert '_constraint.id' in analysis_cif
     assert '_constraint.expression' in analysis_cif
     assert 'a_param = a_param' in analysis_cif
 
