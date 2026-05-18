@@ -1673,6 +1673,8 @@ class Analysis(
         posterior_samples = results.posterior_samples
         if posterior_samples is None:
             return
+
+        self._store_bayesian_plot_cache_projection(results)
         if len(posterior_samples.parameter_names) <= 1:
             return
 
@@ -1683,7 +1685,6 @@ class Analysis(
             correlation_matrix=correlation_matrix,
             source_kind=FitCorrelationSourceEnum.POSTERIOR,
         )
-        self._store_bayesian_plot_cache_projection(results)
 
     def _store_fit_result_projection(
         self,

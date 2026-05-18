@@ -36,8 +36,9 @@ Use `analysis/exports/` for optional user-facing CSV files intended for
 external plotting and inspection.
 
 This naming keeps the fit type out of the filename. The fit type and
-schema are recorded in `analysis/analysis.cif` manifests such as
-`_fit_result.result_kind` and `_fit_state.schema_version`.
+saved fit-state manifests are recorded in `analysis/analysis.cif`,
+principally through `_fit_result.result_kind` and the related fit-state
+categories.
 
 ### 2. Sequential deterministic results stay CSV
 

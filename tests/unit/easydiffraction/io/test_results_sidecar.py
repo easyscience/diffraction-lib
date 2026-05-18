@@ -102,3 +102,37 @@ def test_read_analysis_results_sidecar_warns_when_expected_file_is_missing(tmp_p
 
     assert analysis._persisted_fit_state_sidecar == {}
     assert any('Expected Bayesian results sidecar is missing' in warning for warning in warnings)
+
+
+def test_sidecar_path_traversal_falls_back_to_local_results_file(tmp_path, monkeypatch):
+    from easydiffraction.io import results_sidecar as results_sidecar_mod
+
+    analysis_dir = Path(tmp_path) / 'analysis'
+    external_sidecar = Path(tmp_path) / 'outside.h5'
+    analysis = _analysis_with_predictive_sidecar()
+    analysis.bayesian_result._set_sidecar_file('../outside.h5')
+
+    warnings: list[str] = []
+    monkeypatch.setattr(results_sidecar_mod.log, 'warning', warnings.append)
+
+    results_sidecar_mod.write_analysis_results_sidecar(
+        analysis=analysis,
+        analysis_dir=analysis_dir,
+    )
+
+    assert (analysis_dir / 'results.h5').is_file()
+    assert not external_sidecar.exists()
+
+    restored = _analysis_with_predictive_sidecar()
+    restored.fit_results = None
+    restored.bayesian_result._set_sidecar_file('../outside.h5')
+    results_sidecar_mod.read_analysis_results_sidecar(
+        analysis=restored,
+        analysis_dir=analysis_dir,
+    )
+
+    assert 'predictive_datasets' in restored._persisted_fit_state_sidecar
+    assert any(
+        'Ignoring Bayesian sidecar file path outside the analysis directory' in warning
+        for warning in warnings
+    )

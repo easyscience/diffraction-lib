@@ -11,6 +11,7 @@ import numpy as np
 
 from easydiffraction.utils.logging import log
 
+_DEFAULT_SIDECAR_FILE_NAME = 'results.h5'
 _POSTERIOR_PARAMETER_SAMPLES_PATH = '/posterior/parameter_samples'
 _POSTERIOR_LOG_POSTERIOR_PATH = '/posterior/log_posterior'
 _POSTERIOR_DRAW_INDEX_PATH = '/posterior/draw_index'
@@ -27,17 +28,39 @@ def _sidecar_file_name(analysis: object) -> str:
     """Return the configured sidecar file name for an analysis."""
     bayesian_result = getattr(analysis, 'bayesian_result', None)
     if bayesian_result is None:
-        return 'results.h5'
+        return _DEFAULT_SIDECAR_FILE_NAME
 
     file_name = bayesian_result.sidecar_file.value
-    if isinstance(file_name, str) and file_name.strip():
-        return file_name
-    return 'results.h5'
+    if not isinstance(file_name, str) or not file_name.strip():
+        return _DEFAULT_SIDECAR_FILE_NAME
+
+    normalized_name = file_name.strip()
+    normalized_path = Path(normalized_name)
+    if (
+        normalized_path.is_absolute()
+        or normalized_path.name in {'', '.', '..'}
+        or normalized_path.name != normalized_name
+    ):
+        log.warning(
+            'Ignoring Bayesian sidecar file path outside the analysis directory: '
+            f'{normalized_name!r}. Using {_DEFAULT_SIDECAR_FILE_NAME!r} instead.'
+        )
+        return _DEFAULT_SIDECAR_FILE_NAME
+
+    return normalized_path.name
 
 
 def _sidecar_path(*, analysis: object, analysis_dir: Path) -> Path:
     """Return the results sidecar path inside the analysis directory."""
-    return analysis_dir / _sidecar_file_name(analysis)
+    resolved_analysis_dir = analysis_dir.resolve()
+    sidecar_path = (resolved_analysis_dir / _sidecar_file_name(analysis)).resolve()
+    if sidecar_path.parent != resolved_analysis_dir:
+        log.warning(
+            'Resolved Bayesian sidecar file path escaped the analysis directory. '
+            f'Using {_DEFAULT_SIDECAR_FILE_NAME!r} instead.'
+        )
+        return resolved_analysis_dir / _DEFAULT_SIDECAR_FILE_NAME
+    return sidecar_path
 
 
 def _should_use_sidecar(analysis: object) -> bool:
