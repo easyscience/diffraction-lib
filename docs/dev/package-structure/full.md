@@ -80,12 +80,6 @@
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class ConstraintsFactory
 │   │   ├── 📁 deterministic_parameter_results
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   │   ├── 🏷️ class DeterministicParameterResultItem
-│   │   │   │   └── 🏷️ class DeterministicParameterResults
-│   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class DeterministicParameterResultsFactory
 │   │   ├── 📁 deterministic_result
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
