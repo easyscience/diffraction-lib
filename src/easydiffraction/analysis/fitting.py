@@ -21,6 +21,50 @@ if TYPE_CHECKING:
     from easydiffraction.datablocks.structure.collection import Structures
 
 
+def _resolve_fit_result_message(results: FitResults) -> str:
+    """Return a normalized fit-result message."""
+    if results.message:
+        return results.message
+
+    raw_result = results.engine_result
+    message = getattr(raw_result, 'message', '')
+    return str(message) if message is not None else ''
+
+
+def _resolve_fit_result_iterations(results: FitResults) -> int:
+    """Return a normalized iteration or evaluation count."""
+    if results.iterations:
+        return int(results.iterations)
+
+    raw_result = results.engine_result
+    for attribute_name in ('nfev', 'nit', 'iterations', 'niter'):
+        value = getattr(raw_result, attribute_name, None)
+        if value is not None:
+            return int(value)
+    return 0
+
+
+def _resolve_fit_result_chi_square(results: FitResults) -> float | None:
+    """Return a normalized chi-square-like objective value."""
+    if results.chi_square is not None:
+        return float(results.chi_square)
+
+    raw_result = results.engine_result
+    chisqr = getattr(raw_result, 'chisqr', None)
+    if chisqr is not None:
+        return float(chisqr)
+
+    fun = getattr(raw_result, 'fun', None)
+    if fun is None:
+        return None
+
+    if np.isscalar(fun):
+        return float(fun)
+
+    fun_array = np.asarray(fun, dtype=float)
+    return float(np.sum(fun_array**2))
+
+
 class Fitter:
     """Handles the fitting workflow using a pluggable minimizer."""
 
@@ -86,8 +130,15 @@ class Fitter:
         params = structures.free_parameters + expt_free_params
 
         if not params:
+            if analysis is not None:
+                analysis._clear_persisted_fit_state()
+                analysis.fit_results = None
+            self.results = None
             print('⚠️ No parameters selected for fitting.')
             return
+
+        if analysis is not None:
+            analysis._capture_fit_parameter_state(params)
 
         for param in params:
             param._fit_start_value = param.value
@@ -123,6 +174,17 @@ class Fitter:
             use_physical_limits=use_physical_limits,
             random_seed=random_seed,
         )
+
+        if self.results is not None:
+            self.results.message = _resolve_fit_result_message(self.results)
+            self.results.iterations = _resolve_fit_result_iterations(self.results)
+            self.results.chi_square = _resolve_fit_result_chi_square(self.results)
+            if analysis is not None:
+                analysis._store_fit_result_projection(
+                    self.results,
+                    experiments=experiments,
+                    fitted_parameters=params,
+                )
 
     def _process_fit_results(
         self,

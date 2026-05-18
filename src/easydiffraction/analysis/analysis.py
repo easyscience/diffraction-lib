@@ -40,15 +40,20 @@ from easydiffraction.analysis.categories.sequential_fit import SequentialFitFact
 from easydiffraction.analysis.categories.sequential_fit_extract import (
     SequentialFitExtractCollection,
 )
+from easydiffraction.analysis.fit_helpers.bayesian import BayesianFitResults
+from easydiffraction.analysis.fit_helpers.reporting import FitResults
+from easydiffraction.analysis.enums import FitCorrelationSourceEnum
 from easydiffraction.analysis.enums import FitModeEnum
 from easydiffraction.analysis.enums import FitResultKindEnum
 from easydiffraction.analysis.fitting import Fitter
+from easydiffraction.analysis.minimizers.base import BOUNDARY_PROXIMITY_FRACTION
 from easydiffraction.core.category_owner import CategoryOwner
 from easydiffraction.core.guard import _apply_help_filter
 from easydiffraction.core.singleton import ConstraintsHandler
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import Parameter
 from easydiffraction.core.variable import StringDescriptor
+from easydiffraction.datablocks.experiment.item.base import intensity_category_for
 from easydiffraction.display.progress import make_display_handle
 from easydiffraction.display.tables import TableRenderer
 from easydiffraction.io.cif.serialize import analysis_to_cif
@@ -840,6 +845,332 @@ class Analysis(CategoryOwner):
         ])
         return categories
 
+    def _clear_persisted_fit_state(self) -> None:
+        """Reset all persisted fit-state categories before a new fit."""
+        self._fit_state = FitState()
+        self._fit_parameters = FitParameters()
+        self._fit_result = FitResult()
+        self._fit_parameter_correlations = FitParameterCorrelations()
+        self._deterministic_result = DeterministicResult()
+        self._deterministic_parameter_results = DeterministicParameterResults()
+        self._bayesian_result = BayesianResult()
+        self._bayesian_sampler = BayesianSampler()
+        self._bayesian_convergence = BayesianConvergence()
+        self._bayesian_parameter_posteriors = BayesianParameterPosteriors()
+        self._bayesian_distribution_caches = BayesianDistributionCaches()
+        self._bayesian_pair_caches = BayesianPairCaches()
+        self._bayesian_predictive_datasets = BayesianPredictiveDatasets()
+        self._set_has_persisted_fit_state(False)
+
+    def _capture_fit_parameter_state(self, parameters: list[Parameter]) -> None:
+        """Capture pre-fit parameter state into persisted fit-state categories."""
+        self._clear_persisted_fit_state()
+        self.fit_state._set_schema_version(1)
+
+        for param in parameters:
+            self.fit_parameters.create(
+                param_unique_name=param.unique_name,
+                fit_min=param.fit_min,
+                fit_max=param.fit_max,
+                fit_bounds_uncertainty_multiplier=param.fit_bounds_uncertainty_multiplier,
+                start_value=param.value,
+                start_uncertainty=param.uncertainty,
+            )
+
+        self._set_has_persisted_fit_state(True)
+
+    @staticmethod
+    def _parameter_is_at_fit_bound(
+        param: Parameter,
+        *,
+        use_upper_bound: bool,
+    ) -> bool:
+        """Return whether a parameter finished within tolerance of a fit bound."""
+        value = param.value
+        if value is None:
+            return False
+
+        bound = param.fit_max if use_upper_bound else param.fit_min
+        if not np.isfinite(bound):
+            return False
+
+        span = param.fit_max - param.fit_min
+        if np.isfinite(span) and span > 0:
+            tolerance = BOUNDARY_PROXIMITY_FRACTION * span
+        else:
+            tolerance = BOUNDARY_PROXIMITY_FRACTION * max(abs(bound), 1.0)
+        return abs(value - bound) <= tolerance
+
+    def _selected_parameters_for_fit(self, experiments: list[object]) -> list[Parameter]:
+        """Return unique live parameters involved in the current fit slice."""
+        selected_parameters: list[Parameter] = []
+        seen_unique_names: set[str] = set()
+
+        for param in self.project.structures.parameters:
+            if not isinstance(param, Parameter):
+                continue
+            if param.unique_name in seen_unique_names:
+                continue
+            selected_parameters.append(param)
+            seen_unique_names.add(param.unique_name)
+
+        for experiment in experiments:
+            for param in experiment.parameters:
+                if not isinstance(param, Parameter):
+                    continue
+                if param.unique_name in seen_unique_names:
+                    continue
+                selected_parameters.append(param)
+                seen_unique_names.add(param.unique_name)
+
+        return selected_parameters
+
+    @staticmethod
+    def _fit_data_point_count(experiments: list[object]) -> int:
+        """Return the total number of observed data points in the fit slice."""
+        total = 0
+        for experiment in experiments:
+            intensity_category = intensity_category_for(experiment)
+            total += int(np.asarray(intensity_category.intensity_meas).size)
+        return total
+
+    @staticmethod
+    def _resolve_covariance_matrix(results: FitResults) -> np.ndarray | None:
+        """Return a covariance matrix when the raw fit result exposes one."""
+        raw_result = results.engine_result
+        for attribute_name in ('covar', 'covariance_matrix'):
+            covariance = getattr(raw_result, attribute_name, None)
+            if covariance is None:
+                continue
+
+            covariance_array = np.asarray(covariance, dtype=float)
+            if covariance_array.ndim != 2:
+                continue
+            if covariance_array.shape[0] != covariance_array.shape[1]:
+                continue
+            return covariance_array
+
+        return None
+
+    @staticmethod
+    def _correlation_matrix_from_covariance(covariance: np.ndarray) -> np.ndarray | None:
+        """Return a correlation matrix derived from a covariance matrix."""
+        diagonal = np.diag(covariance)
+        if np.any(diagonal <= 0):
+            return None
+
+        scales = np.sqrt(diagonal)
+        denominator = np.outer(scales, scales)
+        with np.errstate(invalid='ignore', divide='ignore'):
+            correlation = covariance / denominator
+
+        if not np.all(np.isfinite(correlation)):
+            return None
+        return correlation
+
+    @staticmethod
+    def _resolve_objective_value(results: FitResults) -> float | None:
+        """Return the objective value stored for a fit result."""
+        if results.chi_square is None:
+            return None
+        return float(results.chi_square)
+
+    def _store_common_fit_result_projection(
+        self,
+        results: FitResults,
+        *,
+        result_kind: FitResultKindEnum,
+    ) -> None:
+        """Store fields shared by deterministic and Bayesian fit results."""
+        self.fit_state._set_schema_version(1)
+        self.fit_result._set_result_kind(result_kind.value)
+        self.fit_result._set_success(results.success)
+        self.fit_result._set_message(results.message)
+        self.fit_result._set_iterations(results.iterations)
+        self.fit_result._set_fitting_time(results.fitting_time)
+        self.fit_result._set_reduced_chi_square(results.reduced_chi_square)
+        self._set_has_persisted_fit_state(True)
+
+    def _store_correlation_projection(
+        self,
+        *,
+        unique_names: list[str],
+        correlation_matrix: np.ndarray,
+        source_kind: FitCorrelationSourceEnum,
+    ) -> None:
+        """Store upper-triangle parameter correlations from a correlation matrix."""
+        if len(unique_names) <= 1:
+            return
+        if correlation_matrix.shape != (len(unique_names), len(unique_names)):
+            return
+
+        for row_index, unique_name_i in enumerate(unique_names[:-1]):
+            for column_index in range(row_index + 1, len(unique_names)):
+                correlation = correlation_matrix[row_index, column_index]
+                if not np.isfinite(correlation):
+                    continue
+                self.fit_parameter_correlations.create(
+                    source_kind=source_kind.value,
+                    param_unique_name_i=unique_name_i,
+                    param_unique_name_j=unique_names[column_index],
+                    correlation=float(np.clip(correlation, -1.0, 1.0)),
+                )
+
+    def _store_deterministic_result_projection(
+        self,
+        results: FitResults,
+        *,
+        experiments: list[object],
+        fitted_parameters: list[Parameter],
+    ) -> None:
+        """Store deterministic fit-result projections into persisted categories."""
+        selected_parameters = self._selected_parameters_for_fit(experiments)
+        n_parameters = len(selected_parameters)
+        n_free_parameters = len(fitted_parameters)
+        n_data_points = self._fit_data_point_count(experiments)
+        degrees_of_freedom = max(n_data_points - n_free_parameters, 0)
+        covariance = self._resolve_covariance_matrix(results)
+        correlation_matrix = (
+            self._correlation_matrix_from_covariance(covariance)
+            if covariance is not None
+            else None
+        )
+
+        self.deterministic_result._set_optimizer_name(
+            str(self.fitter.minimizer.name or self.fitter.selection)
+        )
+        self.deterministic_result._set_method_name(str(self.fitter.minimizer.method or ''))
+        self.deterministic_result._set_objective_name('chi_square')
+        self.deterministic_result._set_objective_value(self._resolve_objective_value(results))
+        self.deterministic_result._set_n_data_points(n_data_points)
+        self.deterministic_result._set_n_parameters(n_parameters)
+        self.deterministic_result._set_n_free_parameters(n_free_parameters)
+        self.deterministic_result._set_degrees_of_freedom(degrees_of_freedom)
+        self.deterministic_result._set_covariance_available(covariance is not None)
+        self.deterministic_result._set_correlation_available(correlation_matrix is not None)
+
+        for order_index, param in enumerate(fitted_parameters):
+            self.deterministic_parameter_results.create(
+                order_index=order_index,
+                param_unique_name=param.unique_name,
+                final_value=param.value,
+                final_uncertainty=param.uncertainty,
+                at_lower_bound=self._parameter_is_at_fit_bound(
+                    param,
+                    use_upper_bound=False,
+                ),
+                at_upper_bound=self._parameter_is_at_fit_bound(
+                    param,
+                    use_upper_bound=True,
+                ),
+            )
+
+        if correlation_matrix is not None:
+            self._store_correlation_projection(
+                unique_names=[param.unique_name for param in fitted_parameters],
+                correlation_matrix=correlation_matrix,
+                source_kind=FitCorrelationSourceEnum.DETERMINISTIC,
+            )
+
+    def _store_bayesian_result_projection(self, results: BayesianFitResults) -> None:
+        """Store Bayesian fit-result projections into persisted categories."""
+        credible_interval_inner = 0.68
+        credible_interval_outer = 0.95
+        if len(results.credible_interval_levels) >= 2:
+            credible_interval_inner = float(results.credible_interval_levels[0])
+            credible_interval_outer = float(results.credible_interval_levels[1])
+
+        point_estimate_name = results.point_estimate_name or 'best_sample'
+        sampler_settings = results.sampler_settings
+        convergence = results.convergence_diagnostics
+
+        self.bayesian_result._set_sampler_name(results.sampler_name)
+        self.bayesian_result._set_point_estimate_name(point_estimate_name)
+        self.bayesian_result._set_success(results.success)
+        self.bayesian_result._set_sampler_completed(results.sampler_completed)
+        self.bayesian_result._set_best_log_posterior(results.best_log_posterior)
+        self.bayesian_result._set_credible_interval_inner(credible_interval_inner)
+        self.bayesian_result._set_credible_interval_outer(credible_interval_outer)
+        self.bayesian_result._set_has_posterior_samples(results.posterior_samples is not None)
+        self.bayesian_result._set_has_distribution_cache(False)
+        self.bayesian_result._set_has_pair_cache(False)
+        self.bayesian_result._set_has_posterior_predictive(bool(results.posterior_predictive))
+        self.bayesian_result._set_sidecar_file('results.h5')
+
+        self.bayesian_sampler._set_steps(int(sampler_settings.get('steps', 0)))
+        self.bayesian_sampler._set_burn(int(sampler_settings.get('burn', 0)))
+        self.bayesian_sampler._set_thin(int(sampler_settings.get('thin', 0)))
+        self.bayesian_sampler._set_pop(int(sampler_settings.get('pop', 0)))
+        self.bayesian_sampler._set_parallel(bool(sampler_settings.get('parallel', False)))
+        self.bayesian_sampler._set_init(str(sampler_settings.get('init', '')))
+        random_seed = sampler_settings.get('random_seed')
+        self.bayesian_sampler._set_random_seed(
+            None if random_seed is None else int(random_seed)
+        )
+
+        self.bayesian_convergence._set_converged(bool(convergence.get('converged', False)))
+        self.bayesian_convergence._set_max_r_hat(convergence.get('max_r_hat'))
+        self.bayesian_convergence._set_min_ess_bulk(convergence.get('min_ess_bulk'))
+        self.bayesian_convergence._set_n_draws(int(convergence.get('n_draws', 0)))
+        self.bayesian_convergence._set_n_chains(int(convergence.get('n_chains', 0)))
+        self.bayesian_convergence._set_n_parameters(int(convergence.get('n_parameters', 0)))
+
+        for order_index, summary in enumerate(results.posterior_parameter_summaries):
+            self.bayesian_parameter_posteriors.create(
+                order_index=order_index,
+                unique_name=summary.unique_name,
+                display_name=summary.display_name,
+                best_sample_value=summary.best_sample_value,
+                median=summary.median,
+                uncertainty=summary.standard_deviation,
+                interval_68_lower=summary.interval_68[0],
+                interval_68_upper=summary.interval_68[1],
+                interval_95_lower=summary.interval_95[0],
+                interval_95_upper=summary.interval_95[1],
+                ess_bulk=summary.ess_bulk,
+                r_hat=summary.r_hat,
+            )
+
+        posterior_samples = results.posterior_samples
+        if posterior_samples is None:
+            return
+        if len(posterior_samples.parameter_names) <= 1:
+            return
+
+        flattened = posterior_samples.flattened()
+        correlation_matrix = np.corrcoef(flattened, rowvar=False)
+        self._store_correlation_projection(
+            unique_names=list(posterior_samples.parameter_names),
+            correlation_matrix=correlation_matrix,
+            source_kind=FitCorrelationSourceEnum.POSTERIOR,
+        )
+
+    def _store_fit_result_projection(
+        self,
+        results: FitResults,
+        *,
+        experiments: list[object],
+        fitted_parameters: list[Parameter],
+    ) -> None:
+        """Store the latest fit result into persisted fit-state categories."""
+        if isinstance(results, BayesianFitResults):
+            self._store_common_fit_result_projection(
+                results,
+                result_kind=FitResultKindEnum.BAYESIAN,
+            )
+            self._store_bayesian_result_projection(results)
+            return
+
+        self._store_common_fit_result_projection(
+            results,
+            result_kind=FitResultKindEnum.DETERMINISTIC,
+        )
+        self._store_deterministic_result_projection(
+            results,
+            experiments=experiments,
+            fitted_parameters=fitted_parameters,
+        )
+
     def _resolve_sequential_data_dir(self) -> Path:
         """
         Resolve the sequential-fit data directory to an absolute path.
@@ -924,6 +1255,7 @@ class Analysis(CategoryOwner):
 
         self._set_fitting_mode_type(FitModeEnum.SEQUENTIAL.value)
         self._update_categories()
+        self._clear_persisted_fit_state()
 
         max_workers_value = self._sequential_fit.max_workers.value
         max_workers = max_workers_value if max_workers_value == 'auto' else int(max_workers_value)
@@ -946,6 +1278,7 @@ class Analysis(CategoryOwner):
         finally:
             self.fit_results = None
             self.fitter.results = None
+            self._clear_persisted_fit_state()
 
         if self.project.info.path is not None:
             self.project.save()
