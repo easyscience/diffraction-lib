@@ -158,23 +158,31 @@ this category.
 ### 5. Add `_fit_parameter_correlation` for reusable correlations
 
 `_fit_parameter_correlation` stores compact pairwise correlation
-summaries:
+summaries keyed by a persisted `id`:
 
 ```cif
 loop_
+_fit_parameter_correlation.id
 _fit_parameter_correlation.source_kind
 _fit_parameter_correlation.param_unique_name_i
 _fit_parameter_correlation.param_unique_name_j
 _fit_parameter_correlation.correlation
-posterior lbco.cell.length_a hrpt.peak.broad_gauss_u 0.87
+"posterior:lbco.cell.length_a:hrpt.peak.broad_gauss_u" posterior lbco.cell.length_a hrpt.peak.broad_gauss_u 0.87
 ```
 
 Fields:
 
+- `id`
 - `source_kind`
 - `param_unique_name_i`
 - `param_unique_name_j`
 - `correlation`
+
+Rows are keyed by the persisted `id` field so each correlation pair has
+stable collection identity in both Python and CIF. When a caller does
+not provide an explicit `id`, implementations should derive one from
+the normalized `source_kind`, `param_unique_name_i`, and
+`param_unique_name_j` values.
 
 Only the upper triangle excluding the diagonal is stored. Correlation
 heatmaps can be restored from this loop alone. Posterior pair plots
@@ -301,6 +309,7 @@ caches therefore have their own manifest categories in
 
 - `param_unique_name_x`
 - `param_unique_name_y`
+- `id`
 - `x_path`
 - `y_path`
 - `density_path`
@@ -308,6 +317,12 @@ caches therefore have their own manifest categories in
 - `n_grid_x`
 - `n_grid_y`
 - `n_draws_cached`
+
+`_bayesian_pair_cache` rows are keyed by the persisted `id` field so
+each cached parameter pair has stable identity in both Python and CIF.
+When a caller does not provide an explicit `id`, implementations should
+derive one from the normalized `param_unique_name_x` and
+`param_unique_name_y` values.
 
 `_bayesian_predictive_dataset` supports
 `project.display.posterior.predictive(...)`:
@@ -324,6 +339,9 @@ caches therefore have their own manifest categories in
 - `n_x`
 - `n_draws_cached`
 
+`_bayesian_predictive_dataset` is keyed by `experiment_name` in this
+schema, with at most one cached predictive dataset per experiment.
+
 The manifest rows are the source of truth for HDF5 paths. HDF5 group
 naming conventions are implementation details and may change as long as
 the manifest remains valid.
@@ -334,6 +352,9 @@ the manifest remains valid.
 arrays large enough to make CIF unwieldy are stored in:
 
 - `analysis/results.h5`
+
+The reference implementation uses a direct `h5py` dependency to read
+and write this sidecar.
 
 Required canonical posterior arrays, when available:
 
