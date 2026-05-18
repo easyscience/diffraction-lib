@@ -392,7 +392,7 @@ class FitProgressTracker:
         clamped_iteration: int,
         clamped_progress: float,
     ) -> list[str]:
-        if self._previous_chi2 is not None and self._best_chi2 is not None:
+        if self._df_rows:
             return []
 
         self._previous_chi2 = update.reduced_chi2
@@ -402,8 +402,10 @@ class FitProgressTracker:
         if self._sampler_pre_processing_pending:
             self._sampler_pre_processing_pending = False
             return self._sampler_status_row(
+                iteration_label=self._sampler_iteration_label(clamped_iteration),
                 phase=SAMPLER_PHASE_PRE_PROCESSING,
                 elapsed_time=update.elapsed_time,
+                log_posterior=update.log_posterior,
             )
         return self._sampler_progress_row(
             clamped_iteration=clamped_iteration,
@@ -485,15 +487,17 @@ class FitProgressTracker:
     def _sampler_status_row(
         self,
         *,
+        iteration_label: str = '',
         phase: str,
         elapsed_time: float | None,
+        log_posterior: float | None = None,
     ) -> list[str]:
         """Return a status-only sampler row without iteration metrics."""
         return [
-            '',
+            iteration_label,
             '',
             self._format_elapsed_time(elapsed_time),
-            '',
+            '' if log_posterior is None else f'{log_posterior:.2f}',
             phase,
         ]
 
