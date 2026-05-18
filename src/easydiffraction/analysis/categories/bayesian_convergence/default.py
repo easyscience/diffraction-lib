@@ -11,6 +11,7 @@ from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.variable import BoolDescriptor
+from easydiffraction.core.variable import IntegerDescriptor
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.io.cif.handler import CifHandler
 
@@ -46,19 +47,19 @@ class BayesianConvergence(CategoryItem):
             value_spec=AttributeSpec(default=None, allow_none=True),
             cif_handler=CifHandler(names=['_bayesian_convergence.min_ess_bulk']),
         )
-        self._n_draws = NumericDescriptor(
+        self._n_draws = IntegerDescriptor(
             name='n_draws',
             description='Number of stored posterior draws.',
             value_spec=AttributeSpec(default=0),
             cif_handler=CifHandler(names=['_bayesian_convergence.n_draws']),
         )
-        self._n_chains = NumericDescriptor(
+        self._n_chains = IntegerDescriptor(
             name='n_chains',
             description='Number of stored posterior chains.',
             value_spec=AttributeSpec(default=0),
             cif_handler=CifHandler(names=['_bayesian_convergence.n_chains']),
         )
-        self._n_parameters = NumericDescriptor(
+        self._n_parameters = IntegerDescriptor(
             name='n_parameters',
             description='Number of sampled parameters.',
             value_spec=AttributeSpec(default=0),
@@ -93,28 +94,28 @@ class BayesianConvergence(CategoryItem):
         self._min_ess_bulk.value = value
 
     @property
-    def n_draws(self) -> NumericDescriptor:
+    def n_draws(self) -> IntegerDescriptor:
         """Number of stored posterior draws."""
         return self._n_draws
 
-    def _set_n_draws(self, value: float) -> None:
+    def _set_n_draws(self, value: int) -> None:
         """Set the draw count for internal callers."""
         self._n_draws.value = value
 
     @property
-    def n_chains(self) -> NumericDescriptor:
+    def n_chains(self) -> IntegerDescriptor:
         """Number of stored posterior chains."""
         return self._n_chains
 
-    def _set_n_chains(self, value: float) -> None:
+    def _set_n_chains(self, value: int) -> None:
         """Set the chain count for internal callers."""
         self._n_chains.value = value
 
     @property
-    def n_parameters(self) -> NumericDescriptor:
+    def n_parameters(self) -> IntegerDescriptor:
         """Number of sampled parameters."""
         return self._n_parameters
 
-    def _set_n_parameters(self, value: float) -> None:
+    def _set_n_parameters(self, value: int) -> None:
         """Set the sampled-parameter count for internal callers."""
         self._n_parameters.value = value

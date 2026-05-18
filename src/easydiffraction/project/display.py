@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+from contextlib import nullcontext
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -134,6 +135,66 @@ class PosteriorDisplay:
     def __init__(self, project: Project) -> None:
         self._project = project
 
+    def _pairs_need_processing_indicator(
+        self,
+        *,
+        parameters: list[object] | None,
+    ) -> bool:
+        """Return whether posterior pair plotting still needs processing."""
+        if parameters is not None:
+            return True
+
+        analysis = self._project.analysis
+        sidecar_data = getattr(analysis, '_persisted_fit_state_sidecar', {})
+        pair_caches = sidecar_data.get('pair_caches', {})
+        return not (
+            analysis.bayesian_result.has_pair_cache.value
+            and len(analysis.bayesian_pair_caches) > 0
+            and bool(pair_caches)
+        )
+
+    def _predictive_needs_processing_indicator(
+        self,
+        *,
+        expt_name: str,
+        style: str,
+        x: object | None,
+    ) -> bool:
+        """Return whether posterior predictive plotting still needs processing."""
+        analysis = self._project.analysis
+        sidecar_data = getattr(analysis, '_persisted_fit_state_sidecar', {})
+        predictive_datasets = sidecar_data.get('predictive_datasets', {})
+        if not (
+            analysis.bayesian_result.has_posterior_predictive.value
+            and bool(predictive_datasets)
+            and expt_name in predictive_datasets
+        ):
+            return True
+
+        experiment = self._project.experiments[expt_name]
+        plotter = self._project.rendering.plotter
+        _, x_axis_name, _, _, _ = plotter._resolve_x_axis(experiment.type, x)
+        require_draws = (
+            plotter.engine == PlotterEngineEnum.PLOTLY.value
+            and style in {'draws', 'band+draws'}
+        )
+
+        matching_rows = [
+            row
+            for row in analysis.bayesian_predictive_datasets
+            if row.experiment_name.value == expt_name
+            and str(row.x_axis_name.value) == str(x_axis_name)
+        ]
+        if not matching_rows:
+            return True
+        if not require_draws:
+            return False
+        return not any(
+            row.draws_path.value is not None
+            and predictive_datasets[expt_name].get('draws') is not None
+            for row in matching_rows
+        )
+
     def pairs(
         self,
         parameters: list[object] | None = None,
@@ -143,10 +204,15 @@ class PosteriorDisplay:
         max_parameters: int = 6,
     ) -> None:
         """Plot posterior pair relationships for sampled parameters."""
-        with activity_indicator(
-            ACTIVITY_LABEL_PROCESSING,
-            verbosity=VerbosityEnum(self._project.verbosity.fit.value),
-        ):
+        indicator_context = (
+            activity_indicator(
+                ACTIVITY_LABEL_PROCESSING,
+                verbosity=VerbosityEnum(self._project.verbosity.fit.value),
+            )
+            if self._pairs_need_processing_indicator(parameters=parameters)
+            else nullcontext()
+        )
+        with indicator_context:
             self._project.rendering.plotter.plot_posterior_pairs(
                 parameters=parameters,
                 style=style,
@@ -182,10 +248,19 @@ class PosteriorDisplay:
         x: object | None = None,
     ) -> None:
         """Plot posterior predictive summaries for one experiment."""
-        with activity_indicator(
-            ACTIVITY_LABEL_PROCESSING,
-            verbosity=VerbosityEnum(self._project.verbosity.fit.value),
-        ):
+        indicator_context = (
+            activity_indicator(
+                ACTIVITY_LABEL_PROCESSING,
+                verbosity=VerbosityEnum(self._project.verbosity.fit.value),
+            )
+            if self._predictive_needs_processing_indicator(
+                expt_name=expt_name,
+                style=style,
+                x=x,
+            )
+            else nullcontext()
+        )
+        with indicator_context:
             self._project.rendering.plotter.plot_posterior_predictive(
                 expt_name=expt_name,
                 style=style,
@@ -249,10 +324,19 @@ class ProjectDisplay:
                 msg = self._status_by_name(statuses, 'auto').reason
                 raise ValueError(msg)
             if 'uncertainty' in auto_include:
-                with activity_indicator(
-                    ACTIVITY_LABEL_PROCESSING,
-                    verbosity=VerbosityEnum(self._project.verbosity.fit.value),
-                ):
+                indicator_context = (
+                    activity_indicator(
+                        ACTIVITY_LABEL_PROCESSING,
+                        verbosity=VerbosityEnum(self._project.verbosity.fit.value),
+                    )
+                    if self._posterior._predictive_needs_processing_indicator(
+                        expt_name=expt_name,
+                        style='band',
+                        x=x,
+                    )
+                    else nullcontext()
+                )
+                with indicator_context:
                     self._project.rendering.plotter._plot_posterior_predictive_request(
                         expt_name=expt_name,
                         style='band',
@@ -283,10 +367,19 @@ class ProjectDisplay:
             raise ValueError(msg)
 
         if 'uncertainty' in normalized_include:
-            with activity_indicator(
-                ACTIVITY_LABEL_PROCESSING,
-                verbosity=VerbosityEnum(self._project.verbosity.fit.value),
-            ):
+            indicator_context = (
+                activity_indicator(
+                    ACTIVITY_LABEL_PROCESSING,
+                    verbosity=VerbosityEnum(self._project.verbosity.fit.value),
+                )
+                if self._posterior._predictive_needs_processing_indicator(
+                    expt_name=expt_name,
+                    style='band',
+                    x=x,
+                )
+                else nullcontext()
+            )
+            with indicator_context:
                 self._project.rendering.plotter._plot_posterior_predictive_request(
                     expt_name=expt_name,
                     style='band',

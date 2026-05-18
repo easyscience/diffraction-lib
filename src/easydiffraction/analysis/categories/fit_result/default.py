@@ -11,6 +11,7 @@ from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.variable import BoolDescriptor
+from easydiffraction.core.variable import IntegerDescriptor
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.io.cif.handler import CifHandler
@@ -52,7 +53,7 @@ class FitResult(CategoryItem):
             value_spec=AttributeSpec(default=''),
             cif_handler=CifHandler(names=['_fit_result.message']),
         )
-        self._iterations = NumericDescriptor(
+        self._iterations = IntegerDescriptor(
             name='iterations',
             description='Iteration count for the latest persisted fit-result projection.',
             value_spec=AttributeSpec(default=0),
@@ -103,13 +104,13 @@ class FitResult(CategoryItem):
         self._message.value = value
 
     @property
-    def iterations(self) -> NumericDescriptor:
+    def iterations(self) -> IntegerDescriptor:
         """
         Iteration count for the latest persisted fit-result projection.
         """
         return self._iterations
 
-    def _set_iterations(self, value: float) -> None:
+    def _set_iterations(self, value: int) -> None:
         """Set the iteration count for internal callers."""
         self._iterations.value = value
 

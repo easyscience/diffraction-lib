@@ -276,6 +276,15 @@ class GenericNumericDescriptor(GenericDescriptorBase):
 # ======================================================================
 
 
+class GenericIntegerDescriptor(GenericNumericDescriptor):
+    """Base descriptor that constrains values to integers."""
+
+    _value_type = DataTypes.INTEGER
+
+
+# ======================================================================
+
+
 class GenericParameter(GenericNumericDescriptor):
     """
     Numeric descriptor extended with fitting-related attributes.
@@ -607,6 +616,33 @@ class NumericDescriptor(GenericNumericDescriptor):
             Object that tracks CIF identifiers.
         **kwargs : object
             Forwarded to GenericNumericDescriptor.
+        """
+        super().__init__(**kwargs)
+        self._cif_handler = cif_handler
+        self._cif_handler.attach(self)
+
+
+# ======================================================================
+
+
+class IntegerDescriptor(GenericIntegerDescriptor):
+    """Integer descriptor bound to a CIF handler."""
+
+    def __init__(
+        self,
+        *,
+        cif_handler: CifHandler,
+        **kwargs: object,
+    ) -> None:
+        """
+        Integer descriptor bound to a CIF handler.
+
+        Parameters
+        ----------
+        cif_handler : CifHandler
+            Object that tracks CIF identifiers.
+        **kwargs : object
+            Forwarded to GenericIntegerDescriptor.
         """
         super().__init__(**kwargs)
         self._cif_handler = cif_handler

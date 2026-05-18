@@ -51,9 +51,9 @@ def format_value(value: object) -> str:
     # Booleans use CIF true/false tokens
     elif isinstance(value, bool):
         value = 'true' if value else 'false'
-    # Convert ints to floats
-    elif isinstance(value, int):
-        value = float(value)
+    # Preserve integers as integers in CIF output
+    elif isinstance(value, (int, np.integer)):
+        value = str(int(value))
     # Empty strings → CIF unknown marker
     elif isinstance(value, str) and not value.strip():
         value = '?'
@@ -839,7 +839,19 @@ def param_from_cif(
         return
 
     # If numeric, parse with uncertainty if present
-    if self._value_type == DataTypes.NUMERIC:
+    if self._value_type == DataTypes.INTEGER:
+        numeric_value = str_to_ufloat(raw).n
+        integer_value = int(round(numeric_value))
+        if not np.isclose(numeric_value, integer_value):
+            log.warning(
+                f'Ignoring non-integer CIF value {raw!r} for integer field '
+                f'{self.unique_name}.'
+            )
+            return
+        self.value = integer_value
+
+    # If numeric, parse with uncertainty if present
+    elif self._value_type == DataTypes.NUMERIC:
         has_brackets = '(' in raw
         u = str_to_ufloat(raw)
         self.value = u.n
@@ -891,7 +903,18 @@ def _set_param_from_raw_cif_value(
     if raw in {'?', '.'}:
         return
 
-    if param._value_type == DataTypes.NUMERIC:
+    if param._value_type == DataTypes.INTEGER:
+        numeric_value = str_to_ufloat(raw).n
+        integer_value = int(round(numeric_value))
+        if not np.isclose(numeric_value, integer_value):
+            log.warning(
+                f'Ignoring non-integer CIF value {raw!r} for integer field '
+                f'{param.unique_name}.'
+            )
+            return
+        param.value = integer_value
+
+    elif param._value_type == DataTypes.NUMERIC:
         has_brackets = '(' in raw
         u = str_to_ufloat(raw)
         param.value = u.n

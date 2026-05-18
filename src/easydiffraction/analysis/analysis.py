@@ -1494,7 +1494,8 @@ class Analysis(CategoryOwner):
         for experiment_name in self.project.experiments.names:
             experiment = self.project.experiments[experiment_name]
             x_axis, x_axis_name, _, _, _ = plotter._resolve_x_axis(experiment.type, None)
-            summary = plotter._get_or_build_posterior_predictive_summary(
+            summary = plotter._build_posterior_predictive_summary(
+                fit_results=results,
                 experiment=experiment,
                 expt_name=experiment_name,
                 x_axis=x_axis,
@@ -1504,6 +1505,20 @@ class Analysis(CategoryOwner):
                 continue
 
             results.posterior_predictive[summary.experiment_name] = summary
+            results.posterior_predictive[
+                self._predictive_cache_key(
+                    summary.experiment_name,
+                    str(x_axis_name),
+                    include_draws=False,
+                )
+            ] = summary
+            results.posterior_predictive[
+                self._predictive_cache_key(
+                    summary.experiment_name,
+                    str(x_axis_name),
+                    include_draws=True,
+                )
+            ] = summary
             predictive_payload[summary.experiment_name] = self._predictive_dataset_payload(
                 summary,
             )
