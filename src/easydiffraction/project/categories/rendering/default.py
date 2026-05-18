@@ -24,6 +24,8 @@ from easydiffraction.utils.utils import render_table
 class Rendering(CategoryItem):
     """Chart and table engine selection for a project."""
 
+    _category_code = 'rendering'
+
     type_info = TypeInfo(
         tag='default',
         description='Project rendering category',
@@ -57,8 +59,6 @@ class Rendering(CategoryItem):
             ),
             cif_handler=CifHandler(names=['_rendering.table_engine']),
         )
-
-        self._identity.category_code = 'rendering'
 
     @property
     def chart_engine(self) -> StringDescriptor:

@@ -31,6 +31,8 @@ class Fitting(CategoryItem):
     Holds the active minimizer backend tag.
     """
 
+    _category_code = 'fitting'
+
     type_info = TypeInfo(
         tag='default',
         description='Fitting configuration category',
@@ -50,8 +52,6 @@ class Fitting(CategoryItem):
             ),
             cif_handler=CifHandler(names=['_fitting.minimizer_type']),
         )
-
-        self._identity.category_code = 'fitting'
 
     @property
     def minimizer_type(self) -> StringDescriptor:

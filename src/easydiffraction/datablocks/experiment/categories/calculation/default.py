@@ -21,6 +21,8 @@ from easydiffraction.utils.utils import render_table
 class Calculation(CategoryItem):
     """Calculator selection and access for an experiment."""
 
+    _category_code = 'calculation'
+
     type_info = TypeInfo(
         tag='default',
         description='Experiment calculation category',
@@ -44,8 +46,6 @@ class Calculation(CategoryItem):
             ),
             cif_handler=CifHandler(names=['_calculation.calculator_type']),
         )
-
-        self._identity.category_code = 'calculation'
 
     @property
     def calculator_type(self) -> StringDescriptor:

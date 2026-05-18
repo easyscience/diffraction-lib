@@ -23,6 +23,8 @@ class Cell(CategoryItem):
     descriptors supporting validation, fitting and CIF serialization.
     """
 
+    _category_code = 'cell'
+
     type_info = TypeInfo(
         tag='default',
         description='Unit cell parameters',
@@ -92,8 +94,6 @@ class Cell(CategoryItem):
             ),
             cif_handler=CifHandler(names=['_cell.angle_gamma']),
         )
-
-        self._identity.category_code = 'cell'
 
     # ------------------------------------------------------------------
     #  Private helper methods

@@ -32,6 +32,9 @@ class AtomSiteAniso(CategoryItem):
     ``atom_site.adp_type``.
     """
 
+    _category_code = 'atom_site_aniso'
+    _category_entry_name = 'label'
+
     def __init__(self) -> None:
         """Initialise with default zero-valued tensor components."""
         super().__init__()
@@ -133,9 +136,6 @@ class AtomSiteAniso(CategoryItem):
                 ]
             ),
         )
-
-        self._identity.category_code = 'atom_site_aniso'
-        self._identity.category_entry_name = lambda: str(self.label.value)
 
     # ------------------------------------------------------------------
     #  Public properties

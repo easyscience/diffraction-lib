@@ -22,6 +22,8 @@ from easydiffraction.io.cif.handler import CifHandler
 class SequentialFit(CategoryItem):
     """Persisted settings for sequential fitting."""
 
+    _category_code = 'sequential_fit'
+
     type_info = TypeInfo(
         tag='default',
         description='Sequential fitting settings',
@@ -66,8 +68,6 @@ class SequentialFit(CategoryItem):
             value_spec=AttributeSpec(default=False),
             cif_handler=CifHandler(names=['_sequential_fit.reverse']),
         )
-
-        self._identity.category_code = 'sequential_fit'
 
     @property
     def data_dir(self) -> StringDescriptor:

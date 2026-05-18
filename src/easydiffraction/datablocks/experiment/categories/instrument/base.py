@@ -20,7 +20,8 @@ class InstrumentBase(CategoryItem):
     for concrete CWL/TOF instrument definitions.
     """
 
+    _category_code = 'instrument'
+
     def __init__(self) -> None:
-        """Initialize instrument base and set category code."""
+        """Initialize instrument base."""
         super().__init__()
-        self._identity.category_code = 'instrument'

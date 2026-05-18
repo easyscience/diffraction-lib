@@ -24,6 +24,9 @@ from easydiffraction.io.cif.handler import CifHandler
 class JointFitItem(CategoryItem):
     """A single joint-fit entry."""
 
+    _category_code = 'joint_fit'
+    _category_entry_name = 'experiment_id'
+
     def __init__(self) -> None:
         super().__init__()
 
@@ -45,9 +48,6 @@ class JointFitItem(CategoryItem):
             ),
             cif_handler=CifHandler(names=['_joint_fit.weight']),
         )
-
-        self._identity.category_code = 'joint_fit'
-        self._identity.category_entry_name = lambda: str(self.experiment_id.value)
 
     @property
     def experiment_id(self) -> StringDescriptor:

@@ -27,9 +27,9 @@ Phase 1 - Implementation
 [x] Add class-level identity declarations to CategoryItem.
 [x] Teach Identity to resolve declared category entry names.
 [x] Rebuild collection indexes after CIF loop loading.
-[ ] Add _category_code to all current CategoryItem subclasses.
+[x] Add _category_code to all current CategoryItem subclasses.
 [ ] Add _category_entry_name to all current loop CategoryItem subclasses.
-[ ] Remove direct self._identity.category_code assignments.
+[x] Remove direct self._identity.category_code assignments.
 [ ] Remove direct self._identity.category_entry_name lambda assignments.
 [ ] Add Constraint.id descriptor serialized as _constraint.id.
 [ ] Change constraints collection keys from lhs_alias to id.

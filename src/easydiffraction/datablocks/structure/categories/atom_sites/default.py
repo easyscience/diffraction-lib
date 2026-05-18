@@ -36,6 +36,9 @@ class AtomSite(CategoryItem):
     CIF serialization.
     """
 
+    _category_code = 'atom_site'
+    _category_entry_name = 'label'
+
     def __init__(self) -> None:
         """Initialise the atom site with default descriptor values."""
         super().__init__()
@@ -138,9 +141,6 @@ class AtomSite(CategoryItem):
             ),
             cif_handler=CifHandler(names=['_atom_site.adp_type']),
         )
-
-        self._identity.category_code = 'atom_site'
-        self._identity.category_entry_name = lambda: str(self.label.value)
 
     # ------------------------------------------------------------------
     #  Private helper methods

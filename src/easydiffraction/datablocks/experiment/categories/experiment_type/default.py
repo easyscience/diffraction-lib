@@ -29,6 +29,8 @@ from easydiffraction.io.cif.handler import CifHandler
 class ExperimentType(CategoryItem):
     """Container of attributes defining the experiment type."""
 
+    _category_code = 'expt_type'
+
     type_info = TypeInfo(
         tag='default',
         description='Experiment type descriptor',
@@ -78,8 +80,6 @@ class ExperimentType(CategoryItem):
             ),
             cif_handler=CifHandler(names=['_expt_type.scattering_type']),
         )
-
-        self._identity.category_code = 'expt_type'
 
     # ------------------------------------------------------------------
     #  Private setters (used by factories and loaders only)

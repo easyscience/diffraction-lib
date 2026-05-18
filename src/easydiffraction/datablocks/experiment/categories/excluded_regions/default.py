@@ -27,6 +27,9 @@ from easydiffraction.utils.utils import render_table
 class ExcludedRegion(CategoryItem):
     """Closed interval [start, end] to be excluded."""
 
+    _category_code = 'excluded_regions'
+    _category_entry_name = 'id'
+
     def __init__(self) -> None:
         super().__init__()
 
@@ -61,8 +64,6 @@ class ExcludedRegion(CategoryItem):
             ),
             cif_handler=CifHandler(names=['_excluded_region.end']),
         )
-        self._identity.category_code = 'excluded_regions'
-        self._identity.category_entry_name = lambda: str(self._id.value)
 
     # ------------------------------------------------------------------
     #  Public properties

@@ -26,6 +26,8 @@ from easydiffraction.utils.utils import render_table
 class Constraint(CategoryItem):
     """Single constraint item stored as ``lhs = rhs`` expression."""
 
+    _category_code = 'constraint'
+
     def __init__(self) -> None:
         super().__init__()
 
@@ -38,8 +40,6 @@ class Constraint(CategoryItem):
             ),
             cif_handler=CifHandler(names=['_constraint.expression']),
         )
-
-        self._identity.category_code = 'constraint'
         self._identity.category_entry_name = lambda: self.lhs_alias
 
     # ------------------------------------------------------------------
