@@ -169,14 +169,14 @@ implementation:
   attribute name (`info` → `project`) changes.
 - `ProjectInfo.path` is removed; the saved directory path lives on
   `Workspace.path` only.
-- A first-class `Verbosity` category under `WorkspaceConfig` is
-  required (not optional) so that `_verbosity.level` round-trips
-  through `workspace.cif` like other singleton categories.
+- A first-class `Verbosity` category under `WorkspaceConfig` is required
+  (not optional) so that `_verbosity.level` round-trips through
+  `workspace.cif` like other singleton categories.
 - Source-tree imports may be temporarily inconsistent between phases
   (for example, Phase 1 leaves `project_config_to_cif` imports until
-  Phase 4 renames the serializer functions). This is acceptable
-  because tests are not run in Phase 1. Each phase must still leave
-  the source importable at the end of the phase.
+  Phase 4 renames the serializer functions). This is acceptable because
+  tests are not run in Phase 1. Each phase must still leave the source
+  importable at the end of the phase.
 
 ## Current Shape
 
@@ -322,8 +322,8 @@ Rename the top-level runtime facade and package from `project` to
    Project.current_project_path() -> Workspace.current_workspace_path()
    ```
 
-   Update the `ClassVar` annotation accordingly and update all
-   internal references (`type(self)._current_project = self`,
+   Update the `ClassVar` annotation accordingly and update all internal
+   references (`type(self)._current_project = self`,
    `cls._current_project`).
 
 5. Update the `varname()` fallback inside `__init__` so the default
@@ -366,14 +366,15 @@ Rename the top-level runtime facade and package from `project` to
 
 12. Run a source-only grep. Do not run tests in Phase 1:
 
-   ```shell
-   rg -n "easydiffraction\\.project|\\bProject\\b|ProjectDisplay|ProjectConfig" src
-   ```
+```shell
+rg -n "easydiffraction\\.project|\\bProject\\b|ProjectDisplay|ProjectConfig" src
+```
 
-   For every match, decide whether it refers to:
-   - the old root object, which should become `Workspace`;
-   - the project-information category, which should remain project;
-   - historical text that should be updated in docs later.
+For every match, decide whether it refers to:
+
+- the old root object, which should become `Workspace`;
+- the project-information category, which should remain project;
+- historical text that should be updated in docs later.
 
 ### Stop Conditions
 
@@ -498,8 +499,7 @@ the workspace location and is not serialized project information.
 
 ### Steps
 
-1. In `ProjectInfo`, rename the public identity property and its
-   setter:
+1. In `ProjectInfo`, rename the public identity property and its setter:
 
    ```text
    name (getter)  -> id (getter)
@@ -539,9 +539,9 @@ the workspace location and is not serialized project information.
 7. Add `Workspace.path` as the runtime storage path. Initialize
    `self._path: pathlib.Path | None = None` in `Workspace.__init__`.
 
-   Suggested shape (match the surrounding `GuardedBase` pattern; do
-   not add `@typechecked` here because the setter accepts both `str`
-   and `pathlib.Path`):
+   Suggested shape (match the surrounding `GuardedBase` pattern; do not
+   add `@typechecked` here because the setter accepts both `str` and
+   `pathlib.Path`):
 
    ```python
    @property
@@ -572,15 +572,15 @@ the workspace location and is not serialized project information.
    ```
 
    Concrete call sites include `Workspace.save`, `Workspace.load`,
-   `Workspace.current_workspace_path`, and any consumers in
-   `analysis/`, `display/`, `summary/`, and `io/`.
+   `Workspace.current_workspace_path`, and any consumers in `analysis/`,
+   `display/`, `summary/`, and `io/`.
 
 10. Update messages and string representations:
 
-   ```text
-   Workspace '<project_id>' (...)
-   Saving workspace '<project_id>' to ...
-   ```
+```text
+Workspace '<project_id>' (...)
+Saving workspace '<project_id>' to ...
+```
 
 11. Run grep:
 
@@ -634,9 +634,10 @@ Rename the saved singleton configuration file from `project.cif` to
    ```
 
    Call sites include `workspace.py` (formerly `project.py`),
-   `workspace_config.py`, and the serializer itself (the `project_to_cif`
-   body calls `project_config_to_cif`). After this step the imports
-   that were intentionally left stale in Phase 1 must compile cleanly.
+   `workspace_config.py`, and the serializer itself (the
+   `project_to_cif` body calls `project_config_to_cif`). After this step
+   the imports that were intentionally left stale in Phase 1 must
+   compile cleanly.
 
    Do not rename `project_info_to_cif`; it serializes the `_project`
    category and that name remains correct.
@@ -676,10 +677,10 @@ Rename the saved singleton configuration file from `project.cif` to
    workspace.verbosity              # -> 'short'
    ```
 
-   The public `verbosity` getter/setter on `Workspace` reads and
-   writes the category's `level` descriptor (validated against
-   `VerbosityEnum`) and replaces the current `self._verbosity:
-   VerbosityEnum` runtime-only attribute. Remove that attribute.
+   The public `verbosity` getter/setter on `Workspace` reads and writes
+   the category's `level` descriptor (validated against `VerbosityEnum`)
+   and replaces the current `self._verbosity: VerbosityEnum`
+   runtime-only attribute. Remove that attribute.
 
    Serialize it as:
 
@@ -705,16 +706,16 @@ Rename the saved singleton configuration file from `project.cif` to
    rg -n "project\\.cif|config\\.cif|meta\\.cif|project_config_to_cif|project_config_from_cif|project_to_cif|verbosity" src docs tests
    ```
 
-   Update source and docs only. Test files are handled in Phase 2
-   unless the user explicitly asks otherwise.
+   Update source and docs only. Test files are handled in Phase 2 unless
+   the user explicitly asks otherwise.
 
 9. Saved on-disk fixtures under `data/` and `projects/` still contain
    `project.cif` files (for example `data/lbco_project/project.cif`,
-   `projects/cosio/project.cif`). Do **not** edit or regenerate them
-   in Phase 1. They are inputs to integration/script tests and will
-   either be regenerated in Phase 2 or the relevant tests will be
-   updated to write fresh workspace directories. Flag any that block
-   Phase 2 in the review gate.
+   `projects/cosio/project.cif`). Do **not** edit or regenerate them in
+   Phase 1. They are inputs to integration/script tests and will either
+   be regenerated in Phase 2 or the relevant tests will be updated to
+   write fresh workspace directories. Flag any that block Phase 2 in the
+   review gate.
 
 ### Stop Conditions
 
@@ -762,8 +763,8 @@ category or the scientific project itself.
    analysis.project -> analysis.workspace
    ```
 
-   This includes the constructor argument, the stored attribute, and
-   any public read-only property exposing the parent workspace.
+   This includes the constructor argument, the stored attribute, and any
+   public read-only property exposing the parent workspace.
 
 2. Rename display internals in `WorkspaceDisplay` (formerly
    `ProjectDisplay`) and in any other class that stores a back-
@@ -774,9 +775,9 @@ category or the scientific project itself.
    _set_project(...) -> _set_workspace(...)
    ```
 
-   Only do this when the stored object is the top-level runtime
-   facade. Do not touch `self._project_id` inside `ProjectInfo` or
-   `_project.*` CIF tags.
+   Only do this when the stored object is the top-level runtime facade.
+   Do not touch `self._project_id` inside `ProjectInfo` or `_project.*`
+   CIF tags.
 
 3. Rename local variables in runtime code:
 
@@ -1191,17 +1192,18 @@ should be `workspace.path`, not `workspace.project.path`.
 
 ### Mistake: Forgetting Facade Class-Level State
 
-When renaming `Project` to `Workspace`, the `ClassVar` `_current_project`,
-the `current_project_path()` classmethod, and the `varname()` fallback
-string `'project'` all live on the class itself and are easy to miss
-with a single search-and-replace. Rename them to `_current_workspace`,
-`current_workspace_path()`, and `'workspace'` respectively.
+When renaming `Project` to `Workspace`, the `ClassVar`
+`_current_project`, the `current_project_path()` classmethod, and the
+`varname()` fallback string `'project'` all live on the class itself and
+are easy to miss with a single search-and-replace. Rename them to
+`_current_workspace`, `current_workspace_path()`, and `'workspace'`
+respectively.
 
 ### Mistake: Renaming `ProjectInfo._project_id`
 
 The internal descriptor attribute `self._project_id` inside
-`ProjectInfo` already matches the new public name `id` and stays as
-is. Only the public `name` property/setter becomes `id`.
+`ProjectInfo` already matches the new public name `id` and stays as is.
+Only the public `name` property/setter becomes `id`.
 
 ### Mistake: Editing Generated Notebooks Directly
 

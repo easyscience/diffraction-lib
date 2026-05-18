@@ -34,7 +34,10 @@
 - One class per file when substantial; group small related classes.
 - No `**kwargs` — use explicit keyword arguments.
 - No string-based dispatch (e.g. `getattr(self, f'_{name}')`); write
-  named methods (`_set_sample_form`, `_set_beam_mode`).
+  named methods (`_set_sample_form`, `_set_beam_mode`). Narrow framework
+  metadata lookups are allowed when the attribute name is a class-level
+  declaration, is not user input, and is validated in one central place;
+  for example, `CategoryItem._category_entry_name`.
 - Public attrs are either editable (getter+setter property) or read-only
   (getter only). For internal mutation of read-only props, use a private
   `_set_<name>` method, not a public setter.
@@ -115,7 +118,10 @@
   resolves them.
 - Never remove or replace existing functionality without explicit
   confirmation — highlight every removal and wait for approval.
-- When renaming, grep the entire project (code, tests, tutorials, docs).
+- When renaming or auditing usages, search the entire project (code,
+  tests, tutorials, docs). Use `git grep -n` because all contributors
+  have Git; do not assume `rg` is installed. If `git grep` is
+  unavailable, fall back to `find ... -type f` plus `grep -n`.
 - Each change is atomic and single-commit-sized: make one change,
   suggest the commit message, then stop and wait for confirmation.
 - When in doubt, ask.
@@ -163,14 +169,22 @@ Notes:
 
 When asked to create a plan:
 
+- Start the plan by referencing this file:
+  `.github/copilot-instructions.md`. State any deliberate exception to
+  these instructions in the plan itself.
 - First gather enough repository context to make the plan concrete. Ask
   all ambiguous or unclear questions in one concise batch; record
   unresolved questions in the plan if the user wants it saved before
   answering them.
 - Save plans as `docs/dev/plans/<feature-name>.md` (lowercase,
-  dash-separated, e.g. `docs/dev/plans/background-refactor.md`). Use the
-  same `<feature-name>` for the implementation branch
-  (`feature/<feature-name>`). Do not push the branch unless asked.
+  dash-separated, e.g. `docs/dev/plans/background-refactor.md`). When a
+  plan implements one ADR, use the same slug as the ADR file; for
+  example, `docs/dev/adrs/suggestions/foo.md` maps to
+  `docs/dev/plans/foo.md`. If a plan has no corresponding ADR or spans
+  multiple ADRs, choose a concise feature slug and list all related ADRs
+  in the plan. Use the same `<feature-name>` for the implementation
+  branch (`feature/<feature-name>`). Do not push the branch unless
+  asked.
 - Include a status checklist with `[ ]` items; mark `[x]` as completed
   during implementation.
 - Apply the two-phase workflow (Phase 1 implementation, Phase 2
@@ -190,6 +204,9 @@ When asked to create a plan:
   files likely to change, decisions already made, open questions,
   verification commands for Phase 2, and a short suggested commit
   message or branch name when useful.
+- Before saving a plan, verify that referenced files, directories,
+  scripts, and task names exist locally when that is practical. If a
+  referenced tool is optional or missing, include an available fallback.
 - End every plan with a "Suggested Pull Request" section containing a
   short PR title and a brief end-user-oriented description. Keep this
   section non-technical enough for scientists and other users to
