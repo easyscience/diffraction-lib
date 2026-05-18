@@ -24,9 +24,9 @@ Status checklist. Mark `[x]` only while implementing:
 
 ```text
 Phase 1 - Implementation
-[ ] Add class-level identity declarations to CategoryItem.
-[ ] Teach Identity to resolve declared category entry names.
-[ ] Rebuild collection indexes after CIF loop loading.
+[x] Add class-level identity declarations to CategoryItem.
+[x] Teach Identity to resolve declared category entry names.
+[x] Rebuild collection indexes after CIF loop loading.
 [ ] Add _category_code to all current CategoryItem subclasses.
 [ ] Add _category_entry_name to all current loop CategoryItem subclasses.
 [ ] Remove direct self._identity.category_code assignments.

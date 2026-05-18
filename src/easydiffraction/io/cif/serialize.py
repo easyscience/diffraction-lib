@@ -912,3 +912,9 @@ def category_collection_from_cif(
                     #  param_from_cif
                     _set_param_from_raw_cif_value(param, array[row_idx][col_idx])
                     break
+
+    after_from_cif = getattr(self, '_after_from_cif', None)
+    if callable(after_from_cif):
+        after_from_cif()
+
+    self._rebuild_index()
