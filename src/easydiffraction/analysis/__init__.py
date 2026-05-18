@@ -5,6 +5,15 @@ from easydiffraction.analysis.categories.bayesian_convergence import BayesianCon
 from easydiffraction.analysis.categories.bayesian_convergence import (
     BayesianConvergenceFactory,
 )
+from easydiffraction.analysis.categories.bayesian_distribution_caches import (
+    BayesianDistributionCacheItem,
+)
+from easydiffraction.analysis.categories.bayesian_distribution_caches import (
+    BayesianDistributionCaches,
+)
+from easydiffraction.analysis.categories.bayesian_distribution_caches import (
+    BayesianDistributionCachesFactory,
+)
 from easydiffraction.analysis.categories.bayesian_parameter_posteriors import (
     BayesianParameterPosteriorItem,
 )
@@ -13,6 +22,22 @@ from easydiffraction.analysis.categories.bayesian_parameter_posteriors import (
 )
 from easydiffraction.analysis.categories.bayesian_parameter_posteriors import (
     BayesianParameterPosteriorsFactory,
+)
+from easydiffraction.analysis.categories.bayesian_pair_caches import (
+    BayesianPairCacheItem,
+)
+from easydiffraction.analysis.categories.bayesian_pair_caches import BayesianPairCaches
+from easydiffraction.analysis.categories.bayesian_pair_caches import (
+    BayesianPairCachesFactory,
+)
+from easydiffraction.analysis.categories.bayesian_predictive_datasets import (
+    BayesianPredictiveDatasetItem,
+)
+from easydiffraction.analysis.categories.bayesian_predictive_datasets import (
+    BayesianPredictiveDatasets,
+)
+from easydiffraction.analysis.categories.bayesian_predictive_datasets import (
+    BayesianPredictiveDatasetsFactory,
 )
 from easydiffraction.analysis.categories.bayesian_result import BayesianResult
 from easydiffraction.analysis.categories.bayesian_result import BayesianResultFactory

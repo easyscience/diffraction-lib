@@ -4,11 +4,27 @@
 from easydiffraction.analysis.categories.aliases import Alias
 from easydiffraction.analysis.categories.aliases import Aliases
 from easydiffraction.analysis.categories.bayesian_convergence import BayesianConvergence
+from easydiffraction.analysis.categories.bayesian_distribution_caches import (
+    BayesianDistributionCacheItem,
+)
+from easydiffraction.analysis.categories.bayesian_distribution_caches import (
+    BayesianDistributionCaches,
+)
 from easydiffraction.analysis.categories.bayesian_parameter_posteriors import (
     BayesianParameterPosteriorItem,
 )
 from easydiffraction.analysis.categories.bayesian_parameter_posteriors import (
     BayesianParameterPosteriors,
+)
+from easydiffraction.analysis.categories.bayesian_pair_caches import (
+    BayesianPairCacheItem,
+)
+from easydiffraction.analysis.categories.bayesian_pair_caches import BayesianPairCaches
+from easydiffraction.analysis.categories.bayesian_predictive_datasets import (
+    BayesianPredictiveDatasetItem,
+)
+from easydiffraction.analysis.categories.bayesian_predictive_datasets import (
+    BayesianPredictiveDatasets,
 )
 from easydiffraction.analysis.categories.bayesian_result import BayesianResult
 from easydiffraction.analysis.categories.bayesian_sampler import BayesianSampler
