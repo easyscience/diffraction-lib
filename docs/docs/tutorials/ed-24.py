@@ -12,20 +12,17 @@
 # ## Import Library
 
 # %%
-from pathlib import Path
-
 import easydiffraction as ed
 
 # %% [markdown]
-# ## Locate the Saved Project
+# ## Download Saved Project
 #
-# In the repository, the saved project currently lives under
-# `tmp/tutorials/projects/lbco_hrpt_bayesian`. Once a downloadable
-# archive is available, replace this path with the extracted project
-# directory instead.
+# The returned path points directly to the saved project directory with
+# the completed Bayesian fit and persisted posterior samples and plot
+# caches.
 
 # %%
-project_dir = Path('../../../tmp/tutorials/projects/lbco_hrpt_bayesian')
+project_dir = ed.download_data(id=35, destination='projects')
 
 # %% [markdown]
 # ## Load the Saved Bayesian Project

@@ -19,13 +19,10 @@ from easydiffraction import Project
 from easydiffraction import download_data
 
 # %% [markdown]
-# ## Download Project
-#
-# Project archives are extracted automatically, and the returned path
-# points to the saved project directory.
+# ## Download Saved Project
 
 # %%
-project_dir = download_data(id=30, destination='projects')
+project_dir = download_data(id=36, destination='projects')
 
 # %% [markdown]
 # ## Load Project
