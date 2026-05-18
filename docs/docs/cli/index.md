@@ -71,7 +71,7 @@ existing files.
 Load a saved project and run structural refinement:
 
 ```bash
-python -m easydiffraction fit PROJECT_DIR
+python -m easydiffraction PROJECT_DIR fit
 ```
 
 `PROJECT_DIR` is the path to a project directory previously created by
@@ -86,5 +86,35 @@ Use the `--dry` flag to run the fit **without overwriting** the project
 files:
 
 ```bash
-python -m easydiffraction fit PROJECT_DIR --dry
+python -m easydiffraction PROJECT_DIR fit --dry
 ```
+
+EasyDiffraction also accepts the legacy subcommand-first form
+`python -m easydiffraction fit PROJECT_DIR`, but the project-first form
+is recommended because it makes it easy to rerun the same command and
+swap only the action.
+
+### Display a Project
+
+Load a saved project and show the outputs that match its current fit
+state and rendering backend:
+
+```bash
+python -m easydiffraction PROJECT_DIR display
+```
+
+For typical non-sequential projects this includes the latest fit
+results, parameter correlations, default pattern views, and when the
+saved state is Bayesian also posterior distributions and predictive
+checks. Plotly-only views such as posterior pair plots are shown only
+when the active chart engine is Plotly.
+
+### Undo the Last Fit
+
+The CLI already reserves the project-first undo command shape:
+
+```bash
+python -m easydiffraction PROJECT_DIR undo
+```
+
+This command currently reports that undo support is not implemented yet.
