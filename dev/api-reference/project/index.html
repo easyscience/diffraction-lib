@@ -3414,6 +3414,8 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">ProjectInfo</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Project metadata category.&quot;&quot;&quot;</span>
 
+    <span class="n">_category_code</span> <span class="o">=</span> <span class="s1">&#39;project&#39;</span>
+
     <span class="n">type_info</span> <span class="o">=</span> <span class="n">TypeInfo</span><span class="p">(</span>
         <span class="n">tag</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Project metadata category&#39;</span><span class="p">,</span>
@@ -3461,8 +3463,6 @@
             <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_project.last_modified&#39;</span><span class="p">]),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span> <span class="o">=</span> <span class="s1">&#39;project&#39;</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_parse_timestamp</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">:</span>
@@ -4204,6 +4204,8 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">Rendering</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Chart and table engine selection for a project.&quot;&quot;&quot;</span>
 
+    <span class="n">_category_code</span> <span class="o">=</span> <span class="s1">&#39;rendering&#39;</span>
+
     <span class="n">type_info</span> <span class="o">=</span> <span class="n">TypeInfo</span><span class="p">(</span>
         <span class="n">tag</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Project rendering category&#39;</span><span class="p">,</span>
@@ -4237,8 +4239,6 @@
             <span class="p">),</span>
             <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_rendering.table_engine&#39;</span><span class="p">]),</span>
         <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span> <span class="o">=</span> <span class="s1">&#39;rendering&#39;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">chart_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StringDescriptor</span><span class="p">:</span>

@@ -3681,6 +3681,9 @@ not break immediately. Tests should migrate to the short names.</p>
 <span class="sd">    not break immediately. Tests should migrate to the short names.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">_category_code</span> <span class="o">=</span> <span class="s1">&#39;background&#39;</span>
+    <span class="n">_category_entry_name</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
@@ -3714,9 +3717,6 @@ not break immediately. Tests should migrate to the short names.</p>
             <span class="p">),</span>
             <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_pd_background.Chebyshev_coef&#39;</span><span class="p">]),</span>
         <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span> <span class="o">=</span> <span class="s1">&#39;background&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_entry_name</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1">#  Public properties</span>
@@ -4591,6 +4591,9 @@ object. Assigning to it updates the parameter value.</p>
 <span class="normal">130</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">LineSegment</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Single background control point for interpolation.&quot;&quot;&quot;</span>
 
+    <span class="n">_category_code</span> <span class="o">=</span> <span class="s1">&#39;background&#39;</span>
+    <span class="n">_category_entry_name</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
@@ -4634,9 +4637,6 @@ object. Assigning to it updates the parameter value.</p>
                 <span class="p">]</span>
             <span class="p">),</span>
         <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span> <span class="o">=</span> <span class="s1">&#39;background&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_entry_name</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1">#  Public properties</span>
@@ -5226,6 +5226,8 @@ object. Assigning to it updates the parameter value.</p>
 <span class="k">class</span><span class="w"> </span><span class="nc">Calculation</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculator selection and access for an experiment.&quot;&quot;&quot;</span>
 
+    <span class="n">_category_code</span> <span class="o">=</span> <span class="s1">&#39;calculation&#39;</span>
+
     <span class="n">type_info</span> <span class="o">=</span> <span class="n">TypeInfo</span><span class="p">(</span>
         <span class="n">tag</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Experiment calculation category&#39;</span><span class="p">,</span>
@@ -5249,8 +5251,6 @@ object. Assigning to it updates the parameter value.</p>
             <span class="p">),</span>
             <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_calculation.calculator_type&#39;</span><span class="p">]),</span>
         <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span> <span class="o">=</span> <span class="s1">&#39;calculation&#39;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">calculator_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StringDescriptor</span><span class="p">:</span>
@@ -6595,7 +6595,8 @@ object. Assigning to it updates the parameter value.</p>
 <span class="normal">288</span>
 <span class="normal">289</span>
 <span class="normal">290</span>
-<span class="normal">291</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PdCwlDataPoint</span><span class="p">(</span>
+<span class="normal">291</span>
+<span class="normal">292</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PdCwlDataPoint</span><span class="p">(</span>
     <span class="n">PdDataPointBaseMixin</span><span class="p">,</span>  <span class="c1"># TODO: rename to BasePdDataPointMixin???</span>
     <span class="n">PdCwlDataPointMixin</span><span class="p">,</span>  <span class="c1"># TODO: rename to CwlPdDataPointMixin???</span>
     <span class="n">CategoryItem</span><span class="p">,</span>  <span class="c1"># Must be last to ensure mixins initialized first</span>
@@ -6610,10 +6611,11 @@ object. Assigning to it updates the parameter value.</p>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Powder diffraction data point for CWL experiments.&quot;&quot;&quot;</span>
 
+    <span class="n">_category_code</span> <span class="o">=</span> <span class="s1">&#39;pd_data&#39;</span>
+    <span class="n">_category_entry_name</span> <span class="o">=</span> <span class="s1">&#39;point_id&#39;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span> <span class="o">=</span> <span class="s1">&#39;pd_data&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_entry_name</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">point_id</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -6669,8 +6671,7 @@ object. Assigning to it updates the parameter value.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">294</span>
-<span class="normal">295</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">295</span>
 <span class="normal">296</span>
 <span class="normal">297</span>
 <span class="normal">298</span>
@@ -6679,17 +6680,20 @@ object. Assigning to it updates the parameter value.</p>
 <span class="normal">301</span>
 <span class="normal">302</span>
 <span class="normal">303</span>
-<span class="normal">304</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PdTofDataPoint</span><span class="p">(</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PdTofDataPoint</span><span class="p">(</span>
     <span class="n">PdDataPointBaseMixin</span><span class="p">,</span>
     <span class="n">PdTofDataPointMixin</span><span class="p">,</span>
     <span class="n">CategoryItem</span><span class="p">,</span>  <span class="c1"># Must be last to ensure mixins initialized first</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Powder diffraction data point for time-of-flight experiments.&quot;&quot;&quot;</span>
 
+    <span class="n">_category_code</span> <span class="o">=</span> <span class="s1">&#39;pd_data&#39;</span>
+    <span class="n">_category_entry_name</span> <span class="o">=</span> <span class="s1">&#39;point_id&#39;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span> <span class="o">=</span> <span class="s1">&#39;pd_data&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_entry_name</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">point_id</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -6745,9 +6749,7 @@ object. Assigning to it updates the parameter value.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">307</span>
-<span class="normal">308</span>
-<span class="normal">309</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">309</span>
 <span class="normal">310</span>
 <span class="normal">311</span>
 <span class="normal">312</span>
@@ -6979,7 +6981,9 @@ object. Assigning to it updates the parameter value.</p>
 <span class="normal">538</span>
 <span class="normal">539</span>
 <span class="normal">540</span>
-<span class="normal">541</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PdDataBase</span><span class="p">(</span><span class="n">CategoryCollection</span><span class="p">):</span>
+<span class="normal">541</span>
+<span class="normal">542</span>
+<span class="normal">543</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PdDataBase</span><span class="p">(</span><span class="n">CategoryCollection</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for powder diffraction data collections.&quot;&quot;&quot;</span>
 
     <span class="c1"># TODO: ???</span>
@@ -7421,9 +7425,7 @@ fitting failures.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">544</span>
-<span class="normal">545</span>
-<span class="normal">546</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">546</span>
 <span class="normal">547</span>
 <span class="normal">548</span>
 <span class="normal">549</span>
@@ -7500,7 +7502,9 @@ fitting failures.</p>
 <span class="normal">620</span>
 <span class="normal">621</span>
 <span class="normal">622</span>
-<span class="normal">623</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@DataFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">623</span>
+<span class="normal">624</span>
+<span class="normal">625</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@DataFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">PdCwlData</span><span class="p">(</span><span class="n">PdDataBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Bragg powder CWL data collection.&quot;&quot;&quot;</span>
 
@@ -7710,9 +7714,7 @@ fitting failures.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">626</span>
-<span class="normal">627</span>
-<span class="normal">628</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">628</span>
 <span class="normal">629</span>
 <span class="normal">630</span>
 <span class="normal">631</span>
@@ -7788,7 +7790,9 @@ fitting failures.</p>
 <span class="normal">701</span>
 <span class="normal">702</span>
 <span class="normal">703</span>
-<span class="normal">704</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@DataFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">704</span>
+<span class="normal">705</span>
+<span class="normal">706</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@DataFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">PdTofData</span><span class="p">(</span><span class="n">PdDataBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Bragg powder TOF data collection.&quot;&quot;&quot;</span>
 
@@ -8343,6 +8347,9 @@ original measurement was CWL or TOF.</p>
 <span class="sd">    original measurement was CWL or TOF.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">_category_code</span> <span class="o">=</span> <span class="s1">&#39;total_data&#39;</span>
+    <span class="n">_category_entry_name</span> <span class="o">=</span> <span class="s1">&#39;point_id&#39;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
@@ -8423,9 +8430,6 @@ original measurement was CWL or TOF.</p>
                 <span class="p">]</span>
             <span class="p">),</span>
         <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span> <span class="o">=</span> <span class="s1">&#39;total_data&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_entry_name</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">point_id</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1">#  Public properties</span>
@@ -9587,6 +9591,8 @@ transformed to r-space.</p>
 <span class="k">class</span><span class="w"> </span><span class="nc">DefaultDiffrn</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Ambient conditions recorded during diffraction measurement.&quot;&quot;&quot;</span>
 
+    <span class="n">_category_code</span> <span class="o">=</span> <span class="s1">&#39;diffrn&#39;</span>
+
     <span class="n">type_info</span> <span class="o">=</span> <span class="n">TypeInfo</span><span class="p">(</span>
         <span class="n">tag</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Diffraction ambient conditions&#39;</span><span class="p">,</span>
@@ -9642,8 +9648,6 @@ transformed to r-space.</p>
             <span class="p">),</span>
             <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_diffrn.ambient_electric_field&#39;</span><span class="p">]),</span>
         <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span> <span class="o">=</span> <span class="s1">&#39;diffrn&#39;</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1">#  Public properties</span>
@@ -10154,8 +10158,12 @@ transformed to r-space.</p>
 <span class="normal">111</span>
 <span class="normal">112</span>
 <span class="normal">113</span>
-<span class="normal">114</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExcludedRegion</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
+<span class="normal">114</span>
+<span class="normal">115</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExcludedRegion</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Closed interval [start, end] to be excluded.&quot;&quot;&quot;</span>
+
+    <span class="n">_category_code</span> <span class="o">=</span> <span class="s1">&#39;excluded_regions&#39;</span>
+    <span class="n">_category_entry_name</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
@@ -10191,8 +10199,6 @@ transformed to r-space.</p>
             <span class="p">),</span>
             <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_excluded_region.end&#39;</span><span class="p">]),</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span> <span class="o">=</span> <span class="s1">&#39;excluded_regions&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_entry_name</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1">#  Public properties</span>
@@ -10387,8 +10393,7 @@ fitting and plotting.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/excluded_regions/default.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">117</span>
-<span class="normal">118</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">118</span>
 <span class="normal">119</span>
 <span class="normal">120</span>
 <span class="normal">121</span>
@@ -10448,7 +10453,8 @@ fitting and plotting.</p>
 <span class="normal">175</span>
 <span class="normal">176</span>
 <span class="normal">177</span>
-<span class="normal">178</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@ExcludedRegionsFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">178</span>
+<span class="normal">179</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@ExcludedRegionsFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ExcludedRegions</span><span class="p">(</span><span class="n">CategoryCollection</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Collection of ExcludedRegion instances.</span>
@@ -10545,8 +10551,7 @@ fitting and plotting.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/excluded_regions/default.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">164</span>
-<span class="normal">165</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">165</span>
 <span class="normal">166</span>
 <span class="normal">167</span>
 <span class="normal">168</span>
@@ -10559,7 +10564,8 @@ fitting and plotting.</p>
 <span class="normal">175</span>
 <span class="normal">176</span>
 <span class="normal">177</span>
-<span class="normal">178</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">178</span>
+<span class="normal">179</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print a table of excluded [start, end] intervals.&quot;&quot;&quot;</span>
     <span class="c1"># TODO: Consider moving this to the base class</span>
     <span class="c1">#  to avoid code duplication with implementations in Background,</span>
@@ -10936,6 +10942,8 @@ experiment configuration and handles <abbr title="Crystallographic Information F
 <span class="k">class</span><span class="w"> </span><span class="nc">ExperimentType</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Container of attributes defining the experiment type.&quot;&quot;&quot;</span>
 
+    <span class="n">_category_code</span> <span class="o">=</span> <span class="s1">&#39;expt_type&#39;</span>
+
     <span class="n">type_info</span> <span class="o">=</span> <span class="n">TypeInfo</span><span class="p">(</span>
         <span class="n">tag</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Experiment type descriptor&#39;</span><span class="p">,</span>
@@ -10985,8 +10993,6 @@ experiment configuration and handles <abbr title="Crystallographic Information F
             <span class="p">),</span>
             <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_expt_type.scattering_type&#39;</span><span class="p">]),</span>
         <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span> <span class="o">=</span> <span class="s1">&#39;expt_type&#39;</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1">#  Private setters (used by factories and loaders only)</span>
@@ -11534,6 +11540,8 @@ either Gaussian (<code>'gauss'</code>) or Lorentzian (<code>'lorentz'</code>).</
 <span class="sd">    (in arc-minutes, as expected by CrysPy).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">_category_code</span> <span class="o">=</span> <span class="s1">&#39;extinction&#39;</span>
+
     <span class="n">type_info</span> <span class="o">=</span> <span class="n">TypeInfo</span><span class="p">(</span>
         <span class="n">tag</span><span class="o">=</span><span class="s1">&#39;becker-coppens&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Becker-Coppens isotropic extinction correction&#39;</span><span class="p">,</span>
@@ -11580,8 +11588,6 @@ either Gaussian (<code>'gauss'</code>) or Lorentzian (<code>'lorentz'</code>).</
             <span class="p">),</span>
             <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_extinction.radius&#39;</span><span class="p">]),</span>
         <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span> <span class="o">=</span> <span class="s1">&#39;extinction&#39;</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1">#  Public properties</span>
@@ -11980,7 +11986,8 @@ for concrete CWL/TOF instrument definitions.</p>
 <span class="normal">23</span>
 <span class="normal">24</span>
 <span class="normal">25</span>
-<span class="normal">26</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">InstrumentBase</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
+<span class="normal">26</span>
+<span class="normal">27</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">InstrumentBase</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for instrument category items.</span>
 
@@ -11988,10 +11995,11 @@ for concrete CWL/TOF instrument definitions.</p>
 <span class="sd">    for concrete CWL/TOF instrument definitions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">_category_code</span> <span class="o">=</span> <span class="s1">&#39;instrument&#39;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize instrument base and set category code.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize instrument base.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span> <span class="o">=</span> <span class="s1">&#39;instrument&#39;</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -12019,7 +12027,7 @@ for concrete CWL/TOF instrument definitions.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Initialize instrument base and set category code.</p>
+        <p>Initialize instrument base.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -12027,13 +12035,11 @@ for concrete CWL/TOF instrument definitions.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/instrument/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize instrument base and set category code.&quot;&quot;&quot;</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize instrument base.&quot;&quot;&quot;</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span> <span class="o">=</span> <span class="s1">&#39;instrument&#39;</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -13450,6 +13456,8 @@ object. Assigning to it updates the parameter value.</p>
 <span class="k">class</span><span class="w"> </span><span class="nc">LinkedCrystal</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Linked crystal reference for single-crystal diffraction.&quot;&quot;&quot;</span>
 
+    <span class="n">_category_code</span> <span class="o">=</span> <span class="s1">&#39;linked_crystal&#39;</span>
+
     <span class="n">type_info</span> <span class="o">=</span> <span class="n">TypeInfo</span><span class="p">(</span>
         <span class="n">tag</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Crystal reference with id and scale factor&#39;</span><span class="p">,</span>
@@ -13479,8 +13487,6 @@ object. Assigning to it updates the parameter value.</p>
             <span class="p">),</span>
             <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_sc_crystal_block.scale&#39;</span><span class="p">]),</span>
         <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span> <span class="o">=</span> <span class="s1">&#39;linked_crystal&#39;</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1">#  Public properties</span>
@@ -13884,6 +13890,9 @@ object. Assigning to it updates the parameter value.</p>
 <span class="normal">82</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">LinkedPhase</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Link to a phase by id with a scale factor.&quot;&quot;&quot;</span>
 
+    <span class="n">_category_code</span> <span class="o">=</span> <span class="s1">&#39;linked_phases&#39;</span>
+    <span class="n">_category_entry_name</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
@@ -13905,9 +13914,6 @@ object. Assigning to it updates the parameter value.</p>
             <span class="p">),</span>
             <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_pd_phase_block.scale&#39;</span><span class="p">]),</span>
         <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span> <span class="o">=</span> <span class="s1">&#39;linked_phases&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_entry_name</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1">#  Public properties</span>
@@ -14389,12 +14395,14 @@ object. Assigning to it updates the parameter value.</p>
 <span class="normal">36</span>
 <span class="normal">37</span>
 <span class="normal">38</span>
-<span class="normal">39</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PeakBase</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
+<span class="normal">39</span>
+<span class="normal">40</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PeakBase</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for peak profile categories.&quot;&quot;&quot;</span>
+
+    <span class="n">_category_code</span> <span class="o">=</span> <span class="s1">&#39;peak&#39;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span> <span class="o">=</span> <span class="s1">&#39;peak&#39;</span>
 
         <span class="n">type_info</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="s1">&#39;type_info&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">default_tag</span> <span class="o">=</span> <span class="n">type_info</span><span class="o">.</span><span class="n">tag</span> <span class="k">if</span> <span class="n">type_info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
@@ -21091,6 +21099,9 @@ object. Assigning to it updates the parameter value.</p>
 <span class="normal">236</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Refln</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Single reflection for single-crystal diffraction data.&quot;&quot;&quot;</span>
 
+    <span class="n">_category_code</span> <span class="o">=</span> <span class="s1">&#39;refln&#39;</span>
+    <span class="n">_category_entry_name</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
@@ -21190,9 +21201,6 @@ object. Assigning to it updates the parameter value.</p>
             <span class="p">),</span>
             <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_refln.wavelength&#39;</span><span class="p">]),</span>
         <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span> <span class="o">=</span> <span class="s1">&#39;refln&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_entry_name</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1">#  Public properties</span>

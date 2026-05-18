@@ -11,9 +11,10 @@ n2_ferrite_scale expt_n2.linked_phases.ferrite.scale
 n2_austenite_scale expt_n2.linked_phases.austenite.scale
 
 loop_
+_constraint.id
 _constraint.expression
-"n2_ferrite_scale = s2_ferrite_scale"
-"n2_austenite_scale = s2_austenite_scale"
+n2_ferrite_scale "n2_ferrite_scale = s2_ferrite_scale"
+n2_austenite_scale "n2_austenite_scale = s2_austenite_scale"
 
 loop_
 _joint_fit.experiment_id

@@ -15,8 +15,9 @@ biso_Co1 cosio.atom_site.Co1.adp_iso
 biso_Co2 cosio.atom_site.Co2.adp_iso
 
 loop_
+_constraint.id
 _constraint.expression
-"biso_Co2 = biso_Co1"
+biso_Co2 "biso_Co2 = biso_Co1"
 
 loop_
 _sequential_fit_extract.id

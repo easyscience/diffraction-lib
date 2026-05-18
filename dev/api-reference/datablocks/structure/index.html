@@ -3349,6 +3349,9 @@ tensor components whose physical meaning (B or U) is determined by
 <span class="sd">    ``atom_site.adp_type``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">_category_code</span> <span class="o">=</span> <span class="s1">&#39;atom_site_aniso&#39;</span>
+    <span class="n">_category_entry_name</span> <span class="o">=</span> <span class="s1">&#39;label&#39;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialise with default zero-valued tensor components.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
@@ -3450,9 +3453,6 @@ tensor components whose physical meaning (B or U) is determined by
                 <span class="p">]</span>
             <span class="p">),</span>
         <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span> <span class="o">=</span> <span class="s1">&#39;atom_site_aniso&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_entry_name</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1">#  Public properties</span>
@@ -3737,10 +3737,7 @@ tensor components whose physical meaning (B or U) is determined by
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/atom_site_aniso/default.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 35</span>
-<span class="normal"> 36</span>
-<span class="normal"> 37</span>
-<span class="normal"> 38</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 38</span>
 <span class="normal"> 39</span>
 <span class="normal"> 40</span>
 <span class="normal"> 41</span>
@@ -3941,9 +3938,6 @@ tensor components whose physical meaning (B or U) is determined by
             <span class="p">]</span>
         <span class="p">),</span>
     <span class="p">)</span>
-
-    <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span> <span class="o">=</span> <span class="s1">&#39;atom_site_aniso&#39;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_entry_name</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -4819,6 +4813,9 @@ in crystallographic structures.</p>
 <span class="sd">    CIF serialization.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">_category_code</span> <span class="o">=</span> <span class="s1">&#39;atom_site&#39;</span>
+    <span class="n">_category_entry_name</span> <span class="o">=</span> <span class="s1">&#39;label&#39;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialise the atom site with default descriptor values.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
@@ -4921,9 +4918,6 @@ in crystallographic structures.</p>
             <span class="p">),</span>
             <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_atom_site.adp_type&#39;</span><span class="p">]),</span>
         <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span> <span class="o">=</span> <span class="s1">&#39;atom_site&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_entry_name</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1">#  Private helper methods</span>
@@ -5627,10 +5621,7 @@ returned unchanged.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/atom_sites/default.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 39</span>
-<span class="normal"> 40</span>
-<span class="normal"> 41</span>
-<span class="normal"> 42</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 42</span>
 <span class="normal"> 43</span>
 <span class="normal"> 44</span>
 <span class="normal"> 45</span>
@@ -5833,9 +5824,6 @@ returned unchanged.</p>
         <span class="p">),</span>
         <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_atom_site.adp_type&#39;</span><span class="p">]),</span>
     <span class="p">)</span>
-
-    <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span> <span class="o">=</span> <span class="s1">&#39;atom_site&#39;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_entry_name</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -6995,6 +6983,8 @@ descriptors supporting validation, fitting and <abbr title="Crystallographic Inf
 <span class="sd">    descriptors supporting validation, fitting and CIF serialization.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">_category_code</span> <span class="o">=</span> <span class="s1">&#39;cell&#39;</span>
+
     <span class="n">type_info</span> <span class="o">=</span> <span class="n">TypeInfo</span><span class="p">(</span>
         <span class="n">tag</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Unit cell parameters&#39;</span><span class="p">,</span>
@@ -7064,8 +7054,6 @@ descriptors supporting validation, fitting and <abbr title="Crystallographic Inf
             <span class="p">),</span>
             <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_cell.angle_gamma&#39;</span><span class="p">]),</span>
         <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span> <span class="o">=</span> <span class="s1">&#39;cell&#39;</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1">#  Private helper methods</span>
@@ -7416,9 +7404,7 @@ object. Assigning to it updates the parameter value.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/cell/default.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">33</span>
 <span class="normal">34</span>
 <span class="normal">35</span>
 <span class="normal">36</span>
@@ -7545,8 +7531,6 @@ object. Assigning to it updates the parameter value.</p>
         <span class="p">),</span>
         <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_cell.angle_gamma&#39;</span><span class="p">]),</span>
     <span class="p">)</span>
-
-    <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span> <span class="o">=</span> <span class="s1">&#39;cell&#39;</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -7944,6 +7928,8 @@ to the first allowed value for the new group.</p>
 <span class="sd">    to the first allowed value for the new group.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">_category_code</span> <span class="o">=</span> <span class="s1">&#39;space_group&#39;</span>
+
     <span class="n">type_info</span> <span class="o">=</span> <span class="n">TypeInfo</span><span class="p">(</span>
         <span class="n">tag</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Space group symmetry&#39;</span><span class="p">,</span>
@@ -7990,8 +7976,6 @@ to the first allowed value for the new group.</p>
                 <span class="p">]</span>
             <span class="p">),</span>
         <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span> <span class="o">=</span> <span class="s1">&#39;space_group&#39;</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1">#  Private helper methods</span>
@@ -8168,9 +8152,7 @@ parameter value.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/structure/categories/space_group/default.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">40</span>
 <span class="normal">41</span>
 <span class="normal">42</span>
 <span class="normal">43</span>
@@ -8251,8 +8233,6 @@ parameter value.</p>
             <span class="p">]</span>
         <span class="p">),</span>
     <span class="p">)</span>
-
-    <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="o">.</span><span class="n">category_code</span> <span class="o">=</span> <span class="s1">&#39;space_group&#39;</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
