@@ -28,14 +28,14 @@ Phase 1 - Implementation
 [x] Teach Identity to resolve declared category entry names.
 [x] Rebuild collection indexes after CIF loop loading.
 [x] Add _category_code to all current CategoryItem subclasses.
-[ ] Add _category_entry_name to all current loop CategoryItem subclasses.
+[x] Add _category_entry_name to all current loop CategoryItem subclasses.
 [x] Remove direct self._identity.category_code assignments.
-[ ] Remove direct self._identity.category_entry_name lambda assignments.
-[ ] Add Constraint.id descriptor serialized as _constraint.id.
-[ ] Change constraints collection keys from lhs_alias to id.
-[ ] Preserve default constraints.create(expression=...) behavior by using lhs_alias as the default id.
-[ ] Add backward-compatible loading for old CIF loops without _constraint.id.
-[ ] Update constraints display.
+[x] Remove direct self._identity.category_entry_name lambda assignments.
+[x] Add Constraint.id descriptor serialized as _constraint.id.
+[x] Change constraints collection keys from lhs_alias to id.
+[x] Preserve default constraints.create(expression=...) behavior by using lhs_alias as the default id.
+[x] Add backward-compatible loading for old CIF loops without _constraint.id.
+[x] Update constraints display.
 [ ] Update loop-category-key-identity.md if implementation details differ from the ADR.
 [ ] Phase 1 review gate: present diff for approval.
 
