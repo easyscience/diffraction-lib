@@ -49,26 +49,12 @@ project = ed.Project.load(project_dir)
 project.display.fit.results()
 
 # %% [markdown]
-# ## Show Correlations and the Fitted Pattern
+# ## Show Correlations
 #
-# The correlation matrix and measured-vs-calculated pattern are restored
-# from the saved project state.
+# The correlation matrix is restored from the saved project state.
 
 # %%
 project.display.fit.correlations()
-
-# %% [markdown]
-# Show the standard measured vs calculated pattern for the full range.
-
-# %%
-project.display.pattern(expt_name='hrpt')
-
-# %% [markdown]
-# A zoomed view is useful for checking the fit quality in a narrow
-# region of the diffraction pattern.
-
-# %%
-project.display.pattern(expt_name='hrpt', x_min=92, x_max=93)
 
 # %% [markdown]
 # ## Inspect Posterior Densities and Pair Structure
@@ -87,6 +73,8 @@ project.display.posterior.distribution()
 #
 # The posterior predictive view reuses the cached predictive summary
 # stored in the project rather than recalculating it on first display.
+# It overlays the 95% credible interval propagated from the posterior
+# samples.
 
 # %%
 project.display.posterior.predictive(expt_name='hrpt')
