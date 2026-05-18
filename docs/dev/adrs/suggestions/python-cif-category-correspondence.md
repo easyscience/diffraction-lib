@@ -65,17 +65,17 @@ to objects reached from the current `Project` root, for example
 
 ### Project-Level Configuration
 
-| Current Python path              | Current CIF path          | Match? | Notes                                                                                                                           |
-| -------------------------------- | ------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------- |
-| `project.info.name`              | `_project.id`             | No     | Python uses user-facing `name`; CIF uses `id`; category is `info` in Python but `_project` in CIF.                              |
-| `project.info.title`             | `_project.title`          | Partly | Field name matches, category name does not.                                                                                     |
-| `project.info.description`       | `_project.description`    | Partly | Field name matches, category name does not.                                                                                     |
-| `project.info.created`           | `_project.created`        | Partly | Field name matches, category name does not.                                                                                     |
-| `project.info.last_modified`     | `_project.last_modified`  | Partly | Field name matches, category name does not.                                                                                     |
-| `project.info.path`              | none                      | No     | Runtime storage path, not a CIF field.                                                                                          |
-| `project.rendering.chart_engine` | `_rendering.chart_engine` | Yes    | Direct category and field mapping.                                                                                              |
-| `project.rendering.table_engine` | `_rendering.table_engine` | Yes    | Direct category and field mapping.                                                                                              |
-| `project.verbosity.fit`          | `_verbosity.fit`          | Yes    | Direct category and field mapping for fitting process output verbosity.                                       |
+| Current Python path              | Current CIF path          | Match? | Notes                                                                                              |
+| -------------------------------- | ------------------------- | ------ | -------------------------------------------------------------------------------------------------- |
+| `project.info.name`              | `_project.id`             | No     | Python uses user-facing `name`; CIF uses `id`; category is `info` in Python but `_project` in CIF. |
+| `project.info.title`             | `_project.title`          | Partly | Field name matches, category name does not.                                                        |
+| `project.info.description`       | `_project.description`    | Partly | Field name matches, category name does not.                                                        |
+| `project.info.created`           | `_project.created`        | Partly | Field name matches, category name does not.                                                        |
+| `project.info.last_modified`     | `_project.last_modified`  | Partly | Field name matches, category name does not.                                                        |
+| `project.info.path`              | none                      | No     | Runtime storage path, not a CIF field.                                                             |
+| `project.rendering.chart_engine` | `_rendering.chart_engine` | Yes    | Direct category and field mapping.                                                                 |
+| `project.rendering.table_engine` | `_rendering.table_engine` | Yes    | Direct category and field mapping.                                                                 |
+| `project.verbosity.fit`          | `_verbosity.fit`          | Yes    | Direct category and field mapping for fitting process output verbosity.                            |
 
 ### Analysis Configuration
 
@@ -239,15 +239,15 @@ keep separate chart and table engine fields.
 Possible strict-correspondence target if a future ADR explicitly changes
 the accepted `_project.*` baseline:
 
-| Python path                      | Target CIF path           | Current state                              |
-| -------------------------------- | ------------------------- | ------------------------------------------ |
-| `project.info.name`              | `_info.name`              | Currently `_project.id`.                   |
-| `project.info.title`             | `_info.title`             | Currently `_project.title`.                |
-| `project.info.description`       | `_info.description`       | Currently `_project.description`.          |
-| `project.info.created`           | `_info.created`           | Currently `_project.created`.              |
-| `project.info.last_modified`     | `_info.last_modified`     | Currently `_project.last_modified`.        |
-| `project.rendering.chart_engine` | `_rendering.chart_engine` | Already matches.                           |
-| `project.rendering.table_engine` | `_rendering.table_engine` | Already matches.                           |
+| Python path                      | Target CIF path           | Current state                                    |
+| -------------------------------- | ------------------------- | ------------------------------------------------ |
+| `project.info.name`              | `_info.name`              | Currently `_project.id`.                         |
+| `project.info.title`             | `_info.title`             | Currently `_project.title`.                      |
+| `project.info.description`       | `_info.description`       | Currently `_project.description`.                |
+| `project.info.created`           | `_info.created`           | Currently `_project.created`.                    |
+| `project.info.last_modified`     | `_info.last_modified`     | Currently `_project.last_modified`.              |
+| `project.rendering.chart_engine` | `_rendering.chart_engine` | Already matches.                                 |
+| `project.rendering.table_engine` | `_rendering.table_engine` | Already matches.                                 |
 | `project.verbosity.fit`          | `_verbosity.fit`          | Implemented direct fit-output verbosity mapping. |
 
 Alternative target if the project identity field should be called `id`

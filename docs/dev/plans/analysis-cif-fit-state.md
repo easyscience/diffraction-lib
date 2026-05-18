@@ -108,6 +108,19 @@ For every new category package in Phase 1:
    generic `CategoryCollection.create(**kwargs)` path. Add an explicit
    `create(...)` method that builds the row and uses private helpers.
 
+Complexity guardrails:
+
+- Steps 7 and 9 are broad. Start with the smallest central hook, then
+   edit individual minimizers or display helpers only when the required
+   data is not available through that central hook.
+- If one step needs more than six source files, more than one new public
+   class family beyond the planned categories, or a public API change not
+   named in this plan, stop and ask to split the step.
+- When auditing usages or renaming symbols, search code, tests,
+   tutorials, and docs with `git grep -n` before editing.
+- Do not fix unrelated lint, formatting, typing, or test failures while
+   implementing this plan. Mention them at the review gate instead.
+
 Required commit discipline for any AI agent following this plan:
 
 ```text
@@ -133,8 +146,8 @@ feature/analysis-cif-fit-state
 - `category_owner_to_cif()` serializes explicit `CategoryItem` and
   `CategoryCollection` instances in the order returned by
   `_serializable_categories()`.
-- `analysis_from_cif()` restores fitting configuration, active
-  fit-mode sections, aliases, and constraints.
+- `analysis_from_cif()` restores fitting configuration, active fit-mode
+  sections, aliases, and constraints.
 - `Project.save()` writes `analysis/analysis.cif` from
   `self.analysis.as_cif` and lists all files already present under the
   `analysis/` directory.
@@ -158,21 +171,21 @@ Use exact CIF category codes from the ADR. For Python attributes on
 `Analysis`, use singular names for single-item categories and plural
 names for collections:
 
-| Python attribute | CIF category | Shape |
-| --- | --- | --- |
-| `fit_state` | `_fit_state` | single item |
-| `fit_parameters` | `_fit_parameter` | collection |
-| `fit_result` | `_fit_result` | single item |
-| `fit_parameter_correlations` | `_fit_parameter_correlation` | collection |
-| `deterministic_result` | `_deterministic_result` | single item |
-| `deterministic_parameter_results` | `_deterministic_parameter_result` | collection |
-| `bayesian_result` | `_bayesian_result` | single item |
-| `bayesian_sampler` | `_bayesian_sampler` | single item |
-| `bayesian_convergence` | `_bayesian_convergence` | single item |
-| `bayesian_parameter_posteriors` | `_bayesian_parameter_posterior` | collection |
-| `bayesian_distribution_caches` | `_bayesian_distribution_cache` | collection |
-| `bayesian_pair_caches` | `_bayesian_pair_cache` | collection |
-| `bayesian_predictive_datasets` | `_bayesian_predictive_dataset` | collection |
+| Python attribute                  | CIF category                      | Shape       |
+| --------------------------------- | --------------------------------- | ----------- |
+| `fit_state`                       | `_fit_state`                      | single item |
+| `fit_parameters`                  | `_fit_parameter`                  | collection  |
+| `fit_result`                      | `_fit_result`                     | single item |
+| `fit_parameter_correlations`      | `_fit_parameter_correlation`      | collection  |
+| `deterministic_result`            | `_deterministic_result`           | single item |
+| `deterministic_parameter_results` | `_deterministic_parameter_result` | collection  |
+| `bayesian_result`                 | `_bayesian_result`                | single item |
+| `bayesian_sampler`                | `_bayesian_sampler`               | single item |
+| `bayesian_convergence`            | `_bayesian_convergence`           | single item |
+| `bayesian_parameter_posteriors`   | `_bayesian_parameter_posterior`   | collection  |
+| `bayesian_distribution_caches`    | `_bayesian_distribution_cache`    | collection  |
+| `bayesian_pair_caches`            | `_bayesian_pair_cache`            | collection  |
+| `bayesian_predictive_datasets`    | `_bayesian_predictive_dataset`    | collection  |
 
 If this public surface feels too noisy during implementation, stop and
 ask before hiding these properties from `Analysis.help()`. Do not move
@@ -224,22 +237,23 @@ Files likely to change:
 
 Actions:
 
-1. Add `(str, Enum)` classes for closed values:
-   `FitResultKindEnum` with `deterministic` and `bayesian`, and
-   `FitCorrelationSourceEnum` with `deterministic` and `posterior`.
+1. Add `(str, Enum)` classes for closed values: `FitResultKindEnum` with
+   `deterministic` and `bayesian`, and `FitCorrelationSourceEnum` with
+   `deterministic` and `posterior`.
 2. Add category modules following existing analysis category patterns:
    `default.py`, `factory.py`, and `__init__.py` with explicit imports.
-3. Add `FitState` as a `CategoryItem` with `_category_code =
-   'fit_state'` and numeric `schema_version` default `1`.
-4. Add `FitParameterItem` and `FitParameters` for `_fit_parameter`.
-   Use `_category_entry_name = 'param_unique_name'`.
+3. Add `FitState` as a `CategoryItem` with
+   `_category_code = 'fit_state'` and numeric `schema_version` default
+   `1`.
+4. Add `FitParameterItem` and `FitParameters` for `_fit_parameter`. Use
+   `_category_entry_name = 'param_unique_name'`.
 5. Add `FitResult` for `_fit_result` with `result_kind`, `success`,
    `message`, `iterations`, `fitting_time`, and `reduced_chi_square`.
 6. Add `FitParameterCorrelationItem` and collection for
    `_fit_parameter_correlation`. Include persisted
-   `_fit_parameter_correlation.id` and use `_category_entry_name =
-   'id'`. Generate a stable default id from the normalized source and
-   parameter pair when callers do not provide one.
+   `_fit_parameter_correlation.id` and use
+   `_category_entry_name = 'id'`. Generate a stable default id from the
+   normalized source and parameter pair when callers do not provide one.
 7. Normalize correlation pairs so only upper-triangle rows are stored.
 8. Use `StringDescriptor`, `NumericDescriptor`, and `BoolDescriptor` as
    appropriate. Avoid raw Python attributes for persisted fields.
@@ -251,9 +265,9 @@ Actions:
 Implementation notes:
 
 - The collection `add()` path assumes one key. For categories with a
-   persisted `id`, set `_category_entry_name = 'id'` on the item and
-   generate a stable default `id` before adding the item to the
-   collection.
+  persisted `id`, set `_category_entry_name = 'id'` on the item and
+  generate a stable default `id` before adding the item to the
+  collection.
 - Keep CIF tag names exactly as in the ADR, for example
   `_fit_parameter.param_unique_name`.
 - If an enum value from CIF is invalid, warn clearly and keep the
@@ -315,16 +329,16 @@ Actions:
 
 1. Add `BayesianResult` as a single-item category with all ADR fields.
 2. Add `BayesianSampler` as a single-item category with resolved DREAM
-   sampler settings: `steps`, `burn`, `thin`, `pop`, `parallel`,
-   `init`, and `random_seed`.
-3. Add `BayesianConvergence` as a single-item category with
-   `converged`, `max_r_hat`, `min_ess_bulk`, `n_draws`, `n_chains`, and
+   sampler settings: `steps`, `burn`, `thin`, `pop`, `parallel`, `init`,
+   and `random_seed`.
+3. Add `BayesianConvergence` as a single-item category with `converged`,
+   `max_r_hat`, `min_ess_bulk`, `n_draws`, `n_chains`, and
    `n_parameters`.
 4. Add `BayesianParameterPosteriorItem` and collection with all ADR
    posterior summary fields. Use `_category_entry_name = 'unique_name'`.
-5. Preserve the repo naming rule from prior Bayesian work:
-   `best_sample` and `Best posterior sample` refer to the committed
-   sampled point, not a continuous MAP estimate.
+5. Preserve the repo naming rule from prior Bayesian work: `best_sample`
+   and `Best posterior sample` refer to the committed sampled point, not
+   a continuous MAP estimate.
 6. Add explicit package imports.
 7. Update this plan checklist for Step 4.
 
@@ -347,14 +361,13 @@ Files likely to change:
 
 Actions:
 
-1. Add distribution cache manifest rows keyed by
-   `param_unique_name`.
+1. Add distribution cache manifest rows keyed by `param_unique_name`.
 2. Add pair cache manifest rows with persisted `_bayesian_pair_cache.id`
    and `_category_entry_name = 'id'`. Generate a stable default id from
    the normalized parameter pair when callers do not provide one.
-3. Add predictive dataset manifest rows keyed by `experiment_name`.
-   If multiple predictive datasets per experiment become necessary,
-   stop and ask before changing the ADR schema.
+3. Add predictive dataset manifest rows keyed by `experiment_name`. If
+   multiple predictive datasets per experiment become necessary, stop
+   and ask before changing the ADR schema.
 4. Store only HDF5 dataset paths and shape/count metadata in CIF.
 5. Do not write numerical arrays into CIF loops.
 6. Add explicit package imports.
@@ -429,16 +442,20 @@ Actions:
 4. Add `_store_fit_result_projection(results)` or equivalent on
    `Analysis` to fill common, deterministic, and Bayesian categories
    from `FitResults` or `BayesianFitResults`.
-5. For deterministic fits, prefer live parameter values for
-   calculations and store final values only as display projections.
-6. If deterministic projection values disagree with live parameter
-   state on load, warn and keep the live parameter state.
-7. For Bayesian fits, keep `point_estimate_name = 'best_sample'` unless
+5. Prefer calling the analysis-owned capture and projection methods from
+   `Fitter.fit()` or the existing `Analysis._fit_*` methods. Only edit
+   individual minimizer classes when a required result field is missing
+   from `FitResults` or `BayesianFitResults`.
+6. For deterministic fits, prefer live parameter values for calculations
+   and store final values only as display projections.
+7. If deterministic projection values disagree with live parameter state
+   on load, warn and keep the live parameter state.
+8. For Bayesian fits, keep `point_estimate_name = 'best_sample'` unless
    the result object says otherwise.
-8. Store upper-triangle parameter correlations only.
-9. Clear stale fit-state categories at the start of a new fit so old
+9. Store upper-triangle parameter correlations only.
+10. Clear stale fit-state categories at the start of a new fit so old
    cache manifests cannot survive a new result.
-10. Update this plan checklist for Step 7.
+11. Update this plan checklist for Step 7.
 
 Suggested commit message:
 
@@ -474,8 +491,8 @@ Actions:
 7. Call the sidecar writer from `Project.save()` after `analysis.cif`
    data has been prepared and before analysis directory contents are
    listed.
-8. Call the sidecar reader from `Project.load()` after `analysis_from_cif()`
-   and before restored display state is used.
+8. Call the sidecar reader from `Project.load()` after
+   `analysis_from_cif()` and before restored display state is used.
 9. Do not persist backend runtime objects, DREAM drivers, raw engine
    results, or ArviZ `InferenceData`.
 10. Update this plan checklist for Step 8.
@@ -506,18 +523,23 @@ Actions:
 3. Keep backend runtime fields such as `engine_result` as `None`.
 4. Make `analysis.display.fit_results()` work from the restored result
    projection.
-5. Update correlation plotting so it can use
+5. First restore non-plotting result behavior and correlation summaries.
+   Only then add cache-aware posterior distribution, pair, and predictive
+   plotting.
+6. Update correlation plotting so it can use
    `_fit_parameter_correlation` when raw covariance or posterior samples
    are not available.
-6. Keep correlation heatmaps compact. Do not replace the heatmap path
+7. Keep correlation heatmaps compact. Do not replace the heatmap path
    with many per-cell Plotly traces.
-7. Make posterior distribution, pair, and predictive display methods
+8. Make posterior distribution, pair, and predictive display methods
    prefer valid persisted cache arrays when available.
-8. If a requested cache is unavailable or invalid, warn clearly and use
+9. If a requested cache is unavailable or invalid, warn clearly and use
    the existing recomputation path only when enough runtime data exists.
-9. Do not make display methods recompute KDE, contours, or predictive
+10. Do not make display methods recompute KDE, contours, or predictive
    bands when valid cache arrays were restored.
-10. Update this plan checklist for Step 9.
+11. If cache-aware display requires a new helper object or cache API not
+    named in this plan, stop and ask before adding it.
+12. Update this plan checklist for Step 9.
 
 Suggested commit message:
 
@@ -622,8 +644,7 @@ pixi run script-tests
 
 Notes:
 
-- `pixi run fix` may regenerate
-  `docs/dev/package-structure/full.md` and
+- `pixi run fix` may regenerate `docs/dev/package-structure/full.md` and
   `docs/dev/package-structure/short.md`. Accept those generated changes
   if the command produced them.
 - If a command fails for an unrelated existing problem, do not fix
