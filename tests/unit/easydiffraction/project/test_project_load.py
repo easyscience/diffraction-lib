@@ -172,6 +172,30 @@ class TestLoadAnalysis:
         assert loaded_parameter._fit_start_uncertainty == 0.02
         assert loaded_parameter.uncertainty == 0.07
 
+    def test_round_trips_bayesian_sampler_settings_to_live_dream_minimizer(self, tmp_path):
+        original = Project(name='bayes_state')
+        original.analysis.fitting.minimizer_type = 'bumps (dream)'
+        original.analysis.fit_result._set_result_kind('bayesian')
+        original.analysis.bayesian_sampler._set_steps(300)
+        original.analysis.bayesian_sampler._set_burn(60)
+        original.analysis.bayesian_sampler._set_thin(2)
+        original.analysis.bayesian_sampler._set_pop(8)
+        original.analysis.bayesian_sampler._set_parallel(0)
+        original.analysis.bayesian_sampler._set_init('lhs')
+        original.analysis._set_has_persisted_fit_state(value=True)
+        original.save_as(str(tmp_path / 'proj'))
+
+        loaded = Project.load(str(tmp_path / 'proj'))
+        minimizer = loaded.analysis.fitting.minimizer
+
+        assert minimizer is not None
+        assert minimizer.steps == 300
+        assert minimizer.burn == 60
+        assert minimizer.thin == 2
+        assert minimizer.pop == 8
+        assert minimizer.parallel == 0
+        assert minimizer.init.value == 'lhs'
+
 
 class TestLoadAnalysisCifFallback:
     """Load falls back from analysis/analysis.cif to analysis.cif at root."""

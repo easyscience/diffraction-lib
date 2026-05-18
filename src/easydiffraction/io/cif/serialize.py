@@ -608,6 +608,7 @@ def _restore_bayesian_fit_state(analysis: object, block: object) -> None:
     analysis.bayesian_distribution_caches.from_cif(block)
     analysis.bayesian_pair_caches.from_cif(block)
     analysis.bayesian_predictive_datasets.from_cif(block)
+    analysis._sync_live_minimizer_from_persisted_fit_state()
 
 
 def _restore_persisted_fit_state(analysis: object, block: object) -> None:

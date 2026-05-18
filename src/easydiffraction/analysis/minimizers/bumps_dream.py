@@ -30,7 +30,6 @@ from easydiffraction.analysis.minimizers.enums import DreamPopulationInitializat
 from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 from easydiffraction.core.metadata import TypeInfo
-from easydiffraction.utils.logging import log
 
 DEFAULT_METHOD = 'dream'
 DEFAULT_MAX_ITERATIONS = 3000
@@ -623,6 +622,8 @@ class BumpsDreamMinimizer(BumpsMinimizer):
                 sampler_completed=False,
             )
 
+        self.tracker.start_sampler_post_processing()
+
         return self._build_success_result(
             context=context,
             raw_state=driver_result.raw_state,
@@ -731,7 +732,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             return None
 
         if self._requires_serial_mapper_for_spawn_main_module():
-            log.warning(
+            self._warn_after_tracking(
                 'DREAM parallel evaluation requires an import-safe main '
                 'module on spawn-based multiprocessing; falling back to '
                 'serial execution.'
@@ -747,7 +748,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
 
         try:
             if not can_pickle(problem):
-                log.warning(
+                self._warn_after_tracking(
                     'DREAM parallel evaluation requires a picklable '
                     'problem; falling back to serial execution.'
                 )
@@ -758,7 +759,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             message = str(error)
             if 'bootstrapping phase' not in message:
                 raise
-            log.warning(
+            self._warn_after_tracking(
                 'DREAM parallel evaluation requires an import-safe main '
                 'module on spawn-based multiprocessing; falling back to '
                 'serial execution.'
@@ -888,7 +889,9 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         )
         convergence_diagnostics = compute_convergence_diagnostics(posterior_samples)
         if not convergence_diagnostics.get('converged', True):
-            log.warning('Convergence diagnostics indicate the posterior may be poorly mixed.')
+            self._warn_after_tracking(
+                'Convergence diagnostics indicate the posterior may be poorly mixed.'
+            )
         posterior_parameter_summaries = summarize_posterior_parameters(
             parameter_names=context.parameter_names,
             posterior_samples=posterior_samples,

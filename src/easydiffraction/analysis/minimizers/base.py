@@ -42,6 +42,8 @@ class MinimizerBase(ABC):
         self._best_iteration: int | None = None
         self._fitting_time: float | None = None
         self._resolved_random_seed: int | None = None
+        self._tracking_active: bool = False
+        self._deferred_warning_messages: list[str] = []
         self.tracker: FitProgressTracker = FitProgressTracker()
 
     def _start_tracking(
@@ -61,13 +63,34 @@ class MinimizerBase(ABC):
         """
         self.tracker.reset()
         self.tracker._verbosity = verbosity
+        self._tracking_active = True
+        self._deferred_warning_messages = []
         self.tracker.start_tracking(minimizer_name, mode=self._tracking_mode())
         self.tracker.start_timer()
 
     def _stop_tracking(self) -> None:
         """Stop timer and finalize tracking."""
+        if not self._tracking_active:
+            self._emit_deferred_warnings()
+            return
+
+        self._tracking_active = False
         self.tracker.stop_timer()
         self.tracker.finish_tracking()
+        self._emit_deferred_warnings()
+
+    def _warn_after_tracking(self, message: str) -> None:
+        """Log immediately or defer a warning until tracking stops."""
+        if self._tracking_active:
+            self._deferred_warning_messages.append(message)
+            return
+
+        log.warning(message)
+
+    def _emit_deferred_warnings(self) -> None:
+        """Flush warnings deferred during live progress display."""
+        while self._deferred_warning_messages:
+            log.warning(self._deferred_warning_messages.pop(0))
 
     @staticmethod
     def _tracking_mode() -> str:
@@ -300,6 +323,7 @@ class MinimizerBase(ABC):
         objective_function: Callable[..., object],
         verbosity: VerbosityEnum = VerbosityEnum.FULL,
         *,
+        finalize_tracking: bool = True,
         use_physical_limits: bool = False,
         random_seed: int | None = None,
     ) -> FitResults:
@@ -315,6 +339,8 @@ class MinimizerBase(ABC):
             arguments.
         verbosity : VerbosityEnum, default=VerbosityEnum.FULL
             Console output verbosity.
+        finalize_tracking : bool, default=True
+            Whether to stop and finalize live tracking before returning.
         use_physical_limits : bool, default=False
             When ``True``, fall back to physical limits from the value
             spec for parameters whose ``fit_min``/``fit_max`` are
@@ -345,7 +371,8 @@ class MinimizerBase(ABC):
             raw_result = self._run_solver(objective_function, **solver_args)
             return self._finalize_fit(parameters, raw_result)
         finally:
-            self._stop_tracking()
+            if finalize_tracking:
+                self._stop_tracking()
 
     def _objective_function(
         self,

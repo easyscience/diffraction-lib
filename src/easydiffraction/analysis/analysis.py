@@ -50,6 +50,7 @@ from easydiffraction.analysis.fit_helpers.bayesian import PosteriorPredictiveSum
 from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
 from easydiffraction.analysis.fit_helpers.reporting import FitResults
 from easydiffraction.analysis.fitting import Fitter
+from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.core.category_owner import CategoryOwner
 from easydiffraction.core.guard import _apply_help_filter
 from easydiffraction.core.singleton import ConstraintsHandler
@@ -589,6 +590,37 @@ class Analysis(
             if parameter is None or row.uncertainty.value is None:
                 continue
             parameter.uncertainty = float(row.uncertainty.value)
+
+    def _sync_live_minimizer_from_persisted_fit_state(self) -> None:
+        """Apply saved sampler settings to the live minimizer."""
+        if not self._has_persisted_fit_state():
+            return
+
+        if self.fit_result.result_kind.value != FitResultKindEnum.BAYESIAN.value:
+            return
+
+        if self.fitting.minimizer_type.value != MinimizerTypeEnum.BUMPS_DREAM.value:
+            return
+
+        minimizer = self.fitting.minimizer
+        if minimizer is None:
+            return
+
+        steps = int(self.bayesian_sampler.steps.value)
+        thin = int(self.bayesian_sampler.thin.value)
+        pop = int(self.bayesian_sampler.pop.value)
+        if steps <= 0 or thin <= 0 or pop <= 0:
+            return
+
+        minimizer.steps = steps
+        minimizer.burn = int(self.bayesian_sampler.burn.value)
+        minimizer.thin = thin
+        minimizer.pop = pop
+        minimizer.parallel = int(self.bayesian_sampler.parallel.value)
+
+        init_value = str(self.bayesian_sampler.init.value)
+        if init_value:
+            minimizer.init = init_value
 
     def _restored_fit_parameters(self, param_map: dict[str, Parameter]) -> list[Parameter]:
         """Return live parameters in the persisted fit-result order."""
@@ -1748,6 +1780,7 @@ class Analysis(
         # Apply constraints before fitting so that user-constrained
         # parameters are marked and excluded from the free parameter
         # list built by the fitter.
+        self._sync_live_minimizer_from_persisted_fit_state()
         self._update_categories()
 
         return verb, structures, experiments

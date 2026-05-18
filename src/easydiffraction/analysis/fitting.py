@@ -8,14 +8,12 @@ from typing import Any
 
 import numpy as np
 
-from easydiffraction.analysis.fit_helpers.bayesian import BayesianFitResults
 from easydiffraction.analysis.fit_helpers.metrics import get_reliability_inputs
 from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 from easydiffraction.core.variable import Parameter
 from easydiffraction.datablocks.experiment.item.base import intensity_category_for
 from easydiffraction.utils.enums import VerbosityEnum
-from easydiffraction.utils.logging import log
 
 if TYPE_CHECKING:
     from easydiffraction.analysis.fit_helpers.reporting import FitResults
@@ -121,34 +119,23 @@ class Fitter:
         analysis: object,
         experiments: list[ExperimentBase],
         fitted_parameters: list[Parameter],
-    ) -> bool:
+    ) -> None:
         """Populate result fields and persist fit projections."""
         if self.results is None:
-            return False
+            return
 
         self.results.message = _resolve_fit_result_message(self.results)
         self.results.iterations = _resolve_fit_result_iterations(self.results)
         self.results.chi_square = _resolve_fit_result_chi_square(self.results)
 
         if analysis is None:
-            return False
-
-        warn_poorly_mixed = False
-        if isinstance(self.results, BayesianFitResults):
-            warn_poorly_mixed = not self.results.convergence_diagnostics.get(
-                'converged',
-                True,
-            )
-            self.minimizer.tracker.start_sampler_post_processing(
-                log_posterior=self.results.best_log_posterior,
-            )
+            return
 
         analysis._store_fit_result_projection(
             self.results,
             experiments=experiments,
             fitted_parameters=fitted_parameters,
         )
-        return warn_poorly_mixed
 
     def fit(
         self,
@@ -225,21 +212,19 @@ class Fitter:
             params,
             objective_function,
             verbosity=verbosity,
+            finalize_tracking=False,
             use_physical_limits=use_physical_limits,
             random_seed=random_seed,
         )
 
         try:
-            warn_poorly_mixed = self._postprocess_fit_results(
+            self._postprocess_fit_results(
                 analysis=analysis,
                 experiments=experiments,
                 fitted_parameters=params,
             )
         finally:
             self.minimizer._stop_tracking()
-
-        if warn_poorly_mixed:
-            log.warning('Convergence diagnostics indicate the posterior may be poorly mixed.')
 
     def _process_fit_results(
         self,

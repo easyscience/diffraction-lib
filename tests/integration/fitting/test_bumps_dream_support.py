@@ -277,10 +277,7 @@ def test_build_mapper_falls_back_for_serial_and_unpicklable(monkeypatch):
     monkeypatch.setattr(
         'easydiffraction.analysis.minimizers.bumps_dream.can_pickle', lambda problem: False
     )
-    monkeypatch.setattr(
-        'easydiffraction.analysis.minimizers.bumps_dream.log.warning',
-        lambda message: warnings.append(message),
-    )
+    monkeypatch.setattr(minimizer, '_warn_after_tracking', warnings.append)
 
     assert minimizer._build_mapper('problem') is None
     assert warnings == [
