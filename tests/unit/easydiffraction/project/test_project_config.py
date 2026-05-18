@@ -42,6 +42,26 @@ def test_project_config_as_cif_has_project_and_rendering_sections_without_data_h
     assert '_project.last_modified' in cif_text
     assert '_rendering.chart_engine' in cif_text
     assert '_rendering.table_engine' in cif_text
+    assert '_rendering.chart_engine auto' in cif_text
+    assert '_rendering.table_engine auto' in cif_text
+
+
+def test_project_save_and_load_use_auto_rendering_defaults_when_unset(tmp_path):
+    from easydiffraction.project.project import Project
+
+    project = Project(name='beer', title='Beer title', description='Some description')
+    project.save_as(str(tmp_path / 'proj'))
+
+    project_cif = (tmp_path / 'proj' / 'project.cif').read_text()
+
+    assert not project_cif.startswith('data_')
+    assert '_rendering.chart_engine auto' in project_cif
+    assert '_rendering.table_engine auto' in project_cif
+
+    loaded = Project.load(str(tmp_path / 'proj'))
+
+    assert loaded.rendering.chart_engine.value == 'auto'
+    assert loaded.rendering.table_engine.value == 'auto'
 
 
 def test_project_save_and_load_keep_project_config_section_format(tmp_path):

@@ -744,7 +744,12 @@ class ProjectDisplay:
         if posterior_samples is None or posterior_predictive is None:
             return False, 'Posterior predictive data is unavailable.'
 
-        if self._project.rendering.chart_engine.value != PlotterEngineEnum.PLOTLY.value:
+        active_chart_engine = getattr(self._project.rendering.plotter, 'engine', None)
+        if active_chart_engine is None:
+            chart_engine = getattr(self._project.rendering, 'chart_engine', None)
+            active_chart_engine = getattr(chart_engine, 'value', None)
+
+        if active_chart_engine != PlotterEngineEnum.PLOTLY.value:
             return False, 'Uncertainty bands currently require the Plotly chart engine.'
 
         return True, ''
