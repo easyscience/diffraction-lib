@@ -219,7 +219,8 @@ project.analysis.fitting.show_minimizer_types()
 project.analysis.fitting.minimizer_type = 'bumps (dream)'
 
 # %%
-project.analysis.fitting.minimizer.steps = 500  # lower than the default 3000
+project.analysis.fitting.minimizer.steps = 100  # lower than the default 3000
+project.analysis.fitting.minimizer.burn = 20  # lower than the default 600
 
 # %%
 project.analysis.fit()

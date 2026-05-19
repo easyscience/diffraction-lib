@@ -163,7 +163,7 @@ def test_lm_prefit_followed_by_dream_uses_uncertainty_based_bounds():
     assert len(results.posterior_parameter_summaries) == 3
 
 
-def test_bayesian_fit_results_are_runtime_only_after_save_load(tmp_path):
+def test_bayesian_fit_results_reload_from_persisted_fit_state(tmp_path):
     project = _create_lbco_project()
     length_a, scale, offset = _dream_parameters(project)
     for parameter in (length_a, scale, offset):
@@ -185,8 +185,13 @@ def test_bayesian_fit_results_are_runtime_only_after_save_load(tmp_path):
     project.save_as(str(proj_dir))
 
     analysis_cif = proj_dir / 'analysis' / 'analysis.cif'
+    results_sidecar = proj_dir / 'analysis' / 'results.h5'
     assert analysis_cif.is_file()
-    assert 'posterior' not in analysis_cif.read_text().lower()
+    assert results_sidecar.is_file()
 
     loaded = Project.load(str(proj_dir))
-    assert loaded.analysis.fit_results is None
+    loaded_results = loaded.analysis.fit_results
+    assert loaded_results is not None
+    assert loaded_results.sampler_completed is True
+    assert loaded_results.posterior_samples is not None
+    assert loaded_results.posterior_samples.parameter_samples.ndim == 3

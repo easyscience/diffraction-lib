@@ -165,9 +165,18 @@ def test_fit_sequential_produces_csv(tmp_path) -> None:
 
     assert len(rows) == 3, f'Expected 3 rows, got {len(rows)}'
 
-    # Each row should have fit_success
+    # Each row should have fit_result.success
     for row in rows:
-        assert row['fit_success'] == 'True', f'Fit failed for {row["file_path"]}'
+        assert row['fit_result.success'] == 'True', f'Fit failed for {row["file_path"]}'
+        assert int(row['fit_result.iterations']) > 0, (
+            f'Expected non-zero iterations for {row["file_path"]}'
+        )
+
+    assert 'fit_result.reduced_chi_square' in rows[0]
+    assert 'fit_result.iterations' in rows[0]
+    assert 'success' not in rows[0]
+    assert 'reduced_chi_square' not in rows[0]
+    assert 'iterations' not in rows[0]
 
     # Each row should have parameter values
     assert 'lbco.cell.length_a' in rows[0]
@@ -316,7 +325,10 @@ def test_fit_sequential_parallel(tmp_path) -> None:
     assert len(rows) == 3, f'Expected 3 rows, got {len(rows)}'
 
     for row in rows:
-        assert row['fit_success'] == 'True', f'Fit failed for {row["file_path"]}'
+        assert row['fit_result.success'] == 'True', f'Fit failed for {row["file_path"]}'
+        assert int(row['fit_result.iterations']) > 0, (
+            f'Expected non-zero iterations for {row["file_path"]}'
+        )
 
     # Parameter values should be present and reasonable
     assert 'lbco.cell.length_a' in rows[0]

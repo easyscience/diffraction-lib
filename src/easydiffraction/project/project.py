@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import pathlib
+import shutil
 import tempfile
 from typing import TYPE_CHECKING
 from typing import ClassVar
@@ -16,17 +17,25 @@ from easydiffraction.analysis.analysis import Analysis
 from easydiffraction.core.guard import GuardedBase
 from easydiffraction.datablocks.experiment.collection import Experiments
 from easydiffraction.datablocks.structure.collection import Structures
+from easydiffraction.io.cif.serialize import analysis_from_cif
+from easydiffraction.io.cif.serialize import project_config_from_cif
 from easydiffraction.io.cif.serialize import project_config_to_cif
 from easydiffraction.io.cif.serialize import project_to_cif
+from easydiffraction.io.results_sidecar import read_analysis_results_sidecar
+from easydiffraction.io.results_sidecar import write_analysis_results_sidecar
 from easydiffraction.project.display import ProjectDisplay
 from easydiffraction.project.project_config import ProjectConfig
 from easydiffraction.summary.summary import Summary
 from easydiffraction.utils.enums import VerbosityEnum
+from easydiffraction.utils.environment import resolve_artifact_path
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from easydiffraction.project.categories.rendering import Rendering
+    from easydiffraction.project.categories.verbosity import Verbosity
     from easydiffraction.project.project_info import ProjectInfo
 
 
@@ -108,6 +117,63 @@ def _resolve_data_path_from_results_csv(
     return project_path / path
 
 
+def _load_cif_directory(
+    cif_dir: pathlib.Path,
+    add_from_cif_path: Callable[[str], None],
+) -> None:
+    """Load all CIF files from one directory using the given loader."""
+    if not cif_dir.is_dir():
+        return
+
+    for cif_file in sorted(cif_dir.glob('*.cif')):
+        add_from_cif_path(str(cif_file))
+
+
+def _create_loading_project(project_cls: type[Project]) -> Project:
+    """Create a project instance while suppressing varname lookup."""
+    project_cls._loading = True
+    try:
+        return project_cls()
+    finally:
+        project_cls._loading = False
+
+
+def _load_project_info(project: Project, project_path: pathlib.Path) -> None:
+    """
+    Restore project configuration from ``project.cif`` when present.
+    """
+    project_cif_path = project_path / 'project.cif'
+    if project_cif_path.is_file():
+        project_config_from_cif(project, project_cif_path.read_text())
+
+
+def _resolved_analysis_cif_path(project_path: pathlib.Path) -> pathlib.Path | None:
+    """Return the preferred analysis CIF path for a saved project."""
+    analysis_cif_path = project_path / 'analysis' / 'analysis.cif'
+    if analysis_cif_path.is_file():
+        return analysis_cif_path
+
+    analysis_cif_path = project_path / 'analysis.cif'
+    if analysis_cif_path.is_file():
+        return analysis_cif_path
+    return None
+
+
+def _load_project_analysis(project: Project, project_path: pathlib.Path) -> None:
+    """Restore analysis categories and sidecar state from disk."""
+    analysis_cif_path = _resolved_analysis_cif_path(project_path)
+    if analysis_cif_path is None:
+        return
+
+    analysis_from_cif(project._analysis, analysis_cif_path.read_text())
+    read_analysis_results_sidecar(
+        analysis=project._analysis,
+        analysis_dir=analysis_cif_path.parent,
+    )
+    if project._analysis._has_persisted_fit_state():
+        project._analysis._restore_live_parameter_state(project._build_parameter_map())
+
+
 class Project(GuardedBase):
     """
     Central API for managing a diffraction data analysis project.
@@ -135,12 +201,12 @@ class Project(GuardedBase):
         self._structures = Structures()
         self._experiments = Experiments()
         object.__setattr__(self, '_rendering', self._config.rendering)
+        object.__setattr__(self, '_verbosity', self._config.verbosity)
         self._display = ProjectDisplay(self)
         self._analysis = Analysis(self)
         self._summary = Summary(self)
         self._saved = False
         self._varname = 'project' if type(self)._loading else varname()
-        self._verbosity: VerbosityEnum = VerbosityEnum.FULL
         type(self)._current_project = self
 
     @classmethod
@@ -249,21 +315,14 @@ class Project(GuardedBase):
         return project_to_cif(self)
 
     @property
-    def verbosity(self) -> str:
-        """
-        Project-wide console output verbosity.
-
-        Returns
-        -------
-        str
-            One of ``'full'``, ``'short'``, or ``'silent'``.
-        """
-        return self._verbosity.value
+    def verbosity(self) -> Verbosity:
+        """Verbosity configuration bound to the project."""
+        return self._verbosity
 
     @verbosity.setter
     def verbosity(self, value: str) -> None:
         """
-        Set project-wide console output verbosity.
+        Set fitting process output verbosity.
 
         Parameters
         ----------
@@ -271,7 +330,7 @@ class Project(GuardedBase):
             ``'full'`` for multi-line output, ``'short'`` for one-line
             status messages, or ``'silent'`` for no output.
         """
-        self._verbosity = VerbosityEnum(value)
+        self._verbosity.fit = VerbosityEnum(value).value
 
     # ------------------------------------------
     #  Project File I/O
@@ -303,52 +362,19 @@ class Project(GuardedBase):
         FileNotFoundError
             If *dir_path* does not exist.
         """
-        from easydiffraction.io.cif.serialize import analysis_from_cif  # noqa: PLC0415
-        from easydiffraction.io.cif.serialize import project_config_from_cif  # noqa: PLC0415
-
         project_path = pathlib.Path(dir_path)
         if not project_path.is_dir():
             msg = f"Project directory not found: '{dir_path}'"
             raise FileNotFoundError(msg)
 
-        # Create a minimal project.
-        # Use _loading sentinel to skip varname() inside __init__.
-        cls._loading = True
-        try:
-            project = cls()
-        finally:
-            cls._loading = False
+        project = _create_loading_project(cls)
         project._saved = True
 
-        # 1. Load project info
-        project_cif_path = project_path / 'project.cif'
-        if project_cif_path.is_file():
-            cif_text = project_cif_path.read_text()
-            project_config_from_cif(project, cif_text)
-
+        _load_project_info(project, project_path)
         project.info.path = project_path
-
-        # 2. Load structures
-        structures_dir = project_path / 'structures'
-        if structures_dir.is_dir():
-            for cif_file in sorted(structures_dir.glob('*.cif')):
-                project._structures.add_from_cif_path(str(cif_file))
-
-        # 3. Load experiments
-        experiments_dir = project_path / 'experiments'
-        if experiments_dir.is_dir():
-            for cif_file in sorted(experiments_dir.glob('*.cif')):
-                project._experiments.add_from_cif_path(str(cif_file))
-
-        # 4. Load analysis
-        #    Check analysis/analysis.cif first (future layout), then
-        #    fall back to analysis.cif at root (current layout).
-        analysis_cif_path = project_path / 'analysis' / 'analysis.cif'
-        if not analysis_cif_path.is_file():
-            analysis_cif_path = project_path / 'analysis.cif'
-        if analysis_cif_path.is_file():
-            cif_text = analysis_cif_path.read_text()
-            analysis_from_cif(project._analysis, cif_text)
+        _load_cif_directory(project_path / 'structures', project._structures.add_from_cif_path)
+        _load_cif_directory(project_path / 'experiments', project._experiments.add_from_cif_path)
+        _load_project_analysis(project, project_path)
 
         # 5. Resolve alias param references
         project._resolve_alias_references()
@@ -373,13 +399,7 @@ class Project(GuardedBase):
         if not aliases._items:
             return
 
-        # Build unique_name → parameter map
-        all_params = self._structures.parameters + self._experiments.parameters
-        param_map: dict[str, object] = {}
-        for p in all_params:
-            uname = getattr(p, 'unique_name', None)
-            if uname is not None:
-                param_map[uname] = p
+        param_map = self._build_parameter_map()
 
         for alias in aliases:
             uname = alias.param_unique_name.value
@@ -390,6 +410,22 @@ class Project(GuardedBase):
                     f"Alias '{alias.label.value}' references unknown "
                     f"parameter '{uname}'. Reference not resolved."
                 )
+
+    def _build_parameter_map(self) -> dict[str, object]:
+        """
+        Return a ``unique_name`` to live parameter mapping.
+
+        The map combines structure and experiment parameters and is
+        reused by CIF restore steps that need to reconnect persisted
+        names to live parameter objects.
+        """
+        all_params = self._structures.parameters + self._experiments.parameters
+        param_map: dict[str, object] = {}
+        for param in all_params:
+            unique_name = getattr(param, 'unique_name', None)
+            if unique_name is not None:
+                param_map[unique_name] = param
+        return param_map
 
     def save(self) -> None:
         """Save the project into the existing project directory."""
@@ -441,6 +477,10 @@ class Project(GuardedBase):
         with (analysis_dir / 'analysis.cif').open('w') as f:
             f.write(self.analysis.as_cif)
             console.print('├── 📁 analysis/')
+        write_analysis_results_sidecar(
+            analysis=self.analysis,
+            analysis_dir=analysis_dir,
+        )
 
         analysis_file_names = sorted(
             path.name for path in analysis_dir.iterdir() if path.is_file()
@@ -462,12 +502,40 @@ class Project(GuardedBase):
         dir_path: str,
         *,
         temporary: bool = False,
+        overwrite: bool = True,
     ) -> None:
-        """Save the project into a new directory."""
+        """
+        Save the project into a directory.
+
+        Parameters
+        ----------
+        dir_path : str
+            Destination directory for the saved project.
+        temporary : bool, default=False
+            Whether to save beneath the system temporary directory.
+        overwrite : bool, default=True
+            Whether to remove an existing target directory before
+            saving.
+        """
         if temporary:
             tmp: str = tempfile.gettempdir()
-            dir_path = pathlib.Path(tmp) / dir_path
-        self.info.path = dir_path
+            project_dir = pathlib.Path(tmp) / dir_path
+        else:
+            project_dir = resolve_artifact_path(dir_path)
+
+        if overwrite and project_dir.is_dir():
+            current_working_directory = pathlib.Path.cwd().resolve()
+            resolved_project_dir = project_dir.resolve()
+            if resolved_project_dir == current_working_directory:
+                for child_path in resolved_project_dir.iterdir():
+                    if child_path.is_dir():
+                        shutil.rmtree(child_path)
+                    else:
+                        child_path.unlink()
+            else:
+                shutil.rmtree(project_dir)
+
+        self.info.path = project_dir
         self.save()
 
     def apply_params_from_csv(self, row_index: int) -> None:

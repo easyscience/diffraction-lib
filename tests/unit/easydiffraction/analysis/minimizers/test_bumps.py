@@ -189,6 +189,80 @@ def test_fitness_numpoints_after_nllf():
     assert fitness.numpoints() == 3
 
 
+def test_fitness_evaluation_count_can_be_reset_and_stopped():
+    from bumps.parameter import Parameter as BumpsParameter
+
+    from easydiffraction.analysis.minimizers.bumps import _EasyDiffractionFitness
+
+    bp = BumpsParameter(value=0.0, name='a')
+    fitness = _EasyDiffractionFitness([bp], lambda values: np.array([values[0]]))
+
+    fitness.residuals()
+    fitness.residuals()
+    assert fitness.evaluation_count == 2
+
+    fitness.reset_evaluation_count()
+    assert fitness.evaluation_count == 0
+
+    fitness.stop_counting_evaluations()
+    fitness.residuals()
+    assert fitness.evaluation_count == 0
+
+
+def test_fitness_raises_when_max_evaluations_is_reached():
+    from bumps.parameter import Parameter as BumpsParameter
+
+    from easydiffraction.analysis.minimizers.bumps import _BumpsEvaluationLimitError
+    from easydiffraction.analysis.minimizers.bumps import _EasyDiffractionFitness
+
+    bp = BumpsParameter(value=2.0, name='a')
+    fitness = _EasyDiffractionFitness(
+        [bp],
+        lambda values: np.array([values[0]]),
+        max_evaluations=2,
+    )
+
+    fitness.residuals()
+    fitness.residuals()
+
+    with pytest.raises(_BumpsEvaluationLimitError) as exc_info:
+        fitness.residuals()
+
+    assert exc_info.value.evaluation_count == 2
+    np.testing.assert_array_equal(exc_info.value.parameter_values, np.array([2.0]))
+    np.testing.assert_array_equal(exc_info.value.residuals, np.array([2.0]))
+
+
+def test_bumps_progress_monitor_reports_evaluation_count():
+    from easydiffraction.analysis.minimizers.bumps import _EasyDiffractionFitness
+    from easydiffraction.analysis.minimizers.bumps import _BumpsProgressMonitor
+
+    tracker = MagicMock()
+    fitness = _EasyDiffractionFitness([], lambda values: np.array([]))
+    fitness.reset_evaluation_count()
+    fitness._evaluation_count = 63
+    monitor = _BumpsProgressMonitor(
+        tracker=tracker,
+        fitness=fitness,
+        n_points=20,
+        n_parameters=4,
+    )
+
+    monitor(
+        types.SimpleNamespace(
+            step=[7],
+            value=[8.0],
+            time=[1.5],
+        )
+    )
+
+    tracker.track_fit_progress.assert_called_once_with(
+        iteration=63,
+        reduced_chi2=pytest.approx(1.0),
+        elapsed_time=1.5,
+    )
+
+
 def test_fitness_update_is_noop():
     from easydiffraction.analysis.minimizers.bumps import _EasyDiffractionFitness
 
@@ -232,6 +306,8 @@ def test_run_solver_returns_optimize_result():
             bumps_params=[bp1, bp2],
         )
 
+    assert len(mock_driver_cls.call_args.kwargs['monitors']) == 1
+
     assert isinstance(res, OptimizeResult)
     assert res.success is True
     np.testing.assert_array_almost_equal(res.x, [1.5, 2.5])
@@ -263,6 +339,51 @@ def test_run_solver_failure():
 
     assert res.success is False
     assert res.status == -1
+
+
+def test_run_solver_stops_at_max_evaluations():
+    from easydiffraction.analysis.minimizers.bumps import BumpsMinimizer
+    from easydiffraction.analysis.minimizers.bumps import _BumpsEvaluationLimitError
+
+    m = BumpsMinimizer(max_iterations=50)
+    m.tracker = MagicMock()
+    m.tracker._current_elapsed_time.return_value = 1.25
+
+    fake_fitter = types.SimpleNamespace(id='lm')
+    limit_error = _BumpsEvaluationLimitError(
+        evaluation_count=50,
+        parameter_values=np.array([1.5]),
+        residuals=np.array([2.0, 2.0]),
+    )
+
+    with (
+        patch('easydiffraction.analysis.minimizers.bumps.FitDriver') as mock_driver_cls,
+        patch('easydiffraction.analysis.minimizers.bumps.FitProblem'),
+        patch('easydiffraction.analysis.minimizers.bumps.FITTERS', [fake_fitter]),
+        patch.object(m, '_compute_covariance', return_value=(None, None)) as mock_covariance,
+    ):
+        driver_instance = mock_driver_cls.return_value
+        driver_instance.fit.side_effect = limit_error
+        driver_instance.clip = MagicMock()
+
+        from bumps.parameter import Parameter as BumpsParameter
+
+        bp = BumpsParameter(value=1.5, name='a')
+        result = m._run_solver(
+            lambda values: np.array([values[0], values[0]]),
+            bumps_params=[bp],
+        )
+
+    assert result.success is False
+    assert result.status == 5
+    assert result.message == 'maximum number of residual evaluations reached'
+    np.testing.assert_array_equal(result.x, np.array([1.5]))
+    mock_covariance.assert_not_called()
+    m.tracker.track_fit_progress.assert_called_once_with(
+        iteration=50,
+        reduced_chi2=pytest.approx(8.0),
+        elapsed_time=1.25,
+    )
 
 
 # -- _sync_result_to_parameters tests -----------------------------------------

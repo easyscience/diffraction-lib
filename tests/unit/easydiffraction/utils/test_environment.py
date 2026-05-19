@@ -84,3 +84,44 @@ class TestIpythonHelpers:
         from easydiffraction.utils.environment import can_use_ipython_display
 
         assert can_use_ipython_display(None) is False
+
+
+class TestArtifactPaths:
+    def test_resolve_artifact_path_uses_env_root(self, monkeypatch, tmp_path):
+        from easydiffraction.utils.environment import resolve_artifact_path
+
+        monkeypatch.setenv('EASYDIFFRACTION_ARTIFACT_ROOT', 'tmp/tutorials')
+        monkeypatch.setenv('PIXI_PROJECT_ROOT', str(tmp_path))
+
+        assert resolve_artifact_path('data') == tmp_path / 'tmp' / 'tutorials' / 'data'
+
+    def test_resolve_artifact_path_uses_tutorial_fallback(self, monkeypatch, tmp_path):
+        import easydiffraction.utils.environment as env
+
+        repo_root = tmp_path / 'repo'
+        tutorials_dir = repo_root / 'docs' / 'docs' / 'tutorials'
+        tutorials_dir.mkdir(parents=True)
+
+        monkeypatch.delenv('EASYDIFFRACTION_ARTIFACT_ROOT', raising=False)
+        monkeypatch.delenv('PIXI_PROJECT_ROOT', raising=False)
+        monkeypatch.chdir(tutorials_dir)
+        monkeypatch.setattr(env, '_repo_root', lambda: repo_root)
+
+        assert env.resolve_artifact_path('data') == repo_root / 'tmp' / 'tutorials' / 'data'
+
+    def test_create_artifact_temp_dir_uses_tutorial_fallback(self, monkeypatch, tmp_path):
+        import easydiffraction.utils.environment as env
+
+        repo_root = tmp_path / 'repo'
+        tutorials_dir = repo_root / 'docs' / 'docs' / 'tutorials'
+        tutorials_dir.mkdir(parents=True)
+
+        monkeypatch.delenv('EASYDIFFRACTION_ARTIFACT_ROOT', raising=False)
+        monkeypatch.delenv('PIXI_PROJECT_ROOT', raising=False)
+        monkeypatch.chdir(tutorials_dir)
+        monkeypatch.setattr(env, '_repo_root', lambda: repo_root)
+
+        created_dir = env.create_artifact_temp_dir('ed_zip_')
+
+        assert created_dir.is_dir()
+        assert created_dir.parent == repo_root / 'tmp' / 'tutorials'

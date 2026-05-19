@@ -33,9 +33,15 @@ import easydiffraction as ed
 # The project object keeps structures, experiments, fit settings, and
 # plotting utilities together in a single place. We will build the full
 # workflow inside this object.
+#
+# Save the project to a directory early on so that you can easily reload
+# it later if needed.
 
 # %%
 project = ed.Project()
+
+# %%
+project.save_as('projects/lbco_hrpt_bayesian')
 
 # %% [markdown]
 # ## Step 2: Build the Structural Model
@@ -291,7 +297,8 @@ project.analysis.fitting.show_minimizer_types()
 project.analysis.fitting.minimizer_type = 'bumps (dream)'
 
 # %%
-project.analysis.fitting.minimizer.steps = 300  # lower than the default 3000
+project.analysis.fitting.minimizer.steps = 100  # lower than the default 3000
+project.analysis.fitting.minimizer.burn = 20  # lower than the default 600
 
 # %%
 project.analysis.fit()

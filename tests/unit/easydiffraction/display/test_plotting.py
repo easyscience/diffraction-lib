@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+import csv
 import re
 from types import MethodType
 from types import SimpleNamespace
@@ -64,6 +65,78 @@ def test_plotter_factory_supported_and_unsupported():
         match=r"Unsupported engine 'nope'\. Supported engines: .*",
     ):
         PlotterFactory.create('nope')
+
+
+@pytest.mark.parametrize(
+    ('descriptor_name', 'column_values', 'expected_y'),
+    [
+        ('reduced_chi_square', ['1.5', '2.5'], [1.5, 2.5]),
+        ('iterations', ['5', '8'], [5.0, 8.0]),
+        ('success', ['True', 'False'], [1.0, 0.0]),
+    ],
+)
+def test_plot_param_series_reads_fit_result_columns_from_csv(
+    monkeypatch,
+    tmp_path,
+    descriptor_name,
+    column_values,
+    expected_y,
+):
+    from easydiffraction.display.plotting import Plotter
+    from easydiffraction.project.project import Project
+
+    project = Project(name='series')
+    project.info.path = tmp_path
+
+    analysis_dir = tmp_path / 'analysis'
+    analysis_dir.mkdir(parents=True)
+    csv_path = analysis_dir / 'results.csv'
+    with csv_path.open('w', newline='', encoding='utf-8') as handle:
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=[
+                'file_path',
+                'fit_result.reduced_chi_square',
+                'fit_result.success',
+                'fit_result.iterations',
+            ],
+        )
+        writer.writeheader()
+        writer.writerow({
+            'file_path': 'a.dat',
+            'fit_result.reduced_chi_square': column_values[0],
+            'fit_result.success': column_values[0] if descriptor_name == 'success' else 'True',
+            'fit_result.iterations': column_values[0] if descriptor_name == 'iterations' else '5',
+        })
+        writer.writerow({
+            'file_path': 'b.dat',
+            'fit_result.reduced_chi_square': column_values[1],
+            'fit_result.success': column_values[1] if descriptor_name == 'success' else 'False',
+            'fit_result.iterations': column_values[1] if descriptor_name == 'iterations' else '8',
+        })
+
+    captured: dict[str, object] = {}
+
+    plotter = Plotter()
+    plotter._set_project(project)
+
+    def fake_plot_scatter(*, x, y, sy, axes_labels, title, height):
+        captured['x'] = x
+        captured['y'] = y
+        captured['sy'] = sy
+        captured['axes_labels'] = axes_labels
+        captured['title'] = title
+        captured['height'] = height
+
+    monkeypatch.setattr(plotter._backend, 'plot_scatter', fake_plot_scatter)
+
+    plotter.plot_param_series(getattr(project.analysis.fit_result, descriptor_name))
+
+    assert captured['x'] == [1, 2]
+    assert captured['y'] == expected_y
+    assert captured['sy'] == [0.0, 0.0]
+    assert captured['axes_labels'] == ['Experiment No.', 'Parameter value']
+    assert captured['title'] == f"Parameter 'fit_result.{descriptor_name}' across fit results"
 
 
 def test_plotter_error_paths_and_filtering(capsys, monkeypatch):

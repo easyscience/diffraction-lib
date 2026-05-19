@@ -6,6 +6,7 @@ from __future__ import annotations
 import functools
 import json
 import pathlib
+import shutil
 import urllib.request
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version
@@ -20,6 +21,8 @@ from uncertainties import ufloat
 from uncertainties import ufloat_fromstr
 
 from easydiffraction.display.tables import TableRenderer
+from easydiffraction.io.ascii import extract_project_from_zip
+from easydiffraction.utils.environment import resolve_artifact_path
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 
@@ -28,9 +31,9 @@ pooch.get_logger().setLevel('WARNING')  # Suppress pooch info messages
 _DATA_REPO = 'easyscience/diffraction'
 _DATA_ROOT = 'data'
 # commit SHA preferred
-_DATA_INDEX_REF = '39dad256ba1faedf4b26fad3e44a361c802fd8e4'
+_DATA_INDEX_REF = 'dbe92a87e0106c4742eee0ff9a8e32bdb8b483cb'
 # macOS: sha256sum index.json
-_DATA_INDEX_HASH = 'sha256:301aaca0f35927cd63715b858a1f03164e4d05d1d39234325a3798d2b4a5f4ea'
+_DATA_INDEX_HASH = 'sha256:9e7bbaf2cb650f4126572e85157c63bc76f201408856fe4af566bee55dcdfbb4'
 
 
 def _build_data_url(path: str) -> str:
@@ -112,6 +115,42 @@ def _fetch_data_index() -> dict:
         return json.load(f)
 
 
+def _existing_project_dir(extraction_dir: pathlib.Path) -> pathlib.Path | None:
+    """Return one extracted project directory from a destination."""
+    project_files = sorted(extraction_dir.rglob('project.cif'))
+    if not project_files:
+        return None
+    return project_files[0].parent.resolve()
+
+
+def _download_data_message(data_id: int | str, record: dict) -> str:
+    """Return the console message for one downloadable data record."""
+    description = record.get('description', '')
+    message = f'Data #{data_id}'
+    if description:
+        message += f': {description}'
+    return message
+
+
+def _download_data_targets(
+    data_id: int | str,
+    destination: str,
+    record: dict,
+) -> tuple[str, bool, pathlib.Path, pathlib.Path, pathlib.Path, str]:
+    """Return URL and filesystem targets for one download request."""
+    record_path = _record_path(record)
+    url = _build_data_url(record_path)
+    _validate_url(url)
+
+    fname = _filename_for_id_from_path(data_id, record_path)
+    is_project_archive = record.get('kind') == 'project' and fname.endswith('.zip')
+    dest_path = resolve_artifact_path(destination)
+    dest_path.mkdir(parents=True, exist_ok=True)
+    file_path = dest_path / fname
+    extraction_dir = dest_path / pathlib.Path(fname).stem
+    return url, is_project_archive, dest_path, file_path, extraction_dir, fname
+
+
 @functools.lru_cache(maxsize=1)
 def _fetch_tutorials_index() -> dict:
     """
@@ -160,14 +199,18 @@ def download_data(
     id : int | str
         Numeric dataset id (e.g. 12).
     destination : str, default='data'
-        Directory to save the file into (created if missing).
+        Directory to save the downloaded file or extracted project into
+        (created if missing). Relative destinations are resolved against
+        the configured artifact root when
+        ``EASYDIFFRACTION_ARTIFACT_ROOT`` is set.
     overwrite : bool, default=False
         Whether to overwrite the file if it already exists.
 
     Returns
     -------
     str
-        Full path to the downloaded file as string.
+        Full path to the downloaded file, or to the extracted project
+        directory for project ZIP archives, as string.
 
     Raises
     ------
@@ -186,24 +229,29 @@ def download_data(
         raise KeyError(msg)
 
     record = index[key]
-    record_path = _record_path(record)
-    url = _build_data_url(record_path)
-    _validate_url(url)
-    fname = _filename_for_id_from_path(id, record_path)
-
-    dest_path = pathlib.Path(destination)
-    dest_path.mkdir(parents=True, exist_ok=True)
-    file_path = dest_path / fname
-
-    description = record.get('description', '')
-    message = f'Data #{id}'
-    if description:
-        message += f': {description}'
+    url, is_project_archive, dest_path, file_path, extraction_dir, fname = _download_data_targets(
+        id, destination, record
+    )
+    message = _download_data_message(id, record)
 
     console.paragraph('Getting data...')
     console.print(f'{message}')
 
+    if is_project_archive and extraction_dir.exists() and not overwrite:
+        existing_project_dir = _existing_project_dir(extraction_dir)
+        if existing_project_dir is not None:
+            console.print(
+                f"✅ Data #{id} already extracted at '{existing_project_dir}'. "
+                'Keeping existing project.'
+            )
+            return str(existing_project_dir)
+
     if file_path.exists():
+        if is_project_archive and not overwrite:
+            project_dir = extract_project_from_zip(file_path, destination=extraction_dir)
+            file_path.unlink()
+            console.print(f"✅ Data #{id} extracted to '{project_dir}'")
+            return str(project_dir)
         if not overwrite:
             console.print(
                 f"✅ Data #{id} already present at '{file_path}'. Keeping existing file."
@@ -214,6 +262,9 @@ def download_data(
 
     known_hash = _normalize_known_hash(record.get('hash'))
 
+    if is_project_archive and extraction_dir.exists() and overwrite:
+        shutil.rmtree(extraction_dir)
+
     # Pooch downloads to destination with our controlled filename.
     pooch.retrieve(
         url=url,
@@ -222,8 +273,43 @@ def download_data(
         path=str(dest_path),
     )
 
-    console.print(f"✅ Data #{id} downloaded to '{file_path}'")
+    if is_project_archive:
+        project_dir = extract_project_from_zip(file_path, destination=extraction_dir)
+        file_path.unlink()
+        console.print(f"✅ Data #{id} downloaded and extracted to\n'{project_dir}'")
+        return str(project_dir)
+
+    console.print(f"✅ Data #{id} downloaded to:\n'{file_path}'")
     return str(file_path)
+
+
+def list_data() -> None:
+    """Display a table of available example data records."""
+    index = _fetch_data_index()
+    if not index:
+        console.print('❌ No example data available.')
+        return
+
+    console.paragraph('Example data available for download:')
+
+    columns_headers = ['id', 'file', 'kind', 'description']
+    columns_alignment = ['right', 'left', 'left', 'left']
+    columns_data = []
+
+    for data_id in sorted(index, key=lambda value: int(value) if value.isdigit() else value):
+        record = index[data_id]
+        columns_data.append([
+            data_id,
+            pathlib.PurePosixPath(_record_path(record)).name,
+            record.get('kind', ''),
+            record.get('description', ''),
+        ])
+
+    render_table(
+        columns_headers=columns_headers,
+        columns_data=columns_data,
+        columns_alignment=columns_alignment,
+    )
 
 
 def package_version(package_name: str) -> str | None:
@@ -474,7 +560,7 @@ def download_tutorial(
     with _safe_urlopen(url) as resp:
         file_path.write_bytes(resp.read())
 
-    console.print(f"✅ Tutorial #{id} downloaded to '{file_path}'")
+    console.print(f"✅ Tutorial #{id} downloaded to:\n'{file_path}'")
     return str(file_path)
 
 

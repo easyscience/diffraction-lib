@@ -34,7 +34,7 @@ def test_datablock_item_to_cif_includes_item_and_collection():
 
     out = MUT.datablock_item_to_cif(DB())
     assert out.startswith('data_block1')
-    assert '_aa 42.' in out
+    assert '_aa 42' in out
     assert 'loop_' in out
     assert '_aa' in out
     assert '7' in out
@@ -80,7 +80,7 @@ def test_datablock_item_to_cif_skips_empty_category_fragments():
             self.empty_coll = CategoryCollection(item_type=Item)
 
     out = MUT.datablock_item_to_cif(DB())
-    assert out == 'data_block1\n\n_aa 42.\n\nloop_\n_aa\n7.'
+    assert out == 'data_block1\n\n_aa 42\n\nloop_\n_aa\n7'
     assert '\n\n\n' not in out
 
 
@@ -107,11 +107,24 @@ def test_project_info_to_cif_contains_core_fields():
     info = ProjectInfo(name='p1', title='My Title', description='Some description text')
     out = MUT.project_info_to_cif(info)
     assert '_project.id               p1' in out
-    assert '_project.title' in out
-    assert 'My Title' in out
-    assert '_project.description' in out
-    assert '_project.created' in out
-    assert '_project.last_modified' in out
+    assert '_project.title            "My Title"' in out
+    assert '_project.description      "Some description text"' in out
+    assert '_project.created          "' in out
+    assert '_project.last_modified    "' in out
+
+
+def test_project_info_to_cif_wraps_long_description_as_text_field():
+    import easydiffraction.io.cif.serialize as MUT
+    from easydiffraction.project.project_info import ProjectInfo
+
+    description = ' '.join(['long'] * 20)
+    info = ProjectInfo(name='p1', title='My Title', description=description)
+
+    out = MUT.project_info_to_cif(info)
+
+    assert '_project.description      ' in out
+    assert '\n;\n' in out
+    assert 'long long long long long long long long long long long long' in out
 
 
 def test_experiment_to_cif_with_and_without_data():
@@ -159,7 +172,7 @@ def test_experiment_to_cif_with_and_without_data():
 
     out_without = MUT.experiment_to_cif(Exp(''))
     assert out_without.startswith('data_expA')
-    assert out_without.endswith('1.')
+    assert out_without.endswith('1')
 
 
 def test_analysis_to_cif_renders_all_sections():

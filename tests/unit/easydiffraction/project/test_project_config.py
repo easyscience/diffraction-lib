@@ -23,8 +23,12 @@ def test_project_config_exposes_project_info_and_rendering_categories():
     assert config.info.path is None
     assert isinstance(config.info.created, datetime.datetime)
     assert isinstance(config.info.last_modified, datetime.datetime)
-    assert config.categories == [config.info, config.rendering]
-    assert config.parameters == config.info.parameters + config.rendering.parameters
+    assert config.verbosity._parent is config
+    assert config.verbosity.fit.value == 'full'
+    assert config.categories == [config.info, config.rendering, config.verbosity]
+    assert config.parameters == (
+        config.info.parameters + config.rendering.parameters + config.verbosity.parameters
+    )
 
 
 def test_project_config_as_cif_has_project_and_rendering_sections_without_data_header():
@@ -42,6 +46,29 @@ def test_project_config_as_cif_has_project_and_rendering_sections_without_data_h
     assert '_project.last_modified' in cif_text
     assert '_rendering.chart_engine' in cif_text
     assert '_rendering.table_engine' in cif_text
+    assert '_rendering.chart_engine auto' in cif_text
+    assert '_rendering.table_engine auto' in cif_text
+    assert '_verbosity.fit full' in cif_text
+
+
+def test_project_save_and_load_use_auto_rendering_defaults_when_unset(tmp_path):
+    from easydiffraction.project.project import Project
+
+    project = Project(name='beer', title='Beer title', description='Some description')
+    project.save_as(str(tmp_path / 'proj'))
+
+    project_cif = (tmp_path / 'proj' / 'project.cif').read_text()
+
+    assert not project_cif.startswith('data_')
+    assert '_rendering.chart_engine auto' in project_cif
+    assert '_rendering.table_engine auto' in project_cif
+    assert '_verbosity.fit full' in project_cif
+
+    loaded = Project.load(str(tmp_path / 'proj'))
+
+    assert loaded.rendering.chart_engine.value == 'auto'
+    assert loaded.rendering.table_engine.value == 'auto'
+    assert loaded.verbosity.fit.value == 'full'
 
 
 def test_project_save_and_load_keep_project_config_section_format(tmp_path):
@@ -57,6 +84,7 @@ def test_project_save_and_load_keep_project_config_section_format(tmp_path):
     assert '_project.id               beer' in project_cif
     assert '_rendering.chart_engine asciichartpy' in project_cif
     assert '_rendering.table_engine rich' in project_cif
+    assert '_verbosity.fit full' in project_cif
 
     loaded = Project.load(str(tmp_path / 'proj'))
     assert loaded.info.name == 'beer'
@@ -66,3 +94,36 @@ def test_project_save_and_load_keep_project_config_section_format(tmp_path):
     assert isinstance(loaded.info.last_modified, datetime.datetime)
     assert loaded.rendering.chart_engine.value == 'asciichartpy'
     assert loaded.rendering.table_engine.value == 'rich'
+    assert loaded.verbosity.fit.value == 'full'
+
+
+def test_project_save_wraps_long_description_as_cif_text_field(tmp_path):
+    from easydiffraction.project.project import Project
+
+    description = (
+        'This is the most minimal example of using EasyDiffraction. '
+        'It shows how to load a previously saved project from a directory '
+        'and run refinement in just a few lines of code.'
+    )
+    project = Project(name='beer', title='Beer title', description=description)
+    project.save_as(str(tmp_path / 'proj'))
+
+    project_cif = (tmp_path / 'proj' / 'project.cif').read_text()
+
+    assert '_project.description' in project_cif
+    description_tail = project_cif.split('_project.description', maxsplit=1)[1].lstrip(' ')
+    assert description_tail.startswith('\n;\n')
+    assert '\n;\n_project.created' in project_cif
+    description_block = description_tail.split('\n;\n', maxsplit=1)[1]
+    description_block = description_block.split('\n;\n_project.created', maxsplit=1)[0]
+    description_lines = description_block.splitlines()
+
+    assert len(description_lines) > 1
+    assert all(not line.startswith(';') for line in description_lines)
+    assert all(not line.endswith(';') for line in description_lines)
+    assert description_lines[0].startswith('This is the most minimal example')
+    assert description_lines[-1].endswith('lines of code.')
+
+    loaded = Project.load(str(tmp_path / 'proj'))
+
+    assert loaded.info.description == description

@@ -17,19 +17,12 @@
 # %%
 from easydiffraction import Project
 from easydiffraction import download_data
-from easydiffraction import extract_project_from_zip
 
 # %% [markdown]
-# ## Download Project Archive
+# ## Download Saved Project
 
 # %%
-zip_path = download_data(id=30, destination='data')
-
-# %% [markdown]
-# ## Extract Project
-
-# %%
-project_dir = extract_project_from_zip(zip_path, destination='data')
+project_dir = download_data(id=36, destination='projects')
 
 # %% [markdown]
 # ## Load Project

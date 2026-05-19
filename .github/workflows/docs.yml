@@ -119,7 +119,7 @@ jobs:
       # Uses multiple cores for parallel execution to speed up the process.
       - name: Run notebooks
         # if: false # Temporarily disabled to speed up the docs build
-        run: pixi run notebook-exec
+        run: pixi run notebook-exec-ci
 
       # Build the static files for the documentation site for local inspection
       # Input: docs/ directory containing the Markdown files

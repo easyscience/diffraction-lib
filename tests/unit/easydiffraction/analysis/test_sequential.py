@@ -137,7 +137,7 @@ def _run_non_silent_fit(monkeypatch, tmp_path, *, verbosity, is_jupyter):
     del is_jupyter  # legacy parameter, no longer affects behavior
 
     analysis = SimpleNamespace(
-        project=SimpleNamespace(verbosity=verbosity),
+        project=SimpleNamespace(verbosity=SimpleNamespace(fit=SimpleNamespace(value=verbosity))),
         fitter=SimpleNamespace(selection='lmfit'),
     )
 
@@ -198,7 +198,7 @@ class TestBuildCsvHeader:
 class TestCsvWriteAndAppend:
     def test_write_creates_file_with_header(self, tmp_path):
         csv_path = tmp_path / 'results.csv'
-        header = ['file_path', 'chi_squared', 'param_a']
+        header = ['file_path', 'fit_result.reduced_chi_square', 'param_a']
         _write_csv_header(csv_path, header)
 
         with csv_path.open() as f:
@@ -336,19 +336,17 @@ class TestReadCsvForRecovery:
             [
                 {
                     'file_path': str(project_dir / 'experiments' / 'a.dat'),
-                    'fit_success': 'True',
-                    'chi_squared': '5.0',
-                    'reduced_chi_squared': '2.5',
-                    'n_iterations': '10',
+                    'fit_result.success': 'True',
+                    'fit_result.reduced_chi_square': '2.5',
+                    'fit_result.iterations': '10',
                     'cell.a': '3.89',
                     'cell.a.uncertainty': '0.01',
                 },
                 {
                     'file_path': str(project_dir / 'experiments' / 'b.dat'),
-                    'fit_success': 'False',
-                    'chi_squared': '',
-                    'reduced_chi_squared': '',
-                    'n_iterations': '0',
+                    'fit_result.success': 'False',
+                    'fit_result.reduced_chi_square': '',
+                    'fit_result.iterations': '0',
                     'cell.a': '',
                     'cell.a.uncertainty': '',
                 },
@@ -374,10 +372,9 @@ class TestReadCsvForRecovery:
             writer.writeheader()
             writer.writerow({
                 'file_path': 'projects/cosio/experiments/d20_scan/scan_001.dat',
-                'fit_success': 'True',
-                'chi_squared': '5.0',
-                'reduced_chi_squared': '2.5',
-                'n_iterations': '10',
+                'fit_result.success': 'True',
+                'fit_result.reduced_chi_square': '2.5',
+                'fit_result.iterations': '10',
                 'cell.a': '3.89',
                 'cell.a.uncertainty': '0.01',
             })
@@ -397,19 +394,17 @@ class TestReadCsvForRecovery:
             [
                 {
                     'file_path': 'a.dat',
-                    'fit_success': 'True',
-                    'chi_squared': '5.0',
-                    'reduced_chi_squared': '2.5',
-                    'n_iterations': '10',
+                    'fit_result.success': 'True',
+                    'fit_result.reduced_chi_square': '2.5',
+                    'fit_result.iterations': '10',
                     'cell.a': '3.89',
                     'cell.a.uncertainty': '0.01',
                 },
                 {
                     'file_path': 'b.dat',
-                    'fit_success': 'True',
-                    'chi_squared': '4.0',
-                    'reduced_chi_squared': '2.0',
-                    'n_iterations': '8',
+                    'fit_result.success': 'True',
+                    'fit_result.reduced_chi_square': '2.0',
+                    'fit_result.iterations': '8',
                     'cell.a': '3.90',
                     'cell.a.uncertainty': '0.02',
                 },
@@ -436,10 +431,9 @@ class TestReadCsvForRecovery:
             [
                 {
                     'file_path': 'a.dat',
-                    'fit_success': 'True',
-                    'chi_squared': '5.0',
-                    'reduced_chi_squared': '2.5',
-                    'n_iterations': '10',
+                    'fit_result.success': 'True',
+                    'fit_result.reduced_chi_square': '2.5',
+                    'fit_result.iterations': '10',
                     'diffrn.temp': '300',
                     'cell.a': '3.89',
                     'cell.a.uncertainty': '0.01',
@@ -452,7 +446,7 @@ class TestReadCsvForRecovery:
         assert 'cell.a' in params
         # Meta columns, diffrn, and uncertainty should be excluded
         assert 'file_path' not in params
-        assert 'fit_success' not in params
+        assert 'fit_result.success' not in params
         assert 'diffrn.temp' not in params
         assert 'cell.a.uncertainty' not in params
 
@@ -466,10 +460,9 @@ class TestReadCsvForRecovery:
             [
                 {
                     'file_path': 'a.dat',
-                    'fit_success': 'False',
-                    'chi_squared': '',
-                    'reduced_chi_squared': '',
-                    'n_iterations': '0',
+                    'fit_result.success': 'False',
+                    'fit_result.reduced_chi_square': '',
+                    'fit_result.iterations': '0',
                     'cell.a': '',
                     'cell.a.uncertainty': '',
                 },
@@ -537,15 +530,15 @@ def test_report_chunk_progress_updates_indicator_with_renderable(monkeypatch, ve
         [
             {
                 'file_path': _TEST_SCAN_001,
-                'fit_success': True,
-                'reduced_chi_squared': 4.0,
-                'n_iterations': 11,
+                'fit_result.success': True,
+                'fit_result.reduced_chi_square': 4.0,
+                'fit_result.iterations': 11,
             },
             {
                 'file_path': _TEST_SCAN_002,
-                'fit_success': False,
-                'reduced_chi_squared': None,
-                'n_iterations': 0,
+                'fit_result.success': False,
+                'fit_result.reduced_chi_square': None,
+                'fit_result.iterations': 0,
             },
         ],
         progress,
@@ -608,7 +601,7 @@ def test_fit_sequential_non_silent_starts_indicator_with_progress_table(
     assert events[8] == ('stop',)
     assert events[9:] == [
         ('console_print', ('✅ Sequential fitting complete: 1 files processed.',), {}),
-        ('console_print', (f'📄 Results saved to: {tmp_path / "results.csv"}',), {}),
+        ('console_print', (f'📄 Results saved to:\n{tmp_path / "results.csv"}',), {}),
     ]
 
 
@@ -631,9 +624,9 @@ def test_run_fit_loop_runs_chunks_sequentially_with_executor_map(monkeypatch, tm
             for path in paths:
                 yield {
                     'file_path': path,
-                    'fit_success': True,
-                    'reduced_chi_squared': 1.0,
-                    'n_iterations': 5,
+                    'fit_result.success': True,
+                    'fit_result.reduced_chi_square': 1.0,
+                    'fit_result.iterations': 5,
                     'params': {'cell.a': 4.0},
                 }
 
@@ -728,7 +721,7 @@ def test_fit_sequential_silent_does_not_start_indicator(monkeypatch, tmp_path):
     monkeypatch.setattr(sequential_mod, '_restore_main_state', lambda *args: None)
 
     analysis = SimpleNamespace(
-        project=SimpleNamespace(verbosity='silent'),
+        project=SimpleNamespace(verbosity=SimpleNamespace(fit=SimpleNamespace(value='silent'))),
         fitter=SimpleNamespace(selection='lmfit'),
     )
 

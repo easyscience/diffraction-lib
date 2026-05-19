@@ -24,12 +24,19 @@ one-to-one correspondence for project-owned singleton categories:
 ```text
 project.info.title        -> project.cif: _info.title
 project.rendering.engine  -> project.cif: _rendering.engine
-project.verbosity.level   -> project.cif: _verbosity.level
+project.verbosity.fit     -> project.cif: _verbosity.fit
 ```
 
 The design question is whether this rule should be applied only to
 project-level configuration, or more broadly across analysis,
 experiments, structures, and calculated data.
+
+The accepted project-facade decision keeps `Project` as the public root
+and keeps `project.cif` as the singleton project configuration file. It
+also keeps `_project.*` as the semantic CIF category for scientific
+project information and rejects `_meta.*` for that purpose. This ADR
+therefore must not reintroduce the rejected `Workspace` rename,
+`workspace.cif`, or `_meta.project_*` tags as incidental cleanup.
 
 ## Scope Of Comparison
 
@@ -48,7 +55,7 @@ to objects reached from the current `Project` root, for example
 | Current Python surface              | Current saved location   | Current CIF block form | Notes                                                                               |
 | ----------------------------------- | ------------------------ | ---------------------- | ----------------------------------------------------------------------------------- |
 | `project.info`, `project.rendering` | `project.cif`            | bare categories        | Project-level singleton config.                                                     |
-| `project.verbosity`                 | not persisted            | none                   | Runtime-only string property backed by `VerbosityEnum`; no `_verbosity` category.   |
+| `project.verbosity`                 | `project.cif`            | bare category          | Project-owned fit-output verbosity category backed by `VerbosityEnum`.              |
 | `project.structures[name]`          | `structures/<name>.cif`  | `data_<name>`          | Each structure is one CIF data block.                                               |
 | `project.experiments[name]`         | `experiments/<name>.cif` | `data_<name>`          | Each experiment is one CIF data block.                                              |
 | `project.analysis`                  | `analysis/analysis.cif`  | bare categories        | Loader also accepts legacy root-level `analysis.cif`.                               |
@@ -58,17 +65,17 @@ to objects reached from the current `Project` root, for example
 
 ### Project-Level Configuration
 
-| Current Python path              | Current CIF path          | Match? | Notes                                                                                                                           |
-| -------------------------------- | ------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------- |
-| `project.info.name`              | `_project.id`             | No     | Python uses user-facing `name`; CIF uses `id`; category is `info` in Python but `_project` in CIF.                              |
-| `project.info.title`             | `_project.title`          | Partly | Field name matches, category name does not.                                                                                     |
-| `project.info.description`       | `_project.description`    | Partly | Field name matches, category name does not.                                                                                     |
-| `project.info.created`           | `_project.created`        | Partly | Field name matches, category name does not.                                                                                     |
-| `project.info.last_modified`     | `_project.last_modified`  | Partly | Field name matches, category name does not.                                                                                     |
-| `project.info.path`              | none                      | No     | Runtime storage path, not a CIF field.                                                                                          |
-| `project.rendering.chart_engine` | `_rendering.chart_engine` | Yes    | Direct category and field mapping.                                                                                              |
-| `project.rendering.table_engine` | `_rendering.table_engine` | Yes    | Direct category and field mapping.                                                                                              |
-| `project.verbosity`              | none                      | No     | Runtime-only string convenience property; current code has no `project.verbosity.level` category and no `_verbosity.level` tag. |
+| Current Python path              | Current CIF path          | Match? | Notes                                                                                              |
+| -------------------------------- | ------------------------- | ------ | -------------------------------------------------------------------------------------------------- |
+| `project.info.name`              | `_project.id`             | No     | Python uses user-facing `name`; CIF uses `id`; category is `info` in Python but `_project` in CIF. |
+| `project.info.title`             | `_project.title`          | Partly | Field name matches, category name does not.                                                        |
+| `project.info.description`       | `_project.description`    | Partly | Field name matches, category name does not.                                                        |
+| `project.info.created`           | `_project.created`        | Partly | Field name matches, category name does not.                                                        |
+| `project.info.last_modified`     | `_project.last_modified`  | Partly | Field name matches, category name does not.                                                        |
+| `project.info.path`              | none                      | No     | Runtime storage path, not a CIF field.                                                             |
+| `project.rendering.chart_engine` | `_rendering.chart_engine` | Yes    | Direct category and field mapping.                                                                 |
+| `project.rendering.table_engine` | `_rendering.table_engine` | Yes    | Direct category and field mapping.                                                                 |
+| `project.verbosity.fit`          | `_verbosity.fit`          | Yes    | Direct category and field mapping for fitting process output verbosity.                            |
 
 ### Analysis Configuration
 
@@ -218,18 +225,30 @@ This ADR does not propose renaming the public root object. The current
 root object is already `Project`; the proposal is about category and tag
 correspondence inside project-owned singleton configuration.
 
-Target project-level mappings if the current Python names are kept:
+The accepted baseline is:
 
-| Python path                      | Target CIF path           | Current state                              |
-| -------------------------------- | ------------------------- | ------------------------------------------ |
-| `project.info.name`              | `_info.name`              | Currently `_project.id`.                   |
-| `project.info.title`             | `_info.title`             | Currently `_project.title`.                |
-| `project.info.description`       | `_info.description`       | Currently `_project.description`.          |
-| `project.info.created`           | `_info.created`           | Currently `_project.created`.              |
-| `project.info.last_modified`     | `_info.last_modified`     | Currently `_project.last_modified`.        |
-| `project.rendering.chart_engine` | `_rendering.chart_engine` | Already matches.                           |
-| `project.rendering.table_engine` | `_rendering.table_engine` | Already matches.                           |
-| `project.verbosity.level`        | `_verbosity.level`        | Currently no persisted verbosity category. |
+```text
+project.info.<field> -> project.cif: _project.<field>
+```
+
+Future one-to-one correspondence work may still discuss whether the
+public identity field should be `name` or `id`, whether verbosity should
+gain additional coverage-specific fields, and whether rendering should
+keep separate chart and table engine fields.
+
+Possible strict-correspondence target if a future ADR explicitly changes
+the accepted `_project.*` baseline:
+
+| Python path                      | Target CIF path           | Current state                                    |
+| -------------------------------- | ------------------------- | ------------------------------------------------ |
+| `project.info.name`              | `_info.name`              | Currently `_project.id`.                         |
+| `project.info.title`             | `_info.title`             | Currently `_project.title`.                      |
+| `project.info.description`       | `_info.description`       | Currently `_project.description`.                |
+| `project.info.created`           | `_info.created`           | Currently `_project.created`.                    |
+| `project.info.last_modified`     | `_info.last_modified`     | Currently `_project.last_modified`.              |
+| `project.rendering.chart_engine` | `_rendering.chart_engine` | Already matches.                                 |
+| `project.rendering.table_engine` | `_rendering.table_engine` | Already matches.                                 |
+| `project.verbosity.fit`          | `_verbosity.fit`          | Implemented direct fit-output verbosity mapping. |
 
 Alternative target if the project identity field should be called `id`
 rather than `name`:
@@ -253,15 +272,24 @@ repository can optimize them for API/persistence symmetry.
 ### `project.cif` Scopes Generic Categories
 
 `_info.title` is generic in isolation, but inside `project.cif` it reads
-as project information. This is similar to `_verbosity.level`: the file
-scope tells the reader this is project-level verbosity.
+as project information. This is similar to `_verbosity.fit`: the file
+scope tells the reader this is project-level verbosity, and the field
+name identifies the fitting-process coverage.
 
 ### The Current `Project` Root Already Matches User Language
 
 The current public root object is already `Project`. Keeping it avoids a
-user-facing `workspace.project.*` nesting and aligns with scientific
-workflows where a project is the container for structures, experiments,
-analysis, and saved files.
+broad user-facing root rename and aligns with scientific workflows where
+a project is the container for structures, experiments, analysis, and
+saved files.
+
+### `_project.*` Is More Semantic Than `_meta.*`
+
+The project-information category stores the scientific project identity,
+title, description, and timestamps. `_project.id` and `_project.title`
+say that directly, while `_meta.project_id` and `_meta.project_title`
+make the CIF less domain-oriented and repeat the concept in every item
+name.
 
 ### Scientific CIF/Domain Categories Should Stay Domain-Oriented
 
@@ -291,9 +319,9 @@ unless a separate ADR changes the underlying API pattern.
 - `_info.*` is less self-describing if copied out of `project.cif`.
 - Existing `_project.*` project files would need migration or a
   deliberate compatibility decision.
-- If verbosity is persisted, `project.verbosity` would either need to
-  become a category object or remain as a convenience alias for a new
-  `project.verbosity.level` field.
+- Persisted verbosity is now a category object. The initial field is
+  `project.verbosity.fit`, leaving room for future coverage-specific
+  verbosity fields.
 - Collapsing rendering to `project.rendering.engine` would simplify the
   API, but only if chart and table renderers are intended to share one
   backend choice.
@@ -302,13 +330,9 @@ unless a separate ADR changes the underlying API pattern.
 
 - Should the project identity remain `project.info.name`, or should it
   become `project.info.id` to mirror the saved identifier field?
-- Should project metadata move from `_project.*` to `_info.*`, or is
-  `_project.*` clearer even inside `project.cif`?
 - Should `project.rendering.chart_engine` and
   `project.rendering.table_engine` remain separate, or should the public
   API and CIF collapse to one `engine` field?
-- Should `_project.*` be accepted as a read-only legacy fallback when
-  loading older saved projects?
 - Should `project.verbosity = 'short'` remain as a convenience alias for
-  `project.verbosity.level = 'short'`, or should strict correspondence
+  `project.verbosity.fit = 'short'`, or should strict correspondence
   remove the alias?

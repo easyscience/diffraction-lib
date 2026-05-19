@@ -21,6 +21,50 @@ if TYPE_CHECKING:
     from easydiffraction.datablocks.structure.collection import Structures
 
 
+def _resolve_fit_result_message(results: FitResults) -> str:
+    """Return a normalized fit-result message."""
+    if results.message:
+        return results.message
+
+    raw_result = results.engine_result
+    message = getattr(raw_result, 'message', '')
+    return str(message) if message is not None else ''
+
+
+def _resolve_fit_result_iterations(results: FitResults) -> int:
+    """Return a normalized iteration or evaluation count."""
+    if results.iterations:
+        return int(results.iterations)
+
+    raw_result = results.engine_result
+    for attribute_name in ('nfev', 'nit', 'iterations', 'niter'):
+        value = getattr(raw_result, attribute_name, None)
+        if value is not None:
+            return int(value)
+    return 0
+
+
+def _resolve_fit_result_chi_square(results: FitResults) -> float | None:
+    """Return a normalized chi-square-like objective value."""
+    if results.chi_square is not None:
+        return float(results.chi_square)
+
+    raw_result = results.engine_result
+    chisqr = getattr(raw_result, 'chisqr', None)
+    if chisqr is not None:
+        return float(chisqr)
+
+    fun = getattr(raw_result, 'fun', None)
+    if fun is None:
+        return None
+
+    if np.isscalar(fun):
+        return float(fun)
+
+    fun_array = np.asarray(fun, dtype=float)
+    return float(np.sum(fun_array**2))
+
+
 class Fitter:
     """Handles the fitting workflow using a pluggable minimizer."""
 
@@ -29,6 +73,69 @@ class Fitter:
         self.engine: str = selection
         self.minimizer = MinimizerFactory.create(selection)
         self.results: FitResults | None = None
+
+    @staticmethod
+    def _collect_fit_parameters(
+        structures: Structures,
+        experiments: list[ExperimentBase],
+    ) -> list[Parameter]:
+        """Return free parameters from structures and experiments."""
+        expt_free_params: list[Parameter] = []
+        for expt in experiments:
+            expt_free_params.extend(
+                p
+                for p in expt.parameters
+                if isinstance(p, Parameter) and not p.user_constrained and p.free
+            )
+        return structures.free_parameters + expt_free_params
+
+    def _build_objective_function(
+        self,
+        *,
+        params: list[Parameter],
+        structures: Structures,
+        experiments: list[ExperimentBase],
+        weights: np.ndarray | None,
+        analysis: object,
+    ) -> object:
+        """Return the residual function for the current fit context."""
+
+        def objective_function(engine_params: dict[str, Any]) -> np.ndarray:
+            """Evaluate residuals for the current minimizer state."""
+            return self._residual_function(
+                engine_params=engine_params,
+                parameters=params,
+                structures=structures,
+                experiments=experiments,
+                weights=weights,
+                analysis=analysis,
+            )
+
+        return objective_function
+
+    def _postprocess_fit_results(
+        self,
+        *,
+        analysis: object,
+        experiments: list[ExperimentBase],
+        fitted_parameters: list[Parameter],
+    ) -> None:
+        """Populate result fields and persist fit projections."""
+        if self.results is None:
+            return
+
+        self.results.message = _resolve_fit_result_message(self.results)
+        self.results.iterations = _resolve_fit_result_iterations(self.results)
+        self.results.chi_square = _resolve_fit_result_chi_square(self.results)
+
+        if analysis is None:
+            return
+
+        analysis._store_fit_result_projection(
+            self.results,
+            experiments=experiments,
+            fitted_parameters=fitted_parameters,
+        )
 
     def fit(
         self,
@@ -76,53 +183,48 @@ class Fitter:
             structure._need_categories_update = True
             structure._update_categories()
 
-        expt_free_params: list[Parameter] = []
-        for expt in experiments:
-            expt_free_params.extend(
-                p
-                for p in expt.parameters
-                if isinstance(p, Parameter) and not p.user_constrained and p.free
-            )
-        params = structures.free_parameters + expt_free_params
+        params = self._collect_fit_parameters(structures, experiments)
 
         if not params:
+            if analysis is not None:
+                analysis._clear_persisted_fit_state()
+                analysis.fit_results = None
+            self.results = None
             print('⚠️ No parameters selected for fitting.')
             return
+
+        if analysis is not None:
+            analysis._capture_fit_parameter_state(params)
 
         for param in params:
             param._fit_start_value = param.value
 
-        def objective_function(engine_params: dict[str, Any]) -> np.ndarray:
-            """
-            Evaluate the residual for the current minimizer parameters.
-
-            Parameters
-            ----------
-            engine_params : dict[str, Any]
-                Parameter values provided by the minimizer engine.
-
-            Returns
-            -------
-            np.ndarray
-                Residual array passed back to the minimizer.
-            """
-            return self._residual_function(
-                engine_params=engine_params,
-                parameters=params,
-                structures=structures,
-                experiments=experiments,
-                weights=weights,
-                analysis=analysis,
-            )
-
-        # Perform fitting
-        self.results = self.minimizer.fit(
-            params,
-            objective_function,
-            verbosity=verbosity,
-            use_physical_limits=use_physical_limits,
-            random_seed=random_seed,
+        objective_function = self._build_objective_function(
+            params=params,
+            structures=structures,
+            experiments=experiments,
+            weights=weights,
+            analysis=analysis,
         )
+
+        try:
+            # Keep tracker finalization in this layer so post-processing
+            # can run before the live display is closed.
+            self.results = self.minimizer.fit(
+                params,
+                objective_function,
+                verbosity=verbosity,
+                finalize_tracking=False,
+                use_physical_limits=use_physical_limits,
+                random_seed=random_seed,
+            )
+            self._postprocess_fit_results(
+                analysis=analysis,
+                experiments=experiments,
+                fitted_parameters=params,
+            )
+        finally:
+            self.minimizer._stop_tracking()
 
     def _process_fit_results(
         self,
@@ -243,4 +345,7 @@ class Fitter:
             # Append the residuals for this experiment
             residuals.extend(diff)
 
-        return self.minimizer.tracker.track(np.array(residuals), parameters)
+        residual_array = np.array(residuals)
+        if getattr(self.minimizer, '_tracks_progress_via_solver_monitor', lambda: False)():
+            return residual_array
+        return self.minimizer.tracker.track(residual_array, parameters)

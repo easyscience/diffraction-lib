@@ -125,7 +125,7 @@ class Experiments(DatablockCollection):
         scattering_type : str | None, default=None
             Scattering type (e.g. ``'bragg'``).
         """
-        verbosity = self._parent.verbosity if self._parent is not None else None
+        verbosity = self._parent.verbosity.fit.value if self._parent is not None else None
         verb = VerbosityEnum(verbosity) if verbosity is not None else VerbosityEnum.FULL
         experiment = ExperimentFactory.from_scratch(
             name=name,

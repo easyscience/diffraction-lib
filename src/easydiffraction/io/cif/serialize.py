@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import textwrap
 from typing import TYPE_CHECKING
 from typing import Any
 
@@ -21,14 +22,14 @@ if TYPE_CHECKING:
     from easydiffraction.core.category import CategoryItem
     from easydiffraction.core.variable import GenericDescriptorBase
 
-# Maximum CIF description length before using semicolon-delimited block
-_CIF_DESCRIPTION_WRAP_LEN = 60
-
 # Minimum string length to check for surrounding quotes
 _MIN_QUOTED_LEN = 2
 
 # Number of significant digits kept for CIF uncertainty notation
 _CIF_UNCERTAINTY_SIG_DIGITS = 2
+
+# Maximum CIF description length before using semicolon-delimited block
+_CIF_DESCRIPTION_WRAP_LEN = 60
 
 
 def format_value(value: object) -> str:
@@ -51,9 +52,9 @@ def format_value(value: object) -> str:
     # Booleans use CIF true/false tokens
     elif isinstance(value, bool):
         value = 'true' if value else 'false'
-    # Convert ints to floats
-    elif isinstance(value, int):
-        value = float(value)
+    # Preserve integers as integers in CIF output
+    elif isinstance(value, (int, np.integer)):
+        value = str(int(value))
     # Empty strings → CIF unknown marker
     elif isinstance(value, str) and not value.strip():
         value = '?'
@@ -77,6 +78,13 @@ def _strip_optional_quotes(raw: str) -> str:
     """Return an unquoted CIF token when it is wrapped in quotes."""
     is_quoted = len(raw) >= _MIN_QUOTED_LEN and raw[0] == raw[-1] and raw[0] in {"'", '"'}
     return raw[1:-1] if is_quoted else raw
+
+
+def _strip_cif_text_field_delimiters(raw: str) -> str:
+    """Return CIF text-field content without delimiter lines."""
+    if raw.startswith(';\n') and raw.endswith('\n;'):
+        return raw[2:-2].strip()
+    return raw
 
 
 def _parse_bool_cif_value(raw: str) -> bool | str:
@@ -335,25 +343,38 @@ def datablock_collection_to_cif(collection: object) -> str:
     return '\n\n'.join([block.as_cif for block in collection.values()])
 
 
+def _format_project_description(description: str) -> str:
+    """Format project descriptions as CIF text."""
+    normalized_description = ' '.join(description.split())
+    if not normalized_description:
+        return '?'
+
+    if len(normalized_description) > _CIF_DESCRIPTION_WRAP_LEN:
+        wrapped_description = '\n'.join(
+            textwrap.wrap(
+                normalized_description,
+                width=_CIF_DESCRIPTION_WRAP_LEN,
+                break_long_words=False,
+                break_on_hyphens=False,
+            )
+        )
+        return f'\n;\n{wrapped_description}\n;'
+
+    return format_value(normalized_description)
+
+
 def project_info_to_cif(info: object) -> str:
     """Render ProjectInfo to CIF text (id, title, description)."""
     name = f'{info.name}'
 
     title = f'{info.title}'
     if ' ' in title:
-        title = f"'{title}'"
+        title = format_value(info.title)
 
-    if len(info.description) > _CIF_DESCRIPTION_WRAP_LEN:
-        description = f'\n;\n{info.description}\n;'
-    elif info.description:
-        description = f'{info.description}'
-        if ' ' in description:
-            description = f"'{description}'"
-    else:
-        description = '?'
+    description = _format_project_description(info.description)
 
-    created = f"'{info.created.strftime('%d %b %Y %H:%M:%S')}'"
-    last_modified = f"'{info.last_modified.strftime('%d %b %Y %H:%M:%S')}'"
+    created = format_value(info.created.strftime('%d %b %Y %H:%M:%S'))
+    last_modified = format_value(info.last_modified.strftime('%d %b %Y %H:%M:%S'))
 
     return (
         f'_project.id               {name}\n'
@@ -458,6 +479,13 @@ def _wrap_in_data_block(cif_text: str, block_name: str = '_') -> str:
     return f'data_{block_name}\n\n{cif_text}'
 
 
+def _project_block_from_cif_text(cif_text: str) -> gemmi.cif.Block:
+    """Parse project CIF text."""
+    import gemmi  # noqa: PLC0415
+
+    return gemmi.cif.read_string(_wrap_in_data_block(cif_text, 'project')).sole_block()
+
+
 def _populate_project_info_from_block(
     info: object,
     block: gemmi.cif.Block,
@@ -487,9 +515,7 @@ def project_info_from_cif(info: object, cif_text: str) -> None:
     """
     Populate a ProjectInfo instance from CIF text.
 
-    Reads ``_project.id``, ``_project.title``, and
-    ``_project.description`` from the given CIF string and sets them on
-    the *info* object.
+    Reads the core project metadata fields from CIF text.
 
     Parameters
     ----------
@@ -498,10 +524,7 @@ def project_info_from_cif(info: object, cif_text: str) -> None:
     cif_text : str
         CIF text content of ``project.cif``.
     """
-    import gemmi  # noqa: PLC0415
-
-    doc = gemmi.cif.read_string(_wrap_in_data_block(cif_text, 'project'))
-    block = doc.sole_block()
+    block = _project_block_from_cif_text(cif_text)
 
     _populate_project_info_from_block(info, block)
 
@@ -510,16 +533,17 @@ def project_config_from_cif(project: object, cif_text: str) -> None:
     """
     Populate project-level configuration from ``project.cif`` text.
     """
-    import gemmi  # noqa: PLC0415
-
-    doc = gemmi.cif.read_string(_wrap_in_data_block(cif_text, 'project'))
-    block = doc.sole_block()
+    block = _project_block_from_cif_text(cif_text)
 
     _populate_project_info_from_block(project.info, block)
 
     rendering = getattr(project, 'rendering', None)
     if rendering is not None:
         rendering.from_cif(block)
+
+    verbosity = getattr(project, 'verbosity', None)
+    if verbosity is not None:
+        verbosity.from_cif(block)
 
 
 def analysis_from_cif(analysis: object, cif_text: str) -> None:
@@ -555,6 +579,82 @@ def analysis_from_cif(analysis: object, cif_text: str) -> None:
     analysis.constraints.from_cif(block)
     if analysis.constraints._items:
         analysis.constraints.enable()
+
+    if _has_persisted_fit_state_sections(block):
+        _restore_persisted_fit_state(analysis, block)
+
+
+def _has_persisted_fit_state_sections(block: object) -> bool:
+    """Return True when any persisted fit-state section is present."""
+    scalar_tags = (
+        '_fit_result.result_kind',
+        '_deterministic_result.optimizer_name',
+        '_bayesian_result.sampler_name',
+        '_bayesian_sampler.steps',
+        '_bayesian_convergence.converged',
+    )
+    loop_tags = (
+        '_fit_parameter.param_unique_name',
+        '_fit_parameter_correlation.param_unique_name_i',
+        '_bayesian_parameter_posterior.unique_name',
+        '_bayesian_distribution_cache.param_unique_name',
+        '_bayesian_pair_cache.param_unique_name_x',
+        '_bayesian_predictive_dataset.experiment_name',
+    )
+
+    return any(_has_cif_value(block, tag) for tag in scalar_tags) or any(
+        _has_cif_loop(block, tag) for tag in loop_tags
+    )
+
+
+def _restore_common_fit_state(analysis: object, block: object) -> None:
+    """Restore fit-state categories shared by both fit kinds."""
+    analysis.fit_parameters.from_cif(block)
+    analysis.fit_result.from_cif(block)
+    analysis.fit_parameter_correlations.from_cif(block)
+
+
+def _restore_deterministic_fit_state(analysis: object, block: object) -> None:
+    """Restore deterministic-only persisted fit-state categories."""
+    analysis.deterministic_result.from_cif(block)
+
+
+def _restore_bayesian_fit_state(analysis: object, block: object) -> None:
+    """Restore Bayesian-only persisted fit-state categories."""
+    analysis.bayesian_result.from_cif(block)
+    analysis.bayesian_sampler.from_cif(block)
+    analysis.bayesian_convergence.from_cif(block)
+    analysis.bayesian_parameter_posteriors.from_cif(block)
+    analysis.bayesian_distribution_caches.from_cif(block)
+    analysis.bayesian_pair_caches.from_cif(block)
+    analysis.bayesian_predictive_datasets.from_cif(block)
+    analysis._sync_live_minimizer_from_persisted_fit_state()
+
+
+def _restore_persisted_fit_state(analysis: object, block: object) -> None:
+    """
+    Restore persisted fit-state categories after analysis configuration.
+    """
+    from easydiffraction.analysis.enums import FitResultKindEnum  # noqa: PLC0415
+
+    analysis._set_has_persisted_fit_state(value=True)
+    _restore_common_fit_state(analysis, block)
+
+    result_kind_value = analysis.fit_result.result_kind.value
+    try:
+        result_kind = FitResultKindEnum(result_kind_value)
+    except ValueError:
+        log.warning(
+            'Unsupported _fit_result.result_kind in analysis CIF: '
+            f'{result_kind_value!r}. Skipping kind-specific fit-state categories.',
+        )
+        return
+
+    if result_kind is FitResultKindEnum.DETERMINISTIC:
+        _restore_deterministic_fit_state(analysis, block)
+        return
+
+    _restore_bayesian_fit_state(analysis, block)
 
 
 def _collect_legacy_analysis_tags(block: object) -> list[str]:
@@ -687,10 +787,8 @@ def _make_cif_string_reader(block: gemmi.cif.Block) -> object:
         # CIF unknown / inapplicable markers
         if raw in {'?', '.'}:
             return None
-        # Strip surrounding quotes
-        if len(raw) >= _MIN_QUOTED_LEN and raw[0] == raw[-1] and raw[0] in {"'", '"'}:
-            raw = raw[1:-1]
-        return raw
+        raw = _strip_cif_text_field_delimiters(raw)
+        return _strip_optional_quotes(raw)
 
     return _read
 
@@ -747,33 +845,9 @@ def param_from_cif(
     if not found_values:
         return
 
-    # If found, pick the one at the given index
+    # If found, pick the one at the given index.
     raw = found_values[idx]
-
-    # CIF unknown / inapplicable markers → keep default
-    if raw in {'?', '.'}:
-        return
-
-    # If numeric, parse with uncertainty if present
-    if self._value_type == DataTypes.NUMERIC:
-        has_brackets = '(' in raw
-        u = str_to_ufloat(raw)
-        self.value = u.n
-        if has_brackets and hasattr(self, 'free'):
-            self.free = True  # type: ignore[attr-defined]
-            if not np.isnan(u.s) and hasattr(self, 'uncertainty'):
-                self.uncertainty = u.s  # type: ignore[attr-defined]
-
-    # If string, strip quotes if present
-    elif self._value_type == DataTypes.STRING:
-        self.value = _strip_optional_quotes(raw)
-
-    elif self._value_type == DataTypes.BOOL:
-        self.value = _parse_bool_cif_value(raw)
-
-    # Other types are not supported
-    else:
-        log.debug(f'Unrecognized type: {self._value_type}')
+    _set_param_from_raw_cif_value(self, raw)
 
 
 def category_item_from_cif(
@@ -803,11 +877,23 @@ def _set_param_from_raw_cif_value(
     raw : str
         The raw string from the CIF loop cell.
     """
+    raw = _strip_cif_text_field_delimiters(raw)
+
     # CIF unknown / inapplicable markers → keep default
     if raw in {'?', '.'}:
         return
 
-    if param._value_type == DataTypes.NUMERIC:
+    if param._value_type == DataTypes.INTEGER:
+        numeric_value = str_to_ufloat(raw).n
+        integer_value = round(numeric_value)
+        if not np.isclose(numeric_value, integer_value):
+            log.warning(
+                f'Ignoring non-integer CIF value {raw!r} for integer field {param.unique_name}.'
+            )
+            return
+        param.value = integer_value
+
+    elif param._value_type == DataTypes.NUMERIC:
         has_brackets = '(' in raw
         u = str_to_ufloat(raw)
         param.value = u.n

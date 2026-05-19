@@ -17,10 +17,6 @@ The tutorials are organized into the following categories:
 
 ## Getting Started
 
-- [LBCO `quick` `load`](ed-18.ipynb) – The most minimal example showing
-  how to load a previously saved project from a directory and run
-  refinement. Useful when a project has already been set up and saved in
-  a prior session.
 - [LBCO `quick` `code`](ed-2.ipynb) – A minimal example intended as a
   quick reference for users already familiar with the EasyDiffraction
   API or who want to see an example refinement when both the structure
@@ -41,6 +37,19 @@ The tutorials are organized into the following categories:
   full explanation of the workflow with detailed comments and
   descriptions of every step, making it suitable for users who are new
   to EasyDiffraction or those who prefer a more guided approach.
+
+## Load Project
+
+- [LBCO Single Fit](ed-18.ipynb) – The most minimal example showing how
+  to load a previously saved project from a directory and continue
+  working with it.
+- [Co2SiO4 Sequential Fit](ed-23.ipynb) – Resumes a sequential
+  refinement from an existing `analysis/results.csv` after an incomplete
+  previous run.
+- [LBCO Bayesian Display](ed-24.ipynb) – Shows how to load the saved
+  project after a Bayesian analysis and inspect the persisted fit
+  summary, correlation matrix, posterior plots, and predictive checks
+  without rerunning MCMC sampling.
 
 ## Powder Diffraction
 
@@ -89,9 +98,6 @@ The tutorials are organized into the following categories:
 - [Co2SiO4 Temperature scan](ed-17.ipynb) – Sequential Rietveld
   refinement of Co2SiO4 using constant wavelength neutron powder
   diffraction data from D20 at ILL across a temperature scan.
-- [Co2SiO4 Temperature scan, resumed](ed-23.ipynb) – Continue a saved
-  sequential refinement of Co2SiO4 from an existing
-  `analysis/results.csv` after an incomplete previous run.
 
 ## Simulated Data
 

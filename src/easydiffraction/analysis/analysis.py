@@ -4,13 +4,35 @@
 from __future__ import annotations
 
 from contextlib import suppress
+from itertools import combinations
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
 from easydiffraction.analysis.categories.aliases.factory import AliasesFactory
+from easydiffraction.analysis.categories.bayesian_convergence import BayesianConvergence
+from easydiffraction.analysis.categories.bayesian_distribution_caches import (
+    BayesianDistributionCaches,
+)
+from easydiffraction.analysis.categories.bayesian_pair_caches import BayesianPairCaches
+from easydiffraction.analysis.categories.bayesian_pair_caches.default import BayesianPairCachePaths
+from easydiffraction.analysis.categories.bayesian_parameter_posteriors import (
+    BayesianParameterPosteriors,
+)
+from easydiffraction.analysis.categories.bayesian_predictive_datasets import (
+    BayesianPredictiveDatasets,
+)
+from easydiffraction.analysis.categories.bayesian_predictive_datasets.default import (
+    BayesianPredictiveDatasetPaths,
+)
+from easydiffraction.analysis.categories.bayesian_result import BayesianResult
+from easydiffraction.analysis.categories.bayesian_sampler import BayesianSampler
 from easydiffraction.analysis.categories.constraints.factory import ConstraintsFactory
+from easydiffraction.analysis.categories.deterministic_result import DeterministicResult
+from easydiffraction.analysis.categories.fit_parameter_correlations import FitParameterCorrelations
+from easydiffraction.analysis.categories.fit_parameters import FitParameters
+from easydiffraction.analysis.categories.fit_result import FitResult
 from easydiffraction.analysis.categories.fitting import Fitting
 from easydiffraction.analysis.categories.fitting import FittingFactory
 from easydiffraction.analysis.categories.joint_fit import JointFitCollection
@@ -19,14 +41,23 @@ from easydiffraction.analysis.categories.sequential_fit import SequentialFitFact
 from easydiffraction.analysis.categories.sequential_fit_extract import (
     SequentialFitExtractCollection,
 )
+from easydiffraction.analysis.enums import FitCorrelationSourceEnum
 from easydiffraction.analysis.enums import FitModeEnum
+from easydiffraction.analysis.enums import FitResultKindEnum
+from easydiffraction.analysis.fit_helpers.bayesian import BayesianFitResults
+from easydiffraction.analysis.fit_helpers.bayesian import PosteriorParameterSummary
+from easydiffraction.analysis.fit_helpers.bayesian import PosteriorPredictiveSummary
+from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
+from easydiffraction.analysis.fit_helpers.reporting import FitResults
 from easydiffraction.analysis.fitting import Fitter
+from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.core.category_owner import CategoryOwner
 from easydiffraction.core.guard import _apply_help_filter
 from easydiffraction.core.singleton import ConstraintsHandler
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import Parameter
 from easydiffraction.core.variable import StringDescriptor
+from easydiffraction.datablocks.experiment.item.base import intensity_category_for
 from easydiffraction.display.progress import make_display_handle
 from easydiffraction.display.tables import TableRenderer
 from easydiffraction.io.cif.serialize import analysis_to_cif
@@ -40,6 +71,9 @@ from easydiffraction.utils.utils import render_object_help
 from easydiffraction.utils.utils import render_table
 
 _SUMMARY_HIDDEN_PARAMETER_CATEGORIES = frozenset({'pd_data', 'total_data', 'refln'})
+_POSTERIOR_SAMPLE_NDIM = 3
+_FLATTENED_POSTERIOR_SAMPLE_NDIM = 2
+_CREDIBLE_INTERVAL_LEVEL_COUNT = 2
 
 
 def _discover_property_rows(cls: type) -> list[list[str]]:
@@ -347,43 +381,7 @@ class AnalysisDisplay:
         self._analysis.show_as_cif()
 
 
-class Analysis(CategoryOwner):
-    """
-    High-level orchestration of analysis tasks for a Project.
-
-    This class wires calculators and minimizers, exposes a compact
-    interface for parameters, constraints and results, and coordinates
-    computations across the project's structures and experiments.
-    """
-
-    def __init__(self, project: object) -> None:
-        """
-        Create a new Analysis instance bound to a project.
-
-        Parameters
-        ----------
-        project : object
-            The project that owns models and experiments.
-        """
-        super().__init__()
-        self._project = project
-        self._aliases_type: str = AliasesFactory.default_tag()
-        self._aliases = AliasesFactory.create(self._aliases_type)
-        self._constraints_type: str = ConstraintsFactory.default_tag()
-        self._constraints = ConstraintsFactory.create(self._constraints_type)
-        self._constraints_handler = ConstraintsHandler.get()
-        self._fitting: Fitting = FittingFactory.create(FittingFactory.default_tag())
-        self._fitting_mode_type: FitModeEnum = FitModeEnum.default()
-        self._joint_fit: JointFitCollection = JointFitCollection()
-        self._sequential_fit: SequentialFit = SequentialFitFactory.create(
-            SequentialFitFactory.default_tag()
-        )
-        self._sequential_fit_extract = SequentialFitExtractCollection()
-        self._fitter = Fitter(self._fitting.minimizer_type.value)
-        self._fit_results = None
-        self._parameter_snapshots: dict[str, dict[str, dict]] = {}
-        self._display = AnalysisDisplay(self)
-
+class _AnalysisOwnerAccessorsMixin:
     @property
     def project(self) -> object:
         """Project that owns this analysis section."""
@@ -416,11 +414,424 @@ class Analysis(CategoryOwner):
     @property
     def fit_results(self) -> object | None:
         """Results from the most recent fit, if any."""
+        if self._fit_results is None and self._has_persisted_fit_state():
+            self._restore_fit_results_from_projection()
         return self._fit_results
 
     @fit_results.setter
     def fit_results(self, value: object | None) -> None:
         self._fit_results = value
+        self._fitter.results = value
+
+
+class _AnalysisPersistedCategoryAccessorsMixin:
+    @property
+    def fit_parameters(self) -> FitParameters:
+        """Persisted fit-parameter control snapshots."""
+        return self._fit_parameters
+
+    @property
+    def fit_result(self) -> FitResult:
+        """Persisted common fit-result status metadata."""
+        return self._fit_result
+
+    @property
+    def fit_parameter_correlations(self) -> FitParameterCorrelations:
+        """Persisted fit-parameter correlation summaries."""
+        return self._fit_parameter_correlations
+
+    @property
+    def deterministic_result(self) -> DeterministicResult:
+        """Persisted deterministic fit-result metadata."""
+        return self._deterministic_result
+
+    @property
+    def bayesian_result(self) -> BayesianResult:
+        """Persisted Bayesian fit-result metadata."""
+        return self._bayesian_result
+
+    @property
+    def bayesian_sampler(self) -> BayesianSampler:
+        """Persisted Bayesian sampler settings."""
+        return self._bayesian_sampler
+
+    @property
+    def bayesian_convergence(self) -> BayesianConvergence:
+        """Persisted Bayesian convergence diagnostics."""
+        return self._bayesian_convergence
+
+    @property
+    def bayesian_parameter_posteriors(self) -> BayesianParameterPosteriors:
+        """Persisted Bayesian parameter posterior summaries."""
+        return self._bayesian_parameter_posteriors
+
+    @property
+    def bayesian_distribution_caches(self) -> BayesianDistributionCaches:
+        """Persisted Bayesian distribution-cache manifests."""
+        return self._bayesian_distribution_caches
+
+    @property
+    def bayesian_pair_caches(self) -> BayesianPairCaches:
+        """Persisted Bayesian pair-cache manifests."""
+        return self._bayesian_pair_caches
+
+    @property
+    def bayesian_predictive_datasets(self) -> BayesianPredictiveDatasets:
+        """Persisted Bayesian predictive-dataset manifests."""
+        return self._bayesian_predictive_datasets
+
+
+class Analysis(
+    _AnalysisOwnerAccessorsMixin,
+    _AnalysisPersistedCategoryAccessorsMixin,
+    CategoryOwner,
+):
+    """
+    High-level orchestration of analysis tasks for a Project.
+
+    This class wires calculators and minimizers, exposes a compact
+    interface for parameters, constraints and results, and coordinates
+    computations across the project's structures and experiments.
+    """
+
+    def __init__(self, project: object) -> None:
+        """
+        Create a new Analysis instance bound to a project.
+
+        Parameters
+        ----------
+        project : object
+            The project that owns models and experiments.
+        """
+        super().__init__()
+        self._project = project
+        self._aliases_type: str = AliasesFactory.default_tag()
+        self._aliases = AliasesFactory.create(self._aliases_type)
+        self._constraints_type: str = ConstraintsFactory.default_tag()
+        self._constraints = ConstraintsFactory.create(self._constraints_type)
+        self._constraints_handler = ConstraintsHandler.get()
+        self._fitting: Fitting = FittingFactory.create(FittingFactory.default_tag())
+        self._fitting_mode_type: FitModeEnum = FitModeEnum.default()
+        self._joint_fit: JointFitCollection = JointFitCollection()
+        self._sequential_fit: SequentialFit = SequentialFitFactory.create(
+            SequentialFitFactory.default_tag()
+        )
+        self._sequential_fit_extract = SequentialFitExtractCollection()
+        self._fit_parameters = FitParameters()
+        self._fit_result = FitResult()
+        self._fit_parameter_correlations = FitParameterCorrelations()
+        self._deterministic_result = DeterministicResult()
+        self._bayesian_result = BayesianResult()
+        self._bayesian_sampler = BayesianSampler()
+        self._bayesian_convergence = BayesianConvergence()
+        self._bayesian_parameter_posteriors = BayesianParameterPosteriors()
+        self._bayesian_distribution_caches = BayesianDistributionCaches()
+        self._bayesian_pair_caches = BayesianPairCaches()
+        self._bayesian_predictive_datasets = BayesianPredictiveDatasets()
+        self._has_persisted_fit_state_data = False
+        self._persisted_fit_state_sidecar: dict[str, object] = {}
+        self._fitter = Fitter(self._fitting.minimizer_type.value)
+        self._fit_results = None
+        self._parameter_snapshots: dict[str, dict[str, dict]] = {}
+        self._display = AnalysisDisplay(self)
+
+    @staticmethod
+    def _predictive_cache_key(
+        experiment_name: str,
+        x_axis_name: str,
+        *,
+        include_draws: bool = True,
+    ) -> str:
+        """Return the runtime cache key for one predictive summary."""
+        key_suffix = 'draws' if include_draws else 'band'
+        return f'{experiment_name}:{x_axis_name}:{key_suffix}'
+
+    def _live_parameter_map(self) -> dict[str, Parameter]:
+        """Return live parameters keyed by unique name."""
+        all_parameters = self.project.structures.parameters + self.project.experiments.parameters
+        return {
+            param.unique_name: param
+            for param in all_parameters
+            if isinstance(param, Parameter) and hasattr(param, 'unique_name')
+        }
+
+    def _ordered_restored_parameter_names(self) -> list[str]:
+        """
+        Return persisted parameter names in display and array order.
+        """
+        if self.fit_result.result_kind.value == FitResultKindEnum.BAYESIAN.value:
+            posterior_rows = list(self.bayesian_parameter_posteriors)
+            if posterior_rows:
+                return [row.unique_name.value for row in posterior_rows]
+
+        return [row.param_unique_name.value for row in self.fit_parameters]
+
+    def _restore_live_parameter_state(self, param_map: dict[str, Parameter]) -> None:
+        """Restore saved fit metadata onto live parameter objects."""
+        for row in self.fit_parameters:
+            parameter = param_map.get(row.param_unique_name.value)
+            if parameter is None:
+                log.warning(
+                    'Persisted fit-state references unknown parameter '
+                    f'{row.param_unique_name.value!r}.'
+                )
+                continue
+
+            parameter.fit_min = row.fit_min.value
+            parameter.fit_max = row.fit_max.value
+            parameter._set_fit_bounds_uncertainty_multiplier(
+                row.fit_bounds_uncertainty_multiplier.value
+            )
+            parameter._fit_start_value = row.start_value.value
+            parameter._fit_start_uncertainty = row.start_uncertainty.value
+
+        for row in self.bayesian_parameter_posteriors:
+            parameter = param_map.get(row.unique_name.value)
+            if parameter is None or row.uncertainty.value is None:
+                continue
+            parameter.uncertainty = float(row.uncertainty.value)
+
+    def _sync_live_minimizer_from_persisted_fit_state(self) -> None:
+        """Apply saved sampler settings to the live minimizer."""
+        if not self._has_persisted_fit_state():
+            return
+
+        if self.fit_result.result_kind.value != FitResultKindEnum.BAYESIAN.value:
+            return
+
+        if self.fitting.minimizer_type.value != MinimizerTypeEnum.BUMPS_DREAM.value:
+            return
+
+        minimizer = self.fitting.minimizer
+        if minimizer is None:
+            return
+
+        steps = int(self.bayesian_sampler.steps.value)
+        if steps <= 0:
+            return
+
+        minimizer.steps = steps
+        minimizer.burn = int(self.bayesian_sampler.burn.value)
+
+        thin = int(self.bayesian_sampler.thin.value)
+        if thin > 0:
+            minimizer.thin = thin
+
+        pop = int(self.bayesian_sampler.pop.value)
+        if pop > 0:
+            minimizer.pop = pop
+
+        minimizer.parallel = int(self.bayesian_sampler.parallel.value)
+
+        init_value = str(self.bayesian_sampler.init.value)
+        if init_value:
+            minimizer.init = init_value
+
+    def _restored_fit_parameters(self, param_map: dict[str, Parameter]) -> list[Parameter]:
+        """Return live parameters in the persisted fit-result order."""
+        restored_parameters: list[Parameter] = []
+        for unique_name in self._ordered_restored_parameter_names():
+            parameter = param_map.get(unique_name)
+            if parameter is not None:
+                restored_parameters.append(parameter)
+        return restored_parameters
+
+    def _restored_posterior_samples(self) -> PosteriorSamples | None:
+        """Return restored posterior samples from the HDF5 sidecar."""
+        if not self.bayesian_result.has_posterior_samples.value:
+            return None
+
+        posterior_data = self._persisted_fit_state_sidecar.get('posterior', {})
+        parameter_samples = posterior_data.get('parameter_samples')
+        if parameter_samples is None:
+            return None
+
+        posterior_rows = list(self.bayesian_parameter_posteriors)
+        parameter_names = [row.unique_name.value for row in posterior_rows]
+        if not parameter_names:
+            parameter_names = [row.param_unique_name.value for row in self.fit_parameters]
+
+        parameter_sample_array = np.asarray(parameter_samples, dtype=float)
+        if parameter_sample_array.ndim != _POSTERIOR_SAMPLE_NDIM:
+            log.warning('Persisted posterior samples have an invalid shape for restore.')
+            return None
+        if parameter_sample_array.shape[2] != len(parameter_names):
+            log.warning(
+                'Persisted posterior samples do not match restored posterior parameter names.'
+            )
+            return None
+
+        log_posterior = posterior_data.get('log_posterior')
+        draw_index = posterior_data.get('draw_index')
+        return PosteriorSamples(
+            parameter_names=parameter_names,
+            parameter_samples=parameter_sample_array,
+            log_posterior=(
+                None if log_posterior is None else np.asarray(log_posterior, dtype=float)
+            ),
+            draw_index=None if draw_index is None else np.asarray(draw_index),
+        )
+
+    def _restored_posterior_summaries(self) -> list[PosteriorParameterSummary]:
+        """Return posterior summary rows as runtime summary objects."""
+        return [
+            PosteriorParameterSummary(
+                unique_name=row.unique_name.value,
+                display_name=row.display_name.value,
+                best_sample_value=float(row.best_sample_value.value),
+                median=float(row.median.value),
+                standard_deviation=float(row.uncertainty.value),
+                interval_68=(
+                    float(row.interval_68_lower.value),
+                    float(row.interval_68_upper.value),
+                ),
+                interval_95=(
+                    float(row.interval_95_lower.value),
+                    float(row.interval_95_upper.value),
+                ),
+                ess_bulk=row.ess_bulk.value,
+                r_hat=row.r_hat.value,
+            )
+            for row in self.bayesian_parameter_posteriors
+        ]
+
+    def _restored_predictive_summaries(self) -> dict[str, PosteriorPredictiveSummary]:
+        """Return restored predictive summaries for runtime reuse."""
+        restored_predictive: dict[str, PosteriorPredictiveSummary] = {}
+        predictive_data = self._persisted_fit_state_sidecar.get('predictive_datasets', {})
+        for row in self.bayesian_predictive_datasets:
+            experiment_name = str(row.experiment_name.value)
+            x_axis_name = str(row.x_axis_name.value)
+            dataset = predictive_data.get(experiment_name)
+            if dataset is None:
+                continue
+
+            summary = PosteriorPredictiveSummary(
+                experiment_name=experiment_name,
+                x_axis_name=x_axis_name,
+                x=np.asarray(dataset['x'], dtype=float),
+                best_sample_prediction=np.asarray(
+                    dataset['best_sample_prediction'],
+                    dtype=float,
+                ),
+                lower_95=(
+                    None
+                    if dataset.get('lower_95') is None
+                    else np.asarray(dataset['lower_95'], dtype=float)
+                ),
+                upper_95=(
+                    None
+                    if dataset.get('upper_95') is None
+                    else np.asarray(dataset['upper_95'], dtype=float)
+                ),
+                lower_68=(
+                    None
+                    if dataset.get('lower_68') is None
+                    else np.asarray(dataset['lower_68'], dtype=float)
+                ),
+                upper_68=(
+                    None
+                    if dataset.get('upper_68') is None
+                    else np.asarray(dataset['upper_68'], dtype=float)
+                ),
+                draws=(
+                    None
+                    if dataset.get('draws') is None
+                    else np.asarray(dataset['draws'], dtype=float)
+                ),
+            )
+            restored_predictive[experiment_name] = summary
+            restored_predictive[
+                self._predictive_cache_key(
+                    experiment_name,
+                    x_axis_name,
+                    include_draws=False,
+                )
+            ] = summary
+            if summary.draws is not None:
+                restored_predictive[
+                    self._predictive_cache_key(
+                        experiment_name,
+                        x_axis_name,
+                        include_draws=True,
+                    )
+                ] = summary
+        return restored_predictive
+
+    def _restore_fit_results_from_projection(self) -> object | None:
+        """Rebuild a runtime fit-result object from saved state."""
+        if not self._has_persisted_fit_state():
+            return None
+
+        param_map = self._live_parameter_map()
+        self._restore_live_parameter_state(param_map)
+        restored_parameters = self._restored_fit_parameters(param_map)
+        fitting_time = self.fit_result.fitting_time.value
+        reduced_chi_square = self.fit_result.reduced_chi_square.value
+
+        if self.fit_result.result_kind.value == FitResultKindEnum.BAYESIAN.value:
+            restored_results = BayesianFitResults(
+                success=bool(self.fit_result.success.value),
+                parameters=restored_parameters,
+                reduced_chi_square=reduced_chi_square,
+                starting_parameters=list(restored_parameters),
+                fitting_time=fitting_time,
+                sampler_name=self.bayesian_result.sampler_name.value,
+                point_estimate_name=self.bayesian_result.point_estimate_name.value,
+                posterior_samples=self._restored_posterior_samples(),
+                posterior_parameter_summaries=self._restored_posterior_summaries(),
+                posterior_predictive=self._restored_predictive_summaries(),
+                credible_interval_levels=(
+                    float(self.bayesian_result.credible_interval_inner.value),
+                    float(self.bayesian_result.credible_interval_outer.value),
+                ),
+                sampler_settings={
+                    'steps': int(self.bayesian_sampler.steps.value),
+                    'burn': int(self.bayesian_sampler.burn.value),
+                    'thin': int(self.bayesian_sampler.thin.value),
+                    'pop': int(self.bayesian_sampler.pop.value),
+                    'parallel': int(self.bayesian_sampler.parallel.value),
+                    'init': self.bayesian_sampler.init.value,
+                    'random_seed': self.bayesian_sampler.random_seed.value,
+                },
+                convergence_diagnostics={
+                    'converged': bool(self.bayesian_convergence.converged.value),
+                    'max_r_hat': self.bayesian_convergence.max_r_hat.value,
+                    'min_ess_bulk': self.bayesian_convergence.min_ess_bulk.value,
+                    'n_draws': int(self.bayesian_convergence.n_draws.value),
+                    'n_chains': int(self.bayesian_convergence.n_chains.value),
+                    'n_parameters': int(self.bayesian_convergence.n_parameters.value),
+                },
+                sampler_completed=bool(self.bayesian_result.sampler_completed.value),
+                best_log_posterior=self.bayesian_result.best_log_posterior.value,
+            )
+            restored_results.message = self.fit_result.message.value
+            restored_results.iterations = int(self.fit_result.iterations.value)
+            self.fit_results = restored_results
+            return restored_results
+
+        restored_results = FitResults(
+            success=bool(self.fit_result.success.value),
+            parameters=restored_parameters,
+            reduced_chi_square=reduced_chi_square,
+            starting_parameters=list(restored_parameters),
+            fitting_time=fitting_time,
+            optimizer_name=self.deterministic_result.optimizer_name.value,
+            method_name=self.deterministic_result.method_name.value,
+            objective_name=self.deterministic_result.objective_name.value,
+            objective_value=self.deterministic_result.objective_value.value,
+            n_data_points=int(self.deterministic_result.n_data_points.value),
+            n_parameters=int(self.deterministic_result.n_parameters.value),
+            n_free_parameters=int(self.deterministic_result.n_free_parameters.value),
+            degrees_of_freedom=int(self.deterministic_result.degrees_of_freedom.value),
+            covariance_available=bool(self.deterministic_result.covariance_available.value),
+            correlation_available=bool(self.deterministic_result.correlation_available.value),
+        )
+        restored_results.message = self.fit_result.message.value
+        restored_results.iterations = int(self.fit_result.iterations.value)
+        restored_results.chi_square = self.deterministic_result.objective_value.value
+        self.fit_results = restored_results
+        return restored_results
 
     def help(self) -> None:
         """Print a summary of analysis properties and methods."""
@@ -501,6 +912,9 @@ class Analysis(CategoryOwner):
                 self.sequential_fit,
                 self.sequential_fit_extract,
             ])
+
+        if self._has_persisted_fit_state():
+            categories.extend(self._fit_state_categories())
 
         return categories
 
@@ -684,6 +1098,659 @@ class Analysis(CategoryOwner):
         """Persisted extract rules for sequential fitting."""
         return self._sequential_fit_extract
 
+    def _has_persisted_fit_state(self) -> bool:
+        """
+        Return whether a persisted fit-state projection is present.
+        """
+        return self._has_persisted_fit_state_data
+
+    def _set_has_persisted_fit_state(self, *, value: bool) -> None:
+        """Set the persisted fit-state presence flag."""
+        self._has_persisted_fit_state_data = value
+
+    def _fit_state_categories(self) -> list[object]:
+        """Return fit-state categories for the current result kind."""
+        categories: list[object] = [
+            self.fit_parameters,
+            self.fit_result,
+            self.fit_parameter_correlations,
+        ]
+
+        try:
+            result_kind = FitResultKindEnum(self.fit_result.result_kind.value)
+        except ValueError:
+            log.warning(
+                'Unsupported fit_result.result_kind while serializing analysis CIF: '
+                f'{self.fit_result.result_kind.value!r}. '
+                'Saving only common fit-state categories.',
+            )
+            return categories
+
+        if result_kind is FitResultKindEnum.DETERMINISTIC:
+            categories.append(self.deterministic_result)
+            return categories
+
+        categories.extend([
+            self.bayesian_result,
+            self.bayesian_sampler,
+            self.bayesian_convergence,
+            self.bayesian_parameter_posteriors,
+            self.bayesian_distribution_caches,
+            self.bayesian_pair_caches,
+            self.bayesian_predictive_datasets,
+        ])
+        return categories
+
+    def _clear_persisted_fit_state(self) -> None:
+        """Reset all persisted fit-state categories before a new fit."""
+        self._fit_parameters = FitParameters()
+        self._fit_result = FitResult()
+        self._fit_parameter_correlations = FitParameterCorrelations()
+        self._deterministic_result = DeterministicResult()
+        self._bayesian_result = BayesianResult()
+        self._bayesian_sampler = BayesianSampler()
+        self._bayesian_convergence = BayesianConvergence()
+        self._bayesian_parameter_posteriors = BayesianParameterPosteriors()
+        self._bayesian_distribution_caches = BayesianDistributionCaches()
+        self._bayesian_pair_caches = BayesianPairCaches()
+        self._bayesian_predictive_datasets = BayesianPredictiveDatasets()
+        self._set_has_persisted_fit_state(value=False)
+        self._persisted_fit_state_sidecar = {}
+
+    def _capture_fit_parameter_state(self, parameters: list[Parameter]) -> None:
+        """Capture pre-fit parameter state."""
+        self._clear_persisted_fit_state()
+
+        for param in parameters:
+            self.fit_parameters.create(
+                param_unique_name=param.unique_name,
+                fit_min=param.fit_min,
+                fit_max=param.fit_max,
+                fit_bounds_uncertainty_multiplier=param.fit_bounds_uncertainty_multiplier,
+                start_value=param.value,
+                start_uncertainty=param.uncertainty,
+            )
+
+        self._set_has_persisted_fit_state(value=True)
+
+    def _selected_parameters_for_fit(self, experiments: list[object]) -> list[Parameter]:
+        """
+        Return unique live parameters involved in the current fit slice.
+        """
+        selected_parameters: list[Parameter] = []
+        seen_unique_names: set[str] = set()
+
+        for param in self.project.structures.parameters:
+            if not isinstance(param, Parameter):
+                continue
+            if param.unique_name in seen_unique_names:
+                continue
+            selected_parameters.append(param)
+            seen_unique_names.add(param.unique_name)
+
+        for experiment in experiments:
+            for param in experiment.parameters:
+                if not isinstance(param, Parameter):
+                    continue
+                if param.unique_name in seen_unique_names:
+                    continue
+                selected_parameters.append(param)
+                seen_unique_names.add(param.unique_name)
+
+        return selected_parameters
+
+    @staticmethod
+    def _fit_data_point_count(experiments: list[object]) -> int:
+        """Return observed data-point count for one fit slice."""
+        total = 0
+        for experiment in experiments:
+            intensity_category = intensity_category_for(experiment)
+            total += int(np.asarray(intensity_category.intensity_meas).size)
+        return total
+
+    @staticmethod
+    def _resolve_covariance_matrix(results: FitResults) -> np.ndarray | None:
+        """
+        Return a covariance matrix when the raw fit result exposes one.
+        """
+        raw_result = results.engine_result
+        for attribute_name in ('covar', 'covariance_matrix'):
+            covariance = getattr(raw_result, attribute_name, None)
+            if covariance is None:
+                continue
+
+            covariance_array = np.asarray(covariance, dtype=float)
+            if covariance_array.ndim != _FLATTENED_POSTERIOR_SAMPLE_NDIM:
+                continue
+            if covariance_array.shape[0] != covariance_array.shape[1]:
+                continue
+            return covariance_array
+
+        return None
+
+    @staticmethod
+    def _correlation_matrix_from_covariance(covariance: np.ndarray) -> np.ndarray | None:
+        """
+        Return a correlation matrix derived from a covariance matrix.
+        """
+        diagonal = np.diag(covariance)
+        if np.any(diagonal <= 0):
+            return None
+
+        scales = np.sqrt(diagonal)
+        denominator = np.outer(scales, scales)
+        with np.errstate(invalid='ignore', divide='ignore'):
+            correlation = covariance / denominator
+
+        if not np.all(np.isfinite(correlation)):
+            return None
+        return correlation
+
+    @staticmethod
+    def _resolve_objective_value(results: FitResults) -> float | None:
+        """Return the objective value stored for a fit result."""
+        if results.chi_square is None:
+            return None
+        return float(results.chi_square)
+
+    def _store_common_fit_result_projection(
+        self,
+        results: FitResults,
+        *,
+        result_kind: FitResultKindEnum,
+    ) -> None:
+        """
+        Store fields shared by deterministic and Bayesian fit results.
+        """
+        self.fit_result._set_result_kind(result_kind.value)
+        self.fit_result._set_success(value=results.success)
+        self.fit_result._set_message(results.message)
+        self.fit_result._set_iterations(results.iterations)
+        self.fit_result._set_fitting_time(results.fitting_time)
+        self.fit_result._set_reduced_chi_square(results.reduced_chi_square)
+        self._set_has_persisted_fit_state(value=True)
+
+    def _store_correlation_projection(
+        self,
+        *,
+        unique_names: list[str],
+        correlation_matrix: np.ndarray,
+        source_kind: FitCorrelationSourceEnum,
+    ) -> None:
+        """Store upper-triangle correlations from one matrix."""
+        if len(unique_names) <= 1:
+            return
+        if correlation_matrix.shape != (len(unique_names), len(unique_names)):
+            return
+
+        for row_index, unique_name_i in enumerate(unique_names[:-1]):
+            for column_index in range(row_index + 1, len(unique_names)):
+                correlation = correlation_matrix[row_index, column_index]
+                if not np.isfinite(correlation):
+                    continue
+                self.fit_parameter_correlations.create(
+                    source_kind=source_kind.value,
+                    param_unique_name_i=unique_name_i,
+                    param_unique_name_j=unique_names[column_index],
+                    correlation=float(np.clip(correlation, -1.0, 1.0)),
+                )
+
+    def _store_deterministic_result_projection(
+        self,
+        results: FitResults,
+        *,
+        experiments: list[object],
+        fitted_parameters: list[Parameter],
+    ) -> None:
+        """Store deterministic fit results in persisted categories."""
+        selected_parameters = self._selected_parameters_for_fit(experiments)
+        n_parameters = len(selected_parameters)
+        n_free_parameters = len(fitted_parameters)
+        n_data_points = self._fit_data_point_count(experiments)
+        degrees_of_freedom = max(n_data_points - n_free_parameters, 0)
+        covariance = self._resolve_covariance_matrix(results)
+        correlation_matrix = (
+            self._correlation_matrix_from_covariance(covariance)
+            if covariance is not None
+            else None
+        )
+
+        self.deterministic_result._set_optimizer_name(
+            str(self.fitter.minimizer.name or self.fitter.selection)
+        )
+        self.deterministic_result._set_method_name(str(self.fitter.minimizer.method or ''))
+        self.deterministic_result._set_objective_name('chi_square')
+        self.deterministic_result._set_objective_value(self._resolve_objective_value(results))
+        self.deterministic_result._set_n_data_points(n_data_points)
+        self.deterministic_result._set_n_parameters(n_parameters)
+        self.deterministic_result._set_n_free_parameters(n_free_parameters)
+        self.deterministic_result._set_degrees_of_freedom(degrees_of_freedom)
+        self.deterministic_result._set_covariance_available(value=covariance is not None)
+        self.deterministic_result._set_correlation_available(value=correlation_matrix is not None)
+
+        if correlation_matrix is not None:
+            self._store_correlation_projection(
+                unique_names=[param.unique_name for param in fitted_parameters],
+                correlation_matrix=correlation_matrix,
+                source_kind=FitCorrelationSourceEnum.DETERMINISTIC,
+            )
+
+    def _store_bayesian_distribution_cache_projection(
+        self,
+        *,
+        plotter: object,
+        results: BayesianFitResults,
+        flattened_samples: np.ndarray,
+        parameter_names: list[str],
+    ) -> dict[str, dict[str, np.ndarray]]:
+        """
+        Store cached posterior density curves into persisted manifests.
+        """
+        payload: dict[str, dict[str, np.ndarray]] = {}
+        for parameter_index, parameter_name in enumerate(parameter_names):
+            lower_bound, upper_bound = plotter._posterior_parameter_bounds(
+                fit_results=results,
+                parameter_name=parameter_name,
+            )
+            density_curve = plotter._posterior_density_curve(
+                flattened_samples[:, parameter_index],
+                lower_bound=lower_bound,
+                upper_bound=upper_bound,
+            )
+            if density_curve is None:
+                continue
+
+            x_values, density_values = density_curve
+            x_array = np.asarray(x_values, dtype=float)
+            density_array = np.asarray(density_values, dtype=float)
+            cache_index = len(payload)
+            self.bayesian_distribution_caches.create(
+                param_unique_name=parameter_name,
+                x_path=f'/posterior/distribution/{cache_index}/x',
+                density_path=f'/posterior/distribution/{cache_index}/density',
+                n_grid=float(x_array.size),
+                n_draws_cached=float(np.isfinite(flattened_samples[:, parameter_index]).sum()),
+            )
+            payload[parameter_name] = {
+                'x': x_array,
+                'density': density_array,
+            }
+        return payload
+
+    @staticmethod
+    def _posterior_pair_contour_levels(density: np.ndarray) -> np.ndarray:
+        """Return default contour levels for one cached pair."""
+        density_max = float(np.max(density))
+        if not np.isfinite(density_max) or density_max <= 0:
+            return np.asarray([], dtype=float)
+        return density_max * np.asarray([0.20, 0.35, 0.50, 0.65, 0.80, 0.95], dtype=float)
+
+    @staticmethod
+    def _ordered_pair_metadata(
+        parameter_names: list[str],
+        first_index: int,
+        second_index: int,
+    ) -> tuple[int, int, str, str]:
+        """Return ordered pair indices and parameter names."""
+        x_index = first_index
+        y_index = second_index
+        x_name = parameter_names[x_index]
+        y_name = parameter_names[y_index]
+        if x_name > y_name:
+            x_index, y_index = y_index, x_index
+            x_name, y_name = y_name, x_name
+        return x_index, y_index, x_name, y_name
+
+    def _store_one_bayesian_pair_cache_projection(
+        self,
+        *,
+        plotter: object,
+        results: BayesianFitResults,
+        density_samples: np.ndarray,
+        pair_metadata: tuple[int, int, str, str],
+        contour_grid_size: int,
+        pair_id: str,
+    ) -> tuple[str, dict[str, np.ndarray]] | None:
+        """Store one cached pair surface and return its payload."""
+        x_index, y_index, x_name, y_name = pair_metadata
+
+        x_values = density_samples[:, x_index]
+        y_values = density_samples[:, y_index]
+        x_bounds, y_bounds = plotter._posterior_pair_bounds(
+            fit_results=results,
+            x_parameter_name=x_name,
+            y_parameter_name=y_name,
+            x_values=x_values,
+            y_values=y_values,
+        )
+        density_surface = plotter._posterior_pair_density_surface(
+            x_values=x_values,
+            y_values=y_values,
+            x_bounds=x_bounds,
+            y_bounds=y_bounds,
+            grid_size=contour_grid_size,
+        )
+        if density_surface is None:
+            return None
+
+        x_grid_array = np.asarray(density_surface[0], dtype=float)
+        y_grid_array = np.asarray(density_surface[1], dtype=float)
+        density_array = np.asarray(density_surface[2], dtype=float)
+        contour_levels = self._posterior_pair_contour_levels(density_array)
+        self.bayesian_pair_caches.create(
+            id=pair_id,
+            parameter_names=(x_name, y_name),
+            paths=BayesianPairCachePaths(
+                x_path=f'/posterior/pairs/{pair_id}/x',
+                y_path=f'/posterior/pairs/{pair_id}/y',
+                density_path=f'/posterior/pairs/{pair_id}/density',
+                contour_level_path=f'/posterior/pairs/{pair_id}/contour_levels',
+            ),
+            grid_shape=(float(x_grid_array.size), float(y_grid_array.size)),
+            n_draws_cached=float(density_samples.shape[0]),
+        )
+        return pair_id, {
+            'x': x_grid_array,
+            'y': y_grid_array,
+            'density': density_array,
+            'contour_levels': contour_levels,
+        }
+
+    def _store_bayesian_pair_cache_projection(
+        self,
+        *,
+        plotter: object,
+        results: BayesianFitResults,
+        flattened_samples: np.ndarray,
+        parameter_names: list[str],
+    ) -> dict[str, dict[str, np.ndarray]]:
+        """Store cached pair-density surfaces in manifests."""
+        n_parameters = len(parameter_names)
+        if n_parameters <= 1:
+            return {}
+
+        density_samples = plotter._thin_posterior_samples(
+            flattened_samples,
+            max_points=plotter._posterior_pair_density_max_points(n_parameters),
+        )
+        contour_grid_size = plotter._posterior_pair_contour_grid_size(n_parameters)
+        payload: dict[str, dict[str, np.ndarray]] = {}
+        for first_index, second_index in combinations(range(n_parameters), 2):
+            pair_id = str(len(payload) + 1)
+            cache_projection = self._store_one_bayesian_pair_cache_projection(
+                plotter=plotter,
+                results=results,
+                density_samples=density_samples,
+                pair_metadata=self._ordered_pair_metadata(
+                    parameter_names,
+                    first_index,
+                    second_index,
+                ),
+                contour_grid_size=contour_grid_size,
+                pair_id=pair_id,
+            )
+            if cache_projection is None:
+                continue
+
+            pair_id, pair_payload = cache_projection
+            payload[pair_id] = pair_payload
+        return payload
+
+    @staticmethod
+    def _predictive_dataset_payload(
+        summary: PosteriorPredictiveSummary,
+    ) -> dict[str, np.ndarray]:
+        """Return persisted predictive arrays for one summary."""
+        payload: dict[str, np.ndarray] = {
+            'x': np.asarray(summary.x, dtype=float),
+            'best_sample_prediction': np.asarray(summary.best_sample_prediction, dtype=float),
+        }
+        if summary.lower_95 is not None:
+            payload['lower_95'] = np.asarray(summary.lower_95, dtype=float)
+        if summary.upper_95 is not None:
+            payload['upper_95'] = np.asarray(summary.upper_95, dtype=float)
+        if summary.lower_68 is not None:
+            payload['lower_68'] = np.asarray(summary.lower_68, dtype=float)
+        if summary.upper_68 is not None:
+            payload['upper_68'] = np.asarray(summary.upper_68, dtype=float)
+        if summary.draws is not None:
+            payload['draws'] = np.asarray(summary.draws, dtype=float)
+        return payload
+
+    def _store_bayesian_predictive_projection(
+        self,
+        *,
+        plotter: object,
+        results: BayesianFitResults,
+    ) -> dict[str, dict[str, np.ndarray]]:
+        """
+        Store posterior predictive summaries into persisted manifests.
+        """
+        predictive_payload: dict[str, dict[str, np.ndarray]] = {}
+        for experiment_name in self.project.experiments.names:
+            experiment = self.project.experiments[experiment_name]
+            x_axis, x_axis_name, _, _, _ = plotter._resolve_x_axis(experiment.type, None)
+            summary = plotter._build_posterior_predictive_summary(
+                fit_results=results,
+                experiment=experiment,
+                expt_name=experiment_name,
+                x_axis=x_axis,
+                include_draws=False,
+            )
+            if summary is None:
+                continue
+
+            results.posterior_predictive[summary.experiment_name] = summary
+            results.posterior_predictive[
+                self._predictive_cache_key(
+                    summary.experiment_name,
+                    str(x_axis_name),
+                    include_draws=False,
+                )
+            ] = summary
+            predictive_payload[summary.experiment_name] = self._predictive_dataset_payload(
+                summary,
+            )
+            predictive_root = f'/predictive/{summary.experiment_name}'
+            self.bayesian_predictive_datasets.create(
+                experiment_name=summary.experiment_name,
+                x_axis_name=str(x_axis_name),
+                paths=BayesianPredictiveDatasetPaths(
+                    x_path=f'{predictive_root}/x',
+                    best_sample_prediction_path=(f'{predictive_root}/best_sample_prediction'),
+                    lower_95_path=(
+                        None if summary.lower_95 is None else f'{predictive_root}/lower_95'
+                    ),
+                    upper_95_path=(
+                        None if summary.upper_95 is None else f'{predictive_root}/upper_95'
+                    ),
+                    lower_68_path=(
+                        None if summary.lower_68 is None else f'{predictive_root}/lower_68'
+                    ),
+                    upper_68_path=(
+                        None if summary.upper_68 is None else f'{predictive_root}/upper_68'
+                    ),
+                    draws_path=(None if summary.draws is None else f'{predictive_root}/draws'),
+                ),
+                n_x=float(np.asarray(summary.x).size),
+                n_draws_cached=(
+                    0.0 if summary.draws is None else float(np.asarray(summary.draws).shape[0])
+                ),
+            )
+        return predictive_payload
+
+    def _store_bayesian_plot_cache_projection(self, results: BayesianFitResults) -> None:
+        """Populate persisted Bayesian plot caches."""
+        posterior_samples = results.posterior_samples
+        if posterior_samples is None:
+            self._persisted_fit_state_sidecar['distribution_caches'] = {}
+            self._persisted_fit_state_sidecar['pair_caches'] = {}
+            self._persisted_fit_state_sidecar['predictive_datasets'] = {}
+            self.bayesian_result._set_has_distribution_cache(value=False)
+            self.bayesian_result._set_has_pair_cache(value=False)
+            self.bayesian_result._set_has_posterior_predictive(value=False)
+            return
+
+        flattened_samples = np.asarray(posterior_samples.flattened(), dtype=float)
+        parameter_names = list(posterior_samples.parameter_names)
+        if (
+            flattened_samples.ndim != _FLATTENED_POSTERIOR_SAMPLE_NDIM
+            or not parameter_names
+            or flattened_samples.shape[1] != len(parameter_names)
+        ):
+            self._persisted_fit_state_sidecar['distribution_caches'] = {}
+            self._persisted_fit_state_sidecar['pair_caches'] = {}
+            self._persisted_fit_state_sidecar['predictive_datasets'] = {}
+            self.bayesian_result._set_has_distribution_cache(value=False)
+            self.bayesian_result._set_has_pair_cache(value=False)
+            self.bayesian_result._set_has_posterior_predictive(value=False)
+            return
+
+        plotter = self.project.rendering.plotter
+        distribution_payload = self._store_bayesian_distribution_cache_projection(
+            plotter=plotter,
+            results=results,
+            flattened_samples=flattened_samples,
+            parameter_names=parameter_names,
+        )
+        pair_payload = self._store_bayesian_pair_cache_projection(
+            plotter=plotter,
+            results=results,
+            flattened_samples=flattened_samples,
+            parameter_names=parameter_names,
+        )
+        predictive_payload = self._store_bayesian_predictive_projection(
+            plotter=plotter,
+            results=results,
+        )
+
+        self._persisted_fit_state_sidecar['distribution_caches'] = distribution_payload
+        self._persisted_fit_state_sidecar['pair_caches'] = pair_payload
+        self._persisted_fit_state_sidecar['predictive_datasets'] = predictive_payload
+        self.bayesian_result._set_has_distribution_cache(value=bool(distribution_payload))
+        self.bayesian_result._set_has_pair_cache(value=bool(pair_payload))
+        self.bayesian_result._set_has_posterior_predictive(value=bool(predictive_payload))
+
+    def _store_bayesian_posterior_sidecar_projection(
+        self,
+        results: BayesianFitResults,
+    ) -> None:
+        """Persist posterior arrays while live samples exist."""
+        posterior_samples = results.posterior_samples
+        if posterior_samples is None:
+            self._persisted_fit_state_sidecar['posterior'] = {}
+            return
+
+        self._persisted_fit_state_sidecar['posterior'] = {
+            'parameter_samples': np.asarray(
+                posterior_samples.parameter_samples,
+                dtype=float,
+            ),
+            'log_posterior': (
+                None
+                if posterior_samples.log_posterior is None
+                else np.asarray(posterior_samples.log_posterior, dtype=float)
+            ),
+            'draw_index': (
+                None
+                if posterior_samples.draw_index is None
+                else np.asarray(posterior_samples.draw_index)
+            ),
+        }
+
+    def _store_bayesian_result_projection(self, results: BayesianFitResults) -> None:
+        """
+        Store Bayesian fit-result projections into persisted categories.
+        """
+        credible_interval_inner = 0.68
+        credible_interval_outer = 0.95
+        if len(results.credible_interval_levels) >= _CREDIBLE_INTERVAL_LEVEL_COUNT:
+            credible_interval_inner = float(results.credible_interval_levels[0])
+            credible_interval_outer = float(results.credible_interval_levels[1])
+
+        point_estimate_name = results.point_estimate_name or 'best_sample'
+        sampler_settings = results.sampler_settings
+        convergence = results.convergence_diagnostics
+
+        self.bayesian_result._set_sampler_name(results.sampler_name)
+        self.bayesian_result._set_point_estimate_name(point_estimate_name)
+        self.bayesian_result._set_success(value=results.success)
+        self.bayesian_result._set_sampler_completed(value=results.sampler_completed)
+        self.bayesian_result._set_best_log_posterior(results.best_log_posterior)
+        self.bayesian_result._set_credible_interval_inner(credible_interval_inner)
+        self.bayesian_result._set_credible_interval_outer(credible_interval_outer)
+        self.bayesian_result._set_has_posterior_samples(
+            value=results.posterior_samples is not None
+        )
+        self.bayesian_result._set_has_distribution_cache(value=False)
+        self.bayesian_result._set_has_pair_cache(value=False)
+        self.bayesian_result._set_has_posterior_predictive(value=False)
+        self.bayesian_result._set_sidecar_file('results.h5')
+        self._store_bayesian_posterior_sidecar_projection(results)
+
+        self.bayesian_sampler._set_steps(int(sampler_settings.get('steps', 0)))
+        self.bayesian_sampler._set_burn(int(sampler_settings.get('burn', 0)))
+        self.bayesian_sampler._set_thin(int(sampler_settings.get('thin', 0)))
+        self.bayesian_sampler._set_pop(int(sampler_settings.get('pop', 0)))
+        self.bayesian_sampler._set_parallel(int(sampler_settings.get('parallel', 0)))
+        self.bayesian_sampler._set_init(str(sampler_settings.get('init', '')))
+        random_seed = sampler_settings.get('random_seed')
+        self.bayesian_sampler._set_random_seed(None if random_seed is None else int(random_seed))
+
+        self.bayesian_convergence._set_converged(value=bool(convergence.get('converged', False)))
+        self.bayesian_convergence._set_max_r_hat(convergence.get('max_r_hat'))
+        self.bayesian_convergence._set_min_ess_bulk(convergence.get('min_ess_bulk'))
+        self.bayesian_convergence._set_n_draws(int(convergence.get('n_draws', 0)))
+        self.bayesian_convergence._set_n_chains(int(convergence.get('n_chains', 0)))
+        self.bayesian_convergence._set_n_parameters(int(convergence.get('n_parameters', 0)))
+
+        for summary in results.posterior_parameter_summaries:
+            self.bayesian_parameter_posteriors.create(summary=summary)
+
+        posterior_samples = results.posterior_samples
+        if posterior_samples is None:
+            return
+
+        self._store_bayesian_plot_cache_projection(results)
+        if len(posterior_samples.parameter_names) <= 1:
+            return
+
+        flattened = posterior_samples.flattened()
+        correlation_matrix = np.corrcoef(flattened, rowvar=False)
+        self._store_correlation_projection(
+            unique_names=list(posterior_samples.parameter_names),
+            correlation_matrix=correlation_matrix,
+            source_kind=FitCorrelationSourceEnum.POSTERIOR,
+        )
+
+    def _store_fit_result_projection(
+        self,
+        results: FitResults,
+        *,
+        experiments: list[object],
+        fitted_parameters: list[Parameter],
+    ) -> None:
+        """
+        Store the latest fit result into persisted fit-state categories.
+        """
+        if isinstance(results, BayesianFitResults):
+            self._store_common_fit_result_projection(
+                results,
+                result_kind=FitResultKindEnum.BAYESIAN,
+            )
+            self._store_bayesian_result_projection(results)
+            return
+
+        self._store_common_fit_result_projection(
+            results,
+            result_kind=FitResultKindEnum.DETERMINISTIC,
+        )
+        self._store_deterministic_result_projection(
+            results,
+            experiments=experiments,
+            fitted_parameters=fitted_parameters,
+        )
+
     def _resolve_sequential_data_dir(self) -> Path:
         """
         Resolve the sequential-fit data directory to an absolute path.
@@ -704,7 +1771,7 @@ class Analysis(CategoryOwner):
 
     def _prepare_fit_run(self) -> tuple[VerbosityEnum, object, object] | None:
         """Resolve common inputs for single and joint fitting."""
-        verb = VerbosityEnum(self.project.verbosity)
+        verb = VerbosityEnum(self.project.verbosity.fit.value)
         structures = self.project.structures
         if not structures:
             log.warning('No structures found in the project. Cannot run fit.')
@@ -718,6 +1785,7 @@ class Analysis(CategoryOwner):
         # Apply constraints before fitting so that user-constrained
         # parameters are marked and excluded from the free parameter
         # list built by the fitter.
+        self._sync_live_minimizer_from_persisted_fit_state()
         self._update_categories()
 
         return verb, structures, experiments
@@ -768,6 +1836,7 @@ class Analysis(CategoryOwner):
 
         self._set_fitting_mode_type(FitModeEnum.SEQUENTIAL.value)
         self._update_categories()
+        self._clear_persisted_fit_state()
 
         max_workers_value = self._sequential_fit.max_workers.value
         max_workers = max_workers_value if max_workers_value == 'auto' else int(max_workers_value)
@@ -790,6 +1859,7 @@ class Analysis(CategoryOwner):
         finally:
             self.fit_results = None
             self.fitter.results = None
+            self._clear_persisted_fit_state()
 
         if self.project.info.path is not None:
             self.project.save()

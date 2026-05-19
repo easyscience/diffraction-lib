@@ -19,6 +19,10 @@ from easydiffraction.project.categories.rendering.factory import RenderingFactor
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.utils import render_table
 
+AUTO_ENGINE = 'auto'
+CHART_ENGINE_OPTIONS = [AUTO_ENGINE, *[member.value for member in PlotterEngineEnum]]
+TABLE_ENGINE_OPTIONS = [AUTO_ENGINE, *[member.value for member in TableEngineEnum]]
+
 
 @RenderingFactory.register
 class Rendering(CategoryItem):
@@ -37,13 +41,14 @@ class Rendering(CategoryItem):
         self._plotter = Plotter()
         self._tabler = TableRenderer.get()
 
+        # Persist symbolic "auto" so project.cif stays portable.
         self._chart_engine = StringDescriptor(
             name='chart_engine',
             description='Chart renderer backend type',
             value_spec=AttributeSpec(
-                default=self._plotter.engine,
+                default=AUTO_ENGINE,
                 validator=MembershipValidator(
-                    allowed=[member.value for member in PlotterEngineEnum],
+                    allowed=CHART_ENGINE_OPTIONS,
                 ),
             ),
             cif_handler=CifHandler(names=['_rendering.chart_engine']),
@@ -52,13 +57,45 @@ class Rendering(CategoryItem):
             name='table_engine',
             description='Table renderer backend type',
             value_spec=AttributeSpec(
-                default=self._tabler.engine,
+                default=AUTO_ENGINE,
                 validator=MembershipValidator(
-                    allowed=[member.value for member in TableEngineEnum],
+                    allowed=TABLE_ENGINE_OPTIONS,
                 ),
             ),
             cif_handler=CifHandler(names=['_rendering.table_engine']),
         )
+
+    @staticmethod
+    def _resolved_chart_engine(value: str) -> str:
+        if value == AUTO_ENGINE:
+            return PlotterEngineEnum.default().value
+        return value
+
+    @staticmethod
+    def _resolved_table_engine(value: str) -> str:
+        if value == AUTO_ENGINE:
+            return TableEngineEnum.default().value
+        return value
+
+    def _set_chart_engine(self, value: str) -> None:
+        if value not in CHART_ENGINE_OPTIONS:
+            self._plotter.engine = value
+            return
+
+        resolved_engine = self._resolved_chart_engine(value)
+        if self._plotter.engine != resolved_engine:
+            self._plotter.engine = resolved_engine
+        self._chart_engine.value = value
+
+    def _set_table_engine(self, value: str) -> None:
+        if value not in TABLE_ENGINE_OPTIONS:
+            self._tabler.engine = value
+            return
+
+        resolved_engine = self._resolved_table_engine(value)
+        if self._tabler.engine != resolved_engine:
+            self._tabler.engine = resolved_engine
+        self._table_engine.value = value
 
     @property
     def chart_engine(self) -> StringDescriptor:
@@ -67,8 +104,7 @@ class Rendering(CategoryItem):
 
     @chart_engine.setter
     def chart_engine(self, value: str) -> None:
-        self._plotter.engine = value
-        self._chart_engine.value = self._plotter.engine
+        self._set_chart_engine(value)
 
     @property
     def table_engine(self) -> StringDescriptor:
@@ -77,8 +113,7 @@ class Rendering(CategoryItem):
 
     @table_engine.setter
     def table_engine(self, value: str) -> None:
-        self._tabler.engine = value
-        self._table_engine.value = self._tabler.engine
+        self._set_table_engine(value)
 
     @property
     def plotter(self) -> Plotter:
@@ -123,14 +158,8 @@ class Rendering(CategoryItem):
         del idx
         chart_engine = read_cif_str(block, '_rendering.chart_engine')
         if chart_engine is not None:
-            if chart_engine == self._plotter.engine:
-                self._chart_engine.value = chart_engine
-            else:
-                self.chart_engine = chart_engine
+            self._set_chart_engine(chart_engine)
 
         table_engine = read_cif_str(block, '_rendering.table_engine')
         if table_engine is not None:
-            if table_engine == self._tabler.engine:
-                self._table_engine.value = table_engine
-            else:
-                self.table_engine = table_engine
+            self._set_table_engine(table_engine)

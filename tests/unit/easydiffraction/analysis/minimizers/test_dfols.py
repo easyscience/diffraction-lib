@@ -43,10 +43,12 @@ def test_dfols_prepare_run_and_sync(monkeypatch):
 
     def fake_solve(fun, x0, bounds, maxfun):
         # Verify we pass reasonable arguments
+        del fun
         assert isinstance(x0, np.ndarray)
         assert x0.shape[0] == 2
         assert isinstance(bounds, tuple)
         assert all(isinstance(b, np.ndarray) for b in bounds)
+        assert maxfun == 10
         return FakeRes()
 
     monkeypatch.setattr(mod, 'solve', fake_solve)
@@ -63,3 +65,5 @@ def test_dfols_prepare_run_and_sync(monkeypatch):
     assert params[0].uncertainty is None
     assert params[1].uncertainty is None
     assert minim._check_success(res) is True
+    assert minim.max_iterations == 10
+    assert not hasattr(minim, 'steps')

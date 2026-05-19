@@ -32,6 +32,8 @@ from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.utils.logging import log
 
+_BUMPS_DREAM_LOG = log
+
 DEFAULT_METHOD = 'dream'
 DEFAULT_MAX_ITERATIONS = 3000
 DEFAULT_BURN_FRACTION = 0.2
@@ -305,13 +307,27 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         self._init: DreamPopulationInitializationEnum = DEFAULT_INIT
 
     @property
+    def max_iterations(self) -> int:
+        """DREAM exposes sampler length through ``steps`` instead."""
+        sampler_name = self.type_info.description.partition('with ')[2].split()[0]
+        msg = f"{sampler_name} sampler uses 'steps' instead of 'max_iterations'."
+        raise AttributeError(msg)
+
+    @max_iterations.setter
+    def max_iterations(self, value: int) -> None:
+        del value
+        sampler_name = self.type_info.description.partition('with ')[2].split()[0]
+        msg = f"{sampler_name} sampler uses 'steps' instead of 'max_iterations'."
+        raise AttributeError(msg)
+
+    @property
     def steps(self) -> int:
         """Number of DREAM generations retained after burn-in."""
-        return self._validated_positive_integer('steps', self.max_iterations)
+        return self._validated_positive_integer('steps', self._max_iterations)
 
     @steps.setter
     def steps(self, value: int) -> None:
-        self.max_iterations = self._validated_positive_integer('steps', value)
+        self._max_iterations = self._validated_positive_integer('steps', value)
 
     @property
     def burn(self) -> int | None:
@@ -601,6 +617,8 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         object
             Normalized DREAM result stored in an ``OptimizeResult``.
         """
+        total_iterations = int(self.steps + self._resolved_burn(self.steps) + 1)
+        self.tracker.start_sampler_pre_processing(total_iterations=total_iterations)
         context = self._prepare_run_context(objective_function=objective_function, kwargs=kwargs)
         driver_result = self._execute_driver(
             driver=context.driver,
@@ -620,6 +638,8 @@ class BumpsDreamMinimizer(BumpsMinimizer):
                 raw_state=driver_result.raw_state,
                 sampler_completed=False,
             )
+
+        self.tracker.start_sampler_post_processing()
 
         return self._build_success_result(
             context=context,
@@ -729,7 +749,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             return None
 
         if self._requires_serial_mapper_for_spawn_main_module():
-            log.warning(
+            self._warn_after_tracking(
                 'DREAM parallel evaluation requires an import-safe main '
                 'module on spawn-based multiprocessing; falling back to '
                 'serial execution.'
@@ -745,7 +765,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
 
         try:
             if not can_pickle(problem):
-                log.warning(
+                self._warn_after_tracking(
                     'DREAM parallel evaluation requires a picklable '
                     'problem; falling back to serial execution.'
                 )
@@ -756,7 +776,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             message = str(error)
             if 'bootstrapping phase' not in message:
                 raise
-            log.warning(
+            self._warn_after_tracking(
                 'DREAM parallel evaluation requires an import-safe main '
                 'module on spawn-based multiprocessing; falling back to '
                 'serial execution.'
@@ -885,6 +905,10 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             draw_index=np.asarray(draw_index, dtype=float),
         )
         convergence_diagnostics = compute_convergence_diagnostics(posterior_samples)
+        if not convergence_diagnostics.get('converged', True):
+            self._warn_after_tracking(
+                'Convergence diagnostics indicate the posterior may be poorly mixed.'
+            )
         posterior_parameter_summaries = summarize_posterior_parameters(
             parameter_names=context.parameter_names,
             posterior_samples=posterior_samples,
@@ -895,9 +919,6 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         posterior_standard_deviations = standard_deviations_from_summaries(
             posterior_parameter_summaries
         )
-
-        if not convergence_diagnostics.get('converged', True):
-            log.warning('Convergence diagnostics indicate the posterior may be poorly mixed.')
 
         return OptimizeResult(
             x=best_sample_values,
