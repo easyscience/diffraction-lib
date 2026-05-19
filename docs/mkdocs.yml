@@ -197,9 +197,9 @@ nav:
           - LBCO basic load: tutorials/ed-1.ipynb
           - LBCO complete: tutorials/ed-3.ipynb
       - Load Project:
-          - LBCO Standard continuation: tutorials/ed-18.ipynb
-          - Co2SiO4 Sequential resumed: tutorials/ed-23.ipynb
-          - LBCO Bayesian display: tutorials/ed-24.ipynb
+          - LBCO Single: tutorials/ed-18.ipynb
+          - Co2SiO4 Sequential: tutorials/ed-23.ipynb
+          - LBCO Bayesian: tutorials/ed-24.ipynb
       - Powder Diffraction:
           - Co2SiO4 pd-neut-cwl: tutorials/ed-5.ipynb
           - HS pd-neut-cwl: tutorials/ed-6.ipynb

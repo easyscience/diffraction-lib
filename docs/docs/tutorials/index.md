@@ -40,13 +40,13 @@ The tutorials are organized into the following categories:
 
 ## Load Project
 
-- [LBCO Standard, continuation](ed-18.ipynb) – The most minimal example
+- [LBCO Single Fit](ed-18.ipynb) – The most minimal example
   showing how to load a previously saved project from a directory and
   continue working with it.
-- [Co2SiO4 Sequential, resumed](ed-23.ipynb) – Resumes a sequential
+- [Co2SiO4 Sequential Fit](ed-23.ipynb) – Resumes a sequential
   refinement from an existing `analysis/results.csv` after an incomplete
   previous run.
-- [LBCO Bayesian, display](ed-24.ipynb) – Shows how to load the saved
+- [LBCO Bayesian Display](ed-24.ipynb) – Shows how to load the saved
   project after a Bayesian analysis and inspect the persisted fit
   summary, correlation matrix, posterior plots, and predictive checks
   without rerunning MCMC sampling.
