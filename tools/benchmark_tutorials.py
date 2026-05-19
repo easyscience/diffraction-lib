@@ -19,6 +19,7 @@ SRC_ROOT = ROOT / 'src'
 DEFAULT_TUTORIAL_DIR = ROOT / 'docs' / 'docs' / 'tutorials'
 DEFAULT_OUTPUT_DIR = ROOT / 'docs' / 'dev' / 'benchmarking'
 CHECKPOINT_DIR_NAME = '.ipynb_checkpoints'
+CSV_HEADER = ['tutorial_name', 'elapsed_seconds', 'status', 'return_code']
 
 
 @dataclass(frozen=True)
@@ -93,9 +94,9 @@ def _run_tutorial(
     status = 'ok' if result.returncode == 0 else 'failed'
 
     if result.returncode == 0:
-        print(f'OK      {tutorial_name} ({elapsed_seconds:.3f}s)')
+        print(f'        OK      {elapsed_seconds:.1f}s')
     else:
-        print(f'FAILED  {tutorial_name} ({elapsed_seconds:.3f}s)', file=sys.stderr)
+        print(f'        FAILED  {elapsed_seconds:.1f}s', file=sys.stderr)
         details = ((result.stdout or '') + (result.stderr or '')).strip()
         if details:
             print(details, file=sys.stderr)
@@ -120,20 +121,24 @@ def _build_output_path(output_dir: Path) -> Path:
     return output_dir / file_name
 
 
-def _write_results(output_path: Path, results: list[TutorialBenchmarkResult]) -> None:
+def _write_csv_header(output_path: Path) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open('w', encoding='utf-8', newline='') as handle:
         writer = csv.writer(handle)
-        writer.writerow(['tutorial_name', 'elapsed_seconds', 'status', 'return_code'])
-        for result in results:
-            writer.writerow(
-                [
-                    result.tutorial_name,
-                    f'{result.elapsed_seconds:.3f}',
-                    result.status,
-                    result.return_code,
-                ]
-            )
+        writer.writerow(CSV_HEADER)
+
+
+def _append_result(output_path: Path, result: TutorialBenchmarkResult) -> None:
+    with output_path.open('a', encoding='utf-8', newline='') as handle:
+        writer = csv.writer(handle)
+        writer.writerow(
+            [
+                result.tutorial_name,
+                f'{result.elapsed_seconds:.3f}',
+                result.status,
+                result.return_code,
+            ]
+        )
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -182,15 +187,17 @@ def main() -> int:
         print('No tutorial scripts matched the requested pattern(s).', file=sys.stderr)
         return 1
 
+    output_path = _build_output_path(output_dir)
+    _write_csv_header(output_path)
+
     env = _build_env()
     results: list[TutorialBenchmarkResult] = []
     for index, tutorial_path in enumerate(tutorials, start=1):
         tutorial_name = _relative_display_path(tutorial_path, tutorial_dir)
-        print(f'[{index}/{len(tutorials)}] Running {tutorial_name}')
-        results.append(_run_tutorial(tutorial_path, tutorial_dir, env))
-
-    output_path = _build_output_path(output_dir)
-    _write_results(output_path, results)
+        print(f'[{index:2}/{len(tutorials)}] Running {tutorial_name}')
+        result = _run_tutorial(tutorial_path, tutorial_dir, env)
+        results.append(result)
+        _append_result(output_path, result)
 
     total_elapsed = sum(result.elapsed_seconds for result in results)
     failure_count = sum(result.status == 'failed' for result in results)
