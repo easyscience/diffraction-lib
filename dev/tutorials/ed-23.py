@@ -61,11 +61,30 @@ project.display.pattern(expt_name='d20')
 # ## Plot Parameter Evolution
 #
 # Use the same persisted diffrn path stored in `analysis/results.csv`
-# for the x-axis. Omitting `param` plots every fitted parameter one
-# after another.
+# for the x-axis.
 
 # %%
 temperature = 'diffrn.ambient_temperature'
+
+# %% [markdown]
+# Plot fit quality metrics vs. temperature.
+
+# %%
+project.display.fit.series(
+    project.analysis.fit_result.success,
+    versus=temperature,
+)
+project.display.fit.series(
+    project.analysis.fit_result.reduced_chi_square,
+    versus=temperature,
+)
+project.display.fit.series(
+    project.analysis.fit_result.iterations,
+    versus=temperature,
+)
+
+# %% [markdown]
+# Omitting `param` plots every fitted parameter one after another.
 
 # %%
 project.display.fit.series(versus=temperature)
