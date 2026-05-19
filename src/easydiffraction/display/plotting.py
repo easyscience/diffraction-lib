@@ -5775,7 +5775,7 @@ class Plotter(RendererBase):
     def _plot_param_series_from_csv(
         self,
         csv_path: str,
-        column_names: list[str],
+        column_names: str | list[str],
         param_descriptor: object,
         versus_path: str | None = None,
     ) -> None:
@@ -5796,7 +5796,7 @@ class Plotter(RendererBase):
         ----------
         csv_path : str
             Path to the ``results.csv`` file.
-        column_names : list[str]
+        column_names : str | list[str]
             Candidate CSV column keys to plot.
         param_descriptor : object
             The live parameter descriptor (for axis label / units).
@@ -5806,10 +5806,12 @@ class Plotter(RendererBase):
         """
         df = pd.read_csv(csv_path)
 
-        column_name = next((name for name in column_names if name in df.columns), None)
+        column_candidates = [column_names] if isinstance(column_names, str) else column_names
+
+        column_name = next((name for name in column_candidates if name in df.columns), None)
         if column_name is None:
             log.warning(
-                f"Parameter '{column_names[0]}' not found in CSV columns. "
+                f"Parameter '{column_candidates[0]}' not found in CSV columns. "
                 f'Available: {list(df.columns)}'
             )
             return
