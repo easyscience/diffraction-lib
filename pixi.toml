@@ -186,6 +186,7 @@ cov = { depends-on = [
 
 python = { cmd = 'python', env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
 tutorial = { cmd = 'python', env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
+tutorial-benchmarks = { cmd = 'python tools/benchmark_tutorials.py', env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
 jupyter = { cmd = 'jupyter', env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
 
 notebook-convert = 'jupytext docs/docs/tutorials/*.py --from py:percent --to ipynb'
