@@ -79,6 +79,23 @@ def test_tracker_fit_adds_timed_rows_and_resets_counter(monkeypatch):
     assert tracker._previous_chi2 == 4.0
 
 
+def test_tracker_fit_progress_uses_backend_iterations_for_display():
+    from easydiffraction.analysis.fit_helpers.tracking import FitProgressTracker
+
+    tracker = FitProgressTracker()
+
+    tracker.track_fit_progress(iteration=1, reduced_chi2=10.0, elapsed_time=0.1)
+    tracker.track_fit_progress(iteration=63, reduced_chi2=5.0, elapsed_time=1.0)
+    tracker.track_fit_progress(iteration=122, reduced_chi2=4.0, elapsed_time=2.0)
+
+    assert tracker._df_rows == [
+        ['1', '0.10', '10.00', ''],
+        ['63', '1.00', '5.00', '50.0% ↓'],
+        ['122', '2.00', '4.00', '20.0% ↓'],
+    ]
+    assert tracker.best_iteration == 122
+
+
 def test_tracker_sampler_post_processing_adds_final_status_row():
     from easydiffraction.analysis.fit_helpers.tracking import FitProgressTracker
     from easydiffraction.analysis.fit_helpers.tracking import SamplerProgressUpdate

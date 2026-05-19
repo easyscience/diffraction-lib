@@ -81,7 +81,7 @@ project.analysis.fitting.minimizer_type = 'bumps'
 
 # %%
 # Limit number of iterations to prevent long calculation time in this tutorial.
-project.analysis.fitting.minimizer.max_iterations = 1500
+project.analysis.fitting.minimizer.max_iterations = 500
 
 # %%
 # Start refinement. All parameters, which have standard uncertainties

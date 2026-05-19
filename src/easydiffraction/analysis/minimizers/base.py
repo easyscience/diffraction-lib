@@ -34,7 +34,7 @@ class MinimizerBase(ABC):
     ) -> None:
         self.name: str | None = name
         self.method: str | None = method
-        self.max_iterations: int | None = max_iterations
+        self._max_iterations: int | None = max_iterations
         self.result: FitResults | None = None
         self._previous_chi2: float | None = None
         self._iteration: int | None = None
@@ -45,6 +45,15 @@ class MinimizerBase(ABC):
         self._tracking_active: bool = False
         self._deferred_warning_messages: list[str] = []
         self.tracker: FitProgressTracker = FitProgressTracker()
+
+    @property
+    def max_iterations(self) -> int | None:
+        """User-facing iteration limit for the current minimizer."""
+        return self._max_iterations
+
+    @max_iterations.setter
+    def max_iterations(self, value: int | None) -> None:
+        self._max_iterations = value
 
     def _start_tracking(
         self,
@@ -98,6 +107,10 @@ class MinimizerBase(ABC):
     def _tracking_mode() -> str:
         """Return the tracker mode for the current minimizer."""
         return 'fit'
+
+    def _tracks_progress_via_solver_monitor(self) -> bool:
+        """Return whether live progress comes from solver callbacks."""
+        return False
 
     @abstractmethod
     def _prepare_solver_args(self, parameters: list[Any]) -> dict[str, Any]:

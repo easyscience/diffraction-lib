@@ -235,3 +235,51 @@ def test_fitter_fit_stops_tracking_when_minimizer_fit_raises(monkeypatch):
         )
 
     assert fitter.minimizer.stop_calls == 1
+
+
+def test_residual_function_skips_tracker_for_solver_monitored_minimizer(monkeypatch):
+    import numpy as np
+
+    from easydiffraction.analysis.fitting import Fitter
+
+    class DummyExperiment:
+        def _update_categories(self, called_by_minimizer=False):
+            del called_by_minimizer
+            return None
+
+    class DummyMin:
+        def __init__(self):
+            self.tracker = SimpleNamespace(
+                track=lambda residuals, parameters: (_ for _ in ()).throw(
+                    AssertionError('tracker.track should not be called')
+                )
+            )
+
+        def _sync_result_to_parameters(self, parameters, engine_params):
+            del parameters, engine_params
+
+        def _tracks_progress_via_solver_monitor(self):
+            return True
+
+    fitter = Fitter()
+    fitter.minimizer = DummyMin()
+
+    monkeypatch.setattr(
+        'easydiffraction.analysis.fitting.intensity_category_for',
+        lambda experiment: SimpleNamespace(
+            intensity_calc=np.array([1.0]),
+            intensity_meas=np.array([2.0]),
+            intensity_meas_su=np.array([1.0]),
+        ),
+    )
+
+    residuals = fitter._residual_function(
+        engine_params={},
+        parameters=[],
+        structures=[],
+        experiments=[DummyExperiment()],
+        weights=None,
+        analysis=None,
+    )
+
+    np.testing.assert_allclose(residuals, np.array([1.0]))

@@ -29,6 +29,7 @@ from easydiffraction.analysis.minimizers.bumps import _EasyDiffractionFitness
 from easydiffraction.analysis.minimizers.enums import DreamPopulationInitializationEnum
 from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
+from easydiffraction.utils.logging import log
 from easydiffraction.core.metadata import TypeInfo
 
 DEFAULT_METHOD = 'dream'
@@ -304,13 +305,25 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         self._init: DreamPopulationInitializationEnum = DEFAULT_INIT
 
     @property
+    def max_iterations(self) -> int:
+        """DREAM exposes sampler length through ``steps`` instead."""
+        msg = "DREAM sampler uses 'steps' instead of 'max_iterations'."
+        raise AttributeError(msg)
+
+    @max_iterations.setter
+    def max_iterations(self, value: int) -> None:
+        del value
+        msg = "DREAM sampler uses 'steps' instead of 'max_iterations'."
+        raise AttributeError(msg)
+
+    @property
     def steps(self) -> int:
         """Number of DREAM generations retained after burn-in."""
-        return self._validated_positive_integer('steps', self.max_iterations)
+        return self._validated_positive_integer('steps', self._max_iterations)
 
     @steps.setter
     def steps(self, value: int) -> None:
-        self.max_iterations = self._validated_positive_integer('steps', value)
+        self._max_iterations = self._validated_positive_integer('steps', value)
 
     @property
     def burn(self) -> int | None:

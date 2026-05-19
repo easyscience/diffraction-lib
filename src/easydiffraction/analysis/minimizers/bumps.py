@@ -8,6 +8,7 @@ import numpy as np
 from bumps.fitproblem import FitProblem
 from bumps.fitters import FITTERS
 from bumps.fitters import FitDriver
+from bumps.fitters import monitor as bumps_monitor
 from bumps.parameter import Parameter as BumpsParameter
 from scipy.optimize import OptimizeResult
 
@@ -20,6 +21,22 @@ DEFAULT_METHOD = 'lm'
 DEFAULT_MAX_ITERATIONS = 1000
 
 
+class _BumpsEvaluationLimitReached(RuntimeError):
+    """Raised when the BUMPS residual-evaluation budget is exhausted."""
+
+    def __init__(
+        self,
+        *,
+        evaluation_count: int,
+        parameter_values: np.ndarray,
+        residuals: np.ndarray | None,
+    ) -> None:
+        super().__init__('maximum number of residual evaluations reached')
+        self.evaluation_count = evaluation_count
+        self.parameter_values = parameter_values
+        self.residuals = residuals
+
+
 class _EasyDiffractionFitness:
     """
     Adaptor wrapping an EasyDiffraction objective into bumps Fitness.
@@ -29,10 +46,16 @@ class _EasyDiffractionFitness:
         self,
         bumps_params: list[BumpsParameter],
         objective_function: object,
+        max_evaluations: int | None = None,
     ) -> None:
         self._bumps_params = bumps_params
         self._objective_function = objective_function
+        self._max_evaluations = max_evaluations
         self._numpoints = 0
+        self._evaluation_count = 0
+        self._count_evaluations = True
+        self._last_parameter_values: np.ndarray | None = None
+        self._last_residuals: np.ndarray | None = None
 
     def parameters(self) -> dict[str, BumpsParameter]:
         """Return bumps parameters as a name-keyed dictionary."""
@@ -43,9 +66,27 @@ class _EasyDiffractionFitness:
 
     def residuals(self) -> np.ndarray:
         """Compute residuals using current bumps parameter values."""
+        if (
+            self._count_evaluations
+            and self._max_evaluations is not None
+            and self._evaluation_count >= self._max_evaluations
+        ):
+            last_parameter_values = self._last_parameter_values
+            if last_parameter_values is None:
+                last_parameter_values = np.array([p.value for p in self._bumps_params])
+            raise _BumpsEvaluationLimitReached(
+                evaluation_count=self._evaluation_count,
+                parameter_values=last_parameter_values,
+                residuals=self._last_residuals,
+            )
+
         values = np.array([p.value for p in self._bumps_params])
-        r = self._objective_function(values)
+        r = np.asarray(self._objective_function(values), dtype=float)
         self._numpoints = len(r)
+        self._last_parameter_values = values.copy()
+        self._last_residuals = r.copy()
+        if self._count_evaluations:
+            self._evaluation_count += 1
         return r
 
     def nllf(self) -> float:
@@ -58,6 +99,95 @@ class _EasyDiffractionFitness:
     def numpoints(self) -> int:
         """Return the number of data points."""
         return self._numpoints
+
+    @property
+    def evaluation_count(self) -> int:
+        """Return the number of residual evaluations during the live fit."""
+        return self._evaluation_count
+
+    def reset_evaluation_count(self) -> None:
+        """Reset the residual-evaluation counter before the live fit starts."""
+        self._evaluation_count = 0
+
+    def stop_counting_evaluations(self) -> None:
+        """Freeze residual-evaluation counting after the live fit ends."""
+        self._count_evaluations = False
+
+    @property
+    def last_residuals(self) -> np.ndarray | None:
+        """Return the residual vector from the last successful evaluation."""
+        return self._last_residuals
+
+    def last_reduced_chi_square(self, *, n_parameters: int) -> float | None:
+        """Return the reduced chi-square from the last residual vector."""
+        if self._last_residuals is None:
+            return None
+
+        chi_square = float(np.sum(self._last_residuals**2))
+        dof = len(self._last_residuals) - n_parameters
+        if dof <= 0:
+            return chi_square
+        return chi_square / dof
+
+
+class _BumpsProgressMonitor(bumps_monitor.Monitor):
+    """Progress monitor reporting live BUMPS fit evaluation counts."""
+
+    def __init__(
+        self,
+        *,
+        tracker: object,
+        fitness: _EasyDiffractionFitness,
+        n_points: int,
+        n_parameters: int,
+    ) -> None:
+        self._tracker = tracker
+        self._fitness = fitness
+        self._n_points = n_points
+        self._n_parameters = n_parameters
+
+    @staticmethod
+    def config_history(history: object) -> None:
+        """Declare the history fields needed for deterministic progress."""
+        history.requires(time=1, step=1, value=1)
+
+    def __call__(self, history: object) -> None:
+        """Forward deterministic BUMPS progress to the fit tracker."""
+        if not history.time or not history.value:
+            return
+
+        self._tracker.track_fit_progress(
+            iteration=self._reported_iteration(history),
+            reduced_chi2=self._reduced_chi_square_from_nllf(float(history.value[0])),
+            elapsed_time=float(history.time[0]),
+        )
+
+    def final(self, history: object, best: dict[str, object]) -> None:
+        """Record the final BUMPS state in the fit tracker."""
+        if not history.time or best.get('value') is None:
+            return
+
+        self._tracker.track_fit_progress(
+            iteration=self._reported_iteration(history),
+            reduced_chi2=self._reduced_chi_square_from_nllf(float(best['value'])),
+            elapsed_time=float(history.time[0]),
+        )
+
+    def _reported_iteration(self, history: object) -> int:
+        """Return the live fit evaluation count shown in progress."""
+        if self._fitness.evaluation_count > 0:
+            return self._fitness.evaluation_count
+
+        step = int(history.step[0]) if history.step else 0
+        return max(1, step)
+
+    def _reduced_chi_square_from_nllf(self, nllf: float) -> float:
+        """Convert negative log-likelihood to reduced chi-square."""
+        dof = self._n_points - self._n_parameters
+        chi_square = 2.0 * nllf
+        if dof <= 0:
+            return chi_square
+        return chi_square / dof
 
 
 @MinimizerFactory.register
@@ -80,6 +210,10 @@ class BumpsMinimizer(MinimizerBase):
             method=method,
             max_iterations=max_iterations,
         )
+
+    def _tracks_progress_via_solver_monitor(self) -> bool:
+        """Use BUMPS monitor callbacks for live deterministic progress."""
+        return True
 
     def _prepare_solver_args(  # noqa: PLR6301
         self,
@@ -135,21 +269,58 @@ class BumpsMinimizer(MinimizerBase):
             A scipy OptimizeResult with the optimized values.
         """
         bumps_params = kwargs.get('bumps_params')
-        fitness = _EasyDiffractionFitness(bumps_params, objective_function)
+        fitness = _EasyDiffractionFitness(
+            bumps_params,
+            objective_function,
+            max_evaluations=self.max_iterations,
+        )
         fitness.nllf()  # pre-compute so numpoints() is valid
+        fitness.reset_evaluation_count()
         problem = FitProblem(fitness)
+        progress_monitor = _BumpsProgressMonitor(
+            tracker=self.tracker,
+            fitness=fitness,
+            n_points=fitness.numpoints(),
+            n_parameters=len(bumps_params),
+        )
 
         fitclass = next(cls for cls in FITTERS if cls.id == self.method)
         driver = FitDriver(
             fitclass=fitclass,
             problem=problem,
-            monitors=[],
+            monitors=[progress_monitor],
             steps=self.max_iterations,
         )
         driver.clip()
-        x, fx = driver.fit()
+        evaluation_limit_reached = False
+        evaluation_limit_message = 'successful termination'
+        try:
+            x, fx = driver.fit()
+        except _BumpsEvaluationLimitReached as exc:
+            evaluation_limit_reached = True
+            evaluation_limit_message = str(exc)
+            x = exc.parameter_values.copy()
+            fx = None
+            reduced_chi2 = None
+            if exc.residuals is not None:
+                chi_square = float(np.sum(exc.residuals**2))
+                dof = len(exc.residuals) - len(bumps_params)
+                reduced_chi2 = chi_square if dof <= 0 else chi_square / dof
+            elif fitness.last_residuals is not None:
+                reduced_chi2 = fitness.last_reduced_chi_square(
+                    n_parameters=len(bumps_params)
+                )
+            if reduced_chi2 is not None:
+                elapsed_time = self.tracker._current_elapsed_time()
+                self.tracker.track_fit_progress(
+                    iteration=exc.evaluation_count,
+                    reduced_chi2=reduced_chi2,
+                    elapsed_time=0.0 if elapsed_time is None else elapsed_time,
+                )
+        finally:
+            fitness.stop_counting_evaluations()
 
-        success = x is not None
+        success = x is not None and not evaluation_limit_reached
         if success:
             problem.setp(x)
 
@@ -168,8 +339,8 @@ class BumpsMinimizer(MinimizerBase):
             dx=stderr,
             fun=fx,
             success=success,
-            status=0 if success else -1,
-            message='successful termination' if success else 'fit failed',
+            status=0 if success else 5 if evaluation_limit_reached else -1,
+            message='successful termination' if success else evaluation_limit_message,
             covar=covar,
             var_names=var_names,
         )

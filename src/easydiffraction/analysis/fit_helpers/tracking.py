@@ -154,8 +154,25 @@ class FitProgressTracker:
             self._last_chi2 = reduced_chi2
             return residuals
 
+        self.track_fit_progress(
+            iteration=self._iteration,
+            reduced_chi2=reduced_chi2,
+            elapsed_time=self._current_elapsed_time(),
+        )
+
+        return residuals
+
+    def track_fit_progress(
+        self,
+        *,
+        iteration: int,
+        reduced_chi2: float,
+        elapsed_time: float,
+    ) -> None:
+        """Update fit progress from a backend iteration callback."""
+        self._iteration = max(1, iteration)
+
         row: list[str] = []
-        elapsed_time = self._current_elapsed_time()
 
         if self._previous_chi2 is None:
             self._previous_chi2 = reduced_chi2
@@ -202,8 +219,6 @@ class FitProgressTracker:
 
         self._last_chi2 = reduced_chi2
         self._last_iteration = self._iteration
-
-        return residuals
 
     def track_sampler_progress(self, update: SamplerProgressUpdate) -> None:
         """

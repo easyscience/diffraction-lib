@@ -345,4 +345,7 @@ class Fitter:
             # Append the residuals for this experiment
             residuals.extend(diff)
 
-        return self.minimizer.tracker.track(np.array(residuals), parameters)
+        residual_array = np.array(residuals)
+        if getattr(self.minimizer, '_tracks_progress_via_solver_monitor', lambda: False)():
+            return residual_array
+        return self.minimizer.tracker.track(residual_array, parameters)

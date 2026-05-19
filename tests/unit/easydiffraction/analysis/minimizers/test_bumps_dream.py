@@ -53,6 +53,28 @@ def test_type_info_and_default_init():
     assert minimizer.steps == 3000
 
 
+def test_dream_uses_steps_instead_of_max_iterations():
+    from easydiffraction.analysis.minimizers.bumps_dream import BumpsDreamMinimizer
+
+    minimizer = BumpsDreamMinimizer()
+
+    with pytest.raises(
+        AttributeError,
+        match=r"DREAM sampler uses 'steps' instead of 'max_iterations'\.",
+    ):
+        _ = minimizer.max_iterations
+
+    with pytest.raises(
+        AttributeError,
+        match=r"DREAM sampler uses 'steps' instead of 'max_iterations'\.",
+    ):
+        minimizer.max_iterations = 300
+
+    minimizer.steps = 300
+
+    assert minimizer.steps == 300
+
+
 def test_dream_progress_monitor_allocates_rows_by_phase_ratio():
     from easydiffraction.analysis.minimizers.bumps_dream import _DreamProgressMonitor
 

@@ -524,7 +524,16 @@ class Project(GuardedBase):
             project_dir = resolve_artifact_path(dir_path)
 
         if overwrite and project_dir.is_dir():
-            shutil.rmtree(project_dir)
+            current_working_directory = pathlib.Path.cwd().resolve()
+            resolved_project_dir = project_dir.resolve()
+            if resolved_project_dir == current_working_directory:
+                for child_path in resolved_project_dir.iterdir():
+                    if child_path.is_dir():
+                        shutil.rmtree(child_path)
+                    else:
+                        child_path.unlink()
+            else:
+                shutil.rmtree(project_dir)
 
         self.info.path = project_dir
         self.save()

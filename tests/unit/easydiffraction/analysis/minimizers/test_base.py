@@ -123,6 +123,37 @@ def test_minimizer_base_create_objective_function_uses_compute_residuals():
     assert np.allclose(out, np.array([1.0, 2.0, 3.0]))
 
 
+def test_max_iterations_property_updates_internal_value():
+    from easydiffraction.analysis.minimizers.base import MinimizerBase
+
+    class M(MinimizerBase):
+        def __init__(self):
+            super().__init__(name='dummy', method='m', max_iterations=5)
+
+        def _prepare_solver_args(self, parameters):
+            del parameters
+            return {}
+
+        def _run_solver(self, objective_function, **kwargs):
+            del objective_function, kwargs
+            return None
+
+        def _sync_result_to_parameters(self, parameters, raw_result):
+            del parameters, raw_result
+
+        def _check_success(self, raw_result):
+            del raw_result
+            return True
+
+    minimizer = M()
+
+    assert minimizer.max_iterations == 5
+
+    minimizer.max_iterations = 200
+
+    assert minimizer.max_iterations == 200
+
+
 def test_minimizer_base_fit_stops_tracking_when_solver_prep_fails():
     from easydiffraction.analysis.minimizers.base import MinimizerBase
 
