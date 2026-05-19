@@ -90,9 +90,9 @@ def _fit_worker(
     Returns
     -------
     dict[str, Any]
-        Result dict with keys: ``file_path``, ``fit_success``,
-        ``chi_squared``, ``reduced_chi_squared``, ``n_iterations``, and
-        per-parameter ``{unique_name}`` / ``{unique_name}.uncertainty``.
+        Result dict with keys: ``file_path``, ``success``,
+        ``reduced_chi_square``, ``iterations``, and per-parameter
+        ``{unique_name}`` / ``{unique_name}.uncertainty``.
     """
     # Lazy import to avoid circular dependencies and keep the module
     # importable without heavy imports at top level.
@@ -163,10 +163,9 @@ def _fit_worker(
         IndexError,
         OSError,
     ) as exc:
-        result['fit_success'] = False
-        result['chi_squared'] = None
-        result['reduced_chi_squared'] = None
-        result['n_iterations'] = 0
+        result['success'] = False
+        result['reduced_chi_square'] = None
+        result['iterations'] = 0
         result['error'] = str(exc)
 
     return result
@@ -352,17 +351,17 @@ def _collect_results(
 
     result: dict[str, Any] = {}
     fit_results = project.analysis.fit_results
+    tracker = getattr(project.analysis.fitter.minimizer, 'tracker', None)
+    best_iteration = getattr(tracker, 'best_iteration', None)
 
     if fit_results is not None:
-        result['fit_success'] = fit_results.success
-        result['chi_squared'] = fit_results.chi_square
-        result['reduced_chi_squared'] = fit_results.reduced_chi_square
-        result['n_iterations'] = project.analysis.fitter.minimizer.tracker.best_iteration or 0
+        result['fit_result.success'] = fit_results.success
+        result['fit_result.reduced_chi_square'] = fit_results.reduced_chi_square
+        result['fit_result.iterations'] = fit_results.iterations or best_iteration or 0
     else:
-        result['fit_success'] = False
-        result['chi_squared'] = None
-        result['reduced_chi_squared'] = None
-        result['n_iterations'] = 0
+        result['fit_result.success'] = False
+        result['fit_result.reduced_chi_square'] = None
+        result['fit_result.iterations'] = best_iteration or 0
 
     # Collect all free parameter values and uncertainties
     all_params = project.structures.parameters + project.experiments.parameters
@@ -383,10 +382,9 @@ def _collect_results(
 
 _META_COLUMNS = [
     'file_path',
-    'chi_squared',
-    'reduced_chi_squared',
-    'fit_success',
-    'n_iterations',
+    'fit_result.reduced_chi_square',
+    'fit_result.success',
+    'fit_result.iterations',
 ]
 
 
@@ -551,7 +549,8 @@ def _read_csv_for_recovery(
             file_path = row.get('file_path', '')
             if file_path:
                 fitted.add(_resolve_csv_file_path(csv_path, file_path))
-            if row.get('fit_success', '').lower() == 'true':
+            success_value = row.get('fit_result.success', row.get('success', ''))
+            if success_value.lower() == 'true':
                 params = _extract_params_from_row(row)
                 if params:
                     last_params = params
@@ -725,9 +724,9 @@ class SequentialRunPlan:
 def _summarize_chunk_results(results: list[dict[str, Any]]) -> tuple[str, str]:
     """Return average reduced chi-square and status for a chunk."""
     num_files = len(results)
-    successful = [r for r in results if r.get('fit_success')]
+    successful = [r for r in results if r.get('fit_result.success')]
     if successful:
-        avg_chi2 = sum(r['reduced_chi_squared'] for r in successful) / len(successful)
+        avg_chi2 = sum(r['fit_result.reduced_chi_square'] for r in successful) / len(successful)
         chi2_str = f'{avg_chi2:.2f}'
     else:
         chi2_str = '—'
@@ -798,10 +797,10 @@ def _build_file_progress_rows(
     rows: list[list[str]] = []
     time_str = _format_elapsed_seconds(elapsed_time)
     for index, result in enumerate(results, start=1):
-        reduced_chi2 = result.get('reduced_chi_squared')
+        reduced_chi2 = result.get('fit_result.reduced_chi_square')
         chi2_str = f'{reduced_chi2:.2f}' if reduced_chi2 is not None else '—'
-        iterations = str(result.get('n_iterations') or 0)
-        status = '✅' if result.get('fit_success') else '❌'
+        iterations = str(result.get('fit_result.iterations') or 0)
+        status = '✅' if result.get('fit_result.success') else '❌'
         rows.append([
             Path(result['file_path']).name,
             _format_progress_percent(completed_files_before + index, total_files),
@@ -1260,7 +1259,7 @@ def _run_fit_loop(
 def _find_last_successful(results: list[dict[str, Any]]) -> dict[str, Any] | None:
     """Return the last successful result dict, or None."""
     for r in reversed(results):
-        if r.get('fit_success') and r.get('params'):
+        if r.get('fit_result.success') and r.get('params'):
             return r
     return None
 

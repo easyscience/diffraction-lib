@@ -744,7 +744,7 @@ class Plotter(RendererBase):
         Parameters
         ----------
         param : object
-            Parameter descriptor whose ``unique_name`` identifies the
+            Descriptor whose ``unique_name`` or ``name`` identifies the
             values to plot.
         versus : str | None, default=None
             Persisted diffrn path (e.g.
@@ -752,7 +752,10 @@ class Plotter(RendererBase):
             column is used as the x-axis. When ``None``, the experiment
             sequence number is used instead.
         """
-        unique_name = param.unique_name
+        column_names = self._series_column_names(param)
+        if not column_names:
+            log.warning('Series plot target does not expose a CSV column name.')
+            return
 
         # Try CSV first (produced by fit_sequential or future fit)
         csv_path = None
@@ -764,18 +767,50 @@ class Plotter(RendererBase):
         if csv_path is not None:
             self._plot_param_series_from_csv(
                 csv_path=csv_path,
-                unique_name=unique_name,
+                column_names=column_names,
                 param_descriptor=param,
                 versus_path=versus,
             )
         else:
             # Fallback: in-memory snapshots from fit() single mode
             self.plot_param_series_from_snapshots(
-                unique_name,
+                column_names[0],
                 versus,
                 self._project.experiments,
                 self._project.analysis._parameter_snapshots,
             )
+
+    @staticmethod
+    def _series_column_names(param: object) -> list[str]:
+        """Return candidate CSV column names for one plotted series."""
+        names: list[str] = []
+
+        unique_name = getattr(param, 'unique_name', None)
+        if isinstance(unique_name, str) and unique_name:
+            names.append(unique_name)
+
+        name = getattr(param, 'name', None)
+        if isinstance(name, str) and name and name not in names:
+            names.append(name)
+
+        return names
+
+    @staticmethod
+    def _numeric_series_values(values: object) -> list[float]:
+        """Return one CSV column normalized to numeric plot values."""
+        series = pd.Series(values)
+        if series.dtype == bool:
+            return series.astype(float).tolist()
+
+        normalized = series.replace(
+            {
+                'True': 1.0,
+                'False': 0.0,
+                'true': 1.0,
+                'false': 0.0,
+            }
+        )
+        return pd.to_numeric(normalized, errors='raise').tolist()
 
     def plot_all_param_series(
         self,
@@ -5742,7 +5777,7 @@ class Plotter(RendererBase):
     def _plot_param_series_from_csv(
         self,
         csv_path: str,
-        unique_name: str,
+        column_names: list[str],
         param_descriptor: object,
         versus_path: str | None = None,
     ) -> None:
@@ -5750,8 +5785,9 @@ class Plotter(RendererBase):
         Plot a parameter's value across sequential fit results.
 
         Reads data from the CSV file at *csv_path*.  The y-axis values
-        come from the column named *unique_name*, uncertainties from
-        ``{unique_name}.uncertainty``. When *versus_path* is provided,
+        come from the first matching column named in *column_names*,
+        with uncertainties from ``{column_name}.uncertainty``. When
+        *versus_path* is provided,
         the x-axis uses the corresponding ``diffrn.*`` CSV column;
         otherwise the row index is used.
 
@@ -5763,8 +5799,8 @@ class Plotter(RendererBase):
         ----------
         csv_path : str
             Path to the ``results.csv`` file.
-        unique_name : str
-            Unique name of the parameter to plot (CSV column key).
+        column_names : list[str]
+            Candidate CSV column keys to plot.
         param_descriptor : object
             The live parameter descriptor (for axis label / units).
         versus_path : str | None, default=None
@@ -5773,16 +5809,17 @@ class Plotter(RendererBase):
         """
         df = pd.read_csv(csv_path)
 
-        if unique_name not in df.columns:
+        column_name = next((name for name in column_names if name in df.columns), None)
+        if column_name is None:
             log.warning(
-                f"Parameter '{unique_name}' not found in CSV columns. "
+                f"Parameter '{column_names[0]}' not found in CSV columns. "
                 f'Available: {list(df.columns)}'
             )
             return
 
-        y = df[unique_name].astype(float).tolist()
-        uncert_col = f'{unique_name}.uncertainty'
-        sy = df[uncert_col].astype(float).tolist() if uncert_col in df.columns else [0.0] * len(y)
+        y = self._numeric_series_values(df[column_name])
+        uncert_col = f'{column_name}.uncertainty'
+        sy = self._numeric_series_values(df[uncert_col]) if uncert_col in df.columns else [0.0] * len(y)
 
         # X-axis: diffrn column or row index
         diffrn_col = versus_path
@@ -5799,7 +5836,7 @@ class Plotter(RendererBase):
         param_units = getattr(param_descriptor, 'units', '')
         y_label = f'Parameter value ({param_units})' if param_units else 'Parameter value'
 
-        title = f"Parameter '{unique_name}' across fit results"
+        title = f"Parameter '{column_name}' across fit results"
 
         self._backend.plot_scatter(
             x=x,
