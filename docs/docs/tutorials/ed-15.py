@@ -67,17 +67,21 @@ experiment.extinction.radius = 100.0
 # ## Step 4: Perform Analysis I (ADP iso)
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='senju')
+project.display.pattern(expt_name='senju')
 
 # %%
 experiment.linked_crystal.scale.free = True
 experiment.extinction.radius.free = True
 
 # %%
-project.analysis.fit.show_minimizer_types()
+project.analysis.fitting.show_minimizer_types()
 
 # %%
-project.analysis.fit.minimizer_type = 'bumps'
+project.analysis.fitting.minimizer_type = 'bumps'
+
+# %%
+# Limit number of iterations to prevent long calculation time in this tutorial.
+project.analysis.fitting.minimizer.max_iterations = 500
 
 # %%
 # Start refinement. All parameters, which have standard uncertainties
@@ -86,7 +90,7 @@ project.analysis.fit()
 
 # %%
 # Show fit results summary
-project.analysis.display.fit_results()
+project.display.fit.results()
 
 # %%
 structure.show_as_cif()
@@ -95,7 +99,7 @@ structure.show_as_cif()
 project.experiments.show_names()
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='senju')
+project.display.pattern(expt_name='senju')
 
 # %% [markdown]
 # ## Step 5: Perform Analysis (ADP aniso)
@@ -114,19 +118,19 @@ for atom_site in structure.atom_site_aniso:
 structure.show_as_cif()
 
 # %%
-project.analysis.display.free_params()
+project.display.parameters.free()
 
 # %%
 project.analysis.fit()
 
 # %%
-project.analysis.display.fit_results()
+project.display.fit.results()
 
 # %%
-project.display.plotter.plot_param_correlations()
+project.display.fit.correlations()
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='senju')
+project.display.pattern(expt_name='senju')
 
 # %%
 structure.show_as_cif()

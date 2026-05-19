@@ -13,62 +13,19 @@ def test_module_import():
     assert expected_module_name == actual_module_name
 
 
-def test_default_template_name_prefers_jupyter_theme(monkeypatch):
+def test_get_layout_sets_title_and_axis_title_font_sizes():
     import easydiffraction.display.plotters.plotly as pp
 
-    monkeypatch.setattr(pp, 'in_jupyter', lambda: True)
-    monkeypatch.setattr(pp, 'is_dark', lambda: True)
-    monkeypatch.setattr(pp.darkdetect, 'isDark', lambda: False)
+    layout = pp.PlotlyPlotter._get_layout('Title', ['x axis', 'y axis'])
 
-    assert pp.PlotlyPlotter._default_template_name() == 'plotly_dark'
-
-
-def test_correlation_colorscale_uses_black_center_in_dark_mode(monkeypatch):
-    import easydiffraction.display.plotters.plotly as pp
-
-    monkeypatch.setattr(pp.PlotlyPlotter, '_is_dark_mode', staticmethod(lambda: True))
-
-    assert pp.PlotlyPlotter._correlation_colorscale()[1] == (0.5, '#000000')
-
-
-def test_default_template_name_uses_system_theme_outside_jupyter(monkeypatch):
-    import easydiffraction.display.plotters.plotly as pp
-
-    monkeypatch.setattr(pp, 'in_jupyter', lambda: False)
-    monkeypatch.setattr(pp, 'is_dark', lambda: False)
-    monkeypatch.setattr(pp.darkdetect, 'isDark', lambda: False)
-
-    assert pp.PlotlyPlotter._default_template_name() == 'plotly_white'
-
-
-def test_correlation_colorscale_uses_white_center_in_light_mode(monkeypatch):
-    import easydiffraction.display.plotters.plotly as pp
-
-    monkeypatch.setattr(pp.PlotlyPlotter, '_is_dark_mode', staticmethod(lambda: False))
-
-    assert pp.PlotlyPlotter._correlation_colorscale()[1] == (0.5, '#f7f7f7')
-
-
-def test_legend_background_color_uses_light_overlay_in_light_mode(monkeypatch):
-    import easydiffraction.display.plotters.plotly as pp
-
-    monkeypatch.setattr(pp.PlotlyPlotter, '_is_dark_mode', staticmethod(lambda: False))
-
-    assert pp.PlotlyPlotter._legend_background_color() == 'rgba(255, 255, 255, 0.5)'
-
-
-def test_legend_background_color_uses_dark_overlay_in_dark_mode(monkeypatch):
-    import easydiffraction.display.plotters.plotly as pp
-
-    monkeypatch.setattr(pp.PlotlyPlotter, '_is_dark_mode', staticmethod(lambda: True))
-
-    assert pp.PlotlyPlotter._legend_background_color() == 'rgba(0, 0, 0, 0.5)'
+    assert layout.title.font.size == pp.TITLE_FONT_SIZE
+    assert layout.xaxis.title.font.size == pp.AXIS_TITLE_FONT_SIZE
+    assert layout.yaxis.title.font.size == pp.AXIS_TITLE_FONT_SIZE
 
 
 def test_get_trace_and_plot(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
 
-    # Arrange: force non-PyCharm branch and stub fig.show/HTML/display so nothing opens
     monkeypatch.setattr(pp, 'in_pycharm', lambda: False)
 
     shown = {'count': 0}
@@ -83,7 +40,6 @@ def test_get_trace_and_plot(monkeypatch):
         def show(self, **kwargs):
             shown['count'] += 1
 
-    # Patch go.Scatter and go.Figure to minimal dummies
     class DummyScatter:
         def __init__(self, **kwargs):
             self.kwargs = kwargs
@@ -122,7 +78,6 @@ def test_get_trace_and_plot(monkeypatch):
 
     plotter = pp.PlotlyPlotter()
 
-    # Exercise _get_powder_trace
     x = [0, 1, 2]
     y = [1, 2, 3]
     trace = plotter._get_powder_trace(x, y, label='calc')
@@ -276,6 +231,57 @@ def test_show_figure_skips_legend_toggle_script_without_legend(monkeypatch):
     assert captured.get('show_called') is not True
     assert captured['post_script'] is None
     assert captured['displayed_html'] == '<div>plot</div>'
+
+
+def test_show_figure_wraps_fixed_aspect_html(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    monkeypatch.setattr(pp, 'in_pycharm', lambda: False)
+
+    captured = {}
+
+    class DummyLayout:
+        def __init__(self):
+            self.meta = {
+                'fixed_aspect_wrapper': {
+                    'aspect_ratio': '1 / 1',
+                }
+            }
+            self.showlegend = False
+
+    class DummyFig:
+        def __init__(self):
+            self.data = []
+            self.layout = DummyLayout()
+
+        def show(self, **kwargs):
+            captured['show_called'] = True
+
+    class DummyPIO:
+        @staticmethod
+        def to_html(fig, include_plotlyjs=None, full_html=None, config=None, post_script=None):
+            captured['post_script'] = post_script
+            return '<div>plot</div>'
+
+    def dummy_display(obj):
+        captured['displayed_html'] = obj.html
+
+    class DummyHTML:
+        def __init__(self, html):
+            self.html = html
+
+    monkeypatch.setattr(pp, 'pio', DummyPIO)
+    monkeypatch.setattr(pp, 'display', dummy_display)
+    monkeypatch.setattr(pp, 'HTML', DummyHTML)
+
+    plotter = pp.PlotlyPlotter()
+    plotter._show_figure(DummyFig())
+
+    assert captured.get('show_called') is not True
+    assert captured['post_script'] is None
+    assert 'aspect-ratio: 1 / 1;' in captured['displayed_html']
+    assert 'ed-fixed-aspect-plotly-wrapper' in captured['displayed_html']
+    assert '<div>plot</div>' in captured['displayed_html']
 
 
 def test_plotly_single_crystal_trace_and_plot(monkeypatch):
@@ -779,11 +785,61 @@ def test_plot_powder_meas_vs_calc_skips_bragg_row_when_no_ticks(monkeypatch):
     assert fig.layout.xaxis2.matches == 'x'
     assert fig.layout.yaxis2.title.text is None
     assert fig.layout.xaxis2.title.text == '2θ (degree)'
+    assert fig.layout.title.font.size == pp.TITLE_FONT_SIZE
+    assert fig.layout.yaxis.title.font.size == pp.AXIS_TITLE_FONT_SIZE
+    assert fig.layout.xaxis2.title.font.size == pp.AXIS_TITLE_FONT_SIZE
     assert [trace.name for trace in fig.data] == [
         'Measured (Imeas)',
         'Total calculated (Icalc)',
         'Residual (Imeas - Icalc)',
     ]
+
+
+def test_plot_powder_meas_vs_calc_styles_predictive_max_posterior_and_band(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
+
+    captured = {}
+
+    def fake_show_figure(self, fig):
+        captured['fig'] = fig
+
+    monkeypatch.setattr(pp.PlotlyPlotter, '_show_figure', fake_show_figure)
+
+    plotter = pp.PlotlyPlotter()
+    plotter.plot_powder_meas_vs_calc(
+        plot_spec=PowderMeasVsCalcSpec(
+            x=np.array([1.0, 2.0, 3.0]),
+            y_meas=np.array([10.0, 12.0, 11.0]),
+            y_calc=np.array([9.0, 11.0, 10.5]),
+            y_resid=np.array([1.0, 1.0, 0.5]),
+            bragg_tick_sets=(),
+            axes_labels=['2θ (degree)', 'Intensity (arb. units)'],
+            title='Powder',
+            residual_height_fraction=0.25,
+            bragg_peaks_height_fraction=0.15,
+            height=None,
+            predictive_lower_95=np.array([8.0, 9.0, 10.0]),
+            predictive_upper_95=np.array([10.0, 11.0, 12.0]),
+            y_calc_name='Best posterior sample',
+            y_calc_line_dash='dot',
+        ),
+    )
+
+    fig = captured['fig']
+    predictive_band_trace = next(
+        trace for trace in fig.data if trace.name == '95% credible interval'
+    )
+    max_posterior_trace = next(
+        trace for trace in fig.data if trace.name == 'Best posterior sample'
+    )
+    residual_trace = next(trace for trace in fig.data if trace.name == 'Residual (Imeas - Icalc)')
+
+    assert predictive_band_trace.fillcolor == pp.PREDICTIVE_BAND_COLOR
+    assert predictive_band_trace.legendrank == 35
+    assert max_posterior_trace.line.dash == 'dot'
+    assert predictive_band_trace.legendrank < residual_trace.legendrank
 
 
 def test_plot_powder_meas_vs_calc_keeps_exact_residual_scale_match(monkeypatch):

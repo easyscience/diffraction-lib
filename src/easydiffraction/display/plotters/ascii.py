@@ -10,6 +10,8 @@ a consistent API with other plotters.
 
 from __future__ import annotations
 
+import shutil
+
 import asciichartpy
 import numpy as np
 
@@ -22,12 +24,87 @@ from easydiffraction.utils.logging import console
 DEFAULT_COLORS = {
     'meas': asciichartpy.blue,
     'calc': asciichartpy.red,
+    'posterior': asciichartpy.red,
+    'density': asciichartpy.green,
     'resid': asciichartpy.green,
 }
+ASCII_CHART_OFFSET = 3
+ASCII_CHART_LEFT_PADDING = 15
+ASCII_CHART_FALLBACK_POINT_COUNT = 80
+ASCII_CHART_MIN_POINT_COUNT = 2
+ASCII_CHART_CROP_TRIGGER_MULTIPLIER = 2
 
 
 class AsciiPlotter(PlotterBase):
     """Terminal-based plotter using ASCII art."""
+
+    @staticmethod
+    def _chart_point_count() -> int:
+        """Return the number of points that fit the current terminal."""
+        fallback_columns = (
+            ASCII_CHART_FALLBACK_POINT_COUNT + ASCII_CHART_OFFSET + ASCII_CHART_LEFT_PADDING
+        )
+        columns = shutil.get_terminal_size(fallback=(fallback_columns, DEFAULT_HEIGHT)).columns
+        return max(
+            ASCII_CHART_MIN_POINT_COUNT,
+            columns - ASCII_CHART_OFFSET - ASCII_CHART_LEFT_PADDING,
+        )
+
+    @classmethod
+    def _resample_series_for_chart(
+        cls,
+        y_series: object,
+    ) -> list[list[float]]:
+        """Return y-series adapted to the available chart width."""
+        target_point_count = cls._chart_point_count()
+        series_arrays = [np.ravel(np.asarray(series, dtype=float)) for series in y_series]
+        if not series_arrays:
+            return []
+
+        reference_array = series_arrays[0]
+        if cls._should_crop_to_peak_window(reference_array.size):
+            start, end = cls._peak_window_bounds(reference_array)
+            return [series_array[start:end].tolist() for series_array in series_arrays]
+
+        resampled_series: list[list[float]] = []
+        for series_array in series_arrays:
+            if series_array.size == 0:
+                resampled_series.append([0.0] * target_point_count)
+                continue
+            if series_array.size == 1:
+                resampled_series.append([float(series_array[0])] * target_point_count)
+                continue
+
+            source_positions = np.linspace(0.0, 1.0, series_array.size)
+            target_positions = np.linspace(0.0, 1.0, target_point_count)
+            resampled_series.append(
+                np.interp(target_positions, source_positions, series_array).tolist()
+            )
+        return resampled_series
+
+    @classmethod
+    def _should_crop_to_peak_window(
+        cls,
+        point_count: int,
+    ) -> bool:
+        """Return whether a peak-centred viewport should be used."""
+        return point_count > cls._chart_point_count() * ASCII_CHART_CROP_TRIGGER_MULTIPLIER
+
+    @classmethod
+    def _peak_window_bounds(
+        cls,
+        y_array: np.ndarray,
+    ) -> tuple[int, int]:
+        """Return start/end indices for a peak-centred chart window."""
+        target_point_count = cls._chart_point_count()
+        if y_array.size <= target_point_count:
+            return 0, y_array.size
+
+        peak_index = int(np.argmax(np.nan_to_num(y_array, nan=float('-inf'))))
+        start = max(0, peak_index - target_point_count // 2)
+        end = min(y_array.size, start + target_point_count)
+        start = max(0, end - target_point_count)
+        return start, end
 
     @staticmethod
     def _get_legend_item(label: str) -> str:
@@ -61,6 +138,7 @@ class AsciiPlotter(PlotterBase):
         axes_labels: object,
         title: str,
         height: int | None = None,
+        excluded_ranges: tuple[tuple[float, float], ...] = (),
     ) -> None:
         """
         Render a line plot for powder diffraction data.
@@ -83,6 +161,8 @@ class AsciiPlotter(PlotterBase):
             Figure title printed above the chart.
         height : int | None, default=None
             Number of text rows to allocate for the chart.
+        excluded_ranges : tuple[tuple[float, float], ...], default=()
+            Excluded x-ranges to print below the selected x-range.
         """
         # Intentionally unused; kept for a consistent display API
         del axes_labels
@@ -91,8 +171,12 @@ class AsciiPlotter(PlotterBase):
         if height is None:
             height = DEFAULT_HEIGHT
         colors = [DEFAULT_COLORS[label] for label in labels]
-        config = {'height': height, 'colors': colors}
-        y_series = [y.tolist() for y in y_series]
+        config = {
+            'height': height,
+            'colors': colors,
+            'offset': ASCII_CHART_OFFSET,
+        }
+        y_series = self._resample_series_for_chart(y_series)
 
         chart = asciichartpy.plot(y_series, config)
 
@@ -100,6 +184,11 @@ class AsciiPlotter(PlotterBase):
         console.print(
             f'Displaying data for selected x-range from {x[0]} to {x[-1]} ({len(x)} points)'
         )
+        if excluded_ranges:
+            formatted_ranges = ', '.join(
+                f'[{start:,.2f}, {end:,.2f}]' for start, end in excluded_ranges
+            )
+            console.print(f'Excluded regions: {formatted_ranges}')
         console.print(f'Legend:\n{legend}')
 
         padded = '\n'.join(' ' + line for line in chart.splitlines())
@@ -130,12 +219,15 @@ class AsciiPlotter(PlotterBase):
             axes_labels=plot_spec.axes_labels,
             title=plot_spec.title,
             height=plot_spec.height,
+            excluded_ranges=plot_spec.excluded_ranges,
         )
+        if plot_spec.predictive_lower_95 is not None and plot_spec.predictive_upper_95 is not None:
+            console.print('Posterior predictive bands are available with the Plotly engine only.')
         if plot_spec.bragg_tick_sets:
             console.print('Bragg peak subplot rows are available with the Plotly engine only.')
 
-    @staticmethod
     def plot_single_crystal(
+        self,
         x_calc: object,
         y_meas: object,
         y_meas_su: object,
@@ -170,7 +262,7 @@ class AsciiPlotter(PlotterBase):
 
         if height is None:
             height = DEFAULT_HEIGHT
-        width = 60  # TODO: Make width configurable
+        width = self._chart_point_count()
 
         # Determine axis limits
         vmin = float(min(np.min(y_meas), np.min(x_calc)))
@@ -213,8 +305,8 @@ class AsciiPlotter(PlotterBase):
         print(f'  {x_axis}')
         console.print(f'{" " * (width - 3)}{axes_labels[0]}')
 
-    @staticmethod
     def plot_scatter(
+        self,
         x: object,
         y: object,
         sy: object,
@@ -223,13 +315,20 @@ class AsciiPlotter(PlotterBase):
         height: int | None = None,
     ) -> None:
         """Render a scatter plot with error bars in ASCII."""
-        _ = x, sy  # ASCII backend does not use x ticks or error bars
+        _ = sy  # ASCII backend does not use error bars
 
         if height is None:
             height = DEFAULT_HEIGHT
 
+        x_array = np.ravel(np.asarray(x, dtype=float))
+        y_array = np.ravel(np.asarray(y, dtype=float))
+        if x_array.size == y_array.size and x_array.size > 1:
+            order = np.argsort(x_array, kind='stable')
+            y_array = y_array[order]
+
+        y_series = self._resample_series_for_chart([y_array])
         config = {'height': height, 'colors': [asciichartpy.blue]}
-        chart = asciichartpy.plot([list(y)], config)
+        chart = asciichartpy.plot(y_series, config)
 
         console.paragraph(f'{title}')
         console.print(f'{axes_labels[1]} vs {axes_labels[0]}')

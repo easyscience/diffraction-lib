@@ -244,17 +244,18 @@ once using the command line, as shown below.
 
 - Navigate to your existing Pixi project, created as described in the
   [Installing with Pixi](#installing-with-pixi) section.
-- Add JupyterLab and the Pixi kernel for Jupyter:
+- Add JupyterLab, Interactive Python shell and the Pixi kernel for
+  Jupyter:
   ```txt
-  pixi add --pypi jupyterlab pixi-kernel
+  pixi add --pypi jupyterlab ipython pixi-kernel
   ```
 - Download all the EasyDiffraction tutorials to the `tutorials/`
   directory:
   ```txt
   pixi run easydiffraction download-all-tutorials
   ```
-- Start JupyterLab in the `tutorials/` directory to access the
-  notebooks:
+- Start the JupyterLab server in the `tutorials/` directory to access
+  the notebooks:
   ```txt
   pixi run jupyter lab tutorials/
   ```
@@ -263,9 +264,10 @@ once using the command line, as shown below.
 
 ### Classical Run Tutorials Locally
 
-- Install Jupyter Notebook and IPython kernel:
+- Install Jupyter Notebook, Interactive Python shell and the IPython
+  kernel:
   ```txt
-  pip install notebook ipykernel
+  pip install notebook ipython ipykernel
   ```
 - Add the virtual environment as a Jupyter kernel:
   ```txt
@@ -276,13 +278,14 @@ once using the command line, as shown below.
   ```txt
   python -m easydiffraction download-all-tutorials
   ```
-- Launch the Jupyter Notebook server (opens browser automatically at
-  `http://localhost:8888/`):
+- Start the Jupyter Notebook server in the `tutorials/` directory to
+  access the notebooks:
   ```txt
   jupyter notebook tutorials/
   ```
-- Open one of the `*.ipynb` files and select the
-  `EasyDiffraction Python kernel` to get started.
+- Your web browser should open automatically. Click on one of the
+  `*.ipynb` files and select the `EasyDiffraction Python kernel` to get
+  started.
 
 ### Run Tutorials via Google Colab
 

@@ -2,6 +2,10 @@
 # SPDX-License-Identifier: BSD-3-Clause
 """Additional unit tests for analysis.py to cover patch gaps."""
 
+from types import SimpleNamespace
+
+import numpy as np
+
 
 def _make_project():
     class ExpCol:
@@ -72,16 +76,20 @@ class TestAnalysisDisplayConstraints:
         assert 'No constraints' in out
 
     def test_constraints_with_items(self, capsys, monkeypatch):
-        import easydiffraction.analysis.analysis as mod
+        import easydiffraction.analysis.categories.constraints.default as constraints_mod
         from easydiffraction.analysis.analysis import Analysis
 
         a = Analysis(project=_make_project())
 
         # Create a fake constraint with expression
+        class FakeId:
+            value = 'constraint_1'
+
         class FakeExpr:
             value = 'x = y + 1'
 
         class FakeConstraint:
+            id = FakeId()
             expression = FakeExpr()
 
         a.constraints._items = [FakeConstraint()]
@@ -91,12 +99,13 @@ class TestAnalysisDisplayConstraints:
         def fake_render_table(**kwargs):
             captured.update(kwargs)
 
-        monkeypatch.setattr(mod, 'render_table', fake_render_table)
+        monkeypatch.setattr(constraints_mod, 'render_table', fake_render_table)
         a.display.constraints()
         out = capsys.readouterr().out
         assert 'User defined constraints' in out
+        assert captured['columns_headers'] == ['id', 'expression']
         assert 'columns_data' in captured
-        assert captured['columns_data'][0][0] == 'x = y + 1'
+        assert captured['columns_data'][0] == ['constraint_1', 'x = y + 1']
 
 
 # ------------------------------------------------------------------
@@ -164,8 +173,8 @@ class TestCurrentMinimizerSetter:
         from easydiffraction.analysis.analysis import Analysis
 
         a = Analysis(project=_make_project())
-        assert a.fit.minimizer_type.value == 'lmfit (leastsq)'
-        a.fit.minimizer_type = 'lmfit (leastsq)'
+        assert a.fitting.minimizer_type.value == 'lmfit (leastsq)'
+        a.fitting.minimizer_type = 'lmfit (leastsq)'
         out = capsys.readouterr().out
         assert 'Current minimizer changed to' in out
 
@@ -194,3 +203,104 @@ class TestSnapshotParams:
         assert 'expt1' in a._parameter_snapshots
         assert a._parameter_snapshots['expt1']['p1']['value'] == 1.23
         assert a._parameter_snapshots['expt1']['p1']['uncertainty'] == 0.01
+
+
+class TestBayesianProjection:
+    def test_single_parameter_projection_persists_distribution_and_predictive_caches(self):
+        from easydiffraction.analysis.analysis import Analysis
+        from easydiffraction.analysis.fit_helpers.bayesian import BayesianFitResults
+        from easydiffraction.analysis.fit_helpers.bayesian import PosteriorParameterSummary
+        from easydiffraction.analysis.fit_helpers.bayesian import PosteriorPredictiveSummary
+        from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
+
+        class Plotter:
+            @staticmethod
+            def _posterior_parameter_bounds(*, fit_results, parameter_name):
+                del fit_results, parameter_name
+                return 0.5, 1.5
+
+            @staticmethod
+            def _posterior_density_curve(values, *, lower_bound, upper_bound):
+                del values
+                return (
+                    np.asarray([lower_bound, upper_bound], dtype=float),
+                    np.asarray([0.25, 0.75], dtype=float),
+                )
+
+            @staticmethod
+            def _resolve_x_axis(experiment_type, _axis_name):
+                del experiment_type
+                return np.asarray([1.0, 2.0], dtype=float), 'two_theta', None, None, None
+
+            @staticmethod
+            def _build_posterior_predictive_summary(
+                *,
+                fit_results,
+                experiment,
+                expt_name,
+                x_axis,
+                include_draws,
+            ):
+                del fit_results, experiment, x_axis, include_draws
+                return PosteriorPredictiveSummary(
+                    experiment_name=expt_name,
+                    x_axis_name='two_theta',
+                    x=np.asarray([1.0, 2.0], dtype=float),
+                    best_sample_prediction=np.asarray([3.0, 4.0], dtype=float),
+                    lower_95=np.asarray([2.5, 3.5], dtype=float),
+                    upper_95=np.asarray([3.5, 4.5], dtype=float),
+                )
+
+        class Experiments:
+            names = ['hrpt']
+
+            def __getitem__(self, name):
+                del name
+                return SimpleNamespace(type='powder')
+
+        project = SimpleNamespace(
+            experiments=Experiments(),
+            structures=object(),
+            rendering=SimpleNamespace(plotter=Plotter()),
+            _varname='proj',
+        )
+        analysis = Analysis(project=project)
+
+        results = BayesianFitResults(
+            success=True,
+            parameters=[],
+            posterior_samples=PosteriorSamples(
+                parameter_names=['alpha'],
+                parameter_samples=np.asarray([[[1.0]], [[1.2]]], dtype=float),
+            ),
+            posterior_parameter_summaries=[
+                PosteriorParameterSummary(
+                    unique_name='alpha',
+                    display_name='Alpha',
+                    best_sample_value=1.2,
+                    median=1.1,
+                    standard_deviation=0.1,
+                    interval_68=(1.0, 1.2),
+                    interval_95=(0.9, 1.3),
+                )
+            ],
+            posterior_predictive={},
+            sampler_settings={},
+            convergence_diagnostics={},
+        )
+
+        analysis._store_bayesian_result_projection(results)
+
+        assert analysis.bayesian_result.has_distribution_cache.value is True
+        assert analysis.bayesian_result.has_pair_cache.value is False
+        assert analysis.bayesian_result.has_posterior_predictive.value is True
+        assert np.allclose(
+            analysis._persisted_fit_state_sidecar['distribution_caches']['alpha']['x'],
+            np.asarray([0.5, 1.5], dtype=float),
+        )
+        assert np.allclose(
+            analysis._persisted_fit_state_sidecar['predictive_datasets']['hrpt'][
+                'best_sample_prediction'
+            ],
+            np.asarray([3.0, 4.0], dtype=float),
+        )

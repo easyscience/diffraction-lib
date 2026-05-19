@@ -82,11 +82,11 @@ project.experiments['pdf'].peak.sharp_delta_2.free = True
 
 # %%
 project.analysis.fit()
-project.analysis.display.fit_results()
-project.display.plotter.plot_param_correlations(threshold=0.75)
+project.display.fit.results()
+project.display.fit.correlations(threshold=0.75)
 
 # %% [markdown]
 # ## Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='pdf', show_residual=True)
+project.display.pattern(expt_name='pdf')

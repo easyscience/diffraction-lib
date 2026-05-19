@@ -28,10 +28,10 @@ def test_summary_show_report_prints_sections(capsys):
             self.experiments = {}  # empty mapping to exercise loops safely
 
             class A:
-                class Fit:
+                class Fitting:
                     minimizer_type = type('V', (), {'value': 'lmfit'})()
 
-                fit = Fit()
+                fitting = Fitting()
 
                 class R:
                     reduced_chi_square = 0.0
@@ -48,6 +48,21 @@ def test_summary_show_report_prints_sections(capsys):
     assert 'CRYSTALLOGRAPHIC DATA' in out
     assert 'EXPERIMENTS' in out
     assert 'FITTING' in out
+
+
+def test_summary_help(capsys):
+    from easydiffraction.summary.summary import Summary
+
+    class P:
+        pass
+
+    s = Summary(P())
+    s.help()
+    out = capsys.readouterr().out
+    assert "Help for 'Summary'" in out
+    assert 'show_report()' in out
+    assert 'show_project_info()' in out
+    assert 'show_fitting_details()' in out
 
 
 def test_module_import():

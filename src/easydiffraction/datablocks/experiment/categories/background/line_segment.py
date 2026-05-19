@@ -34,6 +34,9 @@ from easydiffraction.utils.utils import render_table
 class LineSegment(CategoryItem):
     """Single background control point for interpolation."""
 
+    _category_code = 'background'
+    _category_entry_name = 'id'
+
     def __init__(self) -> None:
         super().__init__()
 
@@ -77,9 +80,6 @@ class LineSegment(CategoryItem):
                 ]
             ),
         )
-
-        self._identity.category_code = 'background'
-        self._identity.category_entry_name = lambda: str(self._id.value)
 
     # ------------------------------------------------------------------
     #  Public properties

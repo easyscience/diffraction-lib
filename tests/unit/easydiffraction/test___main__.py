@@ -44,6 +44,14 @@ def test_cli_subcommands_call_utils(monkeypatch):
     import easydiffraction.__main__ as main_mod
 
     logs = []
+    monkeypatch.setattr(ed, 'list_data', lambda: logs.append('LIST_DATA'))
+    monkeypatch.setattr(
+        ed,
+        'download_data',
+        lambda id, destination='data', overwrite=False: logs.append(
+            f'DATA_{id}_{destination}_{overwrite}'
+        ),
+    )
     monkeypatch.setattr(ed, 'list_tutorials', lambda: logs.append('LIST'))
     monkeypatch.setattr(
         ed,
@@ -56,14 +64,25 @@ def test_cli_subcommands_call_utils(monkeypatch):
         lambda id, destination='tutorials', overwrite=False: logs.append(f'DOWNLOAD_{id}'),
     )
 
-    res1 = runner.invoke(main_mod.app, ['list-tutorials'])
-    res2 = runner.invoke(main_mod.app, ['download-all-tutorials'])
-    res3 = runner.invoke(main_mod.app, ['download-tutorial', '1'])
+    res0 = runner.invoke(main_mod.app, ['list-data'])
+    res1 = runner.invoke(main_mod.app, ['download-data', '30', '--destination', 'projects'])
+    res2 = runner.invoke(main_mod.app, ['list-tutorials'])
+    res3 = runner.invoke(main_mod.app, ['download-all-tutorials'])
+    res4 = runner.invoke(main_mod.app, ['download-tutorial', '1'])
 
+    assert res0.exit_code == 0
     assert res1.exit_code == 0
     assert res2.exit_code == 0
     assert res3.exit_code == 0
-    assert logs == ['LIST', 'DOWNLOAD_ALL', 'DOWNLOAD_1']
+    assert res4.exit_code == 0
+    assert logs == ['LIST_DATA', 'DATA_30_projects_False', 'LIST', 'DOWNLOAD_ALL', 'DOWNLOAD_1']
+
+
+def test_cli_project_first_argument_normalization_supports_global_data_commands():
+    import easydiffraction.__main__ as main_mod
+
+    assert main_mod._normalized_cli_args(['list-data']) == ['list-data']
+    assert main_mod._normalized_cli_args(['download-data', '30']) == ['download-data', '30']
 
 
 def test_cli_fit_loads_and_fits(monkeypatch, tmp_path):
@@ -95,16 +114,21 @@ def test_cli_fit_loads_and_fits(monkeypatch, tmp_path):
         analysis = _analysis()
 
         class _display:
-            class _plotter:
+            class _fit:
                 @staticmethod
-                def plot_param_correlations():
+                def results():
+                    calls.append('DISPLAY')
+
+                @staticmethod
+                def correlations():
                     calls.append('PLOT_CORR')
 
-                @staticmethod
-                def plot_meas_vs_calc(expt_name, *, show_residual=False):
-                    calls.append(f'PLOT_{expt_name}_{show_residual}')
+            fit = _fit()
 
-            plotter = _plotter()
+            @staticmethod
+            def pattern(expt_name, **kwargs):
+                del kwargs
+                calls.append(f'PLOT_{expt_name}_False')
 
         display = _display()
 
@@ -119,7 +143,64 @@ def test_cli_fit_loads_and_fits(monkeypatch, tmp_path):
 
     result = runner.invoke(main_mod.app, ['fit', str(proj_dir)])
     assert result.exit_code == 0
-    assert calls == ['FIT', 'DISPLAY', 'PLOT_CORR', 'PLOT_exp1_True']
+    assert calls == ['FIT', 'DISPLAY', 'PLOT_CORR', 'PLOT_exp1_False']
+
+
+def test_cli_fit_skips_fit_reports_for_sequential_mode(monkeypatch, tmp_path):
+    import easydiffraction.__main__ as main_mod
+    from easydiffraction.project.project import Project
+
+    calls = []
+
+    class FakeInfo:
+        _path = '/some/path'
+
+    class FakeExperiment:
+        name = 'exp1'
+
+    class FakeProject:
+        info = FakeInfo()
+        experiments = [FakeExperiment()]
+
+        class _analysis:
+            fitting_mode_type = 'sequential'
+
+            @staticmethod
+            def fit():
+                calls.append('FIT')
+
+        analysis = _analysis()
+
+        class _display:
+            class _fit:
+                @staticmethod
+                def results():
+                    calls.append('DISPLAY')
+
+                @staticmethod
+                def correlations():
+                    calls.append('PLOT_CORR')
+
+            fit = _fit()
+
+            @staticmethod
+            def pattern(expt_name, **kwargs):
+                del kwargs
+                calls.append(f'PLOT_{expt_name}_False')
+
+        display = _display()
+
+    fake_project = FakeProject()
+
+    proj_dir = tmp_path / 'proj'
+    proj_dir.mkdir()
+    (proj_dir / 'project.cif').write_text('_project.id test\n')
+
+    monkeypatch.setattr(Project, 'load', staticmethod(lambda dir_path: fake_project))
+
+    result = runner.invoke(main_mod.app, ['fit', str(proj_dir)])
+    assert result.exit_code == 0
+    assert calls == ['FIT', 'PLOT_exp1_False']
 
 
 def test_cli_fit_dry_clears_path(monkeypatch, tmp_path):
@@ -149,16 +230,20 @@ def test_cli_fit_dry_clears_path(monkeypatch, tmp_path):
         analysis = _analysis()
 
         class _display:
-            class _plotter:
+            class _fit:
                 @staticmethod
-                def plot_param_correlations():
+                def results():
                     pass
 
                 @staticmethod
-                def plot_meas_vs_calc(expt_name, *, show_residual=False):
+                def correlations():
                     pass
 
-            plotter = _plotter()
+            fit = _fit()
+
+            @staticmethod
+            def pattern(expt_name, **kwargs):
+                del expt_name, kwargs
 
         display = _display()
 

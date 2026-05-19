@@ -131,5 +131,19 @@
     "title": "Instrument calibration: BEER at ESS",
     "description": "Instrument calibration of BEER at ESS using neutron powder diffraction data simulated with McStas",
     "level": "intermediate"
+  },
+  "21": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-21/ed-21.ipynb",
+    "original_name": "",
+    "title": "Bayesian Analysis: LBCO, HRPT",
+    "description": "Bayesian analysis of the La0.5Ba0.5CoO3 crystal structure - Markov Chain Monte Carlo (MCMC) sampling.",
+    "level": "advanced"
+  },
+  "22": {
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/ed-22/ed-22.ipynb",
+    "original_name": "",
+    "title": "Bayesian Analysis: Tb2TiO7, HEiDi",
+    "description": "Bayesian analysis of the Tb2TiO7 crystal structure - Markov Chain Monte Carlo (MCMC) sampling.",
+    "level": "advanced"
   }
 }

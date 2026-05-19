@@ -117,7 +117,7 @@ You can also check the available minimizers using the
 `show_minimizer_types()` method:
 
 ```python
-project.analysis.fit.show_minimizer_types()
+project.analysis.fitting.show_minimizer_types()
 ```
 
 ### Available parameters
@@ -125,23 +125,22 @@ project.analysis.fit.show_minimizer_types()
 EasyDiffraction provides several methods for showing the available
 parameters grouped in different categories. For example, you can use:
 
-- `project.analysis.display.all_params()` – to display all available
+- `project.display.parameters.all()` – to display all available
   parameters for the analysis step.
-- `project.analysis.display.fittable_params()` – to display only the
+- `project.display.parameters.fittable()` – to display only the
   parameters that can be fitted during the analysis.
-- `project.analysis.display.free_params()` – to display the parameters
-  that are currently free to be adjusted during the fitting process.
+- `project.display.parameters.free()` – to display the parameters that
+  are currently free to be adjusted during the fitting process.
 
-Finally, you can use the
-`project.analysis.display.how_to_access_parameters()` method to get a
-brief overview of how to access and modify parameters in the analysis
-step, along with their unique identifiers in the CIF format. This can be
-particularly useful for users who are new to the EasyDiffraction API or
-those who want to quickly understand how to work with parameters in
-their projects.
+Finally, you can use the `project.display.parameters.access()` method to
+get a brief overview of how to access and modify parameters in the
+analysis step, along with their unique identifiers in the CIF format.
+This can be particularly useful for users who are new to the
+EasyDiffraction API or those who want to quickly understand how to work
+with parameters in their projects.
 
-An example of the output for the
-`project.analysis.display.how_to_access_parameters()` method is:
+An example of the output for the `project.display.parameters.access()`
+method is:
 
 |     | Code variable                                       | Unique ID for CIF          |
 | --- | --------------------------------------------------- | -------------------------- |
@@ -160,7 +159,7 @@ To see the available plotters, you can use the `display` category on the
 `Project` instance:
 
 ```python
-project.display.show_plotter_types()
+project.rendering.show_chart_engines()
 ```
 
 An example of the output is:

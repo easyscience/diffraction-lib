@@ -205,12 +205,18 @@ def test_save_load_round_trip_preserves_parameters(tmp_path) -> None:
     # Compare constraints
     assert len(loaded.analysis.constraints) == len(original.analysis.constraints)
     for i, orig_c in enumerate(original.analysis.constraints):
+        loaded_constraint = loaded.analysis.constraints[orig_c.id.value]
+        assert loaded_constraint.id.value == orig_c.id.value
+        assert loaded_constraint.expression.value == orig_c.expression.value
         assert loaded.analysis.constraints[i].expression.value == orig_c.expression.value
     assert loaded.analysis.constraints.enabled is True
 
     # Compare analysis settings
-    assert loaded.analysis.fit.minimizer_type.value == original.analysis.fit.minimizer_type.value
-    assert loaded.analysis.fit.mode.value == original.analysis.fit.mode.value
+    assert (
+        loaded.analysis.fitting.minimizer_type.value
+        == original.analysis.fitting.minimizer_type.value
+    )
+    assert loaded.analysis.fitting_mode_type == original.analysis.fitting_mode_type
 
 
 # ------------------------------------------------------------------
@@ -227,7 +233,8 @@ def test_save_load_round_trip_preserves_fit_quality(tmp_path) -> None:
     """
     # Create and fit the original project
     original = _create_lbco_project()
-    original.analysis.fit(verbosity='silent')
+    original.verbosity = 'silent'
+    original.analysis.fit()
     original_chi2 = original.analysis.fit_results.reduced_chi_square
 
     # Save the fitted project
@@ -238,7 +245,8 @@ def test_save_load_round_trip_preserves_fit_quality(tmp_path) -> None:
     loaded = Project.load(proj_dir)
 
     # Fit the loaded project
-    loaded.analysis.fit(verbosity='silent')
+    loaded.verbosity = 'silent'
+    loaded.analysis.fit()
     loaded_chi2 = loaded.analysis.fit_results.reduced_chi_square
 
     # The χ² values should be very close (same starting point,

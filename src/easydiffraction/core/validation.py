@@ -27,6 +27,7 @@ class DataTypeHints:
     """Type hint aliases for numeric, string, and boolean types."""
 
     Numeric = int | float | np.integer | np.floating
+    Integer = int | np.integer
     String = str
     Bool = bool
 
@@ -38,6 +39,7 @@ class DataTypes(Enum):
     """Enumeration of supported data types for descriptors."""
 
     NUMERIC = (int, float, np.integer, np.floating)
+    INTEGER = (int, np.integer)
     STRING = (str,)
     BOOL = (bool,)
     ANY = (object,)  # fallback for unconstrained

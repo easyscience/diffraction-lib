@@ -1,11 +1,10 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-"""Integration tests for Analysis.fit_sequential()."""
+"""Integration tests for sequential fitting via Analysis.fit()."""
 
 from __future__ import annotations
 
 import csv
-import shutil
 import tempfile
 from pathlib import Path
 
@@ -20,7 +19,10 @@ from easydiffraction import download_data
 TEMP_DIR = tempfile.gettempdir()
 
 
-def _create_sequential_project(tmp_path: Path) -> tuple[Project, str]:
+def _create_sequential_project(
+    tmp_path: Path,
+    temperatures: dict[str, float] | None = None,
+) -> tuple[Project, str]:
     """
     Build a project for sequential fitting and save it.
 
@@ -100,7 +102,8 @@ def _create_sequential_project(tmp_path: Path) -> tuple[Project, str]:
     expt.background['2'].y.free = True
 
     # Initial fit on the template
-    project.analysis.fit(verbosity='silent')
+    project.verbosity = 'silent'
+    project.analysis.fit()
 
     # Save project
     proj_dir = str(tmp_path / 'seq_project')
@@ -109,10 +112,37 @@ def _create_sequential_project(tmp_path: Path) -> tuple[Project, str]:
     # Create a data directory with copies of the same data file
     data_dir = tmp_path / 'scan_data'
     data_dir.mkdir()
+    source_text = Path(data_path).read_text(encoding='utf-8')
     for i in range(3):
-        shutil.copy(data_path, data_dir / f'scan_{i + 1:03d}.xye')
+        file_name = f'scan_{i + 1:03d}.xye'
+        destination = data_dir / file_name
+        destination_text = source_text
+        if temperatures is not None:
+            temperature = temperatures[file_name]
+            destination_text = f'# ambient_temperature = {temperature}\n{source_text}'
+        destination.write_text(destination_text, encoding='utf-8')
 
     return project, str(data_dir)
+
+
+def _run_sequential_fit(
+    project: Project,
+    data_dir: str,
+    *,
+    max_workers: int | str = 1,
+    chunk_size: int | None = None,
+    file_pattern: str = '*',
+    reverse: bool = False,
+) -> None:
+    project.analysis.fitting_mode_type = 'sequential'
+    project.analysis.sequential_fit.data_dir = data_dir
+    project.analysis.sequential_fit.max_workers = (
+        'auto' if max_workers == 'auto' else str(max_workers)
+    )
+    project.analysis.sequential_fit.chunk_size = '.' if chunk_size is None else str(chunk_size)
+    project.analysis.sequential_fit.file_pattern = file_pattern
+    project.analysis.sequential_fit.reverse = reverse
+    project.analysis.fit()
 
 
 # ------------------------------------------------------------------
@@ -124,10 +154,7 @@ def test_fit_sequential_produces_csv(tmp_path) -> None:
     """fit_sequential creates a results.csv with one row per file."""
     project, data_dir = _create_sequential_project(tmp_path)
 
-    project.analysis.fit_sequential(
-        data_dir=data_dir,
-        verbosity='silent',
-    )
+    _run_sequential_fit(project, data_dir)
 
     csv_path = project.info.path / 'analysis' / 'results.csv'
     assert csv_path.is_file(), 'results.csv was not created'
@@ -138,9 +165,18 @@ def test_fit_sequential_produces_csv(tmp_path) -> None:
 
     assert len(rows) == 3, f'Expected 3 rows, got {len(rows)}'
 
-    # Each row should have fit_success
+    # Each row should have fit_result.success
     for row in rows:
-        assert row['fit_success'] == 'True', f'Fit failed for {row["file_path"]}'
+        assert row['fit_result.success'] == 'True', f'Fit failed for {row["file_path"]}'
+        assert int(row['fit_result.iterations']) > 0, (
+            f'Expected non-zero iterations for {row["file_path"]}'
+        )
+
+    assert 'fit_result.reduced_chi_square' in rows[0]
+    assert 'fit_result.iterations' in rows[0]
+    assert 'success' not in rows[0]
+    assert 'reduced_chi_square' not in rows[0]
+    assert 'iterations' not in rows[0]
 
     # Each row should have parameter values
     assert 'lbco.cell.length_a' in rows[0]
@@ -157,10 +193,7 @@ def test_fit_sequential_crash_recovery(tmp_path) -> None:
     project, data_dir = _create_sequential_project(tmp_path)
 
     # First run: fit all 3 files
-    project.analysis.fit_sequential(
-        data_dir=data_dir,
-        verbosity='silent',
-    )
+    _run_sequential_fit(project, data_dir)
 
     csv_path = project.info.path / 'analysis' / 'results.csv'
     with csv_path.open() as f:
@@ -168,10 +201,7 @@ def test_fit_sequential_crash_recovery(tmp_path) -> None:
     assert len(rows_first) == 3
 
     # Second run: should skip all 3 files
-    project.analysis.fit_sequential(
-        data_dir=data_dir,
-        verbosity='silent',
-    )
+    _run_sequential_fit(project, data_dir)
 
     with csv_path.open() as f:
         rows_second = list(csv.DictReader(f))
@@ -188,10 +218,7 @@ def test_fit_sequential_parameter_propagation(tmp_path) -> None:
     """Parameters from one fit propagate to the next."""
     project, data_dir = _create_sequential_project(tmp_path)
 
-    project.analysis.fit_sequential(
-        data_dir=data_dir,
-        verbosity='silent',
-    )
+    _run_sequential_fit(project, data_dir)
 
     csv_path = project.info.path / 'analysis' / 'results.csv'
     with csv_path.open() as f:
@@ -204,25 +231,23 @@ def test_fit_sequential_parameter_propagation(tmp_path) -> None:
 
 
 # ------------------------------------------------------------------
-#  Test 4: extract_diffrn callback
+#  Test 4: extract metadata rules
 # ------------------------------------------------------------------
 
 
-def test_fit_sequential_with_diffrn_callback(tmp_path) -> None:
-    """extract_diffrn callback populates diffrn columns in CSV."""
-    project, data_dir = _create_sequential_project(tmp_path)
-
+def test_fit_sequential_with_diffrn_extract_rules(tmp_path) -> None:
+    """Sequential extract rules populate diffrn columns in the CSV."""
     temperatures = {'scan_001.xye': 300.0, 'scan_002.xye': 350.0, 'scan_003.xye': 400.0}
+    project, data_dir = _create_sequential_project(tmp_path, temperatures=temperatures)
 
-    def extract_diffrn(file_path: str) -> dict[str, float]:
-        name = Path(file_path).name
-        return {'ambient_temperature': temperatures.get(name, 0.0)}
-
-    project.analysis.fit_sequential(
-        data_dir=data_dir,
-        extract_diffrn=extract_diffrn,
-        verbosity='silent',
+    project.analysis.sequential_fit_extract.create(
+        id='temperature',
+        target='diffrn.ambient_temperature',
+        pattern=r'ambient_temperature\s*=\s*([0-9.]+)',
+        required=True,
     )
+
+    _run_sequential_fit(project, data_dir)
 
     csv_path = project.info.path / 'analysis' / 'results.csv'
     with csv_path.open() as f:
@@ -231,9 +256,9 @@ def test_fit_sequential_with_diffrn_callback(tmp_path) -> None:
     # Check that temperature column is present and populated
     for row in rows:
         name = Path(row['file_path']).name
-        if 'diffrn.ambient_temperature' in row:
-            expected = temperatures.get(name, 0.0)
-            assert_almost_equal(float(row['diffrn.ambient_temperature']), expected)
+        assert 'diffrn.ambient_temperature' in row
+        expected = temperatures[name]
+        assert_almost_equal(float(row['diffrn.ambient_temperature']), expected)
 
 
 # ------------------------------------------------------------------
@@ -256,7 +281,7 @@ def test_fit_sequential_requires_saved_project(tmp_path) -> None:
     project.experiments.add(expt)
 
     with pytest.raises(ValueError, match='must be saved'):
-        project.analysis.fit_sequential(data_dir=str(tmp_path))
+        _run_sequential_fit(project, str(tmp_path))
 
 
 def test_fit_sequential_requires_one_structure(tmp_path) -> None:
@@ -265,7 +290,7 @@ def test_fit_sequential_requires_one_structure(tmp_path) -> None:
     project.save_as(str(tmp_path / 'proj'))
 
     with pytest.raises(ValueError, match='exactly 1 structure'):
-        project.analysis.fit_sequential(data_dir=str(tmp_path))
+        _run_sequential_fit(project, str(tmp_path))
 
 
 def test_fit_sequential_requires_one_experiment(tmp_path) -> None:
@@ -276,7 +301,7 @@ def test_fit_sequential_requires_one_experiment(tmp_path) -> None:
     project.save_as(str(tmp_path / 'proj'))
 
     with pytest.raises(ValueError, match='exactly 1 experiment'):
-        project.analysis.fit_sequential(data_dir=str(tmp_path))
+        _run_sequential_fit(project, str(tmp_path))
 
 
 # ------------------------------------------------------------------
@@ -288,11 +313,7 @@ def test_fit_sequential_parallel(tmp_path) -> None:
     """fit_sequential with max_workers=2 produces correct CSV."""
     project, data_dir = _create_sequential_project(tmp_path)
 
-    project.analysis.fit_sequential(
-        data_dir=data_dir,
-        max_workers=2,
-        verbosity='silent',
-    )
+    _run_sequential_fit(project, data_dir, max_workers=2)
 
     csv_path = project.info.path / 'analysis' / 'results.csv'
     assert csv_path.is_file(), 'results.csv was not created'
@@ -304,7 +325,10 @@ def test_fit_sequential_parallel(tmp_path) -> None:
     assert len(rows) == 3, f'Expected 3 rows, got {len(rows)}'
 
     for row in rows:
-        assert row['fit_success'] == 'True', f'Fit failed for {row["file_path"]}'
+        assert row['fit_result.success'] == 'True', f'Fit failed for {row["file_path"]}'
+        assert int(row['fit_result.iterations']) > 0, (
+            f'Expected non-zero iterations for {row["file_path"]}'
+        )
 
     # Parameter values should be present and reasonable
     assert 'lbco.cell.length_a' in rows[0]
@@ -320,12 +344,16 @@ def test_fit_sequential_parallel(tmp_path) -> None:
 
 def test_apply_params_from_csv_loads_data_and_params(tmp_path) -> None:
     """apply_params_from_csv overrides params and reloads data."""
-    project, data_dir = _create_sequential_project(tmp_path)
-
-    project.analysis.fit_sequential(
-        data_dir=data_dir,
-        verbosity='silent',
+    temperatures = {'scan_001.xye': 300.0, 'scan_002.xye': 350.0, 'scan_003.xye': 400.0}
+    project, data_dir = _create_sequential_project(tmp_path, temperatures=temperatures)
+    project.analysis.sequential_fit_extract.create(
+        id='temperature',
+        target='diffrn.ambient_temperature',
+        pattern=r'ambient_temperature\s*=\s*([0-9.]+)',
+        required=True,
     )
+
+    _run_sequential_fit(project, data_dir)
 
     csv_path = project.info.path / 'analysis' / 'results.csv'
     with csv_path.open() as f:
@@ -333,6 +361,10 @@ def test_apply_params_from_csv_loads_data_and_params(tmp_path) -> None:
 
     # Read the expected cell_length_a from CSV row 1
     expected_a = float(rows[1]['lbco.cell.length_a'])
+    expected_temperature = float(rows[1]['diffrn.ambient_temperature'])
+
+    expt = next(iter(project.experiments.values()))
+    expt.diffrn.ambient_temperature.value = None
 
     # Apply params from row 1
     project.apply_params_from_csv(row_index=1)
@@ -343,8 +375,8 @@ def test_apply_params_from_csv_loads_data_and_params(tmp_path) -> None:
 
     # Verify that the experiment has measured data loaded
     # (from the file_path in that CSV row)
-    expt = next(iter(project.experiments.values()))
     assert expt.data.intensity_meas is not None
+    assert_almost_equal(expt.diffrn.ambient_temperature.value, expected_temperature)
 
 
 def test_apply_params_from_csv_raises_on_missing_csv(tmp_path) -> None:
@@ -360,10 +392,7 @@ def test_apply_params_from_csv_raises_on_bad_index(tmp_path) -> None:
     """apply_params_from_csv raises on out-of-range index."""
     project, data_dir = _create_sequential_project(tmp_path)
 
-    project.analysis.fit_sequential(
-        data_dir=data_dir,
-        verbosity='silent',
-    )
+    _run_sequential_fit(project, data_dir)
 
     with pytest.raises(IndexError, match='out of range'):
         project.apply_params_from_csv(row_index=99)

@@ -13,11 +13,11 @@ def test_module_import():
 
 
 def test_tracker_terminal_flow_prints_and_updates_best(monkeypatch, capsys):
-    import easydiffraction.analysis.fit_helpers.tracking as tracking_mod
+    import easydiffraction.display.progress as progress_mod
     from easydiffraction.analysis.fit_helpers.tracking import FitProgressTracker
 
-    # Force terminal branch (not notebook): tracking imports in_jupyter directly
-    monkeypatch.setattr(tracking_mod, 'in_jupyter', lambda: False)
+    # Force terminal branch (not notebook) in the shared progress layer.
+    monkeypatch.setattr(progress_mod, 'in_jupyter', lambda: False)
 
     tracker = FitProgressTracker()
     tracker.start_tracking('dummy')
@@ -43,3 +43,84 @@ def test_tracker_terminal_flow_prints_and_updates_best(monkeypatch, capsys):
     out2 = capsys.readouterr().out
     assert 'Best goodness-of-fit' in out2
     assert tracker.best_iteration is not None
+
+
+def test_tracker_fit_adds_timed_rows_and_resets_counter(monkeypatch):
+    import easydiffraction.analysis.fit_helpers.tracking as tracking_mod
+    from easydiffraction.analysis.fit_helpers.tracking import FitProgressTracker
+
+    chi2_values = iter([5.0, 4.0, 3.97, 3.97, 3.97, 3.97])
+    perf_counter_values = iter([0.0, 0.0, 2.0, 6.9, 7.1, 11.9, 12.2])
+
+    monkeypatch.setattr(
+        tracking_mod,
+        'calculate_reduced_chi_square',
+        lambda residuals, n_parameters: next(chi2_values),
+    )
+    monkeypatch.setattr(
+        tracking_mod.time,
+        'perf_counter',
+        lambda: next(perf_counter_values),
+    )
+
+    tracker = FitProgressTracker()
+    tracker.start_timer()
+
+    for _ in range(6):
+        tracker.track(np.array([1.0]), parameters=[1.0])
+
+    assert tracker._df_rows == [
+        ['1', '0.00', '5.00', ''],
+        ['2', '2.00', '4.00', '20.0% ↓'],
+        ['4', '7.10', '3.97', ''],
+        ['6', '12.20', '3.97', ''],
+    ]
+    assert tracker._last_progress_time == 12.2
+    assert tracker._previous_chi2 == 4.0
+
+
+def test_tracker_fit_progress_uses_backend_iterations_for_display():
+    from easydiffraction.analysis.fit_helpers.tracking import FitProgressTracker
+
+    tracker = FitProgressTracker()
+
+    tracker.track_fit_progress(iteration=1, reduced_chi2=10.0, elapsed_time=0.1)
+    tracker.track_fit_progress(iteration=63, reduced_chi2=5.0, elapsed_time=1.0)
+    tracker.track_fit_progress(iteration=122, reduced_chi2=4.0, elapsed_time=2.0)
+
+    assert tracker._df_rows == [
+        ['1', '0.10', '10.00', ''],
+        ['63', '1.00', '5.00', '50.0% ↓'],
+        ['122', '2.00', '4.00', '20.0% ↓'],
+    ]
+    assert tracker.best_iteration == 122
+
+
+def test_tracker_sampler_post_processing_adds_final_status_row():
+    from easydiffraction.analysis.fit_helpers.tracking import FitProgressTracker
+    from easydiffraction.analysis.fit_helpers.tracking import SamplerProgressUpdate
+
+    tracker = FitProgressTracker()
+    tracker.start_tracking('dream', mode='sampling')
+    tracker.start_timer()
+    tracker.track_sampler_progress(
+        SamplerProgressUpdate(
+            iteration=10,
+            total_iterations=10,
+            phase='sampling',
+            progress_percent=100.0,
+            log_posterior=-3.0,
+            reduced_chi2=1.0,
+            elapsed_time=5.0,
+            force_report=True,
+        )
+    )
+
+    tracker.start_sampler_post_processing()
+    tracker.stop_timer()
+    tracker.finish_tracking()
+
+    assert tracker._df_rows[-1][0] == ''
+    assert tracker._df_rows[-1][1] == ''
+    assert tracker._df_rows[-1][3] == ''
+    assert tracker._df_rows[-1][4] == 'post-processing'

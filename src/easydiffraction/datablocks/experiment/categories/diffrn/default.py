@@ -17,6 +17,8 @@ from easydiffraction.io.cif.handler import CifHandler
 class DefaultDiffrn(CategoryItem):
     """Ambient conditions recorded during diffraction measurement."""
 
+    _category_code = 'diffrn'
+
     type_info = TypeInfo(
         tag='default',
         description='Diffraction ambient conditions',
@@ -72,8 +74,6 @@ class DefaultDiffrn(CategoryItem):
             ),
             cif_handler=CifHandler(names=['_diffrn.ambient_electric_field']),
         )
-
-        self._identity.category_code = 'diffrn'
 
     # ------------------------------------------------------------------
     #  Public properties

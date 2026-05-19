@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import textwrap
 from typing import TYPE_CHECKING
 from typing import Any
 
@@ -21,14 +22,14 @@ if TYPE_CHECKING:
     from easydiffraction.core.category import CategoryItem
     from easydiffraction.core.variable import GenericDescriptorBase
 
-# Maximum CIF description length before using semicolon-delimited block
-_CIF_DESCRIPTION_WRAP_LEN = 60
-
 # Minimum string length to check for surrounding quotes
 _MIN_QUOTED_LEN = 2
 
 # Number of significant digits kept for CIF uncertainty notation
 _CIF_UNCERTAINTY_SIG_DIGITS = 2
+
+# Maximum CIF description length before using semicolon-delimited block
+_CIF_DESCRIPTION_WRAP_LEN = 60
 
 
 def format_value(value: object) -> str:
@@ -48,9 +49,12 @@ def format_value(value: object) -> str:
     # None → CIF unknown marker
     if value is None:
         value = '?'
-    # Convert ints to floats
-    elif isinstance(value, int):
-        value = float(value)
+    # Booleans use CIF true/false tokens
+    elif isinstance(value, bool):
+        value = 'true' if value else 'false'
+    # Preserve integers as integers in CIF output
+    elif isinstance(value, (int, np.integer)):
+        value = str(int(value))
     # Empty strings → CIF unknown marker
     elif isinstance(value, str) and not value.strip():
         value = '?'
@@ -70,6 +74,29 @@ def format_value(value: object) -> str:
     return str(value)
 
 
+def _strip_optional_quotes(raw: str) -> str:
+    """Return an unquoted CIF token when it is wrapped in quotes."""
+    is_quoted = len(raw) >= _MIN_QUOTED_LEN and raw[0] == raw[-1] and raw[0] in {"'", '"'}
+    return raw[1:-1] if is_quoted else raw
+
+
+def _strip_cif_text_field_delimiters(raw: str) -> str:
+    """Return CIF text-field content without delimiter lines."""
+    if raw.startswith(';\n') and raw.endswith('\n;'):
+        return raw[2:-2].strip()
+    return raw
+
+
+def _parse_bool_cif_value(raw: str) -> bool | str:
+    """Parse CIF boolean tokens, returning the raw token if invalid."""
+    normalized_value = _strip_optional_quotes(raw).lower()
+    if normalized_value == 'true':
+        return True
+    if normalized_value == 'false':
+        return False
+    return _strip_optional_quotes(raw)
+
+
 ##################
 # Serialize to CIF
 ##################
@@ -87,7 +114,7 @@ def format_param_value(param: object) -> str:
     - Free parameter with uncertainty: value with esd in brackets,
       e.g. ``3.89(20)``
 
-    Constrained (dependent) parameters are always written without
+    User-constrained (dependent) parameters are always written without
     brackets, even if their ``free`` flag is ``True``, because they are
     not independently varied by the minimizer.
 
@@ -98,7 +125,7 @@ def format_param_value(param: object) -> str:
     ----------
     param : object
         A descriptor or parameter exposing ``.value`` and optionally
-        ``.free``, ``.constrained``, and ``.uncertainty``.
+        ``.free``, ``.user_constrained``, and ``.uncertainty``.
 
     Returns
     -------
@@ -108,10 +135,10 @@ def format_param_value(param: object) -> str:
     from easydiffraction.core.variable import Parameter  # noqa: PLC0415
 
     is_free = param.free if isinstance(param, Parameter) else False
-    is_constrained = param.constrained if isinstance(param, Parameter) else False
+    is_user_constrained = param.user_constrained if isinstance(param, Parameter) else False
     value = param.value  # type: ignore[attr-defined]
 
-    if not is_free or is_constrained or not isinstance(value, (int, float)):
+    if not is_free or is_user_constrained or not isinstance(value, (int, float)):
         return format_value(value)
 
     precision = 8
@@ -249,6 +276,39 @@ def category_collection_to_cif(
     return '\n'.join(lines)
 
 
+def category_owner_to_cif(
+    owner: object,
+    max_loop_display: int | None = None,
+) -> str:
+    """Render a category-owning object without a ``data_`` header."""
+    from easydiffraction.core.category import CategoryCollection  # noqa: PLC0415
+    from easydiffraction.core.category import CategoryItem  # noqa: PLC0415
+
+    categories_getter = getattr(owner, '_serializable_categories', None)
+    if callable(categories_getter):
+        categories = categories_getter()
+    else:
+        categories = [
+            value
+            for value in vars(owner).values()
+            if isinstance(value, (CategoryItem, CategoryCollection))
+        ]
+
+    item_parts = [
+        category.as_cif
+        for category in categories
+        if isinstance(category, CategoryItem) and category.as_cif
+    ]
+
+    collection_parts = [
+        category_collection_to_cif(category, max_display=max_loop_display)
+        for category in categories
+        if isinstance(category, CategoryCollection)
+    ]
+
+    return '\n\n'.join([part for part in item_parts + collection_parts if part])
+
+
 def datablock_item_to_cif(
     datablock: object,
     max_loop_display: int | None = None,
@@ -271,29 +331,36 @@ def datablock_item_to_cif(
     str
         CIF text representing the datablock as a loop.
     """
-    # Local imports to avoid import-time cycles
-    from easydiffraction.core.category import CategoryCollection  # noqa: PLC0415
-    from easydiffraction.core.category import CategoryItem  # noqa: PLC0415
-
     header = f'data_{datablock._identity.datablock_entry_name}'
-    parts: list[str] = [header]
-
-    # First categories
-    parts.extend(v.as_cif for v in vars(datablock).values() if isinstance(v, CategoryItem))
-
-    # Then collections
-    parts.extend(
-        category_collection_to_cif(v, max_display=max_loop_display)
-        for v in vars(datablock).values()
-        if isinstance(v, CategoryCollection)
-    )
-
-    return '\n\n'.join(parts)
+    body = category_owner_to_cif(datablock, max_loop_display=max_loop_display)
+    if not body:
+        return header
+    return f'{header}\n\n{body}'
 
 
 def datablock_collection_to_cif(collection: object) -> str:
     """Render a collection of datablocks by joining their CIF blocks."""
     return '\n\n'.join([block.as_cif for block in collection.values()])
+
+
+def _format_project_description(description: str) -> str:
+    """Format project descriptions as CIF text."""
+    normalized_description = ' '.join(description.split())
+    if not normalized_description:
+        return '?'
+
+    if len(normalized_description) > _CIF_DESCRIPTION_WRAP_LEN:
+        wrapped_description = '\n'.join(
+            textwrap.wrap(
+                normalized_description,
+                width=_CIF_DESCRIPTION_WRAP_LEN,
+                break_long_words=False,
+                break_on_hyphens=False,
+            )
+        )
+        return f'\n;\n{wrapped_description}\n;'
+
+    return format_value(normalized_description)
 
 
 def project_info_to_cif(info: object) -> str:
@@ -302,19 +369,12 @@ def project_info_to_cif(info: object) -> str:
 
     title = f'{info.title}'
     if ' ' in title:
-        title = f"'{title}'"
+        title = format_value(info.title)
 
-    if len(info.description) > _CIF_DESCRIPTION_WRAP_LEN:
-        description = f'\n;\n{info.description}\n;'
-    elif info.description:
-        description = f'{info.description}'
-        if ' ' in description:
-            description = f"'{description}'"
-    else:
-        description = '?'
+    description = _format_project_description(info.description)
 
-    created = f"'{info._created.strftime('%d %b %Y %H:%M:%S')}'"
-    last_modified = f"'{info._last_modified.strftime('%d %b %Y %H:%M:%S')}'"
+    created = format_value(info.created.strftime('%d %b %Y %H:%M:%S'))
+    last_modified = format_value(info.last_modified.strftime('%d %b %Y %H:%M:%S'))
 
     return (
         f'_project.id               {name}\n'
@@ -333,10 +393,14 @@ def _as_cif_text(section: object) -> str:
 
 def project_config_to_cif(project: object) -> str:
     """Render project-level configuration to ``project.cif`` text."""
+    config = getattr(project, '_config', None)
+    if config is not None:
+        return category_owner_to_cif(config)
+
     lines: list[str] = [_as_cif_text(project.info)]
-    display = getattr(project, 'display', None)
-    if display is not None:
-        lines.extend(('', _as_cif_text(display)))
+    rendering = getattr(project, 'rendering', None)
+    if rendering is not None:
+        lines.extend(('', _as_cif_text(rendering)))
     return '\n'.join(lines)
 
 
@@ -350,7 +414,7 @@ def project_to_cif(project: object) -> str:
     if getattr(project, 'experiments', None):
         parts.append(_as_cif_text(project.experiments))
     if getattr(project, 'analysis', None):
-        parts.append(project.analysis.as_cif())
+        parts.append(_as_cif_text(project.analysis))
     if getattr(project, 'summary', None):
         parts.append(project.summary.as_cif())
     return '\n\n'.join([p for p in parts if p])
@@ -363,18 +427,32 @@ def experiment_to_cif(experiment: object) -> str:
 
 def analysis_to_cif(analysis: object) -> str:
     """Render analysis metadata, aliases, and constraints to CIF."""
-    lines: list[str] = []
-    lines.extend((
-        analysis.fit.as_cif,
-        '',
-        analysis.aliases.as_cif,
-        '',
-        analysis.constraints.as_cif,
-    ))
-    jfe_cif = analysis.joint_fit_experiments.as_cif
-    if jfe_cif:
-        lines.extend(('', jfe_cif))
-    return '\n'.join(lines)
+    parts: list[str] = [f'_fitting.mode_type {format_value(analysis.fitting_mode_type)}']
+
+    body = category_owner_to_cif(analysis)
+    if not body:
+        fallback_sections = [
+            getattr(analysis, 'fitting', None),
+            getattr(analysis, 'aliases', None),
+            getattr(analysis, 'constraints', None),
+        ]
+
+        if analysis.fitting_mode_type == 'joint':
+            fallback_sections.append(getattr(analysis, 'joint_fit', None))
+        elif analysis.fitting_mode_type == 'sequential':
+            fallback_sections.extend([
+                getattr(analysis, 'sequential_fit', None),
+                getattr(analysis, 'sequential_fit_extract', None),
+            ])
+
+        body = '\n\n'.join([
+            _as_cif_text(section) for section in fallback_sections if section is not None
+        ])
+
+    if body:
+        parts.append(body)
+
+    return '\n\n'.join(parts)
 
 
 def summary_to_cif(_summary: object) -> str:
@@ -401,11 +479,23 @@ def _wrap_in_data_block(cif_text: str, block_name: str = '_') -> str:
     return f'data_{block_name}\n\n{cif_text}'
 
 
+def _project_block_from_cif_text(cif_text: str) -> gemmi.cif.Block:
+    """Parse project CIF text."""
+    import gemmi  # noqa: PLC0415
+
+    return gemmi.cif.read_string(_wrap_in_data_block(cif_text, 'project')).sole_block()
+
+
 def _populate_project_info_from_block(
     info: object,
     block: gemmi.cif.Block,
 ) -> None:
     """Populate ProjectInfo fields from a parsed CIF block."""
+    from_cif = getattr(info, 'from_cif', None)
+    if callable(from_cif):
+        from_cif(block)
+        return
+
     read_cif_string = _make_cif_string_reader(block)
 
     name = read_cif_string('_project.id')
@@ -425,9 +515,7 @@ def project_info_from_cif(info: object, cif_text: str) -> None:
     """
     Populate a ProjectInfo instance from CIF text.
 
-    Reads ``_project.id``, ``_project.title``, and
-    ``_project.description`` from the given CIF string and sets them on
-    the *info* object.
+    Reads the core project metadata fields from CIF text.
 
     Parameters
     ----------
@@ -436,10 +524,7 @@ def project_info_from_cif(info: object, cif_text: str) -> None:
     cif_text : str
         CIF text content of ``project.cif``.
     """
-    import gemmi  # noqa: PLC0415
-
-    doc = gemmi.cif.read_string(_wrap_in_data_block(cif_text, 'project'))
-    block = doc.sole_block()
+    block = _project_block_from_cif_text(cif_text)
 
     _populate_project_info_from_block(info, block)
 
@@ -448,16 +533,17 @@ def project_config_from_cif(project: object, cif_text: str) -> None:
     """
     Populate project-level configuration from ``project.cif`` text.
     """
-    import gemmi  # noqa: PLC0415
-
-    doc = gemmi.cif.read_string(_wrap_in_data_block(cif_text, 'project'))
-    block = doc.sole_block()
+    block = _project_block_from_cif_text(cif_text)
 
     _populate_project_info_from_block(project.info, block)
 
-    display = getattr(project, 'display', None)
-    if display is not None:
-        display.from_cif(block)
+    rendering = getattr(project, 'rendering', None)
+    if rendering is not None:
+        rendering.from_cif(block)
+
+    verbosity = getattr(project, 'verbosity', None)
+    if verbosity is not None:
+        verbosity.from_cif(block)
 
 
 def analysis_from_cif(analysis: object, cif_text: str) -> None:
@@ -479,8 +565,12 @@ def analysis_from_cif(analysis: object, cif_text: str) -> None:
     doc = gemmi.cif.read_string(_wrap_in_data_block(cif_text, 'analysis'))
     block = doc.sole_block()
 
+    _raise_for_legacy_analysis_tags(block)
+    analysis._set_fitting_mode_type(_analysis_mode_from_cif_block(block))
+
     # Restore fit configuration
-    analysis.fit.from_cif(block)
+    analysis.fitting.from_cif(block)
+    _restore_mode_specific_analysis_sections(analysis, block)
 
     # Restore aliases (loop)
     analysis.aliases.from_cif(block)
@@ -490,8 +580,187 @@ def analysis_from_cif(analysis: object, cif_text: str) -> None:
     if analysis.constraints._items:
         analysis.constraints.enable()
 
-    # Restore joint-fit experiment weights (loop)
-    analysis._joint_fit_experiments.from_cif(block)
+    if _has_persisted_fit_state_sections(block):
+        _restore_persisted_fit_state(analysis, block)
+
+
+def _has_persisted_fit_state_sections(block: object) -> bool:
+    """Return True when any persisted fit-state section is present."""
+    scalar_tags = (
+        '_fit_result.result_kind',
+        '_deterministic_result.optimizer_name',
+        '_bayesian_result.sampler_name',
+        '_bayesian_sampler.steps',
+        '_bayesian_convergence.converged',
+    )
+    loop_tags = (
+        '_fit_parameter.param_unique_name',
+        '_fit_parameter_correlation.param_unique_name_i',
+        '_bayesian_parameter_posterior.unique_name',
+        '_bayesian_distribution_cache.param_unique_name',
+        '_bayesian_pair_cache.param_unique_name_x',
+        '_bayesian_predictive_dataset.experiment_name',
+    )
+
+    return any(_has_cif_value(block, tag) for tag in scalar_tags) or any(
+        _has_cif_loop(block, tag) for tag in loop_tags
+    )
+
+
+def _restore_common_fit_state(analysis: object, block: object) -> None:
+    """Restore fit-state categories shared by both fit kinds."""
+    analysis.fit_parameters.from_cif(block)
+    analysis.fit_result.from_cif(block)
+    analysis.fit_parameter_correlations.from_cif(block)
+
+
+def _restore_deterministic_fit_state(analysis: object, block: object) -> None:
+    """Restore deterministic-only persisted fit-state categories."""
+    analysis.deterministic_result.from_cif(block)
+
+
+def _restore_bayesian_fit_state(analysis: object, block: object) -> None:
+    """Restore Bayesian-only persisted fit-state categories."""
+    analysis.bayesian_result.from_cif(block)
+    analysis.bayesian_sampler.from_cif(block)
+    analysis.bayesian_convergence.from_cif(block)
+    analysis.bayesian_parameter_posteriors.from_cif(block)
+    analysis.bayesian_distribution_caches.from_cif(block)
+    analysis.bayesian_pair_caches.from_cif(block)
+    analysis.bayesian_predictive_datasets.from_cif(block)
+    analysis._sync_live_minimizer_from_persisted_fit_state()
+
+
+def _restore_persisted_fit_state(analysis: object, block: object) -> None:
+    """
+    Restore persisted fit-state categories after analysis configuration.
+    """
+    from easydiffraction.analysis.enums import FitResultKindEnum  # noqa: PLC0415
+
+    analysis._set_has_persisted_fit_state(value=True)
+    _restore_common_fit_state(analysis, block)
+
+    result_kind_value = analysis.fit_result.result_kind.value
+    try:
+        result_kind = FitResultKindEnum(result_kind_value)
+    except ValueError:
+        log.warning(
+            'Unsupported _fit_result.result_kind in analysis CIF: '
+            f'{result_kind_value!r}. Skipping kind-specific fit-state categories.',
+        )
+        return
+
+    if result_kind is FitResultKindEnum.DETERMINISTIC:
+        _restore_deterministic_fit_state(analysis, block)
+        return
+
+    _restore_bayesian_fit_state(analysis, block)
+
+
+def _collect_legacy_analysis_tags(block: object) -> list[str]:
+    """Return deprecated analysis CIF tags present in a block."""
+    legacy_tags: list[str] = []
+    if _has_cif_value(block, '_fit.minimizer_type'):
+        legacy_tags.append('_fit.minimizer_type')
+    if _has_cif_value(block, '_fit.mode'):
+        legacy_tags.append('_fit.mode')
+    if _has_cif_loop(block, '_joint_fit_experiment.id'):
+        legacy_tags.append('_joint_fit_experiment.id')
+    if _has_cif_loop(block, '_joint_fit_experiment.weight'):
+        legacy_tags.append('_joint_fit_experiment.weight')
+    return legacy_tags
+
+
+def _raise_for_legacy_analysis_tags(block: object) -> None:
+    """Raise when deprecated analysis CIF tags are present."""
+    legacy_tags = _collect_legacy_analysis_tags(block)
+    if not legacy_tags:
+        return
+
+    msg = (
+        'Legacy analysis CIF tags are no longer supported: '
+        f'{legacy_tags}. Use _fitting.minimizer_type, _fitting.mode_type, '
+        '_joint_fit.experiment_id, and _joint_fit.weight.'
+    )
+    raise ValueError(msg)
+
+
+def _analysis_mode_from_cif_block(block: object) -> str:
+    """Return the fitting mode stored in an analysis CIF block."""
+    read_cif_string = _make_cif_string_reader(block)
+    mode_value = read_cif_string('_fitting.mode_type')
+    if mode_value is not None:
+        return mode_value
+
+    from easydiffraction.analysis.enums import FitModeEnum  # noqa: PLC0415
+
+    return FitModeEnum.default().value
+
+
+def _has_joint_fit_rows(block: object) -> bool:
+    """Return True when joint-fit rows are present."""
+    return _has_cif_loop(block, '_joint_fit.experiment_id') or _has_cif_loop(
+        block,
+        '_joint_fit.weight',
+    )
+
+
+def _has_sequential_fit_settings(block: object) -> bool:
+    """Return True when sequential-fit scalar settings are present."""
+    return any(
+        _has_cif_value(block, tag)
+        for tag in (
+            '_sequential_fit.data_dir',
+            '_sequential_fit.file_pattern',
+            '_sequential_fit.max_workers',
+            '_sequential_fit.chunk_size',
+            '_sequential_fit.reverse',
+        )
+    )
+
+
+def _warn_inactive_analysis_sections(
+    *,
+    has_joint_rows: bool,
+    has_sequential_settings: bool,
+    has_sequential_extract_rows: bool,
+) -> None:
+    """Warn when inactive analysis sections are skipped."""
+    skipped_sections: list[str] = []
+    if has_joint_rows:
+        skipped_sections.append('joint_fit')
+    if has_sequential_settings or has_sequential_extract_rows:
+        skipped_sections.append('sequential_fit')
+    log.warning(
+        'Skipping inactive analysis CIF sections while fitting_mode_type is single: '
+        f'{skipped_sections}.'
+    )
+
+
+def _restore_mode_specific_analysis_sections(analysis: object, block: object) -> None:
+    """Restore only the active mode-specific analysis sections."""
+    has_joint_rows = _has_joint_fit_rows(block)
+    has_sequential_settings = _has_sequential_fit_settings(block)
+    has_sequential_extract_rows = _has_cif_loop(block, '_sequential_fit_extract.id')
+
+    if analysis.fitting_mode_type == 'joint':
+        if has_joint_rows:
+            analysis.joint_fit.from_cif(block)
+        return
+
+    if analysis.fitting_mode_type == 'sequential':
+        if has_sequential_settings:
+            analysis.sequential_fit.from_cif(block)
+        if has_sequential_extract_rows:
+            analysis.sequential_fit_extract.from_cif(block)
+        return
+
+    if has_joint_rows or has_sequential_settings or has_sequential_extract_rows:
+        _warn_inactive_analysis_sections(
+            has_joint_rows=has_joint_rows,
+            has_sequential_settings=has_sequential_settings,
+            has_sequential_extract_rows=has_sequential_extract_rows,
+        )
 
 
 def _make_cif_string_reader(block: gemmi.cif.Block) -> object:
@@ -518,12 +787,24 @@ def _make_cif_string_reader(block: gemmi.cif.Block) -> object:
         # CIF unknown / inapplicable markers
         if raw in {'?', '.'}:
             return None
-        # Strip surrounding quotes
-        if len(raw) >= _MIN_QUOTED_LEN and raw[0] == raw[-1] and raw[0] in {"'", '"'}:
-            raw = raw[1:-1]
-        return raw
+        raw = _strip_cif_text_field_delimiters(raw)
+        return _strip_optional_quotes(raw)
 
     return _read
+
+
+def _has_cif_value(block: gemmi.cif.Block, tag: str) -> bool:
+    """Return True when a scalar CIF tag is present in the block."""
+    return block.find_value(tag) is not None
+
+
+def _has_cif_loop(block: gemmi.cif.Block, tag: str) -> bool:
+    """Return True when a CIF loop column is present in the block."""
+    loop_ref = block.find_loop(tag)
+    if loop_ref is None:
+        return False
+    loop = loop_ref.get_loop() if hasattr(loop_ref, 'get_loop') else loop_ref
+    return loop is not None
 
 
 # TODO: Check the following methods:
@@ -564,33 +845,9 @@ def param_from_cif(
     if not found_values:
         return
 
-    # If found, pick the one at the given index
+    # If found, pick the one at the given index.
     raw = found_values[idx]
-
-    # CIF unknown / inapplicable markers → keep default
-    if raw in {'?', '.'}:
-        return
-
-    # If numeric, parse with uncertainty if present
-    if self._value_type == DataTypes.NUMERIC:
-        has_brackets = '(' in raw
-        u = str_to_ufloat(raw)
-        self.value = u.n
-        if has_brackets and hasattr(self, 'free'):
-            self.free = True  # type: ignore[attr-defined]
-            if not np.isnan(u.s) and hasattr(self, 'uncertainty'):
-                self.uncertainty = u.s  # type: ignore[attr-defined]
-
-    # If string, strip quotes if present
-    elif self._value_type == DataTypes.STRING:
-        if len(raw) >= _MIN_QUOTED_LEN and raw[0] == raw[-1] and raw[0] in {"'", '"'}:
-            self.value = raw[1:-1]
-        else:
-            self.value = raw
-
-    # Other types are not supported
-    else:
-        log.debug(f'Unrecognized type: {self._value_type}')
+    _set_param_from_raw_cif_value(self, raw)
 
 
 def category_item_from_cif(
@@ -620,11 +877,23 @@ def _set_param_from_raw_cif_value(
     raw : str
         The raw string from the CIF loop cell.
     """
+    raw = _strip_cif_text_field_delimiters(raw)
+
     # CIF unknown / inapplicable markers → keep default
     if raw in {'?', '.'}:
         return
 
-    if param._value_type == DataTypes.NUMERIC:
+    if param._value_type == DataTypes.INTEGER:
+        numeric_value = str_to_ufloat(raw).n
+        integer_value = round(numeric_value)
+        if not np.isclose(numeric_value, integer_value):
+            log.warning(
+                f'Ignoring non-integer CIF value {raw!r} for integer field {param.unique_name}.'
+            )
+            return
+        param.value = integer_value
+
+    elif param._value_type == DataTypes.NUMERIC:
         has_brackets = '(' in raw
         u = str_to_ufloat(raw)
         param.value = u.n
@@ -634,10 +903,11 @@ def _set_param_from_raw_cif_value(
                 param.uncertainty = u.s  # type: ignore[attr-defined]
 
     # If string, strip quotes if present
-    # TODO: Make a helper function for this
     elif param._value_type == DataTypes.STRING:
-        is_quoted = len(raw) >= _MIN_QUOTED_LEN and raw[0] == raw[-1] and raw[0] in {"'", '"'}
-        param.value = raw[1:-1] if is_quoted else raw
+        param.value = _strip_optional_quotes(raw)
+
+    elif param._value_type == DataTypes.BOOL:
+        param.value = _parse_bool_cif_value(raw)
 
     else:
         log.debug(f'Unrecognized type: {param._value_type}')
@@ -715,11 +985,7 @@ def category_collection_from_cif(
     array = np.array(loop.values, dtype=str).reshape(num_rows, num_cols)
 
     # Pre-create default items in the collection
-    self._items = [self._item_type() for _ in range(num_rows)]
-
-    # Set parent for each item to enable identity resolution
-    for item in self._items:
-        object.__setattr__(item, '_parent', self)  # noqa: PLC2801
+    self._adopt_items([self._item_type() for _ in range(num_rows)])
 
     # Set those items' parameters, which are present in the loop
     for row_idx in range(num_rows):
@@ -732,3 +998,9 @@ def category_collection_from_cif(
                     #  param_from_cif
                     _set_param_from_raw_cif_value(param, array[row_idx][col_idx])
                     break
+
+    after_from_cif = getattr(self, '_after_from_cif', None)
+    if callable(after_from_cif):
+        after_from_cif()
+
+    self._rebuild_index()

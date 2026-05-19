@@ -182,18 +182,18 @@ project.experiments.add(pdf_expt)
 # #### Set Fit Mode and Weights
 
 # %%
-project.analysis.fit.mode = 'joint'
-project.analysis.joint_fit_experiments.create(id='sepd', weight=0.7)
-project.analysis.joint_fit_experiments.create(id='nomad', weight=0.3)
+project.analysis.fitting_mode_type = 'joint'
+project.analysis.joint_fit.create(experiment_id='sepd', weight=0.7)
+project.analysis.joint_fit.create(experiment_id='nomad', weight=0.3)
 
 # %% [markdown]
 # #### Plot Measured vs Calculated (Before Fit)
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='sepd')
+project.display.pattern(expt_name='sepd')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='nomad')
+project.display.pattern(expt_name='nomad')
 
 # %% [markdown]
 # #### Set Fitting Parameters
@@ -231,21 +231,21 @@ pdf_expt.peak.sharp_delta_2.free = True
 # #### Show Free Parameters
 
 # %%
-project.analysis.display.free_params()
+project.display.parameters.free()
 
 # %% [markdown]
 # #### Run Fitting
 
 # %%
 project.analysis.fit()
-project.analysis.display.fit_results()
-project.display.plotter.plot_param_correlations()
+project.display.fit.results()
+project.display.fit.correlations()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated (After Fit)
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='sepd')
+project.display.pattern(expt_name='sepd')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='nomad')
+project.display.pattern(expt_name='nomad')

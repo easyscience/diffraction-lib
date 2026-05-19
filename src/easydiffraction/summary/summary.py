@@ -6,6 +6,7 @@ from textwrap import wrap
 from easydiffraction.core.variable import Parameter
 from easydiffraction.io.cif.serialize import summary_to_cif
 from easydiffraction.utils.logging import console
+from easydiffraction.utils.utils import render_object_help
 from easydiffraction.utils.utils import render_table
 
 
@@ -27,6 +28,10 @@ class Summary:
             The Project instance this summary belongs to.
         """
         self.project = project
+
+    def help(self) -> None:
+        """Print available summary-report methods."""
+        render_object_help(self)
 
     @staticmethod
     def _fmt_row(
@@ -214,7 +219,7 @@ class Summary:
         console.section('Fitting')
 
         console.paragraph('Minimization engine')
-        console.print(self.project.analysis.fit.minimizer_type.value)
+        console.print(self.project.analysis.fitting.minimizer_type.value)
 
         console.paragraph('Fit quality')
         columns_headers = ['metric', 'value']

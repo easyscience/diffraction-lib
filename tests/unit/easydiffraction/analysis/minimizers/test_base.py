@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import numpy as np
+import pytest
 
 
 class _DummyParam:
@@ -86,7 +87,8 @@ def test_minimizer_base_fit_flow_and_finalize():
     assert minim.synced is True
     assert isinstance(result.parameters, list)
     assert result.parameters[0].value == 42
-    # Fitting time should be a positive float
+    assert result.fitting_time is not None
+    assert result.fitting_time >= 0.0
     assert minim.tracker.fitting_time is not None
     assert minim.tracker.fitting_time >= 0.0
 
@@ -119,3 +121,171 @@ def test_minimizer_base_create_objective_function_uses_compute_residuals():
     )
     out = f({})
     assert np.allclose(out, np.array([1.0, 2.0, 3.0]))
+
+
+def test_max_iterations_property_updates_internal_value():
+    from easydiffraction.analysis.minimizers.base import MinimizerBase
+
+    class M(MinimizerBase):
+        def __init__(self):
+            super().__init__(name='dummy', method='m', max_iterations=5)
+
+        def _prepare_solver_args(self, parameters):
+            del parameters
+            return {}
+
+        def _run_solver(self, objective_function, **kwargs):
+            del objective_function, kwargs
+            return
+
+        def _sync_result_to_parameters(self, parameters, raw_result):
+            del parameters, raw_result
+
+        def _check_success(self, raw_result):
+            del raw_result
+            return True
+
+    minimizer = M()
+
+    assert minimizer.max_iterations == 5
+
+    minimizer.max_iterations = 200
+
+    assert minimizer.max_iterations == 200
+
+
+def test_minimizer_base_fit_stops_tracking_when_solver_prep_fails():
+    from easydiffraction.analysis.minimizers.base import MinimizerBase
+
+    class M(MinimizerBase):
+        def __init__(self):
+            super().__init__(name='dummy', method='m', max_iterations=5)
+            self.started = False
+            self.stopped = False
+
+        def _start_tracking(self, minimizer_name, verbosity=None):
+            self.started = True
+
+        def _stop_tracking(self):
+            self.stopped = True
+
+        def _prepare_solver_args(self, parameters):
+            msg = 'prep failed'
+            raise ValueError(msg)
+
+        def _run_solver(self, objective_function, **kwargs):
+            msg = 'should not run solver'
+            raise AssertionError(msg)
+
+        def _sync_result_to_parameters(self, parameters, raw_result):
+            pass
+
+        def _check_success(self, raw_result):
+            return True
+
+    minimizer = M()
+
+    with pytest.raises(ValueError, match='prep failed'):
+        minimizer.fit(parameters=[_DummyParam(1.0)], objective_function=lambda _: np.array([0.0]))
+
+    assert minimizer.started is True
+    assert minimizer.stopped is True
+
+
+def test_minimizer_base_fit_preserves_solver_prep_error_during_cleanup(monkeypatch):
+    import easydiffraction.analysis.fit_helpers.tracking as tracking_mod
+    from easydiffraction.analysis.minimizers.base import MinimizerBase
+
+    monkeypatch.setattr(
+        tracking_mod.FitProgressTracker,
+        '_start_activity_indicator',
+        lambda self: None,
+    )
+    monkeypatch.setattr(
+        tracking_mod.FitProgressTracker,
+        '_stop_activity_indicator',
+        lambda self: None,
+    )
+    monkeypatch.setattr(tracking_mod.console, 'print', lambda *args, **kwargs: None)
+
+    class M(MinimizerBase):
+        def __init__(self):
+            super().__init__(name='dummy', method='m', max_iterations=5)
+
+        def _prepare_solver_args(self, parameters):
+            del parameters
+            msg = 'prep failed'
+            raise ValueError(msg)
+
+        def _run_solver(self, objective_function, **kwargs):
+            del objective_function, kwargs
+            msg = 'should not run solver'
+            raise AssertionError(msg)
+
+        def _sync_result_to_parameters(self, parameters, raw_result):
+            del parameters, raw_result
+
+        def _check_success(self, raw_result):
+            del raw_result
+            return True
+
+    minimizer = M()
+
+    with pytest.raises(ValueError, match='prep failed'):
+        minimizer.fit(parameters=[_DummyParam(1.0)], objective_function=lambda _: np.array([0.0]))
+
+
+def test_minimizer_base_stop_tracking_backfills_result_fitting_time():
+    from easydiffraction.analysis.minimizers.base import MinimizerBase
+
+    class DummyResult:
+        success = True
+
+    class DummyMinimizer(MinimizerBase):
+        def __init__(self):
+            super().__init__(name='dummy', method='m', max_iterations=5)
+
+        def _prepare_solver_args(self, parameters):
+            del parameters
+            return {'engine_parameters': {'ok': True}}
+
+        def _run_solver(self, objective_function, **kwargs):
+            residuals = objective_function(kwargs.get('engine_parameters'))
+            self.tracker.track(residuals=np.array(residuals), parameters=[1])
+            return DummyResult()
+
+        def _sync_result_to_parameters(self, parameters, raw_result):
+            del parameters, raw_result
+
+        def _check_success(self, raw_result):
+            del raw_result
+            return True
+
+        def _compute_residuals(
+            self, engine_params, parameters, structures, experiments, calculator
+        ):
+            del parameters, structures, experiments, calculator
+            assert engine_params == {'ok': True}
+            return np.array([0.0])
+
+    minimizer = DummyMinimizer()
+    params = [_DummyParam(1.0)]
+    objective = minimizer._create_objective_function(
+        parameters=params,
+        structures=None,
+        experiments=None,
+        calculator=None,
+    )
+
+    result = minimizer.fit(
+        parameters=params,
+        objective_function=objective,
+        finalize_tracking=False,
+    )
+
+    assert result.fitting_time is None
+
+    minimizer._stop_tracking()
+
+    assert result.fitting_time is not None
+    assert result.fitting_time >= 0.0

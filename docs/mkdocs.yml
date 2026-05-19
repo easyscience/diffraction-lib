@@ -148,8 +148,10 @@ plugins:
         python:
           paths: ['src'] # Change 'src' to your actual sources directory
           options:
+            annotations_path: source
             docstring_style: numpy
-            group_by_category: false
+            group_by_category: true
+            members_order: source
             heading_level: 1
             show_root_heading: true
             show_root_full_path: false
@@ -191,10 +193,13 @@ nav:
   - Tutorials:
       - Tutorials: tutorials/index.md
       - Getting Started:
-          - LBCO quick load: tutorials/ed-18.ipynb
           - LBCO quick code: tutorials/ed-2.ipynb
           - LBCO basic load: tutorials/ed-1.ipynb
           - LBCO complete: tutorials/ed-3.ipynb
+      - Load Project:
+          - LBCO Single: tutorials/ed-18.ipynb
+          - Co2SiO4 Sequential: tutorials/ed-23.ipynb
+          - LBCO Bayesian: tutorials/ed-24.ipynb
       - Powder Diffraction:
           - Co2SiO4 pd-neut-cwl: tutorials/ed-5.ipynb
           - HS pd-neut-cwl: tutorials/ed-6.ipynb
@@ -214,8 +219,13 @@ nav:
       - Simulated Data:
           - LBCO+Si McStas: tutorials/ed-9.ipynb
           - BEER McStas: tutorials/ed-20.ipynb
+      - Bayesian Analysis:
+          - LBCO Bayesian: tutorials/ed-21.ipynb
+          - Tb2TiO7 Bayesian: tutorials/ed-22.ipynb
       - Workshops & Schools:
           - DMSC Summer School: tutorials/ed-13.ipynb
+  - Command-Line:
+      - Command-Line: cli/index.md
   - API Reference:
       - API Reference: api-reference/index.md
       - analysis: api-reference/analysis.md
@@ -229,5 +239,5 @@ nav:
       - project: api-reference/project.md
       - summary: api-reference/summary.md
       - utils: api-reference/utils.md
-  - Command-Line Interface:
-      - Command-Line Interface: cli/index.md
+  - Quick Reference:
+      - Quick Reference: quick-reference/index.md

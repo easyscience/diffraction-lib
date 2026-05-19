@@ -5,7 +5,55 @@ from __future__ import annotations
 
 import os
 import sys
+import tempfile
 from importlib.util import find_spec
+from pathlib import Path
+
+_ARTIFACT_ROOT_ENV_VAR = 'EASYDIFFRACTION_ARTIFACT_ROOT'
+_PIXI_PROJECT_ROOT_ENV_VAR = 'PIXI_PROJECT_ROOT'
+_TUTORIALS_DIR = Path('docs') / 'docs' / 'tutorials'
+_TUTORIAL_ARTIFACT_ROOT = Path('tmp') / 'tutorials'
+
+
+def _repo_root() -> Path | None:
+    project_root = os.environ.get(_PIXI_PROJECT_ROOT_ENV_VAR)
+    if project_root:
+        return Path(project_root).resolve()
+
+    for parent in Path(__file__).resolve().parents:
+        if (parent / 'pixi.toml').is_file() and (parent / _TUTORIALS_DIR).is_dir():
+            return parent
+
+    return None
+
+
+def _tutorial_artifact_root() -> Path | None:
+    repo_root = _repo_root()
+    if repo_root is None:
+        return None
+
+    tutorials_dir = (repo_root / _TUTORIALS_DIR).resolve()
+    cwd = Path.cwd().resolve()
+    if not cwd.is_relative_to(tutorials_dir):
+        return None
+
+    return (repo_root / _TUTORIAL_ARTIFACT_ROOT).resolve()
+
+
+def _artifact_root() -> Path | None:
+    artifact_root = os.environ.get(_ARTIFACT_ROOT_ENV_VAR)
+    if not artifact_root:
+        return _tutorial_artifact_root()
+
+    root = Path(artifact_root)
+    if root.is_absolute():
+        return root.resolve()
+
+    project_root = os.environ.get(_PIXI_PROJECT_ROOT_ENV_VAR)
+    if project_root:
+        return (Path(project_root) / root).resolve()
+
+    return (Path.cwd() / root).resolve()
 
 
 def in_pytest() -> bool:
@@ -105,6 +153,52 @@ def in_github_ci() -> bool:
         True if env var ``GITHUB_ACTIONS`` is set, False otherwise.
     """
     return os.environ.get('GITHUB_ACTIONS') is not None
+
+
+def resolve_artifact_path(path: str | Path) -> Path:
+    """
+    Resolve a path against the configured artifact root.
+
+    Parameters
+    ----------
+    path : str | Path
+        Path to resolve.
+
+    Returns
+    -------
+    Path
+        The original path when no artifact root is configured or when
+        *path* is absolute. Otherwise, the absolute path under the
+        configured artifact root.
+    """
+    resolved_path = Path(path)
+    artifact_root = _artifact_root()
+    if artifact_root is None or resolved_path.is_absolute():
+        return resolved_path
+
+    return (artifact_root / resolved_path).resolve()
+
+
+def create_artifact_temp_dir(prefix: str) -> Path:
+    """
+    Create a temporary directory under the artifact root when set.
+
+    Parameters
+    ----------
+    prefix : str
+        Prefix for the temporary directory name.
+
+    Returns
+    -------
+    Path
+        Path to the created temporary directory.
+    """
+    artifact_root = _artifact_root()
+    if artifact_root is None:
+        return Path(tempfile.mkdtemp(prefix=prefix))
+
+    artifact_root.mkdir(parents=True, exist_ok=True)
+    return Path(tempfile.mkdtemp(prefix=prefix, dir=artifact_root)).resolve()
 
 
 # ----------------------------------------------------------------------

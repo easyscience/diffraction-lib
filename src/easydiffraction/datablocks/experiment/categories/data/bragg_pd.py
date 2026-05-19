@@ -285,10 +285,11 @@ class PdCwlDataPoint(
 ):
     """Powder diffraction data point for CWL experiments."""
 
+    _category_code = 'pd_data'
+    _category_entry_name = 'point_id'
+
     def __init__(self) -> None:
         super().__init__()
-        self._identity.category_code = 'pd_data'
-        self._identity.category_entry_name = lambda: str(self.point_id.value)
 
 
 class PdTofDataPoint(
@@ -298,10 +299,11 @@ class PdTofDataPoint(
 ):
     """Powder diffraction data point for time-of-flight experiments."""
 
+    _category_code = 'pd_data'
+    _category_entry_name = 'point_id'
+
     def __init__(self) -> None:
         super().__init__()
-        self._identity.category_code = 'pd_data'
-        self._identity.category_entry_name = lambda: str(self.point_id.value)
 
 
 class PdDataBase(CategoryCollection):
@@ -572,7 +574,7 @@ class PdCwlData(PdDataBase):
         # TODO: split into multiple methods
 
         # Create items
-        self._items = [self._item_type() for _ in range(values.size)]
+        self._adopt_items([self._item_type() for _ in range(values.size)])
 
         # Set two-theta values
         for p, v in zip(self._items, values, strict=True):
@@ -651,7 +653,7 @@ class PdTofData(PdDataBase):
         # TODO: split into multiple methods
 
         # Create items
-        self._items = [self._item_type() for _ in range(values.size)]
+        self._adopt_items([self._item_type() for _ in range(values.size)])
 
         # Set time-of-flight values
         for p, v in zip(self._items, values, strict=True):

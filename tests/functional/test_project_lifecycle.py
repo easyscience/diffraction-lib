@@ -88,7 +88,7 @@ class TestProjectVerbosity:
             project = Project()
         finally:
             Project._loading = False
-        assert project.verbosity == 'full'
+        assert project.verbosity.fit.value == 'full'
 
     def test_set_verbosity_short(self):
         Project._loading = True
@@ -97,7 +97,7 @@ class TestProjectVerbosity:
         finally:
             Project._loading = False
         project.verbosity = 'short'
-        assert project.verbosity == 'short'
+        assert project.verbosity.fit.value == 'short'
 
     def test_set_verbosity_silent(self):
         Project._loading = True
@@ -106,7 +106,7 @@ class TestProjectVerbosity:
         finally:
             Project._loading = False
         project.verbosity = 'silent'
-        assert project.verbosity == 'silent'
+        assert project.verbosity.fit.value == 'silent'
 
     def test_invalid_verbosity_raises(self):
         Project._loading = True

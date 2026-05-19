@@ -30,6 +30,9 @@ class Alias(CategoryItem):
     ``unique_name`` for CIF serialization.
     """
 
+    _category_code = 'alias'
+    _category_entry_name = 'label'
+
     def __init__(self) -> None:
         super().__init__()
 
@@ -55,9 +58,6 @@ class Alias(CategoryItem):
         # Direct reference to the Parameter object (runtime only).
         # Stored via object.__setattr__ to avoid parent-chain mutation.
         object.__setattr__(self, '_param_ref', None)
-
-        self._identity.category_code = 'alias'
-        self._identity.category_entry_name = lambda: str(self.label.value)
 
     # ------------------------------------------------------------------
     #  Public properties

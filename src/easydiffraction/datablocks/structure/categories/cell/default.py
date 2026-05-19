@@ -23,6 +23,8 @@ class Cell(CategoryItem):
     descriptors supporting validation, fitting and CIF serialization.
     """
 
+    _category_code = 'cell'
+
     type_info = TypeInfo(
         tag='default',
         description='Unit cell parameters',
@@ -93,8 +95,6 @@ class Cell(CategoryItem):
             cif_handler=CifHandler(names=['_cell.angle_gamma']),
         )
 
-        self._identity.category_code = 'cell'
-
     # ------------------------------------------------------------------
     #  Private helper methods
     # ------------------------------------------------------------------
@@ -106,7 +106,7 @@ class Cell(CategoryItem):
         Uses the parent structure's space-group symbol to determine
         which lattice parameters are dependent and sets them
         accordingly. Dependent parameters are also flagged as
-        ``symmetry_fixed`` so they cannot be marked refinable.
+        ``symmetry_constrained`` so they cannot be marked refinable.
         """
         dummy_cell = {
             'lattice_a': self.length_a.value,
@@ -122,7 +122,7 @@ class Cell(CategoryItem):
             cell=dummy_cell,
             name_hm=space_group_name,
         )
-        fixed_flags = ecr.cell_symmetry_fixed_flags(name_hm=space_group_name)
+        constrained_flags = ecr.cell_symmetry_constrained_flags(name_hm=space_group_name)
 
         param_by_key = {
             'lattice_a': self._length_a,
@@ -134,7 +134,7 @@ class Cell(CategoryItem):
         }
         for key, param in param_by_key.items():
             param.value = dummy_cell[key]
-            param._set_symmetry_fixed(value=fixed_flags[key])
+            param._set_symmetry_constrained(value=constrained_flags[key])
 
     def _update(
         self,

@@ -22,6 +22,8 @@ if TYPE_CHECKING:
 
 # ======================================================================
 
+DEFAULT_FIT_BOUNDS_MULTIPLIER = 4.0
+
 
 class GenericDescriptorBase(GuardedBase):
     """
@@ -126,11 +128,11 @@ class GenericDescriptorBase(GuardedBase):
             obj = getattr(obj, '_parent', None)
         return None
 
-    def _datablock_item(self) -> object | None:
-        """Return the DatablockItem ancestor, if any."""
-        from easydiffraction.core.datablock import DatablockItem  # noqa: PLC0415
+    def _category_owner(self) -> object | None:
+        """Return the CategoryOwner ancestor, if any."""
+        from easydiffraction.core.category_owner import CategoryOwner  # noqa: PLC0415
 
-        return self._parent_of_type(DatablockItem)
+        return self._parent_of_type(CategoryOwner)
 
     @property
     def value(self) -> object:
@@ -151,18 +153,18 @@ class GenericDescriptorBase(GuardedBase):
             current=self._value,
         )
 
-        # Mark parent datablock as needing categories update
+        # Mark the owning category owner as needing an update
         # TODO: Check if it is actually in use?
-        parent_datablock = self._datablock_item()
-        if parent_datablock is not None:
-            parent_datablock._need_categories_update = True
+        parent_owner = self._category_owner()
+        if parent_owner is not None:
+            parent_owner._need_categories_update = True
 
     def _set_value_from_minimizer(self, v: object) -> None:
         """
         Set the value from a minimizer, bypassing validation.
 
         Writes ``_value`` directly — no type or range checks — but still
-        marks the owning :class:`DatablockItem` dirty so that
+        marks the owning category owner dirty so that
         ``_update_categories()`` knows work is needed.
 
         This exists because:
@@ -173,9 +175,9 @@ class GenericDescriptorBase(GuardedBase):
         evaluations.
         """
         self._value = v
-        parent_datablock = self._datablock_item()
-        if parent_datablock is not None:
-            parent_datablock._need_categories_update = True
+        parent_owner = self._category_owner()
+        if parent_owner is not None:
+            parent_owner._need_categories_update = True
 
     @property
     def description(self) -> str | None:
@@ -221,6 +223,28 @@ class GenericStringDescriptor(GenericDescriptorBase):
 # ======================================================================
 
 
+class GenericBoolDescriptor(GenericDescriptorBase):
+    """Base descriptor that constrains values to booleans."""
+
+    _value_type = DataTypes.BOOL
+
+    def __init__(
+        self,
+        *,
+        value_spec: AttributeSpec | None = None,
+        **kwargs: object,
+    ) -> None:
+        if value_spec is None:
+            value_spec = AttributeSpec(
+                data_type=DataTypes.BOOL,
+                default=False,
+            )
+        super().__init__(value_spec=value_spec, **kwargs)
+
+
+# ======================================================================
+
+
 class GenericNumericDescriptor(GenericDescriptorBase):
     """Base descriptor that constrains values to numbers."""
 
@@ -247,6 +271,15 @@ class GenericNumericDescriptor(GenericDescriptorBase):
     def units(self) -> str:
         """Units associated with the numeric value, if any."""
         return self._units
+
+
+# ======================================================================
+
+
+class GenericIntegerDescriptor(GenericNumericDescriptor):
+    """Base descriptor that constrains values to integers."""
+
+    _value_type = DataTypes.INTEGER
 
 
 # ======================================================================
@@ -280,12 +313,13 @@ class GenericParameter(GenericNumericDescriptor):
         self._fit_min = self._fit_min_spec.default
         self._fit_max_spec = AttributeSpec(data_type=DataTypes.NUMERIC, default=np.inf)
         self._fit_max = self._fit_max_spec.default
+        self._fit_bounds_uncertainty_multiplier: float | None = None
         self._start_value_spec = AttributeSpec(data_type=DataTypes.NUMERIC, default=0.0)
         self._start_value = self._start_value_spec.default
-        self._constrained_spec = self._BOOL_SPEC_TEMPLATE
-        self._constrained = self._constrained_spec.default
-        self._symmetry_fixed_spec = self._BOOL_SPEC_TEMPLATE
-        self._symmetry_fixed = self._symmetry_fixed_spec.default
+        self._user_constrained_spec = self._BOOL_SPEC_TEMPLATE
+        self._user_constrained = self._user_constrained_spec.default
+        self._symmetry_constrained_spec = self._BOOL_SPEC_TEMPLATE
+        self._symmetry_constrained = self._symmetry_constrained_spec.default
 
     def _physical_lower_bound(self) -> float:
         """
@@ -322,25 +356,25 @@ class GenericParameter(GenericNumericDescriptor):
         return self.unique_name.replace('.', '__')
 
     @property
-    def constrained(self) -> bool:
+    def user_constrained(self) -> bool:
         """Whether this parameter is part of a constraint expression."""
-        return self._constrained
+        return self._user_constrained
 
-    def _set_value_constrained(self, v: object) -> None:
+    def _set_value_user_constrained(self, v: object) -> None:
         """
         Set the value from a constraint expression.
 
-        Bypasses validation and marks the parent datablock dirty, like
-        ``_set_value_from_minimizer``, because constraints are applied
-        inside the minimizer loop where trial values may exceed
-        physical-range validators. Flags the parameter as constrained.
-        Used exclusively by ``ConstraintsHandler.apply()``.
+        Bypasses validation and marks the parent category owner dirty,
+        like ``_set_value_from_minimizer``, because constraints are
+        applied inside the minimizer loop where trial values may exceed
+        physical-range validators. Flags the parameter as user
+        constrained. Used exclusively by ``ConstraintsHandler.apply()``.
         """
         self._value = v
-        self._constrained = True
-        parent_datablock = self._datablock_item()
-        if parent_datablock is not None:
-            parent_datablock._need_categories_update = True
+        self._user_constrained = True
+        parent_owner = self._category_owner()
+        if parent_owner is not None:
+            parent_owner._need_categories_update = True
 
     @property
     def free(self) -> bool:
@@ -353,24 +387,24 @@ class GenericParameter(GenericNumericDescriptor):
         validated = self._free_spec.validated(
             v, name=f'{self.unique_name}.free', current=self._free
         )
-        if validated and self._symmetry_fixed:
+        if validated and self._symmetry_constrained:
             log.warning(
-                f"Parameter '{self.unique_name}' is fixed by symmetry. Ignoring free=True."
+                f"Parameter '{self.unique_name}' is constrained by symmetry. Ignoring free=True."
             )
             self._free = False
             return
         self._free = validated
 
     @property
-    def symmetry_fixed(self) -> bool:
+    def symmetry_constrained(self) -> bool:
         """
-        Whether this parameter is fixed by crystallographic symmetry.
+        Return whether symmetry constrains this parameter.
         """
-        return self._symmetry_fixed
+        return self._symmetry_constrained
 
-    def _set_symmetry_fixed(self, *, value: bool) -> None:
+    def _set_symmetry_constrained(self, *, value: bool) -> None:
         """
-        Mark or unmark this parameter as fixed by symmetry.
+        Mark or unmark this parameter as constrained by symmetry.
 
         When set to True, ``free`` is forced to False and any subsequent
         attempt to set ``free = True`` is ignored with a warning. When
@@ -380,14 +414,14 @@ class GenericParameter(GenericNumericDescriptor):
         Parameters
         ----------
         value : bool
-            New symmetry-fixed state.
+            New symmetry-constrained state.
         """
-        validated = self._symmetry_fixed_spec.validated(
+        validated = self._symmetry_constrained_spec.validated(
             value,
-            name=f'{self.unique_name}.symmetry_fixed',
-            current=self._symmetry_fixed,
+            name=f'{self.unique_name}.symmetry_constrained',
+            current=self._symmetry_constrained,
         )
-        self._symmetry_fixed = validated
+        self._symmetry_constrained = validated
         if validated:
             self._free = False
 
@@ -414,6 +448,7 @@ class GenericParameter(GenericNumericDescriptor):
         self._fit_min = self._fit_min_spec.validated(
             v, name=f'{self.unique_name}.fit_min', current=self._fit_min
         )
+        self._fit_bounds_uncertainty_multiplier = None
 
     @property
     def fit_max(self) -> float:
@@ -426,6 +461,84 @@ class GenericParameter(GenericNumericDescriptor):
         self._fit_max = self._fit_max_spec.validated(
             v, name=f'{self.unique_name}.fit_max', current=self._fit_max
         )
+        self._fit_bounds_uncertainty_multiplier = None
+
+    @property
+    def fit_bounds_uncertainty_multiplier(self) -> float | None:
+        """
+        Multiplier used for uncertainty-derived fit bounds, if known.
+        """
+        return self._fit_bounds_uncertainty_multiplier
+
+    def _set_fit_bounds_uncertainty_multiplier(self, value: float | None) -> None:
+        """Set the cached uncertainty-derived fit-bounds multiplier."""
+        self._fit_bounds_uncertainty_multiplier = value
+
+    def set_fit_bounds_from_uncertainty(
+        self,
+        multiplier: float = DEFAULT_FIT_BOUNDS_MULTIPLIER,
+        *,
+        clip_to_limits: bool = True,
+    ) -> None:
+        """
+        Set fit bounds from the current standard uncertainty.
+
+        Parameters
+        ----------
+        multiplier : float, default=DEFAULT_FIT_BOUNDS_MULTIPLIER
+            Positive finite factor applied symmetrically to the current
+            parameter uncertainty.
+        clip_to_limits : bool, default=True
+            Whether to clip the resolved fit bounds to the parameter's
+            physical lower and upper limits when those are finite.
+
+        Raises
+        ------
+        ValueError
+            If the current value, uncertainty, or multiplier is missing,
+            invalid, or produces non-increasing bounds.
+        """
+        name = self.unique_name
+        value = self.value
+        uncertainty = self.uncertainty
+
+        if value is None or not np.isfinite(float(value)):
+            msg = f'Cannot set fit bounds for {name}: current value is missing or invalid.'
+            raise ValueError(msg)
+
+        resolved_multiplier = float(multiplier)
+        if isinstance(multiplier, bool) or not np.isfinite(resolved_multiplier):
+            msg = 'multiplier must be a positive finite number.'
+            raise ValueError(msg)
+        if resolved_multiplier <= 0:
+            msg = 'multiplier must be a positive finite number.'
+            raise ValueError(msg)
+
+        if uncertainty is None or uncertainty <= 0 or not np.isfinite(float(uncertainty)):
+            msg = f'Cannot set fit bounds for {name}: uncertainty is missing or invalid.'
+            raise ValueError(msg)
+
+        lower = float(value) - resolved_multiplier * float(uncertainty)
+        upper = float(value) + resolved_multiplier * float(uncertainty)
+
+        if clip_to_limits:
+            physical_lower = float(self._physical_lower_bound())
+            physical_upper = float(self._physical_upper_bound())
+            if np.isfinite(physical_lower):
+                lower = max(lower, physical_lower)
+            if np.isfinite(physical_upper):
+                upper = min(upper, physical_upper)
+
+        if lower >= upper:
+            msg = (
+                f'Cannot set fit bounds for {name}: resolved lower bound {lower} '
+                f'is not below upper bound {upper}.'
+            )
+            raise ValueError(msg)
+
+        self.fit_min = lower
+        self.fit_max = upper
+        self._fit_bounds_uncertainty_multiplier = resolved_multiplier
 
 
 # ======================================================================
@@ -458,6 +571,33 @@ class StringDescriptor(GenericStringDescriptor):
 # ======================================================================
 
 
+class BoolDescriptor(GenericBoolDescriptor):
+    """Boolean descriptor bound to a CIF handler."""
+
+    def __init__(
+        self,
+        *,
+        cif_handler: CifHandler,
+        **kwargs: object,
+    ) -> None:
+        """
+        Initialize a boolean descriptor bound to a CIF handler.
+
+        Parameters
+        ----------
+        cif_handler : CifHandler
+            Object that tracks CIF identifiers.
+        **kwargs : object
+            Forwarded to GenericBoolDescriptor.
+        """
+        super().__init__(**kwargs)
+        self._cif_handler = cif_handler
+        self._cif_handler.attach(self)
+
+
+# ======================================================================
+
+
 class NumericDescriptor(GenericNumericDescriptor):
     """Numeric descriptor bound to a CIF handler."""
 
@@ -476,6 +616,33 @@ class NumericDescriptor(GenericNumericDescriptor):
             Object that tracks CIF identifiers.
         **kwargs : object
             Forwarded to GenericNumericDescriptor.
+        """
+        super().__init__(**kwargs)
+        self._cif_handler = cif_handler
+        self._cif_handler.attach(self)
+
+
+# ======================================================================
+
+
+class IntegerDescriptor(GenericIntegerDescriptor):
+    """Integer descriptor bound to a CIF handler."""
+
+    def __init__(
+        self,
+        *,
+        cif_handler: CifHandler,
+        **kwargs: object,
+    ) -> None:
+        """
+        Integer descriptor bound to a CIF handler.
+
+        Parameters
+        ----------
+        cif_handler : CifHandler
+            Object that tracks CIF identifiers.
+        **kwargs : object
+            Forwarded to GenericIntegerDescriptor.
         """
         super().__init__(**kwargs)
         self._cif_handler = cif_handler

@@ -118,7 +118,7 @@ def _crystal_system_from_name_hm(name_hm: str) -> str | None:
     return crystal_system
 
 
-_CELL_FIXED_AXES_BY_SYSTEM: dict[str, set[str]] = {
+_CELL_CONSTRAINED_AXES_BY_SYSTEM: dict[str, set[str]] = {
     'cubic': {'lattice_b', 'lattice_c', 'angle_alpha', 'angle_beta', 'angle_gamma'},
     'tetragonal': {'lattice_b', 'angle_alpha', 'angle_beta', 'angle_gamma'},
     'orthorhombic': {'angle_alpha', 'angle_beta', 'angle_gamma'},
@@ -129,7 +129,7 @@ _CELL_FIXED_AXES_BY_SYSTEM: dict[str, set[str]] = {
 }
 
 
-def _cell_fixed_axes(crystal_system: str) -> set[str]:
+def _cell_constrained_axes(crystal_system: str) -> set[str]:
     """
     Return cell keys that are dependent on others for a crystal system.
 
@@ -145,14 +145,14 @@ def _cell_fixed_axes(crystal_system: str) -> set[str]:
     Returns
     -------
     set[str]
-        Subset of cell keys that are fixed by symmetry.
+        Subset of cell keys that are constrained by symmetry.
     """
-    return _CELL_FIXED_AXES_BY_SYSTEM.get(crystal_system, set())
+    return _CELL_CONSTRAINED_AXES_BY_SYSTEM.get(crystal_system, set())
 
 
-def cell_symmetry_fixed_flags(name_hm: str) -> dict[str, bool]:
+def cell_symmetry_constrained_flags(name_hm: str) -> dict[str, bool]:
     """
-    Return per-key flags indicating which cell parameters are fixed.
+    Return cell-parameter symmetry-constraint flags.
 
     Parameters
     ----------
@@ -162,16 +162,16 @@ def cell_symmetry_fixed_flags(name_hm: str) -> dict[str, bool]:
     Returns
     -------
     dict[str, bool]
-        Mapping of cell key to ``True`` when the parameter is fixed by
-        symmetry (dependent on another parameter or set to a fixed
-        angle), ``False`` when it is independent. Returns all keys
-        ``False`` when the space group cannot be resolved.
+        Mapping of cell key to ``True`` when the parameter is
+        constrained by symmetry (dependent on another parameter or set
+        to a fixed angle), ``False`` when it is independent. Returns all
+        keys ``False`` when the space group cannot be resolved.
     """
     crystal_system = _crystal_system_from_name_hm(name_hm)
     if crystal_system is None:
         return dict.fromkeys(_CELL_KEYS, False)
-    fixed = _cell_fixed_axes(crystal_system)
-    return {key: key in fixed for key in _CELL_KEYS}
+    constrained = _cell_constrained_axes(crystal_system)
+    return {key: key in constrained for key in _CELL_KEYS}
 
 
 def _get_wyckoff_exprs(
@@ -218,13 +218,13 @@ def _get_wyckoff_exprs(
     return [sympify(comp.strip()) for comp in components]
 
 
-def _fract_fixed_flags(parsed_exprs: list[Expr]) -> dict[str, bool]:
+def _fract_constrained_flags(parsed_exprs: list[Expr]) -> dict[str, bool]:
     """
-    Return per-axis flags marking coordinates fixed by site symmetry.
+    Return fractional-coordinate symmetry-constraint flags.
 
-    For each axis (x, y, z), the coordinate is considered fixed when the
-    corresponding symbol does not appear as a free symbol in any of the
-    Wyckoff position expressions.
+    For each axis (x, y, z), the coordinate is considered constrained
+    when the corresponding symbol does not appear as a free symbol in
+    any of the Wyckoff position expressions.
 
     Parameters
     ----------
@@ -235,7 +235,7 @@ def _fract_fixed_flags(parsed_exprs: list[Expr]) -> dict[str, bool]:
     -------
     dict[str, bool]
         Mapping ``'fract_x' / 'fract_y' / 'fract_z'`` to ``True`` if
-        that axis is fixed by symmetry.
+        that axis is constrained by symmetry.
     """
     x, y, z = symbols('x y z')
     symbols_xyz = (x, y, z)
@@ -271,10 +271,10 @@ def _apply_fract_constraints(
         'y': sympify(atom_site['fract_y']),
         'z': sympify(atom_site['fract_z']),
     }
-    fixed_flags = _fract_fixed_flags(parsed_exprs)
+    constrained_flags = _fract_constrained_flags(parsed_exprs)
 
     for i, axis in enumerate(axes):
-        if fixed_flags[f'fract_{axis}']:
+        if constrained_flags[f'fract_{axis}']:
             evaluated = simplify(parsed_exprs[i].subs(substitutions))
             atom_site[f'fract_{axis}'] = float(evaluated)
 
@@ -312,13 +312,13 @@ def apply_atom_site_symmetry_constraints(
     return atom_site
 
 
-def atom_site_symmetry_fixed_flags(
+def atom_site_symmetry_constrained_flags(
     name_hm: str,
     coord_code: int,
     wyckoff_letter: str,
 ) -> dict[str, bool]:
     """
-    Return per-axis flags marking coordinates fixed by site symmetry.
+    Return atom-site symmetry-constraint flags.
 
     Parameters
     ----------
@@ -339,7 +339,7 @@ def atom_site_symmetry_fixed_flags(
     parsed_exprs = _get_wyckoff_exprs(name_hm, coord_code, wyckoff_letter)
     if parsed_exprs is None:
         return {'fract_x': False, 'fract_y': False, 'fract_z': False}
-    return _fract_fixed_flags(parsed_exprs)
+    return _fract_constrained_flags(parsed_exprs)
 
 
 # ------------------------------------------------------------------

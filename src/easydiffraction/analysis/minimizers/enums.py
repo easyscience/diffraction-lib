@@ -16,6 +16,7 @@ class MinimizerTypeEnum(StrEnum):
     DFOLS = 'dfols'
     BUMPS = 'bumps'
     BUMPS_LM = 'bumps (lm)'
+    BUMPS_DREAM = 'bumps (dream)'
     BUMPS_AMOEBA = 'bumps (amoeba)'
     BUMPS_DE = 'bumps (de)'
 
@@ -45,7 +46,17 @@ class MinimizerTypeEnum(StrEnum):
                 'BUMPS library using the default Levenberg-Marquardt method'
             ),
             MinimizerTypeEnum.BUMPS_LM: ('BUMPS library with Levenberg-Marquardt method'),
+            MinimizerTypeEnum.BUMPS_DREAM: ('BUMPS library with DREAM Bayesian sampling'),
             MinimizerTypeEnum.BUMPS_AMOEBA: ('BUMPS library with Nelder-Mead simplex method'),
             MinimizerTypeEnum.BUMPS_DE: ('BUMPS library with differential evolution method'),
         }
         return descriptions.get(self, '')
+
+
+class DreamPopulationInitializationEnum(StrEnum):
+    """Supported DREAM population initializers."""
+
+    EPS = 'eps'
+    COV = 'cov'
+    LHS = 'lhs'
+    RANDOM = 'random'

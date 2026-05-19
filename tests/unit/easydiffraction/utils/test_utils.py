@@ -142,6 +142,33 @@ def test_render_table_terminal_branch(capsys, monkeypatch):
     assert ('╒' in out and '╕' in out) or ('┌' in out and '┐' in out)
 
 
+def test_render_object_help_prints_public_api(capsys):
+    import easydiffraction.utils.utils as MUT
+
+    class Example:
+        @property
+        def value(self):
+            """Visible value."""
+            return 1
+
+        def run(self):
+            """Run visible action."""
+
+        def _hidden(self):
+            """Hidden action."""
+
+    MUT.render_object_help(Example())
+    out = capsys.readouterr().out
+    assert "Help for 'Example'" in out
+    assert 'Properties' in out
+    assert 'value' in out
+    assert 'Visible value.' in out
+    assert 'Methods' in out
+    assert 'run()' in out
+    assert 'Run visible action.' in out
+    assert '_hidden' not in out
+
+
 def test_is_dev_version_with_dev_suffix(monkeypatch):
     import easydiffraction.utils.utils as MUT
 

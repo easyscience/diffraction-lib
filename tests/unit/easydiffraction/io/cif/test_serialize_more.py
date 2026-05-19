@@ -34,10 +34,54 @@ def test_datablock_item_to_cif_includes_item_and_collection():
 
     out = MUT.datablock_item_to_cif(DB())
     assert out.startswith('data_block1')
-    assert '_aa 42.' in out
+    assert '_aa 42' in out
     assert 'loop_' in out
     assert '_aa' in out
     assert '7' in out
+
+
+def test_datablock_item_to_cif_skips_empty_category_fragments():
+    import easydiffraction.io.cif.serialize as MUT
+    from easydiffraction.core.category import CategoryCollection
+    from easydiffraction.core.category import CategoryItem
+    from easydiffraction.io.cif.handler import CifHandler
+
+    class Item(CategoryItem):
+        def __init__(self, val):
+            super().__init__()
+            self._p = type('P', (), {})()
+            self._p._cif_handler = CifHandler(names=['_aa'])
+            self._p.value = val
+
+        @property
+        def parameters(self):
+            return [self._p]
+
+        @property
+        def as_cif(self) -> str:
+            return MUT.category_item_to_cif(self)
+
+    class EmptyItem(CategoryItem):
+        @property
+        def parameters(self):
+            return []
+
+        @property
+        def as_cif(self) -> str:
+            return ''
+
+    class DB:
+        def __init__(self):
+            self._identity = type('I', (), {'datablock_entry_name': 'block1'})()
+            self.item = Item(42)
+            self.empty_item = EmptyItem()
+            self.coll = CategoryCollection(item_type=Item)
+            self.coll['row1'] = Item(7)
+            self.empty_coll = CategoryCollection(item_type=Item)
+
+    out = MUT.datablock_item_to_cif(DB())
+    assert out == 'data_block1\n\n_aa 42\n\nloop_\n_aa\n7'
+    assert '\n\n\n' not in out
 
 
 def test_datablock_collection_to_cif_concatenates_blocks():
@@ -63,11 +107,24 @@ def test_project_info_to_cif_contains_core_fields():
     info = ProjectInfo(name='p1', title='My Title', description='Some description text')
     out = MUT.project_info_to_cif(info)
     assert '_project.id               p1' in out
-    assert '_project.title' in out
-    assert 'My Title' in out
-    assert '_project.description' in out
-    assert '_project.created' in out
-    assert '_project.last_modified' in out
+    assert '_project.title            "My Title"' in out
+    assert '_project.description      "Some description text"' in out
+    assert '_project.created          "' in out
+    assert '_project.last_modified    "' in out
+
+
+def test_project_info_to_cif_wraps_long_description_as_text_field():
+    import easydiffraction.io.cif.serialize as MUT
+    from easydiffraction.project.project_info import ProjectInfo
+
+    description = ' '.join(['long'] * 20)
+    info = ProjectInfo(name='p1', title='My Title', description=description)
+
+    out = MUT.project_info_to_cif(info)
+
+    assert '_project.description      ' in out
+    assert '\n;\n' in out
+    assert 'long long long long long long long long long long long long' in out
 
 
 def test_experiment_to_cif_with_and_without_data():
@@ -115,12 +172,11 @@ def test_experiment_to_cif_with_and_without_data():
 
     out_without = MUT.experiment_to_cif(Exp(''))
     assert out_without.startswith('data_expA')
-    assert out_without.endswith('1.')
+    assert out_without.endswith('1')
 
 
 def test_analysis_to_cif_renders_all_sections():
     import easydiffraction.io.cif.serialize as MUT
-    from easydiffraction.analysis.categories.joint_fit_experiments import JointFitExperiments
 
     class Obj:
         def __init__(self, t):
@@ -131,16 +187,16 @@ def test_analysis_to_cif_renders_all_sections():
             return self._t
 
     class A:
-        fit = Obj('_fit.minimizer_type lmfit\n_fit.mode single')
-        joint_fit_experiments = JointFitExperiments()
+        fitting_mode_type = 'single'
+        fitting = Obj('_fitting.minimizer_type lmfit')
         aliases = Obj('ALIASES')
         constraints = Obj('CONSTRAINTS')
 
     out = MUT.analysis_to_cif(A())
-    lines = out.splitlines()
-    assert lines[0].startswith('_fit.minimizer_type')
-    assert 'lmfit' in lines[0]
-    assert lines[1].startswith('_fit.mode')
-    assert 'single' in lines[1]
+    lines = [line for line in out.splitlines() if line]
+    assert lines[0].startswith('_fitting.mode_type')
+    assert 'single' in lines[0]
+    assert lines[1].startswith('_fitting.minimizer_type')
+    assert 'lmfit' in lines[1]
     assert 'ALIASES' in out
     assert 'CONSTRAINTS' in out

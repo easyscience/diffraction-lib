@@ -9,25 +9,37 @@ from __future__ import annotations
 import contextlib
 import csv
 import multiprocessing as mp
+import os
+import re
 import sys
+import time
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from dataclasses import replace
 from pathlib import Path
-from typing import TYPE_CHECKING
 from typing import Any
 
+from easydiffraction.display.progress import ACTIVITY_LABEL_FITTING
+from easydiffraction.display.progress import ActivityIndicator
 from easydiffraction.io.ascii import extract_data_paths_from_dir
 from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
-
-if TYPE_CHECKING:
-    from collections.abc import Callable
+from easydiffraction.utils.utils import build_table_renderable
 
 # ------------------------------------------------------------------
 #  Template dataclass (picklable for ProcessPoolExecutor)
 # ------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class SequentialFitExtractRule:
+    """Picklable sequential-fit extract rule for worker execution."""
+
+    id: str
+    field_name: str
+    pattern: str
+    required: bool
 
 
 @dataclass(frozen=True)
@@ -48,6 +60,7 @@ class SequentialFitTemplate:
     constraints_enabled: bool
     minimizer_tag: str
     calculator_tag: str
+    diffrn_extract_rules: list[SequentialFitExtractRule]
     diffrn_field_names: list[str]
 
 
@@ -77,9 +90,9 @@ def _fit_worker(
     Returns
     -------
     dict[str, Any]
-        Result dict with keys: ``file_path``, ``fit_success``,
-        ``chi_squared``, ``reduced_chi_squared``, ``n_iterations``, and
-        per-parameter ``{unique_name}`` / ``{unique_name}.uncertainty``.
+        Result dict with keys: ``file_path``, ``success``,
+        ``reduced_chi_square``, ``iterations``, and per-parameter
+        ``{unique_name}`` / ``{unique_name}.uncertainty``.
     """
     # Lazy import to avoid circular dependencies and keep the module
     # importable without heavy imports at top level.
@@ -106,13 +119,16 @@ def _fit_worker(
         # 4. Replace data from the new data path
         expt._load_ascii_data_to_experiment(data_path)
 
-        # 5. Override parameter values from propagated starting values
+        # 5. Extract diffrn metadata from the data file
+        result.update(_extract_diffrn_values(expt, data_path, template.diffrn_extract_rules))
+
+        # 6. Override parameter values from propagated starting values
         _apply_param_overrides(project, template.initial_params)
 
-        # 6. Set free flags
+        # 7. Set free flags
         _set_free_params(project, template.free_param_unique_names)
 
-        # 7. Apply constraints
+        # 8. Apply constraints
         if template.constraints_enabled and template.alias_defs:
             _apply_constraints(
                 project,
@@ -120,17 +136,22 @@ def _fit_worker(
                 template.constraint_defs,
             )
 
-        # 8. Set calculator and minimizer
+        # 9. Set calculator and minimizer
         #    (internal, no console output)
         from easydiffraction.analysis.fitting import Fitter  # noqa: PLC0415
 
         expt._set_calculator_type(template.calculator_tag, announce=False)
         project.analysis.fitter = Fitter(template.minimizer_tag)
 
-        # 9. Fit
-        project.analysis.fit(verbosity='silent')
+        # 10. Fit
+        original_verbosity = project.verbosity.fit.value
+        project.verbosity.fit = 'silent'
+        try:
+            project.analysis.fit()
+        finally:
+            project.verbosity.fit = original_verbosity
 
-        # 10. Collect results
+        # 11. Collect results
         result.update(_collect_results(project, template))
 
     except (
@@ -142,10 +163,9 @@ def _fit_worker(
         IndexError,
         OSError,
     ) as exc:
-        result['fit_success'] = False
-        result['chi_squared'] = None
-        result['reduced_chi_squared'] = None
-        result['n_iterations'] = 0
+        result['success'] = False
+        result['reduced_chi_square'] = None
+        result['iterations'] = 0
         result['error'] = str(exc)
 
     return result
@@ -232,6 +252,82 @@ def _apply_constraints(
         project.analysis.constraints.create(expression=expr)
 
 
+def _extract_diffrn_values(
+    experiment: object,
+    data_path: str,
+    extract_rules: list[SequentialFitExtractRule],
+) -> dict[str, float]:
+    """
+    Extract diffrn metadata from a single data file.
+
+    Parameters
+    ----------
+    experiment : object
+        The worker experiment whose diffrn descriptors are updated.
+    data_path : str
+        Path to the data file being fitted.
+    extract_rules : list[SequentialFitExtractRule]
+        Persisted extract rules resolved from analysis settings.
+
+    Returns
+    -------
+    dict[str, float]
+        Extracted ``diffrn.<field>`` values for the CSV row.
+
+    Raises
+    ------
+    ValueError
+        If a required rule does not match or captures a non-numeric
+        value.
+    """
+    if not extract_rules:
+        return {}
+
+    compiled_rules = [(rule, re.compile(rule.pattern)) for rule in extract_rules]
+    matched_rule_ids: set[str] = set()
+    extracted_values: dict[str, float] = {}
+
+    with Path(data_path).open(encoding='utf-8', errors='ignore') as handle:
+        for line in handle:
+            for rule, pattern in compiled_rules:
+                if rule.id in matched_rule_ids:
+                    continue
+
+                match = pattern.search(line)
+                if match is None:
+                    continue
+
+                try:
+                    extracted_value = float(match.group(1))
+                except (TypeError, ValueError) as error:
+                    msg = (
+                        f"Sequential extract rule '{rule.id}' captured a non-numeric value "
+                        f"for 'diffrn.{rule.field_name}' in {data_path!r}."
+                    )
+                    raise ValueError(msg) from error
+
+                descriptor = getattr(experiment.diffrn, rule.field_name)
+                descriptor.value = extracted_value
+                extracted_values[f'diffrn.{rule.field_name}'] = extracted_value
+                matched_rule_ids.add(rule.id)
+
+            if len(matched_rule_ids) == len(extract_rules):
+                break
+
+    missing_required = [
+        f'{rule.id} (diffrn.{rule.field_name})'
+        for rule in extract_rules
+        if rule.required and rule.id not in matched_rule_ids
+    ]
+    if missing_required:
+        msg = (
+            f'Sequential extract rules did not match {data_path!r}: {", ".join(missing_required)}.'
+        )
+        raise ValueError(msg)
+
+    return extracted_values
+
+
 def _collect_results(
     project: object,
     template: SequentialFitTemplate,
@@ -255,17 +351,17 @@ def _collect_results(
 
     result: dict[str, Any] = {}
     fit_results = project.analysis.fit_results
+    tracker = getattr(project.analysis.fitter.minimizer, 'tracker', None)
+    best_iteration = getattr(tracker, 'best_iteration', None)
 
     if fit_results is not None:
-        result['fit_success'] = fit_results.success
-        result['chi_squared'] = fit_results.chi_square
-        result['reduced_chi_squared'] = fit_results.reduced_chi_square
-        result['n_iterations'] = project.analysis.fitter.minimizer.tracker.best_iteration or 0
+        result['fit_result.success'] = fit_results.success
+        result['fit_result.reduced_chi_square'] = fit_results.reduced_chi_square
+        result['fit_result.iterations'] = fit_results.iterations or best_iteration or 0
     else:
-        result['fit_success'] = False
-        result['chi_squared'] = None
-        result['reduced_chi_squared'] = None
-        result['n_iterations'] = 0
+        result['fit_result.success'] = False
+        result['fit_result.reduced_chi_square'] = None
+        result['fit_result.iterations'] = best_iteration or 0
 
     # Collect all free parameter values and uncertainties
     all_params = project.structures.parameters + project.experiments.parameters
@@ -286,10 +382,9 @@ def _collect_results(
 
 _META_COLUMNS = [
     'file_path',
-    'chi_squared',
-    'reduced_chi_squared',
-    'fit_success',
-    'n_iterations',
+    'fit_result.reduced_chi_square',
+    'fit_result.success',
+    'fit_result.iterations',
 ]
 
 
@@ -355,7 +450,47 @@ def _append_to_csv(
     with csv_path.open('a', newline='', encoding='utf-8') as f:
         writer = csv.DictWriter(f, fieldnames=header, extrasaction='ignore')
         for result in results:
-            writer.writerow(result)
+            row = dict(result)
+            file_path = row.get('file_path')
+            if file_path:
+                row['file_path'] = _relative_file_path_for_csv(csv_path, str(file_path))
+            writer.writerow(row)
+
+
+def _relative_file_path_for_csv(
+    csv_path: Path,
+    file_path: str,
+) -> str:
+    """Return *file_path* relative to the CSV-owning project."""
+    project_path = csv_path.parent.parent.resolve()
+    resolved_path = _resolve_project_file_path(project_path, file_path)
+    relative_path = os.path.relpath(resolved_path, start=project_path)
+    return relative_path.replace('\\', '/')
+
+
+def _resolve_csv_file_path(
+    csv_path: Path,
+    file_path: str,
+) -> str:
+    """Resolve a stored CSV file path against the owning project."""
+    project_path = csv_path.parent.parent.resolve()
+    return str(_resolve_project_file_path(project_path, file_path))
+
+
+def _resolve_project_file_path(
+    project_path: Path,
+    file_path: str,
+) -> Path:
+    """Resolve a data file path to an absolute path near the project."""
+    path = Path(file_path)
+    if path.is_absolute():
+        return path.resolve()
+
+    cwd_relative_path = path.resolve()
+    if cwd_relative_path.is_relative_to(project_path):
+        return cwd_relative_path
+
+    return (project_path / path).resolve()
 
 
 def _extract_params_from_row(row: dict[str, str]) -> dict[str, float]:
@@ -413,8 +548,9 @@ def _read_csv_for_recovery(
         for row in reader:
             file_path = row.get('file_path', '')
             if file_path:
-                fitted.add(file_path)
-            if row.get('fit_success', '').lower() == 'true':
+                fitted.add(_resolve_csv_file_path(csv_path, file_path))
+            success_value = row.get('fit_result.success', row.get('success', ''))
+            if success_value.lower() == 'true':
                 params = _extract_params_from_row(row)
                 if params:
                     last_params = params
@@ -441,7 +577,14 @@ def _build_template(project: object) -> SequentialFitTemplate:
     -------
     SequentialFitTemplate
         A frozen, picklable snapshot.
+
+    Raises
+    ------
+    TypeError
+        If a sequential extract target does not reference an existing
+        numeric ``diffrn`` descriptor on the template experiment.
     """
+    from easydiffraction.core.variable import NumericDescriptor  # noqa: PLC0415
     from easydiffraction.core.variable import Parameter  # noqa: PLC0415
 
     structure = next(iter(project.structures.values()))
@@ -452,7 +595,7 @@ def _build_template(project: object) -> SequentialFitTemplate:
     free_names: list[str] = []
     initial_params: dict[str, float] = {}
     for p in all_params:
-        if isinstance(p, Parameter) and not p.constrained and p.free:
+        if isinstance(p, Parameter) and not p.user_constrained and p.free:
             free_names.append(p.unique_name)
             initial_params[p.unique_name] = p.value
 
@@ -470,12 +613,31 @@ def _build_template(project: object) -> SequentialFitTemplate:
         constraint.expression.value for constraint in project.analysis.constraints
     ]
 
-    # Collect diffrn field names from the experiment
+    # Validate and collect sequential diffrn extract rules against the
+    # template experiment before worker execution starts.
+    diffrn_extract_rules: list[SequentialFitExtractRule] = []
     diffrn_field_names: list[str] = []
-    if hasattr(experiment, 'diffrn'):
-        diffrn_field_names.extend(
-            p.name for p in experiment.diffrn.parameters if hasattr(p, 'name') and p.name != 'type'
+    for extract_rule in project.analysis.sequential_fit_extract:
+        target = extract_rule.target.value
+        field_name = target.split('.', maxsplit=1)[1]
+        descriptor = getattr(experiment.diffrn, field_name, None)
+        if not isinstance(descriptor, NumericDescriptor):
+            msg = (
+                f"Sequential extract target '{target}' must reference an existing numeric "
+                'diffrn descriptor on the template experiment.'
+            )
+            raise TypeError(msg)
+
+        diffrn_extract_rules.append(
+            SequentialFitExtractRule(
+                id=extract_rule.id.value,
+                field_name=field_name,
+                pattern=extract_rule.pattern.value,
+                required=extract_rule.required.value,
+            )
         )
+        if field_name not in diffrn_field_names:
+            diffrn_field_names.append(field_name)
 
     return SequentialFitTemplate(
         structure_cif=structure.as_cif,
@@ -485,8 +647,9 @@ def _build_template(project: object) -> SequentialFitTemplate:
         alias_defs=alias_defs,
         constraint_defs=constraint_defs,
         constraints_enabled=project.analysis.constraints.enabled,
-        minimizer_tag=project.analysis.fit.minimizer_type.value or 'lmfit',
+        minimizer_tag=project.analysis.fitting.minimizer_type.value or 'lmfit',
         calculator_tag=experiment.calculation.calculator_type.value,
+        diffrn_extract_rules=diffrn_extract_rules,
         diffrn_field_names=diffrn_field_names,
     )
 
@@ -496,11 +659,315 @@ def _build_template(project: object) -> SequentialFitTemplate:
 # ------------------------------------------------------------------
 
 
+_SEQUENTIAL_CHUNK_PROGRESS_HEADERS = [
+    'chunk',
+    'progress',
+    'time (s)',
+    'files',
+    'count',
+    'average χ²',
+    'status',
+]
+_SEQUENTIAL_CHUNK_PROGRESS_ALIGNMENTS = [
+    'right',
+    'right',
+    'right',
+    'left',
+    'right',
+    'right',
+    'center',
+]
+_SEQUENTIAL_FILE_PROGRESS_HEADERS = ['file', 'progress', 'time (s)', 'χ²', 'iterations', 'status']
+_SEQUENTIAL_FILE_PROGRESS_ALIGNMENTS = ['left', 'right', 'right', 'right', 'right', 'center']
+
+
+@dataclass
+class SequentialProgressState:
+    """Mutable live progress rows for sequential fitting."""
+
+    chunk_rows: list[list[str]]
+    file_rows: list[list[str]]
+
+
+@dataclass
+class SequentialProgressContext:
+    """Mutable sequential-fit progress handles and state."""
+
+    verbosity: VerbosityEnum
+    state: SequentialProgressState | None
+    indicator: ActivityIndicator | None = None
+
+
+@dataclass(frozen=True)
+class _ChunkProgressMetrics:
+    """File counts and elapsed time for a completed chunk."""
+
+    completed_files_before: int
+    total_files: int
+    elapsed_time: float
+
+
+@dataclass(frozen=True)
+class SequentialRunPlan:
+    """Resolved sequential-fit inputs and bookkeeping."""
+
+    verbosity: VerbosityEnum
+    template: SequentialFitTemplate
+    csv_path: Path
+    header: list[str]
+    remaining: list[str]
+    chunks: list[list[str]]
+    max_workers: int
+    processed_count: int
+
+
+def _summarize_chunk_results(results: list[dict[str, Any]]) -> tuple[str, str]:
+    """Return average reduced chi-square and status for a chunk."""
+    num_files = len(results)
+    successful = [r for r in results if r.get('fit_result.success')]
+    if successful:
+        avg_chi2 = sum(r['fit_result.reduced_chi_square'] for r in successful) / len(successful)
+        chi2_str = f'{avg_chi2:.2f}'
+    else:
+        chi2_str = '—'
+
+    if len(successful) == num_files:
+        status = '✅'
+    elif successful:
+        status = '⚠️'
+    else:
+        status = '❌'
+
+    return chi2_str, status
+
+
+def _chunk_file_range(chunk: list[str]) -> str:
+    """Return the inclusive file-name range for a chunk."""
+    first_name = Path(chunk[0]).name
+    last_name = Path(chunk[-1]).name
+    if first_name == last_name:
+        return first_name
+    return f'{first_name} - {last_name}'
+
+
+def _format_progress_percent(completed_items: int, total_items: int) -> str:
+    """Return overall progress as a percentage string."""
+    if total_items < 1:
+        return '0.0%'
+    clamped_completed = min(max(completed_items, 0), total_items)
+    return f'{100.0 * clamped_completed / total_items:.1f}%'
+
+
+def _format_elapsed_seconds(elapsed_time: float) -> str:
+    """Return elapsed time in seconds with two decimal places."""
+    return f'{max(elapsed_time, 0.0):.2f}'
+
+
+def _build_chunk_progress_row(
+    chunk_idx: int,
+    total_chunks: int,
+    chunk: list[str],
+    results: list[dict[str, Any]],
+    completed_files: int,
+    total_files: int,
+    elapsed_time: float,
+) -> list[str]:
+    """
+    Return one sequential-progress table row for a completed chunk.
+    """
+    chi2_str, status = _summarize_chunk_results(results)
+    return [
+        f'{chunk_idx}/{total_chunks}',
+        _format_progress_percent(completed_files, total_files),
+        _format_elapsed_seconds(elapsed_time),
+        _chunk_file_range(chunk),
+        str(len(results)),
+        chi2_str,
+        status,
+    ]
+
+
+def _build_file_progress_rows(
+    results: list[dict[str, Any]],
+    completed_files_before: int,
+    total_files: int,
+    elapsed_time: float,
+) -> list[list[str]]:
+    """Return sequential-progress rows for individual file fits."""
+    rows: list[list[str]] = []
+    time_str = _format_elapsed_seconds(elapsed_time)
+    for index, result in enumerate(results, start=1):
+        reduced_chi2 = result.get('fit_result.reduced_chi_square')
+        chi2_str = f'{reduced_chi2:.2f}' if reduced_chi2 is not None else '—'
+        iterations = str(result.get('fit_result.iterations') or 0)
+        status = '✅' if result.get('fit_result.success') else '❌'
+        rows.append([
+            Path(result['file_path']).name,
+            _format_progress_percent(completed_files_before + index, total_files),
+            time_str,
+            chi2_str,
+            iterations,
+            status,
+        ])
+    return rows
+
+
+def _build_progress_renderable(
+    verbosity: VerbosityEnum,
+    progress_state: SequentialProgressState,
+) -> object:
+    """Build the sequential progress table renderable."""
+    if verbosity is VerbosityEnum.FULL:
+        return build_table_renderable(
+            columns_headers=_SEQUENTIAL_FILE_PROGRESS_HEADERS,
+            columns_alignment=_SEQUENTIAL_FILE_PROGRESS_ALIGNMENTS,
+            columns_data=progress_state.file_rows,
+        )
+
+    return build_table_renderable(
+        columns_headers=_SEQUENTIAL_CHUNK_PROGRESS_HEADERS,
+        columns_alignment=_SEQUENTIAL_CHUNK_PROGRESS_ALIGNMENTS,
+        columns_data=progress_state.chunk_rows,
+    )
+
+
+def _create_progress_context(
+    verbosity: VerbosityEnum,
+) -> SequentialProgressContext:
+    """Return a mutable progress context for the given verbosity."""
+    if verbosity is VerbosityEnum.SILENT:
+        return SequentialProgressContext(verbosity=verbosity, state=None)
+
+    return SequentialProgressContext(
+        verbosity=verbosity,
+        state=SequentialProgressState(chunk_rows=[], file_rows=[]),
+    )
+
+
+def _start_progress_display(progress: SequentialProgressContext) -> None:
+    """
+    Start the live progress indicator with an empty bordered table.
+    """
+    if progress.verbosity is VerbosityEnum.SILENT or progress.state is None:
+        return
+
+    indicator = ActivityIndicator(
+        ACTIVITY_LABEL_FITTING,
+        verbosity=progress.verbosity,
+    )
+    indicator.start()
+    indicator.update(
+        content=_build_progress_renderable(progress.verbosity, progress.state),
+    )
+    progress.indicator = indicator
+
+
+def _stop_progress_display(progress: SequentialProgressContext) -> None:
+    """Stop any active sequential-fit progress display."""
+    if progress.indicator is not None:
+        progress.indicator.stop()
+        progress.indicator = None
+
+
+def _print_sequential_header(
+    analysis: object,
+    verbosity: VerbosityEnum,
+    remaining: list[str],
+    chunks: list[list[str]],
+    max_workers: int,
+) -> None:
+    """Print the user-facing sequential-fit header."""
+    if verbosity is VerbosityEnum.SILENT:
+        return
+
+    console.paragraph('Sequential fitting')
+    console.print(f"🚀 Starting fit process with '{analysis.fitter.selection}'...")
+    console.print(f'📋 {len(remaining)} files in {len(chunks)} chunks (max_workers={max_workers})')
+    console.print('📈 Goodness-of-fit progress:')
+
+
+def _print_sequential_completion(
+    verbosity: VerbosityEnum,
+    processed_count: int,
+    csv_path: Path,
+) -> None:
+    """Print the final sequential-fit summary."""
+    if verbosity is VerbosityEnum.SILENT:
+        return
+
+    console.print(f'✅ Sequential fitting complete: {processed_count} files processed.')
+    console.print(f'📄 Results saved to:\n{csv_path}')
+
+
+def _prepare_sequential_run(
+    analysis: object,
+    data_dir: str,
+    max_workers: int | str,
+    chunk_size: int | None,
+    file_pattern: str,
+    *,
+    reverse: bool,
+) -> SequentialRunPlan | None:
+    """Resolve inputs and bookkeeping for one sequential-fit run."""
+    verbosity = VerbosityEnum(analysis.project.verbosity.fit.value)
+
+    _check_seq_preconditions(analysis.project)
+
+    data_paths = extract_data_paths_from_dir(data_dir, file_pattern=file_pattern)
+    template = _build_template(analysis.project)
+    csv_path, header, already_fitted, template = _setup_csv_and_recovery(
+        analysis.project,
+        template,
+        verbosity,
+    )
+
+    remaining = [path for path in data_paths if path not in already_fitted]
+    if reverse:
+        remaining.reverse()
+    if not remaining:
+        if verbosity is not VerbosityEnum.SILENT:
+            console.print('✅ All files already fitted. Nothing to do.')
+        return None
+
+    resolved_workers, resolved_chunk_size = _resolve_workers(max_workers, chunk_size)
+    chunks = [
+        remaining[index : index + resolved_chunk_size]
+        for index in range(0, len(remaining), resolved_chunk_size)
+    ]
+    return SequentialRunPlan(
+        verbosity=verbosity,
+        template=template,
+        csv_path=csv_path,
+        header=header,
+        remaining=remaining,
+        chunks=chunks,
+        max_workers=resolved_workers,
+        processed_count=len(already_fitted) + len(remaining),
+    )
+
+
+def _run_fit_loop_with_pool(
+    max_workers: int,
+    chunks: list[list[str]],
+    template: SequentialFitTemplate,
+    csv_info: tuple[Path, list[str]],
+    progress: SequentialProgressContext,
+) -> None:
+    """Execute the fit loop inside a worker-pool context."""
+    pool_cm, main_mod, main_file_bak, main_spec_bak = _create_pool_context(max_workers)
+    try:
+        _run_fit_loop(pool_cm, chunks, template, csv_info, progress)
+    finally:
+        _restore_main_state(main_mod, main_file_bak, main_spec_bak)
+
+
 def _report_chunk_progress(
     chunk_idx: int,
     total_chunks: int,
+    chunk: list[str],
     results: list[dict[str, Any]],
-    verbosity: VerbosityEnum,
+    progress: SequentialProgressContext,
+    metrics: _ChunkProgressMetrics,
 ) -> None:
     """
     Report progress after a chunk completes.
@@ -511,63 +978,46 @@ def _report_chunk_progress(
         1-based index of the current chunk.
     total_chunks : int
         Total number of chunks.
+    chunk : list[str]
+        File paths in the current chunk.
     results : list[dict[str, Any]]
         Results from the chunk.
-    verbosity : VerbosityEnum
-        Output verbosity.
+    progress : SequentialProgressContext
+        Mutable progress handles and accumulated table rows.
+    metrics : _ChunkProgressMetrics
+        File counts and elapsed time for the completed chunk.
     """
-    if verbosity is VerbosityEnum.SILENT:
+    if progress.verbosity is VerbosityEnum.SILENT or progress.state is None:
         return
 
-    num_files = len(results)
-    successful = [r for r in results if r.get('fit_success')]
-    if successful:
-        avg_chi2 = sum(r['reduced_chi_squared'] for r in successful) / len(successful)
-        chi2_str = f'{avg_chi2:.2f}'
-    else:
-        chi2_str = '—'
+    completed_files = metrics.completed_files_before + len(results)
 
-    if verbosity is VerbosityEnum.SHORT:
-        status = '✅' if successful else '❌'
-        print(f'{status} Chunk {chunk_idx}/{total_chunks}: {num_files} files, avg χ² = {chi2_str}')
-    elif verbosity is VerbosityEnum.FULL:
-        print(
-            f'Chunk {chunk_idx}/{total_chunks}: '
-            f'{num_files} files, {len(successful)} succeeded, '
-            f'avg reduced χ² = {chi2_str}'
+    if progress.verbosity is VerbosityEnum.FULL:
+        new_rows = _build_file_progress_rows(
+            results,
+            metrics.completed_files_before,
+            metrics.total_files,
+            metrics.elapsed_time,
         )
-        for r in results:
-            status = '✅' if r.get('fit_success') else '❌'
-            rchi2 = r.get('reduced_chi_squared')
-            rchi2_str = f'{rchi2:.2f}' if rchi2 is not None else '—'
-            print(f'  {status} {Path(r["file_path"]).name}: χ² = {rchi2_str}')
+        progress.state.file_rows.extend(new_rows)
+    else:
+        new_rows = [
+            _build_chunk_progress_row(
+                chunk_idx,
+                total_chunks,
+                chunk,
+                results,
+                completed_files,
+                metrics.total_files,
+                metrics.elapsed_time,
+            )
+        ]
+        progress.state.chunk_rows.extend(new_rows)
 
-
-def _apply_diffrn_metadata(
-    results: list[dict[str, Any]],
-    extract_diffrn: Callable,
-) -> None:
-    """
-    Enrich result dicts with diffrn metadata from a user callback.
-
-    Calls *extract_diffrn* for each result and merges the returned
-    key/value pairs into the result dict under ``diffrn.<key>`` keys.
-    Failures are logged as warnings and do not interrupt processing.
-
-    Parameters
-    ----------
-    results : list[dict[str, Any]]
-        Worker result dicts (mutated in place).
-    extract_diffrn : Callable
-        User callback: ``f(file_path) → {field: value}``.
-    """
-    for result in results:
-        try:
-            diffrn_values = extract_diffrn(result['file_path'])
-            for key, val in diffrn_values.items():
-                result[f'diffrn.{key}'] = val
-        except (RuntimeError, ValueError, TypeError, KeyError, AttributeError, OSError) as exc:
-            log.warning(f'extract_diffrn failed for {result["file_path"]}: {exc}')
+    if progress.indicator is not None:
+        progress.indicator.update(
+            content=_build_progress_renderable(progress.verbosity, progress.state),
+        )
 
 
 # ------------------------------------------------------------------
@@ -612,7 +1062,9 @@ def _check_seq_preconditions(project: object) -> list[str]:
     from easydiffraction.core.variable import Parameter  # noqa: PLC0415
 
     free_params = [
-        p for p in project.parameters if isinstance(p, Parameter) and not p.constrained and p.free
+        p
+        for p in project.parameters
+        if isinstance(p, Parameter) and not p.user_constrained and p.free
     ]
     if not free_params:
         msg = 'No free parameters found. Mark at least one parameter as free.'
@@ -651,7 +1103,7 @@ def _setup_csv_and_recovery(
         num_skipped = len(already_fitted)
         log.info(f'Resuming: {num_skipped} files already fitted, skipping.')
         if verb is not VerbosityEnum.SILENT:
-            print(f'📂 Resuming from CSV: {num_skipped} files already fitted.')
+            console.print(f'📂 Resuming from CSV: {num_skipped} files already fitted.')
         if recovered_params is not None:
             template = replace(template, initial_params=recovered_params)
     else:
@@ -751,8 +1203,7 @@ def _run_fit_loop(
     chunks: list[list[str]],
     template: SequentialFitTemplate,
     csv_info: tuple[Path, list[str]],
-    extract_diffrn: Callable | None,
-    verb: VerbosityEnum,
+    progress: SequentialProgressContext,
 ) -> None:
     """
     Execute the chunk-based fitting loop.
@@ -767,13 +1218,14 @@ def _run_fit_loop(
         Starting template (updated via propagation).
     csv_info : tuple[Path, list[str]]
         Tuple of ``(csv_path, header)``.
-    extract_diffrn : Callable | None
-        User callback for diffrn metadata.
-    verb : VerbosityEnum
-        Output verbosity.
+    progress : SequentialProgressContext
+        Mutable progress handles and accumulated table rows.
     """
     csv_path, header = csv_info
     total_chunks = len(chunks)
+    total_files = sum(len(chunk) for chunk in chunks)
+    completed_files = 0
+    started_at = time.perf_counter()
     with pool_cm as executor:
         for chunk_idx, chunk in enumerate(chunks, start=1):
             if executor is not None:
@@ -782,11 +1234,21 @@ def _run_fit_loop(
             else:
                 results = [_fit_worker(template, path) for path in chunk]
 
-            if extract_diffrn is not None:
-                _apply_diffrn_metadata(results, extract_diffrn)
-
             _append_to_csv(csv_path, header, results)
-            _report_chunk_progress(chunk_idx, total_chunks, results, verb)
+            elapsed_time = time.perf_counter() - started_at
+            _report_chunk_progress(
+                chunk_idx,
+                total_chunks,
+                chunk,
+                results,
+                progress,
+                _ChunkProgressMetrics(
+                    completed_files_before=completed_files,
+                    total_files=total_files,
+                    elapsed_time=elapsed_time,
+                ),
+            )
+            completed_files += len(results)
 
             # Propagate last successful params
             last_ok = _find_last_successful(results)
@@ -797,7 +1259,7 @@ def _run_fit_loop(
 def _find_last_successful(results: list[dict[str, Any]]) -> dict[str, Any] | None:
     """Return the last successful result dict, or None."""
     for r in reversed(results):
-        if r.get('fit_success') and r.get('params'):
+        if r.get('fit_result.success') and r.get('params'):
             return r
     return None
 
@@ -808,7 +1270,6 @@ def fit_sequential(
     max_workers: int | str = 1,
     chunk_size: int | None = None,
     file_pattern: str = '*',
-    extract_diffrn: Callable | None = None,
     *,
     reverse: bool = False,
 ) -> None:
@@ -829,8 +1290,6 @@ def fit_sequential(
         Files per chunk. Default ``None`` uses ``max_workers``.
     file_pattern : str, default='*'
         Glob pattern to filter files in *data_dir*.
-    extract_diffrn : Callable | None, default=None
-        User callback: ``f(file_path) → {diffrn_field: value}``.
     reverse : bool, default=False
         When ``True``, process data files in reverse order.  Useful when
         starting values are better matched to the last file (e.g.
@@ -839,48 +1298,40 @@ def fit_sequential(
     if mp.parent_process() is not None:
         return
 
-    project = analysis.project
-    verb = VerbosityEnum(project.verbosity)
-
-    _check_seq_preconditions(project)
-
-    data_paths = extract_data_paths_from_dir(data_dir, file_pattern=file_pattern)
-    template = _build_template(project)
-
-    csv_path, header, already_fitted, template = _setup_csv_and_recovery(
-        project,
-        template,
-        verb,
+    plan = _prepare_sequential_run(
+        analysis,
+        data_dir,
+        max_workers,
+        chunk_size,
+        file_pattern,
+        reverse=reverse,
     )
-
-    remaining = [p for p in data_paths if p not in already_fitted]
-    if reverse:
-        remaining.reverse()
-    if not remaining:
-        if verb is not VerbosityEnum.SILENT:
-            print('✅ All files already fitted. Nothing to do.')
+    if plan is None:
         return
 
-    max_workers, chunk_size = _resolve_workers(max_workers, chunk_size)
-    chunks = [remaining[i : i + chunk_size] for i in range(0, len(remaining), chunk_size)]
+    _print_sequential_header(
+        analysis,
+        plan.verbosity,
+        plan.remaining,
+        plan.chunks,
+        plan.max_workers,
+    )
 
-    if verb is not VerbosityEnum.SILENT:
-        console.paragraph('Sequential fitting')
-        console.print(f"🚀 Starting fit process with '{analysis.fitter.selection}'...")
-        console.print(
-            f'📋 {len(remaining)} files in {len(chunks)} chunks (max_workers={max_workers})'
-        )
-        console.print('📈 Goodness-of-fit (reduced χ²):')
-
-    pool_cm, main_mod, main_file_bak, main_spec_bak = _create_pool_context(max_workers)
+    progress = _create_progress_context(plan.verbosity)
+    _start_progress_display(progress)
     try:
-        _run_fit_loop(pool_cm, chunks, template, (csv_path, header), extract_diffrn, verb)
-    finally:
-        _restore_main_state(main_mod, main_file_bak, main_spec_bak)
-
-    if verb is not VerbosityEnum.SILENT:
-        print(
-            f'✅ Sequential fitting complete: '
-            f'{len(already_fitted) + len(remaining)} files processed.'
+        _run_fit_loop_with_pool(
+            plan.max_workers,
+            plan.chunks,
+            plan.template,
+            (plan.csv_path, plan.header),
+            progress,
         )
-        print(f'📄 Results saved to: {csv_path}')
+    finally:
+        _stop_progress_display(progress)
+
+    _print_sequential_completion(
+        plan.verbosity,
+        plan.processed_count,
+        plan.csv_path,
+    )

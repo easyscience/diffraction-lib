@@ -134,7 +134,7 @@ derivatives of the objective.
 To show the supported minimizers:
 
 ```python
-project.analysis.fit.show_minimizer_types()
+project.analysis.fitting.show_minimizer_types()
 ```
 
 The example of the output is:
@@ -151,7 +151,7 @@ Supported minimizers
 To select the desired minimizer, e.g., 'lmfit':
 
 ```python
-project.analysis.fit.minimizer_type = 'lmfit'
+project.analysis.fitting.minimizer_type = 'lmfit'
 ```
 
 ### Fit Mode
@@ -168,16 +168,16 @@ The supported fit modes are:
 | single | Independent fitting of each experiment; no shared parameters        |
 | joint  | Simultaneous fitting of all experiments; some parameters are shared |
 
-You can set the fit mode on the `fit` category:
+You can set the fit mode on the analysis owner:
 
 ```python
-project.analysis.fit.mode = 'joint'
+project.analysis.fitting_mode_type = 'joint'
 ```
 
 To check the current fit mode:
 
 ```python
-print(project.analysis.fit.mode.value)
+print(project.analysis.fitting_mode_type)
 ```
 
 ### Perform Fit
@@ -247,11 +247,11 @@ Now, you can inspect the fitted parameters to see how they have changed
 during the refinement process, select more parameters to be refined, and
 perform additional fits as needed.
 
-To plot the measured vs calculated data after the fit, you can use the
-`plot_meas_vs_calc` method of the `analysis` object:
+To plot the measured and calculated data after the fit, you can use the
+`pattern` method of the `display` object:
 
 ```python
-project.display.plotter.plot_meas_vs_calc(expt_name='hrpt', show_residual=True)
+project.display.pattern(expt_name='hrpt')
 ```
 
 ## Constraints
@@ -319,7 +319,7 @@ To view the defined constraints, you can use the `show_constraints`
 method:
 
 ```python
-project.analysis.display.constraints()
+project.analysis.constraints.show()
 ```
 
 The example of the output is:
@@ -336,16 +336,16 @@ User defined constraints
 To inspect an analysis configuration in CIF format, use:
 
 ```python
-# Show structure as CIF
-project.structures['lbco'].show_as_cif()
+# Show analysis as CIF
+project.analysis.show_as_cif()
 ```
 
 Example output:
 
 ```
 ╒════════════════════════════════════════════════╕
-│ _fit.minimizer_type          "lmfit (leastsq)" │
-│ _fit.mode                    single            │
+│ _fitting.minimizer_type      "lmfit (leastsq)" │
+│ _fitting.mode_type           single            │
 │                                                │
 │ loop_                                          │
 │ _alias.label                                   │

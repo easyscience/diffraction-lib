@@ -60,6 +60,12 @@ class PowderMeasVsCalcSpec:
     bragg_peaks_height_fraction: float
     height: int | None = None
     y_bkg: np.ndarray | None = None
+    predictive_lower_95: np.ndarray | None = None
+    predictive_upper_95: np.ndarray | None = None
+    predictive_draws: np.ndarray | None = None
+    y_calc_name: str | None = None
+    y_calc_line_dash: str | None = None
+    excluded_ranges: tuple[tuple[float, float], ...] = ()
 
 
 class XAxisType(StrEnum):
@@ -185,6 +191,14 @@ SERIES_CONFIG = {
         'mode': 'lines',
         'name': 'Total calculated (Icalc)',
     },
+    'posterior': {
+        'mode': 'lines',
+        'name': 'Best posterior sample',
+    },
+    'density': {
+        'mode': 'lines',
+        'name': 'Marginal density',
+    },
     'bkg': {
         'mode': 'lines',
         'name': 'Background (Ibkg)',
@@ -224,6 +238,7 @@ class PlotterBase(ABC):
         axes_labels: object,
         title: str,
         height: int | None,
+        excluded_ranges: tuple[tuple[float, float], ...] = (),
     ) -> None:
         """
         Render a line plot for powder diffraction data.
@@ -245,6 +260,8 @@ class PlotterBase(ABC):
             Figure title.
         height : int | None
             Backend-specific height (text rows or pixels).
+        excluded_ranges : tuple[tuple[float, float], ...], default=()
+            Closed x-intervals to highlight as excluded regions.
         """
 
     @abstractmethod

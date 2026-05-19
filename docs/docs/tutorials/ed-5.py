@@ -200,10 +200,10 @@ project.experiments.add(expt)
 # #### Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='d20')
+project.display.pattern(expt_name='d20')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='d20', x_min=41, x_max=54)
+project.display.pattern(expt_name='d20', x_min=41, x_max=54)
 
 # %% [markdown]
 # #### Set Free Parameters
@@ -243,7 +243,7 @@ for point in expt.background:
 # Show free parameters after selection.
 
 # %%
-project.analysis.display.free_params()
+project.display.parameters.free()
 
 # %% [markdown]
 # #### Set Constraints
@@ -274,19 +274,19 @@ project.analysis.constraints.create(expression='biso_Co2 = biso_Co1')
 project.analysis.fit()
 
 # %%
-project.analysis.display.fit_results()
+project.display.fit.results()
 
 # %%
-project.display.plotter.plot_param_correlations()
+project.display.fit.correlations()
 
 # %% [markdown]
 # #### Plot Measured vs Calculated
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='d20')
+project.display.pattern(expt_name='d20')
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='d20', x_min=42, x_max=52)
+project.display.pattern(expt_name='d20', x_min=42, x_max=52)
 
 # %% [markdown]
 # ## Summary

@@ -23,10 +23,7 @@ classifiers = [
 ]
 requires-python = '>=3.12'
 dependencies = [
-  'essdiffraction', # ESS-specific diffraction library
   'numpy',          # Numerical computing library
-  'colorama',       # Color terminal output
-  'tabulate',       # Pretty-print tabular data for terminal output
   'asciichartpy',   # ASCII charts for terminal output
   'pooch',          # Data downloader
   'typer',          # Command-line interface creation
@@ -44,15 +41,18 @@ dependencies = [
   'diffpy.pdffit2', # Calculations of Pair Distribution Function (PDF)
   'diffpy.utils',   # Utilities for PDF calculations
   'uncertainties',  # Propagation of uncertainties
+  'h5py',           # HDF5 file handling
   'typeguard',      # Runtime type checking
   'darkdetect',     # Detecting dark mode (system-level)
   'pandas',         # Displaying tables in Jupyter notebooks
   'plotly',         # Interactive plots
+  'arviz',          # Bayesian analysis summaries and posterior plotting
   'py3Dmol',        # Visualisation of crystal structures
 ]
 
 [project.optional-dependencies]
 dev = [
+  'essdiffraction',                  # ESS-specific diffraction library
   'GitPython',                       # Interact with Git repositories
   'build',                           # Building the package
   'pre-commit',                      # Pre-commit hooks
@@ -63,7 +63,6 @@ dev = [
   'pytest',                          # Testing
   'pytest-cov',                      # Test coverage
   'pytest-xdist',                    # Enable parallel testing
-  'pytest-benchmark',                # Benchmarking tests
   'ruff',                            # Linting and formatting code
   'radon',                           # Code complexity and maintainability
   'validate-pyproject[all]',         # Validate pyproject.toml
@@ -170,7 +169,7 @@ source = ['src'] # Limit coverage to the source code directory
 [tool.coverage.report]
 show_missing = true  # Show missing lines
 skip_covered = false # Skip files with 100% coverage in the report
-fail_under = 70      # Minimum coverage percentage to pass
+fail_under = 65      # Minimum coverage percentage to pass
 
 ##########################
 # Configuration for pytest

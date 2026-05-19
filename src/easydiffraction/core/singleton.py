@@ -34,7 +34,7 @@ class SingletonBase:
 # ======================================================================
 
 
-# TODO: Implement changing atrr '.constrained' back to False
+# TODO: Implement changing attr '.user_constrained' back to False
 #  when removing constraints
 class ConstraintsHandler(SingletonBase):
     """
@@ -95,7 +95,7 @@ class ConstraintsHandler(SingletonBase):
         For each constraint:
         - Evaluate RHS using current values of aliased parameters
         - Locate the dependent parameter via direct alias reference
-        - Update its value and mark it as constrained
+        - Update its value and mark it as user constrained
         """
         if not self._parsed_constraints:
             return  # Nothing to apply
@@ -132,8 +132,8 @@ class ConstraintsHandler(SingletonBase):
                 # Get the actual parameter object we want to update
                 param = self._alias_to_param[lhs_alias].param
 
-                # Update its value and mark it as constrained
-                param._set_value_constrained(rhs_value)
+                # Update its value and mark it as user constrained
+                param._set_value_user_constrained(rhs_value)
 
             except (ValueError, TypeError, ArithmeticError, KeyError, AttributeError) as error:
                 print(f"Failed to apply constraint '{lhs_alias} = {rhs_expr}': {error}")

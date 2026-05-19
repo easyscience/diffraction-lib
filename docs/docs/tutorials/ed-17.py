@@ -4,7 +4,7 @@
 # This example demonstrates a Rietveld refinement of the Co2SiO4 crystal
 # structure using constant-wavelength neutron powder diffraction data
 # from D20 at ILL. A sequential refinement is performed against a
-# temperature scan using `fit_sequential`, which processes each data
+# temperature scan using sequential fitting, which processes each data
 # file independently without loading all datasets into memory at once.
 
 # %% [markdown]
@@ -16,17 +16,20 @@ import easydiffraction as ed
 # %% [markdown]
 # ## Step 1: Define Project
 #
-# The project object manages structures, experiments, and analysis.
+# The project object manages structures, experiments, analysis, display,
+# and other related components.
 
 # %%
-project = ed.Project()
+project = ed.Project(name='cosio_d20')
+analysis = project.analysis
+display = project.display
 
 # %% [markdown]
 # The project must be saved before running sequential fitting, so that
 # results can be written to `analysis/results.csv`.
 
 # %%
-project.save_as('data/cosio_project', temporary=False)
+project.save_as(dir_path='projects/cosio_d20')
 
 # %% [markdown]
 # ## Step 2: Define Crystal Structure
@@ -38,28 +41,28 @@ project.save_as('data/cosio_project', temporary=False)
 
 # %%
 project.structures.create(name='cosio')
-structure = project.structures['cosio']
+struct = project.structures['cosio']
 
 # %% [markdown]
 # #### Set Space Group
 
 # %%
-structure.space_group.name_h_m = 'P n m a'
-structure.space_group.it_coordinate_system_code = 'abc'
+struct.space_group.name_h_m = 'P n m a'
+struct.space_group.it_coordinate_system_code = 'abc'
 
 # %% [markdown]
 # #### Set Unit Cell
 
 # %%
-structure.cell.length_a = 10.31
-structure.cell.length_b = 6.0
-structure.cell.length_c = 4.79
+struct.cell.length_a = 10.31
+struct.cell.length_b = 6.0
+struct.cell.length_c = 4.79
 
 # %% [markdown]
 # #### Set Atom Sites
 
 # %%
-structure.atom_sites.create(
+struct.atom_sites.create(
     label='Co1',
     type_symbol='Co',
     fract_x=0,
@@ -68,7 +71,7 @@ structure.atom_sites.create(
     wyckoff_letter='a',
     adp_iso=0.3,
 )
-structure.atom_sites.create(
+struct.atom_sites.create(
     label='Co2',
     type_symbol='Co',
     fract_x=0.279,
@@ -77,7 +80,7 @@ structure.atom_sites.create(
     wyckoff_letter='c',
     adp_iso=0.3,
 )
-structure.atom_sites.create(
+struct.atom_sites.create(
     label='Si',
     type_symbol='Si',
     fract_x=0.094,
@@ -86,7 +89,7 @@ structure.atom_sites.create(
     wyckoff_letter='c',
     adp_iso=0.34,
 )
-structure.atom_sites.create(
+struct.atom_sites.create(
     label='O1',
     type_symbol='O',
     fract_x=0.091,
@@ -95,7 +98,7 @@ structure.atom_sites.create(
     wyckoff_letter='c',
     adp_iso=0.63,
 )
-structure.atom_sites.create(
+struct.atom_sites.create(
     label='O2',
     type_symbol='O',
     fract_x=0.448,
@@ -104,7 +107,7 @@ structure.atom_sites.create(
     wyckoff_letter='c',
     adp_iso=0.59,
 )
-structure.atom_sites.create(
+struct.atom_sites.create(
     label='O3',
     type_symbol='O',
     fract_x=0.164,
@@ -125,14 +128,17 @@ structure.atom_sites.create(
 # #### Download Measured Data
 
 # %%
-zip_path = ed.download_data(id=27, destination='data')
+zip_path = ed.download_data(id=25, destination='data')
 
 # %% [markdown]
 # #### Extract Data Files
 
 # %%
-data_dir = 'data/d20_scan'
-data_paths = ed.extract_data_paths_from_zip(zip_path, destination=data_dir)
+scan_data_dir = 'experiments/d20_scan'
+data_paths = ed.extract_data_paths_from_zip(
+    zip_path,
+    destination=project.info.path / scan_data_dir,
+)
 
 # %% [markdown]
 # #### Create Template Experiment from the First File
@@ -202,28 +208,28 @@ expt.linked_phases.create(id='cosio', scale=1.2)
 # #### Set Free Parameters
 
 # %%
-structure.cell.length_a.free = True
-structure.cell.length_b.free = True
-structure.cell.length_c.free = True
+struct.cell.length_a.free = True
+struct.cell.length_b.free = True
+struct.cell.length_c.free = True
 
-structure.atom_sites['Co2'].fract_x.free = True
-structure.atom_sites['Co2'].fract_z.free = True
-structure.atom_sites['Si'].fract_x.free = True
-structure.atom_sites['Si'].fract_z.free = True
-structure.atom_sites['O1'].fract_x.free = True
-structure.atom_sites['O1'].fract_z.free = True
-structure.atom_sites['O2'].fract_x.free = True
-structure.atom_sites['O2'].fract_z.free = True
-structure.atom_sites['O3'].fract_x.free = True
-structure.atom_sites['O3'].fract_y.free = True
-structure.atom_sites['O3'].fract_z.free = True
+struct.atom_sites['Co2'].fract_x.free = True
+struct.atom_sites['Co2'].fract_z.free = True
+struct.atom_sites['Si'].fract_x.free = True
+struct.atom_sites['Si'].fract_z.free = True
+struct.atom_sites['O1'].fract_x.free = True
+struct.atom_sites['O1'].fract_z.free = True
+struct.atom_sites['O2'].fract_x.free = True
+struct.atom_sites['O2'].fract_z.free = True
+struct.atom_sites['O3'].fract_x.free = True
+struct.atom_sites['O3'].fract_y.free = True
+struct.atom_sites['O3'].fract_z.free = True
 
-structure.atom_sites['Co1'].adp_iso.free = True
-structure.atom_sites['Co2'].adp_iso.free = True
-structure.atom_sites['Si'].adp_iso.free = True
-structure.atom_sites['O1'].adp_iso.free = True
-structure.atom_sites['O2'].adp_iso.free = True
-structure.atom_sites['O3'].adp_iso.free = True
+struct.atom_sites['Co1'].adp_iso.free = True
+struct.atom_sites['Co2'].adp_iso.free = True
+struct.atom_sites['Si'].adp_iso.free = True
+struct.atom_sites['O1'].adp_iso.free = True
+struct.atom_sites['O2'].adp_iso.free = True
+struct.atom_sites['O3'].adp_iso.free = True
 
 # %%
 expt.linked_phases['cosio'].scale.free = True
@@ -244,26 +250,26 @@ for point in expt.background:
 # Set aliases for parameters.
 
 # %%
-project.analysis.aliases.create(
+analysis.aliases.create(
     label='biso_Co1',
-    param=structure.atom_sites['Co1'].adp_iso,
+    param=struct.atom_sites['Co1'].adp_iso,
 )
-project.analysis.aliases.create(
+analysis.aliases.create(
     label='biso_Co2',
-    param=structure.atom_sites['Co2'].adp_iso,
+    param=struct.atom_sites['Co2'].adp_iso,
 )
 
 # %% [markdown]
 # Set constraints.
 
 # %%
-project.analysis.constraints.create(expression='biso_Co2 = biso_Co1')
+analysis.constraints.create(expression='biso_Co2 = biso_Co1')
 
 # %% [markdown]
 # #### Set Minimizer
 
 # %%
-project.analysis.fit.minimizer_type = 'bumps (lm)'
+analysis.fitting.minimizer_type = 'bumps (lm)'
 
 # %% [markdown]
 # #### Run Single Fitting
@@ -274,19 +280,22 @@ project.analysis.fit.minimizer_type = 'bumps (lm)'
 # if the initial parameters are far from optimal.
 
 # %%
-project.analysis.fit()
+analysis.fit()
+
+# %%
+display.fit.results()
 
 # %% [markdown]
 # #### Show parameter correlations
 
 # %%
-project.display.plotter.plot_param_correlations()
+display.fit.correlations()
 
 # %% [markdown]
 # #### Compare measured and calculated patterns for the first fit.
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='d20')
+display.pattern(expt_name='d20')
 
 # %% [markdown]
 # #### Run Sequential Fitting
@@ -299,28 +308,35 @@ project.verbosity = 'short'
 
 # %% [markdown]
 #
-# Define a callback that extracts the temperature from each data file.
+# Create a persisted extract rule that reads the temperature from each
+# data file.
 
 
 # %%
-def extract_diffrn(file_path):
-    temperature = ed.extract_metadata(
-        file_path=file_path,
-        pattern=r'^TEMP\s+([0-9.]+)',
-    )
-    return {'ambient_temperature': temperature}
+temperature = 'diffrn.ambient_temperature'
 
+# %%
+analysis.sequential_fit_extract.create(
+    id='temperature',
+    target=temperature,
+    pattern=r'^TEMP\s+([0-9.]+)',
+    required=True,
+)
+
+# %% [markdown]
+# Set the sequential fitting parameters.
+
+# %%
+analysis.fitting_mode_type = 'sequential'
+analysis.sequential_fit.data_dir = scan_data_dir
+analysis.sequential_fit.max_workers = 'auto'
+analysis.sequential_fit.reverse = True
 
 # %% [markdown]
 # Run the sequential fit over all data files in the scan directory.
 
 # %%
-project.analysis.fit_sequential(
-    data_dir=data_dir,
-    extract_diffrn=extract_diffrn,
-    max_workers='auto',
-    reverse=True,
-)
+analysis.fit()
 
 # %% [markdown]
 # #### Replay a Dataset
@@ -329,7 +345,7 @@ project.analysis.fit_sequential(
 
 # %%
 project.apply_params_from_csv(row_index=0)
-project.display.plotter.plot_meas_vs_calc(expt_name='d20')
+display.pattern(expt_name='d20')
 
 # %% [markdown]
 #
@@ -337,70 +353,45 @@ project.display.plotter.plot_meas_vs_calc(expt_name='d20')
 
 # %%
 project.apply_params_from_csv(row_index=-1)
-project.display.plotter.plot_meas_vs_calc(expt_name='d20')
+display.pattern(expt_name='d20')
 
 # %% [markdown]
 # #### Plot Parameter Evolution
 #
-# Define the quantity to use as the x-axis in the following plots.
+# Reuse the extracted diffrn path as the x-axis in the following plots.
+
+# %% [markdown]
+# Plot fit quality metrics vs. temperature.
 
 # %%
-temperature = expt.diffrn.ambient_temperature
+display.fit.series(analysis.fit_result.success, versus=temperature)
+display.fit.series(analysis.fit_result.reduced_chi_square, versus=temperature)
+display.fit.series(analysis.fit_result.iterations, versus=temperature)
 
 # %% [markdown]
 # Plot unit cell parameters vs. temperature.
 
 # %%
-project.display.plotter.plot_param_series(structure.cell.length_a, versus=temperature)
-project.display.plotter.plot_param_series(structure.cell.length_b, versus=temperature)
-project.display.plotter.plot_param_series(structure.cell.length_c, versus=temperature)
+display.fit.series(struct.cell.length_a, versus=temperature)
+display.fit.series(struct.cell.length_b, versus=temperature)
+display.fit.series(struct.cell.length_c, versus=temperature)
 
 # %% [markdown]
 # Plot isotropic displacement parameters vs. temperature.
 
 # %%
-project.display.plotter.plot_param_series(
-    structure.atom_sites['Co1'].adp_iso,
-    versus=temperature,
-)
-project.display.plotter.plot_param_series(
-    structure.atom_sites['Si'].adp_iso,
-    versus=temperature,
-)
-project.display.plotter.plot_param_series(
-    structure.atom_sites['O1'].adp_iso,
-    versus=temperature,
-)
-project.display.plotter.plot_param_series(
-    structure.atom_sites['O2'].adp_iso,
-    versus=temperature,
-)
-project.display.plotter.plot_param_series(
-    structure.atom_sites['O3'].adp_iso,
-    versus=temperature,
-)
+display.fit.series(struct.atom_sites['Co1'].adp_iso, versus=temperature)
+display.fit.series(struct.atom_sites['Si'].adp_iso, versus=temperature)
+display.fit.series(struct.atom_sites['O1'].adp_iso, versus=temperature)
+display.fit.series(struct.atom_sites['O2'].adp_iso, versus=temperature)
+display.fit.series(struct.atom_sites['O3'].adp_iso, versus=temperature)
 
 # %% [markdown]
 # Plot selected fractional coordinates vs. temperature.
 
 # %%
-project.display.plotter.plot_param_series(
-    structure.atom_sites['Co2'].fract_x,
-    versus=temperature,
-)
-project.display.plotter.plot_param_series(
-    structure.atom_sites['Co2'].fract_z,
-    versus=temperature,
-)
-project.display.plotter.plot_param_series(
-    structure.atom_sites['O1'].fract_z,
-    versus=temperature,
-)
-project.display.plotter.plot_param_series(
-    structure.atom_sites['O2'].fract_z,
-    versus=temperature,
-)
-project.display.plotter.plot_param_series(
-    structure.atom_sites['O3'].fract_z,
-    versus=temperature,
-)
+display.fit.series(struct.atom_sites['Co2'].fract_x, versus=temperature)
+display.fit.series(struct.atom_sites['Co2'].fract_z, versus=temperature)
+display.fit.series(struct.atom_sites['O1'].fract_z, versus=temperature)
+display.fit.series(struct.atom_sites['O2'].fract_z, versus=temperature)
+display.fit.series(struct.atom_sites['O3'].fract_z, versus=temperature)

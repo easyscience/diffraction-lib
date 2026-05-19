@@ -18,14 +18,29 @@ from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RegexValidator
 from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.utils.logging import console
+from easydiffraction.utils.logging import log
+from easydiffraction.utils.utils import render_table
 
 
 class Constraint(CategoryItem):
     """Single constraint item stored as ``lhs = rhs`` expression."""
 
+    _category_code = 'constraint'
+    _category_entry_name = 'id'
+
     def __init__(self) -> None:
         super().__init__()
 
+        self._id = StringDescriptor(
+            name='id',
+            description='Explicit identifier for this constraint row.',
+            value_spec=AttributeSpec(
+                default='_',
+                validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
+            ),
+            cif_handler=CifHandler(names=['_constraint.id']),
+        )
         self._expression = StringDescriptor(
             name='expression',
             description='Constraint equation, e.g. "occ_Ba = 1 - occ_La".',
@@ -36,12 +51,18 @@ class Constraint(CategoryItem):
             cif_handler=CifHandler(names=['_constraint.expression']),
         )
 
-        self._identity.category_code = 'constraint'
-        self._identity.category_entry_name = lambda: self.lhs_alias
-
     # ------------------------------------------------------------------
     #  Public properties
     # ------------------------------------------------------------------
+
+    @property
+    def id(self) -> StringDescriptor:
+        """Explicit identifier for this constraint row."""
+        return self._id
+
+    @id.setter
+    def id(self, value: str) -> None:
+        self._id.value = value
 
     @property
     def expression(self) -> StringDescriptor:
@@ -116,7 +137,7 @@ class Constraints(CategoryCollection):
         """Deactivate constraints without deleting them."""
         self._enabled = False
 
-    def create(self, *, expression: str) -> None:
+    def create(self, *, expression: str, id: str | None = None) -> None:
         """
         Create a constraint from an expression string.
 
@@ -127,8 +148,41 @@ class Constraints(CategoryCollection):
         expression : str
             Constraint equation, e.g. ``'biso_Co2 = biso_Co1'`` or
             ``'occ_Ba = 1 - occ_La'``.
+        id : str | None, default=None
+            Explicit row identifier. When not ``None``, this value is
+            used as the collection key instead of the left-hand alias.
         """
         item = Constraint()
         item.expression = expression
+        if id is not None:
+            item.id = id
+        elif item.lhs_alias:
+            item.id = item.lhs_alias
         self.add(item)
         self._enabled = True
+
+    def _after_from_cif(self) -> None:
+        """
+        Backfill explicit ids when loading older CIF constraint loops.
+        """
+        for item in self:
+            constraint_id = item.id.value.strip()
+            if constraint_id not in {'', '_', '?'} or not item.lhs_alias:
+                continue
+            item.id = item.lhs_alias
+
+    def show(self) -> None:
+        """Print a table of all user-defined symbolic constraints."""
+        if not self._items:
+            log.warning('No constraints defined.')
+            return
+
+        rows = [[constraint.id.value, constraint.expression.value] for constraint in self]
+
+        console.paragraph('User defined constraints')
+        render_table(
+            columns_headers=['id', 'expression'],
+            columns_alignment=['left', 'left'],
+            columns_data=rows,
+        )
+        console.print(f'Constraints enabled: {self.enabled}')

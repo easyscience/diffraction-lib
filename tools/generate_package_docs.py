@@ -3,9 +3,9 @@
 
 """Generate project package structure markdown files.
 
-Outputs two docs under docs/architecture/:
- - package-structure-short.md  (folders/files only)
- - package-structure-full.md   (folders/files and classes)
+Outputs two docs under docs/dev/package-structure/:
+ - short.md  (folders/files only)
+ - full.md   (folders/files and classes)
 
 Run (from repo root):
     pixi run python tools/generate_package_docs.py
@@ -21,7 +21,7 @@ from typing import List
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SRC_ROOT = REPO_ROOT / 'src' / 'easydiffraction'
-DOCS_OUT_DIR = REPO_ROOT / 'docs' / 'architecture'
+DOCS_OUT_DIR = REPO_ROOT / 'docs' / 'dev' / 'package-structure'
 
 
 IGNORE_DIRS = {
@@ -132,8 +132,8 @@ def render_full(root: Node) -> List[str]:
 def write_markdown(short_lines: List[str], full_lines: List[str]) -> None:
     DOCS_OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    short_md = DOCS_OUT_DIR / 'package-structure-short.md'
-    full_md = DOCS_OUT_DIR / 'package-structure-full.md'
+    short_md = DOCS_OUT_DIR / 'short.md'
+    full_md = DOCS_OUT_DIR / 'full.md'
 
     short_content = [
         '# Package Structure (short)',

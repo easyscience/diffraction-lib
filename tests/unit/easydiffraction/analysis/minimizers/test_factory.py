@@ -9,11 +9,12 @@ def test_minimizer_factory_list_and_show(capsys):
 
     lst = MinimizerFactory.supported_tags()
     assert isinstance(lst, list)
-    assert len(lst) >= 4
+    assert len(lst) >= 5
     assert 'lmfit' in lst
     assert 'lmfit (leastsq)' in lst
     assert 'lmfit (least_squares)' in lst
     assert 'dfols' in lst
+    assert 'bumps (dream)' in lst
     MinimizerFactory.show_supported()
     out = capsys.readouterr().out
     assert 'Supported types' in out
@@ -75,3 +76,12 @@ def test_minimizer_factory_create_lmfit_least_squares():
     m = MinimizerFactory.create('lmfit (least_squares)')
     assert isinstance(m, LmfitLeastSquaresMinimizer)
     assert m.method == 'least_squares'
+
+
+def test_minimizer_factory_create_bumps_dream():
+    from easydiffraction.analysis.minimizers.bumps_dream import BumpsDreamMinimizer
+    from easydiffraction.analysis.minimizers.factory import MinimizerFactory
+
+    m = MinimizerFactory.create('bumps (dream)')
+    assert isinstance(m, BumpsDreamMinimizer)
+    assert m.method == 'dream'

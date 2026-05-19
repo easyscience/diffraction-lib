@@ -27,7 +27,7 @@ def test_param_to_cif_minimal():
             self.value = 3
 
     p = P()
-    assert MUT.param_to_cif(p) == '_x.y 3.'
+    assert MUT.param_to_cif(p) == '_x.y 3'
 
 
 def test_format_param_value_with_uncertainty_uses_two_sig_digits():

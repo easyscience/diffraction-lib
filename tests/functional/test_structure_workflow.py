@@ -162,9 +162,9 @@ class TestSymmetryFixedParameters:
         s._update_categories()
 
         atom = s.atom_sites['La']
-        assert atom.fract_x.symmetry_fixed is True
-        assert atom.fract_y.symmetry_fixed is True
-        assert atom.fract_z.symmetry_fixed is True
+        assert atom.fract_x.symmetry_constrained is True
+        assert atom.fract_y.symmetry_constrained is True
+        assert atom.fract_z.symmetry_constrained is True
 
         monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.WARN, raising=True)
         for parameter in ('fract_x', 'fract_y', 'fract_z'):
@@ -183,12 +183,12 @@ class TestSymmetryFixedParameters:
         s._need_categories_update = True
         s._update_categories()
 
-        assert s.cell.length_a.symmetry_fixed is False
-        assert s.cell.length_b.symmetry_fixed is True
-        assert s.cell.length_c.symmetry_fixed is True
-        assert s.cell.angle_alpha.symmetry_fixed is True
-        assert s.cell.angle_beta.symmetry_fixed is True
-        assert s.cell.angle_gamma.symmetry_fixed is True
+        assert s.cell.length_a.symmetry_constrained is False
+        assert s.cell.length_b.symmetry_constrained is True
+        assert s.cell.length_c.symmetry_constrained is True
+        assert s.cell.angle_alpha.symmetry_constrained is True
+        assert s.cell.angle_beta.symmetry_constrained is True
+        assert s.cell.angle_gamma.symmetry_constrained is True
 
     def test_general_position_remains_refinable(self):
         project = _make_project()
@@ -208,7 +208,7 @@ class TestSymmetryFixedParameters:
         s._update_categories()
 
         atom = s.atom_sites['La']
-        assert atom.fract_x.symmetry_fixed is False
+        assert atom.fract_x.symmetry_constrained is False
         atom.fract_x.free = True
         assert atom.fract_x.free is True
 
@@ -222,14 +222,14 @@ class TestSymmetryFixedParameters:
         # Start in P 1: cell free
         s._need_categories_update = True
         s._update_categories()
-        assert s.cell.length_b.symmetry_fixed is False
+        assert s.cell.length_b.symmetry_constrained is False
         s.cell.length_b.free = True
         assert s.cell.length_b.free is True
 
         # Switch to cubic: length_b becomes fixed
         s.space_group.name_h_m = 'P m -3 m'
         s._update_categories()
-        assert s.cell.length_b.symmetry_fixed is True
+        assert s.cell.length_b.symmetry_constrained is True
         assert s.cell.length_b.free is False
 
         # Setting free=True is now ignored with a warning

@@ -36,6 +36,9 @@ class AtomSite(CategoryItem):
     CIF serialization.
     """
 
+    _category_code = 'atom_site'
+    _category_entry_name = 'label'
+
     def __init__(self) -> None:
         """Initialise the atom site with default descriptor values."""
         super().__init__()
@@ -138,9 +141,6 @@ class AtomSite(CategoryItem):
             ),
             cif_handler=CifHandler(names=['_atom_site.adp_type']),
         )
-
-        self._identity.category_code = 'atom_site'
-        self._identity.category_entry_name = lambda: str(self.label.value)
 
     # ------------------------------------------------------------------
     #  Private helper methods
@@ -558,8 +558,8 @@ class AtomSites(CategoryCollection):
         Uses the parent structure's space-group symbol, IT coordinate
         system code and each atom's Wyckoff letter.  Atoms without a
         Wyckoff letter are silently skipped. Coordinates fully
-        determined by site symmetry are flagged as ``symmetry_fixed`` so
-        they cannot be marked refinable.
+        determined by site symmetry are flagged as
+        ``symmetry_constrained`` so they cannot be marked refinable.
         """
         structure = self._parent
         space_group_name = structure.space_group.name_h_m.value
@@ -568,7 +568,7 @@ class AtomSites(CategoryCollection):
             wl = atom.wyckoff_letter.value
             if not wl:
                 # TODO: Decide how to handle this case
-                self._clear_fract_symmetry_fixed(atom)
+                self._clear_fract_symmetry_constrained(atom)
                 continue
             dummy_atom = {
                 'fract_x': atom.fract_x.value,
@@ -581,7 +581,7 @@ class AtomSites(CategoryCollection):
                 coord_code=space_group_coord_code,
                 wyckoff_letter=wl,
             )
-            fixed_flags = ecr.atom_site_symmetry_fixed_flags(
+            constrained_flags = ecr.atom_site_symmetry_constrained_flags(
                 name_hm=space_group_name,
                 coord_code=space_group_coord_code,
                 wyckoff_letter=wl,
@@ -589,17 +589,17 @@ class AtomSites(CategoryCollection):
             atom.fract_x.value = dummy_atom['fract_x']
             atom.fract_y.value = dummy_atom['fract_y']
             atom.fract_z.value = dummy_atom['fract_z']
-            atom._fract_x._set_symmetry_fixed(value=fixed_flags['fract_x'])
-            atom._fract_y._set_symmetry_fixed(value=fixed_flags['fract_y'])
-            atom._fract_z._set_symmetry_fixed(value=fixed_flags['fract_z'])
+            atom._fract_x._set_symmetry_constrained(value=constrained_flags['fract_x'])
+            atom._fract_y._set_symmetry_constrained(value=constrained_flags['fract_y'])
+            atom._fract_z._set_symmetry_constrained(value=constrained_flags['fract_z'])
 
     @staticmethod
-    def _clear_fract_symmetry_fixed(atom: AtomSite) -> None:
+    def _clear_fract_symmetry_constrained(atom: AtomSite) -> None:
         """
-        Reset the ``symmetry_fixed`` flag on all fract coordinates.
+        Clear fractional-coordinate symmetry constraints.
         """
         for axis_param in (atom._fract_x, atom._fract_y, atom._fract_z):
-            axis_param._set_symmetry_fixed(value=False)
+            axis_param._set_symmetry_constrained(value=False)
 
     def _apply_adp_symmetry_constraints(self) -> None:
         """
@@ -607,9 +607,9 @@ class AtomSites(CategoryCollection):
 
         For each atom with an anisotropic ADP type and a Wyckoff letter,
         enforces the tensor constraints dictated by the site symmetry.
-        Tensor components fixed by symmetry are flagged as
-        ``symmetry_fixed`` (which also forces ``free = False``), and
-        ``adp_iso`` is flagged as fixed for all anisotropic atoms.
+        Tensor components constrained by symmetry are flagged as
+        ``symmetry_constrained`` (which also forces ``free = False``),
+        and ``adp_iso`` is flagged as fixed for all anisotropic atoms.
         """
         structure = self._parent
         aniso_types = {AdpTypeEnum.BANI.value, AdpTypeEnum.UANI.value}
@@ -620,7 +620,7 @@ class AtomSites(CategoryCollection):
         for atom in self._items:
             is_aniso = atom.adp_type.value in aniso_types
             # Isotropic ADP is not refinable for aniso atoms
-            atom._adp_iso._set_symmetry_fixed(value=is_aniso)
+            atom._adp_iso._set_symmetry_constrained(value=is_aniso)
             if not is_aniso:
                 continue
             wl = atom.wyckoff_letter.value
@@ -654,7 +654,7 @@ class AtomSites(CategoryCollection):
             for key, is_free in zip(adp_keys, ref_i, strict=False):
                 param = getattr(aniso_entry, key)
                 param.value = dummy[key]
-                param._set_symmetry_fixed(value=not is_free)
+                param._set_symmetry_constrained(value=not is_free)
 
     def _sync_iso_from_aniso(self) -> None:
         """

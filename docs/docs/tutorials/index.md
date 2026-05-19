@@ -17,10 +17,6 @@ The tutorials are organized into the following categories:
 
 ## Getting Started
 
-- [LBCO `quick` `load`](ed-18.ipynb) – The most minimal example showing
-  how to load a previously saved project from a directory and run
-  refinement. Useful when a project has already been set up and saved in
-  a prior session.
 - [LBCO `quick` `code`](ed-2.ipynb) – A minimal example intended as a
   quick reference for users already familiar with the EasyDiffraction
   API or who want to see an example refinement when both the structure
@@ -41,6 +37,19 @@ The tutorials are organized into the following categories:
   full explanation of the workflow with detailed comments and
   descriptions of every step, making it suitable for users who are new
   to EasyDiffraction or those who prefer a more guided approach.
+
+## Load Project
+
+- [LBCO Single Fit](ed-18.ipynb) – The most minimal example showing how
+  to load a previously saved project from a directory and continue
+  working with it.
+- [Co2SiO4 Sequential Fit](ed-23.ipynb) – Resumes a sequential
+  refinement from an existing `analysis/results.csv` after an incomplete
+  previous run.
+- [LBCO Bayesian Display](ed-24.ipynb) – Shows how to load the saved
+  project after a Bayesian analysis and inspect the persisted fit
+  summary, correlation matrix, posterior plots, and predictive checks
+  without rerunning MCMC sampling.
 
 ## Powder Diffraction
 
@@ -97,6 +106,22 @@ The tutorials are organized into the following categories:
   simulated with McStas.
 - [BEER McStas](ed-20.ipynb) – Rietveld refinement based on the data
   simulated with McStas for the BEER instrument at ESS.
+
+## Bayesian Analysis
+
+- [LBCO Bayesian](ed-21.ipynb) – Demonstrates how to perform a Bayesian
+  analysis of the La0.5Ba0.5CoO3 crystal structure using constant
+  wavelength neutron powder diffraction data from HRPT at PSI. This
+  tutorial covers the use of Markov Chain Monte Carlo (MCMC) sampling to
+  explore the posterior distribution of the refined parameters,
+  providing insights into parameter uncertainties and correlations.
+- [Tb2TiO7 Bayesian](ed-22.ipynb) – Another example of a Bayesian
+  analysis. This tutorial focuses on the Tb2TiO7 crystal structure using
+  constant wavelength neutron single crystal diffraction data from HEiDi
+  at FRM II. Similar to the LBCO Bayesian tutorial, it covers the use of
+  MCMC sampling to explore the posterior distribution of the refined
+  parameters, providing insights into parameter uncertainties and
+  correlations in the context of single crystal diffraction data.
 
 ## Workshops & Schools
 

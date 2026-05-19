@@ -85,7 +85,7 @@ experiment.extinction.radius = 10
 # ## Step 4: Perform Analysis I (ADP iso)
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='heidi')
+project.display.pattern(expt_name='heidi')
 
 # %%
 structure.atom_sites['O1'].fract_x.free = True
@@ -110,7 +110,7 @@ project.analysis.fit()
 
 # %%
 # Show fit results summary
-project.analysis.display.fit_results()
+project.display.fit.results()
 
 # %%
 structure.show_as_cif()
@@ -119,7 +119,7 @@ structure.show_as_cif()
 project.experiments.show_names()
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='heidi')
+project.display.pattern(expt_name='heidi')
 
 # %% [markdown]
 # ## Step 5: Perform Analysis (ADP aniso)
@@ -147,13 +147,13 @@ structure.atom_site_aniso['O1'].adp_23.free = True
 project.analysis.fit()
 
 # %%
-project.analysis.display.fit_results()
+project.display.fit.results()
 
 # %%
-project.display.plotter.plot_param_correlations()
+project.display.fit.correlations()
 
 # %%
-project.display.plotter.plot_meas_vs_calc(expt_name='heidi')
+project.display.pattern(expt_name='heidi')
 
 # %%
 structure.show_as_cif()

@@ -22,6 +22,13 @@ class CategoryItem(GuardedBase):
     #  CategoryCollection and use them when serializing to CIF!
     # TODO: Common for all categories
     _update_priority = 10  # Default. Lower values run first.
+    _category_code: str | None = None
+    _category_entry_name: str | None = None
+
+    def __init__(self) -> None:
+        super().__init__()
+        if self._category_code is not None:
+            self._identity.category_code = self._category_code
 
     def __str__(self) -> str:
         """Human-readable representation of this component."""
@@ -36,6 +43,17 @@ class CategoryItem(GuardedBase):
         called_by_minimizer: bool = False,
     ) -> None:
         del called_by_minimizer
+
+    def _resolve_category_entry_name(self) -> str | None:
+        """Resolve the declared category entry value for this item."""
+        attr_name = self._category_entry_name
+        if attr_name is None:
+            return None
+
+        value = getattr(self, attr_name)
+        if isinstance(value, GenericDescriptorBase):
+            value = value.value
+        return str(value)
 
     @property
     def unique_name(self) -> str:

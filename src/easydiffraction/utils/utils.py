@@ -6,6 +6,7 @@ from __future__ import annotations
 import functools
 import json
 import pathlib
+import shutil
 import urllib.request
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version
@@ -20,6 +21,8 @@ from uncertainties import ufloat
 from uncertainties import ufloat_fromstr
 
 from easydiffraction.display.tables import TableRenderer
+from easydiffraction.io.ascii import extract_project_from_zip
+from easydiffraction.utils.environment import resolve_artifact_path
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 
@@ -28,9 +31,9 @@ pooch.get_logger().setLevel('WARNING')  # Suppress pooch info messages
 _DATA_REPO = 'easyscience/diffraction'
 _DATA_ROOT = 'data'
 # commit SHA preferred
-_DATA_INDEX_REF = 'd5a1fddd0d3e3e919c7e4a19e83b94b4231b99b6'
+_DATA_INDEX_REF = 'dbe92a87e0106c4742eee0ff9a8e32bdb8b483cb'
 # macOS: sha256sum index.json
-_DATA_INDEX_HASH = 'sha256:8305fd55d5b0c7c63ffa2641c082c623a107c32af09343ba901e196f68fd9f73'
+_DATA_INDEX_HASH = 'sha256:9e7bbaf2cb650f4126572e85157c63bc76f201408856fe4af566bee55dcdfbb4'
 
 
 def _build_data_url(path: str) -> str:
@@ -112,6 +115,42 @@ def _fetch_data_index() -> dict:
         return json.load(f)
 
 
+def _existing_project_dir(extraction_dir: pathlib.Path) -> pathlib.Path | None:
+    """Return one extracted project directory from a destination."""
+    project_files = sorted(extraction_dir.rglob('project.cif'))
+    if not project_files:
+        return None
+    return project_files[0].parent.resolve()
+
+
+def _download_data_message(data_id: int | str, record: dict) -> str:
+    """Return the console message for one downloadable data record."""
+    description = record.get('description', '')
+    message = f'Data #{data_id}'
+    if description:
+        message += f': {description}'
+    return message
+
+
+def _download_data_targets(
+    data_id: int | str,
+    destination: str,
+    record: dict,
+) -> tuple[str, bool, pathlib.Path, pathlib.Path, pathlib.Path, str]:
+    """Return URL and filesystem targets for one download request."""
+    record_path = _record_path(record)
+    url = _build_data_url(record_path)
+    _validate_url(url)
+
+    fname = _filename_for_id_from_path(data_id, record_path)
+    is_project_archive = record.get('kind') == 'project' and fname.endswith('.zip')
+    dest_path = resolve_artifact_path(destination)
+    dest_path.mkdir(parents=True, exist_ok=True)
+    file_path = dest_path / fname
+    extraction_dir = dest_path / pathlib.Path(fname).stem
+    return url, is_project_archive, dest_path, file_path, extraction_dir, fname
+
+
 @functools.lru_cache(maxsize=1)
 def _fetch_tutorials_index() -> dict:
     """
@@ -160,14 +199,18 @@ def download_data(
     id : int | str
         Numeric dataset id (e.g. 12).
     destination : str, default='data'
-        Directory to save the file into (created if missing).
+        Directory to save the downloaded file or extracted project into
+        (created if missing). Relative destinations are resolved against
+        the configured artifact root when
+        ``EASYDIFFRACTION_ARTIFACT_ROOT`` is set.
     overwrite : bool, default=False
         Whether to overwrite the file if it already exists.
 
     Returns
     -------
     str
-        Full path to the downloaded file as string.
+        Full path to the downloaded file, or to the extracted project
+        directory for project ZIP archives, as string.
 
     Raises
     ------
@@ -186,24 +229,29 @@ def download_data(
         raise KeyError(msg)
 
     record = index[key]
-    record_path = _record_path(record)
-    url = _build_data_url(record_path)
-    _validate_url(url)
-    fname = _filename_for_id_from_path(id, record_path)
-
-    dest_path = pathlib.Path(destination)
-    dest_path.mkdir(parents=True, exist_ok=True)
-    file_path = dest_path / fname
-
-    description = record.get('description', '')
-    message = f'Data #{id}'
-    if description:
-        message += f': {description}'
+    url, is_project_archive, dest_path, file_path, extraction_dir, fname = _download_data_targets(
+        id, destination, record
+    )
+    message = _download_data_message(id, record)
 
     console.paragraph('Getting data...')
     console.print(f'{message}')
 
+    if is_project_archive and extraction_dir.exists() and not overwrite:
+        existing_project_dir = _existing_project_dir(extraction_dir)
+        if existing_project_dir is not None:
+            console.print(
+                f"✅ Data #{id} already extracted at '{existing_project_dir}'. "
+                'Keeping existing project.'
+            )
+            return str(existing_project_dir)
+
     if file_path.exists():
+        if is_project_archive and not overwrite:
+            project_dir = extract_project_from_zip(file_path, destination=extraction_dir)
+            file_path.unlink()
+            console.print(f"✅ Data #{id} extracted to '{project_dir}'")
+            return str(project_dir)
         if not overwrite:
             console.print(
                 f"✅ Data #{id} already present at '{file_path}'. Keeping existing file."
@@ -214,6 +262,9 @@ def download_data(
 
     known_hash = _normalize_known_hash(record.get('hash'))
 
+    if is_project_archive and extraction_dir.exists() and overwrite:
+        shutil.rmtree(extraction_dir)
+
     # Pooch downloads to destination with our controlled filename.
     pooch.retrieve(
         url=url,
@@ -222,8 +273,43 @@ def download_data(
         path=str(dest_path),
     )
 
-    console.print(f"✅ Data #{id} downloaded to '{file_path}'")
+    if is_project_archive:
+        project_dir = extract_project_from_zip(file_path, destination=extraction_dir)
+        file_path.unlink()
+        console.print(f"✅ Data #{id} downloaded and extracted to\n'{project_dir}'")
+        return str(project_dir)
+
+    console.print(f"✅ Data #{id} downloaded to:\n'{file_path}'")
     return str(file_path)
+
+
+def list_data() -> None:
+    """Display a table of available example data records."""
+    index = _fetch_data_index()
+    if not index:
+        console.print('❌ No example data available.')
+        return
+
+    console.paragraph('Example data available for download:')
+
+    columns_headers = ['id', 'file', 'kind', 'description']
+    columns_alignment = ['right', 'left', 'left', 'left']
+    columns_data = []
+
+    for data_id in sorted(index, key=lambda value: int(value) if value.isdigit() else value):
+        record = index[data_id]
+        columns_data.append([
+            data_id,
+            pathlib.PurePosixPath(_record_path(record)).name,
+            record.get('kind', ''),
+            record.get('description', ''),
+        ])
+
+    render_table(
+        columns_headers=columns_headers,
+        columns_data=columns_data,
+        columns_alignment=columns_alignment,
+    )
 
 
 def package_version(package_name: str) -> str | None:
@@ -474,7 +560,7 @@ def download_tutorial(
     with _safe_urlopen(url) as resp:
         file_path.write_bytes(resp.read())
 
-    console.print(f"✅ Tutorial #{id} downloaded to '{file_path}'")
+    console.print(f"✅ Tutorial #{id} downloaded to:\n'{file_path}'")
     return str(file_path)
 
 
@@ -561,6 +647,123 @@ def render_table(
 
     tabler = TableRenderer.get()
     tabler.render(df, display_handle=display_handle)
+
+
+def build_table_renderable(
+    columns_data: object,
+    columns_alignment: object,
+    columns_headers: object = None,
+) -> object:
+    """
+    Build a table renderable for the active display backend.
+
+    Parameters
+    ----------
+    columns_data : object
+        A list of rows, where each row is a list of cell values.
+    columns_alignment : object
+        A list of alignment strings (e.g. ``'left'``, ``'right'``,
+        ``'center'``) matching the number of columns.
+    columns_headers : object, default=None
+        Optional list of column header strings.
+
+    Returns
+    -------
+    object
+        Backend-native renderable, such as a Rich table or HTML.
+    """
+    headers = [
+        (col, align) for col, align in zip(columns_headers, columns_alignment, strict=False)
+    ]
+    df = pd.DataFrame(columns_data, columns=pd.MultiIndex.from_tuples(headers))
+
+    tabler = TableRenderer.get()
+    return tabler.build_renderable(df)
+
+
+def _help_first_sentence(docstring: str | None) -> str:
+    """Return the first paragraph of a docstring on one line."""
+    if not docstring:
+        return ''
+    first_para = docstring.strip().split('\n\n')[0]
+    return ' '.join(line.strip() for line in first_para.splitlines())
+
+
+def _help_property_rows(cls: type) -> list[list[str]]:
+    """Return public property rows for object help tables."""
+    seen: dict[str, property] = {}
+    for base in cls.mro():
+        for key, attr in base.__dict__.items():
+            if key.startswith('_') or not isinstance(attr, property):
+                continue
+            if key not in seen:
+                seen[key] = attr
+
+    rows = []
+    for i, key in enumerate(sorted(seen), 1):
+        prop = seen[key]
+        writable = '✓' if prop.fset else '✗'
+        doc = _help_first_sentence(prop.fget.__doc__ if prop.fget else None)
+        rows.append([str(i), key, writable, doc])
+    return rows
+
+
+def _help_method_rows(cls: type) -> list[list[str]]:
+    """Return public method rows for object help tables."""
+    seen: set[str] = set()
+    methods = []
+    for base in cls.mro():
+        for key, attr in base.__dict__.items():
+            if key.startswith('_') or key in seen:
+                continue
+            if isinstance(attr, property):
+                continue
+            raw = attr
+            if isinstance(raw, (staticmethod, classmethod)):
+                raw = raw.__func__
+            if callable(raw):
+                seen.add(key)
+                methods.append((key, raw))
+
+    rows = []
+    for i, (key, method) in enumerate(sorted(methods), 1):
+        doc = _help_first_sentence(getattr(method, '__doc__', None))
+        rows.append([str(i), f'{key}()', doc])
+    return rows
+
+
+def render_object_help(obj: object, title: str | None = None) -> None:
+    """
+    Print public properties and methods for a plain helper object.
+
+    Parameters
+    ----------
+    obj : object
+        Object whose public API should be summarized.
+    title : str | None, default=None
+        Optional display name. Uses the class name when omitted.
+    """
+    cls = type(obj)
+    display_title = title or cls.__name__
+    console.paragraph(f"Help for '{display_title}'")
+
+    prop_rows = _help_property_rows(cls)
+    if prop_rows:
+        console.paragraph('Properties')
+        render_table(
+            columns_headers=['#', 'Name', 'Writable', 'Description'],
+            columns_alignment=['right', 'left', 'center', 'left'],
+            columns_data=prop_rows,
+        )
+
+    method_rows = _help_method_rows(cls)
+    if method_rows:
+        console.paragraph('Methods')
+        render_table(
+            columns_headers=['#', 'Name', 'Description'],
+            columns_alignment=['right', 'left', 'left'],
+            columns_data=method_rows,
+        )
 
 
 def render_cif(cif_text: str) -> None:

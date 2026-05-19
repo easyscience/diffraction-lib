@@ -48,6 +48,41 @@ List all available tutorial notebooks:
 python -m easydiffraction list-tutorials
 ```
 
+### List Example Data
+
+List all available example data files and downloadable project archives:
+
+```bash
+python -m easydiffraction list-data
+```
+
+The table includes the data ID, file name, record kind, and description.
+
+### Download Example Data
+
+Download a specific example data record by ID:
+
+```bash
+python -m easydiffraction download-data 3
+```
+
+For downloadable saved projects, the ZIP archive is extracted
+automatically, the ZIP file is removed, and the extracted project path
+is reported:
+
+```bash
+python -m easydiffraction download-data 30
+```
+
+This makes it possible to go straight from download to a project-first
+CLI command such as:
+
+```bash
+python -m easydiffraction EXTRACTED_PROJECT_DIR display
+```
+
+Use the extracted path printed by `download-data`.
+
 ### Download Tutorials
 
 Download a specific tutorial by ID:
@@ -66,12 +101,16 @@ Both commands accept `--destination` (`-d`) to specify the output
 directory (default: `tutorials/`) and `--overwrite` (`-o`) to replace
 existing files.
 
+`download-data` also accepts `--destination` (`-d`) and `--overwrite`
+(`-o`). For project archives, `--overwrite` replaces the extracted
+project directory before downloading and unpacking a fresh copy.
+
 ### Fit a Project
 
 Load a saved project and run structural refinement:
 
 ```bash
-python -m easydiffraction fit PROJECT_DIR
+python -m easydiffraction PROJECT_DIR fit
 ```
 
 `PROJECT_DIR` is the path to a project directory previously created by
@@ -86,5 +125,35 @@ Use the `--dry` flag to run the fit **without overwriting** the project
 files:
 
 ```bash
-python -m easydiffraction fit PROJECT_DIR --dry
+python -m easydiffraction PROJECT_DIR fit --dry
 ```
+
+EasyDiffraction also accepts the legacy subcommand-first form
+`python -m easydiffraction fit PROJECT_DIR`, but the project-first form
+is recommended because it makes it easy to rerun the same command and
+swap only the action.
+
+### Display a Project
+
+Load a saved project and show the outputs that match its current fit
+state and rendering backend:
+
+```bash
+python -m easydiffraction PROJECT_DIR display
+```
+
+For typical non-sequential projects this includes the latest fit
+results, parameter correlations, default pattern views, and when the
+saved state is Bayesian also posterior distributions and predictive
+checks. Plotly-only views such as posterior pair plots are shown only
+when the active chart engine is Plotly.
+
+### Undo the Last Fit
+
+The CLI already reserves the project-first undo command shape:
+
+```bash
+python -m easydiffraction PROJECT_DIR undo
+```
+
+This command currently reports that undo support is not implemented yet.

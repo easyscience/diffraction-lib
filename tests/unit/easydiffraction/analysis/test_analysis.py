@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from types import SimpleNamespace
+
 
 def test_module_import():
     import easydiffraction.analysis.analysis as MUT
@@ -31,26 +33,26 @@ def test_show_minimizer_types_prints(capsys):
     from easydiffraction.analysis.analysis import Analysis
 
     a = Analysis(project=_make_project_with_names([]))
-    a.fit.show_minimizer_types()
+    a.fitting.show_minimizer_types()
     out = capsys.readouterr().out
     assert 'Minimizer types' in out
     assert 'lmfit (leastsq)' in out
 
 
-def test_fit_mode_category_and_joint_fit_experiments(monkeypatch, capsys):
+def test_fit_mode_category_and_joint_fit(monkeypatch, capsys):
     from easydiffraction.analysis.analysis import Analysis
 
     a = Analysis(project=_make_project_with_names(['e1', 'e2']))
 
     # Default fit mode is 'single'
-    assert a.fit.mode.value == 'single'
+    assert a.fitting_mode_type == 'single'
 
     # Switch to joint
-    a.fit.mode = 'joint'
-    assert a.fit.mode.value == 'joint'
+    a.fitting_mode_type = 'joint'
+    assert a.fitting_mode_type == 'joint'
 
-    # joint_fit_experiments exists but is empty until fit() populates it
-    assert len(a.joint_fit_experiments) == 0
+    # joint_fit exists but is empty until fit() populates it
+    assert len(a.joint_fit) == 0
 
 
 def test_analysis_help(capsys):
@@ -64,7 +66,20 @@ def test_analysis_help(capsys):
     assert 'display' in out
     assert 'Properties' in out
     assert 'Methods' in out
-    assert 'fit_sequential()' in out
+    assert 'fit()' in out
+    assert 'show_fitting_mode_types()' in out
+
+
+def test_analysis_display_help(capsys):
+    from easydiffraction.analysis.analysis import Analysis
+
+    a = Analysis(project=_make_project_with_names([]))
+    a.display.help()
+    out = capsys.readouterr().out
+    assert "Help for 'AnalysisDisplay'" in out
+    assert 'all_params()' in out
+    assert 'fit_results()' in out
+    assert 'how_to_access_parameters()' in out
 
 
 def test_display_fit_results_warns_when_no_results(capsys):
@@ -120,3 +135,167 @@ def test_display_fit_results_calls_process_fit_results(monkeypatch):
     a.display.fit_results()
 
     assert process_called['called'], '_process_fit_results should be called'
+
+
+def test_fit_single_short_reuses_tracker_display_handle(monkeypatch):
+    from easydiffraction.analysis.analysis import Analysis
+    from easydiffraction.utils.enums import VerbosityEnum
+
+    class Handle:
+        def __init__(self) -> None:
+            self.closed = False
+
+        def close(self) -> None:
+            self.closed = True
+
+    class Experiments:
+        def __init__(self) -> None:
+            self.names = ['e1']
+
+        def __getitem__(self, name: str) -> object:
+            del name
+            return object()
+
+    class Tracker:
+        def __init__(self) -> None:
+            self.best_iteration = 7
+            self.display_handles: list[object | None] = []
+
+        def _set_shared_display_handle(self, display_handle: object | None) -> None:
+            self.display_handles.append(display_handle)
+
+    project = SimpleNamespace(
+        experiments=Experiments(),
+        structures=object(),
+        _varname='proj',
+    )
+    analysis = Analysis(project=project)
+    tracker = Tracker()
+    analysis.fitter.minimizer = SimpleNamespace(tracker=tracker)
+    analysis.fitter.results = None
+
+    handle = Handle()
+    short_display_handles: list[object | None] = []
+
+    def fake_make_display_handle() -> Handle:
+        return handle
+
+    def fake_fit(
+        structures: object,
+        experiments: list[object],
+        *,
+        analysis: object,
+        verbosity: object,
+        use_physical_limits: bool,
+        random_seed: int | None,
+    ) -> None:
+        del structures, experiments, analysis, verbosity, use_physical_limits, random_seed
+        analysis_obj = fake_fit.analysis_obj
+        analysis_obj.fitter.results = SimpleNamespace(
+            reduced_chi_square=1.23,
+            success=True,
+            parameters=[],
+        )
+
+    fake_fit.analysis_obj = analysis
+
+    def fake_update_short_table(
+        self,
+        short_rows: list[list[str]],
+        expt_name: str,
+        results: object,
+        display_handle: object | None,
+    ) -> None:
+        del self, expt_name, results
+        short_rows.append(['e1', '1.23', '7', '✅'])
+        short_display_handles.append(display_handle)
+
+    monkeypatch.setattr(
+        'easydiffraction.analysis.analysis.make_display_handle', fake_make_display_handle
+    )
+    monkeypatch.setattr(analysis, '_snapshot_params', lambda expt_name, results: None)
+    monkeypatch.setattr(analysis.fitter, 'fit', fake_fit)
+    monkeypatch.setattr(Analysis, '_fit_single_update_short_table', fake_update_short_table)
+
+    analysis._fit_single(
+        VerbosityEnum.SHORT,
+        project.structures,
+        project.experiments,
+        use_physical_limits=False,
+        random_seed=None,
+    )
+
+    assert tracker.display_handles == [handle, None]
+    assert short_display_handles == [handle]
+    assert handle.closed is True
+
+
+def test_run_sequential_sets_mode_and_saves_project(monkeypatch, tmp_path):
+    from easydiffraction.analysis.analysis import Analysis
+
+    project = SimpleNamespace(
+        info=SimpleNamespace(path=tmp_path),
+        save_calls=0,
+        _varname='proj',
+    )
+
+    def save() -> None:
+        project.save_calls += 1
+
+    project.save = save
+
+    analysis = Analysis(project=project)
+    analysis.sequential_fit.data_dir.value = 'scans'
+    analysis.sequential_fit.file_pattern.value = '*.xye'
+    analysis.sequential_fit.max_workers.value = 'auto'
+    analysis.sequential_fit.chunk_size.value = '.'
+    analysis.sequential_fit.reverse.value = True
+
+    calls: list[tuple[str, object]] = []
+
+    def fake_fit_sequential(
+        *,
+        analysis: object,
+        data_dir: str,
+        max_workers: int | str,
+        chunk_size: int | None,
+        file_pattern: str,
+        reverse: bool,
+    ) -> None:
+        calls.append(('analysis', analysis))
+        calls.append(('data_dir', data_dir))
+        calls.append(('max_workers', max_workers))
+        calls.append(('chunk_size', chunk_size))
+        calls.append(('file_pattern', file_pattern))
+        calls.append(('reverse', reverse))
+
+    monkeypatch.setattr('easydiffraction.analysis.sequential.fit_sequential', fake_fit_sequential)
+    monkeypatch.setattr(
+        analysis, '_update_categories', lambda: calls.append(('update_categories', None))
+    )
+    monkeypatch.setattr(
+        analysis, '_resolve_sequential_data_dir', lambda: tmp_path / 'resolved-scans'
+    )
+    analysis.fit_results = object()
+    analysis.fitter.results = object()
+
+    analysis._run_sequential()
+
+    assert analysis.fitting_mode_type == 'sequential'
+    analysis_cif = analysis.as_cif
+    assert '_fitting.mode_type sequential' in analysis_cif
+    assert '_sequential_fit.data_dir scans' in analysis_cif
+    assert '_sequential_fit.file_pattern *.xye' in analysis_cif
+    assert calls == [
+        ('update_categories', None),
+        ('analysis', analysis),
+        ('data_dir', str(tmp_path / 'resolved-scans')),
+        ('max_workers', 'auto'),
+        ('chunk_size', None),
+        ('file_pattern', '*.xye'),
+        ('reverse', True),
+        ('update_categories', None),
+    ]
+    assert project.save_calls == 1
+    assert analysis.fit_results is None
+    assert analysis.fitter.results is None

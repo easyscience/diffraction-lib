@@ -38,6 +38,7 @@ DEFAULT_COLORS = {
     'meas': 'rgb(31, 119, 180)',
     'bkg': 'rgb(140, 140, 140)',
     'calc': 'rgb(214, 39, 40)',
+    'posterior': 'rgb(214, 39, 40)',
     'resid': 'rgb(44, 160, 44)',
 }
 
@@ -65,6 +66,16 @@ COMPOSITE_VERTICAL_SPACING = 0.03
 COMPOSITE_MARGIN_RIGHT = 30
 COMPOSITE_MARGIN_TOP = 40
 COMPOSITE_MARGIN_BOTTOM = 45
+TITLE_FONT_SIZE = 14
+AXIS_TITLE_FONT_SIZE = 12
+PREDICTIVE_BAND_COLOR = 'rgba(214, 39, 40, 0.14)'
+PREDICTIVE_BAND_EDGE_COLOR = 'rgba(214, 39, 40, 0.45)'
+PREDICTIVE_DRAW_COLOR = 'rgba(140, 140, 140, 0.18)'
+EXCLUDED_REGION_FILL_COLOR = 'rgba(120, 120, 120, 0.16)'
+PREDICTIVE_DRAW_PLOT_CAP = 50
+PREDICTIVE_DRAW_ARRAY_NDIM = 2
+FIXED_ASPECT_WRAPPER_META_KEY = 'fixed_aspect_wrapper'
+FIXED_ASPECT_WRAPPER_CLASS_NAME = 'ed-fixed-aspect-plotly-wrapper'
 
 
 @dataclass(frozen=True)
@@ -158,6 +169,11 @@ class PlotlyPlotter(PlotterBase):
         return 'rgba(120, 140, 160, 0.28)'
 
     @classmethod
+    def _axis_frame_color(cls) -> str:
+        """Return the shared axis-frame color for Plotly figures."""
+        return cls._correlation_grid_color()
+
+    @classmethod
     def _legend_background_color(cls) -> str:
         """Return a half-transparent legend background color."""
         if cls._is_dark_mode():
@@ -208,7 +224,7 @@ class PlotlyPlotter(PlotterBase):
                 'yanchor': 'middle',
             },
             hoverongaps=False,
-            hovertemplate=f'x: %{{x}}<br>y: %{{y}}<br>corr: %{{z:.{precision}f}}<extra></extra>',
+            hovertemplate=f'%{{x}}<br>%{{y}}<br>correlation: %{{z:.{precision}f}}<extra></extra>',
         )
         label_trace = self._get_correlation_label_trace(
             corr_df,
@@ -461,12 +477,13 @@ class PlotlyPlotter(PlotterBase):
         """
         Return a shared hover template for composite powder traces.
         """
+        calc_label = plot_spec.y_calc_name or 'Icalc'
         if plot_spec.y_bkg is None:
             return (
                 'x: %{x:,.2f}<br>'
                 'Imeas: %{customdata[0]:,.2f}<br>'
-                'Icalc: %{customdata[1]:,.2f}<br>'
-                'Imeas - Icalc: %{customdata[2]:,.2f}'
+                f'{calc_label}: %{{customdata[1]:,.2f}}<br>'
+                f'Imeas - {calc_label}: %{{customdata[2]:,.2f}}'
                 '<extra></extra>'
             )
 
@@ -474,8 +491,8 @@ class PlotlyPlotter(PlotterBase):
             'x: %{x:,.2f}<br>'
             'Imeas: %{customdata[0]:,.2f}<br>'
             'Ibkg: %{customdata[1]:,.2f}<br>'
-            'Icalc: %{customdata[2]:,.2f}<br>'
-            'Imeas - Icalc: %{customdata[3]:,.2f}'
+            f'{calc_label}: %{{customdata[2]:,.2f}}<br>'
+            f'Imeas - {calc_label}: %{{customdata[3]:,.2f}}'
             '<extra></extra>'
         )
 
@@ -778,6 +795,90 @@ syncLegendVisibility();
 window.requestAnimationFrame(installLegendToggleButton);
 """
 
+    @classmethod
+    def _html_post_script(cls, fig: object) -> str | None:
+        """Return concatenated HTML post scripts for a Plotly figure."""
+        scripts: list[str] = []
+        if cls._has_visible_legend(fig):
+            scripts.append(cls._modebar_legend_toggle_post_script())
+        if not scripts:
+            return None
+        return '\n'.join(cls._scoped_html_post_script(script) for script in scripts)
+
+    @staticmethod
+    def _scoped_html_post_script(script: str) -> str:
+        """
+        Return one HTML post script wrapped in its own block scope.
+        """
+        return '{\n' + script.strip() + '\n}'
+
+    @staticmethod
+    def _figure_meta(fig: object) -> dict[str, object] | None:
+        """Return figure layout metadata when available."""
+        layout = getattr(fig, 'layout', None)
+        if layout is None:
+            return None
+
+        meta = getattr(layout, 'meta', None)
+        if isinstance(meta, dict):
+            return meta
+
+        layout_kwargs = getattr(layout, 'kwargs', None)
+        if isinstance(layout_kwargs, dict):
+            meta = layout_kwargs.get('meta')
+            if isinstance(meta, dict):
+                return meta
+        return None
+
+    @classmethod
+    def _fixed_aspect_wrapper_aspect_ratio(cls, fig: object) -> str | None:
+        """Return the fixed aspect ratio requested for inline HTML."""
+        meta = cls._figure_meta(fig)
+        if not isinstance(meta, dict):
+            return None
+
+        wrapper = meta.get(FIXED_ASPECT_WRAPPER_META_KEY)
+        if not isinstance(wrapper, dict):
+            return None
+
+        aspect_ratio = wrapper.get('aspect_ratio')
+        if not isinstance(aspect_ratio, str):
+            return None
+
+        aspect_ratio = aspect_ratio.strip()
+        if not aspect_ratio:
+            return None
+        return aspect_ratio
+
+    @classmethod
+    def _wrap_html_figure(cls, fig: object, html_fig: str) -> str:
+        """Wrap inline Plotly HTML in a fixed-aspect container."""
+        aspect_ratio = cls._fixed_aspect_wrapper_aspect_ratio(fig)
+        if aspect_ratio is None:
+            return html_fig
+
+        return (
+            '<style>\n'
+            f'.{FIXED_ASPECT_WRAPPER_CLASS_NAME} {{\n'
+            '    width: 100%;\n'
+            f'    aspect-ratio: {aspect_ratio};\n'
+            '}\n\n'
+            f'.{FIXED_ASPECT_WRAPPER_CLASS_NAME} > div,\n'
+            f'.{FIXED_ASPECT_WRAPPER_CLASS_NAME} .plotly-graph-div,\n'
+            f'.{FIXED_ASPECT_WRAPPER_CLASS_NAME} .js-plotly-plot,\n'
+            f'.{FIXED_ASPECT_WRAPPER_CLASS_NAME} .plotly,\n'
+            f'.{FIXED_ASPECT_WRAPPER_CLASS_NAME} .plot-container,\n'
+            f'.{FIXED_ASPECT_WRAPPER_CLASS_NAME} .svg-container {{\n'
+            '    display: block;\n'
+            '    width: 100% !important;\n'
+            '    height: 100% !important;\n'
+            '}\n'
+            '</style>\n\n'
+            f'<div class="{FIXED_ASPECT_WRAPPER_CLASS_NAME}">\n'
+            f'{html_fig}\n'
+            '</div>'
+        )
+
     @staticmethod
     def _get_figure(
         data: object,
@@ -855,9 +956,7 @@ window.requestAnimationFrame(installLegendToggleButton);
         if in_pycharm() or display is None or HTML is None:
             fig.show(config=config)
         else:
-            post_script = None
-            if self._has_visible_legend(fig):
-                post_script = self._modebar_legend_toggle_post_script()
+            post_script = self._html_post_script(fig)
             html_fig = pio.to_html(
                 fig,
                 include_plotlyjs='cdn',
@@ -865,6 +964,7 @@ window.requestAnimationFrame(installLegendToggleButton);
                 config=config,
                 post_script=post_script,
             )
+            html_fig = self._wrap_html_figure(fig, html_fig)
             display(HTML(html_fig))
 
     @classmethod
@@ -900,6 +1000,7 @@ window.requestAnimationFrame(installLegendToggleButton);
             },
             title={
                 'text': title,
+                'font': {'size': TITLE_FONT_SIZE},
             },
             legend={
                 'bgcolor': cls._legend_background_color(),
@@ -909,14 +1010,22 @@ window.requestAnimationFrame(installLegendToggleButton);
                 'y': 1.0,
             },
             xaxis={
-                'title_text': axes_labels[0],
+                'title': {
+                    'text': axes_labels[0],
+                    'font': {'size': AXIS_TITLE_FONT_SIZE},
+                },
                 'showline': True,
+                'linecolor': cls._axis_frame_color(),
                 'mirror': True,
                 'zeroline': False,
             },
             yaxis={
-                'title_text': axes_labels[1],
+                'title': {
+                    'text': axes_labels[1],
+                    'font': {'size': AXIS_TITLE_FONT_SIZE},
+                },
                 'showline': True,
+                'linecolor': cls._axis_frame_color(),
                 'mirror': True,
                 'zeroline': False,
             },
@@ -931,6 +1040,7 @@ window.requestAnimationFrame(installLegendToggleButton);
         axes_labels: object,
         title: str,
         height: int | None = None,
+        excluded_ranges: tuple[tuple[float, float], ...] = (),
     ) -> None:
         """
         Render a line plot for powder diffraction data.
@@ -952,6 +1062,8 @@ window.requestAnimationFrame(installLegendToggleButton);
             Figure title.
         height : int | None, default=None
             Ignored; Plotly auto-sizes based on renderer.
+        excluded_ranges : tuple[tuple[float, float], ...], default=()
+            Excluded x-ranges to shade on the figure.
         """
         # Intentionally unused; accepted for API compatibility
         del height
@@ -968,7 +1080,32 @@ window.requestAnimationFrame(installLegendToggleButton);
         )
 
         fig = self._get_figure(data, layout)
+        self._add_excluded_region_vrects(fig=fig, excluded_ranges=excluded_ranges)
         self._show_figure(fig)
+
+    @staticmethod
+    def _add_excluded_region_vrects(
+        *,
+        fig: object,
+        excluded_ranges: tuple[tuple[float, float], ...],
+        row: object | None = None,
+        col: int | None = None,
+    ) -> None:
+        """Shade excluded x-ranges on a Plotly figure."""
+        for start, end in excluded_ranges:
+            add_kwargs = {
+                'x0': start,
+                'x1': end,
+                'fillcolor': EXCLUDED_REGION_FILL_COLOR,
+                'opacity': 1.0,
+                'line_width': 0,
+                'layer': 'below',
+            }
+            if row is not None:
+                add_kwargs['row'] = row
+            if col is not None:
+                add_kwargs['col'] = col
+            fig.add_vrect(**add_kwargs)
 
     @staticmethod
     def _get_bragg_tick_trace(
@@ -1165,11 +1302,7 @@ window.requestAnimationFrame(installLegendToggleButton);
         if min(y_meas.size, y_calc.size) == 0:
             return 0.0, 1.0
 
-        main_series = [y_meas, y_calc]
-        if plot_spec.y_bkg is not None:
-            y_bkg = np.asarray(plot_spec.y_bkg)
-            if y_bkg.size > 0:
-                main_series.append(y_bkg)
+        main_series = cls._main_intensity_series(plot_spec, y_meas=y_meas, y_calc=y_calc)
 
         main_y_min = float(min(np.min(series) for series in main_series))
         main_y_max = float(max(np.max(series) for series in main_series))
@@ -1179,6 +1312,49 @@ window.requestAnimationFrame(installLegendToggleButton);
             return main_y_min - main_y_margin, main_y_max + main_y_margin
 
         return main_y_min - 1.0, main_y_max + 1.0
+
+    @classmethod
+    def _main_intensity_series(
+        cls,
+        plot_spec: PowderMeasVsCalcSpec,
+        *,
+        y_meas: np.ndarray,
+        y_calc: np.ndarray,
+    ) -> list[np.ndarray]:
+        main_series = [y_meas, y_calc]
+        for values in (
+            plot_spec.y_bkg,
+            plot_spec.predictive_lower_95,
+            plot_spec.predictive_upper_95,
+        ):
+            cls._append_non_empty_series(main_series, values)
+
+        predictive_draws = cls._predictive_draw_array(plot_spec.predictive_draws)
+        if predictive_draws is not None:
+            main_series.extend(predictive_draws)
+        return main_series
+
+    @staticmethod
+    def _append_non_empty_series(
+        main_series: list[np.ndarray],
+        values: np.ndarray | None,
+    ) -> None:
+        if values is None:
+            return
+
+        array = np.asarray(values)
+        if array.size > 0:
+            main_series.append(array)
+
+    @staticmethod
+    def _predictive_draw_array(values: object | None) -> np.ndarray | None:
+        if values is None:
+            return None
+
+        predictive_draws = np.asarray(values)
+        if predictive_draws.ndim != PREDICTIVE_DRAW_ARRAY_NDIM or predictive_draws.size == 0:
+            return None
+        return predictive_draws
 
     @classmethod
     def _get_residual_limit(cls, plot_spec: PowderMeasVsCalcSpec) -> float:
@@ -1221,11 +1397,46 @@ window.requestAnimationFrame(installLegendToggleButton);
         layout = self._get_powder_composite_rows(plot_spec)
         x_min, x_max = self._composite_x_range(np.asarray(plot_spec.x))
         main_y_min, main_y_max = self._get_main_intensity_range(plot_spec)
-        residual_limit = None
         hover_data = self._powder_meas_vs_calc_hover_data(plot_spec)
         hover_template = self._powder_meas_vs_calc_hover_template(plot_spec)
+        fig = self._create_powder_composite_figure(layout)
+        self._add_predictive_band_traces(fig=fig, plot_spec=plot_spec)
+        self._add_main_intensity_traces(
+            fig=fig,
+            plot_spec=plot_spec,
+            hover_data=hover_data,
+            hover_template=hover_template,
+        )
+        self._add_predictive_draw_traces(fig=fig, plot_spec=plot_spec)
+        self._add_bragg_tick_traces(fig=fig, plot_spec=plot_spec, layout=layout)
+        residual_limit = self._add_residual_trace(
+            fig=fig,
+            plot_spec=plot_spec,
+            layout=layout,
+            hover_data=hover_data,
+            hover_template=hover_template,
+        )
+        self._add_excluded_region_vrects(
+            fig=fig,
+            excluded_ranges=plot_spec.excluded_ranges,
+            row='all',
+            col=1,
+        )
+        self._configure_powder_composite_layout(fig=fig, plot_spec=plot_spec, layout=layout)
+        self._configure_powder_composite_axes(
+            fig=fig,
+            plot_spec=plot_spec,
+            layout=layout,
+            x_range=(x_min, x_max),
+            main_y_range=(main_y_min, main_y_max),
+            residual_limit=residual_limit,
+        )
 
-        fig = make_subplots(
+        self._show_figure(fig)
+
+    @staticmethod
+    def _create_powder_composite_figure(layout: PowderCompositeRows) -> object:
+        return make_subplots(
             rows=layout.row_count,
             cols=1,
             shared_xaxes=True,
@@ -1233,58 +1444,146 @@ window.requestAnimationFrame(installLegendToggleButton);
             row_heights=layout.row_heights,
         )
 
-        main_traces = (
-            (
-                ('meas', plot_spec.y_meas),
-                ('bkg', plot_spec.y_bkg),
-                ('calc', plot_spec.y_calc),
-            )
-            if plot_spec.y_bkg is not None
-            else (
-                ('meas', plot_spec.y_meas),
-                ('calc', plot_spec.y_calc),
-            )
+    def _add_predictive_band_traces(
+        self,
+        *,
+        fig: object,
+        plot_spec: PowderMeasVsCalcSpec,
+    ) -> None:
+        if plot_spec.predictive_lower_95 is None or plot_spec.predictive_upper_95 is None:
+            return
+
+        lower_trace, upper_trace = self._get_predictive_band_traces(
+            x=plot_spec.x,
+            lower=plot_spec.predictive_lower_95,
+            upper=plot_spec.predictive_upper_95,
         )
-        for label, y_values in main_traces:
+        fig.add_trace(lower_trace, row=1, col=1)
+        fig.add_trace(upper_trace, row=1, col=1)
+
+    def _add_main_intensity_traces(
+        self,
+        *,
+        fig: object,
+        plot_spec: PowderMeasVsCalcSpec,
+        hover_data: object,
+        hover_template: str,
+    ) -> None:
+        meas_trace = self._get_powder_trace(
+            plot_spec.x,
+            plot_spec.y_meas,
+            'meas',
+            customdata=hover_data,
+            hovertemplate=hover_template,
+        )
+        fig.add_trace(meas_trace, row=1, col=1)
+
+        if plot_spec.y_bkg is not None:
+            bkg_trace = self._get_powder_trace(
+                plot_spec.x,
+                plot_spec.y_bkg,
+                'bkg',
+                customdata=hover_data,
+                hovertemplate=hover_template,
+            )
+            fig.add_trace(bkg_trace, row=1, col=1)
+
+        calc_trace = self._get_powder_trace(
+            plot_spec.x,
+            plot_spec.y_calc,
+            'calc',
+            customdata=hover_data,
+            hovertemplate=hover_template,
+        )
+        if plot_spec.y_calc_name is not None:
+            calc_trace.name = plot_spec.y_calc_name
+        if plot_spec.y_calc_line_dash is not None:
+            calc_trace.line.dash = plot_spec.y_calc_line_dash
+        fig.add_trace(calc_trace, row=1, col=1)
+
+    def _add_predictive_draw_traces(
+        self,
+        *,
+        fig: object,
+        plot_spec: PowderMeasVsCalcSpec,
+    ) -> None:
+        predictive_draws = self._predictive_draw_array(plot_spec.predictive_draws)
+        if predictive_draws is None:
+            return
+
+        draw_cap = min(predictive_draws.shape[0], PREDICTIVE_DRAW_PLOT_CAP)
+        for index in range(draw_cap):
             fig.add_trace(
-                self._get_powder_trace(
-                    plot_spec.x,
-                    y_values,
-                    label,
-                    customdata=hover_data,
-                    hovertemplate=hover_template,
+                go.Scatter(
+                    x=plot_spec.x,
+                    y=predictive_draws[index],
+                    mode='lines',
+                    line={'color': PREDICTIVE_DRAW_COLOR, 'width': 1},
+                    name='Posterior draw' if index == 0 else None,
+                    showlegend=index == 0,
+                    hovertemplate=(
+                        'Posterior draw<br>x: %{x:,.2f}<br>y: %{y:,.2f}<extra></extra>'
+                    ),
                 ),
                 row=1,
                 col=1,
             )
 
-        if layout.bragg_row is not None:
-            for idx, tick_set in enumerate(plot_spec.bragg_tick_sets):
-                color = BRAGG_TICK_COLORS[idx % len(BRAGG_TICK_COLORS)]
-                fig.add_trace(
-                    self._get_bragg_tick_trace(
-                        tick_set=tick_set,
-                        row_y=float(idx + 1),
-                        color=color,
-                    ),
-                    row=layout.bragg_row,
-                    col=1,
-                )
+    def _add_bragg_tick_traces(
+        self,
+        *,
+        fig: object,
+        plot_spec: PowderMeasVsCalcSpec,
+        layout: PowderCompositeRows,
+    ) -> None:
+        if layout.bragg_row is None:
+            return
 
-        if layout.residual_row is not None and plot_spec.y_resid is not None:
-            residual_limit = self._get_residual_limit(plot_spec)
+        for idx, tick_set in enumerate(plot_spec.bragg_tick_sets):
+            color = BRAGG_TICK_COLORS[idx % len(BRAGG_TICK_COLORS)]
             fig.add_trace(
-                self._get_powder_trace(
-                    plot_spec.x,
-                    plot_spec.y_resid,
-                    'resid',
-                    customdata=hover_data,
-                    hovertemplate=hover_template,
+                self._get_bragg_tick_trace(
+                    tick_set=tick_set,
+                    row_y=float(idx + 1),
+                    color=color,
                 ),
-                row=layout.residual_row,
+                row=layout.bragg_row,
                 col=1,
             )
 
+    def _add_residual_trace(
+        self,
+        *,
+        fig: object,
+        plot_spec: PowderMeasVsCalcSpec,
+        layout: PowderCompositeRows,
+        hover_data: object,
+        hover_template: str,
+    ) -> float | None:
+        if layout.residual_row is None or plot_spec.y_resid is None:
+            return None
+
+        residual_limit = self._get_residual_limit(plot_spec)
+        fig.add_trace(
+            self._get_powder_trace(
+                plot_spec.x,
+                plot_spec.y_resid,
+                'resid',
+                customdata=hover_data,
+                hovertemplate=hover_template,
+            ),
+            row=layout.residual_row,
+            col=1,
+        )
+        return residual_limit
+
+    def _configure_powder_composite_layout(
+        self,
+        *,
+        fig: object,
+        plot_spec: PowderMeasVsCalcSpec,
+        layout: PowderCompositeRows,
+    ) -> None:
         fig.update_layout(
             height=self._composite_figure_height(plot_spec, layout),
             margin={
@@ -1293,7 +1592,10 @@ window.requestAnimationFrame(installLegendToggleButton);
                 't': COMPOSITE_MARGIN_TOP,
                 'b': COMPOSITE_MARGIN_BOTTOM,
             },
-            title={'text': plot_spec.title},
+            title={
+                'text': plot_spec.title,
+                'font': {'size': TITLE_FONT_SIZE},
+            },
             legend={
                 'bgcolor': self._legend_background_color(),
                 'xanchor': 'right',
@@ -1303,10 +1605,64 @@ window.requestAnimationFrame(installLegendToggleButton);
             },
         )
 
-        for row_idx in range(1, layout.row_count + 1):
+    def _configure_powder_composite_axes(
+        self,
+        *,
+        fig: object,
+        plot_spec: PowderMeasVsCalcSpec,
+        layout: PowderCompositeRows,
+        x_range: tuple[float | None, float | None],
+        main_y_range: tuple[float, float],
+        residual_limit: float | None,
+    ) -> None:
+        self._configure_shared_composite_axes(
+            fig=fig,
+            row_count=layout.row_count,
+            x_min=x_range[0],
+            x_max=x_range[1],
+        )
+        fig.update_xaxes(showticklabels=(layout.row_count == 1), row=1, col=1)
+        fig.update_yaxes(
+            title_text=plot_spec.axes_labels[1],
+            title_font={'size': AXIS_TITLE_FONT_SIZE},
+            range=list(main_y_range),
+            row=1,
+            col=1,
+        )
+
+        if layout.bragg_row is not None:
+            self._configure_bragg_axes(fig=fig, plot_spec=plot_spec, layout=layout)
+        if layout.residual_row is not None and residual_limit is not None:
+            self._configure_residual_axes(
+                fig=fig,
+                plot_spec=plot_spec,
+                layout=layout,
+                residual_limit=residual_limit,
+            )
+            return
+
+        terminal_row = layout.bragg_row if layout.bragg_row is not None else 1
+        fig.update_xaxes(
+            title_text=plot_spec.axes_labels[0],
+            title_font={'size': AXIS_TITLE_FONT_SIZE},
+            row=terminal_row,
+            col=1,
+        )
+
+    def _configure_shared_composite_axes(
+        self,
+        *,
+        fig: object,
+        row_count: int,
+        x_min: float | None,
+        x_max: float | None,
+    ) -> None:
+        axis_frame_color = self._axis_frame_color()
+        for row_idx in range(1, row_count + 1):
             x_axis_kwargs = {
                 'matches': 'x',
                 'showline': True,
+                'linecolor': axis_frame_color,
                 'mirror': True,
                 'zeroline': False,
                 'tickformat': ',.6~g',
@@ -1317,6 +1673,7 @@ window.requestAnimationFrame(installLegendToggleButton);
             fig.update_xaxes(row=row_idx, col=1, **x_axis_kwargs)
             fig.update_yaxes(
                 showline=True,
+                linecolor=axis_frame_color,
                 mirror=True,
                 zeroline=False,
                 tickformat=',.6~g',
@@ -1325,50 +1682,86 @@ window.requestAnimationFrame(installLegendToggleButton);
                 col=1,
             )
 
-        fig.update_xaxes(showticklabels=(layout.row_count == 1), row=1, col=1)
+    @staticmethod
+    def _configure_bragg_axes(
+        *,
+        fig: object,
+        plot_spec: PowderMeasVsCalcSpec,
+        layout: PowderCompositeRows,
+    ) -> None:
         fig.update_yaxes(
-            title_text=plot_spec.axes_labels[1],
-            range=[main_y_min, main_y_max],
-            row=1,
+            tickmode='array',
+            tickvals=[float(idx + 1) for idx in range(len(plot_spec.bragg_tick_sets))],
+            ticktext=[tick_set.phase_id for tick_set in plot_spec.bragg_tick_sets],
+            range=[float(len(plot_spec.bragg_tick_sets)) + 0.5, 0.5],
+            showgrid=False,
+            row=layout.bragg_row,
+            col=1,
+        )
+        fig.update_xaxes(
+            showticklabels=layout.residual_row is None,
+            row=layout.bragg_row,
             col=1,
         )
 
-        if layout.bragg_row is not None:
-            fig.update_yaxes(
-                # title_text='Bragg peaks',
-                tickmode='array',
-                tickvals=[float(idx + 1) for idx in range(len(plot_spec.bragg_tick_sets))],
-                ticktext=[tick_set.phase_id for tick_set in plot_spec.bragg_tick_sets],
-                range=[float(len(plot_spec.bragg_tick_sets)) + 0.5, 0.5],
-                showgrid=False,
-                row=layout.bragg_row,
-                col=1,
-            )
-            fig.update_xaxes(
-                showticklabels=layout.residual_row is None,
-                row=layout.bragg_row,
-                col=1,
-            )
+    def _configure_residual_axes(
+        self,
+        *,
+        fig: object,
+        plot_spec: PowderMeasVsCalcSpec,
+        layout: PowderCompositeRows,
+        residual_limit: float,
+    ) -> None:
+        residual_tick_limit = self._get_display_tick_limit(residual_limit)
+        fig.update_yaxes(
+            range=[-residual_limit, residual_limit],
+            tickmode='array',
+            tickvals=[-residual_tick_limit, 0.0, residual_tick_limit],
+            scaleanchor='y',
+            scaleratio=1,
+            zeroline=False,
+            row=layout.residual_row,
+            col=1,
+        )
+        fig.update_xaxes(
+            title_text=plot_spec.axes_labels[0],
+            title_font={'size': AXIS_TITLE_FONT_SIZE},
+            row=layout.residual_row,
+            col=1,
+        )
 
-        if layout.residual_row is not None and plot_spec.y_resid is not None:
-            residual_tick_limit = self._get_display_tick_limit(residual_limit)
-            fig.update_yaxes(
-                # title_text='Residual',
-                range=[-residual_limit, residual_limit],
-                tickmode='array',
-                tickvals=[-residual_tick_limit, 0.0, residual_tick_limit],
-                scaleanchor='y',
-                scaleratio=1,
-                zeroline=False,
-                row=layout.residual_row,
-                col=1,
-            )
-            fig.update_xaxes(title_text=plot_spec.axes_labels[0], row=layout.residual_row, col=1)
-        else:
-            terminal_row = layout.bragg_row if layout.bragg_row is not None else 1
-            fig.update_xaxes(title_text=plot_spec.axes_labels[0], row=terminal_row, col=1)
-
-        self._show_figure(fig)
+    @staticmethod
+    def _get_predictive_band_traces(
+        *,
+        x: np.ndarray,
+        lower: np.ndarray,
+        upper: np.ndarray,
+    ) -> tuple[go.Scatter, go.Scatter]:
+        """
+        Return Plotly traces for a filled predictive interval band.
+        """
+        lower_trace = go.Scatter(
+            x=x,
+            y=lower,
+            mode='lines',
+            line={'color': PREDICTIVE_BAND_EDGE_COLOR, 'width': 1},
+            hoverinfo='skip',
+            showlegend=False,
+            legendgroup='predictive_band',
+        )
+        upper_trace = go.Scatter(
+            x=x,
+            y=upper,
+            mode='lines',
+            line={'color': PREDICTIVE_BAND_EDGE_COLOR, 'width': 1},
+            fill='tonexty',
+            fillcolor=PREDICTIVE_BAND_COLOR,
+            name='95% credible interval',
+            hoverinfo='skip',
+            legendgroup='predictive_band',
+            legendrank=35,
+        )
+        return lower_trace, upper_trace
 
     def plot_single_crystal(
         self,

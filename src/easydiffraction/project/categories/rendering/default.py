@@ -1,0 +1,165 @@
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
+# SPDX-License-Identifier: BSD-3-Clause
+"""Project rendering category."""
+
+from __future__ import annotations
+
+from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.metadata import TypeInfo
+from easydiffraction.core.validation import AttributeSpec
+from easydiffraction.core.validation import MembershipValidator
+from easydiffraction.core.variable import StringDescriptor
+from easydiffraction.display.plotting import Plotter
+from easydiffraction.display.plotting import PlotterEngineEnum
+from easydiffraction.display.tables import TableEngineEnum
+from easydiffraction.display.tables import TableRenderer
+from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.parse import read_cif_str
+from easydiffraction.project.categories.rendering.factory import RenderingFactory
+from easydiffraction.utils.logging import console
+from easydiffraction.utils.utils import render_table
+
+AUTO_ENGINE = 'auto'
+CHART_ENGINE_OPTIONS = [AUTO_ENGINE, *[member.value for member in PlotterEngineEnum]]
+TABLE_ENGINE_OPTIONS = [AUTO_ENGINE, *[member.value for member in TableEngineEnum]]
+
+
+@RenderingFactory.register
+class Rendering(CategoryItem):
+    """Chart and table engine selection for a project."""
+
+    _category_code = 'rendering'
+
+    type_info = TypeInfo(
+        tag='default',
+        description='Project rendering category',
+    )
+
+    def __init__(self) -> None:
+        super().__init__()
+
+        self._plotter = Plotter()
+        self._tabler = TableRenderer.get()
+
+        # Persist symbolic "auto" so project.cif stays portable.
+        self._chart_engine = StringDescriptor(
+            name='chart_engine',
+            description='Chart renderer backend type',
+            value_spec=AttributeSpec(
+                default=AUTO_ENGINE,
+                validator=MembershipValidator(
+                    allowed=CHART_ENGINE_OPTIONS,
+                ),
+            ),
+            cif_handler=CifHandler(names=['_rendering.chart_engine']),
+        )
+        self._table_engine = StringDescriptor(
+            name='table_engine',
+            description='Table renderer backend type',
+            value_spec=AttributeSpec(
+                default=AUTO_ENGINE,
+                validator=MembershipValidator(
+                    allowed=TABLE_ENGINE_OPTIONS,
+                ),
+            ),
+            cif_handler=CifHandler(names=['_rendering.table_engine']),
+        )
+
+    @staticmethod
+    def _resolved_chart_engine(value: str) -> str:
+        if value == AUTO_ENGINE:
+            return PlotterEngineEnum.default().value
+        return value
+
+    @staticmethod
+    def _resolved_table_engine(value: str) -> str:
+        if value == AUTO_ENGINE:
+            return TableEngineEnum.default().value
+        return value
+
+    def _set_chart_engine(self, value: str) -> None:
+        if value not in CHART_ENGINE_OPTIONS:
+            self._plotter.engine = value
+            return
+
+        resolved_engine = self._resolved_chart_engine(value)
+        if self._plotter.engine != resolved_engine:
+            self._plotter.engine = resolved_engine
+        self._chart_engine.value = value
+
+    def _set_table_engine(self, value: str) -> None:
+        if value not in TABLE_ENGINE_OPTIONS:
+            self._tabler.engine = value
+            return
+
+        resolved_engine = self._resolved_table_engine(value)
+        if self._tabler.engine != resolved_engine:
+            self._tabler.engine = resolved_engine
+        self._table_engine.value = value
+
+    @property
+    def chart_engine(self) -> StringDescriptor:
+        """Chart renderer backend type."""
+        return self._chart_engine
+
+    @chart_engine.setter
+    def chart_engine(self, value: str) -> None:
+        self._set_chart_engine(value)
+
+    @property
+    def table_engine(self) -> StringDescriptor:
+        """Table renderer backend type."""
+        return self._table_engine
+
+    @table_engine.setter
+    def table_engine(self, value: str) -> None:
+        self._set_table_engine(value)
+
+    @property
+    def plotter(self) -> Plotter:
+        """Live plotting facade bound to the owning project."""
+        direct_parent = getattr(self, '_parent', None)
+        owner = direct_parent
+        while owner is not None and not hasattr(owner, 'structures'):
+            owner = getattr(owner, '_parent', None)
+        if owner is None:
+            owner = direct_parent
+        if owner is not None:
+            self._plotter._set_project(owner)
+        return self._plotter
+
+    @property
+    def tabler(self) -> TableRenderer:
+        """Live table-rendering facade."""
+        return self._tabler
+
+    def show_chart_engines(self) -> None:
+        """Print supported chart renderer backends."""
+        self.plotter.show_supported_engines()
+
+    def show_table_engines(self) -> None:
+        """Print supported table renderer backends."""
+        self.tabler.show_supported_engines()
+
+    def show_config(self) -> None:
+        """Print the current rendering configuration."""
+        console.paragraph('Current rendering configuration')
+        render_table(
+            columns_headers=['Setting', 'Value'],
+            columns_alignment=['left', 'left'],
+            columns_data=[
+                ['Chart engine', self.chart_engine.value],
+                ['Table engine', self.table_engine.value],
+            ],
+        )
+
+    def from_cif(self, block: object, idx: int = 0) -> None:
+        """Populate this rendering category from a CIF block."""
+        del idx
+        chart_engine = read_cif_str(block, '_rendering.chart_engine')
+        if chart_engine is not None:
+            self._set_chart_engine(chart_engine)
+
+        table_engine = read_cif_str(block, '_rendering.table_engine')
+        if table_engine is not None:
+            self._set_table_engine(table_engine)

@@ -34,14 +34,26 @@ class MinimizerBase(ABC):
     ) -> None:
         self.name: str | None = name
         self.method: str | None = method
-        self.max_iterations: int | None = max_iterations
+        self._max_iterations: int | None = max_iterations
         self.result: FitResults | None = None
         self._previous_chi2: float | None = None
         self._iteration: int | None = None
         self._best_chi2: float | None = None
         self._best_iteration: int | None = None
         self._fitting_time: float | None = None
+        self._resolved_random_seed: int | None = None
+        self._tracking_active: bool = False
+        self._deferred_warning_messages: list[str] = []
         self.tracker: FitProgressTracker = FitProgressTracker()
+
+    @property
+    def max_iterations(self) -> int | None:
+        """User-facing iteration limit for the current minimizer."""
+        return self._max_iterations
+
+    @max_iterations.setter
+    def max_iterations(self, value: int | None) -> None:
+        self._max_iterations = value
 
     def _start_tracking(
         self,
@@ -60,13 +72,46 @@ class MinimizerBase(ABC):
         """
         self.tracker.reset()
         self.tracker._verbosity = verbosity
-        self.tracker.start_tracking(minimizer_name)
+        self._tracking_active = True
+        self._deferred_warning_messages = []
+        self.tracker.start_tracking(minimizer_name, mode=self._tracking_mode())
         self.tracker.start_timer()
 
     def _stop_tracking(self) -> None:
         """Stop timer and finalize tracking."""
+        if not self._tracking_active:
+            self._emit_deferred_warnings()
+            return
+
+        self._tracking_active = False
         self.tracker.stop_timer()
         self.tracker.finish_tracking()
+        if self.result is not None:
+            self.result.fitting_time = self.tracker.fitting_time
+        self._emit_deferred_warnings()
+
+    def _warn_after_tracking(self, message: str) -> None:
+        """Log immediately or defer a warning until tracking stops."""
+        if self._tracking_active:
+            self._deferred_warning_messages.append(message)
+            return
+
+        log.warning(message)
+
+    def _emit_deferred_warnings(self) -> None:
+        """Flush warnings deferred during live progress display."""
+        while self._deferred_warning_messages:
+            log.warning(self._deferred_warning_messages.pop(0))
+
+    @staticmethod
+    def _tracking_mode() -> str:
+        """Return the tracker mode for the current minimizer."""
+        return 'fit'
+
+    @staticmethod
+    def _tracks_progress_via_solver_monitor() -> bool:
+        """Return whether live progress comes from solver callbacks."""
+        return False
 
     @abstractmethod
     def _prepare_solver_args(self, parameters: list[Any]) -> dict[str, Any]:
@@ -124,7 +169,38 @@ class MinimizerBase(ABC):
         self._warn_boundary_parameters(parameters)
         self._warn_physical_limit_violations(parameters)
         success = self._check_success(raw_result)
-        self.result = FitResults(
+        self.result = self._build_fit_results(
+            parameters=parameters,
+            raw_result=raw_result,
+            success=success,
+        )
+        return self.result
+
+    def _build_fit_results(
+        self,
+        *,
+        parameters: list[object],
+        raw_result: object,
+        success: bool,
+    ) -> FitResults:
+        """
+        Build the final fit-result object for this minimizer.
+
+        Parameters
+        ----------
+        parameters : list[object]
+            Parameters after the solver finished.
+        raw_result : object
+            Backend-specific solver output object.
+        success : bool
+            Whether the minimizer considers the run successful.
+
+        Returns
+        -------
+        FitResults
+            Aggregated outcome of the fit.
+        """
+        return FitResults(
             success=success,
             parameters=parameters,
             reduced_chi_square=self.tracker.best_chi2,
@@ -132,7 +208,6 @@ class MinimizerBase(ABC):
             starting_parameters=parameters,
             fitting_time=self.tracker.fitting_time,
         )
-        return self.result
 
     @staticmethod
     def _warn_boundary_parameters(parameters: list[object]) -> None:
@@ -231,13 +306,42 @@ class MinimizerBase(ABC):
     def _check_success(self, raw_result: object) -> bool:
         """Determine whether the fit was successful."""
 
+    def _resolve_random_seed(self, random_seed: int | None) -> int | None:
+        """
+        Validate or normalize the random seed for this minimizer.
+
+        Parameters
+        ----------
+        random_seed : int | None
+            User-provided random seed.
+
+        Returns
+        -------
+        int | None
+            Seed accepted by the minimizer, or ``None`` when not used.
+
+        Raises
+        ------
+        ValueError
+            If this minimizer does not support ``random_seed``.
+        """
+        if random_seed is None:
+            self._resolved_random_seed = None
+            return None
+
+        minimizer_name = self.name or self.__class__.__name__
+        msg = f"Minimizer '{minimizer_name}' does not support random_seed."
+        raise ValueError(msg)
+
     def fit(
         self,
         parameters: list[object],
         objective_function: Callable[..., object],
         verbosity: VerbosityEnum = VerbosityEnum.FULL,
         *,
+        finalize_tracking: bool = True,
         use_physical_limits: bool = False,
+        random_seed: int | None = None,
     ) -> FitResults:
         """
         Run the full minimization workflow.
@@ -251,10 +355,14 @@ class MinimizerBase(ABC):
             arguments.
         verbosity : VerbosityEnum, default=VerbosityEnum.FULL
             Console output verbosity.
+        finalize_tracking : bool, default=True
+            Whether to stop and finalize live tracking before returning.
         use_physical_limits : bool, default=False
             When ``True``, fall back to physical limits from the value
             spec for parameters whose ``fit_min``/``fit_max`` are
             unbounded.
+        random_seed : int | None, default=None
+            Optional random seed passed to stochastic minimizers.
 
         Returns
         -------
@@ -264,18 +372,23 @@ class MinimizerBase(ABC):
         if use_physical_limits:
             self._apply_physical_limits(parameters)
 
+        resolved_random_seed = self._resolve_random_seed(random_seed)
+
         minimizer_name = self.name or 'Unnamed Minimizer'
         if self.method is not None and f'({self.method})' not in minimizer_name:
             minimizer_name += f' ({self.method})'
 
         self._start_tracking(minimizer_name, verbosity=verbosity)
 
-        solver_args = self._prepare_solver_args(parameters)
-        raw_result = self._run_solver(objective_function, **solver_args)
-
-        self._stop_tracking()
-
-        return self._finalize_fit(parameters, raw_result)
+        try:
+            solver_args = self._prepare_solver_args(parameters)
+            if resolved_random_seed is not None:
+                solver_args['random_seed'] = resolved_random_seed
+            raw_result = self._run_solver(objective_function, **solver_args)
+            return self._finalize_fit(parameters, raw_result)
+        finally:
+            if finalize_tracking:
+                self._stop_tracking()
 
     def _objective_function(
         self,

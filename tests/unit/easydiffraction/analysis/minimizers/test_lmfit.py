@@ -77,3 +77,38 @@ def test_lmfit_prepare_and_sync(monkeypatch):
     assert params[1].value == 20.0
     assert params[1].uncertainty == 1.0
     assert minim._check_success(res) is True
+
+
+def test_lmfit_max_iterations_is_user_facing_iteration_setting(monkeypatch):
+    from easydiffraction.analysis.minimizers.lmfit import LmfitMinimizer
+
+    import easydiffraction.analysis.minimizers.lmfit as lm
+
+    observed_max_nfev = {}
+
+    def fake_minimize(
+        objective_function,
+        *,
+        params,
+        method,
+        nan_policy,
+        max_nfev,
+    ):
+        del objective_function, params, method, nan_policy
+        observed_max_nfev['value'] = max_nfev
+        return types.SimpleNamespace(success=True, params={})
+
+    monkeypatch.setattr(
+        lm,
+        'lmfit',
+        types.SimpleNamespace(Parameters=lm.lmfit.Parameters, minimize=fake_minimize),
+    )
+
+    minimizer = LmfitMinimizer()
+
+    minimizer.max_iterations = 300
+    minimizer._run_solver(lambda *args, **kwargs: np.array([0.0]), engine_parameters=object())
+
+    assert minimizer.max_iterations == 300
+    assert observed_max_nfev['value'] == 300
+    assert not hasattr(minimizer, 'steps')

@@ -36,6 +36,8 @@ class BeckerCoppensExtinction(CategoryItem):
     (in arc-minutes, as expected by CrysPy).
     """
 
+    _category_code = 'extinction'
+
     type_info = TypeInfo(
         tag='becker-coppens',
         description='Becker-Coppens isotropic extinction correction',
@@ -82,8 +84,6 @@ class BeckerCoppensExtinction(CategoryItem):
             ),
             cif_handler=CifHandler(names=['_extinction.radius']),
         )
-
-        self._identity.category_code = 'extinction'
 
     # ------------------------------------------------------------------
     #  Public properties

@@ -13,9 +13,10 @@ from easydiffraction.io.cif.handler import CifHandler
 class PeakBase(CategoryItem):
     """Base class for peak profile categories."""
 
+    _category_code = 'peak'
+
     def __init__(self) -> None:
         super().__init__()
-        self._identity.category_code = 'peak'
 
         type_info = getattr(type(self), 'type_info', None)
         default_tag = type_info.tag if type_info is not None else ''
