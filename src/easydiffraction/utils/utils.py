@@ -276,7 +276,7 @@ def download_data(
     if is_project_archive:
         project_dir = extract_project_from_zip(file_path, destination=extraction_dir)
         file_path.unlink()
-        console.print(f"✅ Data #{id} downloaded and extracted to '{project_dir}'")
+        console.print(f"✅ Data #{id} downloaded and extracted to\n'{project_dir}'")
         return str(project_dir)
 
     console.print(f"✅ Data #{id} downloaded to:\n'{file_path}'")

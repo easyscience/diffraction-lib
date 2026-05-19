@@ -896,7 +896,7 @@ def _print_sequential_completion(
         return
 
     console.print(f'✅ Sequential fitting complete: {processed_count} files processed.')
-    console.print(f'📄 Results saved to: {csv_path}')
+    console.print(f'📄 Results saved to:\n{csv_path}')
 
 
 def _prepare_sequential_run(

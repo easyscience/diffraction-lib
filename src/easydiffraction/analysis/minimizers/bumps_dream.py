@@ -30,6 +30,9 @@ from easydiffraction.analysis.minimizers.enums import DreamPopulationInitializat
 from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 from easydiffraction.core.metadata import TypeInfo
+from easydiffraction.utils.logging import log
+
+_BUMPS_DREAM_LOG = log
 
 DEFAULT_METHOD = 'dream'
 DEFAULT_MAX_ITERATIONS = 3000
