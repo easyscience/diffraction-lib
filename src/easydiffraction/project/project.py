@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import pathlib
+import shutil
 import tempfile
 from typing import TYPE_CHECKING
 from typing import ClassVar
@@ -501,14 +502,29 @@ class Project(GuardedBase):
         dir_path: str,
         *,
         temporary: bool = False,
+        overwrite: bool = True,
     ) -> None:
-        """Save the project into a new directory."""
+        """Save the project into a directory.
+
+        Parameters
+        ----------
+        dir_path : str
+            Destination directory for the saved project.
+        temporary : bool, default=False
+            Whether to save beneath the system temporary directory.
+        overwrite : bool, default=True
+            Whether to remove an existing target directory before saving.
+        """
         if temporary:
             tmp: str = tempfile.gettempdir()
-            dir_path = pathlib.Path(tmp) / dir_path
+            project_dir = pathlib.Path(tmp) / dir_path
         else:
-            dir_path = resolve_artifact_path(dir_path)
-        self.info.path = dir_path
+            project_dir = resolve_artifact_path(dir_path)
+
+        if overwrite and project_dir.is_dir():
+            shutil.rmtree(project_dir)
+
+        self.info.path = project_dir
         self.save()
 
     def apply_params_from_csv(self, row_index: int) -> None:

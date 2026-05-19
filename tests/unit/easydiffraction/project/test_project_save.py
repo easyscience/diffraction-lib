@@ -64,6 +64,53 @@ def test_project_save_lists_existing_analysis_results_csv(tmp_path, monkeypatch,
     assert 'results.csv' in out
 
 
+def test_project_save_as_overwrites_existing_directory_by_default(tmp_path, monkeypatch):
+    from easydiffraction.analysis.analysis import Analysis
+    from easydiffraction.project.project import Project
+    from easydiffraction.project.project_info import ProjectInfo
+    from easydiffraction.summary.summary import Summary
+
+    monkeypatch.setattr(ProjectInfo, 'as_cif', property(lambda self: 'info'))
+    monkeypatch.setattr(Analysis, 'as_cif', property(lambda self: 'analysis'))
+    monkeypatch.setattr(Summary, 'as_cif', lambda self: 'summary')
+
+    target = tmp_path / 'proj_dir'
+    stale_file = target / 'stale.txt'
+    target.mkdir()
+    stale_file.write_text('stale')
+
+    project = Project(name='p1')
+    project.save_as(str(target))
+
+    assert not stale_file.exists()
+    assert (target / 'project.cif').is_file()
+
+
+def test_project_save_as_preserves_existing_directory_when_disabled(tmp_path, monkeypatch):
+    from easydiffraction.analysis.analysis import Analysis
+    from easydiffraction.project.project import Project
+    from easydiffraction.project.project_info import ProjectInfo
+    from easydiffraction.summary.summary import Summary
+
+    monkeypatch.setattr(ProjectInfo, 'as_cif', property(lambda self: 'info'))
+    monkeypatch.setattr(Analysis, 'as_cif', property(lambda self: 'analysis'))
+    monkeypatch.setattr(Summary, 'as_cif', lambda self: 'summary')
+
+    target = tmp_path / 'proj_dir'
+    stale_file = target / 'stale.txt'
+    target.mkdir()
+    stale_file.write_text('stale')
+
+    project = Project(name='p1')
+    project.save_as(
+        str(target),
+        overwrite=False,
+    )
+
+    assert stale_file.exists()
+    assert (target / 'project.cif').is_file()
+
+
 def test_project_save_omits_empty_fit_state_sections(tmp_path):
     from easydiffraction.project.project import Project
 
