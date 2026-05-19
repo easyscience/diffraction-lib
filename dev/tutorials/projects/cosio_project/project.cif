@@ -1,8 +1,0 @@
-_project.id               untitled_project
-_project.title            'Untitled Project'
-_project.description      ?
-_project.created          '16 May 2026 23:45:31'
-_project.last_modified    '16 May 2026 23:46:16'
-
-_rendering.chart_engine plotly
-_rendering.table_engine pandas
