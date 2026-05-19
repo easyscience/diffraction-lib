@@ -172,6 +172,80 @@ class TestLoadAnalysis:
         assert loaded_parameter._fit_start_uncertainty == 0.02
         assert loaded_parameter.uncertainty == 0.07
 
+    def test_round_trips_persisted_deterministic_correlation_summary_for_reloaded_display(
+        self,
+        tmp_path,
+    ):
+        from easydiffraction.display.plotting import Plotter
+
+        original = Project(name='fit_correlation_state')
+        original.structures.create(name='lbco')
+        structure = original.structures['lbco']
+        structure.space_group.name_h_m = 'P m -3 m'
+        structure.cell.length_a = 3.88
+        structure.cell.length_b = 3.89
+
+        parameter_a = structure.cell.length_a
+        parameter_b = structure.cell.length_b
+        for parameter, start_value in (
+            (parameter_a, 3.87),
+            (parameter_b, 3.88),
+        ):
+            parameter.free = True
+            parameter.uncertainty = 0.05
+            parameter.fit_min = 3.8
+            parameter.fit_max = 3.9
+            parameter._set_fit_bounds_uncertainty_multiplier(4.0)
+            parameter._fit_start_value = start_value
+            parameter._fit_start_uncertainty = 0.02
+            original.analysis.fit_parameters.create(
+                param_unique_name=parameter.unique_name,
+                fit_min=parameter.fit_min,
+                fit_max=parameter.fit_max,
+                fit_bounds_uncertainty_multiplier=4.0,
+                start_value=start_value,
+                start_uncertainty=0.02,
+            )
+
+        original.analysis.fit_result._set_result_kind('deterministic')
+        original.analysis.fit_result._set_success(value=True)
+        original.analysis.fit_result._set_message('Fit converged')
+        original.analysis.fit_result._set_iterations(21)
+        original.analysis.fit_result._set_fitting_time(0.74)
+        original.analysis.fit_result._set_reduced_chi_square(1.031)
+        original.analysis.deterministic_result._set_optimizer_name('lmfit')
+        original.analysis.deterministic_result._set_method_name('leastsq')
+        original.analysis.deterministic_result._set_objective_name('chi-square')
+        original.analysis.deterministic_result._set_objective_value(1.031)
+        original.analysis.deterministic_result._set_n_data_points(120)
+        original.analysis.deterministic_result._set_n_parameters(2)
+        original.analysis.deterministic_result._set_n_free_parameters(2)
+        original.analysis.deterministic_result._set_degrees_of_freedom(118)
+        original.analysis.deterministic_result._set_covariance_available(value=False)
+        original.analysis.deterministic_result._set_correlation_available(value=True)
+        original.analysis.fit_parameter_correlations.create(
+            source_kind='deterministic',
+            param_unique_name_i=parameter_b.unique_name,
+            param_unique_name_j=parameter_a.unique_name,
+            correlation=0.42,
+        )
+        original.analysis._set_has_persisted_fit_state(value=True)
+        original.save_as(str(tmp_path / 'proj'))
+
+        loaded = Project.load(str(tmp_path / 'proj'))
+        plotter = Plotter()
+        plotter._set_project(loaded)
+
+        corr_df = plotter._get_param_correlation_dataframe()
+
+        assert corr_df is not None
+        assert list(corr_df.index) == [parameter_a.unique_name, parameter_b.unique_name]
+        assert list(corr_df.columns) == [parameter_a.unique_name, parameter_b.unique_name]
+        assert corr_df.loc[parameter_a.unique_name, parameter_a.unique_name] == pytest.approx(1.0)
+        assert corr_df.loc[parameter_b.unique_name, parameter_b.unique_name] == pytest.approx(1.0)
+        assert corr_df.loc[parameter_a.unique_name, parameter_b.unique_name] == pytest.approx(0.42)
+        assert corr_df.loc[parameter_b.unique_name, parameter_a.unique_name] == pytest.approx(0.42)
+
     def test_round_trips_bayesian_sampler_settings_to_live_dream_minimizer(self, tmp_path):
         original = Project(name='bayes_state')
         original.analysis.fitting.minimizer_type = 'bumps (dream)'
