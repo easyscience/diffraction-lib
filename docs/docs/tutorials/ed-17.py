@@ -128,7 +128,7 @@ struct.atom_sites.create(
 # #### Download Measured Data
 
 # %%
-zip_path = ed.download_data(id=27, destination='data')
+zip_path = ed.download_data(id=25, destination='data')
 
 # %% [markdown]
 # #### Extract Data Files
