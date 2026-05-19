@@ -3,6 +3,14 @@
 **Status:** Proposed  
 **Date:** 2026-05-18
 
+## Status Note
+
+The rollback anchors described here are already persisted and restored.
+Current code saves `_fit_parameter.start_value` and
+`_fit_parameter.start_uncertainty` in `analysis/analysis.cif`, and the
+CLI already reserves `PROJECT_DIR undo`, but no rollback operation is
+implemented yet.
+
 ## Context
 
 The accepted fit-state persistence design now stores

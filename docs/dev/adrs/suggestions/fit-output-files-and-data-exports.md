@@ -1,19 +1,39 @@
 # ADR: Fit Output Files and Data Exports
 
-**Status:** Proposed **Date:** 2026-05-18
+**Status:** Proposed
+**Date:** 2026-05-18
+
+## Status Note
+
+The current branch already adopts two pieces of this naming scheme:
+
+- sequential deterministic results stay in `analysis/results.csv`
+- Bayesian arrays and plot caches use `analysis/results.h5`
+
+Those decisions now live in
+[Analysis CIF Fit State](../accepted/analysis-cif-fit-state.md). This
+proposal is therefore narrowed to the still-open roles for
+`analysis/data.h5`, `analysis/exports/`, and any extra deterministic
+convenience exports.
 
 ## Context
 
-Different fit modes produce different kinds of reusable output:
+Different fit modes still produce different kinds of reusable output:
 
 - sequential deterministic fits produce a rectangular parameter
-  evolution table, currently saved as `analysis/results.csv`
+  evolution table, already saved as `analysis/results.csv`
 - Bayesian fits produce posterior samples, diagnostics, predictive
   arrays, and plot caches, which are too large and structured for CIF or
   CSV
 - deterministic single and joint fits produce fitted model state,
   calculated data, reflection tables, residuals, and optional
   covariance/correlation summaries
+
+The accepted fit-state ADR already standardizes the canonical saved fit
+projection in `analysis/analysis.cif` plus `analysis/results.h5` for
+Bayesian sidecars. What remains open here is whether project save should
+also produce optional archives or user-facing export files beyond that
+accepted baseline.
 
 The project should keep naming consistent and avoid making users extract
 ordinary plotting data from CIF when a clearer CSV export is possible.
@@ -23,24 +43,31 @@ and large numerical arrays should not be embedded in
 
 ## Decision
 
-### 1. Separate results, data archives, and exports
+### 1. Keep the implemented results baseline
 
-Use three file roles under `analysis/`:
+The accepted baseline is:
 
-- `analysis/results.csv` for flat tabular fit results.
-- `analysis/results.h5` for large or structured result arrays and
-  result-derived plot caches.
+- `analysis/results.csv` for sequential deterministic fit tables
+- `analysis/results.h5` for large Bayesian arrays and result-derived
+  caches
+
+Any future change to those canonical filenames would need a follow-up
+ADR.
+
+### 2. Reserve separate roles for archives and exports
+
+If extra persisted files are added under `analysis/`, keep their roles
+separate:
+
 - `analysis/data.h5` for optional archived input or measured data.
+- `analysis/exports/` for optional user-facing CSV files intended for
+  external plotting and inspection.
 
-Use `analysis/exports/` for optional user-facing CSV files intended for
-external plotting and inspection.
+The fit type and saved fit-state manifests stay recorded in
+`analysis/analysis.cif`, principally through `_fit_result.result_kind`
+and the related fit-state categories.
 
-This naming keeps the fit type out of the filename. The fit type and
-saved fit-state manifests are recorded in `analysis/analysis.cif`,
-principally through `_fit_result.result_kind` and the related fit-state
-categories.
-
-### 2. Sequential deterministic results stay CSV
+### 3. Sequential deterministic results stay CSV
 
 Sequential deterministic fitting should keep `analysis/results.csv` as
 the canonical table for parameter evolution and extracted metadata.
@@ -55,18 +82,18 @@ Sequential measured input data may optionally be archived in
 `analysis/data.h5`, but that archive is data, not results. It must not
 replace `analysis/results.csv`.
 
-### 3. Bayesian arrays use `analysis/results.h5`
+### 4. Bayesian arrays use `analysis/results.h5`
 
 Single Bayesian fits should store posterior samples, log posterior
 arrays, predictive arrays, and prepared plot caches in
 `analysis/results.h5`.
 
-The previous candidate name `analysis/bayesian_data.h5` is avoided
-because it mixes fit type with file role and blurs result arrays with
-input data. Bayesian-specific meaning belongs in the CIF manifest and
-HDF5 groups, not the sidecar filename.
+The previous candidate name `analysis/bayesian_data.h5` remains
+rejected because it mixes fit type with file role and blurs result
+arrays with input data. Bayesian-specific meaning belongs in the CIF
+manifest and HDF5 groups, not the sidecar filename.
 
-### 4. Deterministic single and joint fits may gain CSV exports
+### 5. Deterministic single and joint fits may gain CSV exports
 
 For single, joint, and sequential deterministic fits, EasyDiffraction
 should consider optional CSV exports for ordinary plotting data:
@@ -97,12 +124,12 @@ analysis/
 
 ## Fit-Type Mapping
 
-| Fit type                 | Canonical fit state              | Tabular results              | Large arrays / caches | Optional data archive | Optional exports                |
-| ------------------------ | -------------------------------- | ---------------------------- | --------------------- | --------------------- | ------------------------------- |
-| single deterministic     | `analysis/analysis.cif`          | open question                | none initially        | none initially        | `analysis/exports/*.csv`        |
-| joint deterministic      | `analysis/analysis.cif`          | open question                | none initially        | none initially        | `analysis/exports/*.csv`        |
-| sequential deterministic | `analysis/analysis.cif`          | `analysis/results.csv`       | none initially        | `analysis/data.h5`    | `analysis/exports/*.csv`        |
-| single Bayesian          | `analysis/analysis.cif` manifest | optional summary export only | `analysis/results.h5` | none initially        | optional summary/predictive CSV |
+| Fit type                 | Canonical fit state                              | Tabular results              | Large arrays / caches | Optional data archive | Optional exports                |
+| ------------------------ | ------------------------------------------------ | ---------------------------- | --------------------- | --------------------- | ------------------------------- |
+| single deterministic     | `analysis/analysis.cif`                          | open question                | none initially        | none initially        | `analysis/exports/*.csv`        |
+| joint deterministic      | `analysis/analysis.cif`                          | open question                | none initially        | none initially        | `analysis/exports/*.csv`        |
+| sequential deterministic | `analysis/analysis.cif` + `analysis/results.csv` | `analysis/results.csv`       | none initially        | `analysis/data.h5`    | `analysis/exports/*.csv`        |
+| single Bayesian          | `analysis/analysis.cif` + `analysis/results.h5`  | optional summary export only | `analysis/results.h5` | none initially        | optional summary/predictive CSV |
 
 ## Open Questions
 
@@ -118,10 +145,9 @@ analysis/
 - Should sequential measured data archival in `analysis/data.h5` be
   opt-in, automatic below a size threshold, or always disabled unless
   requested?
-- What size threshold and compression policy should control
-  `analysis/data.h5` and `analysis/results.h5`?
-- Should `analysis/results.h5` store only the latest fit, or eventually
-  support multiple saved runs?
+- What size threshold and compression policy should control the
+  optional `analysis/data.h5`, and does `analysis/results.h5` need a
+  matching convention?
 - Should external CSV exports be regenerated from canonical CIF/HDF5 on
   demand rather than stored persistently?
 

@@ -3,6 +3,15 @@
 **Status:** Proposed  
 **Date:** 2026-05-13
 
+## Status Note
+
+The core of this proposal is now accepted and implemented.
+[Analysis CIF Fit State](../accepted/analysis-cif-fit-state.md)
+adopts `_fit_parameter_correlation` as a common fit-state category, and
+current code stores both deterministic and posterior upper-triangle
+correlation summaries. This document now mainly captures the rationale
+and deferred extensions beyond that accepted baseline.
+
 ## Context
 
 `plot_param_correlations()` can currently visualize either:
@@ -21,7 +30,7 @@ experiment CIF files.
 
 ## Decision
 
-### 1. Add a `_fit_parameter_correlation` loop category
+### 1. Use a `_fit_parameter_correlation` loop category
 
 Persist pairwise parameter correlations in a new analysis-owned loop:
 
@@ -73,7 +82,7 @@ The same loop category is used for both deterministic and Bayesian fit
 results. The distinction is carried by `source_kind`, not by separate
 loop names.
 
-### 5. Suggested restore behavior
+### 5. Restore behavior
 
 On load:
 
@@ -82,7 +91,7 @@ On load:
 - if it is absent, correlation plots fall back to whatever live runtime
   information is available
 
-### 6. Suggested user-facing behavior
+### 6. User-facing behavior
 
 ```python
 # Restored from analysis.cif when available
@@ -96,7 +105,8 @@ correlation heatmap without needing raw posterior samples.
 
 ### Positive
 
-- Deterministic and Bayesian correlation summaries survive reload.
+- Deterministic and Bayesian correlation summaries survive reload on
+  the current branch.
 - Correlation heatmaps no longer depend entirely on runtime-only data.
 - The schema is compact and fit-type-agnostic.
 

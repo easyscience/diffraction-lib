@@ -1,6 +1,18 @@
 # ADR: Parameter-Level Posterior Projection
 
-**Status:** Proposed **Date:** 2026-05-13
+**Status:** Proposed
+**Date:** 2026-05-13
+
+## Status Note
+
+This proposal is narrower than its original draft. The accepted
+[Analysis CIF Fit State](../accepted/analysis-cif-fit-state.md) ADR now
+persists analysis-level posterior summaries in
+`_bayesian_parameter_posterior`, and current Bayesian fits already
+commit the best posterior sample to `parameter.value`. What remains
+undecided is whether parameters should also expose a convenience
+`parameter.posterior` projection and dedicated internal helpers for
+updating fit-derived metadata atomically.
 
 ## Context
 
@@ -12,8 +24,9 @@ Bayesian DREAM currently keeps posterior state only on
 `analysis.fit_results` via `BayesianFitResults`, including
 `posterior_samples`, `posterior_parameter_summaries`,
 `posterior_predictive`, diagnostics, and sampler settings. The accepted
-runtime-fit-results ADR describes this state as runtime-only and not
-serialized unless a narrower persistence ADR defines a saved projection.
+runtime-fit-results ADR originally described this state as runtime-only,
+but the accepted fit-state ADR now persists analysis-level posterior
+summaries and cache manifests as a narrower saved projection.
 
 `analysis.fit_results` already changes by analysis type: deterministic
 fits use `FitResults`, while posterior-capable fits such as DREAM use
@@ -191,6 +204,8 @@ while internal fit application installs fresh metadata atomically.
 After a posterior-capable fit, `parameter.value` is committed from the
 best posterior sample.
 
+Current DREAM support already follows this rule.
+
 The best posterior sample is chosen because it is a coherent joint point
 estimate across all free parameters. Marginal medians remain available
 on `parameter.posterior`, but they are summary data rather than the
@@ -215,6 +230,10 @@ Asymmetric interval information is not squeezed into
 Canonical Bayesian state is owned by `analysis.fit_results`, not by
 individual parameters. The saved fit-state format and restore order are
 defined in `analysis-cif-fit-state.md`.
+
+The accepted fit-state ADR currently rebuilds analysis-level posterior
+state only. This proposal would add a parameter-level convenience
+projection on top of that restored analysis state.
 
 `parameter.posterior` is never serialized as a per-parameter property.
 It is rebuilt from the analysis-level saved result projection when that
