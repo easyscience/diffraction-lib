@@ -77,6 +77,8 @@ class MinimizerBase(ABC):
         self._tracking_active = False
         self.tracker.stop_timer()
         self.tracker.finish_tracking()
+        if self.result is not None:
+            self.result.fitting_time = self.tracker.fitting_time
         self._emit_deferred_warnings()
 
     def _warn_after_tracking(self, message: str) -> None:

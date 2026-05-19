@@ -182,3 +182,56 @@ def test_fitter_fit_defers_minimizer_tracking_until_postprocessing(monkeypatch):
     assert fitter.minimizer.fit_calls[0]['finalize_tracking'] is False
     assert fitter.minimizer.stop_calls == 1
     assert analysis_events == ['capture', 'store']
+
+
+def test_fitter_fit_stops_tracking_when_minimizer_fit_raises(monkeypatch):
+    import pytest
+
+    from easydiffraction.analysis.fitting import Fitter
+
+    class DummyParam:
+        value = 1.0
+        _fit_start_value = None
+
+    class DummyStructure:
+        _need_categories_update = False
+
+        def _update_categories(self):
+            return None
+
+    class DummyStructures:
+        def __iter__(self):
+            return iter([DummyStructure()])
+
+    class DummyExperiment:
+        parameters = []
+
+    class DummyMin:
+        def __init__(self):
+            self.stop_calls = 0
+            self.tracker = SimpleNamespace(track=lambda residuals, parameters: residuals)
+
+        def fit(self, params, obj, verbosity=None, **kwargs):
+            del params, obj, verbosity, kwargs
+            msg = 'fit failed'
+            raise RuntimeError(msg)
+
+        def _stop_tracking(self):
+            self.stop_calls += 1
+
+    fitter = Fitter()
+    fitter.minimizer = DummyMin()
+    monkeypatch.setattr(
+        fitter,
+        '_collect_fit_parameters',
+        lambda structures, experiments: [DummyParam()],
+    )
+
+    with pytest.raises(RuntimeError, match='fit failed'):
+        fitter.fit(
+            structures=DummyStructures(),
+            experiments=[DummyExperiment()],
+            verbosity=VerbosityEnum.FULL,
+        )
+
+    assert fitter.minimizer.stop_calls == 1

@@ -207,17 +207,17 @@ class Fitter:
             analysis=analysis,
         )
 
-        # Perform fitting
-        self.results = self.minimizer.fit(
-            params,
-            objective_function,
-            verbosity=verbosity,
-            finalize_tracking=False,
-            use_physical_limits=use_physical_limits,
-            random_seed=random_seed,
-        )
-
         try:
+            # Keep tracker finalization in this layer so post-processing
+            # can run before the live display is closed.
+            self.results = self.minimizer.fit(
+                params,
+                objective_function,
+                verbosity=verbosity,
+                finalize_tracking=False,
+                use_physical_limits=use_physical_limits,
+                random_seed=random_seed,
+            )
             self._postprocess_fit_results(
                 analysis=analysis,
                 experiments=experiments,
