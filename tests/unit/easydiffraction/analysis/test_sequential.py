@@ -601,7 +601,7 @@ def test_fit_sequential_non_silent_starts_indicator_with_progress_table(
     assert events[8] == ('stop',)
     assert events[9:] == [
         ('console_print', ('✅ Sequential fitting complete: 1 files processed.',), {}),
-        ('console_print', (f'📄 Results saved to: {tmp_path / "results.csv"}',), {}),
+        ('console_print', (f'📄 Results saved to:\n{tmp_path / "results.csv"}',), {}),
     ]
 
 
