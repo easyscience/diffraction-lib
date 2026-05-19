@@ -279,7 +279,7 @@ def download_data(
         console.print(f"✅ Data #{id} downloaded and extracted to '{project_dir}'")
         return str(project_dir)
 
-    console.print(f"✅ Data #{id} downloaded to '{file_path}'")
+    console.print(f"✅ Data #{id} downloaded to:\n'{file_path}'")
     return str(file_path)
 
 
@@ -560,7 +560,7 @@ def download_tutorial(
     with _safe_urlopen(url) as resp:
         file_path.write_bytes(resp.read())
 
-    console.print(f"✅ Tutorial #{id} downloaded to '{file_path}'")
+    console.print(f"✅ Tutorial #{id} downloaded to:\n'{file_path}'")
     return str(file_path)
 
 

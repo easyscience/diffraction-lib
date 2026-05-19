@@ -1,7 +1,6 @@
 # ADR: Fit Output Files and Data Exports
 
-**Status:** Proposed
-**Date:** 2026-05-18
+**Status:** Proposed **Date:** 2026-05-18
 
 ## Status Note
 
@@ -88,10 +87,10 @@ Single Bayesian fits should store posterior samples, log posterior
 arrays, predictive arrays, and prepared plot caches in
 `analysis/results.h5`.
 
-The previous candidate name `analysis/bayesian_data.h5` remains
-rejected because it mixes fit type with file role and blurs result
-arrays with input data. Bayesian-specific meaning belongs in the CIF
-manifest and HDF5 groups, not the sidecar filename.
+The previous candidate name `analysis/bayesian_data.h5` remains rejected
+because it mixes fit type with file role and blurs result arrays with
+input data. Bayesian-specific meaning belongs in the CIF manifest and
+HDF5 groups, not the sidecar filename.
 
 ### 5. Deterministic single and joint fits may gain CSV exports
 
@@ -145,9 +144,9 @@ analysis/
 - Should sequential measured data archival in `analysis/data.h5` be
   opt-in, automatic below a size threshold, or always disabled unless
   requested?
-- What size threshold and compression policy should control the
-  optional `analysis/data.h5`, and does `analysis/results.h5` need a
-  matching convention?
+- What size threshold and compression policy should control the optional
+  `analysis/data.h5`, and does `analysis/results.h5` need a matching
+  convention?
 - Should external CSV exports be regenerated from canonical CIF/HDF5 on
   demand rather than stored persistently?
 

@@ -802,14 +802,12 @@ class Plotter(RendererBase):
         if series.dtype == bool:
             return series.astype(float).tolist()
 
-        normalized = series.replace(
-            {
-                'True': 1.0,
-                'False': 0.0,
-                'true': 1.0,
-                'false': 0.0,
-            }
-        )
+        normalized = series.replace({
+            'True': 1.0,
+            'False': 0.0,
+            'true': 1.0,
+            'false': 0.0,
+        })
         return pd.to_numeric(normalized, errors='raise').tolist()
 
     def plot_all_param_series(
@@ -5787,9 +5785,8 @@ class Plotter(RendererBase):
         Reads data from the CSV file at *csv_path*.  The y-axis values
         come from the first matching column named in *column_names*,
         with uncertainties from ``{column_name}.uncertainty``. When
-        *versus_path* is provided,
-        the x-axis uses the corresponding ``diffrn.*`` CSV column;
-        otherwise the row index is used.
+        *versus_path* is provided, the x-axis uses the corresponding
+        ``diffrn.*`` CSV column; otherwise the row index is used.
 
         Axis labels use the live parameter descriptor and, when
         available, a template diffrn descriptor resolved from
@@ -5819,7 +5816,11 @@ class Plotter(RendererBase):
 
         y = self._numeric_series_values(df[column_name])
         uncert_col = f'{column_name}.uncertainty'
-        sy = self._numeric_series_values(df[uncert_col]) if uncert_col in df.columns else [0.0] * len(y)
+        sy = (
+            self._numeric_series_values(df[uncert_col])
+            if uncert_col in df.columns
+            else [0.0] * len(y)
+        )
 
         # X-axis: diffrn column or row index
         diffrn_col = versus_path

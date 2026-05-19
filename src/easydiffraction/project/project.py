@@ -504,7 +504,8 @@ class Project(GuardedBase):
         temporary: bool = False,
         overwrite: bool = True,
     ) -> None:
-        """Save the project into a directory.
+        """
+        Save the project into a directory.
 
         Parameters
         ----------
@@ -513,7 +514,8 @@ class Project(GuardedBase):
         temporary : bool, default=False
             Whether to save beneath the system temporary directory.
         overwrite : bool, default=True
-            Whether to remove an existing target directory before saving.
+            Whether to remove an existing target directory before
+            saving.
         """
         if temporary:
             tmp: str = tempfile.gettempdir()

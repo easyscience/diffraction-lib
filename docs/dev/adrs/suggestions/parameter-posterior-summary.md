@@ -1,7 +1,6 @@
 # ADR: Parameter-Level Posterior Projection
 
-**Status:** Proposed
-**Date:** 2026-05-13
+**Status:** Proposed **Date:** 2026-05-13
 
 ## Status Note
 

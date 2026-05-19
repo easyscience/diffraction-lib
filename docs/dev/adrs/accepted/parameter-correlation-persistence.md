@@ -14,9 +14,9 @@ Analysis and fitting.
 
 ## Context
 
-`plot_param_correlations()` can visualize either deterministic
-parameter correlations derived from engine covariance or Bayesian
-correlations derived from posterior samples.
+`plot_param_correlations()` can visualize either deterministic parameter
+correlations derived from engine covariance or Bayesian correlations
+derived from posterior samples.
 
 Reloaded projects still need correlation heatmaps even when the raw
 runtime covariance or posterior arrays are unavailable. The broader
