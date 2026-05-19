@@ -29,7 +29,6 @@ from easydiffraction.analysis.minimizers.bumps import _EasyDiffractionFitness
 from easydiffraction.analysis.minimizers.enums import DreamPopulationInitializationEnum
 from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
-from easydiffraction.utils.logging import log
 from easydiffraction.core.metadata import TypeInfo
 
 DEFAULT_METHOD = 'dream'
@@ -307,13 +306,15 @@ class BumpsDreamMinimizer(BumpsMinimizer):
     @property
     def max_iterations(self) -> int:
         """DREAM exposes sampler length through ``steps`` instead."""
-        msg = "DREAM sampler uses 'steps' instead of 'max_iterations'."
+        sampler_name = self.type_info.description.partition('with ')[2].split()[0]
+        msg = f"{sampler_name} sampler uses 'steps' instead of 'max_iterations'."
         raise AttributeError(msg)
 
     @max_iterations.setter
     def max_iterations(self, value: int) -> None:
         del value
-        msg = "DREAM sampler uses 'steps' instead of 'max_iterations'."
+        sampler_name = self.type_info.description.partition('with ')[2].split()[0]
+        msg = f"{sampler_name} sampler uses 'steps' instead of 'max_iterations'."
         raise AttributeError(msg)
 
     @property

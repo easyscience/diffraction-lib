@@ -212,7 +212,7 @@ def test_fitness_evaluation_count_can_be_reset_and_stopped():
 def test_fitness_raises_when_max_evaluations_is_reached():
     from bumps.parameter import Parameter as BumpsParameter
 
-    from easydiffraction.analysis.minimizers.bumps import _BumpsEvaluationLimitReached
+    from easydiffraction.analysis.minimizers.bumps import _BumpsEvaluationLimitError
     from easydiffraction.analysis.minimizers.bumps import _EasyDiffractionFitness
 
     bp = BumpsParameter(value=2.0, name='a')
@@ -225,7 +225,7 @@ def test_fitness_raises_when_max_evaluations_is_reached():
     fitness.residuals()
     fitness.residuals()
 
-    with pytest.raises(_BumpsEvaluationLimitReached) as exc_info:
+    with pytest.raises(_BumpsEvaluationLimitError) as exc_info:
         fitness.residuals()
 
     assert exc_info.value.evaluation_count == 2
@@ -343,14 +343,14 @@ def test_run_solver_failure():
 
 def test_run_solver_stops_at_max_evaluations():
     from easydiffraction.analysis.minimizers.bumps import BumpsMinimizer
-    from easydiffraction.analysis.minimizers.bumps import _BumpsEvaluationLimitReached
+    from easydiffraction.analysis.minimizers.bumps import _BumpsEvaluationLimitError
 
     m = BumpsMinimizer(max_iterations=50)
     m.tracker = MagicMock()
     m.tracker._current_elapsed_time.return_value = 1.25
 
     fake_fitter = types.SimpleNamespace(id='lm')
-    limit_error = _BumpsEvaluationLimitReached(
+    limit_error = _BumpsEvaluationLimitError(
         evaluation_count=50,
         parameter_values=np.array([1.5]),
         residuals=np.array([2.0, 2.0]),

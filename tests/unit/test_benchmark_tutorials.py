@@ -74,7 +74,7 @@ def test_main_appends_first_result_before_second_tutorial_starts(monkeypatch, tm
         lambda: SimpleNamespace(parse_args=lambda: args),
     )
     monkeypatch.setattr(MUT, '_build_output_path', lambda output_dir: output_path)
-    monkeypatch.setattr(MUT, '_build_env', lambda: {})
+    monkeypatch.setattr(MUT, '_build_env', dict)
 
     def fake_run_tutorial(
         script_path: Path,

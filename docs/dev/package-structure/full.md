@@ -151,7 +151,9 @@
 │   │   ├── 📄 base.py
 │   │   │   └── 🏷️ class MinimizerBase
 │   │   ├── 📄 bumps.py
+│   │   │   ├── 🏷️ class _BumpsEvaluationLimitError
 │   │   │   ├── 🏷️ class _EasyDiffractionFitness
+│   │   │   ├── 🏷️ class _BumpsProgressMonitor
 │   │   │   └── 🏷️ class BumpsMinimizer
 │   │   ├── 📄 bumps_amoeba.py
 │   │   │   └── 🏷️ class BumpsAmoebaMinimizer

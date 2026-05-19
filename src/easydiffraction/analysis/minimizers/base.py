@@ -108,7 +108,8 @@ class MinimizerBase(ABC):
         """Return the tracker mode for the current minimizer."""
         return 'fit'
 
-    def _tracks_progress_via_solver_monitor(self) -> bool:
+    @staticmethod
+    def _tracks_progress_via_solver_monitor() -> bool:
         """Return whether live progress comes from solver callbacks."""
         return False
 
