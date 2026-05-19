@@ -1165,7 +1165,7 @@
   <span class="md-ellipsis">
     
   
-    LBCO Standard continuation
+    LBCO Single
   
 
     
@@ -1193,7 +1193,7 @@
   <span class="md-ellipsis">
     
   
-    Co2SiO4 Sequential resumed
+    Co2SiO4 Sequential
   
 
     
@@ -1221,7 +1221,7 @@
   <span class="md-ellipsis">
     
   
-    LBCO Bayesian display
+    LBCO Bayesian
   
 
     
@@ -8678,7 +8678,16 @@ another.
 <span class="normal">609</span>
 <span class="normal">610</span>
 <span class="normal">611</span>
-<span class="normal">612</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Project</span><span class="p">(</span><span class="n">GuardedBase</span><span class="p">):</span>
+<span class="normal">612</span>
+<span class="normal">613</span>
+<span class="normal">614</span>
+<span class="normal">615</span>
+<span class="normal">616</span>
+<span class="normal">617</span>
+<span class="normal">618</span>
+<span class="normal">619</span>
+<span class="normal">620</span>
+<span class="normal">621</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Project</span><span class="p">(</span><span class="n">GuardedBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Central API for managing a diffraction data analysis project.</span>
 
@@ -9028,7 +9037,16 @@ another.
             <span class="n">project_dir</span> <span class="o">=</span> <span class="n">resolve_artifact_path</span><span class="p">(</span><span class="n">dir_path</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">overwrite</span> <span class="ow">and</span> <span class="n">project_dir</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
-            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">project_dir</span><span class="p">)</span>
+            <span class="n">current_working_directory</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+            <span class="n">resolved_project_dir</span> <span class="o">=</span> <span class="n">project_dir</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">resolved_project_dir</span> <span class="o">==</span> <span class="n">current_working_directory</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">child_path</span> <span class="ow">in</span> <span class="n">resolved_project_dir</span><span class="o">.</span><span class="n">iterdir</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">child_path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+                        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">child_path</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">child_path</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">project_dir</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">project_dir</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
@@ -10073,7 +10091,16 @@ saving.</p>
 <span class="normal">527</span>
 <span class="normal">528</span>
 <span class="normal">529</span>
-<span class="normal">530</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save_as</span><span class="p">(</span>
+<span class="normal">530</span>
+<span class="normal">531</span>
+<span class="normal">532</span>
+<span class="normal">533</span>
+<span class="normal">534</span>
+<span class="normal">535</span>
+<span class="normal">536</span>
+<span class="normal">537</span>
+<span class="normal">538</span>
+<span class="normal">539</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save_as</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">dir_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
@@ -10100,7 +10127,16 @@ saving.</p>
         <span class="n">project_dir</span> <span class="o">=</span> <span class="n">resolve_artifact_path</span><span class="p">(</span><span class="n">dir_path</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">overwrite</span> <span class="ow">and</span> <span class="n">project_dir</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
-        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">project_dir</span><span class="p">)</span>
+        <span class="n">current_working_directory</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="n">resolved_project_dir</span> <span class="o">=</span> <span class="n">project_dir</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">resolved_project_dir</span> <span class="o">==</span> <span class="n">current_working_directory</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">child_path</span> <span class="ow">in</span> <span class="n">resolved_project_dir</span><span class="o">.</span><span class="n">iterdir</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">child_path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+                    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">child_path</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">child_path</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">project_dir</span><span class="p">)</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">project_dir</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
@@ -10210,16 +10246,7 @@ indexing (e.g. <code>-1</code> for the last row).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/project/project.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">532</span>
-<span class="normal">533</span>
-<span class="normal">534</span>
-<span class="normal">535</span>
-<span class="normal">536</span>
-<span class="normal">537</span>
-<span class="normal">538</span>
-<span class="normal">539</span>
-<span class="normal">540</span>
-<span class="normal">541</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">541</span>
 <span class="normal">542</span>
 <span class="normal">543</span>
 <span class="normal">544</span>
@@ -10290,7 +10317,16 @@ indexing (e.g. <code>-1</code> for the last row).</p>
 <span class="normal">609</span>
 <span class="normal">610</span>
 <span class="normal">611</span>
-<span class="normal">612</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">apply_params_from_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">612</span>
+<span class="normal">613</span>
+<span class="normal">614</span>
+<span class="normal">615</span>
+<span class="normal">616</span>
+<span class="normal">617</span>
+<span class="normal">618</span>
+<span class="normal">619</span>
+<span class="normal">620</span>
+<span class="normal">621</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">apply_params_from_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load a single CSV row and apply its parameters to the project.</span>
 

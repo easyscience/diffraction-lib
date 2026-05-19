@@ -1165,7 +1165,7 @@
   <span class="md-ellipsis">
     
   
-    LBCO Standard continuation
+    LBCO Single
   
 
     
@@ -1193,7 +1193,7 @@
   <span class="md-ellipsis">
     
   
-    Co2SiO4 Sequential resumed
+    Co2SiO4 Sequential
   
 
     
@@ -1221,7 +1221,7 @@
   <span class="md-ellipsis">
     
   
-    LBCO Bayesian display
+    LBCO Bayesian
   
 
     
@@ -35419,7 +35419,22 @@ a table in notebooks or a text UI in terminals.</p>
 <span class="normal">738</span>
 <span class="normal">739</span>
 <span class="normal">740</span>
-<span class="normal">741</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">FitProgressTracker</span><span class="p">:</span>
+<span class="normal">741</span>
+<span class="normal">742</span>
+<span class="normal">743</span>
+<span class="normal">744</span>
+<span class="normal">745</span>
+<span class="normal">746</span>
+<span class="normal">747</span>
+<span class="normal">748</span>
+<span class="normal">749</span>
+<span class="normal">750</span>
+<span class="normal">751</span>
+<span class="normal">752</span>
+<span class="normal">753</span>
+<span class="normal">754</span>
+<span class="normal">755</span>
+<span class="normal">756</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">FitProgressTracker</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Track and report reduced chi-square during optimization.</span>
 
@@ -35512,8 +35527,25 @@ a table in notebooks or a text UI in terminals.</p>
             <span class="bp">self</span><span class="o">.</span><span class="n">_last_chi2</span> <span class="o">=</span> <span class="n">reduced_chi2</span>
             <span class="k">return</span> <span class="n">residuals</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">track_fit_progress</span><span class="p">(</span>
+            <span class="n">iteration</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_iteration</span><span class="p">,</span>
+            <span class="n">reduced_chi2</span><span class="o">=</span><span class="n">reduced_chi2</span><span class="p">,</span>
+            <span class="n">elapsed_time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_elapsed_time</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">residuals</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">track_fit_progress</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">iteration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">reduced_chi2</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">elapsed_time</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update fit progress from a backend iteration callback.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_iteration</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">iteration</span><span class="p">)</span>
+
         <span class="n">row</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">elapsed_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_elapsed_time</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_previous_chi2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_previous_chi2</span> <span class="o">=</span> <span class="n">reduced_chi2</span>
@@ -35560,8 +35592,6 @@ a table in notebooks or a text UI in terminals.</p>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_chi2</span> <span class="o">=</span> <span class="n">reduced_chi2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_iteration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iteration</span>
-
-        <span class="k">return</span> <span class="n">residuals</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">track_sampler_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update</span><span class="p">:</span> <span class="n">SamplerProgressUpdate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -36421,9 +36451,73 @@ a table in notebooks or a text UI in terminals.</p>
 <span class="normal">160</span>
 <span class="normal">161</span>
 <span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span>
+<span class="normal">163</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">track</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">residuals</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Update progress with current residuals and parameters.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    residuals : np.ndarray</span>
+<span class="sd">        Residuals between measured and calculated data.</span>
+<span class="sd">    parameters : list[float]</span>
+<span class="sd">        Current free parameters being fitted.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.ndarray</span>
+<span class="sd">        Residuals unchanged, for optimizer consumption.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_iteration</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="n">reduced_chi2</span> <span class="o">=</span> <span class="n">calculate_reduced_chi_square</span><span class="p">(</span><span class="n">residuals</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">parameters</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tracking_mode</span> <span class="o">==</span> <span class="n">TRACKING_MODE_SAMPLER</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_previous_chi2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_previous_chi2</span> <span class="o">=</span> <span class="n">reduced_chi2</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_best_chi2</span> <span class="o">=</span> <span class="n">reduced_chi2</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_best_chi2</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">reduced_chi2</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_best_chi2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_best_chi2</span> <span class="o">=</span> <span class="n">reduced_chi2</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_chi2</span> <span class="o">=</span> <span class="n">reduced_chi2</span>
+        <span class="k">return</span> <span class="n">residuals</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">track_fit_progress</span><span class="p">(</span>
+        <span class="n">iteration</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_iteration</span><span class="p">,</span>
+        <span class="n">reduced_chi2</span><span class="o">=</span><span class="n">reduced_chi2</span><span class="p">,</span>
+        <span class="n">elapsed_time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_elapsed_time</span><span class="p">(),</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">residuals</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h5 id="easydiffraction.analysis.fit_helpers.tracking.FitProgressTracker.track_fit_progress" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">track_fit_progress</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">iteration</span><span class="p">,</span> <span class="n">reduced_chi2</span><span class="p">,</span> <span class="n">elapsed_time</span><span class="p">)</span></code>
+
+</h5>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Update fit progress from a backend iteration callback.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/analysis/fit_helpers/tracking.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">165</span>
 <span class="normal">166</span>
 <span class="normal">167</span>
 <span class="normal">168</span>
@@ -36464,42 +36558,32 @@ a table in notebooks or a text UI in terminals.</p>
 <span class="normal">203</span>
 <span class="normal">204</span>
 <span class="normal">205</span>
-<span class="normal">206</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">track</span><span class="p">(</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">track_fit_progress</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">residuals</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-    <span class="n">parameters</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Update progress with current residuals and parameters.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    residuals : np.ndarray</span>
-<span class="sd">        Residuals between measured and calculated data.</span>
-<span class="sd">    parameters : list[float]</span>
-<span class="sd">        Current free parameters being fitted.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    np.ndarray</span>
-<span class="sd">        Residuals unchanged, for optimizer consumption.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_iteration</span> <span class="o">+=</span> <span class="mi">1</span>
-
-    <span class="n">reduced_chi2</span> <span class="o">=</span> <span class="n">calculate_reduced_chi_square</span><span class="p">(</span><span class="n">residuals</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">parameters</span><span class="p">))</span>
-
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tracking_mode</span> <span class="o">==</span> <span class="n">TRACKING_MODE_SAMPLER</span><span class="p">:</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_previous_chi2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_previous_chi2</span> <span class="o">=</span> <span class="n">reduced_chi2</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_best_chi2</span> <span class="o">=</span> <span class="n">reduced_chi2</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_best_chi2</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">reduced_chi2</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_best_chi2</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_best_chi2</span> <span class="o">=</span> <span class="n">reduced_chi2</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_last_chi2</span> <span class="o">=</span> <span class="n">reduced_chi2</span>
-        <span class="k">return</span> <span class="n">residuals</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">iteration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">reduced_chi2</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">elapsed_time</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update fit progress from a backend iteration callback.&quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_iteration</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">iteration</span><span class="p">)</span>
 
     <span class="n">row</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">elapsed_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_elapsed_time</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_previous_chi2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_previous_chi2</span> <span class="o">=</span> <span class="n">reduced_chi2</span>
@@ -36546,8 +36630,6 @@ a table in notebooks or a text UI in terminals.</p>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_last_chi2</span> <span class="o">=</span> <span class="n">reduced_chi2</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_last_iteration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iteration</span>
-
-    <span class="k">return</span> <span class="n">residuals</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -36612,22 +36694,7 @@ a table in notebooks or a text UI in terminals.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/fit_helpers/tracking.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">208</span>
-<span class="normal">209</span>
-<span class="normal">210</span>
-<span class="normal">211</span>
-<span class="normal">212</span>
-<span class="normal">213</span>
-<span class="normal">214</span>
-<span class="normal">215</span>
-<span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span>
-<span class="normal">221</span>
-<span class="normal">222</span>
-<span class="normal">223</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">223</span>
 <span class="normal">224</span>
 <span class="normal">225</span>
 <span class="normal">226</span>
@@ -36651,7 +36718,22 @@ a table in notebooks or a text UI in terminals.</p>
 <span class="normal">244</span>
 <span class="normal">245</span>
 <span class="normal">246</span>
-<span class="normal">247</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">track_sampler_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update</span><span class="p">:</span> <span class="n">SamplerProgressUpdate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">track_sampler_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update</span><span class="p">:</span> <span class="n">SamplerProgressUpdate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Update progress from a sampler monitor.</span>
 
@@ -36716,16 +36798,16 @@ a table in notebooks or a text UI in terminals.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/fit_helpers/tracking.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">249</span>
-<span class="normal">250</span>
-<span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span>
-<span class="normal">254</span>
-<span class="normal">255</span>
-<span class="normal">256</span>
-<span class="normal">257</span>
-<span class="normal">258</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">start_sampler_pre_processing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">total_iterations</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">start_sampler_pre_processing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">total_iterations</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Mark sampler setup so a status row appears on update.&quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_tracking_mode</span> <span class="o">=</span> <span class="n">TRACKING_MODE_SAMPLER</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_sampler_total_iterations</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">total_iterations</span><span class="p">)</span>
@@ -36760,25 +36842,25 @@ a table in notebooks or a text UI in terminals.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/fit_helpers/tracking.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">260</span>
-<span class="normal">261</span>
-<span class="normal">262</span>
-<span class="normal">263</span>
-<span class="normal">264</span>
-<span class="normal">265</span>
-<span class="normal">266</span>
-<span class="normal">267</span>
-<span class="normal">268</span>
-<span class="normal">269</span>
-<span class="normal">270</span>
-<span class="normal">271</span>
-<span class="normal">272</span>
-<span class="normal">273</span>
-<span class="normal">274</span>
-<span class="normal">275</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">275</span>
 <span class="normal">276</span>
 <span class="normal">277</span>
-<span class="normal">278</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">start_sampler_post_processing</span><span class="p">(</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">start_sampler_post_processing</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">log_posterior</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -36822,10 +36904,10 @@ a table in notebooks or a text UI in terminals.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/fit_helpers/tracking.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">300</span>
-<span class="normal">301</span>
-<span class="normal">302</span>
-<span class="normal">303</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">start_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">start_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Begin timing of a fit run.&quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_end_time</span> <span class="o">=</span> <span class="kc">None</span>
@@ -36854,13 +36936,13 @@ a table in notebooks or a text UI in terminals.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/fit_helpers/tracking.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">305</span>
-<span class="normal">306</span>
-<span class="normal">307</span>
-<span class="normal">308</span>
-<span class="normal">309</span>
-<span class="normal">310</span>
-<span class="normal">311</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">stop_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">stop_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Stop timing and store elapsed time for the run.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fitting_time</span> <span class="o">=</span> <span class="kc">None</span>
@@ -36945,22 +37027,7 @@ a table in notebooks or a text UI in terminals.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/fit_helpers/tracking.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">323</span>
-<span class="normal">324</span>
-<span class="normal">325</span>
-<span class="normal">326</span>
-<span class="normal">327</span>
-<span class="normal">328</span>
-<span class="normal">329</span>
-<span class="normal">330</span>
-<span class="normal">331</span>
-<span class="normal">332</span>
-<span class="normal">333</span>
-<span class="normal">334</span>
-<span class="normal">335</span>
-<span class="normal">336</span>
-<span class="normal">337</span>
-<span class="normal">338</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">338</span>
 <span class="normal">339</span>
 <span class="normal">340</span>
 <span class="normal">341</span>
@@ -36972,7 +37039,22 @@ a table in notebooks or a text UI in terminals.</p>
 <span class="normal">347</span>
 <span class="normal">348</span>
 <span class="normal">349</span>
-<span class="normal">350</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">start_tracking</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minimizer_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">TRACKING_MODE_FIT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">start_tracking</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minimizer_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">TRACKING_MODE_FIT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Initialize display and headers and announce the minimizer.</span>
 
@@ -37059,22 +37141,22 @@ a table in notebooks or a text UI in terminals.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/fit_helpers/tracking.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">352</span>
-<span class="normal">353</span>
-<span class="normal">354</span>
-<span class="normal">355</span>
-<span class="normal">356</span>
-<span class="normal">357</span>
-<span class="normal">358</span>
-<span class="normal">359</span>
-<span class="normal">360</span>
-<span class="normal">361</span>
-<span class="normal">362</span>
-<span class="normal">363</span>
-<span class="normal">364</span>
-<span class="normal">365</span>
-<span class="normal">366</span>
-<span class="normal">367</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_tracking_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_tracking_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Append a formatted row to the progress display.</span>
 
@@ -37115,19 +37197,19 @@ a table in notebooks or a text UI in terminals.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/fit_helpers/tracking.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">369</span>
-<span class="normal">370</span>
-<span class="normal">371</span>
-<span class="normal">372</span>
-<span class="normal">373</span>
-<span class="normal">374</span>
-<span class="normal">375</span>
-<span class="normal">376</span>
-<span class="normal">377</span>
-<span class="normal">378</span>
-<span class="normal">379</span>
-<span class="normal">380</span>
-<span class="normal">381</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">finish_tracking</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">finish_tracking</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Finalize progress display and print best result summary.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tracking_mode</span> <span class="o">==</span> <span class="n">TRACKING_MODE_SAMPLER</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_finalize_sampler_tracking_row</span><span class="p">()</span>
@@ -37510,7 +37592,10 @@ a table in notebooks or a text UI in terminals.</p>
 <span class="normal">345</span>
 <span class="normal">346</span>
 <span class="normal">347</span>
-<span class="normal">348</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Fitter</span><span class="p">:</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Fitter</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Handles the fitting workflow using a pluggable minimizer.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selection</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">MinimizerTypeEnum</span><span class="o">.</span><span class="n">default</span><span class="p">())</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -37790,7 +37875,10 @@ a table in notebooks or a text UI in terminals.</p>
             <span class="c1"># Append the residuals for this experiment</span>
             <span class="n">residuals</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimizer</span><span class="o">.</span><span class="n">tracker</span><span class="o">.</span><span class="n">track</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">residuals</span><span class="p">),</span> <span class="n">parameters</span><span class="p">)</span>
+        <span class="n">residual_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">residuals</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">minimizer</span><span class="p">,</span> <span class="s1">&#39;_tracks_progress_via_solver_monitor&#39;</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">False</span><span class="p">)():</span>
+            <span class="k">return</span> <span class="n">residual_array</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimizer</span><span class="o">.</span><span class="n">tracker</span><span class="o">.</span><span class="n">track</span><span class="p">(</span><span class="n">residual_array</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -38669,7 +38757,21 @@ workflow and returns     :class:<code>FitResults</code>.</p>
 <span class="normal">407</span>
 <span class="normal">408</span>
 <span class="normal">409</span>
-<span class="normal">410</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MinimizerBase</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span>
+<span class="normal">417</span>
+<span class="normal">418</span>
+<span class="normal">419</span>
+<span class="normal">420</span>
+<span class="normal">421</span>
+<span class="normal">422</span>
+<span class="normal">423</span>
+<span class="normal">424</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MinimizerBase</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract base for concrete minimizers.</span>
 
@@ -38687,7 +38789,7 @@ workflow and returns     :class:<code>FitResults</code>.</p>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">method</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">max_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">max_iterations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">max_iterations</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">:</span> <span class="n">FitResults</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_previous_chi2</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_iteration</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -38698,6 +38800,15 @@ workflow and returns     :class:<code>FitResults</code>.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tracking_active</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_deferred_warning_messages</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tracker</span><span class="p">:</span> <span class="n">FitProgressTracker</span> <span class="o">=</span> <span class="n">FitProgressTracker</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">max_iterations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;User-facing iteration limit for the current minimizer.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_iterations</span>
+
+    <span class="nd">@max_iterations</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">max_iterations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_iterations</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_start_tracking</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -38751,6 +38862,11 @@ workflow and returns     :class:<code>FitResults</code>.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">_tracking_mode</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the tracker mode for the current minimizer.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s1">&#39;fit&#39;</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_tracks_progress_via_solver_monitor</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return whether live progress comes from solver callbacks.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">False</span>
 
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_solver_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
@@ -39074,6 +39190,32 @@ workflow and returns     :class:<code>FitResults</code>.</p>
 
 
 
+<div class="doc doc-object doc-attribute">
+
+
+
+<h5 id="easydiffraction.analysis.minimizers.base.MinimizerBase.max_iterations" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">max_iterations</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h5>
+
+
+    <div class="doc doc-contents ">
+
+        <p>User-facing iteration limit for the current minimizer.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
 
 
 
@@ -39254,21 +39396,7 @@ unbounded.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/analysis/minimizers/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">322</span>
-<span class="normal">323</span>
-<span class="normal">324</span>
-<span class="normal">325</span>
-<span class="normal">326</span>
-<span class="normal">327</span>
-<span class="normal">328</span>
-<span class="normal">329</span>
-<span class="normal">330</span>
-<span class="normal">331</span>
-<span class="normal">332</span>
-<span class="normal">333</span>
-<span class="normal">334</span>
-<span class="normal">335</span>
-<span class="normal">336</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">336</span>
 <span class="normal">337</span>
 <span class="normal">338</span>
 <span class="normal">339</span>
@@ -39309,7 +39437,21 @@ unbounded.</p>
 <span class="normal">374</span>
 <span class="normal">375</span>
 <span class="normal">376</span>
-<span class="normal">377</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">parameters</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">],</span>
     <span class="n">objective_function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">object</span><span class="p">],</span>
@@ -39441,7 +39583,7 @@ unbounded.</p>
 
 
 
-        <p>Minimizer using the bumps package.</p>
+        <p>Minimizer using the BUMPS package.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -39455,135 +39597,7 @@ unbounded.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/analysis/minimizers/bumps.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 63</span>
-<span class="normal"> 64</span>
-<span class="normal"> 65</span>
-<span class="normal"> 66</span>
-<span class="normal"> 67</span>
-<span class="normal"> 68</span>
-<span class="normal"> 69</span>
-<span class="normal"> 70</span>
-<span class="normal"> 71</span>
-<span class="normal"> 72</span>
-<span class="normal"> 73</span>
-<span class="normal"> 74</span>
-<span class="normal"> 75</span>
-<span class="normal"> 76</span>
-<span class="normal"> 77</span>
-<span class="normal"> 78</span>
-<span class="normal"> 79</span>
-<span class="normal"> 80</span>
-<span class="normal"> 81</span>
-<span class="normal"> 82</span>
-<span class="normal"> 83</span>
-<span class="normal"> 84</span>
-<span class="normal"> 85</span>
-<span class="normal"> 86</span>
-<span class="normal"> 87</span>
-<span class="normal"> 88</span>
-<span class="normal"> 89</span>
-<span class="normal"> 90</span>
-<span class="normal"> 91</span>
-<span class="normal"> 92</span>
-<span class="normal"> 93</span>
-<span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span>
-<span class="normal">171</span>
-<span class="normal">172</span>
-<span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span>
-<span class="normal">181</span>
-<span class="normal">182</span>
-<span class="normal">183</span>
-<span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span>
-<span class="normal">191</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">191</span>
 <span class="normal">192</span>
 <span class="normal">193</span>
 <span class="normal">194</span>
@@ -39658,9 +39672,224 @@ unbounded.</p>
 <span class="normal">263</span>
 <span class="normal">264</span>
 <span class="normal">265</span>
-<span class="normal">266</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@MinimizerFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span>
+<span class="normal">397</span>
+<span class="normal">398</span>
+<span class="normal">399</span>
+<span class="normal">400</span>
+<span class="normal">401</span>
+<span class="normal">402</span>
+<span class="normal">403</span>
+<span class="normal">404</span>
+<span class="normal">405</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span>
+<span class="normal">417</span>
+<span class="normal">418</span>
+<span class="normal">419</span>
+<span class="normal">420</span>
+<span class="normal">421</span>
+<span class="normal">422</span>
+<span class="normal">423</span>
+<span class="normal">424</span>
+<span class="normal">425</span>
+<span class="normal">426</span>
+<span class="normal">427</span>
+<span class="normal">428</span>
+<span class="normal">429</span>
+<span class="normal">430</span>
+<span class="normal">431</span>
+<span class="normal">432</span>
+<span class="normal">433</span>
+<span class="normal">434</span>
+<span class="normal">435</span>
+<span class="normal">436</span>
+<span class="normal">437</span>
+<span class="normal">438</span>
+<span class="normal">439</span>
+<span class="normal">440</span>
+<span class="normal">441</span>
+<span class="normal">442</span>
+<span class="normal">443</span>
+<span class="normal">444</span>
+<span class="normal">445</span>
+<span class="normal">446</span>
+<span class="normal">447</span>
+<span class="normal">448</span>
+<span class="normal">449</span>
+<span class="normal">450</span>
+<span class="normal">451</span>
+<span class="normal">452</span>
+<span class="normal">453</span>
+<span class="normal">454</span>
+<span class="normal">455</span>
+<span class="normal">456</span>
+<span class="normal">457</span>
+<span class="normal">458</span>
+<span class="normal">459</span>
+<span class="normal">460</span>
+<span class="normal">461</span>
+<span class="normal">462</span>
+<span class="normal">463</span>
+<span class="normal">464</span>
+<span class="normal">465</span>
+<span class="normal">466</span>
+<span class="normal">467</span>
+<span class="normal">468</span>
+<span class="normal">469</span>
+<span class="normal">470</span>
+<span class="normal">471</span>
+<span class="normal">472</span>
+<span class="normal">473</span>
+<span class="normal">474</span>
+<span class="normal">475</span>
+<span class="normal">476</span>
+<span class="normal">477</span>
+<span class="normal">478</span>
+<span class="normal">479</span>
+<span class="normal">480</span>
+<span class="normal">481</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@MinimizerFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">BumpsMinimizer</span><span class="p">(</span><span class="n">MinimizerBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Minimizer using the bumps package.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Minimizer using the BUMPS package.&quot;&quot;&quot;</span>
 
     <span class="n">type_info</span> <span class="o">=</span> <span class="n">TypeInfo</span><span class="p">(</span>
         <span class="n">tag</span><span class="o">=</span><span class="n">MinimizerTypeEnum</span><span class="o">.</span><span class="n">BUMPS</span><span class="p">,</span>
@@ -39679,12 +39908,19 @@ unbounded.</p>
             <span class="n">max_iterations</span><span class="o">=</span><span class="n">max_iterations</span><span class="p">,</span>
         <span class="p">)</span>
 
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_tracks_progress_via_solver_monitor</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Use BUMPS monitor callbacks for live deterministic progress.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_solver_args</span><span class="p">(</span>  <span class="c1"># noqa: PLR6301</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">parameters</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Prepare bumps parameters from EasyDiffraction parameters.</span>
+<span class="sd">        Prepare BUMPS parameters from EasyDiffraction parameters.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -39714,7 +39950,7 @@ unbounded.</p>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Run the bumps solver.</span>
+<span class="sd">        Run the BUMPS solver.</span>
 
 <span class="sd">        Uses FitDriver directly instead of bumps.fitters.fit() to skip</span>
 <span class="sd">        the expensive post-fit stderr/Jacobian computation that would</span>
@@ -39733,43 +39969,123 @@ unbounded.</p>
 <span class="sd">            A scipy OptimizeResult with the optimized values.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">bumps_params</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;bumps_params&#39;</span><span class="p">)</span>
-        <span class="n">fitness</span> <span class="o">=</span> <span class="n">_EasyDiffractionFitness</span><span class="p">(</span><span class="n">bumps_params</span><span class="p">,</span> <span class="n">objective_function</span><span class="p">)</span>
+        <span class="n">fitness</span> <span class="o">=</span> <span class="n">_EasyDiffractionFitness</span><span class="p">(</span>
+            <span class="n">bumps_params</span><span class="p">,</span>
+            <span class="n">objective_function</span><span class="p">,</span>
+            <span class="n">max_evaluations</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iterations</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="n">fitness</span><span class="o">.</span><span class="n">nllf</span><span class="p">()</span>  <span class="c1"># pre-compute so numpoints() is valid</span>
+        <span class="n">fitness</span><span class="o">.</span><span class="n">reset_evaluation_count</span><span class="p">()</span>
         <span class="n">problem</span> <span class="o">=</span> <span class="n">FitProblem</span><span class="p">(</span><span class="n">fitness</span><span class="p">)</span>
+        <span class="n">progress_monitor</span> <span class="o">=</span> <span class="n">_BumpsProgressMonitor</span><span class="p">(</span>
+            <span class="n">tracker</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tracker</span><span class="p">,</span>
+            <span class="n">fitness</span><span class="o">=</span><span class="n">fitness</span><span class="p">,</span>
+            <span class="n">n_points</span><span class="o">=</span><span class="n">fitness</span><span class="o">.</span><span class="n">numpoints</span><span class="p">(),</span>
+            <span class="n">n_parameters</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">bumps_params</span><span class="p">),</span>
+        <span class="p">)</span>
 
         <span class="n">fitclass</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">cls</span> <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">FITTERS</span> <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">)</span>
         <span class="n">driver</span> <span class="o">=</span> <span class="n">FitDriver</span><span class="p">(</span>
             <span class="n">fitclass</span><span class="o">=</span><span class="n">fitclass</span><span class="p">,</span>
             <span class="n">problem</span><span class="o">=</span><span class="n">problem</span><span class="p">,</span>
-            <span class="n">monitors</span><span class="o">=</span><span class="p">[],</span>
+            <span class="n">monitors</span><span class="o">=</span><span class="p">[</span><span class="n">progress_monitor</span><span class="p">],</span>
             <span class="n">steps</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iterations</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">driver</span><span class="o">.</span><span class="n">clip</span><span class="p">()</span>
-        <span class="n">x</span><span class="p">,</span> <span class="n">fx</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">fx</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+            <span class="n">evaluation_limit_reached</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">evaluation_limit_message</span> <span class="o">=</span> <span class="s1">&#39;successful termination&#39;</span>
+        <span class="k">except</span> <span class="n">_BumpsEvaluationLimitError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">fx</span><span class="p">,</span> <span class="n">evaluation_limit_message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_evaluation_limit</span><span class="p">(</span>
+                <span class="n">exc</span><span class="o">=</span><span class="n">exc</span><span class="p">,</span>
+                <span class="n">fitness</span><span class="o">=</span><span class="n">fitness</span><span class="p">,</span>
+                <span class="n">n_parameters</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">bumps_params</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="n">evaluation_limit_reached</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">fitness</span><span class="o">.</span><span class="n">stop_counting_evaluations</span><span class="p">()</span>
 
-        <span class="n">success</span> <span class="o">=</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">evaluation_limit_reached</span>
         <span class="k">if</span> <span class="n">success</span><span class="p">:</span>
             <span class="n">problem</span><span class="o">.</span><span class="n">setp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_optimize_result</span><span class="p">(</span>
+            <span class="n">bumps_params</span><span class="o">=</span><span class="n">bumps_params</span><span class="p">,</span>
+            <span class="n">fitness</span><span class="o">=</span><span class="n">fitness</span><span class="p">,</span>
+            <span class="n">success</span><span class="o">=</span><span class="n">success</span><span class="p">,</span>
+            <span class="n">evaluation_limit_reached</span><span class="o">=</span><span class="n">evaluation_limit_reached</span><span class="p">,</span>
+            <span class="n">evaluation_limit_message</span><span class="o">=</span><span class="n">evaluation_limit_message</span><span class="p">,</span>
+            <span class="n">function_value</span><span class="o">=</span><span class="n">fx</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_handle_evaluation_limit</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">exc</span><span class="p">:</span> <span class="n">_BumpsEvaluationLimitError</span><span class="p">,</span>
+        <span class="n">fitness</span><span class="p">:</span> <span class="n">_EasyDiffractionFitness</span><span class="p">,</span>
+        <span class="n">n_parameters</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build a partial result when the evaluation budget is exhausted.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">reduced_chi2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reduced_chi_square_from_limit</span><span class="p">(</span>
+            <span class="n">exc</span><span class="o">=</span><span class="n">exc</span><span class="p">,</span>
+            <span class="n">fitness</span><span class="o">=</span><span class="n">fitness</span><span class="p">,</span>
+            <span class="n">n_parameters</span><span class="o">=</span><span class="n">n_parameters</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">reduced_chi2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">elapsed_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracker</span><span class="o">.</span><span class="n">_current_elapsed_time</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tracker</span><span class="o">.</span><span class="n">track_fit_progress</span><span class="p">(</span>
+                <span class="n">iteration</span><span class="o">=</span><span class="n">exc</span><span class="o">.</span><span class="n">evaluation_count</span><span class="p">,</span>
+                <span class="n">reduced_chi2</span><span class="o">=</span><span class="n">reduced_chi2</span><span class="p">,</span>
+                <span class="n">elapsed_time</span><span class="o">=</span><span class="mf">0.0</span> <span class="k">if</span> <span class="n">elapsed_time</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">elapsed_time</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">exc</span><span class="o">.</span><span class="n">parameter_values</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_reduced_chi_square_from_limit</span><span class="p">(</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">exc</span><span class="p">:</span> <span class="n">_BumpsEvaluationLimitError</span><span class="p">,</span>
+        <span class="n">fitness</span><span class="p">:</span> <span class="n">_EasyDiffractionFitness</span><span class="p">,</span>
+        <span class="n">n_parameters</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return reduced chi-square at the evaluation cutoff.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">exc</span><span class="o">.</span><span class="n">residuals</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">chi_square</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">exc</span><span class="o">.</span><span class="n">residuals</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+            <span class="n">dof</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">exc</span><span class="o">.</span><span class="n">residuals</span><span class="p">)</span> <span class="o">-</span> <span class="n">n_parameters</span>
+            <span class="k">return</span> <span class="n">chi_square</span> <span class="k">if</span> <span class="n">dof</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">chi_square</span> <span class="o">/</span> <span class="n">dof</span>
+        <span class="k">if</span> <span class="n">fitness</span><span class="o">.</span><span class="n">last_residuals</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">fitness</span><span class="o">.</span><span class="n">last_reduced_chi_square</span><span class="p">(</span><span class="n">n_parameters</span><span class="o">=</span><span class="n">n_parameters</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_optimize_result</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">bumps_params</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BumpsParameter</span><span class="p">],</span>
+        <span class="n">fitness</span><span class="p">:</span> <span class="n">_EasyDiffractionFitness</span><span class="p">,</span>
+        <span class="n">success</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">evaluation_limit_reached</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">evaluation_limit_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">function_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OptimizeResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert the BUMPS solver outcome into an OptimizeResult.&quot;&quot;&quot;</span>
         <span class="c1"># Read values back from bumps Parameters in our original order.</span>
         <span class="c1"># FitProblem sorts parameters alphabetically, so x from</span>
         <span class="c1"># driver.fit() uses that sorted order — not ours.</span>
         <span class="n">result_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">bumps_params</span><span class="p">])</span>
-
-        <span class="n">covar</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">covariance</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_compute_covariance</span><span class="p">(</span><span class="n">bumps_params</span><span class="p">,</span> <span class="n">fitness</span><span class="p">)</span> <span class="k">if</span> <span class="n">success</span> <span class="k">else</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="p">)</span>
-        <span class="n">var_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">bumps_params</span><span class="p">]</span>
-
         <span class="k">return</span> <span class="n">OptimizeResult</span><span class="p">(</span>
             <span class="n">x</span><span class="o">=</span><span class="n">result_x</span><span class="p">,</span>
             <span class="n">dx</span><span class="o">=</span><span class="n">stderr</span><span class="p">,</span>
-            <span class="n">fun</span><span class="o">=</span><span class="n">fx</span><span class="p">,</span>
+            <span class="n">fun</span><span class="o">=</span><span class="n">function_value</span><span class="p">,</span>
             <span class="n">success</span><span class="o">=</span><span class="n">success</span><span class="p">,</span>
-            <span class="n">status</span><span class="o">=</span><span class="mi">0</span> <span class="k">if</span> <span class="n">success</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
-            <span class="n">message</span><span class="o">=</span><span class="s1">&#39;successful termination&#39;</span> <span class="k">if</span> <span class="n">success</span> <span class="k">else</span> <span class="s1">&#39;fit failed&#39;</span><span class="p">,</span>
-            <span class="n">covar</span><span class="o">=</span><span class="n">covar</span><span class="p">,</span>
-            <span class="n">var_names</span><span class="o">=</span><span class="n">var_names</span><span class="p">,</span>
+            <span class="n">status</span><span class="o">=</span><span class="mi">0</span> <span class="k">if</span> <span class="n">success</span> <span class="k">else</span> <span class="mi">5</span> <span class="k">if</span> <span class="n">evaluation_limit_reached</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">message</span><span class="o">=</span><span class="s1">&#39;successful termination&#39;</span> <span class="k">if</span> <span class="n">success</span> <span class="k">else</span> <span class="n">evaluation_limit_message</span><span class="p">,</span>
+            <span class="n">covar</span><span class="o">=</span><span class="n">covariance</span><span class="p">,</span>
+            <span class="n">var_names</span><span class="o">=</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">bumps_params</span><span class="p">],</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_compute_covariance</span><span class="p">(</span>  <span class="c1"># noqa: PLR6301</span>
@@ -39823,7 +40139,7 @@ unbounded.</p>
         <span class="n">raw_result</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Synchronize the result from the solver to the parameters.</span>
+<span class="sd">        Synchronize the solver result back to the parameters.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -39849,7 +40165,7 @@ unbounded.</p>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_success</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_result</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>  <span class="c1"># noqa: PLR6301</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Determine success from bumps OptimizeResult.</span>
+<span class="sd">        Determine success from a BUMPS OptimizeResult.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -40968,7 +41284,21 @@ unbounded.</p>
 <span class="normal">1005</span>
 <span class="normal">1006</span>
 <span class="normal">1007</span>
-<span class="normal">1008</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@MinimizerFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">1008</span>
+<span class="normal">1009</span>
+<span class="normal">1010</span>
+<span class="normal">1011</span>
+<span class="normal">1012</span>
+<span class="normal">1013</span>
+<span class="normal">1014</span>
+<span class="normal">1015</span>
+<span class="normal">1016</span>
+<span class="normal">1017</span>
+<span class="normal">1018</span>
+<span class="normal">1019</span>
+<span class="normal">1020</span>
+<span class="normal">1021</span>
+<span class="normal">1022</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@MinimizerFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">BumpsDreamMinimizer</span><span class="p">(</span><span class="n">BumpsMinimizer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Bumps minimizer using the DREAM Bayesian sampler.&quot;&quot;&quot;</span>
 
@@ -40995,13 +41325,27 @@ unbounded.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init</span><span class="p">:</span> <span class="n">DreamPopulationInitializationEnum</span> <span class="o">=</span> <span class="n">DEFAULT_INIT</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">max_iterations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;DREAM exposes sampler length through ``steps`` instead.&quot;&quot;&quot;</span>
+        <span class="n">sampler_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_info</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;with &#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sampler_name</span><span class="si">}</span><span class="s2"> sampler uses &#39;steps&#39; instead of &#39;max_iterations&#39;.&quot;</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="nd">@max_iterations</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">max_iterations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">del</span> <span class="n">value</span>
+        <span class="n">sampler_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_info</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;with &#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sampler_name</span><span class="si">}</span><span class="s2"> sampler uses &#39;steps&#39; instead of &#39;max_iterations&#39;.&quot;</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">steps</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Number of DREAM generations retained after burn-in.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validated_positive_integer</span><span class="p">(</span><span class="s1">&#39;steps&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iterations</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validated_positive_integer</span><span class="p">(</span><span class="s1">&#39;steps&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_iterations</span><span class="p">)</span>
 
     <span class="nd">@steps</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">steps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">max_iterations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validated_positive_integer</span><span class="p">(</span><span class="s1">&#39;steps&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_iterations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validated_positive_integer</span><span class="p">(</span><span class="s1">&#39;steps&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">burn</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
@@ -41709,6 +42053,32 @@ unbounded.</p>
 
 
 
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h5 id="easydiffraction.analysis.minimizers.bumps_dream.BumpsDreamMinimizer.max_iterations" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">max_iterations</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+  </span>
+
+</h5>
+
+
+    <div class="doc doc-contents ">
+
+        <p>DREAM exposes sampler length through <code>steps</code> instead.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
 
 <div class="doc doc-object doc-attribute">
 
