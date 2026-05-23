@@ -783,7 +783,7 @@ entries for F1, F4, F7, F9, F10 cover the deferred items.
   Update any test asserting the old warning text.
   Commit: `Format minimizer-swap warning as removed/added lines`
 
-- [ ] **P2.8 — F5: validate minimizer family vs `result_kind` on
+- [x] **P2.8 — F5: validate minimizer family vs `result_kind` on
       restore.** In `src/easydiffraction/analysis/analysis.py`
   `_restore_fit_results_from_projection` (around line 649):
   - Before the Bayesian-branch attribute reads, check

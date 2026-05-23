@@ -19,6 +19,9 @@ from easydiffraction.analysis.categories.fit_result import FitResult
 from easydiffraction.analysis.categories.joint_fit import JointFitCollection
 from easydiffraction.analysis.categories.minimizer import MinimizerCategoryFactory
 from easydiffraction.analysis.categories.minimizer.base import MinimizerCategoryBase
+from easydiffraction.analysis.categories.minimizer.bayesian_base import (
+    BayesianMinimizerBase,
+)
 from easydiffraction.analysis.categories.sequential_fit import SequentialFit
 from easydiffraction.analysis.categories.sequential_fit import SequentialFitFactory
 from easydiffraction.analysis.categories.sequential_fit_extract import (
@@ -658,6 +661,15 @@ class Analysis(
         reduced_chi_square = self.fit_result.reduced_chi_square.value
 
         if self.fit_result.result_kind.value == FitResultKindEnum.BAYESIAN.value:
+            if not isinstance(self.minimizer, BayesianMinimizerBase):
+                raise ValueError(
+                    'CIF restore mismatch: '
+                    f"_fit_result.result_kind = '{FitResultKindEnum.BAYESIAN.value}' "
+                    f"but _fitting.minimizer_type = '{self.minimizer_type}' is not a "
+                    'Bayesian minimizer. Either set _fitting.minimizer_type to a '
+                    'Bayesian sampler (e.g. bumps (dream)), or set '
+                    f"_fit_result.result_kind to '{FitResultKindEnum.DETERMINISTIC.value}'."
+                )
             posterior_samples = self._restored_posterior_samples()
             sample_shape = (
                 np.asarray(posterior_samples.parameter_samples).shape

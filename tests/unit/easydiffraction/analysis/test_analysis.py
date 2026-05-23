@@ -55,6 +55,35 @@ def test_fit_mode_category_and_joint_fit(monkeypatch, capsys):
     assert len(a.joint_fit) == 0
 
 
+def test_restore_raises_when_bayesian_result_kind_with_lsq_minimizer():
+    """Restoring a Bayesian projection onto an LSQ minimizer must raise.
+
+    See minimizer-category-consolidation_review-8 finding F5: a CIF
+    where ``_fit_result.result_kind = bayesian`` but
+    ``_fitting.minimizer_type = lmfit (leastsq)`` would previously
+    crash with ``AttributeError: 'LmfitLeastsqMinimizer' object has no
+    attribute 'point_estimate_name'`` deep inside the restore path.
+    We now raise a clear ``ValueError`` at the gate.
+    """
+    import pytest
+
+    from easydiffraction.analysis.analysis import Analysis
+    from easydiffraction.analysis.enums import FitResultKindEnum
+
+    a = Analysis(project=_make_project_with_names([]))
+    a.minimizer_type = 'lmfit (leastsq)'
+    a.fit_result._set_result_kind(FitResultKindEnum.BAYESIAN.value)
+    a._set_has_persisted_fit_state(value=True)
+
+    with pytest.raises(ValueError) as excinfo:
+        a._restore_fit_results_from_projection()
+
+    message = str(excinfo.value)
+    assert 'lmfit (leastsq)' in message
+    assert 'Bayesian' in message
+    assert FitResultKindEnum.BAYESIAN.value in message
+
+
 def test_minimizer_type_swap_warns_for_different_defaults(monkeypatch):
     from easydiffraction.analysis import analysis as analysis_mod
     from easydiffraction.analysis.analysis import Analysis
