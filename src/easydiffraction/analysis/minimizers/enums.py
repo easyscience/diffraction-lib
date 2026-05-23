@@ -53,6 +53,15 @@ class MinimizerTypeEnum(StrEnum):
         return descriptions.get(self, '')
 
 
+class InitializationMethodEnum(StrEnum):
+    """Supported Bayesian sampler initialization methods."""
+
+    LATIN_HYPERCUBE = 'latin_hypercube'
+    BALL = 'ball'
+    UNIFORM = 'uniform'
+    PRIOR = 'prior'
+
+
 class DreamPopulationInitializationEnum(StrEnum):
     """Supported DREAM population initializers."""
 

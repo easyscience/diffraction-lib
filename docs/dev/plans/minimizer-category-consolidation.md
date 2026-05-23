@@ -267,7 +267,7 @@ PosteriorParameterSummary` so the existing intra-module
       Phase 2.
       Commit: `Add Parameter.posterior attribute`
 
-- [ ] **P1.2 — Add `InitializationMethodEnum`.**
+- [x] **P1.2 — Add `InitializationMethodEnum`.**
       Add an `(str, Enum)` with members `latin_hypercube`, `ball`,
       `uniform`, `prior`. Place it next to existing minimizer enums
       (`src/easydiffraction/analysis/minimizers/enums.py`).
