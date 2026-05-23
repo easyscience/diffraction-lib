@@ -77,29 +77,26 @@ before proceeding.
 
 Review 8 of
 [`minimizer-category-consolidation.md`](minimizer-category-consolidation.md)
-identified four cleanup opportunities that touch code this plan
-will modify. Fold them in while the surrounding code is already
-being edited, rather than queuing a separate refactor PR.
+identified four cleanup opportunities that touch code this plan will
+modify. Fold them in while the surrounding code is already being edited,
+rather than queuing a separate refactor PR.
 
 - **F1 — Collapse duplicate predictive-cache-key helpers.**
   `Analysis._predictive_cache_key` and
-  `Plotter._posterior_predictive_key` build the identical string;
-  keep one canonical helper. Tracked as
-  [open-issue 100](../issues/open.md).
-- **F4 — Drop dead branch in `Analysis._fit_state_categories`.**
-  Both branches return the same list since the Bayesian categories
-  were absorbed. Tracked as
-  [open-issue 101](../issues/open.md).
+  `Plotter._posterior_predictive_key` build the identical string; keep
+  one canonical helper. Tracked as [open-issue 100](../issues/open.md).
+- **F4 — Drop dead branch in `Analysis._fit_state_categories`.** Both
+  branches return the same list since the Bayesian categories were
+  absorbed. Tracked as [open-issue 101](../issues/open.md).
 - **F7 — Drop compute-and-ignore `result_kind` validation in
-  `_restore_persisted_fit_state`.** Replace with a validator helper
-  or move the warning into `fit_result.result_kind` setter. Tracked
-  as [open-issue 102](../issues/open.md).
+  `_restore_persisted_fit_state`.** Replace with a validator helper or
+  move the warning into `fit_result.result_kind` setter. Tracked as
+  [open-issue 102](../issues/open.md).
 - **F10 — Make `_sync_engine_from_minimizer_category` skip-keys
   declarative.** This plan adds `proposal_moves` as a second
-  engine-level "ambient" key; introduce the
-  `_engine_sync_skip_keys` frozenset on `MinimizerCategoryBase`
-  before adding the second member. Tracked as
-  [open-issue 103](../issues/open.md).
+  engine-level "ambient" key; introduce the `_engine_sync_skip_keys`
+  frozenset on `MinimizerCategoryBase` before adding the second member.
+  Tracked as [open-issue 103](../issues/open.md).
 
 When the matching open-issue is fully resolved, move it to
 [`closed.md`](../issues/closed.md) and update

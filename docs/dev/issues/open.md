@@ -1697,8 +1697,7 @@ sampler progress displays — any fix should keep their visuals consistent
 
 ## 100. 🟢 Collapse Duplicate Predictive-Cache-Key Helpers
 
-**Type:** Refactor / drift risk
-**Source:** Review 8 finding F1.
+**Type:** Refactor / drift risk **Source:** Review 8 finding F1.
 **Recommended:** fold into the emcee-minimizer plan while the
 surrounding code is being touched.
 
@@ -1707,15 +1706,15 @@ surrounding code is being touched.
 and `Plotter._posterior_predictive_key`
 ([plotting.py:3795-3804](../../../src/easydiffraction/display/plotting.py))
 both return `f'{name}:{x_axis_name}:{suffix}'`. The strings are
-identical today; a future refactor that changes one will silently
-break lookup against the other.
+identical today; a future refactor that changes one will silently break
+lookup against the other.
 
-**Fix:** collapse to a single helper — either move the canonical
-helper to a shared module (e.g. `analysis/fit_helpers/bayesian.py`),
-or have `Analysis._store_posterior_predictive_projection` and
+**Fix:** collapse to a single helper — either move the canonical helper
+to a shared module (e.g. `analysis/fit_helpers/bayesian.py`), or have
+`Analysis._store_posterior_predictive_projection` and
 `_restored_predictive_summaries` reuse
-`Plotter._posterior_predictive_key` from
-`project.rendering.plotter` (already accessed nearby).
+`Plotter._posterior_predictive_key` from `project.rendering.plotter`
+(already accessed nearby).
 
 **Depends on:** nothing.
 
@@ -1723,20 +1722,20 @@ or have `Analysis._store_posterior_predictive_projection` and
 
 ## 101. 🟢 Remove Dead Branch in `_fit_state_categories`
 
-**Type:** Dead code
-**Source:** Review 8 finding F4.
-**Recommended:** fold into the emcee-minimizer plan.
+**Type:** Dead code **Source:** Review 8 finding F4. **Recommended:**
+fold into the emcee-minimizer plan.
 
 `Analysis._fit_state_categories`
 ([analysis.py:1135-1148](../../../src/easydiffraction/analysis/analysis.py))
-has `if result_kind is FitResultKindEnum.DETERMINISTIC: return
-categories` followed by `return categories`. Both branches return
-the same list since P1.10 absorbed Bayesian-only categories.
+has
+`if result_kind is FitResultKindEnum.DETERMINISTIC: return categories`
+followed by `return categories`. Both branches return the same list
+since P1.10 absorbed Bayesian-only categories.
 
 **Fix:** simplify to an unconditional `return categories`. Keep the
-preceding `try/except` for its warning side-effect; extract it so
-the function body reads cleanly. If a future Bayesian-only category
-list is expected, add a TODO instead.
+preceding `try/except` for its warning side-effect; extract it so the
+function body reads cleanly. If a future Bayesian-only category list is
+expected, add a TODO instead.
 
 **Depends on:** nothing.
 
@@ -1744,21 +1743,20 @@ list is expected, add a TODO instead.
 
 ## 102. 🟢 Drop Compute-and-Ignore `result_kind` Validation in CIF Restore
 
-**Type:** Dead code / clarity
-**Source:** Review 8 finding F7.
+**Type:** Dead code / clarity **Source:** Review 8 finding F7.
 **Recommended:** fold into the emcee-minimizer plan.
 
 `_restore_persisted_fit_state`
 ([serialize.py:595-611](../../../src/easydiffraction/io/cif/serialize.py))
-calls `FitResultKindEnum(result_kind_value)` purely for the warning
-side effect; the result is discarded. After P1.10 absorbed the
+calls `FitResultKindEnum(result_kind_value)` purely for the warning side
+effect; the result is discarded. After P1.10 absorbed the
 Bayesian-specific categories there is nothing else to do per
 `result_kind`.
 
-**Fix:** replace with a validator helper that takes a string and
-logs the warning, or move the warning into `fit_result.result_kind`
-setter so invalid values are caught on read. Either removes the
-"compute and ignore" pattern.
+**Fix:** replace with a validator helper that takes a string and logs
+the warning, or move the warning into `fit_result.result_kind` setter so
+invalid values are caught on read. Either removes the "compute and
+ignore" pattern.
 
 **Depends on:** nothing.
 
@@ -1766,21 +1764,20 @@ setter so invalid values are caught on read. Either removes the
 
 ## 103. 🟢 Make `_sync_engine_from_minimizer_category` Skip-Keys Declarative
 
-**Type:** Refactor / discoverability
-**Source:** Review 8 finding F10.
+**Type:** Refactor / discoverability **Source:** Review 8 finding F10.
 **Recommended:** fold into the emcee-minimizer plan (it adds
 `proposal_moves` which is also engine-level).
 
 `Analysis._sync_engine_from_minimizer_category`
 ([analysis.py:1077-1089](../../../src/easydiffraction/analysis/analysis.py))
-hardcodes `if key == 'random_seed': continue` to keep call-time
-seed threading via `_resolved_fit_random_seed`. A second ambient key
-joining it (emcee `proposal_moves`) will need the same treatment.
+hardcodes `if key == 'random_seed': continue` to keep call-time seed
+threading via `_resolved_fit_random_seed`. A second ambient key joining
+it (emcee `proposal_moves`) will need the same treatment.
 
 **Fix:** declare
 `_engine_sync_skip_keys: ClassVar[frozenset[str]] = frozenset({'random_seed'})`
-on `MinimizerCategoryBase` (or per family) and filter against it.
-Adds declarative, growing coverage.
+on `MinimizerCategoryBase` (or per family) and filter against it. Adds
+declarative, growing coverage.
 
 **Depends on:** nothing.
 
@@ -1788,26 +1785,24 @@ Adds declarative, growing coverage.
 
 ## 104. 🟢 Tighten `FitParameterItem.posterior_summary` NaN Behaviour
 
-**Type:** Robustness / partial-data edge case
-**Source:** Review 8 finding F9.
+**Type:** Robustness / partial-data edge case **Source:** Review 8
+finding F9.
 
-`FitParameterItem.has_posterior_summary` returns `True` if any
-posterior field is set, and `posterior_summary` then builds a
+`FitParameterItem.has_posterior_summary` returns `True` if any posterior
+field is set, and `posterior_summary` then builds a
 `PosteriorParameterSummary` whose missing floats become `NaN`. A
 hand-edited or partially-written CIF row with only
-`posterior_gelman_rubin = 1.02` and the rest unset produces a
-summary whose `median`, `standard_deviation`, and both interval
-bounds are `NaN`. Downstream plotting and the `display.fit_results`
-table render NaN intervals — harder to debug than a clean "no
-posterior" outcome.
+`posterior_gelman_rubin = 1.02` and the rest unset produces a summary
+whose `median`, `standard_deviation`, and both interval bounds are
+`NaN`. Downstream plotting and the `display.fit_results` table render
+NaN intervals — harder to debug than a clean "no posterior" outcome.
 
-The deterministic-fit case is fine: deterministic fits set all
-required fields to `None`, so `has_posterior_summary()` returns
-`False`.
+The deterministic-fit case is fine: deterministic fits set all required
+fields to `None`, so `has_posterior_summary()` returns `False`.
 
-**Fix:** tighten `has_posterior_summary` to require the core stats
-(at least `posterior_median` and one interval bound) before emitting
-a summary, or split the dataclass into required-statistics and
+**Fix:** tighten `has_posterior_summary` to require the core stats (at
+least `posterior_median` and one interval bound) before emitting a
+summary, or split the dataclass into required-statistics and
 optional-diagnostics components.
 
 **Depends on:** nothing.

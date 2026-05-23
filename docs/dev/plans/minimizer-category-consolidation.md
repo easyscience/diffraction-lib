@@ -753,64 +753,62 @@ required by `.github/copilot-instructions.md` → **Workflow**.
 
 ## Phase 2 follow-ups from Review 8
 
-Reply 8 records the verdicts; these are the four PR-recommended
-findings the user asked to fix in-PR. Each lands as a separate commit
-per `.github/copilot-instructions.md` → **Commits**. Open-issues
-entries for F1, F4, F7, F9, F10 cover the deferred items.
+Reply 8 records the verdicts; these are the four PR-recommended findings
+the user asked to fix in-PR. Each lands as a separate commit per
+`.github/copilot-instructions.md` → **Commits**. Open-issues entries for
+F1, F4, F7, F9, F10 cover the deferred items.
 
 - [x] **P2.6 — F2: compare `FitResultKindEnum` member, not raw string.**
-  In `src/easydiffraction/io/results_sidecar.py`:
+      In `src/easydiffraction/io/results_sidecar.py`:
   - Import `FitResultKindEnum` from
     `easydiffraction.analysis.fit_helpers.enums`.
   - Change `_should_use_sidecar` from
     `analysis.fit_result.result_kind.value == 'bayesian'` to
     `analysis.fit_result.result_kind.value == FitResultKindEnum.BAYESIAN.value`.
-  Add a unit-test assertion in
-  `tests/unit/easydiffraction/io/test_results_sidecar.py` that
-  `_should_use_sidecar` reads the enum member (not the literal).
-  Commit: `Compare FitResultKindEnum member in _should_use_sidecar`
+    Add a unit-test assertion in
+    `tests/unit/easydiffraction/io/test_results_sidecar.py` that
+    `_should_use_sidecar` reads the enum member (not the literal).
+    Commit: `Compare FitResultKindEnum member in _should_use_sidecar`
 
 - [x] **P2.7 — F3: split minimizer-swap warning into removed/added
       lines.** In `src/easydiffraction/analysis/analysis.py`:
-  - Replace `_changed_minimizer_defaults` with two helpers that
-    return `removed: list[str]` and `added: list[str]` (each entry
+  - Replace `_changed_minimizer_defaults` with two helpers that return
+    `removed: list[str]` and `added: list[str]` (each entry
     `f'{name}={default!r}'`).
-  - The caller emits two `log.warn(...)` lines for inter-family
-    swaps: "Settings removed: …" and "Settings added with
-    defaults: …". Same-family swaps with field-value differences
-    keep the existing per-field `old->new` diff (third line).
-  - Drop the `'<not available>'` sentinel.
-  Update any test asserting the old warning text.
-  Commit: `Format minimizer-swap warning as removed/added lines`
+  - The caller emits two `log.warn(...)` lines for inter-family swaps:
+    "Settings removed: …" and "Settings added with defaults: …".
+    Same-family swaps with field-value differences keep the existing
+    per-field `old->new` diff (third line).
+  - Drop the `'<not available>'` sentinel. Update any test asserting the
+    old warning text. Commit:
+    `Format minimizer-swap warning as removed/added lines`
 
 - [x] **P2.8 — F5: validate minimizer family vs `result_kind` on
       restore.** In `src/easydiffraction/analysis/analysis.py`
-  `_restore_fit_results_from_projection` (around line 649):
+      `_restore_fit_results_from_projection` (around line 649):
   - Before the Bayesian-branch attribute reads, check
     `isinstance(self.minimizer, BayesianMinimizerBase)` whenever
     `self.fit_result.result_kind.value == FitResultKindEnum.BAYESIAN.value`.
-  - Raise a clear `ValueError` naming the persisted
-    `minimizer_type` and the expected family if the check fails.
-  Add a unit-test in
-  `tests/unit/easydiffraction/analysis/test_analysis.py` that
-  constructs an `Analysis` with `result_kind = 'bayesian'` but
-  `minimizer_type = 'lmfit (leastsq)'` and asserts the
-  `ValueError` is raised.
-  Commit: `Validate Bayesian minimizer matches result_kind on restore`
+  - Raise a clear `ValueError` naming the persisted `minimizer_type` and
+    the expected family if the check fails. Add a unit-test in
+    `tests/unit/easydiffraction/analysis/test_analysis.py` that
+    constructs an `Analysis` with `result_kind = 'bayesian'` but
+    `minimizer_type = 'lmfit (leastsq)'` and asserts the `ValueError` is
+    raised. Commit:
+    `Validate Bayesian minimizer matches result_kind on restore`
 
 - [x] **P2.9 — F6: default LSQ result descriptors to `None`.** In
-  `src/easydiffraction/analysis/categories/minimizer/lsq_base.py`:
+      `src/easydiffraction/analysis/categories/minimizer/lsq_base.py`:
   - `_integer_result_descriptor` → `default=None, allow_none=True`.
   - `_bool_result_descriptor` → `default=None, allow_none=True`.
   - `_string_result_descriptor` → `default=None, allow_none=True`
-    (matches the "no fit happened yet" semantics across all
-    families; readers resolve `?` → default).
-  - Update the property type hints / setter signatures to accept
-    `None` where they don't already.
-  Update tests in
-  `tests/unit/easydiffraction/analysis/categories/minimizer/test_lsq_base.py`
-  that asserted the previous `0` / `False` / `''` defaults.
-  Commit: `Default LSQ result descriptors to None for clean round-trip`
+    (matches the "no fit happened yet" semantics across all families;
+    readers resolve `?` → default).
+  - Update the property type hints / setter signatures to accept `None`
+    where they don't already. Update tests in
+    `tests/unit/easydiffraction/analysis/categories/minimizer/test_lsq_base.py`
+    that asserted the previous `0` / `False` / `''` defaults. Commit:
+    `Default LSQ result descriptors to None for clean round-trip`
 
 - [ ] **P2.10 — Re-run Phase-2 verification after P2.6–P2.9.**
   ```
