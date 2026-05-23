@@ -841,13 +841,41 @@ def param_from_cif(
             found_values = candidates
             break
 
-    # If no values found, the parameter keeps its default value.
+    # If no values found, use the descriptor default when available.
     if not found_values:
+        _set_param_to_default_from_cif(self, raw=None)
         return
 
     # If found, pick the one at the given index.
     raw = found_values[idx]
     _set_param_from_raw_cif_value(self, raw)
+
+
+def _set_param_to_default_from_cif(
+    param: GenericDescriptorBase,
+    *,
+    raw: str | None,
+) -> None:
+    """
+    Resolve missing or unknown CIF values to descriptor defaults.
+
+    Parameters
+    ----------
+    param : GenericDescriptorBase
+        Descriptor being populated from CIF.
+    raw : str | None
+        Raw CIF token, or ``None`` when no tag was present.
+    """
+    value_spec = getattr(param, '_value_spec', None)
+    if value_spec is not None and (value_spec.has_default or value_spec.allow_none):
+        param.value = value_spec.default_value()
+        return
+
+    detail = 'missing tag' if raw is None else f'value {raw!r}'
+    log.error(
+        f"Cannot load required CIF field '{param.unique_name}': {detail}.",
+        exc_type=ValueError,
+    )
 
 
 def category_item_from_cif(
@@ -879,8 +907,9 @@ def _set_param_from_raw_cif_value(
     """
     raw = _strip_cif_text_field_delimiters(raw)
 
-    # CIF unknown / inapplicable markers → keep default
+    # CIF unknown / inapplicable markers → descriptor default
     if raw in {'?', '.'}:
+        _set_param_to_default_from_cif(param, raw=raw)
         return
 
     if param._value_type == DataTypes.INTEGER:
@@ -991,13 +1020,17 @@ def category_collection_from_cif(
     for row_idx in range(num_rows):
         current_item = self._items[row_idx]
         for param in current_item.parameters:
+            tag_found = False
             for cif_name in param._cif_handler.names:
                 if cif_name in loop.tags:
                     col_idx = loop.tags.index(cif_name)
                     # TODO: The following is duplication of
                     #  param_from_cif
                     _set_param_from_raw_cif_value(param, array[row_idx][col_idx])
+                    tag_found = True
                     break
+            if not tag_found:
+                _set_param_to_default_from_cif(param, raw=None)
 
     after_from_cif = getattr(self, '_after_from_cif', None)
     if callable(after_from_cif):

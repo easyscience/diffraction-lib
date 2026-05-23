@@ -323,7 +323,7 @@ PosteriorParameterSummary` so the existing intra-module
 
   Commit: `Add concrete minimizer category classes`
 
-- [ ] **P1.5 — Resolve CIF `?` and missing values to descriptor
+- [x] **P1.5 — Resolve CIF `?` and missing values to descriptor
       defaults.**
       In the central descriptor → CIF read path (locate via
       `CifHandler.read_from_block` / equivalent), treat `?` and missing

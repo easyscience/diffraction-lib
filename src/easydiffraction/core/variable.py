@@ -95,8 +95,7 @@ class GenericDescriptorBase(GuardedBase):
         # Skip validation — defaults are trusted.
         # Callable is needed for dynamic defaults like SpaceGroup
         # it_coordinate_system_code, and similar cases.
-        default = value_spec.default
-        self._value = default() if callable(default) else default
+        self._value = value_spec.default_value()
 
     def __str__(self) -> str:
         """Return the string representation of this descriptor."""
