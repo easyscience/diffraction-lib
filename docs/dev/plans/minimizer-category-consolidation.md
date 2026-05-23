@@ -723,7 +723,7 @@ required by `.github/copilot-instructions.md` → **Workflow**.
   Iterate `pixi run check` until clean. Do not raise lint thresholds —
   refactor instead (`.github/copilot-instructions.md` → **Code Style**).
 
-- [ ] **P2.3 — Unit tests.**
+- [x] **P2.3 — Unit tests.**
 
   ```
   pixi run unit-tests > /tmp/easydiffraction-unit-tests.log 2>&1; \
