@@ -937,6 +937,18 @@ class Analysis(
             msg = f'Unknown fit mode: {mode!r}'
             raise ValueError(msg)
 
+    def _warn_results_sidecar_overwrite(self) -> None:
+        """Warn when the next fit save will replace persisted sidecar arrays."""
+        project_path = self.project.info.path
+        if project_path is None:
+            return
+
+        from easydiffraction.io.results_sidecar import (  # noqa: PLC0415
+            warn_analysis_results_sidecar_overwrite,
+        )
+
+        warn_analysis_results_sidecar_overwrite(analysis_dir=project_path / 'analysis')
+
     def _prepare_joint_fit(self) -> None:
         """
         Auto-populate and validate joint-fit rows before execution.
@@ -1639,6 +1651,8 @@ class Analysis(
         """Populate persisted Bayesian plot caches."""
         posterior_samples = results.posterior_samples
         if posterior_samples is None:
+            results.posterior_distribution_caches = {}
+            results.posterior_pair_caches = {}
             self._persisted_fit_state_sidecar['distribution_caches'] = {}
             self._persisted_fit_state_sidecar['pair_caches'] = {}
             self._persisted_fit_state_sidecar['predictive_datasets'] = {}
@@ -1654,6 +1668,8 @@ class Analysis(
             or not parameter_names
             or flattened_samples.shape[1] != len(parameter_names)
         ):
+            results.posterior_distribution_caches = {}
+            results.posterior_pair_caches = {}
             self._persisted_fit_state_sidecar['distribution_caches'] = {}
             self._persisted_fit_state_sidecar['pair_caches'] = {}
             self._persisted_fit_state_sidecar['predictive_datasets'] = {}
@@ -1683,6 +1699,8 @@ class Analysis(
         self._persisted_fit_state_sidecar['distribution_caches'] = distribution_payload
         self._persisted_fit_state_sidecar['pair_caches'] = pair_payload
         self._persisted_fit_state_sidecar['predictive_datasets'] = predictive_payload
+        results.posterior_distribution_caches = distribution_payload
+        results.posterior_pair_caches = pair_payload
         self.bayesian_result._set_has_distribution_cache(value=bool(distribution_payload))
         self.bayesian_result._set_has_pair_cache(value=bool(pair_payload))
         self.bayesian_result._set_has_posterior_predictive(value=bool(predictive_payload))
@@ -1846,6 +1864,8 @@ class Analysis(
             log.warning('No experiments found in the project. Cannot run fit.')
             return None
 
+        self._warn_results_sidecar_overwrite()
+
         # Apply constraints before fitting so that user-constrained
         # parameters are marked and excluded from the free parameter
         # list built by the fitter.
@@ -1901,6 +1921,7 @@ class Analysis(
 
         self._set_fitting_mode_type(FitModeEnum.SEQUENTIAL.value)
         self._update_categories()
+        self._warn_results_sidecar_overwrite()
         self._clear_persisted_fit_state()
 
         max_workers_value = self._sequential_fit.max_workers.value

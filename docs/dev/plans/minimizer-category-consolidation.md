@@ -397,7 +397,7 @@ PosteriorParameterSummary` so the existing intra-module
     references slipped in).
     Commit: `Use Analysis.minimizer_type in non-analysis modules`
 
-- [ ] **P1.10 — Rewrite `results_sidecar.py` for overwrite-on-new-fit.**
+- [x] **P1.10 — Rewrite `results_sidecar.py` for overwrite-on-new-fit.**
   - Keep the file basename `results.h5`; resolve it relative to the
     project `analysis/` directory. Drop the
     `_DEFAULT_SIDECAR_FILE_NAME` indirection via CIF.

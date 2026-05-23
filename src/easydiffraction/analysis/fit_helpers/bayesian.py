@@ -152,6 +152,7 @@ class PosteriorSamples:
 
 SummaryList = list[PosteriorParameterSummary] | None
 PredictiveMap = dict[str, PosteriorPredictiveSummary] | None
+ArrayPayloadMap = dict[str, dict[str, np.ndarray]] | None
 
 
 @dataclass(kw_only=True)
@@ -183,6 +184,10 @@ class BayesianFitResults(FitResults):
         Posterior summaries for each sampled parameter.
     posterior_predictive : PredictiveMap, default=None
         Posterior predictive summaries keyed by experiment name.
+    posterior_distribution_caches : ArrayPayloadMap, default=None
+        Cached posterior density arrays keyed by parameter name.
+    posterior_pair_caches : ArrayPayloadMap, default=None
+        Cached posterior pair-density arrays keyed by cache id.
     credible_interval_levels : IntervalLevels, default=DEFAULT_CI_LEVELS
         Interval levels available in the summaries.
     sampler_settings : SettingsMap, default=None
@@ -206,6 +211,8 @@ class BayesianFitResults(FitResults):
     posterior_samples: PosteriorSamples | None = None
     posterior_parameter_summaries: SummaryList = None
     posterior_predictive: PredictiveMap = None
+    posterior_distribution_caches: ArrayPayloadMap = None
+    posterior_pair_caches: ArrayPayloadMap = None
     credible_interval_levels: IntervalLevels = DEFAULT_CI_LEVELS
     sampler_settings: SettingsMap = None
     convergence_diagnostics: DiagnosticsMap = None
@@ -231,6 +238,14 @@ class BayesianFitResults(FitResults):
         )
         self.posterior_predictive = (
             dict(self.posterior_predictive) if self.posterior_predictive is not None else {}
+        )
+        self.posterior_distribution_caches = (
+            dict(self.posterior_distribution_caches)
+            if self.posterior_distribution_caches is not None
+            else {}
+        )
+        self.posterior_pair_caches = (
+            dict(self.posterior_pair_caches) if self.posterior_pair_caches is not None else {}
         )
         self.sampler_settings = dict(self.sampler_settings) if self.sampler_settings else {}
         self.convergence_diagnostics = (
