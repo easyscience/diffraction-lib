@@ -601,7 +601,7 @@ PosteriorParameterSummary` so the existing intra-module
     `docs/dev/issues/open.md` first).
     Commit: `Promote minimizer-category-consolidation ADR`
 
-- [ ] **P1.15 — Phase 1 review gate.**
+- [x] **P1.15 — Phase 1 review gate.**
       No code change in this step. Re-run the three targeted greps from
       P1.12, this time against the **Phase 1 scopes only** (`src/` and
       `docs/docs/tutorials/`) — all must return empty. The `tests/`
