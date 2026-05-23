@@ -247,7 +247,7 @@ with explicit `git add` paths.
       construction. No public selector surface changes yet.
       Commit: `Add owner-side switchable hook scaffolding`
 
-- [ ] **P1.4 — Wire `analysis.minimizer` to the new mixin.**
+- [x] **P1.4 — Wire `analysis.minimizer` to the new mixin.**
       - `MinimizerCategoryBase` multi-inherits
         `SwitchableCategoryBase`; declare `_category_code`,
         `_owner_attr_name = 'minimizer'`,

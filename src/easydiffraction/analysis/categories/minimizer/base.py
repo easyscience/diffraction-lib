@@ -6,17 +6,54 @@ from __future__ import annotations
 
 from typing import ClassVar
 
+from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.switchable import SwitchableCategoryBase
+from easydiffraction.core.validation import AttributeSpec
+from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.variable import GenericDescriptorBase
+from easydiffraction.core.variable import StringDescriptor
+from easydiffraction.io.cif.handler import CifHandler
 
 
-class MinimizerCategoryBase(CategoryItem):
+class MinimizerCategoryBase(CategoryItem, SwitchableCategoryBase):
     """Base class for persisted minimizer settings and results."""
 
     _category_code = 'minimizer'
+    _owner_attr_name = 'minimizer'
+    _swap_method_name = '_swap_minimizer'
     _native_key_map: ClassVar[dict[str, str]] = {}
     _setting_descriptor_names: ClassVar[tuple[str, ...]] = ()
     _result_descriptor_names: ClassVar[tuple[str, ...]] = ()
+
+    def __init__(self) -> None:
+        super().__init__()
+        self._type = StringDescriptor(
+            name='type',
+            description='Minimizer category type.',
+            value_spec=AttributeSpec(
+                default=str(self.type_info.tag),
+                validator=MembershipValidator(
+                    allowed=[member.value for member in MinimizerTypeEnum],
+                ),
+            ),
+            cif_handler=CifHandler(names=['_minimizer.type']),
+        )
+
+    def _supported_types(
+        self,
+        filters: dict[str, object],
+    ) -> list[tuple[str, str]]:
+        """Return minimizer types supported by the factory."""
+        del filters
+        from easydiffraction.analysis.categories.minimizer.factory import (  # noqa: PLC0415
+            MinimizerCategoryFactory,
+        )
+
+        return [
+            (str(tag), klass.type_info.description)
+            for tag, klass in MinimizerCategoryFactory._supported_map().items()
+        ]
 
     def _descriptor_values(self, names: tuple[str, ...]) -> dict[str, object]:
         """Return descriptor values for the named public attributes."""

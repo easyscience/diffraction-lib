@@ -505,8 +505,7 @@ class Analysis(
 
     def _swap_minimizer(self, new_type: str) -> None:
         """Switch the active minimizer category."""
-        msg = f"Switching minimizer to '{new_type}' is not wired yet."
-        raise NotImplementedError(msg)
+        self._replace_minimizer(new_type, announce=True)
 
     def _swap_fitting_mode(self, new_type: str) -> None:
         """Switch the active fitting-mode category."""
@@ -691,9 +690,9 @@ class Analysis(
             msg = (
                 'CIF restore mismatch: '
                 f"_fit_result.result_kind = '{bayesian_kind}' "
-                f"but _fitting.minimizer_type = '{self.minimizer_type}' "
+                f"but _minimizer.type = '{self.minimizer_type}' "
                 'is not a Bayesian minimizer. Either set '
-                '_fitting.minimizer_type to a Bayesian sampler '
+                '_minimizer.type to a Bayesian sampler '
                 '(e.g. bumps (dream)), or set _fit_result.result_kind '
                 f"to '{deterministic_kind}'."
             )
@@ -1050,10 +1049,14 @@ class Analysis(
     @property
     def minimizer_type(self) -> str:
         """Currently selected minimizer type."""
-        return str(self._minimizer.type_info.tag)
+        return self.minimizer.type
 
     @minimizer_type.setter
     def minimizer_type(self, value: str) -> None:
+        self._replace_minimizer(value, announce=True)
+
+    def _replace_minimizer(self, value: str, *, announce: bool) -> None:
+        """Replace the active minimizer category."""
         supported = [str(tag) for tag in MinimizerCategoryFactory.supported_tags()]
         if value not in supported:
             log.warning(
@@ -1064,31 +1067,27 @@ class Analysis(
             return
 
         if value == self.minimizer_type:
-            console.paragraph('Current minimizer already set to')
-            console.print(value)
+            if announce:
+                console.paragraph('Current minimizer already set to')
+                console.print(value)
             return
 
+        old_minimizer = self._minimizer
         new_minimizer = MinimizerCategoryFactory.create(value)
         old_defaults = MinimizerCategoryFactory.create(self.minimizer_type)
         self._warn_about_minimizer_swap_defaults(old_defaults, new_minimizer)
 
+        old_minimizer._parent = None
         self._minimizer = new_minimizer
+        self._minimizer._parent = self
         self._fitter = Fitter(value)
-        console.paragraph('Current minimizer changed to')
-        console.print(value)
+        if announce:
+            console.paragraph('Current minimizer changed to')
+            console.print(value)
 
     def _set_minimizer_type(self, value: str) -> None:
         """Set the minimizer type without console output."""
-        supported = [str(tag) for tag in MinimizerCategoryFactory.supported_tags()]
-        if value not in supported:
-            log.warning(
-                f"Unsupported minimizer type '{value}' in CIF. "
-                f'Supported: {supported}. Keeping default.',
-            )
-            return
-
-        self._minimizer = MinimizerCategoryFactory.create(value)
-        self._fitter = Fitter(value)
+        self._replace_minimizer(value, announce=False)
 
     @staticmethod
     def _minimizer_swap_diff(

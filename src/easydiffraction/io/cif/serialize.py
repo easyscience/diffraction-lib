@@ -431,7 +431,6 @@ def analysis_to_cif(analysis: object) -> str:
     """Render analysis metadata, aliases, and constraints to CIF."""
     parts: list[str] = [
         f'_fitting.mode_type {format_value(analysis.fitting_mode_type)}',
-        f'_fitting.minimizer_type {format_value(analysis.minimizer_type)}',
     ]
 
     body = category_owner_to_cif(analysis)
@@ -620,6 +619,8 @@ def _collect_legacy_analysis_tags(block: object) -> list[str]:
         legacy_tags.append('_fit.minimizer_type')
     if _has_cif_value(block, '_fit.mode'):
         legacy_tags.append('_fit.mode')
+    if _has_cif_value(block, '_fitting.minimizer_type'):
+        legacy_tags.append('_fitting.minimizer_type')
     if _has_cif_loop(block, '_joint_fit_experiment.id'):
         legacy_tags.append('_joint_fit_experiment.id')
     if _has_cif_loop(block, '_joint_fit_experiment.weight'):
@@ -635,7 +636,7 @@ def _raise_for_legacy_analysis_tags(block: object) -> None:
 
     msg = (
         'Legacy analysis CIF tags are no longer supported: '
-        f'{legacy_tags}. Use _fitting.minimizer_type, _fitting.mode_type, '
+        f'{legacy_tags}. Use _minimizer.type, _fitting.mode_type, '
         '_minimizer.*, _joint_fit.experiment_id, and _joint_fit.weight.'
     )
     raise ValueError(msg)
@@ -656,7 +657,7 @@ def _analysis_mode_from_cif_block(block: object) -> str:
 def _analysis_minimizer_from_cif_block(block: object) -> str:
     """Return the minimizer type stored in an analysis CIF block."""
     read_cif_string = _make_cif_string_reader(block)
-    minimizer_value = read_cif_string('_fitting.minimizer_type')
+    minimizer_value = read_cif_string('_minimizer.type')
     if minimizer_value is not None:
         return minimizer_value
 
