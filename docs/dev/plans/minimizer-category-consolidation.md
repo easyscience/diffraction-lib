@@ -810,15 +810,19 @@ F1, F4, F7, F9, F10 cover the deferred items.
     that asserted the previous `0` / `False` / `''` defaults. Commit:
     `Default LSQ result descriptors to None for clean round-trip`
 
-- [ ] **P2.10 — Re-run Phase-2 verification after P2.6–P2.9.**
-  ```
-  pixi run fix > /tmp/easydiffraction-fix.log 2>&1; fix_exit_code=$?; tail -n 200 /tmp/easydiffraction-fix.log; exit $fix_exit_code
-  pixi run check > /tmp/easydiffraction-check.log 2>&1; check_exit_code=$?; tail -n 200 /tmp/easydiffraction-check.log; exit $check_exit_code
-  pixi run unit-tests > /tmp/easydiffraction-unit-tests.log 2>&1; unit_tests_exit_code=$?; tail -n 200 /tmp/easydiffraction-unit-tests.log; exit $unit_tests_exit_code
-  pixi run integration-tests > /tmp/easydiffraction-integration-tests.log 2>&1; integration_tests_exit_code=$?; tail -n 200 /tmp/easydiffraction-integration-tests.log; exit $integration_tests_exit_code
-  pixi run script-tests > /tmp/easydiffraction-script-tests.log 2>&1; script_tests_exit_code=$?; tail -n 200 /tmp/easydiffraction-script-tests.log; exit $script_tests_exit_code
-  ```
-  Commit any `pixi run fix` auto-edits separately if non-empty.
+- [x] **P2.10 — Re-run Phase-2 verification after P2.6–P2.9.** Results:
+
+  - `pixi run unit-tests` → 1091 passed.
+  - `pixi run integration-tests` → 168 passed.
+  - `pixi run script-tests` → 23 passed.
+  - `pixi run check` clean apart from a pre-existing `B018` lint on
+    `docs/docs/tutorials/ed-5.py:297` (user pending work, unrelated to
+    this PR; mentioned per the
+    [`.github/copilot-instructions.md`](../../../.github/copilot-instructions.md)
+    → **Commits** rule on unrelated dirty files).
+  - `pixi run fix` reformatted five markdown files (prettier);
+    committed in a separate `Reformat review-8 markdown files with
+    prettier` commit.
 
 ## Suggested Pull Request
 
