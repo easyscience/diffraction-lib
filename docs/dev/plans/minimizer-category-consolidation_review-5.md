@@ -59,20 +59,21 @@ around lines 451 and 524-530. If implementation removes the public
 category properties but leaves private storage or reset code behind, the
 P1.12 verification can still pass.
 
-Recommended fix: add `\bself\._bayesian_(sampler|result|convergence|parameter_posteriors|distribution_caches|pair_caches|predictive_datasets)\b`
+Recommended fix: add
+`\bself\._bayesian_(sampler|result|convergence|parameter_posteriors|distribution_caches|pair_caches|predictive_datasets)\b`
 to the dedicated `analysis.py` grep.
 
 ### P2: The plan references a missing "Decisions added after Review 4" section
 
-Reply 4 says the kept-vs-removed `analysis.fitting` decision was recorded
-under `Decisions added after Review 4`. The plan also references that
-section in P1.12 (`minimizer-category-consolidation.md` line 455) and
-P2.1a (line 589).
+Reply 4 says the kept-vs-removed `analysis.fitting` decision was
+recorded under `Decisions added after Review 4`. The plan also
+references that section in P1.12 (`minimizer-category-consolidation.md`
+line 455) and P2.1a (line 589).
 
 The plan currently has `Decisions added after Review 2` but no
-`Decisions added after Review 4` heading. The kept engine-module decision
-is described inline in P1.12 and P2.1a, so this is not a design blocker,
-but the cross-reference is dangling.
+`Decisions added after Review 4` heading. The kept engine-module
+decision is described inline in P1.12 and P2.1a, so this is not a design
+blocker, but the cross-reference is dangling.
 
 Recommended fix: add the missing decision section near the existing
 decision notes, or change both references to point to the section where
@@ -80,5 +81,5 @@ the decision actually lives.
 
 ## Verification
 
-No tests were run. This was a static review of the updated plan, reply 4,
-`.github/copilot-instructions.md`, and current source references.
+No tests were run. This was a static review of the updated plan, reply
+4, `.github/copilot-instructions.md`, and current source references.

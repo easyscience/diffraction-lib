@@ -22,11 +22,11 @@ would blur distinct concepts.
 
 Recognize three selector families:
 
-| Family                       | User intent                     | Examples                                                                          |
-| ---------------------------- | ------------------------------- | --------------------------------------------------------------------------------- |
-| Backend selector             | Pick an execution backend       | `calculation.calculator_type`, `rendering.chart_engine`                           |
+| Family                       | User intent                     | Examples                                                                                |
+| ---------------------------- | ------------------------------- | --------------------------------------------------------------------------------------- |
+| Backend selector             | Pick an execution backend       | `calculation.calculator_type`, `rendering.chart_engine`                                 |
 | Switchable-category selector | Swap a category implementation  | `analysis.minimizer_type`, `experiment.background_type`, `experiment.peak_profile_type` |
-| Active-sibling selector      | Pick the active sibling surface | `analysis.fitting_mode_type`                                                      |
+| Active-sibling selector      | Pick the active sibling surface | `analysis.fitting_mode_type`                                                            |
 
 Backend selectors live on dedicated configuration categories.
 Switchable-category selectors live on the host because they replace a

@@ -6,6 +6,7 @@ from __future__ import annotations
 from contextlib import suppress
 from itertools import combinations
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
@@ -34,7 +35,6 @@ from easydiffraction.analysis.fitting import Fitter
 from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.core.category_owner import CategoryOwner
 from easydiffraction.core.guard import _apply_help_filter
-from easydiffraction.core.posterior import PosteriorParameterSummary
 from easydiffraction.core.singleton import ConstraintsHandler
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import Parameter
@@ -51,6 +51,10 @@ from easydiffraction.utils.utils import _help_property_rows
 from easydiffraction.utils.utils import render_cif
 from easydiffraction.utils.utils import render_object_help
 from easydiffraction.utils.utils import render_table
+
+if TYPE_CHECKING:
+    from easydiffraction.analysis.categories.minimizer.base import MinimizerCategoryBase
+    from easydiffraction.core.posterior import PosteriorParameterSummary
 
 _SUMMARY_HIDDEN_PARAMETER_CATEGORIES = frozenset({'pd_data', 'total_data', 'refln'})
 _POSTERIOR_SAMPLE_NDIM = 3
@@ -566,9 +570,7 @@ class Analysis(
         summaries: list[PosteriorParameterSummary] = []
         for row in self.fit_parameters:
             parameter = param_map.get(row.param_unique_name.value)
-            display_name = (
-                row.param_unique_name.value if parameter is None else parameter.name
-            )
+            display_name = row.param_unique_name.value if parameter is None else parameter.name
             summary = row.posterior_summary(display_name=display_name)
             if summary is not None:
                 summaries.append(summary)
@@ -578,8 +580,8 @@ class Analysis(
         """Return restored predictive summaries for runtime reuse."""
         restored_predictive: dict[str, PosteriorPredictiveSummary] = {}
         predictive_data = self._persisted_fit_state_sidecar.get('predictive_datasets', {})
-        for experiment_name, dataset in predictive_data.items():
-            experiment_name = str(experiment_name)
+        for item_id, dataset in predictive_data.items():
+            experiment_name = str(item_id)
             x_axis_name = str(dataset.get('x_axis_name', ''))
             summary = PosteriorPredictiveSummary(
                 experiment_name=experiment_name,
@@ -877,7 +879,7 @@ class Analysis(
             raise ValueError(msg)
 
     def _warn_results_sidecar_overwrite(self) -> None:
-        """Warn when the next fit save will replace persisted sidecar arrays."""
+        """Warn before persisted sidecar arrays are overwritten."""
         project_path = self.project.info.path
         if project_path is None:
             return
@@ -1037,13 +1039,9 @@ class Analysis(
         old_minimizer: MinimizerCategoryBase,
         new_minimizer: MinimizerCategoryBase,
     ) -> list[str]:
-        """Return setting fields whose declared default values differ."""
-        old_values = old_minimizer._descriptor_values(
-            old_minimizer._setting_descriptor_names
-        )
-        new_values = new_minimizer._descriptor_values(
-            new_minimizer._setting_descriptor_names
-        )
+        """Return minimizer setting defaults that differ."""
+        old_values = old_minimizer._descriptor_values(old_minimizer._setting_descriptor_names)
+        new_values = new_minimizer._descriptor_values(new_minimizer._setting_descriptor_names)
         changed_defaults = []
         sentinel = '<not available>'
         for name in sorted(old_values.keys() | new_values.keys()):
@@ -1307,7 +1305,7 @@ class Analysis(
         experiments: list[object],
         fitted_parameters: list[Parameter],
     ) -> None:
-        """Store least-squares fit results in the active minimizer category."""
+        """Store least-squares result fields."""
         selected_parameters = self._selected_parameters_for_fit(experiments)
         n_parameters = len(selected_parameters)
         n_free_parameters = len(fitted_parameters)
@@ -1343,8 +1341,8 @@ class Analysis(
                 source_kind=FitCorrelationSourceEnum.DETERMINISTIC,
             )
 
+    @staticmethod
     def _store_posterior_distribution_cache_projection(
-        self,
         *,
         plotter: object,
         results: BayesianFitResults,
@@ -1621,9 +1619,7 @@ class Analysis(
         }
 
     def _store_posterior_fit_projection(self, results: BayesianFitResults) -> None:
-        """
-        Store Bayesian fit-result projections into the minimizer category.
-        """
+        """Store Bayesian result fields."""
         credible_interval_inner = 0.68
         credible_interval_outer = 0.95
         if len(results.credible_interval_levels) >= _CREDIBLE_INTERVAL_LEVEL_COUNT:

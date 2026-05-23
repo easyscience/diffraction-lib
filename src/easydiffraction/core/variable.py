@@ -9,7 +9,6 @@ import numpy as np
 
 from easydiffraction.core.diagnostic import Diagnostics
 from easydiffraction.core.guard import GuardedBase
-from easydiffraction.core.posterior import PosteriorParameterSummary
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
@@ -19,6 +18,7 @@ from easydiffraction.io.cif.serialize import param_to_cif
 from easydiffraction.utils.logging import log
 
 if TYPE_CHECKING:
+    from easydiffraction.core.posterior import PosteriorParameterSummary
     from easydiffraction.io.cif.handler import CifHandler
 
 # ======================================================================

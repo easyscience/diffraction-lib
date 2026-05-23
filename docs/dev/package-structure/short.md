@@ -15,39 +15,7 @@
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
-│   │   ├── 📁 bayesian_convergence
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   └── 📄 factory.py
-│   │   ├── 📁 bayesian_distribution_caches
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   └── 📄 factory.py
-│   │   ├── 📁 bayesian_pair_caches
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   └── 📄 factory.py
-│   │   ├── 📁 bayesian_parameter_posteriors
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   └── 📄 factory.py
-│   │   ├── 📁 bayesian_predictive_datasets
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   └── 📄 factory.py
-│   │   ├── 📁 bayesian_result
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   └── 📄 factory.py
-│   │   ├── 📁 bayesian_sampler
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   └── 📄 factory.py
 │   │   ├── 📁 constraints
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   └── 📄 factory.py
-│   │   ├── 📁 deterministic_result
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
@@ -64,14 +32,25 @@
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
 │   │   ├── 📁 fit_state
-│   │   ├── 📁 fitting
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   └── 📄 factory.py
 │   │   ├── 📁 joint_fit
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
+│   │   ├── 📁 minimizer
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 base.py
+│   │   │   ├── 📄 bayesian_base.py
+│   │   │   ├── 📄 bumps.py
+│   │   │   ├── 📄 bumps_amoeba.py
+│   │   │   ├── 📄 bumps_de.py
+│   │   │   ├── 📄 bumps_dream.py
+│   │   │   ├── 📄 bumps_lm.py
+│   │   │   ├── 📄 dfols.py
+│   │   │   ├── 📄 factory.py
+│   │   │   ├── 📄 lmfit.py
+│   │   │   ├── 📄 lmfit_least_squares.py
+│   │   │   ├── 📄 lmfit_leastsq.py
+│   │   │   └── 📄 lsq_base.py
 │   │   ├── 📁 sequential_fit
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -117,6 +96,7 @@
 │   ├── 📄 guard.py
 │   ├── 📄 identity.py
 │   ├── 📄 metadata.py
+│   ├── 📄 posterior.py
 │   ├── 📄 singleton.py
 │   ├── 📄 validation.py
 │   └── 📄 variable.py

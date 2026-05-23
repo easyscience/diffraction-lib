@@ -27,8 +27,8 @@ after P1.13, and leave `tests/` checks to P2.1a.
 
 The plan says concrete minimizer classes declare verbose descriptors in
 the class body and "No mixins". It also adds `lsq_base.py` and
-`bayesian_base.py` with shared descriptor declarations, then repeats that
-in P1.4.
+`bayesian_base.py` with shared descriptor declarations, then repeats
+that in P1.4.
 
 Recommended fix: either make those bases behavior-only, or explicitly
 amend the ADR and plan decision to allow inherited descriptor
@@ -44,8 +44,8 @@ The P1.12 and P2.1a greps cover plural package names such as
 - `_bayesian_predictive_dataset`
 - `_bayesian_parameter_posterior`
 
-Current source uses those singular category codes, so the verification can
-pass while stale CIF/category references remain.
+Current source uses those singular category codes, so the verification
+can pass while stale CIF/category references remain.
 
 Recommended fix: broaden the regex to include singular forms, or use a
 simpler `git grep -n 'bayesian_'` in the scopes where no Bayesian

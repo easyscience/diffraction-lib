@@ -58,9 +58,7 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
 
     def __init__(self) -> None:
         super().__init__()
-        self._max_iterations = self._max_iterations_descriptor(
-            self._default_max_iterations
-        )
+        self._max_iterations = self._max_iterations_descriptor(self._default_max_iterations)
         self._optimizer_name = self._string_result_descriptor(
             'optimizer_name',
             'Name of the persisted deterministic optimizer.',
@@ -181,7 +179,9 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
 
     @property
     def optimizer_name(self) -> StringDescriptor:
-        """Name of the optimizer used by the persisted deterministic fit."""
+        """
+        Name of the optimizer used by the persisted deterministic fit.
+        """
         return self._optimizer_name
 
     def _set_optimizer_name(self, value: str) -> None:
@@ -197,7 +197,9 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
 
     @property
     def objective_name(self) -> StringDescriptor:
-        """Objective function name for the persisted deterministic fit."""
+        """
+        Objective function name for the persisted deterministic fit.
+        """
         return self._objective_name
 
     def _set_objective_name(self, value: str) -> None:
@@ -213,7 +215,9 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
 
     @property
     def n_data_points(self) -> NumericDescriptor:
-        """Number of data points used in the persisted deterministic fit."""
+        """
+        Number of data points used in the persisted deterministic fit.
+        """
         return self._n_data_points
 
     def _set_n_data_points(self, value: float) -> None:
@@ -221,7 +225,7 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
 
     @property
     def n_parameters(self) -> NumericDescriptor:
-        """Number of parameters considered in the persisted deterministic fit."""
+        """Number of parameters in the persisted deterministic fit."""
         return self._n_parameters
 
     def _set_n_parameters(self, value: float) -> None:
@@ -229,7 +233,9 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
 
     @property
     def n_free_parameters(self) -> NumericDescriptor:
-        """Number of free parameters in the persisted deterministic fit."""
+        """
+        Number of free parameters in the persisted deterministic fit.
+        """
         return self._n_free_parameters
 
     def _set_n_free_parameters(self, value: float) -> None:
@@ -245,7 +251,7 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
 
     @property
     def covariance_available(self) -> BoolDescriptor:
-        """Whether covariance was available for the persisted deterministic fit."""
+        """Whether deterministic covariance was available."""
         return self._covariance_available
 
     def _set_covariance_available(self, *, value: bool) -> None:
@@ -253,7 +259,7 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
 
     @property
     def correlation_available(self) -> BoolDescriptor:
-        """Whether correlations were available for the persisted deterministic fit."""
+        """Whether deterministic correlations were available."""
         return self._correlation_available
 
     def _set_correlation_available(self, *, value: bool) -> None:
@@ -269,7 +275,7 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
 
     @property
     def iterations_performed(self) -> NumericDescriptor:
-        """Number of iterations performed by the persisted deterministic fit."""
+        """Number of iterations performed by the deterministic fit."""
         return self._iterations_performed
 
     def _set_iterations_performed(self, value: float) -> None:

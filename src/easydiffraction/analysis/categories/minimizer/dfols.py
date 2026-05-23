@@ -5,9 +5,7 @@
 from __future__ import annotations
 
 from easydiffraction.analysis.categories.minimizer.factory import MinimizerCategoryFactory
-from easydiffraction.analysis.categories.minimizer.lsq_base import (
-    LeastSquaresMinimizerBase,
-)
+from easydiffraction.analysis.categories.minimizer.lsq_base import LeastSquaresMinimizerBase
 from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.core.metadata import TypeInfo
 

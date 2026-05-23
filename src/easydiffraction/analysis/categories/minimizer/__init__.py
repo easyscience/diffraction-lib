@@ -14,9 +14,5 @@ from easydiffraction.analysis.categories.minimizer.lmfit import LmfitMinimizer
 from easydiffraction.analysis.categories.minimizer.lmfit_least_squares import (
     LmfitLeastSquaresMinimizer,
 )
-from easydiffraction.analysis.categories.minimizer.lmfit_leastsq import (
-    LmfitLeastsqMinimizer,
-)
-from easydiffraction.analysis.categories.minimizer.lsq_base import (
-    LeastSquaresMinimizerBase,
-)
+from easydiffraction.analysis.categories.minimizer.lmfit_leastsq import LmfitLeastsqMinimizer
+from easydiffraction.analysis.categories.minimizer.lsq_base import LeastSquaresMinimizerBase

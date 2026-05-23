@@ -230,12 +230,11 @@ When asked to create a plan:
   description.
 - When replying to a plan review, save the reply alongside the review.
   Reviews live at `docs/dev/plans/<feature-name>_review-<N>.md`; the
-  matching reply goes to
-  `docs/dev/plans/<feature-name>_reply-<N>.md` (same slug, same
-  number, swap `review` → `reply`). One reply file per review file;
-  do not bundle replies to multiple reviews into one document.
-  Structure the reply with one section per finding, each containing a
-  verdict (agree / disagree / partial), the action taken in the plan,
-  and a pointer to the affected plan section. After updating the
-  plan, also update the reply if a numbered step shifts so that
+  matching reply goes to `docs/dev/plans/<feature-name>_reply-<N>.md`
+  (same slug, same number, swap `review` → `reply`). One reply file per
+  review file; do not bundle replies to multiple reviews into one
+  document. Structure the reply with one section per finding, each
+  containing a verdict (agree / disagree / partial), the action taken in
+  the plan, and a pointer to the affected plan section. After updating
+  the plan, also update the reply if a numbered step shifts so that
   cross-references stay accurate.

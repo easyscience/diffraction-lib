@@ -15,6 +15,4 @@ def test_lmfit_least_squares_minimizer_registers_expected_tag():
     from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 
     assert issubclass(LmfitLeastSquaresMinimizer, LeastSquaresMinimizerBase)
-    assert LmfitLeastSquaresMinimizer.type_info.tag == (
-        MinimizerTypeEnum.LMFIT_LEAST_SQUARES
-    )
+    assert LmfitLeastSquaresMinimizer.type_info.tag == (MinimizerTypeEnum.LMFIT_LEAST_SQUARES)

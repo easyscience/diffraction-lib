@@ -5,8 +5,6 @@ from __future__ import annotations
 
 import re
 
-import pytest
-
 ANSI_ESCAPE_RE = re.compile(r'\x1b\[[0-?]*[ -/]*[@-~]')
 
 
@@ -85,72 +83,6 @@ def test_fit_mode_enum_members_default_and_descriptions():
     assert FitModeEnum.SEQUENTIAL == 'sequential'
     assert FitModeEnum.default() is FitModeEnum.SINGLE
     assert all(member.description() for member in FitModeEnum)
-
-
-def test_fitting_instantiation_defaults_and_helpers():
-    from easydiffraction.analysis.categories.fitting.default import Fitting
-    import easydiffraction.analysis.categories.fitting.default as fitting_mod
-
-    fitting = Fitting()
-
-    assert fitting._identity.category_code == 'fitting'
-    assert fitting.minimizer_type.value == 'lmfit (leastsq)'
-    assert fitting.minimizer is None
-
-    class ParentWithMinimizer:
-        fitter = type('FitterHolder', (), {'minimizer': 'MIN'})()
-
-    fitting._parent = ParentWithMinimizer()
-    assert fitting.minimizer == 'MIN'
-
-    shown: list[str] = []
-    monkeypatch = pytest.MonkeyPatch()
-    monkeypatch.setattr(
-        fitting_mod.MinimizerFactory,
-        'show_supported',
-        lambda: shown.append('shown'),
-    )
-    Fitting.show_available_minimizers()
-    monkeypatch.undo()
-
-    assert shown == ['shown']
-
-
-def test_fit_from_cif_warns_on_invalid_minimizer(monkeypatch):
-    import easydiffraction.analysis.categories.fitting.default as fitting_mod
-    from easydiffraction.analysis.categories.fitting.default import Fitting
-
-    fitting = Fitting()
-    fitting._minimizer_type._value = 'bad-minimizer'
-
-    class Parent:
-        fitter = None
-
-    warnings: list[str] = []
-    fitting._parent = Parent()
-    monkeypatch.setattr(fitting_mod.CategoryItem, 'from_cif', lambda self, block, idx=0: None)
-    monkeypatch.setattr(
-        fitting_mod,
-        'Fitter',
-        lambda value: (_ for _ in ()).throw(ValueError('bad minimizer')),
-    )
-    monkeypatch.setattr(fitting_mod.log, 'warning', lambda message: warnings.append(message))
-
-    fitting.from_cif(object())
-
-    assert warnings == ['bad minimizer']
-
-
-def test_fitting_fallback_paths_without_parent(monkeypatch):
-    import easydiffraction.analysis.categories.fitting.default as fitting_mod
-    from easydiffraction.analysis.categories.fitting.default import Fitting
-
-    fitting = Fitting()
-
-    assert fitting.minimizer is None
-
-    monkeypatch.setattr(fitting_mod.CategoryItem, 'from_cif', lambda self, block, idx=0: None)
-    fitting.from_cif(object())
 
 
 def test_show_supported_fitting_mode_types_for_single_and_multiple_experiments(capsys):

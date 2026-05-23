@@ -550,8 +550,7 @@ new settings requires an explicit save step.
 ### Positive
 
 - `fit()` has one meaning: execute fitting.
-- `minimizer_type` and `fitting_mode_type` live on the `Analysis`
-  owner.
+- `minimizer_type` and `fitting_mode_type` live on the `Analysis` owner.
 - Fit modes follow the same owner-level selection style as existing
   switchable categories.
 - `joint_fit` and `sequential_fit` are visible only when relevant.
@@ -671,9 +670,9 @@ project.analysis.fitting_mode_type = 'sequential'
 ```
 
 A separate `fitting.mode` descriptor on a runtime category is also
-rejected: it would duplicate state already held by
-`fitting_mode_type`. `_fitting.mode_type` is synthesized at
-serialization time instead of being mirrored on a runtime object.
+rejected: it would duplicate state already held by `fitting_mode_type`.
+`_fitting.mode_type` is synthesized at serialization time instead of
+being mirrored on a runtime object.
 
 ### Replace a fitting category object per fit mode
 

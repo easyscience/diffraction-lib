@@ -175,7 +175,7 @@ def test_experiment_to_cif_with_and_without_data():
     assert out_without.endswith('1')
 
 
-def test_analysis_to_cif_renders_all_sections():
+def test_analysis_to_cif_renders_all_sections(monkeypatch):
     import easydiffraction.io.cif.serialize as MUT
 
     class Obj:
@@ -188,9 +188,20 @@ def test_analysis_to_cif_renders_all_sections():
 
     class A:
         fitting_mode_type = 'single'
-        fitting = Obj('_fitting.minimizer_type lmfit')
+        minimizer_type = 'lmfit'
+        minimizer = Obj('_minimizer.max_iterations 1000')
         aliases = Obj('ALIASES')
         constraints = Obj('CONSTRAINTS')
+
+    monkeypatch.setattr(
+        MUT,
+        'category_owner_to_cif',
+        lambda analysis: (
+            f'{analysis.minimizer.as_cif}\n\n'
+            f'{analysis.aliases.as_cif}\n\n'
+            f'{analysis.constraints.as_cif}'
+        ),
+    )
 
     out = MUT.analysis_to_cif(A())
     lines = [line for line in out.splitlines() if line]

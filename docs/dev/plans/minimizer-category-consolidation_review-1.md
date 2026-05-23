@@ -19,24 +19,24 @@ The new category list only creates four minimizer classes:
 
 See
 [`minimizer-category-consolidation.md`](minimizer-category-consolidation.md#concrete-files-likely-to-change).
-However, the current enum and minimizer registry include additional tags:
-`lmfit`, `lmfit (leastsq)`, `dfols`, `bumps`, `bumps (amoeba)`, and
-`bumps (de)`.
+However, the current enum and minimizer registry include additional
+tags: `lmfit`, `lmfit (leastsq)`, `dfols`, `bumps`, `bumps (amoeba)`,
+and `bumps (de)`.
 
 That conflicts with the suggested PR text saying:
 
 > no fitting capability is removed
 
 Recommended fix: add category coverage for every currently supported
-minimizer tag, or explicitly record which tags are removed or aliased and
-get approval before implementation.
+minimizer tag, or explicitly record which tags are removed or aliased
+and get approval before implementation.
 
 ### P1: The plan omits `deterministic_result`, although the ADR removes it
 
 The ADR being implemented says `deterministic_result` fields move into
 the deterministic concrete minimizer classes. The plan's deleted package
-list removes the Python `fitting` category and seven Bayesian categories,
-but does not remove:
+list removes the Python `fitting` category and seven Bayesian
+categories, but does not remove:
 
 ```text
 src/easydiffraction/analysis/categories/deterministic_result/
@@ -71,8 +71,8 @@ plan and amend the conflicting ADR guidance.
 
 ### P2: The sidecar instructions contradict each other
 
-The modified-file list says `results_sidecar.py` should use
-"append-mode open", but P1.10 requires:
+The modified-file list says `results_sidecar.py` should use "append-mode
+open", but P1.10 requires:
 
 ```python
 h5py.File(path, 'w')

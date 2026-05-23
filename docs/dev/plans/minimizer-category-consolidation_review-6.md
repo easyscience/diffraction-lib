@@ -55,8 +55,8 @@ The detailed P1.13 tutorial step correctly lists `ed-8.py` and
 
 The "Concrete files likely to change" summary at lines 194-195 still
 lists only the tutorials with `analysis.fitting.minimizer*` references:
-`ed-2.py`, `ed-3.py`, `ed-4.py`, `ed-15.py`, `ed-17.py`, `ed-21.py`,
-and `ed-22.py`.
+`ed-2.py`, `ed-3.py`, `ed-4.py`, `ed-15.py`, `ed-17.py`, `ed-21.py`, and
+`ed-22.py`.
 
 This is not a design blocker because P1.13 has the correct detailed
 list, but the summary is now stale and can mislead an implementer doing
@@ -68,6 +68,6 @@ show-method-only tutorial files are listed in P1.13.
 
 ## Verification
 
-No tests were run. This was a static review of the updated plan, reply 5,
-`.github/copilot-instructions.md`, and current grep behavior against
+No tests were run. This was a static review of the updated plan, reply
+5, `.github/copilot-instructions.md`, and current grep behavior against
 source, tests, and tutorials.

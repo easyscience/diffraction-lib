@@ -349,7 +349,9 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
         return self._credible_interval_inner
 
     def _set_credible_interval_inner(self, value: float) -> None:
-        """Set the inner credible-interval level for internal callers."""
+        """
+        Set the inner credible-interval level for internal callers.
+        """
         self._credible_interval_inner.value = value
 
     @property
@@ -358,7 +360,9 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
         return self._credible_interval_outer
 
     def _set_credible_interval_outer(self, value: float) -> None:
-        """Set the outer credible-interval level for internal callers."""
+        """
+        Set the outer credible-interval level for internal callers.
+        """
         self._credible_interval_outer.value = value
 
     @property
@@ -385,7 +389,9 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
         return self._effective_sample_size_min
 
     def _set_effective_sample_size_min(self, value: float | None) -> None:
-        """Set the minimum effective sample size for internal callers."""
+        """
+        Set the minimum effective sample size for internal callers.
+        """
         self._effective_sample_size_min.value = value
 
     @property

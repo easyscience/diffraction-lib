@@ -4,9 +4,7 @@
 
 from __future__ import annotations
 
-from easydiffraction.analysis.categories.minimizer.bayesian_base import (
-    BayesianMinimizerBase,
-)
+from easydiffraction.analysis.categories.minimizer.bayesian_base import BayesianMinimizerBase
 from easydiffraction.analysis.categories.minimizer.factory import MinimizerCategoryFactory
 from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.core.metadata import TypeInfo
@@ -31,13 +29,9 @@ class BumpsDreamMinimizer(BayesianMinimizerBase):
         super().__init__()
         self._sampling_steps = self._sampling_steps_descriptor(DEFAULT_SAMPLING_STEPS)
         self._burn_in_steps = self._burn_in_steps_descriptor(DEFAULT_BURN_IN_STEPS)
-        self._thinning_interval = self._thinning_interval_descriptor(
-            DEFAULT_THINNING_INTERVAL
-        )
+        self._thinning_interval = self._thinning_interval_descriptor(DEFAULT_THINNING_INTERVAL)
         self._population_size = self._population_size_descriptor(DEFAULT_POPULATION_SIZE)
-        self._parallel_workers = self._parallel_workers_descriptor(
-            DEFAULT_PARALLEL_WORKERS
-        )
+        self._parallel_workers = self._parallel_workers_descriptor(DEFAULT_PARALLEL_WORKERS)
         self._initialization_method = self._initialization_method_descriptor()
         self._random_seed = self._random_seed_descriptor()
         self._runtime_seconds = self._runtime_seconds_descriptor()

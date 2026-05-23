@@ -212,10 +212,7 @@ def test_save_load_round_trip_preserves_parameters(tmp_path) -> None:
     assert loaded.analysis.constraints.enabled is True
 
     # Compare analysis settings
-    assert (
-        loaded.analysis.minimizer_type
-        == original.analysis.minimizer_type
-    )
+    assert loaded.analysis.minimizer_type == original.analysis.minimizer_type
     assert loaded.analysis.fitting_mode_type == original.analysis.fitting_mode_type
 
 

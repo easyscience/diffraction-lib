@@ -25,9 +25,9 @@ Persist fit configuration, not full runtime fit results.
 
 Per-experiment calculator selection lives in experiment files. Common
 fit configuration and fit-mode settings live in `analysis/analysis.cif`.
-Runtime fit outputs such as `analysis.fit_results`, backend objects,
-and raw driver payloads remain runtime-only unless a narrower ADR
-defines a persisted projection. The accepted
+Runtime fit outputs such as `analysis.fit_results`, backend objects, and
+raw driver payloads remain runtime-only unless a narrower ADR defines a
+persisted projection. The accepted
 [`analysis-cif-fit-state.md`](analysis-cif-fit-state.md) and
 [`minimizer-category-consolidation.md`](minimizer-category-consolidation.md)
 ADRs define the current compact projection for fit headers,

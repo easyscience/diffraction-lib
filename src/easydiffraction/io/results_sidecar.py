@@ -4,11 +4,14 @@
 
 from __future__ import annotations
 
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import numpy as np
 
 from easydiffraction.utils.logging import log
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 SidecarPayload = dict[str, dict[str, object]]
 SIDECAR_FILE_NAME = 'results.h5'
@@ -286,11 +289,6 @@ def write_analysis_results_sidecar(
         results.
     analysis_dir : Path
         The project ``analysis/`` directory.
-
-    Raises
-    ------
-    Exception
-        Propagated when sidecar writing fails.
     """
     sidecar_path = _sidecar_path(analysis_dir=analysis_dir)
     if not _should_use_sidecar(analysis):
@@ -310,7 +308,7 @@ def write_analysis_results_sidecar(
         _delete_stale_sidecar(sidecar_path)
 
 
-def _read_posterior_payload(handle: object, analysis: object) -> dict[str, np.ndarray]:
+def _read_posterior_payload(handle: object) -> dict[str, np.ndarray]:
     """Read canonical posterior arrays from a sidecar file."""
     parameter_samples = _read_dataset(handle, _POSTERIOR_PARAMETER_SAMPLES_PATH)
     if parameter_samples is None:
@@ -349,8 +347,7 @@ def _read_payload_group(handle: object, group_name: str) -> SidecarPayload:
     for item_name, item_group in root.items():
         item_id = str(item_group.attrs.get('id', item_name))
         item_payload: dict[str, object] = {
-            dataset_name: np.asarray(dataset)
-            for dataset_name, dataset in item_group.items()
+            dataset_name: np.asarray(dataset) for dataset_name, dataset in item_group.items()
         }
         for attr_name, attr_value in item_group.attrs.items():
             if attr_name == 'id':
@@ -407,7 +404,7 @@ def read_analysis_results_sidecar(
     with h5py.File(sidecar_path, 'r') as handle:
         sidecar_data: dict[str, object] = {}
 
-        posterior_payload = _read_posterior_payload(handle, analysis)
+        posterior_payload = _read_posterior_payload(handle)
         if posterior_payload:
             sidecar_data['posterior'] = posterior_payload
 

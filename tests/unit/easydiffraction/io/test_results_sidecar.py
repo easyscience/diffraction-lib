@@ -90,7 +90,7 @@ def test_write_and_read_analysis_results_sidecar_round_trip_predictive(tmp_path)
     sidecar_path = analysis_dir / 'results.h5'
     assert sidecar_path.is_file()
 
-    import h5py  # noqa: PLC0415
+    import h5py
 
     with h5py.File(sidecar_path, 'r') as handle:
         assert 'posterior' in handle
@@ -153,7 +153,7 @@ def test_write_analysis_results_sidecar_truncates_stale_payloads(tmp_path):
         analysis_dir=analysis_dir,
     )
 
-    import h5py  # noqa: PLC0415
+    import h5py
 
     with h5py.File(analysis_dir / 'results.h5', 'r') as handle:
         assert 'posterior' not in handle

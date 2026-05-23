@@ -43,14 +43,8 @@ class MinimizerCategoryBase(CategoryItem):
         Returns
         -------
         dict[str, object]
-            Descriptor values mapped from public minimizer attributes
-            to backend-specific keyword names.
-
-        Raises
-        ------
-        AttributeError
-            If a declared native-key mapping references a missing
-            minimizer attribute.
+            Descriptor values mapped from public minimizer attributes to
+            backend-specific keyword names.
         """
         kwargs: dict[str, object] = {}
         for attr_name, native_key in self._native_key_map.items():

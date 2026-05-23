@@ -63,8 +63,8 @@ holds both user-writable inputs and fit-filled outputs in one place.
 
 The following categories are removed:
 
-- `bayesian_sampler` — fields move into the Bayesian concrete classes
-  of `minimizer`.
+- `bayesian_sampler` — fields move into the Bayesian concrete classes of
+  `minimizer`.
 - `bayesian_result`, `bayesian_convergence` — fields move into the
   Bayesian concrete classes of `minimizer` (`runtime_seconds`,
   `acceptance_rate_mean`, `gelman_rubin_max`,
@@ -87,7 +87,8 @@ The Python `fitting` category intermediate is dropped. `Analysis`
 exposes:
 
 - `analysis.minimizer_type` (was `analysis.fitting.minimizer_type`)
-- `analysis.fitting_mode_type` (was `analysis.fitting.fitting_mode_type`)
+- `analysis.fitting_mode_type` (was
+  `analysis.fitting.fitting_mode_type`)
 - `analysis.minimizer` (the swappable category)
 - `analysis.show_supported_minimizer_types()`
 - `analysis.show_current_minimizer_type()`
@@ -116,8 +117,7 @@ Adopt the proposal from
 `PosteriorParameterSummary` for Bayesian fits. The
 `_bayesian_parameter_posterior` CIF loop is removed; posterior summary
 columns are added to the existing `_fit_parameter` loop (one row per
-refined parameter, mostly-empty columns when the fit was
-deterministic):
+refined parameter, mostly-empty columns when the fit was deterministic):
 
 - `_fit_parameter.posterior_best_sample_value`
 - `_fit_parameter.posterior_median`
@@ -140,12 +140,12 @@ Posterior chains, KDE / distribution caches, pair-plot caches, and
 predictive datasets are large arrays unsuited to CIF. The existing
 `analysis/results.h5` sidecar absorbs all of them. The corresponding
 manifest categories (`_bayesian_distribution_cache`,
-`_bayesian_pair_cache`, `_bayesian_predictive_dataset`) are removed
-from CIF entirely — the HDF5 file is self-describing.
+`_bayesian_pair_cache`, `_bayesian_predictive_dataset`) are removed from
+CIF entirely — the HDF5 file is self-describing.
 
-There is exactly **one** sidecar file per fit, regardless of
-minimizer: `analysis/results.h5`. No CIF tag stores the sidecar path.
-The file uses namespaced top-level groups:
+There is exactly **one** sidecar file per fit, regardless of minimizer:
+`analysis/results.h5`. No CIF tag stores the sidecar path. The file uses
+namespaced top-level groups:
 
 ```
 analysis/results.h5
@@ -160,16 +160,16 @@ analysis/results.h5
 results from different minimizers — or from the same minimizer with
 different settings or a different free-parameter set — is the most
 common source of "stale plot" confusion. To prevent this, calling
-`analysis.fit()` truncates `analysis/results.h5` (recreating it with
-the new run's groups). The user is shown a `log.warn(...)` message
-the first time a fit is started while a populated sidecar exists,
-naming the file and stating that previous results will be overwritten.
+`analysis.fit()` truncates `analysis/results.h5` (recreating it with the
+new run's groups). The user is shown a `log.warn(...)` message the first
+time a fit is started while a populated sidecar exists, naming the file
+and stating that previous results will be overwritten.
 
-Resume is the only exception: `analysis.fit(resume=True,
-extra_steps=N)` opens the existing file in append mode and extends
-the chain. Resume is rejected with a clear error if the active
-minimizer does not support it, if `results.h5` is missing, or if the
-stored chain's parameter set does not match the current one.
+Resume is the only exception: `analysis.fit(resume=True, extra_steps=N)`
+opens the existing file in append mode and extends the chain. Resume is
+rejected with a clear error if the active minimizer does not support it,
+if `results.h5` is missing, or if the stored chain's parameter set does
+not match the current one.
 
 For deterministic runs the Bayesian groups are absent and the sidecar
 file may not exist at all. For non-emcee Bayesian runs the
@@ -183,27 +183,27 @@ these names to its native backend keys.
 
 Stable inputs across Bayesian samplers (shared by DREAM and emcee):
 
-| Tag                       | Native (DREAM)       | Native (emcee)     | Description                                                |
-|---------------------------|----------------------|--------------------|------------------------------------------------------------|
-| `sampling_steps`          | `steps`              | `nsteps`           | Total MCMC iterations per chain/walker                     |
-| `burn_in_steps`           | `burn`               | `nburn`            | Iterations discarded as warm-up                            |
-| `thinning_interval`       | `thin`               | `thin`             | Keep every Nth sample                                      |
-| `population_size`         | `pop`                | `nwalkers`         | Number of chains / walkers                                 |
-| `parallel_workers`        | `parallel` (int)     | `pool`             | `0` = all CPUs; `1` = serial; `N>1` = N worker processes   |
-| `initialization_method`   | `init` (enum)        | (custom)           | Single unified enum (see §6)                               |
-| `random_seed`             | `random_seed`        | `random_seed`      | Random seed; `None` = system-derived                       |
+| Tag                     | Native (DREAM)   | Native (emcee) | Description                                              |
+| ----------------------- | ---------------- | -------------- | -------------------------------------------------------- |
+| `sampling_steps`        | `steps`          | `nsteps`       | Total MCMC iterations per chain/walker                   |
+| `burn_in_steps`         | `burn`           | `nburn`        | Iterations discarded as warm-up                          |
+| `thinning_interval`     | `thin`           | `thin`         | Keep every Nth sample                                    |
+| `population_size`       | `pop`            | `nwalkers`     | Number of chains / walkers                               |
+| `parallel_workers`      | `parallel` (int) | `pool`         | `0` = all CPUs; `1` = serial; `N>1` = N worker processes |
+| `initialization_method` | `init` (enum)    | (custom)       | Single unified enum (see §6)                             |
+| `random_seed`           | `random_seed`    | `random_seed`  | Random seed; `None` = system-derived                     |
 
 Bayesian-sampler-specific inputs:
 
-| Tag                | Concrete class | Description                       |
-|--------------------|---------------|-----------------------------------|
-| `proposal_moves`   | emcee only    | emcee proposal moves (e.g. `stretch`, `de`) |
+| Tag              | Concrete class | Description                                 |
+| ---------------- | -------------- | ------------------------------------------- |
+| `proposal_moves` | emcee only     | emcee proposal moves (e.g. `stretch`, `de`) |
 
 Deterministic-LSQ inputs:
 
-| Tag                       | Description                                            |
-|---------------------------|--------------------------------------------------------|
-| `max_iterations`          | Maximum solver iterations                              |
+| Tag              | Description               |
+| ---------------- | ------------------------- |
+| `max_iterations` | Maximum solver iterations |
 
 `random_seed` remains a Bayesian sampler input because the current
 deterministic engines reject non-`None` random seeds.
@@ -212,21 +212,21 @@ actually consumes it.
 
 Fit-filled outputs (subset varies per class):
 
-| Tag                              | Class                | Description                                  |
-|----------------------------------|----------------------|----------------------------------------------|
-| `runtime_seconds`                | all                  | Wall time of the fit                         |
-| `reduced_chi2`                   | all                  | Reduced χ²                                   |
-| `iterations_performed`           | LSQ                  | Iterations actually executed                 |
-| `exit_reason`                    | LSQ                  | Free-form short string                       |
-| `acceptance_rate_mean`           | Bayesian             | Mean acceptance rate across chains/walkers   |
-| `gelman_rubin_max`               | Bayesian             | Max R̂ across sampled parameters             |
-| `effective_sample_size_min`      | Bayesian             | Min effective sample size across parameters  |
-| `best_log_posterior`             | Bayesian             | Best log-posterior value found               |
+| Tag                         | Class    | Description                                 |
+| --------------------------- | -------- | ------------------------------------------- |
+| `runtime_seconds`           | all      | Wall time of the fit                        |
+| `reduced_chi2`              | all      | Reduced χ²                                  |
+| `iterations_performed`      | LSQ      | Iterations actually executed                |
+| `exit_reason`               | LSQ      | Free-form short string                      |
+| `acceptance_rate_mean`      | Bayesian | Mean acceptance rate across chains/walkers  |
+| `gelman_rubin_max`          | Bayesian | Max R̂ across sampled parameters             |
+| `effective_sample_size_min` | Bayesian | Min effective sample size across parameters |
+| `best_log_posterior`        | Bayesian | Best log-posterior value found              |
 
 Verbose CIF tags are user-facing. The canonical MCMC abbreviation
-(`r_hat`, `n_eff`, `nllf`) is recorded in the descriptor's
-`description` field so it appears in `help()` output but does not
-become a Python attribute or a CIF tag.
+(`r_hat`, `n_eff`, `nllf`) is recorded in the descriptor's `description`
+field so it appears in `help()` output but does not become a Python
+attribute or a CIF tag.
 
 ### 6. Unified `initialization_method` enum
 
@@ -252,17 +252,17 @@ when each minimizer category instance is constructed. CIF behavior:
   carries the concrete default value from that moment on.
 - **Save.** Always emit the actual value. Do not emit `?` for fields
   that happen to equal the default. Round-trip is exact for any value
-  the user set; for an unset field, round-trip resolves `?` → default
-  on first load and emits the default on next save.
+  the user set; for an unset field, round-trip resolves `?` → default on
+  first load and emits the default on next save.
 - **No callable defaults.** No "auto-resolve at fit time" (today's
-  `burn = steps // 5` is replaced by a fixed default `burn_in_steps =
-  600`). If a default depends on other settings, the dependency is
-  documented; the user sets it explicitly.
+  `burn = steps // 5` is replaced by a fixed default
+  `burn_in_steps = 600`). If a default depends on other settings, the
+  dependency is documented; the user sets it explicitly.
 
 This rule applies to every descriptor, not just `minimizer`. For
 descriptors that have no sensible default (e.g. `cell.length_a`), the
-descriptor declaration omits `default=...` and CIF `?` continues to
-mean "unknown" — a load-time error is raised when the field is read.
+descriptor declaration omits `default=...` and CIF `?` continues to mean
+"unknown" — a load-time error is raised when the field is read.
 
 ### 8. Minimizer families carry defaults; warn-and-reset on swap
 
@@ -350,9 +350,9 @@ _minimizer.best_log_posterior        -1237.89
 _minimizer.reduced_chi2               1.22
 ```
 
-emcee's resumable chain state lives in the `/emcee_chain` group of
-the same `analysis/results.h5` file (see §4). No sidecar path appears
-in CIF.
+emcee's resumable chain state lives in the `/emcee_chain` group of the
+same `analysis/results.h5` file (see §4). No sidecar path appears in
+CIF.
 
 ## Consequences
 
@@ -362,9 +362,8 @@ in CIF.
   category per concept, selectors on owners, refinement-in-place.
 - The Bayesian / deterministic split stops requiring parallel category
   trees. One swappable `minimizer` covers both worlds.
-- Adding new minimizers (emcee, future samplers, future LSQ variants)
-  is a one-class change: declare descriptors, register with the
-  factory.
+- Adding new minimizers (emcee, future samplers, future LSQ variants) is
+  a one-class change: declare descriptors, register with the factory.
 - CIF projects shrink: large arrays move to HDF5; redundant manifest
   categories disappear.
 
@@ -388,34 +387,34 @@ in CIF.
 
 ### ADRs amended by this ADR
 
-- [`runtime-fit-results.md`](../accepted/runtime-fit-results.md) —
-  amend the closing line to point at this ADR as the canonical
+- [`runtime-fit-results.md`](../accepted/runtime-fit-results.md) — amend
+  the closing line to point at this ADR as the canonical
   saved-projection definition (alongside `analysis-cif-fit-state.md`).
-- [`analysis-cif-fit-state.md`](../accepted/analysis-cif-fit-state.md)
-  — replace §"Bayesian fit projection" entirely. Remove the seven
+- [`analysis-cif-fit-state.md`](../accepted/analysis-cif-fit-state.md) —
+  replace §"Bayesian fit projection" entirely. Remove the seven
   `_bayesian_*` categories; describe `_minimizer.*` and the extended
-  `_fit_parameter` posterior columns. Remove the sidecar-path CIF
-  field; the sidecar name is implicit.
+  `_fit_parameter` posterior columns. Remove the sidecar-path CIF field;
+  the sidecar name is implicit.
 - [`fit-mode-categories.md`](../accepted/fit-mode-categories.md) —
   update §1 and §2 to reflect that `minimizer_type` and
   `fitting_mode_type` live on `Analysis` directly, not on a `fitting`
   Python intermediate. The active-sibling design for `joint_fit` /
   `sequential_fit` is unchanged.
 - [`selector-families.md`](../accepted/selector-families.md) —
-  reclassify `analysis.minimizer_type` as a switchable-category
-  selector (on owner `Analysis`, swaps the `minimizer` category
-  instance), no longer a Backend selector.
+  reclassify `analysis.minimizer_type` as a switchable-category selector
+  (on owner `Analysis`, swaps the `minimizer` category instance), no
+  longer a Backend selector.
 - [`switchable-category-api.md`](../accepted/switchable-category-api.md)
   — append `minimizer` to the examples list. No mechanical change.
 - [`parameter-correlation-persistence.md`](../accepted/parameter-correlation-persistence.md)
-  — verify wording still applies (categories `_fit_parameter_correlation`
-  are kept by this ADR; should be a no-op).
+  — verify wording still applies (categories
+  `_fit_parameter_correlation` are kept by this ADR; should be a no-op).
 
 ### Suggestions superseded or absorbed
 
 - [`parameter-posterior-summary.md`](parameter-posterior-summary.md) —
-  absorbed by §3 of this ADR. When this ADR is accepted, that
-  suggestion can be closed and a pointer added.
+  absorbed by §3 of this ADR. When this ADR is accepted, that suggestion
+  can be closed and a pointer added.
 
 ## Alternatives Considered
 
@@ -439,8 +438,7 @@ forces long attribute names (`fit_settings.bayesian_population_size`),
 
 Add `_emcee_sampler`, `_emcee_convergence`, …, mirroring the existing
 `_bayesian_*` layout per backend. Rejected because it doubles the
-category count for each new sampler and entrenches the convention
-break.
+category count for each new sampler and entrenches the convention break.
 
 ### D. Strict input-only `minimizer` plus a separate `fit_result`
 

@@ -117,9 +117,7 @@ class FitParameterItem(CategoryItem):
             name='posterior_effective_sample_size_bulk',
             description='Bulk effective sample size when available.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(
-                names=['_fit_parameter.posterior_effective_sample_size_bulk']
-            ),
+            cif_handler=CifHandler(names=['_fit_parameter.posterior_effective_sample_size_bulk']),
         )
 
     @property

@@ -40,16 +40,17 @@ src/easydiffraction/analysis/fitting.py
 Current unit tests in
 `tests/unit/easydiffraction/analysis/test_fitting.py` exercise that
 engine module (`easydiffraction.analysis.fitting.Fitter`), not the
-category package. The updated stale-reference grep
-`analysis\.fitting\b` also catches imports of this engine module.
+category package. The updated stale-reference grep `analysis\.fitting\b`
+also catches imports of this engine module.
 
-As written, P1.12 can force removal or renaming of a module the plan does
-not list as deleted, and P2.1a deletes engine coverage by calling
+As written, P1.12 can force removal or renaming of a module the plan
+does not list as deleted, and P2.1a deletes engine coverage by calling
 `test_fitting.py` an obsolete category test.
 
-Recommended fix: decide explicitly whether `src/easydiffraction/analysis/fitting.py`
-is kept, renamed, or deleted. If kept, narrow stale-reference checks to
-the removed owner/category surface (`self.fitting`, `project.analysis.fitting`,
+Recommended fix: decide explicitly whether
+`src/easydiffraction/analysis/fitting.py` is kept, renamed, or deleted.
+If kept, narrow stale-reference checks to the removed owner/category
+surface (`self.fitting`, `project.analysis.fitting`,
 `categories.fitting`, `categories/fitting/`) and keep or migrate
 `test_fitting.py`. If renamed/deleted, add that source-file move/removal
 and replacement test coverage to the plan.
@@ -81,5 +82,6 @@ and private removed-category attributes are covered.
 
 ## Verification
 
-No tests were run. This was a static review of the updated plan, reply 3,
-`.github/copilot-instructions.md`, and current source/test references.
+No tests were run. This was a static review of the updated plan, reply
+3, `.github/copilot-instructions.md`, and current source/test
+references.
