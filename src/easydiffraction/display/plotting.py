@@ -2659,15 +2659,11 @@ class Plotter(RendererBase):
         analysis = self._project.analysis
         sidecar_data = getattr(analysis, '_persisted_fit_state_sidecar', {})
         pair_caches = sidecar_data.get('pair_caches', {})
-        for cache in analysis.bayesian_pair_caches:
-            cache_x = cache.param_unique_name_x.value
-            cache_y = cache.param_unique_name_y.value
+        for cache_data in pair_caches.values():
+            cache_x = str(cache_data.get('param_unique_name_x', ''))
+            cache_y = str(cache_data.get('param_unique_name_y', ''))
             if {cache_x, cache_y} != {x_parameter_name, y_parameter_name}:
                 continue
-
-            cache_data = pair_caches.get(cache.id.value)
-            if cache_data is None:
-                return None
 
             x_grid = np.asarray(cache_data.get('x'), dtype=float)
             y_grid = np.asarray(cache_data.get('y'), dtype=float)

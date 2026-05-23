@@ -663,13 +663,9 @@ class Analysis(
         """Return restored predictive summaries for runtime reuse."""
         restored_predictive: dict[str, PosteriorPredictiveSummary] = {}
         predictive_data = self._persisted_fit_state_sidecar.get('predictive_datasets', {})
-        for row in self.bayesian_predictive_datasets:
-            experiment_name = str(row.experiment_name.value)
-            x_axis_name = str(row.x_axis_name.value)
-            dataset = predictive_data.get(experiment_name)
-            if dataset is None:
-                continue
-
+        for experiment_name, dataset in predictive_data.items():
+            experiment_name = str(experiment_name)
+            x_axis_name = str(dataset.get('x_axis_name', ''))
             summary = PosteriorPredictiveSummary(
                 experiment_name=experiment_name,
                 x_axis_name=x_axis_name,
@@ -1507,7 +1503,7 @@ class Analysis(
         pair_metadata: tuple[int, int, str, str],
         contour_grid_size: int,
         pair_id: str,
-    ) -> tuple[str, dict[str, np.ndarray]] | None:
+    ) -> tuple[str, dict[str, object]] | None:
         """Store one cached pair surface and return its payload."""
         x_index, y_index, x_name, y_name = pair_metadata
 
@@ -1547,6 +1543,8 @@ class Analysis(
             n_draws_cached=float(density_samples.shape[0]),
         )
         return pair_id, {
+            'param_unique_name_x': x_name,
+            'param_unique_name_y': y_name,
             'x': x_grid_array,
             'y': y_grid_array,
             'density': density_array,
@@ -1560,7 +1558,7 @@ class Analysis(
         results: BayesianFitResults,
         flattened_samples: np.ndarray,
         parameter_names: list[str],
-    ) -> dict[str, dict[str, np.ndarray]]:
+    ) -> dict[str, dict[str, object]]:
         """Store cached pair-density surfaces in manifests."""
         n_parameters = len(parameter_names)
         if n_parameters <= 1:
@@ -1571,7 +1569,7 @@ class Analysis(
             max_points=plotter._posterior_pair_density_max_points(n_parameters),
         )
         contour_grid_size = plotter._posterior_pair_contour_grid_size(n_parameters)
-        payload: dict[str, dict[str, np.ndarray]] = {}
+        payload: dict[str, dict[str, object]] = {}
         for first_index, second_index in combinations(range(n_parameters), 2):
             pair_id = str(len(payload) + 1)
             cache_projection = self._store_one_bayesian_pair_cache_projection(
@@ -1596,9 +1594,10 @@ class Analysis(
     @staticmethod
     def _predictive_dataset_payload(
         summary: PosteriorPredictiveSummary,
-    ) -> dict[str, np.ndarray]:
+    ) -> dict[str, object]:
         """Return persisted predictive arrays for one summary."""
-        payload: dict[str, np.ndarray] = {
+        payload: dict[str, object] = {
+            'x_axis_name': summary.x_axis_name,
             'x': np.asarray(summary.x, dtype=float),
             'best_sample_prediction': np.asarray(summary.best_sample_prediction, dtype=float),
         }
@@ -1619,11 +1618,11 @@ class Analysis(
         *,
         plotter: object,
         results: BayesianFitResults,
-    ) -> dict[str, dict[str, np.ndarray]]:
+    ) -> dict[str, dict[str, object]]:
         """
         Store posterior predictive summaries into persisted manifests.
         """
-        predictive_payload: dict[str, dict[str, np.ndarray]] = {}
+        predictive_payload: dict[str, dict[str, object]] = {}
         for experiment_name in self.project.experiments.names:
             experiment = self.project.experiments[experiment_name]
             x_axis, x_axis_name, _, _, _ = plotter._resolve_x_axis(experiment.type, None)

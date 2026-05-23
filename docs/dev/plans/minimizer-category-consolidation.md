@@ -454,7 +454,7 @@ PosteriorParameterSummary` so the existing intra-module
     `git grep -n deterministic_result src/`).
     Commit: `Absorb deterministic_result fields into LSQ minimizers`
 
-- [ ] **P1.11 — Migrate plotting and display consumers.**
+- [x] **P1.11 — Migrate plotting and display consumers.**
   - `src/easydiffraction/display/plotting.py` line 2662
     (`analysis.bayesian_pair_caches` loop) and any other Bayesian-
     category readers: replace with reads of sidecar groups

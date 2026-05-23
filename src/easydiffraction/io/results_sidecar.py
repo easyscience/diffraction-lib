@@ -10,6 +10,7 @@ import numpy as np
 
 from easydiffraction.utils.logging import log
 
+SidecarPayload = dict[str, dict[str, object]]
 SIDECAR_FILE_NAME = 'results.h5'
 _POSTERIOR_PARAMETER_SAMPLES_PATH = '/posterior/parameter_samples'
 _POSTERIOR_LOG_POSTERIOR_PATH = '/posterior/log_posterior'
@@ -102,7 +103,7 @@ def _posterior_payload_from_analysis(analysis: object) -> dict[str, np.ndarray |
     return dict(sidecar_data.get('posterior', {}))
 
 
-def _distribution_cache_payload(analysis: object) -> dict[str, dict[str, np.ndarray]]:
+def _distribution_cache_payload(analysis: object) -> SidecarPayload:
     """Return distribution caches keyed by parameter name."""
     fit_results = getattr(analysis, 'fit_results', None)
     distribution_caches = getattr(fit_results, 'posterior_distribution_caches', None)
@@ -113,7 +114,7 @@ def _distribution_cache_payload(analysis: object) -> dict[str, dict[str, np.ndar
     return dict(sidecar_data.get('distribution_caches', {}))
 
 
-def _pair_cache_payload(analysis: object) -> dict[str, dict[str, np.ndarray]]:
+def _pair_cache_payload(analysis: object) -> SidecarPayload:
     """Return pair-cache arrays keyed by cache id."""
     fit_results = getattr(analysis, 'fit_results', None)
     pair_caches = getattr(fit_results, 'posterior_pair_caches', None)
@@ -124,18 +125,19 @@ def _pair_cache_payload(analysis: object) -> dict[str, dict[str, np.ndarray]]:
     return dict(sidecar_data.get('pair_caches', {}))
 
 
-def _predictive_payload(analysis: object) -> dict[str, dict[str, np.ndarray]]:
+def _predictive_payload(analysis: object) -> SidecarPayload:
     """Return persisted predictive arrays keyed by experiment name."""
     fit_results = getattr(analysis, 'fit_results', None)
     posterior_predictive = getattr(fit_results, 'posterior_predictive', None)
     if posterior_predictive:
-        payload: dict[str, dict[str, np.ndarray]] = {}
+        payload: SidecarPayload = {}
         for runtime_key, summary in posterior_predictive.items():
             experiment_name = getattr(summary, 'experiment_name', None)
             if not isinstance(experiment_name, str) or not experiment_name.strip():
                 experiment_name = runtime_key
 
             dataset_payload = payload.setdefault(experiment_name, {})
+            dataset_payload['x_axis_name'] = str(summary.x_axis_name)
             dataset_payload['x'] = np.asarray(summary.x, dtype=float)
             dataset_payload['best_sample_prediction'] = np.asarray(
                 summary.best_sample_prediction,
@@ -225,7 +227,7 @@ def _write_posterior_payload(handle: object, analysis: object) -> bool:
 def _write_payload_group(
     handle: object,
     group_name: str,
-    payload: dict[str, dict[str, np.ndarray]],
+    payload: SidecarPayload,
 ) -> bool:
     """Write a mapping payload under one HDF5 group."""
     wrote_any = False
@@ -241,6 +243,10 @@ def _write_payload_group(
         item_group.attrs['id'] = str(item_id)
         for dataset_name, values in item_payload.items():
             if values is None:
+                continue
+            if isinstance(values, str):
+                item_group.attrs[dataset_name] = values
+                wrote_any = True
                 continue
             item_group.create_dataset(dataset_name, data=np.asarray(values))
             wrote_any = True
@@ -325,9 +331,16 @@ def _read_posterior_payload(handle: object, analysis: object) -> dict[str, np.nd
     return payload
 
 
-def _read_payload_group(handle: object, group_name: str) -> dict[str, dict[str, np.ndarray]]:
+def _read_hdf5_attr(value: object) -> object:
+    """Return one HDF5 attribute as a plain Python value."""
+    if isinstance(value, bytes):
+        return value.decode('utf-8')
+    return value
+
+
+def _read_payload_group(handle: object, group_name: str) -> SidecarPayload:
     """Read a mapping payload from one HDF5 group."""
-    payload: dict[str, dict[str, np.ndarray]] = {}
+    payload: SidecarPayload = {}
     normalized_group = _normalized_hdf5_path(group_name)
     if normalized_group not in handle:
         return payload
@@ -335,24 +348,29 @@ def _read_payload_group(handle: object, group_name: str) -> dict[str, dict[str, 
     root = handle[normalized_group]
     for item_name, item_group in root.items():
         item_id = str(item_group.attrs.get('id', item_name))
-        payload[item_id] = {
+        item_payload: dict[str, object] = {
             dataset_name: np.asarray(dataset)
             for dataset_name, dataset in item_group.items()
         }
+        for attr_name, attr_value in item_group.attrs.items():
+            if attr_name == 'id':
+                continue
+            item_payload[attr_name] = _read_hdf5_attr(attr_value)
+        payload[item_id] = item_payload
     return payload
 
 
-def _read_distribution_caches(handle: object) -> dict[str, dict[str, np.ndarray]]:
+def _read_distribution_caches(handle: object) -> SidecarPayload:
     """Read cached posterior distribution arrays."""
     return _read_payload_group(handle, _DISTRIBUTION_CACHE_GROUP)
 
 
-def _read_pair_caches(handle: object) -> dict[str, dict[str, np.ndarray]]:
+def _read_pair_caches(handle: object) -> SidecarPayload:
     """Read cached posterior pair-density arrays."""
     return _read_payload_group(handle, _PAIR_CACHE_GROUP)
 
 
-def _read_predictive_datasets(handle: object) -> dict[str, dict[str, np.ndarray]]:
+def _read_predictive_datasets(handle: object) -> SidecarPayload:
     """Read cached posterior predictive arrays."""
     return _read_payload_group(handle, _PREDICTIVE_GROUP)
 

@@ -147,13 +147,13 @@ class PosteriorDisplay:
             return True
 
         analysis = self._project.analysis
+        fit_results = getattr(analysis, 'fit_results', None)
+        runtime_pair_caches = getattr(fit_results, 'posterior_pair_caches', None)
+        if runtime_pair_caches:
+            return False
+
         sidecar_data = getattr(analysis, '_persisted_fit_state_sidecar', {})
-        pair_caches = sidecar_data.get('pair_caches', {})
-        return not (
-            analysis.bayesian_result.has_pair_cache.value
-            and len(analysis.bayesian_pair_caches) > 0
-            and bool(pair_caches)
-        )
+        return not bool(sidecar_data.get('pair_caches', {}))
 
     def _predictive_needs_processing_indicator(
         self,
@@ -164,38 +164,39 @@ class PosteriorDisplay:
     ) -> bool:
         """Return whether predictive plotting still needs processing."""
         analysis = self._project.analysis
-        sidecar_data = getattr(analysis, '_persisted_fit_state_sidecar', {})
-        predictive_datasets = sidecar_data.get('predictive_datasets', {})
-        if not (
-            analysis.bayesian_result.has_posterior_predictive.value
-            and bool(predictive_datasets)
-            and expt_name in predictive_datasets
-        ):
-            return True
-
         experiment = self._project.experiments[expt_name]
         plotter = self._project.rendering.plotter
         _, x_axis_name, _, _, _ = plotter._resolve_x_axis(experiment.type, x)
+        x_axis_name = str(x_axis_name)
         require_draws = plotter.engine == PlotterEngineEnum.PLOTLY.value and style in {
             'draws',
             'band+draws',
         }
 
-        matching_rows = [
-            row
-            for row in analysis.bayesian_predictive_datasets
-            if row.experiment_name.value == expt_name
-            and str(row.x_axis_name.value) == str(x_axis_name)
-        ]
-        if not matching_rows:
+        sidecar_data = getattr(analysis, '_persisted_fit_state_sidecar', {})
+        predictive_dataset = sidecar_data.get('predictive_datasets', {}).get(expt_name)
+        if predictive_dataset is not None:
+            dataset_axis_name = str(predictive_dataset.get('x_axis_name', ''))
+            if dataset_axis_name in {'', x_axis_name}:
+                return require_draws and predictive_dataset.get('draws') is None
+
+        fit_results = getattr(analysis, 'fit_results', None)
+        posterior_predictive = getattr(fit_results, 'posterior_predictive', None)
+        if not posterior_predictive:
             return True
-        if not require_draws:
-            return False
-        return not any(
-            row.draws_path.value is not None
-            and predictive_datasets[expt_name].get('draws') is not None
-            for row in matching_rows
-        )
+
+        cache_keys = [
+            plotter._posterior_predictive_key(expt_name, x_axis_name, include_draws=True),
+            plotter._posterior_predictive_key(expt_name, x_axis_name, include_draws=False),
+            expt_name,
+        ]
+        for cache_key in cache_keys:
+            summary = posterior_predictive.get(cache_key)
+            if summary is None or str(getattr(summary, 'x_axis_name', '')) != x_axis_name:
+                continue
+            return require_draws and getattr(summary, 'draws', None) is None
+
+        return True
 
     def pairs(
         self,
