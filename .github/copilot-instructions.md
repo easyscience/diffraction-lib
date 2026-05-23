@@ -122,6 +122,12 @@
   tests, tutorials, docs). Use `git grep -n` because all contributors
   have Git; do not assume `rg` is installed. If `git grep` is
   unavailable, fall back to `find ... -type f` plus `grep -n`.
+- When asked to review a plan, save the review next to that plan using
+  `<plan-stem>_review-N.md`, where `N` is one greater than the highest
+  existing review number for that plan. For example,
+  `docs/dev/plans/background-refactor.md` is reviewed in
+  `docs/dev/plans/background-refactor_review-1.md`, then
+  `docs/dev/plans/background-refactor_review-2.md`.
 - Each change is atomic and single-commit-sized: make one change,
   suggest the commit message, then stop and wait for confirmation.
 - When in doubt, ask.
@@ -222,3 +228,14 @@ When asked to create a plan:
   understand the benefit. Update it during implementation if extra
   approved changes become important enough to mention in the PR title or
   description.
+- When replying to a plan review, save the reply alongside the review.
+  Reviews live at `docs/dev/plans/<feature-name>_review-<N>.md`; the
+  matching reply goes to
+  `docs/dev/plans/<feature-name>_reply-<N>.md` (same slug, same
+  number, swap `review` → `reply`). One reply file per review file;
+  do not bundle replies to multiple reviews into one document.
+  Structure the reply with one section per finding, each containing a
+  verdict (agree / disagree / partial), the action taken in the plan,
+  and a pointer to the affected plan section. After updating the
+  plan, also update the reply if a numbered step shifts so that
+  cross-references stay accurate.
