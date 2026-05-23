@@ -647,7 +647,7 @@ def _build_template(project: object) -> SequentialFitTemplate:
         alias_defs=alias_defs,
         constraint_defs=constraint_defs,
         constraints_enabled=project.analysis.constraints.enabled,
-        minimizer_tag=project.analysis.minimizer_type or 'lmfit',
+        minimizer_tag=project.analysis.minimizer.type or 'lmfit',
         calculator_tag=experiment.calculator.type,
         diffrn_extract_rules=diffrn_extract_rules,
         diffrn_field_names=diffrn_field_names,

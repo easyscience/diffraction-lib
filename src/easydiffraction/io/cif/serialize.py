@@ -613,14 +613,6 @@ def _restore_persisted_fit_state(analysis: object, block: object) -> None:
 def _collect_legacy_analysis_tags(block: object) -> list[str]:
     """Return deprecated analysis CIF tags present in a block."""
     legacy_tags: list[str] = []
-    if _has_cif_value(block, '_fit.minimizer_type'):
-        legacy_tags.append('_fit.minimizer_type')
-    if _has_cif_value(block, '_fit.mode'):
-        legacy_tags.append('_fit.mode')
-    if _has_cif_value(block, '_fitting.minimizer_type'):
-        legacy_tags.append('_fitting.minimizer_type')
-    if _has_cif_value(block, '_fitting.mode_type'):
-        legacy_tags.append('_fitting.mode_type')
     if _has_cif_loop(block, '_joint_fit_experiment.id'):
         legacy_tags.append('_joint_fit_experiment.id')
     if _has_cif_loop(block, '_joint_fit_experiment.weight'):

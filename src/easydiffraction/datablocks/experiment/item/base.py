@@ -154,7 +154,7 @@ class ExperimentBase(DatablockItem):
             log.warning(
                 f"Unsupported background type '{new_type}'. "
                 f'Supported: {supported_tags}. '
-                f"For more information, use 'show_background_types()'",
+                f"For more information, use 'background.show_supported()'",
             )
             return
 
@@ -194,7 +194,7 @@ class ExperimentBase(DatablockItem):
             log.warning(
                 f"Unsupported extinction type '{new_type}'. "
                 f'Supported: {supported_tags}. '
-                f"For more information, use 'show_extinction_types()'",
+                f"For more information, use 'extinction.show_supported()'",
             )
             return
 
@@ -409,27 +409,6 @@ class ScExperimentBase(ExperimentBase):
         """Active extinction correction model."""
         return self._extinction
 
-    @property
-    def extinction_type(self) -> str:
-        """Tag of the active extinction correction model."""
-        return self._extinction_type
-
-    @extinction_type.setter
-    def extinction_type(self, new_type: str) -> None:
-        """
-        Switch to a different extinction correction model.
-
-        Parameters
-        ----------
-        new_type : str
-            Extinction tag (e.g. ``'becker-coppens'``).
-        """
-        self._replace_extinction(new_type, announce=True)
-
-    def show_extinction_types(self) -> None:
-        """Print supported extinction types and mark current type."""
-        self.extinction.show_supported()
-
     def _normalize_switchable_type_descriptors(self) -> None:
         """
         Normalize switchable category descriptors after CIF loading.
@@ -442,9 +421,9 @@ class ScExperimentBase(ExperimentBase):
         Restore single-crystal switchable category types from CIF.
         """
         super()._restore_switchable_types(block)
-        extinction_type = read_cif_str(block, '_extinction.type')
-        if extinction_type is not None:
-            self._replace_extinction(extinction_type, announce=False)
+        extinction_tag = read_cif_str(block, '_extinction.type')
+        if extinction_tag is not None:
+            self._replace_extinction(extinction_tag, announce=False)
 
     # ------------------------------------------------------------------
     #  Linked crystal (read-only, single type)
@@ -598,26 +577,6 @@ class PdExperimentBase(ExperimentBase):
         """Peak category object with profile parameters and mixins."""
         return self._peak
 
-    @property
-    def peak_profile_type(self) -> object:
-        """Currently selected peak profile type alias."""
-        return PeakFactory._local_alias_for(
-            self._peak_profile_type,
-            **self._peak_profile_context(),
-        )
-
-    @peak_profile_type.setter
-    def peak_profile_type(self, new_type: str) -> None:
-        """
-        Change the active peak profile type, if supported.
-
-        Parameters
-        ----------
-        new_type : str
-            New profile type as context-local alias or canonical tag.
-        """
-        self._replace_peak_profile(new_type, announce=True)
-
     def _replace_peak_profile(self, new_type: str, *, announce: bool) -> None:
         """Replace the active peak profile category."""
         context = self._peak_profile_context()
@@ -634,7 +593,7 @@ class PdExperimentBase(ExperimentBase):
             log.warning(
                 f"Unsupported peak profile '{new_type}'. "
                 f'Supported peak profiles: {supported_aliases}. '
-                f"For more information, use 'show_peak_profile_types()'",
+                f"For more information, use 'peak.show_supported()'",
             )
             return
 
@@ -652,11 +611,7 @@ class PdExperimentBase(ExperimentBase):
         self._peak._type.value = canonical_type
         if announce:
             console.paragraph(f"Peak profile type for experiment '{self.name}' changed to")
-            console.print(self.peak_profile_type)
-
-    def show_peak_profile_types(self) -> None:
-        """Print supported peak profile types and mark current type."""
-        self.peak.show_supported()
+            console.print(PeakFactory._local_alias_for(canonical_type, **context))
 
     def _set_peak_profile_type(self, new_type: str) -> None:
         """

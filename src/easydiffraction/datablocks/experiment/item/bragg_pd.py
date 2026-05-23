@@ -182,23 +182,9 @@ class BraggPdExperiment(PdExperimentBase):
     # ------------------------------------------------------------------
 
     @property
-    def background_type(self) -> object:
-        """Current background type enum value."""
-        return self._background_type
-
-    @background_type.setter
-    def background_type(self, new_type: str) -> None:
-        """Set a new background type and recreate background object."""
-        self._replace_background(new_type, announce=True)
-
-    @property
     def background(self) -> object:
         """Active background model for this experiment."""
         return self._background
-
-    def show_background_types(self) -> None:
-        """Print supported background types and mark current type."""
-        self.background.show_supported()
 
     def _normalize_switchable_type_descriptors(self) -> None:
         """
@@ -212,6 +198,6 @@ class BraggPdExperiment(PdExperimentBase):
         Restore Bragg powder switchable category types from CIF.
         """
         super()._restore_switchable_types(block)
-        background_type = read_cif_str(block, '_background.type')
-        if background_type is not None:
-            self._replace_background(background_type, announce=False)
+        background_tag = read_cif_str(block, '_background.type')
+        if background_tag is not None:
+            self._replace_background(background_tag, announce=False)

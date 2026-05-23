@@ -485,7 +485,7 @@ class Analysis(
         self._fit_parameter_correlations = FitParameterCorrelations()
         self._has_persisted_fit_state_data = False
         self._persisted_fit_state_sidecar: dict[str, object] = {}
-        self._fitter = Fitter(self.minimizer_type)
+        self._fitter = Fitter(self.minimizer.type)
         self._fit_results = None
         self._parameter_snapshots: dict[str, dict[str, dict]] = {}
         self._display = AnalysisDisplay(self)
@@ -695,7 +695,7 @@ class Analysis(
             msg = (
                 'CIF restore mismatch: '
                 f"_fit_result.result_kind = '{bayesian_kind}' "
-                f"but _minimizer.type = '{self.minimizer_type}' "
+                f"but _minimizer.type = '{self.minimizer.type}' "
                 'is not a Bayesian minimizer. Either set '
                 '_minimizer.type to a Bayesian sampler '
                 '(e.g. bumps (dream)), or set _fit_result.result_kind '
@@ -719,8 +719,8 @@ class Analysis(
             sampler_settings = self.minimizer._native_kwargs()
             sampler_name = (
                 'dream'
-                if self.minimizer_type == MinimizerTypeEnum.BUMPS_DREAM.value
-                else str(self.minimizer_type)
+                if self.minimizer.type == MinimizerTypeEnum.BUMPS_DREAM.value
+                else str(self.minimizer.type)
             )
             restored_results = BayesianFitResults(
                 success=bool(self.fit_result.success.value),
@@ -1025,15 +1025,6 @@ class Analysis(
         """Active minimizer settings and result category."""
         return self._minimizer
 
-    @property
-    def minimizer_type(self) -> str:
-        """Currently selected minimizer type."""
-        return self.minimizer.type
-
-    @minimizer_type.setter
-    def minimizer_type(self, value: str) -> None:
-        self._replace_minimizer(value, announce=True)
-
     def _replace_minimizer(self, value: str, *, announce: bool) -> None:
         """Replace the active minimizer category."""
         supported = [str(tag) for tag in MinimizerCategoryFactory.supported_tags()]
@@ -1041,11 +1032,11 @@ class Analysis(
             log.warning(
                 f"Unsupported minimizer type '{value}'. "
                 f'Supported minimizer types: {supported}. '
-                f"For more information, use 'show_supported_minimizer_types()'",
+                f"For more information, use 'minimizer.show_supported()'",
             )
             return
 
-        if value == self.minimizer_type:
+        if value == self.minimizer.type:
             if announce:
                 console.paragraph('Current minimizer already set to')
                 console.print(value)
@@ -1053,7 +1044,7 @@ class Analysis(
 
         old_minimizer = self._minimizer
         new_minimizer = MinimizerCategoryFactory.create(value)
-        old_defaults = MinimizerCategoryFactory.create(self.minimizer_type)
+        old_defaults = MinimizerCategoryFactory.create(self.minimizer.type)
         self._warn_about_minimizer_swap_defaults(old_defaults, new_minimizer)
 
         old_minimizer._parent = None
@@ -1123,29 +1114,6 @@ class Analysis(
                 f'Switching minimizer type changes these default values: {", ".join(changed)}.'
             )
 
-    def show_supported_minimizer_types(self) -> None:
-        """Print supported minimizer types and mark the current type."""
-        current = self.minimizer_type
-        columns_data = [
-            [
-                '*' if str(klass.type_info.tag) == current else '',
-                str(klass.type_info.tag),
-                klass.type_info.description,
-            ]
-            for klass in MinimizerCategoryFactory.supported_for()
-        ]
-        console.paragraph('Minimizer types')
-        render_table(
-            columns_headers=['', 'Type', 'Description'],
-            columns_alignment=['left', 'left', 'left'],
-            columns_data=columns_data,
-        )
-
-    def show_current_minimizer_type(self) -> None:
-        """Print the currently selected minimizer type."""
-        console.paragraph('Current minimizer type')
-        console.print(self.minimizer_type)
-
     def _sync_engine_from_minimizer_category(self) -> None:
         """Apply minimizer category settings to the live engine."""
         engine = self.fitter.minimizer
@@ -1155,7 +1123,7 @@ class Analysis(
             if not hasattr(engine, key):
                 log.warning(
                     f"Minimizer setting '{key}' is not supported by "
-                    f"engine '{self.minimizer_type}'."
+                    f"engine '{self.minimizer.type}'."
                 )
                 continue
             setattr(engine, key, value)

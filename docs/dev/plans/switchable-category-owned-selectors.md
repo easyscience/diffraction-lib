@@ -451,7 +451,7 @@ with explicit `git add` paths.
         and `['method_name']`.
       Commit: `Drop persisted optimizer_name/method_name; add metadata dict`
 
-- [ ] **P1.12 — Delete owner-level selector shims and CIF tags.**
+- [x] **P1.12 — Delete owner-level selector shims and CIF tags.**
       - Remove the following from `Analysis`: `minimizer_type`
         getter/setter, `show_supported_minimizer_types()`,
         `show_current_minimizer_type()`,

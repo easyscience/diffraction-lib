@@ -164,9 +164,9 @@ class Summary:
                     console.paragraph('2θ offset')
                     console.print(f'{expt.instrument.calib_twotheta_offset.value:.5f}')
 
-            if 'peak_profile_type' in expt._public_attrs():
+            if 'peak' in expt._public_attrs():
                 console.paragraph('Profile type')
-                console.print(expt.peak_profile_type)
+                console.print(expt.peak.type)
 
             if 'peak' in expt._public_attrs():
                 if 'broad_gauss_u' in expt.peak._public_attrs():
@@ -219,7 +219,7 @@ class Summary:
         console.section('Fitting')
 
         console.paragraph('Minimization engine')
-        console.print(self.project.analysis.minimizer_type)
+        console.print(self.project.analysis.minimizer.type)
 
         console.paragraph('Fit quality')
         columns_headers = ['metric', 'value']
