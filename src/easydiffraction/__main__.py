@@ -84,7 +84,7 @@ def _display_project_outputs(project: object) -> None:
     project.display.fit.correlations()
 
     if _project_result_kind(project) == 'bayesian':
-        if project.rendering.plotter.engine == 'plotly':
+        if project.chart.plotter.engine == 'plotly':
             project.display.posterior.pairs()
         project.display.posterior.distribution()
         for experiment in project.experiments:

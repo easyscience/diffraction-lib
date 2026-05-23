@@ -34,7 +34,8 @@ from easydiffraction.utils.logging import log
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from easydiffraction.project.categories.rendering import Rendering
+    from easydiffraction.project.categories.chart import Chart
+    from easydiffraction.project.categories.table import Table
     from easydiffraction.project.categories.verbosity import Verbosity
     from easydiffraction.project.project_info import ProjectInfo
 
@@ -200,7 +201,8 @@ class Project(GuardedBase):
         object.__setattr__(self, '_info', self._config.info)
         self._structures = Structures()
         self._experiments = Experiments()
-        object.__setattr__(self, '_rendering', self._config.rendering)
+        object.__setattr__(self, '_chart', self._config.chart)
+        object.__setattr__(self, '_table', self._config.table)
         object.__setattr__(self, '_verbosity', self._config.verbosity)
         self._display = ProjectDisplay(self)
         self._analysis = Analysis(self)
@@ -215,6 +217,8 @@ class Project(GuardedBase):
         self._structures._parent = self
         self._experiments._parent = self
         self._analysis._parent = self
+        self._chart._parent = self
+        self._table._parent = self
 
     def _supported_filters_for(self, category: object) -> dict[str, object]:
         """Return owner context filters for a switchable category."""
@@ -222,14 +226,12 @@ class Project(GuardedBase):
         return {}
 
     def _swap_chart(self, new_type: str) -> None:
-        """Switch the active chart category."""
-        msg = f"Switching chart to '{new_type}' is not wired yet."
-        raise NotImplementedError(msg)
+        """Switch the active chart renderer."""
+        self._chart._set_type(new_type)
 
     def _swap_table(self, new_type: str) -> None:
-        """Switch the active table category."""
-        msg = f"Switching table to '{new_type}' is not wired yet."
-        raise NotImplementedError(msg)
+        """Switch the active table renderer."""
+        self._table._set_type(new_type)
 
     @classmethod
     def current_project_path(cls) -> pathlib.Path | None:
@@ -301,9 +303,14 @@ class Project(GuardedBase):
         self._experiments = experiments
 
     @property
-    def rendering(self) -> Rendering:
-        """Rendering configuration bound to the project."""
-        return self._rendering
+    def chart(self) -> Chart:
+        """Chart configuration bound to the project."""
+        return self._chart
+
+    @property
+    def table(self) -> Table:
+        """Table configuration bound to the project."""
+        return self._table
 
     @property
     def display(self) -> ProjectDisplay:

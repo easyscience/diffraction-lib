@@ -400,9 +400,12 @@ def project_config_to_cif(project: object) -> str:
         return category_owner_to_cif(config)
 
     lines: list[str] = [_as_cif_text(project.info)]
-    rendering = getattr(project, 'rendering', None)
-    if rendering is not None:
-        lines.extend(('', _as_cif_text(rendering)))
+    chart = getattr(project, 'chart', None)
+    if chart is not None:
+        lines.extend(('', _as_cif_text(chart)))
+    table = getattr(project, 'table', None)
+    if table is not None:
+        lines.extend(('', _as_cif_text(table)))
     return '\n'.join(lines)
 
 
@@ -522,9 +525,13 @@ def project_config_from_cif(project: object, cif_text: str) -> None:
 
     _populate_project_info_from_block(project.info, block)
 
-    rendering = getattr(project, 'rendering', None)
-    if rendering is not None:
-        rendering.from_cif(block)
+    chart = getattr(project, 'chart', None)
+    if chart is not None:
+        chart.from_cif(block)
+
+    table = getattr(project, 'table', None)
+    if table is not None:
+        table.from_cif(block)
 
     verbosity = getattr(project, 'verbosity', None)
     if verbosity is not None:

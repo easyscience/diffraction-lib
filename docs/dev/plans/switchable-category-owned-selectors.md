@@ -362,7 +362,7 @@ with explicit `git add` paths.
         `peak` filters use `self.calculator.type` after the rename).
       Commit: `Rename Calculation to Calculator and wire to mixin`
 
-- [ ] **P1.9 — Split `Rendering` into `Chart` + `Table` (§8a).**
+- [x] **P1.9 — Split `Rendering` into `Chart` + `Table` (§8a).**
       This step lands as a **single atomic commit** that covers
       both the new categories AND every consumer of the removed
       `project.rendering` surface, so the branch stays buildable
