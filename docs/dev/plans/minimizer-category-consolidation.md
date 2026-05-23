@@ -732,7 +732,7 @@ required by `.github/copilot-instructions.md` → **Workflow**.
     exit $unit_tests_exit_code
   ```
 
-- [ ] **P2.4 — Integration tests.**
+- [x] **P2.4 — Integration tests.**
 
   ```
   pixi run integration-tests > /tmp/easydiffraction-integration-tests.log 2>&1; \
