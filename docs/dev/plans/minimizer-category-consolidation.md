@@ -387,7 +387,7 @@ PosteriorParameterSummary` so the existing intra-module
       `_bayesian_parameter_posterior` reader.
       Commit: `Persist parameter posterior via _fit_parameter columns`
 
-- [ ] **P1.9 — Migrate path consumers off `analysis.fitting.*`.**
+- [x] **P1.9 — Migrate path consumers off `analysis.fitting.*`.**
       Update remaining live-Python references (already covered for
       `analysis.py` in P1.6) in:
   - `src/easydiffraction/summary/summary.py` (line 222).
