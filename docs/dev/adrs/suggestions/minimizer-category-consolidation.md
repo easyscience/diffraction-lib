@@ -143,8 +143,7 @@ from CIF entirely — the HDF5 file is self-describing.
 
 There is exactly **one** sidecar file per fit, regardless of
 minimizer: `analysis/results.h5`. No CIF tag stores the sidecar path.
-The file uses namespaced top-level groups so writers with different
-lifecycles can coexist:
+The file uses namespaced top-level groups:
 
 ```
 analysis/results.h5
@@ -155,17 +154,24 @@ analysis/results.h5
 └── /emcee_chain/          # emcee HDFBackend live state (emcee runs only)
 ```
 
-Invariant: each writer owns a fixed set of top-level groups and must
-never truncate the file as a whole. The post-fit snapshot writer
-opens the file in append mode and replaces only the groups it owns
-(`/posterior`, `/distribution_cache`, `/pair_cache`, `/predictive`)
-before rewriting them. emcee's `HDFBackend` writes incrementally to
-`/emcee_chain` during sampling and survives process restart for
-resume.
+**Lifecycle rule: a new fit overwrites the file.** Mixing partial
+results from different minimizers — or from the same minimizer with
+different settings or a different free-parameter set — is the most
+common source of "stale plot" confusion. To prevent this, calling
+`analysis.fit()` truncates `analysis/results.h5` (recreating it with
+the new run's groups). The user is shown a `log.warn(...)` message
+the first time a fit is started while a populated sidecar exists,
+naming the file and stating that previous results will be overwritten.
 
-For non-emcee runs (DREAM, deterministic) the `/emcee_chain` group is
-absent. For deterministic runs the Bayesian groups are absent too,
-and the sidecar file may not exist at all.
+Resume is the only exception: `analysis.fit(resume=True,
+extra_steps=N)` opens the existing file in append mode and extends
+the chain. Resume is rejected with a clear error if the active
+minimizer does not support it, if `results.h5` is missing, or if the
+stored chain's parameter set does not match the current one.
+
+For deterministic runs the Bayesian groups are absent and the sidecar
+file may not exist at all. For non-emcee Bayesian runs the
+`/emcee_chain` group is absent.
 
 ### 5. Unified, verbose attribute names with internal mapping
 
