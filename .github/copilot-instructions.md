@@ -127,7 +127,11 @@
   existing review number for that plan. For example,
   `docs/dev/plans/background-refactor.md` is reviewed in
   `docs/dev/plans/background-refactor_review-1.md`, then
-  `docs/dev/plans/background-refactor_review-2.md`.
+  `docs/dev/plans/background-refactor_review-2.md`. A reviewer must not
+  run tests, `pixi run fix`, `pixi run check`, or any other build or
+  verification command; reviews are static reads of code, plan, and
+  documentation only. Note in the review which checks were skipped so
+  the next implementer knows the gap.
 - Each change is atomic and single-commit-sized: make one change,
   suggest the commit message, then stop and wait for confirmation.
 - When in doubt, ask.
