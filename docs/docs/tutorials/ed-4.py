@@ -143,7 +143,7 @@ expt1.peak.broad_lorentz_y = 0.088
 # Select the background type.
 
 # %%
-expt1.background_type = 'line-segment'
+expt1.background.type = 'line-segment'
 
 # %% [markdown]
 # Add background points.
@@ -209,7 +209,7 @@ expt2.peak.broad_lorentz_y = 0.057691
 # Select background type.
 
 # %%
-expt2.background_type = 'chebyshev'
+expt2.background.type = 'chebyshev'
 
 # %% [markdown]
 # Add background points.
@@ -264,13 +264,13 @@ project.experiments.add(expt2)
 # #### Set Fit Mode
 
 # %%
-project.analysis.fitting_mode_type = 'joint'
+project.analysis.fitting_mode.type = 'joint'
 
 # %% [markdown]
 # #### Set Minimizer
 
 # %%
-project.analysis.minimizer_type = 'lmfit'
+project.analysis.minimizer.type = 'lmfit'
 
 # %% [markdown]
 # #### Set Fitting Parameters

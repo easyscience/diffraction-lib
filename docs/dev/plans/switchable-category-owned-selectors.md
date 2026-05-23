@@ -475,7 +475,7 @@ with explicit `git add` paths.
         All three must return empty.
       Commit: `Remove owner-level selector shims and obsolete CIF tags`
 
-- [ ] **P1.13 — Update tutorials.** Grep
+- [x] **P1.13 — Update tutorials.** Grep
       `docs/docs/tutorials/*.py` for the renamed Python paths and
       replace each with the new shape:
       - `project.analysis.minimizer_type = X` →

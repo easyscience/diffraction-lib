@@ -192,8 +192,8 @@ project.analysis.aliases.create(
 project.analysis.constraints.create(expression='biso_Ba = biso_La')
 
 # %%
-project.analysis.show_supported_minimizer_types()
-project.analysis.minimizer_type = 'lmfit'
+project.analysis.minimizer.show_supported()
+project.analysis.minimizer.type = 'lmfit'
 
 # %%
 project.analysis.fit()
@@ -211,10 +211,10 @@ project.display.pattern(expt_name='hrpt')
 # ## Step 6: Switch calculator engine
 
 # %%
-experiment.calculation.show_calculator_types()
+experiment.calculator.show_supported()
 
 # %%
-experiment.calculation.calculator_type = 'crysfml'
+experiment.calculator.type = 'crysfml'
 
 # %%
 project.analysis.fit()

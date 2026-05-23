@@ -74,10 +74,10 @@ experiment.linked_crystal.scale.free = True
 experiment.extinction.radius.free = True
 
 # %%
-project.analysis.show_supported_minimizer_types()
+project.analysis.minimizer.show_supported()
 
 # %%
-project.analysis.minimizer_type = 'bumps'
+project.analysis.minimizer.type = 'bumps'
 
 # %%
 # Limit number of iterations to prevent long calculation time in this tutorial.

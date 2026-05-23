@@ -68,13 +68,13 @@ project.save_as(dir_path='lbco_hrpt', temporary=True)
 # Show supported plotting engines.
 
 # %%
-project.rendering.show_chart_engines()
+project.chart.show_supported()
 
 # %% [markdown]
 # Show current plotting configuration.
 
 # %%
-project.rendering.show_config()
+project.chart.show_supported()
 
 # %% [markdown]
 # ## Step 2: Define Structure
@@ -236,13 +236,13 @@ project.experiments['hrpt'].instrument.calib_twotheta_offset = 0.6
 # Show supported peak profile types.
 
 # %%
-project.experiments['hrpt'].show_peak_profile_types()
+project.experiments['hrpt'].peak.show_supported()
 
 # %% [markdown]
 # Select the desired peak profile type.
 
 # %%
-project.experiments['hrpt'].peak_profile_type = 'pseudo-voigt'
+project.experiments['hrpt'].peak.type = 'pseudo-voigt'
 
 # %% [markdown]
 # Modify default peak profile parameters.
@@ -261,13 +261,13 @@ project.experiments['hrpt'].peak.broad_lorentz_y = 0.1
 # Show supported background types.
 
 # %%
-project.experiments['hrpt'].show_background_types()
+project.experiments['hrpt'].background.show_supported()
 
 # %% [markdown]
 # Select the desired background type.
 
 # %%
-project.experiments['hrpt'].background_type = 'line-segment'
+project.experiments['hrpt'].background.type = 'line-segment'
 
 # %% [markdown]
 # Add background points.
@@ -316,13 +316,13 @@ project.save()
 # Show supported calculation engines for this experiment.
 
 # %%
-project.experiments['hrpt'].calculation.show_calculator_types()
+project.experiments['hrpt'].calculator.show_supported()
 
 # %% [markdown]
 # Select the desired calculation engine.
 
 # %%
-project.experiments['hrpt'].calculation.calculator_type = 'cryspy'
+project.experiments['hrpt'].calculator.type = 'cryspy'
 
 # %% [markdown]
 # #### Show Calculated Data
@@ -371,13 +371,13 @@ project.display.parameters.access()
 # Show supported fit modes.
 
 # %%
-project.analysis.show_supported_fitting_mode_types()
+project.analysis.fitting_mode.show_supported()
 
 # %% [markdown]
 # Select desired fit mode.
 
 # %%
-project.analysis.fitting_mode_type = 'single'
+project.analysis.fitting_mode.type = 'single'
 
 # %% [markdown]
 # #### Set Minimizer
@@ -385,13 +385,13 @@ project.analysis.fitting_mode_type = 'single'
 # Show supported fitting engines.
 
 # %%
-project.analysis.show_supported_minimizer_types()
+project.analysis.minimizer.show_supported()
 
 # %% [markdown]
 # Select desired fitting engine.
 
 # %%
-project.analysis.minimizer_type = 'lmfit'
+project.analysis.minimizer.type = 'lmfit'
 
 # %% [markdown]
 # ### Perform Fit 1/5
