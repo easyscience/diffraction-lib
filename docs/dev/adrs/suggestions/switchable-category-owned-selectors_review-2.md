@@ -1,7 +1,7 @@
 # Review 2: Switchable Category Owned Selectors ADR
 
 Reviewed ADR:
-[`switchable-category-owned-selectors.md`](switchable-category-owned-selectors.md)
+[`switchable-category-owned-selectors.md`](../accepted/switchable-category-owned-selectors.md)
 
 Reviewed reply:
 [`switchable-category-owned-selectors_reply-1.md`](switchable-category-owned-selectors_reply-1.md)
@@ -30,7 +30,7 @@ before acceptance.
 
 The amended ADR says the `_type` descriptor is picked up automatically
 by `category.parameters` and the generic CIF path, so no custom hook is
-needed (`switchable-category-owned-selectors.md:247`). That is true for
+needed (`../accepted/switchable-category-owned-selectors.md:247`). That is true for
 `CategoryItem`, but not for `CategoryCollection`. The current collection
 implementation returns only parameters from its loop items
 (`src/easydiffraction/core/category.py:230`), and
@@ -39,7 +39,7 @@ item's parameters (`src/easydiffraction/io/cif/serialize.py:244`).
 
 `background` is explicitly modeled as
 `BackgroundBase(CategoryCollection, SwitchableCategoryBase)`
-(`switchable-category-owned-selectors.md:165`), so a collection-level
+(`../accepted/switchable-category-owned-selectors.md:165`), so a collection-level
 `_type` descriptor will not emit `_background.type` or load back through
 the existing generic collection serializer. The ADR needs either a
 collection-level scalar serialization contract, a custom
@@ -51,8 +51,8 @@ shape for collection-backed switchables.
 The reply reframes the ADR around one public surface for Families A/B/C,
 but the proposed mixin still requires `_factory: ClassVar[type[FactoryBase]]`
 and renders by calling `_factory._supported_map()` and
-`_factory.supported_for(**filters)` (`switchable-category-owned-selectors.md:185`,
-`switchable-category-owned-selectors.md:229`). That works for current
+`_factory.supported_for(**filters)` (`../accepted/switchable-category-owned-selectors.md:185`,
+`../accepted/switchable-category-owned-selectors.md:229`). That works for current
 domain factories, but not for the newly in-scope renderer and fitting
 mode selectors.
 
@@ -85,13 +85,13 @@ prints those aliases in `show_peak_profile_types()`
 (`src/easydiffraction/datablocks/experiment/item/base.py:568`).
 
 The amended mixin renders raw `klass.type_info.tag` values and validates
-against factory-supported tags (`switchable-category-owned-selectors.md:229`,
-`switchable-category-owned-selectors.md:247`). That removes the
+against factory-supported tags (`../accepted/switchable-category-owned-selectors.md:229`,
+`../accepted/switchable-category-owned-selectors.md:247`). That removes the
 local-alias behavior, but the ADR examples still show the alias form:
 `_peak.type 'pseudo-voigt'` and
 `project.experiments['hrpt'].peak.type = 'pseudo-voigt'`
-(`switchable-category-owned-selectors.md:767`,
-`switchable-category-owned-selectors.md:858`).
+(`../accepted/switchable-category-owned-selectors.md:767`,
+`../accepted/switchable-category-owned-selectors.md:858`).
 
 The ADR needs to choose and document one behavior: persist and expose
 canonical tags such as `_peak.type cwl-pseudo-voigt`, or keep the
@@ -102,7 +102,7 @@ context-local alias UX by adding category-specific alias hooks to
 
 Reply 1 adds `Rendering -> Chart + Table`, removes
 `project.rendering`, and replaces `_rendering.*` with `_chart.*` /
-`_table.*` (`switchable-category-owned-selectors.md:436`). That directly
+`_table.*` (`../accepted/switchable-category-owned-selectors.md:436`). That directly
 supersedes the accepted Display UX ADR, which deliberately moved
 serialized renderer settings into `project.rendering` and `_rendering.*`
 (`../accepted/display-ux.md:44`), and the accepted Category Owner
@@ -111,7 +111,7 @@ Sections ADR, which lists `ProjectConfig` children as `ProjectInfo` and
 (`../accepted/category-owner-sections.md:74`).
 
 The "ADRs that need to be updated" list does not include either accepted
-ADR (`switchable-category-owned-selectors.md:654`). If the widened scope
+ADR (`../accepted/switchable-category-owned-selectors.md:654`). If the widened scope
 stays, those ADRs need explicit amendments. Otherwise the accepted
 documentation will continue to direct implementers toward the old
 `project.rendering` object graph and CIF block.
@@ -121,7 +121,7 @@ documentation will continue to direct implementers toward the old
 The amended ADR drops `_minimizer.optimizer_name` and
 `_minimizer.method_name`, then says restored `FitResults` derives them
 from `analysis.minimizer.type` and the engine's `DEFAULT_METHOD` class
-constant (`switchable-category-owned-selectors.md:151`). Current
+constant (`../accepted/switchable-category-owned-selectors.md:151`). Current
 minimizer implementations define `DEFAULT_METHOD` as a module-level
 constant, not a class attribute
 (`src/easydiffraction/analysis/minimizers/lmfit_leastsq.py:12`,

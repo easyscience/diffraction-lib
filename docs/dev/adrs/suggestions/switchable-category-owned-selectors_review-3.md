@@ -1,7 +1,7 @@
 # Review 3: Switchable Category Owned Selectors ADR
 
 Reviewed ADR:
-[`switchable-category-owned-selectors.md`](switchable-category-owned-selectors.md)
+[`switchable-category-owned-selectors.md`](../accepted/switchable-category-owned-selectors.md)
 
 Reviewed reply:
 [`switchable-category-owned-selectors_reply-2.md`](switchable-category-owned-selectors_reply-2.md)
@@ -33,8 +33,8 @@ acceptance because they would mislead the implementing plan.
 Reply 2 says the user decision for peak aliases is: Python setters accept
 either aliases or canonical tags, but CIF persists the canonical tag so
 round-trips are stable. The ADR text now says the same in the alias
-section (`switchable-category-owned-selectors.md:329`) and in the mixin
-docstring (`switchable-category-owned-selectors.md:236`).
+section (`../accepted/switchable-category-owned-selectors.md:329`) and in the mixin
+docstring (`../accepted/switchable-category-owned-selectors.md:236`).
 
 The end-state CIF example still shows:
 
@@ -42,7 +42,7 @@ The end-state CIF example still shows:
 _peak.type                'pseudo-voigt'
 ```
 
-(`switchable-category-owned-selectors.md:918`). In the current peak
+(`../accepted/switchable-category-owned-selectors.md:918`). In the current peak
 system, `pseudo-voigt` is a context-local alias, while canonical tags
 are values such as `cwl-pseudo-voigt` and `tof-pseudo-voigt`
 (`src/easydiffraction/datablocks/experiment/categories/peak/factory.py:34`,
@@ -65,13 +65,13 @@ return [
 ]
 ```
 
-(`switchable-category-owned-selectors.md:305`). `RendererFactoryBase.descriptions()`
+(`../accepted/switchable-category-owned-selectors.md:305`). `RendererFactoryBase.descriptions()`
 returns a `list[tuple[str, str]]`, not a mapping, so `.get()` will fail
 (`src/easydiffraction/display/base.py:141`). The template also omits the
 `'auto'` sentinel even though §8a says `project.chart.type` and
 `project.table.type` include `'auto'`, and the current rendering
 descriptors validate against `[AUTO_ENGINE, *engine_enum_values]`
-(`switchable-category-owned-selectors.md:581`,
+(`../accepted/switchable-category-owned-selectors.md:581`,
 `src/easydiffraction/project/categories/rendering/default.py:22`).
 
 The ADR should make the renderer template implementable and include
@@ -86,7 +86,7 @@ The Family-D catalog lists verbosity as:
 project.config.verbosity.fit
 ```
 
-(`switchable-category-owned-selectors.md:728`). The public project API
+(`../accepted/switchable-category-owned-selectors.md:728`). The public project API
 does not expose `config`; `Project` stores `_config` privately and
 exposes `project.verbosity` directly
 (`src/easydiffraction/project/project.py:199`,

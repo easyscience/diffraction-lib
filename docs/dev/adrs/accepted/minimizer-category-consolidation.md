@@ -354,6 +354,25 @@ emcee's resumable chain state lives in the `/emcee_chain` group of the
 same `analysis/results.h5` file (see §4). No sidecar path appears in
 CIF.
 
+## Superseded Selector Layout
+
+This ADR's original selector layout was superseded by
+[`switchable-category-owned-selectors.md`](switchable-category-owned-selectors.md).
+The minimizer selector no longer persists as `_fitting.minimizer_type`
+and is no longer assigned through `analysis.minimizer_type`. The current
+surface is:
+
+```python
+analysis.minimizer.type = 'bumps (lm)'
+analysis.minimizer.show_supported()
+```
+
+The active minimizer persists as `_minimizer.type`. The earlier
+`_minimizer.optimizer_name` and `_minimizer.method_name` fields are also
+dropped; restored `FitResults.optimizer_name` and
+`FitResults.method_name` are derived from the concrete minimizer
+category's class-level `_engine_metadata` dict.
+
 ## Consequences
 
 ### Architecture wins

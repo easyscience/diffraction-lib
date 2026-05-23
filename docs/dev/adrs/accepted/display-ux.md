@@ -42,23 +42,22 @@ defaults.
 ## Decision
 
 Use `project.display` as the user-facing facade for display actions.
-Move serialized renderer settings out of that facade and into a separate
-project category named `project.rendering`.
+Move serialized renderer settings out of that facade and into separate
+project categories named `project.chart` and `project.table`.
 
 Renderer settings:
 
 ```python
-project.rendering.chart_engine = 'plotly'
-project.rendering.table_engine = 'pandas'
-project.rendering.show_chart_engines()
-project.rendering.show_table_engines()
-project.rendering.show_config()
+project.chart.type = 'plotly'
+project.table.type = 'pandas'
+project.chart.show_supported()
+project.table.show_supported()
 ```
 
 CIF names:
 
-- `_rendering.chart_engine`
-- `_rendering.table_engine`
+- `_chart.type`
+- `_table.type`
 
 No legacy loader is required for `_display.plotter_type` or
 `_display.tabler_type`. The project is in beta, so this cleanup may

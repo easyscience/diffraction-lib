@@ -1319,19 +1319,6 @@ order explicit and helps catch priority conflicts.
 
 ---
 
-## 72. 🟡 Warn on All Switchable-Category Type Changes
-
-**Type:** UX / Consistency
-
-Switching `background_type` already warns: "Switching background type
-discards 1 existing background point(s)." The same warning pattern
-should apply to all other switchable types (`peak_profile_type`,
-`data_type`, etc.) so users know their values will be lost.
-
-**Depends on:** nothing.
-
----
-
 ## 73. 🟢 Unify Setter Parameter Naming Convention
 
 **Type:** Code style
@@ -1378,20 +1365,6 @@ check. Options:
 project/analysis-level method to list all available calculator engines.
 Users exploring the API have no single entry point to see what
 calculators are installed.
-
-**Depends on:** nothing.
-
----
-
-## 76. 🟡 Consistent `_type` Suffix in Switchable-Category API Names
-
-**Type:** Naming / Consistency
-
-The switchable-category naming convention prescribes `<category>_type`
-(getter/setter) and `show_supported_<category>_types()`. But some names
-deviate: e.g. `show_minimizer_types()` instead of
-`show_supported_minimizer_types()`, and `minimizer_type` instead of
-`minimizer_type`. Audit and align all switchable-category APIs.
 
 **Depends on:** nothing.
 
@@ -1877,11 +1850,9 @@ optional-diagnostics components.
 | 69  | Shorter public API names via `__init__`           | 🟢 Low   | API ergonomics               |
 | 70  | Standardise class member ordering + headers       | 🟡 Med   | Code style                   |
 | 71  | `_update_priority` reference table                | 🟢 Low   | Documentation                |
-| 72  | Warn on all switchable-category type changes      | 🟡 Med   | UX                           |
 | 73  | Unify setter parameter naming                     | 🟢 Low   | Code style                   |
 | 74  | Sync property type hints + custom lint rules      | 🟡 Med   | Tooling                      |
 | 75  | `show_supported_calculators()` on Analysis        | 🟢 Low   | API completeness             |
-| 76  | Consistent `_type` suffix in switchable APIs      | 🟡 Med   | Naming                       |
 | 79  | Verify analysis CIF serialisation completeness    | 🟢 Low   | Correctness                  |
 | 80  | Resolve `Any` vs `object` annotation policy       | 🟢 Low   | Code style                   |
 | 81  | Enforce docstrings on all public methods          | 🟡 Med   | Code quality                 |

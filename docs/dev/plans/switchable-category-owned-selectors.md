@@ -7,8 +7,8 @@
 ## ADR
 
 Implements
-[`docs/dev/adrs/suggestions/switchable-category-owned-selectors.md`](../adrs/suggestions/switchable-category-owned-selectors.md).
-This plan promotes that ADR from Suggestion → Accepted during
+[`docs/dev/adrs/accepted/switchable-category-owned-selectors.md`](../adrs/accepted/switchable-category-owned-selectors.md).
+This plan promoted that ADR from Suggestion → Accepted during
 implementation (step P1.14).
 
 Affected ADRs that this plan amends or supersedes (from the ADR's
@@ -494,7 +494,7 @@ with explicit `git add` paths.
       return empty.
       Commit: `Update tutorials for category-owned selectors`
 
-- [ ] **P1.14 — Promote ADR + amend affected ADRs.**
+- [x] **P1.14 — Promote ADR + amend affected ADRs.**
       - `git mv docs/dev/adrs/suggestions/switchable-category-owned-selectors.md docs/dev/adrs/accepted/`.
         Flip Status header to `Accepted`. Update any relative
         links that move.

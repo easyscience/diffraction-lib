@@ -3,7 +3,7 @@
 Reply to
 [`switchable-category-owned-selectors_review-1.md`](switchable-category-owned-selectors_review-1.md)
 for the ADR at
-[`switchable-category-owned-selectors.md`](switchable-category-owned-selectors.md).
+[`switchable-category-owned-selectors.md`](../accepted/switchable-category-owned-selectors.md).
 
 This reply follows
 [`.github/copilot-instructions.md`](../../../../.github/copilot-instructions.md).
@@ -368,7 +368,7 @@ acceptance) will include the standard Phase-2 verification suite.
 
 ## Summary of files touched by this reply
 
-- [`docs/dev/adrs/suggestions/switchable-category-owned-selectors.md`](switchable-category-owned-selectors.md)
+- [`docs/dev/adrs/accepted/switchable-category-owned-selectors.md`](../accepted/switchable-category-owned-selectors.md)
   — amended per F1–F7 in the initial pass; re-amended per the
   addendum above.
 - [`docs/dev/adrs/suggestions/switchable-category-owned-selectors_reply-1.md`](switchable-category-owned-selectors_reply-1.md)

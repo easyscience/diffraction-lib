@@ -3,7 +3,7 @@
 Reply to
 [`switchable-category-owned-selectors_review-2.md`](switchable-category-owned-selectors_review-2.md)
 for the ADR at
-[`switchable-category-owned-selectors.md`](switchable-category-owned-selectors.md).
+[`switchable-category-owned-selectors.md`](../accepted/switchable-category-owned-selectors.md).
 
 This reply follows
 [`.github/copilot-instructions.md`](../../../../.github/copilot-instructions.md).
@@ -243,7 +243,7 @@ discipline needs to be a habit, not an exception.
 
 ## Summary of files touched by this reply
 
-- [`docs/dev/adrs/suggestions/switchable-category-owned-selectors.md`](switchable-category-owned-selectors.md)
+- [`docs/dev/adrs/accepted/switchable-category-owned-selectors.md`](../accepted/switchable-category-owned-selectors.md)
   — amended per F1-F5, plus the addendum above for the
   `background.create()` keyword-name fix.
 - [`docs/dev/adrs/suggestions/switchable-category-owned-selectors_reply-2.md`](switchable-category-owned-selectors_reply-2.md)

@@ -16,14 +16,15 @@ saved in:
 project.cif
 ```
 
-Inside that file, generic category names such as `_info.*`,
-`_rendering.*`, and `_verbosity.*` are less ambiguous than they would be
-in a single monolithic CIF file. This opens the option of a strict
+Inside that file, generic category names such as `_info.*`, `_chart.*`,
+`_table.*`, and `_verbosity.*` are less ambiguous than they would be in
+a single monolithic CIF file. This opens the option of a strict
 one-to-one correspondence for project-owned singleton categories:
 
 ```text
 project.info.title        -> project.cif: _info.title
-project.rendering.engine  -> project.cif: _rendering.engine
+project.chart.type        -> project.cif: _chart.type
+project.table.type        -> project.cif: _table.type
 project.verbosity.fit     -> project.cif: _verbosity.fit
 ```
 
@@ -54,7 +55,7 @@ to objects reached from the current `Project` root, for example
 
 | Current Python surface              | Current saved location   | Current CIF block form | Notes                                                                               |
 | ----------------------------------- | ------------------------ | ---------------------- | ----------------------------------------------------------------------------------- |
-| `project.info`, `project.rendering` | `project.cif`            | bare categories        | Project-level singleton config.                                                     |
+| `project.info`, `project.chart`, `project.table` | `project.cif`            | bare categories        | Project-level singleton config.                                                     |
 | `project.verbosity`                 | `project.cif`            | bare category          | Project-owned fit-output verbosity category backed by `VerbosityEnum`.              |
 | `project.structures[name]`          | `structures/<name>.cif`  | `data_<name>`          | Each structure is one CIF data block.                                               |
 | `project.experiments[name]`         | `experiments/<name>.cif` | `data_<name>`          | Each experiment is one CIF data block.                                              |
@@ -73,16 +74,16 @@ to objects reached from the current `Project` root, for example
 | `project.info.created`           | `_project.created`        | Partly | Field name matches, category name does not.                                                        |
 | `project.info.last_modified`     | `_project.last_modified`  | Partly | Field name matches, category name does not.                                                        |
 | `project.info.path`              | none                      | No     | Runtime storage path, not a CIF field.                                                             |
-| `project.rendering.chart_engine` | `_rendering.chart_engine` | Yes    | Direct category and field mapping.                                                                 |
-| `project.rendering.table_engine` | `_rendering.table_engine` | Yes    | Direct category and field mapping.                                                                 |
+| `project.chart.type`             | `_chart.type`             | Yes    | Direct category-owned selector mapping.                                                            |
+| `project.table.type`             | `_table.type`             | Yes    | Direct category-owned selector mapping.                                                            |
 | `project.verbosity.fit`          | `_verbosity.fit`          | Yes    | Direct category and field mapping for fitting process output verbosity.                            |
 
 ### Analysis Configuration
 
 | Current Python path                               | Current CIF path                   | Match? | Notes                                                                                            |
 | ------------------------------------------------- | ---------------------------------- | ------ | ------------------------------------------------------------------------------------------------ |
-| `analysis.fitting.minimizer_type`                 | `_fitting.minimizer_type`          | Yes    | Direct category mapping.                                                                         |
-| `analysis.fitting_mode_type`                      | `_fitting.mode_type`               | No     | Public selector is owner-level state serialized into the `_fitting` category.                    |
+| `analysis.minimizer.type`                         | `_minimizer.type`                  | Yes    | Direct category-owned selector mapping.                                                         |
+| `analysis.fitting_mode.type`                      | `_fitting_mode.type`               | Yes    | Direct category-owned active-sibling selector mapping.                                          |
 | `analysis.joint_fit[experiment_id].experiment_id` | `_joint_fit.experiment_id`         | Yes    | Collection key is also stored as a field.                                                        |
 | `analysis.joint_fit[experiment_id].weight`        | `_joint_fit.weight`                | Yes    | Direct field mapping.                                                                            |
 | `analysis.sequential_fit.data_dir`                | `_sequential_fit.data_dir`         | Yes    | Direct category mapping.                                                                         |
@@ -106,7 +107,7 @@ to objects reached from the current `Project` root, for example
 | `experiment.type.beam_mode`                   | `_expt_type.beam_mode`                                                             | Partly | Python uses the user-facing word `type`; CIF uses abbreviated `_expt_type`.          |
 | `experiment.type.radiation_probe`             | `_expt_type.radiation_probe`                                                       | Partly | Python uses the user-facing word `type`; CIF uses abbreviated `_expt_type`.          |
 | `experiment.type.scattering_type`             | `_expt_type.scattering_type`                                                       | Partly | Python uses the user-facing word `type`; CIF uses abbreviated `_expt_type`.          |
-| `experiment.calculation.calculator_type`      | `_calculation.calculator_type`                                                     | Yes    | Direct category mapping.                                                             |
+| `experiment.calculator.type`                  | `_calculator.type`                                                             | Yes    | Direct category-owned backend selector mapping.                                      |
 | `experiment.diffrn.ambient_temperature`       | `_diffrn.ambient_temperature`                                                      | Yes    | Direct category mapping.                                                             |
 | `experiment.diffrn.ambient_pressure`          | `_diffrn.ambient_pressure`                                                         | Yes    | Direct category mapping.                                                             |
 | `experiment.diffrn.ambient_magnetic_field`    | `_diffrn.ambient_magnetic_field`                                                   | Yes    | Direct category mapping.                                                             |
@@ -118,8 +119,7 @@ to objects reached from the current `Project` root, for example
 | `experiment.instrument.calib_d_to_tof_linear` | `_instr.d_to_tof_linear`                                                           | Partly | Python name exposes calibration role; CIF tag uses compact instrument name.          |
 | `experiment.instrument.calib_d_to_tof_quad`   | `_instr.d_to_tof_quad`                                                             | Partly | Python name exposes calibration role; CIF tag uses compact instrument name.          |
 | `experiment.instrument.calib_d_to_tof_recip`  | `_instr.d_to_tof_recip`                                                            | Partly | Python name exposes calibration role; CIF tag uses compact instrument name.          |
-| `experiment.peak.profile_type`                | `_peak.profile_type`                                                               | Yes    | The active peak category stores its own type tag.                                    |
-| `experiment.peak_profile_type`                | `_peak.profile_type`                                                               | No     | Public selector is an owner-level convenience alias.                                 |
+| `experiment.peak.type`                        | `_peak.type`                                                                       | Yes    | Direct category-owned selector mapping.                                              |
 | `experiment.peak.broad_gauss_u`               | `_peak.broad_gauss_u`                                                              | Yes    | CWL peak field.                                                                      |
 | `experiment.peak.broad_gauss_v`               | `_peak.broad_gauss_v`                                                              | Yes    | CWL peak field.                                                                      |
 | `experiment.peak.broad_gauss_w`               | `_peak.broad_gauss_w`                                                              | Yes    | CWL peak field.                                                                      |
@@ -144,11 +144,11 @@ to objects reached from the current `Project` root, for example
 | `experiment.background[id].id` Chebyshev      | `_pd_background.id`                                                                | Partly | Python category is `background`; CIF uses powder-background category.                |
 | `experiment.background[id].order` Chebyshev   | `_pd_background.Chebyshev_order`                                                   | Partly | CIF tag encodes polynomial type and uses CIF-style capitalization.                   |
 | `experiment.background[id].coef` Chebyshev    | `_pd_background.Chebyshev_coef`                                                    | Partly | CIF tag encodes polynomial type and uses CIF-style capitalization.                   |
-| `experiment.background_type`                  | implied by active background category                                              | No     | There is no standalone selector tag.                                                 |
+| `experiment.background.type`                  | `_background.type`                                                                 | Yes    | Direct collection-level category-owned selector mapping.                             |
+| `experiment.extinction.type`                  | `_extinction.type`                                                                 | Yes    | Direct category-owned selector mapping.                                              |
 | `experiment.extinction.model`                 | `_extinction.model`                                                                | Yes    | Direct category mapping.                                                             |
 | `experiment.extinction.mosaicity`             | `_extinction.mosaicity`                                                            | Yes    | Direct category mapping.                                                             |
 | `experiment.extinction.radius`                | `_extinction.radius`                                                               | Yes    | Direct category mapping.                                                             |
-| `experiment.extinction_type`                  | `_extinction.model`                                                                | Partly | Public selector chooses the category; persisted model tag lives inside the category. |
 | `experiment.linked_phases[id].id`             | `_pd_phase_block.id`                                                               | Partly | Python name is user-facing; CIF tag follows powder phase-block convention.           |
 | `experiment.linked_phases[id].scale`          | `_pd_phase_block.scale`                                                            | Partly | Python name is user-facing; CIF tag follows powder phase-block convention.           |
 | `experiment.linked_crystal.id`                | `_sc_crystal_block.id`                                                             | Partly | Python name is user-facing; CIF tag follows single-crystal block convention.         |
@@ -232,9 +232,8 @@ project.info.<field> -> project.cif: _project.<field>
 ```
 
 Future one-to-one correspondence work may still discuss whether the
-public identity field should be `name` or `id`, whether verbosity should
-gain additional coverage-specific fields, and whether rendering should
-keep separate chart and table engine fields.
+public identity field should be `name` or `id`, and whether verbosity
+should gain additional coverage-specific fields.
 
 Possible strict-correspondence target if a future ADR explicitly changes
 the accepted `_project.*` baseline:
@@ -246,8 +245,8 @@ the accepted `_project.*` baseline:
 | `project.info.description`       | `_info.description`       | Currently `_project.description`.                |
 | `project.info.created`           | `_info.created`           | Currently `_project.created`.                    |
 | `project.info.last_modified`     | `_info.last_modified`     | Currently `_project.last_modified`.              |
-| `project.rendering.chart_engine` | `_rendering.chart_engine` | Already matches.                                 |
-| `project.rendering.table_engine` | `_rendering.table_engine` | Already matches.                                 |
+| `project.chart.type`             | `_chart.type`             | Already matches.                                 |
+| `project.table.type`             | `_table.type`             | Already matches.                                 |
 | `project.verbosity.fit`          | `_verbosity.fit`          | Implemented direct fit-output verbosity mapping. |
 
 Alternative target if the project identity field should be called `id`
@@ -300,10 +299,14 @@ compatibility with scientific conventions.
 
 ### Some Python Names Are Deliberate Abstractions
 
-Type-neutral ADP parameters, owner-level switchable selectors,
-active-sibling selectors, and analysis-friendly data names intentionally
-do not mirror individual CIF fields. These should remain exceptions
-unless a separate ADR changes the underlying API pattern.
+Type-neutral ADP parameters and analysis-friendly data names
+intentionally do not mirror individual CIF fields. Switchable selectors
+are no longer an exception: the accepted
+[`switchable-category-owned-selectors.md`](../accepted/switchable-category-owned-selectors.md)
+decision uses `category.type` in Python and `_<cat>.type` in CIF across
+switchable-category, backend, and active-sibling selector families.
+These should remain exceptions unless a separate ADR changes the
+underlying API pattern.
 
 ## Consequences
 
@@ -322,17 +325,16 @@ unless a separate ADR changes the underlying API pattern.
 - Persisted verbosity is now a category object. The initial field is
   `project.verbosity.fit`, leaving room for future coverage-specific
   verbosity fields.
-- Collapsing rendering to `project.rendering.engine` would simplify the
-  API, but only if chart and table renderers are intended to share one
-  backend choice.
+- Chart and table renderers are separate selector categories
+  (`project.chart.type`, `project.table.type`), so a future collapsed
+  renderer setting would need a separate ADR.
 
 ## Open Questions
 
 - Should the project identity remain `project.info.name`, or should it
   become `project.info.id` to mirror the saved identifier field?
-- Should `project.rendering.chart_engine` and
-  `project.rendering.table_engine` remain separate, or should the public
-  API and CIF collapse to one `engine` field?
+- Should `project.chart.type` and `project.table.type` remain separate,
+  or should the public API and CIF collapse to one renderer field?
 - Should `project.verbosity = 'short'` remain as a convenience alias for
   `project.verbosity.fit = 'short'`, or should strict correspondence
   remove the alias?

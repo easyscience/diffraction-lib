@@ -3,7 +3,7 @@
 Reply to
 [`switchable-category-owned-selectors_review-4.md`](switchable-category-owned-selectors_review-4.md)
 for the ADR at
-[`switchable-category-owned-selectors.md`](switchable-category-owned-selectors.md).
+[`switchable-category-owned-selectors.md`](../accepted/switchable-category-owned-selectors.md).
 
 This reply follows
 [`.github/copilot-instructions.md`](../../../../.github/copilot-instructions.md).
@@ -124,7 +124,7 @@ acceptance) will include the standard Phase-2 verification suite.
 
 ## Summary of files touched by this reply
 
-- [`docs/dev/adrs/suggestions/switchable-category-owned-selectors.md`](switchable-category-owned-selectors.md)
+- [`docs/dev/adrs/accepted/switchable-category-owned-selectors.md`](../accepted/switchable-category-owned-selectors.md)
   — Context paragraph 2 rewritten (F1); §1 widened from instance-
   swap to all-three-families phrasing (F2); §4 Family-B hook
   example renamed `_swap_calculation` → `_swap_calculator` (F3).

@@ -15,7 +15,7 @@ Analysis and fitting.
 ## Context
 
 `analysis/analysis.cif` already persists analysis configuration such as
-`_fitting.minimizer_type`, `_fitting.mode_type`, aliases, constraints,
+`_minimizer.type`, `_fitting_mode.type`, aliases, constraints,
 and active fit-mode settings. That configuration alone is not enough to
 reopen a saved project and continue the same fit-result, plotting, and
 command-line workflow.
@@ -94,10 +94,8 @@ pairs are stored.
 
 The active `_minimizer.*` category stores both user-selected solver
 inputs and fit-filled outputs. Deterministic minimizer classes store
-compact optimizer metadata and counts:
+compact fit output counts:
 
-- `optimizer_name`
-- `method_name`
 - `objective_name`
 - `objective_value`
 - `n_data_points`
@@ -139,6 +137,14 @@ Bayesian per-parameter posterior summaries are stored on the
 corresponding `_fit_parameter` rows. Their row order defines the saved
 posterior parameter order.
 
+`FitResults.optimizer_name` and `FitResults.method_name` are restored
+from the active minimizer category class instead of being persisted as
+independent CIF fields. Each concrete minimizer category declares a
+class-level `_engine_metadata: ClassVar[dict[str, str]]` containing
+those two display values. This keeps the persisted projection to the
+user-selected `_minimizer.type` and removes duplicated deterministic
+metadata from `_minimizer.*`.
+
 ### Posterior sidecar
 
 Persist large posterior arrays in `analysis/results.h5` using `h5py`.
@@ -166,7 +172,7 @@ Load order is:
 1. standard analysis configuration
 2. common fit-state categories
 3. `_minimizer.*` fit-output fields according to the active
-   `minimizer_type`
+   `_minimizer.type`
 4. posterior sidecar arrays when a Bayesian result is expected
 
 Persist backend runtime objects, optimizer instances, and raw driver

@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed.
+Accepted.
 
 ## Date
 
@@ -54,7 +54,7 @@ Three problems have accumulated since that ADR landed:
    `_calculation.calculator_type` lives inside its category block
    but the descriptor name awkwardly repeats the noun
    ("calculator") instead of using a uniform `.type` selector.
-   [`python-cif-category-correspondence.md`](python-cif-category-correspondence.md)
+   [`python-cif-category-correspondence.md`](../suggestions/python-cif-category-correspondence.md)
    notes the inconsistency under §"Owner-level switchable selectors"
    and tags it for a future ADR.
 
@@ -83,7 +83,7 @@ merged, the path is clear to amend the convention now.
 
 Every in-scope selector category — across all three mechanism
 families recognised by
-[`selector-families.md`](../accepted/selector-families.md) (A
+[`selector-families.md`](selector-families.md) (A
 switchable categories, B backend selectors, C active-sibling
 selectors) — exposes the same writable surface:
 
@@ -148,7 +148,7 @@ selector is promoted to its own category (also §8).
 | `_fitting.mode_type`                     | `_fitting_mode.type` | C (and §8 promote)     |
 
 ¹ Mechanism family per
-[`selector-families.md`](../accepted/selector-families.md): A swaps
+[`selector-families.md`](selector-families.md): A swaps
 the category instance, B swaps the live engine behind a singleton
 category, C activates or deactivates sibling categories. The user-
 facing CIF and Python surface is **identical** across all three.
@@ -180,7 +180,7 @@ class LmfitLeastsqMinimizer(LeastSquaresMinimizerBase):
         description='LMFIT library with Levenberg-Marquardt least squares method',
     )
     _engine_metadata: ClassVar[dict[str, str]] = {
-        'optimizer_name': 'Levenberg-Marquardt',
+        'optimizer_name': 'lmfit (leastsq)',
         'method_name': 'leastsq',
     }
 ```
@@ -191,7 +191,7 @@ do not need to grow class-level mirrors of their module-level
 `DEFAULT_METHOD` constants. The dict lives on the category class
 where `type_info.description` already lives, keeping all per-tag
 metadata in one place.
-[`accepted/analysis-cif-fit-state.md`](../accepted/analysis-cif-fit-state.md)
+[`analysis-cif-fit-state.md`](analysis-cif-fit-state.md)
 is amended to drop these two fields from the persisted projection
 and to point at the class-level dict as the new restore source.
 
@@ -211,7 +211,7 @@ class BackgroundBase(CategoryCollection, SwitchableCategoryBase): ...
 ```
 
 This is consistent with
-[`minimizer-category-consolidation.md`](../accepted/minimizer-category-consolidation.md)
+[`minimizer-category-consolidation.md`](minimizer-category-consolidation.md)
 §8 "no mixins" — that rule rejects mixins **for descriptor
 declarations**; behavior mixins are allowed (the
 `LeastSquaresMinimizerBase` / `BayesianMinimizerBase` intermediates
@@ -478,7 +478,7 @@ CIF read path becomes:
    the newly-installed instance.
 
 This is the same shape as
-[`minimizer-category-consolidation.md`](../accepted/minimizer-category-consolidation.md)
+[`minimizer-category-consolidation.md`](minimizer-category-consolidation.md)
 P1.7's peek-then-populate flow; the only change is that the type tag
 lives inside the category's own namespace.
 
@@ -516,7 +516,7 @@ recorded as a follow-up but is not part of this ADR.
 This ADR applies to every selector whose public Python surface is "set
 a type / pick from a supported list", regardless of what happens
 behind the setter. Three mechanism families per
-[`selector-families.md`](../accepted/selector-families.md) all
+[`selector-families.md`](selector-families.md) all
 present the **same** writable `category.type` surface and the same
 `category.show_supported()` API; the mechanism differs only in what
 the owner's `_swap_<name>` hook does behind that surface.
@@ -553,9 +553,9 @@ automatically when a second type is added.
 - **Plain enum descriptors:** `experiment.type.sample_form`,
   `experiment.type.beam_mode`, `experiment.type.radiation_probe`,
   `experiment.type.scattering_type` (creation-time axes per
-  [`immutable-experiment-type.md`](../accepted/immutable-experiment-type.md));
+  [`immutable-experiment-type.md`](immutable-experiment-type.md));
   `atom_site.adp_type` (governed by
-  [`type-neutral-adp-parameters.md`](../accepted/type-neutral-adp-parameters.md));
+  [`type-neutral-adp-parameters.md`](type-neutral-adp-parameters.md));
   `extinction.becker-coppens.model` (a closed-set enum nested inside
   the Family-A `extinction` category — local to the selected
   extinction class). These select a value, not a type or backend, and
@@ -586,7 +586,7 @@ script tests, matching the precedent set by
 
 Three selectors need structural changes to fit the `category.type`
 rule under
-[`category-parameter-access.md`](../accepted/category-parameter-access.md)'s
+[`category-parameter-access.md`](category-parameter-access.md)'s
 two-level parameter access (`datablock.category.parameter`) and the
 "category name matches the noun of the thing being selected"
 convention shared by every other in-scope category (`minimizer`,
@@ -667,10 +667,10 @@ this is a Family-B engine-swap mechanism; only the user-facing
 surface and the CIF block name change.
 
 Affected ADRs: this rename adds a small amendment to
-[`python-cif-category-correspondence.md`](python-cif-category-correspondence.md)
+[`python-cif-category-correspondence.md`](../suggestions/python-cif-category-correspondence.md)
 (category and CIF tag both move from `calculation` to
 `calculator`) and to
-[`selector-families.md`](../accepted/selector-families.md) (the
+[`selector-families.md`](selector-families.md) (the
 example row for Family B).
 
 After all three structural changes the `_fitting.*`,
@@ -755,10 +755,10 @@ swap a category, engine, or sibling.
 Notes on Family D:
 
 - Rows 1–4 are creation-time axes governed by
-  [`immutable-experiment-type.md`](../accepted/immutable-experiment-type.md);
+  [`immutable-experiment-type.md`](immutable-experiment-type.md);
   no user-facing writable setter, listed only for completeness.
 - Row 5 (`adp_type`) has Family-C-like side effects per
-  [`type-neutral-adp-parameters.md`](../accepted/type-neutral-adp-parameters.md).
+  [`type-neutral-adp-parameters.md`](type-neutral-adp-parameters.md).
   Stays.
 - Row 6 (`extinction.becker-coppens.model`) is a Family-D enum
   **inside** an in-scope Family-A category (extinction). Selecting
@@ -815,33 +815,33 @@ member and exposes `category.type` plus `category.show_supported()`.
   the §"Decision" to point at this ADR. The new contract is "the
   category exposes `type` (getter+setter) and `show_supported()`; the
   owner exposes only the category itself".
-- [`selector-families.md`](../accepted/selector-families.md) —
+- [`selector-families.md`](selector-families.md) —
   rewrite the §"Decision" to use the mechanism-vs-surface framing
   from §6: all three families (A switchable categories, B backend
   selectors, C active-sibling selectors) present the same writable
   `category.type` surface; the family classification documents only
   what the owner's `_swap_<name>` does behind that surface. Update
   every "Examples" row to the proposed `<owner>.<cat>.type` form.
-- [`fit-mode-categories.md`](../accepted/fit-mode-categories.md) —
+- [`fit-mode-categories.md`](fit-mode-categories.md) —
   strike the matching "Deferred Work" entry (this ADR closes the
   follow-up). Replace the `analysis.fitting_mode_type` description
   with `analysis.fitting_mode.type` and document the new
   `FittingMode` category (§8b).
-- [`python-cif-category-correspondence.md`](python-cif-category-correspondence.md)
+- [`python-cif-category-correspondence.md`](../suggestions/python-cif-category-correspondence.md)
   — the §"Owner-level switchable selectors" table becomes obsolete;
   remove the "deliberate abstraction" exception. Update every entry
   to the `_<cat>.type` form.
-- [`minimizer-category-consolidation.md`](../accepted/minimizer-category-consolidation.md)
+- [`minimizer-category-consolidation.md`](minimizer-category-consolidation.md)
   — append a "Superseded selector layout" note pointing here for the
   `_fitting.minimizer_type` → `_minimizer.type` change and the drop
   of `_minimizer.optimizer_name` / `_minimizer.method_name`.
-- [`analysis-cif-fit-state.md`](../accepted/analysis-cif-fit-state.md)
+- [`analysis-cif-fit-state.md`](analysis-cif-fit-state.md)
   — drop `_minimizer.optimizer_name` and `_minimizer.method_name`
   from the persisted projection (§3 of this ADR). The runtime
   `FitResults.optimizer_name` / `method_name` fields are populated on
   restore from the active minimizer class's metadata rather than from
   CIF.
-- [`display-ux.md`](../accepted/display-ux.md) — replace every
+- [`display-ux.md`](display-ux.md) — replace every
   reference to `project.rendering`, `_rendering.chart_engine`, and
   `_rendering.table_engine` with the post-§8a shape:
   `project.chart.type`, `project.table.type`, CIF blocks `_chart.*`
@@ -849,7 +849,7 @@ member and exposes `category.type` plus `category.show_supported()`.
   chart/table engines on the `rendering` category; document instead
   that each renderer lives on its own category with the canonical
   `category.type` surface.
-- [`category-owner-sections.md`](../accepted/category-owner-sections.md)
+- [`category-owner-sections.md`](category-owner-sections.md)
   — update the `ProjectConfig` children list: drop `Rendering`; add
   `Chart` and `Table` as siblings. Update the `_rendering.*` CIF
   block reference to `_chart.*` and `_table.*`.
@@ -887,7 +887,7 @@ descriptor introspection.
 
 One `MinimizerCategory` class with a `type` attribute that reconfigures
 internal state. Rejected: conflicts with
-[`minimizer-category-consolidation.md`](../accepted/minimizer-category-consolidation.md)
+[`minimizer-category-consolidation.md`](minimizer-category-consolidation.md)
 §8 ("concrete classes carry their own defaults; no mixins"). Loses
 per-backend type signatures and `help()` output.
 
