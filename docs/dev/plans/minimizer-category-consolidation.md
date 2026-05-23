@@ -519,7 +519,7 @@ PosteriorParameterSummary` so the existing intra-module
 
   Commit: `Remove obsolete Bayesian and fitting categories`
 
-- [ ] **P1.13 — Update tutorials and regenerate notebooks.**
+- [x] **P1.13 — Update tutorials and regenerate notebooks.**
       Update Python source files (the `*.ipynb` are generated artifacts —
       do not edit those directly per copilot-instructions). Tutorial list
       is the union of every file currently referencing

@@ -270,7 +270,7 @@ project.analysis.fitting_mode_type = 'joint'
 # #### Set Minimizer
 
 # %%
-project.analysis.fitting.minimizer_type = 'lmfit'
+project.analysis.minimizer_type = 'lmfit'
 
 # %% [markdown]
 # #### Set Fitting Parameters

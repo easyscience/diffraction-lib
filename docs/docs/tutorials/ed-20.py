@@ -259,7 +259,7 @@ project.display.pattern(expt_name='expt_n2')
 # #### Set Fit Mode
 
 # %%
-project.analysis.show_fitting_mode_types()
+project.analysis.show_supported_fitting_mode_types()
 
 # %%
 project.analysis.fitting_mode_type = 'joint'

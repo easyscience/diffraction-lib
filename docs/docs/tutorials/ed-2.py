@@ -192,8 +192,8 @@ project.analysis.aliases.create(
 project.analysis.constraints.create(expression='biso_Ba = biso_La')
 
 # %%
-project.analysis.fitting.show_minimizer_types()
-project.analysis.fitting.minimizer_type = 'lmfit'
+project.analysis.show_supported_minimizer_types()
+project.analysis.minimizer_type = 'lmfit'
 
 # %%
 project.analysis.fit()
