@@ -621,7 +621,7 @@ PosteriorParameterSummary` so the existing intra-module
 Each command captures its log with a zsh-safe exit-code variable as
 required by `.github/copilot-instructions.md` → **Workflow**.
 
-- [ ] **P2.1a — Migrate existing tests off removed API.**
+- [x] **P2.1a — Migrate existing tests off removed API.**
       Each bullet below is a separate commit, staged with explicit paths
       per `.github/copilot-instructions.md` → **Commits**. The set is
       sized so each commit lands one atomic test migration.
@@ -698,7 +698,7 @@ required by `.github/copilot-instructions.md` → **Workflow**.
   (`from easydiffraction.analysis.fitting import Fitter`) used in
   `tests/unit/easydiffraction/analysis/test_fitting.py` and friends.
 
-- [ ] **P2.1 — Add unit tests mirroring source tree.**
+- [x] **P2.1 — Add unit tests mirroring source tree.**
       Create one `test_<module>.py` per file under
       `src/easydiffraction/analysis/categories/minimizer/`. Cover:
       default-value resolution, swap warnings, native-key mapping, CIF
