@@ -11,6 +11,7 @@ from easydiffraction.analysis.minimizers.enums import InitializationMethodEnum
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.validation import RangeValidator
+from easydiffraction.core.variable import BoolDescriptor
 from easydiffraction.core.variable import IntegerDescriptor
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import StringDescriptor
@@ -29,6 +30,10 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
         'initialization_method',
         'random_seed',
         'runtime_seconds',
+        'point_estimate_name',
+        'sampler_completed',
+        'credible_interval_inner',
+        'credible_interval_outer',
         'acceptance_rate_mean',
         'gelman_rubin_max',
         'effective_sample_size_min',
@@ -141,6 +146,46 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
             description='Wall time of the fit in seconds.',
             value_spec=AttributeSpec(default=None, allow_none=True),
             cif_handler=CifHandler(names=['_minimizer.runtime_seconds']),
+        )
+
+    @staticmethod
+    def _point_estimate_name_descriptor() -> StringDescriptor:
+        """Create a point-estimate-name descriptor."""
+        return StringDescriptor(
+            name='point_estimate_name',
+            description='Committed sampled point estimate name.',
+            value_spec=AttributeSpec(default='best_sample'),
+            cif_handler=CifHandler(names=['_minimizer.point_estimate_name']),
+        )
+
+    @staticmethod
+    def _sampler_completed_descriptor() -> BoolDescriptor:
+        """Create a sampler-completed descriptor."""
+        return BoolDescriptor(
+            name='sampler_completed',
+            description='Whether the sampler completed and returned posterior data.',
+            value_spec=AttributeSpec(default=False),
+            cif_handler=CifHandler(names=['_minimizer.sampler_completed']),
+        )
+
+    @staticmethod
+    def _credible_interval_inner_descriptor() -> NumericDescriptor:
+        """Create an inner credible-interval descriptor."""
+        return NumericDescriptor(
+            name='credible_interval_inner',
+            description='Inner credible-interval level used in summaries.',
+            value_spec=AttributeSpec(default=0.68),
+            cif_handler=CifHandler(names=['_minimizer.credible_interval_inner']),
+        )
+
+    @staticmethod
+    def _credible_interval_outer_descriptor() -> NumericDescriptor:
+        """Create an outer credible-interval descriptor."""
+        return NumericDescriptor(
+            name='credible_interval_outer',
+            description='Outer credible-interval level used in summaries.',
+            value_spec=AttributeSpec(default=0.95),
+            cif_handler=CifHandler(names=['_minimizer.credible_interval_outer']),
         )
 
     @staticmethod
@@ -259,6 +304,42 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
     def _set_runtime_seconds(self, value: float | None) -> None:
         """Set the fit runtime for internal callers."""
         self._runtime_seconds.value = value
+
+    @property
+    def point_estimate_name(self) -> StringDescriptor:
+        """Committed sampled point estimate name."""
+        return self._point_estimate_name
+
+    def _set_point_estimate_name(self, value: str) -> None:
+        """Set the point-estimate name for internal callers."""
+        self._point_estimate_name.value = value
+
+    @property
+    def sampler_completed(self) -> BoolDescriptor:
+        """Whether the sampler completed and returned posterior data."""
+        return self._sampler_completed
+
+    def _set_sampler_completed(self, *, value: bool) -> None:
+        """Set the sampler-completed flag for internal callers."""
+        self._sampler_completed.value = value
+
+    @property
+    def credible_interval_inner(self) -> NumericDescriptor:
+        """Inner credible-interval level used in summaries."""
+        return self._credible_interval_inner
+
+    def _set_credible_interval_inner(self, value: float) -> None:
+        """Set the inner credible-interval level for internal callers."""
+        self._credible_interval_inner.value = value
+
+    @property
+    def credible_interval_outer(self) -> NumericDescriptor:
+        """Outer credible-interval level used in summaries."""
+        return self._credible_interval_outer
+
+    def _set_credible_interval_outer(self, value: float) -> None:
+        """Set the outer credible-interval level for internal callers."""
+        self._credible_interval_outer.value = value
 
     @property
     def acceptance_rate_mean(self) -> NumericDescriptor:

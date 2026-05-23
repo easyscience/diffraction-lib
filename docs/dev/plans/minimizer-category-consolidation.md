@@ -466,7 +466,7 @@ PosteriorParameterSummary` so the existing intra-module
     posterior-presence checks.
     Commit: `Read posterior plots from results.h5 groups`
 
-- [ ] **P1.12 — Delete obsolete category packages.**
+- [x] **P1.12 — Delete obsolete category packages.**
       Remove the 9 directories listed in §"Concrete files likely to
       change" → "Deleted" (`fitting/`, the seven `bayesian_*/`
       packages, and `deterministic_result/`). Update

@@ -11,23 +11,6 @@ import numpy as np
 import pandas as pd
 
 from easydiffraction.analysis.categories.aliases.factory import AliasesFactory
-from easydiffraction.analysis.categories.bayesian_convergence import BayesianConvergence
-from easydiffraction.analysis.categories.bayesian_distribution_caches import (
-    BayesianDistributionCaches,
-)
-from easydiffraction.analysis.categories.bayesian_pair_caches import BayesianPairCaches
-from easydiffraction.analysis.categories.bayesian_pair_caches.default import BayesianPairCachePaths
-from easydiffraction.analysis.categories.bayesian_parameter_posteriors import (
-    BayesianParameterPosteriors,
-)
-from easydiffraction.analysis.categories.bayesian_predictive_datasets import (
-    BayesianPredictiveDatasets,
-)
-from easydiffraction.analysis.categories.bayesian_predictive_datasets.default import (
-    BayesianPredictiveDatasetPaths,
-)
-from easydiffraction.analysis.categories.bayesian_result import BayesianResult
-from easydiffraction.analysis.categories.bayesian_sampler import BayesianSampler
 from easydiffraction.analysis.categories.constraints.factory import ConstraintsFactory
 from easydiffraction.analysis.categories.fit_parameter_correlations import FitParameterCorrelations
 from easydiffraction.analysis.categories.fit_parameters import FitParameters
@@ -85,6 +68,10 @@ _MINIMIZER_RESULT_DEFAULTS = {
     'covariance_available': False,
     'correlation_available': False,
     'runtime_seconds': None,
+    'point_estimate_name': 'best_sample',
+    'sampler_completed': False,
+    'credible_interval_inner': 0.68,
+    'credible_interval_outer': 0.95,
     'iterations_performed': 0,
     'exit_reason': '',
     'negative_log_likelihood': None,
@@ -459,41 +446,6 @@ class _AnalysisPersistedCategoryAccessorsMixin:
         """Persisted fit-parameter correlation summaries."""
         return self._fit_parameter_correlations
 
-    @property
-    def bayesian_result(self) -> BayesianResult:
-        """Persisted Bayesian fit-result metadata."""
-        return self._bayesian_result
-
-    @property
-    def bayesian_sampler(self) -> BayesianSampler:
-        """Persisted Bayesian sampler settings."""
-        return self._bayesian_sampler
-
-    @property
-    def bayesian_convergence(self) -> BayesianConvergence:
-        """Persisted Bayesian convergence diagnostics."""
-        return self._bayesian_convergence
-
-    @property
-    def bayesian_parameter_posteriors(self) -> BayesianParameterPosteriors:
-        """Persisted Bayesian parameter posterior summaries."""
-        return self._bayesian_parameter_posteriors
-
-    @property
-    def bayesian_distribution_caches(self) -> BayesianDistributionCaches:
-        """Persisted Bayesian distribution-cache manifests."""
-        return self._bayesian_distribution_caches
-
-    @property
-    def bayesian_pair_caches(self) -> BayesianPairCaches:
-        """Persisted Bayesian pair-cache manifests."""
-        return self._bayesian_pair_caches
-
-    @property
-    def bayesian_predictive_datasets(self) -> BayesianPredictiveDatasets:
-        """Persisted Bayesian predictive-dataset manifests."""
-        return self._bayesian_predictive_datasets
-
 
 class Analysis(
     _AnalysisOwnerAccessorsMixin,
@@ -536,13 +488,6 @@ class Analysis(
         self._fit_parameters = FitParameters()
         self._fit_result = FitResult()
         self._fit_parameter_correlations = FitParameterCorrelations()
-        self._bayesian_result = BayesianResult()
-        self._bayesian_sampler = BayesianSampler()
-        self._bayesian_convergence = BayesianConvergence()
-        self._bayesian_parameter_posteriors = BayesianParameterPosteriors()
-        self._bayesian_distribution_caches = BayesianDistributionCaches()
-        self._bayesian_pair_caches = BayesianPairCaches()
-        self._bayesian_predictive_datasets = BayesianPredictiveDatasets()
         self._has_persisted_fit_state_data = False
         self._persisted_fit_state_sidecar: dict[str, object] = {}
         self._fitter = Fitter(self.minimizer_type)
@@ -613,9 +558,6 @@ class Analysis(
 
     def _restored_posterior_samples(self) -> PosteriorSamples | None:
         """Return restored posterior samples from the HDF5 sidecar."""
-        if not self.bayesian_result.has_posterior_samples.value:
-            return None
-
         posterior_data = self._persisted_fit_state_sidecar.get('posterior', {})
         parameter_samples = posterior_data.get('parameter_samples')
         if parameter_samples is None:
@@ -730,40 +672,52 @@ class Analysis(
         reduced_chi_square = self.fit_result.reduced_chi_square.value
 
         if self.fit_result.result_kind.value == FitResultKindEnum.BAYESIAN.value:
+            posterior_samples = self._restored_posterior_samples()
+            sample_shape = (
+                np.asarray(posterior_samples.parameter_samples).shape
+                if posterior_samples is not None
+                else (0, 0, 0)
+            )
+            sampler_settings = self.minimizer._native_kwargs()
+            sampler_name = (
+                'dream'
+                if self.minimizer_type == MinimizerTypeEnum.BUMPS_DREAM.value
+                else str(self.minimizer_type)
+            )
             restored_results = BayesianFitResults(
                 success=bool(self.fit_result.success.value),
                 parameters=restored_parameters,
                 reduced_chi_square=reduced_chi_square,
                 starting_parameters=list(restored_parameters),
                 fitting_time=fitting_time,
-                sampler_name=self.bayesian_result.sampler_name.value,
-                point_estimate_name=self.bayesian_result.point_estimate_name.value,
-                posterior_samples=self._restored_posterior_samples(),
+                sampler_name=sampler_name,
+                point_estimate_name=self.minimizer.point_estimate_name.value,
+                posterior_samples=posterior_samples,
                 posterior_parameter_summaries=self._restored_posterior_summaries(),
                 posterior_predictive=self._restored_predictive_summaries(),
                 credible_interval_levels=(
-                    float(self.bayesian_result.credible_interval_inner.value),
-                    float(self.bayesian_result.credible_interval_outer.value),
+                    float(self.minimizer.credible_interval_inner.value),
+                    float(self.minimizer.credible_interval_outer.value),
                 ),
                 sampler_settings={
-                    'steps': int(self.bayesian_sampler.steps.value),
-                    'burn': int(self.bayesian_sampler.burn.value),
-                    'thin': int(self.bayesian_sampler.thin.value),
-                    'pop': int(self.bayesian_sampler.pop.value),
-                    'parallel': int(self.bayesian_sampler.parallel.value),
-                    'init': self.bayesian_sampler.init.value,
-                    'random_seed': self.bayesian_sampler.random_seed.value,
+                    'steps': int(sampler_settings.get('steps', 0)),
+                    'burn': int(sampler_settings.get('burn', 0)),
+                    'thin': int(sampler_settings.get('thin', 0)),
+                    'pop': int(sampler_settings.get('pop', 0)),
+                    'parallel': int(sampler_settings.get('parallel', 0)),
+                    'init': str(sampler_settings.get('init', '')),
+                    'random_seed': sampler_settings.get('random_seed'),
                 },
                 convergence_diagnostics={
-                    'converged': bool(self.bayesian_convergence.converged.value),
-                    'max_r_hat': self.bayesian_convergence.max_r_hat.value,
-                    'min_ess_bulk': self.bayesian_convergence.min_ess_bulk.value,
-                    'n_draws': int(self.bayesian_convergence.n_draws.value),
-                    'n_chains': int(self.bayesian_convergence.n_chains.value),
-                    'n_parameters': int(self.bayesian_convergence.n_parameters.value),
+                    'converged': False,
+                    'max_r_hat': self.minimizer.gelman_rubin_max.value,
+                    'min_ess_bulk': self.minimizer.effective_sample_size_min.value,
+                    'n_draws': int(sample_shape[0]),
+                    'n_chains': int(sample_shape[1]),
+                    'n_parameters': int(sample_shape[2]),
                 },
-                sampler_completed=bool(self.bayesian_result.sampler_completed.value),
-                best_log_posterior=self.bayesian_result.best_log_posterior.value,
+                sampler_completed=bool(self.minimizer.sampler_completed.value),
+                best_log_posterior=self.minimizer.best_log_posterior.value,
             )
             restored_results.message = self.fit_result.message.value
             restored_results.iterations = int(self.fit_result.iterations.value)
@@ -1210,15 +1164,6 @@ class Analysis(
         if result_kind is FitResultKindEnum.DETERMINISTIC:
             return categories
 
-        categories.extend([
-            self.bayesian_result,
-            self.bayesian_sampler,
-            self.bayesian_convergence,
-            self.bayesian_parameter_posteriors,
-            self.bayesian_distribution_caches,
-            self.bayesian_pair_caches,
-            self.bayesian_predictive_datasets,
-        ])
         return categories
 
     def _clear_persisted_fit_state(self) -> None:
@@ -1227,13 +1172,6 @@ class Analysis(
         self._fit_parameters = FitParameters()
         self._fit_result = FitResult()
         self._fit_parameter_correlations = FitParameterCorrelations()
-        self._bayesian_result = BayesianResult()
-        self._bayesian_sampler = BayesianSampler()
-        self._bayesian_convergence = BayesianConvergence()
-        self._bayesian_parameter_posteriors = BayesianParameterPosteriors()
-        self._bayesian_distribution_caches = BayesianDistributionCaches()
-        self._bayesian_pair_caches = BayesianPairCaches()
-        self._bayesian_predictive_datasets = BayesianPredictiveDatasets()
         self._set_has_persisted_fit_state(value=False)
         self._persisted_fit_state_sidecar = {}
 
@@ -1428,7 +1366,7 @@ class Analysis(
                 source_kind=FitCorrelationSourceEnum.DETERMINISTIC,
             )
 
-    def _store_bayesian_distribution_cache_projection(
+    def _store_posterior_distribution_cache_projection(
         self,
         *,
         plotter: object,
@@ -1456,14 +1394,6 @@ class Analysis(
             x_values, density_values = density_curve
             x_array = np.asarray(x_values, dtype=float)
             density_array = np.asarray(density_values, dtype=float)
-            cache_index = len(payload)
-            self.bayesian_distribution_caches.create(
-                param_unique_name=parameter_name,
-                x_path=f'/posterior/distribution/{cache_index}/x',
-                density_path=f'/posterior/distribution/{cache_index}/density',
-                n_grid=float(x_array.size),
-                n_draws_cached=float(np.isfinite(flattened_samples[:, parameter_index]).sum()),
-            )
             payload[parameter_name] = {
                 'x': x_array,
                 'density': density_array,
@@ -1494,7 +1424,7 @@ class Analysis(
             x_name, y_name = y_name, x_name
         return x_index, y_index, x_name, y_name
 
-    def _store_one_bayesian_pair_cache_projection(
+    def _store_one_posterior_pair_cache_projection(
         self,
         *,
         plotter: object,
@@ -1530,18 +1460,6 @@ class Analysis(
         y_grid_array = np.asarray(density_surface[1], dtype=float)
         density_array = np.asarray(density_surface[2], dtype=float)
         contour_levels = self._posterior_pair_contour_levels(density_array)
-        self.bayesian_pair_caches.create(
-            id=pair_id,
-            parameter_names=(x_name, y_name),
-            paths=BayesianPairCachePaths(
-                x_path=f'/posterior/pairs/{pair_id}/x',
-                y_path=f'/posterior/pairs/{pair_id}/y',
-                density_path=f'/posterior/pairs/{pair_id}/density',
-                contour_level_path=f'/posterior/pairs/{pair_id}/contour_levels',
-            ),
-            grid_shape=(float(x_grid_array.size), float(y_grid_array.size)),
-            n_draws_cached=float(density_samples.shape[0]),
-        )
         return pair_id, {
             'param_unique_name_x': x_name,
             'param_unique_name_y': y_name,
@@ -1551,7 +1469,7 @@ class Analysis(
             'contour_levels': contour_levels,
         }
 
-    def _store_bayesian_pair_cache_projection(
+    def _store_posterior_pair_cache_projection(
         self,
         *,
         plotter: object,
@@ -1572,7 +1490,7 @@ class Analysis(
         payload: dict[str, dict[str, object]] = {}
         for first_index, second_index in combinations(range(n_parameters), 2):
             pair_id = str(len(payload) + 1)
-            cache_projection = self._store_one_bayesian_pair_cache_projection(
+            cache_projection = self._store_one_posterior_pair_cache_projection(
                 plotter=plotter,
                 results=results,
                 density_samples=density_samples,
@@ -1613,7 +1531,7 @@ class Analysis(
             payload['draws'] = np.asarray(summary.draws, dtype=float)
         return payload
 
-    def _store_bayesian_predictive_projection(
+    def _store_posterior_predictive_projection(
         self,
         *,
         plotter: object,
@@ -1647,35 +1565,9 @@ class Analysis(
             predictive_payload[summary.experiment_name] = self._predictive_dataset_payload(
                 summary,
             )
-            predictive_root = f'/predictive/{summary.experiment_name}'
-            self.bayesian_predictive_datasets.create(
-                experiment_name=summary.experiment_name,
-                x_axis_name=str(x_axis_name),
-                paths=BayesianPredictiveDatasetPaths(
-                    x_path=f'{predictive_root}/x',
-                    best_sample_prediction_path=(f'{predictive_root}/best_sample_prediction'),
-                    lower_95_path=(
-                        None if summary.lower_95 is None else f'{predictive_root}/lower_95'
-                    ),
-                    upper_95_path=(
-                        None if summary.upper_95 is None else f'{predictive_root}/upper_95'
-                    ),
-                    lower_68_path=(
-                        None if summary.lower_68 is None else f'{predictive_root}/lower_68'
-                    ),
-                    upper_68_path=(
-                        None if summary.upper_68 is None else f'{predictive_root}/upper_68'
-                    ),
-                    draws_path=(None if summary.draws is None else f'{predictive_root}/draws'),
-                ),
-                n_x=float(np.asarray(summary.x).size),
-                n_draws_cached=(
-                    0.0 if summary.draws is None else float(np.asarray(summary.draws).shape[0])
-                ),
-            )
         return predictive_payload
 
-    def _store_bayesian_plot_cache_projection(self, results: BayesianFitResults) -> None:
+    def _store_posterior_plot_cache_projection(self, results: BayesianFitResults) -> None:
         """Populate persisted Bayesian plot caches."""
         posterior_samples = results.posterior_samples
         if posterior_samples is None:
@@ -1684,9 +1576,6 @@ class Analysis(
             self._persisted_fit_state_sidecar['distribution_caches'] = {}
             self._persisted_fit_state_sidecar['pair_caches'] = {}
             self._persisted_fit_state_sidecar['predictive_datasets'] = {}
-            self.bayesian_result._set_has_distribution_cache(value=False)
-            self.bayesian_result._set_has_pair_cache(value=False)
-            self.bayesian_result._set_has_posterior_predictive(value=False)
             return
 
         flattened_samples = np.asarray(posterior_samples.flattened(), dtype=float)
@@ -1701,25 +1590,22 @@ class Analysis(
             self._persisted_fit_state_sidecar['distribution_caches'] = {}
             self._persisted_fit_state_sidecar['pair_caches'] = {}
             self._persisted_fit_state_sidecar['predictive_datasets'] = {}
-            self.bayesian_result._set_has_distribution_cache(value=False)
-            self.bayesian_result._set_has_pair_cache(value=False)
-            self.bayesian_result._set_has_posterior_predictive(value=False)
             return
 
         plotter = self.project.rendering.plotter
-        distribution_payload = self._store_bayesian_distribution_cache_projection(
+        distribution_payload = self._store_posterior_distribution_cache_projection(
             plotter=plotter,
             results=results,
             flattened_samples=flattened_samples,
             parameter_names=parameter_names,
         )
-        pair_payload = self._store_bayesian_pair_cache_projection(
+        pair_payload = self._store_posterior_pair_cache_projection(
             plotter=plotter,
             results=results,
             flattened_samples=flattened_samples,
             parameter_names=parameter_names,
         )
-        predictive_payload = self._store_bayesian_predictive_projection(
+        predictive_payload = self._store_posterior_predictive_projection(
             plotter=plotter,
             results=results,
         )
@@ -1729,11 +1615,8 @@ class Analysis(
         self._persisted_fit_state_sidecar['predictive_datasets'] = predictive_payload
         results.posterior_distribution_caches = distribution_payload
         results.posterior_pair_caches = pair_payload
-        self.bayesian_result._set_has_distribution_cache(value=bool(distribution_payload))
-        self.bayesian_result._set_has_pair_cache(value=bool(pair_payload))
-        self.bayesian_result._set_has_posterior_predictive(value=bool(predictive_payload))
 
-    def _store_bayesian_posterior_sidecar_projection(
+    def _store_posterior_samples_sidecar_projection(
         self,
         results: BayesianFitResults,
     ) -> None:
@@ -1760,9 +1643,9 @@ class Analysis(
             ),
         }
 
-    def _store_bayesian_result_projection(self, results: BayesianFitResults) -> None:
+    def _store_posterior_fit_projection(self, results: BayesianFitResults) -> None:
         """
-        Store Bayesian fit-result projections into persisted categories.
+        Store Bayesian fit-result projections into the minimizer category.
         """
         credible_interval_inner = 0.68
         credible_interval_outer = 0.95
@@ -1771,40 +1654,18 @@ class Analysis(
             credible_interval_outer = float(results.credible_interval_levels[1])
 
         point_estimate_name = results.point_estimate_name or 'best_sample'
-        sampler_settings = results.sampler_settings
         convergence = results.convergence_diagnostics
 
-        self.bayesian_result._set_sampler_name(results.sampler_name)
-        self.bayesian_result._set_point_estimate_name(point_estimate_name)
-        self.bayesian_result._set_success(value=results.success)
-        self.bayesian_result._set_sampler_completed(value=results.sampler_completed)
-        self.bayesian_result._set_best_log_posterior(results.best_log_posterior)
-        self.bayesian_result._set_credible_interval_inner(credible_interval_inner)
-        self.bayesian_result._set_credible_interval_outer(credible_interval_outer)
-        self.bayesian_result._set_has_posterior_samples(
-            value=results.posterior_samples is not None
-        )
-        self.bayesian_result._set_has_distribution_cache(value=False)
-        self.bayesian_result._set_has_pair_cache(value=False)
-        self.bayesian_result._set_has_posterior_predictive(value=False)
-        self.bayesian_result._set_sidecar_file('results.h5')
-        self._store_bayesian_posterior_sidecar_projection(results)
-
-        self.bayesian_sampler._set_steps(int(sampler_settings.get('steps', 0)))
-        self.bayesian_sampler._set_burn(int(sampler_settings.get('burn', 0)))
-        self.bayesian_sampler._set_thin(int(sampler_settings.get('thin', 0)))
-        self.bayesian_sampler._set_pop(int(sampler_settings.get('pop', 0)))
-        self.bayesian_sampler._set_parallel(int(sampler_settings.get('parallel', 0)))
-        self.bayesian_sampler._set_init(str(sampler_settings.get('init', '')))
-        random_seed = sampler_settings.get('random_seed')
-        self.bayesian_sampler._set_random_seed(None if random_seed is None else int(random_seed))
-
-        self.bayesian_convergence._set_converged(value=bool(convergence.get('converged', False)))
-        self.bayesian_convergence._set_max_r_hat(convergence.get('max_r_hat'))
-        self.bayesian_convergence._set_min_ess_bulk(convergence.get('min_ess_bulk'))
-        self.bayesian_convergence._set_n_draws(int(convergence.get('n_draws', 0)))
-        self.bayesian_convergence._set_n_chains(int(convergence.get('n_chains', 0)))
-        self.bayesian_convergence._set_n_parameters(int(convergence.get('n_parameters', 0)))
+        self.minimizer._set_runtime_seconds(results.fitting_time)
+        self.minimizer._set_point_estimate_name(point_estimate_name)
+        self.minimizer._set_sampler_completed(value=results.sampler_completed)
+        self.minimizer._set_best_log_posterior(results.best_log_posterior)
+        self.minimizer._set_credible_interval_inner(credible_interval_inner)
+        self.minimizer._set_credible_interval_outer(credible_interval_outer)
+        self.minimizer._set_gelman_rubin_max(convergence.get('max_r_hat'))
+        self.minimizer._set_effective_sample_size_min(convergence.get('min_ess_bulk'))
+        self.minimizer._set_acceptance_rate_mean(convergence.get('acceptance_rate_mean'))
+        self._store_posterior_samples_sidecar_projection(results)
 
         live_parameters = {
             parameter.unique_name: parameter
@@ -1821,7 +1682,7 @@ class Analysis(
         if posterior_samples is None:
             return
 
-        self._store_bayesian_plot_cache_projection(results)
+        self._store_posterior_plot_cache_projection(results)
         if len(posterior_samples.parameter_names) <= 1:
             return
 
@@ -1848,7 +1709,7 @@ class Analysis(
                 results,
                 result_kind=FitResultKindEnum.BAYESIAN,
             )
-            self._store_bayesian_result_projection(results)
+            self._store_posterior_fit_projection(results)
             return
 
         self._store_common_fit_result_projection(
