@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 from typing import Any
 
 from easydiffraction.core.datablock import DatablockItem
+from easydiffraction.datablocks.experiment.categories.background.factory import BackgroundFactory
 from easydiffraction.datablocks.experiment.categories.calculation import CalculationFactory
 from easydiffraction.datablocks.experiment.categories.data.factory import DataFactory
 from easydiffraction.datablocks.experiment.categories.diffrn.factory import DiffrnFactory
@@ -121,8 +122,43 @@ class ExperimentBase(DatablockItem):
 
     def _swap_background(self, new_type: str) -> None:
         """Switch the active background category."""
-        msg = f"Switching background to '{new_type}' is not wired yet."
-        raise NotImplementedError(msg)
+        self._replace_background(new_type, announce=True)
+
+    def _replace_background(self, new_type: str, *, announce: bool) -> None:
+        """Replace the active background category."""
+        supported = BackgroundFactory.supported_for(
+            **self._supported_filters_for(self.background),
+        )
+        supported_tags = [klass.type_info.tag for klass in supported]
+        if new_type not in supported_tags:
+            log.warning(
+                f"Unsupported background type '{new_type}'. "
+                f'Supported: {supported_tags}. '
+                f"For more information, use 'show_background_types()'",
+            )
+            return
+
+        if self._background_type == new_type:
+            if announce:
+                console.paragraph(f"Background type for experiment '{self.name}' already set to")
+                console.print(new_type)
+            return
+
+        if len(self._background) > 0 and announce:
+            log.warning(
+                f'Switching background type discards {len(self._background)} '
+                f'existing background point(s).',
+            )
+
+        old_background = self._background
+        self._background = BackgroundFactory.create(new_type)
+        old_background._parent = None
+        self._background._parent = self
+        self._background_type = new_type
+        self._background._type.value = new_type
+        if announce:
+            console.paragraph(f"Background type for experiment '{self.name}' changed to")
+            console.print(new_type)
 
     def _swap_extinction(self, new_type: str) -> None:
         """Switch the active extinction category."""

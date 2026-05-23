@@ -297,7 +297,7 @@ with explicit `git add` paths.
         `PeakFactory.create(...)` and rebinds.
       Commit: `Wire experiment.peak to category-owned selector`
 
-- [ ] **P1.6 — Wire `experiment.background` to the new mixin.**
+- [x] **P1.6 — Wire `experiment.background` to the new mixin.**
       - `BackgroundBase(CategoryCollection, SwitchableCategoryBase)`;
         declare the collection-level `_type` descriptor via P1.2's
         generalisation with `cif_handler=CifHandler(names=['_background.type'])`.

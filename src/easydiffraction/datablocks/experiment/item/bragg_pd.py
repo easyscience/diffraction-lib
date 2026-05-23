@@ -19,9 +19,8 @@ from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.datablocks.experiment.item.factory import ExperimentFactory
 from easydiffraction.io.ascii import load_numeric_block
-from easydiffraction.utils.logging import console
+from easydiffraction.io.cif.parse import read_cif_str
 from easydiffraction.utils.logging import log
-from easydiffraction.utils.utils import render_table
 
 if TYPE_CHECKING:
     from easydiffraction.datablocks.experiment.categories.experiment_type import ExperimentType
@@ -190,33 +189,7 @@ class BraggPdExperiment(PdExperimentBase):
     @background_type.setter
     def background_type(self, new_type: str) -> None:
         """Set a new background type and recreate background object."""
-        if self._background_type == new_type:
-            console.paragraph(f"Background type for experiment '{self.name}' already set to")
-            console.print(new_type)
-            return
-
-        supported = BackgroundFactory.supported_for(
-            calculator=self.calculation.calculator_type.value,
-        )
-        supported_tags = [k.type_info.tag for k in supported]
-        if new_type not in supported_tags:
-            log.warning(
-                f"Unsupported background type '{new_type}'. "
-                f'Supported: {supported_tags}. '
-                f"For more information, use 'show_background_types()'",
-            )
-            return
-
-        if len(self._background) > 0:
-            log.warning(
-                f'Switching background type discards {len(self._background)} '
-                f'existing background point(s).',
-            )
-
-        self._background = BackgroundFactory.create(new_type)
-        self._background_type = new_type
-        console.paragraph(f"Background type for experiment '{self.name}' changed to")
-        console.print(new_type)
+        self._replace_background(new_type, announce=True)
 
     @property
     def background(self) -> object:
@@ -225,20 +198,20 @@ class BraggPdExperiment(PdExperimentBase):
 
     def show_background_types(self) -> None:
         """Print supported background types and mark current type."""
-        supported = BackgroundFactory.supported_for(
-            calculator=self.calculation.calculator_type.value,
-        )
-        columns_data = [
-            [
-                '*' if klass.type_info.tag == self._background_type else '',
-                klass.type_info.tag,
-                klass.type_info.description,
-            ]
-            for klass in supported
-        ]
-        console.paragraph('Background types')
-        render_table(
-            columns_headers=['', 'Type', 'Description'],
-            columns_alignment=['left', 'left', 'left'],
-            columns_data=columns_data,
-        )
+        self.background.show_supported()
+
+    def _normalize_switchable_type_descriptors(self) -> None:
+        """
+        Normalize switchable category descriptors after CIF loading.
+        """
+        super()._normalize_switchable_type_descriptors()
+        self.background._type.value = self._background_type
+
+    def _restore_switchable_types(self, block: object) -> None:
+        """
+        Restore Bragg powder switchable category types from CIF.
+        """
+        super()._restore_switchable_types(block)
+        background_type = read_cif_str(block, '_background.type')
+        if background_type is not None:
+            self._replace_background(background_type, announce=False)
