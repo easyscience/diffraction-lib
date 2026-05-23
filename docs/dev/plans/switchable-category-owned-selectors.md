@@ -264,7 +264,7 @@ with explicit `git add` paths.
         `_minimizer.type` first, then populates the rest.
       Commit: `Wire analysis.minimizer to category-owned selector`
 
-- [ ] **P1.5 — Wire `experiment.peak` to the new mixin.**
+- [x] **P1.5 — Wire `experiment.peak` to the new mixin.**
       - `PeakBase` multi-inherits the mixin; rename CIF tag
         `_peak.profile_type` → `_peak.type` (renames the descriptor
         from `profile_type` to `type`).

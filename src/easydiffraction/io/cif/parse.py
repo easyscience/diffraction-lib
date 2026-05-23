@@ -43,7 +43,7 @@ def read_cif_str(block: gemmi.cif.Block, tag: str) -> str | None:
     block : gemmi.cif.Block
         Parsed CIF data block to read from.
     tag : str
-        CIF tag to look up (e.g. ``'_peak.profile_type'``).
+        CIF tag to look up (e.g. ``'_peak.type'``).
 
     Returns
     -------

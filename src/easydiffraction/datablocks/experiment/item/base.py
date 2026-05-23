@@ -117,8 +117,7 @@ class ExperimentBase(DatablockItem):
 
     def _swap_peak(self, new_type: str) -> None:
         """Switch the active peak category."""
-        msg = f"Switching peak to '{new_type}' is not wired yet."
-        raise NotImplementedError(msg)
+        self._replace_peak_profile(new_type, announce=True)
 
     def _swap_background(self, new_type: str) -> None:
         """Switch the active background category."""
@@ -581,10 +580,13 @@ class PdExperimentBase(ExperimentBase):
         new_type : str
             New profile type as context-local alias or canonical tag.
         """
+        self._replace_peak_profile(new_type, announce=True)
+
+    def _replace_peak_profile(self, new_type: str, *, announce: bool) -> None:
+        """Replace the active peak profile category."""
         context = self._peak_profile_context()
         supported = PeakFactory.supported_for(
-            calculator=self.calculation.calculator_type.value,
-            **context,
+            **self._supported_filters_for(self.peak),
         )
         supported_tags = [klass.type_info.tag for klass in supported]
         supported_aliases = [
@@ -600,41 +602,25 @@ class PdExperimentBase(ExperimentBase):
             )
             return
 
-        if self._peak is not None:
+        if self._peak is not None and announce:
             log.warning(
                 'Switching peak profile type discards existing peak parameters.',
             )
 
+        old_peak = self._peak
         self._peak = PeakFactory.create(canonical_type)
+        if old_peak is not None:
+            old_peak._parent = None
+        self._peak._parent = self
         self._peak_profile_type = canonical_type
-        console.paragraph(f"Peak profile type for experiment '{self.name}' changed to")
-        console.print(self.peak_profile_type)
+        self._peak._type.value = canonical_type
+        if announce:
+            console.paragraph(f"Peak profile type for experiment '{self.name}' changed to")
+            console.print(self.peak_profile_type)
 
     def show_peak_profile_types(self) -> None:
         """Print supported peak profile types and mark current type."""
-        supported = PeakFactory.supported_for(
-            calculator=self.calculation.calculator_type.value,
-            scattering_type=self.type.scattering_type.value,
-            beam_mode=self.type.beam_mode.value,
-        )
-        context = self._peak_profile_context()
-        current = PeakFactory._local_alias_for(self._peak_profile_type, **context)
-        columns_data = [
-            [
-                '*'
-                if PeakFactory._local_alias_for(klass.type_info.tag, **context) == current
-                else '',
-                PeakFactory._local_alias_for(klass.type_info.tag, **context),
-                klass.type_info.description,
-            ]
-            for klass in supported
-        ]
-        console.paragraph('Peak profile types')
-        render_table(
-            columns_headers=['', 'Type', 'Description'],
-            columns_alignment=['left', 'left', 'left'],
-            columns_data=columns_data,
-        )
+        self.peak.show_supported()
 
     def _set_peak_profile_type(self, new_type: str) -> None:
         """
@@ -649,23 +635,7 @@ class PdExperimentBase(ExperimentBase):
         new_type : str
             Peak profile type alias or canonical tag.
         """
-        context = self._peak_profile_context()
-        supported = PeakFactory.supported_for(
-            **context,
-        )
-        supported_tags = [klass.type_info.tag for klass in supported]
-        canonical_type = PeakFactory._canonical_tag_for(new_type, **context)
-        if canonical_type not in supported_tags:
-            supported_aliases = [
-                PeakFactory._local_alias_for(tag, **context) for tag in supported_tags
-            ]
-            log.warning(
-                f"Unsupported peak profile '{new_type}' in CIF. "
-                f'Supported: {supported_aliases}. Keeping default.',
-            )
-            return
-        self._peak = PeakFactory.create(canonical_type)
-        self._peak_profile_type = canonical_type
+        self._replace_peak_profile(new_type, announce=False)
 
     def _peak_profile_context(self) -> dict[str, object]:
         """
@@ -681,13 +651,13 @@ class PdExperimentBase(ExperimentBase):
         Normalize switchable category descriptors after CIF loading.
         """
         super()._normalize_switchable_type_descriptors()
-        self.peak.profile_type.value = self._peak_profile_type
+        self.peak._type.value = self._peak_profile_type
 
     def _restore_switchable_types(self, block: object) -> None:
         """
         Restore switchable category types for powder experiments.
 
-        Reads ``_peak.profile_type`` from the CIF block and switches to
+        Reads ``_peak.type`` from the CIF block and switches to
         the matching peak implementation before category parameters are
         loaded, ensuring profile-specific descriptors are present.
 
@@ -697,6 +667,6 @@ class PdExperimentBase(ExperimentBase):
             Parsed ``gemmi.cif.Block`` to read type tags from.
         """
         super()._restore_switchable_types(block)
-        peak_type = read_cif_str(block, '_peak.profile_type')
+        peak_type = read_cif_str(block, '_peak.type')
         if peak_type is not None:
             self._set_peak_profile_type(peak_type)
