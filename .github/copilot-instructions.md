@@ -132,6 +132,15 @@
   verification command; reviews are static reads of code, plan, and
   documentation only. Note in the review which checks were skipped so
   the next implementer knows the gap.
+- Writing a review or a reply to a review does **not** require running
+  any formatter (`prettier`, `pixi run fix`, `ruff format`, …) or any
+  lint/check/test command on the review/reply file itself or any
+  surrounding documentation. Review and reply files are markdown-only,
+  written by hand, and committed as-is. Formatting passes happen later,
+  during implementation Phase 2 verification — not in the review cycle.
+  This rule applies to both `_review-N.md` and `_reply-N.md` files
+  regardless of where they live (`docs/dev/plans/`, `docs/dev/adrs/…/`,
+  etc.).
 - Each change is atomic and single-commit-sized: make one change,
   suggest the commit message, then stop and wait for confirmation.
 - When in doubt, ask.
