@@ -31,7 +31,6 @@ from easydiffraction.io.cif.serialize import experiment_to_cif
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_cif
-from easydiffraction.utils.utils import render_table
 
 if TYPE_CHECKING:
     from easydiffraction.datablocks.experiment.categories.experiment_type import ExperimentType
@@ -162,8 +161,31 @@ class ExperimentBase(DatablockItem):
 
     def _swap_extinction(self, new_type: str) -> None:
         """Switch the active extinction category."""
-        msg = f"Switching extinction to '{new_type}' is not wired yet."
-        raise NotImplementedError(msg)
+        self._replace_extinction(new_type, announce=True)
+
+    def _replace_extinction(self, new_type: str, *, announce: bool) -> None:
+        """Replace the active extinction category."""
+        supported = ExtinctionFactory.supported_for(
+            **self._supported_filters_for(self.extinction),
+        )
+        supported_tags = [klass.type_info.tag for klass in supported]
+        if new_type not in supported_tags:
+            log.warning(
+                f"Unsupported extinction type '{new_type}'. "
+                f'Supported: {supported_tags}. '
+                f"For more information, use 'show_extinction_types()'",
+            )
+            return
+
+        old_extinction = self._extinction
+        self._extinction = ExtinctionFactory.create(new_type)
+        old_extinction._parent = None
+        self._extinction._parent = self
+        self._extinction_type = new_type
+        self._extinction._type.value = new_type
+        if announce:
+            console.paragraph('Extinction type changed to')
+            console.print(new_type)
 
     @property
     def name(self) -> str:
@@ -410,41 +432,27 @@ class ScExperimentBase(ExperimentBase):
         new_type : str
             Extinction tag (e.g. ``'becker-coppens'``).
         """
-        supported = ExtinctionFactory.supported_for(
-            calculator=self.calculation.calculator_type.value,
-        )
-        supported_tags = [k.type_info.tag for k in supported]
-        if new_type not in supported_tags:
-            log.warning(
-                f"Unsupported extinction type '{new_type}'. "
-                f'Supported: {supported_tags}. '
-                f"For more information, use 'show_extinction_types()'",
-            )
-            return
-        self._extinction = ExtinctionFactory.create(new_type)
-        self._extinction_type = new_type
-        console.paragraph('Extinction type changed to')
-        console.print(new_type)
+        self._replace_extinction(new_type, announce=True)
 
     def show_extinction_types(self) -> None:
         """Print supported extinction types and mark current type."""
-        supported = ExtinctionFactory.supported_for(
-            calculator=self.calculation.calculator_type.value,
-        )
-        columns_data = [
-            [
-                '*' if klass.type_info.tag == self._extinction_type else '',
-                klass.type_info.tag,
-                klass.type_info.description,
-            ]
-            for klass in supported
-        ]
-        console.paragraph('Extinction types')
-        render_table(
-            columns_headers=['', 'Type', 'Description'],
-            columns_alignment=['left', 'left', 'left'],
-            columns_data=columns_data,
-        )
+        self.extinction.show_supported()
+
+    def _normalize_switchable_type_descriptors(self) -> None:
+        """
+        Normalize switchable category descriptors after CIF loading.
+        """
+        super()._normalize_switchable_type_descriptors()
+        self.extinction._type.value = self._extinction_type
+
+    def _restore_switchable_types(self, block: object) -> None:
+        """
+        Restore single-crystal switchable category types from CIF.
+        """
+        super()._restore_switchable_types(block)
+        extinction_type = read_cif_str(block, '_extinction.type')
+        if extinction_type is not None:
+            self._replace_extinction(extinction_type, announce=False)
 
     # ------------------------------------------------------------------
     #  Linked crystal (read-only, single type)

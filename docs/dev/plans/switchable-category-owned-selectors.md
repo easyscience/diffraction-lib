@@ -308,7 +308,7 @@ with explicit `git add` paths.
         per ADR §3 (B2 choice).
       Commit: `Wire experiment.background to category-owned selector`
 
-- [ ] **P1.7 — Wire `experiment.extinction` to the new mixin.**
+- [x] **P1.7 — Wire `experiment.extinction` to the new mixin.**
       - `ExtinctionBase` multi-inherits the mixin; add `_type`
         descriptor with `cif_handler=CifHandler(names=['_extinction.type'])`.
       - `_supported_types(filters)` (Shape 1, `calculator` filter).

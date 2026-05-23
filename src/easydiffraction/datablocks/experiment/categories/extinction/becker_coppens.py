@@ -6,7 +6,6 @@ Becker-Coppens isotropic extinction correction for single crystals.
 
 from __future__ import annotations
 
-from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.metadata import CalculatorSupport
 from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
@@ -15,6 +14,7 @@ from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.variable import Parameter
 from easydiffraction.core.variable import StringDescriptor
+from easydiffraction.datablocks.experiment.categories.extinction.base import ExtinctionBase
 from easydiffraction.datablocks.experiment.categories.extinction.factory import ExtinctionFactory
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.datablocks.experiment.item.enums import ExtinctionModelEnum
@@ -23,7 +23,7 @@ from easydiffraction.io.cif.handler import CifHandler
 
 
 @ExtinctionFactory.register
-class BeckerCoppensExtinction(CategoryItem):
+class BeckerCoppensExtinction(ExtinctionBase):
     """
     Becker-Coppens spherical extinction correction for single crystals.
 
@@ -35,8 +35,6 @@ class BeckerCoppensExtinction(CategoryItem):
     Parameters are the crystal ``radius`` (in μm) and the ``mosaicity``
     (in arc-minutes, as expected by CrysPy).
     """
-
-    _category_code = 'extinction'
 
     type_info = TypeInfo(
         tag='becker-coppens',
