@@ -19,7 +19,7 @@ from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.io.cif.handler import CifHandler
 
 if TYPE_CHECKING:
-    from easydiffraction.analysis.fit_helpers.bayesian import PosteriorParameterSummary
+    from easydiffraction.core.posterior import PosteriorParameterSummary
 
 
 class BayesianParameterPosteriorItem(CategoryItem):

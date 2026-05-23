@@ -45,7 +45,6 @@ from easydiffraction.analysis.enums import FitCorrelationSourceEnum
 from easydiffraction.analysis.enums import FitModeEnum
 from easydiffraction.analysis.enums import FitResultKindEnum
 from easydiffraction.analysis.fit_helpers.bayesian import BayesianFitResults
-from easydiffraction.analysis.fit_helpers.bayesian import PosteriorParameterSummary
 from easydiffraction.analysis.fit_helpers.bayesian import PosteriorPredictiveSummary
 from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
 from easydiffraction.analysis.fit_helpers.reporting import FitResults
@@ -53,6 +52,7 @@ from easydiffraction.analysis.fitting import Fitter
 from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.core.category_owner import CategoryOwner
 from easydiffraction.core.guard import _apply_help_filter
+from easydiffraction.core.posterior import PosteriorParameterSummary
 from easydiffraction.core.singleton import ConstraintsHandler
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import Parameter

@@ -17,6 +17,7 @@ from easydiffraction.analysis.fit_helpers.metrics import calculate_weighted_r_fa
 from easydiffraction.analysis.fit_helpers.reporting import FitResults
 from easydiffraction.analysis.fit_helpers.reporting import _build_parameter_row
 from easydiffraction.analysis.fit_helpers.reporting import _format_optional_float
+from easydiffraction.core.posterior import PosteriorParameterSummary
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_table
@@ -29,44 +30,6 @@ DEFAULT_CREDIBLE_INTERVAL_LEVELS = DEFAULT_CI_LEVELS
 IntervalLevels = tuple[float, ...]
 SettingsMap = dict[str, object] | None
 DiagnosticsMap = dict[str, object] | None
-
-
-@dataclass(slots=True)
-class PosteriorParameterSummary:
-    r"""
-    Posterior summary statistics for one fitted parameter.
-
-    Attributes
-    ----------
-    unique_name : str
-        Unique parameter name used across EasyDiffraction.
-    display_name : str
-        Human-readable label used in plots and tables.
-    best_sample_value : float
-        Highest-posterior sampled parameter value.
-    median : float
-        Posterior median value.
-    standard_deviation : float
-        Posterior standard deviation.
-    interval_68 : tuple[float, float]
-        Central 68% interval.
-    interval_95 : tuple[float, float]
-        Central 95% interval.
-    ess_bulk : float | None, default=None
-        Bulk effective sample size when available.
-    r_hat : float | None, default=None
-        Rank-normalized split-$\hat{R}$ when available.
-    """
-
-    unique_name: str
-    display_name: str
-    best_sample_value: float
-    median: float
-    standard_deviation: float
-    interval_68: tuple[float, float]
-    interval_95: tuple[float, float]
-    ess_bulk: float | None = None
-    r_hat: float | None = None
 
 
 @dataclass(slots=True)

@@ -210,7 +210,7 @@ Add (Phase 2):
 
 Mark `[x]` as each step lands.
 
-- [ ] **P1.1a — Relocate `PosteriorParameterSummary` to `core/`.**
+- [x] **P1.1a — Relocate `PosteriorParameterSummary` to `core/`.**
       Create `src/easydiffraction/core/posterior.py` and move the
       `PosteriorParameterSummary` dataclass from
       `src/easydiffraction/analysis/fit_helpers/bayesian.py` (lines 34–69
