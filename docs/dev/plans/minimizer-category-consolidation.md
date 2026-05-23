@@ -758,7 +758,7 @@ findings the user asked to fix in-PR. Each lands as a separate commit
 per `.github/copilot-instructions.md` → **Commits**. Open-issues
 entries for F1, F4, F7, F9, F10 cover the deferred items.
 
-- [ ] **P2.6 — F2: compare `FitResultKindEnum` member, not raw string.**
+- [x] **P2.6 — F2: compare `FitResultKindEnum` member, not raw string.**
   In `src/easydiffraction/io/results_sidecar.py`:
   - Import `FitResultKindEnum` from
     `easydiffraction.analysis.fit_helpers.enums`.

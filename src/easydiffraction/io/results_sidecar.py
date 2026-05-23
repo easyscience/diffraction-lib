@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
+from easydiffraction.analysis.enums import FitResultKindEnum
 from easydiffraction.utils.logging import log
 
 if TYPE_CHECKING:
@@ -42,7 +43,7 @@ def _should_use_sidecar(analysis: object) -> bool:
     if not callable(has_fit_state) or not has_fit_state():
         return False
 
-    return analysis.fit_result.result_kind.value == 'bayesian'
+    return analysis.fit_result.result_kind.value == FitResultKindEnum.BAYESIAN.value
 
 
 def _delete_stale_sidecar(sidecar_path: Path) -> None:

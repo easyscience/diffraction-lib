@@ -160,3 +160,20 @@ def test_write_analysis_results_sidecar_truncates_stale_payloads(tmp_path):
         assert 'alpha' not in handle['distribution_cache']
         assert 'alpha__beta' not in handle['pair_cache']
         assert 'hrpt' in handle['predictive']
+
+
+def test_should_use_sidecar_compares_to_fit_result_kind_enum():
+    """`_should_use_sidecar` must read from `FitResultKindEnum`, not a literal."""
+    from easydiffraction.analysis.enums import FitResultKindEnum
+    from easydiffraction.io.results_sidecar import _should_use_sidecar
+
+    deterministic_analysis = _analysis_with_sidecar_payload()
+    deterministic_analysis.fit_result._set_result_kind(
+        FitResultKindEnum.DETERMINISTIC.value
+    )
+
+    bayesian_analysis = _analysis_with_sidecar_payload()
+    bayesian_analysis.fit_result._set_result_kind(FitResultKindEnum.BAYESIAN.value)
+
+    assert _should_use_sidecar(deterministic_analysis) is False
+    assert _should_use_sidecar(bayesian_analysis) is True
