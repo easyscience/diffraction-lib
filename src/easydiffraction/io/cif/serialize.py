@@ -427,12 +427,15 @@ def experiment_to_cif(experiment: object) -> str:
 
 def analysis_to_cif(analysis: object) -> str:
     """Render analysis metadata, aliases, and constraints to CIF."""
-    parts: list[str] = [f'_fitting.mode_type {format_value(analysis.fitting_mode_type)}']
+    parts: list[str] = [
+        f'_fitting.mode_type {format_value(analysis.fitting_mode_type)}',
+        f'_fitting.minimizer_type {format_value(analysis.minimizer_type)}',
+    ]
 
     body = category_owner_to_cif(analysis)
     if not body:
         fallback_sections = [
-            getattr(analysis, 'fitting', None),
+            getattr(analysis, 'minimizer', None),
             getattr(analysis, 'aliases', None),
             getattr(analysis, 'constraints', None),
         ]
@@ -567,9 +570,8 @@ def analysis_from_cif(analysis: object, cif_text: str) -> None:
 
     _raise_for_legacy_analysis_tags(block)
     analysis._set_fitting_mode_type(_analysis_mode_from_cif_block(block))
-
-    # Restore fit configuration
-    analysis.fitting.from_cif(block)
+    analysis._set_minimizer_type(_analysis_minimizer_from_cif_block(block))
+    analysis.minimizer.from_cif(block)
     _restore_mode_specific_analysis_sections(analysis, block)
 
     # Restore aliases (loop)
@@ -589,17 +591,13 @@ def _has_persisted_fit_state_sections(block: object) -> bool:
     scalar_tags = (
         '_fit_result.result_kind',
         '_deterministic_result.optimizer_name',
-        '_bayesian_result.sampler_name',
-        '_bayesian_sampler.steps',
-        '_bayesian_convergence.converged',
+        '_minimizer.optimizer_name',
+        '_minimizer.runtime_seconds',
+        '_minimizer.best_log_posterior',
     )
     loop_tags = (
         '_fit_parameter.param_unique_name',
         '_fit_parameter_correlation.param_unique_name_i',
-        '_bayesian_parameter_posterior.unique_name',
-        '_bayesian_distribution_cache.param_unique_name',
-        '_bayesian_pair_cache.param_unique_name_x',
-        '_bayesian_predictive_dataset.experiment_name',
     )
 
     return any(_has_cif_value(block, tag) for tag in scalar_tags) or any(
@@ -621,13 +619,7 @@ def _restore_deterministic_fit_state(analysis: object, block: object) -> None:
 
 def _restore_bayesian_fit_state(analysis: object, block: object) -> None:
     """Restore Bayesian-only persisted fit-state categories."""
-    analysis.bayesian_result.from_cif(block)
-    analysis.bayesian_sampler.from_cif(block)
-    analysis.bayesian_convergence.from_cif(block)
-    analysis.bayesian_parameter_posteriors.from_cif(block)
-    analysis.bayesian_distribution_caches.from_cif(block)
-    analysis.bayesian_pair_caches.from_cif(block)
-    analysis.bayesian_predictive_datasets.from_cif(block)
+    del block
     analysis._sync_live_minimizer_from_persisted_fit_state()
 
 
@@ -680,7 +672,7 @@ def _raise_for_legacy_analysis_tags(block: object) -> None:
     msg = (
         'Legacy analysis CIF tags are no longer supported: '
         f'{legacy_tags}. Use _fitting.minimizer_type, _fitting.mode_type, '
-        '_joint_fit.experiment_id, and _joint_fit.weight.'
+        '_minimizer.*, _joint_fit.experiment_id, and _joint_fit.weight.'
     )
     raise ValueError(msg)
 
@@ -695,6 +687,18 @@ def _analysis_mode_from_cif_block(block: object) -> str:
     from easydiffraction.analysis.enums import FitModeEnum  # noqa: PLC0415
 
     return FitModeEnum.default().value
+
+
+def _analysis_minimizer_from_cif_block(block: object) -> str:
+    """Return the minimizer type stored in an analysis CIF block."""
+    read_cif_string = _make_cif_string_reader(block)
+    minimizer_value = read_cif_string('_fitting.minimizer_type')
+    if minimizer_value is not None:
+        return minimizer_value
+
+    from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum  # noqa: PLC0415
+
+    return MinimizerTypeEnum.default().value
 
 
 def _has_joint_fit_rows(block: object) -> bool:

@@ -1085,6 +1085,19 @@ class Analysis(
         console.paragraph('Current minimizer changed to')
         console.print(value)
 
+    def _set_minimizer_type(self, value: str) -> None:
+        """Set the minimizer type without console output."""
+        supported = [str(tag) for tag in MinimizerCategoryFactory.supported_tags()]
+        if value not in supported:
+            log.warning(
+                f"Unsupported minimizer type '{value}' in CIF. "
+                f'Supported: {supported}. Keeping default.',
+            )
+            return
+
+        self._minimizer = MinimizerCategoryFactory.create(value)
+        self._fitter = Fitter(value)
+
     @staticmethod
     def _changed_minimizer_defaults(
         old_minimizer: MinimizerCategoryBase,

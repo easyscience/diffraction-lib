@@ -364,7 +364,7 @@ PosteriorParameterSummary` so the existing intra-module
   - `Analysis.fitting` Python attribute is removed at the same time.
     Commit: `Wire minimizer selector on Analysis owner`
 
-- [ ] **P1.7 — Update CIF serialize/deserialize for `_minimizer.*`.**
+- [x] **P1.7 — Update CIF serialize/deserialize for `_minimizer.*`.**
       In `src/easydiffraction/io/cif/serialize.py`:
   - Emit `_minimizer.*` tags from `analysis.minimizer` (replaces the
     `_bayesian_sampler.*` emit path).
