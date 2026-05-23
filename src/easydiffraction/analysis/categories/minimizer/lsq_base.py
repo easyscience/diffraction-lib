@@ -124,11 +124,16 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
 
     @staticmethod
     def _string_result_descriptor(name: str, description: str) -> StringDescriptor:
-        """Create a string-valued result descriptor."""
+        """Create a string-valued result descriptor.
+
+        Defaults to ``None`` so a CIF written before any fit emits ``?``
+        rather than an empty string, matching the "no fit happened yet"
+        semantics shared with the numeric/integer/bool variants.
+        """
         return StringDescriptor(
             name=name,
             description=description,
-            value_spec=AttributeSpec(default=''),
+            value_spec=AttributeSpec(default=None, allow_none=True),
             cif_handler=CifHandler(names=[f'_minimizer.{name}']),
         )
 
@@ -150,21 +155,32 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
 
     @staticmethod
     def _integer_result_descriptor(name: str, description: str) -> NumericDescriptor:
-        """Create an integer-like numeric result descriptor."""
+        """Create an integer-like numeric result descriptor.
+
+        Defaults to ``None`` so a CIF written before any fit emits ``?``
+        rather than ``0``; the scientist audience reads ``0`` as a
+        degenerate result, not as "no fit yet".
+        """
         return NumericDescriptor(
             name=name,
             description=description,
-            value_spec=AttributeSpec(default=0),
+            value_spec=AttributeSpec(default=None, allow_none=True),
             cif_handler=CifHandler(names=[f'_minimizer.{name}']),
         )
 
     @staticmethod
     def _bool_result_descriptor(name: str, description: str) -> BoolDescriptor:
-        """Create a boolean result descriptor."""
+        """Create a boolean result descriptor.
+
+        Defaults to ``None`` so a CIF written before any fit emits ``?``
+        rather than ``false``; ``false`` would otherwise read as
+        "covariance/correlation was actively unavailable" instead of
+        "no fit happened yet".
+        """
         return BoolDescriptor(
             name=name,
             description=description,
-            value_spec=AttributeSpec(default=False),
+            value_spec=AttributeSpec(default=None, allow_none=True),
             cif_handler=CifHandler(names=[f'_minimizer.{name}']),
         )
 
@@ -184,7 +200,7 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
         """
         return self._optimizer_name
 
-    def _set_optimizer_name(self, value: str) -> None:
+    def _set_optimizer_name(self, value: str | None) -> None:
         self._optimizer_name.value = value
 
     @property
@@ -192,7 +208,7 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
         """Method name used by the persisted deterministic fit."""
         return self._method_name
 
-    def _set_method_name(self, value: str) -> None:
+    def _set_method_name(self, value: str | None) -> None:
         self._method_name.value = value
 
     @property
@@ -202,7 +218,7 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
         """
         return self._objective_name
 
-    def _set_objective_name(self, value: str) -> None:
+    def _set_objective_name(self, value: str | None) -> None:
         self._objective_name.value = value
 
     @property
@@ -220,7 +236,7 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
         """
         return self._n_data_points
 
-    def _set_n_data_points(self, value: float) -> None:
+    def _set_n_data_points(self, value: float | None) -> None:
         self._n_data_points.value = value
 
     @property
@@ -228,7 +244,7 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
         """Number of parameters in the persisted deterministic fit."""
         return self._n_parameters
 
-    def _set_n_parameters(self, value: float) -> None:
+    def _set_n_parameters(self, value: float | None) -> None:
         self._n_parameters.value = value
 
     @property
@@ -238,7 +254,7 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
         """
         return self._n_free_parameters
 
-    def _set_n_free_parameters(self, value: float) -> None:
+    def _set_n_free_parameters(self, value: float | None) -> None:
         self._n_free_parameters.value = value
 
     @property
@@ -246,7 +262,7 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
         """Degrees of freedom for the persisted deterministic fit."""
         return self._degrees_of_freedom
 
-    def _set_degrees_of_freedom(self, value: float) -> None:
+    def _set_degrees_of_freedom(self, value: float | None) -> None:
         self._degrees_of_freedom.value = value
 
     @property
@@ -254,7 +270,7 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
         """Whether deterministic covariance was available."""
         return self._covariance_available
 
-    def _set_covariance_available(self, *, value: bool) -> None:
+    def _set_covariance_available(self, *, value: bool | None) -> None:
         self._covariance_available.value = value
 
     @property
@@ -262,7 +278,7 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
         """Whether deterministic correlations were available."""
         return self._correlation_available
 
-    def _set_correlation_available(self, *, value: bool) -> None:
+    def _set_correlation_available(self, *, value: bool | None) -> None:
         self._correlation_available.value = value
 
     @property
@@ -278,7 +294,7 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
         """Number of iterations performed by the deterministic fit."""
         return self._iterations_performed
 
-    def _set_iterations_performed(self, value: float) -> None:
+    def _set_iterations_performed(self, value: float | None) -> None:
         self._iterations_performed.value = value
 
     @property
@@ -286,5 +302,5 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
         """Backend exit reason for the persisted deterministic fit."""
         return self._exit_reason
 
-    def _set_exit_reason(self, value: str) -> None:
+    def _set_exit_reason(self, value: str | None) -> None:
         self._exit_reason.value = value

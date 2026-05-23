@@ -62,6 +62,17 @@ _FLATTENED_POSTERIOR_SAMPLE_NDIM = 2
 _CREDIBLE_INTERVAL_LEVEL_COUNT = 2
 
 
+def _int_or_none(value: object) -> int | None:
+    """Coerce a numeric descriptor value to ``int`` while preserving ``None``.
+
+    Used during CIF restore: LSQ result descriptors now default to ``None``
+    (per ADR review-8 F6), so the call sites that previously did
+    ``int(descriptor.value)`` would crash on a CIF that was saved before
+    any fit ran.
+    """
+    return None if value is None else int(value)
+
+
 def _discover_property_rows(cls: type) -> list[list[str]]:
     """Return public property rows for analysis help tables."""
     return _help_property_rows(cls)
@@ -709,14 +720,14 @@ class Analysis(
             method_name=self.minimizer.method_name.value,
             objective_name=self.minimizer.objective_name.value,
             objective_value=self.minimizer.objective_value.value,
-            n_data_points=int(self.minimizer.n_data_points.value),
-            n_parameters=int(self.minimizer.n_parameters.value),
-            n_free_parameters=int(self.minimizer.n_free_parameters.value),
-            degrees_of_freedom=int(self.minimizer.degrees_of_freedom.value),
-            covariance_available=bool(self.minimizer.covariance_available.value),
-            correlation_available=bool(self.minimizer.correlation_available.value),
+            n_data_points=_int_or_none(self.minimizer.n_data_points.value),
+            n_parameters=_int_or_none(self.minimizer.n_parameters.value),
+            n_free_parameters=_int_or_none(self.minimizer.n_free_parameters.value),
+            degrees_of_freedom=_int_or_none(self.minimizer.degrees_of_freedom.value),
+            covariance_available=self.minimizer.covariance_available.value,
+            correlation_available=self.minimizer.correlation_available.value,
             runtime_seconds=self.minimizer.runtime_seconds.value,
-            iterations_performed=int(self.minimizer.iterations_performed.value),
+            iterations_performed=_int_or_none(self.minimizer.iterations_performed.value),
             exit_reason=self.minimizer.exit_reason.value,
         )
         restored_results.message = self.fit_result.message.value

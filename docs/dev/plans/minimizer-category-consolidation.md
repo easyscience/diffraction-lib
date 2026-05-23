@@ -798,7 +798,7 @@ entries for F1, F4, F7, F9, F10 cover the deferred items.
   `ValueError` is raised.
   Commit: `Validate Bayesian minimizer matches result_kind on restore`
 
-- [ ] **P2.9 — F6: default LSQ result descriptors to `None`.** In
+- [x] **P2.9 — F6: default LSQ result descriptors to `None`.** In
   `src/easydiffraction/analysis/categories/minimizer/lsq_base.py`:
   - `_integer_result_descriptor` → `default=None, allow_none=True`.
   - `_bool_result_descriptor` → `default=None, allow_none=True`.

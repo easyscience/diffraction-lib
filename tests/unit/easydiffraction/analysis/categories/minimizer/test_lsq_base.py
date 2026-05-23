@@ -22,9 +22,14 @@ def test_lsq_minimizer_defaults_and_result_reset():
 
     minimizer._reset_result_descriptors()
 
-    assert minimizer.optimizer_name.value == ''
+    # LSQ result descriptors default to None so a CIF written before
+    # any fit emits `?` rather than `''`, `0`, or `False`. See
+    # minimizer-category-consolidation_review-8 finding F6.
+    assert minimizer.optimizer_name.value is None
     assert minimizer.objective_value.value is None
-    assert minimizer.covariance_available.value is False
+    assert minimizer.covariance_available.value is None
+    assert minimizer.n_data_points.value is None
+    assert minimizer.iterations_performed.value is None
 
 
 def test_lsq_minimizer_reads_cif_unknown_values_as_defaults():
