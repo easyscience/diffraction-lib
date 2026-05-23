@@ -519,7 +519,7 @@ with explicit `git add` paths.
         pointer to the new uniform surface that drops the suffix.
       Commit: `Promote switchable-category-owned-selectors ADR`
 
-- [ ] **P1.15 — Phase 1 review gate.** No code change in this
+- [x] **P1.15 — Phase 1 review gate.** No code change in this
       step. Re-run the three targeted greps from P1.12 against the
       Phase 1 scopes (`src/` and `docs/docs/tutorials/`); they must
       all return empty. The `tests/` sweep is intentionally
