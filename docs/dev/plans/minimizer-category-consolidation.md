@@ -283,7 +283,7 @@ PosteriorParameterSummary` so the existing intra-module
       Empty `__init__.py` + the base. No factory yet.
       Commit: `Add MinimizerCategoryBase`
 
-- [ ] **P1.4 — Add concrete minimizer category classes.**
+- [x] **P1.4 — Add concrete minimizer category classes.**
       Add nine modules under
       `src/easydiffraction/analysis/categories/minimizer/`, one per
       current `MinimizerTypeEnum` tag, plus two **behavior-only**
