@@ -273,7 +273,7 @@ PosteriorParameterSummary` so the existing intra-module
       (`src/easydiffraction/analysis/minimizers/enums.py`).
       Commit: `Add InitializationMethodEnum for samplers`
 
-- [ ] **P1.3 — Add `MinimizerCategoryBase`.**
+- [x] **P1.3 — Add `MinimizerCategoryBase`.**
       New module
       `src/easydiffraction/analysis/categories/minimizer/base.py`
       defining `MinimizerCategoryBase(CategoryItem)` with
