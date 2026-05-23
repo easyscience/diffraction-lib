@@ -257,7 +257,7 @@ PosteriorParameterSummary` so the existing intra-module
   Tests deferred to Phase 2.
   Commit: `Move PosteriorParameterSummary to core`
 
-- [ ] **P1.1 — Add `Parameter.posterior` attribute.**
+- [x] **P1.1 — Add `Parameter.posterior` attribute.**
       In `src/easydiffraction/core/variable.py`, extend `GenericParameter`
       with a read-only `posterior` property (default `None`) and a private
       `_set_posterior(value)` setter accepting
