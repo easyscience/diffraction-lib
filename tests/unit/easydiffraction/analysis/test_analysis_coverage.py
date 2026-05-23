@@ -289,18 +289,17 @@ class TestBayesianProjection:
             convergence_diagnostics={},
         )
 
-        analysis._store_bayesian_result_projection(results)
+        analysis._store_posterior_plot_cache_projection(results)
 
-        assert analysis.bayesian_result.has_distribution_cache.value is True
-        assert analysis.bayesian_result.has_pair_cache.value is False
-        assert analysis.bayesian_result.has_posterior_predictive.value is True
+        sidecar = analysis._persisted_fit_state_sidecar
+        assert sidecar['distribution_caches']
+        assert sidecar['pair_caches'] == {}
+        assert sidecar['predictive_datasets']
         assert np.allclose(
-            analysis._persisted_fit_state_sidecar['distribution_caches']['alpha']['x'],
+            sidecar['distribution_caches']['alpha']['x'],
             np.asarray([0.5, 1.5], dtype=float),
         )
         assert np.allclose(
-            analysis._persisted_fit_state_sidecar['predictive_datasets']['hrpt'][
-                'best_sample_prediction'
-            ],
+            sidecar['predictive_datasets']['hrpt']['best_sample_prediction'],
             np.asarray([3.0, 4.0], dtype=float),
         )
