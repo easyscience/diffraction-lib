@@ -30,7 +30,6 @@ class LmfitLeastsqMinimizer(LeastSquaresMinimizerBase):
         self._convergence_tolerance = self._convergence_tolerance_descriptor(
             DEFAULT_CONVERGENCE_TOLERANCE
         )
-        self._random_seed = self._random_seed_descriptor()
         self._optimizer_name = self._string_result_descriptor(
             'optimizer_name',
             'Name of the persisted deterministic optimizer.',

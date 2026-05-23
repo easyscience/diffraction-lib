@@ -22,7 +22,6 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
     _expected_descriptor_names: ClassVar[tuple[str, ...]] = (
         'max_iterations',
         'convergence_tolerance',
-        'random_seed',
         'optimizer_name',
         'method_name',
         'objective_name',
@@ -41,7 +40,6 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
     _native_key_map: ClassVar[dict[str, str]] = {
         'max_iterations': 'max_iterations',
         'convergence_tolerance': 'convergence_tolerance',
-        'random_seed': 'random_seed',
     }
 
     @staticmethod
@@ -62,16 +60,6 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
             description='Convergence tolerance for the solver.',
             value_spec=AttributeSpec(default=default, validator=RangeValidator(ge=0)),
             cif_handler=CifHandler(names=['_minimizer.convergence_tolerance']),
-        )
-
-    @staticmethod
-    def _random_seed_descriptor() -> IntegerDescriptor:
-        """Create a random-seed descriptor."""
-        return IntegerDescriptor(
-            name='random_seed',
-            description='Random seed used by stochastic solvers.',
-            value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(names=['_minimizer.random_seed']),
         )
 
     @staticmethod
@@ -137,15 +125,6 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
     @convergence_tolerance.setter
     def convergence_tolerance(self, value: float) -> None:
         self._convergence_tolerance.value = value
-
-    @property
-    def random_seed(self) -> IntegerDescriptor:
-        """Random seed used by stochastic solvers."""
-        return self._random_seed
-
-    @random_seed.setter
-    def random_seed(self, value: int | None) -> None:
-        self._random_seed.value = value
 
     @property
     def optimizer_name(self) -> StringDescriptor:

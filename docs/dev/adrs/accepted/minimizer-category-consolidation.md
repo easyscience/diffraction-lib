@@ -205,7 +205,9 @@ Deterministic-LSQ inputs:
 |---------------------------|--------------------------------------------------------|
 | `max_iterations`          | Maximum solver iterations                              |
 | `convergence_tolerance`   | Convergence tolerance                                  |
-| `random_seed`             | Same semantics as Bayesian                             |
+
+`random_seed` remains a Bayesian sampler input because the current
+deterministic engines reject non-`None` random seeds.
 
 Fit-filled outputs (subset varies per class):
 
@@ -298,7 +300,6 @@ _fitting.minimizer_type  'bumps (lm)'
 
 _minimizer.max_iterations           200
 _minimizer.convergence_tolerance    1.0e-6
-_minimizer.random_seed              ?
 _minimizer.runtime_seconds          12.34
 _minimizer.iterations_performed     87
 _minimizer.exit_reason              converged
