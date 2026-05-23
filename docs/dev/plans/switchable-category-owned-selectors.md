@@ -316,7 +316,7 @@ with explicit `git add` paths.
         `ExtinctionFactory.create(...)` and rebinds.
       Commit: `Wire experiment.extinction to category-owned selector`
 
-- [ ] **P1.8 — Rename `Calculation` → `Calculator` (§8c).**
+- [x] **P1.8 — Rename `Calculation` → `Calculator` (§8c).**
       - Move
         `src/easydiffraction/datablocks/experiment/categories/calculation/`
         to `categories/calculator/` via `git mv` (preserves history).

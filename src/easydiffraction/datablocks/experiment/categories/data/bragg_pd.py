@@ -386,7 +386,7 @@ class PdDataBase(CategoryCollection):
         experiments = experiment._parent
         project = experiments._parent
         structures = project.structures
-        calculator = experiment.calculation.calculator
+        calculator = experiment.calculator.calculator
         refln = experiment.refln
 
         calc, refln_records, missing_refln_records = self._phase_calculation_results(

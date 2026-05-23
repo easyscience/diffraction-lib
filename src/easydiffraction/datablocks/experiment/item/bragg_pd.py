@@ -86,9 +86,9 @@ class BraggPdExperiment(PdExperimentBase):
 
     def _sync_refln_category(self) -> None:
         """Create or remove ``refln`` for the active calculator."""
-        calculator_type = self._calculator_type or self._default_calculator_tag()
+        calculator_tag = self.calculator.type
         refln_collection_type = self._refln_collection_type()
-        calculator = CalculatorEnum(calculator_type)
+        calculator = CalculatorEnum(calculator_tag)
         if refln_collection_type.calculator_support.supports(calculator):
             if not isinstance(self._refln, refln_collection_type):
                 self._refln = ReflnFactory.create(self._refln_collection_tag())
@@ -96,14 +96,14 @@ class BraggPdExperiment(PdExperimentBase):
 
         self._refln = None
 
-    def _set_calculator_type(
+    def _swap_calculator(
         self,
         tag: str,
         *,
         announce: bool = True,
     ) -> None:
         """Switch calculator backend and sync ``refln`` availability."""
-        super()._set_calculator_type(tag, announce=announce)
+        super()._swap_calculator(tag, announce=announce)
         self._sync_refln_category()
 
     def _load_ascii_data_to_experiment(

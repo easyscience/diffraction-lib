@@ -10,7 +10,9 @@ from typing import Any
 
 from easydiffraction.core.datablock import DatablockItem
 from easydiffraction.datablocks.experiment.categories.background.factory import BackgroundFactory
-from easydiffraction.datablocks.experiment.categories.calculation import CalculationFactory
+from easydiffraction.datablocks.experiment.categories.calculator import (
+    CalculatorCategoryFactory,
+)
 from easydiffraction.datablocks.experiment.categories.data.factory import DataFactory
 from easydiffraction.datablocks.experiment.categories.diffrn.factory import DiffrnFactory
 from easydiffraction.datablocks.experiment.categories.excluded_regions.factory import (
@@ -69,14 +71,14 @@ class ExperimentBase(DatablockItem):
         self._name = name
         self._type = type
         self._calculator = None
-        self._calculator_type: str | None = None
+        self._calculator_type: str | None = self._default_calculator_tag()
         self._identity.datablock_entry_name = lambda: self.name
 
         self._diffrn_type: str = DiffrnFactory.default_tag()
         self._diffrn = DiffrnFactory.create(self._diffrn_type)
-        self._calculation = CalculationFactory.create(
+        self._calculator_category = CalculatorCategoryFactory.create(
             'default',
-            calculator_type=self._default_calculator_tag(),
+            type=self._calculator_type,
         )
         self._attach_category_parents()
 
@@ -85,7 +87,7 @@ class ExperimentBase(DatablockItem):
         for category in [
             self._type,
             getattr(self, '_diffrn', None),
-            getattr(self, '_calculation', None),
+            getattr(self, '_calculator_category', None),
             getattr(self, '_extinction', None),
             getattr(self, '_linked_crystal', None),
             getattr(self, '_instrument', None),
@@ -103,17 +105,36 @@ class ExperimentBase(DatablockItem):
         """Return owner context filters for a switchable category."""
         del category
         return {
-            'calculator': self.calculation.calculator_type.value,
+            'calculator': self.calculator.type,
             'sample_form': self.type.sample_form.value,
             'scattering_type': self.type.scattering_type.value,
             'beam_mode': self.type.beam_mode.value,
             'radiation_probe': self.type.radiation_probe.value,
         }
 
-    def _swap_calculator(self, new_type: str) -> None:
-        """Switch the active calculator category."""
-        msg = f"Switching calculator to '{new_type}' is not wired yet."
-        raise NotImplementedError(msg)
+    def _swap_calculator(self, new_type: str, *, announce: bool = True) -> None:
+        """Switch the active calculator backend."""
+        from easydiffraction.analysis.calculators.factory import CalculatorFactory  # noqa: PLC0415
+
+        supported = self._supported_calculator_tags()
+        if new_type not in supported:
+            log.warning(
+                f"Unsupported calculator '{new_type}' for experiment "
+                f"'{self.name}'. Supported: {supported}. "
+                f"For more information, use 'calculator.show_supported()'",
+            )
+            return
+        if self._calculator_type == new_type and self._calculator is not None:
+            if announce:
+                console.paragraph(f"Calculator for experiment '{self.name}' already set to")
+                console.print(new_type)
+            return
+        self._calculator = CalculatorFactory.create(new_type)
+        self._calculator_type = new_type
+        self._calculator_category._type.value = new_type
+        if announce:
+            console.paragraph(f"Calculator for experiment '{self.name}' changed to")
+            console.print(new_type)
 
     def _swap_peak(self, new_type: str) -> None:
         """Switch the active peak category."""
@@ -225,7 +246,7 @@ class ExperimentBase(DatablockItem):
         Called by the factory immediately after the experiment object is
         created and before any category parameters are loaded from CIF.
         Subclasses with switchable categories must override this method
-        and call their ``_set_<type>`` private setter for each category
+        and call their private swap hook for each category
         whose active implementation is identified by a CIF type tag.
 
         Parameters
@@ -233,16 +254,16 @@ class ExperimentBase(DatablockItem):
         block : object
             Parsed ``gemmi.cif.Block`` to read type tags from.
         """
-        calculator_type = read_cif_str(block, '_calculation.calculator_type')
-        if calculator_type is not None:
-            self._set_calculator_type(calculator_type, announce=False)
+        calculator_tag = read_cif_str(block, '_calculator.type')
+        if calculator_tag is not None:
+            self._swap_calculator(calculator_tag, announce=False)
 
     def _normalize_switchable_type_descriptors(self) -> None:
         """
         Normalize switchable category descriptors after CIF loading.
         """
         if self._calculator_type is not None:
-            self.calculation.calculator_type.value = self._calculator_type
+            self._calculator_category._type.value = self._calculator_type
 
     @property
     def as_cif(self) -> str:
@@ -273,20 +294,20 @@ class ExperimentBase(DatablockItem):
         raise NotImplementedError
 
     # ------------------------------------------------------------------
-    #  Calculation (switchable-category pattern)
+    #  Calculator (switchable-category pattern)
     # ------------------------------------------------------------------
 
     @property
-    def calculation(self) -> object:
+    def calculator(self) -> object:
         """
-        The active calculation category for this experiment.
+        The active calculator category for this experiment.
 
         Holds the selected calculator type and provides access to the
         live calculator backend instance.
         """
         if self._calculator is None:
-            self._resolve_calculation()
-        return self._calculation
+            self._resolve_calculator()
+        return self._calculator_category
 
     def _default_calculator_tag(self) -> str:
         """Return the default calculator tag for this experiment."""
@@ -296,36 +317,7 @@ class ExperimentBase(DatablockItem):
             scattering_type=self.type.scattering_type.value,
         )
 
-    def _set_calculator_type(
-        self,
-        tag: str,
-        *,
-        announce: bool = True,
-    ) -> None:
-        """Switch to a different calculator backend."""
-        from easydiffraction.analysis.calculators.factory import CalculatorFactory  # noqa: PLC0415
-
-        supported = self._supported_calculator_tags()
-        if tag not in supported:
-            log.warning(
-                f"Unsupported calculator '{tag}' for experiment "
-                f"'{self.name}'. Supported: {supported}. "
-                f"For more information, use 'calculation.show_calculator_types()'",
-            )
-            return
-        if self._calculator_type == tag and self._calculator is not None:
-            if announce:
-                console.paragraph(f"Calculator for experiment '{self.name}' already set to")
-                console.print(tag)
-            return
-        self._calculator = CalculatorFactory.create(tag)
-        self._calculator_type = tag
-        self.calculation.calculator_type.value = tag
-        if announce:
-            console.paragraph(f"Calculator for experiment '{self.name}' changed to")
-            console.print(tag)
-
-    def _resolve_calculation(self) -> None:
+    def _resolve_calculator(self) -> None:
         """Auto-resolve the default calculator from category support."""
         from easydiffraction.analysis.calculators.factory import CalculatorFactory  # noqa: PLC0415
 
@@ -335,7 +327,7 @@ class ExperimentBase(DatablockItem):
             tag = supported[0]
         self._calculator = CalculatorFactory.create(tag)
         self._calculator_type = tag
-        self.calculation.calculator_type.value = tag
+        self._calculator_category._type.value = tag
 
     def _supported_calculator_tags(self) -> list[str]:
         """
@@ -393,7 +385,7 @@ class ScExperimentBase(ExperimentBase):
             scattering_type=self.type.scattering_type.value,
         )
         self._refln = ReflnFactory.create(self._refln_type)
-        self._resolve_calculation()
+        self._resolve_calculator()
         self._attach_category_parents()
 
     @abstractmethod
@@ -514,7 +506,7 @@ class PdExperimentBase(ExperimentBase):
         )
         self._data = DataFactory.create(self._data_type)
         self._peak = PeakFactory.create(self._peak_profile_type)
-        self._resolve_calculation()
+        self._resolve_calculator()
         self._attach_category_parents()
 
     def _get_valid_linked_phases(
