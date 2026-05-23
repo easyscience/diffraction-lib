@@ -12,6 +12,8 @@ from easydiffraction.analysis.categories.fit_parameter_correlations import FitPa
 from easydiffraction.analysis.categories.fit_parameters import FitParameterItem
 from easydiffraction.analysis.categories.fit_parameters import FitParameters
 from easydiffraction.analysis.categories.fit_result import FitResult
+from easydiffraction.analysis.categories.fitting_mode import FittingMode
+from easydiffraction.analysis.categories.fitting_mode import FittingModeFactory
 from easydiffraction.analysis.categories.joint_fit import JointFitCollection
 from easydiffraction.analysis.categories.joint_fit import JointFitItem
 from easydiffraction.analysis.categories.minimizer import BayesianMinimizerBase

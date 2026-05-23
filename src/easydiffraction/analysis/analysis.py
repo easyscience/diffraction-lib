@@ -16,6 +16,8 @@ from easydiffraction.analysis.categories.constraints.factory import ConstraintsF
 from easydiffraction.analysis.categories.fit_parameter_correlations import FitParameterCorrelations
 from easydiffraction.analysis.categories.fit_parameters import FitParameters
 from easydiffraction.analysis.categories.fit_result import FitResult
+from easydiffraction.analysis.categories.fitting_mode import FittingMode
+from easydiffraction.analysis.categories.fitting_mode import FittingModeFactory
 from easydiffraction.analysis.categories.joint_fit import JointFitCollection
 from easydiffraction.analysis.categories.minimizer import MinimizerCategoryFactory
 from easydiffraction.analysis.categories.minimizer.base import MinimizerCategoryBase
@@ -470,6 +472,9 @@ class Analysis(
             MinimizerTypeEnum.default().value
         )
         self._fitting_mode_type: FitModeEnum = FitModeEnum.default()
+        self._fitting_mode: FittingMode = FittingModeFactory.create(
+            FittingModeFactory.default_tag()
+        )
         self._joint_fit: JointFitCollection = JointFitCollection()
         self._sequential_fit: SequentialFit = SequentialFitFactory.create(
             SequentialFitFactory.default_tag()
@@ -491,6 +496,7 @@ class Analysis(
         self._aliases._parent = self
         self._constraints._parent = self
         self._minimizer._parent = self
+        self._fitting_mode._parent = self
         self._joint_fit._parent = self
         self._sequential_fit._parent = self
         self._sequential_fit_extract._parent = self
@@ -509,8 +515,7 @@ class Analysis(
 
     def _swap_fitting_mode(self, new_type: str) -> None:
         """Switch the active fitting-mode category."""
-        msg = f"Switching fitting mode to '{new_type}' is not wired yet."
-        raise NotImplementedError(msg)
+        self._replace_fitting_mode(new_type, announce=True)
 
     @staticmethod
     def _predictive_cache_key(
@@ -850,6 +855,7 @@ class Analysis(
     def _serializable_categories(self) -> list:
         """Serializable analysis categories for the active fit mode."""
         categories = [
+            self.fitting_mode,
             self.minimizer,
             self.aliases,
             self.constraints,
@@ -985,12 +991,12 @@ class Analysis(
             raise ValueError(msg)
 
     @property
-    def fitting_mode_type(self) -> str:
-        """Currently selected fitting mode."""
-        return self._fitting_mode_type.value
+    def fitting_mode(self) -> FittingMode:
+        """Active fitting-mode selector category."""
+        return self._fitting_mode
 
-    @fitting_mode_type.setter
-    def fitting_mode_type(self, value: str) -> None:
+    def _replace_fitting_mode(self, value: str, *, announce: bool) -> None:
+        """Set the active fitting mode."""
         supported = [mode.value for mode in FitModeEnum]
 
         try:
@@ -999,47 +1005,19 @@ class Analysis(
             log.warning(
                 f"Unsupported fitting mode '{value}'. "
                 f'Supported fitting modes: {supported}. '
-                f"For more information, use 'show_supported_fitting_mode_types()'",
+                f"For more information, use 'fitting_mode.show_supported()'",
             )
             return
 
         self._fitting_mode_type = new_mode
-        console.paragraph('Fitting mode changed to')
-        console.print(self._fitting_mode_type.value)
-
-    def show_supported_fitting_mode_types(self) -> None:
-        """Print supported fitting modes and mark the current type."""
-        columns_data = [
-            [
-                '*' if mode is self._fitting_mode_type else '',
-                mode.value,
-                mode.description(),
-            ]
-            for mode in FitModeEnum
-        ]
-        console.paragraph('Fitting mode types')
-        render_table(
-            columns_headers=['', 'Type', 'Description'],
-            columns_alignment=['left', 'left', 'left'],
-            columns_data=columns_data,
-        )
-
-    def show_current_fitting_mode_type(self) -> None:
-        """Print the currently selected fitting mode."""
-        console.paragraph('Current fitting mode type')
-        console.print(self._fitting_mode_type.value)
+        self._fitting_mode._type.value = new_mode.value
+        if announce:
+            console.paragraph('Fitting mode changed to')
+            console.print(self._fitting_mode_type.value)
 
     def _set_fitting_mode_type(self, value: str) -> None:
         """Set the fitting mode without console output."""
-        supported = [mode.value for mode in FitModeEnum]
-
-        try:
-            self._fitting_mode_type = FitModeEnum(value)
-        except ValueError:
-            log.warning(
-                f"Unsupported fitting mode '{value}' in CIF. "
-                f'Supported: {supported}. Keeping default.',
-            )
+        self._replace_fitting_mode(value, announce=False)
 
     @property
     def minimizer(self) -> MinimizerCategoryBase:

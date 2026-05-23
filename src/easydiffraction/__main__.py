@@ -56,7 +56,8 @@ def _display_project_patterns(project: object) -> None:
 
 def _project_fit_mode(project: object) -> str | None:
     """Return the resolved fitting mode type for one project."""
-    return getattr(project.analysis, 'fitting_mode_type', None)
+    fitting_mode = getattr(project.analysis, 'fitting_mode', None)
+    return getattr(fitting_mode, 'type', None)
 
 
 def _project_result_kind(project: object) -> str | None:

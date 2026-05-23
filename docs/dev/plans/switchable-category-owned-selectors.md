@@ -411,7 +411,7 @@ with explicit `git add` paths.
         P2.1a and P1.13 respectively.)
       Commit: `Split Rendering into Chart and Table sibling categories`
 
-- [ ] **P1.10 — Promote `fitting_mode_type` to `FittingMode` (§8b).**
+- [x] **P1.10 — Promote `fitting_mode_type` to `FittingMode` (§8b).**
       - Create
         `src/easydiffraction/analysis/categories/fitting_mode/`
         with a `FittingMode(CategoryItem, SwitchableCategoryBase)`

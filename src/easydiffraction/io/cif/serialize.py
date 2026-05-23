@@ -432,15 +432,7 @@ def experiment_to_cif(experiment: object) -> str:
 
 def analysis_to_cif(analysis: object) -> str:
     """Render analysis metadata, aliases, and constraints to CIF."""
-    parts: list[str] = [
-        f'_fitting.mode_type {format_value(analysis.fitting_mode_type)}',
-    ]
-
-    body = category_owner_to_cif(analysis)
-    if body:
-        parts.append(body)
-
-    return '\n\n'.join(parts)
+    return category_owner_to_cif(analysis)
 
 
 def summary_to_cif(_summary: object) -> str:
@@ -628,6 +620,8 @@ def _collect_legacy_analysis_tags(block: object) -> list[str]:
         legacy_tags.append('_fit.mode')
     if _has_cif_value(block, '_fitting.minimizer_type'):
         legacy_tags.append('_fitting.minimizer_type')
+    if _has_cif_value(block, '_fitting.mode_type'):
+        legacy_tags.append('_fitting.mode_type')
     if _has_cif_loop(block, '_joint_fit_experiment.id'):
         legacy_tags.append('_joint_fit_experiment.id')
     if _has_cif_loop(block, '_joint_fit_experiment.weight'):
@@ -643,7 +637,7 @@ def _raise_for_legacy_analysis_tags(block: object) -> None:
 
     msg = (
         'Legacy analysis CIF tags are no longer supported: '
-        f'{legacy_tags}. Use _minimizer.type, _fitting.mode_type, '
+        f'{legacy_tags}. Use _minimizer.type, _fitting_mode.type, '
         '_minimizer.*, _joint_fit.experiment_id, and _joint_fit.weight.'
     )
     raise ValueError(msg)
@@ -652,7 +646,7 @@ def _raise_for_legacy_analysis_tags(block: object) -> None:
 def _analysis_mode_from_cif_block(block: object) -> str:
     """Return the fitting mode stored in an analysis CIF block."""
     read_cif_string = _make_cif_string_reader(block)
-    mode_value = read_cif_string('_fitting.mode_type')
+    mode_value = read_cif_string('_fitting_mode.type')
     if mode_value is not None:
         return mode_value
 
@@ -708,7 +702,7 @@ def _warn_inactive_analysis_sections(
     if has_sequential_settings or has_sequential_extract_rows:
         skipped_sections.append('sequential_fit')
     log.warning(
-        'Skipping inactive analysis CIF sections while fitting_mode_type is single: '
+        'Skipping inactive analysis CIF sections while fitting_mode is single: '
         f'{skipped_sections}.'
     )
 
@@ -719,12 +713,12 @@ def _restore_mode_specific_analysis_sections(analysis: object, block: object) ->
     has_sequential_settings = _has_sequential_fit_settings(block)
     has_sequential_extract_rows = _has_cif_loop(block, '_sequential_fit_extract.id')
 
-    if analysis.fitting_mode_type == 'joint':
+    if analysis.fitting_mode.type == 'joint':
         if has_joint_rows:
             analysis.joint_fit.from_cif(block)
         return
 
-    if analysis.fitting_mode_type == 'sequential':
+    if analysis.fitting_mode.type == 'sequential':
         if has_sequential_settings:
             analysis.sequential_fit.from_cif(block)
         if has_sequential_extract_rows:
