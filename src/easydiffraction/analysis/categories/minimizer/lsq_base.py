@@ -124,7 +124,8 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
 
     @staticmethod
     def _string_result_descriptor(name: str, description: str) -> StringDescriptor:
-        """Create a string-valued result descriptor.
+        """
+        Create a string-valued result descriptor.
 
         Defaults to ``None`` so a CIF written before any fit emits ``?``
         rather than an empty string, matching the "no fit happened yet"
@@ -155,7 +156,8 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
 
     @staticmethod
     def _integer_result_descriptor(name: str, description: str) -> NumericDescriptor:
-        """Create an integer-like numeric result descriptor.
+        """
+        Create an integer-like numeric result descriptor.
 
         Defaults to ``None`` so a CIF written before any fit emits ``?``
         rather than ``0``; the scientist audience reads ``0`` as a
@@ -170,12 +172,13 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
 
     @staticmethod
     def _bool_result_descriptor(name: str, description: str) -> BoolDescriptor:
-        """Create a boolean result descriptor.
+        """
+        Create a boolean result descriptor.
 
         Defaults to ``None`` so a CIF written before any fit emits ``?``
         rather than ``false``; ``false`` would otherwise read as
-        "covariance/correlation was actively unavailable" instead of
-        "no fit happened yet".
+        "covariance/correlation was actively unavailable" instead of "no
+        fit happened yet".
         """
         return BoolDescriptor(
             name=name,

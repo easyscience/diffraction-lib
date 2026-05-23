@@ -19,9 +19,7 @@ from easydiffraction.analysis.categories.fit_result import FitResult
 from easydiffraction.analysis.categories.joint_fit import JointFitCollection
 from easydiffraction.analysis.categories.minimizer import MinimizerCategoryFactory
 from easydiffraction.analysis.categories.minimizer.base import MinimizerCategoryBase
-from easydiffraction.analysis.categories.minimizer.bayesian_base import (
-    BayesianMinimizerBase,
-)
+from easydiffraction.analysis.categories.minimizer.bayesian_base import BayesianMinimizerBase
 from easydiffraction.analysis.categories.sequential_fit import SequentialFit
 from easydiffraction.analysis.categories.sequential_fit import SequentialFitFactory
 from easydiffraction.analysis.categories.sequential_fit_extract import (
@@ -65,14 +63,12 @@ _FLATTENED_POSTERIOR_SAMPLE_NDIM = 2
 _CREDIBLE_INTERVAL_LEVEL_COUNT = 2
 
 
+# LSQ result descriptors default to ``None`` (review-8 F6); the CIF
+# restore path calls ``int(...)`` on every result field, which would
+# crash for a CIF saved before any fit ran. ``_int_or_none`` lets the
+# call site stay terse while preserving ``None`` through the coercion.
 def _int_or_none(value: object) -> int | None:
-    """Coerce a numeric descriptor value to ``int`` while preserving ``None``.
-
-    Used during CIF restore: LSQ result descriptors now default to ``None``
-    (per ADR review-8 F6), so the call sites that previously did
-    ``int(descriptor.value)`` would crash on a CIF that was saved before
-    any fit ran.
-    """
+    """Coerce a descriptor value to ``int``; ``None`` passes through."""
     return None if value is None else int(value)
 
 
@@ -654,6 +650,27 @@ class Analysis(
         if not self._has_persisted_fit_state():
             return None
 
+        # Validate the (result_kind, minimizer family) pair before
+        # touching any live parameters or posterior arrays, so a CIF
+        # whose tags disagree fails fast with a clear error rather than
+        # crashing deep inside the Bayesian restore (review-8 F5).
+        if (
+            self.fit_result.result_kind.value == FitResultKindEnum.BAYESIAN.value
+            and not isinstance(self.minimizer, BayesianMinimizerBase)
+        ):
+            bayesian_kind = FitResultKindEnum.BAYESIAN.value
+            deterministic_kind = FitResultKindEnum.DETERMINISTIC.value
+            msg = (
+                'CIF restore mismatch: '
+                f"_fit_result.result_kind = '{bayesian_kind}' "
+                f"but _fitting.minimizer_type = '{self.minimizer_type}' "
+                'is not a Bayesian minimizer. Either set '
+                '_fitting.minimizer_type to a Bayesian sampler '
+                '(e.g. bumps (dream)), or set _fit_result.result_kind '
+                f"to '{deterministic_kind}'."
+            )
+            raise ValueError(msg)
+
         param_map = self._live_parameter_map()
         self._restore_live_parameter_state(param_map)
         restored_parameters = self._restored_fit_parameters(param_map)
@@ -661,15 +678,6 @@ class Analysis(
         reduced_chi_square = self.fit_result.reduced_chi_square.value
 
         if self.fit_result.result_kind.value == FitResultKindEnum.BAYESIAN.value:
-            if not isinstance(self.minimizer, BayesianMinimizerBase):
-                raise ValueError(
-                    'CIF restore mismatch: '
-                    f"_fit_result.result_kind = '{FitResultKindEnum.BAYESIAN.value}' "
-                    f"but _fitting.minimizer_type = '{self.minimizer_type}' is not a "
-                    'Bayesian minimizer. Either set _fitting.minimizer_type to a '
-                    'Bayesian sampler (e.g. bumps (dream)), or set '
-                    f"_fit_result.result_kind to '{FitResultKindEnum.DETERMINISTIC.value}'."
-                )
             posterior_samples = self._restored_posterior_samples()
             sample_shape = (
                 np.asarray(posterior_samples.parameter_samples).shape
@@ -1059,12 +1067,13 @@ class Analysis(
         old_minimizer: MinimizerCategoryBase,
         new_minimizer: MinimizerCategoryBase,
     ) -> tuple[list[str], list[str], list[str]]:
-        """Return (removed, added, changed) setting-name lists for a swap.
+        """
+        Return (removed, added, changed) setting-name lists for a swap.
 
-        ``removed`` lists settings present on ``old_minimizer`` but not on
-        ``new_minimizer`` (a value the user previously customised is no
-        longer applicable). ``added`` lists settings introduced by the
-        new minimizer with their default value. ``changed`` lists
+        ``removed`` lists settings present on ``old_minimizer`` but not
+        on ``new_minimizer`` (a value the user previously customised is
+        no longer applicable). ``added`` lists settings introduced by
+        the new minimizer with their default value. ``changed`` lists
         settings shared by both whose default value differs, in the
         ``'{name}={old!r}->{new!r}'`` form.
         """
@@ -1073,9 +1082,7 @@ class Analysis(
         old_keys = set(old_values)
         new_keys = set(new_values)
         removed = sorted(old_keys - new_keys)
-        added = sorted(
-            f'{name}={new_values[name]!r}' for name in (new_keys - old_keys)
-        )
+        added = sorted(f'{name}={new_values[name]!r}' for name in (new_keys - old_keys))
         changed = sorted(
             f'{name}={old_values[name]!r}->{new_values[name]!r}'
             for name in (old_keys & new_keys)
@@ -1089,29 +1096,25 @@ class Analysis(
         old_minimizer: MinimizerCategoryBase,
         new_minimizer: MinimizerCategoryBase,
     ) -> None:
-        """Emit human-readable warnings about a minimizer swap.
+        """
+        Emit human-readable warnings about a minimizer swap.
 
         Splits the diff into "removed", "added", "changed" lines so the
         message stays legible for scientists when an inter-family swap
-        replaces the whole setting surface (e.g. ``lmfit`` →
-        ``bumps (dream)``). Same-family swaps still see the per-field
+        replaces the whole setting surface (e.g. ``lmfit`` → ``bumps
+        (dream)``). Same-family swaps still see the per-field
         ``old->new`` line for actual default differences.
         """
         removed, added, changed = cls._minimizer_swap_diff(old_minimizer, new_minimizer)
         if removed:
-            log.warning(
-                'Switching minimizer type removes these settings: '
-                f'{", ".join(removed)}.'
-            )
+            log.warning(f'Switching minimizer type removes these settings: {", ".join(removed)}.')
         if added:
             log.warning(
-                'Switching minimizer type adds these settings with defaults: '
-                f'{", ".join(added)}.'
+                f'Switching minimizer type adds these settings with defaults: {", ".join(added)}.'
             )
         if changed:
             log.warning(
-                'Switching minimizer type changes these default values: '
-                f'{", ".join(changed)}.'
+                f'Switching minimizer type changes these default values: {", ".join(changed)}.'
             )
 
     def show_supported_minimizer_types(self) -> None:

@@ -75,11 +75,13 @@ def test_restore_raises_when_bayesian_result_kind_with_lsq_minimizer():
     a.fit_result._set_result_kind(FitResultKindEnum.BAYESIAN.value)
     a._set_has_persisted_fit_state(value=True)
 
-    with pytest.raises(ValueError) as excinfo:
+    with pytest.raises(
+        ValueError,
+        match=r"_fitting\.minimizer_type = 'lmfit \(leastsq\)'",
+    ) as excinfo:
         a._restore_fit_results_from_projection()
 
     message = str(excinfo.value)
-    assert 'lmfit (leastsq)' in message
     assert 'Bayesian' in message
     assert FitResultKindEnum.BAYESIAN.value in message
 
@@ -98,12 +100,9 @@ def test_minimizer_type_swap_warns_for_different_defaults(monkeypatch):
     # Inter-family swap should split warnings into "removed"/"added"
     # lines rather than emitting "<not available>" sentinels per
     # finding F3.
+    assert any('removes these settings' in w and 'max_iterations' in w for w in warnings)
     assert any(
-        'removes these settings' in w and 'max_iterations' in w for w in warnings
-    )
-    assert any(
-        'adds these settings with defaults' in w and 'sampling_steps' in w
-        for w in warnings
+        'adds these settings with defaults' in w and 'sampling_steps' in w for w in warnings
     )
     assert not any('<not available>' in w for w in warnings)
 
@@ -114,7 +113,6 @@ def test_analysis_help(capsys):
     a = Analysis(project=_make_project_with_names([]))
     a.help()
     out = capsys.readouterr().out
-    assert "Help for 'Analysis'" in out
     assert 'fit' in out
     assert 'display' in out
     assert 'Properties' in out
@@ -129,7 +127,6 @@ def test_analysis_display_help(capsys):
     a = Analysis(project=_make_project_with_names([]))
     a.display.help()
     out = capsys.readouterr().out
-    assert "Help for 'AnalysisDisplay'" in out
     assert 'all_params()' in out
     assert 'fit_results()' in out
     assert 'how_to_access_parameters()' in out

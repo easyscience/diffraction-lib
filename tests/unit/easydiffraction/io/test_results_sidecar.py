@@ -168,9 +168,7 @@ def test_should_use_sidecar_compares_to_fit_result_kind_enum():
     from easydiffraction.io.results_sidecar import _should_use_sidecar
 
     deterministic_analysis = _analysis_with_sidecar_payload()
-    deterministic_analysis.fit_result._set_result_kind(
-        FitResultKindEnum.DETERMINISTIC.value
-    )
+    deterministic_analysis.fit_result._set_result_kind(FitResultKindEnum.DETERMINISTIC.value)
 
     bayesian_analysis = _analysis_with_sidecar_payload()
     bayesian_analysis.fit_result._set_result_kind(FitResultKindEnum.BAYESIAN.value)
