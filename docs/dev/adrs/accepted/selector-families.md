@@ -24,8 +24,8 @@ Recognize three selector families:
 
 | Family                       | User intent                     | Examples                                                                          |
 | ---------------------------- | ------------------------------- | --------------------------------------------------------------------------------- |
-| Backend selector             | Pick an execution backend       | `fitting.minimizer_type`, `calculation.calculator_type`, `rendering.chart_engine` |
-| Switchable-category selector | Swap a category implementation  | `experiment.background_type`, `experiment.peak_profile_type`                      |
+| Backend selector             | Pick an execution backend       | `calculation.calculator_type`, `rendering.chart_engine`                           |
+| Switchable-category selector | Swap a category implementation  | `analysis.minimizer_type`, `experiment.background_type`, `experiment.peak_profile_type` |
 | Active-sibling selector      | Pick the active sibling surface | `analysis.fitting_mode_type`                                                      |
 
 Backend selectors live on dedicated configuration categories.

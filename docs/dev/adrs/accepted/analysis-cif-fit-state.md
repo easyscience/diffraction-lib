@@ -26,9 +26,9 @@ Analysis-owned fit state needs to persist:
 - pre-fit scalar snapshots for recovery workflows
 - compact status metadata for the latest saved fit projection
 - deterministic correlation summaries
-- Bayesian summary metadata and manifests for bulk array sidecars
-- plot-ready Bayesian caches so restored posterior displays do not need
-  to recompute on first use
+- minimizer-specific fit outputs on the active `_minimizer.*` category
+- per-parameter posterior summaries on `_fit_parameter`
+- large posterior arrays and plot caches in `analysis/results.h5`
 
 Committed model parameter values and uncertainties already persist in
 structure and experiment CIF files through the accepted free-flag CIF
@@ -41,13 +41,14 @@ projection. This ADR defines that narrower saved projection.
 
 ## Decision
 
-Persist analysis-owned fit state as explicit sibling categories in
-`analysis/analysis.cif`, with large Bayesian arrays stored in
+Persist analysis-owned fit state as explicit analysis categories in
+`analysis/analysis.cif`, with large posterior arrays stored in
 `analysis/results.h5`.
 
 Do not add a dedicated `_fit_state` category or
 `_fit_state.schema_version`. Persisted fit state is detected from
-`_fit_result` and the related fit-state categories.
+`_fit_result`, `_fit_parameter`, `_fit_parameter_correlation`, and
+fit-output fields on `_minimizer.*`.
 
 ### Common fit-state categories
 
@@ -66,6 +67,15 @@ pre-fit scalar snapshots:
 - `fit_bounds_uncertainty_multiplier`
 - `start_value`
 - `start_uncertainty`
+- `posterior_best_sample_value`
+- `posterior_median`
+- `posterior_uncertainty`
+- `posterior_interval_68_low`
+- `posterior_interval_68_high`
+- `posterior_interval_95_low`
+- `posterior_interval_95_high`
+- `posterior_gelman_rubin`
+- `posterior_effective_sample_size_bulk`
 
 `_fit_result` stores the latest saved fit header:
 
@@ -80,12 +90,11 @@ pre-fit scalar snapshots:
 correlation summaries keyed by a persisted `id`. Only unique parameter
 pairs are stored.
 
-### Deterministic fit projection
+### Minimizer fit projection
 
-Deterministic fits persist `_deterministic_result` in addition to the
-common categories above.
-
-`_deterministic_result` stores compact optimizer metadata and counts:
+The active `_minimizer.*` category stores both user-selected solver
+inputs and fit-filled outputs. Deterministic minimizer classes store
+compact optimizer metadata and counts:
 
 - `optimizer_name`
 - `method_name`
@@ -97,60 +106,49 @@ common categories above.
 - `degrees_of_freedom`
 - `covariance_available`
 - `correlation_available`
+- `runtime_seconds`
+- `iterations_performed`
+- `exit_reason`
+- `negative_log_likelihood`
 
 Do not persist a `_deterministic_parameter_result` category. Final
 deterministic parameter values and uncertainties already persist in the
 model CIF files, and restored deterministic ordering comes from
 `_fit_parameter`.
 
-### Bayesian fit projection
+Bayesian minimizer classes store sampler inputs and fit outputs under
+`_minimizer.*`, including:
 
-Bayesian fits persist these additional categories:
+- `sampling_steps`
+- `burn_in_steps`
+- `thinning_interval`
+- `population_size`
+- `parallel_workers`
+- `initialization_method`
+- `random_seed`
+- `runtime_seconds`
+- `point_estimate_name`
+- `sampler_completed`
+- `credible_interval_inner`
+- `credible_interval_outer`
+- `acceptance_rate_mean`
+- `gelman_rubin_max`
+- `effective_sample_size_min`
+- `best_log_posterior`
 
-- `_bayesian_result`
-- `_bayesian_sampler`
-- `_bayesian_convergence`
-- `_bayesian_parameter_posterior`
-- `_bayesian_distribution_cache`
-- `_bayesian_pair_cache`
-- `_bayesian_predictive_dataset`
+Bayesian per-parameter posterior summaries are stored on the
+corresponding `_fit_parameter` rows. Their row order defines the saved
+posterior parameter order.
 
-`_bayesian_result` stores the saved Bayesian header and sidecar flags,
-including `sidecar_file`, `has_posterior_samples`,
-`has_distribution_cache`, `has_pair_cache`, and
-`has_posterior_predictive`.
+### Posterior sidecar
 
-`_bayesian_sampler` stores the resolved sampler settings used for the
-run. `parallel` persists the resolved non-negative worker count as an
-integer.
+Persist large posterior arrays in `analysis/results.h5` using `h5py`.
+This includes canonical posterior arrays and saved distribution, pair,
+and predictive cache arrays. The HDF5 file is self-describing; no CIF
+manifest rows or sidecar filename tags are persisted.
 
-`_bayesian_convergence` stores convergence metadata and posterior array
-shape counts.
-
-`_bayesian_parameter_posterior` stores one summary row per sampled
-parameter, including credible intervals, uncertainty, ESS, and R-hat.
-Its row order defines the saved posterior parameter order.
-
-`_bayesian_distribution_cache`, `_bayesian_pair_cache`, and
-`_bayesian_predictive_dataset` store manifest rows for plot-ready
-posterior caches. Distribution and predictive caches are persisted for
-any Bayesian fit with posterior samples, including single-parameter
-fits. Pair caches and posterior correlation summaries are only persisted
-when more than one parameter was sampled.
-
-`parameter.posterior` is not part of this accepted design. This ADR
-persists analysis-level posterior summaries and caches only. Any future
-parameter-level posterior API remains a separate decision.
-
-### Bayesian sidecar
-
-Persist large Bayesian arrays in `analysis/results.h5` using `h5py`.
-This includes canonical posterior arrays and any saved distribution,
-pair, and predictive cache arrays referenced by the CIF manifests.
-
-The persisted `sidecar_file` value is a local file name only. It must
-resolve to a basename inside the project `analysis/` directory. Absolute
-paths and traversal paths are rejected and fall back to `results.h5`.
+The sidecar filename is fixed to `results.h5` inside the project
+`analysis/` directory.
 
 If the sidecar is missing on load, summary rows in
 `analysis/analysis.cif` still restore fit tables and metadata. Features
@@ -168,9 +166,9 @@ Load order is:
 
 1. standard analysis configuration
 2. common fit-state categories
-3. deterministic or Bayesian fit-specific categories according to
-   `_fit_result.result_kind`
-4. Bayesian sidecar arrays when a Bayesian sidecar is expected
+3. `_minimizer.*` fit-output fields according to the active
+   `minimizer_type`
+4. posterior sidecar arrays when a Bayesian result is expected
 
 Persist backend runtime objects, optimizer instances, and raw driver
 payloads nowhere in this design.
@@ -186,7 +184,8 @@ values remain in the model CIF files instead of being duplicated in a
 second deterministic per-parameter result loop.
 
 Bayesian persistence spans CIF metadata and an HDF5 sidecar, so save and
-load must validate consistency between manifest rows and bulk datasets.
+load must validate consistency between `_fit_parameter` rows and bulk
+datasets.
 
 The accepted runtime fit-results ADR should now be read as runtime-only
 except where this narrower projection explicitly persists fit-state

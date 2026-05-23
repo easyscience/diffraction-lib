@@ -106,31 +106,31 @@ to keep legacy runtime aliases.
 `Analysis.fit()` becomes the public operation that executes the current
 fit mode.
 
-Common fitting configuration moves to a dedicated category:
+Common fitting configuration lives directly on `Analysis`:
 
 ```python
-project.analysis.fitting.minimizer_type = 'lmfit (leastsq)'
+project.analysis.minimizer_type = 'lmfit (leastsq)'
 project.analysis.fit()
 ```
 
 `project.analysis.fit` is no longer a category. It is an action method.
 
-The common `fitting` category owns configuration shared by all fit
+The owner-level analysis surface owns configuration shared by all fit
 modes. Initially this includes:
 
 - `minimizer_type`
 
 Additional settings that apply to all fit modes can be added here later.
 Verbosity remains a call-level or project-level concern and does not
-need to be persisted in this category.
+need a fitting category.
 
 **Single source of truth.** `Analysis.fitting_mode_type` is the only
 writable surface for the active mode, and the only place the mode is
 stored at runtime. The CIF field `_fitting.mode_type` (§8) is
 synthesized directly from `analysis.fitting_mode_type` at serialization
 time and applied back to the selector on load. There is no mirror
-descriptor on the `fitting` category. This keeps the runtime model free
-of duplicated state.
+descriptor on a `fitting` category. This keeps the runtime model free of
+duplicated state.
 
 ### 2. Add an owner-level fitting-mode selector
 
@@ -143,8 +143,9 @@ The selector name must start with the public category name. This mirrors
 category is `fitting`, and the selected aspect is the fitting mode.
 
 ```python
-project.analysis.show_fitting_mode_types()
+project.analysis.show_supported_fitting_mode_types()
 project.analysis.fitting_mode_type = 'sequential'
+project.analysis.show_current_fitting_mode_type()
 ```
 
 The selector is backed by `FitModeEnum` and accepts:
@@ -153,12 +154,13 @@ The selector is backed by `FitModeEnum` and accepts:
 - `joint`
 - `sequential`
 
-`show_fitting_mode_types()` should show all fitting modes, mark the
-current mode, and describe the execution requirements for each mode. It
-should not hide `sequential` simply because the project currently has
-only one experiment. Sequential fitting uses one template experiment
-plus files from `sequential_fit.data_dir`, so filtering it out based on
-experiment count is misleading.
+`show_supported_fitting_mode_types()` should show all fitting modes and
+describe the execution requirements for each mode.
+`show_current_fitting_mode_type()` should show the selected mode. The
+supported list should not hide `sequential` simply because the project
+currently has only one experiment. Sequential fitting uses one template
+experiment plus files from `sequential_fit.data_dir`, so filtering it
+out based on experiment count is misleading.
 
 The selector changes the active fit mode and controls which
 mode-specific public categories are visible and serialized.
@@ -166,12 +168,11 @@ mode-specific public categories are visible and serialized.
 Note that this is **not** the same mechanism as `peak_profile_type`.
 `peak_profile_type` swaps the concrete class behind a single category
 (`peak`); `fitting_mode_type` swaps which _sibling_ category
-(`joint_fit` / `sequential_fit`) is active and visible. The `fitting`
-category itself does not change shape. This is a new pattern — call it
-the **active-sibling selector** — and it is documented here as a
-first-class convention for owners that gate sibling categories on a
-run-time choice. Future categories with the same shape should follow the
-same naming and lifecycle rules.
+(`joint_fit` / `sequential_fit`) is active and visible. This is the
+**active-sibling selector** pattern, documented here as a first-class
+convention for owners that gate sibling categories on a run-time choice.
+Future categories with the same shape should follow the same naming and
+lifecycle rules.
 
 ### 3. Keep mode-specific categories as flat Analysis siblings
 
@@ -419,17 +420,18 @@ categories are conditional workflow surfaces.
 The help output should show common analysis properties and only the
 category relevant to the active fit mode.
 
-For `single` mode, help should show fitting configuration and the
-`fit()` operation, but no joint or sequential category:
+For `single` mode, help should show common analysis configuration and
+the `fit()` operation, but no joint or sequential category:
 
 ```text
 Properties
-fitting
+minimizer
 display
 
 Methods
 fit()
-show_fitting_mode_types()
+show_supported_fitting_mode_types()
+show_current_fitting_mode_type()
 ```
 
 For `joint` mode, help should additionally show:
@@ -452,8 +454,8 @@ surface should only show categories relevant to the selected mode.
 
 ### 8. Serialize common and active mode-specific categories
 
-Persist common fitting configuration in `analysis/analysis.cif` using a
-category name that matches the new Python category:
+Persist owner-level fitting selectors in `analysis/analysis.cif` using
+the stable `_fitting.*` CIF prefix:
 
 ```cif
 _fitting.minimizer_type "lmfit (leastsq)"
@@ -512,12 +514,13 @@ workflow, it is serialized only when the active fitting mode is
 
 Deserialization order must be:
 
-1. restore the common `fitting` category
-2. read `_fitting.mode_type`
-3. set `analysis.fitting_mode_type`
-4. restore the active mode-specific category, if present
-5. restore active child collections such as `sequential_fit_extract`
-6. restore other analysis categories such as aliases and constraints
+1. read `_fitting.minimizer_type`
+2. instantiate and restore `analysis.minimizer`
+3. read `_fitting.mode_type`
+4. set `analysis.fitting_mode_type`
+5. restore the active mode-specific category, if present
+6. restore active child collections such as `sequential_fit_extract`
+7. restore other analysis categories such as aliases and constraints
 
 This mirrors the switchable-category restoration pattern used by
 experiment categories: the active mode is known before mode-specific
@@ -547,7 +550,8 @@ new settings requires an explicit save step.
 ### Positive
 
 - `fit()` has one meaning: execute fitting.
-- `fitting` has one meaning: common fitting configuration.
+- `minimizer_type` and `fitting_mode_type` live on the `Analysis`
+  owner.
 - Fit modes follow the same owner-level selection style as existing
   switchable categories.
 - `joint_fit` and `sequential_fit` are visible only when relevant.
@@ -559,7 +563,7 @@ new settings requires an explicit save step.
   public surfaces.
 - CIF structure is flat, explicit, and aligned with public API names.
 - Mode-specific configuration can grow independently without polluting
-  the common fitting category.
+  the common analysis surface.
 
 ### Trade-offs
 
@@ -586,10 +590,11 @@ The following public API shapes are replaced by the new design:
 - `project.analysis.fit.mode`
 - `project.analysis.fit_sequential(...)`
 - `project.analysis.joint_fit_experiments`
+- `project.analysis.fitting.minimizer_type`
 
 The replacement API is:
 
-- `project.analysis.fitting.minimizer_type`
+- `project.analysis.minimizer_type`
 - `project.analysis.fitting_mode_type`
 - `project.analysis.joint_fit`
 - `project.analysis.sequential_fit`
@@ -665,12 +670,12 @@ should follow the existing switchable-category owner style:
 project.analysis.fitting_mode_type = 'sequential'
 ```
 
-A separate `fitting.mode` descriptor on the runtime `fitting` category
-is also rejected: it would duplicate state already held by
+A separate `fitting.mode` descriptor on a runtime category is also
+rejected: it would duplicate state already held by
 `fitting_mode_type`. `_fitting.mode_type` is synthesized at
 serialization time instead of being mirrored on a runtime object.
 
-### Replace the `fitting` category object per fit mode
+### Replace a fitting category object per fit mode
 
 Rejected.
 
@@ -679,12 +684,12 @@ directly, but switching by assigning a property on the object being
 replaced creates stale-reference hazards:
 
 ```python
-fitting = project.analysis.fitting
+mode_config = project.analysis.single_fit
 project.analysis.fitting_mode_type = 'sequential'
-# fitting may now point to the old object
+# mode_config may now point to an inactive object
 ```
 
-Keeping `fitting` stable and adding active sibling mode categories gives
+Keeping mode-specific categories as active siblings on `Analysis` gives
 better long-term API stability.
 
 ### Persist inactive mode-specific categories

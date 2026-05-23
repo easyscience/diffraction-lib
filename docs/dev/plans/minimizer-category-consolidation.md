@@ -7,8 +7,8 @@
 ## ADR
 
 Implements
-[`docs/dev/adrs/suggestions/minimizer-category-consolidation.md`](../adrs/suggestions/minimizer-category-consolidation.md).
-This plan promotes that ADR from Suggestion → Accepted during
+[`docs/dev/adrs/accepted/minimizer-category-consolidation.md`](../adrs/accepted/minimizer-category-consolidation.md).
+This plan promoted that ADR from Suggestion → Accepted during
 implementation (step P1.14).
 
 Affected ADRs that this plan amends or supersedes:
@@ -554,7 +554,7 @@ PosteriorParameterSummary` so the existing intra-module
 
   Commit: `Update tutorials for analysis.minimizer API`
 
-- [ ] **P1.14 — Promote ADR + amend affected ADRs.**
+- [x] **P1.14 — Promote ADR + amend affected ADRs.**
   - Move
     `docs/dev/adrs/suggestions/minimizer-category-consolidation.md`
     → `docs/dev/adrs/accepted/minimizer-category-consolidation.md`
