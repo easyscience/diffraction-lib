@@ -55,6 +55,20 @@ def test_fit_mode_category_and_joint_fit(monkeypatch, capsys):
     assert len(a.joint_fit) == 0
 
 
+def test_minimizer_type_swap_warns_for_different_defaults(monkeypatch):
+    from easydiffraction.analysis import analysis as analysis_mod
+    from easydiffraction.analysis.analysis import Analysis
+
+    a = Analysis(project=_make_project_with_names([]))
+    warnings: list[str] = []
+    monkeypatch.setattr(analysis_mod.log, 'warning', warnings.append)
+
+    a.minimizer_type = 'bumps (dream)'
+
+    assert a.minimizer_type == 'bumps (dream)'
+    assert any('different defaults' in warning for warning in warnings)
+
+
 def test_analysis_help(capsys):
     from easydiffraction.analysis.analysis import Analysis
 

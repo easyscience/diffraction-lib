@@ -1,0 +1,18 @@
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
+# SPDX-License-Identifier: BSD-3-Clause
+"""Tests for the BUMPS amoeba minimizer category."""
+
+from __future__ import annotations
+
+
+def test_bumps_amoeba_minimizer_registers_expected_tag():
+    from easydiffraction.analysis.categories.minimizer.bumps_amoeba import (
+        BumpsAmoebaMinimizer,
+    )
+    from easydiffraction.analysis.categories.minimizer.lsq_base import (
+        LeastSquaresMinimizerBase,
+    )
+    from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
+
+    assert issubclass(BumpsAmoebaMinimizer, LeastSquaresMinimizerBase)
+    assert BumpsAmoebaMinimizer.type_info.tag == MinimizerTypeEnum.BUMPS_AMOEBA
