@@ -333,7 +333,7 @@ PosteriorParameterSummary` so the existing intra-module
       emits the current value.
       Commit: `Resolve CIF '?' to descriptor default on load`
 
-- [ ] **P1.6 — Wire `Analysis.minimizer_type` and `Analysis.minimizer`.**
+- [x] **P1.6 — Wire `Analysis.minimizer_type` and `Analysis.minimizer`.**
       In `src/easydiffraction/analysis/analysis.py`:
   - Replace `self._fitting = Fitting(...)` with
     `self._minimizer = MinimizerCategoryFactory.create('lmfit (leastsq)')`.

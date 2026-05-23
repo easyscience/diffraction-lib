@@ -33,9 +33,9 @@ from easydiffraction.analysis.categories.deterministic_result import Determinist
 from easydiffraction.analysis.categories.fit_parameter_correlations import FitParameterCorrelations
 from easydiffraction.analysis.categories.fit_parameters import FitParameters
 from easydiffraction.analysis.categories.fit_result import FitResult
-from easydiffraction.analysis.categories.fitting import Fitting
-from easydiffraction.analysis.categories.fitting import FittingFactory
 from easydiffraction.analysis.categories.joint_fit import JointFitCollection
+from easydiffraction.analysis.categories.minimizer import MinimizerCategoryFactory
+from easydiffraction.analysis.categories.minimizer.base import MinimizerCategoryBase
 from easydiffraction.analysis.categories.sequential_fit import SequentialFit
 from easydiffraction.analysis.categories.sequential_fit import SequentialFitFactory
 from easydiffraction.analysis.categories.sequential_fit_extract import (
@@ -510,7 +510,9 @@ class Analysis(
         self._constraints_type: str = ConstraintsFactory.default_tag()
         self._constraints = ConstraintsFactory.create(self._constraints_type)
         self._constraints_handler = ConstraintsHandler.get()
-        self._fitting: Fitting = FittingFactory.create(FittingFactory.default_tag())
+        self._minimizer: MinimizerCategoryBase = MinimizerCategoryFactory.create(
+            MinimizerTypeEnum.default().value
+        )
         self._fitting_mode_type: FitModeEnum = FitModeEnum.default()
         self._joint_fit: JointFitCollection = JointFitCollection()
         self._sequential_fit: SequentialFit = SequentialFitFactory.create(
@@ -530,7 +532,7 @@ class Analysis(
         self._bayesian_predictive_datasets = BayesianPredictiveDatasets()
         self._has_persisted_fit_state_data = False
         self._persisted_fit_state_sidecar: dict[str, object] = {}
-        self._fitter = Fitter(self._fitting.minimizer_type.value)
+        self._fitter = Fitter(self.minimizer_type)
         self._fit_results = None
         self._parameter_snapshots: dict[str, dict[str, dict]] = {}
         self._display = AnalysisDisplay(self)
@@ -592,40 +594,7 @@ class Analysis(
             parameter.uncertainty = float(row.uncertainty.value)
 
     def _sync_live_minimizer_from_persisted_fit_state(self) -> None:
-        """Apply saved sampler settings to the live minimizer."""
-        if not self._has_persisted_fit_state():
-            return
-
-        if self.fit_result.result_kind.value != FitResultKindEnum.BAYESIAN.value:
-            return
-
-        if self.fitting.minimizer_type.value != MinimizerTypeEnum.BUMPS_DREAM.value:
-            return
-
-        minimizer = self.fitting.minimizer
-        if minimizer is None:
-            return
-
-        steps = int(self.bayesian_sampler.steps.value)
-        if steps <= 0:
-            return
-
-        minimizer.steps = steps
-        minimizer.burn = int(self.bayesian_sampler.burn.value)
-
-        thin = int(self.bayesian_sampler.thin.value)
-        if thin > 0:
-            minimizer.thin = thin
-
-        pop = int(self.bayesian_sampler.pop.value)
-        if pop > 0:
-            minimizer.pop = pop
-
-        minimizer.parallel = int(self.bayesian_sampler.parallel.value)
-
-        init_value = str(self.bayesian_sampler.init.value)
-        if init_value:
-            minimizer.init = init_value
+        """No-op after minimizer state moved onto the category."""
 
     def _restored_fit_parameters(self, param_map: dict[str, Parameter]) -> list[Parameter]:
         """Return live parameters in the persisted fit-result order."""
@@ -900,7 +869,7 @@ class Analysis(
     def _serializable_categories(self) -> list:
         """Serializable analysis categories for the active fit mode."""
         categories = [
-            self.fitting,
+            self.minimizer,
             self.aliases,
             self.constraints,
         ]
@@ -1023,11 +992,6 @@ class Analysis(
             raise ValueError(msg)
 
     @property
-    def fitting(self) -> Fitting:
-        """Fitting configuration category."""
-        return self._fitting
-
-    @property
     def fitting_mode_type(self) -> str:
         """Currently selected fitting mode."""
         return self._fitting_mode_type.value
@@ -1042,7 +1006,7 @@ class Analysis(
             log.warning(
                 f"Unsupported fitting mode '{value}'. "
                 f'Supported fitting modes: {supported}. '
-                f"For more information, use 'show_fitting_mode_types()'",
+                f"For more information, use 'show_supported_fitting_mode_types()'",
             )
             return
 
@@ -1050,7 +1014,7 @@ class Analysis(
         console.paragraph('Fitting mode changed to')
         console.print(self._fitting_mode_type.value)
 
-    def show_fitting_mode_types(self) -> None:
+    def show_supported_fitting_mode_types(self) -> None:
         """Print supported fitting modes and mark the current type."""
         columns_data = [
             [
@@ -1067,6 +1031,11 @@ class Analysis(
             columns_data=columns_data,
         )
 
+    def show_current_fitting_mode_type(self) -> None:
+        """Print the currently selected fitting mode."""
+        console.paragraph('Current fitting mode type')
+        console.print(self._fitting_mode_type.value)
+
     def _set_fitting_mode_type(self, value: str) -> None:
         """Set the fitting mode without console output."""
         supported = [mode.value for mode in FitModeEnum]
@@ -1078,6 +1047,98 @@ class Analysis(
                 f"Unsupported fitting mode '{value}' in CIF. "
                 f'Supported: {supported}. Keeping default.',
             )
+
+    @property
+    def minimizer(self) -> MinimizerCategoryBase:
+        """Active minimizer settings and result category."""
+        return self._minimizer
+
+    @property
+    def minimizer_type(self) -> str:
+        """Currently selected minimizer type."""
+        return str(self._minimizer.type_info.tag)
+
+    @minimizer_type.setter
+    def minimizer_type(self, value: str) -> None:
+        supported = [str(tag) for tag in MinimizerCategoryFactory.supported_tags()]
+        if value not in supported:
+            log.warning(
+                f"Unsupported minimizer type '{value}'. "
+                f'Supported minimizer types: {supported}. '
+                f"For more information, use 'show_supported_minimizer_types()'",
+            )
+            return
+
+        if value == self.minimizer_type:
+            console.paragraph('Current minimizer already set to')
+            console.print(value)
+            return
+
+        new_minimizer = MinimizerCategoryFactory.create(value)
+        changed_defaults = self._changed_minimizer_defaults(self._minimizer, new_minimizer)
+        if changed_defaults:
+            joined = ', '.join(changed_defaults)
+            log.warning(f'Switching minimizer type resets defaults: {joined}.')
+
+        self._minimizer = new_minimizer
+        self._fitter = Fitter(value)
+        console.paragraph('Current minimizer changed to')
+        console.print(value)
+
+    @staticmethod
+    def _changed_minimizer_defaults(
+        old_minimizer: MinimizerCategoryBase,
+        new_minimizer: MinimizerCategoryBase,
+    ) -> list[str]:
+        """Return common fields whose default values differ."""
+        old_values = {param.name: param.value for param in old_minimizer.parameters}
+        new_values = {param.name: param.value for param in new_minimizer.parameters}
+        changed_defaults = []
+        sentinel = '<not available>'
+        for name in sorted(old_values.keys() | new_values.keys()):
+            old_value = old_values.get(name, sentinel)
+            new_value = new_values.get(name, sentinel)
+            if old_value != new_value:
+                changed_defaults.append(f'{name} {old_value!r}->{new_value!r}')
+        return changed_defaults
+
+    def show_supported_minimizer_types(self) -> None:
+        """Print supported minimizer types and mark the current type."""
+        current = self.minimizer_type
+        columns_data = [
+            [
+                '*' if str(klass.type_info.tag) == current else '',
+                str(klass.type_info.tag),
+                klass.type_info.description,
+            ]
+            for klass in MinimizerCategoryFactory.supported_for()
+        ]
+        console.paragraph('Minimizer types')
+        render_table(
+            columns_headers=['', 'Type', 'Description'],
+            columns_alignment=['left', 'left', 'left'],
+            columns_data=columns_data,
+        )
+
+    def show_current_minimizer_type(self) -> None:
+        """Print the currently selected minimizer type."""
+        console.paragraph('Current minimizer type')
+        console.print(self.minimizer_type)
+
+    def _sync_engine_from_minimizer_category(self) -> None:
+        """Apply minimizer category settings to the live engine."""
+        engine = self.fitter.minimizer
+        for key, value in self.minimizer._native_kwargs().items():
+            if key == 'random_seed' or not hasattr(engine, key):
+                continue
+            setattr(engine, key, value)
+
+    def _resolved_fit_random_seed(self, random_seed: int | None) -> int | None:
+        """Return call-time or minimizer-category random seed."""
+        if random_seed is not None:
+            return random_seed
+        seed = self.minimizer._native_kwargs().get('random_seed')
+        return None if seed is None else int(seed)
 
     # ------------------------------------------------------------------
     #  Joint-fit weights (category)
@@ -1786,6 +1847,7 @@ class Analysis(
         # parameters are marked and excluded from the free parameter
         # list built by the fitter.
         self._sync_live_minimizer_from_persisted_fit_state()
+        self._sync_engine_from_minimizer_category()
         self._update_categories()
 
         return verb, structures, experiments
@@ -1909,7 +1971,7 @@ class Analysis(
             analysis=self,
             verbosity=verb,
             use_physical_limits=use_physical_limits,
-            random_seed=random_seed,
+            random_seed=self._resolved_fit_random_seed(random_seed),
         )
 
         # After fitting, get the results
@@ -1961,7 +2023,7 @@ class Analysis(
                     analysis=self,
                     verbosity=verb,
                     use_physical_limits=use_physical_limits,
-                    random_seed=random_seed,
+                    random_seed=self._resolved_fit_random_seed(random_seed),
                 )
 
                 # After fitting, snapshot parameter values before
