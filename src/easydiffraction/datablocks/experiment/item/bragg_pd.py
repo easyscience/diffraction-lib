@@ -66,6 +66,7 @@ class BraggPdExperiment(PdExperimentBase):
         self._background = BackgroundFactory.create(self._background_type)
         self._refln = None
         self._sync_refln_category()
+        self._attach_category_parents()
 
     def _refln_collection_tag(self) -> str:
         """

@@ -78,7 +78,57 @@ class ExperimentBase(DatablockItem):
             'default',
             calculator_type=self._default_calculator_tag(),
         )
-        self._calculation._parent = self
+        self._attach_category_parents()
+
+    def _attach_category_parents(self) -> None:
+        """Link owned categories back to this experiment object."""
+        for category in [
+            self._type,
+            getattr(self, '_diffrn', None),
+            getattr(self, '_calculation', None),
+            getattr(self, '_extinction', None),
+            getattr(self, '_linked_crystal', None),
+            getattr(self, '_instrument', None),
+            getattr(self, '_refln', None),
+            getattr(self, '_linked_phases', None),
+            getattr(self, '_excluded_regions', None),
+            getattr(self, '_data', None),
+            getattr(self, '_peak', None),
+            getattr(self, '_background', None),
+        ]:
+            if category is not None:
+                category._parent = self
+
+    def _supported_filters_for(self, category: object) -> dict[str, object]:
+        """Return owner context filters for a switchable category."""
+        del category
+        return {
+            'calculator': self.calculation.calculator_type.value,
+            'sample_form': self.type.sample_form.value,
+            'scattering_type': self.type.scattering_type.value,
+            'beam_mode': self.type.beam_mode.value,
+            'radiation_probe': self.type.radiation_probe.value,
+        }
+
+    def _swap_calculator(self, new_type: str) -> None:
+        """Switch the active calculator category."""
+        msg = f"Switching calculator to '{new_type}' is not wired yet."
+        raise NotImplementedError(msg)
+
+    def _swap_peak(self, new_type: str) -> None:
+        """Switch the active peak category."""
+        msg = f"Switching peak to '{new_type}' is not wired yet."
+        raise NotImplementedError(msg)
+
+    def _swap_background(self, new_type: str) -> None:
+        """Switch the active background category."""
+        msg = f"Switching background to '{new_type}' is not wired yet."
+        raise NotImplementedError(msg)
+
+    def _swap_extinction(self, new_type: str) -> None:
+        """Switch the active extinction category."""
+        msg = f"Switching extinction to '{new_type}' is not wired yet."
+        raise NotImplementedError(msg)
 
     @property
     def name(self) -> str:
@@ -287,6 +337,7 @@ class ScExperimentBase(ExperimentBase):
         )
         self._refln = ReflnFactory.create(self._refln_type)
         self._resolve_calculation()
+        self._attach_category_parents()
 
     @abstractmethod
     def _load_ascii_data_to_experiment(self, data_path: str) -> None:
@@ -421,6 +472,7 @@ class PdExperimentBase(ExperimentBase):
         self._data = DataFactory.create(self._data_type)
         self._peak = PeakFactory.create(self._peak_profile_type)
         self._resolve_calculation()
+        self._attach_category_parents()
 
     def _get_valid_linked_phases(
         self,

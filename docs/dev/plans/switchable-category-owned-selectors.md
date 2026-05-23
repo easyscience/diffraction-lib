@@ -233,7 +233,7 @@ with explicit `git add` paths.
       scalar per collection) per the Open question.
       Commit: `Support collection-level scalar descriptors`
 
-- [ ] **P1.3 — Add owner-side swap-hook scaffolding.** On each of
+- [x] **P1.3 — Add owner-side swap-hook scaffolding.** On each of
       `Analysis` (`src/easydiffraction/analysis/analysis.py`),
       `ExperimentBase`
       (`src/easydiffraction/datablocks/experiment/item/base.py`),

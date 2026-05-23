@@ -484,6 +484,34 @@ class Analysis(
         self._fit_results = None
         self._parameter_snapshots: dict[str, dict[str, dict]] = {}
         self._display = AnalysisDisplay(self)
+        self._attach_category_parents()
+
+    def _attach_category_parents(self) -> None:
+        """Link owned categories back to this analysis object."""
+        self._aliases._parent = self
+        self._constraints._parent = self
+        self._minimizer._parent = self
+        self._joint_fit._parent = self
+        self._sequential_fit._parent = self
+        self._sequential_fit_extract._parent = self
+        self._fit_parameters._parent = self
+        self._fit_result._parent = self
+        self._fit_parameter_correlations._parent = self
+
+    def _supported_filters_for(self, category: object) -> dict[str, object]:
+        """Return owner context filters for a switchable category."""
+        del category
+        return {}
+
+    def _swap_minimizer(self, new_type: str) -> None:
+        """Switch the active minimizer category."""
+        msg = f"Switching minimizer to '{new_type}' is not wired yet."
+        raise NotImplementedError(msg)
+
+    def _swap_fitting_mode(self, new_type: str) -> None:
+        """Switch the active fitting-mode category."""
+        msg = f"Switching fitting mode to '{new_type}' is not wired yet."
+        raise NotImplementedError(msg)
 
     @staticmethod
     def _predictive_cache_key(

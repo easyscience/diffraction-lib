@@ -208,6 +208,28 @@ class Project(GuardedBase):
         self._saved = False
         self._varname = 'project' if type(self)._loading else varname()
         type(self)._current_project = self
+        self._attach_category_parents()
+
+    def _attach_category_parents(self) -> None:
+        """Link directly owned project sections back to this project."""
+        self._structures._parent = self
+        self._experiments._parent = self
+        self._analysis._parent = self
+
+    def _supported_filters_for(self, category: object) -> dict[str, object]:
+        """Return owner context filters for a switchable category."""
+        del category
+        return {}
+
+    def _swap_chart(self, new_type: str) -> None:
+        """Switch the active chart category."""
+        msg = f"Switching chart to '{new_type}' is not wired yet."
+        raise NotImplementedError(msg)
+
+    def _swap_table(self, new_type: str) -> None:
+        """Switch the active table category."""
+        msg = f"Switching table to '{new_type}' is not wired yet."
+        raise NotImplementedError(msg)
 
     @classmethod
     def current_project_path(cls) -> pathlib.Path | None:
