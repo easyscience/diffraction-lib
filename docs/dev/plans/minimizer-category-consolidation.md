@@ -378,7 +378,7 @@ PosteriorParameterSummary` so the existing intra-module
     `_minimizer.*` indicators.
     Commit: `Serialize minimizer category to _minimizer.* CIF tags`
 
-- [ ] **P1.8 — Extend `_fit_parameter` with posterior columns.**
+- [x] **P1.8 — Extend `_fit_parameter` with posterior columns.**
       Add the 8 posterior columns from ADR §3 to the existing
       `_fit_parameter` CIF writer/reader. On load, hydrate
       `Parameter.posterior` (a `PosteriorParameterSummary` instance) from

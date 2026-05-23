@@ -10,6 +10,7 @@ from easydiffraction.analysis.categories.fit_parameters.factory import FitParame
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.metadata import TypeInfo
+from easydiffraction.core.posterior import PosteriorParameterSummary
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RegexValidator
 from easydiffraction.core.variable import NumericDescriptor
@@ -63,6 +64,62 @@ class FitParameterItem(CategoryItem):
             description='Persisted pre-fit uncertainty snapshot.',
             value_spec=AttributeSpec(default=None, allow_none=True),
             cif_handler=CifHandler(names=['_fit_parameter.start_uncertainty']),
+        )
+        self._posterior_best_sample_value = NumericDescriptor(
+            name='posterior_best_sample_value',
+            description='Highest-posterior sampled parameter value.',
+            value_spec=AttributeSpec(default=None, allow_none=True),
+            cif_handler=CifHandler(names=['_fit_parameter.posterior_best_sample_value']),
+        )
+        self._posterior_median = NumericDescriptor(
+            name='posterior_median',
+            description='Posterior median value.',
+            value_spec=AttributeSpec(default=None, allow_none=True),
+            cif_handler=CifHandler(names=['_fit_parameter.posterior_median']),
+        )
+        self._posterior_uncertainty = NumericDescriptor(
+            name='posterior_uncertainty',
+            description='Posterior standard deviation.',
+            value_spec=AttributeSpec(default=None, allow_none=True),
+            cif_handler=CifHandler(names=['_fit_parameter.posterior_uncertainty']),
+        )
+        self._posterior_interval_68_low = NumericDescriptor(
+            name='posterior_interval_68_low',
+            description='Lower bound of the 68% credible interval.',
+            value_spec=AttributeSpec(default=None, allow_none=True),
+            cif_handler=CifHandler(names=['_fit_parameter.posterior_interval_68_low']),
+        )
+        self._posterior_interval_68_high = NumericDescriptor(
+            name='posterior_interval_68_high',
+            description='Upper bound of the 68% credible interval.',
+            value_spec=AttributeSpec(default=None, allow_none=True),
+            cif_handler=CifHandler(names=['_fit_parameter.posterior_interval_68_high']),
+        )
+        self._posterior_interval_95_low = NumericDescriptor(
+            name='posterior_interval_95_low',
+            description='Lower bound of the 95% credible interval.',
+            value_spec=AttributeSpec(default=None, allow_none=True),
+            cif_handler=CifHandler(names=['_fit_parameter.posterior_interval_95_low']),
+        )
+        self._posterior_interval_95_high = NumericDescriptor(
+            name='posterior_interval_95_high',
+            description='Upper bound of the 95% credible interval.',
+            value_spec=AttributeSpec(default=None, allow_none=True),
+            cif_handler=CifHandler(names=['_fit_parameter.posterior_interval_95_high']),
+        )
+        self._posterior_gelman_rubin = NumericDescriptor(
+            name='posterior_gelman_rubin',
+            description='Rank-normalized split-R-hat when available.',
+            value_spec=AttributeSpec(default=None, allow_none=True),
+            cif_handler=CifHandler(names=['_fit_parameter.posterior_gelman_rubin']),
+        )
+        self._posterior_effective_sample_size_bulk = NumericDescriptor(
+            name='posterior_effective_sample_size_bulk',
+            description='Bulk effective sample size when available.',
+            value_spec=AttributeSpec(default=None, allow_none=True),
+            cif_handler=CifHandler(
+                names=['_fit_parameter.posterior_effective_sample_size_bulk']
+            ),
         )
 
     @property
@@ -126,6 +183,144 @@ class FitParameterItem(CategoryItem):
         """Set the pre-fit uncertainty snapshot for internal callers."""
         self._start_uncertainty.value = value
 
+    @property
+    def posterior_best_sample_value(self) -> NumericDescriptor:
+        """Highest-posterior sampled parameter value."""
+        return self._posterior_best_sample_value
+
+    def _set_posterior_best_sample_value(self, value: float | None) -> None:
+        """Set the posterior best sample for internal callers."""
+        self._posterior_best_sample_value.value = value
+
+    @property
+    def posterior_median(self) -> NumericDescriptor:
+        """Posterior median value."""
+        return self._posterior_median
+
+    def _set_posterior_median(self, value: float | None) -> None:
+        """Set the posterior median for internal callers."""
+        self._posterior_median.value = value
+
+    @property
+    def posterior_uncertainty(self) -> NumericDescriptor:
+        """Posterior standard deviation."""
+        return self._posterior_uncertainty
+
+    def _set_posterior_uncertainty(self, value: float | None) -> None:
+        """Set the posterior uncertainty for internal callers."""
+        self._posterior_uncertainty.value = value
+
+    @property
+    def posterior_interval_68_low(self) -> NumericDescriptor:
+        """Lower bound of the 68% credible interval."""
+        return self._posterior_interval_68_low
+
+    def _set_posterior_interval_68_low(self, value: float | None) -> None:
+        """Set the lower 68% interval bound for internal callers."""
+        self._posterior_interval_68_low.value = value
+
+    @property
+    def posterior_interval_68_high(self) -> NumericDescriptor:
+        """Upper bound of the 68% credible interval."""
+        return self._posterior_interval_68_high
+
+    def _set_posterior_interval_68_high(self, value: float | None) -> None:
+        """Set the upper 68% interval bound for internal callers."""
+        self._posterior_interval_68_high.value = value
+
+    @property
+    def posterior_interval_95_low(self) -> NumericDescriptor:
+        """Lower bound of the 95% credible interval."""
+        return self._posterior_interval_95_low
+
+    def _set_posterior_interval_95_low(self, value: float | None) -> None:
+        """Set the lower 95% interval bound for internal callers."""
+        self._posterior_interval_95_low.value = value
+
+    @property
+    def posterior_interval_95_high(self) -> NumericDescriptor:
+        """Upper bound of the 95% credible interval."""
+        return self._posterior_interval_95_high
+
+    def _set_posterior_interval_95_high(self, value: float | None) -> None:
+        """Set the upper 95% interval bound for internal callers."""
+        self._posterior_interval_95_high.value = value
+
+    @property
+    def posterior_gelman_rubin(self) -> NumericDescriptor:
+        """Rank-normalized split-R-hat when available."""
+        return self._posterior_gelman_rubin
+
+    def _set_posterior_gelman_rubin(self, value: float | None) -> None:
+        """Set the posterior R-hat for internal callers."""
+        self._posterior_gelman_rubin.value = value
+
+    @property
+    def posterior_effective_sample_size_bulk(self) -> NumericDescriptor:
+        """Bulk effective sample size when available."""
+        return self._posterior_effective_sample_size_bulk
+
+    def _set_posterior_effective_sample_size_bulk(self, value: float | None) -> None:
+        """Set the posterior bulk ESS for internal callers."""
+        self._posterior_effective_sample_size_bulk.value = value
+
+    def _set_posterior_summary(self, summary: PosteriorParameterSummary) -> None:
+        """Set posterior summary fields for internal callers."""
+        self._set_posterior_best_sample_value(summary.best_sample_value)
+        self._set_posterior_median(summary.median)
+        self._set_posterior_uncertainty(summary.standard_deviation)
+        self._set_posterior_interval_68_low(summary.interval_68[0])
+        self._set_posterior_interval_68_high(summary.interval_68[1])
+        self._set_posterior_interval_95_low(summary.interval_95[0])
+        self._set_posterior_interval_95_high(summary.interval_95[1])
+        self._set_posterior_gelman_rubin(summary.r_hat)
+        self._set_posterior_effective_sample_size_bulk(summary.ess_bulk)
+
+    def has_posterior_summary(self) -> bool:
+        """Return whether any posterior summary field is populated."""
+        return any(
+            value is not None
+            for value in (
+                self.posterior_best_sample_value.value,
+                self.posterior_median.value,
+                self.posterior_uncertainty.value,
+                self.posterior_interval_68_low.value,
+                self.posterior_interval_68_high.value,
+                self.posterior_interval_95_low.value,
+                self.posterior_interval_95_high.value,
+                self.posterior_gelman_rubin.value,
+                self.posterior_effective_sample_size_bulk.value,
+            )
+        )
+
+    @staticmethod
+    def _posterior_float(value: float | None) -> float:
+        """Return a posterior value or NaN for incomplete rows."""
+        return np.nan if value is None else float(value)
+
+    def posterior_summary(self, *, display_name: str) -> PosteriorParameterSummary | None:
+        """Return this row as a posterior summary, if populated."""
+        if not self.has_posterior_summary():
+            return None
+
+        return PosteriorParameterSummary(
+            unique_name=self.param_unique_name.value,
+            display_name=display_name,
+            best_sample_value=self._posterior_float(self.posterior_best_sample_value.value),
+            median=self._posterior_float(self.posterior_median.value),
+            standard_deviation=self._posterior_float(self.posterior_uncertainty.value),
+            interval_68=(
+                self._posterior_float(self.posterior_interval_68_low.value),
+                self._posterior_float(self.posterior_interval_68_high.value),
+            ),
+            interval_95=(
+                self._posterior_float(self.posterior_interval_95_low.value),
+                self._posterior_float(self.posterior_interval_95_high.value),
+            ),
+            ess_bulk=self.posterior_effective_sample_size_bulk.value,
+            r_hat=self.posterior_gelman_rubin.value,
+        )
+
 
 @FitParametersFactory.register
 class FitParameters(CategoryCollection):
@@ -175,3 +370,8 @@ class FitParameters(CategoryCollection):
         item._set_start_value(start_value)
         item._set_start_uncertainty(start_uncertainty)
         self.add(item)
+
+    def set_posterior_summary(self, summary: PosteriorParameterSummary) -> None:
+        """Attach a posterior summary to an existing row."""
+        item = self[summary.unique_name]
+        item._set_posterior_summary(summary)

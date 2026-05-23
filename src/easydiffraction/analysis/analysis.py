@@ -561,11 +561,6 @@ class Analysis(
         """
         Return persisted parameter names in display and array order.
         """
-        if self.fit_result.result_kind.value == FitResultKindEnum.BAYESIAN.value:
-            posterior_rows = list(self.bayesian_parameter_posteriors)
-            if posterior_rows:
-                return [row.unique_name.value for row in posterior_rows]
-
         return [row.param_unique_name.value for row in self.fit_parameters]
 
     def _restore_live_parameter_state(self, param_map: dict[str, Parameter]) -> None:
@@ -586,12 +581,10 @@ class Analysis(
             )
             parameter._fit_start_value = row.start_value.value
             parameter._fit_start_uncertainty = row.start_uncertainty.value
-
-        for row in self.bayesian_parameter_posteriors:
-            parameter = param_map.get(row.unique_name.value)
-            if parameter is None or row.uncertainty.value is None:
-                continue
-            parameter.uncertainty = float(row.uncertainty.value)
+            posterior = row.posterior_summary(display_name=parameter.name)
+            parameter._set_posterior(posterior)
+            if posterior is not None and np.isfinite(posterior.standard_deviation):
+                parameter.uncertainty = posterior.standard_deviation
 
     def _sync_live_minimizer_from_persisted_fit_state(self) -> None:
         """No-op after minimizer state moved onto the category."""
@@ -615,10 +608,8 @@ class Analysis(
         if parameter_samples is None:
             return None
 
-        posterior_rows = list(self.bayesian_parameter_posteriors)
-        parameter_names = [row.unique_name.value for row in posterior_rows]
-        if not parameter_names:
-            parameter_names = [row.param_unique_name.value for row in self.fit_parameters]
+        posterior_rows = [row for row in self.fit_parameters if row.has_posterior_summary()]
+        parameter_names = [row.param_unique_name.value for row in posterior_rows]
 
         parameter_sample_array = np.asarray(parameter_samples, dtype=float)
         if parameter_sample_array.ndim != _POSTERIOR_SAMPLE_NDIM:
@@ -643,26 +634,17 @@ class Analysis(
 
     def _restored_posterior_summaries(self) -> list[PosteriorParameterSummary]:
         """Return posterior summary rows as runtime summary objects."""
-        return [
-            PosteriorParameterSummary(
-                unique_name=row.unique_name.value,
-                display_name=row.display_name.value,
-                best_sample_value=float(row.best_sample_value.value),
-                median=float(row.median.value),
-                standard_deviation=float(row.uncertainty.value),
-                interval_68=(
-                    float(row.interval_68_lower.value),
-                    float(row.interval_68_upper.value),
-                ),
-                interval_95=(
-                    float(row.interval_95_lower.value),
-                    float(row.interval_95_upper.value),
-                ),
-                ess_bulk=row.ess_bulk.value,
-                r_hat=row.r_hat.value,
+        param_map = self._live_parameter_map()
+        summaries: list[PosteriorParameterSummary] = []
+        for row in self.fit_parameters:
+            parameter = param_map.get(row.param_unique_name.value)
+            display_name = (
+                row.param_unique_name.value if parameter is None else parameter.name
             )
-            for row in self.bayesian_parameter_posteriors
-        ]
+            summary = row.posterior_summary(display_name=display_name)
+            if summary is not None:
+                summaries.append(summary)
+        return summaries
 
     def _restored_predictive_summaries(self) -> dict[str, PosteriorPredictiveSummary]:
         """Return restored predictive summaries for runtime reuse."""
@@ -1778,8 +1760,16 @@ class Analysis(
         self.bayesian_convergence._set_n_chains(int(convergence.get('n_chains', 0)))
         self.bayesian_convergence._set_n_parameters(int(convergence.get('n_parameters', 0)))
 
+        live_parameters = {
+            parameter.unique_name: parameter
+            for parameter in results.parameters
+            if isinstance(parameter, Parameter)
+        }
         for summary in results.posterior_parameter_summaries:
-            self.bayesian_parameter_posteriors.create(summary=summary)
+            self.fit_parameters.set_posterior_summary(summary)
+            parameter = live_parameters.get(summary.unique_name)
+            if parameter is not None:
+                parameter._set_posterior(summary)
 
         posterior_samples = results.posterior_samples
         if posterior_samples is None:
