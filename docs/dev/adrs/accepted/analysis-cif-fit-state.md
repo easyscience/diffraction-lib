@@ -109,7 +109,6 @@ compact optimizer metadata and counts:
 - `runtime_seconds`
 - `iterations_performed`
 - `exit_reason`
-- `negative_log_likelihood`
 
 Do not persist a `_deterministic_parameter_result` category. Final
 deterministic parameter values and uncertainties already persist in the

@@ -49,8 +49,8 @@ implementation contradictory with the ADR.
 §"Concrete files likely to change" → "Deleted" list. Added a new step
 **P1.10a** to migrate `_deterministic_result.*` descriptors into the
 concrete LSQ minimizer classes (`runtime_seconds`,
-`iterations_performed`, `exit_reason`, `negative_log_likelihood`,
-`covariance_available`, `correlation_available`, …) and the obsolete
+`iterations_performed`, `exit_reason`, `covariance_available`,
+`correlation_available`, …) and the obsolete
 CIF reader/writer. Step **P1.12** "Delete obsolete category packages"
 now also removes `deterministic_result/` and its tests.
 

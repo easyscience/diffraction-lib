@@ -71,7 +71,7 @@ The following categories are removed:
   `effective_sample_size_min`, `best_log_posterior`, …).
 - `deterministic_result` — fields move into the deterministic concrete
   classes of `minimizer` (`runtime_seconds`, `iterations_performed`,
-  `exit_reason`, `negative_log_likelihood`, …).
+  `exit_reason`, …).
 - `bayesian_parameter_posterior` — replaced by `Parameter.posterior`
   (see §3).
 - `bayesian_distribution_cache`, `bayesian_pair_cache`,
@@ -204,10 +204,11 @@ Deterministic-LSQ inputs:
 | Tag                       | Description                                            |
 |---------------------------|--------------------------------------------------------|
 | `max_iterations`          | Maximum solver iterations                              |
-| `convergence_tolerance`   | Convergence tolerance                                  |
 
 `random_seed` remains a Bayesian sampler input because the current
 deterministic engines reject non-`None` random seeds.
+`convergence_tolerance` is not exposed until a concrete engine path
+actually consumes it.
 
 Fit-filled outputs (subset varies per class):
 
@@ -215,7 +216,6 @@ Fit-filled outputs (subset varies per class):
 |----------------------------------|----------------------|----------------------------------------------|
 | `runtime_seconds`                | all                  | Wall time of the fit                         |
 | `reduced_chi2`                   | all                  | Reduced χ²                                   |
-| `negative_log_likelihood`        | all                  | −log L (replaces `nllf`)                     |
 | `iterations_performed`           | LSQ                  | Iterations actually executed                 |
 | `exit_reason`                    | LSQ                  | Free-form short string                       |
 | `acceptance_rate_mean`           | Bayesian             | Mean acceptance rate across chains/walkers   |
@@ -299,12 +299,10 @@ _fitting.mode_type        joint
 _fitting.minimizer_type  'bumps (lm)'
 
 _minimizer.max_iterations           200
-_minimizer.convergence_tolerance    1.0e-6
 _minimizer.runtime_seconds          12.34
 _minimizer.iterations_performed     87
 _minimizer.exit_reason              converged
 _minimizer.reduced_chi2             1.42
-_minimizer.negative_log_likelihood  1532.4
 ```
 
 `bumps (dream)`:

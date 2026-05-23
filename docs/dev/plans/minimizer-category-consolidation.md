@@ -437,9 +437,15 @@ PosteriorParameterSummary` so the existing intra-module
     `n_free_parameters`, `degrees_of_freedom`, `covariance_available`,
     `correlation_available` with the same defaults the current
     `DeterministicResult` uses, plus the runtime outputs
-    (`runtime_seconds`, `iterations_performed`, `exit_reason`,
-    `negative_log_likelihood`). CIF tag prefix becomes `_minimizer.*`
+    (`runtime_seconds`, `iterations_performed`, `exit_reason`).
+    CIF tag prefix becomes `_minimizer.*`
     (was `_deterministic_result.*`).
+    Post-review descriptor-scope correction: deterministic minimizer
+    categories expose only fields that are consumed or populated by
+    the current deterministic engine/result path. Do not expose
+    `random_seed`, `convergence_tolerance`, or
+    `negative_log_likelihood` on LSQ categories until a concrete
+    engine path supports and populates them.
   - Append every new descriptor name to
     `LeastSquaresMinimizerBase._expected_descriptor_names` so the
     P1.4 coverage check still catches accidental drift.

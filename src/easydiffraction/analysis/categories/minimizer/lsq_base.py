@@ -21,7 +21,6 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
 
     _expected_descriptor_names: ClassVar[tuple[str, ...]] = (
         'max_iterations',
-        'convergence_tolerance',
         'optimizer_name',
         'method_name',
         'objective_name',
@@ -35,11 +34,9 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
         'runtime_seconds',
         'iterations_performed',
         'exit_reason',
-        'negative_log_likelihood',
     )
     _native_key_map: ClassVar[dict[str, str]] = {
         'max_iterations': 'max_iterations',
-        'convergence_tolerance': 'convergence_tolerance',
     }
 
     @staticmethod
@@ -50,16 +47,6 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
             description='Maximum solver iterations.',
             value_spec=AttributeSpec(default=default, validator=RangeValidator(ge=1)),
             cif_handler=CifHandler(names=['_minimizer.max_iterations']),
-        )
-
-    @staticmethod
-    def _convergence_tolerance_descriptor(default: float) -> NumericDescriptor:
-        """Create a convergence-tolerance descriptor."""
-        return NumericDescriptor(
-            name='convergence_tolerance',
-            description='Convergence tolerance for the solver.',
-            value_spec=AttributeSpec(default=default, validator=RangeValidator(ge=0)),
-            cif_handler=CifHandler(names=['_minimizer.convergence_tolerance']),
         )
 
     @staticmethod
@@ -116,15 +103,6 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
     @max_iterations.setter
     def max_iterations(self, value: int) -> None:
         self._max_iterations.value = value
-
-    @property
-    def convergence_tolerance(self) -> NumericDescriptor:
-        """Convergence tolerance for the solver."""
-        return self._convergence_tolerance
-
-    @convergence_tolerance.setter
-    def convergence_tolerance(self, value: float) -> None:
-        self._convergence_tolerance.value = value
 
     @property
     def optimizer_name(self) -> StringDescriptor:
@@ -229,11 +207,3 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
 
     def _set_exit_reason(self, value: str) -> None:
         self._exit_reason.value = value
-
-    @property
-    def negative_log_likelihood(self) -> NumericDescriptor:
-        """Negative log likelihood for the persisted deterministic fit."""
-        return self._negative_log_likelihood
-
-    def _set_negative_log_likelihood(self, value: float | None) -> None:
-        self._negative_log_likelihood.value = value

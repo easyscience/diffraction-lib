@@ -74,7 +74,6 @@ _MINIMIZER_RESULT_DEFAULTS = {
     'credible_interval_outer': 0.95,
     'iterations_performed': 0,
     'exit_reason': '',
-    'negative_log_likelihood': None,
     'acceptance_rate_mean': None,
     'gelman_rubin_max': None,
     'effective_sample_size_min': None,
@@ -743,7 +742,6 @@ class Analysis(
             runtime_seconds=self.minimizer.runtime_seconds.value,
             iterations_performed=int(self.minimizer.iterations_performed.value),
             exit_reason=self.minimizer.exit_reason.value,
-            negative_log_likelihood=self.minimizer.negative_log_likelihood.value,
         )
         restored_results.message = self.fit_result.message.value
         restored_results.iterations = int(self.fit_result.iterations.value)
@@ -1355,9 +1353,6 @@ class Analysis(
         self.minimizer._set_runtime_seconds(results.fitting_time)
         self.minimizer._set_iterations_performed(results.iterations)
         self.minimizer._set_exit_reason(results.message)
-        self.minimizer._set_negative_log_likelihood(
-            getattr(results, 'negative_log_likelihood', None)
-        )
 
         if correlation_matrix is not None:
             self._store_correlation_projection(

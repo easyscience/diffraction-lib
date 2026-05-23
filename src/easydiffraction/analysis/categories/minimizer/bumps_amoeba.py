@@ -12,8 +12,6 @@ from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.core.metadata import TypeInfo
 
 DEFAULT_MAX_ITERATIONS = 1000
-DEFAULT_CONVERGENCE_TOLERANCE = 1.0e-6
-
 
 @MinimizerCategoryFactory.register
 class BumpsAmoebaMinimizer(LeastSquaresMinimizerBase):
@@ -27,9 +25,6 @@ class BumpsAmoebaMinimizer(LeastSquaresMinimizerBase):
     def __init__(self) -> None:
         super().__init__()
         self._max_iterations = self._max_iterations_descriptor(DEFAULT_MAX_ITERATIONS)
-        self._convergence_tolerance = self._convergence_tolerance_descriptor(
-            DEFAULT_CONVERGENCE_TOLERANCE
-        )
         self._optimizer_name = self._string_result_descriptor(
             'optimizer_name',
             'Name of the persisted deterministic optimizer.',
@@ -81,8 +76,4 @@ class BumpsAmoebaMinimizer(LeastSquaresMinimizerBase):
         self._exit_reason = self._string_result_descriptor(
             'exit_reason',
             'Backend exit reason for the persisted deterministic fit.',
-        )
-        self._negative_log_likelihood = self._numeric_result_descriptor(
-            'negative_log_likelihood',
-            'Negative log likelihood for the persisted deterministic fit.',
         )
