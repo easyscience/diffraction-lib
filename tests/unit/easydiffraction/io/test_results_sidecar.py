@@ -10,56 +10,68 @@ from types import SimpleNamespace
 import numpy as np
 
 
-def _analysis_with_predictive_sidecar() -> object:
-    from easydiffraction.analysis.categories.bayesian_predictive_datasets.default import (
-        BayesianPredictiveDatasetPaths,
-        BayesianPredictiveDatasets,
-    )
-    from easydiffraction.analysis.categories.bayesian_result.default import BayesianResult
+def _analysis_with_sidecar_payload(
+    *,
+    include_posterior: bool = True,
+    include_distribution: bool = True,
+    include_pair: bool = True,
+    include_predictive: bool = True,
+) -> object:
     from easydiffraction.analysis.categories.fit_result.default import FitResult
 
     fit_result = FitResult()
     fit_result._set_result_kind('bayesian')
-    bayesian_result = BayesianResult()
-    bayesian_result._set_has_posterior_predictive(value=True)
-    predictive = BayesianPredictiveDatasets()
-    predictive.create(
-        experiment_name='hrpt',
-        x_axis_name='two_theta',
-        paths=BayesianPredictiveDatasetPaths(
-            x_path='/predictive/hrpt/x',
-            best_sample_prediction_path='/predictive/hrpt/best_sample_prediction',
-            lower_95_path='/predictive/hrpt/lower_95',
-            upper_95_path='/predictive/hrpt/upper_95',
-        ),
-        n_x=2,
-        n_draws_cached=0,
-    )
+
+    posterior_samples = None
+    if include_posterior:
+        posterior_samples = SimpleNamespace(
+            parameter_samples=np.asarray([[[1.0]], [[1.2]]], dtype=float),
+            log_posterior=np.asarray([[-4.0], [-3.5]], dtype=float),
+            draw_index=np.asarray([0, 1]),
+        )
+
+    distribution_caches = {}
+    if include_distribution:
+        distribution_caches = {
+            'alpha': {
+                'x': np.asarray([0.5, 1.5], dtype=float),
+                'density': np.asarray([0.25, 0.75], dtype=float),
+            }
+        }
+
+    pair_caches = {}
+    if include_pair:
+        pair_caches = {
+            'alpha__beta': {
+                'x': np.asarray([0.5, 1.5], dtype=float),
+                'y': np.asarray([2.5, 3.5], dtype=float),
+                'density': np.asarray([[0.1, 0.2], [0.3, 0.4]], dtype=float),
+            }
+        }
+
+    posterior_predictive = {}
+    if include_predictive:
+        posterior_predictive = {
+            'hrpt': SimpleNamespace(
+                experiment_name='hrpt',
+                x_axis_name='two_theta',
+                x=np.asarray([1.0, 2.0]),
+                best_sample_prediction=np.asarray([3.0, 4.0]),
+                lower_95=np.asarray([2.5, 3.5]),
+                upper_95=np.asarray([3.5, 4.5]),
+                lower_68=None,
+                upper_68=None,
+                draws=None,
+            )
+        }
+
     return SimpleNamespace(
         fit_result=fit_result,
-        bayesian_result=bayesian_result,
-        bayesian_convergence=SimpleNamespace(
-            n_draws=SimpleNamespace(value=0),
-            n_chains=SimpleNamespace(value=0),
-            n_parameters=SimpleNamespace(value=0),
-        ),
-        bayesian_distribution_caches=[],
-        bayesian_pair_caches=[],
-        bayesian_predictive_datasets=predictive,
         fit_results=SimpleNamespace(
-            posterior_predictive={
-                'hrpt': SimpleNamespace(
-                    experiment_name='hrpt',
-                    x_axis_name='two_theta',
-                    x=np.asarray([1.0, 2.0]),
-                    best_sample_prediction=np.asarray([3.0, 4.0]),
-                    lower_95=np.asarray([2.5, 3.5]),
-                    upper_95=np.asarray([3.5, 4.5]),
-                    lower_68=None,
-                    upper_68=None,
-                    draws=None,
-                )
-            }
+            posterior_samples=posterior_samples,
+            posterior_distribution_caches=distribution_caches,
+            posterior_pair_caches=pair_caches,
+            posterior_predictive=posterior_predictive,
         ),
         _persisted_fit_state_sidecar={},
         _has_persisted_fit_state=lambda: True,
@@ -71,17 +83,34 @@ def test_write_and_read_analysis_results_sidecar_round_trip_predictive(tmp_path)
     from easydiffraction.io.results_sidecar import write_analysis_results_sidecar
 
     analysis_dir = Path(tmp_path)
-    analysis = _analysis_with_predictive_sidecar()
+    analysis = _analysis_with_sidecar_payload()
 
     write_analysis_results_sidecar(analysis=analysis, analysis_dir=analysis_dir)
 
     sidecar_path = analysis_dir / 'results.h5'
     assert sidecar_path.is_file()
 
-    restored = _analysis_with_predictive_sidecar()
+    import h5py  # noqa: PLC0415
+
+    with h5py.File(sidecar_path, 'r') as handle:
+        assert 'posterior' in handle
+        assert 'distribution_cache' in handle
+        assert 'pair_cache' in handle
+        assert 'predictive' in handle
+
+    restored = _analysis_with_sidecar_payload()
     restored.fit_results = None
     read_analysis_results_sidecar(analysis=restored, analysis_dir=analysis_dir)
 
+    assert 'posterior' in restored._persisted_fit_state_sidecar
+    posterior = restored._persisted_fit_state_sidecar['posterior']
+    assert np.allclose(posterior['parameter_samples'], np.asarray([[[1.0]], [[1.2]]]))
+    assert 'distribution_caches' in restored._persisted_fit_state_sidecar
+    distribution = restored._persisted_fit_state_sidecar['distribution_caches']['alpha']
+    assert np.allclose(distribution['x'], np.asarray([0.5, 1.5]))
+    assert 'pair_caches' in restored._persisted_fit_state_sidecar
+    pair = restored._persisted_fit_state_sidecar['pair_caches']['alpha__beta']
+    assert np.allclose(pair['density'], np.asarray([[0.1, 0.2], [0.3, 0.4]]))
     assert 'predictive_datasets' in restored._persisted_fit_state_sidecar
     dataset = restored._persisted_fit_state_sidecar['predictive_datasets']['hrpt']
     assert np.allclose(dataset['x'], np.asarray([1.0, 2.0]))
@@ -91,7 +120,7 @@ def test_write_and_read_analysis_results_sidecar_round_trip_predictive(tmp_path)
 def test_read_analysis_results_sidecar_warns_when_expected_file_is_missing(tmp_path, monkeypatch):
     from easydiffraction.io import results_sidecar as results_sidecar_mod
 
-    analysis = _analysis_with_predictive_sidecar()
+    analysis = _analysis_with_sidecar_payload()
     warnings: list[str] = []
     monkeypatch.setattr(results_sidecar_mod.log, 'warning', warnings.append)
 
@@ -104,35 +133,30 @@ def test_read_analysis_results_sidecar_warns_when_expected_file_is_missing(tmp_p
     assert any('Expected Bayesian results sidecar is missing' in warning for warning in warnings)
 
 
-def test_sidecar_path_traversal_falls_back_to_local_results_file(tmp_path, monkeypatch):
+def test_write_analysis_results_sidecar_truncates_stale_payloads(tmp_path):
     from easydiffraction.io import results_sidecar as results_sidecar_mod
 
     analysis_dir = Path(tmp_path) / 'analysis'
-    external_sidecar = Path(tmp_path) / 'outside.h5'
-    analysis = _analysis_with_predictive_sidecar()
-    analysis.bayesian_result._set_sidecar_file('../outside.h5')
-
-    warnings: list[str] = []
-    monkeypatch.setattr(results_sidecar_mod.log, 'warning', warnings.append)
-
+    analysis = _analysis_with_sidecar_payload()
     results_sidecar_mod.write_analysis_results_sidecar(
         analysis=analysis,
         analysis_dir=analysis_dir,
     )
 
-    assert (analysis_dir / 'results.h5').is_file()
-    assert not external_sidecar.exists()
-
-    restored = _analysis_with_predictive_sidecar()
-    restored.fit_results = None
-    restored.bayesian_result._set_sidecar_file('../outside.h5')
-    results_sidecar_mod.read_analysis_results_sidecar(
-        analysis=restored,
+    analysis = _analysis_with_sidecar_payload(
+        include_posterior=False,
+        include_distribution=False,
+        include_pair=False,
+    )
+    results_sidecar_mod.write_analysis_results_sidecar(
+        analysis=analysis,
         analysis_dir=analysis_dir,
     )
 
-    assert 'predictive_datasets' in restored._persisted_fit_state_sidecar
-    assert any(
-        'Ignoring Bayesian sidecar file path outside the analysis directory' in warning
-        for warning in warnings
-    )
+    import h5py  # noqa: PLC0415
+
+    with h5py.File(analysis_dir / 'results.h5', 'r') as handle:
+        assert 'posterior' not in handle
+        assert 'alpha' not in handle['distribution_cache']
+        assert 'alpha__beta' not in handle['pair_cache']
+        assert 'hrpt' in handle['predictive']
