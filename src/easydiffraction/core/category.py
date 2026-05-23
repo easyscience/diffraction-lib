@@ -236,6 +236,11 @@ class CategoryCollection(CollectionBase):
         return params
 
     @property
+    def scalar_descriptors(self) -> list:
+        """Collection-level descriptors serialized outside the loop."""
+        return [v for v in vars(self).values() if isinstance(v, GenericDescriptorBase)]
+
+    @property
     def as_cif(self) -> str:
         """Return CIF representation of this object."""
         return category_collection_to_cif(self)

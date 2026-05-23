@@ -215,7 +215,7 @@ with explicit `git add` paths.
       `__init__` work; behavior-only.
       Commit: `Add SwitchableCategoryBase behavior-only mixin`
 
-- [ ] **P1.2 — Generalise `CategoryCollection` for collection-level
+- [x] **P1.2 — Generalise `CategoryCollection` for collection-level
       scalars.** In `src/easydiffraction/core/category.py`, add a
       **separate** collection-scalar access surface — a new
       `CategoryCollection.scalar_descriptors` property (or

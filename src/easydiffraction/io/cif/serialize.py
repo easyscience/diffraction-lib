@@ -241,15 +241,17 @@ def category_collection_to_cif(
     str
         CIF text representing the collection as a loop.
     """
-    if not len(collection):
-        return ''
-
     # Allow collections to conditionally suppress CIF output
     skip = getattr(collection, '_skip_cif_serialization', None)
     if skip is not None and skip():
         return ''
 
     lines: list[str] = []
+    scalar_descriptors = getattr(collection, 'scalar_descriptors', [])
+    lines.extend(param_to_cif(p) for p in scalar_descriptors)
+
+    if not len(collection):
+        return '\n'.join(lines)
 
     # Header — use first item's CIF tag names as the canonical columns
     first_item = next(iter(collection.values()))
@@ -960,6 +962,9 @@ def category_collection_from_cif(
     if self._item_type is None:
         msg = 'Child class is not defined.'
         raise ValueError(msg)
+
+    for param in self.scalar_descriptors:
+        param.from_cif(block)
 
     # Create a temporary instance to access its parameters and
     # parameter CIF names
