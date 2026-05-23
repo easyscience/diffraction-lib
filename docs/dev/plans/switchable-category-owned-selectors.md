@@ -205,7 +205,7 @@ Affected ADRs that this plan amends or supersedes (from the ADR's
 Mark `[x]` as each step lands. Each step is a single atomic commit
 with explicit `git add` paths.
 
-- [ ] **P1.1 — Add `SwitchableCategoryBase` mixin.** New file
+- [x] **P1.1 — Add `SwitchableCategoryBase` mixin.** New file
       `src/easydiffraction/core/switchable.py` containing the
       behavior-only mixin sketched in ADR §4: `_parent`
       back-reference, `type` property with setter staleness checks,
