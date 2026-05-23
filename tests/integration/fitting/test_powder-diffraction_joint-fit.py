@@ -122,7 +122,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     project.experiments.add(expt2)
 
     # Prepare for fitting
-    project.analysis.fitting.minimizer_type = 'lmfit'
+    project.analysis.minimizer_type = 'lmfit'
     project.analysis.fitting_mode_type = 'joint'
 
     # Select fitting parameters
@@ -255,7 +255,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     project.experiments.add(expt2)
 
     # Prepare for fitting
-    project.analysis.fitting.minimizer_type = 'lmfit'
+    project.analysis.minimizer_type = 'lmfit'
 
     # Select fitting parameters
     model.cell.length_a.free = True

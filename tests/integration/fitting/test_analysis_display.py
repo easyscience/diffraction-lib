@@ -57,14 +57,14 @@ def test_analysis_help(lbco_fitted_project):
     project.analysis.help()
 
 
-def test_show_minimizer_types_again(lbco_fitted_project):
+def test_show_supported_minimizer_types_again(lbco_fitted_project):
     project = lbco_fitted_project
-    project.analysis.fitting.show_minimizer_types()
+    project.analysis.show_supported_minimizer_types()
 
 
-def test_show_minimizer_types(lbco_fitted_project):
+def test_show_supported_minimizer_types(lbco_fitted_project):
     project = lbco_fitted_project
-    project.analysis.fitting.show_minimizer_types()
+    project.analysis.show_supported_minimizer_types()
 
 
 def test_fit_results_attributes(lbco_fitted_project):

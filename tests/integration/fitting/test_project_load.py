@@ -213,8 +213,8 @@ def test_save_load_round_trip_preserves_parameters(tmp_path) -> None:
 
     # Compare analysis settings
     assert (
-        loaded.analysis.fitting.minimizer_type.value
-        == original.analysis.fitting.minimizer_type.value
+        loaded.analysis.minimizer_type
+        == original.analysis.minimizer_type
     )
     assert loaded.analysis.fitting_mode_type == original.analysis.fitting_mode_type
 

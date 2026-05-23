@@ -153,28 +153,28 @@ def test_fitting_fallback_paths_without_parent(monkeypatch):
     fitting.from_cif(object())
 
 
-def test_show_fitting_mode_types_for_single_and_multiple_experiments(capsys):
+def test_show_supported_fitting_mode_types_for_single_and_multiple_experiments(capsys):
     from easydiffraction.analysis.analysis import Analysis
 
     single = Analysis(project=_make_project_with_names(['e1']))
-    single.show_fitting_mode_types()
+    single.show_supported_fitting_mode_types()
     out_single = capsys.readouterr().out
     assert 'Fitting mode types' in out_single
     assert 'single' in out_single
     assert 'joint' in out_single
 
     multi = Analysis(project=_make_project_with_names(['e1', 'e2']))
-    multi.show_fitting_mode_types()
+    multi.show_supported_fitting_mode_types()
     out_multi = capsys.readouterr().out
     assert 'joint' in out_multi
     assert 'sequential' in out_multi
 
 
-def test_show_minimizer_types_prints(capsys):
+def test_show_supported_minimizer_types_prints(capsys):
     from easydiffraction.analysis.analysis import Analysis
 
     analysis = Analysis(project=_make_project_with_names([]))
-    analysis.fitting.show_minimizer_types()
+    analysis.show_supported_minimizer_types()
     out = capsys.readouterr().out
     assert 'Minimizer types' in out
     assert 'lmfit (leastsq)' in out

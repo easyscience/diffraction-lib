@@ -29,11 +29,11 @@ def _make_project_with_names(names):
     return P()
 
 
-def test_show_minimizer_types_prints(capsys):
+def test_show_supported_minimizer_types_prints(capsys):
     from easydiffraction.analysis.analysis import Analysis
 
     a = Analysis(project=_make_project_with_names([]))
-    a.fitting.show_minimizer_types()
+    a.show_supported_minimizer_types()
     out = capsys.readouterr().out
     assert 'Minimizer types' in out
     assert 'lmfit (leastsq)' in out
@@ -67,7 +67,7 @@ def test_analysis_help(capsys):
     assert 'Properties' in out
     assert 'Methods' in out
     assert 'fit()' in out
-    assert 'show_fitting_mode_types()' in out
+    assert 'show_supported_fitting_mode_types()' in out
 
 
 def test_analysis_display_help(capsys):
