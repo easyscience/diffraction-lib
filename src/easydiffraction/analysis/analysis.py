@@ -29,7 +29,6 @@ from easydiffraction.analysis.categories.bayesian_predictive_datasets.default im
 from easydiffraction.analysis.categories.bayesian_result import BayesianResult
 from easydiffraction.analysis.categories.bayesian_sampler import BayesianSampler
 from easydiffraction.analysis.categories.constraints.factory import ConstraintsFactory
-from easydiffraction.analysis.categories.deterministic_result import DeterministicResult
 from easydiffraction.analysis.categories.fit_parameter_correlations import FitParameterCorrelations
 from easydiffraction.analysis.categories.fit_parameters import FitParameters
 from easydiffraction.analysis.categories.fit_result import FitResult
@@ -74,6 +73,26 @@ _SUMMARY_HIDDEN_PARAMETER_CATEGORIES = frozenset({'pd_data', 'total_data', 'refl
 _POSTERIOR_SAMPLE_NDIM = 3
 _FLATTENED_POSTERIOR_SAMPLE_NDIM = 2
 _CREDIBLE_INTERVAL_LEVEL_COUNT = 2
+_MINIMIZER_RESULT_DEFAULTS = {
+    'optimizer_name': '',
+    'method_name': '',
+    'objective_name': '',
+    'objective_value': None,
+    'n_data_points': 0,
+    'n_parameters': 0,
+    'n_free_parameters': 0,
+    'degrees_of_freedom': 0,
+    'covariance_available': False,
+    'correlation_available': False,
+    'runtime_seconds': None,
+    'iterations_performed': 0,
+    'exit_reason': '',
+    'negative_log_likelihood': None,
+    'acceptance_rate_mean': None,
+    'gelman_rubin_max': None,
+    'effective_sample_size_min': None,
+    'best_log_posterior': None,
+}
 
 
 def _discover_property_rows(cls: type) -> list[list[str]]:
@@ -441,11 +460,6 @@ class _AnalysisPersistedCategoryAccessorsMixin:
         return self._fit_parameter_correlations
 
     @property
-    def deterministic_result(self) -> DeterministicResult:
-        """Persisted deterministic fit-result metadata."""
-        return self._deterministic_result
-
-    @property
     def bayesian_result(self) -> BayesianResult:
         """Persisted Bayesian fit-result metadata."""
         return self._bayesian_result
@@ -522,7 +536,6 @@ class Analysis(
         self._fit_parameters = FitParameters()
         self._fit_result = FitResult()
         self._fit_parameter_correlations = FitParameterCorrelations()
-        self._deterministic_result = DeterministicResult()
         self._bayesian_result = BayesianResult()
         self._bayesian_sampler = BayesianSampler()
         self._bayesian_convergence = BayesianConvergence()
@@ -767,20 +780,24 @@ class Analysis(
             reduced_chi_square=reduced_chi_square,
             starting_parameters=list(restored_parameters),
             fitting_time=fitting_time,
-            optimizer_name=self.deterministic_result.optimizer_name.value,
-            method_name=self.deterministic_result.method_name.value,
-            objective_name=self.deterministic_result.objective_name.value,
-            objective_value=self.deterministic_result.objective_value.value,
-            n_data_points=int(self.deterministic_result.n_data_points.value),
-            n_parameters=int(self.deterministic_result.n_parameters.value),
-            n_free_parameters=int(self.deterministic_result.n_free_parameters.value),
-            degrees_of_freedom=int(self.deterministic_result.degrees_of_freedom.value),
-            covariance_available=bool(self.deterministic_result.covariance_available.value),
-            correlation_available=bool(self.deterministic_result.correlation_available.value),
+            optimizer_name=self.minimizer.optimizer_name.value,
+            method_name=self.minimizer.method_name.value,
+            objective_name=self.minimizer.objective_name.value,
+            objective_value=self.minimizer.objective_value.value,
+            n_data_points=int(self.minimizer.n_data_points.value),
+            n_parameters=int(self.minimizer.n_parameters.value),
+            n_free_parameters=int(self.minimizer.n_free_parameters.value),
+            degrees_of_freedom=int(self.minimizer.degrees_of_freedom.value),
+            covariance_available=bool(self.minimizer.covariance_available.value),
+            correlation_available=bool(self.minimizer.correlation_available.value),
+            runtime_seconds=self.minimizer.runtime_seconds.value,
+            iterations_performed=int(self.minimizer.iterations_performed.value),
+            exit_reason=self.minimizer.exit_reason.value,
+            negative_log_likelihood=self.minimizer.negative_log_likelihood.value,
         )
         restored_results.message = self.fit_result.message.value
         restored_results.iterations = int(self.fit_result.iterations.value)
-        restored_results.chi_square = self.deterministic_result.objective_value.value
+        restored_results.chi_square = self.minimizer.objective_value.value
         self.fit_results = restored_results
         return restored_results
 
@@ -1195,7 +1212,6 @@ class Analysis(
             return categories
 
         if result_kind is FitResultKindEnum.DETERMINISTIC:
-            categories.append(self.deterministic_result)
             return categories
 
         categories.extend([
@@ -1211,10 +1227,10 @@ class Analysis(
 
     def _clear_persisted_fit_state(self) -> None:
         """Reset all persisted fit-state categories before a new fit."""
+        self._clear_minimizer_result_projection()
         self._fit_parameters = FitParameters()
         self._fit_result = FitResult()
         self._fit_parameter_correlations = FitParameterCorrelations()
-        self._deterministic_result = DeterministicResult()
         self._bayesian_result = BayesianResult()
         self._bayesian_sampler = BayesianSampler()
         self._bayesian_convergence = BayesianConvergence()
@@ -1224,6 +1240,13 @@ class Analysis(
         self._bayesian_predictive_datasets = BayesianPredictiveDatasets()
         self._set_has_persisted_fit_state(value=False)
         self._persisted_fit_state_sidecar = {}
+
+    def _clear_minimizer_result_projection(self) -> None:
+        """Reset result-only fields on the active minimizer category."""
+        for descriptor_name, default_value in _MINIMIZER_RESULT_DEFAULTS.items():
+            descriptor = getattr(self.minimizer, descriptor_name, None)
+            if descriptor is not None and hasattr(descriptor, 'value'):
+                descriptor.value = default_value
 
     def _capture_fit_parameter_state(self, parameters: list[Parameter]) -> None:
         """Capture pre-fit parameter state."""
@@ -1363,14 +1386,14 @@ class Analysis(
                     correlation=float(np.clip(correlation, -1.0, 1.0)),
                 )
 
-    def _store_deterministic_result_projection(
+    def _store_least_squares_result_projection(
         self,
         results: FitResults,
         *,
         experiments: list[object],
         fitted_parameters: list[Parameter],
     ) -> None:
-        """Store deterministic fit results in persisted categories."""
+        """Store least-squares fit results in the active minimizer category."""
         selected_parameters = self._selected_parameters_for_fit(experiments)
         n_parameters = len(selected_parameters)
         n_free_parameters = len(fitted_parameters)
@@ -1383,18 +1406,24 @@ class Analysis(
             else None
         )
 
-        self.deterministic_result._set_optimizer_name(
+        self.minimizer._set_optimizer_name(
             str(self.fitter.minimizer.name or self.fitter.selection)
         )
-        self.deterministic_result._set_method_name(str(self.fitter.minimizer.method or ''))
-        self.deterministic_result._set_objective_name('chi_square')
-        self.deterministic_result._set_objective_value(self._resolve_objective_value(results))
-        self.deterministic_result._set_n_data_points(n_data_points)
-        self.deterministic_result._set_n_parameters(n_parameters)
-        self.deterministic_result._set_n_free_parameters(n_free_parameters)
-        self.deterministic_result._set_degrees_of_freedom(degrees_of_freedom)
-        self.deterministic_result._set_covariance_available(value=covariance is not None)
-        self.deterministic_result._set_correlation_available(value=correlation_matrix is not None)
+        self.minimizer._set_method_name(str(self.fitter.minimizer.method or ''))
+        self.minimizer._set_objective_name('chi_square')
+        self.minimizer._set_objective_value(self._resolve_objective_value(results))
+        self.minimizer._set_n_data_points(n_data_points)
+        self.minimizer._set_n_parameters(n_parameters)
+        self.minimizer._set_n_free_parameters(n_free_parameters)
+        self.minimizer._set_degrees_of_freedom(degrees_of_freedom)
+        self.minimizer._set_covariance_available(value=covariance is not None)
+        self.minimizer._set_correlation_available(value=correlation_matrix is not None)
+        self.minimizer._set_runtime_seconds(results.fitting_time)
+        self.minimizer._set_iterations_performed(results.iterations)
+        self.minimizer._set_exit_reason(results.message)
+        self.minimizer._set_negative_log_likelihood(
+            getattr(results, 'negative_log_likelihood', None)
+        )
 
         if correlation_matrix is not None:
             self._store_correlation_projection(
@@ -1827,7 +1856,7 @@ class Analysis(
             results,
             result_kind=FitResultKindEnum.DETERMINISTIC,
         )
-        self._store_deterministic_result_projection(
+        self._store_least_squares_result_projection(
             results,
             experiments=experiments,
             fitted_parameters=fitted_parameters,

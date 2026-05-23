@@ -590,7 +590,6 @@ def _has_persisted_fit_state_sections(block: object) -> bool:
     """Return True when any persisted fit-state section is present."""
     scalar_tags = (
         '_fit_result.result_kind',
-        '_deterministic_result.optimizer_name',
         '_minimizer.optimizer_name',
         '_minimizer.runtime_seconds',
         '_minimizer.best_log_posterior',
@@ -614,7 +613,7 @@ def _restore_common_fit_state(analysis: object, block: object) -> None:
 
 def _restore_deterministic_fit_state(analysis: object, block: object) -> None:
     """Restore deterministic-only persisted fit-state categories."""
-    analysis.deterministic_result.from_cif(block)
+    del analysis, block
 
 
 def _restore_bayesian_fit_state(analysis: object, block: object) -> None:

@@ -420,7 +420,7 @@ PosteriorParameterSummary` so the existing intra-module
     user actually starts a new fit.
     Commit: `Overwrite results.h5 on new fit with user warning`
 
-- [ ] **P1.10a — Absorb `_deterministic_result.*` into LSQ classes.**
+- [x] **P1.10a — Absorb `_deterministic_result.*` into LSQ classes.**
       Per ADR §1, the `deterministic_result` category disappears. Its
       fields move into the concrete LSQ minimizer classes added in P1.4.
       Per the behavior-only-bases decision recorded in

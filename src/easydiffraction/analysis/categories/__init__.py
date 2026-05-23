@@ -28,7 +28,6 @@ from easydiffraction.analysis.categories.bayesian_result import BayesianResult
 from easydiffraction.analysis.categories.bayesian_sampler import BayesianSampler
 from easydiffraction.analysis.categories.constraints import Constraint
 from easydiffraction.analysis.categories.constraints import Constraints
-from easydiffraction.analysis.categories.deterministic_result import DeterministicResult
 from easydiffraction.analysis.categories.fit_parameter_correlations import (
     FitParameterCorrelationItem,
 )
