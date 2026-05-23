@@ -66,7 +66,17 @@ def test_minimizer_type_swap_warns_for_different_defaults(monkeypatch):
     a.minimizer_type = 'bumps (dream)'
 
     assert a.minimizer_type == 'bumps (dream)'
-    assert any('different defaults' in warning for warning in warnings)
+    # Inter-family swap should split warnings into "removed"/"added"
+    # lines rather than emitting "<not available>" sentinels per
+    # finding F3.
+    assert any(
+        'removes these settings' in w and 'max_iterations' in w for w in warnings
+    )
+    assert any(
+        'adds these settings with defaults' in w and 'sampling_steps' in w
+        for w in warnings
+    )
+    assert not any('<not available>' in w for w in warnings)
 
 
 def test_analysis_help(capsys):

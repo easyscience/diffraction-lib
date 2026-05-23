@@ -1022,10 +1022,7 @@ class Analysis(
 
         new_minimizer = MinimizerCategoryFactory.create(value)
         old_defaults = MinimizerCategoryFactory.create(self.minimizer_type)
-        changed_defaults = self._changed_minimizer_defaults(old_defaults, new_minimizer)
-        if changed_defaults:
-            joined = ', '.join(changed_defaults)
-            log.warning(f'Switching minimizer type uses different defaults: {joined}.')
+        self._warn_about_minimizer_swap_defaults(old_defaults, new_minimizer)
 
         self._minimizer = new_minimizer
         self._fitter = Fitter(value)
@@ -1046,21 +1043,64 @@ class Analysis(
         self._fitter = Fitter(value)
 
     @staticmethod
-    def _changed_minimizer_defaults(
+    def _minimizer_swap_diff(
         old_minimizer: MinimizerCategoryBase,
         new_minimizer: MinimizerCategoryBase,
-    ) -> list[str]:
-        """Return minimizer setting defaults that differ."""
+    ) -> tuple[list[str], list[str], list[str]]:
+        """Return (removed, added, changed) setting-name lists for a swap.
+
+        ``removed`` lists settings present on ``old_minimizer`` but not on
+        ``new_minimizer`` (a value the user previously customised is no
+        longer applicable). ``added`` lists settings introduced by the
+        new minimizer with their default value. ``changed`` lists
+        settings shared by both whose default value differs, in the
+        ``'{name}={old!r}->{new!r}'`` form.
+        """
         old_values = old_minimizer._descriptor_values(old_minimizer._setting_descriptor_names)
         new_values = new_minimizer._descriptor_values(new_minimizer._setting_descriptor_names)
-        changed_defaults = []
-        sentinel = '<not available>'
-        for name in sorted(old_values.keys() | new_values.keys()):
-            old_value = old_values.get(name, sentinel)
-            new_value = new_values.get(name, sentinel)
-            if old_value != new_value:
-                changed_defaults.append(f'{name} {old_value!r}->{new_value!r}')
-        return changed_defaults
+        old_keys = set(old_values)
+        new_keys = set(new_values)
+        removed = sorted(old_keys - new_keys)
+        added = sorted(
+            f'{name}={new_values[name]!r}' for name in (new_keys - old_keys)
+        )
+        changed = sorted(
+            f'{name}={old_values[name]!r}->{new_values[name]!r}'
+            for name in (old_keys & new_keys)
+            if old_values[name] != new_values[name]
+        )
+        return removed, added, changed
+
+    @classmethod
+    def _warn_about_minimizer_swap_defaults(
+        cls,
+        old_minimizer: MinimizerCategoryBase,
+        new_minimizer: MinimizerCategoryBase,
+    ) -> None:
+        """Emit human-readable warnings about a minimizer swap.
+
+        Splits the diff into "removed", "added", "changed" lines so the
+        message stays legible for scientists when an inter-family swap
+        replaces the whole setting surface (e.g. ``lmfit`` →
+        ``bumps (dream)``). Same-family swaps still see the per-field
+        ``old->new`` line for actual default differences.
+        """
+        removed, added, changed = cls._minimizer_swap_diff(old_minimizer, new_minimizer)
+        if removed:
+            log.warning(
+                'Switching minimizer type removes these settings: '
+                f'{", ".join(removed)}.'
+            )
+        if added:
+            log.warning(
+                'Switching minimizer type adds these settings with defaults: '
+                f'{", ".join(added)}.'
+            )
+        if changed:
+            log.warning(
+                'Switching minimizer type changes these default values: '
+                f'{", ".join(changed)}.'
+            )
 
     def show_supported_minimizer_types(self) -> None:
         """Print supported minimizer types and mark the current type."""

@@ -770,7 +770,7 @@ entries for F1, F4, F7, F9, F10 cover the deferred items.
   `_should_use_sidecar` reads the enum member (not the literal).
   Commit: `Compare FitResultKindEnum member in _should_use_sidecar`
 
-- [ ] **P2.7 — F3: split minimizer-swap warning into removed/added
+- [x] **P2.7 — F3: split minimizer-swap warning into removed/added
       lines.** In `src/easydiffraction/analysis/analysis.py`:
   - Replace `_changed_minimizer_defaults` with two helpers that
     return `removed: list[str]` and `added: list[str]` (each entry
