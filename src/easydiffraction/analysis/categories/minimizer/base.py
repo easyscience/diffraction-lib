@@ -15,6 +15,26 @@ class MinimizerCategoryBase(CategoryItem):
 
     _category_code = 'minimizer'
     _native_key_map: ClassVar[dict[str, str]] = {}
+    _setting_descriptor_names: ClassVar[tuple[str, ...]] = ()
+    _result_descriptor_names: ClassVar[tuple[str, ...]] = ()
+
+    def _descriptor_values(self, names: tuple[str, ...]) -> dict[str, object]:
+        """Return descriptor values for the named public attributes."""
+        values: dict[str, object] = {}
+        for name in names:
+            descriptor = getattr(self, name)
+            if isinstance(descriptor, GenericDescriptorBase):
+                values[name] = descriptor.value
+            else:
+                values[name] = descriptor
+        return values
+
+    def _reset_result_descriptors(self) -> None:
+        """Reset fit-result descriptors to their declared defaults."""
+        for name in self._result_descriptor_names:
+            descriptor = getattr(self, name)
+            if isinstance(descriptor, GenericDescriptorBase):
+                descriptor.value = descriptor._value_spec.default_value()
 
     def _native_kwargs(self) -> dict[str, object]:
         """

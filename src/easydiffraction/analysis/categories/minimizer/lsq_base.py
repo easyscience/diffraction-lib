@@ -19,6 +19,7 @@ from easydiffraction.io.cif.handler import CifHandler
 class LeastSquaresMinimizerBase(MinimizerCategoryBase):
     """Shared behavior for least-squares minimizer categories."""
 
+    _default_max_iterations: ClassVar[int] = 1000
     _expected_descriptor_names: ClassVar[tuple[str, ...]] = (
         'max_iterations',
         'optimizer_name',
@@ -38,6 +39,80 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
     _native_key_map: ClassVar[dict[str, str]] = {
         'max_iterations': 'max_iterations',
     }
+    _setting_descriptor_names: ClassVar[tuple[str, ...]] = ('max_iterations',)
+    _result_descriptor_names: ClassVar[tuple[str, ...]] = (
+        'optimizer_name',
+        'method_name',
+        'objective_name',
+        'objective_value',
+        'n_data_points',
+        'n_parameters',
+        'n_free_parameters',
+        'degrees_of_freedom',
+        'covariance_available',
+        'correlation_available',
+        'runtime_seconds',
+        'iterations_performed',
+        'exit_reason',
+    )
+
+    def __init__(self) -> None:
+        super().__init__()
+        self._max_iterations = self._max_iterations_descriptor(
+            self._default_max_iterations
+        )
+        self._optimizer_name = self._string_result_descriptor(
+            'optimizer_name',
+            'Name of the persisted deterministic optimizer.',
+        )
+        self._method_name = self._string_result_descriptor(
+            'method_name',
+            'Method name of the persisted deterministic optimizer.',
+        )
+        self._objective_name = self._string_result_descriptor(
+            'objective_name',
+            'Objective function name for the persisted deterministic fit.',
+        )
+        self._objective_value = self._numeric_result_descriptor(
+            'objective_value',
+            'Objective value for the persisted deterministic fit.',
+        )
+        self._n_data_points = self._integer_result_descriptor(
+            'n_data_points',
+            'Number of data points used in the persisted deterministic fit.',
+        )
+        self._n_parameters = self._integer_result_descriptor(
+            'n_parameters',
+            'Number of parameters considered in the persisted deterministic fit.',
+        )
+        self._n_free_parameters = self._integer_result_descriptor(
+            'n_free_parameters',
+            'Number of free parameters in the persisted deterministic fit.',
+        )
+        self._degrees_of_freedom = self._integer_result_descriptor(
+            'degrees_of_freedom',
+            'Degrees of freedom for the persisted deterministic fit.',
+        )
+        self._covariance_available = self._bool_result_descriptor(
+            'covariance_available',
+            'Whether covariance was available for the persisted deterministic fit.',
+        )
+        self._correlation_available = self._bool_result_descriptor(
+            'correlation_available',
+            'Whether correlations were available for the persisted deterministic fit.',
+        )
+        self._runtime_seconds = self._numeric_result_descriptor(
+            'runtime_seconds',
+            'Runtime in seconds for the persisted deterministic fit.',
+        )
+        self._iterations_performed = self._integer_result_descriptor(
+            'iterations_performed',
+            'Number of iterations performed by the persisted deterministic fit.',
+        )
+        self._exit_reason = self._string_result_descriptor(
+            'exit_reason',
+            'Backend exit reason for the persisted deterministic fit.',
+        )
 
     @staticmethod
     def _max_iterations_descriptor(default: int) -> IntegerDescriptor:

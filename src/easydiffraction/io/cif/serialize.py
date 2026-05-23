@@ -433,25 +433,6 @@ def analysis_to_cif(analysis: object) -> str:
     ]
 
     body = category_owner_to_cif(analysis)
-    if not body:
-        fallback_sections = [
-            getattr(analysis, 'minimizer', None),
-            getattr(analysis, 'aliases', None),
-            getattr(analysis, 'constraints', None),
-        ]
-
-        if analysis.fitting_mode_type == 'joint':
-            fallback_sections.append(getattr(analysis, 'joint_fit', None))
-        elif analysis.fitting_mode_type == 'sequential':
-            fallback_sections.extend([
-                getattr(analysis, 'sequential_fit', None),
-                getattr(analysis, 'sequential_fit_extract', None),
-            ])
-
-        body = '\n\n'.join([
-            _as_cif_text(section) for section in fallback_sections if section is not None
-        ])
-
     if body:
         parts.append(body)
 
@@ -611,17 +592,6 @@ def _restore_common_fit_state(analysis: object, block: object) -> None:
     analysis.fit_parameter_correlations.from_cif(block)
 
 
-def _restore_deterministic_fit_state(analysis: object, block: object) -> None:
-    """Restore deterministic-only persisted fit-state categories."""
-    del analysis, block
-
-
-def _restore_bayesian_fit_state(analysis: object, block: object) -> None:
-    """Restore Bayesian-only persisted fit-state categories."""
-    del block
-    analysis._sync_live_minimizer_from_persisted_fit_state()
-
-
 def _restore_persisted_fit_state(analysis: object, block: object) -> None:
     """
     Restore persisted fit-state categories after analysis configuration.
@@ -633,19 +603,12 @@ def _restore_persisted_fit_state(analysis: object, block: object) -> None:
 
     result_kind_value = analysis.fit_result.result_kind.value
     try:
-        result_kind = FitResultKindEnum(result_kind_value)
+        FitResultKindEnum(result_kind_value)
     except ValueError:
         log.warning(
             'Unsupported _fit_result.result_kind in analysis CIF: '
             f'{result_kind_value!r}. Skipping kind-specific fit-state categories.',
         )
-        return
-
-    if result_kind is FitResultKindEnum.DETERMINISTIC:
-        _restore_deterministic_fit_state(analysis, block)
-        return
-
-    _restore_bayesian_fit_state(analysis, block)
 
 
 def _collect_legacy_analysis_tags(block: object) -> list[str]:

@@ -113,11 +113,16 @@ Modified:
   Commit: `Register emcee minimizer enum value`
 
 - [ ] **P1.3 — Add `EmceeMinimizer` concrete class.**
-  Class-body descriptor declarations following the ADR §5 / §8
-  template (`sampling_steps=5000`, `population_size=32`, …,
-  `proposal_moves='stretch'`). Implement `_native_kwargs()` mapping
-  to emcee's `EnsembleSampler.run_mcmc(nsteps=..., progress=...,
-  ...)`. Update
+  Descriptor setup follows the prerequisite plan's accepted helper
+  pattern: class-level defaults for emcee-specific values
+  (`sampling_steps=5000`, `population_size=32`, …,
+  `proposal_moves='stretch'`) and instance descriptors constructed
+  from the Bayesian minimizer helpers. Before wiring emcee, decide
+  whether DREAM's direct-engine `DreamPopulationInitializationEnum`
+  remains broader than the persisted `InitializationMethodEnum` subset
+  or is narrowed to match it. Implement `_native_kwargs()` mapping to
+  emcee's `EnsembleSampler.run_mcmc(nsteps=..., progress=..., ...)`.
+  Update
   `src/easydiffraction/analysis/categories/minimizer/__init__.py` to
   import `EmceeMinimizer` (registration trigger).
   Commit: `Add EmceeMinimizer concrete class`

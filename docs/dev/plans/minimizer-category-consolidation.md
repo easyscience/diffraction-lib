@@ -39,8 +39,10 @@ Affected ADRs that this plan amends or supersedes:
 ## Decisions already made (from the ADR)
 
 1. Single unified `minimizer` switchable category on `Analysis`. Concrete
-   classes per backend with verbose descriptor names declared in the
-   class body. No mixins.
+   classes per backend expose verbose descriptor names through their
+   minimizer-family base. Shared LSQ descriptors are constructed once
+   in `LeastSquaresMinimizerBase`; sampler-specific descriptors stay
+   on their concrete Bayesian class.
 2. Selectors `minimizer_type` and `fitting_mode_type` live on `Analysis`
    directly. The Python `fitting` category and all 7 `bayesian_*`
    categories are deleted.
@@ -81,11 +83,15 @@ Affected ADRs that this plan amends or supersedes:
   Folding them into `lmfit (leastsq)` / `bumps (lm)` aliases is out
   of scope for this plan; raise a separate suggestion ADR if wanted
   later.
-- **Intermediates are behavior-only.** Per ADR §8 "no mixins",
-  `LeastSquaresMinimizerBase` and `BayesianMinimizerBase` carry
-  helper methods and expected-descriptor-name class constants only;
-  no descriptor instances. Every concrete class repeats its own
-  descriptor declarations with class-specific defaults.
+- **Descriptor setup follows real divergence.**
+  `LeastSquaresMinimizerBase` owns shared LSQ descriptor construction
+  because the concrete LSQ classes currently have the same settings
+  and persisted outputs. Bayesian descriptors stay on the concrete
+  sampler class until a second sampler proves shared defaults or
+  result fields. Each family declares expected descriptor names,
+  setting descriptor names, and result descriptor names so reset and
+  swap behavior derives from the active minimizer, not a hard-coded
+  analysis list.
 
 ## Decisions added after Review 4
 
@@ -115,16 +121,14 @@ Created:
 - `src/easydiffraction/analysis/categories/minimizer/base.py`
   (`MinimizerCategoryBase`)
 - `src/easydiffraction/analysis/categories/minimizer/lsq_base.py`
-  (`LeastSquaresMinimizerBase` — behavior-only: shared
-  `_native_kwargs()` / `_run_solver()` plumbing, expected LSQ
-  descriptor _names_ declared as class constants for the factory to
-  introspect. No descriptor instances on the base — per ADR §8 "no
-  mixins", every concrete class declares its own descriptors with
-  class-specific defaults.)
+  (`LeastSquaresMinimizerBase` — shared LSQ descriptor construction,
+  `_native_kwargs()` mapping, and expected/setting/result descriptor
+  name constants for factory coverage, swap warnings, and fit-result
+  reset behavior.)
 - `src/easydiffraction/analysis/categories/minimizer/bayesian_base.py`
-  (`BayesianMinimizerBase` — same convention: behavior-only helpers
-  for sampler lifecycle, expected Bayesian descriptor _names_ as
-  class constants, no inherited descriptor instances.)
+  (`BayesianMinimizerBase` — shared Bayesian descriptor helpers plus
+  expected/setting/result descriptor name constants; concrete sampler
+  classes construct their sampler-specific descriptors.)
 - One concrete class per `MinimizerTypeEnum` tag:
   - `lmfit.py` (tag `lmfit`)
   - `lmfit_leastsq.py` (tag `lmfit (leastsq)`)
@@ -286,17 +290,16 @@ PosteriorParameterSummary` so the existing intra-module
 - [x] **P1.4 — Add concrete minimizer category classes.**
       Add nine modules under
       `src/easydiffraction/analysis/categories/minimizer/`, one per
-      current `MinimizerTypeEnum` tag, plus two **behavior-only**
-      intermediates (`LeastSquaresMinimizerBase`,
-      `BayesianMinimizerBase`). Per ADR §8 "no mixins", the
-      intermediates contain only shared helpers (`_native_kwargs()`,
-      `_run_solver()`, expected-descriptor-name class constants for
-      factory/coverage introspection) — **no descriptor instances**.
-      Every concrete class declares every one of its descriptors in its
-      own class body with backend-specific defaults per ADR §5 / §8 (no
-      `__init__` mutation of parent declarations). Two descriptors with
-      the same verbose name across two LSQ classes are intentional
-      duplication, not an abstraction smell.
+      current `MinimizerTypeEnum` tag, plus two minimizer-family bases
+      (`LeastSquaresMinimizerBase`, `BayesianMinimizerBase`).
+      `LeastSquaresMinimizerBase` constructs the shared LSQ descriptor
+      surface once because all concrete LSQ classes currently share
+      defaults and result fields. Bayesian sampler descriptors stay on
+      the concrete sampler class until another Bayesian backend proves
+      a common surface. Each family exposes expected descriptor names,
+      setting descriptor names, result descriptor names, and
+      `_native_kwargs()` mapping for factory/coverage introspection and
+      reset behavior.
 
   | Concrete class               | `MinimizerTypeEnum` tag | Family   |
   | ---------------------------- | ----------------------- | -------- |
@@ -423,15 +426,10 @@ PosteriorParameterSummary` so the existing intra-module
 - [x] **P1.10a — Absorb `_deterministic_result.*` into LSQ classes.**
       Per ADR §1, the `deterministic_result` category disappears. Its
       fields move into the concrete LSQ minimizer classes added in P1.4.
-      Per the behavior-only-bases decision recorded in
-      §"Decisions added after Review 2", the descriptors are **declared
-      in each concrete LSQ class body** — not on
-      `LeastSquaresMinimizerBase`. The base only gains the expected-name
-      constants the factory uses to assert coverage.
-  - In each of the eight LSQ concrete classes (`LmfitMinimizer`,
-    `LmfitLeastsqMinimizer`, `LmfitLeastSquaresMinimizer`,
-    `DfolsMinimizer`, `BumpsMinimizer`, `BumpsLmMinimizer`,
-    `BumpsAmoebaMinimizer`, `BumpsDeMinimizer`), declare:
+      Post-review cleanup folds the identical LSQ descriptor setup
+      into `LeastSquaresMinimizerBase` so future LSQ result-field
+      additions land in one place.
+  - In `LeastSquaresMinimizerBase`, declare:
     `optimizer_name`, `method_name`, `objective_name`,
     `objective_value`, `n_data_points`, `n_parameters`,
     `n_free_parameters`, `degrees_of_freedom`, `covariance_available`,
@@ -449,6 +447,9 @@ PosteriorParameterSummary` so the existing intra-module
   - Append every new descriptor name to
     `LeastSquaresMinimizerBase._expected_descriptor_names` so the
     P1.4 coverage check still catches accidental drift.
+  - Add `_setting_descriptor_names` and `_result_descriptor_names` so
+    minimizer swap warnings and result resets derive from the active
+    minimizer category.
   - Update `src/easydiffraction/io/cif/serialize.py` to stop calling
     `analysis.deterministic_result.from_cif(block)` and to read these
     fields from the active `analysis.minimizer` instance instead.

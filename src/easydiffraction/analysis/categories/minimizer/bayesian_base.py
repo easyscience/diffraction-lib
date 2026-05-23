@@ -48,6 +48,26 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
         'initialization_method': 'init',
         'random_seed': 'random_seed',
     }
+    _setting_descriptor_names: ClassVar[tuple[str, ...]] = (
+        'sampling_steps',
+        'burn_in_steps',
+        'thinning_interval',
+        'population_size',
+        'parallel_workers',
+        'initialization_method',
+        'random_seed',
+    )
+    _result_descriptor_names: ClassVar[tuple[str, ...]] = (
+        'runtime_seconds',
+        'point_estimate_name',
+        'sampler_completed',
+        'credible_interval_inner',
+        'credible_interval_outer',
+        'acceptance_rate_mean',
+        'gelman_rubin_max',
+        'effective_sample_size_min',
+        'best_log_posterior',
+    )
     _supported_initialization_methods: ClassVar[tuple[InitializationMethodEnum, ...]] = (
         InitializationMethodEnum.LATIN_HYPERCUBE,
     )

@@ -56,29 +56,6 @@ _SUMMARY_HIDDEN_PARAMETER_CATEGORIES = frozenset({'pd_data', 'total_data', 'refl
 _POSTERIOR_SAMPLE_NDIM = 3
 _FLATTENED_POSTERIOR_SAMPLE_NDIM = 2
 _CREDIBLE_INTERVAL_LEVEL_COUNT = 2
-_MINIMIZER_RESULT_DEFAULTS = {
-    'optimizer_name': '',
-    'method_name': '',
-    'objective_name': '',
-    'objective_value': None,
-    'n_data_points': 0,
-    'n_parameters': 0,
-    'n_free_parameters': 0,
-    'degrees_of_freedom': 0,
-    'covariance_available': False,
-    'correlation_available': False,
-    'runtime_seconds': None,
-    'point_estimate_name': 'best_sample',
-    'sampler_completed': False,
-    'credible_interval_inner': 0.68,
-    'credible_interval_outer': 0.95,
-    'iterations_performed': 0,
-    'exit_reason': '',
-    'acceptance_rate_mean': None,
-    'gelman_rubin_max': None,
-    'effective_sample_size_min': None,
-    'best_log_posterior': None,
-}
 
 
 def _discover_property_rows(cls: type) -> list[list[str]]:
@@ -542,9 +519,6 @@ class Analysis(
             parameter._set_posterior(posterior)
             if posterior is not None and np.isfinite(posterior.standard_deviation):
                 parameter.uncertainty = posterior.standard_deviation
-
-    def _sync_live_minimizer_from_persisted_fit_state(self) -> None:
-        """No-op after minimizer state moved onto the category."""
 
     def _restored_fit_parameters(self, param_map: dict[str, Parameter]) -> list[Parameter]:
         """Return live parameters in the persisted fit-result order."""
@@ -1034,10 +1008,11 @@ class Analysis(
             return
 
         new_minimizer = MinimizerCategoryFactory.create(value)
-        changed_defaults = self._changed_minimizer_defaults(self._minimizer, new_minimizer)
+        old_defaults = MinimizerCategoryFactory.create(self.minimizer_type)
+        changed_defaults = self._changed_minimizer_defaults(old_defaults, new_minimizer)
         if changed_defaults:
             joined = ', '.join(changed_defaults)
-            log.warning(f'Switching minimizer type resets defaults: {joined}.')
+            log.warning(f'Switching minimizer type uses different defaults: {joined}.')
 
         self._minimizer = new_minimizer
         self._fitter = Fitter(value)
@@ -1062,9 +1037,13 @@ class Analysis(
         old_minimizer: MinimizerCategoryBase,
         new_minimizer: MinimizerCategoryBase,
     ) -> list[str]:
-        """Return common fields whose default values differ."""
-        old_values = {param.name: param.value for param in old_minimizer.parameters}
-        new_values = {param.name: param.value for param in new_minimizer.parameters}
+        """Return setting fields whose declared default values differ."""
+        old_values = old_minimizer._descriptor_values(
+            old_minimizer._setting_descriptor_names
+        )
+        new_values = new_minimizer._descriptor_values(
+            new_minimizer._setting_descriptor_names
+        )
         changed_defaults = []
         sentinel = '<not available>'
         for name in sorted(old_values.keys() | new_values.keys()):
@@ -1101,7 +1080,13 @@ class Analysis(
         """Apply minimizer category settings to the live engine."""
         engine = self.fitter.minimizer
         for key, value in self.minimizer._native_kwargs().items():
-            if key == 'random_seed' or not hasattr(engine, key):
+            if key == 'random_seed':
+                continue
+            if not hasattr(engine, key):
+                log.warning(
+                    f"Minimizer setting '{key}' is not supported by "
+                    f"engine '{self.minimizer_type}'."
+                )
                 continue
             setattr(engine, key, value)
 
@@ -1175,10 +1160,7 @@ class Analysis(
 
     def _clear_minimizer_result_projection(self) -> None:
         """Reset result-only fields on the active minimizer category."""
-        for descriptor_name, default_value in _MINIMIZER_RESULT_DEFAULTS.items():
-            descriptor = getattr(self.minimizer, descriptor_name, None)
-            if descriptor is not None and hasattr(descriptor, 'value'):
-                descriptor.value = default_value
+        self.minimizer._reset_result_descriptors()
 
     def _capture_fit_parameter_state(self, parameters: list[Parameter]) -> None:
         """Capture pre-fit parameter state."""
@@ -1753,7 +1735,6 @@ class Analysis(
         # Apply constraints before fitting so that user-constrained
         # parameters are marked and excluded from the free parameter
         # list built by the fitter.
-        self._sync_live_minimizer_from_persisted_fit_state()
         self._sync_engine_from_minimizer_category()
         self._update_categories()
 

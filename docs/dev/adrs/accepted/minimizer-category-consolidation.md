@@ -244,8 +244,8 @@ at set time, not at fit time.
 
 ### 7. CIF `?` is the universal "use default" marker
 
-Descriptors declare static defaults at class-body level via
-`AttributeSpec(default=...)`. CIF behavior:
+Descriptors declare static defaults via `AttributeSpec(default=...)`
+when each minimizer category instance is constructed. CIF behavior:
 
 - **Load.** A missing tag, or a tag with value `?`, resolves to the
   descriptor's static default at load time. The category instance
@@ -264,22 +264,20 @@ descriptors that have no sensible default (e.g. `cell.length_a`), the
 descriptor declaration omits `default=...` and CIF `?` continues to
 mean "unknown" — a load-time error is raised when the field is read.
 
-### 8. Concrete classes carry their own defaults; warn-and-reset on swap
+### 8. Minimizer families carry defaults; warn-and-reset on swap
 
-Each concrete `minimizer` class declares descriptors directly in its
-class body with class-specific defaults. No mixins.
+Each concrete `minimizer` class has a complete, discoverable descriptor
+surface. Descriptor instances are constructed from family helpers in
+`__init__` so shared LSQ fields are declared once and sampler-specific
+fields stay on the Bayesian concrete classes. Concrete subclasses may
+override class-level defaults only when their backend behavior really
+differs.
 
 ```python
-class DreamMinimizer(BayesianMinimizerBase):
-    sampling_steps  = IntegerDescriptor(spec=AttributeSpec(default=3000, ...))
-    population_size = IntegerDescriptor(spec=AttributeSpec(default=4,    ...))
-    # …
-
 class EmceeMinimizer(BayesianMinimizerBase):
-    sampling_steps  = IntegerDescriptor(spec=AttributeSpec(default=5000, ...))
-    population_size = IntegerDescriptor(spec=AttributeSpec(default=32,   ...))
-    proposal_moves  = StringDescriptor(spec=AttributeSpec(default='stretch', ...))
-    # …
+    _default_sampling_steps = 5000
+    _default_population_size = 32
+    _default_proposal_moves = 'stretch'
 ```
 
 When `analysis.minimizer_type` changes, the underlying instance is
