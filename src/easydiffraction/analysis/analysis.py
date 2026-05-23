@@ -762,14 +762,15 @@ class Analysis(
             self.fit_results = restored_results
             return restored_results
 
+        engine_metadata = type(self.minimizer)._engine_metadata
         restored_results = FitResults(
             success=bool(self.fit_result.success.value),
             parameters=restored_parameters,
             reduced_chi_square=reduced_chi_square,
             starting_parameters=list(restored_parameters),
             fitting_time=fitting_time,
-            optimizer_name=self.minimizer.optimizer_name.value,
-            method_name=self.minimizer.method_name.value,
+            optimizer_name=engine_metadata['optimizer_name'],
+            method_name=engine_metadata['method_name'],
             objective_name=self.minimizer.objective_name.value,
             objective_value=self.minimizer.objective_value.value,
             n_data_points=_int_or_none(self.minimizer.n_data_points.value),
@@ -1389,10 +1390,6 @@ class Analysis(
             else None
         )
 
-        self.minimizer._set_optimizer_name(
-            str(self.fitter.minimizer.name or self.fitter.selection)
-        )
-        self.minimizer._set_method_name(str(self.fitter.minimizer.method or ''))
         self.minimizer._set_objective_name('chi_square')
         self.minimizer._set_objective_value(self._resolve_objective_value(results))
         self.minimizer._set_n_data_points(n_data_points)

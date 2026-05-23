@@ -4,6 +4,8 @@
 
 from __future__ import annotations
 
+from typing import ClassVar
+
 from easydiffraction.analysis.categories.minimizer.bayesian_base import BayesianMinimizerBase
 from easydiffraction.analysis.categories.minimizer.factory import MinimizerCategoryFactory
 from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
@@ -19,6 +21,11 @@ DEFAULT_PARALLEL_WORKERS = 0
 @MinimizerCategoryFactory.register
 class BumpsDreamMinimizer(BayesianMinimizerBase):
     """Persisted settings and results for the BUMPS DREAM minimizer."""
+
+    _engine_metadata: ClassVar[dict[str, str]] = {
+        'optimizer_name': 'bumps (dream)',
+        'method_name': 'dream',
+    }
 
     type_info = TypeInfo(
         tag=MinimizerTypeEnum.BUMPS_DREAM,

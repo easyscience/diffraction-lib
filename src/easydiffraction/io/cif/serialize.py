@@ -571,7 +571,6 @@ def _has_persisted_fit_state_sections(block: object) -> bool:
     """Return True when any persisted fit-state section is present."""
     scalar_tags = (
         '_fit_result.result_kind',
-        '_minimizer.optimizer_name',
         '_minimizer.runtime_seconds',
         '_minimizer.best_log_posterior',
     )

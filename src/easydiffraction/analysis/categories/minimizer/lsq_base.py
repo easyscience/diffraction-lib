@@ -22,8 +22,6 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
     _default_max_iterations: ClassVar[int] = 1000
     _expected_descriptor_names: ClassVar[tuple[str, ...]] = (
         'max_iterations',
-        'optimizer_name',
-        'method_name',
         'objective_name',
         'objective_value',
         'n_data_points',
@@ -41,8 +39,6 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
     }
     _setting_descriptor_names: ClassVar[tuple[str, ...]] = ('max_iterations',)
     _result_descriptor_names: ClassVar[tuple[str, ...]] = (
-        'optimizer_name',
-        'method_name',
         'objective_name',
         'objective_value',
         'n_data_points',
@@ -59,14 +55,6 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
     def __init__(self) -> None:
         super().__init__()
         self._max_iterations = self._max_iterations_descriptor(self._default_max_iterations)
-        self._optimizer_name = self._string_result_descriptor(
-            'optimizer_name',
-            'Name of the persisted deterministic optimizer.',
-        )
-        self._method_name = self._string_result_descriptor(
-            'method_name',
-            'Method name of the persisted deterministic optimizer.',
-        )
         self._objective_name = self._string_result_descriptor(
             'objective_name',
             'Objective function name for the persisted deterministic fit.',
@@ -195,24 +183,6 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
     @max_iterations.setter
     def max_iterations(self, value: int) -> None:
         self._max_iterations.value = value
-
-    @property
-    def optimizer_name(self) -> StringDescriptor:
-        """
-        Name of the optimizer used by the persisted deterministic fit.
-        """
-        return self._optimizer_name
-
-    def _set_optimizer_name(self, value: str | None) -> None:
-        self._optimizer_name.value = value
-
-    @property
-    def method_name(self) -> StringDescriptor:
-        """Method name used by the persisted deterministic fit."""
-        return self._method_name
-
-    def _set_method_name(self, value: str | None) -> None:
-        self._method_name.value = value
 
     @property
     def objective_name(self) -> StringDescriptor:

@@ -431,7 +431,7 @@ with explicit `git add` paths.
         first.
       Commit: `Promote fitting_mode to FittingMode category`
 
-- [ ] **P1.11 — Drop persisted minimizer-name fields; add
+- [x] **P1.11 — Drop persisted minimizer-name fields; add
       `_engine_metadata`.**
       - Drop `_minimizer.optimizer_name` and `_minimizer.method_name`
         from the LSQ base descriptor declarations and CIF emit/read
