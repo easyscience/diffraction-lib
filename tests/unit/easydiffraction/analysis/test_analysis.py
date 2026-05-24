@@ -107,6 +107,51 @@ def test_minimizer_selector_swap_warns_for_different_defaults(monkeypatch):
     assert not any('<not available>' in w for w in warnings)
 
 
+def test_minimizer_type_invalid_assignment_raises_and_preserves_state():
+    import pytest
+
+    from easydiffraction.analysis.analysis import Analysis
+
+    a = Analysis(project=_make_project_with_names([]))
+    initial_type = a.minimizer.type
+
+    with pytest.raises(ValueError, match='Unsupported minimizer type'):
+        a.minimizer.type = 'bogus-minimizer'
+
+    assert a.minimizer.type == initial_type
+
+
+def test_fitting_mode_type_invalid_assignment_raises_and_preserves_state():
+    import pytest
+
+    from easydiffraction.analysis.analysis import Analysis
+
+    a = Analysis(project=_make_project_with_names([]))
+    initial_type = a.fitting_mode.type
+
+    with pytest.raises(ValueError, match='Unsupported fitting mode'):
+        a.fitting_mode.type = 'bogus-mode'
+
+    assert a.fitting_mode.type == initial_type
+
+
+def test_cif_restore_path_tolerates_invalid_minimizer_type(monkeypatch):
+    from easydiffraction.analysis import analysis as analysis_mod
+    from easydiffraction.analysis.analysis import Analysis
+
+    a = Analysis(project=_make_project_with_names([]))
+    initial_type = a.minimizer.type
+    warnings: list[str] = []
+    monkeypatch.setattr(analysis_mod.log, 'warning', warnings.append)
+
+    # CIF-restore path uses strict=False so bad data warns instead of
+    # raising — kept tolerant for partially-broken saved projects.
+    a._set_minimizer_type('bogus-minimizer')
+
+    assert a.minimizer.type == initial_type
+    assert any('Unsupported minimizer type' in w for w in warnings)
+
+
 def test_analysis_help(capsys):
     from easydiffraction.analysis.analysis import Analysis
 

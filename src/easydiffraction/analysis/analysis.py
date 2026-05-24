@@ -986,18 +986,27 @@ class Analysis(
         """Active fitting-mode selector category."""
         return self._fitting_mode
 
-    def _replace_fitting_mode(self, value: str, *, announce: bool) -> None:
+    def _replace_fitting_mode(
+        self,
+        value: str,
+        *,
+        announce: bool,
+        strict: bool = True,
+    ) -> None:
         """Set the active fitting mode."""
         supported = [mode.value for mode in FitModeEnum]
 
         try:
             new_mode = FitModeEnum(value)
         except ValueError:
-            log.warning(
+            msg = (
                 f"Unsupported fitting mode '{value}'. "
                 f'Supported fitting modes: {supported}. '
-                f"For more information, use 'fitting_mode.show_supported()'",
+                f"For more information, use 'fitting_mode.show_supported()'"
             )
+            if strict:
+                raise ValueError(msg) from None
+            log.warning(msg)
             return
 
         self._fitting_mode._type.value = new_mode.value
@@ -1007,22 +1016,31 @@ class Analysis(
 
     def _set_fitting_mode_type(self, value: str) -> None:
         """Set the fitting mode without console output."""
-        self._replace_fitting_mode(value, announce=False)
+        self._replace_fitting_mode(value, announce=False, strict=False)
 
     @property
     def minimizer(self) -> MinimizerCategoryBase:
         """Active minimizer settings and result category."""
         return self._minimizer
 
-    def _replace_minimizer(self, value: str, *, announce: bool) -> None:
+    def _replace_minimizer(
+        self,
+        value: str,
+        *,
+        announce: bool,
+        strict: bool = True,
+    ) -> None:
         """Replace the active minimizer category."""
         supported = [str(tag) for tag in MinimizerCategoryFactory.supported_tags()]
         if value not in supported:
-            log.warning(
+            msg = (
                 f"Unsupported minimizer type '{value}'. "
                 f'Supported minimizer types: {supported}. '
-                f"For more information, use 'minimizer.show_supported()'",
+                f"For more information, use 'minimizer.show_supported()'"
             )
+            if strict:
+                raise ValueError(msg)
+            log.warning(msg)
             return
 
         if value == self.minimizer.type:
@@ -1046,7 +1064,7 @@ class Analysis(
 
     def _set_minimizer_type(self, value: str) -> None:
         """Set the minimizer type without console output."""
-        self._replace_minimizer(value, announce=False)
+        self._replace_minimizer(value, announce=False, strict=False)
 
     @staticmethod
     def _minimizer_swap_diff(

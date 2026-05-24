@@ -100,9 +100,10 @@ class BraggPdExperiment(PdExperimentBase):
         tag: str,
         *,
         announce: bool = True,
+        strict: bool = True,
     ) -> None:
         """Switch calculator backend and sync ``refln`` availability."""
-        super()._swap_calculator(tag, announce=announce)
+        super()._swap_calculator(tag, announce=announce, strict=strict)
         self._sync_refln_category()
 
     def _load_ascii_data_to_experiment(
@@ -192,4 +193,4 @@ class BraggPdExperiment(PdExperimentBase):
         super()._restore_switchable_types(block)
         background_tag = read_cif_str(block, '_background.type')
         if background_tag is not None:
-            self._replace_background(background_tag, announce=False)
+            self._replace_background(background_tag, announce=False, strict=False)

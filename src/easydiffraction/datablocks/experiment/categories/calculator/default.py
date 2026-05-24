@@ -90,4 +90,4 @@ class Calculator(CategoryItem, SwitchableCategoryBase):
         if parent is None:
             self._type.value = tag
             return
-        parent._swap_calculator(tag, announce=False)
+        parent._swap_calculator(tag, announce=False, strict=False)

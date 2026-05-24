@@ -109,17 +109,26 @@ class ExperimentBase(DatablockItem):
             'radiation_probe': self.type.radiation_probe.value,
         }
 
-    def _swap_calculator(self, new_type: str, *, announce: bool = True) -> None:
+    def _swap_calculator(
+        self,
+        new_type: str,
+        *,
+        announce: bool = True,
+        strict: bool = True,
+    ) -> None:
         """Switch the active calculator backend."""
         from easydiffraction.analysis.calculators.factory import CalculatorFactory  # noqa: PLC0415
 
         supported = self._supported_calculator_tags()
         if new_type not in supported:
-            log.warning(
+            msg = (
                 f"Unsupported calculator '{new_type}' for experiment "
                 f"'{self.name}'. Supported: {supported}. "
-                f"For more information, use 'calculator.show_supported()'",
+                f"For more information, use 'calculator.show_supported()'"
             )
+            if strict:
+                raise ValueError(msg)
+            log.warning(msg)
             return
         if self._calculator_category._type.value == new_type and self._calculator is not None:
             if announce:
@@ -140,18 +149,27 @@ class ExperimentBase(DatablockItem):
         """Switch the active background category."""
         self._replace_background(new_type, announce=True)
 
-    def _replace_background(self, new_type: str, *, announce: bool) -> None:
+    def _replace_background(
+        self,
+        new_type: str,
+        *,
+        announce: bool,
+        strict: bool = True,
+    ) -> None:
         """Replace the active background category."""
         supported = BackgroundFactory.supported_for(
             **self._supported_filters_for(self.background),
         )
         supported_tags = [klass.type_info.tag for klass in supported]
         if new_type not in supported_tags:
-            log.warning(
+            msg = (
                 f"Unsupported background type '{new_type}'. "
                 f'Supported: {supported_tags}. '
-                f"For more information, use 'background.show_supported()'",
+                f"For more information, use 'background.show_supported()'"
             )
+            if strict:
+                raise ValueError(msg)
+            log.warning(msg)
             return
 
         if self._background._type.value == new_type:
@@ -179,18 +197,27 @@ class ExperimentBase(DatablockItem):
         """Switch the active extinction category."""
         self._replace_extinction(new_type, announce=True)
 
-    def _replace_extinction(self, new_type: str, *, announce: bool) -> None:
+    def _replace_extinction(
+        self,
+        new_type: str,
+        *,
+        announce: bool,
+        strict: bool = True,
+    ) -> None:
         """Replace the active extinction category."""
         supported = ExtinctionFactory.supported_for(
             **self._supported_filters_for(self.extinction),
         )
         supported_tags = [klass.type_info.tag for klass in supported]
         if new_type not in supported_tags:
-            log.warning(
+            msg = (
                 f"Unsupported extinction type '{new_type}'. "
                 f'Supported: {supported_tags}. '
-                f"For more information, use 'extinction.show_supported()'",
+                f"For more information, use 'extinction.show_supported()'"
             )
+            if strict:
+                raise ValueError(msg)
+            log.warning(msg)
             return
 
         old_extinction = self._extinction
@@ -250,7 +277,7 @@ class ExperimentBase(DatablockItem):
         """
         calculator_tag = read_cif_str(block, '_calculator.type')
         if calculator_tag is not None:
-            self._swap_calculator(calculator_tag, announce=False)
+            self._swap_calculator(calculator_tag, announce=False, strict=False)
 
     @property
     def as_cif(self) -> str:
@@ -401,7 +428,7 @@ class ScExperimentBase(ExperimentBase):
         super()._restore_switchable_types(block)
         extinction_tag = read_cif_str(block, '_extinction.type')
         if extinction_tag is not None:
-            self._replace_extinction(extinction_tag, announce=False)
+            self._replace_extinction(extinction_tag, announce=False, strict=False)
 
     # ------------------------------------------------------------------
     #  Linked crystal (read-only, single type)
@@ -556,7 +583,13 @@ class PdExperimentBase(ExperimentBase):
         """Peak category object with profile parameters and mixins."""
         return self._peak
 
-    def _replace_peak_profile(self, new_type: str, *, announce: bool) -> None:
+    def _replace_peak_profile(
+        self,
+        new_type: str,
+        *,
+        announce: bool,
+        strict: bool = True,
+    ) -> None:
         """Replace the active peak profile category."""
         context = self._peak_profile_context()
         supported = PeakFactory.supported_for(
@@ -569,11 +602,14 @@ class PdExperimentBase(ExperimentBase):
         canonical_type = PeakFactory._canonical_tag_for(new_type, **context)
 
         if canonical_type not in supported_tags:
-            log.warning(
+            msg = (
                 f"Unsupported peak profile '{new_type}'. "
                 f'Supported peak profiles: {supported_aliases}. '
-                f"For more information, use 'peak.show_supported()'",
+                f"For more information, use 'peak.show_supported()'"
             )
+            if strict:
+                raise ValueError(msg)
+            log.warning(msg)
             return
 
         if self._peak is not None and announce:
@@ -604,7 +640,7 @@ class PdExperimentBase(ExperimentBase):
         new_type : str
             Peak profile type alias or canonical tag.
         """
-        self._replace_peak_profile(new_type, announce=False)
+        self._replace_peak_profile(new_type, announce=False, strict=False)
 
     def _peak_profile_context(self) -> dict[str, object]:
         """
