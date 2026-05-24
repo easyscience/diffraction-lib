@@ -55,31 +55,34 @@ samplers.
 
 ## Decision
 
-### 1. Unified `minimizer` category replaces all sampler-input and fit-result categories
+### 1. Unified `minimizer` category replaces sampler-input categories
 
 Introduce a single switchable category `minimizer` on `Analysis`. Its
 concrete class is determined by `Analysis.minimizer_type`. The category
-holds both user-writable inputs and fit-filled outputs in one place.
+now holds user-writable minimizer inputs only. The later
+[`minimizer-input-output-split.md`](minimizer-input-output-split.md)
+ADR reverses the fit-output half of this rule: scalar fit outputs live
+on the paired `fit_result` category instead of on `minimizer`.
 
 The following categories are removed:
 
 - `bayesian_sampler` — fields move into the Bayesian concrete classes of
   `minimizer`.
 - `bayesian_result`, `bayesian_convergence` — fields move into the
-  Bayesian concrete classes of `minimizer` (`runtime_seconds`,
+  Bayesian concrete classes of `fit_result` (`fitting_time`,
   `acceptance_rate_mean`, `gelman_rubin_max`,
   `effective_sample_size_min`, `best_log_posterior`, …).
 - `deterministic_result` — fields move into the deterministic concrete
-  classes of `minimizer` (`runtime_seconds`, `iterations_performed`,
-  `exit_reason`, …).
+  classes of `fit_result` (`fitting_time`, `iterations`,
+  `objective_value`, `exit_reason`, …).
 - `bayesian_parameter_posterior` — replaced by `Parameter.posterior`
   (see §3).
 - `bayesian_distribution_cache`, `bayesian_pair_cache`,
   `bayesian_predictive_dataset` — replaced by HDF5 sidecar (see §4).
 
-`fit_result` and `fit_parameter` (analysis-owned bounds, success flag,
-reduced chi-square, message, fit time, iterations) remain unchanged as
-fit-mode-agnostic header categories.
+`fit_parameter` (analysis-owned bounds) remains a fit-state category.
+`fit_result` remains the common fit header category and is extended by
+the input/output split ADR with family-specific scalar outputs.
 
 ### 2. Selectors move to the `Analysis` owner
 
@@ -388,10 +391,11 @@ category's class-level `_engine_metadata` dict.
 
 ### Trade-offs
 
-- `minimizer` is the first category that mixes writable user inputs and
-  writable fit-filled outputs in the same scope. This is a small new
-  convention but is the natural generalization of how `Parameter`
-  already holds both user input and refined value on the same object.
+- `minimizer` no longer mixes writable user inputs and fit-filled
+  outputs in the same scope. That stricter boundary is recorded by
+  [`minimizer-input-output-split.md`](minimizer-input-output-split.md);
+  `Parameter` remains the refinement-in-place precedent for model
+  values rather than minimizer diagnostics.
 - The set of `_minimizer.*` tags present in CIF depends on the active
   `_fitting.minimizer_type`. Loading a CIF whose tags don't match the
   minimizer's allowed set raises (clear validation, not silent
@@ -461,9 +465,10 @@ category count for each new sampler and entrenches the convention break.
 
 ### D. Strict input-only `minimizer` plus a separate `fit_result`
 
-Keep the categories single-concept (inputs xor outputs) at the cost of
-two-place lookup for related info. Rejected in favour of the
-one-category-mixes-both shape (§1, §"Trade-offs") because the existing
-`Parameter` model already mixes input and refined value on the same
-object, and one-place discoverability is more valuable than strict
-purity.
+Originally rejected in favour of the one-category-mixes-both shape (§1,
+§"Trade-offs"). Reversed by
+[`minimizer-input-output-split.md`](minimizer-input-output-split.md)
+after implementation showed the `Parameter` analogy does not hold for
+minimizer settings versus fit diagnostics. The current design keeps
+`minimizer` input-only and moves scalar fit outputs to the paired
+`fit_result` category.

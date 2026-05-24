@@ -458,7 +458,7 @@ Mark `[x]` as each step lands.
       the rest of the display facade uses. Commit:
       `Add settings-used block to fit.results display`
 
-- [ ] **P1.14 — Amend the five accepted ADRs listed in §"ADR".** For
+- [x] **P1.14 — Amend the five accepted ADRs listed in §"ADR".** For
       each, apply the matching paragraph from the ADR's §"ADRs
       amended" section:
   - `minimizer-category-consolidation.md` — §1 partial-rule
