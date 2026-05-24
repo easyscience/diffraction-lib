@@ -279,7 +279,7 @@ Mark `[x]` as each step lands.
   Files modified by this step: `pyproject.toml`, `pixi.toml`,
   `pixi.lock`. Commit: `Add emcee runtime dependency`
 
-- [ ] **P1.2 — Register `MinimizerTypeEnum.EMCEE`.** Add the enum member
+- [x] **P1.2 — Register `MinimizerTypeEnum.EMCEE`.** Add the enum member
       with value `'emcee'` to
       `src/easydiffraction/analysis/minimizers/enums.py`. No other code
       wiring yet. Commit: `Register emcee minimizer enum value`
