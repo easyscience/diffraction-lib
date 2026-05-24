@@ -91,7 +91,7 @@ def test_fitting_mode_show_supported_for_single_and_multiple_experiments(capsys)
     single = Analysis(project=_make_project_with_names(['e1']))
     single.fitting_mode.show_supported()
     out_single = capsys.readouterr().out
-    assert 'Fitting mode types' in out_single
+    assert 'Fitting Mode types' in out_single
     assert 'single' in out_single
     assert 'joint' in out_single
 

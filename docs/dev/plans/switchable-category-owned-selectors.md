@@ -566,7 +566,7 @@ required by `.github/copilot-instructions.md` → **Workflow**.
 - [x] **P2.3 — Unit tests.**
       `     pixi run unit-tests > /tmp/easydiffraction-unit-tests.log 2>&1; \       unit_tests_exit_code=$?; tail -n 200 /tmp/easydiffraction-unit-tests.log; \       exit $unit_tests_exit_code     `
 
-- [ ] **P2.4 — Integration tests.**
+- [x] **P2.4 — Integration tests.**
       `     pixi run integration-tests > /tmp/easydiffraction-integration-tests.log 2>&1; \       integration_tests_exit_code=$?; tail -n 200 /tmp/easydiffraction-integration-tests.log; \       exit $integration_tests_exit_code     `
 
 - [ ] **P2.5 — Script tests.**

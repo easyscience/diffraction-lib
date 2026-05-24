@@ -82,7 +82,8 @@ def test_experiment_show_as_cif_omits_empty_category_gaps(lbco_fitted_project, m
     expt.show_as_cif()
 
     cif_text = captured['cif_text']
-    assert re.search(r'_pd_phase_block\.scale\n[^\n]+\n\nloop_', cif_text) is not None
+    assert re.search(r'_pd_phase_block\.scale\n[^\n]+\n\n_background\.type', cif_text) is not None
+    assert re.search(r'_background\.type [^\n]+\nloop_', cif_text) is not None
     assert '\n\n\n' not in cif_text
 
 
