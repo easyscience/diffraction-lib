@@ -52,7 +52,6 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-  'essdiffraction',                  # ESS-specific diffraction library
   'GitPython',                       # Interact with Git repositories
   'build',                           # Building the package
   'pre-commit',                      # Pre-commit hooks
