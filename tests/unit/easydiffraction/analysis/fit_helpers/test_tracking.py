@@ -165,7 +165,7 @@ def test_notebook_fit_stop_control_renders_interrupt_button(monkeypatch):
     assert html_updates[-1] == ''
 
 
-def test_notebook_fit_stop_control_marks_interrupted(monkeypatch):
+def test_notebook_fit_stop_control_clears_button_after_interrupt(monkeypatch):
     import easydiffraction.display.progress as progress_mod
     from easydiffraction.utils.enums import VerbosityEnum
 
@@ -194,7 +194,7 @@ def test_notebook_fit_stop_control_marks_interrupted(monkeypatch):
     except KeyboardInterrupt:
         pass
 
-    assert 'Fitting stopped.' in html_updates[-1]
+    assert html_updates[-1] == ''
 
 
 def test_notebook_fit_stop_control_extracts_kernel_id_from_connection_file():

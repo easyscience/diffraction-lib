@@ -519,10 +519,10 @@ class NotebookFitStopControl(AbstractContextManager):
         traceback: TracebackType | None,
     ) -> None:
         """Update or clear the stop button when leaving the context."""
+        del exc_type
         del exc_value
         del traceback
-        interrupted = exc_type is not None and issubclass(exc_type, KeyboardInterrupt)
-        self.close(interrupted=interrupted)
+        self.close()
 
     def show(self) -> None:
         """Render the stop button when running in a notebook."""
@@ -535,14 +535,13 @@ class NotebookFitStopControl(AbstractContextManager):
             handle.display(HTML(self._active_html()))
             display(Javascript(self._interrupt_javascript()))
 
-    def close(self, *, interrupted: bool = False) -> None:
-        """Clear or update the stop button when fitting ends."""
+    def close(self) -> None:
+        """Clear the stop button when fitting ends."""
         if self._display_handle is None or HTML is None:
             return
 
-        html_content = self._stopped_html() if interrupted else ''
         with suppress(Exception):
-            self._display_handle.update(HTML(html_content))
+            self._display_handle.update(HTML(''))
         self._display_handle = None
 
     def _can_display(self) -> bool:
@@ -589,13 +588,6 @@ class NotebookFitStopControl(AbstractContextManager):
             f'<button id="{self._element_id}-button" '
             'class="ed-fit-stop-button" type="button">Stop fitting</button>'
             f'<span id="{self._element_id}-status" class="ed-fit-stop-status"></span>'
-            '</div>'
-        )
-
-    def _stopped_html(self) -> str:
-        return (
-            f'<div id="{self._element_id}" class="ed-fit-stop-control">'
-            '<span class="ed-fit-stop-status">Fitting stopped.</span>'
             '</div>'
         )
 
