@@ -663,3 +663,12 @@ The CIF layout follows the same split: `_minimizer.*` holds settings
 only, `_fit_result.*` holds outputs. Saved projects from the previous
 layout do not load unchanged (the project is in beta; no legacy shims).
 Tutorials and saved-fixture regeneration land in this PR.
+
+Incidental cleanup also bundled in this branch: the unused
+`essdiffraction` development dependency is removed, and a handful of
+unrelated functions are split into helpers to satisfy the project's
+complexity thresholds during Phase 2 verification:
+`singleton.ConstraintsHandler.apply_constraints`,
+`analysis.sequential._fit_worker`,
+`display.plotting._posterior_predictive_*`, and
+`calculators.{crysfml,pdffit}._calculate_pattern`.
