@@ -96,9 +96,13 @@ Affected ADRs that this plan amends (per the ADR's §"ADRs amended"):
 - `src/easydiffraction/analysis/categories/fit_result/bayesian.py` —
   `BayesianFitResult` with Bayesian-specific output descriptors,
   including `credible_interval_inner` / `credible_interval_outer`.
-- `src/easydiffraction/analysis/categories/fit_result/factory.py` —
-  internal-use factory keyed by minimizer family. Not exposed to the
-  user (no `show_supported`); used only by `Analysis._swap_minimizer`.
+- *(`src/easydiffraction/analysis/categories/fit_result/factory.py`
+  already exists; this plan extends it rather than creating it. See
+  P1.4 — the factory becomes a registration helper for the two new
+  family classes; the authoritative swap mechanism is the
+  `_fit_result_class` attribute on the paired minimizer base, not a
+  factory lookup. The factory is still useful for introspection /
+  testing.)*
 - `tests/unit/easydiffraction/analysis/categories/fit_result/test_base.py`
 - `tests/unit/easydiffraction/analysis/categories/fit_result/test_lsq.py`
 - `tests/unit/easydiffraction/analysis/categories/fit_result/test_bayesian.py`
@@ -162,17 +166,39 @@ Affected ADRs that this plan amends (per the ADR's §"ADRs amended"):
 
 Mark `[x]` as each step lands.
 
-- [ ] **P1.1 — Rename `FitResult` to `FitResultBase`; keep current
-      common fields.** In
+- [ ] **P1.1 — Rename `FitResult` to `FitResultBase`; update every
+      import site.** In
       `src/easydiffraction/analysis/categories/fit_result/default.py`,
-      rename the class. The factory registration stays on the old
-      class name to avoid breaking the existing
-      `FitResultFactory.default_tag()` lookup until P1.4 introduces
-      the family-keyed factory. Update
-      `src/easydiffraction/analysis/categories/fit_result/__init__.py`
-      to re-export the renamed class under both the new and old name
-      (the old `FitResult` re-export is removed at P1.16). Commit:
-      `Rename FitResult to FitResultBase`
+      rename the class. The factory `@register` decorator stays on
+      the renamed class so the default-tag lookup keeps working until
+      P1.4 extends the factory.
+
+      Update every package-level import that referenced the old
+      name. `git grep -nP '\bFitResult\b' src/ tests/` lists the
+      sites at plan time:
+
+      - `src/easydiffraction/analysis/__init__.py` (line 14 today)
+      - `src/easydiffraction/analysis/categories/__init__.py`
+        (line 14 today)
+      - `src/easydiffraction/analysis/categories/fit_result/__init__.py`
+      - `src/easydiffraction/analysis/analysis.py` (import line 18;
+        type annotation on the `fit_result` property at line 432;
+        `self._fit_result = FitResult()` at line 483; same
+        construction at line 1208)
+
+      All four `FitResult` import/annotation/construction sites in
+      `analysis.py` become `FitResultBase` after this step. The two
+      `self._fit_result = FitResult()` construction sites (init and
+      `_clear_persisted_fit_state`) become
+      `FitResultBase()` temporarily; P1.6 retargets them to the
+      paired class.
+
+      Re-run `git grep -nP '\bFitResult\b' src/` at the end of this
+      step — every remaining hit must be the renamed class name or a
+      module path, not the old bare class. Tests are migrated by
+      P2.1.
+
+      Commit: `Rename FitResult to FitResultBase`
 
 - [ ] **P1.2 — Add `LeastSquaresFitResult` class.** New file
       `src/easydiffraction/analysis/categories/fit_result/lsq.py`.
@@ -180,12 +206,19 @@ Mark `[x]` as each step lands.
       `objective_value`, `n_data_points`, `n_parameters`,
       `n_free_parameters`, `degrees_of_freedom`,
       `covariance_available`, `correlation_available`, `exit_reason`.
-      Numeric defaults follow `None` / `allow_none=True` (matching the
-      consolidation cleanup); bool defaults `False`; string defaults
-      `''`. Declare `_expected_descriptor_names`,
-      `_result_descriptor_names` for parity with the minimizer
-      hierarchy. Tests deferred to Phase 2. Commit:
-      `Add LeastSquaresFitResult class`
+      **All defaults are `None` with `allow_none=True`**, matching the
+      consolidation cleanup that previously moved LSQ outputs off `0` /
+      `false` / `''` so a pre-fit CIF emits `?` rather than a value
+      that looks like a degenerate result. This applies to numeric,
+      integer-like, string, and bool fields alike; the descriptor
+      helpers in `LeastSquaresMinimizerBase`
+      ([`lsq_base.py`](../../../src/easydiffraction/analysis/categories/minimizer/lsq_base.py))
+      that currently produce these descriptors are the model — they
+      can be lifted into `LeastSquaresFitResult` verbatim before being
+      removed from `lsq_base.py` at P1.9. Declare
+      `_expected_descriptor_names`, `_result_descriptor_names` for
+      parity with the minimizer hierarchy. Tests deferred to Phase 2.
+      Commit: `Add LeastSquaresFitResult class`
 
 - [ ] **P1.3 — Add `BayesianFitResult` class.** New file
       `src/easydiffraction/analysis/categories/fit_result/bayesian.py`.
@@ -199,16 +232,24 @@ Mark `[x]` as each step lands.
       Tests deferred to Phase 2. Commit:
       `Add BayesianFitResult class`
 
-- [ ] **P1.4 — Add `FitResultCategoryFactory`.** New file
-      `src/easydiffraction/analysis/categories/fit_result/factory.py`.
-      `FitResultCategoryFactory(FactoryBase)` registers
-      `FitResultBase` (default tag), `LeastSquaresFitResult`,
-      `BayesianFitResult`. Update
+- [ ] **P1.4 — Register fit-result classes with the existing
+      `FitResultFactory`.** The factory already exists at
+      [`src/easydiffraction/analysis/categories/fit_result/factory.py`](../../../src/easydiffraction/analysis/categories/fit_result/factory.py)
+      and currently registers only the default common class. Update
+      it to also register `LeastSquaresFitResult` and
+      `BayesianFitResult` with their family tags. Update
       `src/easydiffraction/analysis/categories/fit_result/__init__.py`
-      to explicitly import every concrete class. The factory is used
-      only by `Analysis._swap_minimizer`; no
-      `show_supported`/`type`-style user surface is exposed. Commit:
-      `Add FitResultCategoryFactory`
+      to explicitly import every concrete class (so registration
+      fires on package import, per the repo's standard pattern).
+
+      **Authoritative mechanism:** `Analysis._swap_minimizer`
+      constructs the paired fit-result via the minimizer's
+      `_fit_result_class` attribute (P1.5), not via a factory
+      lookup. The factory is kept as a registration helper for
+      introspection and testing; do not add a public selector surface
+      (`type`, `show_supported`) since `fit_result` is internally
+      paired, per ADR §1. Commit:
+      `Register fit-result family classes with factory`
 
 - [ ] **P1.5 — Declare `_fit_result_class` on minimizer bases.** In
       `src/easydiffraction/analysis/categories/minimizer/lsq_base.py`,
@@ -224,19 +265,52 @@ Mark `[x]` as each step lands.
       `Declare paired _fit_result_class on minimizer bases`
 
 - [ ] **P1.6 — Wire `Analysis._swap_minimizer` to install both
-      instances.** In
+      instances, and update every `_fit_result` reset path.** In
       `src/easydiffraction/analysis/analysis.py`:
-  - Construct `self._fit_result =
-    new_minimizer._fit_result_class()` after the new minimizer is
-    created in `_replace_minimizer`. The old `fit_result` instance is
-    detached (`_parent = None`).
-  - Add `analysis.fit_result` read-only property.
-  - Wire `self._fit_result._parent = self` in
-    `_attach_category_parents`.
-  - The Analysis `__init__` constructs the initial `_fit_result` from
-    the default minimizer's `_fit_result_class`.
 
-  Commit: `Wire fit_result swap to minimizer swap`
+  - `__init__` constructs the initial `_fit_result` from the default
+    minimizer's `_fit_result_class`:
+    `self._fit_result = self._minimizer._fit_result_class()`. The
+    line 483 `self._fit_result = FitResultBase()` (after P1.1) is
+    replaced.
+  - `_replace_minimizer` constructs `self._fit_result =
+    new_minimizer._fit_result_class()` after the new minimizer is
+    created. The old `fit_result` is detached (`_parent = None`)
+    before being replaced.
+  - `_clear_persisted_fit_state` (line 1204 today) currently calls
+    `self._clear_minimizer_result_projection()` and then
+    `self._fit_result = FitResult()`. After P1.1 + the split, both
+    lines must change:
+    - `self._fit_result = self.minimizer._fit_result_class()`
+      replaces the bare `FitResultBase()` construction. This keeps
+      the paired class invariant whenever the persisted state is
+      reset.
+    - `self._clear_minimizer_result_projection()` currently calls
+      `self.minimizer._reset_result_descriptors()`. After P1.9/P1.10
+      remove the result descriptors from the minimizer, this method
+      becomes a no-op. **Retarget it to
+      `self.fit_result._reset_result_descriptors()`** and rename it
+      to `_clear_fit_result_projection`. Update the call sites
+      (line 1204; potentially others — `git grep` confirms).
+  - Add `analysis.fit_result` read-only property
+    (`return self._fit_result`). Type annotation:
+    `FitResultBase` (the family classes inherit from it).
+  - Wire `self._fit_result._parent = self` in
+    `_attach_category_parents`. Every `_fit_result` reassignment in
+    the methods above must also set `_parent` on the new instance.
+
+  Verification at the end of this step:
+
+  ```
+  git grep -nE 'self\._fit_result\s*=' src/easydiffraction/analysis/analysis.py
+  ```
+
+  Every match must construct via `self.minimizer._fit_result_class()`
+  (or `new_minimizer._fit_result_class()` in `_replace_minimizer`),
+  not a bare class name. There must be no remaining
+  `self._fit_result = FitResultBase()` after this step.
+
+  Commit: `Wire fit_result swap and reset paths to paired class`
 
 - [ ] **P1.7 — Route LSQ result writers to `fit_result`.** In
       `src/easydiffraction/analysis/analysis.py`,
@@ -255,21 +329,26 @@ Mark `[x]` as each step lands.
       `self.fit_result._set_credible_interval_*`. Commit:
       `Route Bayesian result writers to fit_result`
 
-- [ ] **P1.9 — Remove duplicate fields from LSQ minimizer base.** In
+- [ ] **P1.9 — Remove output fields from LSQ minimizer base.** In
       `src/easydiffraction/analysis/categories/minimizer/lsq_base.py`,
       delete the descriptor declarations and properties for
-      `optimizer_name`, `method_name`, `objective_name`,
-      `objective_value`, `n_data_points`, `n_parameters`,
-      `n_free_parameters`, `degrees_of_freedom`,
+      `objective_name`, `objective_value`, `n_data_points`,
+      `n_parameters`, `n_free_parameters`, `degrees_of_freedom`,
       `covariance_available`, `correlation_available`,
       `runtime_seconds`, `iterations_performed`, `exit_reason`. Remove
       these names from `_expected_descriptor_names` and
-      `_result_descriptor_names`. `_setting_descriptor_names` is
-      already `('max_iterations',)` and stays.
+      `_result_descriptor_names`. `_setting_descriptor_names` stays
+      `('max_iterations',)`. After this step,
+      `_result_descriptor_names` on `LeastSquaresMinimizerBase` is
+      `()` and `_reset_result_descriptors()` is a no-op on every LSQ
+      minimizer — confirming the P1.6 retarget of
+      `_clear_minimizer_result_projection` to operate on
+      `self.fit_result` is the correct call site.
 
-      Note: `optimizer_name` and `method_name` were already removed by
-      the consolidation work (`_engine_metadata` dict replaces them);
-      this step is the bulk removal of the remaining LSQ outputs.
+      Note: `optimizer_name` and `method_name` were already removed
+      by the consolidation work (`_engine_metadata` dict replaces
+      them); this step is the bulk removal of the remaining LSQ
+      outputs.
 
       Commit: `Remove LSQ output descriptors from minimizer base`
 
