@@ -72,28 +72,56 @@ broken: scalar fit outputs are split across `minimizer`, `fit_result`,
 ### 1. Split `analysis.minimizer` into inputs and outputs
 
 `analysis.minimizer` keeps only **writable user settings**. The
-fit-filled output fields move to `analysis.fit_result`, which also
-becomes a switchable category that swaps in lockstep with the
-minimizer's family so each family can declare its own output schema.
+fit-filled output fields move to `analysis.fit_result`, which gets a
+class hierarchy parallel to `minimizer` so each minimizer family can
+declare its own output schema.
 
 After this ADR:
 
-| Category | Role | Family | Writable |
-| -------- | ---- | ------ | -------- |
-| `analysis.minimizer` | user-supplied settings | Family A (already) | yes |
-| `analysis.fit_result` | scalar fit outputs | Family A (new) | no (internal `_set_*` only) |
-| `analysis.fit_parameters` | per-parameter snapshots and posterior summary rows | (loop, unchanged) | no |
-| `analysis.fit_parameter_correlations` | upper-triangle correlation rows | (loop, unchanged) | no |
+| Category | Role | Writable |
+| -------- | ---- | -------- |
+| `analysis.minimizer` | user-supplied settings | yes |
+| `analysis.fit_result` | scalar fit outputs | no (internal `_set_*` only) |
+| `analysis.fit_parameters` | per-parameter snapshots and posterior summary rows | no |
+| `analysis.fit_parameter_correlations` | upper-triangle correlation rows | no |
 
-The output split is paired by minimizer family:
+**`fit_result` is not a user-facing switchable category.** It is an
+internal projection paired with the active `minimizer`. It does not
+expose `fit_result.type` or `fit_result.show_supported()`; the only way
+the user changes the active `fit_result` class is by setting
+`analysis.minimizer.type`, which the owner's `_swap_minimizer` hook
+uses to instantiate both `self._minimizer` and `self._fit_result`
+atomically. This is an explicit, documented exception to the global
+selector contract from
+[`switchable-category-owned-selectors.md`](../accepted/switchable-category-owned-selectors.md)
+§1 because there is no user choice involved at the `fit_result` level
+— the minimizer family fully determines the result schema. See the
+new exception text added to that ADR (listed under §"ADRs amended").
 
-- `analysis.minimizer = LmfitLeastsqMinimizer` ↔
-  `analysis.fit_result = LeastSquaresFitResult`
-- `analysis.minimizer = BumpsDreamMinimizer` ↔
-  `analysis.fit_result = BayesianFitResult`
+**Family mapping is one-to-one between minimizer family and result
+class.** Every minimizer registered under
+`MinimizerTypeEnum` maps to exactly one `FitResult` concrete class
+according to its family:
 
-Both swap together when `analysis.minimizer.type` changes, via a single
-`Analysis._swap_minimizer` hook that replaces both instances at once.
+| `MinimizerTypeEnum` member | Minimizer family | Paired `FitResult` class |
+| -------------------------- | ---------------- | ------------------------ |
+| `LMFIT` | LSQ | `LeastSquaresFitResult` |
+| `LMFIT_LEASTSQ` | LSQ | `LeastSquaresFitResult` |
+| `LMFIT_LEAST_SQUARES` | LSQ | `LeastSquaresFitResult` |
+| `DFOLS` | LSQ | `LeastSquaresFitResult` |
+| `BUMPS` | LSQ | `LeastSquaresFitResult` |
+| `BUMPS_LM` | LSQ | `LeastSquaresFitResult` |
+| `BUMPS_AMOEBA` | LSQ | `LeastSquaresFitResult` |
+| `BUMPS_DE` | LSQ | `LeastSquaresFitResult` |
+| `BUMPS_DREAM` | Bayesian | `BayesianFitResult` |
+| `EMCEE` *(when added)* | Bayesian | `BayesianFitResult` |
+
+The pairing rule is encoded once on the minimizer base classes
+(`LeastSquaresMinimizerBase._fit_result_class = LeastSquaresFitResult`,
+`BayesianMinimizerBase._fit_result_class = BayesianFitResult`) so
+`_swap_minimizer` reads the paired class off the new minimizer instance
+and does not need a per-tag dispatch.
+
 This preserves the consolidation ADR's "no `_bayesian_*` mirror"
 guarantee — there is exactly one output category, not seven — while
 making the input/output boundary unambiguous.
@@ -106,6 +134,23 @@ making the input/output boundary unambiguous.
 - Bayesian: `sampling_steps`, `burn_in_steps`, `thinning_interval`,
   `population_size`, `parallel_workers`, `initialization_method`,
   `random_seed`, `credible_interval_inner`, `credible_interval_outer`.
+
+`credible_interval_inner` and `credible_interval_outer` are
+**promoted from output-only to writable input** by this ADR. Today
+they have only an internal `_set_*` and are written from
+`_store_posterior_fit_projection`, which makes them effectively
+hard-coded to `0.68` / `0.95`. After the split, the user sets them
+before `analysis.fit()`; the Bayesian posterior-summary path reads
+the two values when generating the per-parameter interval columns
+(`posterior_interval_68_low/high`, `posterior_interval_95_low/high`).
+The column names stay numeric (`68`, `95`) for backwards compatibility
+with deterministic-fit rows that have empty values there; mismatching
+user-supplied levels (e.g. `credible_interval_inner = 0.5`) are
+warned about at fit time so the column names do not silently lie.
+
+A separate suggestion ADR can later generalise the interval column
+naming (e.g. `posterior_interval_low_<level>`); that is deferred work
+and not in scope here.
 
 **`analysis.fit_result` after the split** (outputs only). Common fields
 live on `FitResultBase`; family-specific fields on the concrete classes:
@@ -127,10 +172,15 @@ the `minimizer` copy** and keeping the `fit_result` copy:
   single source.
 - `minimizer.iterations_performed` removed;
   `fit_result.iterations` is the single source.
-- `minimizer.objective_value` removed;
-  `fit_result.reduced_chi_square` is the single source (or the
-  per-family `LeastSquaresFitResult.objective_value` if the raw,
-  un-normalised value matters separately).
+- `minimizer.objective_value` removed. `LeastSquaresFitResult` keeps
+  **two distinct fields**: `objective_value` (raw χ² returned by the
+  minimizer's objective function) and `reduced_chi_square` (= χ² /
+  `degrees_of_freedom`). They are not duplicates; the unreduced value
+  is what the solver actually optimises and is useful for diagnostics
+  on small-dof fits, while the reduced value is what every user-facing
+  table and plot displays. `BayesianFitResult` does not carry
+  `objective_value` because the Bayesian engine optimises the log
+  posterior rather than χ² directly.
 
 ### 3. CIF layout follows the Python split
 
@@ -202,10 +252,14 @@ ADR does **not** rename it. After the split it remains the
 category) holds the persisted scalar projection of the same fit. The
 naming pair stays as today.
 
-A small UX win is added: `analysis.show_fit_summary()` prints settings
-and outputs side-by-side, so users do not have to mentally join the
-two categories. The method lives on `Analysis`, reads
-`self.minimizer.*` and `self.fit_result.*`, and prints one table.
+A small UX win is added under the accepted display facade
+([`display-ux.md`](../accepted/display-ux.md)): the existing
+`project.display.fit.results()` entry point gains a "Settings used"
+table above the existing results tables, populated from
+`analysis.minimizer.*`. No new `Analysis`-level display method is
+added; the user-facing surface stays exactly where the display ADR
+put it. Internally the helper reads `self.minimizer.*` and
+`self.fit_result.*` and renders one combined view.
 
 ### 5. Help and discoverability
 
@@ -221,11 +275,15 @@ family-specific ones, all clearly read-only.
 `analysis.minimizer.type` remains the single user-facing selector. The
 swap hook updates **both** `analysis.minimizer` and
 `analysis.fit_result` instances atomically (via
-`Analysis._swap_minimizer`). The new `fit_result` switchable does
-**not** expose its own `type` property — there is no scenario where the
-user would set `fit_result.type` independently of `minimizer.type`, and
-hiding the selector keeps the convention "one minimizer concept, one
-user-facing type" intact.
+`Analysis._swap_minimizer`, which reads the paired
+`_fit_result_class` off the new minimizer base). The paired
+`fit_result` is not a user-facing switchable: there is no
+`fit_result.type` and no `fit_result.show_supported()`, per the
+documented exception added to
+[`switchable-category-owned-selectors.md`](../accepted/switchable-category-owned-selectors.md)
+(see §"ADRs amended"). This keeps "one minimizer concept, one
+user-facing type" intact and removes the temptation to swap the result
+class independently of the minimizer.
 
 ## Consequences
 
@@ -233,10 +291,11 @@ user-facing type" intact.
 
 - **Clear writable surface.** `analysis.minimizer.help()` shows only
   settings. Inputs and outputs no longer mix in one namespace.
-- **Single source for every output field.** The three current
-  duplications (`runtime_seconds`/`fitting_time`,
-  `iterations_performed`/`iterations`, `objective_value`/
-  `reduced_chi_square`) collapse to one location each.
+- **Single source for every output field.** The two current real
+  duplications (`runtime_seconds`/`fitting_time` and
+  `iterations_performed`/`iterations`) collapse to one location each.
+  The `objective_value`/`reduced_chi_square` pair is **not** a
+  duplication and both stay (see §2 for the distinction).
 - **Family-specific outputs have a natural home.** Currently
   `minimizer.gelman_rubin_max` lives on the Bayesian minimizer class;
   after the split it lives on the paired `BayesianFitResult` class.
@@ -252,13 +311,15 @@ user-facing type" intact.
 ### Trade-offs
 
 - **Settings and matching outputs are two-place reads.** Mitigation:
-  `analysis.show_fit_summary()` presents both. The current layout
+  `project.display.fit.results()` presents both. The current layout
   already requires multi-place reads; this just makes the rule
   consistent.
-- **`fit_result` becomes a switchable category.** Switchable-category
-  cost is small (one factory + one swap hook on the owner), and the
-  swap is co-triggered by `minimizer.type` so no second selector
-  appears to the user.
+- **`fit_result` becomes an internally-paired category.** The pairing
+  cost is small (one paired-instance assignment in the existing
+  `_swap_minimizer` hook) and is invisible to the user — there is no
+  second `fit_result.type` selector. The exception to the global
+  selector contract is documented explicitly in §"ADRs amended"
+  alongside the selector ADR.
 - **Saved CIF files from the post-consolidation layout cannot load
   unchanged.** Beta posture (no legacy shims) applies. Tutorial
   fixtures regenerate via `pixi run script-tests`. Tutorial `ed-24`
@@ -281,18 +342,37 @@ user-facing type" intact.
   family-specific fields).
 - [`runtime-fit-results.md`](../accepted/runtime-fit-results.md)
   — closing paragraph references this ADR alongside the existing two.
+- [`switchable-category-owned-selectors.md`](../accepted/switchable-category-owned-selectors.md)
+  — §1 ("The category owns its selector") gains a paragraph carving
+  out one documented exception: a category that is fully determined by
+  another category's `type` (today only `fit_result`, derived from
+  `minimizer.type`) is allowed to omit `category.type` and
+  `category.show_supported()`. The mechanism is described in §1 of
+  this ADR. The user-facing selector convention is otherwise unchanged.
+- [`display-ux.md`](../accepted/display-ux.md) — §"Fit results display"
+  expanded to mention that `project.display.fit.results()` now prints
+  a "Settings used" block above the result tables, sourced from
+  `analysis.minimizer.*`. No new public entry point is added.
 
 ## Deferred Work
 
 - **Renaming `analysis.fit_results` (plural runtime object).** The
   plural/singular pair is mildly confusing but the rename has wide
   blast radius (tests, tutorials, every BayesianFitResults reference).
-  Track separately if the confusion remains after `show_fit_summary()`
-  lands.
-- **`fit_result` switchable beyond Family A.** This ADR introduces a
-  paired switch only for the minimizer. If future categories grow the
-  same input/output asymmetry (e.g. extinction, peak), apply the same
-  pattern then; do not generalise pre-emptively.
+  Track separately if the confusion remains after the combined
+  display lands.
+- **Paired internal categories beyond `minimizer` / `fit_result`.**
+  This ADR introduces the paired pattern for the minimizer only. If
+  future categories grow the same input/output asymmetry (e.g.
+  extinction, peak), apply the same pattern then; do not generalise
+  pre-emptively.
+- **Generalising the posterior-interval column naming.** Today the
+  per-parameter posterior summary uses fixed numeric column names
+  (`posterior_interval_68_low`, etc.). Promoting
+  `credible_interval_inner/outer` to user settings raises the
+  question of whether the column names should follow. Deferred to a
+  separate suggestion ADR so this proposal stays focused on the
+  input/output split.
 - **CIF compatibility helper for ID 35 archive.** The
   `_normalize_id35_archive_for_tutorial` helper in `ed-24.py` already
   has a roadmap to deletion; the new CIF layout extends the rename map
