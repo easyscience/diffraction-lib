@@ -70,27 +70,27 @@ class TestLoadAnalysis:
 
         loaded = Project.load(str(tmp_path / 'proj'))
 
-        assert loaded.analysis.minimizer_type == 'lmfit (leastsq)'
+        assert loaded.analysis.minimizer.type == 'lmfit (leastsq)'
 
     def test_round_trips_fit_mode(self, tmp_path):
         original = Project(name='a2')
-        original.analysis.fitting_mode_type = 'joint'
+        original.analysis.fitting_mode.type = 'joint'
         original.save_as(str(tmp_path / 'proj'))
 
         loaded = Project.load(str(tmp_path / 'proj'))
 
-        assert loaded.analysis.fitting_mode_type == 'joint'
+        assert loaded.analysis.fitting_mode.type == 'joint'
 
-    def test_round_trips_rendering_configuration(self, tmp_path):
+    def test_round_trips_display_engine_configuration(self, tmp_path):
         original = Project(name='d1')
-        original.rendering.chart_engine = 'asciichartpy'
-        original.rendering.table_engine = 'rich'
+        original.chart.type = 'asciichartpy'
+        original.table.type = 'rich'
         original.save_as(str(tmp_path / 'proj'))
 
         loaded = Project.load(str(tmp_path / 'proj'))
 
-        assert loaded.rendering.chart_engine.value == 'asciichartpy'
-        assert loaded.rendering.table_engine.value == 'rich'
+        assert loaded.chart.type == 'asciichartpy'
+        assert loaded.table.type == 'rich'
 
     def test_round_trips_constraints(self, tmp_path):
         original = Project(name='c1')
@@ -248,7 +248,7 @@ class TestLoadAnalysis:
 
     def test_round_trips_dream_minimizer_settings(self, tmp_path):
         original = Project(name='bayes_state')
-        original.analysis.minimizer_type = 'bumps (dream)'
+        original.analysis.minimizer.type = 'bumps (dream)'
         original.analysis.fit_result._set_result_kind('bayesian')
         minimizer = original.analysis.minimizer
         minimizer.sampling_steps = 300
@@ -274,7 +274,7 @@ class TestLoadAnalysis:
 
     def test_round_trips_partial_dream_minimizer_settings(self, tmp_path):
         original = Project(name='partial_bayes_state')
-        original.analysis.minimizer_type = 'bumps (dream)'
+        original.analysis.minimizer.type = 'bumps (dream)'
         original.analysis.fit_result._set_result_kind('bayesian')
         minimizer = original.analysis.minimizer
         minimizer.sampling_steps = 300
@@ -304,7 +304,7 @@ class TestLoadAnalysisCifFallback:
         assert (tmp_path / 'proj' / 'analysis' / 'analysis.cif').is_file()
 
         loaded = Project.load(str(tmp_path / 'proj'))
-        assert loaded.analysis.minimizer_type == 'lmfit (leastsq)'
+        assert loaded.analysis.minimizer.type == 'lmfit (leastsq)'
 
     def test_loads_analysis_from_root_fallback(self, tmp_path):
         """Old layout fallback: analysis.cif at project root."""
@@ -318,4 +318,4 @@ class TestLoadAnalysisCifFallback:
         analysis_dir.rmdir()
 
         loaded = Project.load(str(proj_dir))
-        assert loaded.analysis.minimizer_type == 'lmfit (leastsq)'
+        assert loaded.analysis.minimizer.type == 'lmfit (leastsq)'

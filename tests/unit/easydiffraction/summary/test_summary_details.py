@@ -57,6 +57,7 @@ class _Instr:
 
 class _Peak:
     def __init__(self):
+        self.type = 'pseudo-Voigt'
         self.broad_gauss_u = _Val(0.1)
         self.broad_gauss_v = _Val(0.2)
         self.broad_gauss_w = _Val(0.3)
@@ -87,17 +88,16 @@ class _Expt:
             },
         )
         self.type = typ()
-        self.calculation = type(
-            'Calculation',
+        self.calculator = type(
+            'Calculator',
             (),
-            {'calculator_type': _Val('cryspy')},
+            {'type': 'cryspy'},
         )()
         self.instrument = _Instr()
-        self.peak_profile_type = 'pseudo-Voigt'
         self.peak = _Peak()
 
     def _public_attrs(self):
-        return ['instrument', 'peak_profile_type', 'peak']
+        return ['instrument', 'peak']
 
 
 class _Info:
@@ -112,10 +112,10 @@ class _StubProject:
         self.experiments = {'exp1': _Expt()}
 
         class A:
-            class Fitting:
-                minimizer_type = _Val('lmfit')
+            class Minimizer:
+                type = 'lmfit'
 
-            fitting = Fitting()
+            minimizer = Minimizer()
 
             class R:
                 reduced_chi_square = 1.23

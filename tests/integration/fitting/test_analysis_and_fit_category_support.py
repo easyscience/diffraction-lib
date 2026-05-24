@@ -85,28 +85,28 @@ def test_fit_mode_enum_members_default_and_descriptions():
     assert all(member.description() for member in FitModeEnum)
 
 
-def test_show_supported_fitting_mode_types_for_single_and_multiple_experiments(capsys):
+def test_fitting_mode_show_supported_for_single_and_multiple_experiments(capsys):
     from easydiffraction.analysis.analysis import Analysis
 
     single = Analysis(project=_make_project_with_names(['e1']))
-    single.show_supported_fitting_mode_types()
+    single.fitting_mode.show_supported()
     out_single = capsys.readouterr().out
     assert 'Fitting mode types' in out_single
     assert 'single' in out_single
     assert 'joint' in out_single
 
     multi = Analysis(project=_make_project_with_names(['e1', 'e2']))
-    multi.show_supported_fitting_mode_types()
+    multi.fitting_mode.show_supported()
     out_multi = capsys.readouterr().out
     assert 'joint' in out_multi
     assert 'sequential' in out_multi
 
 
-def test_show_supported_minimizer_types_prints(capsys):
+def test_minimizer_show_supported_prints(capsys):
     from easydiffraction.analysis.analysis import Analysis
 
     analysis = Analysis(project=_make_project_with_names([]))
-    analysis.show_supported_minimizer_types()
+    analysis.minimizer.show_supported()
     out = capsys.readouterr().out
     assert 'Minimizer types' in out
     assert 'lmfit (leastsq)' in out
@@ -116,9 +116,9 @@ def test_analysis_help_and_mode_switching(capsys):
     from easydiffraction.analysis.analysis import Analysis
 
     analysis = Analysis(project=_make_project_with_names(['e1', 'e2']))
-    assert analysis.fitting_mode_type == 'single'
-    analysis.fitting_mode_type = 'joint'
-    assert analysis.fitting_mode_type == 'joint'
+    assert analysis.fitting_mode.type == 'single'
+    analysis.fitting_mode.type = 'joint'
+    assert analysis.fitting_mode.type == 'joint'
     assert len(analysis.joint_fit) == 0
 
     analysis.help()

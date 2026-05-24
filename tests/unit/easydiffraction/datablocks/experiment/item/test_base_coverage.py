@@ -66,32 +66,32 @@ class TestExperimentBaseCalculator:
     def test_calculator_auto_resolves(self):
         ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
         # calculator should auto-resolve on first access
-        assert ex.calculation.calculator is not None
+        assert ex.calculator.calculator is not None
 
     def test_calculator_type_auto_resolves(self):
         ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
-        ct = ex.calculation.calculator_type.value
+        ct = ex.calculator.type
         assert isinstance(ct, str)
         assert len(ct) > 0
 
     def test_calculator_type_invalid(self):
         ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
-        _ = ex.calculation.calculator_type.value  # trigger resolve
-        old = ex.calculation.calculator_type.value
-        ex.calculation.calculator_type = 'bogus-engine'
-        assert ex.calculation.calculator_type.value == old
+        _ = ex.calculator.calculator  # trigger resolve
+        old = ex.calculator.type
+        ex.calculator.type = 'bogus-engine'
+        assert ex.calculator.type == old
 
     def test_show_calculator_types(self, capsys):
         ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
-        ex.calculation.show_calculator_types()
+        ex.calculator.show_supported()
         out = capsys.readouterr().out
         assert len(out) > 0
 
     def test_show_calculator_types_includes_current(self, capsys):
         ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
-        ex.calculation.show_calculator_types()
+        ex.calculator.show_supported()
         out = capsys.readouterr().out
-        assert ex.calculation.calculator_type.value in out
+        assert ex.calculator.type in out
 
 
 class TestExperimentBaseAsCif:
@@ -134,16 +134,16 @@ class TestPdExperimentPeak:
     def test_peak_defaults(self):
         ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
         assert ex.peak is not None
-        assert ex.peak_profile_type is not None
+        assert ex.peak.type is not None
 
     def test_show_peak_profile_types(self, capsys):
         ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
-        ex.show_peak_profile_types()
+        ex.peak.show_supported()
         out = capsys.readouterr().out
         assert len(out) > 0
 
     def test_show_peak_profile_types_includes_current(self, capsys):
         ex = ConcretePd(name='pd1', type=_mk_type_powder_cwl_bragg())
-        ex.show_peak_profile_types()
+        ex.peak.show_supported()
         out = capsys.readouterr().out
-        assert str(ex.peak_profile_type) in out
+        assert str(ex.peak.type) in out

@@ -76,7 +76,7 @@ def lbco_fitted_project():
     project = Project()
     project.structures.add(model)
     project.experiments.add(expt)
-    project.analysis.minimizer_type = 'lmfit'
+    project.analysis.minimizer.type = 'lmfit'
 
     model.cell.length_a.free = True
     expt.linked_phases['lbco'].scale.free = True

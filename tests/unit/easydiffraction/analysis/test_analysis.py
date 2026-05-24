@@ -29,11 +29,11 @@ def _make_project_with_names(names):
     return P()
 
 
-def test_show_supported_minimizer_types_prints(capsys):
+def test_minimizer_show_supported_prints(capsys):
     from easydiffraction.analysis.analysis import Analysis
 
     a = Analysis(project=_make_project_with_names([]))
-    a.show_supported_minimizer_types()
+    a.minimizer.show_supported()
     out = capsys.readouterr().out
     assert 'Minimizer types' in out
     assert 'lmfit (leastsq)' in out
@@ -45,11 +45,11 @@ def test_fit_mode_category_and_joint_fit(monkeypatch, capsys):
     a = Analysis(project=_make_project_with_names(['e1', 'e2']))
 
     # Default fit mode is 'single'
-    assert a.fitting_mode_type == 'single'
+    assert a.fitting_mode.type == 'single'
 
     # Switch to joint
-    a.fitting_mode_type = 'joint'
-    assert a.fitting_mode_type == 'joint'
+    a.fitting_mode.type = 'joint'
+    assert a.fitting_mode.type == 'joint'
 
     # joint_fit exists but is empty until fit() populates it
     assert len(a.joint_fit) == 0
@@ -60,7 +60,7 @@ def test_restore_raises_when_bayesian_result_kind_with_lsq_minimizer():
 
     See minimizer-category-consolidation_review-8 finding F5: a CIF
     where ``_fit_result.result_kind = bayesian`` but
-    ``_fitting.minimizer_type = lmfit (leastsq)`` would previously
+    ``_minimizer.type = lmfit (leastsq)`` would previously
     crash with ``AttributeError: 'LmfitLeastsqMinimizer' object has no
     attribute 'point_estimate_name'`` deep inside the restore path.
     We now raise a clear ``ValueError`` at the gate.
@@ -71,13 +71,13 @@ def test_restore_raises_when_bayesian_result_kind_with_lsq_minimizer():
     from easydiffraction.analysis.enums import FitResultKindEnum
 
     a = Analysis(project=_make_project_with_names([]))
-    a.minimizer_type = 'lmfit (leastsq)'
+    a.minimizer.type = 'lmfit (leastsq)'
     a.fit_result._set_result_kind(FitResultKindEnum.BAYESIAN.value)
     a._set_has_persisted_fit_state(value=True)
 
     with pytest.raises(
         ValueError,
-        match=r"_fitting\.minimizer_type = 'lmfit \(leastsq\)'",
+        match=r"_minimizer\.type = 'lmfit \(leastsq\)'",
     ) as excinfo:
         a._restore_fit_results_from_projection()
 
@@ -86,7 +86,7 @@ def test_restore_raises_when_bayesian_result_kind_with_lsq_minimizer():
     assert FitResultKindEnum.BAYESIAN.value in message
 
 
-def test_minimizer_type_swap_warns_for_different_defaults(monkeypatch):
+def test_minimizer_selector_swap_warns_for_different_defaults(monkeypatch):
     from easydiffraction.analysis import analysis as analysis_mod
     from easydiffraction.analysis.analysis import Analysis
 
@@ -94,9 +94,9 @@ def test_minimizer_type_swap_warns_for_different_defaults(monkeypatch):
     warnings: list[str] = []
     monkeypatch.setattr(analysis_mod.log, 'warning', warnings.append)
 
-    a.minimizer_type = 'bumps (dream)'
+    a.minimizer.type = 'bumps (dream)'
 
-    assert a.minimizer_type == 'bumps (dream)'
+    assert a.minimizer.type == 'bumps (dream)'
     # Inter-family swap should split warnings into "removed"/"added"
     # lines rather than emitting "<not available>" sentinels per
     # finding F3.
@@ -118,7 +118,7 @@ def test_analysis_help(capsys):
     assert 'Properties' in out
     assert 'Methods' in out
     assert 'fit()' in out
-    assert 'show_supported_fitting_mode_types()' in out
+    assert 'fitting_mode' in out
 
 
 def test_analysis_display_help(capsys):
@@ -331,9 +331,9 @@ def test_run_sequential_sets_mode_and_saves_project(monkeypatch, tmp_path):
 
     analysis._run_sequential()
 
-    assert analysis.fitting_mode_type == 'sequential'
+    assert analysis.fitting_mode.type == 'sequential'
     analysis_cif = analysis.as_cif
-    assert '_fitting.mode_type sequential' in analysis_cif
+    assert '_fitting_mode.type sequential' in analysis_cif
     assert '_sequential_fit.data_dir scans' in analysis_cif
     assert '_sequential_fit.file_pattern *.xye' in analysis_cif
     assert calls == [

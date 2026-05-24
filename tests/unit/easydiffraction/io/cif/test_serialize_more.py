@@ -187,9 +187,7 @@ def test_analysis_to_cif_renders_all_sections(monkeypatch):
             return self._t
 
     class A:
-        fitting_mode_type = 'single'
-        minimizer_type = 'lmfit'
-        minimizer = Obj('_minimizer.max_iterations 1000')
+        minimizer = Obj('_minimizer.type lmfit')
         aliases = Obj('ALIASES')
         constraints = Obj('CONSTRAINTS')
 
@@ -205,9 +203,7 @@ def test_analysis_to_cif_renders_all_sections(monkeypatch):
 
     out = MUT.analysis_to_cif(A())
     lines = [line for line in out.splitlines() if line]
-    assert lines[0].startswith('_fitting.mode_type')
-    assert 'single' in lines[0]
-    assert lines[1].startswith('_fitting.minimizer_type')
-    assert 'lmfit' in lines[1]
+    assert lines[0].startswith('_minimizer.type')
+    assert 'lmfit' in lines[0]
     assert 'ALIASES' in out
     assert 'CONSTRAINTS' in out

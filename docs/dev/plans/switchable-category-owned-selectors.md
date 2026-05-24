@@ -532,7 +532,7 @@ with explicit `git add` paths.
 Each command captures its log with a zsh-safe exit-code variable as
 required by `.github/copilot-instructions.md` → **Workflow**.
 
-- [ ] **P2.1a — Migrate existing tests off removed API.** Each
+- [x] **P2.1a — Migrate existing tests off removed API.** Each
       bullet is a separate commit. Grep
       `tests/` for the same patterns as P1.12 and replace, mirroring
       the surface change.
@@ -592,7 +592,7 @@ required by `.github/copilot-instructions.md` → **Workflow**.
       ```
       All three must return empty.
 
-- [ ] **P2.1 — Add unit tests for new modules.**
+- [x] **P2.1 — Add unit tests for new modules.**
       - `tests/unit/easydiffraction/core/test_switchable.py`
         covering: setter staleness check raises when `_parent` is
         `None`; setter staleness check raises when the live slot

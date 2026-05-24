@@ -42,15 +42,15 @@ def _mk_type_powder_tof_bragg():
 def test_background_defaults_and_change():
     expt = BraggPdExperiment(name='e1', type=_mk_type_powder_cwl_bragg())
     # default background type
-    assert expt.background_type == BackgroundFactory.default_tag()
+    assert expt.background.type == BackgroundFactory.default_tag()
 
     # change to a supported type
-    expt.background_type = 'chebyshev'
-    assert expt.background_type == 'chebyshev'
+    expt.background.type = 'chebyshev'
+    assert expt.background.type == 'chebyshev'
 
     # unknown type keeps previous type and prints warnings (no raise)
-    expt.background_type = 'not-a-type'  # invalid string
-    assert expt.background_type == 'chebyshev'
+    expt.background.type = 'not-a-type'  # invalid string
+    assert expt.background.type == 'chebyshev'
 
 
 def test_load_ascii_data_rounds_and_defaults_sy(tmp_path: pytest.TempPathFactory):

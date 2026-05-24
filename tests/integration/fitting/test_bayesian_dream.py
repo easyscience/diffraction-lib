@@ -88,7 +88,7 @@ def _dream_parameters(project: Project) -> tuple[object, object, object]:
 
 
 def _configure_small_dream(project: Project) -> None:
-    project.analysis.minimizer_type = 'bumps (dream)'
+    project.analysis.minimizer.type = 'bumps (dream)'
     minimizer = project.analysis.minimizer
     minimizer.sampling_steps = 20
     minimizer.burn_in_steps = 5
@@ -145,7 +145,7 @@ def test_lm_prefit_followed_by_dream_uses_uncertainty_based_bounds():
     for parameter in (length_a, scale, offset):
         parameter.free = True
 
-    project.analysis.minimizer_type = 'bumps (lm)'
+    project.analysis.minimizer.type = 'bumps (lm)'
     _run_single_fit(project)
 
     for parameter in (length_a, scale, offset):

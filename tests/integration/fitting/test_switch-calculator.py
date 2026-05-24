@@ -51,10 +51,10 @@ def test_neutron_pd_cwl_lbco_crysfml(tmp_path) -> None:
     project = ed.Project.load(proj_dir)
 
     # Change calculator
-    project.experiments['hrpt'].calculation.calculator_type = 'crysfml'
+    project.experiments['hrpt'].calculator.type = 'crysfml'
 
     # Compare calculator
-    assert project.experiments['hrpt'].calculation.calculator_type.value == 'crysfml'
+    assert project.experiments['hrpt'].calculator.type == 'crysfml'
 
     # Perform Analysis 1
     project.analysis.fit()
