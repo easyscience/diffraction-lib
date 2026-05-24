@@ -69,14 +69,13 @@ class ExperimentBase(DatablockItem):
         self._name = name
         self._type = type
         self._calculator = None
-        self._calculator_type: str | None = self._default_calculator_tag()
         self._identity.datablock_entry_name = lambda: self.name
 
         self._diffrn_type: str = DiffrnFactory.default_tag()
         self._diffrn = DiffrnFactory.create(self._diffrn_type)
         self._calculator_category = CalculatorCategoryFactory.create(
             'default',
-            type=self._calculator_type,
+            type=self._default_calculator_tag(),
         )
         self._attach_category_parents()
 
@@ -122,13 +121,12 @@ class ExperimentBase(DatablockItem):
                 f"For more information, use 'calculator.show_supported()'",
             )
             return
-        if self._calculator_type == new_type and self._calculator is not None:
+        if self._calculator_category._type.value == new_type and self._calculator is not None:
             if announce:
                 console.paragraph(f"Calculator for experiment '{self.name}' already set to")
                 console.print(new_type)
             return
         self._calculator = CalculatorFactory.create(new_type)
-        self._calculator_type = new_type
         self._calculator_category._type.value = new_type
         if announce:
             console.paragraph(f"Calculator for experiment '{self.name}' changed to")
@@ -156,7 +154,7 @@ class ExperimentBase(DatablockItem):
             )
             return
 
-        if self._background_type == new_type:
+        if self._background._type.value == new_type:
             if announce:
                 console.paragraph(f"Background type for experiment '{self.name}' already set to")
                 console.print(new_type)
@@ -172,7 +170,6 @@ class ExperimentBase(DatablockItem):
         self._background = BackgroundFactory.create(new_type)
         old_background._parent = None
         self._background._parent = self
-        self._background_type = new_type
         self._background._type.value = new_type
         if announce:
             console.paragraph(f"Background type for experiment '{self.name}' changed to")
@@ -200,7 +197,6 @@ class ExperimentBase(DatablockItem):
         self._extinction = ExtinctionFactory.create(new_type)
         old_extinction._parent = None
         self._extinction._parent = self
-        self._extinction_type = new_type
         self._extinction._type.value = new_type
         if announce:
             console.paragraph('Extinction type changed to')
@@ -255,13 +251,6 @@ class ExperimentBase(DatablockItem):
         calculator_tag = read_cif_str(block, '_calculator.type')
         if calculator_tag is not None:
             self._swap_calculator(calculator_tag, announce=False)
-
-    def _normalize_switchable_type_descriptors(self) -> None:
-        """
-        Normalize switchable category descriptors after CIF loading.
-        """
-        if self._calculator_type is not None:
-            self._calculator_category._type.value = self._calculator_type
 
     @property
     def as_cif(self) -> str:
@@ -324,7 +313,6 @@ class ExperimentBase(DatablockItem):
         if supported and tag not in supported:
             tag = supported[0]
         self._calculator = CalculatorFactory.create(tag)
-        self._calculator_type = tag
         self._calculator_category._type.value = tag
 
     def _supported_calculator_tags(self) -> list[str]:
@@ -367,8 +355,7 @@ class ScExperimentBase(ExperimentBase):
     ) -> None:
         super().__init__(name=name, type=type)
 
-        self._extinction_type: str = ExtinctionFactory.default_tag()
-        self._extinction = ExtinctionFactory.create(self._extinction_type)
+        self._extinction = ExtinctionFactory.create(ExtinctionFactory.default_tag())
         self._linked_crystal_type: str = LinkedCrystalFactory.default_tag()
         self._linked_crystal = LinkedCrystalFactory.create(self._linked_crystal_type)
         self._instrument_type: str = InstrumentFactory.default_tag(
@@ -406,13 +393,6 @@ class ScExperimentBase(ExperimentBase):
     def extinction(self) -> object:
         """Active extinction correction model."""
         return self._extinction
-
-    def _normalize_switchable_type_descriptors(self) -> None:
-        """
-        Normalize switchable category descriptors after CIF loading.
-        """
-        super()._normalize_switchable_type_descriptors()
-        self.extinction._type.value = self._extinction_type
 
     def _restore_switchable_types(self, block: object) -> None:
         """
@@ -472,17 +452,18 @@ class PdExperimentBase(ExperimentBase):
         self._linked_phases = LinkedPhasesFactory.create(self._linked_phases_type)
         self._excluded_regions_type: str = ExcludedRegionsFactory.default_tag()
         self._excluded_regions = ExcludedRegionsFactory.create(self._excluded_regions_type)
-        self._peak_profile_type: str = PeakFactory.default_tag(
-            scattering_type=self.type.scattering_type.value,
-            beam_mode=self.type.beam_mode.value,
-        )
         self._data_type: str = DataFactory.default_tag(
             sample_form=self.type.sample_form.value,
             beam_mode=self.type.beam_mode.value,
             scattering_type=self.type.scattering_type.value,
         )
         self._data = DataFactory.create(self._data_type)
-        self._peak = PeakFactory.create(self._peak_profile_type)
+        self._peak = PeakFactory.create(
+            PeakFactory.default_tag(
+                scattering_type=self.type.scattering_type.value,
+                beam_mode=self.type.beam_mode.value,
+            )
+        )
         self._resolve_calculator()
         self._attach_category_parents()
 
@@ -605,7 +586,6 @@ class PdExperimentBase(ExperimentBase):
         if old_peak is not None:
             old_peak._parent = None
         self._peak._parent = self
-        self._peak_profile_type = canonical_type
         self._peak._type.value = canonical_type
         if announce:
             console.paragraph(f"Peak profile type for experiment '{self.name}' changed to")
@@ -634,13 +614,6 @@ class PdExperimentBase(ExperimentBase):
             'scattering_type': self.type.scattering_type.value,
             'beam_mode': self.type.beam_mode.value,
         }
-
-    def _normalize_switchable_type_descriptors(self) -> None:
-        """
-        Normalize switchable category descriptors after CIF loading.
-        """
-        super()._normalize_switchable_type_descriptors()
-        self.peak._type.value = self._peak_profile_type
 
     def _restore_switchable_types(self, block: object) -> None:
         """

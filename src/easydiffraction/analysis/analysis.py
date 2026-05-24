@@ -471,7 +471,6 @@ class Analysis(
         self._minimizer: MinimizerCategoryBase = MinimizerCategoryFactory.create(
             MinimizerTypeEnum.default().value
         )
-        self._fitting_mode_type: FitModeEnum = FitModeEnum.default()
         self._fitting_mode: FittingMode = FittingModeFactory.create(
             FittingModeFactory.default_tag()
         )
@@ -841,12 +840,13 @@ class Analysis(
         methods: list[str],
     ) -> tuple[list[str], list[str]]:
         """Hide inactive mode-specific categories from analysis help."""
+        mode = FitModeEnum(self._fitting_mode.type)
         hidden_properties: set[str]
-        if self._fitting_mode_type is FitModeEnum.SINGLE:
+        if mode is FitModeEnum.SINGLE:
             hidden_properties = {'joint_fit', 'sequential_fit', 'sequential_fit_extract'}
-        elif self._fitting_mode_type is FitModeEnum.JOINT:
+        elif mode is FitModeEnum.JOINT:
             hidden_properties = {'sequential_fit', 'sequential_fit_extract'}
-        elif self._fitting_mode_type is FitModeEnum.SEQUENTIAL:
+        elif mode is FitModeEnum.SEQUENTIAL:
             hidden_properties = {'joint_fit'}
         else:  # pragma: no cover
             hidden_properties = set()
@@ -863,9 +863,10 @@ class Analysis(
             self.constraints,
         ]
 
-        if self._fitting_mode_type is FitModeEnum.JOINT:
+        mode = FitModeEnum(self._fitting_mode.type)
+        if mode is FitModeEnum.JOINT:
             categories.append(self.joint_fit)
-        elif self._fitting_mode_type is FitModeEnum.SEQUENTIAL:
+        elif mode is FitModeEnum.SEQUENTIAL:
             categories.extend([
                 self.sequential_fit,
                 self.sequential_fit_extract,
@@ -932,7 +933,7 @@ class Analysis(
 
     def fit(self) -> None:
         """Execute fitting for the currently selected fitting mode."""
-        mode = self._fitting_mode_type
+        mode = FitModeEnum(self._fitting_mode.type)
         if mode is FitModeEnum.SINGLE:
             self._run_single()
         elif mode is FitModeEnum.JOINT:
@@ -1011,11 +1012,10 @@ class Analysis(
             )
             return
 
-        self._fitting_mode_type = new_mode
         self._fitting_mode._type.value = new_mode.value
         if announce:
             console.paragraph('Fitting mode changed to')
-            console.print(self._fitting_mode_type.value)
+            console.print(new_mode.value)
 
     def _set_fitting_mode_type(self, value: str) -> None:
         """Set the fitting mode without console output."""

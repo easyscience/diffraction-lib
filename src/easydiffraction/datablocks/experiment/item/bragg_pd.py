@@ -61,8 +61,7 @@ class BraggPdExperiment(PdExperimentBase):
             sample_form=self.type.sample_form.value,
         )
         self._instrument = InstrumentFactory.create(self._instrument_type)
-        self._background_type: str = BackgroundFactory.default_tag()
-        self._background = BackgroundFactory.create(self._background_type)
+        self._background = BackgroundFactory.create(BackgroundFactory.default_tag())
         self._refln = None
         self._sync_refln_category()
         self._attach_category_parents()
@@ -185,13 +184,6 @@ class BraggPdExperiment(PdExperimentBase):
     def background(self) -> object:
         """Active background model for this experiment."""
         return self._background
-
-    def _normalize_switchable_type_descriptors(self) -> None:
-        """
-        Normalize switchable category descriptors after CIF loading.
-        """
-        super()._normalize_switchable_type_descriptors()
-        self.background._type.value = self._background_type
 
     def _restore_switchable_types(self, block: object) -> None:
         """
