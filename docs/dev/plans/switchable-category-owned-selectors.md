@@ -563,7 +563,7 @@ required by `.github/copilot-instructions.md` → **Workflow**.
 - [x] **P2.2 — Auto-fixes and static checks.**
       `     pixi run fix > /tmp/easydiffraction-fix.log 2>&1; \       fix_exit_code=$?; tail -n 200 /tmp/easydiffraction-fix.log; \       exit $fix_exit_code     pixi run check > /tmp/easydiffraction-check.log 2>&1; \       check_exit_code=$?; tail -n 200 /tmp/easydiffraction-check.log; \       exit $check_exit_code     `
 
-- [ ] **P2.3 — Unit tests.**
+- [x] **P2.3 — Unit tests.**
       `     pixi run unit-tests > /tmp/easydiffraction-unit-tests.log 2>&1; \       unit_tests_exit_code=$?; tail -n 200 /tmp/easydiffraction-unit-tests.log; \       exit $unit_tests_exit_code     `
 
 - [ ] **P2.4 — Integration tests.**
