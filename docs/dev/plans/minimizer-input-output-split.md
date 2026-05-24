@@ -517,7 +517,7 @@ Mark `[x]` as each step lands.
 
       Commit: `Update tutorials to read outputs from fit_result`
 
-- [ ] **P1.16 — Promote ADR + update index.**
+- [x] **P1.16 — Promote ADR + update index.**
   - `git mv docs/dev/adrs/suggestions/minimizer-input-output-split.md
     docs/dev/adrs/accepted/minimizer-input-output-split.md`. Flip the
     Status header to `Accepted`.

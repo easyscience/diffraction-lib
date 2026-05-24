@@ -1,11 +1,11 @@
 # ADR: Minimizer Input/Output Split
 
-**Status:** Proposed **Date:** 2026-05-24
+**Status:** Accepted **Date:** 2026-05-24
 
 ## Status Note
 
 This proposal revisits and supersedes Alternative D in
-[`minimizer-category-consolidation.md`](../accepted/minimizer-category-consolidation.md)
+[`minimizer-category-consolidation.md`](minimizer-category-consolidation.md)
 ("Strict input-only `minimizer` plus a separate `fit_result`"), which
 was rejected during the consolidation work on the assumption that the
 input/output mix on `analysis.minimizer` was symmetric with the
@@ -16,7 +16,7 @@ duplication problems documented below.
 ## Context
 
 After
-[`minimizer-category-consolidation.md`](../accepted/minimizer-category-consolidation.md)
+[`minimizer-category-consolidation.md`](minimizer-category-consolidation.md)
 landed, `analysis.minimizer` holds both writable user inputs and
 fit-filled outputs in a single namespace. A user typing
 `analysis.minimizer.help()` before any fit sees roughly twenty
@@ -97,7 +97,7 @@ the user changes the active `fit_result` class is by setting
 uses to instantiate both `self._minimizer` and `self._fit_result`
 atomically. This is an explicit, documented exception to the global
 selector contract from
-[`switchable-category-owned-selectors.md`](../accepted/switchable-category-owned-selectors.md)
+[`switchable-category-owned-selectors.md`](switchable-category-owned-selectors.md)
 §1 because there is no user choice involved at the `fit_result` level
 — the minimizer family fully determines the result schema. See the
 new exception text added to that ADR (listed under §"ADRs amended").
@@ -190,7 +190,7 @@ block (already present today for the common header fields) absorbs
 every fit output. The set of `_fit_result.*` tags depends on the active
 `_minimizer.type`, matching the same shape-shifting convention that
 `_minimizer.*` itself already uses per
-[`switchable-category-owned-selectors.md`](../accepted/switchable-category-owned-selectors.md).
+[`switchable-category-owned-selectors.md`](switchable-category-owned-selectors.md).
 
 Example deterministic fit:
 
@@ -254,7 +254,7 @@ category) holds the persisted scalar projection of the same fit. The
 naming pair stays as today.
 
 A small UX win is added under the accepted display facade
-([`display-ux.md`](../accepted/display-ux.md)): the existing
+([`display-ux.md`](display-ux.md)): the existing
 `project.display.fit.results()` entry point gains a "Settings used"
 table above the existing results tables, populated from
 `analysis.minimizer.*`. No new `Analysis`-level display method is
@@ -281,7 +281,7 @@ swap hook updates **both** `analysis.minimizer` and
 `fit_result` is not a user-facing switchable: there is no
 `fit_result.type` and no `fit_result.show_supported()`, per the
 documented exception added to
-[`switchable-category-owned-selectors.md`](../accepted/switchable-category-owned-selectors.md)
+[`switchable-category-owned-selectors.md`](switchable-category-owned-selectors.md)
 (see §"ADRs amended"). This keeps "one minimizer concept, one
 user-facing type" intact and removes the temptation to swap the result
 class independently of the minimizer.
@@ -331,26 +331,26 @@ class independently of the minimizer.
 
 ### ADRs amended by this ADR
 
-- [`minimizer-category-consolidation.md`](../accepted/minimizer-category-consolidation.md)
+- [`minimizer-category-consolidation.md`](minimizer-category-consolidation.md)
   — §1 ("Unified `minimizer` category replaces all sampler-input and
   fit-result categories") becomes a partial rule: the unified
   `minimizer` holds inputs; outputs move to the paired `fit_result`.
   §"Alternatives Considered → D" updated to record the
   reversal and the implementation evidence that prompted it.
-- [`analysis-cif-fit-state.md`](../accepted/analysis-cif-fit-state.md)
+- [`analysis-cif-fit-state.md`](analysis-cif-fit-state.md)
   — §"Minimizer fit projection" rewritten to describe the split
   (`_minimizer.*` settings-only, `_fit_result.*` outputs including
   family-specific fields).
-- [`runtime-fit-results.md`](../accepted/runtime-fit-results.md)
+- [`runtime-fit-results.md`](runtime-fit-results.md)
   — closing paragraph references this ADR alongside the existing two.
-- [`switchable-category-owned-selectors.md`](../accepted/switchable-category-owned-selectors.md)
+- [`switchable-category-owned-selectors.md`](switchable-category-owned-selectors.md)
   — §1 ("The category owns its selector") gains a paragraph carving
   out one documented exception: a category that is fully determined by
   another category's `type` (today only `fit_result`, derived from
   `minimizer.type`) is allowed to omit `category.type` and
   `category.show_supported()`. The mechanism is described in §1 of
   this ADR. The user-facing selector convention is otherwise unchanged.
-- [`display-ux.md`](../accepted/display-ux.md) — §"Fit results display"
+- [`display-ux.md`](display-ux.md) — §"Fit results display"
   expanded to mention that `project.display.fit.results()` now prints
   a "Settings used" block above the result tables, sourced from
   `analysis.minimizer.*`. No new public entry point is added.
@@ -409,6 +409,6 @@ explicitly puts them in CIF (`_minimizer.*` today).
 
 Make the pairing rule explicit in the name (`<x>` and `<x>_result`).
 Rejected because the recently-accepted
-[`switchable-category-owned-selectors.md`](../accepted/switchable-category-owned-selectors.md)
+[`switchable-category-owned-selectors.md`](switchable-category-owned-selectors.md)
 ADR deliberately drops `_type` and other suffixes from category names;
 adding `_result` walks the convention back.
