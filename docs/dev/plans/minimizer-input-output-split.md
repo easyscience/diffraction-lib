@@ -293,7 +293,7 @@ Mark `[x]` as each step lands.
       `_swap_minimizer` reads through this attribute). Commit:
       `Declare paired _fit_result_class on minimizer bases`
 
-- [ ] **P1.6 — Wire `Analysis._swap_minimizer` to install both
+- [x] **P1.6 — Wire `Analysis._swap_minimizer` to install both
       instances, and update every `_fit_result` reset path.** In
       `src/easydiffraction/analysis/analysis.py`:
 

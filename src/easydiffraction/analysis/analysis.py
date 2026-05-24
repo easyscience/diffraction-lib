@@ -480,7 +480,7 @@ class Analysis(
         )
         self._sequential_fit_extract = SequentialFitExtractCollection()
         self._fit_parameters = FitParameters()
-        self._fit_result = FitResultBase()
+        self._fit_result = self._minimizer._fit_result_class()
         self._fit_parameter_correlations = FitParameterCorrelations()
         self._has_persisted_fit_state_data = False
         self._persisted_fit_state_sidecar: dict[str, object] = {}
@@ -1062,8 +1062,11 @@ class Analysis(
         self._warn_about_minimizer_swap_defaults(old_defaults, new_minimizer)
 
         old_minimizer._parent = None
+        self._fit_result._parent = None
         self._minimizer = new_minimizer
+        self._fit_result = new_minimizer._fit_result_class()
         self._minimizer._parent = self
+        self._fit_result._parent = self
         self._fitter = Fitter(value)
         if announce:
             console.paragraph('Current minimizer changed to')
@@ -1203,16 +1206,18 @@ class Analysis(
 
     def _clear_persisted_fit_state(self) -> None:
         """Reset all persisted fit-state categories before a new fit."""
-        self._clear_minimizer_result_projection()
+        self._clear_fit_result_projection()
         self._fit_parameters = FitParameters()
-        self._fit_result = FitResultBase()
+        self._fit_result._parent = None
+        self._fit_result = self.minimizer._fit_result_class()
+        self._fit_result._parent = self
         self._fit_parameter_correlations = FitParameterCorrelations()
         self._set_has_persisted_fit_state(value=False)
         self._persisted_fit_state_sidecar = {}
 
-    def _clear_minimizer_result_projection(self) -> None:
-        """Reset result-only fields on the active minimizer category."""
-        self.minimizer._reset_result_descriptors()
+    def _clear_fit_result_projection(self) -> None:
+        """Reset result-only fields on the active fit-result category."""
+        self.fit_result._reset_result_descriptors()
 
     def _capture_fit_parameter_state(self, parameters: list[Parameter]) -> None:
         """Capture pre-fit parameter state."""
