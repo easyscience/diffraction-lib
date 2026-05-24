@@ -274,10 +274,13 @@ When asked to create a plan:
 
 ## Agent Shortcuts
 
-When the user enters one of these literal keywords at the start of a
-message, execute the matching task instead of asking for the full
-instructions every time. The keyword is the entire trigger; arguments
-follow on the same line.
+When the user's message starts with one of these literal keywords,
+treat it as an operational command, not as ordinary prose. Execute the
+matching task instead of asking for the full instructions every time.
+The first non-whitespace token is the trigger; arguments follow on the
+same line. This applies in future turns and after context compaction:
+if the newest user message begins with `/draft-adr`, `/review-adr`,
+`/draft-plan`, or `/review-plan`, enter that shortcut's stateful loop.
 
 Common preamble for every shortcut (run once at task start):
 
@@ -290,6 +293,10 @@ Common preamble for every shortcut (run once at task start):
 - Polling cadence is 60 s. Use Bash with `run_in_background` and an
   `until [ -f <path> ]; do sleep 60; done` body so the harness
   notifies you when the awaited file appears. Do not poll inline.
+  If the current harness exposes a native recurring automation or
+  heartbeat mechanism instead of background Bash, use that mechanism
+  with the same cadence and file target. Do not downgrade the shortcut
+  into a one-shot review/reply because background Bash is unavailable.
 - Filename suffixes follow the existing convention:
   `<stem>_review-N.md` and `<stem>_reply-N.md` next to the parent
   ADR or plan, where `N` is one greater than the highest existing
@@ -298,6 +305,12 @@ Common preamble for every shortcut (run once at task start):
   between rounds; auto-apply every finding. Only stop when the
   termination condition for that shortcut is met, or the user sends
   an explicit message asking you to stop or change direction.
+- Before starting any poll, first check whether the file being awaited
+  already exists. If it does, process it immediately, then continue the
+  loop from the next expected suffix.
+- Never stop after writing only the first review, first reply, or first
+  draft. After every loop action, immediately arrange the next poll
+  unless the shortcut's termination condition has been reached.
 
 ### `/draft-adr <topic>`
 
@@ -408,3 +421,7 @@ applied to an implementation plan.
 - Loop and termination identical to `/review-adr`, with the final
   commit message `Add <slug> implementation plan` (or an
   equivalent imperative ≤72 chars).
+- A bare `/review-plan` is still enough to start the full reviewer
+  loop. If a target plan already exists, write the first static review
+  and then immediately wait for `<slug>_reply-1.md`; do not return a
+  final answer that implies the task is complete after the first review.
