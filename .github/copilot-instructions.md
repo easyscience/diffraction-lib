@@ -311,6 +311,25 @@ Common preamble for every shortcut (run once at task start):
 - Never stop after writing only the first review, first reply, or first
   draft. After every loop action, immediately arrange the next poll
   unless the shortcut's termination condition has been reached.
+- **Final-review sentinel.** When a reviewer shortcut decides no
+  findings remain, it writes a final review file whose body begins
+  with the literal sentinel line
+  `**No findings. Ready to commit.**` on its own line (immediately
+  after the title and any boilerplate header). The matching author
+  shortcut, before writing a reply, runs
+  `grep -q "^\*\*No findings\. Ready to commit\.\*\*$"
+  docs/dev/{adrs/suggestions,plans}/<stem>_review-<N>.md` on the
+  newest review. If the sentinel is found, the author shortcut
+  **stops the polling loop** without writing a reply and reports
+  that the review cycle is closed. The sentinel is the only
+  termination signal between author and reviewer — no other phrase
+  triggers it.
+- **Existing shortcuts never delete files and never commit.** The
+  four shortcuts in this section
+  (`/draft-adr`, `/review-adr`, `/draft-plan`, `/review-plan`)
+  only read existing files and write new ones. They never call
+  `git rm`, `git add`, or `git commit`. Cleanup and commit happen
+  in a separate dedicated shortcut (`/implement-plan`).
 
 ### `/draft-adr <topic>`
 
@@ -328,17 +347,23 @@ incoming reviews in a polling loop.
 
 **Loop (per tick):**
 
-- When `<slug>_review-N.md` appears: read it, update the ADR to
-  address every finding, and write `<slug>_reply-N.md` with one
-  section per finding (verdict + action taken + pointer to the
-  affected ADR section).
+- When `<slug>_review-N.md` appears, first check for the
+  final-review sentinel (see Common preamble). If
+  `**No findings. Ready to commit.**` is the first body line,
+  stop the polling loop: report that the review cycle is closed
+  and that `/implement-plan` (or a manual commit) is the next
+  step. Do not write a reply.
+- Otherwise read the review, update the ADR to address every
+  finding, and write `<slug>_reply-N.md` with one section per
+  finding (verdict + action taken + pointer to the affected ADR
+  section).
 - Start polling for `<slug>_review-(N+1).md`.
-- **Do not commit.** Leave every edit in the worktree as modified
-  or untracked. The reviewer side (`/review-adr`) is responsible
-  for the final commit.
+- **Do not commit and do not delete any file.** Leave every edit
+  in the worktree as modified or untracked. Commit and cleanup
+  happen later in `/implement-plan`.
 
-**Termination:** only on an explicit user message asking you to
-stop or change direction. The loop never self-terminates.
+**Termination:** either the sentinel-driven stop above or an
+explicit user message asking you to stop or change direction.
 
 ### `/review-adr [<slug>]`
 
@@ -367,20 +392,18 @@ until all findings are addressed.
   and every prior review/reply. Pick exactly one branch:
   - **Findings remain:** write `<slug>_review-(N+1).md` listing
     only the open findings, then poll for the next reply.
-  - **All findings addressed:** write a final
-    `<slug>_review-(N+1).md` stating "no findings; ADR is ready",
-    then run the termination cleanup below and stop.
+  - **All findings addressed:** write the final review file
+    `<slug>_review-(N+1).md` whose body begins with the
+    final-review sentinel from the Common preamble:
+    `**No findings. Ready to commit.**` on its own line, followed
+    by a short paragraph summarising the round (no findings list).
+    Then **stop the loop**. **Do not delete any review or reply
+    file. Do not commit anything.** Cleanup and commit happen in
+    `/implement-plan`.
 
-**Termination cleanup (only when the final clean review is
-written):**
-
-1. `git rm` every `<slug>_review-*.md` and `<slug>_reply-*.md`
-   next to the ADR (including the final clean review just
-   written).
-2. `git add` the cleaned-up ADR.
-3. Commit with message `Add <slug> ADR suggestion` (or an
-   equivalent imperative ≤72 chars).
-4. Report the commit hash and stop.
+**Termination:** either the sentinel-written final review above
+or an explicit user message asking you to stop or change
+direction.
 
 ### `/draft-plan [<slug>]`
 
@@ -400,12 +423,15 @@ applied to an implementation plan instead of an ADR.
   status checklist, Phase 2 verification commands using the
   zsh-safe log-capture pattern, and a Suggested Pull Request
   section.
-- Loop behaviour identical to `/draft-adr`: poll
-  `docs/dev/plans/<slug>_review-N.md`; write
-  `<slug>_reply-N.md`; **no commits in the loop**.
+- Loop behaviour identical to `/draft-adr`, including the
+  sentinel-driven stop: before writing a reply, check the newest
+  `docs/dev/plans/<slug>_review-N.md` for the final-review
+  sentinel and stop if present. Otherwise read the review, update
+  the plan, write `<slug>_reply-N.md`, poll for the next review.
+  **No commits and no file deletions in this loop.**
 
-**Termination:** only on an explicit user message asking you to
-stop or change direction.
+**Termination:** either the sentinel-driven stop or an explicit
+user message asking you to stop or change direction.
 
 ### `/review-plan [<slug>]`
 
@@ -418,10 +444,111 @@ applied to an implementation plan.
   cycle.
 - Static reads only — same "no tests / lint / build / formatters /
   pixi" rule applies during plan reviews.
-- Loop and termination identical to `/review-adr`, with the final
-  commit message `Add <slug> implementation plan` (or an
-  equivalent imperative ≤72 chars).
+- Loop and termination identical to `/review-adr`, including the
+  final-review-sentinel rule: when all findings are addressed,
+  write the final review with `**No findings. Ready to commit.**`
+  as the first body line and stop. **Do not delete any review or
+  reply file and do not commit anything** — those steps belong to
+  `/implement-plan`.
 - A bare `/review-plan` is still enough to start the full reviewer
   loop. If a target plan already exists, write the first static review
   and then immediately wait for `<slug>_reply-1.md`; do not return a
   final answer that implies the task is complete after the first review.
+
+### `/implement-plan [<slug>]`
+
+Clean up the review/reply deliberation history, commit the latest
+ADR + plan, then execute the plan's Phase 1 implementation steps
+autonomously. This is the only shortcut in this section that
+deletes files and commits changes.
+
+**Setup (once):**
+
+1. Ask the user, **in one batch**, to grant every permission this
+   shortcut will need so the implementation phase runs without
+   per-step prompts. List explicitly:
+   - `Bash` (general, including `run_in_background`) for `git`,
+     `ls`, `grep`, `find`, `until`, `sleep`, and any plan-step
+     command (`pixi run notebook-prepare`, etc.).
+   - `Read` / `Edit` / `Write` on `src/`, `tests/`,
+     `docs/dev/adrs/`, `docs/dev/plans/`, `docs/docs/tutorials/`,
+     `pyproject.toml`, `pixi.toml`, `pixi.lock`, and any other
+     paths the plan's `Concrete files likely to change` section
+     enumerates.
+   - `git rm`, `git add`, `git commit` (subsumed under Bash).
+   - Cite this section so the user knows the scope.
+2. **Do not** run tests, lint, `pixi run fix`, `pixi run check`,
+   or the integration/script-test suites during this shortcut —
+   those belong to the plan's Phase 2 verification gate and run
+   only after the Phase 1 review gate the plan defines.
+3. Stay on the current branch.
+4. Identify targets:
+   - **Plan**: if `<slug>` is given, target
+     `docs/dev/plans/<slug>.md`. Otherwise pick the most recently
+     modified plan in `docs/dev/plans/` whose stem matches the
+     current branch slug.
+   - **ADR**: derive from the plan's `## ADR` reference. The ADR
+     usually lives in `docs/dev/adrs/suggestions/<slug>.md` at
+     this point (a Phase 1 plan step typically promotes it to
+     `accepted/`); accept either location.
+
+**Phase A — cleanup + commits (two atomic commits):**
+
+1. **ADR commit.**
+   - `git rm` every `docs/dev/adrs/<dir>/<adr-slug>_review-*.md`
+     and `<adr-slug>_reply-*.md` next to the ADR.
+   - `git add docs/dev/adrs/<dir>/<adr-slug>.md`.
+   - Commit with message `Add <adr-slug> ADR suggestion` (or
+     `Promote <adr-slug> ADR to accepted` if the ADR was already
+     under `accepted/`).
+2. **Plan commit.**
+   - `git rm` every `docs/dev/plans/<plan-slug>_review-*.md` and
+     `<plan-slug>_reply-*.md`.
+   - `git add docs/dev/plans/<plan-slug>.md`.
+   - Commit with message `Add <plan-slug> implementation plan`.
+
+If the ADR or plan has no review/reply siblings (e.g. the user
+drafted it directly without running the loop), skip the `git rm`
+step but still stage + commit the clean artifact.
+
+**Phase B — implementation:**
+
+3. Parse the plan's `## Implementation steps (Phase 1)` section
+   in order. Each `- [ ] **P1.X — <summary>**` item is one
+   atomic commit. For each step in turn:
+   1. Read the step body to identify the files and edits.
+   2. Apply the edits exactly as the step prescribes. If the
+      step says to run a build-step command (e.g.
+      `pixi run notebook-prepare`, `pixi lock`), run it — those
+      are part of the plan, not Phase 2 verification.
+   3. Stage the files the step enumerates with explicit paths
+      (per **Commits** rule "Stage only the files modified for
+      the step"). Do not stage unrelated dirty files.
+   4. Commit with the suggested commit message from the step
+      (the `Commit:` line). Edit the `- [ ]` checkbox to `- [x]`
+      in the plan file before staging, so the checklist tracks
+      progress, and include the checklist update in the same
+      commit.
+4. **Phase 1 review gate.** The plan's final P1 step is always
+   "Phase 1 review gate. No code change. Stop and request user
+   review." When you reach that step, mark it `[x]`, commit the
+   checklist update alone, and **stop**. Report:
+   - How many P1 commits landed.
+   - The current branch and tip commit hash.
+   - That Phase 2 verification (`pixi run fix`, `pixi run check`,
+     `pixi run unit-tests`, `pixi run integration-tests`,
+     `pixi run script-tests`) is still pending and is the user's
+     next action.
+
+**If a step fails:** stop immediately, do not skip ahead, report
+the failure with the step ID and the error. Do not run Phase 2
+verification commands as a debugging tool — fix the step or wait
+for user input.
+
+**Permissions / approval flow.** The setup-step permission batch
+is the only prompt this shortcut emits during normal operation.
+If the plan introduces a step that requires a permission the user
+did not pre-approve (e.g. an `npm` invocation when the upfront
+batch only covered `pixi`), pause at that step and ask for the
+extra grant rather than blocking on a single tool call. Resume
+the loop once granted.
