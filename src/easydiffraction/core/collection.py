@@ -170,12 +170,12 @@ class CollectionBase(GuardedBase):
         if self._items:
             console.paragraph(f'Items ({len(self._items)})')
             rows = []
-            for i, item in enumerate(self._items, 1):
+            for item in self._items:
                 key = self._key_for(item)
-                rows.append([str(i), str(key), f"['{key}']"])
+                rows.append([str(key), f"['{key}']"])
             render_table(
-                columns_headers=['#', 'Name', 'Access'],
-                columns_alignment=['right', 'left', 'left'],
+                columns_headers=['Name', 'Access'],
+                columns_alignment=['left', 'left'],
                 columns_data=rows,
             )
         else:

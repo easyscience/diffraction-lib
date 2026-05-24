@@ -123,7 +123,6 @@ def test_analysis_help_and_mode_switching(capsys):
 
     analysis.help()
     out = _unstyled_output(capsys.readouterr().out)
-    assert "Help for 'Analysis'" in out
     assert 'fitting' in out
     assert 'display' in out
     assert 'Properties' in out
@@ -249,10 +248,10 @@ def test_discover_helpers_and_snapshot_params():
     method_rows = _discover_method_rows(Demo)
 
     assert len(property_rows) == 2
-    assert 'alpha' in [row[1] for row in property_rows]
-    assert next(row for row in property_rows if row[1] == 'beta')[2] == '✓'
-    assert 'do_thing()' in [row[1] for row in method_rows]
-    assert '_private()' not in [row[1] for row in method_rows]
+    assert 'alpha' in [row[0] for row in property_rows]
+    assert next(row for row in property_rows if row[0] == 'beta')[1] == '✓'
+    assert 'do_thing()' in [row[0] for row in method_rows]
+    assert '_private()' not in [row[0] for row in method_rows]
 
     analysis = Analysis(project=_make_project())
 

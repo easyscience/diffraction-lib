@@ -59,7 +59,6 @@ def test_summary_help(capsys):
     s = Summary(P())
     s.help()
     out = capsys.readouterr().out
-    assert "Help for 'Summary'" in out
     assert 'show_report()' in out
     assert 'show_project_info()' in out
     assert 'show_fitting_details()' in out

@@ -20,7 +20,6 @@ def test_project_help(capsys):
     p = Project()
     p.help()
     out = capsys.readouterr().out
-    assert "Help for 'Project'" in out
     assert 'experiments' in out
     assert 'analysis' in out
     assert 'summary' in out

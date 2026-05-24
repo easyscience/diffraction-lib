@@ -792,45 +792,33 @@ class Analysis(
     def help(self) -> None:
         """Print a summary of analysis properties and methods."""
         cls = type(self)
-        console.paragraph(f"Help for '{cls.__name__}'")
 
         property_rows = _discover_property_rows(cls)
         method_rows = _discover_method_rows(cls)
-        property_names = [row[1] for row in property_rows]
-        method_names = [row[1][:-2] for row in method_rows]
+        property_names = [row[0] for row in property_rows]
+        method_names = [row[0][:-2] for row in method_rows]
         property_names, method_names = _apply_help_filter(self, property_names, method_names)
 
         filtered_property_names = set(property_names)
         filtered_method_names = set(method_names)
-        filtered_property_rows = []
-        for row in property_rows:
-            if row[1] in filtered_property_names:
-                filtered_property_rows.append([
-                    str(len(filtered_property_rows) + 1),
-                    row[1],
-                    row[2],
-                    row[3],
-                ])
-
-        filtered_method_rows = []
-        for row in method_rows:
-            method_name = row[1][:-2]
-            if method_name in filtered_method_names:
-                filtered_method_rows.append([str(len(filtered_method_rows) + 1), row[1], row[2]])
+        filtered_property_rows = [row for row in property_rows if row[0] in filtered_property_names]
+        filtered_method_rows = [
+            row for row in method_rows if row[0][:-2] in filtered_method_names
+        ]
 
         if filtered_property_rows:
             console.paragraph('Properties')
             render_table(
-                columns_headers=['#', 'Name', 'Writable', 'Description'],
-                columns_alignment=['right', 'left', 'center', 'left'],
+                columns_headers=['Name', 'Writable', 'Description'],
+                columns_alignment=['left', 'center', 'left'],
                 columns_data=filtered_property_rows,
             )
 
         if filtered_method_rows:
             console.paragraph('Methods')
             render_table(
-                columns_headers=['#', 'Name', 'Description'],
-                columns_alignment=['right', 'left', 'left'],
+                columns_headers=['Name', 'Description'],
+                columns_alignment=['left', 'left'],
                 columns_data=filtered_method_rows,
             )
 

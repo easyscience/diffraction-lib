@@ -700,11 +700,11 @@ def _help_property_rows(cls: type) -> list[list[str]]:
                 seen[key] = attr
 
     rows = []
-    for i, key in enumerate(sorted(seen), 1):
+    for key in sorted(seen):
         prop = seen[key]
-        writable = '✓' if prop.fset else '✗'
+        writable = '✓' if prop.fset else ''
         doc = _help_first_sentence(prop.fget.__doc__ if prop.fget else None)
-        rows.append([str(i), key, writable, doc])
+        rows.append([key, writable, doc])
     return rows
 
 
@@ -726,13 +726,13 @@ def _help_method_rows(cls: type) -> list[list[str]]:
                 methods.append((key, raw))
 
     rows = []
-    for i, (key, method) in enumerate(sorted(methods), 1):
+    for key, method in sorted(methods):
         doc = _help_first_sentence(getattr(method, '__doc__', None))
-        rows.append([str(i), f'{key}()', doc])
+        rows.append([f'{key}()', doc])
     return rows
 
 
-def render_object_help(obj: object, title: str | None = None) -> None:
+def render_object_help(obj: object) -> None:
     """
     Print public properties and methods for a plain helper object.
 
@@ -740,19 +740,15 @@ def render_object_help(obj: object, title: str | None = None) -> None:
     ----------
     obj : object
         Object whose public API should be summarized.
-    title : str | None, default=None
-        Optional display name. Uses the class name when omitted.
     """
     cls = type(obj)
-    display_title = title or cls.__name__
-    console.paragraph(f"Help for '{display_title}'")
 
     prop_rows = _help_property_rows(cls)
     if prop_rows:
         console.paragraph('Properties')
         render_table(
-            columns_headers=['#', 'Name', 'Writable', 'Description'],
-            columns_alignment=['right', 'left', 'center', 'left'],
+            columns_headers=['Name', 'Writable', 'Description'],
+            columns_alignment=['left', 'center', 'left'],
             columns_data=prop_rows,
         )
 
@@ -760,8 +756,8 @@ def render_object_help(obj: object, title: str | None = None) -> None:
     if method_rows:
         console.paragraph('Methods')
         render_table(
-            columns_headers=['#', 'Name', 'Description'],
-            columns_alignment=['right', 'left', 'left'],
+            columns_headers=['Name', 'Description'],
+            columns_alignment=['left', 'left'],
             columns_data=method_rows,
         )
 

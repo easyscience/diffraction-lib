@@ -167,7 +167,6 @@ def test_project_display_help_lists_namespaces_and_methods(capsys):
     display.help()
     out = capsys.readouterr().out
 
-    assert "Help for 'ProjectDisplay'" in out
     assert 'parameters' in out
     assert 'fit' in out
     assert 'posterior' in out
@@ -184,13 +183,10 @@ def test_nested_project_display_help_lists_methods(capsys):
     display.posterior.help()
     out = capsys.readouterr().out
 
-    assert "Help for 'ParameterDisplay'" in out
     assert 'all()' in out
     assert 'access()' in out
-    assert "Help for 'FitDisplay'" in out
     assert 'results()' in out
     assert 'correlations()' in out
-    assert "Help for 'PosteriorDisplay'" in out
     assert 'pairs()' in out
     assert 'predictive()' in out
 

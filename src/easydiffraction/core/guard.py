@@ -227,7 +227,6 @@ class GuardedBase(ABC):
         from easydiffraction.utils.utils import render_table  # noqa: PLC0415
 
         cls = type(self)
-        console.paragraph(f"Help for '{cls.__name__}'")
 
         # Deduplicate (MRO may yield the same name)
         seen: dict = {}
@@ -242,29 +241,29 @@ class GuardedBase(ABC):
         property_names, method_names = _apply_help_filter(self, property_names, method_names)
 
         prop_rows = []
-        for i, key in enumerate(property_names, 1):
+        for key in property_names:
             prop = seen[key]
-            writable = '✓' if prop.fset else '✗'
+            writable = '✓' if prop.fset else ''
             doc = self._first_sentence(prop.fget.__doc__ if prop.fget else None)
-            prop_rows.append([str(i), key, writable, doc])
+            prop_rows.append([key, writable, doc])
 
         if prop_rows:
             console.paragraph('Properties')
             render_table(
-                columns_headers=['#', 'Name', 'Writable', 'Description'],
-                columns_alignment=['right', 'left', 'center', 'left'],
+                columns_headers=['Name', 'Writable', 'Description'],
+                columns_alignment=['left', 'center', 'left'],
                 columns_data=prop_rows,
             )
 
         method_rows = []
-        for i, key in enumerate(method_names, 1):
+        for key in method_names:
             doc = self._first_sentence(getattr(methods[key], '__doc__', None))
-            method_rows.append([str(i), f'{key}()', doc])
+            method_rows.append([f'{key}()', doc])
 
         if method_rows:
             console.paragraph('Methods')
             render_table(
-                columns_headers=['#', 'Name', 'Description'],
-                columns_alignment=['right', 'left', 'left'],
+                columns_headers=['Name', 'Description'],
+                columns_alignment=['left', 'left'],
                 columns_data=method_rows,
             )

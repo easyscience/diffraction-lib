@@ -82,13 +82,11 @@ def test_help_lists_public_properties(capsys):
     obj = Obj()
     obj.help()
     out = capsys.readouterr().out
-    assert "Help for 'Obj'" in out
     assert 'name' in out
     assert 'score' in out
     assert 'Properties' in out
     assert 'Methods' in out
     assert '✓' in out  # score is writable
-    assert '✗' in out  # name is read-only
 
 
 def test_first_sentence_extracts_first_paragraph():
