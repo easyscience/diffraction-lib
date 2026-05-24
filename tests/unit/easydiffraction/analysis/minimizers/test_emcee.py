@@ -269,6 +269,60 @@ def test_emcee_total_iterations_adds_burn_in_and_initial_generation():
     assert minimizer._resolved_total_iterations(resume=True, extra_steps=50) == 50
 
 
+def test_emcee_run_sampler_resumes_from_backend_last_sample(monkeypatch):
+    import easydiffraction.analysis.minimizers.emcee as emcee_mod
+    from easydiffraction.analysis.minimizers.emcee import EmceeMinimizer
+
+    class FakeEnsembleSampler:
+        def __init__(self, **kwargs) -> None:
+            del kwargs
+            self.fake_sampler = _FakeSampler()
+
+        def sample(self, *args, **kwargs):
+            return self.fake_sampler.sample(*args, **kwargs)
+
+    backend = SimpleNamespace(
+        shape=(4, 2),
+        iteration=3,
+        reset=lambda *args: (_ for _ in ()).throw(AssertionError('no reset')),
+    )
+    last_sample = SimpleNamespace(log_prob=np.array([-1.0, -2.0], dtype=float))
+    backend.get_last_sample = lambda: last_sample
+    minimizer = EmceeMinimizer()
+    minimizer.nwalkers = 4
+    minimizer.tracker = _FakeTracker()
+    created_samplers: list[FakeEnsembleSampler] = []
+
+    def fake_sampler_factory(**kwargs):
+        sampler = FakeEnsembleSampler(**kwargs)
+        created_samplers.append(sampler)
+        return sampler
+
+    monkeypatch.setattr(emcee_mod.emcee, 'EnsembleSampler', fake_sampler_factory)
+
+    minimizer._run_sampler(
+        backend=backend,
+        log_prob=lambda values: -1.0,
+        pool=None,
+        parameters=[],
+        n_parameters=2,
+        random_seed=1,
+        resume=True,
+        extra_steps=2,
+        total_iterations=2,
+    )
+
+    assert created_samplers[0].fake_sampler.calls == [
+        {
+            'initial_state': last_sample,
+            'iterations': 2,
+            'skip_initial_state_check': True,
+            'progress': False,
+        }
+    ]
+    assert [update.iteration for update in minimizer.tracker.updates] == [1, 2]
+
+
 def test_emcee_sampler_settings_record_sampling_and_total_steps():
     from easydiffraction.analysis.minimizers.emcee import EmceeMinimizer
 

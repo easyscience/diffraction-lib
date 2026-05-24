@@ -716,9 +716,10 @@ class EmceeMinimizer(MinimizerBase):
             burn_steps=0 if resume else self.nburn,
         )
         if resume:
+            initial_state = self._resume_initial_state(backend)
             self._sample_with_progress(
                 sampler=sampler,
-                initial_state=None,
+                initial_state=initial_state,
                 iterations=int(extra_steps),
                 reporter=reporter,
                 skip_initial_state_check=True,
@@ -765,6 +766,15 @@ class EmceeMinimizer(MinimizerBase):
             return int(getattr(backend, 'iteration', 0))
         except (AttributeError, TypeError, ValueError):
             return 0
+
+    @staticmethod
+    def _resume_initial_state(backend: object) -> object:
+        """Return the last persisted emcee state for resume runs."""
+        try:
+            return backend.get_last_sample()
+        except AttributeError as exc:
+            msg = 'Existing emcee chain has no last sample; start a fresh run.'
+            raise ValueError(msg) from exc
 
     @staticmethod
     def _build_log_probability(
