@@ -571,8 +571,6 @@ def _has_persisted_fit_state_sections(block: object) -> bool:
     """Return True when any persisted fit-state section is present."""
     scalar_tags = (
         '_fit_result.result_kind',
-        '_minimizer.runtime_seconds',
-        '_minimizer.best_log_posterior',
     )
     loop_tags = (
         '_fit_parameter.param_unique_name',
@@ -610,6 +608,29 @@ def _restore_persisted_fit_state(analysis: object, block: object) -> None:
         )
 
 
+_MINIMIZER_OUTPUT_LEGACY_TAGS = (
+    '_minimizer.objective_name',
+    '_minimizer.objective_value',
+    '_minimizer.n_data_points',
+    '_minimizer.n_parameters',
+    '_minimizer.n_free_parameters',
+    '_minimizer.degrees_of_freedom',
+    '_minimizer.covariance_available',
+    '_minimizer.correlation_available',
+    '_minimizer.runtime_seconds',
+    '_minimizer.iterations_performed',
+    '_minimizer.exit_reason',
+    '_minimizer.point_estimate_name',
+    '_minimizer.sampler_completed',
+    '_minimizer.credible_interval_inner',
+    '_minimizer.credible_interval_outer',
+    '_minimizer.acceptance_rate_mean',
+    '_minimizer.gelman_rubin_max',
+    '_minimizer.effective_sample_size_min',
+    '_minimizer.best_log_posterior',
+)
+
+
 def _collect_legacy_analysis_tags(block: object) -> list[str]:
     """Return deprecated analysis CIF tags present in a block."""
     legacy_tags: list[str] = []
@@ -617,6 +638,9 @@ def _collect_legacy_analysis_tags(block: object) -> list[str]:
         legacy_tags.append('_joint_fit_experiment.id')
     if _has_cif_loop(block, '_joint_fit_experiment.weight'):
         legacy_tags.append('_joint_fit_experiment.weight')
+    for tag in _MINIMIZER_OUTPUT_LEGACY_TAGS:
+        if _has_cif_value(block, tag):
+            legacy_tags.append(tag)
     return legacy_tags
 
 
@@ -629,7 +653,8 @@ def _raise_for_legacy_analysis_tags(block: object) -> None:
     msg = (
         'Legacy analysis CIF tags are no longer supported: '
         f'{legacy_tags}. Use _minimizer.type, _fitting_mode.type, '
-        '_minimizer.*, _joint_fit.experiment_id, and _joint_fit.weight.'
+        '_minimizer.* for settings, _fit_result.* for fit outputs, '
+        '_joint_fit.experiment_id, and _joint_fit.weight.'
     )
     raise ValueError(msg)
 

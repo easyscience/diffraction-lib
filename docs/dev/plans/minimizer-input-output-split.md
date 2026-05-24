@@ -395,7 +395,7 @@ Mark `[x]` as each step lands.
 
       Commit: `Remove Bayesian output descriptors from minimizer base`
 
-- [ ] **P1.11 — Update CIF emit/read for the split.** In
+- [x] **P1.11 — Update CIF emit/read for the split.** In
       `src/easydiffraction/io/cif/serialize.py`:
 
   **No category-list reordering is performed in this step.** Neither
