@@ -166,7 +166,7 @@ Affected ADRs that this plan amends (per the ADR's §"ADRs amended"):
 
 Mark `[x]` as each step lands.
 
-- [ ] **P1.1 — Rename `FitResult` to `FitResultBase`; add reset
+- [x] **P1.1 — Rename `FitResult` to `FitResultBase`; add reset
       hooks; update every import site.** In
       `src/easydiffraction/analysis/categories/fit_result/default.py`,
       rename the class. The factory `@register` decorator stays on

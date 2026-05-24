@@ -15,7 +15,7 @@ from easydiffraction.analysis.categories.aliases.factory import AliasesFactory
 from easydiffraction.analysis.categories.constraints.factory import ConstraintsFactory
 from easydiffraction.analysis.categories.fit_parameter_correlations import FitParameterCorrelations
 from easydiffraction.analysis.categories.fit_parameters import FitParameters
-from easydiffraction.analysis.categories.fit_result import FitResult
+from easydiffraction.analysis.categories.fit_result import FitResultBase
 from easydiffraction.analysis.categories.fitting_mode import FittingMode
 from easydiffraction.analysis.categories.fitting_mode import FittingModeFactory
 from easydiffraction.analysis.categories.joint_fit import JointFitCollection
@@ -429,7 +429,7 @@ class _AnalysisPersistedCategoryAccessorsMixin:
         return self._fit_parameters
 
     @property
-    def fit_result(self) -> FitResult:
+    def fit_result(self) -> FitResultBase:
         """Persisted common fit-result status metadata."""
         return self._fit_result
 
@@ -480,7 +480,7 @@ class Analysis(
         )
         self._sequential_fit_extract = SequentialFitExtractCollection()
         self._fit_parameters = FitParameters()
-        self._fit_result = FitResult()
+        self._fit_result = FitResultBase()
         self._fit_parameter_correlations = FitParameterCorrelations()
         self._has_persisted_fit_state_data = False
         self._persisted_fit_state_sidecar: dict[str, object] = {}
@@ -1205,7 +1205,7 @@ class Analysis(
         """Reset all persisted fit-state categories before a new fit."""
         self._clear_minimizer_result_projection()
         self._fit_parameters = FitParameters()
-        self._fit_result = FitResult()
+        self._fit_result = FitResultBase()
         self._fit_parameter_correlations = FitParameterCorrelations()
         self._set_has_persisted_fit_state(value=False)
         self._persisted_fit_state_sidecar = {}
