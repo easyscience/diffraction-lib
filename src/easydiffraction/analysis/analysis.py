@@ -994,17 +994,17 @@ class Analysis(
             msg = 'extra_steps must be a positive integer when resume=True.'
             raise ValueError(msg)
 
-    def _warn_results_sidecar_overwrite(self) -> None:
-        """Warn before persisted sidecar arrays are overwritten."""
+    def _prepare_results_sidecar_for_new_fit(self) -> None:
+        """Warn and remove persisted sidecar arrays before a fresh fit."""
         project_path = self.project.info.path
         if project_path is None:
             return
 
         from easydiffraction.io.results_sidecar import (  # noqa: PLC0415
-            warn_analysis_results_sidecar_overwrite,
+            prepare_analysis_results_sidecar_for_new_fit,
         )
 
-        warn_analysis_results_sidecar_overwrite(analysis_dir=project_path / 'analysis')
+        prepare_analysis_results_sidecar_for_new_fit(analysis_dir=project_path / 'analysis')
 
     def _prepare_joint_fit(self) -> None:
         """
@@ -1839,7 +1839,7 @@ class Analysis(
             return None
 
         if not resume:
-            self._warn_results_sidecar_overwrite()
+            self._prepare_results_sidecar_for_new_fit()
 
         # Apply constraints before fitting so that user-constrained
         # parameters are marked and excluded from the free parameter
@@ -1913,7 +1913,7 @@ class Analysis(
 
         self._set_fitting_mode_type(FitModeEnum.SEQUENTIAL.value)
         self._update_categories()
-        self._warn_results_sidecar_overwrite()
+        self._prepare_results_sidecar_for_new_fit()
         self._clear_persisted_fit_state()
 
         max_workers_value = self._sequential_fit.max_workers.value

@@ -580,7 +580,7 @@ Mark `[x]` as each step lands.
 
   Commit: `Wire emcee resume through fit stack`
 
-- [ ] **P1.5a — Make `results.h5` append-on-save and add an explicit
+- [x] **P1.5a — Make `results.h5` append-on-save and add an explicit
       truncate-on-new-fit prep step.** Two coordinated changes that land
       in a single commit because they jointly preserve the ADR lifecycle
       (resume keeps `/emcee_chain`; new fit removes it).
