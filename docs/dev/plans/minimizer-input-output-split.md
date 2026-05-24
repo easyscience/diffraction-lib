@@ -166,12 +166,41 @@ Affected ADRs that this plan amends (per the ADR's §"ADRs amended"):
 
 Mark `[x]` as each step lands.
 
-- [ ] **P1.1 — Rename `FitResult` to `FitResultBase`; update every
-      import site.** In
+- [ ] **P1.1 — Rename `FitResult` to `FitResultBase`; add reset
+      hooks; update every import site.** In
       `src/easydiffraction/analysis/categories/fit_result/default.py`,
       rename the class. The factory `@register` decorator stays on
       the renamed class so the default-tag lookup keeps working until
       P1.4 extends the factory.
+
+      Add two class-level hooks to `FitResultBase` matching the
+      `MinimizerCategoryBase` shape introduced by the consolidation
+      work
+      ([`minimizer/base.py:69-74`](../../../src/easydiffraction/analysis/categories/minimizer/base.py)):
+
+      ```python
+      _result_descriptor_names: ClassVar[tuple[str, ...]] = (
+          'success', 'message', 'iterations',
+          'fitting_time', 'reduced_chi_square', 'result_kind',
+      )
+
+      def _reset_result_descriptors(self) -> None:
+          """Reset fit-result descriptors to declared defaults."""
+          for name in self._result_descriptor_names:
+              descriptor = getattr(self, name)
+              if isinstance(descriptor, GenericDescriptorBase):
+                  descriptor.value = descriptor._value_spec.default_value()
+      ```
+
+      `LeastSquaresFitResult` (P1.2) and `BayesianFitResult` (P1.3)
+      then add their own field names to `_result_descriptor_names`
+      so the inherited helper resets every relevant descriptor.
+
+      This must land in P1.1 because P1.6 retargets
+      `_clear_minimizer_result_projection` (renamed
+      `_clear_fit_result_projection`) to call
+      `self.fit_result._reset_result_descriptors()`, and that method
+      must exist on `FitResultBase` before the swap is wired.
 
       Update every package-level import that referenced the old
       name. `git grep -nP '\bFitResult\b' src/ tests/` lists the
@@ -198,7 +227,7 @@ Mark `[x]` as each step lands.
       module path, not the old bare class. Tests are migrated by
       P2.1.
 
-      Commit: `Rename FitResult to FitResultBase`
+      Commit: `Rename FitResult to FitResultBase, add reset hooks`
 
 - [ ] **P1.2 — Add `LeastSquaresFitResult` class.** New file
       `src/easydiffraction/analysis/categories/fit_result/lsq.py`.
@@ -370,10 +399,24 @@ Mark `[x]` as each step lands.
       `src/easydiffraction/io/cif/serialize.py`:
   - `_minimizer.*` emit/read continues to handle settings only (the
     minimizer category's `from_cif` walks its remaining descriptors).
-  - Add `_fit_result.*` emit/read after `_minimizer.*` so the paired
-    class is known before the result descriptors load. The order is
-    enforced by `Analysis._serializable_categories()` putting
-    `self.fit_result` directly after `self.minimizer`.
+  - The read-side order is **already** correct in the current code
+    ([`serialize.py:553-555`](../../../src/easydiffraction/io/cif/serialize.py)):
+    `_set_minimizer_type` runs before `analysis.minimizer.from_cif`,
+    and the paired `fit_result` swap fires inside
+    `_set_minimizer_type` after P1.6. The `fit_result.from_cif(block)`
+    call inside `_restore_common_fit_state`
+    ([line 590](../../../src/easydiffraction/io/cif/serialize.py))
+    therefore reads `_fit_result.*` into the already-paired class.
+    No reordering is required.
+  - The emit-side order follows
+    `Analysis._serializable_categories()` and
+    `_fit_state_categories()` exactly as today: `self.fit_result` is
+    **conditionally** included only when persisted fit state exists
+    (`self._has_persisted_fit_state()`). Pre-fit projects continue
+    to emit no `_fit_result.*` tags. Do not promote `fit_result` to
+    an unconditional category in `_serializable_categories` —
+    keeping the conditional preserves the current "no spurious
+    defaults emitted before a fit" behavior.
   - Update the legacy-tag rejection message in
     `_raise_for_legacy_analysis_tags` to include the now-removed
     `_minimizer.<output_name>` tags (e.g.
@@ -383,19 +426,21 @@ Mark `[x]` as each step lands.
 
   Commit: `Serialize fit outputs to _fit_result.* tags`
 
-- [ ] **P1.12 — Update `Analysis._serializable_categories` and
-      `_fit_state_categories`.** In
-      `src/easydiffraction/analysis/analysis.py`:
-  - `_serializable_categories` already includes `self.fit_result` via
-    the `_fit_state_categories` helper; verify after P1.6 that
-    `self.fit_result` is the new paired instance, not the old
-    common-only `FitResult`.
-  - The dead branch in `_fit_state_categories` (review-9 finding F4,
-    open issue #101) can be cleaned up here since this step is already
-    touching the function. The plan does not require the cleanup; if
-    taken, mention "closes #101" in the commit message.
+- [ ] **P1.12 — Confirm `_fit_state_categories` returns the paired
+      `fit_result`.** In
+      `src/easydiffraction/analysis/analysis.py`,
+      `_fit_state_categories()` already returns `[self.fit_parameters,
+      self.fit_result, self.fit_parameter_correlations]` when
+      persisted fit state exists. After P1.6 wires the paired-class
+      construction, `self.fit_result` is automatically the paired
+      `LeastSquaresFitResult` / `BayesianFitResult` instance — no
+      method body change is needed. The dead branch in
+      `_fit_state_categories` (review-9 finding F4, open issue #101)
+      can be cleaned up here since this step is already reading the
+      function. The plan does not require the cleanup; if taken,
+      mention "closes #101" in the commit message.
 
-  Commit: `Verify fit_result is the paired instance in serializer`
+  Commit: `Confirm fit_result paired instance flows through serializer`
 
 - [ ] **P1.13 — Update `project.display.fit.results()` to add a
       "Settings used" block.** In
@@ -425,9 +470,36 @@ Mark `[x]` as each step lands.
 
 - [ ] **P1.15 — Update tutorials.** `git grep` `docs/docs/tutorials/`
       for `analysis.minimizer.<output_field>` references and rewrite
-      each to `analysis.fit_result.<output_field>`. The replacement
-      list is the union of fields removed in P1.9 and P1.10. Run
-      `pixi run notebook-prepare` to regenerate the `.ipynb` files.
+      each per the migration table below. The two **collapsed** rows
+      target existing common fields on `FitResultBase` (already
+      written by the existing common projection writer); they are not
+      1:1 renames of the old setter/getter name. The other rows are
+      moved-but-keep-the-name relocations.
+
+      | Old (removed at P1.9 / P1.10) | New | Notes |
+      | --- | --- | --- |
+      | `analysis.minimizer.runtime_seconds` | `analysis.fit_result.fitting_time` | Collapsed onto existing common field; setter remains `fit_result._set_fitting_time(...)` (already in `FitResultBase`). |
+      | `analysis.minimizer.iterations_performed` | `analysis.fit_result.iterations` | Collapsed onto existing common field; setter remains `fit_result._set_iterations(...)`. |
+      | `analysis.minimizer.objective_name` | `analysis.fit_result.objective_name` | Moved to `LeastSquaresFitResult`. |
+      | `analysis.minimizer.objective_value` | `analysis.fit_result.objective_value` | Moved to `LeastSquaresFitResult`. |
+      | `analysis.minimizer.n_data_points` | `analysis.fit_result.n_data_points` | Moved to `LeastSquaresFitResult`. |
+      | `analysis.minimizer.n_parameters` | `analysis.fit_result.n_parameters` | Moved to `LeastSquaresFitResult`. |
+      | `analysis.minimizer.n_free_parameters` | `analysis.fit_result.n_free_parameters` | Moved to `LeastSquaresFitResult`. |
+      | `analysis.minimizer.degrees_of_freedom` | `analysis.fit_result.degrees_of_freedom` | Moved to `LeastSquaresFitResult`. |
+      | `analysis.minimizer.covariance_available` | `analysis.fit_result.covariance_available` | Moved to `LeastSquaresFitResult`. |
+      | `analysis.minimizer.correlation_available` | `analysis.fit_result.correlation_available` | Moved to `LeastSquaresFitResult`. |
+      | `analysis.minimizer.exit_reason` | `analysis.fit_result.exit_reason` | Moved to `LeastSquaresFitResult`. |
+      | `analysis.minimizer.point_estimate_name` | `analysis.fit_result.point_estimate_name` | Moved to `BayesianFitResult`. |
+      | `analysis.minimizer.sampler_completed` | `analysis.fit_result.sampler_completed` | Moved to `BayesianFitResult`. |
+      | `analysis.minimizer.credible_interval_inner` | `analysis.fit_result.credible_interval_inner` | Moved to `BayesianFitResult`. |
+      | `analysis.minimizer.credible_interval_outer` | `analysis.fit_result.credible_interval_outer` | Moved to `BayesianFitResult`. |
+      | `analysis.minimizer.acceptance_rate_mean` | `analysis.fit_result.acceptance_rate_mean` | Moved to `BayesianFitResult`. |
+      | `analysis.minimizer.gelman_rubin_max` | `analysis.fit_result.gelman_rubin_max` | Moved to `BayesianFitResult`. |
+      | `analysis.minimizer.effective_sample_size_min` | `analysis.fit_result.effective_sample_size_min` | Moved to `BayesianFitResult`. |
+      | `analysis.minimizer.best_log_posterior` | `analysis.fit_result.best_log_posterior` | Moved to `BayesianFitResult`. |
+
+      Run `pixi run notebook-prepare` to regenerate the `.ipynb`
+      files.
 
       Verification grep (must return empty against
       `docs/docs/tutorials/`):
@@ -467,11 +539,23 @@ required by `.github/copilot-instructions.md` → **Workflow**.
 
 - [ ] **P2.1 — Migrate existing tests off the removed minimizer
       output fields.** `git grep` `tests/` for the same patterns as
-      P1.15. Replace each `analysis.minimizer.<output_field>` with
-      `analysis.fit_result.<output_field>`. Same for `_set_*` writers
-      in test fixtures (e.g.
-      `analysis.minimizer._set_runtime_seconds(...)` →
-      `analysis.fit_result._set_runtime_seconds(...)`).
+      P1.15. Apply the same migration table from P1.15 — including
+      the two collapsed rows (`runtime_seconds` → `fitting_time`,
+      `iterations_performed` → `iterations`) where the setter name
+      also changes. Examples:
+
+      - Reader rewrite:
+        `analysis.minimizer.gelman_rubin_max` →
+        `analysis.fit_result.gelman_rubin_max`.
+      - Reader rewrite with collapse:
+        `analysis.minimizer.runtime_seconds` →
+        `analysis.fit_result.fitting_time`.
+      - Setter rewrite (moved-but-kept name):
+        `analysis.minimizer._set_gelman_rubin_max(...)` →
+        `analysis.fit_result._set_gelman_rubin_max(...)`.
+      - Setter rewrite (collapsed name):
+        `analysis.minimizer._set_runtime_seconds(...)` →
+        `analysis.fit_result._set_fitting_time(...)`.
 
       Layout check:
 
