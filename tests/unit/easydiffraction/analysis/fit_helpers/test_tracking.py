@@ -160,7 +160,8 @@ def test_notebook_fit_stop_control_renders_interrupt_button(monkeypatch):
         pass
 
     assert 'Stop fitting' in html_updates[0]
-    assert "kernelmenu:interrupt" in javascript_outputs[0]
+    assert "api/kernels/" in javascript_outputs[0]
+    assert "Interrupt sent..." in javascript_outputs[0]
     assert html_updates[-1] == ''
 
 
@@ -194,3 +195,13 @@ def test_notebook_fit_stop_control_marks_interrupted(monkeypatch):
         pass
 
     assert 'Fitting stopped.' in html_updates[-1]
+
+
+def test_notebook_fit_stop_control_extracts_kernel_id_from_connection_file():
+    from easydiffraction.display.progress import NotebookFitStopControl
+
+    kernel_id = NotebookFitStopControl._kernel_id_from_connection_file(
+        'kernel-abc-123.json'
+    )
+
+    assert kernel_id == 'abc-123'

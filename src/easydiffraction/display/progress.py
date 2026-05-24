@@ -8,6 +8,7 @@ import html
 import uuid
 from contextlib import AbstractContextManager
 from contextlib import suppress
+from pathlib import Path
 from time import monotonic
 from typing import TYPE_CHECKING
 from typing import Self
@@ -504,6 +505,7 @@ class NotebookFitStopControl(AbstractContextManager):
         self._verbosity = verbosity
         self._display_handle: object | None = None
         self._element_id = f'ed-fit-stop-{uuid.uuid4().hex}'
+        self._kernel_id = self._current_kernel_id()
 
     def __enter__(self) -> Self:
         """Show the stop button."""
@@ -600,10 +602,12 @@ class NotebookFitStopControl(AbstractContextManager):
     def _interrupt_javascript(self) -> str:
         button_id = f'{self._element_id}-button'
         status_id = f'{self._element_id}-status'
+        kernel_id = self._kernel_id
         return f"""
 (function() {{
   const button = document.getElementById({button_id!r});
   const status = document.getElementById({status_id!r});
+  const kernelId = {kernel_id!r};
   if (!button) {{
     return;
   }}
@@ -614,59 +618,157 @@ class NotebookFitStopControl(AbstractContextManager):
     }}
   }}
 
-  function executeCommand(commandId) {{
-    const app = window.jupyterapp || window.JupyterLab || window.jupyterlab;
-    if (!app || !app.commands) {{
-      return false;
+  function pageConfig() {{
+    const element = document.getElementById('jupyter-config-data');
+    if (!element || !element.textContent) {{
+      return {{}};
     }}
     try {{
-      app.commands.execute(commandId);
-      return true;
+      return JSON.parse(element.textContent);
     }} catch (error) {{
-      return false;
+      return {{}};
     }}
   }}
 
-  function clickInterruptButton() {{
-    const selectors = [
-      '[data-command="kernelmenu:interrupt"]',
-      '[data-command="notebook:interrupt-kernel"]',
-      'button[title*="Interrupt"]',
-      'button[aria-label*="Interrupt"]'
-    ];
-    for (const selector of selectors) {{
-      const element = document.querySelector(selector);
-      if (element && element !== button) {{
-        element.click();
-        return true;
+  function baseUrl(config) {{
+    const configured = config.baseUrl || config.base_url ||
+      (window.Jupyter && Jupyter.notebook && Jupyter.notebook.base_url);
+    if (configured) {{
+      return configured.endsWith('/') ? configured : configured + '/';
+    }}
+    const markers = ['/lab/', '/notebooks/', '/tree/'];
+    for (const marker of markers) {{
+      const index = window.location.pathname.indexOf(marker);
+      if (index >= 0) {{
+        return window.location.pathname.slice(0, index + 1);
       }}
     }}
-    return false;
+    return '/';
   }}
 
-  button.addEventListener('click', function() {{
+  function token(config) {{
+    return config.token || new URLSearchParams(window.location.search).get('token') || '';
+  }}
+
+  function cookie(name) {{
+    const prefix = name + '=';
+    for (const part of document.cookie.split(';')) {{
+      const trimmed = part.trim();
+      if (trimmed.startsWith(prefix)) {{
+        return decodeURIComponent(trimmed.slice(prefix.length));
+      }}
+    }}
+    return '';
+  }}
+
+  function notebookPath() {{
+    const decoded = decodeURIComponent(window.location.pathname);
+    const markers = ['/lab/tree/', '/notebooks/', '/tree/'];
+    for (const marker of markers) {{
+      const index = decoded.indexOf(marker);
+      if (index >= 0) {{
+        return decoded.slice(index + marker.length);
+      }}
+    }}
+    return '';
+  }}
+
+  async function kernelFromSessions(config) {{
+    const url = new URL(baseUrl(config) + 'api/sessions', window.location.origin);
+    const authToken = token(config);
+    if (authToken) {{
+      url.searchParams.set('token', authToken);
+    }}
+    const response = await fetch(url, {{credentials: 'same-origin'}});
+    if (!response.ok) {{
+      return '';
+    }}
+    const sessions = await response.json();
+    const path = notebookPath();
+    const session = sessions.find((item) => item.path === path) || sessions[0];
+    return session && session.kernel ? session.kernel.id : '';
+  }}
+
+  async function interruptKernel(config, resolvedKernelId) {{
+    const url = new URL(
+      baseUrl(config) + 'api/kernels/' + resolvedKernelId + '/interrupt',
+      window.location.origin
+    );
+    const authToken = token(config);
+    if (authToken) {{
+      url.searchParams.set('token', authToken);
+    }}
+    const xsrfToken = cookie('_xsrf');
+    const headers = {{}};
+    if (xsrfToken) {{
+      headers['X-XSRFToken'] = xsrfToken;
+    }}
+    const response = await fetch(url, {{
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: headers
+    }});
+    return response.ok;
+  }}
+
+  button.addEventListener('click', async function() {{
     button.disabled = true;
     setStatus('Stopping...');
-    let interrupted = false;
-    if (window.Jupyter && Jupyter.notebook && Jupyter.notebook.kernel) {{
-      try {{
-        Jupyter.notebook.kernel.interrupt();
-        interrupted = true;
-      }} catch (error) {{
-        interrupted = false;
+    const config = pageConfig();
+    try {{
+      const resolvedKernelId = kernelId || await kernelFromSessions(config);
+      if (!resolvedKernelId) {{
+        throw new Error('Could not resolve the current kernel id.');
       }}
-    }}
-    interrupted = interrupted ||
-      executeCommand('kernelmenu:interrupt') ||
-      executeCommand('notebook:interrupt-kernel') ||
-      clickInterruptButton();
-    if (!interrupted) {{
+      const interrupted = await interruptKernel(config, resolvedKernelId);
+      if (!interrupted) {{
+        throw new Error('Jupyter Server rejected the interrupt request.');
+      }}
+      setStatus('Interrupt sent...');
+    }} catch (error) {{
       button.disabled = false;
       setStatus('Use Kernel > Interrupt to stop this fit.');
     }}
   }});
 }})();
 """
+
+    @staticmethod
+    def _current_kernel_id() -> str:
+        """Return the active ipykernel id when available."""
+        try:
+            from IPython import get_ipython  # type: ignore[import-not-found]  # noqa: PLC0415
+        except ImportError:  # pragma: no cover - optional dependency
+            return ''
+
+        shell = get_ipython()
+        kernel = getattr(shell, 'kernel', None)
+        kernel_id = getattr(kernel, 'kernel_id', None)
+        if kernel_id:
+            return str(kernel_id)
+
+        try:
+            from ipykernel.connect import (  # type: ignore[import-not-found]  # noqa: PLC0415
+                get_connection_file,
+            )
+        except ImportError:  # pragma: no cover - optional dependency
+            return ''
+
+        with suppress(Exception):
+            return NotebookFitStopControl._kernel_id_from_connection_file(
+                get_connection_file()
+            )
+        return ''
+
+    @staticmethod
+    def _kernel_id_from_connection_file(connection_file: str) -> str:
+        """Extract the kernel id from an ipykernel connection file."""
+        file_name = Path(connection_file).name
+        prefix = 'kernel-'
+        suffix = '.json'
+        if not file_name.startswith(prefix) or not file_name.endswith(suffix):
+            return ''
+        return file_name[len(prefix) : -len(suffix)]
 
 
 def notebook_fit_stop_control(
