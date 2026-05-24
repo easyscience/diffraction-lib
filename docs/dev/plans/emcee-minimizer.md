@@ -6,11 +6,13 @@
 
 ## Prerequisite
 
-This plan **must not start** until
-[`minimizer-category-consolidation.md`](minimizer-category-consolidation.md)
-is fully implemented, merged, and the ADR is in `accepted/`. The new
-`Analysis.minimizer` + `Analysis.minimizer_type` surface is a hard
-dependency; without it this plan duplicates work.
+This plan depends on the
+[`minimizer-category-consolidation`](../adrs/accepted/minimizer-category-consolidation.md)
+ADR and the
+[`switchable-category-owned-selectors`](../adrs/accepted/switchable-category-owned-selectors.md)
+ADR. Both are accepted and the implementing work is merged; the
+`Analysis.minimizer` + `Analysis.minimizer.type` surface emcee builds on
+is in place.
 
 ## ADR
 
@@ -73,13 +75,12 @@ before proceeding.
   `de_snooker`, `walk`). Mixtures deferred to a later plan. Record this
   in the descriptor's `description=`.
 
-## Cleanup opportunities inherited from the consolidation plan
+## Cleanup opportunities inherited from earlier work
 
-Review 8 of
-[`minimizer-category-consolidation.md`](minimizer-category-consolidation.md)
-identified four cleanup opportunities that touch code this plan will
-modify. Fold them in while the surrounding code is already being edited,
-rather than queuing a separate refactor PR.
+The consolidation work left four cleanup opportunities tracked in
+[`docs/dev/issues/open.md`](../issues/open.md) that touch code this
+plan will modify. Fold them in while the surrounding code is already
+being edited, rather than queuing a separate refactor PR.
 
 - **F1 — Collapse duplicate predictive-cache-key helpers.**
   `Analysis._predictive_cache_key` and
