@@ -175,10 +175,10 @@ reconciliation), stop and ask before proceeding.
 
 ## Cleanup opportunities inherited from earlier work
 
-The input/output-split work left four cleanup items still open in
-[`docs/dev/issues/open.md`](../issues/open.md) that touch code this plan
-modifies. Fold them in opportunistically while the surrounding code is
-already being edited; the plan does not block on them.
+The input/output-split work left four cleanup items open when this plan
+was written. They touch code this plan modifies, so fold them in
+opportunistically while the surrounding code is already being edited;
+the plan does not block on them.
 
 - **#100 — Collapse duplicate predictive-cache-key helpers.**
   `Analysis._predictive_cache_key`
@@ -187,17 +187,18 @@ already being edited; the plan does not block on them.
   ([plotting.py:3823](../../../src/easydiffraction/display/plotting.py))
   build the identical string; keep one canonical helper. P1.6 may touch
   the predictive plotting path while validating emcee posterior
-  emission.
+  emission. Resolved in P1.6.
 - **#101 — Remove dead branch in `Analysis._fit_state_categories`.**
   Both branches return the same list since the Bayesian categories were
   absorbed. One-line fix at
   [analysis.py:1184-1205](../../../src/easydiffraction/analysis/analysis.py).
+  Resolved in P1.6.
 - **#102 — Drop compute-and-ignore `result_kind` validation.**
   `_restore_persisted_fit_state`
   ([serialize.py:590-606](../../../src/easydiffraction/io/cif/serialize.py))
   calls `FitResultKindEnum(result_kind_value)` for its side effect only.
   Move the warning into the descriptor setter, or extract a validator
-  helper.
+  helper. Still open.
 - **#103 — Make `_sync_engine_from_minimizer_category` skip-keys
   declarative.** This plan adds `proposal_moves` as a second
   engine-level "ambient" key (alongside `random_seed`). The current
@@ -206,7 +207,7 @@ already being edited; the plan does not block on them.
   should become a class-level
   `_engine_sync_skip_keys: ClassVar[frozenset[str]] = frozenset(...)` on
   `MinimizerCategoryBase` before the second member lands. Recommend
-  addressing as part of P1.5.
+  addressing as part of P1.5. Resolved in P1.5.
 
 When the matching open-issue is fully resolved, move it to
 [`closed.md`](../issues/closed.md) and update
@@ -569,7 +570,7 @@ Mark `[x]` as each step lands.
     the `Analysis` flow — the `Analysis.fit` guard above fires first in
     normal use.
 
-  **Open issue #103 cleanup.** Introduce
+  **Issue #103 cleanup.** Introduce
   `_engine_sync_skip_keys: ClassVar[frozenset[str]] = frozenset({'random_seed', 'parallel_workers'})`
   on `MinimizerCategoryBase`, and update
   `_sync_engine_from_minimizer_category`
@@ -631,7 +632,7 @@ Mark `[x]` as each step lands.
 
   Commit: `Append-on-save plus explicit truncate-on-new-fit prep`
 
-- [ ] **P1.6 — Route emcee outputs into the existing fit_result and
+- [x] **P1.6 — Route emcee outputs into the existing fit_result and
       sidecar pipeline.** Verify the existing
       `_store_posterior_fit_projection`
       ([analysis.py](../../../src/easydiffraction/analysis/analysis.py))
@@ -644,7 +645,7 @@ Mark `[x]` as each step lands.
       vs the DREAM extraction helper). Cache derivations (KDE, pair
       grids) reuse the existing pipeline.
 
-      Opportunistic cleanup: address open issue #100 if the
+      Opportunistic cleanup: address issue #100 if the
       predictive plotting path is being touched anyway. Collapse
       `Analysis._predictive_cache_key` and
       `Plotter._posterior_predictive_key` into one canonical helper.

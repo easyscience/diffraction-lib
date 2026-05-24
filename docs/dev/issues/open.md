@@ -1668,52 +1668,6 @@ sampler progress displays — any fix should keep their visuals consistent
 
 ---
 
-## 100. 🟢 Collapse Duplicate Predictive-Cache-Key Helpers
-
-**Type:** Refactor / drift risk **Source:** Review 8 finding F1.
-**Recommended:** fold into the emcee-minimizer plan while the
-surrounding code is being touched.
-
-`Analysis._predictive_cache_key`
-([analysis.py:478-487](../../../src/easydiffraction/analysis/analysis.py))
-and `Plotter._posterior_predictive_key`
-([plotting.py:3795-3804](../../../src/easydiffraction/display/plotting.py))
-both return `f'{name}:{x_axis_name}:{suffix}'`. The strings are
-identical today; a future refactor that changes one will silently break
-lookup against the other.
-
-**Fix:** collapse to a single helper — either move the canonical helper
-to a shared module (e.g. `analysis/fit_helpers/bayesian.py`), or have
-`Analysis._store_posterior_predictive_projection` and
-`_restored_predictive_summaries` reuse
-`Plotter._posterior_predictive_key` from `project.rendering.plotter`
-(already accessed nearby).
-
-**Depends on:** nothing.
-
----
-
-## 101. 🟢 Remove Dead Branch in `_fit_state_categories`
-
-**Type:** Dead code **Source:** Review 8 finding F4. **Recommended:**
-fold into the emcee-minimizer plan.
-
-`Analysis._fit_state_categories`
-([analysis.py:1135-1148](../../../src/easydiffraction/analysis/analysis.py))
-has
-`if result_kind is FitResultKindEnum.DETERMINISTIC: return categories`
-followed by `return categories`. Both branches return the same list
-since P1.10 absorbed Bayesian-only categories.
-
-**Fix:** simplify to an unconditional `return categories`. Keep the
-preceding `try/except` for its warning side-effect; extract it so the
-function body reads cleanly. If a future Bayesian-only category list is
-expected, add a TODO instead.
-
-**Depends on:** nothing.
-
----
-
 ## 102. 🟢 Drop Compute-and-Ignore `result_kind` Validation in CIF Restore
 
 **Type:** Dead code / clarity **Source:** Review 8 finding F7.
@@ -1730,27 +1684,6 @@ Bayesian-specific categories there is nothing else to do per
 the warning, or move the warning into `fit_result.result_kind` setter so
 invalid values are caught on read. Either removes the "compute and
 ignore" pattern.
-
-**Depends on:** nothing.
-
----
-
-## 103. 🟢 Make `_sync_engine_from_minimizer_category` Skip-Keys Declarative
-
-**Type:** Refactor / discoverability **Source:** Review 8 finding F10.
-**Recommended:** fold into the emcee-minimizer plan (it adds
-`proposal_moves` which is also engine-level).
-
-`Analysis._sync_engine_from_minimizer_category`
-([analysis.py:1077-1089](../../../src/easydiffraction/analysis/analysis.py))
-hardcodes `if key == 'random_seed': continue` to keep call-time seed
-threading via `_resolved_fit_random_seed`. A second ambient key joining
-it (emcee `proposal_moves`) will need the same treatment.
-
-**Fix:** declare
-`_engine_sync_skip_keys: ClassVar[frozenset[str]] = frozenset({'random_seed'})`
-on `MinimizerCategoryBase` (or per family) and filter against it. Adds
-declarative, growing coverage.
 
 **Depends on:** nothing.
 

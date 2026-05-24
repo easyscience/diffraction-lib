@@ -4,6 +4,34 @@ Issues that have been fully resolved. Kept for historical reference.
 
 ---
 
+## 103. Make `_sync_engine_from_minimizer_category` Skip-Keys Declarative
+
+Closed by
+[`emcee-minimizer.md`](../plans/emcee-minimizer.md). Minimizer
+categories now declare `_engine_sync_skip_keys`, and analysis sync
+filters against that set instead of hardcoding skipped keys.
+
+---
+
+## 101. Remove Dead Branch in `_fit_state_categories`
+
+Closed by
+[`emcee-minimizer.md`](../plans/emcee-minimizer.md). The deterministic
+branch that returned the same category list as the fallthrough path was
+removed while preserving unsupported `result_kind` warning behavior.
+
+---
+
+## 100. Collapse Duplicate Predictive-Cache-Key Helpers
+
+Closed by
+[`emcee-minimizer.md`](../plans/emcee-minimizer.md).
+`posterior_predictive_cache_key()` in `analysis.fit_helpers.bayesian`
+is now the single helper used by analysis, plotting, and project
+display code.
+
+---
+
 ## 77. Add Help Methods to Public Discovery Facades
 
 Added consistent `help()` methods for plain user-facing facade classes

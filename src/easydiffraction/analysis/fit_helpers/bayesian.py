@@ -32,6 +32,17 @@ SettingsMap = dict[str, object] | None
 DiagnosticsMap = dict[str, object] | None
 
 
+def posterior_predictive_cache_key(
+    experiment_name: str,
+    x_axis_name: str,
+    *,
+    include_draws: bool = True,
+) -> str:
+    """Return the cache key for one posterior predictive summary."""
+    key_suffix = 'draws' if include_draws else 'band'
+    return f'{experiment_name}:{x_axis_name}:{key_suffix}'
+
+
 @dataclass(slots=True)
 class PosteriorPredictiveSummary:
     """

@@ -19,6 +19,7 @@ import pandas as pd
 from easydiffraction.analysis.enums import FitCorrelationSourceEnum
 from easydiffraction.analysis.enums import FitResultKindEnum
 from easydiffraction.analysis.fit_helpers.bayesian import PosteriorPredictiveSummary
+from easydiffraction.analysis.fit_helpers.bayesian import posterior_predictive_cache_key
 from easydiffraction.datablocks.experiment.item.base import intensity_category_for
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
@@ -3542,12 +3543,12 @@ class Plotter(RendererBase):
             return None
 
         x_axis_name = getattr(x_axis, 'value', x_axis)
-        draw_cache_key = self._posterior_predictive_key(
+        draw_cache_key = posterior_predictive_cache_key(
             expt_name,
             str(x_axis_name),
             include_draws=True,
         )
-        band_cache_key = self._posterior_predictive_key(
+        band_cache_key = posterior_predictive_cache_key(
             expt_name,
             str(x_axis_name),
             include_draws=False,
@@ -3818,17 +3819,6 @@ class Plotter(RendererBase):
                 dtype=int,
             )
         )
-
-    @staticmethod
-    def _posterior_predictive_key(
-        expt_name: str,
-        x_axis_name: str,
-        *,
-        include_draws: bool = True,
-    ) -> str:
-        """Return the cache key for a posterior predictive summary."""
-        key_suffix = 'draws' if include_draws else 'band'
-        return f'{expt_name}:{x_axis_name}:{key_suffix}'
 
     def _get_posterior_inference_data(
         self,

@@ -32,6 +32,7 @@ from easydiffraction.analysis.enums import FitResultKindEnum
 from easydiffraction.analysis.fit_helpers.bayesian import BayesianFitResults
 from easydiffraction.analysis.fit_helpers.bayesian import PosteriorPredictiveSummary
 from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
+from easydiffraction.analysis.fit_helpers.bayesian import posterior_predictive_cache_key
 from easydiffraction.analysis.fit_helpers.reporting import FitResults
 from easydiffraction.analysis.fitting import Fitter
 from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
@@ -524,17 +525,6 @@ class Analysis(
         """Switch the active fitting-mode category."""
         self._replace_fitting_mode(new_type, announce=True)
 
-    @staticmethod
-    def _predictive_cache_key(
-        experiment_name: str,
-        x_axis_name: str,
-        *,
-        include_draws: bool = True,
-    ) -> str:
-        """Return the runtime cache key for one predictive summary."""
-        key_suffix = 'draws' if include_draws else 'band'
-        return f'{experiment_name}:{x_axis_name}:{key_suffix}'
-
     def _live_parameter_map(self) -> dict[str, Parameter]:
         """Return live parameters keyed by unique name."""
         all_parameters = self.project.structures.parameters + self.project.experiments.parameters
@@ -668,7 +658,7 @@ class Analysis(
             )
             restored_predictive[experiment_name] = summary
             restored_predictive[
-                self._predictive_cache_key(
+                posterior_predictive_cache_key(
                     experiment_name,
                     x_axis_name,
                     include_draws=False,
@@ -676,7 +666,7 @@ class Analysis(
             ] = summary
             if summary.draws is not None:
                 restored_predictive[
-                    self._predictive_cache_key(
+                    posterior_predictive_cache_key(
                         experiment_name,
                         x_axis_name,
                         include_draws=True,
@@ -744,15 +734,7 @@ class Analysis(
                     float(self.fit_result.credible_interval_inner.value),
                     float(self.fit_result.credible_interval_outer.value),
                 ),
-                sampler_settings={
-                    'steps': int(sampler_settings.get('steps', 0)),
-                    'burn': int(sampler_settings.get('burn', 0)),
-                    'thin': int(sampler_settings.get('thin', 0)),
-                    'pop': int(sampler_settings.get('pop', 0)),
-                    'parallel': int(sampler_settings.get('parallel', 0)),
-                    'init': str(sampler_settings.get('init', '')),
-                    'random_seed': sampler_settings.get('random_seed'),
-                },
+                sampler_settings=self._restored_bayesian_sampler_settings(sampler_settings),
                 convergence_diagnostics={
                     'converged': False,
                     'max_r_hat': self.fit_result.gelman_rubin_max.value,
@@ -795,6 +777,42 @@ class Analysis(
         restored_results.chi_square = self.fit_result.objective_value.value
         self.fit_results = restored_results
         return restored_results
+
+    def _restored_bayesian_sampler_settings(
+        self,
+        sampler_settings: dict[str, object],
+    ) -> dict[str, object]:
+        """Return display-oriented sampler settings for restored results."""
+        if self.minimizer.type == MinimizerTypeEnum.EMCEE.value:
+            return {
+                'steps': self._int_sampler_setting(sampler_settings, 'nsteps'),
+                'burn': self._int_sampler_setting(sampler_settings, 'nburn'),
+                'thin': self._int_sampler_setting(sampler_settings, 'thin'),
+                'pop': self._int_sampler_setting(sampler_settings, 'nwalkers'),
+                'parallel': self._int_sampler_setting(sampler_settings, 'parallel_workers'),
+                'init': str(sampler_settings.get('initialization_method', '')),
+                'proposal_moves': str(sampler_settings.get('proposal_moves', '')),
+                'random_seed': sampler_settings.get('random_seed'),
+            }
+
+        return {
+            'steps': self._int_sampler_setting(sampler_settings, 'steps'),
+            'burn': self._int_sampler_setting(sampler_settings, 'burn'),
+            'thin': self._int_sampler_setting(sampler_settings, 'thin'),
+            'pop': self._int_sampler_setting(sampler_settings, 'pop'),
+            'parallel': self._int_sampler_setting(sampler_settings, 'parallel'),
+            'init': str(sampler_settings.get('init', '')),
+            'random_seed': sampler_settings.get('random_seed'),
+        }
+
+    @staticmethod
+    def _int_sampler_setting(
+        sampler_settings: dict[str, object],
+        key: str,
+    ) -> int:
+        """Return an integer sampler setting with a zero fallback."""
+        value = sampler_settings.get(key, 0)
+        return 0 if value is None else int(value)
 
     def help(self) -> None:
         """Print a summary of analysis properties and methods."""
@@ -1245,16 +1263,13 @@ class Analysis(
         ]
 
         try:
-            result_kind = FitResultKindEnum(self.fit_result.result_kind.value)
+            FitResultKindEnum(self.fit_result.result_kind.value)
         except ValueError:
             log.warning(
                 'Unsupported fit_result.result_kind while serializing analysis CIF: '
                 f'{self.fit_result.result_kind.value!r}. '
                 'Saving only common fit-state categories.',
             )
-            return categories
-
-        if result_kind is FitResultKindEnum.DETERMINISTIC:
             return categories
 
         return categories
@@ -1640,7 +1655,7 @@ class Analysis(
 
             results.posterior_predictive[summary.experiment_name] = summary
             results.posterior_predictive[
-                self._predictive_cache_key(
+                posterior_predictive_cache_key(
                     summary.experiment_name,
                     str(x_axis_name),
                     include_draws=False,
