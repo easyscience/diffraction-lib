@@ -8,6 +8,7 @@ from contextlib import nullcontext
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from easydiffraction.core.variable import GenericDescriptorBase
 from easydiffraction.datablocks.experiment.item.base import intensity_category_for
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
@@ -17,6 +18,7 @@ from easydiffraction.display.plotting import _MeasVsCalcPlotOptions
 from easydiffraction.display.progress import ACTIVITY_LABEL_PROCESSING
 from easydiffraction.display.progress import activity_indicator
 from easydiffraction.utils.enums import VerbosityEnum
+from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_object_help
 from easydiffraction.utils.utils import render_table
@@ -87,7 +89,42 @@ class FitDisplay:
 
     def results(self) -> None:
         """Show the latest fit summary and fitted parameter table."""
-        self._project.analysis.display.fit_results()
+        analysis = self._project.analysis
+        if analysis.fit_results is None:
+            analysis.display.fit_results()
+            return
+
+        self._show_settings_used()
+        analysis.display.fit_results()
+
+    def _show_settings_used(self) -> None:
+        """Show minimizer settings used for the latest fit."""
+        rows = self._settings_used_rows()
+        if not rows:
+            return
+
+        console.paragraph('Settings used')
+        render_table(
+            columns_headers=['Name', 'Value', 'Description'],
+            columns_alignment=['left', 'right', 'left'],
+            columns_data=rows,
+        )
+
+    def _settings_used_rows(self) -> list[list[str]]:
+        """Return minimizer setting rows for display."""
+        minimizer = self._project.analysis.minimizer
+        rows: list[list[str]] = []
+        for name in minimizer._setting_descriptor_names:
+            descriptor = getattr(minimizer, name)
+            if isinstance(descriptor, GenericDescriptorBase):
+                rows.append([
+                    name,
+                    str(descriptor.value),
+                    descriptor.description or '',
+                ])
+            else:
+                rows.append([name, str(descriptor), ''])
+        return rows
 
     def correlations(
         self,

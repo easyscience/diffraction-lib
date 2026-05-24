@@ -449,7 +449,7 @@ Mark `[x]` as each step lands.
 
   Commit: `Confirm fit_result paired instance flows through serializer`
 
-- [ ] **P1.13 — Update `project.display.fit.results()` to add a
+- [x] **P1.13 — Update `project.display.fit.results()` to add a
       "Settings used" block.** In
       `src/easydiffraction/project/display.py`, extend the existing
       results-display method to print, above the current tables, a
