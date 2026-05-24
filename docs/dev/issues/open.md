@@ -1804,14 +1804,14 @@ instance.
 
 ## 106. 🟢 Document `FitResultBase.result_kind` Default Rationale
 
-**Type:** Code readability **Source:**
-`minimizer-input-output-split` review 6.
+**Type:** Code readability **Source:** `minimizer-input-output-split`
+review 6.
 
 Most `FitResultBase` descriptors use `default=None, allow_none=True` so
 pre-fit CIF output serializes unknown values as `?`. `result_kind`
-intentionally keeps a valid enum default because it drives
-deterministic versus Bayesian projection handling, but that exception
-is not documented in code.
+intentionally keeps a valid enum default because it drives deterministic
+versus Bayesian projection handling, but that exception is not
+documented in code.
 
 **TODOs:**
 
