@@ -63,9 +63,13 @@ pre-fit scalar snapshots:
 - `param_unique_name`
 - `fit_min`
 - `fit_max`
-- `fit_bounds_uncertainty_multiplier`
 - `start_value`
 - `start_uncertainty`
+
+When any row has uncertainty-derived bounds, `_fit_parameter` also stores
+the provenance field:
+
+- `fit_bounds_uncertainty_multiplier`
 
 For Bayesian fit projections, `_fit_parameter` also stores per-parameter
 posterior summaries:

@@ -42,8 +42,21 @@ def test_fit_parameters_cif_omits_posterior_columns_for_deterministic_result():
     cif_text = collection.as_cif
 
     assert '_fit_parameter.start_value' in cif_text
+    assert '_fit_parameter.fit_bounds_uncertainty_multiplier' not in cif_text
     assert '_fit_parameter.posterior_median' not in cif_text
     assert '_fit_parameter.posterior_effective_sample_size_bulk' not in cif_text
+
+
+def test_fit_parameters_cif_keeps_uncertainty_multiplier_when_populated():
+    from easydiffraction.analysis.enums import FitResultKindEnum
+
+    collection = _fit_parameters_with_parent_result_kind(FitResultKindEnum.DETERMINISTIC.value)
+    collection['cosio.cell.length_a']._set_fit_bounds_uncertainty_multiplier(4.0)
+
+    cif_text = collection.as_cif
+
+    assert '_fit_parameter.fit_bounds_uncertainty_multiplier' in cif_text
+    assert '4.' in cif_text
 
 
 def test_fit_parameters_cif_keeps_posterior_columns_for_bayesian_result():

@@ -30,9 +30,11 @@ class FitParameterItem(CategoryItem):
         'param_unique_name',
         'fit_min',
         'fit_max',
-        'fit_bounds_uncertainty_multiplier',
         'start_value',
         'start_uncertainty',
+    )
+    _optional_control_descriptor_names: ClassVar[tuple[str, ...]] = (
+        'fit_bounds_uncertainty_multiplier',
     )
     _posterior_descriptor_names: ClassVar[tuple[str, ...]] = (
         'posterior_best_sample_value',
@@ -363,9 +365,22 @@ class FitParameters(CategoryCollection):
             return result_kind == FitResultKindEnum.BAYESIAN.value
         return any(item.has_posterior_summary() for item in self)
 
+    def _include_uncertainty_multiplier_cif_descriptor(self) -> bool:
+        """Return whether CIF output includes the bounds multiplier."""
+        return any(
+            item.fit_bounds_uncertainty_multiplier.value is not None
+            for item in self
+        )
+
     def _cif_loop_parameters(self, item: FitParameterItem) -> list[object]:
         """Return CIF loop descriptors for the current fit kind."""
         descriptor_names = FitParameterItem._control_descriptor_names
+        if self._include_uncertainty_multiplier_cif_descriptor():
+            descriptor_names = (
+                *descriptor_names[:3],
+                *FitParameterItem._optional_control_descriptor_names,
+                *descriptor_names[3:],
+            )
         if self._include_posterior_cif_descriptors():
             descriptor_names = (
                 *descriptor_names,
