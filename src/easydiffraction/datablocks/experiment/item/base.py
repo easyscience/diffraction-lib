@@ -100,14 +100,19 @@ class ExperimentBase(DatablockItem):
 
     def _supported_filters_for(self, category: object) -> dict[str, object]:
         """Return owner context filters for a switchable category."""
-        del category
-        return {
-            'calculator': self.calculator.type,
-            'sample_form': self.type.sample_form.value,
-            'scattering_type': self.type.scattering_type.value,
-            'beam_mode': self.type.beam_mode.value,
-            'radiation_probe': self.type.radiation_probe.value,
-        }
+        calculator = self.calculator.type
+        if category is getattr(self, '_background', None):
+            return {'calculator': calculator}
+        if category is getattr(self, '_extinction', None):
+            return {'calculator': calculator}
+        if category is getattr(self, '_peak', None):
+            return {
+                'calculator': calculator,
+                'sample_form': self.type.sample_form.value,
+                'scattering_type': self.type.scattering_type.value,
+                'beam_mode': self.type.beam_mode.value,
+            }
+        return {}
 
     def _swap_calculator(
         self,

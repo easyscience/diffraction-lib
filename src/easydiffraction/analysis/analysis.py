@@ -505,7 +505,14 @@ class Analysis(
 
     @staticmethod
     def _supported_filters_for(category: object) -> dict[str, object]:
-        """Return owner context filters for a switchable category."""
+        """
+        Return owner context filters for a switchable category.
+
+        Analysis-level switchables (minimizer, fitting_mode) have no
+        owner-supplied context today; their supported-types lookups read
+        only the registered factory entries. The empty dict is therefore
+        intentional and applies uniformly across both categories.
+        """
         del category
         return {}
 
