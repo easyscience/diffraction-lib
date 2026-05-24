@@ -251,3 +251,140 @@ When asked to create a plan:
   the plan, and a pointer to the affected plan section. After updating
   the plan, also update the reply if a numbered step shifts so that
   cross-references stay accurate.
+
+## Agent Shortcuts
+
+When the user enters one of these literal keywords at the start of a
+message, execute the matching task instead of asking for the full
+instructions every time. The keyword is the entire trigger; arguments
+follow on the same line.
+
+Common preamble for every shortcut (run once at task start):
+
+- Ask the user, in one batch, for any permission grants needed to
+  run unattended for the full task. At minimum: `Bash` with
+  `run_in_background` for polling, `Edit`/`Write` on `docs/`, the
+  shell primitives `git`, `until`, `sleep`, `ls`, `grep`. Cite this
+  section so the user knows why.
+- Stay on the current branch. Do not switch or create branches.
+- Polling cadence is 60 s. Use Bash with `run_in_background` and an
+  `until [ -f <path> ]; do sleep 60; done` body so the harness
+  notifies you when the awaited file appears. Do not poll inline.
+- Filename suffixes follow the existing convention:
+  `<stem>_review-N.md` and `<stem>_reply-N.md` next to the parent
+  ADR or plan, where `N` is one greater than the highest existing
+  number for that stem (starting at 1).
+- Each shortcut runs autonomously. Do not pause for confirmation
+  between rounds; auto-apply every finding. Only stop when the
+  termination condition for that shortcut is met, or the user sends
+  an explicit message asking you to stop or change direction.
+
+### `/draft-adr <topic>`
+
+Act as the ADR author. Draft an ADR suggestion, then respond to
+incoming reviews in a polling loop.
+
+**Setup (once):**
+
+1. Run the common preamble.
+2. Pick a flat lowercase-dash slug from `<topic>`. Save the ADR at
+   `docs/dev/adrs/suggestions/<slug>.md` using the project's ADR
+   template (Status: Proposed; Context; Decision; Consequences;
+   Alternatives Considered; Deferred Work as needed).
+3. Start polling for `<slug>_review-1.md` next to the ADR.
+
+**Loop (per tick):**
+
+- When `<slug>_review-N.md` appears: read it, update the ADR to
+  address every finding, and write `<slug>_reply-N.md` with one
+  section per finding (verdict + action taken + pointer to the
+  affected ADR section).
+- Start polling for `<slug>_review-(N+1).md`.
+- **Do not commit.** Leave every edit in the worktree as modified
+  or untracked. The reviewer side (`/review-adr`) is responsible
+  for the final commit.
+
+**Termination:** only on an explicit user message asking you to
+stop or change direction. The loop never self-terminates.
+
+### `/review-adr [<slug>]`
+
+Act as the ADR reviewer. Review an ADR suggestion in a polling loop
+until all findings are addressed.
+
+**Setup (once):**
+
+1. Run the common preamble.
+2. Identify the target ADR. If `<slug>` is given, target
+   `docs/dev/adrs/suggestions/<slug>.md`. Otherwise monitor
+   `docs/dev/adrs/suggestions/` for a `<slug>.md` with no existing
+   `<slug>_review-*.md`. If none exists, report "no ADR has
+   appeared yet" and start polling for it.
+3. When the ADR appears, run a static review per
+   [`.github/copilot-instructions.md`](.github/copilot-instructions.md)
+   → **Change Discipline** plan-review rule. **Do not run tests,
+   lint, build, formatters, or any `pixi` command — ADR reviews are
+   static reads only.** Save the review at `<slug>_review-1.md`
+   next to the ADR.
+
+**Loop (per tick):**
+
+- Poll for `<slug>_reply-N.md` matching the most recent review.
+- When the reply appears, re-read the ADR against the new reply
+  and every prior review/reply. Pick exactly one branch:
+  - **Findings remain:** write `<slug>_review-(N+1).md` listing
+    only the open findings, then poll for the next reply.
+  - **All findings addressed:** write a final
+    `<slug>_review-(N+1).md` stating "no findings; ADR is ready",
+    then run the termination cleanup below and stop.
+
+**Termination cleanup (only when the final clean review is
+written):**
+
+1. `git rm` every `<slug>_review-*.md` and `<slug>_reply-*.md`
+   next to the ADR (including the final clean review just
+   written).
+2. `git add` the cleaned-up ADR.
+3. Commit with message `Add <slug> ADR suggestion` (or an
+   equivalent imperative ≤72 chars).
+4. Report the commit hash and stop.
+
+### `/draft-plan [<slug>]`
+
+Act as the implementation-plan author. Same loop as `/draft-adr`,
+applied to an implementation plan instead of an ADR.
+
+- Source ADR: if `<slug>` is given, target the ADR at
+  `docs/dev/adrs/accepted/<slug>.md` (or `suggestions/` if the ADR
+  is not yet promoted). Otherwise pick the newest accepted ADR
+  matching the most recent `/review-adr` cycle. Use the same slug
+  for the plan.
+- Save the plan at `docs/dev/plans/<slug>.md` using the project's
+  plan template per
+  [`.github/copilot-instructions.md`](.github/copilot-instructions.md)
+  → **Planning**: ADR cross-reference, branch + PR notes,
+  Decisions, Open questions, Concrete files, Phase 1 steps with
+  status checklist, Phase 2 verification commands using the
+  zsh-safe log-capture pattern, and a Suggested Pull Request
+  section.
+- Loop behaviour identical to `/draft-adr`: poll
+  `docs/dev/plans/<slug>_review-N.md`; write
+  `<slug>_reply-N.md`; **no commits in the loop**.
+
+**Termination:** only on an explicit user message asking you to
+stop or change direction.
+
+### `/review-plan [<slug>]`
+
+Act as the implementation-plan reviewer. Same loop as `/review-adr`,
+applied to an implementation plan.
+
+- Target: if `<slug>` is given, target
+  `docs/dev/plans/<slug>.md`. Otherwise monitor `docs/dev/plans/`
+  for the newest plan matching the most recent `/draft-plan`
+  cycle.
+- Static reads only — same "no tests / lint / build / formatters /
+  pixi" rule applies during plan reviews.
+- Loop and termination identical to `/review-adr`, with the final
+  commit message `Add <slug> implementation plan` (or an
+  equivalent imperative ≤72 chars).
