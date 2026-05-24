@@ -357,6 +357,8 @@ class MinimizerBase(ABC):
         finalize_tracking: bool = True,
         use_physical_limits: bool = False,
         random_seed: int | None = None,
+        resume: bool = False,
+        extra_steps: int | None = None,
     ) -> FitResults:
         """
         Run the full minimization workflow.
@@ -378,12 +380,23 @@ class MinimizerBase(ABC):
             unbounded.
         random_seed : int | None, default=None
             Optional random seed passed to stochastic minimizers.
+        resume : bool, default=False
+            Whether to resume an existing sampler state. Unsupported by
+            the base minimizer implementation.
+        extra_steps : int | None, default=None
+            Additional sampler steps for resume-capable minimizers.
 
         Returns
         -------
         FitResults
             FitResults with success flag, best chi2 and timing.
         """
+        del extra_steps
+        if resume:
+            minimizer_name = self.name or self.__class__.__name__
+            msg = f"Minimizer '{minimizer_name}' does not support resume."
+            raise NotImplementedError(msg)
+
         if use_physical_limits:
             self._apply_physical_limits(parameters)
 

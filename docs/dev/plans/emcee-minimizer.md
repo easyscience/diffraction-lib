@@ -491,7 +491,7 @@ Mark `[x]` as each step lands.
 
       Commit: `Add EmceeMinimizer engine class`
 
-- [ ] **P1.5 — Wire `fit(resume=True, extra_steps=N)` end-to-end.** The
+- [x] **P1.5 — Wire `fit(resume=True, extra_steps=N)` end-to-end.** The
       current fit stack does not accept `resume` / `extra_steps`
       anywhere. Every signature and call site listed below must be
       updated in this step. Each item is one short edit; the step lands

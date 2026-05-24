@@ -147,6 +147,8 @@ class Fitter:
         *,
         use_physical_limits: bool = False,
         random_seed: int | None = None,
+        resume: bool = False,
+        extra_steps: int | None = None,
     ) -> None:
         """
         Run the fitting process.
@@ -175,6 +177,10 @@ class Fitter:
             unbounded.
         random_seed : int | None, default=None
             Optional random seed passed to stochastic minimizers.
+        resume : bool, default=False
+            Whether to resume a sampler state instead of starting a new fit.
+        extra_steps : int | None, default=None
+            Additional sampler steps for resume-capable minimizers.
         """
         # Enforce symmetry constraints (e.g. ADP) before collecting
         # free parameters so that components fixed by site symmetry are
@@ -186,6 +192,9 @@ class Fitter:
         params = self._collect_fit_parameters(structures, experiments)
 
         if not params:
+            if resume:
+                msg = 'Resume requires the same free parameters used by the saved emcee chain.'
+                raise ValueError(msg)
             if analysis is not None:
                 analysis._clear_persisted_fit_state()
                 analysis.fit_results = None
@@ -193,8 +202,10 @@ class Fitter:
             print('⚠️ No parameters selected for fitting.')
             return
 
-        if analysis is not None:
+        if analysis is not None and not resume:
             analysis._capture_fit_parameter_state(params)
+        if analysis is not None and resume:
+            self._validate_resume_parameter_set(params=params, analysis=analysis)
 
         for param in params:
             param._fit_start_value = param.value
@@ -207,6 +218,8 @@ class Fitter:
             analysis=analysis,
         )
 
+        self._set_minimizer_sidecar_path(analysis)
+
         try:
             # Keep tracker finalization in this layer so post-processing
             # can run before the live display is closed.
@@ -217,6 +230,8 @@ class Fitter:
                 finalize_tracking=False,
                 use_physical_limits=use_physical_limits,
                 random_seed=random_seed,
+                resume=resume,
+                extra_steps=extra_steps,
             )
             # Stop the timer and backfill results.fitting_time now so
             # post-processing projects a real duration into persisted
@@ -230,6 +245,34 @@ class Fitter:
             )
         finally:
             self.minimizer._stop_tracking()
+
+    def _set_minimizer_sidecar_path(self, analysis: object) -> None:
+        """Set the analysis results sidecar path on engines that use it."""
+        if analysis is None or not hasattr(self.minimizer, '_sidecar_path'):
+            return
+
+        project_info = getattr(getattr(analysis, 'project', None), 'info', None)
+        project_path = getattr(project_info, 'path', None)
+        sidecar_path = None if project_path is None else project_path / 'analysis' / 'results.h5'
+        self.minimizer._sidecar_path = sidecar_path
+
+    @staticmethod
+    def _validate_resume_parameter_set(
+        *,
+        params: list[Parameter],
+        analysis: object,
+    ) -> None:
+        """Ensure resume uses the same persisted free-parameter set."""
+        persisted_names = [
+            item.param_unique_name.value for item in getattr(analysis, 'fit_parameters', [])
+        ]
+        if not persisted_names:
+            return
+
+        current_names = [param.unique_name for param in params]
+        if persisted_names != current_names:
+            msg = 'Resume parameter set differs from the saved emcee chain; start a fresh run.'
+            raise ValueError(msg)
 
     def _process_fit_results(
         self,

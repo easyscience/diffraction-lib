@@ -926,18 +926,72 @@ class Analysis(
         df.columns = pd.MultiIndex.from_tuples(df.columns)
         return df
 
-    def fit(self) -> None:
+    def fit(
+        self,
+        *,
+        resume: bool = False,
+        extra_steps: int | None = None,
+    ) -> None:
         """Execute fitting for the currently selected fitting mode."""
         mode = FitModeEnum(self._fitting_mode.type)
+        self._validate_fit_request(
+            mode=mode,
+            resume=resume,
+            extra_steps=extra_steps,
+        )
         if mode is FitModeEnum.SINGLE:
-            self._run_single()
+            self._run_single(resume=resume, extra_steps=extra_steps)
         elif mode is FitModeEnum.JOINT:
             self._prepare_joint_fit()
-            self._run_joint()
+            self._run_joint(resume=resume, extra_steps=extra_steps)
         elif mode is FitModeEnum.SEQUENTIAL:
             self._run_sequential()
         else:  # pragma: no cover
             msg = f'Unknown fit mode: {mode!r}'
+            raise ValueError(msg)
+
+    def _validate_fit_request(
+        self,
+        *,
+        mode: FitModeEnum,
+        resume: bool,
+        extra_steps: int | None,
+    ) -> None:
+        """Validate fit options before dispatching to a fitting mode."""
+        if extra_steps is not None and not resume:
+            msg = 'extra_steps is only valid when resume=True.'
+            raise ValueError(msg)
+        if resume and mode is not FitModeEnum.SINGLE:
+            msg = 'Resume is supported in single fit mode only.'
+            raise ValueError(msg)
+
+        is_emcee = self.minimizer.type == MinimizerTypeEnum.EMCEE.value
+        if resume and not is_emcee:
+            msg = "Resume is supported only when analysis.minimizer.type = 'emcee'."
+            raise ValueError(msg)
+        if is_emcee and self.project.info.path is None:
+            msg = (
+                'emcee requires a saved project; call project.save_as(<path>) '
+                'before analysis.fit().'
+            )
+            raise ValueError(msg)
+        if resume:
+            self._validate_resume_extra_steps(extra_steps)
+
+    @staticmethod
+    def _validate_resume_extra_steps(extra_steps: int | None) -> None:
+        """Validate the emcee resume step count."""
+        if extra_steps is None or isinstance(extra_steps, bool):
+            msg = 'extra_steps must be a positive integer when resume=True.'
+            raise ValueError(msg)
+
+        try:
+            integer_steps = int(extra_steps)
+        except (TypeError, ValueError):
+            msg = 'extra_steps must be a positive integer when resume=True.'
+            raise ValueError(msg) from None
+        if integer_steps != extra_steps or integer_steps < 1:
+            msg = 'extra_steps must be a positive integer when resume=True.'
             raise ValueError(msg)
 
     def _warn_results_sidecar_overwrite(self) -> None:
@@ -1134,8 +1188,9 @@ class Analysis(
     def _sync_engine_from_minimizer_category(self) -> None:
         """Apply minimizer category settings to the live engine."""
         engine = self.fitter.minimizer
+        skip_keys = type(self.minimizer)._engine_sync_skip_keys
         for key, value in self.minimizer._native_kwargs().items():
-            if key == 'random_seed':
+            if key in skip_keys:
                 continue
             if not hasattr(engine, key):
                 log.warning(
@@ -1766,7 +1821,11 @@ class Analysis(
 
         return project_path / data_dir
 
-    def _prepare_fit_run(self) -> tuple[VerbosityEnum, object, object] | None:
+    def _prepare_fit_run(
+        self,
+        *,
+        resume: bool = False,
+    ) -> tuple[VerbosityEnum, object, object] | None:
         """Resolve common inputs for single and joint fitting."""
         verb = VerbosityEnum(self.project.verbosity.fit.value)
         structures = self.project.structures
@@ -1779,7 +1838,8 @@ class Analysis(
             log.warning('No experiments found in the project. Cannot run fit.')
             return None
 
-        self._warn_results_sidecar_overwrite()
+        if not resume:
+            self._warn_results_sidecar_overwrite()
 
         # Apply constraints before fitting so that user-constrained
         # parameters are marked and excluded from the free parameter
@@ -1789,11 +1849,16 @@ class Analysis(
 
         return verb, structures, experiments
 
-    def _run_single(self) -> None:
+    def _run_single(
+        self,
+        *,
+        resume: bool = False,
+        extra_steps: int | None = None,
+    ) -> None:
         """
         Execute single-mode fitting with current project verbosity.
         """
-        prepared = self._prepare_fit_run()
+        prepared = self._prepare_fit_run(resume=resume)
         if prepared is None:
             return
 
@@ -1804,14 +1869,25 @@ class Analysis(
             experiments,
             use_physical_limits=False,
             random_seed=None,
+            resume=resume,
+            extra_steps=extra_steps,
         )
 
         if self.project.info.path is not None:
             self.project.save()
 
-    def _run_joint(self) -> None:
+    def _run_joint(
+        self,
+        *,
+        resume: bool = False,
+        extra_steps: int | None = None,
+    ) -> None:
         """Execute joint-mode fitting with current project verbosity."""
-        prepared = self._prepare_fit_run()
+        if resume:
+            msg = 'Resume is supported in single fit mode only.'
+            raise ValueError(msg)
+
+        prepared = self._prepare_fit_run(resume=resume)
         if prepared is None:
             return
 
@@ -1822,6 +1898,8 @@ class Analysis(
             experiments,
             use_physical_limits=False,
             random_seed=None,
+            resume=resume,
+            extra_steps=extra_steps,
         )
 
         if self.project.info.path is not None:
@@ -1872,6 +1950,8 @@ class Analysis(
         *,
         use_physical_limits: bool,
         random_seed: int | None,
+        resume: bool = False,
+        extra_steps: int | None = None,
     ) -> None:
         """
         Run joint fitting across all experiments with weights.
@@ -1888,7 +1968,15 @@ class Analysis(
             Whether to use physical limits as fit bounds.
         random_seed : int | None
             Optional random seed passed to stochastic minimizers.
+        resume : bool, default=False
+            Whether to resume a sampler state.
+        extra_steps : int | None, default=None
+            Additional sampler steps for resume-capable minimizers.
         """
+        if resume:
+            msg = 'Resume is supported in single fit mode only.'
+            raise ValueError(msg)
+
         mode = FitModeEnum.JOINT
         # Auto-populate joint_fit if empty
         if not len(self._joint_fit):
@@ -1910,6 +1998,8 @@ class Analysis(
             verbosity=verb,
             use_physical_limits=use_physical_limits,
             random_seed=self._resolved_fit_random_seed(random_seed),
+            resume=resume,
+            extra_steps=extra_steps,
         )
 
         # After fitting, get the results
@@ -1923,6 +2013,8 @@ class Analysis(
         *,
         use_physical_limits: bool,
         random_seed: int | None,
+        resume: bool = False,
+        extra_steps: int | None = None,
     ) -> None:
         """
         Run single-mode fitting for each experiment independently.
@@ -1939,9 +2031,16 @@ class Analysis(
             Whether to use physical limits as fit bounds.
         random_seed : int | None
             Optional random seed passed to stochastic minimizers.
+        resume : bool, default=False
+            Whether to resume a sampler state.
+        extra_steps : int | None, default=None
+            Additional sampler steps for resume-capable minimizers.
         """
         mode = FitModeEnum.SINGLE
         expt_names = experiments.names
+        if resume and len(expt_names) != 1:
+            msg = 'Resume is supported for one single-fit experiment at a time.'
+            raise ValueError(msg)
 
         short_display_handle = self._fit_single_print_header(verb, expt_names, mode)
         short_rows: list[list[str]] = []
@@ -1954,6 +2053,8 @@ class Analysis(
                 experiments,
                 use_physical_limits=use_physical_limits,
                 random_seed=random_seed,
+                resume=resume,
+                extra_steps=extra_steps,
                 short_state=(short_rows, short_display_handle),
             )
         finally:
@@ -1972,6 +2073,8 @@ class Analysis(
         *,
         use_physical_limits: bool,
         random_seed: int | None,
+        resume: bool,
+        extra_steps: int | None,
         short_state: tuple[list[list[str]], object],
     ) -> None:
         """Run the per-experiment loop for single-fit mode."""
@@ -1991,6 +2094,8 @@ class Analysis(
                 verbosity=verb,
                 use_physical_limits=use_physical_limits,
                 random_seed=self._resolved_fit_random_seed(random_seed),
+                resume=resume,
+                extra_steps=extra_steps,
             )
 
             results = self.fitter.results
