@@ -284,7 +284,7 @@ Mark `[x]` as each step lands.
       `src/easydiffraction/analysis/minimizers/enums.py`. No other code
       wiring yet. Commit: `Register emcee minimizer enum value`
 
-- [ ] **P1.3 — Add `EmceeMinimizer` category class.** New file
+- [x] **P1.3 — Add `EmceeMinimizer` category class.** New file
       `src/easydiffraction/analysis/categories/minimizer/emcee.py`.
       `EmceeMinimizer(BayesianMinimizerBase)` declares:
   - `type_info` with `tag=MinimizerTypeEnum.EMCEE` and a description.
