@@ -4,9 +4,12 @@
 
 from __future__ import annotations
 
+from typing import ClassVar
+
 import numpy as np
 
 from easydiffraction.analysis.categories.fit_parameters.factory import FitParametersFactory
+from easydiffraction.analysis.enums import FitResultKindEnum
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.metadata import TypeInfo
@@ -23,6 +26,25 @@ class FitParameterItem(CategoryItem):
 
     _category_code = 'fit_parameter'
     _category_entry_name = 'param_unique_name'
+    _control_descriptor_names: ClassVar[tuple[str, ...]] = (
+        'param_unique_name',
+        'fit_min',
+        'fit_max',
+        'fit_bounds_uncertainty_multiplier',
+        'start_value',
+        'start_uncertainty',
+    )
+    _posterior_descriptor_names: ClassVar[tuple[str, ...]] = (
+        'posterior_best_sample_value',
+        'posterior_median',
+        'posterior_uncertainty',
+        'posterior_interval_68_low',
+        'posterior_interval_68_high',
+        'posterior_interval_95_low',
+        'posterior_interval_95_high',
+        'posterior_gelman_rubin',
+        'posterior_effective_sample_size_bulk',
+    )
 
     def __init__(self) -> None:
         super().__init__()
@@ -331,6 +353,25 @@ class FitParameters(CategoryCollection):
 
     def __init__(self) -> None:
         super().__init__(item_type=FitParameterItem)
+
+    def _include_posterior_cif_descriptors(self) -> bool:
+        """Return whether CIF output includes posterior columns."""
+        parent = getattr(self, '_parent', None)
+        fit_result = getattr(parent, 'fit_result', None)
+        result_kind = getattr(getattr(fit_result, 'result_kind', None), 'value', None)
+        if result_kind is not None:
+            return result_kind == FitResultKindEnum.BAYESIAN.value
+        return any(item.has_posterior_summary() for item in self)
+
+    def _cif_loop_parameters(self, item: FitParameterItem) -> list[object]:
+        """Return CIF loop descriptors for the current fit kind."""
+        descriptor_names = FitParameterItem._control_descriptor_names
+        if self._include_posterior_cif_descriptors():
+            descriptor_names = (
+                *descriptor_names,
+                *FitParameterItem._posterior_descriptor_names,
+            )
+        return [getattr(item, name) for name in descriptor_names]
 
     def create(
         self,

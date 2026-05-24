@@ -66,6 +66,10 @@ pre-fit scalar snapshots:
 - `fit_bounds_uncertainty_multiplier`
 - `start_value`
 - `start_uncertainty`
+
+For Bayesian fit projections, `_fit_parameter` also stores per-parameter
+posterior summaries:
+
 - `posterior_best_sample_value`
 - `posterior_median`
 - `posterior_uncertainty`
