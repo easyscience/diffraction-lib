@@ -134,12 +134,12 @@ class TestDiscoverHelpers:
 
         rows = _discover_property_rows(MyClass)
         assert len(rows) == 2
-        names = [row[1] for row in rows]
+        names = [row[0] for row in rows]
         assert 'alpha' in names
         assert 'beta' in names
         # beta is writable
-        beta_row = next(r for r in rows if r[1] == 'beta')
-        assert beta_row[2] == '✓'
+        beta_row = next(r for r in rows if r[0] == 'beta')
+        assert beta_row[1] == '✓'
 
     def test_discover_method_rows(self):
         from easydiffraction.analysis.analysis import _discover_method_rows
@@ -157,7 +157,7 @@ class TestDiscoverHelpers:
                 return 1
 
         rows = _discover_method_rows(MyClass)
-        names = [row[1] for row in rows]
+        names = [row[0] for row in rows]
         assert 'do_thing()' in names
         assert '_private()' not in names
         assert 'prop()' not in names
