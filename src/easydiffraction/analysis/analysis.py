@@ -778,21 +778,21 @@ class Analysis(
             fitting_time=fitting_time,
             optimizer_name=engine_metadata['optimizer_name'],
             method_name=engine_metadata['method_name'],
-            objective_name=self.minimizer.objective_name.value,
-            objective_value=self.minimizer.objective_value.value,
-            n_data_points=_int_or_none(self.minimizer.n_data_points.value),
-            n_parameters=_int_or_none(self.minimizer.n_parameters.value),
-            n_free_parameters=_int_or_none(self.minimizer.n_free_parameters.value),
-            degrees_of_freedom=_int_or_none(self.minimizer.degrees_of_freedom.value),
-            covariance_available=self.minimizer.covariance_available.value,
-            correlation_available=self.minimizer.correlation_available.value,
-            runtime_seconds=self.minimizer.runtime_seconds.value,
-            iterations_performed=_int_or_none(self.minimizer.iterations_performed.value),
-            exit_reason=self.minimizer.exit_reason.value,
+            objective_name=self.fit_result.objective_name.value,
+            objective_value=self.fit_result.objective_value.value,
+            n_data_points=_int_or_none(self.fit_result.n_data_points.value),
+            n_parameters=_int_or_none(self.fit_result.n_parameters.value),
+            n_free_parameters=_int_or_none(self.fit_result.n_free_parameters.value),
+            degrees_of_freedom=_int_or_none(self.fit_result.degrees_of_freedom.value),
+            covariance_available=self.fit_result.covariance_available.value,
+            correlation_available=self.fit_result.correlation_available.value,
+            runtime_seconds=fitting_time,
+            iterations_performed=_int_or_none(self.fit_result.iterations.value),
+            exit_reason=self.fit_result.exit_reason.value,
         )
         restored_results.message = self.fit_result.message.value
         restored_results.iterations = int(self.fit_result.iterations.value)
-        restored_results.chi_square = self.minimizer.objective_value.value
+        restored_results.chi_square = self.fit_result.objective_value.value
         self.fit_results = restored_results
         return restored_results
 
@@ -1377,17 +1377,15 @@ class Analysis(
             else None
         )
 
-        self.minimizer._set_objective_name('chi_square')
-        self.minimizer._set_objective_value(self._resolve_objective_value(results))
-        self.minimizer._set_n_data_points(n_data_points)
-        self.minimizer._set_n_parameters(n_parameters)
-        self.minimizer._set_n_free_parameters(n_free_parameters)
-        self.minimizer._set_degrees_of_freedom(degrees_of_freedom)
-        self.minimizer._set_covariance_available(value=covariance is not None)
-        self.minimizer._set_correlation_available(value=correlation_matrix is not None)
-        self.minimizer._set_runtime_seconds(results.fitting_time)
-        self.minimizer._set_iterations_performed(results.iterations)
-        self.minimizer._set_exit_reason(results.message)
+        self.fit_result._set_objective_name('chi_square')
+        self.fit_result._set_objective_value(self._resolve_objective_value(results))
+        self.fit_result._set_n_data_points(n_data_points)
+        self.fit_result._set_n_parameters(n_parameters)
+        self.fit_result._set_n_free_parameters(n_free_parameters)
+        self.fit_result._set_degrees_of_freedom(degrees_of_freedom)
+        self.fit_result._set_covariance_available(value=covariance is not None)
+        self.fit_result._set_correlation_available(value=correlation_matrix is not None)
+        self.fit_result._set_exit_reason(results.message)
 
         if correlation_matrix is not None:
             self._store_correlation_projection(

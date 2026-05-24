@@ -341,7 +341,7 @@ Mark `[x]` as each step lands.
 
   Commit: `Wire fit_result swap and reset paths to paired class`
 
-- [ ] **P1.7 — Route LSQ result writers to `fit_result`.** In
+- [x] **P1.7 — Route LSQ result writers to `fit_result`.** In
       `src/easydiffraction/analysis/analysis.py`,
       `_store_least_squares_result_projection` currently writes to
       `self.minimizer._set_objective_name(...)` etc. Reroute every
