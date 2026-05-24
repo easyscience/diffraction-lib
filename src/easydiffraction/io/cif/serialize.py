@@ -174,7 +174,9 @@ def category_item_to_cif(item: object) -> str:
     Expects ``item.parameters`` iterable of params with
     ``_cif_handler.names`` and ``value``.
     """
-    lines: list[str] = [param_to_cif(p) for p in item.parameters]
+    parameters_hook = getattr(item, '_cif_parameters', None)
+    parameters = parameters_hook() if parameters_hook is not None else item.parameters
+    lines: list[str] = [param_to_cif(p) for p in parameters]
     return '\n'.join(lines)
 
 

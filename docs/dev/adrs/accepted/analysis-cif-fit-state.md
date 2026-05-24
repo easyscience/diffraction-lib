@@ -112,6 +112,10 @@ Deterministic fit-result classes add compact fit output counts:
 - `degrees_of_freedom`
 - `covariance_available`
 - `correlation_available`
+
+When the LSQ backend provides a termination reason that differs from the
+common `_fit_result.message`, deterministic fit results also store:
+
 - `exit_reason`
 
 Do not persist a `_deterministic_parameter_result` category. Final

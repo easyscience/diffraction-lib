@@ -211,6 +211,21 @@ class LeastSquaresFitResult(FitResultBase):
     def _set_correlation_available(self, *, value: bool | None) -> None:
         self._correlation_available.value = value
 
+    def _include_exit_reason_cif_descriptor(self) -> bool:
+        """Return whether exit_reason adds distinct information."""
+        exit_reason = self.exit_reason.value
+        if exit_reason is None:
+            return False
+        return exit_reason != self.message.value
+
+    def _cif_parameters(self) -> list[object]:
+        """Return LSQ fit-result descriptors active for CIF output."""
+        return [
+            descriptor
+            for descriptor in self.parameters
+            if descriptor is not self.exit_reason or self._include_exit_reason_cif_descriptor()
+        ]
+
     @property
     def exit_reason(self) -> StringDescriptor:
         """Backend exit reason for the persisted deterministic fit."""
