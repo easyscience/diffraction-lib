@@ -27,15 +27,17 @@ The current shape on the live category surfaces:
 
 - **Writable inputs:** `max_iterations` (LSQ); `sampling_steps`,
   `burn_in_steps`, `thinning_interval`, `population_size`,
-  `parallel_workers`, `initialization_method`, `random_seed`,
-  `credible_interval_inner`, `credible_interval_outer` (Bayesian).
+  `parallel_workers`, `initialization_method`, `random_seed`
+  (Bayesian).
 - **Fit-filled outputs (no public setter, only `_set_*` internals):**
   `objective_name`, `objective_value`, `n_data_points`, `n_parameters`,
   `n_free_parameters`, `degrees_of_freedom`, `covariance_available`,
   `correlation_available`, `runtime_seconds`, `iterations_performed`,
   `exit_reason` (LSQ); `runtime_seconds`, `point_estimate_name`,
-  `sampler_completed`, `acceptance_rate_mean`, `gelman_rubin_max`,
-  `effective_sample_size_min`, `best_log_posterior` (Bayesian).
+  `sampler_completed`, `credible_interval_inner`,
+  `credible_interval_outer`, `acceptance_rate_mean`,
+  `gelman_rubin_max`, `effective_sample_size_min`,
+  `best_log_posterior` (Bayesian).
 
 Three current output fields straddle `analysis.minimizer` and
 `analysis.fit_result`:
