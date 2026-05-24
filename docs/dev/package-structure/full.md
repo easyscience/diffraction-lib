@@ -502,6 +502,7 @@
 │   │   │   │   └── 🏷️ class ProjectInfo
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class ProjectInfoFactory
+│   │   ├── 📁 rendering
 │   │   ├── 📁 table
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py

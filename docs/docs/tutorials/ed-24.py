@@ -56,6 +56,7 @@ def _normalize_id35_archive_for_tutorial(project_dir):
             )
         file_path.write_text(text, encoding='utf-8')
 
+
 # %% [markdown]
 # ## Download Saved Project
 #

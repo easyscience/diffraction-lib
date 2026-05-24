@@ -78,9 +78,9 @@ before proceeding.
 ## Cleanup opportunities inherited from earlier work
 
 The consolidation work left four cleanup opportunities tracked in
-[`docs/dev/issues/open.md`](../issues/open.md) that touch code this
-plan will modify. Fold them in while the surrounding code is already
-being edited, rather than queuing a separate refactor PR.
+[`docs/dev/issues/open.md`](../issues/open.md) that touch code this plan
+will modify. Fold them in while the surrounding code is already being
+edited, rather than queuing a separate refactor PR.
 
 - **F1 — Collapse duplicate predictive-cache-key helpers.**
   `Analysis._predictive_cache_key` and

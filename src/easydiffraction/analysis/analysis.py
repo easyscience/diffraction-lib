@@ -808,10 +808,10 @@ class Analysis(
 
         filtered_property_names = set(property_names)
         filtered_method_names = set(method_names)
-        filtered_property_rows = [row for row in property_rows if row[0] in filtered_property_names]
-        filtered_method_rows = [
-            row for row in method_rows if row[0][:-2] in filtered_method_names
+        filtered_property_rows = [
+            row for row in property_rows if row[0] in filtered_property_names
         ]
+        filtered_method_rows = [row for row in method_rows if row[0][:-2] in filtered_method_names]
 
         if filtered_property_rows:
             console.paragraph('Properties')
