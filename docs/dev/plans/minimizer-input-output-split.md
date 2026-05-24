@@ -475,7 +475,7 @@ Mark `[x]` as each step lands.
 
   Commit: `Amend affected ADRs for minimizer input/output split`
 
-- [ ] **P1.15 — Update tutorials.** `git grep` `docs/docs/tutorials/`
+- [x] **P1.15 — Update tutorials.** `git grep` `docs/docs/tutorials/`
       for `analysis.minimizer.<output_field>` references and rewrite
       each per the migration table below. The two **collapsed** rows
       target existing common fields on `FitResultBase` (already
