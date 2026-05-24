@@ -974,15 +974,16 @@ class Analysis(
             resume=resume,
             extra_steps=extra_steps,
         )
-        resolved_extra_steps = (
-            self._resolved_resume_extra_steps(extra_steps) if resume else extra_steps
+        resolved_resume, resolved_extra_steps = self._resolved_resume_request(
+            resume=resume,
+            extra_steps=extra_steps,
         )
         verb = VerbosityEnum(self.project.verbosity.fit.value)
         try:
             with notebook_fit_stop_control(verbosity=verb):
                 self._run_fit_mode(
                     mode=mode,
-                    resume=resume,
+                    resume=resolved_resume,
                     extra_steps=resolved_extra_steps,
                 )
         except KeyboardInterrupt:
@@ -1015,6 +1016,25 @@ class Analysis(
         self._prepare_results_sidecar_for_new_fit()
         if verbosity is not VerbosityEnum.SILENT:
             console.print('⏹️ Fitting stopped by user.')
+
+    def _resolved_resume_request(
+        self,
+        *,
+        resume: bool,
+        extra_steps: int | None,
+    ) -> tuple[bool, int | None]:
+        """Return executable resume flags for this fit request."""
+        if not resume:
+            return False, extra_steps
+
+        if not self._has_resumable_emcee_sidecar():
+            log.warning(
+                'resume=True requested, but no saved emcee chain was found; '
+                'starting a fresh fit instead.'
+            )
+            return False, None
+
+        return True, self._resolved_resume_extra_steps(extra_steps)
 
     def _validate_fit_request(
         self,
@@ -1066,6 +1086,31 @@ class Analysis(
         if extra_steps is not None:
             return self._validate_resume_extra_steps(extra_steps)
         return self._validate_resume_extra_steps(self.minimizer.sampling_steps.value)
+
+    def _has_resumable_emcee_sidecar(self) -> bool:
+        """Return whether the saved project has a resumable chain."""
+        project_path = self.project.info.path
+        if project_path is None:
+            return False
+
+        sidecar_path = project_path / 'analysis' / 'results.h5'
+        if not sidecar_path.is_file():
+            return False
+
+        try:
+            import h5py  # noqa: PLC0415
+
+            from easydiffraction.analysis.minimizers.emcee import (  # noqa: PLC0415
+                EMCEE_CHAIN_GROUP,
+            )
+
+            with h5py.File(sidecar_path, 'r') as handle:
+                group = handle.get(EMCEE_CHAIN_GROUP)
+                if group is None:
+                    return False
+                return int(group.attrs.get('iteration', 0)) > 0
+        except (OSError, TypeError, ValueError):
+            return False
 
     def _prepare_results_sidecar_for_new_fit(self) -> None:
         """Remove persisted sidecar arrays before a fresh fit."""
