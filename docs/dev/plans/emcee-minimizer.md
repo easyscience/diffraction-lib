@@ -254,7 +254,7 @@ When the matching open-issue is fully resolved, move it to
   `/emcee_chain` is present, expose a helper to construct an
   `emcee.backends.HDFBackend(path, name='emcee_chain', read_only=True)`
   for inspection/visualisation.
-- `pyproject.toml`, `pixi.toml`, and `pixi.lock` — add `emcee>=3.1` as a
+- `pyproject.toml` — add `emcee` as a
   direct runtime dependency and refresh the lockfile via `pixi lock` (CI
   installs from the lockfile, not from the manifest files alone).
 
@@ -267,7 +267,7 @@ When the matching open-issue is fully resolved, move it to
 Mark `[x]` as each step lands.
 
 - [x] **P1.1 — Add emcee dependency and refresh the lockfile.**
-  - Add `emcee>=3.1` to `pyproject.toml` (runtime dependencies, not just
+  - Add `emcee` to `pyproject.toml` (runtime dependencies, not just
     the `doc` extra — the existing lockfile carries emcee only as
     `extra == 'doc'` which CI does not install for runtime).
   - Add the same dependency to `pixi.toml` (runtime feature).
