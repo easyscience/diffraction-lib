@@ -10,8 +10,14 @@ class _Parent:
         self._set_calls = []
         self.calculator = calculator_category
 
-    def _swap_calculator(self, value: str, *, announce: bool = True) -> None:
-        del announce
+    def _swap_calculator(
+        self,
+        value: str,
+        *,
+        announce: bool = True,
+        strict: bool = True,
+    ) -> None:
+        del announce, strict
         self._set_calls.append(value)
         self._calculator = object()
         self.calculator._type.value = value

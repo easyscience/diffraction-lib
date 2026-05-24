@@ -48,8 +48,11 @@ def test_background_defaults_and_change():
     expt.background.type = 'chebyshev'
     assert expt.background.type == 'chebyshev'
 
-    # unknown type keeps previous type and prints warnings (no raise)
-    expt.background.type = 'not-a-type'  # invalid string
+    # unknown type raises and keeps previous value
+    import pytest
+
+    with pytest.raises(ValueError, match='Unsupported background type'):
+        expt.background.type = 'not-a-type'
     assert expt.background.type == 'chebyshev'
 
 

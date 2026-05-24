@@ -75,10 +75,13 @@ class TestExperimentBaseCalculator:
         assert len(ct) > 0
 
     def test_calculator_type_invalid(self):
+        import pytest
+
         ex = ConcreteBase(name='ex1', type=_mk_type_powder_cwl_bragg())
         _ = ex.calculator.calculator  # trigger resolve
         old = ex.calculator.type
-        ex.calculator.type = 'bogus-engine'
+        with pytest.raises(ValueError, match='Unsupported calculator'):
+            ex.calculator.type = 'bogus-engine'
         assert ex.calculator.type == old
 
     def test_show_calculator_types(self, capsys):

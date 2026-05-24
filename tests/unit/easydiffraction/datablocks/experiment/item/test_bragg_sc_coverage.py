@@ -78,9 +78,12 @@ class TestCwlScExperiment:
         assert ex.refln is not None
 
     def test_extinction_type_invalid(self):
+        import pytest
+
         ex = CwlScExperiment(name='cwl_sc', type=_mk_type_sc_cwl())
         old = ex.extinction.type
-        ex.extinction.type = 'bogus'
+        with pytest.raises(ValueError, match='Unsupported extinction type'):
+            ex.extinction.type = 'bogus'
         assert ex.extinction.type == old
 
     def test_show_extinction_types(self, capsys):

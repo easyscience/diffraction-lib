@@ -30,12 +30,14 @@ def test_pd_experiment_peak_profile_type_switch(capsys):
 
     ex = ConcretePd(name='ex1', type=et)
     # valid switch using tag string
+    import pytest
+
     ex.peak.type = 'pseudo-voigt'
     assert ex.peak.type == 'cwl-pseudo-voigt'
-    # invalid string should warn and keep previous
-    ex.peak.type = 'non-existent'
-    captured = capsys.readouterr().out
-    assert 'Unsupported' in captured or 'Unknown' in captured
+    # invalid string should raise and keep previous
+    with pytest.raises(ValueError, match='Unsupported peak profile'):
+        ex.peak.type = 'non-existent'
+    assert ex.peak.type == 'cwl-pseudo-voigt'
 
 
 def test_pd_experiment_set_peak_profile_type_silent(capsys):
