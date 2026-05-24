@@ -6,6 +6,7 @@ from __future__ import annotations
 
 from typing import ClassVar
 
+from easydiffraction.analysis.categories.fit_result.base import FitResultBase
 from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.switchable import SwitchableCategoryBase
@@ -25,6 +26,7 @@ class MinimizerCategoryBase(CategoryItem, SwitchableCategoryBase):
     _native_key_map: ClassVar[dict[str, str]] = {}
     _setting_descriptor_names: ClassVar[tuple[str, ...]] = ()
     _result_descriptor_names: ClassVar[tuple[str, ...]] = ()
+    _fit_result_class: ClassVar[type[FitResultBase]] = FitResultBase
 
     def __init__(self) -> None:
         super().__init__()

@@ -1782,6 +1782,49 @@ optional-diagnostics components.
 
 ---
 
+## 105. 🟢 Remove Orphaned Fit-Result Reset Helper
+
+**Type:** Cleanup **Source:** `minimizer-input-output-split` review 6.
+
+`Analysis._clear_fit_result_projection` is a private method with no
+callers after `_clear_persisted_fit_state` switched to replacing
+`self._fit_result` with a fresh paired result instance.
+
+**TODOs:**
+
+- [analysis.py](src/easydiffraction/analysis/analysis.py#L1217)
+
+**Fix:** delete the unused helper, or reintroduce a caller only if a
+future fit-result reset path genuinely needs to preserve the active
+instance.
+
+**Depends on:** nothing.
+
+---
+
+## 106. 🟢 Document `FitResultBase.result_kind` Default Rationale
+
+**Type:** Code readability **Source:** `minimizer-input-output-split`
+review 6.
+
+Most `FitResultBase` descriptors use `default=None, allow_none=True` so
+pre-fit CIF output serializes unknown values as `?`. `result_kind`
+intentionally keeps a valid enum default because it drives deterministic
+versus Bayesian projection handling, but that exception is not
+documented in code.
+
+**TODOs:**
+
+- [base.py](src/easydiffraction/analysis/categories/fit_result/base.py#L44)
+
+**Fix:** add a short code comment near the `result_kind` descriptor
+explaining why it keeps a concrete default while unknown result values
+use `None`.
+
+**Depends on:** nothing.
+
+---
+
 ## Summary
 
 | #   | Issue                                             | Severity | Type                         |
@@ -1869,3 +1912,5 @@ optional-diagnostics components.
 | 91  | Disable TODO checks in CodeFactor PRs             | 🟢 Low   | CI / Tooling                 |
 | 92  | Make `save()` respect verbosity                   | 🟢 Low   | UX                           |
 | 93  | Eliminate flicker in live progress tables         | 🟡 Med   | UX                           |
+| 105 | Remove orphaned fit-result reset helper           | 🟢 Low   | Cleanup                      |
+| 106 | Document `FitResultBase.result_kind` default      | 🟢 Low   | Code readability             |

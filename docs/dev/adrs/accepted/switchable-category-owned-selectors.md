@@ -101,6 +101,14 @@ Owner-level shims are removed (no `<owner>.<cat>_type`, no
 `show_supported_<cat>_types()`, no `show_current_<cat>_type()`). The
 owner exposes only the category itself, e.g. `analysis.minimizer`.
 
+Exception: an internally paired category whose concrete class is fully
+determined by another category's `type` may omit its own public
+selector. Today this applies only to `analysis.fit_result`, whose class
+is derived from `analysis.minimizer.type` by the
+[`minimizer-input-output-split.md`](minimizer-input-output-split.md)
+ADR. It has no `fit_result.type`, no `fit_result.show_supported()`, and
+no `_fit_result.type` CIF tag.
+
 The owner still owns the swap mechanism (it holds the slot) but the swap
 is _initiated_ from the category through a back-reference.
 

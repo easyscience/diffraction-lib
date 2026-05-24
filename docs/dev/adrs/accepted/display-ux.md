@@ -200,6 +200,12 @@ Use these naming rules:
   path for `versus`.
 - `posterior.*` names are used only when posterior samples are required.
 
+`project.display.fit.results()` also prints a "Settings used" block
+above the result tables. The block is sourced from
+`analysis.minimizer.*` so the minimizer inputs and paired
+`analysis.fit_result.*` outputs are visible from the accepted display
+facade without adding a new `Analysis`-level display method.
+
 ## Rejected Alternatives
 
 Flat display facade:

@@ -211,14 +211,14 @@ class TestLoadAnalysis:
         original.analysis.fit_result._set_iterations(21)
         original.analysis.fit_result._set_fitting_time(0.74)
         original.analysis.fit_result._set_reduced_chi_square(1.031)
-        original.analysis.minimizer._set_objective_name('chi-square')
-        original.analysis.minimizer._set_objective_value(1.031)
-        original.analysis.minimizer._set_n_data_points(120)
-        original.analysis.minimizer._set_n_parameters(2)
-        original.analysis.minimizer._set_n_free_parameters(2)
-        original.analysis.minimizer._set_degrees_of_freedom(118)
-        original.analysis.minimizer._set_covariance_available(value=False)
-        original.analysis.minimizer._set_correlation_available(value=True)
+        original.analysis.fit_result._set_objective_name('chi-square')
+        original.analysis.fit_result._set_objective_value(1.031)
+        original.analysis.fit_result._set_n_data_points(120)
+        original.analysis.fit_result._set_n_parameters(2)
+        original.analysis.fit_result._set_n_free_parameters(2)
+        original.analysis.fit_result._set_degrees_of_freedom(118)
+        original.analysis.fit_result._set_covariance_available(value=False)
+        original.analysis.fit_result._set_correlation_available(value=True)
         original.analysis.fit_parameter_correlations.create(
             source_kind='deterministic',
             param_unique_name_i=parameter_b.unique_name,

@@ -26,7 +26,7 @@ Analysis-owned fit state needs to persist:
 - pre-fit scalar snapshots for recovery workflows
 - compact status metadata for the latest saved fit projection
 - deterministic correlation summaries
-- minimizer-specific fit outputs on the active `_minimizer.*` category
+- minimizer-specific fit outputs on the paired `_fit_result.*` category
 - per-parameter posterior summaries on `_fit_parameter`
 - large posterior arrays and plot caches in `analysis/results.h5`
 
@@ -47,8 +47,7 @@ Persist analysis-owned fit state as explicit analysis categories in
 
 Do not add a dedicated `_fit_state` category or
 `_fit_state.schema_version`. Persisted fit state is detected from
-`_fit_result`, `_fit_parameter`, `_fit_parameter_correlation`, and
-fit-output fields on `_minimizer.*`.
+`_fit_result`, `_fit_parameter`, and `_fit_parameter_correlation`.
 
 ### Common fit-state categories
 
@@ -77,7 +76,8 @@ pre-fit scalar snapshots:
 - `posterior_gelman_rubin`
 - `posterior_effective_sample_size_bulk`
 
-`_fit_result` stores the latest saved fit header:
+`_fit_result` stores the latest saved fit header and scalar
+family-specific fit outputs:
 
 - `result_kind`
 - `success`
@@ -92,9 +92,9 @@ pairs are stored.
 
 ### Minimizer fit projection
 
-The active `_minimizer.*` category stores both user-selected solver
-inputs and fit-filled outputs. Deterministic minimizer classes store
-compact fit output counts:
+The active `_minimizer.*` category stores user-selected solver inputs
+only. Scalar outputs are written to the paired `_fit_result.*` category.
+Deterministic fit-result classes add compact fit output counts:
 
 - `objective_name`
 - `objective_value`
@@ -104,8 +104,6 @@ compact fit output counts:
 - `degrees_of_freedom`
 - `covariance_available`
 - `correlation_available`
-- `runtime_seconds`
-- `iterations_performed`
 - `exit_reason`
 
 Do not persist a `_deterministic_parameter_result` category. Final
@@ -113,8 +111,7 @@ deterministic parameter values and uncertainties already persist in the
 model CIF files, and restored deterministic ordering comes from
 `_fit_parameter`.
 
-Bayesian minimizer classes store sampler inputs and fit outputs under
-`_minimizer.*`, including:
+Bayesian minimizer classes store sampler inputs under `_minimizer.*`:
 
 - `sampling_steps`
 - `burn_in_steps`
@@ -123,7 +120,9 @@ Bayesian minimizer classes store sampler inputs and fit outputs under
 - `parallel_workers`
 - `initialization_method`
 - `random_seed`
-- `runtime_seconds`
+
+Bayesian fit-result classes store scalar outputs under `_fit_result.*`:
+
 - `point_estimate_name`
 - `sampler_completed`
 - `credible_interval_inner`
@@ -170,10 +169,10 @@ posterior displays.
 Load order is:
 
 1. standard analysis configuration
-2. common fit-state categories
-3. `_minimizer.*` fit-output fields according to the active
-   `_minimizer.type`
-4. posterior sidecar arrays when a Bayesian result is expected
+2. `_minimizer.*` settings according to the active `_minimizer.type`
+3. common and family-specific `_fit_result.*` fields on the paired class
+4. `_fit_parameter` and `_fit_parameter_correlation`
+5. posterior sidecar arrays when a Bayesian result is expected
 
 Persist backend runtime objects, optimizer instances, and raw driver
 payloads nowhere in this design.

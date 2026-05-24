@@ -15,7 +15,6 @@ from easydiffraction.analysis.categories.aliases.factory import AliasesFactory
 from easydiffraction.analysis.categories.constraints.factory import ConstraintsFactory
 from easydiffraction.analysis.categories.fit_parameter_correlations import FitParameterCorrelations
 from easydiffraction.analysis.categories.fit_parameters import FitParameters
-from easydiffraction.analysis.categories.fit_result import FitResult
 from easydiffraction.analysis.categories.fitting_mode import FittingMode
 from easydiffraction.analysis.categories.fitting_mode import FittingModeFactory
 from easydiffraction.analysis.categories.joint_fit import JointFitCollection
@@ -56,6 +55,7 @@ from easydiffraction.utils.utils import render_object_help
 from easydiffraction.utils.utils import render_table
 
 if TYPE_CHECKING:
+    from easydiffraction.analysis.categories.fit_result import FitResultBase
     from easydiffraction.analysis.categories.minimizer.base import MinimizerCategoryBase
     from easydiffraction.core.posterior import PosteriorParameterSummary
 
@@ -429,7 +429,7 @@ class _AnalysisPersistedCategoryAccessorsMixin:
         return self._fit_parameters
 
     @property
-    def fit_result(self) -> FitResult:
+    def fit_result(self) -> FitResultBase:
         """Persisted common fit-result status metadata."""
         return self._fit_result
 
@@ -480,7 +480,7 @@ class Analysis(
         )
         self._sequential_fit_extract = SequentialFitExtractCollection()
         self._fit_parameters = FitParameters()
-        self._fit_result = FitResult()
+        self._fit_result = self._minimizer._fit_result_class()
         self._fit_parameter_correlations = FitParameterCorrelations()
         self._has_persisted_fit_state_data = False
         self._persisted_fit_state_sidecar: dict[str, object] = {}
@@ -736,13 +736,13 @@ class Analysis(
                 starting_parameters=list(restored_parameters),
                 fitting_time=fitting_time,
                 sampler_name=sampler_name,
-                point_estimate_name=self.minimizer.point_estimate_name.value,
+                point_estimate_name=self.fit_result.point_estimate_name.value or 'best_sample',
                 posterior_samples=posterior_samples,
                 posterior_parameter_summaries=self._restored_posterior_summaries(),
                 posterior_predictive=self._restored_predictive_summaries(),
                 credible_interval_levels=(
-                    float(self.minimizer.credible_interval_inner.value),
-                    float(self.minimizer.credible_interval_outer.value),
+                    float(self.fit_result.credible_interval_inner.value),
+                    float(self.fit_result.credible_interval_outer.value),
                 ),
                 sampler_settings={
                     'steps': int(sampler_settings.get('steps', 0)),
@@ -755,17 +755,17 @@ class Analysis(
                 },
                 convergence_diagnostics={
                     'converged': False,
-                    'max_r_hat': self.minimizer.gelman_rubin_max.value,
-                    'min_ess_bulk': self.minimizer.effective_sample_size_min.value,
+                    'max_r_hat': self.fit_result.gelman_rubin_max.value,
+                    'min_ess_bulk': self.fit_result.effective_sample_size_min.value,
                     'n_draws': int(sample_shape[0]),
                     'n_chains': int(sample_shape[1]),
                     'n_parameters': int(sample_shape[2]),
                 },
-                sampler_completed=bool(self.minimizer.sampler_completed.value),
-                best_log_posterior=self.minimizer.best_log_posterior.value,
+                sampler_completed=bool(self.fit_result.sampler_completed.value),
+                best_log_posterior=self.fit_result.best_log_posterior.value,
             )
-            restored_results.message = self.fit_result.message.value
-            restored_results.iterations = int(self.fit_result.iterations.value)
+            restored_results.message = self.fit_result.message.value or ''
+            restored_results.iterations = _int_or_none(self.fit_result.iterations.value) or 0
             self.fit_results = restored_results
             return restored_results
 
@@ -778,21 +778,21 @@ class Analysis(
             fitting_time=fitting_time,
             optimizer_name=engine_metadata['optimizer_name'],
             method_name=engine_metadata['method_name'],
-            objective_name=self.minimizer.objective_name.value,
-            objective_value=self.minimizer.objective_value.value,
-            n_data_points=_int_or_none(self.minimizer.n_data_points.value),
-            n_parameters=_int_or_none(self.minimizer.n_parameters.value),
-            n_free_parameters=_int_or_none(self.minimizer.n_free_parameters.value),
-            degrees_of_freedom=_int_or_none(self.minimizer.degrees_of_freedom.value),
-            covariance_available=self.minimizer.covariance_available.value,
-            correlation_available=self.minimizer.correlation_available.value,
-            runtime_seconds=self.minimizer.runtime_seconds.value,
-            iterations_performed=_int_or_none(self.minimizer.iterations_performed.value),
-            exit_reason=self.minimizer.exit_reason.value,
+            objective_name=self.fit_result.objective_name.value,
+            objective_value=self.fit_result.objective_value.value,
+            n_data_points=_int_or_none(self.fit_result.n_data_points.value),
+            n_parameters=_int_or_none(self.fit_result.n_parameters.value),
+            n_free_parameters=_int_or_none(self.fit_result.n_free_parameters.value),
+            degrees_of_freedom=_int_or_none(self.fit_result.degrees_of_freedom.value),
+            covariance_available=self.fit_result.covariance_available.value,
+            correlation_available=self.fit_result.correlation_available.value,
+            runtime_seconds=fitting_time,
+            iterations_performed=_int_or_none(self.fit_result.iterations.value),
+            exit_reason=self.fit_result.exit_reason.value,
         )
-        restored_results.message = self.fit_result.message.value
-        restored_results.iterations = int(self.fit_result.iterations.value)
-        restored_results.chi_square = self.minimizer.objective_value.value
+        restored_results.message = self.fit_result.message.value or ''
+        restored_results.iterations = _int_or_none(self.fit_result.iterations.value) or 0
+        restored_results.chi_square = self.fit_result.objective_value.value
         self.fit_results = restored_results
         return restored_results
 
@@ -1062,8 +1062,11 @@ class Analysis(
         self._warn_about_minimizer_swap_defaults(old_defaults, new_minimizer)
 
         old_minimizer._parent = None
+        self._fit_result._parent = None
         self._minimizer = new_minimizer
+        self._fit_result = new_minimizer._fit_result_class()
         self._minimizer._parent = self
+        self._fit_result._parent = self
         self._fitter = Fitter(value)
         if announce:
             console.paragraph('Current minimizer changed to')
@@ -1203,16 +1206,19 @@ class Analysis(
 
     def _clear_persisted_fit_state(self) -> None:
         """Reset all persisted fit-state categories before a new fit."""
-        self._clear_minimizer_result_projection()
         self._fit_parameters = FitParameters()
-        self._fit_result = FitResult()
+        self._fit_result._parent = None
+        self._fit_result = self.minimizer._fit_result_class()
+        self._fit_result._parent = self
         self._fit_parameter_correlations = FitParameterCorrelations()
         self._set_has_persisted_fit_state(value=False)
         self._persisted_fit_state_sidecar = {}
 
-    def _clear_minimizer_result_projection(self) -> None:
-        """Reset result-only fields on the active minimizer category."""
-        self.minimizer._reset_result_descriptors()
+    def _clear_fit_result_projection(self) -> None:
+        """
+        Reset result-only fields on the active fit-result category.
+        """
+        self.fit_result._reset_result_descriptors()
 
     def _capture_fit_parameter_state(self, parameters: list[Parameter]) -> None:
         """Capture pre-fit parameter state."""
@@ -1372,17 +1378,15 @@ class Analysis(
             else None
         )
 
-        self.minimizer._set_objective_name('chi_square')
-        self.minimizer._set_objective_value(self._resolve_objective_value(results))
-        self.minimizer._set_n_data_points(n_data_points)
-        self.minimizer._set_n_parameters(n_parameters)
-        self.minimizer._set_n_free_parameters(n_free_parameters)
-        self.minimizer._set_degrees_of_freedom(degrees_of_freedom)
-        self.minimizer._set_covariance_available(value=covariance is not None)
-        self.minimizer._set_correlation_available(value=correlation_matrix is not None)
-        self.minimizer._set_runtime_seconds(results.fitting_time)
-        self.minimizer._set_iterations_performed(results.iterations)
-        self.minimizer._set_exit_reason(results.message)
+        self.fit_result._set_objective_name('chi_square')
+        self.fit_result._set_objective_value(self._resolve_objective_value(results))
+        self.fit_result._set_n_data_points(n_data_points)
+        self.fit_result._set_n_parameters(n_parameters)
+        self.fit_result._set_n_free_parameters(n_free_parameters)
+        self.fit_result._set_degrees_of_freedom(degrees_of_freedom)
+        self.fit_result._set_covariance_available(value=covariance is not None)
+        self.fit_result._set_correlation_available(value=correlation_matrix is not None)
+        self.fit_result._set_exit_reason(results.message)
 
         if correlation_matrix is not None:
             self._store_correlation_projection(
@@ -1679,15 +1683,14 @@ class Analysis(
         point_estimate_name = results.point_estimate_name or 'best_sample'
         convergence = results.convergence_diagnostics
 
-        self.minimizer._set_runtime_seconds(results.fitting_time)
-        self.minimizer._set_point_estimate_name(point_estimate_name)
-        self.minimizer._set_sampler_completed(value=results.sampler_completed)
-        self.minimizer._set_best_log_posterior(results.best_log_posterior)
-        self.minimizer._set_credible_interval_inner(credible_interval_inner)
-        self.minimizer._set_credible_interval_outer(credible_interval_outer)
-        self.minimizer._set_gelman_rubin_max(convergence.get('max_r_hat'))
-        self.minimizer._set_effective_sample_size_min(convergence.get('min_ess_bulk'))
-        self.minimizer._set_acceptance_rate_mean(convergence.get('acceptance_rate_mean'))
+        self.fit_result._set_point_estimate_name(point_estimate_name)
+        self.fit_result._set_sampler_completed(value=results.sampler_completed)
+        self.fit_result._set_best_log_posterior(results.best_log_posterior)
+        self.fit_result._set_credible_interval_inner(credible_interval_inner)
+        self.fit_result._set_credible_interval_outer(credible_interval_outer)
+        self.fit_result._set_gelman_rubin_max(convergence.get('max_r_hat'))
+        self.fit_result._set_effective_sample_size_min(convergence.get('min_ess_bulk'))
+        self.fit_result._set_acceptance_rate_mean(convergence.get('acceptance_rate_mean'))
         self._store_posterior_samples_sidecar_projection(results)
 
         live_parameters = {
@@ -1945,33 +1948,14 @@ class Analysis(
         self.fitter.minimizer.tracker._set_shared_display_handle(short_display_handle)
 
         try:
-            for expt_name in expt_names:
-                if verb is VerbosityEnum.FULL:
-                    console.print(
-                        f"📋 Using experiment 🔬 '{expt_name}' for '{mode.value}' fitting"
-                    )
-
-                experiment = experiments[expt_name]
-                self.fitter.fit(
-                    structures,
-                    [experiment],
-                    analysis=self,
-                    verbosity=verb,
-                    use_physical_limits=use_physical_limits,
-                    random_seed=self._resolved_fit_random_seed(random_seed),
-                )
-
-                # After fitting, snapshot parameter values before
-                # they get overwritten by the next experiment's fit
-                results = self.fitter.results
-                self._snapshot_params(expt_name, results)
-                self.fit_results = results
-
-                # Short mode: append one summary row and update in-place
-                if verb is VerbosityEnum.SHORT:
-                    self._fit_single_update_short_table(
-                        short_rows, expt_name, results, short_display_handle
-                    )
+            self._fit_single_experiments(
+                verb,
+                structures,
+                experiments,
+                use_physical_limits=use_physical_limits,
+                random_seed=random_seed,
+                short_state=(short_rows, short_display_handle),
+            )
         finally:
             self.fitter.minimizer.tracker._set_shared_display_handle(None)
 
@@ -1979,6 +1963,47 @@ class Analysis(
             if short_display_handle is not None and hasattr(short_display_handle, 'close'):
                 with suppress(Exception):
                     short_display_handle.close()
+
+    def _fit_single_experiments(
+        self,
+        verb: VerbosityEnum,
+        structures: object,
+        experiments: object,
+        *,
+        use_physical_limits: bool,
+        random_seed: int | None,
+        short_state: tuple[list[list[str]], object],
+    ) -> None:
+        """Run the per-experiment loop for single-fit mode."""
+        short_rows, short_display_handle = short_state
+        for expt_name in experiments.names:
+            if verb is VerbosityEnum.FULL:
+                console.print(
+                    f"📋 Using experiment 🔬 '{expt_name}' for "
+                    f"'{FitModeEnum.SINGLE.value}' fitting"
+                )
+
+            experiment = experiments[expt_name]
+            self.fitter.fit(
+                structures,
+                [experiment],
+                analysis=self,
+                verbosity=verb,
+                use_physical_limits=use_physical_limits,
+                random_seed=self._resolved_fit_random_seed(random_seed),
+            )
+
+            results = self.fitter.results
+            self._snapshot_params(expt_name, results)
+            self.fit_results = results
+
+            if verb is VerbosityEnum.SHORT:
+                self._fit_single_update_short_table(
+                    short_rows,
+                    expt_name,
+                    results,
+                    short_display_handle,
+                )
 
     @staticmethod
     def _fit_single_print_header(

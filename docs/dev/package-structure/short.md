@@ -29,8 +29,11 @@
 │   │   │   └── 📄 factory.py
 │   │   ├── 📁 fit_result
 │   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 base.py
+│   │   │   ├── 📄 bayesian.py
 │   │   │   ├── 📄 default.py
-│   │   │   └── 📄 factory.py
+│   │   │   ├── 📄 factory.py
+│   │   │   └── 📄 lsq.py
 │   │   ├── 📁 fitting_mode
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py

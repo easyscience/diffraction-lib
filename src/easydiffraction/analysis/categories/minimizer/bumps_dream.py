@@ -20,7 +20,7 @@ DEFAULT_PARALLEL_WORKERS = 0
 
 @MinimizerCategoryFactory.register
 class BumpsDreamMinimizer(BayesianMinimizerBase):
-    """Persisted settings and results for the BUMPS DREAM minimizer."""
+    """Persisted settings for the BUMPS DREAM minimizer."""
 
     _engine_metadata: ClassVar[dict[str, str]] = {
         'optimizer_name': 'bumps (dream)',
@@ -41,12 +41,3 @@ class BumpsDreamMinimizer(BayesianMinimizerBase):
         self._parallel_workers = self._parallel_workers_descriptor(DEFAULT_PARALLEL_WORKERS)
         self._initialization_method = self._initialization_method_descriptor()
         self._random_seed = self._random_seed_descriptor()
-        self._runtime_seconds = self._runtime_seconds_descriptor()
-        self._point_estimate_name = self._point_estimate_name_descriptor()
-        self._sampler_completed = self._sampler_completed_descriptor()
-        self._credible_interval_inner = self._credible_interval_inner_descriptor()
-        self._credible_interval_outer = self._credible_interval_outer_descriptor()
-        self._acceptance_rate_mean = self._acceptance_rate_mean_descriptor()
-        self._gelman_rubin_max = self._gelman_rubin_max_descriptor()
-        self._effective_sample_size_min = self._effective_sample_size_min_descriptor()
-        self._best_log_posterior = self._best_log_posterior_descriptor()
