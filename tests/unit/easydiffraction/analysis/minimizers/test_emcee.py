@@ -119,6 +119,111 @@ def test_emcee_pool_context_uses_fork_worker_for_unpicklable_objective(monkeypat
         _emcee_log_prob_worker(np.array([2.0], dtype=float))
 
 
+def test_emcee_pool_context_terminates_on_interrupt_cleanup():
+    from easydiffraction.analysis.minimizers.emcee import EmceeMinimizer
+    from easydiffraction.analysis.minimizers.emcee import _EmceePoolContext
+
+    class FakePool:
+        def __init__(self) -> None:
+            self.closed = False
+            self.terminated = False
+            self.joined = False
+
+        def close(self) -> None:
+            self.closed = True
+
+        def terminate(self) -> None:
+            self.terminated = True
+
+        def join(self) -> None:
+            self.joined = True
+
+    fake_pool = FakePool()
+    pool_context = _EmceePoolContext(pool=fake_pool, log_prob_fn=lambda values: 0.0)
+
+    EmceeMinimizer._close_pool_context(pool_context, terminate=True)
+
+    assert fake_pool.terminated is True
+    assert fake_pool.closed is False
+    assert fake_pool.joined is True
+
+
+def test_emcee_run_solver_terminates_pool_when_interrupted(monkeypatch, tmp_path):
+    import easydiffraction.analysis.minimizers.emcee as emcee_mod
+    from easydiffraction.analysis.minimizers.emcee import EmceeMinimizer
+    from easydiffraction.analysis.minimizers.emcee import _EmceePoolContext
+
+    class FakeBackend:
+        iteration = 0
+
+        def __init__(
+            self,
+            path: str,
+            *,
+            name: str,
+            read_only: bool,
+        ) -> None:
+            del path, name, read_only
+
+    class FakePool:
+        def __init__(self) -> None:
+            self.terminated = False
+            self.joined = False
+
+        def terminate(self) -> None:
+            self.terminated = True
+
+        def join(self) -> None:
+            self.joined = True
+
+    fake_pool = FakePool()
+    minimizer = EmceeMinimizer()
+    minimizer.tracker = SimpleNamespace(start_sampler_pre_processing=lambda **kwargs: None)
+
+    monkeypatch.setattr(
+        emcee_mod.emcee.backends,
+        'HDFBackend',
+        FakeBackend,
+    )
+    monkeypatch.setattr(
+        minimizer,
+        '_resolved_sidecar_path',
+        lambda: tmp_path / 'analysis' / 'results.h5',
+    )
+    monkeypatch.setattr(minimizer, '_validate_walker_count', lambda **kwargs: None)
+    monkeypatch.setattr(
+        minimizer,
+        '_build_log_probability',
+        lambda **kwargs: object(),
+    )
+    monkeypatch.setattr(
+        minimizer,
+        '_build_pool_context',
+        lambda log_prob: _EmceePoolContext(pool=fake_pool, log_prob_fn=lambda values: 0.0),
+    )
+    monkeypatch.setattr(
+        minimizer,
+        '_run_sampler',
+        lambda **kwargs: (_ for _ in ()).throw(KeyboardInterrupt),
+    )
+
+    with pytest.raises(KeyboardInterrupt):
+        minimizer._run_solver(
+            lambda values: np.array([0.0], dtype=float),
+            parameters=[SimpleNamespace(fit_min=-1.0, fit_max=1.0)],
+            parameter_names=['p'],
+            parameter_display_names=['p'],
+            random_seed=1,
+            resume=False,
+            extra_steps=None,
+            starting_values=[0.0],
+            starting_uncertainties=[None],
+        )
+
+    assert fake_pool.terminated is True
+    assert fake_pool.joined is True
+
+
 def test_emcee_progress_reporter_emits_burn_in_and_sampling_updates():
     from easydiffraction.analysis.minimizers.emcee import _EmceeProgressReporter
 

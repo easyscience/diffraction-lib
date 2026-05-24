@@ -5,10 +5,12 @@
 from __future__ import annotations
 
 import html
+import uuid
 from contextlib import AbstractContextManager
 from contextlib import suppress
 from time import monotonic
 from typing import TYPE_CHECKING
+from typing import Self
 
 if TYPE_CHECKING:
     from types import TracebackType
@@ -16,9 +18,13 @@ if TYPE_CHECKING:
 try:
     from IPython.display import HTML
     from IPython.display import DisplayHandle
+    from IPython.display import Javascript
+    from IPython.display import display
 except ImportError:  # pragma: no cover - optional dependency
     HTML = None
     DisplayHandle = None
+    Javascript = None
+    display = None
 
 from rich.console import Group
 from rich.live import Live
@@ -489,3 +495,183 @@ def activity_indicator(
         on exit.
     """
     return _ActivityIndicatorContext(label=label, verbosity=verbosity)
+
+
+class NotebookFitStopControl(AbstractContextManager):
+    """Display a Jupyter stop button for fitting runs."""
+
+    def __init__(self, *, verbosity: VerbosityEnum) -> None:
+        self._verbosity = verbosity
+        self._display_handle: object | None = None
+        self._element_id = f'ed-fit-stop-{uuid.uuid4().hex}'
+
+    def __enter__(self) -> Self:
+        """Show the stop button."""
+        self.show()
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
+        """Update or clear the stop button when leaving the context."""
+        del exc_value
+        del traceback
+        interrupted = exc_type is not None and issubclass(exc_type, KeyboardInterrupt)
+        self.close(interrupted=interrupted)
+
+    def show(self) -> None:
+        """Render the stop button when running in a notebook."""
+        if not self._can_display():
+            return
+
+        handle = DisplayHandle()
+        self._display_handle = handle
+        with suppress(Exception):
+            handle.display(HTML(self._active_html()))
+            display(Javascript(self._interrupt_javascript()))
+
+    def close(self, *, interrupted: bool = False) -> None:
+        """Clear or update the stop button when fitting ends."""
+        if self._display_handle is None or HTML is None:
+            return
+
+        html_content = self._stopped_html() if interrupted else ''
+        with suppress(Exception):
+            self._display_handle.update(HTML(html_content))
+        self._display_handle = None
+
+    def _can_display(self) -> bool:
+        return (
+            self._verbosity is not VerbosityEnum.SILENT
+            and in_jupyter()
+            and DisplayHandle is not None
+            and HTML is not None
+            and Javascript is not None
+            and display is not None
+        )
+
+    def _active_html(self) -> str:
+        return (
+            '<style>'
+            '.ed-fit-stop-control {'
+            'display: inline-flex;'
+            'align-items: center;'
+            'gap: 0.5rem;'
+            'margin: 0.35rem 0 0.45rem 0;'
+            'font-family: var(--jp-ui-font-family, -apple-system, BlinkMacSystemFont, '
+            '"Segoe UI", sans-serif);'
+            '}'
+            '.ed-fit-stop-button {'
+            'border: 1px solid #b91c1c;'
+            'border-radius: 4px;'
+            'background: #dc2626;'
+            'color: white;'
+            'font-size: 0.9rem;'
+            'line-height: 1.1;'
+            'padding: 0.35rem 0.65rem;'
+            'cursor: pointer;'
+            '}'
+            '.ed-fit-stop-button:disabled {'
+            'cursor: default;'
+            'opacity: 0.65;'
+            '}'
+            '.ed-fit-stop-status {'
+            'color: var(--jp-ui-font-color2, #6b7280);'
+            'font-size: 0.85rem;'
+            '}'
+            '</style>'
+            f'<div id="{self._element_id}" class="ed-fit-stop-control">'
+            f'<button id="{self._element_id}-button" '
+            'class="ed-fit-stop-button" type="button">Stop fitting</button>'
+            f'<span id="{self._element_id}-status" class="ed-fit-stop-status"></span>'
+            '</div>'
+        )
+
+    def _stopped_html(self) -> str:
+        return (
+            f'<div id="{self._element_id}" class="ed-fit-stop-control">'
+            '<span class="ed-fit-stop-status">Fitting stopped.</span>'
+            '</div>'
+        )
+
+    def _interrupt_javascript(self) -> str:
+        button_id = f'{self._element_id}-button'
+        status_id = f'{self._element_id}-status'
+        return f"""
+(function() {{
+  const button = document.getElementById({button_id!r});
+  const status = document.getElementById({status_id!r});
+  if (!button) {{
+    return;
+  }}
+
+  function setStatus(text) {{
+    if (status) {{
+      status.textContent = text;
+    }}
+  }}
+
+  function executeCommand(commandId) {{
+    const app = window.jupyterapp || window.JupyterLab || window.jupyterlab;
+    if (!app || !app.commands) {{
+      return false;
+    }}
+    try {{
+      app.commands.execute(commandId);
+      return true;
+    }} catch (error) {{
+      return false;
+    }}
+  }}
+
+  function clickInterruptButton() {{
+    const selectors = [
+      '[data-command="kernelmenu:interrupt"]',
+      '[data-command="notebook:interrupt-kernel"]',
+      'button[title*="Interrupt"]',
+      'button[aria-label*="Interrupt"]'
+    ];
+    for (const selector of selectors) {{
+      const element = document.querySelector(selector);
+      if (element && element !== button) {{
+        element.click();
+        return true;
+      }}
+    }}
+    return false;
+  }}
+
+  button.addEventListener('click', function() {{
+    button.disabled = true;
+    setStatus('Stopping...');
+    let interrupted = false;
+    if (window.Jupyter && Jupyter.notebook && Jupyter.notebook.kernel) {{
+      try {{
+        Jupyter.notebook.kernel.interrupt();
+        interrupted = true;
+      }} catch (error) {{
+        interrupted = false;
+      }}
+    }}
+    interrupted = interrupted ||
+      executeCommand('kernelmenu:interrupt') ||
+      executeCommand('notebook:interrupt-kernel') ||
+      clickInterruptButton();
+    if (!interrupted) {{
+      button.disabled = false;
+      setStatus('Use Kernel > Interrupt to stop this fit.');
+    }}
+  }});
+}})();
+"""
+
+
+def notebook_fit_stop_control(
+    *,
+    verbosity: VerbosityEnum,
+) -> NotebookFitStopControl:
+    """Return a notebook stop-control context for fitting runs."""
+    return NotebookFitStopControl(verbosity=verbosity)

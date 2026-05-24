@@ -44,6 +44,7 @@ from easydiffraction.core.variable import Parameter
 from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.datablocks.experiment.item.base import intensity_category_for
 from easydiffraction.display.progress import make_display_handle
+from easydiffraction.display.progress import notebook_fit_stop_control
 from easydiffraction.display.tables import TableRenderer
 from easydiffraction.io.cif.serialize import analysis_to_cif
 from easydiffraction.utils.enums import VerbosityEnum
@@ -973,6 +974,25 @@ class Analysis(
             resume=resume,
             extra_steps=extra_steps,
         )
+        verb = VerbosityEnum(self.project.verbosity.fit.value)
+        try:
+            with notebook_fit_stop_control(verbosity=verb):
+                self._run_fit_mode(
+                    mode=mode,
+                    resume=resume,
+                    extra_steps=extra_steps,
+                )
+        except KeyboardInterrupt:
+            self._handle_fit_interrupted(verbosity=verb)
+
+    def _run_fit_mode(
+        self,
+        *,
+        mode: FitModeEnum,
+        resume: bool,
+        extra_steps: int | None,
+    ) -> None:
+        """Dispatch a validated fit request to the selected mode."""
         if mode is FitModeEnum.SINGLE:
             self._run_single(resume=resume, extra_steps=extra_steps)
         elif mode is FitModeEnum.JOINT:
@@ -983,6 +1003,15 @@ class Analysis(
         else:  # pragma: no cover
             msg = f'Unknown fit mode: {mode!r}'
             raise ValueError(msg)
+
+    def _handle_fit_interrupted(self, *, verbosity: VerbosityEnum) -> None:
+        """Clean up in-memory fit state after a user interrupt."""
+        self.fit_results = None
+        self.fitter.results = None
+        self._clear_persisted_fit_state()
+        self._prepare_results_sidecar_for_new_fit()
+        if verbosity is not VerbosityEnum.SILENT:
+            console.print('⏹️ Fitting stopped by user.')
 
     def _validate_fit_request(
         self,

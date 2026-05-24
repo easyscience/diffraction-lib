@@ -143,6 +143,51 @@ def test_store_posterior_projection_persists_resolved_random_seed():
     assert analysis.fit_result.resolved_random_seed.value == 12345
 
 
+def test_fit_interrupt_cleans_state_and_prints_message(monkeypatch, capsys):
+    from easydiffraction.analysis import analysis as analysis_mod
+    from easydiffraction.analysis.analysis import Analysis
+
+    events: list[object] = []
+
+    class FakeStopControl:
+        def __enter__(self) -> object:
+            events.append('enter')
+            return self
+
+        def __exit__(self, exc_type, exc_value, traceback) -> None:
+            del exc_value
+            del traceback
+            events.append(exc_type)
+
+    analysis = Analysis(project=_make_project_with_names([]))
+    analysis.project.verbosity = SimpleNamespace(fit=SimpleNamespace(value='full'))
+    analysis.fit_results = object()
+    analysis.fitter.results = object()
+
+    monkeypatch.setattr(
+        analysis_mod,
+        'notebook_fit_stop_control',
+        lambda *, verbosity: FakeStopControl(),
+    )
+    monkeypatch.setattr(
+        analysis,
+        '_run_single',
+        lambda **kwargs: (_ for _ in ()).throw(KeyboardInterrupt),
+    )
+    monkeypatch.setattr(
+        analysis,
+        '_prepare_results_sidecar_for_new_fit',
+        lambda: events.append('sidecar-cleanup'),
+    )
+
+    analysis.fit()
+
+    assert events == ['enter', KeyboardInterrupt, 'sidecar-cleanup']
+    assert analysis.fit_results is None
+    assert analysis.fitter.results is None
+    assert 'Fitting stopped by user.' in capsys.readouterr().out
+
+
 def test_fitting_mode_type_invalid_assignment_raises_and_preserves_state():
     import pytest
 

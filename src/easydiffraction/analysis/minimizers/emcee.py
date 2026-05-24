@@ -633,6 +633,7 @@ class EmceeMinimizer(MinimizerBase):
             objective_function=objective_function,
         )
         pool_context = self._build_pool_context(log_prob)
+        terminate_pool = False
         try:
             sampler = self._run_sampler(
                 backend=backend,
@@ -645,6 +646,9 @@ class EmceeMinimizer(MinimizerBase):
                 extra_steps=extra_steps,
                 total_iterations=total_iterations,
             )
+        except KeyboardInterrupt:
+            terminate_pool = True
+            raise
         except EMCEE_FAILURES as error:
             return self._failure_result(
                 message=f'emcee sampling failed: {error}',
@@ -659,7 +663,7 @@ class EmceeMinimizer(MinimizerBase):
                 sampler_completed=False,
             )
         finally:
-            self._close_pool_context(pool_context)
+            self._close_pool_context(pool_context, terminate=terminate_pool)
 
         result = self._build_success_result(
             sampler=sampler,
@@ -866,17 +870,30 @@ class EmceeMinimizer(MinimizerBase):
         return _EmceePoolContext(pool=None, log_prob_fn=log_prob)
 
     @staticmethod
-    def _close_pool_context(pool_context: _EmceePoolContext) -> None:
+    def _close_pool_context(
+        pool_context: _EmceePoolContext,
+        *,
+        terminate: bool = False,
+    ) -> None:
         """
         Close a resolved emcee pool and clear inherited worker state.
         """
         pool = pool_context.pool
         try:
-            if pool is not None:
-                pool.close()
-                pool.join()
+            EmceeMinimizer._shutdown_pool(pool, terminate=terminate)
         finally:
             _set_emcee_worker_log_prob(None)
+
+    @staticmethod
+    def _shutdown_pool(pool: object | None, *, terminate: bool) -> None:
+        """Close or terminate an emcee multiprocessing pool."""
+        if pool is None:
+            return
+        if terminate:
+            pool.terminate()
+        else:
+            pool.close()
+        pool.join()
 
     @staticmethod
     def _can_pickle(value: object) -> bool:
