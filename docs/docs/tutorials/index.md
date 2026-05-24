@@ -115,6 +115,10 @@ The tutorials are organized into the following categories:
   tutorial covers the use of Markov Chain Monte Carlo (MCMC) sampling to
   explore the posterior distribution of the refined parameters,
   providing insights into parameter uncertainties and correlations.
+- [LBCO emcee Resume](ed-25.ipynb) – Demonstrates how to run Bayesian
+  sampling with the emcee minimizer, save the project with its chain,
+  resume sampling with additional steps, and inspect the posterior
+  before and after resume.
 - [Tb2TiO7 Bayesian](ed-22.ipynb) – Another example of a Bayesian
   analysis. This tutorial focuses on the Tb2TiO7 crystal structure using
   constant wavelength neutron single crystal diffraction data from HEiDi

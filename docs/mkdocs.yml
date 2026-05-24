@@ -221,6 +221,7 @@ nav:
           - BEER McStas: tutorials/ed-20.ipynb
       - Bayesian Analysis:
           - LBCO Bayesian: tutorials/ed-21.ipynb
+          - LBCO emcee Resume: tutorials/ed-25.ipynb
           - Tb2TiO7 Bayesian: tutorials/ed-22.ipynb
       - Workshops & Schools:
           - DMSC Summer School: tutorials/ed-13.ipynb

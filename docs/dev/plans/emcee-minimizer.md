@@ -652,7 +652,7 @@ Mark `[x]` as each step lands.
 
       Commit: `Route emcee posterior through fit_result and sidecar`
 
-- [ ] **P1.7 — Add `ed-25.py` tutorial.** Verify first that
+- [x] **P1.7 — Add `ed-25.py` tutorial.** Verify first that
       `docs/docs/tutorials/ed-25.py` is unused. `ed-23.py` is the
       "Co2SiO4 Sequential Fit" tutorial and `ed-24.py` is the "LBCO
       Bayesian Display" tutorial — do **not** overwrite either. If
