@@ -714,6 +714,7 @@ class Analysis(
                 else (0, 0, 0)
             )
             sampler_settings = self.minimizer._native_kwargs()
+            resolved_random_seed = self._restored_bayesian_random_seed(sampler_settings)
             sampler_name = (
                 'dream'
                 if self.minimizer.type == MinimizerTypeEnum.BUMPS_DREAM.value
@@ -734,7 +735,10 @@ class Analysis(
                     float(self.fit_result.credible_interval_inner.value),
                     float(self.fit_result.credible_interval_outer.value),
                 ),
-                sampler_settings=self._restored_bayesian_sampler_settings(sampler_settings),
+                sampler_settings=self._restored_bayesian_sampler_settings(
+                    sampler_settings,
+                    random_seed=resolved_random_seed,
+                ),
                 convergence_diagnostics={
                     'converged': False,
                     'max_r_hat': self.fit_result.gelman_rubin_max.value,
@@ -781,8 +785,10 @@ class Analysis(
     def _restored_bayesian_sampler_settings(
         self,
         sampler_settings: dict[str, object],
+        *,
+        random_seed: object | None = None,
     ) -> dict[str, object]:
-        """Return display-oriented sampler settings for restored results."""
+        """Return display settings for restored Bayesian results."""
         if self.minimizer.type == MinimizerTypeEnum.EMCEE.value:
             return {
                 'steps': self._int_sampler_setting(sampler_settings, 'nsteps'),
@@ -792,7 +798,7 @@ class Analysis(
                 'parallel': self._int_sampler_setting(sampler_settings, 'parallel_workers'),
                 'init': str(sampler_settings.get('initialization_method', '')),
                 'proposal_moves': str(sampler_settings.get('proposal_moves', '')),
-                'random_seed': sampler_settings.get('random_seed'),
+                'random_seed': random_seed,
             }
 
         return {
@@ -802,8 +808,18 @@ class Analysis(
             'pop': self._int_sampler_setting(sampler_settings, 'pop'),
             'parallel': self._int_sampler_setting(sampler_settings, 'parallel'),
             'init': str(sampler_settings.get('init', '')),
-            'random_seed': sampler_settings.get('random_seed'),
+            'random_seed': random_seed,
         }
+
+    def _restored_bayesian_random_seed(
+        self,
+        sampler_settings: dict[str, object],
+    ) -> object | None:
+        """Return persisted runtime or configured sampler seed."""
+        resolved_seed = self.fit_result.resolved_random_seed.value
+        if resolved_seed is not None:
+            return int(resolved_seed)
+        return sampler_settings.get('random_seed')
 
     @staticmethod
     def _int_sampler_setting(
@@ -1013,7 +1029,7 @@ class Analysis(
             raise ValueError(msg)
 
     def _prepare_results_sidecar_for_new_fit(self) -> None:
-        """Warn and remove persisted sidecar arrays before a fresh fit."""
+        """Remove persisted sidecar arrays before a fresh fit."""
         project_path = self.project.info.path
         if project_path is None:
             return
@@ -1758,6 +1774,9 @@ class Analysis(
         self.fit_result._set_best_log_posterior(results.best_log_posterior)
         self.fit_result._set_credible_interval_inner(credible_interval_inner)
         self.fit_result._set_credible_interval_outer(credible_interval_outer)
+        self.fit_result._set_resolved_random_seed(
+            self._bayesian_result_random_seed(results)
+        )
         self.fit_result._set_gelman_rubin_max(convergence.get('max_r_hat'))
         self.fit_result._set_effective_sample_size_min(convergence.get('min_ess_bulk'))
         self.fit_result._set_acceptance_rate_mean(convergence.get('acceptance_rate_mean'))
@@ -1789,6 +1808,12 @@ class Analysis(
             correlation_matrix=correlation_matrix,
             source_kind=FitCorrelationSourceEnum.POSTERIOR,
         )
+
+    @staticmethod
+    def _bayesian_result_random_seed(results: BayesianFitResults) -> int | None:
+        """Return the runtime seed from Bayesian result settings."""
+        seed = results.sampler_settings.get('random_seed')
+        return None if seed is None else int(seed)
 
     def _store_fit_result_projection(
         self,

@@ -139,10 +139,15 @@ Bayesian fit-result classes store scalar outputs under `_fit_result.*`:
 - `sampler_completed`
 - `credible_interval_inner`
 - `credible_interval_outer`
-- `acceptance_rate_mean`
+- `resolved_random_seed`
 - `gelman_rubin_max`
 - `effective_sample_size_min`
 - `best_log_posterior`
+
+When the backend reports an acceptance rate, Bayesian fit results also
+store:
+
+- `acceptance_rate_mean`
 
 Bayesian per-parameter posterior summaries are stored on the
 corresponding `_fit_parameter` rows. Their row order defines the saved

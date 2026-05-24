@@ -121,6 +121,28 @@ def test_minimizer_type_invalid_assignment_raises_and_preserves_state():
     assert a.minimizer.type == initial_type
 
 
+def test_store_posterior_projection_persists_resolved_random_seed():
+    from easydiffraction.analysis.analysis import Analysis
+    from easydiffraction.analysis.categories.fit_result.bayesian import BayesianFitResult
+    from easydiffraction.analysis.fit_helpers.bayesian import BayesianFitResults
+
+    analysis = Analysis(project=_make_project_with_names([]))
+    analysis._fit_result._parent = None
+    analysis._fit_result = BayesianFitResult()
+    analysis._fit_result._parent = analysis
+    results = BayesianFitResults(
+        success=True,
+        convergence_diagnostics={},
+        sampler_settings={'random_seed': 12345},
+        posterior_samples=None,
+        posterior_parameter_summaries=[],
+    )
+
+    analysis._store_posterior_fit_projection(results)
+
+    assert analysis.fit_result.resolved_random_seed.value == 12345
+
+
 def test_fitting_mode_type_invalid_assignment_raises_and_preserves_state():
     import pytest
 
@@ -283,8 +305,19 @@ def test_fit_single_short_reuses_tracker_display_handle(monkeypatch):
         verbosity: object,
         use_physical_limits: bool,
         random_seed: int | None,
+        resume: bool,
+        extra_steps: int | None,
     ) -> None:
-        del structures, experiments, analysis, verbosity, use_physical_limits, random_seed
+        del (
+            structures,
+            experiments,
+            analysis,
+            verbosity,
+            use_physical_limits,
+            random_seed,
+            resume,
+            extra_steps,
+        )
         analysis_obj = fake_fit.analysis_obj
         analysis_obj.fitter.results = SimpleNamespace(
             reduced_chi_square=1.23,

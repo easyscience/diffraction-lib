@@ -178,7 +178,7 @@ class Fitter:
         random_seed : int | None, default=None
             Optional random seed passed to stochastic minimizers.
         resume : bool, default=False
-            Whether to resume a sampler state instead of starting a new fit.
+            Whether to resume a sampler state.
         extra_steps : int | None, default=None
             Additional sampler steps for resume-capable minimizers.
         """
@@ -233,21 +233,21 @@ class Fitter:
                 resume=resume,
                 extra_steps=extra_steps,
             )
-            # Stop the timer and backfill results.fitting_time now so
-            # post-processing projects a real duration into persisted
-            # categories. The live display is still torn down in the
-            # finally below.
-            self.minimizer._finalize_timing()
             self._postprocess_fit_results(
                 analysis=analysis,
                 experiments=experiments,
                 fitted_parameters=params,
             )
+            # Keep the timer open through post-processing so the final
+            # sampler row and persisted fitting_time include the heavy
+            # Bayesian projection/cache work.
+            self.minimizer._finalize_timing()
+            self._backfill_persisted_fitting_time(analysis)
         finally:
             self.minimizer._stop_tracking()
 
     def _set_minimizer_sidecar_path(self, analysis: object) -> None:
-        """Set the analysis results sidecar path on engines that use it."""
+        """Set the analysis results sidecar path when supported."""
         if analysis is None or not hasattr(self.minimizer, '_sidecar_path'):
             return
 
@@ -255,6 +255,15 @@ class Fitter:
         project_path = getattr(project_info, 'path', None)
         sidecar_path = None if project_path is None else project_path / 'analysis' / 'results.h5'
         self.minimizer._sidecar_path = sidecar_path
+
+    def _backfill_persisted_fitting_time(self, analysis: object) -> None:
+        """Update persisted fit-result time after post-processing."""
+        if analysis is None or self.results is None:
+            return
+        fit_result = getattr(analysis, 'fit_result', None)
+        set_fitting_time = getattr(fit_result, '_set_fitting_time', None)
+        if callable(set_fitting_time):
+            set_fitting_time(self.results.fitting_time)
 
     @staticmethod
     def _validate_resume_parameter_set(
