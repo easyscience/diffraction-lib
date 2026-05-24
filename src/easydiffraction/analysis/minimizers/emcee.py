@@ -661,8 +661,7 @@ class EmceeMinimizer(MinimizerBase):
         finally:
             self._close_pool_context(pool_context)
 
-        self.tracker.start_sampler_post_processing()
-        return self._build_success_result(
+        result = self._build_success_result(
             sampler=sampler,
             backend=backend,
             parameter_names=parameter_names,
@@ -671,6 +670,8 @@ class EmceeMinimizer(MinimizerBase):
             starting_values=kwargs['starting_values'],
             starting_uncertainties=kwargs['starting_uncertainties'],
         )
+        self.tracker.start_sampler_post_processing()
+        return result
 
     def _run_sampler(  # noqa: PLR0913
         self,
@@ -724,7 +725,7 @@ class EmceeMinimizer(MinimizerBase):
         self._sample_with_progress(
             sampler=sampler,
             initial_state=initial_state,
-            iterations=self.nsteps,
+            iterations=total_iterations,
             reporter=reporter,
             skip_initial_state_check=False,
         )
@@ -790,7 +791,7 @@ class EmceeMinimizer(MinimizerBase):
     ) -> int:
         """Return the total iterations expected for progress display."""
         if not resume:
-            return self.nsteps
+            return self.nsteps + self.nburn + 1
         return self._validated_positive_integer('extra_steps', extra_steps)
 
     def _validate_walker_count(self, *, n_parameters: int) -> None:
@@ -934,10 +935,10 @@ class EmceeMinimizer(MinimizerBase):
         n_parameters: int,
     ) -> dict[str, object]:
         """Build sampler settings recorded in results."""
-        samples = total_steps * self.nwalkers * n_parameters
+        samples = self.nsteps * self.nwalkers * n_parameters
         return {
             'random_seed': int(random_seed),
-            'steps': int(total_steps),
+            'steps': int(self.nsteps),
             'burn': int(self.nburn),
             'thin': int(self.thin),
             'pop': int(self.nwalkers),
@@ -945,7 +946,8 @@ class EmceeMinimizer(MinimizerBase):
             'init': self.initialization_method.value,
             'proposal_moves': self.proposal_moves,
             'samples': int(samples),
-            'nsteps': int(total_steps),
+            'total_steps': int(total_steps),
+            'nsteps': int(self.nsteps),
             'nburn': int(self.nburn),
             'nwalkers': int(self.nwalkers),
             'parallel_workers': int(self.parallel_workers),

@@ -153,6 +153,36 @@ def test_emcee_progress_reporter_treats_resume_as_sampling_only():
     assert {update.phase for update in tracker.updates} == {'sampling'}
 
 
+def test_emcee_total_iterations_adds_burn_in_and_initial_generation():
+    from easydiffraction.analysis.minimizers.emcee import EmceeMinimizer
+
+    minimizer = EmceeMinimizer()
+    minimizer.nsteps = 100
+    minimizer.nburn = 20
+
+    assert minimizer._resolved_total_iterations(resume=False, extra_steps=None) == 121
+    assert minimizer._resolved_total_iterations(resume=True, extra_steps=50) == 50
+
+
+def test_emcee_sampler_settings_record_sampling_and_total_steps():
+    from easydiffraction.analysis.minimizers.emcee import EmceeMinimizer
+
+    minimizer = EmceeMinimizer()
+    minimizer.nsteps = 100
+    minimizer.nburn = 20
+
+    settings = minimizer._sampler_settings(
+        random_seed=123,
+        total_steps=121,
+        n_parameters=2,
+    )
+
+    assert settings['steps'] == 100
+    assert settings['burn'] == 20
+    assert settings['total_steps'] == 121
+    assert settings['samples'] == 100 * minimizer.nwalkers * 2
+
+
 def test_sample_with_progress_iterates_sampler_and_reports_each_state():
     from easydiffraction.analysis.minimizers.emcee import EmceeMinimizer
 
