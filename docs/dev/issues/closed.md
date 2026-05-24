@@ -17,6 +17,26 @@ convention in
 
 ---
 
+## 72. Warn on All Switchable-Category Type Changes
+
+Closed by
+[`switchable-category-owned-selectors.md`](../adrs/accepted/switchable-category-owned-selectors.md).
+Type-change warnings now run through owner `_swap_<name>` hooks, so
+every category-owned selector assignment has a uniform owner-mediated
+place to warn about values that will be discarded.
+
+---
+
+## 76. Consistent `_type` Suffix in Switchable-Category API Names
+
+Closed by
+[`switchable-category-owned-selectors.md`](../adrs/accepted/switchable-category-owned-selectors.md).
+The public suffix is dropped: owners expose categories, categories
+expose a uniform `type` property plus `show_supported()`, and CIF uses
+one `_<cat>.type` selector tag per category.
+
+---
+
 ## Restore Minimiser Variant Support
 
 Used thin subclasses (approach A) to restore lmfit algorithm variants.

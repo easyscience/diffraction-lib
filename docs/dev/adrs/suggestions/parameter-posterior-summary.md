@@ -1,6 +1,14 @@
 # ADR: Parameter-Level Posterior Projection
 
-**Status:** Proposed **Date:** 2026-05-13
+**Status:** Superseded by
+[`minimizer-category-consolidation`](../accepted/minimizer-category-consolidation.md).
+**Date:** 2026-05-13
+
+## Superseded
+
+The accepted minimizer-category consolidation ADR implements
+`Parameter.posterior` and persists posterior summary fields on
+`_fit_parameter`. This suggestion is kept for historical context only.
 
 ## Status Note
 

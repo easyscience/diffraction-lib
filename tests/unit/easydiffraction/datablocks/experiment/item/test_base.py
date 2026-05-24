@@ -30,12 +30,14 @@ def test_pd_experiment_peak_profile_type_switch(capsys):
 
     ex = ConcretePd(name='ex1', type=et)
     # valid switch using tag string
-    ex.peak_profile_type = 'pseudo-voigt'
-    assert ex.peak_profile_type == 'pseudo-voigt'
-    # invalid string should warn and keep previous
-    ex.peak_profile_type = 'non-existent'
-    captured = capsys.readouterr().out
-    assert 'Unsupported' in captured or 'Unknown' in captured
+    import pytest
+
+    ex.peak.type = 'pseudo-voigt'
+    assert ex.peak.type == 'cwl-pseudo-voigt'
+    # invalid string should raise and keep previous
+    with pytest.raises(ValueError, match='Unsupported peak profile'):
+        ex.peak.type = 'non-existent'
+    assert ex.peak.type == 'cwl-pseudo-voigt'
 
 
 def test_pd_experiment_set_peak_profile_type_silent(capsys):
@@ -61,7 +63,7 @@ def test_pd_experiment_set_peak_profile_type_silent(capsys):
     ex._set_peak_profile_type('pseudo-voigt + empirical asymmetry')
 
     # Profile type was switched
-    assert ex.peak_profile_type == 'pseudo-voigt + empirical asymmetry'
+    assert ex.peak.type == 'cwl-pseudo-voigt-empirical-asymmetry'
     assert ex.peak.__class__.__name__ == 'CwlPseudoVoigtEmpiricalAsymmetry'
 
     # No console output was emitted
@@ -89,15 +91,15 @@ def test_pd_experiment_set_peak_profile_type_invalid_keeps_default(capsys):
     et._set_scattering_type(ScatteringTypeEnum.BRAGG.value)
 
     ex = ConcretePd(name='ex1', type=et)
-    original_type = ex.peak_profile_type
+    original_type = ex.peak.type
     ex._set_peak_profile_type('nonexistent-profile')
 
     # Profile type unchanged
-    assert ex.peak_profile_type == original_type
+    assert ex.peak.type == original_type
 
 
 def test_pd_experiment_restore_switchable_types_switches_peak():
-    """_restore_switchable_types reads _peak.profile_type from a CIF block."""
+    """_restore_switchable_types reads _peak.type from a CIF block."""
     import gemmi
 
     from easydiffraction.datablocks.experiment.categories.experiment_type import ExperimentType
@@ -119,13 +121,13 @@ def test_pd_experiment_restore_switchable_types_switches_peak():
 
     ex = ConcretePd(name='ex1', type=et)
 
-    cif = 'data_ex1\n_peak.profile_type "pseudo-voigt + empirical asymmetry"\n'
+    cif = 'data_ex1\n_peak.type "pseudo-voigt + empirical asymmetry"\n'
     doc = gemmi.cif.read_string(cif)
     block = doc.sole_block()
 
     ex._restore_switchable_types(block)
 
-    assert ex.peak_profile_type == 'pseudo-voigt + empirical asymmetry'
+    assert ex.peak.type == 'cwl-pseudo-voigt-empirical-asymmetry'
     assert ex.peak.__class__.__name__ == 'CwlPseudoVoigtEmpiricalAsymmetry'
 
 
@@ -152,7 +154,7 @@ def test_base_experiment_restore_switchable_types_is_noop():
 
     ex = ConcreteBase(name='ex1', type=et)
 
-    cif = 'data_ex1\n_peak.profile_type "pseudo-voigt + empirical asymmetry"\n'
+    cif = 'data_ex1\n_peak.type "pseudo-voigt + empirical asymmetry"\n'
     doc = gemmi.cif.read_string(cif)
     block = doc.sole_block()
 

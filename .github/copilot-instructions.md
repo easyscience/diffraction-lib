@@ -122,6 +122,25 @@
   tests, tutorials, docs). Use `git grep -n` because all contributors
   have Git; do not assume `rg` is installed. If `git grep` is
   unavailable, fall back to `find ... -type f` plus `grep -n`.
+- When asked to review a plan, save the review next to that plan using
+  `<plan-stem>_review-N.md`, where `N` is one greater than the highest
+  existing review number for that plan. For example,
+  `docs/dev/plans/background-refactor.md` is reviewed in
+  `docs/dev/plans/background-refactor_review-1.md`, then
+  `docs/dev/plans/background-refactor_review-2.md`. A reviewer must not
+  run tests, `pixi run fix`, `pixi run check`, or any other build or
+  verification command; reviews are static reads of code, plan, and
+  documentation only. Note in the review which checks were skipped so
+  the next implementer knows the gap.
+- Writing a review or a reply to a review does **not** require running
+  any formatter (`prettier`, `pixi run fix`, `ruff format`, …) or any
+  lint/check/test command on the review/reply file itself or any
+  surrounding documentation. Review and reply files are markdown-only,
+  written by hand, and committed as-is. Formatting passes happen later,
+  during implementation Phase 2 verification — not in the review cycle.
+  This rule applies to both `_review-N.md` and `_reply-N.md` files
+  regardless of where they live (`docs/dev/plans/`, `docs/dev/adrs/…/`,
+  etc.).
 - Each change is atomic and single-commit-sized: make one change,
   suggest the commit message, then stop and wait for confirmation.
 - When in doubt, ask.
@@ -222,3 +241,13 @@ When asked to create a plan:
   understand the benefit. Update it during implementation if extra
   approved changes become important enough to mention in the PR title or
   description.
+- When replying to a plan review, save the reply alongside the review.
+  Reviews live at `docs/dev/plans/<feature-name>_review-<N>.md`; the
+  matching reply goes to `docs/dev/plans/<feature-name>_reply-<N>.md`
+  (same slug, same number, swap `review` → `reply`). One reply file per
+  review file; do not bundle replies to multiple reviews into one
+  document. Structure the reply with one section per finding, each
+  containing a verdict (agree / disagree / partial), the action taken in
+  the plan, and a pointer to the affected plan section. After updating
+  the plan, also update the reply if a numbered step shifts so that
+  cross-references stay accurate.

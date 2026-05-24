@@ -17,6 +17,8 @@ import numpy as np
 
 from easydiffraction.core.diagnostic import Diagnostics
 
+_MISSING_DEFAULT = object()
+
 # ======================================================================
 # Shared constants
 # ======================================================================
@@ -291,15 +293,20 @@ class AttributeSpec:
     def __init__(
         self,
         *,
-        default: object = None,
+        default: object = _MISSING_DEFAULT,
         data_type: DataTypes | None = None,
         validator: ValidatorBase | None = None,
         allow_none: bool = False,
     ) -> None:
-        self.default = default
+        self.has_default = default is not _MISSING_DEFAULT
+        self.default = None if default is _MISSING_DEFAULT else default
         self.allow_none = allow_none
         self._data_type_validator = TypeValidator(data_type) if data_type else None
         self._validator = validator
+
+    def default_value(self) -> object:
+        """Return the resolved static default value."""
+        return self.default() if callable(self.default) else self.default
 
     def validated(
         self,
@@ -315,7 +322,7 @@ class AttributeSpec:
         """
         val = value
         # Evaluate callable defaults dynamically
-        default = self.default() if callable(self.default) else self.default
+        default = self.default_value()
 
         # Type validation
         if self._data_type_validator:

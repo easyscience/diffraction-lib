@@ -5,10 +5,12 @@
 from __future__ import annotations
 
 from easydiffraction.core.category_owner import CategoryOwner
+from easydiffraction.project.categories.chart import Chart
+from easydiffraction.project.categories.chart import ChartFactory
 from easydiffraction.project.categories.info import ProjectInfo
 from easydiffraction.project.categories.info import ProjectInfoFactory
-from easydiffraction.project.categories.rendering import Rendering
-from easydiffraction.project.categories.rendering import RenderingFactory
+from easydiffraction.project.categories.table import Table
+from easydiffraction.project.categories.table import TableFactory
 from easydiffraction.project.categories.verbosity import Verbosity
 from easydiffraction.project.categories.verbosity import VerbosityFactory
 
@@ -29,7 +31,8 @@ class ProjectConfig(CategoryOwner):
             title=title,
             description=description,
         )
-        self._rendering = RenderingFactory.create(RenderingFactory.default_tag())
+        self._chart = ChartFactory.create(ChartFactory.default_tag())
+        self._table = TableFactory.create(TableFactory.default_tag())
         self._verbosity = VerbosityFactory.create(VerbosityFactory.default_tag())
 
     @property
@@ -38,9 +41,14 @@ class ProjectConfig(CategoryOwner):
         return self._info
 
     @property
-    def rendering(self) -> Rendering:
-        """Rendering configuration category."""
-        return self._rendering
+    def chart(self) -> Chart:
+        """Chart configuration category."""
+        return self._chart
+
+    @property
+    def table(self) -> Table:
+        """Table configuration category."""
+        return self._table
 
     @property
     def verbosity(self) -> Verbosity:

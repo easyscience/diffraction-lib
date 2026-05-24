@@ -6,36 +6,22 @@ from __future__ import annotations
 from contextlib import suppress
 from itertools import combinations
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
 
 from easydiffraction.analysis.categories.aliases.factory import AliasesFactory
-from easydiffraction.analysis.categories.bayesian_convergence import BayesianConvergence
-from easydiffraction.analysis.categories.bayesian_distribution_caches import (
-    BayesianDistributionCaches,
-)
-from easydiffraction.analysis.categories.bayesian_pair_caches import BayesianPairCaches
-from easydiffraction.analysis.categories.bayesian_pair_caches.default import BayesianPairCachePaths
-from easydiffraction.analysis.categories.bayesian_parameter_posteriors import (
-    BayesianParameterPosteriors,
-)
-from easydiffraction.analysis.categories.bayesian_predictive_datasets import (
-    BayesianPredictiveDatasets,
-)
-from easydiffraction.analysis.categories.bayesian_predictive_datasets.default import (
-    BayesianPredictiveDatasetPaths,
-)
-from easydiffraction.analysis.categories.bayesian_result import BayesianResult
-from easydiffraction.analysis.categories.bayesian_sampler import BayesianSampler
 from easydiffraction.analysis.categories.constraints.factory import ConstraintsFactory
-from easydiffraction.analysis.categories.deterministic_result import DeterministicResult
 from easydiffraction.analysis.categories.fit_parameter_correlations import FitParameterCorrelations
 from easydiffraction.analysis.categories.fit_parameters import FitParameters
 from easydiffraction.analysis.categories.fit_result import FitResult
-from easydiffraction.analysis.categories.fitting import Fitting
-from easydiffraction.analysis.categories.fitting import FittingFactory
+from easydiffraction.analysis.categories.fitting_mode import FittingMode
+from easydiffraction.analysis.categories.fitting_mode import FittingModeFactory
 from easydiffraction.analysis.categories.joint_fit import JointFitCollection
+from easydiffraction.analysis.categories.minimizer import MinimizerCategoryFactory
+from easydiffraction.analysis.categories.minimizer.base import MinimizerCategoryBase
+from easydiffraction.analysis.categories.minimizer.bayesian_base import BayesianMinimizerBase
 from easydiffraction.analysis.categories.sequential_fit import SequentialFit
 from easydiffraction.analysis.categories.sequential_fit import SequentialFitFactory
 from easydiffraction.analysis.categories.sequential_fit_extract import (
@@ -45,7 +31,6 @@ from easydiffraction.analysis.enums import FitCorrelationSourceEnum
 from easydiffraction.analysis.enums import FitModeEnum
 from easydiffraction.analysis.enums import FitResultKindEnum
 from easydiffraction.analysis.fit_helpers.bayesian import BayesianFitResults
-from easydiffraction.analysis.fit_helpers.bayesian import PosteriorParameterSummary
 from easydiffraction.analysis.fit_helpers.bayesian import PosteriorPredictiveSummary
 from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
 from easydiffraction.analysis.fit_helpers.reporting import FitResults
@@ -70,10 +55,23 @@ from easydiffraction.utils.utils import render_cif
 from easydiffraction.utils.utils import render_object_help
 from easydiffraction.utils.utils import render_table
 
+if TYPE_CHECKING:
+    from easydiffraction.analysis.categories.minimizer.base import MinimizerCategoryBase
+    from easydiffraction.core.posterior import PosteriorParameterSummary
+
 _SUMMARY_HIDDEN_PARAMETER_CATEGORIES = frozenset({'pd_data', 'total_data', 'refln'})
 _POSTERIOR_SAMPLE_NDIM = 3
 _FLATTENED_POSTERIOR_SAMPLE_NDIM = 2
 _CREDIBLE_INTERVAL_LEVEL_COUNT = 2
+
+
+# LSQ result descriptors default to ``None`` (review-8 F6); the CIF
+# restore path calls ``int(...)`` on every result field, which would
+# crash for a CIF saved before any fit ran. ``_int_or_none`` lets the
+# call site stay terse while preserving ``None`` through the coercion.
+def _int_or_none(value: object) -> int | None:
+    """Coerce a descriptor value to ``int``; ``None`` passes through."""
+    return None if value is None else int(value)
 
 
 def _discover_property_rows(cls: type) -> list[list[str]]:
@@ -440,46 +438,6 @@ class _AnalysisPersistedCategoryAccessorsMixin:
         """Persisted fit-parameter correlation summaries."""
         return self._fit_parameter_correlations
 
-    @property
-    def deterministic_result(self) -> DeterministicResult:
-        """Persisted deterministic fit-result metadata."""
-        return self._deterministic_result
-
-    @property
-    def bayesian_result(self) -> BayesianResult:
-        """Persisted Bayesian fit-result metadata."""
-        return self._bayesian_result
-
-    @property
-    def bayesian_sampler(self) -> BayesianSampler:
-        """Persisted Bayesian sampler settings."""
-        return self._bayesian_sampler
-
-    @property
-    def bayesian_convergence(self) -> BayesianConvergence:
-        """Persisted Bayesian convergence diagnostics."""
-        return self._bayesian_convergence
-
-    @property
-    def bayesian_parameter_posteriors(self) -> BayesianParameterPosteriors:
-        """Persisted Bayesian parameter posterior summaries."""
-        return self._bayesian_parameter_posteriors
-
-    @property
-    def bayesian_distribution_caches(self) -> BayesianDistributionCaches:
-        """Persisted Bayesian distribution-cache manifests."""
-        return self._bayesian_distribution_caches
-
-    @property
-    def bayesian_pair_caches(self) -> BayesianPairCaches:
-        """Persisted Bayesian pair-cache manifests."""
-        return self._bayesian_pair_caches
-
-    @property
-    def bayesian_predictive_datasets(self) -> BayesianPredictiveDatasets:
-        """Persisted Bayesian predictive-dataset manifests."""
-        return self._bayesian_predictive_datasets
-
 
 class Analysis(
     _AnalysisOwnerAccessorsMixin,
@@ -510,8 +468,12 @@ class Analysis(
         self._constraints_type: str = ConstraintsFactory.default_tag()
         self._constraints = ConstraintsFactory.create(self._constraints_type)
         self._constraints_handler = ConstraintsHandler.get()
-        self._fitting: Fitting = FittingFactory.create(FittingFactory.default_tag())
-        self._fitting_mode_type: FitModeEnum = FitModeEnum.default()
+        self._minimizer: MinimizerCategoryBase = MinimizerCategoryFactory.create(
+            MinimizerTypeEnum.default().value
+        )
+        self._fitting_mode: FittingMode = FittingModeFactory.create(
+            FittingModeFactory.default_tag()
+        )
         self._joint_fit: JointFitCollection = JointFitCollection()
         self._sequential_fit: SequentialFit = SequentialFitFactory.create(
             SequentialFitFactory.default_tag()
@@ -520,20 +482,47 @@ class Analysis(
         self._fit_parameters = FitParameters()
         self._fit_result = FitResult()
         self._fit_parameter_correlations = FitParameterCorrelations()
-        self._deterministic_result = DeterministicResult()
-        self._bayesian_result = BayesianResult()
-        self._bayesian_sampler = BayesianSampler()
-        self._bayesian_convergence = BayesianConvergence()
-        self._bayesian_parameter_posteriors = BayesianParameterPosteriors()
-        self._bayesian_distribution_caches = BayesianDistributionCaches()
-        self._bayesian_pair_caches = BayesianPairCaches()
-        self._bayesian_predictive_datasets = BayesianPredictiveDatasets()
         self._has_persisted_fit_state_data = False
         self._persisted_fit_state_sidecar: dict[str, object] = {}
-        self._fitter = Fitter(self._fitting.minimizer_type.value)
+        self._fitter = Fitter(self.minimizer.type)
         self._fit_results = None
         self._parameter_snapshots: dict[str, dict[str, dict]] = {}
         self._display = AnalysisDisplay(self)
+        self._attach_category_parents()
+
+    def _attach_category_parents(self) -> None:
+        """Link owned categories back to this analysis object."""
+        self._aliases._parent = self
+        self._constraints._parent = self
+        self._minimizer._parent = self
+        self._fitting_mode._parent = self
+        self._joint_fit._parent = self
+        self._sequential_fit._parent = self
+        self._sequential_fit_extract._parent = self
+        self._fit_parameters._parent = self
+        self._fit_result._parent = self
+        self._fit_parameter_correlations._parent = self
+
+    @staticmethod
+    def _supported_filters_for(category: object) -> dict[str, object]:
+        """
+        Return owner context filters for a switchable category.
+
+        Analysis-level switchables (minimizer, fitting_mode) have no
+        owner-supplied context today; their supported-types lookups read
+        only the registered factory entries. The empty dict is therefore
+        intentional and applies uniformly across both categories.
+        """
+        del category
+        return {}
+
+    def _swap_minimizer(self, new_type: str) -> None:
+        """Switch the active minimizer category."""
+        self._replace_minimizer(new_type, announce=True)
+
+    def _swap_fitting_mode(self, new_type: str) -> None:
+        """Switch the active fitting-mode category."""
+        self._replace_fitting_mode(new_type, announce=True)
 
     @staticmethod
     def _predictive_cache_key(
@@ -559,11 +548,6 @@ class Analysis(
         """
         Return persisted parameter names in display and array order.
         """
-        if self.fit_result.result_kind.value == FitResultKindEnum.BAYESIAN.value:
-            posterior_rows = list(self.bayesian_parameter_posteriors)
-            if posterior_rows:
-                return [row.unique_name.value for row in posterior_rows]
-
         return [row.param_unique_name.value for row in self.fit_parameters]
 
     def _restore_live_parameter_state(self, param_map: dict[str, Parameter]) -> None:
@@ -584,48 +568,10 @@ class Analysis(
             )
             parameter._fit_start_value = row.start_value.value
             parameter._fit_start_uncertainty = row.start_uncertainty.value
-
-        for row in self.bayesian_parameter_posteriors:
-            parameter = param_map.get(row.unique_name.value)
-            if parameter is None or row.uncertainty.value is None:
-                continue
-            parameter.uncertainty = float(row.uncertainty.value)
-
-    def _sync_live_minimizer_from_persisted_fit_state(self) -> None:
-        """Apply saved sampler settings to the live minimizer."""
-        if not self._has_persisted_fit_state():
-            return
-
-        if self.fit_result.result_kind.value != FitResultKindEnum.BAYESIAN.value:
-            return
-
-        if self.fitting.minimizer_type.value != MinimizerTypeEnum.BUMPS_DREAM.value:
-            return
-
-        minimizer = self.fitting.minimizer
-        if minimizer is None:
-            return
-
-        steps = int(self.bayesian_sampler.steps.value)
-        if steps <= 0:
-            return
-
-        minimizer.steps = steps
-        minimizer.burn = int(self.bayesian_sampler.burn.value)
-
-        thin = int(self.bayesian_sampler.thin.value)
-        if thin > 0:
-            minimizer.thin = thin
-
-        pop = int(self.bayesian_sampler.pop.value)
-        if pop > 0:
-            minimizer.pop = pop
-
-        minimizer.parallel = int(self.bayesian_sampler.parallel.value)
-
-        init_value = str(self.bayesian_sampler.init.value)
-        if init_value:
-            minimizer.init = init_value
+            posterior = row.posterior_summary(display_name=parameter.name)
+            parameter._set_posterior(posterior)
+            if posterior is not None and np.isfinite(posterior.standard_deviation):
+                parameter.uncertainty = posterior.standard_deviation
 
     def _restored_fit_parameters(self, param_map: dict[str, Parameter]) -> list[Parameter]:
         """Return live parameters in the persisted fit-result order."""
@@ -638,18 +584,13 @@ class Analysis(
 
     def _restored_posterior_samples(self) -> PosteriorSamples | None:
         """Return restored posterior samples from the HDF5 sidecar."""
-        if not self.bayesian_result.has_posterior_samples.value:
-            return None
-
         posterior_data = self._persisted_fit_state_sidecar.get('posterior', {})
         parameter_samples = posterior_data.get('parameter_samples')
         if parameter_samples is None:
             return None
 
-        posterior_rows = list(self.bayesian_parameter_posteriors)
-        parameter_names = [row.unique_name.value for row in posterior_rows]
-        if not parameter_names:
-            parameter_names = [row.param_unique_name.value for row in self.fit_parameters]
+        posterior_rows = [row for row in self.fit_parameters if row.has_posterior_summary()]
+        parameter_names = [row.param_unique_name.value for row in posterior_rows]
 
         parameter_sample_array = np.asarray(parameter_samples, dtype=float)
         if parameter_sample_array.ndim != _POSTERIOR_SAMPLE_NDIM:
@@ -674,38 +615,23 @@ class Analysis(
 
     def _restored_posterior_summaries(self) -> list[PosteriorParameterSummary]:
         """Return posterior summary rows as runtime summary objects."""
-        return [
-            PosteriorParameterSummary(
-                unique_name=row.unique_name.value,
-                display_name=row.display_name.value,
-                best_sample_value=float(row.best_sample_value.value),
-                median=float(row.median.value),
-                standard_deviation=float(row.uncertainty.value),
-                interval_68=(
-                    float(row.interval_68_lower.value),
-                    float(row.interval_68_upper.value),
-                ),
-                interval_95=(
-                    float(row.interval_95_lower.value),
-                    float(row.interval_95_upper.value),
-                ),
-                ess_bulk=row.ess_bulk.value,
-                r_hat=row.r_hat.value,
-            )
-            for row in self.bayesian_parameter_posteriors
-        ]
+        param_map = self._live_parameter_map()
+        summaries: list[PosteriorParameterSummary] = []
+        for row in self.fit_parameters:
+            parameter = param_map.get(row.param_unique_name.value)
+            display_name = row.param_unique_name.value if parameter is None else parameter.name
+            summary = row.posterior_summary(display_name=display_name)
+            if summary is not None:
+                summaries.append(summary)
+        return summaries
 
     def _restored_predictive_summaries(self) -> dict[str, PosteriorPredictiveSummary]:
         """Return restored predictive summaries for runtime reuse."""
         restored_predictive: dict[str, PosteriorPredictiveSummary] = {}
         predictive_data = self._persisted_fit_state_sidecar.get('predictive_datasets', {})
-        for row in self.bayesian_predictive_datasets:
-            experiment_name = str(row.experiment_name.value)
-            x_axis_name = str(row.x_axis_name.value)
-            dataset = predictive_data.get(experiment_name)
-            if dataset is None:
-                continue
-
+        for item_id, dataset in predictive_data.items():
+            experiment_name = str(item_id)
+            x_axis_name = str(dataset.get('x_axis_name', ''))
             summary = PosteriorPredictiveSummary(
                 experiment_name=experiment_name,
                 x_axis_name=x_axis_name,
@@ -763,6 +689,27 @@ class Analysis(
         if not self._has_persisted_fit_state():
             return None
 
+        # Validate the (result_kind, minimizer family) pair before
+        # touching any live parameters or posterior arrays, so a CIF
+        # whose tags disagree fails fast with a clear error rather than
+        # crashing deep inside the Bayesian restore (review-8 F5).
+        if (
+            self.fit_result.result_kind.value == FitResultKindEnum.BAYESIAN.value
+            and not isinstance(self.minimizer, BayesianMinimizerBase)
+        ):
+            bayesian_kind = FitResultKindEnum.BAYESIAN.value
+            deterministic_kind = FitResultKindEnum.DETERMINISTIC.value
+            msg = (
+                'CIF restore mismatch: '
+                f"_fit_result.result_kind = '{bayesian_kind}' "
+                f"but _minimizer.type = '{self.minimizer.type}' "
+                'is not a Bayesian minimizer. Either set '
+                '_minimizer.type to a Bayesian sampler '
+                '(e.g. bumps (dream)), or set _fit_result.result_kind '
+                f"to '{deterministic_kind}'."
+            )
+            raise ValueError(msg)
+
         param_map = self._live_parameter_map()
         self._restore_live_parameter_state(param_map)
         restored_parameters = self._restored_fit_parameters(param_map)
@@ -770,111 +717,115 @@ class Analysis(
         reduced_chi_square = self.fit_result.reduced_chi_square.value
 
         if self.fit_result.result_kind.value == FitResultKindEnum.BAYESIAN.value:
+            posterior_samples = self._restored_posterior_samples()
+            sample_shape = (
+                np.asarray(posterior_samples.parameter_samples).shape
+                if posterior_samples is not None
+                else (0, 0, 0)
+            )
+            sampler_settings = self.minimizer._native_kwargs()
+            sampler_name = (
+                'dream'
+                if self.minimizer.type == MinimizerTypeEnum.BUMPS_DREAM.value
+                else str(self.minimizer.type)
+            )
             restored_results = BayesianFitResults(
                 success=bool(self.fit_result.success.value),
                 parameters=restored_parameters,
                 reduced_chi_square=reduced_chi_square,
                 starting_parameters=list(restored_parameters),
                 fitting_time=fitting_time,
-                sampler_name=self.bayesian_result.sampler_name.value,
-                point_estimate_name=self.bayesian_result.point_estimate_name.value,
-                posterior_samples=self._restored_posterior_samples(),
+                sampler_name=sampler_name,
+                point_estimate_name=self.minimizer.point_estimate_name.value,
+                posterior_samples=posterior_samples,
                 posterior_parameter_summaries=self._restored_posterior_summaries(),
                 posterior_predictive=self._restored_predictive_summaries(),
                 credible_interval_levels=(
-                    float(self.bayesian_result.credible_interval_inner.value),
-                    float(self.bayesian_result.credible_interval_outer.value),
+                    float(self.minimizer.credible_interval_inner.value),
+                    float(self.minimizer.credible_interval_outer.value),
                 ),
                 sampler_settings={
-                    'steps': int(self.bayesian_sampler.steps.value),
-                    'burn': int(self.bayesian_sampler.burn.value),
-                    'thin': int(self.bayesian_sampler.thin.value),
-                    'pop': int(self.bayesian_sampler.pop.value),
-                    'parallel': int(self.bayesian_sampler.parallel.value),
-                    'init': self.bayesian_sampler.init.value,
-                    'random_seed': self.bayesian_sampler.random_seed.value,
+                    'steps': int(sampler_settings.get('steps', 0)),
+                    'burn': int(sampler_settings.get('burn', 0)),
+                    'thin': int(sampler_settings.get('thin', 0)),
+                    'pop': int(sampler_settings.get('pop', 0)),
+                    'parallel': int(sampler_settings.get('parallel', 0)),
+                    'init': str(sampler_settings.get('init', '')),
+                    'random_seed': sampler_settings.get('random_seed'),
                 },
                 convergence_diagnostics={
-                    'converged': bool(self.bayesian_convergence.converged.value),
-                    'max_r_hat': self.bayesian_convergence.max_r_hat.value,
-                    'min_ess_bulk': self.bayesian_convergence.min_ess_bulk.value,
-                    'n_draws': int(self.bayesian_convergence.n_draws.value),
-                    'n_chains': int(self.bayesian_convergence.n_chains.value),
-                    'n_parameters': int(self.bayesian_convergence.n_parameters.value),
+                    'converged': False,
+                    'max_r_hat': self.minimizer.gelman_rubin_max.value,
+                    'min_ess_bulk': self.minimizer.effective_sample_size_min.value,
+                    'n_draws': int(sample_shape[0]),
+                    'n_chains': int(sample_shape[1]),
+                    'n_parameters': int(sample_shape[2]),
                 },
-                sampler_completed=bool(self.bayesian_result.sampler_completed.value),
-                best_log_posterior=self.bayesian_result.best_log_posterior.value,
+                sampler_completed=bool(self.minimizer.sampler_completed.value),
+                best_log_posterior=self.minimizer.best_log_posterior.value,
             )
             restored_results.message = self.fit_result.message.value
             restored_results.iterations = int(self.fit_result.iterations.value)
             self.fit_results = restored_results
             return restored_results
 
+        engine_metadata = type(self.minimizer)._engine_metadata
         restored_results = FitResults(
             success=bool(self.fit_result.success.value),
             parameters=restored_parameters,
             reduced_chi_square=reduced_chi_square,
             starting_parameters=list(restored_parameters),
             fitting_time=fitting_time,
-            optimizer_name=self.deterministic_result.optimizer_name.value,
-            method_name=self.deterministic_result.method_name.value,
-            objective_name=self.deterministic_result.objective_name.value,
-            objective_value=self.deterministic_result.objective_value.value,
-            n_data_points=int(self.deterministic_result.n_data_points.value),
-            n_parameters=int(self.deterministic_result.n_parameters.value),
-            n_free_parameters=int(self.deterministic_result.n_free_parameters.value),
-            degrees_of_freedom=int(self.deterministic_result.degrees_of_freedom.value),
-            covariance_available=bool(self.deterministic_result.covariance_available.value),
-            correlation_available=bool(self.deterministic_result.correlation_available.value),
+            optimizer_name=engine_metadata['optimizer_name'],
+            method_name=engine_metadata['method_name'],
+            objective_name=self.minimizer.objective_name.value,
+            objective_value=self.minimizer.objective_value.value,
+            n_data_points=_int_or_none(self.minimizer.n_data_points.value),
+            n_parameters=_int_or_none(self.minimizer.n_parameters.value),
+            n_free_parameters=_int_or_none(self.minimizer.n_free_parameters.value),
+            degrees_of_freedom=_int_or_none(self.minimizer.degrees_of_freedom.value),
+            covariance_available=self.minimizer.covariance_available.value,
+            correlation_available=self.minimizer.correlation_available.value,
+            runtime_seconds=self.minimizer.runtime_seconds.value,
+            iterations_performed=_int_or_none(self.minimizer.iterations_performed.value),
+            exit_reason=self.minimizer.exit_reason.value,
         )
         restored_results.message = self.fit_result.message.value
         restored_results.iterations = int(self.fit_result.iterations.value)
-        restored_results.chi_square = self.deterministic_result.objective_value.value
+        restored_results.chi_square = self.minimizer.objective_value.value
         self.fit_results = restored_results
         return restored_results
 
     def help(self) -> None:
         """Print a summary of analysis properties and methods."""
         cls = type(self)
-        console.paragraph(f"Help for '{cls.__name__}'")
 
         property_rows = _discover_property_rows(cls)
         method_rows = _discover_method_rows(cls)
-        property_names = [row[1] for row in property_rows]
-        method_names = [row[1][:-2] for row in method_rows]
+        property_names = [row[0] for row in property_rows]
+        method_names = [row[0][:-2] for row in method_rows]
         property_names, method_names = _apply_help_filter(self, property_names, method_names)
 
         filtered_property_names = set(property_names)
         filtered_method_names = set(method_names)
-        filtered_property_rows = []
-        for row in property_rows:
-            if row[1] in filtered_property_names:
-                filtered_property_rows.append([
-                    str(len(filtered_property_rows) + 1),
-                    row[1],
-                    row[2],
-                    row[3],
-                ])
-
-        filtered_method_rows = []
-        for row in method_rows:
-            method_name = row[1][:-2]
-            if method_name in filtered_method_names:
-                filtered_method_rows.append([str(len(filtered_method_rows) + 1), row[1], row[2]])
+        filtered_property_rows = [
+            row for row in property_rows if row[0] in filtered_property_names
+        ]
+        filtered_method_rows = [row for row in method_rows if row[0][:-2] in filtered_method_names]
 
         if filtered_property_rows:
             console.paragraph('Properties')
             render_table(
-                columns_headers=['#', 'Name', 'Writable', 'Description'],
-                columns_alignment=['right', 'left', 'center', 'left'],
+                columns_headers=['Name', 'Writable', 'Description'],
+                columns_alignment=['left', 'center', 'left'],
                 columns_data=filtered_property_rows,
             )
 
         if filtered_method_rows:
             console.paragraph('Methods')
             render_table(
-                columns_headers=['#', 'Name', 'Description'],
-                columns_alignment=['right', 'left', 'left'],
+                columns_headers=['Name', 'Description'],
+                columns_alignment=['left', 'left'],
                 columns_data=filtered_method_rows,
             )
 
@@ -884,12 +835,13 @@ class Analysis(
         methods: list[str],
     ) -> tuple[list[str], list[str]]:
         """Hide inactive mode-specific categories from analysis help."""
+        mode = FitModeEnum(self._fitting_mode.type)
         hidden_properties: set[str]
-        if self._fitting_mode_type is FitModeEnum.SINGLE:
+        if mode is FitModeEnum.SINGLE:
             hidden_properties = {'joint_fit', 'sequential_fit', 'sequential_fit_extract'}
-        elif self._fitting_mode_type is FitModeEnum.JOINT:
+        elif mode is FitModeEnum.JOINT:
             hidden_properties = {'sequential_fit', 'sequential_fit_extract'}
-        elif self._fitting_mode_type is FitModeEnum.SEQUENTIAL:
+        elif mode is FitModeEnum.SEQUENTIAL:
             hidden_properties = {'joint_fit'}
         else:  # pragma: no cover
             hidden_properties = set()
@@ -900,14 +852,16 @@ class Analysis(
     def _serializable_categories(self) -> list:
         """Serializable analysis categories for the active fit mode."""
         categories = [
-            self.fitting,
+            self.fitting_mode,
+            self.minimizer,
             self.aliases,
             self.constraints,
         ]
 
-        if self._fitting_mode_type is FitModeEnum.JOINT:
+        mode = FitModeEnum(self._fitting_mode.type)
+        if mode is FitModeEnum.JOINT:
             categories.append(self.joint_fit)
-        elif self._fitting_mode_type is FitModeEnum.SEQUENTIAL:
+        elif mode is FitModeEnum.SEQUENTIAL:
             categories.extend([
                 self.sequential_fit,
                 self.sequential_fit_extract,
@@ -974,7 +928,7 @@ class Analysis(
 
     def fit(self) -> None:
         """Execute fitting for the currently selected fitting mode."""
-        mode = self._fitting_mode_type
+        mode = FitModeEnum(self._fitting_mode.type)
         if mode is FitModeEnum.SINGLE:
             self._run_single()
         elif mode is FitModeEnum.JOINT:
@@ -985,6 +939,18 @@ class Analysis(
         else:  # pragma: no cover
             msg = f'Unknown fit mode: {mode!r}'
             raise ValueError(msg)
+
+    def _warn_results_sidecar_overwrite(self) -> None:
+        """Warn before persisted sidecar arrays are overwritten."""
+        project_path = self.project.info.path
+        if project_path is None:
+            return
+
+        from easydiffraction.io.results_sidecar import (  # noqa: PLC0415
+            warn_analysis_results_sidecar_overwrite,
+        )
+
+        warn_analysis_results_sidecar_overwrite(analysis_dir=project_path / 'analysis')
 
     def _prepare_joint_fit(self) -> None:
         """
@@ -1023,61 +989,165 @@ class Analysis(
             raise ValueError(msg)
 
     @property
-    def fitting(self) -> Fitting:
-        """Fitting configuration category."""
-        return self._fitting
+    def fitting_mode(self) -> FittingMode:
+        """Active fitting-mode selector category."""
+        return self._fitting_mode
 
-    @property
-    def fitting_mode_type(self) -> str:
-        """Currently selected fitting mode."""
-        return self._fitting_mode_type.value
-
-    @fitting_mode_type.setter
-    def fitting_mode_type(self, value: str) -> None:
+    def _replace_fitting_mode(
+        self,
+        value: str,
+        *,
+        announce: bool,
+        strict: bool = True,
+    ) -> None:
+        """Set the active fitting mode."""
         supported = [mode.value for mode in FitModeEnum]
 
         try:
             new_mode = FitModeEnum(value)
         except ValueError:
-            log.warning(
+            msg = (
                 f"Unsupported fitting mode '{value}'. "
                 f'Supported fitting modes: {supported}. '
-                f"For more information, use 'show_fitting_mode_types()'",
+                f"For more information, use 'fitting_mode.show_supported()'"
             )
+            if strict:
+                raise ValueError(msg) from None
+            log.warning(msg)
             return
 
-        self._fitting_mode_type = new_mode
-        console.paragraph('Fitting mode changed to')
-        console.print(self._fitting_mode_type.value)
-
-    def show_fitting_mode_types(self) -> None:
-        """Print supported fitting modes and mark the current type."""
-        columns_data = [
-            [
-                '*' if mode is self._fitting_mode_type else '',
-                mode.value,
-                mode.description(),
-            ]
-            for mode in FitModeEnum
-        ]
-        console.paragraph('Fitting mode types')
-        render_table(
-            columns_headers=['', 'Type', 'Description'],
-            columns_alignment=['left', 'left', 'left'],
-            columns_data=columns_data,
-        )
+        self._fitting_mode._type.value = new_mode.value
+        if announce:
+            console.paragraph('Fitting mode changed to')
+            console.print(new_mode.value)
 
     def _set_fitting_mode_type(self, value: str) -> None:
         """Set the fitting mode without console output."""
-        supported = [mode.value for mode in FitModeEnum]
+        self._replace_fitting_mode(value, announce=False, strict=False)
 
-        try:
-            self._fitting_mode_type = FitModeEnum(value)
-        except ValueError:
-            log.warning(
-                f"Unsupported fitting mode '{value}' in CIF. "
-                f'Supported: {supported}. Keeping default.',
+    @property
+    def minimizer(self) -> MinimizerCategoryBase:
+        """Active minimizer settings and result category."""
+        return self._minimizer
+
+    def _replace_minimizer(
+        self,
+        value: str,
+        *,
+        announce: bool,
+        strict: bool = True,
+    ) -> None:
+        """Replace the active minimizer category."""
+        supported = [str(tag) for tag in MinimizerCategoryFactory.supported_tags()]
+        if value not in supported:
+            msg = (
+                f"Unsupported minimizer type '{value}'. "
+                f'Supported minimizer types: {supported}. '
+                f"For more information, use 'minimizer.show_supported()'"
             )
+            if strict:
+                raise ValueError(msg)
+            log.warning(msg)
+            return
+
+        if value == self.minimizer.type:
+            if announce:
+                console.paragraph('Current minimizer already set to')
+                console.print(value)
+            return
+
+        old_minimizer = self._minimizer
+        new_minimizer = MinimizerCategoryFactory.create(value)
+        old_defaults = MinimizerCategoryFactory.create(self.minimizer.type)
+        self._warn_about_minimizer_swap_defaults(old_defaults, new_minimizer)
+
+        old_minimizer._parent = None
+        self._minimizer = new_minimizer
+        self._minimizer._parent = self
+        self._fitter = Fitter(value)
+        if announce:
+            console.paragraph('Current minimizer changed to')
+            console.print(value)
+
+    def _set_minimizer_type(self, value: str) -> None:
+        """Set the minimizer type without console output."""
+        self._replace_minimizer(value, announce=False, strict=False)
+
+    @staticmethod
+    def _minimizer_swap_diff(
+        old_minimizer: MinimizerCategoryBase,
+        new_minimizer: MinimizerCategoryBase,
+    ) -> tuple[list[str], list[str], list[str]]:
+        """
+        Return (removed, added, changed) setting-name lists for a swap.
+
+        ``removed`` lists settings present on ``old_minimizer`` but not
+        on ``new_minimizer`` (a value the user previously customised is
+        no longer applicable). ``added`` lists settings introduced by
+        the new minimizer with their default value. ``changed`` lists
+        settings shared by both whose default value differs, in the
+        ``'{name}={old!r}->{new!r}'`` form.
+        """
+        old_values = old_minimizer._descriptor_values(old_minimizer._setting_descriptor_names)
+        new_values = new_minimizer._descriptor_values(new_minimizer._setting_descriptor_names)
+        old_keys = set(old_values)
+        new_keys = set(new_values)
+        removed = sorted(old_keys - new_keys)
+        added = sorted(f'{name}={new_values[name]!r}' for name in (new_keys - old_keys))
+        changed = sorted(
+            f'{name}={old_values[name]!r}->{new_values[name]!r}'
+            for name in (old_keys & new_keys)
+            if old_values[name] != new_values[name]
+        )
+        return removed, added, changed
+
+    @classmethod
+    def _warn_about_minimizer_swap_defaults(
+        cls,
+        old_minimizer: MinimizerCategoryBase,
+        new_minimizer: MinimizerCategoryBase,
+    ) -> None:
+        """
+        Emit human-readable warnings about a minimizer swap.
+
+        Splits the diff into "removed", "added", "changed" lines so the
+        message stays legible for scientists when an inter-family swap
+        replaces the whole setting surface (e.g. ``lmfit`` → ``bumps
+        (dream)``). Same-family swaps still see the per-field
+        ``old->new`` line for actual default differences.
+        """
+        removed, added, changed = cls._minimizer_swap_diff(old_minimizer, new_minimizer)
+        if removed:
+            log.warning(f'Switching minimizer type removes these settings: {", ".join(removed)}.')
+        if added:
+            log.warning(
+                f'Switching minimizer type adds these settings with defaults: {", ".join(added)}.'
+            )
+        if changed:
+            log.warning(
+                f'Switching minimizer type changes these default values: {", ".join(changed)}.'
+            )
+
+    def _sync_engine_from_minimizer_category(self) -> None:
+        """Apply minimizer category settings to the live engine."""
+        engine = self.fitter.minimizer
+        for key, value in self.minimizer._native_kwargs().items():
+            if key == 'random_seed':
+                continue
+            if not hasattr(engine, key):
+                log.warning(
+                    f"Minimizer setting '{key}' is not supported by "
+                    f"engine '{self.minimizer.type}'."
+                )
+                continue
+            setattr(engine, key, value)
+
+    def _resolved_fit_random_seed(self, random_seed: int | None) -> int | None:
+        """Return call-time or minimizer-category random seed."""
+        if random_seed is not None:
+            return random_seed
+        seed = self.minimizer._native_kwargs().get('random_seed')
+        return None if seed is None else int(seed)
 
     # ------------------------------------------------------------------
     #  Joint-fit weights (category)
@@ -1127,35 +1197,22 @@ class Analysis(
             return categories
 
         if result_kind is FitResultKindEnum.DETERMINISTIC:
-            categories.append(self.deterministic_result)
             return categories
 
-        categories.extend([
-            self.bayesian_result,
-            self.bayesian_sampler,
-            self.bayesian_convergence,
-            self.bayesian_parameter_posteriors,
-            self.bayesian_distribution_caches,
-            self.bayesian_pair_caches,
-            self.bayesian_predictive_datasets,
-        ])
         return categories
 
     def _clear_persisted_fit_state(self) -> None:
         """Reset all persisted fit-state categories before a new fit."""
+        self._clear_minimizer_result_projection()
         self._fit_parameters = FitParameters()
         self._fit_result = FitResult()
         self._fit_parameter_correlations = FitParameterCorrelations()
-        self._deterministic_result = DeterministicResult()
-        self._bayesian_result = BayesianResult()
-        self._bayesian_sampler = BayesianSampler()
-        self._bayesian_convergence = BayesianConvergence()
-        self._bayesian_parameter_posteriors = BayesianParameterPosteriors()
-        self._bayesian_distribution_caches = BayesianDistributionCaches()
-        self._bayesian_pair_caches = BayesianPairCaches()
-        self._bayesian_predictive_datasets = BayesianPredictiveDatasets()
         self._set_has_persisted_fit_state(value=False)
         self._persisted_fit_state_sidecar = {}
+
+    def _clear_minimizer_result_projection(self) -> None:
+        """Reset result-only fields on the active minimizer category."""
+        self.minimizer._reset_result_descriptors()
 
     def _capture_fit_parameter_state(self, parameters: list[Parameter]) -> None:
         """Capture pre-fit parameter state."""
@@ -1295,14 +1352,14 @@ class Analysis(
                     correlation=float(np.clip(correlation, -1.0, 1.0)),
                 )
 
-    def _store_deterministic_result_projection(
+    def _store_least_squares_result_projection(
         self,
         results: FitResults,
         *,
         experiments: list[object],
         fitted_parameters: list[Parameter],
     ) -> None:
-        """Store deterministic fit results in persisted categories."""
+        """Store least-squares result fields."""
         selected_parameters = self._selected_parameters_for_fit(experiments)
         n_parameters = len(selected_parameters)
         n_free_parameters = len(fitted_parameters)
@@ -1315,18 +1372,17 @@ class Analysis(
             else None
         )
 
-        self.deterministic_result._set_optimizer_name(
-            str(self.fitter.minimizer.name or self.fitter.selection)
-        )
-        self.deterministic_result._set_method_name(str(self.fitter.minimizer.method or ''))
-        self.deterministic_result._set_objective_name('chi_square')
-        self.deterministic_result._set_objective_value(self._resolve_objective_value(results))
-        self.deterministic_result._set_n_data_points(n_data_points)
-        self.deterministic_result._set_n_parameters(n_parameters)
-        self.deterministic_result._set_n_free_parameters(n_free_parameters)
-        self.deterministic_result._set_degrees_of_freedom(degrees_of_freedom)
-        self.deterministic_result._set_covariance_available(value=covariance is not None)
-        self.deterministic_result._set_correlation_available(value=correlation_matrix is not None)
+        self.minimizer._set_objective_name('chi_square')
+        self.minimizer._set_objective_value(self._resolve_objective_value(results))
+        self.minimizer._set_n_data_points(n_data_points)
+        self.minimizer._set_n_parameters(n_parameters)
+        self.minimizer._set_n_free_parameters(n_free_parameters)
+        self.minimizer._set_degrees_of_freedom(degrees_of_freedom)
+        self.minimizer._set_covariance_available(value=covariance is not None)
+        self.minimizer._set_correlation_available(value=correlation_matrix is not None)
+        self.minimizer._set_runtime_seconds(results.fitting_time)
+        self.minimizer._set_iterations_performed(results.iterations)
+        self.minimizer._set_exit_reason(results.message)
 
         if correlation_matrix is not None:
             self._store_correlation_projection(
@@ -1335,8 +1391,8 @@ class Analysis(
                 source_kind=FitCorrelationSourceEnum.DETERMINISTIC,
             )
 
-    def _store_bayesian_distribution_cache_projection(
-        self,
+    @staticmethod
+    def _store_posterior_distribution_cache_projection(
         *,
         plotter: object,
         results: BayesianFitResults,
@@ -1363,14 +1419,6 @@ class Analysis(
             x_values, density_values = density_curve
             x_array = np.asarray(x_values, dtype=float)
             density_array = np.asarray(density_values, dtype=float)
-            cache_index = len(payload)
-            self.bayesian_distribution_caches.create(
-                param_unique_name=parameter_name,
-                x_path=f'/posterior/distribution/{cache_index}/x',
-                density_path=f'/posterior/distribution/{cache_index}/density',
-                n_grid=float(x_array.size),
-                n_draws_cached=float(np.isfinite(flattened_samples[:, parameter_index]).sum()),
-            )
             payload[parameter_name] = {
                 'x': x_array,
                 'density': density_array,
@@ -1401,7 +1449,7 @@ class Analysis(
             x_name, y_name = y_name, x_name
         return x_index, y_index, x_name, y_name
 
-    def _store_one_bayesian_pair_cache_projection(
+    def _store_one_posterior_pair_cache_projection(
         self,
         *,
         plotter: object,
@@ -1410,7 +1458,7 @@ class Analysis(
         pair_metadata: tuple[int, int, str, str],
         contour_grid_size: int,
         pair_id: str,
-    ) -> tuple[str, dict[str, np.ndarray]] | None:
+    ) -> tuple[str, dict[str, object]] | None:
         """Store one cached pair surface and return its payload."""
         x_index, y_index, x_name, y_name = pair_metadata
 
@@ -1437,33 +1485,23 @@ class Analysis(
         y_grid_array = np.asarray(density_surface[1], dtype=float)
         density_array = np.asarray(density_surface[2], dtype=float)
         contour_levels = self._posterior_pair_contour_levels(density_array)
-        self.bayesian_pair_caches.create(
-            id=pair_id,
-            parameter_names=(x_name, y_name),
-            paths=BayesianPairCachePaths(
-                x_path=f'/posterior/pairs/{pair_id}/x',
-                y_path=f'/posterior/pairs/{pair_id}/y',
-                density_path=f'/posterior/pairs/{pair_id}/density',
-                contour_level_path=f'/posterior/pairs/{pair_id}/contour_levels',
-            ),
-            grid_shape=(float(x_grid_array.size), float(y_grid_array.size)),
-            n_draws_cached=float(density_samples.shape[0]),
-        )
         return pair_id, {
+            'param_unique_name_x': x_name,
+            'param_unique_name_y': y_name,
             'x': x_grid_array,
             'y': y_grid_array,
             'density': density_array,
             'contour_levels': contour_levels,
         }
 
-    def _store_bayesian_pair_cache_projection(
+    def _store_posterior_pair_cache_projection(
         self,
         *,
         plotter: object,
         results: BayesianFitResults,
         flattened_samples: np.ndarray,
         parameter_names: list[str],
-    ) -> dict[str, dict[str, np.ndarray]]:
+    ) -> dict[str, dict[str, object]]:
         """Store cached pair-density surfaces in manifests."""
         n_parameters = len(parameter_names)
         if n_parameters <= 1:
@@ -1474,10 +1512,10 @@ class Analysis(
             max_points=plotter._posterior_pair_density_max_points(n_parameters),
         )
         contour_grid_size = plotter._posterior_pair_contour_grid_size(n_parameters)
-        payload: dict[str, dict[str, np.ndarray]] = {}
+        payload: dict[str, dict[str, object]] = {}
         for first_index, second_index in combinations(range(n_parameters), 2):
             pair_id = str(len(payload) + 1)
-            cache_projection = self._store_one_bayesian_pair_cache_projection(
+            cache_projection = self._store_one_posterior_pair_cache_projection(
                 plotter=plotter,
                 results=results,
                 density_samples=density_samples,
@@ -1499,9 +1537,10 @@ class Analysis(
     @staticmethod
     def _predictive_dataset_payload(
         summary: PosteriorPredictiveSummary,
-    ) -> dict[str, np.ndarray]:
+    ) -> dict[str, object]:
         """Return persisted predictive arrays for one summary."""
-        payload: dict[str, np.ndarray] = {
+        payload: dict[str, object] = {
+            'x_axis_name': summary.x_axis_name,
             'x': np.asarray(summary.x, dtype=float),
             'best_sample_prediction': np.asarray(summary.best_sample_prediction, dtype=float),
         }
@@ -1517,16 +1556,16 @@ class Analysis(
             payload['draws'] = np.asarray(summary.draws, dtype=float)
         return payload
 
-    def _store_bayesian_predictive_projection(
+    def _store_posterior_predictive_projection(
         self,
         *,
         plotter: object,
         results: BayesianFitResults,
-    ) -> dict[str, dict[str, np.ndarray]]:
+    ) -> dict[str, dict[str, object]]:
         """
         Store posterior predictive summaries into persisted manifests.
         """
-        predictive_payload: dict[str, dict[str, np.ndarray]] = {}
+        predictive_payload: dict[str, dict[str, object]] = {}
         for experiment_name in self.project.experiments.names:
             experiment = self.project.experiments[experiment_name]
             x_axis, x_axis_name, _, _, _ = plotter._resolve_x_axis(experiment.type, None)
@@ -1551,44 +1590,17 @@ class Analysis(
             predictive_payload[summary.experiment_name] = self._predictive_dataset_payload(
                 summary,
             )
-            predictive_root = f'/predictive/{summary.experiment_name}'
-            self.bayesian_predictive_datasets.create(
-                experiment_name=summary.experiment_name,
-                x_axis_name=str(x_axis_name),
-                paths=BayesianPredictiveDatasetPaths(
-                    x_path=f'{predictive_root}/x',
-                    best_sample_prediction_path=(f'{predictive_root}/best_sample_prediction'),
-                    lower_95_path=(
-                        None if summary.lower_95 is None else f'{predictive_root}/lower_95'
-                    ),
-                    upper_95_path=(
-                        None if summary.upper_95 is None else f'{predictive_root}/upper_95'
-                    ),
-                    lower_68_path=(
-                        None if summary.lower_68 is None else f'{predictive_root}/lower_68'
-                    ),
-                    upper_68_path=(
-                        None if summary.upper_68 is None else f'{predictive_root}/upper_68'
-                    ),
-                    draws_path=(None if summary.draws is None else f'{predictive_root}/draws'),
-                ),
-                n_x=float(np.asarray(summary.x).size),
-                n_draws_cached=(
-                    0.0 if summary.draws is None else float(np.asarray(summary.draws).shape[0])
-                ),
-            )
         return predictive_payload
 
-    def _store_bayesian_plot_cache_projection(self, results: BayesianFitResults) -> None:
+    def _store_posterior_plot_cache_projection(self, results: BayesianFitResults) -> None:
         """Populate persisted Bayesian plot caches."""
         posterior_samples = results.posterior_samples
         if posterior_samples is None:
+            results.posterior_distribution_caches = {}
+            results.posterior_pair_caches = {}
             self._persisted_fit_state_sidecar['distribution_caches'] = {}
             self._persisted_fit_state_sidecar['pair_caches'] = {}
             self._persisted_fit_state_sidecar['predictive_datasets'] = {}
-            self.bayesian_result._set_has_distribution_cache(value=False)
-            self.bayesian_result._set_has_pair_cache(value=False)
-            self.bayesian_result._set_has_posterior_predictive(value=False)
             return
 
         flattened_samples = np.asarray(posterior_samples.flattened(), dtype=float)
@@ -1598,28 +1610,27 @@ class Analysis(
             or not parameter_names
             or flattened_samples.shape[1] != len(parameter_names)
         ):
+            results.posterior_distribution_caches = {}
+            results.posterior_pair_caches = {}
             self._persisted_fit_state_sidecar['distribution_caches'] = {}
             self._persisted_fit_state_sidecar['pair_caches'] = {}
             self._persisted_fit_state_sidecar['predictive_datasets'] = {}
-            self.bayesian_result._set_has_distribution_cache(value=False)
-            self.bayesian_result._set_has_pair_cache(value=False)
-            self.bayesian_result._set_has_posterior_predictive(value=False)
             return
 
-        plotter = self.project.rendering.plotter
-        distribution_payload = self._store_bayesian_distribution_cache_projection(
+        plotter = self.project.chart.plotter
+        distribution_payload = self._store_posterior_distribution_cache_projection(
             plotter=plotter,
             results=results,
             flattened_samples=flattened_samples,
             parameter_names=parameter_names,
         )
-        pair_payload = self._store_bayesian_pair_cache_projection(
+        pair_payload = self._store_posterior_pair_cache_projection(
             plotter=plotter,
             results=results,
             flattened_samples=flattened_samples,
             parameter_names=parameter_names,
         )
-        predictive_payload = self._store_bayesian_predictive_projection(
+        predictive_payload = self._store_posterior_predictive_projection(
             plotter=plotter,
             results=results,
         )
@@ -1627,11 +1638,10 @@ class Analysis(
         self._persisted_fit_state_sidecar['distribution_caches'] = distribution_payload
         self._persisted_fit_state_sidecar['pair_caches'] = pair_payload
         self._persisted_fit_state_sidecar['predictive_datasets'] = predictive_payload
-        self.bayesian_result._set_has_distribution_cache(value=bool(distribution_payload))
-        self.bayesian_result._set_has_pair_cache(value=bool(pair_payload))
-        self.bayesian_result._set_has_posterior_predictive(value=bool(predictive_payload))
+        results.posterior_distribution_caches = distribution_payload
+        results.posterior_pair_caches = pair_payload
 
-    def _store_bayesian_posterior_sidecar_projection(
+    def _store_posterior_samples_sidecar_projection(
         self,
         results: BayesianFitResults,
     ) -> None:
@@ -1658,10 +1668,8 @@ class Analysis(
             ),
         }
 
-    def _store_bayesian_result_projection(self, results: BayesianFitResults) -> None:
-        """
-        Store Bayesian fit-result projections into persisted categories.
-        """
+    def _store_posterior_fit_projection(self, results: BayesianFitResults) -> None:
+        """Store Bayesian result fields."""
         credible_interval_inner = 0.68
         credible_interval_outer = 0.95
         if len(results.credible_interval_levels) >= _CREDIBLE_INTERVAL_LEVEL_COUNT:
@@ -1669,49 +1677,35 @@ class Analysis(
             credible_interval_outer = float(results.credible_interval_levels[1])
 
         point_estimate_name = results.point_estimate_name or 'best_sample'
-        sampler_settings = results.sampler_settings
         convergence = results.convergence_diagnostics
 
-        self.bayesian_result._set_sampler_name(results.sampler_name)
-        self.bayesian_result._set_point_estimate_name(point_estimate_name)
-        self.bayesian_result._set_success(value=results.success)
-        self.bayesian_result._set_sampler_completed(value=results.sampler_completed)
-        self.bayesian_result._set_best_log_posterior(results.best_log_posterior)
-        self.bayesian_result._set_credible_interval_inner(credible_interval_inner)
-        self.bayesian_result._set_credible_interval_outer(credible_interval_outer)
-        self.bayesian_result._set_has_posterior_samples(
-            value=results.posterior_samples is not None
-        )
-        self.bayesian_result._set_has_distribution_cache(value=False)
-        self.bayesian_result._set_has_pair_cache(value=False)
-        self.bayesian_result._set_has_posterior_predictive(value=False)
-        self.bayesian_result._set_sidecar_file('results.h5')
-        self._store_bayesian_posterior_sidecar_projection(results)
+        self.minimizer._set_runtime_seconds(results.fitting_time)
+        self.minimizer._set_point_estimate_name(point_estimate_name)
+        self.minimizer._set_sampler_completed(value=results.sampler_completed)
+        self.minimizer._set_best_log_posterior(results.best_log_posterior)
+        self.minimizer._set_credible_interval_inner(credible_interval_inner)
+        self.minimizer._set_credible_interval_outer(credible_interval_outer)
+        self.minimizer._set_gelman_rubin_max(convergence.get('max_r_hat'))
+        self.minimizer._set_effective_sample_size_min(convergence.get('min_ess_bulk'))
+        self.minimizer._set_acceptance_rate_mean(convergence.get('acceptance_rate_mean'))
+        self._store_posterior_samples_sidecar_projection(results)
 
-        self.bayesian_sampler._set_steps(int(sampler_settings.get('steps', 0)))
-        self.bayesian_sampler._set_burn(int(sampler_settings.get('burn', 0)))
-        self.bayesian_sampler._set_thin(int(sampler_settings.get('thin', 0)))
-        self.bayesian_sampler._set_pop(int(sampler_settings.get('pop', 0)))
-        self.bayesian_sampler._set_parallel(int(sampler_settings.get('parallel', 0)))
-        self.bayesian_sampler._set_init(str(sampler_settings.get('init', '')))
-        random_seed = sampler_settings.get('random_seed')
-        self.bayesian_sampler._set_random_seed(None if random_seed is None else int(random_seed))
-
-        self.bayesian_convergence._set_converged(value=bool(convergence.get('converged', False)))
-        self.bayesian_convergence._set_max_r_hat(convergence.get('max_r_hat'))
-        self.bayesian_convergence._set_min_ess_bulk(convergence.get('min_ess_bulk'))
-        self.bayesian_convergence._set_n_draws(int(convergence.get('n_draws', 0)))
-        self.bayesian_convergence._set_n_chains(int(convergence.get('n_chains', 0)))
-        self.bayesian_convergence._set_n_parameters(int(convergence.get('n_parameters', 0)))
-
+        live_parameters = {
+            parameter.unique_name: parameter
+            for parameter in results.parameters
+            if isinstance(parameter, Parameter)
+        }
         for summary in results.posterior_parameter_summaries:
-            self.bayesian_parameter_posteriors.create(summary=summary)
+            self.fit_parameters.set_posterior_summary(summary)
+            parameter = live_parameters.get(summary.unique_name)
+            if parameter is not None:
+                parameter._set_posterior(summary)
 
         posterior_samples = results.posterior_samples
         if posterior_samples is None:
             return
 
-        self._store_bayesian_plot_cache_projection(results)
+        self._store_posterior_plot_cache_projection(results)
         if len(posterior_samples.parameter_names) <= 1:
             return
 
@@ -1738,14 +1732,14 @@ class Analysis(
                 results,
                 result_kind=FitResultKindEnum.BAYESIAN,
             )
-            self._store_bayesian_result_projection(results)
+            self._store_posterior_fit_projection(results)
             return
 
         self._store_common_fit_result_projection(
             results,
             result_kind=FitResultKindEnum.DETERMINISTIC,
         )
-        self._store_deterministic_result_projection(
+        self._store_least_squares_result_projection(
             results,
             experiments=experiments,
             fitted_parameters=fitted_parameters,
@@ -1782,10 +1776,12 @@ class Analysis(
             log.warning('No experiments found in the project. Cannot run fit.')
             return None
 
+        self._warn_results_sidecar_overwrite()
+
         # Apply constraints before fitting so that user-constrained
         # parameters are marked and excluded from the free parameter
         # list built by the fitter.
-        self._sync_live_minimizer_from_persisted_fit_state()
+        self._sync_engine_from_minimizer_category()
         self._update_categories()
 
         return verb, structures, experiments
@@ -1836,6 +1832,7 @@ class Analysis(
 
         self._set_fitting_mode_type(FitModeEnum.SEQUENTIAL.value)
         self._update_categories()
+        self._warn_results_sidecar_overwrite()
         self._clear_persisted_fit_state()
 
         max_workers_value = self._sequential_fit.max_workers.value
@@ -1909,7 +1906,7 @@ class Analysis(
             analysis=self,
             verbosity=verb,
             use_physical_limits=use_physical_limits,
-            random_seed=random_seed,
+            random_seed=self._resolved_fit_random_seed(random_seed),
         )
 
         # After fitting, get the results
@@ -1961,7 +1958,7 @@ class Analysis(
                     analysis=self,
                     verbosity=verb,
                     use_physical_limits=use_physical_limits,
-                    random_seed=random_seed,
+                    random_seed=self._resolved_fit_random_seed(random_seed),
                 )
 
                 # After fitting, snapshot parameter values before

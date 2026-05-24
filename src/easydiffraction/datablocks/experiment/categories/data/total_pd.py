@@ -246,7 +246,7 @@ class TotalDataBase(CategoryCollection):
         experiments = experiment._parent
         project = experiments._parent
         structures = project.structures
-        calculator = experiment.calculation.calculator
+        calculator = experiment.calculator.calculator
 
         initial_calc = np.zeros_like(self.x)
         calc = initial_calc

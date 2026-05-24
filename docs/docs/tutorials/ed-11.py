@@ -21,12 +21,11 @@ project = ed.Project()
 # ## Set Plotting Engine
 
 # %%
-project.rendering.show_chart_engines()
-project.rendering.show_config()
+project.chart.show_supported()
 
 # %%
 # Set global plot range for plots
-project.rendering.plotter.x_max = 40
+project.chart.plotter.x_max = 40
 
 # %% [markdown]
 # ## Add Structure

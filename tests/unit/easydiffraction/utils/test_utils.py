@@ -159,7 +159,6 @@ def test_render_object_help_prints_public_api(capsys):
 
     MUT.render_object_help(Example())
     out = capsys.readouterr().out
-    assert "Help for 'Example'" in out
     assert 'Properties' in out
     assert 'value' in out
     assert 'Visible value.' in out

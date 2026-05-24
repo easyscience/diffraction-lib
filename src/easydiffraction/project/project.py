@@ -34,7 +34,8 @@ from easydiffraction.utils.logging import log
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from easydiffraction.project.categories.rendering import Rendering
+    from easydiffraction.project.categories.chart import Chart
+    from easydiffraction.project.categories.table import Table
     from easydiffraction.project.categories.verbosity import Verbosity
     from easydiffraction.project.project_info import ProjectInfo
 
@@ -174,7 +175,7 @@ def _load_project_analysis(project: Project, project_path: pathlib.Path) -> None
         project._analysis._restore_live_parameter_state(project._build_parameter_map())
 
 
-class Project(GuardedBase):
+class Project(GuardedBase):  # noqa: PLR0904
     """
     Central API for managing a diffraction data analysis project.
 
@@ -200,7 +201,8 @@ class Project(GuardedBase):
         object.__setattr__(self, '_info', self._config.info)
         self._structures = Structures()
         self._experiments = Experiments()
-        object.__setattr__(self, '_rendering', self._config.rendering)
+        object.__setattr__(self, '_chart', self._config.chart)
+        object.__setattr__(self, '_table', self._config.table)
         object.__setattr__(self, '_verbosity', self._config.verbosity)
         self._display = ProjectDisplay(self)
         self._analysis = Analysis(self)
@@ -208,6 +210,29 @@ class Project(GuardedBase):
         self._saved = False
         self._varname = 'project' if type(self)._loading else varname()
         type(self)._current_project = self
+        self._attach_category_parents()
+
+    def _attach_category_parents(self) -> None:
+        """Link directly owned project sections back to this project."""
+        self._structures._parent = self
+        self._experiments._parent = self
+        self._analysis._parent = self
+        self._chart._parent = self
+        self._table._parent = self
+
+    @staticmethod
+    def _supported_filters_for(category: object) -> dict[str, object]:
+        """Return owner context filters for a switchable category."""
+        del category
+        return {}
+
+    def _swap_chart(self, new_type: str, *, strict: bool = True) -> None:
+        """Switch the active chart renderer."""
+        self._chart._set_type(new_type, strict=strict)
+
+    def _swap_table(self, new_type: str, *, strict: bool = True) -> None:
+        """Switch the active table renderer."""
+        self._table._set_type(new_type, strict=strict)
 
     @classmethod
     def current_project_path(cls) -> pathlib.Path | None:
@@ -279,9 +304,14 @@ class Project(GuardedBase):
         self._experiments = experiments
 
     @property
-    def rendering(self) -> Rendering:
-        """Rendering configuration bound to the project."""
-        return self._rendering
+    def chart(self) -> Chart:
+        """Chart configuration bound to the project."""
+        return self._chart
+
+    @property
+    def table(self) -> Table:
+        """Table configuration bound to the project."""
+        return self._table
 
     @property
     def display(self) -> ProjectDisplay:

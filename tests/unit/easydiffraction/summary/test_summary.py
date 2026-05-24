@@ -28,10 +28,10 @@ def test_summary_show_report_prints_sections(capsys):
             self.experiments = {}  # empty mapping to exercise loops safely
 
             class A:
-                class Fitting:
-                    minimizer_type = type('V', (), {'value': 'lmfit'})()
+                class Minimizer:
+                    type = 'lmfit'
 
-                fitting = Fitting()
+                minimizer = Minimizer()
 
                 class R:
                     reduced_chi_square = 0.0
@@ -59,7 +59,6 @@ def test_summary_help(capsys):
     s = Summary(P())
     s.help()
     out = capsys.readouterr().out
-    assert "Help for 'Summary'" in out
     assert 'show_report()' in out
     assert 'show_project_info()' in out
     assert 'show_fitting_details()' in out

@@ -50,7 +50,7 @@ def test_single_fit_pdf_xray_pd_cw_nacl() -> None:
         scattering_type='total',
     )
     experiment = project.experiments['xray_pdf']
-    experiment.peak_profile_type = 'gaussian-damped-sinc'
+    experiment.peak.type = 'gaussian-damped-sinc'
     experiment.peak.damp_q = 0.0606
     experiment.peak.broad_q = 0
     experiment.peak.cutoff_q = 21

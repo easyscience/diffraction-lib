@@ -15,39 +15,7 @@
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
-│   │   ├── 📁 bayesian_convergence
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   └── 📄 factory.py
-│   │   ├── 📁 bayesian_distribution_caches
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   └── 📄 factory.py
-│   │   ├── 📁 bayesian_pair_caches
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   └── 📄 factory.py
-│   │   ├── 📁 bayesian_parameter_posteriors
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   └── 📄 factory.py
-│   │   ├── 📁 bayesian_predictive_datasets
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   └── 📄 factory.py
-│   │   ├── 📁 bayesian_result
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   └── 📄 factory.py
-│   │   ├── 📁 bayesian_sampler
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   └── 📄 factory.py
 │   │   ├── 📁 constraints
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   └── 📄 factory.py
-│   │   ├── 📁 deterministic_result
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
@@ -63,8 +31,7 @@
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
-│   │   ├── 📁 fit_state
-│   │   ├── 📁 fitting
+│   │   ├── 📁 fitting_mode
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
@@ -72,6 +39,21 @@
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
+│   │   ├── 📁 minimizer
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 base.py
+│   │   │   ├── 📄 bayesian_base.py
+│   │   │   ├── 📄 bumps.py
+│   │   │   ├── 📄 bumps_amoeba.py
+│   │   │   ├── 📄 bumps_de.py
+│   │   │   ├── 📄 bumps_dream.py
+│   │   │   ├── 📄 bumps_lm.py
+│   │   │   ├── 📄 dfols.py
+│   │   │   ├── 📄 factory.py
+│   │   │   ├── 📄 lmfit.py
+│   │   │   ├── 📄 lmfit_least_squares.py
+│   │   │   ├── 📄 lmfit_leastsq.py
+│   │   │   └── 📄 lsq_base.py
 │   │   ├── 📁 sequential_fit
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -117,7 +99,9 @@
 │   ├── 📄 guard.py
 │   ├── 📄 identity.py
 │   ├── 📄 metadata.py
+│   ├── 📄 posterior.py
 │   ├── 📄 singleton.py
+│   ├── 📄 switchable.py
 │   ├── 📄 validation.py
 │   └── 📄 variable.py
 ├── 📁 crystallography
@@ -134,7 +118,7 @@
 │   │   │   │   ├── 📄 enums.py
 │   │   │   │   ├── 📄 factory.py
 │   │   │   │   └── 📄 line_segment.py
-│   │   │   ├── 📁 calculation
+│   │   │   ├── 📁 calculator
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 default.py
 │   │   │   │   └── 📄 factory.py
@@ -157,6 +141,7 @@
 │   │   │   │   └── 📄 factory.py
 │   │   │   ├── 📁 extinction
 │   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 base.py
 │   │   │   │   ├── 📄 becker_coppens.py
 │   │   │   │   └── 📄 factory.py
 │   │   │   ├── 📁 instrument
@@ -254,11 +239,16 @@
 │   └── 📄 results_sidecar.py
 ├── 📁 project
 │   ├── 📁 categories
+│   │   ├── 📁 chart
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   └── 📄 factory.py
 │   │   ├── 📁 info
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
 │   │   ├── 📁 rendering
+│   │   ├── 📁 table
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py

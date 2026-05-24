@@ -69,7 +69,7 @@ class TestCwlScExperiment:
         ex = CwlScExperiment(name='cwl_sc', type=_mk_type_sc_cwl())
         # extinction
         assert ex.extinction is not None
-        assert isinstance(ex.extinction_type, str)
+        assert isinstance(ex.extinction.type, str)
         # linked crystal
         assert ex.linked_crystal is not None
         # instrument
@@ -78,22 +78,25 @@ class TestCwlScExperiment:
         assert ex.refln is not None
 
     def test_extinction_type_invalid(self):
+        import pytest
+
         ex = CwlScExperiment(name='cwl_sc', type=_mk_type_sc_cwl())
-        old = ex.extinction_type
-        ex.extinction_type = 'bogus'
-        assert ex.extinction_type == old
+        old = ex.extinction.type
+        with pytest.raises(ValueError, match='Unsupported extinction type'):
+            ex.extinction.type = 'bogus'
+        assert ex.extinction.type == old
 
     def test_show_extinction_types(self, capsys):
         ex = CwlScExperiment(name='cwl_sc', type=_mk_type_sc_cwl())
-        ex.show_extinction_types()
+        ex.extinction.show_supported()
         out = capsys.readouterr().out
         assert len(out) > 0
 
     def test_show_extinction_types_includes_current(self, capsys):
         ex = CwlScExperiment(name='cwl_sc', type=_mk_type_sc_cwl())
-        ex.show_extinction_types()
+        ex.extinction.show_supported()
         out = capsys.readouterr().out
-        assert ex.extinction_type in out
+        assert ex.extinction.type in out
 
 
 class TestTofScExperiment:

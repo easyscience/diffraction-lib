@@ -163,7 +163,10 @@ def test_cli_fit_skips_fit_reports_for_sequential_mode(monkeypatch, tmp_path):
         experiments = [FakeExperiment()]
 
         class _analysis:
-            fitting_mode_type = 'sequential'
+            class _fitting_mode:
+                type = 'sequential'
+
+            fitting_mode = _fitting_mode()
 
             @staticmethod
             def fit():

@@ -134,7 +134,7 @@ def _run_sequential_fit(
     file_pattern: str = '*',
     reverse: bool = False,
 ) -> None:
-    project.analysis.fitting_mode_type = 'sequential'
+    project.analysis.fitting_mode.type = 'sequential'
     project.analysis.sequential_fit.data_dir = data_dir
     project.analysis.sequential_fit.max_workers = (
         'auto' if max_workers == 'auto' else str(max_workers)

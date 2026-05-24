@@ -87,7 +87,6 @@ class CategoryItem(GuardedBase):
         from easydiffraction.utils.utils import render_table  # noqa: PLC0415
 
         cls = type(self)
-        console.paragraph(f"Help for '{cls.__name__}'")
 
         # Deduplicate properties
         seen: dict = {}
@@ -98,8 +97,6 @@ class CategoryItem(GuardedBase):
         # Split into descriptor-backed and other
         param_rows = []
         other_rows = []
-        p_idx = 0
-        o_idx = 0
         for key in sorted(seen):
             prop = seen[key]
             try:
@@ -107,11 +104,9 @@ class CategoryItem(GuardedBase):
             except (AttributeError, TypeError, ValueError):
                 val = None
             if isinstance(val, GenericDescriptorBase):
-                p_idx += 1
                 type_str = 'string' if isinstance(val, GenericStringDescriptor) else 'numeric'
-                writable = '✓' if prop.fset else '✗'
+                writable = '✓' if prop.fset else ''
                 param_rows.append([
-                    str(p_idx),
                     key,
                     type_str,
                     str(val.value),
@@ -119,16 +114,14 @@ class CategoryItem(GuardedBase):
                     val.description or '',
                 ])
             else:
-                o_idx += 1
-                writable = '✓' if prop.fset else '✗'
+                writable = '✓' if prop.fset else ''
                 doc = self._first_sentence(prop.fget.__doc__ if prop.fget else None)
-                other_rows.append([str(o_idx), key, writable, doc])
+                other_rows.append([key, writable, doc])
 
         if param_rows:
             console.paragraph('Parameters')
             render_table(
                 columns_headers=[
-                    '#',
                     'Name',
                     'Type',
                     'Value',
@@ -136,7 +129,6 @@ class CategoryItem(GuardedBase):
                     'Description',
                 ],
                 columns_alignment=[
-                    'right',
                     'left',
                     'left',
                     'right',
@@ -147,16 +139,14 @@ class CategoryItem(GuardedBase):
             )
 
         if other_rows:
-            console.paragraph('Other properties')
+            console.paragraph('Properties')
             render_table(
                 columns_headers=[
-                    '#',
                     'Name',
                     'Writable',
                     'Description',
                 ],
                 columns_alignment=[
-                    'right',
                     'left',
                     'center',
                     'left',
@@ -166,15 +156,15 @@ class CategoryItem(GuardedBase):
 
         methods = dict(cls._iter_methods())
         method_rows = []
-        for i, key in enumerate(sorted(methods), 1):
+        for key in sorted(methods):
             doc = self._first_sentence(getattr(methods[key], '__doc__', None))
-            method_rows.append([str(i), f'{key}()', doc])
+            method_rows.append([f'{key}()', doc])
 
         if method_rows:
             console.paragraph('Methods')
             render_table(
-                columns_headers=['#', 'Name', 'Description'],
-                columns_alignment=['right', 'left', 'left'],
+                columns_headers=['Name', 'Description'],
+                columns_alignment=['left', 'left'],
                 columns_data=method_rows,
             )
 
@@ -234,6 +224,11 @@ class CategoryCollection(CollectionBase):
         for item in self._items:
             params.extend(item.parameters)
         return params
+
+    @property
+    def scalar_descriptors(self) -> list:
+        """Collection-level descriptors serialized outside the loop."""
+        return [v for v in vars(self).values() if isinstance(v, GenericDescriptorBase)]
 
     @property
     def as_cif(self) -> str:

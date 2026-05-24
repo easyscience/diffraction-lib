@@ -20,18 +20,35 @@ would blur distinct concepts.
 
 ## Decision
 
+This ADR is amended by
+[`switchable-category-owned-selectors.md`](switchable-category-owned-selectors.md).
+The family names now describe the owner-side mechanism, not distinct
+public selector surfaces. All three families share the same public
+shape:
+
+```python
+category.type = 'new-type'
+category.show_supported()
+```
+
+The owner exposes the category itself and implements a private
+`_swap_<name>` hook. That hook determines whether the assignment swaps a
+category instance, rebinds a live backend behind a singleton category,
+or activates sibling categories.
+
 Recognize three selector families:
 
-| Family                       | User intent                     | Examples                                                                          |
-| ---------------------------- | ------------------------------- | --------------------------------------------------------------------------------- |
-| Backend selector             | Pick an execution backend       | `fitting.minimizer_type`, `calculation.calculator_type`, `rendering.chart_engine` |
-| Switchable-category selector | Swap a category implementation  | `experiment.background_type`, `experiment.peak_profile_type`                      |
-| Active-sibling selector      | Pick the active sibling surface | `analysis.fitting_mode_type`                                                      |
+| Family                       | User intent                     | Examples                                                                        |
+| ---------------------------- | ------------------------------- | ------------------------------------------------------------------------------- |
+| Backend selector             | Pick an execution backend       | `experiment.calculator.type`, `project.chart.type`, `project.table.type`        |
+| Switchable-category selector | Swap a category implementation  | `analysis.minimizer.type`, `experiment.background.type`, `experiment.peak.type` |
+| Active-sibling selector      | Pick the active sibling surface | `analysis.fitting_mode.type`                                                    |
 
 Backend selectors live on dedicated configuration categories.
-Switchable-category selectors live on the host because they replace a
-category instance. Active-sibling selectors live on the owner and decide
-which sibling categories are visible, authoritative, and serialized.
+Switchable-category selectors live on the category they replace, and the
+owner swaps the instance behind the same public property. Active-sibling
+selectors also live on a category and the owner decides which sibling
+categories are visible, authoritative, and serialized.
 
 ## Consequences
 

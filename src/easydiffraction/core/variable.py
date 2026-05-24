@@ -18,6 +18,7 @@ from easydiffraction.io.cif.serialize import param_to_cif
 from easydiffraction.utils.logging import log
 
 if TYPE_CHECKING:
+    from easydiffraction.core.posterior import PosteriorParameterSummary
     from easydiffraction.io.cif.handler import CifHandler
 
 # ======================================================================
@@ -94,8 +95,7 @@ class GenericDescriptorBase(GuardedBase):
         # Skip validation — defaults are trusted.
         # Callable is needed for dynamic defaults like SpaceGroup
         # it_coordinate_system_code, and similar cases.
-        default = value_spec.default
-        self._value = default() if callable(default) else default
+        self._value = value_spec.default_value()
 
     def __str__(self) -> str:
         """Return the string representation of this descriptor."""
@@ -320,6 +320,7 @@ class GenericParameter(GenericNumericDescriptor):
         self._user_constrained = self._user_constrained_spec.default
         self._symmetry_constrained_spec = self._BOOL_SPEC_TEMPLATE
         self._symmetry_constrained = self._symmetry_constrained_spec.default
+        self._posterior: PosteriorParameterSummary | None = None
 
     def _physical_lower_bound(self) -> float:
         """
@@ -436,6 +437,15 @@ class GenericParameter(GenericNumericDescriptor):
         self._uncertainty = self._uncertainty_spec.validated(
             v, name=f'{self.unique_name}.uncertainty', current=self._uncertainty
         )
+
+    @property
+    def posterior(self) -> PosteriorParameterSummary | None:
+        """Posterior summary from a Bayesian fit, if available."""
+        return self._posterior
+
+    def _set_posterior(self, value: PosteriorParameterSummary | None) -> None:
+        """Set the posterior summary for internal callers."""
+        self._posterior = value
 
     @property
     def fit_min(self) -> float:

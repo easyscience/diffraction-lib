@@ -312,7 +312,7 @@ print(project_1.experiments['sim_si'].instrument.calib_d_to_tof_linear.value)
 # for more details about the peak profile types.
 
 # %%
-project_1.experiments['sim_si'].show_peak_profile_types()
+project_1.experiments['sim_si'].peak.show_supported()
 
 # %%
 project_1.experiments['sim_si'].peak.broad_gauss_sigma_0 = 69498
@@ -359,10 +359,10 @@ project_1.experiments['sim_si'].peak.exp_rise_alpha_1 = 0.0147
 # for more details about the background and its types.
 
 # %%
-project_1.experiments['sim_si'].show_background_types()
+project_1.experiments['sim_si'].background.show_supported()
 
 # %%
-project_1.experiments['sim_si'].background_type = 'line-segment'
+project_1.experiments['sim_si'].background.type = 'line-segment'
 project_1.experiments['sim_si'].background.create(id='1', x=50000, y=0.01)
 project_1.experiments['sim_si'].background.create(id='2', x=60000, y=0.01)
 project_1.experiments['sim_si'].background.create(id='3', x=70000, y=0.01)

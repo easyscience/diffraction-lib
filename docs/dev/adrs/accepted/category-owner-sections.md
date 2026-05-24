@@ -79,17 +79,19 @@ Project-level configuration follows the same pattern via a private
 Its current children are:
 
 - `ProjectInfo`
-- `Rendering`
+- `Chart`
+- `Table`
 
 The public API stays flat and user-facing:
 
 - `project.info`
-- `project.rendering`
+- `project.chart`
+- `project.table`
 
 Saved `project.cif` remains a section file without a `data_` header. It
-serializes the `_project.*` metadata category and the `_rendering.*`
-configuration category without pretending that the project config is a
-real datablock.
+serializes the `_project.*` metadata category plus the `_chart.*` and
+`_table.*` configuration categories without pretending that the project
+config is a real datablock.
 
 ### 4. CIF serialization is split by responsibility
 

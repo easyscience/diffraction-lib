@@ -43,6 +43,7 @@ class MinimizerBase(ABC):
         self._fitting_time: float | None = None
         self._resolved_random_seed: int | None = None
         self._tracking_active: bool = False
+        self._timing_finalized: bool = False
         self._deferred_warning_messages: list[str] = []
         self.tracker: FitProgressTracker = FitProgressTracker()
 
@@ -73,9 +74,25 @@ class MinimizerBase(ABC):
         self.tracker.reset()
         self.tracker._verbosity = verbosity
         self._tracking_active = True
+        self._timing_finalized = False
         self._deferred_warning_messages = []
         self.tracker.start_tracking(minimizer_name, mode=self._tracking_mode())
         self.tracker.start_timer()
+
+    def _finalize_timing(self) -> None:
+        """
+        Stop the timer and propagate fitting_time to the result.
+
+        Idempotent: subsequent calls within the same run are no-ops, so
+        callers can finalize timing before post-processing without the
+        later display teardown overwriting the recorded duration.
+        """
+        if not self._tracking_active or self._timing_finalized:
+            return
+        self.tracker.stop_timer()
+        if self.result is not None:
+            self.result.fitting_time = self.tracker.fitting_time
+        self._timing_finalized = True
 
     def _stop_tracking(self) -> None:
         """Stop timer and finalize tracking."""
@@ -83,11 +100,9 @@ class MinimizerBase(ABC):
             self._emit_deferred_warnings()
             return
 
+        self._finalize_timing()
         self._tracking_active = False
-        self.tracker.stop_timer()
         self.tracker.finish_tracking()
-        if self.result is not None:
-            self.result.fitting_time = self.tracker.fitting_time
         self._emit_deferred_warnings()
 
     def _warn_after_tracking(self, message: str) -> None:

@@ -24,54 +24,6 @@
 │   │   │   │   └── 🏷️ class Aliases
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class AliasesFactory
-│   │   ├── 📁 bayesian_convergence
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   │   └── 🏷️ class BayesianConvergence
-│   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class BayesianConvergenceFactory
-│   │   ├── 📁 bayesian_distribution_caches
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   │   ├── 🏷️ class BayesianDistributionCacheItem
-│   │   │   │   └── 🏷️ class BayesianDistributionCaches
-│   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class BayesianDistributionCachesFactory
-│   │   ├── 📁 bayesian_pair_caches
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   │   ├── 🏷️ class BayesianPairCachePaths
-│   │   │   │   ├── 🏷️ class BayesianPairCacheItem
-│   │   │   │   └── 🏷️ class BayesianPairCaches
-│   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class BayesianPairCachesFactory
-│   │   ├── 📁 bayesian_parameter_posteriors
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   │   ├── 🏷️ class BayesianParameterPosteriorItem
-│   │   │   │   └── 🏷️ class BayesianParameterPosteriors
-│   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class BayesianParameterPosteriorsFactory
-│   │   ├── 📁 bayesian_predictive_datasets
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   │   ├── 🏷️ class BayesianPredictiveDatasetPaths
-│   │   │   │   ├── 🏷️ class BayesianPredictiveDatasetItem
-│   │   │   │   └── 🏷️ class BayesianPredictiveDatasets
-│   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class BayesianPredictiveDatasetsFactory
-│   │   ├── 📁 bayesian_result
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   │   └── 🏷️ class BayesianResult
-│   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class BayesianResultFactory
-│   │   ├── 📁 bayesian_sampler
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   │   └── 🏷️ class BayesianSampler
-│   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class BayesianSamplerFactory
 │   │   ├── 📁 constraints
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -79,12 +31,6 @@
 │   │   │   │   └── 🏷️ class Constraints
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class ConstraintsFactory
-│   │   ├── 📁 deterministic_result
-│   │   │   ├── 📄 __init__.py
-│   │   │   ├── 📄 default.py
-│   │   │   │   └── 🏷️ class DeterministicResult
-│   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class DeterministicResultFactory
 │   │   ├── 📁 fit_parameter_correlations
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -105,13 +51,12 @@
 │   │   │   │   └── 🏷️ class FitResult
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class FitResultFactory
-│   │   ├── 📁 fit_state
-│   │   ├── 📁 fitting
+│   │   ├── 📁 fitting_mode
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
-│   │   │   │   └── 🏷️ class Fitting
+│   │   │   │   └── 🏷️ class FittingMode
 │   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class FittingFactory
+│   │   │       └── 🏷️ class FittingModeFactory
 │   │   ├── 📁 joint_fit
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -119,6 +64,34 @@
 │   │   │   │   └── 🏷️ class JointFitCollection
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class JointFitFactory
+│   │   ├── 📁 minimizer
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 base.py
+│   │   │   │   └── 🏷️ class MinimizerCategoryBase
+│   │   │   ├── 📄 bayesian_base.py
+│   │   │   │   └── 🏷️ class BayesianMinimizerBase
+│   │   │   ├── 📄 bumps.py
+│   │   │   │   └── 🏷️ class BumpsMinimizer
+│   │   │   ├── 📄 bumps_amoeba.py
+│   │   │   │   └── 🏷️ class BumpsAmoebaMinimizer
+│   │   │   ├── 📄 bumps_de.py
+│   │   │   │   └── 🏷️ class BumpsDeMinimizer
+│   │   │   ├── 📄 bumps_dream.py
+│   │   │   │   └── 🏷️ class BumpsDreamMinimizer
+│   │   │   ├── 📄 bumps_lm.py
+│   │   │   │   └── 🏷️ class BumpsLmMinimizer
+│   │   │   ├── 📄 dfols.py
+│   │   │   │   └── 🏷️ class DfolsMinimizer
+│   │   │   ├── 📄 factory.py
+│   │   │   │   └── 🏷️ class MinimizerCategoryFactory
+│   │   │   ├── 📄 lmfit.py
+│   │   │   │   └── 🏷️ class LmfitMinimizer
+│   │   │   ├── 📄 lmfit_least_squares.py
+│   │   │   │   └── 🏷️ class LmfitLeastSquaresMinimizer
+│   │   │   ├── 📄 lmfit_leastsq.py
+│   │   │   │   └── 🏷️ class LmfitLeastsqMinimizer
+│   │   │   └── 📄 lsq_base.py
+│   │   │       └── 🏷️ class LeastSquaresMinimizerBase
 │   │   ├── 📁 sequential_fit
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -136,7 +109,6 @@
 │   ├── 📁 fit_helpers
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 bayesian.py
-│   │   │   ├── 🏷️ class PosteriorParameterSummary
 │   │   │   ├── 🏷️ class PosteriorPredictiveSummary
 │   │   │   ├── 🏷️ class PosteriorSamples
 │   │   │   └── 🏷️ class BayesianFitResults
@@ -170,6 +142,7 @@
 │   │   │   └── 🏷️ class DfolsMinimizer
 │   │   ├── 📄 enums.py
 │   │   │   ├── 🏷️ class MinimizerTypeEnum
+│   │   │   ├── 🏷️ class InitializationMethodEnum
 │   │   │   └── 🏷️ class DreamPopulationInitializationEnum
 │   │   ├── 📄 factory.py
 │   │   │   └── 🏷️ class MinimizerFactory
@@ -222,9 +195,13 @@
 │   │   ├── 🏷️ class TypeInfo
 │   │   ├── 🏷️ class Compatibility
 │   │   └── 🏷️ class CalculatorSupport
+│   ├── 📄 posterior.py
+│   │   └── 🏷️ class PosteriorParameterSummary
 │   ├── 📄 singleton.py
 │   │   ├── 🏷️ class SingletonBase
 │   │   └── 🏷️ class ConstraintsHandler
+│   ├── 📄 switchable.py
+│   │   └── 🏷️ class SwitchableCategoryBase
 │   ├── 📄 validation.py
 │   │   ├── 🏷️ class DataTypeHints
 │   │   ├── 🏷️ class DataTypes
@@ -269,12 +246,12 @@
 │   │   │   │   └── 📄 line_segment.py
 │   │   │   │       ├── 🏷️ class LineSegment
 │   │   │   │       └── 🏷️ class LineSegmentBackground
-│   │   │   ├── 📁 calculation
+│   │   │   ├── 📁 calculator
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 default.py
-│   │   │   │   │   └── 🏷️ class Calculation
+│   │   │   │   │   └── 🏷️ class Calculator
 │   │   │   │   └── 📄 factory.py
-│   │   │   │       └── 🏷️ class CalculationFactory
+│   │   │   │       └── 🏷️ class CalculatorCategoryFactory
 │   │   │   ├── 📁 data
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 bragg_pd.py
@@ -313,6 +290,8 @@
 │   │   │   │       └── 🏷️ class ExperimentTypeFactory
 │   │   │   ├── 📁 extinction
 │   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 base.py
+│   │   │   │   │   └── 🏷️ class ExtinctionBase
 │   │   │   │   ├── 📄 becker_coppens.py
 │   │   │   │   │   └── 🏷️ class BeckerCoppensExtinction
 │   │   │   │   └── 📄 factory.py
@@ -511,6 +490,12 @@
 │   └── 📄 results_sidecar.py
 ├── 📁 project
 │   ├── 📁 categories
+│   │   ├── 📁 chart
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   └── 🏷️ class Chart
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class ChartFactory
 │   │   ├── 📁 info
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -518,11 +503,12 @@
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class ProjectInfoFactory
 │   │   ├── 📁 rendering
+│   │   ├── 📁 table
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
-│   │   │   │   └── 🏷️ class Rendering
+│   │   │   │   └── 🏷️ class Table
 │   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class RenderingFactory
+│   │   │       └── 🏷️ class TableFactory
 │   │   ├── 📁 verbosity
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py

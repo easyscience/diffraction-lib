@@ -26,12 +26,12 @@ project = ed.Project()
 # %%
 # Keep the auto-selected engine. Alternatively, you can uncomment the
 # line below to explicitly set the engine to the required one.
-# project.rendering.chart_engine = 'plotly'
+# project.chart.type = 'plotly'
 
 # %%
 # Set global plot range for plots
-project.rendering.plotter.x_min = 2.0
-project.rendering.plotter.x_max = 30.0
+project.chart.plotter.x_min = 2.0
+project.chart.plotter.x_max = 30.0
 
 # %% [markdown]
 # ## Add Structure
@@ -79,10 +79,10 @@ project.experiments.add_from_data_path(
 )
 
 # %%
-project.experiments['xray_pdf'].show_peak_profile_types()
+project.experiments['xray_pdf'].peak.show_supported()
 
 # %%
-project.experiments['xray_pdf'].peak_profile_type = 'gaussian-damped-sinc'
+project.experiments['xray_pdf'].peak.type = 'gaussian-damped-sinc'
 
 # %%
 project.experiments['xray_pdf'].peak.damp_q = 0.03

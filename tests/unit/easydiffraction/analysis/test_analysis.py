@@ -29,11 +29,11 @@ def _make_project_with_names(names):
     return P()
 
 
-def test_show_minimizer_types_prints(capsys):
+def test_minimizer_show_supported_prints(capsys):
     from easydiffraction.analysis.analysis import Analysis
 
     a = Analysis(project=_make_project_with_names([]))
-    a.fitting.show_minimizer_types()
+    a.minimizer.show_supported()
     out = capsys.readouterr().out
     assert 'Minimizer types' in out
     assert 'lmfit (leastsq)' in out
@@ -45,14 +45,111 @@ def test_fit_mode_category_and_joint_fit(monkeypatch, capsys):
     a = Analysis(project=_make_project_with_names(['e1', 'e2']))
 
     # Default fit mode is 'single'
-    assert a.fitting_mode_type == 'single'
+    assert a.fitting_mode.type == 'single'
 
     # Switch to joint
-    a.fitting_mode_type = 'joint'
-    assert a.fitting_mode_type == 'joint'
+    a.fitting_mode.type = 'joint'
+    assert a.fitting_mode.type == 'joint'
 
     # joint_fit exists but is empty until fit() populates it
     assert len(a.joint_fit) == 0
+
+
+def test_restore_raises_when_bayesian_result_kind_with_lsq_minimizer():
+    """Restoring a Bayesian projection onto an LSQ minimizer must raise.
+
+    See minimizer-category-consolidation_review-8 finding F5: a CIF
+    where ``_fit_result.result_kind = bayesian`` but
+    ``_minimizer.type = lmfit (leastsq)`` would previously
+    crash with ``AttributeError: 'LmfitLeastsqMinimizer' object has no
+    attribute 'point_estimate_name'`` deep inside the restore path.
+    We now raise a clear ``ValueError`` at the gate.
+    """
+    import pytest
+
+    from easydiffraction.analysis.analysis import Analysis
+    from easydiffraction.analysis.enums import FitResultKindEnum
+
+    a = Analysis(project=_make_project_with_names([]))
+    a.minimizer.type = 'lmfit (leastsq)'
+    a.fit_result._set_result_kind(FitResultKindEnum.BAYESIAN.value)
+    a._set_has_persisted_fit_state(value=True)
+
+    with pytest.raises(
+        ValueError,
+        match=r"_minimizer\.type = 'lmfit \(leastsq\)'",
+    ) as excinfo:
+        a._restore_fit_results_from_projection()
+
+    message = str(excinfo.value)
+    assert 'Bayesian' in message
+    assert FitResultKindEnum.BAYESIAN.value in message
+
+
+def test_minimizer_selector_swap_warns_for_different_defaults(monkeypatch):
+    from easydiffraction.analysis import analysis as analysis_mod
+    from easydiffraction.analysis.analysis import Analysis
+
+    a = Analysis(project=_make_project_with_names([]))
+    warnings: list[str] = []
+    monkeypatch.setattr(analysis_mod.log, 'warning', warnings.append)
+
+    a.minimizer.type = 'bumps (dream)'
+
+    assert a.minimizer.type == 'bumps (dream)'
+    # Inter-family swap should split warnings into "removed"/"added"
+    # lines rather than emitting "<not available>" sentinels per
+    # finding F3.
+    assert any('removes these settings' in w and 'max_iterations' in w for w in warnings)
+    assert any(
+        'adds these settings with defaults' in w and 'sampling_steps' in w for w in warnings
+    )
+    assert not any('<not available>' in w for w in warnings)
+
+
+def test_minimizer_type_invalid_assignment_raises_and_preserves_state():
+    import pytest
+
+    from easydiffraction.analysis.analysis import Analysis
+
+    a = Analysis(project=_make_project_with_names([]))
+    initial_type = a.minimizer.type
+
+    with pytest.raises(ValueError, match='Unsupported minimizer type'):
+        a.minimizer.type = 'bogus-minimizer'
+
+    assert a.minimizer.type == initial_type
+
+
+def test_fitting_mode_type_invalid_assignment_raises_and_preserves_state():
+    import pytest
+
+    from easydiffraction.analysis.analysis import Analysis
+
+    a = Analysis(project=_make_project_with_names([]))
+    initial_type = a.fitting_mode.type
+
+    with pytest.raises(ValueError, match='Unsupported fitting mode'):
+        a.fitting_mode.type = 'bogus-mode'
+
+    assert a.fitting_mode.type == initial_type
+
+
+def test_cif_restore_path_tolerates_invalid_minimizer_type(monkeypatch):
+    from easydiffraction.analysis import analysis as analysis_mod
+    from easydiffraction.analysis.analysis import Analysis
+
+    a = Analysis(project=_make_project_with_names([]))
+    initial_type = a.minimizer.type
+    warnings: list[str] = []
+    monkeypatch.setattr(analysis_mod.log, 'warning', warnings.append)
+
+    # CIF-restore path uses strict=False so bad data warns instead of
+    # raising — kept tolerant for partially-broken saved projects.
+    a._set_minimizer_type('bogus-minimizer')
+
+    assert a.minimizer.type == initial_type
+    assert any('Unsupported minimizer type' in w for w in warnings)
 
 
 def test_analysis_help(capsys):
@@ -61,13 +158,12 @@ def test_analysis_help(capsys):
     a = Analysis(project=_make_project_with_names([]))
     a.help()
     out = capsys.readouterr().out
-    assert "Help for 'Analysis'" in out
     assert 'fit' in out
     assert 'display' in out
     assert 'Properties' in out
     assert 'Methods' in out
     assert 'fit()' in out
-    assert 'show_fitting_mode_types()' in out
+    assert 'fitting_mode' in out
 
 
 def test_analysis_display_help(capsys):
@@ -76,7 +172,6 @@ def test_analysis_display_help(capsys):
     a = Analysis(project=_make_project_with_names([]))
     a.display.help()
     out = capsys.readouterr().out
-    assert "Help for 'AnalysisDisplay'" in out
     assert 'all_params()' in out
     assert 'fit_results()' in out
     assert 'how_to_access_parameters()' in out
@@ -281,9 +376,9 @@ def test_run_sequential_sets_mode_and_saves_project(monkeypatch, tmp_path):
 
     analysis._run_sequential()
 
-    assert analysis.fitting_mode_type == 'sequential'
+    assert analysis.fitting_mode.type == 'sequential'
     analysis_cif = analysis.as_cif
-    assert '_fitting.mode_type sequential' in analysis_cif
+    assert '_fitting_mode.type sequential' in analysis_cif
     assert '_sequential_fit.data_dir scans' in analysis_cif
     assert '_sequential_fit.file_pattern *.xye' in analysis_cif
     assert calls == [

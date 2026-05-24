@@ -31,9 +31,9 @@ def test_real_analysis_as_cif_is_singleton_section_without_data_header() -> None
 
     analysis_cif = project.analysis.as_cif
 
-    assert analysis_cif.startswith('_fitting.mode_type single')
+    assert analysis_cif.startswith('_fitting_mode.type single')
     assert not analysis_cif.startswith('data_')
-    assert '_fitting.minimizer_type' in analysis_cif
+    assert '_minimizer.type' in analysis_cif
     assert '_joint_fit.experiment_id' not in analysis_cif
     assert '_sequential_fit.data_dir' not in analysis_cif
     assert '_sequential_fit_extract.id' not in analysis_cif
@@ -66,7 +66,7 @@ def test_real_analysis_as_cif_includes_joint_fit_only_in_joint_mode() -> None:
     analysis_cif = analysis.as_cif
 
     assert not analysis_cif.startswith('data_')
-    assert '_fitting.mode_type joint' in analysis_cif
+    assert '_fitting_mode.type joint' in analysis_cif
     assert '_joint_fit.experiment_id' in analysis_cif
     assert '_joint_fit.weight' in analysis_cif
     assert '_sequential_fit.data_dir' not in analysis_cif
@@ -89,7 +89,7 @@ def test_real_analysis_as_cif_includes_sequential_sections_only_in_sequential_mo
     analysis_cif = analysis.as_cif
 
     assert not analysis_cif.startswith('data_')
-    assert '_fitting.mode_type sequential' in analysis_cif
+    assert '_fitting_mode.type sequential' in analysis_cif
     assert '_sequential_fit.data_dir scans' in analysis_cif
     assert '_sequential_fit.file_pattern *.xye' in analysis_cif
     assert '_sequential_fit_extract.id' in analysis_cif

@@ -84,7 +84,7 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     expt.instrument.calib_d_to_tof_offset = 0.0
     expt.instrument.calib_d_to_tof_linear = 58724.76869981215
     expt.instrument.calib_d_to_tof_quad = -0.00001
-    expt.peak_profile_type = 'jorgensen'
+    expt.peak.type = 'jorgensen'
     expt.peak.broad_gauss_sigma_0 = 45137
     expt.peak.broad_gauss_sigma_1 = -52394
     expt.peak.broad_gauss_sigma_2 = 22998
@@ -107,7 +107,7 @@ def test_single_fit_neutron_pd_tof_mcstas_lbco_si() -> None:
     project.experiments['mcstas'].excluded_regions.create(start=108000, end=200000)
 
     # Prepare for fitting
-    project.analysis.fitting.minimizer_type = 'lmfit'
+    project.analysis.minimizer.type = 'lmfit'
 
     # Select fitting parameters
     model_1.cell.length_a.free = True
@@ -165,7 +165,7 @@ def _test_joint_fit_bragg_pdf_neutron_pd_tof_si() -> None:
     bragg_expt.instrument.calib_d_to_tof_offset = 0.0
     bragg_expt.instrument.calib_d_to_tof_linear = 7476.91
     bragg_expt.instrument.calib_d_to_tof_quad = -1.54
-    bragg_expt.peak_profile_type = 'jorgensen'
+    bragg_expt.peak.type = 'jorgensen'
     bragg_expt.peak.broad_gauss_sigma_0 = 3.0
     bragg_expt.peak.broad_gauss_sigma_1 = 40.0
     bragg_expt.peak.broad_gauss_sigma_2 = 2.0
@@ -200,8 +200,8 @@ def _test_joint_fit_bragg_pdf_neutron_pd_tof_si() -> None:
     project.experiments.add(pdf_expt)
 
     # Prepare for fitting
-    project.analysis.fitting_mode_type = 'joint'
-    project.analysis.fitting.minimizer_type = 'lmfit'
+    project.analysis.fitting_mode.type = 'joint'
+    project.analysis.minimizer.type = 'lmfit'
 
     # Select fitting parameters — shared structure
     model.cell.length_a.free = True

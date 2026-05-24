@@ -40,7 +40,7 @@ def test_single_fit_neutron_pd_tof_si() -> None:
     expt.instrument.calib_d_to_tof_offset = -9.29
     expt.instrument.calib_d_to_tof_linear = 7476.91
     expt.instrument.calib_d_to_tof_quad = -1.54
-    expt.peak_profile_type = 'jorgensen'
+    expt.peak.type = 'jorgensen'
     expt.peak.broad_gauss_sigma_0 = 4.2
     expt.peak.broad_gauss_sigma_1 = 45.8
     expt.peak.broad_gauss_sigma_2 = 1.1
@@ -58,7 +58,7 @@ def test_single_fit_neutron_pd_tof_si() -> None:
     project.experiments.add(expt)
 
     # Prepare for fitting
-    project.analysis.fitting.minimizer_type = 'lmfit'
+    project.analysis.minimizer.type = 'lmfit'
 
     # Select fitting parameters
     model.cell.length_a.free = True
@@ -153,7 +153,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
     expt.instrument.calib_d_to_tof_offset = -13.7123
     expt.instrument.calib_d_to_tof_linear = 20773.1
     expt.instrument.calib_d_to_tof_quad = -1.08308
-    expt.peak_profile_type = 'jorgensen'
+    expt.peak.type = 'jorgensen'
     expt.peak.broad_gauss_sigma_0 = 0.0
     expt.peak.broad_gauss_sigma_1 = 0.0
     expt.peak.broad_gauss_sigma_2 = 15.7
@@ -200,7 +200,7 @@ def test_single_fit_neutron_pd_tof_ncaf() -> None:
     project.experiments.add(expt)
 
     # Prepare for fitting
-    project.analysis.fitting.minimizer_type = 'lmfit'
+    project.analysis.minimizer.type = 'lmfit'
 
     # Select fitting parameters
     expt.linked_phases['ncaf'].scale.free = True

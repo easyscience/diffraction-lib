@@ -62,7 +62,7 @@ def _make_project_stub() -> tuple[SimpleNamespace, list[tuple[str, tuple, dict]]
             bayesian_predictive_datasets=[],
             _persisted_fit_state_sidecar={},
         ),
-        rendering=SimpleNamespace(plotter=plotter),
+        chart=SimpleNamespace(plotter=plotter),
         experiments={'hrpt': SimpleNamespace(type=SimpleNamespace())},
         free_parameters=[],
         verbosity=SimpleNamespace(fit=SimpleNamespace(value='full')),
@@ -167,7 +167,6 @@ def test_project_display_help_lists_namespaces_and_methods(capsys):
     display.help()
     out = capsys.readouterr().out
 
-    assert "Help for 'ProjectDisplay'" in out
     assert 'parameters' in out
     assert 'fit' in out
     assert 'posterior' in out
@@ -184,18 +183,15 @@ def test_nested_project_display_help_lists_methods(capsys):
     display.posterior.help()
     out = capsys.readouterr().out
 
-    assert "Help for 'ParameterDisplay'" in out
     assert 'all()' in out
     assert 'access()' in out
-    assert "Help for 'FitDisplay'" in out
     assert 'results()' in out
     assert 'correlations()' in out
-    assert "Help for 'PosteriorDisplay'" in out
     assert 'pairs()' in out
     assert 'predictive()' in out
 
 
-def test_fit_display_delegates_to_analysis_and_rendering():
+def test_fit_display_delegates_to_analysis_and_chart():
     project, calls = _make_project_stub()
     display = ProjectDisplay(project)
 
@@ -232,7 +228,7 @@ def test_fit_display_delegates_to_analysis_and_rendering():
     )
 
 
-def test_posterior_display_delegates_to_rendering_plotter(monkeypatch):
+def test_posterior_display_delegates_to_chart_plotter(monkeypatch):
     import easydiffraction.project.display as display_mod
 
     project, calls = _make_project_stub()
@@ -304,8 +300,8 @@ def test_posterior_predictive_skips_processing_indicator_for_restored_cache(monk
         },
     )
     project.experiments = {'hrpt': SimpleNamespace(type=SimpleNamespace())}
-    project.rendering.plotter.engine = 'plotly'
-    project.rendering.plotter._resolve_x_axis = lambda expt_type, x: (
+    project.chart.plotter.engine = 'plotly'
+    project.chart.plotter._resolve_x_axis = lambda expt_type, x: (
         'two_theta',
         'two_theta',
         None,
@@ -344,7 +340,7 @@ def test_posterior_predictive_skips_processing_indicator_for_restored_cache(monk
 def test_posterior_distribution_without_param_plots_all_free_parameters():
     project, calls = _make_project_stub()
     project.free_parameters = ['a', 'b']
-    project.rendering.plotter.engine = 'plotly'
+    project.chart.plotter.engine = 'plotly'
     display = ProjectDisplay(project)
 
     display.posterior.distribution()
@@ -358,7 +354,7 @@ def test_posterior_distribution_without_param_plots_all_free_parameters():
 def test_posterior_distribution_without_param_plots_all_free_parameters_for_ascii():
     project, calls = _make_project_stub()
     project.free_parameters = ['a', 'b']
-    project.rendering.plotter.engine = 'asciichartpy'
+    project.chart.plotter.engine = 'asciichartpy'
     display = ProjectDisplay(project)
 
     display.posterior.distribution()
@@ -549,9 +545,9 @@ def test_pattern_option_statuses_ignore_placeholder_arrays_without_usable_state(
         experiments={'hrpt': experiment},
         structures=SimpleNamespace(names=['phase-a']),
         analysis=SimpleNamespace(fit_results=None),
-        rendering=SimpleNamespace(
+        chart=SimpleNamespace(
             plotter=SimpleNamespace(_update_project_categories=lambda expt_name: None),
-            chart_engine=SimpleNamespace(value='plotly'),
+            type='plotly',
         ),
     )
     display = ProjectDisplay(project)
@@ -595,12 +591,12 @@ def test_pattern_auto_routes_single_crystal_with_calculated_data(monkeypatch):
         experiments={'heidi': experiment},
         structures=SimpleNamespace(names=['si']),
         analysis=SimpleNamespace(fit_results=None),
-        rendering=SimpleNamespace(
+        chart=SimpleNamespace(
             plotter=SimpleNamespace(
                 _update_project_categories=lambda expt_name: None,
                 _plot_meas_vs_calc_request=record('_plot_meas_vs_calc_request'),
             ),
-            chart_engine=SimpleNamespace(value='plotly'),
+            type='plotly',
         ),
     )
     display = ProjectDisplay(project)

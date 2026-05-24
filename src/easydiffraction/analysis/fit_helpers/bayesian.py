@@ -17,6 +17,7 @@ from easydiffraction.analysis.fit_helpers.metrics import calculate_weighted_r_fa
 from easydiffraction.analysis.fit_helpers.reporting import FitResults
 from easydiffraction.analysis.fit_helpers.reporting import _build_parameter_row
 from easydiffraction.analysis.fit_helpers.reporting import _format_optional_float
+from easydiffraction.core.posterior import PosteriorParameterSummary
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_table
@@ -29,44 +30,6 @@ DEFAULT_CREDIBLE_INTERVAL_LEVELS = DEFAULT_CI_LEVELS
 IntervalLevels = tuple[float, ...]
 SettingsMap = dict[str, object] | None
 DiagnosticsMap = dict[str, object] | None
-
-
-@dataclass(slots=True)
-class PosteriorParameterSummary:
-    r"""
-    Posterior summary statistics for one fitted parameter.
-
-    Attributes
-    ----------
-    unique_name : str
-        Unique parameter name used across EasyDiffraction.
-    display_name : str
-        Human-readable label used in plots and tables.
-    best_sample_value : float
-        Highest-posterior sampled parameter value.
-    median : float
-        Posterior median value.
-    standard_deviation : float
-        Posterior standard deviation.
-    interval_68 : tuple[float, float]
-        Central 68% interval.
-    interval_95 : tuple[float, float]
-        Central 95% interval.
-    ess_bulk : float | None, default=None
-        Bulk effective sample size when available.
-    r_hat : float | None, default=None
-        Rank-normalized split-$\hat{R}$ when available.
-    """
-
-    unique_name: str
-    display_name: str
-    best_sample_value: float
-    median: float
-    standard_deviation: float
-    interval_68: tuple[float, float]
-    interval_95: tuple[float, float]
-    ess_bulk: float | None = None
-    r_hat: float | None = None
 
 
 @dataclass(slots=True)
@@ -189,6 +152,7 @@ class PosteriorSamples:
 
 SummaryList = list[PosteriorParameterSummary] | None
 PredictiveMap = dict[str, PosteriorPredictiveSummary] | None
+ArrayPayloadMap = dict[str, dict[str, np.ndarray]] | None
 
 
 @dataclass(kw_only=True)
@@ -220,6 +184,10 @@ class BayesianFitResults(FitResults):
         Posterior summaries for each sampled parameter.
     posterior_predictive : PredictiveMap, default=None
         Posterior predictive summaries keyed by experiment name.
+    posterior_distribution_caches : ArrayPayloadMap, default=None
+        Cached posterior density arrays keyed by parameter name.
+    posterior_pair_caches : ArrayPayloadMap, default=None
+        Cached posterior pair-density arrays keyed by cache id.
     credible_interval_levels : IntervalLevels, default=DEFAULT_CI_LEVELS
         Interval levels available in the summaries.
     sampler_settings : SettingsMap, default=None
@@ -243,6 +211,8 @@ class BayesianFitResults(FitResults):
     posterior_samples: PosteriorSamples | None = None
     posterior_parameter_summaries: SummaryList = None
     posterior_predictive: PredictiveMap = None
+    posterior_distribution_caches: ArrayPayloadMap = None
+    posterior_pair_caches: ArrayPayloadMap = None
     credible_interval_levels: IntervalLevels = DEFAULT_CI_LEVELS
     sampler_settings: SettingsMap = None
     convergence_diagnostics: DiagnosticsMap = None
@@ -268,6 +238,14 @@ class BayesianFitResults(FitResults):
         )
         self.posterior_predictive = (
             dict(self.posterior_predictive) if self.posterior_predictive is not None else {}
+        )
+        self.posterior_distribution_caches = (
+            dict(self.posterior_distribution_caches)
+            if self.posterior_distribution_caches is not None
+            else {}
+        )
+        self.posterior_pair_caches = (
+            dict(self.posterior_pair_caches) if self.posterior_pair_caches is not None else {}
         )
         self.sampler_settings = dict(self.sampler_settings) if self.sampler_settings else {}
         self.convergence_diagnostics = (

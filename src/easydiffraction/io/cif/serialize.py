@@ -241,15 +241,17 @@ def category_collection_to_cif(
     str
         CIF text representing the collection as a loop.
     """
-    if not len(collection):
-        return ''
-
     # Allow collections to conditionally suppress CIF output
     skip = getattr(collection, '_skip_cif_serialization', None)
     if skip is not None and skip():
         return ''
 
     lines: list[str] = []
+    scalar_descriptors = getattr(collection, 'scalar_descriptors', [])
+    lines.extend(param_to_cif(p) for p in scalar_descriptors)
+
+    if not len(collection):
+        return '\n'.join(lines)
 
     # Header — use first item's CIF tag names as the canonical columns
     first_item = next(iter(collection.values()))
@@ -398,9 +400,12 @@ def project_config_to_cif(project: object) -> str:
         return category_owner_to_cif(config)
 
     lines: list[str] = [_as_cif_text(project.info)]
-    rendering = getattr(project, 'rendering', None)
-    if rendering is not None:
-        lines.extend(('', _as_cif_text(rendering)))
+    chart = getattr(project, 'chart', None)
+    if chart is not None:
+        lines.extend(('', _as_cif_text(chart)))
+    table = getattr(project, 'table', None)
+    if table is not None:
+        lines.extend(('', _as_cif_text(table)))
     return '\n'.join(lines)
 
 
@@ -427,32 +432,7 @@ def experiment_to_cif(experiment: object) -> str:
 
 def analysis_to_cif(analysis: object) -> str:
     """Render analysis metadata, aliases, and constraints to CIF."""
-    parts: list[str] = [f'_fitting.mode_type {format_value(analysis.fitting_mode_type)}']
-
-    body = category_owner_to_cif(analysis)
-    if not body:
-        fallback_sections = [
-            getattr(analysis, 'fitting', None),
-            getattr(analysis, 'aliases', None),
-            getattr(analysis, 'constraints', None),
-        ]
-
-        if analysis.fitting_mode_type == 'joint':
-            fallback_sections.append(getattr(analysis, 'joint_fit', None))
-        elif analysis.fitting_mode_type == 'sequential':
-            fallback_sections.extend([
-                getattr(analysis, 'sequential_fit', None),
-                getattr(analysis, 'sequential_fit_extract', None),
-            ])
-
-        body = '\n\n'.join([
-            _as_cif_text(section) for section in fallback_sections if section is not None
-        ])
-
-    if body:
-        parts.append(body)
-
-    return '\n\n'.join(parts)
+    return category_owner_to_cif(analysis)
 
 
 def summary_to_cif(_summary: object) -> str:
@@ -537,9 +517,13 @@ def project_config_from_cif(project: object, cif_text: str) -> None:
 
     _populate_project_info_from_block(project.info, block)
 
-    rendering = getattr(project, 'rendering', None)
-    if rendering is not None:
-        rendering.from_cif(block)
+    chart = getattr(project, 'chart', None)
+    if chart is not None:
+        chart.from_cif(block)
+
+    table = getattr(project, 'table', None)
+    if table is not None:
+        table.from_cif(block)
 
     verbosity = getattr(project, 'verbosity', None)
     if verbosity is not None:
@@ -567,9 +551,8 @@ def analysis_from_cif(analysis: object, cif_text: str) -> None:
 
     _raise_for_legacy_analysis_tags(block)
     analysis._set_fitting_mode_type(_analysis_mode_from_cif_block(block))
-
-    # Restore fit configuration
-    analysis.fitting.from_cif(block)
+    analysis._set_minimizer_type(_analysis_minimizer_from_cif_block(block))
+    analysis.minimizer.from_cif(block)
     _restore_mode_specific_analysis_sections(analysis, block)
 
     # Restore aliases (loop)
@@ -588,18 +571,12 @@ def _has_persisted_fit_state_sections(block: object) -> bool:
     """Return True when any persisted fit-state section is present."""
     scalar_tags = (
         '_fit_result.result_kind',
-        '_deterministic_result.optimizer_name',
-        '_bayesian_result.sampler_name',
-        '_bayesian_sampler.steps',
-        '_bayesian_convergence.converged',
+        '_minimizer.runtime_seconds',
+        '_minimizer.best_log_posterior',
     )
     loop_tags = (
         '_fit_parameter.param_unique_name',
         '_fit_parameter_correlation.param_unique_name_i',
-        '_bayesian_parameter_posterior.unique_name',
-        '_bayesian_distribution_cache.param_unique_name',
-        '_bayesian_pair_cache.param_unique_name_x',
-        '_bayesian_predictive_dataset.experiment_name',
     )
 
     return any(_has_cif_value(block, tag) for tag in scalar_tags) or any(
@@ -614,23 +591,6 @@ def _restore_common_fit_state(analysis: object, block: object) -> None:
     analysis.fit_parameter_correlations.from_cif(block)
 
 
-def _restore_deterministic_fit_state(analysis: object, block: object) -> None:
-    """Restore deterministic-only persisted fit-state categories."""
-    analysis.deterministic_result.from_cif(block)
-
-
-def _restore_bayesian_fit_state(analysis: object, block: object) -> None:
-    """Restore Bayesian-only persisted fit-state categories."""
-    analysis.bayesian_result.from_cif(block)
-    analysis.bayesian_sampler.from_cif(block)
-    analysis.bayesian_convergence.from_cif(block)
-    analysis.bayesian_parameter_posteriors.from_cif(block)
-    analysis.bayesian_distribution_caches.from_cif(block)
-    analysis.bayesian_pair_caches.from_cif(block)
-    analysis.bayesian_predictive_datasets.from_cif(block)
-    analysis._sync_live_minimizer_from_persisted_fit_state()
-
-
 def _restore_persisted_fit_state(analysis: object, block: object) -> None:
     """
     Restore persisted fit-state categories after analysis configuration.
@@ -642,28 +602,17 @@ def _restore_persisted_fit_state(analysis: object, block: object) -> None:
 
     result_kind_value = analysis.fit_result.result_kind.value
     try:
-        result_kind = FitResultKindEnum(result_kind_value)
+        FitResultKindEnum(result_kind_value)
     except ValueError:
         log.warning(
             'Unsupported _fit_result.result_kind in analysis CIF: '
             f'{result_kind_value!r}. Skipping kind-specific fit-state categories.',
         )
-        return
-
-    if result_kind is FitResultKindEnum.DETERMINISTIC:
-        _restore_deterministic_fit_state(analysis, block)
-        return
-
-    _restore_bayesian_fit_state(analysis, block)
 
 
 def _collect_legacy_analysis_tags(block: object) -> list[str]:
     """Return deprecated analysis CIF tags present in a block."""
     legacy_tags: list[str] = []
-    if _has_cif_value(block, '_fit.minimizer_type'):
-        legacy_tags.append('_fit.minimizer_type')
-    if _has_cif_value(block, '_fit.mode'):
-        legacy_tags.append('_fit.mode')
     if _has_cif_loop(block, '_joint_fit_experiment.id'):
         legacy_tags.append('_joint_fit_experiment.id')
     if _has_cif_loop(block, '_joint_fit_experiment.weight'):
@@ -679,8 +628,8 @@ def _raise_for_legacy_analysis_tags(block: object) -> None:
 
     msg = (
         'Legacy analysis CIF tags are no longer supported: '
-        f'{legacy_tags}. Use _fitting.minimizer_type, _fitting.mode_type, '
-        '_joint_fit.experiment_id, and _joint_fit.weight.'
+        f'{legacy_tags}. Use _minimizer.type, _fitting_mode.type, '
+        '_minimizer.*, _joint_fit.experiment_id, and _joint_fit.weight.'
     )
     raise ValueError(msg)
 
@@ -688,13 +637,25 @@ def _raise_for_legacy_analysis_tags(block: object) -> None:
 def _analysis_mode_from_cif_block(block: object) -> str:
     """Return the fitting mode stored in an analysis CIF block."""
     read_cif_string = _make_cif_string_reader(block)
-    mode_value = read_cif_string('_fitting.mode_type')
+    mode_value = read_cif_string('_fitting_mode.type')
     if mode_value is not None:
         return mode_value
 
     from easydiffraction.analysis.enums import FitModeEnum  # noqa: PLC0415
 
     return FitModeEnum.default().value
+
+
+def _analysis_minimizer_from_cif_block(block: object) -> str:
+    """Return the minimizer type stored in an analysis CIF block."""
+    read_cif_string = _make_cif_string_reader(block)
+    minimizer_value = read_cif_string('_minimizer.type')
+    if minimizer_value is not None:
+        return minimizer_value
+
+    from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum  # noqa: PLC0415
+
+    return MinimizerTypeEnum.default().value
 
 
 def _has_joint_fit_rows(block: object) -> bool:
@@ -732,7 +693,7 @@ def _warn_inactive_analysis_sections(
     if has_sequential_settings or has_sequential_extract_rows:
         skipped_sections.append('sequential_fit')
     log.warning(
-        'Skipping inactive analysis CIF sections while fitting_mode_type is single: '
+        'Skipping inactive analysis CIF sections while fitting_mode is single: '
         f'{skipped_sections}.'
     )
 
@@ -743,12 +704,12 @@ def _restore_mode_specific_analysis_sections(analysis: object, block: object) ->
     has_sequential_settings = _has_sequential_fit_settings(block)
     has_sequential_extract_rows = _has_cif_loop(block, '_sequential_fit_extract.id')
 
-    if analysis.fitting_mode_type == 'joint':
+    if analysis.fitting_mode.type == 'joint':
         if has_joint_rows:
             analysis.joint_fit.from_cif(block)
         return
 
-    if analysis.fitting_mode_type == 'sequential':
+    if analysis.fitting_mode.type == 'sequential':
         if has_sequential_settings:
             analysis.sequential_fit.from_cif(block)
         if has_sequential_extract_rows:
@@ -841,13 +802,41 @@ def param_from_cif(
             found_values = candidates
             break
 
-    # If no values found, the parameter keeps its default value.
+    # If no values found, use the descriptor default when available.
     if not found_values:
+        _set_param_to_default_from_cif(self, raw=None)
         return
 
     # If found, pick the one at the given index.
     raw = found_values[idx]
     _set_param_from_raw_cif_value(self, raw)
+
+
+def _set_param_to_default_from_cif(
+    param: GenericDescriptorBase,
+    *,
+    raw: str | None,
+) -> None:
+    """
+    Resolve missing or unknown CIF values to descriptor defaults.
+
+    Parameters
+    ----------
+    param : GenericDescriptorBase
+        Descriptor being populated from CIF.
+    raw : str | None
+        Raw CIF token, or ``None`` when no tag was present.
+    """
+    value_spec = getattr(param, '_value_spec', None)
+    if value_spec is not None and (value_spec.has_default or value_spec.allow_none):
+        param.value = value_spec.default_value()
+        return
+
+    detail = 'missing tag' if raw is None else f'value {raw!r}'
+    log.error(
+        f"Cannot load required CIF field '{param.unique_name}': {detail}.",
+        exc_type=ValueError,
+    )
 
 
 def category_item_from_cif(
@@ -879,8 +868,9 @@ def _set_param_from_raw_cif_value(
     """
     raw = _strip_cif_text_field_delimiters(raw)
 
-    # CIF unknown / inapplicable markers → keep default
+    # CIF unknown / inapplicable markers → descriptor default
     if raw in {'?', '.'}:
+        _set_param_to_default_from_cif(param, raw=raw)
         return
 
     if param._value_type == DataTypes.INTEGER:
@@ -966,6 +956,9 @@ def category_collection_from_cif(
         msg = 'Child class is not defined.'
         raise ValueError(msg)
 
+    for param in self.scalar_descriptors:
+        param.from_cif(block)
+
     # Create a temporary instance to access its parameters and
     # parameter CIF names
     category_item = self._item_type()
@@ -991,13 +984,17 @@ def category_collection_from_cif(
     for row_idx in range(num_rows):
         current_item = self._items[row_idx]
         for param in current_item.parameters:
+            tag_found = False
             for cif_name in param._cif_handler.names:
                 if cif_name in loop.tags:
                     col_idx = loop.tags.index(cif_name)
                     # TODO: The following is duplication of
                     #  param_from_cif
                     _set_param_from_raw_cif_value(param, array[row_idx][col_idx])
+                    tag_found = True
                     break
+            if not tag_found:
+                _set_param_to_default_from_cif(param, raw=None)
 
     after_from_cif = getattr(self, '_after_from_cif', None)
     if callable(after_from_cif):

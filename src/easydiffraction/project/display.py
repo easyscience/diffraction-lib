@@ -98,7 +98,7 @@ class FitDisplay:
         show_diagonal: bool = True,
     ) -> None:
         """Show parameter correlations from the latest fit."""
-        self._project.rendering.plotter.plot_param_correlations(
+        self._project.chart.plotter.plot_param_correlations(
             threshold=threshold,
             precision=precision,
             max_parameters=max_parameters,
@@ -120,9 +120,9 @@ class FitDisplay:
             another.
         """
         if param is None:
-            self._project.rendering.plotter.plot_all_param_series(versus=versus)
+            self._project.chart.plotter.plot_all_param_series(versus=versus)
         else:
-            self._project.rendering.plotter.plot_param_series(param=param, versus=versus)
+            self._project.chart.plotter.plot_param_series(param=param, versus=versus)
 
     def help(self) -> None:
         """Print available fit-display methods."""
@@ -147,13 +147,13 @@ class PosteriorDisplay:
             return True
 
         analysis = self._project.analysis
+        fit_results = getattr(analysis, 'fit_results', None)
+        runtime_pair_caches = getattr(fit_results, 'posterior_pair_caches', None)
+        if runtime_pair_caches:
+            return False
+
         sidecar_data = getattr(analysis, '_persisted_fit_state_sidecar', {})
-        pair_caches = sidecar_data.get('pair_caches', {})
-        return not (
-            analysis.bayesian_result.has_pair_cache.value
-            and len(analysis.bayesian_pair_caches) > 0
-            and bool(pair_caches)
-        )
+        return not bool(sidecar_data.get('pair_caches', {}))
 
     def _predictive_needs_processing_indicator(
         self,
@@ -164,38 +164,39 @@ class PosteriorDisplay:
     ) -> bool:
         """Return whether predictive plotting still needs processing."""
         analysis = self._project.analysis
-        sidecar_data = getattr(analysis, '_persisted_fit_state_sidecar', {})
-        predictive_datasets = sidecar_data.get('predictive_datasets', {})
-        if not (
-            analysis.bayesian_result.has_posterior_predictive.value
-            and bool(predictive_datasets)
-            and expt_name in predictive_datasets
-        ):
-            return True
-
         experiment = self._project.experiments[expt_name]
-        plotter = self._project.rendering.plotter
+        plotter = self._project.chart.plotter
         _, x_axis_name, _, _, _ = plotter._resolve_x_axis(experiment.type, x)
+        x_axis_name = str(x_axis_name)
         require_draws = plotter.engine == PlotterEngineEnum.PLOTLY.value and style in {
             'draws',
             'band+draws',
         }
 
-        matching_rows = [
-            row
-            for row in analysis.bayesian_predictive_datasets
-            if row.experiment_name.value == expt_name
-            and str(row.x_axis_name.value) == str(x_axis_name)
-        ]
-        if not matching_rows:
+        sidecar_data = getattr(analysis, '_persisted_fit_state_sidecar', {})
+        predictive_dataset = sidecar_data.get('predictive_datasets', {}).get(expt_name)
+        if predictive_dataset is not None:
+            dataset_axis_name = str(predictive_dataset.get('x_axis_name', ''))
+            if dataset_axis_name in {'', x_axis_name}:
+                return require_draws and predictive_dataset.get('draws') is None
+
+        fit_results = getattr(analysis, 'fit_results', None)
+        posterior_predictive = getattr(fit_results, 'posterior_predictive', None)
+        if not posterior_predictive:
             return True
-        if not require_draws:
-            return False
-        return not any(
-            row.draws_path.value is not None
-            and predictive_datasets[expt_name].get('draws') is not None
-            for row in matching_rows
-        )
+
+        cache_keys = [
+            plotter._posterior_predictive_key(expt_name, x_axis_name, include_draws=True),
+            plotter._posterior_predictive_key(expt_name, x_axis_name, include_draws=False),
+            expt_name,
+        ]
+        for cache_key in cache_keys:
+            summary = posterior_predictive.get(cache_key)
+            if summary is None or str(getattr(summary, 'x_axis_name', '')) != x_axis_name:
+                continue
+            return require_draws and getattr(summary, 'draws', None) is None
+
+        return True
 
     def pairs(
         self,
@@ -215,7 +216,7 @@ class PosteriorDisplay:
             else nullcontext()
         )
         with indicator_context:
-            self._project.rendering.plotter.plot_posterior_pairs(
+            self._project.chart.plotter.plot_posterior_pairs(
                 parameters=parameters,
                 style=style,
                 threshold=threshold,
@@ -226,7 +227,7 @@ class PosteriorDisplay:
         """
         Plot posterior distributions for one or all free parameters.
         """
-        plotter = self._project.rendering.plotter
+        plotter = self._project.chart.plotter
         if param is not None:
             plotter.plot_param_distribution(param)
             return
@@ -263,7 +264,7 @@ class PosteriorDisplay:
             else nullcontext()
         )
         with indicator_context:
-            self._project.rendering.plotter.plot_posterior_predictive(
+            self._project.chart.plotter.plot_posterior_predictive(
                 expt_name=expt_name,
                 style=style,
                 x_min=x_min,
@@ -339,7 +340,7 @@ class ProjectDisplay:
                     else nullcontext()
                 )
                 with indicator_context:
-                    self._project.rendering.plotter._plot_posterior_predictive_request(
+                    self._project.chart.plotter._plot_posterior_predictive_request(
                         expt_name=expt_name,
                         style='band',
                         plot_options=_MeasVsCalcPlotOptions(
@@ -382,7 +383,7 @@ class ProjectDisplay:
                 else nullcontext()
             )
             with indicator_context:
-                self._project.rendering.plotter._plot_posterior_predictive_request(
+                self._project.chart.plotter._plot_posterior_predictive_request(
                     expt_name=expt_name,
                     style='band',
                     plot_options=_MeasVsCalcPlotOptions(
@@ -556,7 +557,7 @@ class ProjectDisplay:
         self._validate_requested_include(statuses, include)
         include_set = set(include)
         if include_set == {'measured'}:
-            self._project.rendering.plotter.plot_meas(
+            self._project.chart.plotter.plot_meas(
                 expt_name=expt_name,
                 x_min=x_min,
                 x_max=x_max,
@@ -565,7 +566,7 @@ class ProjectDisplay:
             )
             return
         if include_set == {'measured', 'excluded'}:
-            self._project.rendering.plotter.plot_meas(
+            self._project.chart.plotter.plot_meas(
                 expt_name=expt_name,
                 x_min=x_min,
                 x_max=x_max,
@@ -574,7 +575,7 @@ class ProjectDisplay:
             )
             return
         if include_set == {'calculated'}:
-            self._project.rendering.plotter.plot_calc(
+            self._project.chart.plotter.plot_calc(
                 expt_name=expt_name,
                 x_min=x_min,
                 x_max=x_max,
@@ -583,7 +584,7 @@ class ProjectDisplay:
             )
             return
         if include_set == {'calculated', 'excluded'}:
-            self._project.rendering.plotter.plot_calc(
+            self._project.chart.plotter.plot_calc(
                 expt_name=expt_name,
                 x_min=x_min,
                 x_max=x_max,
@@ -592,7 +593,7 @@ class ProjectDisplay:
             )
             return
         if {'measured', 'calculated'}.issubset(include_set):
-            self._project.rendering.plotter._plot_meas_vs_calc_request(
+            self._project.chart.plotter._plot_meas_vs_calc_request(
                 expt_name=expt_name,
                 plot_options=_MeasVsCalcPlotOptions(
                     x_min=x_min,
@@ -614,7 +615,7 @@ class ProjectDisplay:
 
     def _pattern_option_statuses(self, expt_name: str) -> list[PatternOptionStatus]:
         """Return availability details for the requested experiment."""
-        self._project.rendering.plotter._update_project_categories(expt_name)
+        self._project.chart.plotter._update_project_categories(expt_name)
         experiment = self._project.experiments[expt_name]
         pattern = intensity_category_for(experiment)
         sample_form = experiment.type.sample_form.value
@@ -838,10 +839,9 @@ class ProjectDisplay:
         if not posterior_predictive:
             return False, 'Posterior predictive data is unavailable.'
 
-        active_chart_engine = getattr(self._project.rendering.plotter, 'engine', None)
+        active_chart_engine = getattr(self._project.chart.plotter, 'engine', None)
         if active_chart_engine is None:
-            chart_engine = getattr(self._project.rendering, 'chart_engine', None)
-            active_chart_engine = getattr(chart_engine, 'value', None)
+            active_chart_engine = self._project.chart.type
 
         if active_chart_engine != PlotterEngineEnum.PLOTLY.value:
             return False, 'Uncertainty bands currently require the Plotly chart engine.'
