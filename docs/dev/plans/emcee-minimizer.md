@@ -317,7 +317,7 @@ Mark `[x]` as each step lands.
 
   Commit: `Add EmceeMinimizer category class`
 
-- [ ] **P1.4 — Add `EmceeMinimizer` engine class.** New file
+- [x] **P1.4 — Add `EmceeMinimizer` engine class.** New file
       `src/easydiffraction/analysis/minimizers/emcee.py`. The engine
       class is registered with `MinimizerFactory` and holds the
       `emcee.EnsembleSampler` plus an `HDFBackend` attribute. Mirror the
