@@ -12978,8 +12978,7 @@ expression(rhs_aliases).</p>
 <span class="normal">135</span>
 <span class="normal">136</span>
 <span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ConstraintsHandler</span><span class="p">(</span><span class="n">SingletonBase</span><span class="p">):</span>
+<span class="normal">138</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ConstraintsHandler</span><span class="p">(</span><span class="n">SingletonBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Manage parameter constraints using aliases and expressions.</span>
 
@@ -13055,31 +13054,30 @@ expression(rhs_aliases).</p>
 
         <span class="k">for</span> <span class="n">lhs_alias</span><span class="p">,</span> <span class="n">rhs_expr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_constraints</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="c1"># Evaluate the RHS expression using the current values</span>
-                <span class="n">rhs_value</span> <span class="o">=</span> <span class="n">ae</span><span class="p">(</span><span class="n">rhs_expr</span><span class="p">)</span>
-
-                <span class="c1"># asteval silently returns None for undefined names</span>
-                <span class="c1"># instead of raising an exception; errors are stored in</span>
-                <span class="c1"># ae.error.</span>
-                <span class="k">if</span> <span class="n">ae</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
-                    <span class="n">error_msgs</span> <span class="o">=</span> <span class="s1">&#39;; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">get_error</span><span class="p">())</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">ae</span><span class="o">.</span><span class="n">error</span><span class="p">)</span>
-                    <span class="n">ae</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-                    <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Constraint &#39;</span><span class="si">{</span><span class="n">lhs_alias</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">rhs_expr</span><span class="si">}</span><span class="s2">&#39; could not be &quot;</span>
-                        <span class="sa">f</span><span class="s1">&#39;evaluated: </span><span class="si">{</span><span class="n">error_msgs</span><span class="si">}</span><span class="s1">. &#39;</span>
-                        <span class="sa">f</span><span class="s1">&#39;Make sure every name in the expression is registered &#39;</span>
-                        <span class="sa">f</span><span class="s1">&#39;as an alias via analysis.aliases.create().&#39;</span><span class="p">,</span>
-                        <span class="n">exc_type</span><span class="o">=</span><span class="ne">ValueError</span><span class="p">,</span>
-                    <span class="p">)</span>
-
-                <span class="c1"># Get the actual parameter object we want to update</span>
-                <span class="n">param</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alias_to_param</span><span class="p">[</span><span class="n">lhs_alias</span><span class="p">]</span><span class="o">.</span><span class="n">param</span>
-
-                <span class="c1"># Update its value and mark it as user constrained</span>
-                <span class="n">param</span><span class="o">.</span><span class="n">_set_value_user_constrained</span><span class="p">(</span><span class="n">rhs_value</span><span class="p">)</span>
-
+                <span class="bp">self</span><span class="o">.</span><span class="n">_apply_one_constraint</span><span class="p">(</span><span class="n">ae</span><span class="p">,</span> <span class="n">lhs_alias</span><span class="p">,</span> <span class="n">rhs_expr</span><span class="p">)</span>
             <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ArithmeticError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to apply constraint &#39;</span><span class="si">{</span><span class="n">lhs_alias</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">rhs_expr</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_apply_one_constraint</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">ae</span><span class="p">:</span> <span class="n">Interpreter</span><span class="p">,</span>
+        <span class="n">lhs_alias</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">rhs_expr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate and apply one parsed constraint expression.&quot;&quot;&quot;</span>
+        <span class="n">rhs_value</span> <span class="o">=</span> <span class="n">ae</span><span class="p">(</span><span class="n">rhs_expr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ae</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
+            <span class="n">error_msgs</span> <span class="o">=</span> <span class="s1">&#39;; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">get_error</span><span class="p">())</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">ae</span><span class="o">.</span><span class="n">error</span><span class="p">)</span>
+            <span class="n">ae</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Constraint &#39;</span><span class="si">{</span><span class="n">lhs_alias</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">rhs_expr</span><span class="si">}</span><span class="s2">&#39; could not be &quot;</span>
+                <span class="sa">f</span><span class="s1">&#39;evaluated: </span><span class="si">{</span><span class="n">error_msgs</span><span class="si">}</span><span class="s1">. &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;Make sure every name in the expression is registered &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;as an alias via analysis.aliases.create().&#39;</span><span class="p">,</span>
+                <span class="n">exc_type</span><span class="o">=</span><span class="ne">ValueError</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="n">param</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alias_to_param</span><span class="p">[</span><span class="n">lhs_alias</span><span class="p">]</span><span class="o">.</span><span class="n">param</span>
+        <span class="n">param</span><span class="o">.</span><span class="n">_set_value_user_constrained</span><span class="p">(</span><span class="n">rhs_value</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -13231,29 +13229,7 @@ rhs_expr='1 - occ_La'</p>
 <span class="normal">114</span>
 <span class="normal">115</span>
 <span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">117</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Evaluate constraints and apply them to dependent parameters.</span>
 
@@ -13277,29 +13253,7 @@ rhs_expr='1 - occ_La'</p>
 
     <span class="k">for</span> <span class="n">lhs_alias</span><span class="p">,</span> <span class="n">rhs_expr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_constraints</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="c1"># Evaluate the RHS expression using the current values</span>
-            <span class="n">rhs_value</span> <span class="o">=</span> <span class="n">ae</span><span class="p">(</span><span class="n">rhs_expr</span><span class="p">)</span>
-
-            <span class="c1"># asteval silently returns None for undefined names</span>
-            <span class="c1"># instead of raising an exception; errors are stored in</span>
-            <span class="c1"># ae.error.</span>
-            <span class="k">if</span> <span class="n">ae</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
-                <span class="n">error_msgs</span> <span class="o">=</span> <span class="s1">&#39;; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">get_error</span><span class="p">())</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">ae</span><span class="o">.</span><span class="n">error</span><span class="p">)</span>
-                <span class="n">ae</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Constraint &#39;</span><span class="si">{</span><span class="n">lhs_alias</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">rhs_expr</span><span class="si">}</span><span class="s2">&#39; could not be &quot;</span>
-                    <span class="sa">f</span><span class="s1">&#39;evaluated: </span><span class="si">{</span><span class="n">error_msgs</span><span class="si">}</span><span class="s1">. &#39;</span>
-                    <span class="sa">f</span><span class="s1">&#39;Make sure every name in the expression is registered &#39;</span>
-                    <span class="sa">f</span><span class="s1">&#39;as an alias via analysis.aliases.create().&#39;</span><span class="p">,</span>
-                    <span class="n">exc_type</span><span class="o">=</span><span class="ne">ValueError</span><span class="p">,</span>
-                <span class="p">)</span>
-
-            <span class="c1"># Get the actual parameter object we want to update</span>
-            <span class="n">param</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alias_to_param</span><span class="p">[</span><span class="n">lhs_alias</span><span class="p">]</span><span class="o">.</span><span class="n">param</span>
-
-            <span class="c1"># Update its value and mark it as user constrained</span>
-            <span class="n">param</span><span class="o">.</span><span class="n">_set_value_user_constrained</span><span class="p">(</span><span class="n">rhs_value</span><span class="p">)</span>
-
+            <span class="bp">self</span><span class="o">.</span><span class="n">_apply_one_constraint</span><span class="p">(</span><span class="n">ae</span><span class="p">,</span> <span class="n">lhs_alias</span><span class="p">,</span> <span class="n">rhs_expr</span><span class="p">)</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ArithmeticError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to apply constraint &#39;</span><span class="si">{</span><span class="n">lhs_alias</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">rhs_expr</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>

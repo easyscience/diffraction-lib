@@ -18444,7 +18444,34 @@ consistent configuration surface and engine handling.</p>
 <span class="normal">5949</span>
 <span class="normal">5950</span>
 <span class="normal">5951</span>
-<span class="normal">5952</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Plotter</span><span class="p">(</span><span class="n">RendererBase</span><span class="p">):</span>
+<span class="normal">5952</span>
+<span class="normal">5953</span>
+<span class="normal">5954</span>
+<span class="normal">5955</span>
+<span class="normal">5956</span>
+<span class="normal">5957</span>
+<span class="normal">5958</span>
+<span class="normal">5959</span>
+<span class="normal">5960</span>
+<span class="normal">5961</span>
+<span class="normal">5962</span>
+<span class="normal">5963</span>
+<span class="normal">5964</span>
+<span class="normal">5965</span>
+<span class="normal">5966</span>
+<span class="normal">5967</span>
+<span class="normal">5968</span>
+<span class="normal">5969</span>
+<span class="normal">5970</span>
+<span class="normal">5971</span>
+<span class="normal">5972</span>
+<span class="normal">5973</span>
+<span class="normal">5974</span>
+<span class="normal">5975</span>
+<span class="normal">5976</span>
+<span class="normal">5977</span>
+<span class="normal">5978</span>
+<span class="normal">5979</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Plotter</span><span class="p">(</span><span class="n">RendererBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;User-facing plotting facade backed by concrete plotters.&quot;&quot;&quot;</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
@@ -21867,37 +21894,18 @@ consistent configuration surface and engine handling.</p>
             <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">original_uncertainties</span> <span class="o">=</span> <span class="p">[</span><span class="n">parameter</span><span class="o">.</span><span class="n">uncertainty</span> <span class="k">for</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="n">sampled_parameters</span><span class="p">]</span>
-        <span class="n">predictive_draws</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">draw_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_posterior_predictive_draw_indices</span><span class="p">(</span><span class="n">flattened_samples</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">best_sample_prediction</span><span class="p">,</span> <span class="n">x_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_posterior_predictive_state</span><span class="p">(</span>
+            <span class="n">evaluated</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_posterior_predictive_draw_values</span><span class="p">(</span>
+                <span class="n">draw_indices</span><span class="o">=</span><span class="n">draw_indices</span><span class="p">,</span>
+                <span class="n">flattened_samples</span><span class="o">=</span><span class="n">flattened_samples</span><span class="p">,</span>
                 <span class="n">sampled_parameters</span><span class="o">=</span><span class="n">sampled_parameters</span><span class="p">,</span>
-                <span class="n">values</span><span class="o">=</span><span class="n">original_values</span><span class="p">,</span>
                 <span class="n">experiment</span><span class="o">=</span><span class="n">experiment</span><span class="p">,</span>
                 <span class="n">expt_name</span><span class="o">=</span><span class="n">expt_name</span><span class="p">,</span>
                 <span class="n">x_axis</span><span class="o">=</span><span class="n">x_axis</span><span class="p">,</span>
+                <span class="n">original_values</span><span class="o">=</span><span class="n">original_values</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="k">if</span> <span class="n">best_sample_prediction</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">x_values</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">return</span> <span class="kc">None</span>
-
-            <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">draw_indices</span><span class="p">:</span>
-                <span class="n">prediction</span><span class="p">,</span> <span class="n">current_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_posterior_predictive_state</span><span class="p">(</span>
-                    <span class="n">sampled_parameters</span><span class="o">=</span><span class="n">sampled_parameters</span><span class="p">,</span>
-                    <span class="n">values</span><span class="o">=</span><span class="n">flattened_samples</span><span class="p">[</span><span class="n">index</span><span class="p">],</span>
-                    <span class="n">experiment</span><span class="o">=</span><span class="n">experiment</span><span class="p">,</span>
-                    <span class="n">expt_name</span><span class="o">=</span><span class="n">expt_name</span><span class="p">,</span>
-                    <span class="n">x_axis</span><span class="o">=</span><span class="n">x_axis</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="k">if</span> <span class="n">prediction</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">current_x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="kc">None</span>
-                <span class="k">if</span> <span class="p">(</span>
-                    <span class="n">prediction</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">best_sample_prediction</span><span class="o">.</span><span class="n">shape</span>
-                    <span class="ow">or</span> <span class="n">current_x</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">x_values</span><span class="o">.</span><span class="n">shape</span>
-                <span class="p">):</span>
-                    <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Posterior predictive draws returned inconsistent array shapes.&#39;</span><span class="p">)</span>
-                    <span class="k">return</span> <span class="kc">None</span>
-                <span class="n">predictive_draws</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prediction</span><span class="p">)</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_restore_posterior_predictive_parameters</span><span class="p">(</span>
                 <span class="n">sampled_parameters</span><span class="o">=</span><span class="n">sampled_parameters</span><span class="p">,</span>
@@ -21906,11 +21914,57 @@ consistent configuration surface and engine handling.</p>
                 <span class="n">expt_name</span><span class="o">=</span><span class="n">expt_name</span><span class="p">,</span>
             <span class="p">)</span>
 
+        <span class="k">if</span> <span class="n">evaluated</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">best_sample_prediction</span><span class="p">,</span> <span class="n">x_values</span><span class="p">,</span> <span class="n">predictive_draws</span> <span class="o">=</span> <span class="n">evaluated</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">best_sample_prediction</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span>
             <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x_values</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span>
             <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">predictive_draws</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span>
         <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_evaluate_posterior_predictive_draw_values</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">draw_indices</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">flattened_samples</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">sampled_parameters</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">],</span>
+        <span class="n">experiment</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+        <span class="n">expt_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">x_axis</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+        <span class="n">original_values</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate posterior predictive best sample and draw curves.&quot;&quot;&quot;</span>
+        <span class="n">best_sample_prediction</span><span class="p">,</span> <span class="n">x_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_posterior_predictive_state</span><span class="p">(</span>
+            <span class="n">sampled_parameters</span><span class="o">=</span><span class="n">sampled_parameters</span><span class="p">,</span>
+            <span class="n">values</span><span class="o">=</span><span class="n">original_values</span><span class="p">,</span>
+            <span class="n">experiment</span><span class="o">=</span><span class="n">experiment</span><span class="p">,</span>
+            <span class="n">expt_name</span><span class="o">=</span><span class="n">expt_name</span><span class="p">,</span>
+            <span class="n">x_axis</span><span class="o">=</span><span class="n">x_axis</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">best_sample_prediction</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">x_values</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">predictive_draws</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">draw_indices</span><span class="p">:</span>
+            <span class="n">prediction</span><span class="p">,</span> <span class="n">current_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_posterior_predictive_state</span><span class="p">(</span>
+                <span class="n">sampled_parameters</span><span class="o">=</span><span class="n">sampled_parameters</span><span class="p">,</span>
+                <span class="n">values</span><span class="o">=</span><span class="n">flattened_samples</span><span class="p">[</span><span class="n">index</span><span class="p">],</span>
+                <span class="n">experiment</span><span class="o">=</span><span class="n">experiment</span><span class="p">,</span>
+                <span class="n">expt_name</span><span class="o">=</span><span class="n">expt_name</span><span class="p">,</span>
+                <span class="n">x_axis</span><span class="o">=</span><span class="n">x_axis</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">prediction</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">current_x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">prediction</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">best_sample_prediction</span><span class="o">.</span><span class="n">shape</span>
+                <span class="ow">or</span> <span class="n">current_x</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">x_values</span><span class="o">.</span><span class="n">shape</span>
+            <span class="p">):</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Posterior predictive draws returned inconsistent array shapes.&#39;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="n">predictive_draws</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prediction</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">best_sample_prediction</span><span class="p">,</span> <span class="n">x_values</span><span class="p">,</span> <span class="n">predictive_draws</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_restore_posterior_predictive_parameters</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -26295,34 +26349,7 @@ adds CSV output to the existing fit loop).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">5849</span>
-<span class="normal">5850</span>
-<span class="normal">5851</span>
-<span class="normal">5852</span>
-<span class="normal">5853</span>
-<span class="normal">5854</span>
-<span class="normal">5855</span>
-<span class="normal">5856</span>
-<span class="normal">5857</span>
-<span class="normal">5858</span>
-<span class="normal">5859</span>
-<span class="normal">5860</span>
-<span class="normal">5861</span>
-<span class="normal">5862</span>
-<span class="normal">5863</span>
-<span class="normal">5864</span>
-<span class="normal">5865</span>
-<span class="normal">5866</span>
-<span class="normal">5867</span>
-<span class="normal">5868</span>
-<span class="normal">5869</span>
-<span class="normal">5870</span>
-<span class="normal">5871</span>
-<span class="normal">5872</span>
-<span class="normal">5873</span>
-<span class="normal">5874</span>
-<span class="normal">5875</span>
-<span class="normal">5876</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">5876</span>
 <span class="normal">5877</span>
 <span class="normal">5878</span>
 <span class="normal">5879</span>
@@ -26365,7 +26392,34 @@ adds CSV output to the existing fit loop).</p>
 <span class="normal">5916</span>
 <span class="normal">5917</span>
 <span class="normal">5918</span>
-<span class="normal">5919</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_param_series_from_snapshots</span><span class="p">(</span>
+<span class="normal">5919</span>
+<span class="normal">5920</span>
+<span class="normal">5921</span>
+<span class="normal">5922</span>
+<span class="normal">5923</span>
+<span class="normal">5924</span>
+<span class="normal">5925</span>
+<span class="normal">5926</span>
+<span class="normal">5927</span>
+<span class="normal">5928</span>
+<span class="normal">5929</span>
+<span class="normal">5930</span>
+<span class="normal">5931</span>
+<span class="normal">5932</span>
+<span class="normal">5933</span>
+<span class="normal">5934</span>
+<span class="normal">5935</span>
+<span class="normal">5936</span>
+<span class="normal">5937</span>
+<span class="normal">5938</span>
+<span class="normal">5939</span>
+<span class="normal">5940</span>
+<span class="normal">5941</span>
+<span class="normal">5942</span>
+<span class="normal">5943</span>
+<span class="normal">5944</span>
+<span class="normal">5945</span>
+<span class="normal">5946</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_param_series_from_snapshots</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">unique_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">versus_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
@@ -26481,21 +26535,21 @@ adds CSV output to the existing fit loop).</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">5955</span>
-<span class="normal">5956</span>
-<span class="normal">5957</span>
-<span class="normal">5958</span>
-<span class="normal">5959</span>
-<span class="normal">5960</span>
-<span class="normal">5961</span>
-<span class="normal">5962</span>
-<span class="normal">5963</span>
-<span class="normal">5964</span>
-<span class="normal">5965</span>
-<span class="normal">5966</span>
-<span class="normal">5967</span>
-<span class="normal">5968</span>
-<span class="normal">5969</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PlotterFactory</span><span class="p">(</span><span class="n">RendererFactoryBase</span><span class="p">):</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">5982</span>
+<span class="normal">5983</span>
+<span class="normal">5984</span>
+<span class="normal">5985</span>
+<span class="normal">5986</span>
+<span class="normal">5987</span>
+<span class="normal">5988</span>
+<span class="normal">5989</span>
+<span class="normal">5990</span>
+<span class="normal">5991</span>
+<span class="normal">5992</span>
+<span class="normal">5993</span>
+<span class="normal">5994</span>
+<span class="normal">5995</span>
+<span class="normal">5996</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PlotterFactory</span><span class="p">(</span><span class="n">RendererFactoryBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Factory for plotter implementations.&quot;&quot;&quot;</span>
 
     <span class="nd">@classmethod</span>
