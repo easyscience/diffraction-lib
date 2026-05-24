@@ -433,7 +433,7 @@ Mark `[x]` as each step lands.
 
   Commit: `Serialize fit outputs to _fit_result.* tags`
 
-- [ ] **P1.12 — Confirm `_fit_state_categories` returns the paired
+- [x] **P1.12 — Confirm `_fit_state_categories` returns the paired
       `fit_result`.** In
       `src/easydiffraction/analysis/analysis.py`,
       `_fit_state_categories()` already returns `[self.fit_parameters,
