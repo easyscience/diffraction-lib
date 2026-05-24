@@ -532,7 +532,7 @@ Mark `[x]` as each step lands.
 
   Commit: `Promote minimizer-input-output-split ADR`
 
-- [ ] **P1.17 — Phase 1 review gate.** No code change. Re-run the
+- [x] **P1.17 — Phase 1 review gate.** No code change. Re-run the
       P1.15 tutorial grep against `src/`, `docs/docs/tutorials/`, and
       `tests/`. The `src/` and `docs/docs/tutorials/` scopes must
       return empty. The `tests/` sweep is deferred to P2.1, which
