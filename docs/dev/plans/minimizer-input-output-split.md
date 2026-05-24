@@ -261,7 +261,7 @@ Mark `[x]` as each step lands.
       Tests deferred to Phase 2. Commit:
       `Add BayesianFitResult class`
 
-- [ ] **P1.4 — Register fit-result classes with the existing
+- [x] **P1.4 — Register fit-result classes with the existing
       `FitResultFactory`.** The factory already exists at
       [`src/easydiffraction/analysis/categories/fit_result/factory.py`](../../../src/easydiffraction/analysis/categories/fit_result/factory.py)
       and currently registers only the default common class. Update

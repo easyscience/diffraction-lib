@@ -7,6 +7,7 @@ from __future__ import annotations
 from typing import ClassVar
 
 from easydiffraction.analysis.categories.fit_result.base import FitResultBase
+from easydiffraction.analysis.categories.fit_result.factory import FitResultFactory
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.variable import BoolDescriptor
@@ -15,6 +16,7 @@ from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.io.cif.handler import CifHandler
 
 
+@FitResultFactory.register
 class LeastSquaresFitResult(FitResultBase):
     """Persisted least-squares fit-result metadata."""
 
