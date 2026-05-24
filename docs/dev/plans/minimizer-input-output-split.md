@@ -397,26 +397,33 @@ Mark `[x]` as each step lands.
 
 - [ ] **P1.11 — Update CIF emit/read for the split.** In
       `src/easydiffraction/io/cif/serialize.py`:
+
+  **No category-list reordering is performed in this step.** Neither
+  `Analysis._serializable_categories()` nor
+  `Analysis._fit_state_categories()` is restructured. `fit_result`
+  stays conditionally included by `_fit_state_categories()` only
+  when `self._has_persisted_fit_state()` is true — exactly as today.
+  Pre-fit projects continue to emit no `_fit_result.*` block.
+
+  The only changes in this step are content updates inside the
+  existing emit/read flow:
+
   - `_minimizer.*` emit/read continues to handle settings only (the
-    minimizer category's `from_cif` walks its remaining descriptors).
-  - The read-side order is **already** correct in the current code
-    ([`serialize.py:553-555`](../../../src/easydiffraction/io/cif/serialize.py)):
-    `_set_minimizer_type` runs before `analysis.minimizer.from_cif`,
-    and the paired `fit_result` swap fires inside
-    `_set_minimizer_type` after P1.6. The `fit_result.from_cif(block)`
-    call inside `_restore_common_fit_state`
-    ([line 590](../../../src/easydiffraction/io/cif/serialize.py))
-    therefore reads `_fit_result.*` into the already-paired class.
-    No reordering is required.
-  - The emit-side order follows
-    `Analysis._serializable_categories()` and
-    `_fit_state_categories()` exactly as today: `self.fit_result` is
-    **conditionally** included only when persisted fit state exists
-    (`self._has_persisted_fit_state()`). Pre-fit projects continue
-    to emit no `_fit_result.*` tags. Do not promote `fit_result` to
-    an unconditional category in `_serializable_categories` —
-    keeping the conditional preserves the current "no spurious
-    defaults emitted before a fit" behavior.
+    minimizer category's `from_cif` walks its remaining descriptors
+    after P1.9 / P1.10 removed the output descriptors).
+  - `_fit_result.*` emit/read picks up the new family-specific
+    descriptors automatically because P1.6 wires the paired class
+    (`LeastSquaresFitResult` or `BayesianFitResult`) onto
+    `self._fit_result`. The existing
+    `analysis.fit_result.from_cif(block)` call inside
+    `_restore_common_fit_state`
+    ([`serialize.py:590`](../../../src/easydiffraction/io/cif/serialize.py))
+    reads `_fit_result.*` tags into the already-paired class — no
+    reordering, no new call.
+  - The read-side already restores `minimizer.type` first
+    ([`serialize.py:553-555`](../../../src/easydiffraction/io/cif/serialize.py)),
+    so the paired-class swap fires before `fit_result.from_cif` runs.
+    No code change is required here.
   - Update the legacy-tag rejection message in
     `_raise_for_legacy_analysis_tags` to include the now-removed
     `_minimizer.<output_name>` tags (e.g.
