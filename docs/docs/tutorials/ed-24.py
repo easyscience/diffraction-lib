@@ -17,8 +17,17 @@ from pathlib import Path
 import easydiffraction as ed
 
 
-def normalize_saved_project_selectors(project_dir):
-    """Normalize archived project CIF selector tags for the current API."""
+# The ID 35 archive used below was saved before the
+# switchable-category-owned-selectors refactor renamed several CIF
+# tags. The helper below rewrites the archive in place so the tutorial
+# can load it; it is intentionally narrow (ID 35 only, hrpt only,
+# line-segment background only) and not a general legacy migration
+# path. EasyDiffraction is in beta and does not ship legacy CIF
+# shims, so saved projects in the old layout must be regenerated. The
+# helper will be deleted once the upstream archive is republished
+# under the current tag names.
+def _normalize_id35_archive_for_tutorial(project_dir):
+    """Rewrite the ID 35 archive's CIF tags for the current API."""
     project_path = Path(project_dir)
 
     replacements_by_file = {
@@ -56,7 +65,7 @@ def normalize_saved_project_selectors(project_dir):
 
 # %%
 project_dir = ed.download_data(id=35, destination='projects')
-normalize_saved_project_selectors(project_dir)
+_normalize_id35_archive_for_tutorial(project_dir)
 
 # %% [markdown]
 # ## Load the Saved Bayesian Project
