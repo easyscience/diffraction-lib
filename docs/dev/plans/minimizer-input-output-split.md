@@ -229,7 +229,7 @@ Mark `[x]` as each step lands.
 
       Commit: `Rename FitResult to FitResultBase, add reset hooks`
 
-- [ ] **P1.2 — Add `LeastSquaresFitResult` class.** New file
+- [x] **P1.2 — Add `LeastSquaresFitResult` class.** New file
       `src/easydiffraction/analysis/categories/fit_result/lsq.py`.
       `LeastSquaresFitResult(FitResultBase)` declares: `objective_name`,
       `objective_value`, `n_data_points`, `n_parameters`,
