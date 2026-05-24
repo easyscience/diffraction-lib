@@ -1,8 +1,7 @@
 # Plan: Minimizer Input/Output Split
 
-> This plan follows
-> [`.github/copilot-instructions.md`](../../../.github/copilot-instructions.md).
-> No deliberate exceptions.
+> This plan follows [`AGENTS.md`](../../../AGENTS.md). No deliberate
+> exceptions.
 
 ## ADR
 
@@ -33,7 +32,7 @@ Affected ADRs that this plan amends (per the ADR's §"ADRs amended"):
   ADR was drafted on). Do not push unless asked.
 - Each step in §"Implementation steps (Phase 1)" must be staged with
   explicit paths and committed locally **before** moving to the next
-  step. See `.github/copilot-instructions.md` → **Commits**.
+  step. See `AGENTS.md` → **Commits**.
 - After P1.17, stop and wait for the user review gate before starting
   Phase 2.
 
@@ -530,7 +529,7 @@ Mark `[x]` as each step lands.
 ## Verification (Phase 2)
 
 Each command captures its log with a zsh-safe exit-code variable as
-required by `.github/copilot-instructions.md` → **Workflow**.
+required by `AGENTS.md` → **Workflow**.
 
 - [x] **P2.1 — Migrate existing tests off the removed minimizer output
       fields.** `git grep` `tests/` for the same patterns as P1.15.

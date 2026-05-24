@@ -564,10 +564,9 @@ categories and their swap hooks at the start of Phase 1.
 
 ### 7. Beta posture: hard cutover, no shims
 
-[`.github/copilot-instructions.md`](../../../../.github/copilot-instructions.md)
-→ **Change Discipline**: "Project is in beta: no legacy shims, no
-deprecation warnings — update tests and tutorials to the current API."
-This ADR keeps that posture:
+[`AGENTS.md`](../../../../AGENTS.md) → **Change Discipline**: "Project
+is in beta: no legacy shims, no deprecation warnings — update tests and
+tutorials to the current API." This ADR keeps that posture:
 
 - `<owner>.<cat>_type` is **deleted**, not deprecated.
 - `show_supported_<cat>_types()` / `show_current_<cat>_type()` are
@@ -872,10 +871,9 @@ full grep results.)
 
 Replace `self.__class__` with the new concrete class so the user's
 reference keeps pointing at "the same object". Rejected:
-[`.github/copilot-instructions.md`](../../../../.github/copilot-instructions.md)
-→ **Architecture** forbids it ("no monkey-patching or runtime class
-mutation"). It would also confuse `isinstance` checks and break
-descriptor introspection.
+[`AGENTS.md`](../../../../AGENTS.md) → **Architecture** forbids it ("no
+monkey-patching or runtime class mutation"). It would also confuse
+`isinstance` checks and break descriptor introspection.
 
 ### B. Single category class with internal mode switching
 
