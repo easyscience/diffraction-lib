@@ -12,7 +12,40 @@
 # ## Import Library
 
 # %%
+from pathlib import Path
+
 import easydiffraction as ed
+
+
+def normalize_saved_project_selectors(project_dir):
+    """Normalize archived project CIF selector tags for the current API."""
+    project_path = Path(project_dir)
+
+    replacements_by_file = {
+        project_path / 'project.cif': {
+            '_rendering.chart_engine': '_chart.type',
+            '_rendering.table_engine': '_table.type',
+        },
+        project_path / 'analysis' / 'analysis.cif': {
+            '_fitting.mode_type': '_fitting_mode.type',
+            '_fitting.minimizer_type': '_minimizer.type',
+        },
+        project_path / 'experiments' / 'hrpt.cif': {
+            '_calculation.calculator_type': '_calculator.type',
+            '_peak.profile_type': '_peak.type',
+        },
+    }
+
+    for file_path, replacements in replacements_by_file.items():
+        text = file_path.read_text(encoding='utf-8')
+        for old, new in replacements.items():
+            text = text.replace(old, new)
+        if file_path.name == 'hrpt.cif' and '_background.type' not in text:
+            text = text.replace(
+                '\nloop_\n_pd_background.id\n',
+                '\n_background.type line-segment\nloop_\n_pd_background.id\n',
+            )
+        file_path.write_text(text, encoding='utf-8')
 
 # %% [markdown]
 # ## Download Saved Project
@@ -23,6 +56,7 @@ import easydiffraction as ed
 
 # %%
 project_dir = ed.download_data(id=35, destination='projects')
+normalize_saved_project_selectors(project_dir)
 
 # %% [markdown]
 # ## Load the Saved Bayesian Project

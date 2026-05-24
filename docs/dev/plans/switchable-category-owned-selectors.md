@@ -569,7 +569,7 @@ required by `.github/copilot-instructions.md` → **Workflow**.
 - [x] **P2.4 — Integration tests.**
       `     pixi run integration-tests > /tmp/easydiffraction-integration-tests.log 2>&1; \       integration_tests_exit_code=$?; tail -n 200 /tmp/easydiffraction-integration-tests.log; \       exit $integration_tests_exit_code     `
 
-- [ ] **P2.5 — Script tests.**
+- [x] **P2.5 — Script tests.**
       `     pixi run script-tests > /tmp/easydiffraction-script-tests.log 2>&1; \       script_tests_exit_code=$?; tail -n 200 /tmp/easydiffraction-script-tests.log; \       exit $script_tests_exit_code     `
       This regenerates `tmp/tutorials/projects/*` fixtures with the new
       CIF layout.
