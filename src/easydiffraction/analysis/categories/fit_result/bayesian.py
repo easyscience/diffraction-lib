@@ -54,7 +54,7 @@ class BayesianFitResult(FitResultBase):
         return StringDescriptor(
             name='point_estimate_name',
             description='Committed sampled point estimate name.',
-            value_spec=AttributeSpec(default='best_sample'),
+            value_spec=AttributeSpec(default=None, allow_none=True),
             cif_handler=CifHandler(names=['_fit_result.point_estimate_name']),
         )
 
@@ -64,7 +64,7 @@ class BayesianFitResult(FitResultBase):
         return BoolDescriptor(
             name='sampler_completed',
             description='Whether the sampler completed and returned posterior data.',
-            value_spec=AttributeSpec(default=False),
+            value_spec=AttributeSpec(default=None, allow_none=True),
             cif_handler=CifHandler(names=['_fit_result.sampler_completed']),
         )
 
@@ -133,7 +133,7 @@ class BayesianFitResult(FitResultBase):
         """Committed sampled point estimate name."""
         return self._point_estimate_name
 
-    def _set_point_estimate_name(self, value: str) -> None:
+    def _set_point_estimate_name(self, value: str | None) -> None:
         """Set the point-estimate name for internal callers."""
         self._point_estimate_name.value = value
 
@@ -142,7 +142,7 @@ class BayesianFitResult(FitResultBase):
         """Whether the sampler completed and returned posterior data."""
         return self._sampler_completed
 
-    def _set_sampler_completed(self, *, value: bool) -> None:
+    def _set_sampler_completed(self, *, value: bool | None) -> None:
         """Set the sampler-completed flag for internal callers."""
         self._sampler_completed.value = value
 

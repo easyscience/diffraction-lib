@@ -47,10 +47,15 @@
 │   │   │       └── 🏷️ class FitParametersFactory
 │   │   ├── 📁 fit_result
 │   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 base.py
+│   │   │   │   └── 🏷️ class FitResultBase
+│   │   │   ├── 📄 bayesian.py
+│   │   │   │   └── 🏷️ class BayesianFitResult
 │   │   │   ├── 📄 default.py
-│   │   │   │   └── 🏷️ class FitResult
-│   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class FitResultFactory
+│   │   │   ├── 📄 factory.py
+│   │   │   │   └── 🏷️ class FitResultFactory
+│   │   │   └── 📄 lsq.py
+│   │   │       └── 🏷️ class LeastSquaresFitResult
 │   │   ├── 📁 fitting_mode
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py

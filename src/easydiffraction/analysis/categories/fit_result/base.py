@@ -55,19 +55,19 @@ class FitResultBase(CategoryItem):
         self._success = BoolDescriptor(
             name='success',
             description='Whether the latest persisted fit-result projection succeeded.',
-            value_spec=AttributeSpec(default=False),
+            value_spec=AttributeSpec(default=None, allow_none=True),
             cif_handler=CifHandler(names=['_fit_result.success']),
         )
         self._message = StringDescriptor(
             name='message',
             description='Status message for the latest persisted fit-result projection.',
-            value_spec=AttributeSpec(default=''),
+            value_spec=AttributeSpec(default=None, allow_none=True),
             cif_handler=CifHandler(names=['_fit_result.message']),
         )
         self._iterations = IntegerDescriptor(
             name='iterations',
             description='Iteration count for the latest persisted fit-result projection.',
-            value_spec=AttributeSpec(default=0),
+            value_spec=AttributeSpec(default=None, allow_none=True),
             cif_handler=CifHandler(names=['_fit_result.iterations']),
         )
         self._fitting_time = NumericDescriptor(
@@ -99,7 +99,7 @@ class FitResultBase(CategoryItem):
         """
         return self._success
 
-    def _set_success(self, *, value: bool) -> None:
+    def _set_success(self, *, value: bool | None) -> None:
         """Set the success flag for internal callers."""
         self._success.value = value
 
@@ -110,7 +110,7 @@ class FitResultBase(CategoryItem):
         """
         return self._message
 
-    def _set_message(self, value: str) -> None:
+    def _set_message(self, value: str | None) -> None:
         """Set the fit-result message for internal callers."""
         self._message.value = value
 
@@ -121,7 +121,7 @@ class FitResultBase(CategoryItem):
         """
         return self._iterations
 
-    def _set_iterations(self, value: int) -> None:
+    def _set_iterations(self, value: int | None) -> None:
         """Set the iteration count for internal callers."""
         self._iterations.value = value
 

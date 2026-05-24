@@ -94,66 +94,8 @@ def _fit_worker(
         ``reduced_chi_square``, ``iterations``, and per-parameter
         ``{unique_name}`` / ``{unique_name}.uncertainty``.
     """
-    # Lazy import to avoid circular dependencies and keep the module
-    # importable without heavy imports at top level.
-    from easydiffraction.project.project import Project  # noqa: PLC0415
-
-    result: dict[str, Any] = {'file_path': data_path}
-
     try:
-        # 1. Create a fresh, isolated project
-        Project._loading = True
-        try:
-            project = Project(name='_worker')
-        finally:
-            Project._loading = False
-
-        # 2. Load structure from template CIF
-        project.structures.add_from_cif_str(template.structure_cif)
-
-        # 3. Load experiment from template CIF
-        #    (full config + template data)
-        project.experiments.add_from_cif_str(template.experiment_cif)
-        expt = next(iter(project.experiments.values()))
-
-        # 4. Replace data from the new data path
-        expt._load_ascii_data_to_experiment(data_path)
-
-        # 5. Extract diffrn metadata from the data file
-        result.update(_extract_diffrn_values(expt, data_path, template.diffrn_extract_rules))
-
-        # 6. Override parameter values from propagated starting values
-        _apply_param_overrides(project, template.initial_params)
-
-        # 7. Set free flags
-        _set_free_params(project, template.free_param_unique_names)
-
-        # 8. Apply constraints
-        if template.constraints_enabled and template.alias_defs:
-            _apply_constraints(
-                project,
-                template.alias_defs,
-                template.constraint_defs,
-            )
-
-        # 9. Set calculator and minimizer
-        #    (internal, no console output)
-        from easydiffraction.analysis.fitting import Fitter  # noqa: PLC0415
-
-        expt._swap_calculator(template.calculator_tag, announce=False)
-        project.analysis.fitter = Fitter(template.minimizer_tag)
-
-        # 10. Fit
-        original_verbosity = project.verbosity.fit.value
-        project.verbosity.fit = 'silent'
-        try:
-            project.analysis.fit()
-        finally:
-            project.verbosity.fit = original_verbosity
-
-        # 11. Collect results
-        result.update(_collect_results(project, template))
-
+        return _fit_worker_success(template, data_path)
     except (
         RuntimeError,
         ValueError,
@@ -163,12 +105,67 @@ def _fit_worker(
         IndexError,
         OSError,
     ) as exc:
-        result['success'] = False
-        result['reduced_chi_square'] = None
-        result['iterations'] = 0
-        result['error'] = str(exc)
+        return _fit_worker_error(data_path, exc)
+
+
+def _fit_worker_success(
+    template: SequentialFitTemplate,
+    data_path: str,
+) -> dict[str, Any]:
+    """Run one sequential-fit worker and return collected results."""
+    # Lazy import to avoid circular dependencies and keep the module
+    # importable without heavy imports at top level.
+    from easydiffraction.project.project import Project  # noqa: PLC0415
+
+    result: dict[str, Any] = {'file_path': data_path}
+
+    Project._loading = True
+    try:
+        project = Project(name='_worker')
+    finally:
+        Project._loading = False
+
+    project.structures.add_from_cif_str(template.structure_cif)
+    project.experiments.add_from_cif_str(template.experiment_cif)
+    expt = next(iter(project.experiments.values()))
+    expt._load_ascii_data_to_experiment(data_path)
+    result.update(_extract_diffrn_values(expt, data_path, template.diffrn_extract_rules))
+
+    _apply_param_overrides(project, template.initial_params)
+    _set_free_params(project, template.free_param_unique_names)
+    if template.constraints_enabled and template.alias_defs:
+        _apply_constraints(
+            project,
+            template.alias_defs,
+            template.constraint_defs,
+        )
+
+    from easydiffraction.analysis.fitting import Fitter  # noqa: PLC0415
+
+    expt._swap_calculator(template.calculator_tag, announce=False)
+    project.analysis.fitter = Fitter(template.minimizer_tag)
+
+    original_verbosity = project.verbosity.fit.value
+    project.verbosity.fit = 'silent'
+    try:
+        project.analysis.fit()
+    finally:
+        project.verbosity.fit = original_verbosity
+
+    result.update(_collect_results(project, template))
 
     return result
+
+
+def _fit_worker_error(data_path: str, exc: Exception) -> dict[str, Any]:
+    """Return the standard failed worker result payload."""
+    return {
+        'file_path': data_path,
+        'success': False,
+        'reduced_chi_square': None,
+        'iterations': 0,
+        'error': str(exc),
+    }
 
 
 # ------------------------------------------------------------------

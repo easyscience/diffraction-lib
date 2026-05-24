@@ -32,9 +32,9 @@ persisted projection. The accepted
 [`minimizer-category-consolidation.md`](minimizer-category-consolidation.md)
 ADRs, as amended by
 [`minimizer-input-output-split.md`](minimizer-input-output-split.md),
-define the current compact projection for fit headers, paired
-fit-result outputs, parameter posterior summaries, and the
-`analysis/results.h5` sidecar.
+define the current compact projection for fit headers, paired fit-result
+outputs, parameter posterior summaries, and the `analysis/results.h5`
+sidecar.
 
 ## Consequences
 

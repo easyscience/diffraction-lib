@@ -569,9 +569,7 @@ def analysis_from_cif(analysis: object, cif_text: str) -> None:
 
 def _has_persisted_fit_state_sections(block: object) -> bool:
     """Return True when any persisted fit-state section is present."""
-    scalar_tags = (
-        '_fit_result.result_kind',
-    )
+    scalar_tags = ('_fit_result.result_kind',)
     loop_tags = (
         '_fit_parameter.param_unique_name',
         '_fit_parameter_correlation.param_unique_name_i',
@@ -638,9 +636,7 @@ def _collect_legacy_analysis_tags(block: object) -> list[str]:
         legacy_tags.append('_joint_fit_experiment.id')
     if _has_cif_loop(block, '_joint_fit_experiment.weight'):
         legacy_tags.append('_joint_fit_experiment.weight')
-    for tag in _MINIMIZER_OUTPUT_LEGACY_TAGS:
-        if _has_cif_value(block, tag):
-            legacy_tags.append(tag)
+    legacy_tags.extend(tag for tag in _MINIMIZER_OUTPUT_LEGACY_TAGS if _has_cif_value(block, tag))
     return legacy_tags
 
 

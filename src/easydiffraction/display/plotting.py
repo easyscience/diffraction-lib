@@ -3684,37 +3684,18 @@ class Plotter(RendererBase):
             dtype=float,
         )
         original_uncertainties = [parameter.uncertainty for parameter in sampled_parameters]
-        predictive_draws: list[np.ndarray] = []
         draw_indices = self._posterior_predictive_draw_indices(flattened_samples.shape[0])
 
         try:
-            best_sample_prediction, x_values = self._evaluate_posterior_predictive_state(
+            evaluated = self._evaluate_posterior_predictive_draw_values(
+                draw_indices=draw_indices,
+                flattened_samples=flattened_samples,
                 sampled_parameters=sampled_parameters,
-                values=original_values,
                 experiment=experiment,
                 expt_name=expt_name,
                 x_axis=x_axis,
+                original_values=original_values,
             )
-            if best_sample_prediction is None or x_values is None:
-                return None
-
-            for index in draw_indices:
-                prediction, current_x = self._evaluate_posterior_predictive_state(
-                    sampled_parameters=sampled_parameters,
-                    values=flattened_samples[index],
-                    experiment=experiment,
-                    expt_name=expt_name,
-                    x_axis=x_axis,
-                )
-                if prediction is None or current_x is None:
-                    return None
-                if (
-                    prediction.shape != best_sample_prediction.shape
-                    or current_x.shape != x_values.shape
-                ):
-                    log.warning('Posterior predictive draws returned inconsistent array shapes.')
-                    return None
-                predictive_draws.append(prediction)
         finally:
             self._restore_posterior_predictive_parameters(
                 sampled_parameters=sampled_parameters,
@@ -3723,11 +3704,57 @@ class Plotter(RendererBase):
                 expt_name=expt_name,
             )
 
+        if evaluated is None:
+            return None
+        best_sample_prediction, x_values, predictive_draws = evaluated
         return (
             np.asarray(best_sample_prediction, dtype=float),
             np.asarray(x_values, dtype=float),
             np.asarray(predictive_draws, dtype=float),
         )
+
+    def _evaluate_posterior_predictive_draw_values(
+        self,
+        *,
+        draw_indices: np.ndarray,
+        flattened_samples: np.ndarray,
+        sampled_parameters: list[object],
+        experiment: object,
+        expt_name: str,
+        x_axis: object,
+        original_values: np.ndarray,
+    ) -> tuple[np.ndarray, np.ndarray, list[np.ndarray]] | None:
+        """Evaluate posterior predictive best sample and draw curves."""
+        best_sample_prediction, x_values = self._evaluate_posterior_predictive_state(
+            sampled_parameters=sampled_parameters,
+            values=original_values,
+            experiment=experiment,
+            expt_name=expt_name,
+            x_axis=x_axis,
+        )
+        if best_sample_prediction is None or x_values is None:
+            return None
+
+        predictive_draws: list[np.ndarray] = []
+        for index in draw_indices:
+            prediction, current_x = self._evaluate_posterior_predictive_state(
+                sampled_parameters=sampled_parameters,
+                values=flattened_samples[index],
+                experiment=experiment,
+                expt_name=expt_name,
+                x_axis=x_axis,
+            )
+            if prediction is None or current_x is None:
+                return None
+            if (
+                prediction.shape != best_sample_prediction.shape
+                or current_x.shape != x_values.shape
+            ):
+                log.warning('Posterior predictive draws returned inconsistent array shapes.')
+                return None
+            predictive_draws.append(prediction)
+
+        return best_sample_prediction, x_values, predictive_draws
 
     def _restore_posterior_predictive_parameters(
         self,

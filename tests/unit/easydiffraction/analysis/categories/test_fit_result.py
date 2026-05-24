@@ -4,10 +4,10 @@
 
 
 def test_fit_result_factory_create():
-    from easydiffraction.analysis.categories.fit_result.default import FitResult
+    from easydiffraction.analysis.categories.fit_result.base import FitResultBase
     from easydiffraction.analysis.categories.fit_result.factory import FitResultFactory
 
     fit_result = FitResultFactory.create('default')
 
     assert FitResultFactory.default_tag() == 'default'
-    assert isinstance(fit_result, FitResult)
+    assert isinstance(fit_result, FitResultBase)

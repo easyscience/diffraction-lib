@@ -60,9 +60,9 @@ samplers.
 Introduce a single switchable category `minimizer` on `Analysis`. Its
 concrete class is determined by `Analysis.minimizer_type`. The category
 now holds user-writable minimizer inputs only. The later
-[`minimizer-input-output-split.md`](minimizer-input-output-split.md)
-ADR reverses the fit-output half of this rule: scalar fit outputs live
-on the paired `fit_result` category instead of on `minimizer`.
+[`minimizer-input-output-split.md`](minimizer-input-output-split.md) ADR
+reverses the fit-output half of this rule: scalar fit outputs live on
+the paired `fit_result` category instead of on `minimizer`.
 
 The following categories are removed:
 
@@ -394,8 +394,8 @@ category's class-level `_engine_metadata` dict.
 - `minimizer` no longer mixes writable user inputs and fit-filled
   outputs in the same scope. That stricter boundary is recorded by
   [`minimizer-input-output-split.md`](minimizer-input-output-split.md);
-  `Parameter` remains the refinement-in-place precedent for model
-  values rather than minimizer diagnostics.
+  `Parameter` remains the refinement-in-place precedent for model values
+  rather than minimizer diagnostics.
 - The set of `_minimizer.*` tags present in CIF depends on the active
   `_fitting.minimizer_type`. Loading a CIF whose tags don't match the
   minimizer's allowed set raises (clear validation, not silent

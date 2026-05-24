@@ -15,7 +15,6 @@ from easydiffraction.analysis.categories.aliases.factory import AliasesFactory
 from easydiffraction.analysis.categories.constraints.factory import ConstraintsFactory
 from easydiffraction.analysis.categories.fit_parameter_correlations import FitParameterCorrelations
 from easydiffraction.analysis.categories.fit_parameters import FitParameters
-from easydiffraction.analysis.categories.fit_result import FitResultBase
 from easydiffraction.analysis.categories.fitting_mode import FittingMode
 from easydiffraction.analysis.categories.fitting_mode import FittingModeFactory
 from easydiffraction.analysis.categories.joint_fit import JointFitCollection
@@ -56,6 +55,7 @@ from easydiffraction.utils.utils import render_object_help
 from easydiffraction.utils.utils import render_table
 
 if TYPE_CHECKING:
+    from easydiffraction.analysis.categories.fit_result import FitResultBase
     from easydiffraction.analysis.categories.minimizer.base import MinimizerCategoryBase
     from easydiffraction.core.posterior import PosteriorParameterSummary
 
@@ -736,7 +736,7 @@ class Analysis(
                 starting_parameters=list(restored_parameters),
                 fitting_time=fitting_time,
                 sampler_name=sampler_name,
-                point_estimate_name=self.fit_result.point_estimate_name.value,
+                point_estimate_name=self.fit_result.point_estimate_name.value or 'best_sample',
                 posterior_samples=posterior_samples,
                 posterior_parameter_summaries=self._restored_posterior_summaries(),
                 posterior_predictive=self._restored_predictive_summaries(),
@@ -764,8 +764,8 @@ class Analysis(
                 sampler_completed=bool(self.fit_result.sampler_completed.value),
                 best_log_posterior=self.fit_result.best_log_posterior.value,
             )
-            restored_results.message = self.fit_result.message.value
-            restored_results.iterations = int(self.fit_result.iterations.value)
+            restored_results.message = self.fit_result.message.value or ''
+            restored_results.iterations = _int_or_none(self.fit_result.iterations.value) or 0
             self.fit_results = restored_results
             return restored_results
 
@@ -790,8 +790,8 @@ class Analysis(
             iterations_performed=_int_or_none(self.fit_result.iterations.value),
             exit_reason=self.fit_result.exit_reason.value,
         )
-        restored_results.message = self.fit_result.message.value
-        restored_results.iterations = int(self.fit_result.iterations.value)
+        restored_results.message = self.fit_result.message.value or ''
+        restored_results.iterations = _int_or_none(self.fit_result.iterations.value) or 0
         restored_results.chi_square = self.fit_result.objective_value.value
         self.fit_results = restored_results
         return restored_results
@@ -1206,7 +1206,6 @@ class Analysis(
 
     def _clear_persisted_fit_state(self) -> None:
         """Reset all persisted fit-state categories before a new fit."""
-        self._clear_fit_result_projection()
         self._fit_parameters = FitParameters()
         self._fit_result._parent = None
         self._fit_result = self.minimizer._fit_result_class()
@@ -1216,7 +1215,9 @@ class Analysis(
         self._persisted_fit_state_sidecar = {}
 
     def _clear_fit_result_projection(self) -> None:
-        """Reset result-only fields on the active fit-result category."""
+        """
+        Reset result-only fields on the active fit-result category.
+        """
         self.fit_result._reset_result_descriptors()
 
     def _capture_fit_parameter_state(self, parameters: list[Parameter]) -> None:
@@ -1947,33 +1948,14 @@ class Analysis(
         self.fitter.minimizer.tracker._set_shared_display_handle(short_display_handle)
 
         try:
-            for expt_name in expt_names:
-                if verb is VerbosityEnum.FULL:
-                    console.print(
-                        f"📋 Using experiment 🔬 '{expt_name}' for '{mode.value}' fitting"
-                    )
-
-                experiment = experiments[expt_name]
-                self.fitter.fit(
-                    structures,
-                    [experiment],
-                    analysis=self,
-                    verbosity=verb,
-                    use_physical_limits=use_physical_limits,
-                    random_seed=self._resolved_fit_random_seed(random_seed),
-                )
-
-                # After fitting, snapshot parameter values before
-                # they get overwritten by the next experiment's fit
-                results = self.fitter.results
-                self._snapshot_params(expt_name, results)
-                self.fit_results = results
-
-                # Short mode: append one summary row and update in-place
-                if verb is VerbosityEnum.SHORT:
-                    self._fit_single_update_short_table(
-                        short_rows, expt_name, results, short_display_handle
-                    )
+            self._fit_single_experiments(
+                verb,
+                structures,
+                experiments,
+                use_physical_limits=use_physical_limits,
+                random_seed=random_seed,
+                short_state=(short_rows, short_display_handle),
+            )
         finally:
             self.fitter.minimizer.tracker._set_shared_display_handle(None)
 
@@ -1981,6 +1963,47 @@ class Analysis(
             if short_display_handle is not None and hasattr(short_display_handle, 'close'):
                 with suppress(Exception):
                     short_display_handle.close()
+
+    def _fit_single_experiments(
+        self,
+        verb: VerbosityEnum,
+        structures: object,
+        experiments: object,
+        *,
+        use_physical_limits: bool,
+        random_seed: int | None,
+        short_state: tuple[list[list[str]], object],
+    ) -> None:
+        """Run the per-experiment loop for single-fit mode."""
+        short_rows, short_display_handle = short_state
+        for expt_name in experiments.names:
+            if verb is VerbosityEnum.FULL:
+                console.print(
+                    f"📋 Using experiment 🔬 '{expt_name}' for "
+                    f"'{FitModeEnum.SINGLE.value}' fitting"
+                )
+
+            experiment = experiments[expt_name]
+            self.fitter.fit(
+                structures,
+                [experiment],
+                analysis=self,
+                verbosity=verb,
+                use_physical_limits=use_physical_limits,
+                random_seed=self._resolved_fit_random_seed(random_seed),
+            )
+
+            results = self.fitter.results
+            self._snapshot_params(expt_name, results)
+            self.fit_results = results
+
+            if verb is VerbosityEnum.SHORT:
+                self._fit_single_update_short_table(
+                    short_rows,
+                    expt_name,
+                    results,
+                    short_display_handle,
+                )
 
     @staticmethod
     def _fit_single_print_header(

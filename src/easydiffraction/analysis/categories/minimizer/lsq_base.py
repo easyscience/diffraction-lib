@@ -19,9 +19,7 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
 
     _default_max_iterations: ClassVar[int] = 1000
     _fit_result_class: ClassVar[type] = LeastSquaresFitResult
-    _expected_descriptor_names: ClassVar[tuple[str, ...]] = (
-        'max_iterations',
-    )
+    _expected_descriptor_names: ClassVar[tuple[str, ...]] = ('max_iterations',)
     _native_key_map: ClassVar[dict[str, str]] = {
         'max_iterations': 'max_iterations',
     }

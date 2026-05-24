@@ -54,6 +54,7 @@ def _make_project_stub() -> tuple[SimpleNamespace, list[tuple[str, tuple, dict]]
         analysis=SimpleNamespace(
             display=analysis_display,
             fit_results=SimpleNamespace(posterior_predictive={}),
+            minimizer=SimpleNamespace(_setting_descriptor_names=()),
             bayesian_result=SimpleNamespace(
                 has_pair_cache=SimpleNamespace(value=False),
                 has_posterior_predictive=SimpleNamespace(value=False),

@@ -93,9 +93,8 @@ pairs are stored.
 ### Minimizer fit projection
 
 The active `_minimizer.*` category stores user-selected solver inputs
-only. Scalar outputs are written to the paired `_fit_result.*`
-category. Deterministic fit-result classes add compact fit output
-counts:
+only. Scalar outputs are written to the paired `_fit_result.*` category.
+Deterministic fit-result classes add compact fit output counts:
 
 - `objective_name`
 - `objective_value`

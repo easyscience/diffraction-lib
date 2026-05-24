@@ -36,9 +36,9 @@ def test_fit_parameter_collection_serializes_expected_tags_and_values():
 
 
 def test_fit_result_serializes_expected_tags_and_enum_value():
-    from easydiffraction.analysis.categories.fit_result.default import FitResult
+    from easydiffraction.analysis.categories.fit_result.base import FitResultBase
 
-    fit_result = FitResult()
+    fit_result = FitResultBase()
     fit_result._set_result_kind('bayesian')
     fit_result._set_success(value=True)
     fit_result._set_message('Sampler completed')
@@ -138,7 +138,10 @@ def test_fit_parameter_posterior_summary_serializes_expected_tags():
     assert summary.ess_bulk == 120
 
 
-def test_dream_minimizer_sampler_and_diagnostics_use_cif_fields():
+def test_dream_sampler_settings_and_diagnostics_use_split_cif_fields():
+    from easydiffraction.analysis.categories.fit_result.bayesian import (
+        BayesianFitResult,
+    )
     from easydiffraction.analysis.categories.minimizer.bumps_dream import (
         BumpsDreamMinimizer,
     )
@@ -148,15 +151,17 @@ def test_dream_minimizer_sampler_and_diagnostics_use_cif_fields():
     minimizer.burn_in_steps = 20
     minimizer.parallel_workers = 0
     minimizer.random_seed = 123
-    minimizer._set_gelman_rubin_max(1.01)
-    minimizer._set_effective_sample_size_min(80)
+    fit_result = BayesianFitResult()
+    fit_result._set_gelman_rubin_max(1.01)
+    fit_result._set_effective_sample_size_min(80)
 
-    cif_text = minimizer.as_cif
+    minimizer_cif_text = minimizer.as_cif
+    fit_result_cif_text = fit_result.as_cif
 
-    assert '_minimizer.sampling_steps 100' in cif_text
-    assert '_minimizer.parallel_workers 0' in cif_text
-    assert '_minimizer.random_seed 123' in cif_text
-    assert '_minimizer.effective_sample_size_min' in cif_text
+    assert '_minimizer.sampling_steps 100' in minimizer_cif_text
+    assert '_minimizer.parallel_workers 0' in minimizer_cif_text
+    assert '_minimizer.random_seed 123' in minimizer_cif_text
+    assert '_fit_result.effective_sample_size_min' in fit_result_cif_text
 
 
 def test_fit_parameter_posteriors_preserve_row_order_from_cif():

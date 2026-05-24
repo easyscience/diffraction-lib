@@ -106,8 +106,8 @@ determined by another category's `type` may omit its own public
 selector. Today this applies only to `analysis.fit_result`, whose class
 is derived from `analysis.minimizer.type` by the
 [`minimizer-input-output-split.md`](minimizer-input-output-split.md)
-ADR. It has no `fit_result.type`, no `fit_result.show_supported()`,
-and no `_fit_result.type` CIF tag.
+ADR. It has no `fit_result.type`, no `fit_result.show_supported()`, and
+no `_fit_result.type` CIF tag.
 
 The owner still owns the swap mechanism (it holds the slot) but the swap
 is _initiated_ from the category through a back-reference.

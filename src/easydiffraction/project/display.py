@@ -8,7 +8,6 @@ from contextlib import nullcontext
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from easydiffraction.core.variable import GenericDescriptorBase
 from easydiffraction.datablocks.experiment.item.base import intensity_category_for
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
@@ -116,14 +115,11 @@ class FitDisplay:
         rows: list[list[str]] = []
         for name in minimizer._setting_descriptor_names:
             descriptor = getattr(minimizer, name)
-            if isinstance(descriptor, GenericDescriptorBase):
-                rows.append([
-                    name,
-                    str(descriptor.value),
-                    descriptor.description or '',
-                ])
-            else:
-                rows.append([name, str(descriptor), ''])
+            rows.append([
+                name,
+                str(descriptor.value),
+                descriptor.description or '',
+            ])
         return rows
 
     def correlations(
