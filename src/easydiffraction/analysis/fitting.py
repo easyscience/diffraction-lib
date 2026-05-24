@@ -218,6 +218,11 @@ class Fitter:
                 use_physical_limits=use_physical_limits,
                 random_seed=random_seed,
             )
+            # Stop the timer and backfill results.fitting_time now so
+            # post-processing projects a real duration into the persisted
+            # categories. The live display is still torn down in the
+            # finally below.
+            self.minimizer._finalize_timing()
             self._postprocess_fit_results(
                 analysis=analysis,
                 experiments=experiments,
