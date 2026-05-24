@@ -5,7 +5,7 @@
 from __future__ import annotations
 
 
-def test_emcee_minimizer_category_defaults_to_serial_parallel_workers():
+def test_emcee_minimizer_category_defaults_to_max_parallel_workers():
     from easydiffraction.analysis.categories.minimizer.emcee import (
         DEFAULT_PARALLEL_WORKERS,
     )
@@ -13,6 +13,6 @@ def test_emcee_minimizer_category_defaults_to_serial_parallel_workers():
 
     minimizer = EmceeMinimizer()
 
-    assert DEFAULT_PARALLEL_WORKERS == 1
-    assert minimizer.parallel_workers.value == 1
-    assert minimizer._native_kwargs()['parallel_workers'] == 1
+    assert DEFAULT_PARALLEL_WORKERS == 0
+    assert minimizer.parallel_workers.value == 0
+    assert minimizer._native_kwargs()['parallel_workers'] == 0

@@ -296,7 +296,7 @@ Mark `[x]` as each step lands.
     native kwargs (see §"Decisions already made" point 3).
   - Class-level defaults for emcee-specific values:
     `sampling_steps=5000`, `burn_in_steps=1000`, `thinning_interval=5`,
-    `population_size=32`, `parallel_workers=1`,
+    `population_size=32`, `parallel_workers=0`,
     `proposal_moves='stretch'`.
   - `__init__` constructs descriptors via the inherited helpers
     (`_sampling_steps_descriptor(default)`, etc. from

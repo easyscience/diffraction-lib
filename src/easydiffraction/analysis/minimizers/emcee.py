@@ -7,6 +7,7 @@ from __future__ import annotations
 import multiprocessing
 import os
 import pickle  # noqa: S403 - used only to test whether multiprocessing can serialize a callable.
+from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -32,7 +33,7 @@ DEFAULT_NSTEPS = 5000
 DEFAULT_NBURN = 1000
 DEFAULT_THIN = 5
 DEFAULT_NWALKERS = 32
-DEFAULT_PARALLEL_WORKERS = 1
+DEFAULT_PARALLEL_WORKERS = 0
 DEFAULT_INITIALIZATION_METHOD = InitializationMethodEnum.BALL
 DEFAULT_PROPOSAL_MOVES = 'stretch'
 MAX_RANDOM_SEED = int(np.iinfo(np.uint32).max)
@@ -49,6 +50,67 @@ SUPPORTED_INITIALIZATION_METHOD_SET = frozenset(SUPPORTED_INITIALIZATION_METHODS
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+
+
+@dataclass(frozen=True, slots=True)
+class _EmceePoolContext:
+    """Resolved emcee pool and log-probability callable."""
+
+    pool: object | None
+    log_prob_fn: Callable[[np.ndarray], float]
+
+
+class _EmceeLogProbability:
+    """Pickle-aware emcee log-probability adapter."""
+
+    def __init__(
+        self,
+        *,
+        parameters: list[object],
+        parameter_names: list[str],
+        objective_function: Callable[[dict[str, object]], object],
+    ) -> None:
+        self._parameter_names = parameter_names
+        self._objective_function = objective_function
+        self._bounds = {
+            name: (float(parameter.fit_min), float(parameter.fit_max))
+            for name, parameter in zip(parameter_names, parameters, strict=True)
+        }
+
+    def __call__(self, theta: np.ndarray) -> float:
+        """Return log posterior for one walker position."""
+        for name, value in zip(self._parameter_names, theta, strict=True):
+            lower_bound, upper_bound = self._bounds[name]
+            if not lower_bound <= float(value) <= upper_bound:
+                return -np.inf
+
+        engine_params = {
+            name: float(value) for name, value in zip(self._parameter_names, theta, strict=True)
+        }
+        try:
+            residuals = np.asarray(self._objective_function(engine_params), dtype=float)
+        except Exception:  # noqa: BLE001 - calculator failures make this proposal invalid.
+            return -np.inf
+        if residuals.size == 0 or not np.all(np.isfinite(residuals)):
+            return -np.inf
+        return -0.5 * float(np.sum(residuals**2))
+
+
+_EMCEE_WORKER_LOG_PROB: _EmceeLogProbability | None = None
+
+
+def _set_emcee_worker_log_prob(log_prob: _EmceeLogProbability | None) -> None:
+    """Set the fork-inherited emcee worker log-probability callable."""
+    global _EMCEE_WORKER_LOG_PROB  # noqa: PLW0603
+    _EMCEE_WORKER_LOG_PROB = log_prob
+
+
+def _emcee_log_prob_worker(theta: np.ndarray) -> float:
+    """Evaluate log probability in an emcee multiprocessing worker."""
+    if _EMCEE_WORKER_LOG_PROB is None:
+        msg = 'emcee worker log-probability callable has not been initialized.'
+        raise RuntimeError(msg)
+    return _EMCEE_WORKER_LOG_PROB(theta)
 
 
 class _EmceeProgressReporter:
@@ -570,12 +632,12 @@ class EmceeMinimizer(MinimizerBase):
             parameter_names=parameter_names,
             objective_function=objective_function,
         )
-        pool = self._build_pool(log_prob)
+        pool_context = self._build_pool_context(log_prob)
         try:
             sampler = self._run_sampler(
                 backend=backend,
-                log_prob=log_prob,
-                pool=pool,
+                log_prob=pool_context.log_prob_fn,
+                pool=pool_context.pool,
                 parameters=parameters,
                 n_parameters=len(parameter_names),
                 random_seed=random_seed,
@@ -597,9 +659,7 @@ class EmceeMinimizer(MinimizerBase):
                 sampler_completed=False,
             )
         finally:
-            if pool is not None:
-                pool.close()
-                pool.join()
+            self._close_pool_context(pool_context)
 
         self.tracker.start_sampler_post_processing()
         return self._build_success_result(
@@ -707,31 +767,13 @@ class EmceeMinimizer(MinimizerBase):
         parameters: list[object],
         parameter_names: list[str],
         objective_function: Callable[[dict[str, object]], object],
-    ) -> Callable[[np.ndarray], float]:
+    ) -> _EmceeLogProbability:
         """Return an emcee log-probability adapter."""
-        bounds = {
-            name: (float(parameter.fit_min), float(parameter.fit_max))
-            for name, parameter in zip(parameter_names, parameters, strict=True)
-        }
-
-        def log_prob(theta: np.ndarray) -> float:
-            for name, value in zip(parameter_names, theta, strict=True):
-                lower_bound, upper_bound = bounds[name]
-                if not lower_bound <= float(value) <= upper_bound:
-                    return -np.inf
-
-            engine_params = {
-                name: float(value) for name, value in zip(parameter_names, theta, strict=True)
-            }
-            try:
-                residuals = np.asarray(objective_function(engine_params), dtype=float)
-            except Exception:  # noqa: BLE001 - calculator failures make this proposal invalid.
-                return -np.inf
-            if residuals.size == 0 or not np.all(np.isfinite(residuals)):
-                return -np.inf
-            return -0.5 * float(np.sum(residuals**2))
-
-        return log_prob
+        return _EmceeLogProbability(
+            parameters=parameters,
+            parameter_names=parameter_names,
+            objective_function=objective_function,
+        )
 
     def _resolved_sidecar_path(self) -> Path:
         """Return the HDF sidecar path required by the emcee backend."""
@@ -786,25 +828,70 @@ class EmceeMinimizer(MinimizerBase):
             )
             raise ValueError(msg)
 
-    def _build_pool(self, log_prob: Callable[[np.ndarray], float]) -> object | None:
-        """Build an emcee map pool for picklable objectives."""
+    def _build_pool_context(self, log_prob: _EmceeLogProbability) -> _EmceePoolContext:
+        """
+        Build an emcee map pool for the configured parallel setting.
+        """
         workers = self.parallel_workers
         if workers == 1:
-            return None
-
-        try:
-            pickle.dumps(log_prob)
-        except (AttributeError, TypeError, pickle.PickleError):
-            self._warn_after_tracking(
-                'emcee parallel evaluation requires a picklable objective; '
-                'falling back to serial execution.'
-            )
-            return None
+            return _EmceePoolContext(pool=None, log_prob_fn=log_prob)
 
         worker_count = os.cpu_count() if workers == 0 else workers
         if worker_count is None or worker_count <= 1:
-            return None
-        return multiprocessing.Pool(worker_count)
+            return _EmceePoolContext(pool=None, log_prob_fn=log_prob)
+
+        if self._can_pickle(log_prob):
+            return _EmceePoolContext(
+                pool=multiprocessing.Pool(worker_count),
+                log_prob_fn=log_prob,
+            )
+
+        if self._fork_context_available():
+            try:
+                _set_emcee_worker_log_prob(log_prob)
+                pool = multiprocessing.get_context('fork').Pool(worker_count)
+            except (OSError, RuntimeError):
+                _set_emcee_worker_log_prob(None)
+            else:
+                return _EmceePoolContext(
+                    pool=pool,
+                    log_prob_fn=_emcee_log_prob_worker,
+                )
+
+        self._warn_after_tracking(
+            'emcee parallel evaluation requires either a picklable objective '
+            'or fork-based multiprocessing; falling back to serial execution.'
+        )
+        return _EmceePoolContext(pool=None, log_prob_fn=log_prob)
+
+    @staticmethod
+    def _close_pool_context(pool_context: _EmceePoolContext) -> None:
+        """
+        Close a resolved emcee pool and clear inherited worker state.
+        """
+        pool = pool_context.pool
+        try:
+            if pool is not None:
+                pool.close()
+                pool.join()
+        finally:
+            _set_emcee_worker_log_prob(None)
+
+    @staticmethod
+    def _can_pickle(value: object) -> bool:
+        """
+        Return whether a value can be serialized by multiprocessing.
+        """
+        try:
+            pickle.dumps(value)
+        except (AttributeError, TypeError, pickle.PickleError):
+            return False
+        return True
+
+    @staticmethod
+    def _fork_context_available() -> bool:
+        """Return whether fork-based multiprocessing is available."""
+        return os.name != 'nt' and 'fork' in multiprocessing.get_all_start_methods()
 
     @staticmethod
     def _resolve_moves(proposal_moves: str) -> object:
