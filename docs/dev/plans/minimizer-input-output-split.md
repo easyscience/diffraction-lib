@@ -249,7 +249,7 @@ Mark `[x]` as each step lands.
       parity with the minimizer hierarchy. Tests deferred to Phase 2.
       Commit: `Add LeastSquaresFitResult class`
 
-- [ ] **P1.3 — Add `BayesianFitResult` class.** New file
+- [x] **P1.3 — Add `BayesianFitResult` class.** New file
       `src/easydiffraction/analysis/categories/fit_result/bayesian.py`.
       `BayesianFitResult(FitResultBase)` declares:
       `point_estimate_name`, `sampler_completed`,
