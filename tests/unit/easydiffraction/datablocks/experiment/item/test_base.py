@@ -31,7 +31,7 @@ def test_pd_experiment_peak_profile_type_switch(capsys):
     ex = ConcretePd(name='ex1', type=et)
     # valid switch using tag string
     ex.peak.type = 'pseudo-voigt'
-    assert ex.peak.type == 'pseudo-voigt'
+    assert ex.peak.type == 'cwl-pseudo-voigt'
     # invalid string should warn and keep previous
     ex.peak.type = 'non-existent'
     captured = capsys.readouterr().out
@@ -61,7 +61,7 @@ def test_pd_experiment_set_peak_profile_type_silent(capsys):
     ex._set_peak_profile_type('pseudo-voigt + empirical asymmetry')
 
     # Profile type was switched
-    assert ex.peak.type == 'pseudo-voigt + empirical asymmetry'
+    assert ex.peak.type == 'cwl-pseudo-voigt-empirical-asymmetry'
     assert ex.peak.__class__.__name__ == 'CwlPseudoVoigtEmpiricalAsymmetry'
 
     # No console output was emitted
@@ -125,7 +125,7 @@ def test_pd_experiment_restore_switchable_types_switches_peak():
 
     ex._restore_switchable_types(block)
 
-    assert ex.peak.type == 'pseudo-voigt + empirical asymmetry'
+    assert ex.peak.type == 'cwl-pseudo-voigt-empirical-asymmetry'
     assert ex.peak.__class__.__name__ == 'CwlPseudoVoigtEmpiricalAsymmetry'
 
 

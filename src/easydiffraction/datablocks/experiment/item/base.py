@@ -10,9 +10,7 @@ from typing import Any
 
 from easydiffraction.core.datablock import DatablockItem
 from easydiffraction.datablocks.experiment.categories.background.factory import BackgroundFactory
-from easydiffraction.datablocks.experiment.categories.calculator import (
-    CalculatorCategoryFactory,
-)
+from easydiffraction.datablocks.experiment.categories.calculator import CalculatorCategoryFactory
 from easydiffraction.datablocks.experiment.categories.data.factory import DataFactory
 from easydiffraction.datablocks.experiment.categories.diffrn.factory import DiffrnFactory
 from easydiffraction.datablocks.experiment.categories.excluded_regions.factory import (
@@ -246,8 +244,8 @@ class ExperimentBase(DatablockItem):
         Called by the factory immediately after the experiment object is
         created and before any category parameters are loaded from CIF.
         Subclasses with switchable categories must override this method
-        and call their private swap hook for each category
-        whose active implementation is identified by a CIF type tag.
+        and call their private swap hook for each category whose active
+        implementation is identified by a CIF type tag.
 
         Parameters
         ----------
@@ -648,8 +646,8 @@ class PdExperimentBase(ExperimentBase):
         """
         Restore switchable category types for powder experiments.
 
-        Reads ``_peak.type`` from the CIF block and switches to
-        the matching peak implementation before category parameters are
+        Reads ``_peak.type`` from the CIF block and switches to the
+        matching peak implementation before category parameters are
         loaded, ensuring profile-specific descriptors are present.
 
         Parameters

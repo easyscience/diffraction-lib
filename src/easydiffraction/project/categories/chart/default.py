@@ -75,8 +75,8 @@ class Chart(CategoryItem, SwitchableCategoryBase):
             self._plotter._set_project(owner)
         return self._plotter
 
+    @staticmethod
     def _supported_types(
-        self,
         filters: dict[str, object],
     ) -> list[tuple[str, str]]:
         """Return supported chart renderer backends."""

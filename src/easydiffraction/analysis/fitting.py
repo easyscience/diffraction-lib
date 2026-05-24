@@ -219,7 +219,7 @@ class Fitter:
                 random_seed=random_seed,
             )
             # Stop the timer and backfill results.fitting_time now so
-            # post-processing projects a real duration into the persisted
+            # post-processing projects a real duration into persisted
             # categories. The live display is still torn down in the
             # finally below.
             self.minimizer._finalize_timing()

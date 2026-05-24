@@ -15,10 +15,11 @@ source layout.
 ### F1 — The proposed base cannot cover `background`
 
 The ADR's scope includes `background` as an in-scope switchable category
-(`../accepted/switchable-category-owned-selectors.md:225`), but the proposed
-contract is a `SwitchableCategoryBase(CategoryItem)`
-(`../accepted/switchable-category-owned-selectors.md:141`). Current backgrounds are
-not `CategoryItem`s; `BackgroundBase` extends `CategoryCollection`
+(`../accepted/switchable-category-owned-selectors.md:225`), but the
+proposed contract is a `SwitchableCategoryBase(CategoryItem)`
+(`../accepted/switchable-category-owned-selectors.md:141`). Current
+backgrounds are not `CategoryItem`s; `BackgroundBase` extends
+`CategoryCollection`
 (`src/easydiffraction/datablocks/experiment/categories/background/base.py:11`).
 
 That makes the mechanism incomplete for one of the named migration
@@ -32,9 +33,9 @@ exception.
 ### F2 — `calculation` is incorrectly included as an instance-swap selector
 
 Section 6 lists `calculation` / `calculator` as in scope
-(`../accepted/switchable-category-owned-selectors.md:225`), but the accepted
-selector-family ADR classifies `calculation.calculator_type` as a
-backend selector, not a switchable-category selector
+(`../accepted/switchable-category-owned-selectors.md:225`), but the
+accepted selector-family ADR classifies `calculation.calculator_type` as
+a backend selector, not a switchable-category selector
 (`../accepted/selector-families.md:27`). The code matches that: the
 `Calculation` category has one factory tag (`default`) and exposes a
 `calculator_type` descriptor inside the category
@@ -44,44 +45,47 @@ while `ExperimentBase._set_calculator_type()` swaps the live calculator
 backend, not the `calculation` category instance
 (`src/easydiffraction/datablocks/experiment/item/base.py:192`).
 
-If this ADR leaves `calculation` in scope, implementers will conflate two
-selector families and may rename a backend selector to `calculation.type`
-without actually moving an instance-swap category. The ADR should remove
-`calculation` from scope, or explicitly amend `selector-families.md` and
-define how backend selectors differ from this new category-owned
-contract.
+If this ADR leaves `calculation` in scope, implementers will conflate
+two selector families and may rename a backend selector to
+`calculation.type` without actually moving an instance-swap category.
+The ADR should remove `calculation` from scope, or explicitly amend
+`selector-families.md` and define how backend selectors differ from this
+new category-owned contract.
 
 ### F3 — `show_supported()` cannot mark the current type as written
 
 The public contract requires `category.show_supported()` to mark the
-active type with `'*'` (`../accepted/switchable-category-owned-selectors.md:94`),
-but the implementation sketch makes it a `@classmethod`
-(`../accepted/switchable-category-owned-selectors.md:169`). A class method has no
-current instance and no owner context, so it cannot reliably know the
-active row.
+active type with `'*'`
+(`../accepted/switchable-category-owned-selectors.md:94`), but the
+implementation sketch makes it a `@classmethod`
+(`../accepted/switchable-category-owned-selectors.md:169`). A class
+method has no current instance and no owner context, so it cannot
+reliably know the active row.
 
 The sketch also calls `cls._factory.show_supported(cls.__mro__[1])`
 (`../accepted/switchable-category-owned-selectors.md:172`), but
 `FactoryBase.show_supported()` accepts only keyword filters after `*`
-(`src/easydiffraction/core/factory.py:228`). That call would raise before
-printing anything. Even if fixed to call the factory without a positional
-argument, owner context is still required for filtered categories:
-`show_peak_profile_types()` filters by calculator, scattering type, and
-beam mode, and applies context-local aliases
+(`src/easydiffraction/core/factory.py:228`). That call would raise
+before printing anything. Even if fixed to call the factory without a
+positional argument, owner context is still required for filtered
+categories: `show_peak_profile_types()` filters by calculator,
+scattering type, and beam mode, and applies context-local aliases
 (`src/easydiffraction/datablocks/experiment/item/base.py:561`), while
 `show_background_types()` filters by calculator
 (`src/easydiffraction/datablocks/experiment/item/bragg_pd.py:225`).
 
 The ADR needs an instance-level `show_supported()` contract that obtains
-current type and support filters from the owner, or an owner-side private
-hook that the category delegates to.
+current type and support filters from the owner, or an owner-side
+private hook that the category delegates to.
 
 ### F4 — `type` is not persisted by the proposed mechanism
 
 The ADR says each switchable category persists exactly one identity tag,
-`_<cat>.type` (`../accepted/switchable-category-owned-selectors.md:111`), but the
+`_<cat>.type`
+(`../accepted/switchable-category-owned-selectors.md:111`), but the
 mechanism defines `type` as a computed string property over
-`type_info.tag` (`../accepted/switchable-category-owned-selectors.md:155`). Current
+`type_info.tag`
+(`../accepted/switchable-category-owned-selectors.md:155`). Current
 generic CIF serialization emits only descriptor parameters:
 `CategoryItem.parameters` returns `GenericDescriptorBase` instances
 (`src/easydiffraction/core/category.py:70`), and
@@ -89,20 +93,21 @@ generic CIF serialization emits only descriptor parameters:
 (`src/easydiffraction/io/cif/serialize.py:170`).
 
 As written, `_minimizer.type` and other `_<cat>.type` tags will not be
-emitted or read by the existing generic machinery. The ADR should specify
-whether `type` is a real descriptor with a `CifHandler`, a computed
-property handled by custom CIF hooks, or a category/collection-specific
-serialization exception.
+emitted or read by the existing generic machinery. The ADR should
+specify whether `type` is a real descriptor with a `CifHandler`, a
+computed property handled by custom CIF hooks, or a
+category/collection-specific serialization exception.
 
 ### F5 — The peak CIF tag decision is internally inconsistent
 
 The ADR first says the replacement for switchable-category identity is
-uniformly `_<cat>.type` (`../accepted/switchable-category-owned-selectors.md:111`,
-`../accepted/switchable-category-owned-selectors.md:119`), but the footnote says
-peak is already collapsed as `_peak.profile_type`
-(`../accepted/switchable-category-owned-selectors.md:126`). The current code indeed
-persists peak identity through the `profile_type` descriptor and
-`_peak.profile_type` tag
+uniformly `_<cat>.type`
+(`../accepted/switchable-category-owned-selectors.md:111`,
+`../accepted/switchable-category-owned-selectors.md:119`), but the
+footnote says peak is already collapsed as `_peak.profile_type`
+(`../accepted/switchable-category-owned-selectors.md:126`). The current
+code indeed persists peak identity through the `profile_type` descriptor
+and `_peak.profile_type` tag
 (`src/easydiffraction/datablocks/experiment/categories/peak/base.py:23`).
 
 The implementing plan cannot tell whether peak should keep
@@ -113,12 +118,12 @@ is accepted.
 
 ### F6 — `optimizer_name` and `method_name` are not just selector echoes
 
-The ADR removes `_minimizer.optimizer_name` and
-`_minimizer.method_name` as identity echoes
+The ADR removes `_minimizer.optimizer_name` and `_minimizer.method_name`
+as identity echoes
 (`../accepted/switchable-category-owned-selectors.md:130`,
-`../accepted/switchable-category-owned-selectors.md:379`). That conflicts with the
-accepted analysis fit-state ADR, which treats them as persisted
-deterministic optimizer metadata
+`../accepted/switchable-category-owned-selectors.md:379`). That
+conflicts with the accepted analysis fit-state ADR, which treats them as
+persisted deterministic optimizer metadata
 (`../accepted/analysis-cif-fit-state.md:93`). The current code stores
 them from the live backend after a fit
 (`src/easydiffraction/analysis/analysis.py:1387`) and uses them when
@@ -137,12 +142,12 @@ restoring `FitResults.optimizer_name` and `FitResults.method_name`.
 
 Section 5 documents stale references as an orphan-editing problem and
 declares guarding out of scope
-(`../accepted/switchable-category-owned-selectors.md:212`). The proposed swap body
-sets the new instance's parent and replaces the owner slot
-(`../accepted/switchable-category-owned-selectors.md:180`), but it never detaches the
-old instance. Current guarded assignment automatically gives nested
-objects a `_parent` reference when they are assigned to private owner
-attributes (`src/easydiffraction/core/guard.py:77`).
+(`../accepted/switchable-category-owned-selectors.md:212`). The proposed
+swap body sets the new instance's parent and replaces the owner slot
+(`../accepted/switchable-category-owned-selectors.md:180`), but it never
+detaches the old instance. Current guarded assignment automatically
+gives nested objects a `_parent` reference when they are assigned to
+private owner attributes (`src/easydiffraction/core/guard.py:77`).
 
 After this sequence:
 
@@ -160,6 +165,6 @@ that `self` is still the owner's live slot before mutating the owner.
 
 ## Checks Skipped
 
-Per reviewer instructions, no tests, lint, build, or `pixi` commands were
-run. The next implementer should run the normal verification sequence
-after the ADR and implementation plan are updated.
+Per reviewer instructions, no tests, lint, build, or `pixi` commands
+were run. The next implementer should run the normal verification
+sequence after the ADR and implementation plan are updated.

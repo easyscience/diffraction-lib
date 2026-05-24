@@ -103,12 +103,10 @@ def test_bragg_pd_experiment_disables_refln_for_crysfml_and_restores_it_for_crys
 
     assert isinstance(experiment.refln, PowderCwlReflnData)
 
-    experiment._calculator_type = CalculatorEnum.CRYSFML.value
-    experiment._sync_refln_category()
+    experiment.calculator.type = CalculatorEnum.CRYSFML.value
     assert experiment.refln is None
 
-    experiment._calculator_type = CalculatorEnum.CRYSPY.value
-    experiment._sync_refln_category()
+    experiment.calculator.type = CalculatorEnum.CRYSPY.value
     assert isinstance(experiment.refln, PowderCwlReflnData)
 
 

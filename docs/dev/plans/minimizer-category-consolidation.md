@@ -811,7 +811,6 @@ F1, F4, F7, F9, F10 cover the deferred items.
     `Default LSQ result descriptors to None for clean round-trip`
 
 - [x] **P2.10 — Re-run Phase-2 verification after P2.6–P2.9.** Results:
-
   - `pixi run unit-tests` → 1091 passed.
   - `pixi run integration-tests` → 168 passed.
   - `pixi run script-tests` → 23 passed.
@@ -820,9 +819,9 @@ F1, F4, F7, F9, F10 cover the deferred items.
     this PR; mentioned per the
     [`.github/copilot-instructions.md`](../../../.github/copilot-instructions.md)
     → **Commits** rule on unrelated dirty files).
-  - `pixi run fix` reformatted five markdown files (prettier);
-    committed in a separate `Reformat review-8 markdown files with
-    prettier` commit.
+  - `pixi run fix` reformatted five markdown files (prettier); committed
+    in a separate `Reformat review-8 markdown files with prettier`
+    commit.
 
 ## Suggested Pull Request
 

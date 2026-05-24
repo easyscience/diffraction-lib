@@ -504,7 +504,8 @@ class Analysis(
         self._fit_result._parent = self
         self._fit_parameter_correlations._parent = self
 
-    def _supported_filters_for(self, category: object) -> dict[str, object]:
+    @staticmethod
+    def _supported_filters_for(category: object) -> dict[str, object]:
         """Return owner context filters for a switchable category."""
         del category
         return {}

@@ -28,8 +28,8 @@ The current public selector contract is:
 - the owner exposes the category object only, for example
   `analysis.minimizer` or `experiment.background`
 - the category exposes the writable `type` property
-- the category exposes `show_supported()`, with the active row marked
-  by `*`
+- the category exposes `show_supported()`, with the active row marked by
+  `*`
 - fixed-at-creation categories and single-implementation categories do
   not expose a public selector
 

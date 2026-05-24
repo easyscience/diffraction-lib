@@ -37,26 +37,24 @@ Three problems have accumulated since that ADR landed:
    background, peak, etc.
 
 2. **CIF duplication and inconsistency.** The owner-level convention
-   persists a tag like `_fitting.minimizer_type = 'bumps (lm)'`
-   _and_ the swapped category records its identity again — e.g.
+   persists a tag like `_fitting.minimizer_type = 'bumps (lm)'` _and_
+   the swapped category records its identity again — e.g.
    `_minimizer.optimizer_name = 'bumps (lm)'`. The two values are by
    construction equal; one of them is dead weight in every saved
    project. The codebase is also internally inconsistent in how it
    persists the active type across switchable categories:
    `_peak.profile_type` is an in-category identity tag (so picking a
    peak profile already lives entirely inside the `_peak.*` block);
-   `_background.*` has no identity tag at all today — the active
-   type is inferred at load time from which `_pd_background.*` loop
-   columns are present;
-   `_fitting.minimizer_type` lives in the owner-level `_fitting.*`
-   block separately from the `_minimizer.*` block that the swapped
-   category writes;
-   `_calculation.calculator_type` lives inside its category block
-   but the descriptor name awkwardly repeats the noun
+   `_background.*` has no identity tag at all today — the active type is
+   inferred at load time from which `_pd_background.*` loop columns are
+   present; `_fitting.minimizer_type` lives in the owner-level
+   `_fitting.*` block separately from the `_minimizer.*` block that the
+   swapped category writes; `_calculation.calculator_type` lives inside
+   its category block but the descriptor name awkwardly repeats the noun
    ("calculator") instead of using a uniform `.type` selector.
    [`python-cif-category-correspondence.md`](../suggestions/python-cif-category-correspondence.md)
-   notes the inconsistency under §"Owner-level switchable selectors"
-   and tags it for a future ADR.
+   notes the inconsistency under §"Owner-level switchable selectors" and
+   tags it for a future ADR.
 
 3. **Cross-cutting inconsistency.** Issue [#76](../../issues/open.md)
    ("Consistent `_type` suffix in switchable-category API names")
@@ -81,11 +79,10 @@ merged, the path is clear to amend the convention now.
 
 ### 1. The category owns its selector
 
-Every in-scope selector category — across all three mechanism
-families recognised by
-[`selector-families.md`](selector-families.md) (A
-switchable categories, B backend selectors, C active-sibling
-selectors) — exposes the same writable surface:
+Every in-scope selector category — across all three mechanism families
+recognised by [`selector-families.md`](selector-families.md) (A
+switchable categories, B backend selectors, C active-sibling selectors)
+— exposes the same writable surface:
 
 ```python
 category.type             # writable property (str)
@@ -93,20 +90,19 @@ category.show_supported() # one method, current marked with '*'
 ```
 
 That is the entire public selector surface. Nothing else. Setting
-`category.type = 'X'` delegates to the owner's `_swap_<name>` hook;
-what happens behind that hook depends on the family — the owner
-replaces the category instance (Family A), rebinds the live engine
-behind a singleton category (Family B), or activates / deactivates
-sibling categories (Family C). The user-facing API does not change
-with the mechanism. See §6 for the full scope and the mechanism-vs-
-surface framing.
+`category.type = 'X'` delegates to the owner's `_swap_<name>` hook; what
+happens behind that hook depends on the family — the owner replaces the
+category instance (Family A), rebinds the live engine behind a singleton
+category (Family B), or activates / deactivates sibling categories
+(Family C). The user-facing API does not change with the mechanism. See
+§6 for the full scope and the mechanism-vs- surface framing.
 
 Owner-level shims are removed (no `<owner>.<cat>_type`, no
 `show_supported_<cat>_types()`, no `show_current_<cat>_type()`). The
 owner exposes only the category itself, e.g. `analysis.minimizer`.
 
-The owner still owns the swap mechanism (it holds the slot) but the
-swap is _initiated_ from the category through a back-reference.
+The owner still owns the swap mechanism (it holds the slot) but the swap
+is _initiated_ from the category through a back-reference.
 
 ### 2. `show_current()` is intentionally omitted
 
@@ -127,51 +123,49 @@ step with the rest of this ADR.
 
 ### 3. CIF mapping is collapsed to one `_<cat>.type` tag per category
 
-Every selector — across all three families that present a writable
-type surface — persists exactly one identity tag, `_<cat>.type`.
-Owner-level selector tags are dropped. Per-category identity-echo
-tags are renamed to the uniform spelling. Three CIF block names are
-new (`_chart`, `_table`, `_calculator`) because the `Rendering`
-category is split and the `Calculation` category is renamed
-(see §8); one is new (`_fitting_mode`) because the active-sibling
-selector is promoted to its own category (also §8).
+Every selector — across all three families that present a writable type
+surface — persists exactly one identity tag, `_<cat>.type`. Owner-level
+selector tags are dropped. Per-category identity-echo tags are renamed
+to the uniform spelling. Three CIF block names are new (`_chart`,
+`_table`, `_calculator`) because the `Rendering` category is split and
+the `Calculation` category is renamed (see §8); one is new
+(`_fitting_mode`) because the active-sibling selector is promoted to its
+own category (also §8).
 
-| Today                                    | Replacement          | Mechanism family ¹     |
-| ---------------------------------------- | -------------------- | ---------------------- |
-| `_fitting.minimizer_type`                | `_minimizer.type`    | A                      |
-| `_peak.profile_type`                     | `_peak.type`         | A                      |
-| (none — only `_pd_background.*` loop)    | `_background.type`   | A                      |
-| (none — only active-class fields)        | `_extinction.type`   | A                      |
-| `_calculation.calculator_type`           | `_calculator.type`   | B (and §8 rename)      |
-| `_rendering.chart_engine`                | `_chart.type`        | B (and §8 split)       |
-| `_rendering.table_engine`                | `_table.type`        | B (and §8 split)       |
-| `_fitting.mode_type`                     | `_fitting_mode.type` | C (and §8 promote)     |
+| Today                                 | Replacement          | Mechanism family ¹ |
+| ------------------------------------- | -------------------- | ------------------ |
+| `_fitting.minimizer_type`             | `_minimizer.type`    | A                  |
+| `_peak.profile_type`                  | `_peak.type`         | A                  |
+| (none — only `_pd_background.*` loop) | `_background.type`   | A                  |
+| (none — only active-class fields)     | `_extinction.type`   | A                  |
+| `_calculation.calculator_type`        | `_calculator.type`   | B (and §8 rename)  |
+| `_rendering.chart_engine`             | `_chart.type`        | B (and §8 split)   |
+| `_rendering.table_engine`             | `_table.type`        | B (and §8 split)   |
+| `_fitting.mode_type`                  | `_fitting_mode.type` | C (and §8 promote) |
 
-¹ Mechanism family per
-[`selector-families.md`](selector-families.md): A swaps
-the category instance, B swaps the live engine behind a singleton
+¹ Mechanism family per [`selector-families.md`](selector-families.md): A
+swaps the category instance, B swaps the live engine behind a singleton
 category, C activates or deactivates sibling categories. The user-
 facing CIF and Python surface is **identical** across all three.
 
-After the consolidation: the `_fitting.*` and `_rendering.*` CIF
-blocks **disappear entirely**. `_fitting` was a heterogeneous bag
-holding two unrelated selectors; `_rendering` did the same. Both
-are split into single-purpose blocks aligned with the new
-`_<cat>.type` rule.
+After the consolidation: the `_fitting.*` and `_rendering.*` CIF blocks
+**disappear entirely**. `_fitting` was a heterogeneous bag holding two
+unrelated selectors; `_rendering` did the same. Both are split into
+single-purpose blocks aligned with the new `_<cat>.type` rule.
 
 `_minimizer.optimizer_name` and `_minimizer.method_name` are also
 **dropped**. Inspecting
 [`src/easydiffraction/analysis/minimizers/lmfit_leastsq.py`](../../../src/easydiffraction/analysis/minimizers/lmfit_leastsq.py)
-(and the matching `bumps_lm.py`, `dfols.py`, …) shows that
-`name` defaults to the enum tag itself and `method` to a per-engine
+(and the matching `bumps_lm.py`, `dfols.py`, …) shows that `name`
+defaults to the enum tag itself and `method` to a per-engine
 module-level constant. The public API never overrides them at
-construction. So the persisted values are deterministic functions
-of the tag, not independent observations — exactly the duplication
-that motivated the ADR.
+construction. So the persisted values are deterministic functions of the
+tag, not independent observations — exactly the duplication that
+motivated the ADR.
 
-The runtime `FitResults.optimizer_name` and `FitResults.method_name`
-are derived on restore from a class-level metadata dict declared on
-each concrete minimizer category:
+The runtime `FitResults.optimizer_name` and `FitResults.method_name` are
+derived on restore from a class-level metadata dict declared on each
+concrete minimizer category:
 
 ```python
 class LmfitLeastsqMinimizer(LeastSquaresMinimizerBase):
@@ -186,14 +180,13 @@ class LmfitLeastsqMinimizer(LeastSquaresMinimizerBase):
 ```
 
 Restore reads `type(self.minimizer)._engine_metadata` — no engine
-instance construction is needed, and the engine modules themselves
-do not need to grow class-level mirrors of their module-level
-`DEFAULT_METHOD` constants. The dict lives on the category class
-where `type_info.description` already lives, keeping all per-tag
-metadata in one place.
-[`analysis-cif-fit-state.md`](analysis-cif-fit-state.md)
-is amended to drop these two fields from the persisted projection
-and to point at the class-level dict as the new restore source.
+instance construction is needed, and the engine modules themselves do
+not need to grow class-level mirrors of their module-level
+`DEFAULT_METHOD` constants. The dict lives on the category class where
+`type_info.description` already lives, keeping all per-tag metadata in
+one place. [`analysis-cif-fit-state.md`](analysis-cif-fit-state.md) is
+amended to drop these two fields from the persisted projection and to
+point at the class-level dict as the new restore source.
 
 ### 4. Mechanism: behavior-only mixin + parent-side swap hook
 
@@ -306,10 +299,10 @@ class SwitchableCategoryBase:
 
 #### Three supported-type shapes
 
-The mixin's `_supported_types()` is abstract because the project
-hosts three different backings for switchable categories. Each
-concrete base picks the shape that matches its backing — two or
-three lines, no abstraction in the mixin itself.
+The mixin's `_supported_types()` is abstract because the project hosts
+three different backings for switchable categories. Each concrete base
+picks the shape that matches its backing — two or three lines, no
+abstraction in the mixin itself.
 
 ```python
 # Shape 1 — domain factories (FactoryBase API):
@@ -344,18 +337,18 @@ class FittingModeBase(CategoryItem, SwitchableCategoryBase):
 ```
 
 The five Shape-1 categories share an identical body; if duplication
-becomes a problem in implementation, factor it into a small base
-helper. The two Shape-2 categories also share an identical body.
-Shape 3 has exactly one user. No upstream changes to factories or
-enums are required.
+becomes a problem in implementation, factor it into a small base helper.
+The two Shape-2 categories also share an identical body. Shape 3 has
+exactly one user. No upstream changes to factories or enums are
+required.
 
 #### Aliases
 
-Categories with a context-local alias system (currently `peak`
-only) override `_canonicalize()` to resolve user-supplied aliases
-to canonical factory tags. The setter applies canonicalization
-before delegating to the owner's swap hook, so the underlying
-descriptor and the persisted CIF tag are always canonical:
+Categories with a context-local alias system (currently `peak` only)
+override `_canonicalize()` to resolve user-supplied aliases to canonical
+factory tags. The setter applies canonicalization before delegating to
+the owner's swap hook, so the underlying descriptor and the persisted
+CIF tag are always canonical:
 
 ```python
 class PeakBase(CategoryItem, SwitchableCategoryBase):
@@ -364,11 +357,10 @@ class PeakBase(CategoryItem, SwitchableCategoryBase):
         return _canonicalize_peak_profile_type(value, beam_mode)
 ```
 
-`show_supported()` defaults to two-column rendering (tag,
-description). Categories that want to show aliases alongside
-canonical tags (peak) override `show_supported()` to add a third
-column; the per-category override pattern is the same as the
-existing
+`show_supported()` defaults to two-column rendering (tag, description).
+Categories that want to show aliases alongside canonical tags (peak)
+override `show_supported()` to add a third column; the per-category
+override pattern is the same as the existing
 [`base.show_peak_profile_types()`](../../../src/easydiffraction/datablocks/experiment/item/base.py)
 implementation, just moved onto the category.
 
@@ -379,41 +371,39 @@ membership validator over the factory's supported tags. The descriptor
 is what serializes; the property is the user-facing writable hook with
 the staleness checks.
 
-For `CategoryItem` substrates (minimizer, peak, extinction,
-calculator, chart, table, fitting_mode) the generic CIF emit/read
-path
+For `CategoryItem` substrates (minimizer, peak, extinction, calculator,
+chart, table, fitting_mode) the generic CIF emit/read path
 [`io/cif/serialize.py:170`](../../../src/easydiffraction/io/cif/serialize.py)
 picks the descriptor up by name automatically — no custom hook is
 needed. For the `CategoryCollection` substrate (background only),
 [`category.py:230`](../../../src/easydiffraction/core/category.py)'s
 `parameters` returns only loop-item parameters and
 [`io/cif/serialize.py:244`](../../../src/easydiffraction/io/cif/serialize.py)
-writes only the loop, so a collection-level `_type` descriptor
-needs a small additional path: the writer emits the scalar tag
-above the loop, and the reader peeks the scalar before iterating
-items. This is a **one-time generalization of the collection
-serializer** to support collection-level scalar descriptors that
-sit alongside the loop; the change is reusable by any future
-collection-shaped switchable.
+writes only the loop, so a collection-level `_type` descriptor needs a
+small additional path: the writer emits the scalar tag above the loop,
+and the reader peeks the scalar before iterating items. This is a
+**one-time generalization of the collection serializer** to support
+collection-level scalar descriptors that sit alongside the loop; the
+change is reusable by any future collection-shaped switchable.
 
-CIF format note. The CIF specification allows scalar tags and loop
-tags to share a category prefix in the same block as long as no
-individual tag is duplicated; gemmi handles this correctly (verified
-empirically by reading a `_background.type chebyshev` scalar
-alongside a `_background.Chebyshev_order` / `_background.Chebyshev_coef`
-loop in the same block — see Reply 2 F1 for the test script). The
-collection-shaped `background` row of the catalog therefore persists
-the scalar selector on `_background.type` while the existing loop
-columns stay on their current `_pd_background.*` prefix (IUCr pd_CIF
-convention); the Python `BackgroundBase` collection owns both CIF
-prefixes — one for its scalar selector, one for its row data.
+CIF format note. The CIF specification allows scalar tags and loop tags
+to share a category prefix in the same block as long as no individual
+tag is duplicated; gemmi handles this correctly (verified empirically by
+reading a `_background.type chebyshev` scalar alongside a
+`_background.Chebyshev_order` / `_background.Chebyshev_coef` loop in the
+same block — see Reply 2 F1 for the test script). The collection-shaped
+`background` row of the catalog therefore persists the scalar selector
+on `_background.type` while the existing loop columns stay on their
+current `_pd_background.*` prefix (IUCr pd_CIF convention); the Python
+`BackgroundBase` collection owns both CIF prefixes — one for its scalar
+selector, one for its row data.
 
 The owner provides two private hooks per switchable category. First, a
 `_swap_<name>` method that performs the swap and **detaches the old
 instance** before installing the new one, so a stale reference cannot
 accidentally re-trigger another swap. Second, a single
-`_supported_filters_for(category)` dispatch that returns the filter
-dict for any of the owner's categories:
+`_supported_filters_for(category)` dispatch that returns the filter dict
+for any of the owner's categories:
 
 ```python
 class Analysis:
@@ -454,19 +444,20 @@ class ExperimentBase:
 The existing owner-level `show_<cat>_types()` methods
 ([`bragg_pd.show_background_types()`](../../../src/easydiffraction/datablocks/experiment/item/bragg_pd.py),
 [`base.show_peak_profile_types()`](../../../src/easydiffraction/datablocks/experiment/item/base.py),
-`Calculation.show_calculator_types()`, `Analysis.show_supported_minimizer_types()`,
-…) are **deleted**. The mixin's `show_supported()` reproduces the same
-`['*', tag, description]` table shape that all of them produce today,
-so the user-facing output is unchanged; only the entry point moves
-from the owner onto the category. Owners contribute only the filter
-dict via `_supported_filters_for(category)`.
+`Calculation.show_calculator_types()`,
+`Analysis.show_supported_minimizer_types()`, …) are **deleted**. The
+mixin's `show_supported()` reproduces the same `['*', tag, description]`
+table shape that all of them produce today, so the user-facing output is
+unchanged; only the entry point moves from the owner onto the category.
+Owners contribute only the filter dict via
+`_supported_filters_for(category)`.
 
 The Family-B swap hooks (e.g. `Experiment._swap_calculator`,
-`Project._swap_chart`, `Project._swap_table`) follow the same shape
-but rebind the live engine rather than the category instance. The
-Family-C swap hook (`Analysis._swap_fitting_mode`) performs the
-existing sibling-activation logic. The mixin does not care which
-mechanism the owner uses; it only routes the writable surface.
+`Project._swap_chart`, `Project._swap_table`) follow the same shape but
+rebind the live engine rather than the category instance. The Family-C
+swap hook (`Analysis._swap_fitting_mode`) performs the existing
+sibling-activation logic. The mixin does not care which mechanism the
+owner uses; it only routes the writable surface.
 
 CIF read path becomes:
 
@@ -513,13 +504,13 @@ recorded as a follow-up but is not part of this ADR.
 
 ### 6. Scope: every selector that presents a writable type surface
 
-This ADR applies to every selector whose public Python surface is "set
-a type / pick from a supported list", regardless of what happens
-behind the setter. Three mechanism families per
-[`selector-families.md`](selector-families.md) all
-present the **same** writable `category.type` surface and the same
-`category.show_supported()` API; the mechanism differs only in what
-the owner's `_swap_<name>` hook does behind that surface.
+This ADR applies to every selector whose public Python surface is "set a
+type / pick from a supported list", regardless of what happens behind
+the setter. Three mechanism families per
+[`selector-families.md`](selector-families.md) all present the **same**
+writable `category.type` surface and the same
+`category.show_supported()` API; the mechanism differs only in what the
+owner's `_swap_<name>` hook does behind that surface.
 
 **In scope:**
 
@@ -528,25 +519,24 @@ the owner's `_swap_<name>` hook does behind that surface.
   `extinction`. Owner's `_swap_<name>` replaces the category instance
   via the matching factory.
 - **Family B — backend selectors:** `calculator` (today the
-  awkwardly-named `experiment.calculation.calculator_type`; the
-  Python class `Calculation` is renamed to `Calculator` and the
-  category attribute moves from `experiment.calculation` to
-  `experiment.calculator` — see §8c), `chart` and `table` (split
-  out of the current `rendering` category — see §8a). Owner's
-  `_swap_<name>` keeps the category singleton and rebinds the live
-  engine instead. The user-facing API surface is identical to
-  Family A.
-- **Family C — active-sibling selector:** `fitting_mode` (today the
-  bare `analysis.fitting_mode_type` descriptor; promoted to its own
-  small `FittingMode` category — see §8). Owner's `_swap_<name>`
-  activates / deactivates sibling categories (`joint_fit` /
-  `sequential_fit` / `sequential_fit_extract`) based on the new
-  value. The user-facing API surface is identical to Family A.
+  awkwardly-named `experiment.calculation.calculator_type`; the Python
+  class `Calculation` is renamed to `Calculator` and the category
+  attribute moves from `experiment.calculation` to
+  `experiment.calculator` — see §8c), `chart` and `table` (split out of
+  the current `rendering` category — see §8a). Owner's `_swap_<name>`
+  keeps the category singleton and rebinds the live engine instead. The
+  user-facing API surface is identical to Family A.
+- **Family C — active-sibling selector:** `fitting_mode` (today the bare
+  `analysis.fitting_mode_type` descriptor; promoted to its own small
+  `FittingMode` category — see §8). Owner's `_swap_<name>` activates /
+  deactivates sibling categories (`joint_fit` / `sequential_fit` /
+  `sequential_fit_extract`) based on the new value. The user-facing API
+  surface is identical to Family A.
 
 The categories with a single factory tag and no second concrete type
-registered today (e.g. `aliases`, `constraints`, `cell`,
-`space_group`, …) are not in scope. They inherit the convention
-automatically when a second type is added.
+registered today (e.g. `aliases`, `constraints`, `cell`, `space_group`,
+…) are not in scope. They inherit the convention automatically when a
+second type is added.
 
 **Out of scope:**
 
@@ -556,13 +546,13 @@ automatically when a second type is added.
   [`immutable-experiment-type.md`](immutable-experiment-type.md));
   `atom_site.adp_type` (governed by
   [`type-neutral-adp-parameters.md`](type-neutral-adp-parameters.md));
-  `extinction.becker-coppens.model` (a closed-set enum nested inside
-  the Family-A `extinction` category — local to the selected
-  extinction class). These select a value, not a type or backend, and
-  do not present a `.type` writable surface.
+  `extinction.becker-coppens.model` (a closed-set enum nested inside the
+  Family-A `extinction` category — local to the selected extinction
+  class). These select a value, not a type or backend, and do not
+  present a `.type` writable surface.
 
-The plan that implements this ADR enumerates the exact set of
-affected categories and their swap hooks at the start of Phase 1.
+The plan that implements this ADR enumerates the exact set of affected
+categories and their swap hooks at the start of Phase 1.
 
 ### 7. Beta posture: hard cutover, no shims
 
@@ -584,13 +574,12 @@ script tests, matching the precedent set by
 
 ### 8. Three structural changes beyond pure renames
 
-Three selectors need structural changes to fit the `category.type`
-rule under
-[`category-parameter-access.md`](category-parameter-access.md)'s
+Three selectors need structural changes to fit the `category.type` rule
+under [`category-parameter-access.md`](category-parameter-access.md)'s
 two-level parameter access (`datablock.category.parameter`) and the
-"category name matches the noun of the thing being selected"
-convention shared by every other in-scope category (`minimizer`,
-`peak`, `background`, …).
+"category name matches the noun of the thing being selected" convention
+shared by every other in-scope category (`minimizer`, `peak`,
+`background`, …).
 
 #### 8a. `Rendering` → `Chart` + `Table`
 
@@ -607,17 +596,18 @@ appear on `Project`:
   (`PlotterEngineEnum` plus the `'auto'` sentinel) and the live
   `Plotter` facade as a private internal. CIF block: `_chart.*`.
 - `project.table` — `CategoryItem` with one writable selector `type`
-  (`TableEngineEnum` plus `'auto'`) and the live `TableRenderer`
-  facade as a private internal. CIF block: `_table.*`.
+  (`TableEngineEnum` plus `'auto'`) and the live `TableRenderer` facade
+  as a private internal. CIF block: `_table.*`.
 
 Both follow the §4 mechanism — Family B (engine swap), `category.type`
-surface — and become natural homes for future chart-only and
-table-only descriptors (e.g. `chart.height`, `chart.theme`,
-`table.max_rows`, `table.precision`).
+surface — and become natural homes for future chart-only and table-only
+descriptors (e.g. `chart.height`, `chart.theme`, `table.max_rows`,
+`table.precision`).
 
 The owner-level `project.rendering.show_chart_engines()`,
-`project.rendering.show_table_engines()`, and `project.rendering.show_config()`
-methods are deleted. Their replacements are `project.chart.show_supported()`,
+`project.rendering.show_table_engines()`, and
+`project.rendering.show_config()` methods are deleted. Their
+replacements are `project.chart.show_supported()`,
 `project.table.show_supported()`, and (if needed) a thin
 `project.show_config()` that prints both categories' current state.
 
@@ -632,149 +622,145 @@ A new minimal `FittingMode` category is added under `Analysis`:
 - One descriptor: `type` (`FitModeEnum`-valued, defaults to
   `FitModeEnum.SINGLE`).
 - One swap hook on the owner: `Analysis._swap_fitting_mode(new_value)`
-  which performs the existing sibling-activation work (controls which
-  of `joint_fit` / `sequential_fit` / `sequential_fit_extract` is
-  visible to `help()`, written by the serialiser, and used at fit
-  time).
+  which performs the existing sibling-activation work (controls which of
+  `joint_fit` / `sequential_fit` / `sequential_fit_extract` is visible
+  to `help()`, written by the serialiser, and used at fit time).
 - CIF block: `_fitting_mode.*` (currently `_fitting.mode_type`).
 
 Today the category has only one descriptor. Future mode-wide settings
-(e.g. parallel-independent-fit knobs from open issue #89) have a
-natural home there. The "don't introduce abstractions before a second
-concrete use" rule from CLAUDE.md is satisfied here because the
-abstraction we are introducing is the **uniform `category.type`
-surface across the project**, not a one-off `FittingMode` class.
+(e.g. parallel-independent-fit knobs from open issue #89) have a natural
+home there. The "don't introduce abstractions before a second concrete
+use" rule from CLAUDE.md is satisfied here because the abstraction we
+are introducing is the **uniform `category.type` surface across the
+project**, not a one-off `FittingMode` class.
 
 #### 8c. `Calculation` → `Calculator`
 
 Today `experiment.calculation` is a singleton category holding one
 descriptor named `calculator_type` (CIF tag
-`_calculation.calculator_type`). The category name does not match
-the thing being selected — every other in-scope category is named
-after the noun whose type is chosen (`minimizer`, `peak`,
-`background`, `extinction`, `chart`, `table`, `fitting_mode`). The
-mismatched name is the only reason the descriptor is called
-`calculator_type` rather than `type`.
+`_calculation.calculator_type`). The category name does not match the
+thing being selected — every other in-scope category is named after the
+noun whose type is chosen (`minimizer`, `peak`, `background`,
+`extinction`, `chart`, `table`, `fitting_mode`). The mismatched name is
+the only reason the descriptor is called `calculator_type` rather than
+`type`.
 
 The Python class `Calculation` is renamed to `Calculator`. The
 owner-side attribute moves from `experiment.calculation` to
 `experiment.calculator`. The single writable selector becomes
-`experiment.calculator.type`. The CIF block becomes `_calculator.*`.
-The live calculator engine (which today is held on
-`experiment._calculator` and rebound by
-`ExperimentBase._set_calculator_type`) keeps its current binding —
-this is a Family-B engine-swap mechanism; only the user-facing
+`experiment.calculator.type`. The CIF block becomes `_calculator.*`. The
+live calculator engine (which today is held on `experiment._calculator`
+and rebound by `ExperimentBase._set_calculator_type`) keeps its current
+binding — this is a Family-B engine-swap mechanism; only the user-facing
 surface and the CIF block name change.
 
 Affected ADRs: this rename adds a small amendment to
 [`python-cif-category-correspondence.md`](../suggestions/python-cif-category-correspondence.md)
-(category and CIF tag both move from `calculation` to
-`calculator`) and to
-[`selector-families.md`](selector-families.md) (the
-example row for Family B).
+(category and CIF tag both move from `calculation` to `calculator`) and
+to [`selector-families.md`](selector-families.md) (the example row for
+Family B).
 
-After all three structural changes the `_fitting.*`,
-`_rendering.*`, and `_calculation.*` CIF blocks disappear from
-saved projects. All three were either heterogeneous bags (`_fitting`,
-`_rendering`) or mis-named singletons (`_calculation`); the new
-layout has one selector per block, aligned with the descriptor it
-persists and the noun it names.
+After all three structural changes the `_fitting.*`, `_rendering.*`, and
+`_calculation.*` CIF blocks disappear from saved projects. All three
+were either heterogeneous bags (`_fitting`, `_rendering`) or mis-named
+singletons (`_calculation`); the new layout has one selector per block,
+aligned with the descriptor it persists and the noun it names.
 
 ## Catalog of selectors across the codebase
 
 After this ADR every selector that presents a writable type surface
 follows the **same** `category.type` shape, regardless of mechanism
-family. The single in-scope table below covers all eight; the
-mechanism column distinguishes what happens behind the setter
-(A = category instance swap, B = engine swap, C = sibling
-activation). Plain enum descriptors (Family D) keep their existing
-form and are listed in a separate, smaller table.
+family. The single in-scope table below covers all eight; the mechanism
+column distinguishes what happens behind the setter (A = category
+instance swap, B = engine swap, C = sibling activation). Plain enum
+descriptors (Family D) keep their existing form and are listed in a
+separate, smaller table.
 
 ### In scope — every selector with a writable type surface
 
-| # | Owner   | Today                                              | Proposed Python                  | CIF today                       | CIF proposed         | Mech | Source |
-| --- | ------- | -------------------------------------------------- | -------------------------------- | ------------------------------- | -------------------- | ---- | --- |
-| 1 | analysis   | `analysis.minimizer_type = 'X'`                  | `analysis.minimizer.type = 'X'`  | `_fitting.minimizer_type`       | `_minimizer.type`    | A    | `analysis/analysis.py:1022` |
-| 2 | experiment | `experiment.peak_profile_type = 'X'`             | `experiment.peak.type = 'X'`     | `_peak.profile_type`            | `_peak.type`         | A    | `experiment/item/base.py:514` |
-| 3 | experiment | `experiment.background_type = 'X'`               | `experiment.background.type = 'X'` | (none — only `_pd_background.*` loop) | `_background.type` | A    | `experiment/item/bragg_pd.py:184` |
-| 4 | experiment | `experiment.extinction_type = 'X'`               | `experiment.extinction.type = 'X'` | (none — only active class's own fields) | `_extinction.type` | A    | `experiment/item/base.py:312` |
-| 5 | experiment | `experiment.calculation.calculator_type = 'X'`   | `experiment.calculator.type = 'X'`  | `_calculation.calculator_type` | `_calculator.type`   | B + §8 rename | `experiment/categories/calculation/default.py:50` |
-| 6 | project    | `project.rendering.chart_engine = 'X'`           | `project.chart.type = 'X'`       | `_rendering.chart_engine`       | `_chart.type`        | B + §8 split | `project/categories/rendering/default.py:100` |
-| 7 | project    | `project.rendering.table_engine = 'X'`           | `project.table.type = 'X'`       | `_rendering.table_engine`       | `_table.type`        | B + §8 split | `project/categories/rendering/default.py:109` |
-| 8 | analysis   | `analysis.fitting_mode_type = 'X'`               | `analysis.fitting_mode.type = 'X'` | `_fitting.mode_type`            | `_fitting_mode.type` | C + §8 promote | `analysis/analysis.py:960` |
+| #   | Owner      | Today                                          | Proposed Python                    | CIF today                               | CIF proposed         | Mech           | Source                                            |
+| --- | ---------- | ---------------------------------------------- | ---------------------------------- | --------------------------------------- | -------------------- | -------------- | ------------------------------------------------- |
+| 1   | analysis   | `analysis.minimizer_type = 'X'`                | `analysis.minimizer.type = 'X'`    | `_fitting.minimizer_type`               | `_minimizer.type`    | A              | `analysis/analysis.py:1022`                       |
+| 2   | experiment | `experiment.peak_profile_type = 'X'`           | `experiment.peak.type = 'X'`       | `_peak.profile_type`                    | `_peak.type`         | A              | `experiment/item/base.py:514`                     |
+| 3   | experiment | `experiment.background_type = 'X'`             | `experiment.background.type = 'X'` | (none — only `_pd_background.*` loop)   | `_background.type`   | A              | `experiment/item/bragg_pd.py:184`                 |
+| 4   | experiment | `experiment.extinction_type = 'X'`             | `experiment.extinction.type = 'X'` | (none — only active class's own fields) | `_extinction.type`   | A              | `experiment/item/base.py:312`                     |
+| 5   | experiment | `experiment.calculation.calculator_type = 'X'` | `experiment.calculator.type = 'X'` | `_calculation.calculator_type`          | `_calculator.type`   | B + §8 rename  | `experiment/categories/calculation/default.py:50` |
+| 6   | project    | `project.rendering.chart_engine = 'X'`         | `project.chart.type = 'X'`         | `_rendering.chart_engine`               | `_chart.type`        | B + §8 split   | `project/categories/rendering/default.py:100`     |
+| 7   | project    | `project.rendering.table_engine = 'X'`         | `project.table.type = 'X'`         | `_rendering.table_engine`               | `_table.type`        | B + §8 split   | `project/categories/rendering/default.py:109`     |
+| 8   | analysis   | `analysis.fitting_mode_type = 'X'`             | `analysis.fitting_mode.type = 'X'` | `_fitting.mode_type`                    | `_fitting_mode.type` | C + §8 promote | `analysis/analysis.py:960`                        |
 
 Mechanism legend (recap):
 
 - **A (instance swap):** owner's `_swap_<name>` calls
   `Factory.create(value)` and rebinds the slot.
 - **B (engine swap):** owner's `_swap_<name>` keeps the singleton
-  category, rebinds the live engine behind it (Plotter,
-  TableRenderer, calculator backend).
-- **C (sibling activation):** owner's `_swap_<name>` records the
-  new `FitModeEnum` value and updates which sibling categories are
-  visible, authoritative, and serialised.
+  category, rebinds the live engine behind it (Plotter, TableRenderer,
+  calculator backend).
+- **C (sibling activation):** owner's `_swap_<name>` records the new
+  `FitModeEnum` value and updates which sibling categories are visible,
+  authoritative, and serialised.
 
-The user-facing Python and CIF columns are uniform across all
-eight. Implementers and reviewers can read every row from a single
-template.
+The user-facing Python and CIF columns are uniform across all eight.
+Implementers and reviewers can read every row from a single template.
 
 Notes on the in-scope rows:
 
 - Rows 1–4 are pure renames + the structural moves in §3 (Python
   selector onto the category; CIF tag onto `_<cat>.type`).
-- Row 5 involves §8c's `Calculation` → `Calculator` rename: the
-  Python class is renamed, the owner-side attribute moves from
-  `experiment.calculation` to `experiment.calculator`, the
-  descriptor is renamed `calculator_type` → `type`, and the CIF
-  block changes from `_calculation.*` to `_calculator.*`. The
-  setter delegation pattern is already in place today
+- Row 5 involves §8c's `Calculation` → `Calculator` rename: the Python
+  class is renamed, the owner-side attribute moves from
+  `experiment.calculation` to `experiment.calculator`, the descriptor is
+  renamed `calculator_type` → `type`, and the CIF block changes from
+  `_calculation.*` to `_calculator.*`. The setter delegation pattern is
+  already in place today
   ([`calculation/default.py:61`](../../../src/easydiffraction/datablocks/experiment/categories/calculation/default.py)),
   so no mechanism change is required.
 - Rows 6 and 7 involve §8a's `Rendering` → `Chart` + `Table` split
   (Python category restructure, CIF block split).
-- Row 8 involves §8b's `FittingMode` promotion (new minimal
-  category on `Analysis`, CIF block rename).
+- Row 8 involves §8b's `FittingMode` promotion (new minimal category on
+  `Analysis`, CIF block rename).
 
 ### Out of scope — plain enum descriptors (Family D)
 
-Closed-set string descriptors with a `MembershipValidator`.
-Selecting a value records a choice and may trigger bookkeeping, but
-does not present the `category.type` writable surface and does not
-swap a category, engine, or sibling.
+Closed-set string descriptors with a `MembershipValidator`. Selecting a
+value records a choice and may trigger bookkeeping, but does not present
+the `category.type` writable surface and does not swap a category,
+engine, or sibling.
 
-| # | Python | CIF | Effect | Source |
-| --- | --- | --- | --- | --- |
-| 1 | `experiment.type.sample_form` | `_expt_type.sample_form` | Powder vs single-crystal; creation-time axis. | `experiment/categories/experiment_type/default.py:104` |
-| 2 | `experiment.type.beam_mode` | `_expt_type.beam_mode` | CWL vs TOF; creation-time axis. | `…/experiment_type/default.py:114` |
-| 3 | `experiment.type.radiation_probe` | `_expt_type.radiation_probe` | Neutron vs X-ray; creation-time axis. | `…/experiment_type/default.py:124` |
-| 4 | `experiment.type.scattering_type` | `_expt_type.scattering_type` | Bragg vs total scattering; creation-time axis. | `…/experiment_type/default.py:134` |
-| 5 | `atom_site.adp_type` (per row of `structure.atom_sites`) | `_atom_site.adp_type` | Pick ADP convention (`Biso`/`Uiso`/`Bani`/`Uani`); triggers value conversion and `atom_site_aniso` sibling sync. | `structure/categories/atom_sites/default.py:377` |
-| 6 | `extinction.becker-coppens.model` (nested inside in-scope row 4 when active) | `_extinction.model` | Mosaicity distribution (`gauss`/`lorentz`) inside the Becker-Coppens extinction category. | `experiment/categories/extinction/becker_coppens.py:92` |
-| 7 | `project.verbosity.fit` | `_verbosity.fit` | Pick fit-output verbosity (`full`/`short`/`silent`). | `project/categories/verbosity/default.py:43` |
+| #   | Python                                                                       | CIF                          | Effect                                                                                                           | Source                                                  |
+| --- | ---------------------------------------------------------------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| 1   | `experiment.type.sample_form`                                                | `_expt_type.sample_form`     | Powder vs single-crystal; creation-time axis.                                                                    | `experiment/categories/experiment_type/default.py:104`  |
+| 2   | `experiment.type.beam_mode`                                                  | `_expt_type.beam_mode`       | CWL vs TOF; creation-time axis.                                                                                  | `…/experiment_type/default.py:114`                      |
+| 3   | `experiment.type.radiation_probe`                                            | `_expt_type.radiation_probe` | Neutron vs X-ray; creation-time axis.                                                                            | `…/experiment_type/default.py:124`                      |
+| 4   | `experiment.type.scattering_type`                                            | `_expt_type.scattering_type` | Bragg vs total scattering; creation-time axis.                                                                   | `…/experiment_type/default.py:134`                      |
+| 5   | `atom_site.adp_type` (per row of `structure.atom_sites`)                     | `_atom_site.adp_type`        | Pick ADP convention (`Biso`/`Uiso`/`Bani`/`Uani`); triggers value conversion and `atom_site_aniso` sibling sync. | `structure/categories/atom_sites/default.py:377`        |
+| 6   | `extinction.becker-coppens.model` (nested inside in-scope row 4 when active) | `_extinction.model`          | Mosaicity distribution (`gauss`/`lorentz`) inside the Becker-Coppens extinction category.                        | `experiment/categories/extinction/becker_coppens.py:92` |
+| 7   | `project.verbosity.fit`                                                      | `_verbosity.fit`             | Pick fit-output verbosity (`full`/`short`/`silent`).                                                             | `project/categories/verbosity/default.py:43`            |
 
 Notes on Family D:
 
 - Rows 1–4 are creation-time axes governed by
-  [`immutable-experiment-type.md`](immutable-experiment-type.md);
-  no user-facing writable setter, listed only for completeness.
+  [`immutable-experiment-type.md`](immutable-experiment-type.md); no
+  user-facing writable setter, listed only for completeness.
 - Row 5 (`adp_type`) has Family-C-like side effects per
   [`type-neutral-adp-parameters.md`](type-neutral-adp-parameters.md).
   Stays.
 - Row 6 (`extinction.becker-coppens.model`) is a Family-D enum
-  **inside** an in-scope Family-A category (extinction). Selecting
-  the model is local to the Becker-Coppens class; selecting the
-  extinction class itself goes through the new
-  `experiment.extinction.type` surface. Both work independently.
+  **inside** an in-scope Family-A category (extinction). Selecting the
+  model is local to the Becker-Coppens class; selecting the extinction
+  class itself goes through the new `experiment.extinction.type`
+  surface. Both work independently.
 
 ### Categories with a `_type` slot but no observable selector (informational)
 
-Many categories store a private `self._<x>_type: str = Factory.default_tag()`
-but only one concrete type is registered (`default`), so no public
-`_type` property, no `show_supported_*` method, and no observable
-selector exist. Examples: `aliases`, `constraints`, `cell`,
-`space_group`, `atom_sites`, `atom_site_aniso`, `diffrn`,
-`linked_crystal`, `linked_phases`, `excluded_regions`, `data`,
-`instrument`, `refln`, `sequential_fit`, `sequential_fit_extract`.
+Many categories store a private
+`self._<x>_type: str = Factory.default_tag()` but only one concrete type
+is registered (`default`), so no public `_type` property, no
+`show_supported_*` method, and no observable selector exist. Examples:
+`aliases`, `constraints`, `cell`, `space_group`, `atom_sites`,
+`atom_site_aniso`, `diffrn`, `linked_crystal`, `linked_phases`,
+`excluded_regions`, `data`, `instrument`, `refln`, `sequential_fit`,
+`sequential_fit_extract`.
 
 If a second concrete type is ever registered for one of these, this
 ADR's rule applies automatically: the category becomes an in-scope
@@ -815,54 +801,54 @@ member and exposes `category.type` plus `category.show_supported()`.
   the §"Decision" to point at this ADR. The new contract is "the
   category exposes `type` (getter+setter) and `show_supported()`; the
   owner exposes only the category itself".
-- [`selector-families.md`](selector-families.md) —
-  rewrite the §"Decision" to use the mechanism-vs-surface framing
-  from §6: all three families (A switchable categories, B backend
-  selectors, C active-sibling selectors) present the same writable
-  `category.type` surface; the family classification documents only
-  what the owner's `_swap_<name>` does behind that surface. Update
-  every "Examples" row to the proposed `<owner>.<cat>.type` form.
-- [`fit-mode-categories.md`](fit-mode-categories.md) —
-  strike the matching "Deferred Work" entry (this ADR closes the
-  follow-up). Replace the `analysis.fitting_mode_type` description
-  with `analysis.fitting_mode.type` and document the new
-  `FittingMode` category (§8b).
+- [`selector-families.md`](selector-families.md) — rewrite the
+  §"Decision" to use the mechanism-vs-surface framing from §6: all three
+  families (A switchable categories, B backend selectors, C
+  active-sibling selectors) present the same writable `category.type`
+  surface; the family classification documents only what the owner's
+  `_swap_<name>` does behind that surface. Update every "Examples" row
+  to the proposed `<owner>.<cat>.type` form.
+- [`fit-mode-categories.md`](fit-mode-categories.md) — strike the
+  matching "Deferred Work" entry (this ADR closes the follow-up).
+  Replace the `analysis.fitting_mode_type` description with
+  `analysis.fitting_mode.type` and document the new `FittingMode`
+  category (§8b).
 - [`python-cif-category-correspondence.md`](../suggestions/python-cif-category-correspondence.md)
   — the §"Owner-level switchable selectors" table becomes obsolete;
-  remove the "deliberate abstraction" exception. Update every entry
-  to the `_<cat>.type` form.
+  remove the "deliberate abstraction" exception. Update every entry to
+  the `_<cat>.type` form.
 - [`minimizer-category-consolidation.md`](minimizer-category-consolidation.md)
   — append a "Superseded selector layout" note pointing here for the
-  `_fitting.minimizer_type` → `_minimizer.type` change and the drop
-  of `_minimizer.optimizer_name` / `_minimizer.method_name`.
-- [`analysis-cif-fit-state.md`](analysis-cif-fit-state.md)
-  — drop `_minimizer.optimizer_name` and `_minimizer.method_name`
-  from the persisted projection (§3 of this ADR). The runtime
+  `_fitting.minimizer_type` → `_minimizer.type` change and the drop of
+  `_minimizer.optimizer_name` / `_minimizer.method_name`.
+- [`analysis-cif-fit-state.md`](analysis-cif-fit-state.md) — drop
+  `_minimizer.optimizer_name` and `_minimizer.method_name` from the
+  persisted projection (§3 of this ADR). The runtime
   `FitResults.optimizer_name` / `method_name` fields are populated on
   restore from the active minimizer class's metadata rather than from
   CIF.
-- [`display-ux.md`](display-ux.md) — replace every
-  reference to `project.rendering`, `_rendering.chart_engine`, and
+- [`display-ux.md`](display-ux.md) — replace every reference to
+  `project.rendering`, `_rendering.chart_engine`, and
   `_rendering.table_engine` with the post-§8a shape:
-  `project.chart.type`, `project.table.type`, CIF blocks `_chart.*`
-  and `_table.*`. Drop the writable-selector contract that puts
-  chart/table engines on the `rendering` category; document instead
-  that each renderer lives on its own category with the canonical
-  `category.type` surface.
-- [`category-owner-sections.md`](category-owner-sections.md)
-  — update the `ProjectConfig` children list: drop `Rendering`; add
-  `Chart` and `Table` as siblings. Update the `_rendering.*` CIF
-  block reference to `_chart.*` and `_table.*`.
+  `project.chart.type`, `project.table.type`, CIF blocks `_chart.*` and
+  `_table.*`. Drop the writable-selector contract that puts chart/table
+  engines on the `rendering` category; document instead that each
+  renderer lives on its own category with the canonical `category.type`
+  surface.
+- [`category-owner-sections.md`](category-owner-sections.md) — update
+  the `ProjectConfig` children list: drop `Rendering`; add `Chart` and
+  `Table` as siblings. Update the `_rendering.*` CIF block reference to
+  `_chart.*` and `_table.*`.
 
-(A grep against `docs/dev/adrs/accepted/` for the renamed Python
-names and CIF tags surfaced four additional hits that turned out
-to be generic phrasing — "rendering engines", "real calculation
-engines", "calculator_support for calculation-engine support",
-"rendering preferences" — rather than category-specific references.
-Those four ADRs (`factory-contracts.md`, `test-strategy.md`,
-`enum-backed-closed-values.md`, `project-facade-and-persistence.md`)
-are unaffected and intentionally not listed here. See Reply 2 F4 for
-the full grep results.)
+(A grep against `docs/dev/adrs/accepted/` for the renamed Python names
+and CIF tags surfaced four additional hits that turned out to be generic
+phrasing — "rendering engines", "real calculation engines",
+"calculator_support for calculation-engine support", "rendering
+preferences" — rather than category-specific references. Those four ADRs
+(`factory-contracts.md`, `test-strategy.md`,
+`enum-backed-closed-values.md`, `project-facade-and-persistence.md`) are
+unaffected and intentionally not listed here. See Reply 2 F4 for the
+full grep results.)
 
 ### Issues that this ADR closes
 
@@ -918,8 +904,8 @@ Dual surfaces double the API and the documentation burden.
 ## Example: end state across the project
 
 The end state of every switchable surface, in one place. All eight
-in-scope rows from the catalog appear; the uniform `_<cat>.type` rule
-is visible at a glance.
+in-scope rows from the catalog appear; the uniform `_<cat>.type` rule is
+visible at a glance.
 
 ### `project.cif`
 
@@ -930,8 +916,8 @@ _chart.type   plotly
 _table.type   rich
 ```
 
-The `_rendering.*` block is gone; two single-purpose blocks replace
-it (§8a).
+The `_rendering.*` block is gone; two single-purpose blocks replace it
+(§8a).
 
 ### `experiment.cif` (per-experiment block)
 
@@ -962,16 +948,15 @@ Three things change in this block:
 - `_calculation.calculator_type` becomes `_calculator.type` (the
   category is also renamed `Calculation` → `Calculator`; §8c).
 - `_peak.profile_type` becomes `_peak.type`; the existing
-  `_peak.broad_gauss_*` and `_peak.broad_lorentz_*` parameter tags
-  are unchanged (the names come from
+  `_peak.broad_gauss_*` and `_peak.broad_lorentz_*` parameter tags are
+  unchanged (the names come from
   [`src/easydiffraction/datablocks/experiment/categories/peak/cwl_mixins.py`](../../../src/easydiffraction/datablocks/experiment/categories/peak/cwl_mixins.py)).
-  The CIF value is the **canonical tag**
-  (`cwl-pseudo-voigt` here, since the example experiment is
-  constant-wavelength); the writable Python setter
-  `experiment.peak.type` accepts the alias `'pseudo-voigt'` too and
-  canonicalizes it before persisting (see §4 → "Aliases").
-- `_background.type` is **new** (today the type is implicit in
-  whichever `_pd_background.*` columns are present); the existing
+  The CIF value is the **canonical tag** (`cwl-pseudo-voigt` here, since
+  the example experiment is constant-wavelength); the writable Python
+  setter `experiment.peak.type` accepts the alias `'pseudo-voigt'` too
+  and canonicalizes it before persisting (see §4 → "Aliases").
+- `_background.type` is **new** (today the type is implicit in whichever
+  `_pd_background.*` columns are present); the existing
   `_pd_background.Chebyshev_order` / `_pd_background.Chebyshev_coef`
   loop tags are unchanged.
 
@@ -1017,9 +1002,9 @@ _minimizer.exit_reason                converged
 _minimizer.reduced_chi2               1.42
 ```
 
-`_minimizer.optimizer_name` and `_minimizer.method_name` are gone —
-they were per-engine constants and are derived from
-`_minimizer.type` at restore time (§3).
+`_minimizer.optimizer_name` and `_minimizer.method_name` are gone — they
+were per-engine constants and are derived from `_minimizer.type` at
+restore time (§3).
 
 ### Python surface
 

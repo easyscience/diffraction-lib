@@ -23,6 +23,11 @@ class _Parent:
     def _supported_calculator_tags() -> list[str]:
         return ['cryspy', 'crysfml']
 
+    @staticmethod
+    def _supported_filters_for(category: object) -> dict[str, object]:
+        del category
+        return {}
+
 
 def test_calculator_defaults():
     from easydiffraction.datablocks.experiment.categories.calculator.default import Calculator

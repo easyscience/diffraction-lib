@@ -172,8 +172,8 @@ The selector is backed by `FitModeEnum` and accepts:
 describe the execution requirements for each mode. The active mode is
 marked in the table; a separate show-current method is intentionally not
 part of the public API. The supported list should not hide `sequential`
-simply because the project currently has only one experiment.
-Sequential fitting uses one template experiment plus files from
+simply because the project currently has only one experiment. Sequential
+fitting uses one template experiment plus files from
 `sequential_fit.data_dir`, so filtering it out based on experiment count
 is misleading.
 

@@ -53,37 +53,37 @@ to objects reached from the current `Project` root, for example
 
 ## Current Persistence Layout
 
-| Current Python surface              | Current saved location   | Current CIF block form | Notes                                                                               |
-| ----------------------------------- | ------------------------ | ---------------------- | ----------------------------------------------------------------------------------- |
+| Current Python surface                           | Current saved location   | Current CIF block form | Notes                                                                               |
+| ------------------------------------------------ | ------------------------ | ---------------------- | ----------------------------------------------------------------------------------- |
 | `project.info`, `project.chart`, `project.table` | `project.cif`            | bare categories        | Project-level singleton config.                                                     |
-| `project.verbosity`                 | `project.cif`            | bare category          | Project-owned fit-output verbosity category backed by `VerbosityEnum`.              |
-| `project.structures[name]`          | `structures/<name>.cif`  | `data_<name>`          | Each structure is one CIF data block.                                               |
-| `project.experiments[name]`         | `experiments/<name>.cif` | `data_<name>`          | Each experiment is one CIF data block.                                              |
-| `project.analysis`                  | `analysis/analysis.cif`  | bare categories        | Loader also accepts legacy root-level `analysis.cif`.                               |
-| `project.summary`                   | `summary.cif`            | placeholder text       | Summary persistence exists as a file but `summary_to_cif()` is not implemented yet. |
+| `project.verbosity`                              | `project.cif`            | bare category          | Project-owned fit-output verbosity category backed by `VerbosityEnum`.              |
+| `project.structures[name]`                       | `structures/<name>.cif`  | `data_<name>`          | Each structure is one CIF data block.                                               |
+| `project.experiments[name]`                      | `experiments/<name>.cif` | `data_<name>`          | Each experiment is one CIF data block.                                              |
+| `project.analysis`                               | `analysis/analysis.cif`  | bare categories        | Loader also accepts legacy root-level `analysis.cif`.                               |
+| `project.summary`                                | `summary.cif`            | placeholder text       | Summary persistence exists as a file but `summary_to_cif()` is not implemented yet. |
 
 ## Current Correspondence
 
 ### Project-Level Configuration
 
-| Current Python path              | Current CIF path          | Match? | Notes                                                                                              |
-| -------------------------------- | ------------------------- | ------ | -------------------------------------------------------------------------------------------------- |
-| `project.info.name`              | `_project.id`             | No     | Python uses user-facing `name`; CIF uses `id`; category is `info` in Python but `_project` in CIF. |
-| `project.info.title`             | `_project.title`          | Partly | Field name matches, category name does not.                                                        |
-| `project.info.description`       | `_project.description`    | Partly | Field name matches, category name does not.                                                        |
-| `project.info.created`           | `_project.created`        | Partly | Field name matches, category name does not.                                                        |
-| `project.info.last_modified`     | `_project.last_modified`  | Partly | Field name matches, category name does not.                                                        |
-| `project.info.path`              | none                      | No     | Runtime storage path, not a CIF field.                                                             |
-| `project.chart.type`             | `_chart.type`             | Yes    | Direct category-owned selector mapping.                                                            |
-| `project.table.type`             | `_table.type`             | Yes    | Direct category-owned selector mapping.                                                            |
-| `project.verbosity.fit`          | `_verbosity.fit`          | Yes    | Direct category and field mapping for fitting process output verbosity.                            |
+| Current Python path          | Current CIF path         | Match? | Notes                                                                                              |
+| ---------------------------- | ------------------------ | ------ | -------------------------------------------------------------------------------------------------- |
+| `project.info.name`          | `_project.id`            | No     | Python uses user-facing `name`; CIF uses `id`; category is `info` in Python but `_project` in CIF. |
+| `project.info.title`         | `_project.title`         | Partly | Field name matches, category name does not.                                                        |
+| `project.info.description`   | `_project.description`   | Partly | Field name matches, category name does not.                                                        |
+| `project.info.created`       | `_project.created`       | Partly | Field name matches, category name does not.                                                        |
+| `project.info.last_modified` | `_project.last_modified` | Partly | Field name matches, category name does not.                                                        |
+| `project.info.path`          | none                     | No     | Runtime storage path, not a CIF field.                                                             |
+| `project.chart.type`         | `_chart.type`            | Yes    | Direct category-owned selector mapping.                                                            |
+| `project.table.type`         | `_table.type`            | Yes    | Direct category-owned selector mapping.                                                            |
+| `project.verbosity.fit`      | `_verbosity.fit`         | Yes    | Direct category and field mapping for fitting process output verbosity.                            |
 
 ### Analysis Configuration
 
 | Current Python path                               | Current CIF path                   | Match? | Notes                                                                                            |
 | ------------------------------------------------- | ---------------------------------- | ------ | ------------------------------------------------------------------------------------------------ |
-| `analysis.minimizer.type`                         | `_minimizer.type`                  | Yes    | Direct category-owned selector mapping.                                                         |
-| `analysis.fitting_mode.type`                      | `_fitting_mode.type`               | Yes    | Direct category-owned active-sibling selector mapping.                                          |
+| `analysis.minimizer.type`                         | `_minimizer.type`                  | Yes    | Direct category-owned selector mapping.                                                          |
+| `analysis.fitting_mode.type`                      | `_fitting_mode.type`               | Yes    | Direct category-owned active-sibling selector mapping.                                           |
 | `analysis.joint_fit[experiment_id].experiment_id` | `_joint_fit.experiment_id`         | Yes    | Collection key is also stored as a field.                                                        |
 | `analysis.joint_fit[experiment_id].weight`        | `_joint_fit.weight`                | Yes    | Direct field mapping.                                                                            |
 | `analysis.sequential_fit.data_dir`                | `_sequential_fit.data_dir`         | Yes    | Direct category mapping.                                                                         |
@@ -101,61 +101,61 @@ to objects reached from the current `Project` root, for example
 
 ### Experiment Configuration
 
-| Current Python path                           | Current CIF path                                                                   | Match? | Notes                                                                                |
-| --------------------------------------------- | ---------------------------------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------ |
-| `experiment.type.sample_form`                 | `_expt_type.sample_form`                                                           | Partly | Python uses the user-facing word `type`; CIF uses abbreviated `_expt_type`.          |
-| `experiment.type.beam_mode`                   | `_expt_type.beam_mode`                                                             | Partly | Python uses the user-facing word `type`; CIF uses abbreviated `_expt_type`.          |
-| `experiment.type.radiation_probe`             | `_expt_type.radiation_probe`                                                       | Partly | Python uses the user-facing word `type`; CIF uses abbreviated `_expt_type`.          |
-| `experiment.type.scattering_type`             | `_expt_type.scattering_type`                                                       | Partly | Python uses the user-facing word `type`; CIF uses abbreviated `_expt_type`.          |
-| `experiment.calculator.type`                  | `_calculator.type`                                                             | Yes    | Direct category-owned backend selector mapping.                                      |
-| `experiment.diffrn.ambient_temperature`       | `_diffrn.ambient_temperature`                                                      | Yes    | Direct category mapping.                                                             |
-| `experiment.diffrn.ambient_pressure`          | `_diffrn.ambient_pressure`                                                         | Yes    | Direct category mapping.                                                             |
-| `experiment.diffrn.ambient_magnetic_field`    | `_diffrn.ambient_magnetic_field`                                                   | Yes    | Direct category mapping.                                                             |
-| `experiment.diffrn.ambient_electric_field`    | `_diffrn.ambient_electric_field`                                                   | Yes    | Direct category mapping.                                                             |
-| `experiment.instrument.setup_wavelength`      | `_instr.wavelength`                                                                | Partly | Python name exposes setup role; CIF tag uses compact instrument name.                |
-| `experiment.instrument.calib_twotheta_offset` | `_instr.2theta_offset`                                                             | Partly | Python name exposes calibration role; CIF tag uses compact instrument name.          |
-| `experiment.instrument.setup_twotheta_bank`   | `_instr.2theta_bank`                                                               | Partly | Python name exposes setup role; CIF tag uses compact instrument name.                |
-| `experiment.instrument.calib_d_to_tof_offset` | `_instr.d_to_tof_offset`                                                           | Partly | Python name exposes calibration role; CIF tag uses compact instrument name.          |
-| `experiment.instrument.calib_d_to_tof_linear` | `_instr.d_to_tof_linear`                                                           | Partly | Python name exposes calibration role; CIF tag uses compact instrument name.          |
-| `experiment.instrument.calib_d_to_tof_quad`   | `_instr.d_to_tof_quad`                                                             | Partly | Python name exposes calibration role; CIF tag uses compact instrument name.          |
-| `experiment.instrument.calib_d_to_tof_recip`  | `_instr.d_to_tof_recip`                                                            | Partly | Python name exposes calibration role; CIF tag uses compact instrument name.          |
-| `experiment.peak.type`                        | `_peak.type`                                                                       | Yes    | Direct category-owned selector mapping.                                              |
-| `experiment.peak.broad_gauss_u`               | `_peak.broad_gauss_u`                                                              | Yes    | CWL peak field.                                                                      |
-| `experiment.peak.broad_gauss_v`               | `_peak.broad_gauss_v`                                                              | Yes    | CWL peak field.                                                                      |
-| `experiment.peak.broad_gauss_w`               | `_peak.broad_gauss_w`                                                              | Yes    | CWL peak field.                                                                      |
-| `experiment.peak.broad_lorentz_x`             | `_peak.broad_lorentz_x`                                                            | Yes    | CWL peak field.                                                                      |
-| `experiment.peak.broad_lorentz_y`             | `_peak.broad_lorentz_y`                                                            | Yes    | CWL peak field.                                                                      |
-| `experiment.peak.asym_empir_1..4`             | `_peak.asym_empir_1..4`                                                            | Yes    | CWL peak field group.                                                                |
-| `experiment.peak.asym_fcj_1..2`               | `_peak.asym_fcj_1..2`                                                              | Yes    | CWL peak field group.                                                                |
-| `experiment.peak.broad_gauss_sigma_0..2`      | `_peak.gauss_sigma_0..2`                                                           | Partly | Python prefixes the family with `broad_`; CIF tags omit that grouping prefix.        |
-| `experiment.peak.broad_lorentz_gamma_0..2`    | `_peak.lorentz_gamma_0..2`                                                         | Partly | Python prefixes the family with `broad_`; CIF tags omit that grouping prefix.        |
-| `experiment.peak.exp_rise_alpha_0..1`         | `_peak.rise_alpha_0..1`                                                            | Partly | Python prefixes the family with `exp_`; CIF tags omit that grouping prefix.          |
-| `experiment.peak.exp_decay_beta_0..1`         | `_peak.decay_beta_0..1`                                                            | Partly | Python prefixes the family with `exp_`; CIF tags omit that grouping prefix.          |
-| `experiment.peak.dexp_*`                      | `_peak.dexp_*`                                                                     | Yes    | TOF double-exponential peak field group.                                             |
-| `experiment.peak.damp_q`                      | `_peak.damp_q`                                                                     | Yes    | Total-scattering peak field.                                                         |
-| `experiment.peak.broad_q`                     | `_peak.broad_q`                                                                    | Yes    | Total-scattering peak field.                                                         |
-| `experiment.peak.cutoff_q`                    | `_peak.cutoff_q`                                                                   | Yes    | Total-scattering peak field.                                                         |
-| `experiment.peak.sharp_delta_1`               | `_peak.sharp_delta_1`                                                              | Yes    | Total-scattering peak field.                                                         |
-| `experiment.peak.sharp_delta_2`               | `_peak.sharp_delta_2`                                                              | Yes    | Total-scattering peak field.                                                         |
-| `experiment.peak.damp_particle_diameter`      | `_peak.damp_particle_diameter`                                                     | Yes    | Total-scattering peak field.                                                         |
-| `experiment.background[id].id` line segment   | `_pd_background.id`                                                                | Partly | Python category is `background`; CIF uses powder-background category.                |
-| `experiment.background[id].x` line segment    | `_pd_background.line_segment_X` or `_pd_background_line_segment_X`                 | Partly | Python uses compact `x`; CIF tag encodes powder-background line-segment meaning.     |
-| `experiment.background[id].y` line segment    | `_pd_background.line_segment_intensity` or `_pd_background_line_segment_intensity` | Partly | Python uses compact `y`; CIF tag encodes powder-background line-segment meaning.     |
-| `experiment.background[id].id` Chebyshev      | `_pd_background.id`                                                                | Partly | Python category is `background`; CIF uses powder-background category.                |
-| `experiment.background[id].order` Chebyshev   | `_pd_background.Chebyshev_order`                                                   | Partly | CIF tag encodes polynomial type and uses CIF-style capitalization.                   |
-| `experiment.background[id].coef` Chebyshev    | `_pd_background.Chebyshev_coef`                                                    | Partly | CIF tag encodes polynomial type and uses CIF-style capitalization.                   |
-| `experiment.background.type`                  | `_background.type`                                                                 | Yes    | Direct collection-level category-owned selector mapping.                             |
-| `experiment.extinction.type`                  | `_extinction.type`                                                                 | Yes    | Direct category-owned selector mapping.                                              |
-| `experiment.extinction.model`                 | `_extinction.model`                                                                | Yes    | Direct category mapping.                                                             |
-| `experiment.extinction.mosaicity`             | `_extinction.mosaicity`                                                            | Yes    | Direct category mapping.                                                             |
-| `experiment.extinction.radius`                | `_extinction.radius`                                                               | Yes    | Direct category mapping.                                                             |
-| `experiment.linked_phases[id].id`             | `_pd_phase_block.id`                                                               | Partly | Python name is user-facing; CIF tag follows powder phase-block convention.           |
-| `experiment.linked_phases[id].scale`          | `_pd_phase_block.scale`                                                            | Partly | Python name is user-facing; CIF tag follows powder phase-block convention.           |
-| `experiment.linked_crystal.id`                | `_sc_crystal_block.id`                                                             | Partly | Python name is user-facing; CIF tag follows single-crystal block convention.         |
-| `experiment.linked_crystal.scale`             | `_sc_crystal_block.scale`                                                          | Partly | Python name is user-facing; CIF tag follows single-crystal block convention.         |
-| `experiment.excluded_regions[id].id`          | `_excluded_region.id`                                                              | Partly | Python collection is plural; CIF row category is singular.                           |
-| `experiment.excluded_regions[id].start`       | `_excluded_region.start`                                                           | Partly | Python collection is plural; CIF row category is singular.                           |
-| `experiment.excluded_regions[id].end`         | `_excluded_region.end`                                                             | Partly | Python collection is plural; CIF row category is singular.                           |
+| Current Python path                           | Current CIF path                                                                   | Match? | Notes                                                                            |
+| --------------------------------------------- | ---------------------------------------------------------------------------------- | ------ | -------------------------------------------------------------------------------- |
+| `experiment.type.sample_form`                 | `_expt_type.sample_form`                                                           | Partly | Python uses the user-facing word `type`; CIF uses abbreviated `_expt_type`.      |
+| `experiment.type.beam_mode`                   | `_expt_type.beam_mode`                                                             | Partly | Python uses the user-facing word `type`; CIF uses abbreviated `_expt_type`.      |
+| `experiment.type.radiation_probe`             | `_expt_type.radiation_probe`                                                       | Partly | Python uses the user-facing word `type`; CIF uses abbreviated `_expt_type`.      |
+| `experiment.type.scattering_type`             | `_expt_type.scattering_type`                                                       | Partly | Python uses the user-facing word `type`; CIF uses abbreviated `_expt_type`.      |
+| `experiment.calculator.type`                  | `_calculator.type`                                                                 | Yes    | Direct category-owned backend selector mapping.                                  |
+| `experiment.diffrn.ambient_temperature`       | `_diffrn.ambient_temperature`                                                      | Yes    | Direct category mapping.                                                         |
+| `experiment.diffrn.ambient_pressure`          | `_diffrn.ambient_pressure`                                                         | Yes    | Direct category mapping.                                                         |
+| `experiment.diffrn.ambient_magnetic_field`    | `_diffrn.ambient_magnetic_field`                                                   | Yes    | Direct category mapping.                                                         |
+| `experiment.diffrn.ambient_electric_field`    | `_diffrn.ambient_electric_field`                                                   | Yes    | Direct category mapping.                                                         |
+| `experiment.instrument.setup_wavelength`      | `_instr.wavelength`                                                                | Partly | Python name exposes setup role; CIF tag uses compact instrument name.            |
+| `experiment.instrument.calib_twotheta_offset` | `_instr.2theta_offset`                                                             | Partly | Python name exposes calibration role; CIF tag uses compact instrument name.      |
+| `experiment.instrument.setup_twotheta_bank`   | `_instr.2theta_bank`                                                               | Partly | Python name exposes setup role; CIF tag uses compact instrument name.            |
+| `experiment.instrument.calib_d_to_tof_offset` | `_instr.d_to_tof_offset`                                                           | Partly | Python name exposes calibration role; CIF tag uses compact instrument name.      |
+| `experiment.instrument.calib_d_to_tof_linear` | `_instr.d_to_tof_linear`                                                           | Partly | Python name exposes calibration role; CIF tag uses compact instrument name.      |
+| `experiment.instrument.calib_d_to_tof_quad`   | `_instr.d_to_tof_quad`                                                             | Partly | Python name exposes calibration role; CIF tag uses compact instrument name.      |
+| `experiment.instrument.calib_d_to_tof_recip`  | `_instr.d_to_tof_recip`                                                            | Partly | Python name exposes calibration role; CIF tag uses compact instrument name.      |
+| `experiment.peak.type`                        | `_peak.type`                                                                       | Yes    | Direct category-owned selector mapping.                                          |
+| `experiment.peak.broad_gauss_u`               | `_peak.broad_gauss_u`                                                              | Yes    | CWL peak field.                                                                  |
+| `experiment.peak.broad_gauss_v`               | `_peak.broad_gauss_v`                                                              | Yes    | CWL peak field.                                                                  |
+| `experiment.peak.broad_gauss_w`               | `_peak.broad_gauss_w`                                                              | Yes    | CWL peak field.                                                                  |
+| `experiment.peak.broad_lorentz_x`             | `_peak.broad_lorentz_x`                                                            | Yes    | CWL peak field.                                                                  |
+| `experiment.peak.broad_lorentz_y`             | `_peak.broad_lorentz_y`                                                            | Yes    | CWL peak field.                                                                  |
+| `experiment.peak.asym_empir_1..4`             | `_peak.asym_empir_1..4`                                                            | Yes    | CWL peak field group.                                                            |
+| `experiment.peak.asym_fcj_1..2`               | `_peak.asym_fcj_1..2`                                                              | Yes    | CWL peak field group.                                                            |
+| `experiment.peak.broad_gauss_sigma_0..2`      | `_peak.gauss_sigma_0..2`                                                           | Partly | Python prefixes the family with `broad_`; CIF tags omit that grouping prefix.    |
+| `experiment.peak.broad_lorentz_gamma_0..2`    | `_peak.lorentz_gamma_0..2`                                                         | Partly | Python prefixes the family with `broad_`; CIF tags omit that grouping prefix.    |
+| `experiment.peak.exp_rise_alpha_0..1`         | `_peak.rise_alpha_0..1`                                                            | Partly | Python prefixes the family with `exp_`; CIF tags omit that grouping prefix.      |
+| `experiment.peak.exp_decay_beta_0..1`         | `_peak.decay_beta_0..1`                                                            | Partly | Python prefixes the family with `exp_`; CIF tags omit that grouping prefix.      |
+| `experiment.peak.dexp_*`                      | `_peak.dexp_*`                                                                     | Yes    | TOF double-exponential peak field group.                                         |
+| `experiment.peak.damp_q`                      | `_peak.damp_q`                                                                     | Yes    | Total-scattering peak field.                                                     |
+| `experiment.peak.broad_q`                     | `_peak.broad_q`                                                                    | Yes    | Total-scattering peak field.                                                     |
+| `experiment.peak.cutoff_q`                    | `_peak.cutoff_q`                                                                   | Yes    | Total-scattering peak field.                                                     |
+| `experiment.peak.sharp_delta_1`               | `_peak.sharp_delta_1`                                                              | Yes    | Total-scattering peak field.                                                     |
+| `experiment.peak.sharp_delta_2`               | `_peak.sharp_delta_2`                                                              | Yes    | Total-scattering peak field.                                                     |
+| `experiment.peak.damp_particle_diameter`      | `_peak.damp_particle_diameter`                                                     | Yes    | Total-scattering peak field.                                                     |
+| `experiment.background[id].id` line segment   | `_pd_background.id`                                                                | Partly | Python category is `background`; CIF uses powder-background category.            |
+| `experiment.background[id].x` line segment    | `_pd_background.line_segment_X` or `_pd_background_line_segment_X`                 | Partly | Python uses compact `x`; CIF tag encodes powder-background line-segment meaning. |
+| `experiment.background[id].y` line segment    | `_pd_background.line_segment_intensity` or `_pd_background_line_segment_intensity` | Partly | Python uses compact `y`; CIF tag encodes powder-background line-segment meaning. |
+| `experiment.background[id].id` Chebyshev      | `_pd_background.id`                                                                | Partly | Python category is `background`; CIF uses powder-background category.            |
+| `experiment.background[id].order` Chebyshev   | `_pd_background.Chebyshev_order`                                                   | Partly | CIF tag encodes polynomial type and uses CIF-style capitalization.               |
+| `experiment.background[id].coef` Chebyshev    | `_pd_background.Chebyshev_coef`                                                    | Partly | CIF tag encodes polynomial type and uses CIF-style capitalization.               |
+| `experiment.background.type`                  | `_background.type`                                                                 | Yes    | Direct collection-level category-owned selector mapping.                         |
+| `experiment.extinction.type`                  | `_extinction.type`                                                                 | Yes    | Direct category-owned selector mapping.                                          |
+| `experiment.extinction.model`                 | `_extinction.model`                                                                | Yes    | Direct category mapping.                                                         |
+| `experiment.extinction.mosaicity`             | `_extinction.mosaicity`                                                            | Yes    | Direct category mapping.                                                         |
+| `experiment.extinction.radius`                | `_extinction.radius`                                                               | Yes    | Direct category mapping.                                                         |
+| `experiment.linked_phases[id].id`             | `_pd_phase_block.id`                                                               | Partly | Python name is user-facing; CIF tag follows powder phase-block convention.       |
+| `experiment.linked_phases[id].scale`          | `_pd_phase_block.scale`                                                            | Partly | Python name is user-facing; CIF tag follows powder phase-block convention.       |
+| `experiment.linked_crystal.id`                | `_sc_crystal_block.id`                                                             | Partly | Python name is user-facing; CIF tag follows single-crystal block convention.     |
+| `experiment.linked_crystal.scale`             | `_sc_crystal_block.scale`                                                          | Partly | Python name is user-facing; CIF tag follows single-crystal block convention.     |
+| `experiment.excluded_regions[id].id`          | `_excluded_region.id`                                                              | Partly | Python collection is plural; CIF row category is singular.                       |
+| `experiment.excluded_regions[id].start`       | `_excluded_region.start`                                                           | Partly | Python collection is plural; CIF row category is singular.                       |
+| `experiment.excluded_regions[id].end`         | `_excluded_region.end`                                                             | Partly | Python collection is plural; CIF row category is singular.                       |
 
 ### Experiment Data And Calculated Results
 
@@ -238,16 +238,16 @@ should gain additional coverage-specific fields.
 Possible strict-correspondence target if a future ADR explicitly changes
 the accepted `_project.*` baseline:
 
-| Python path                      | Target CIF path           | Current state                                    |
-| -------------------------------- | ------------------------- | ------------------------------------------------ |
-| `project.info.name`              | `_info.name`              | Currently `_project.id`.                         |
-| `project.info.title`             | `_info.title`             | Currently `_project.title`.                      |
-| `project.info.description`       | `_info.description`       | Currently `_project.description`.                |
-| `project.info.created`           | `_info.created`           | Currently `_project.created`.                    |
-| `project.info.last_modified`     | `_info.last_modified`     | Currently `_project.last_modified`.              |
-| `project.chart.type`             | `_chart.type`             | Already matches.                                 |
-| `project.table.type`             | `_table.type`             | Already matches.                                 |
-| `project.verbosity.fit`          | `_verbosity.fit`          | Implemented direct fit-output verbosity mapping. |
+| Python path                  | Target CIF path       | Current state                                    |
+| ---------------------------- | --------------------- | ------------------------------------------------ |
+| `project.info.name`          | `_info.name`          | Currently `_project.id`.                         |
+| `project.info.title`         | `_info.title`         | Currently `_project.title`.                      |
+| `project.info.description`   | `_info.description`   | Currently `_project.description`.                |
+| `project.info.created`       | `_info.created`       | Currently `_project.created`.                    |
+| `project.info.last_modified` | `_info.last_modified` | Currently `_project.last_modified`.              |
+| `project.chart.type`         | `_chart.type`         | Already matches.                                 |
+| `project.table.type`         | `_table.type`         | Already matches.                                 |
+| `project.verbosity.fit`      | `_verbosity.fit`      | Implemented direct fit-output verbosity mapping. |
 
 Alternative target if the project identity field should be called `id`
 rather than `name`:

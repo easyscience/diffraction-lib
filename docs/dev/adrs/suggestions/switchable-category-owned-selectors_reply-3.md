@@ -17,16 +17,16 @@ elected to apply them in one pass.
 ### F1 — Peak CIF example persisted an alias, not the canonical tag
 
 **Verdict: agree.** The ADR text says CIF persists the canonical
-peak-profile tag (see §4 → "Aliases" and the §3 mixin sketch), but
-the Example block at the bottom of the ADR still showed
-`_peak.type 'pseudo-voigt'`. `'pseudo-voigt'` is a context-local
-alias, not a canonical factory tag. Canonical tags per
+peak-profile tag (see §4 → "Aliases" and the §3 mixin sketch), but the
+Example block at the bottom of the ADR still showed
+`_peak.type 'pseudo-voigt'`. `'pseudo-voigt'` is a context-local alias,
+not a canonical factory tag. Canonical tags per
 [`src/easydiffraction/datablocks/experiment/item/enums.py:159-165`](../../../src/easydiffraction/datablocks/experiment/item/enums.py)
 include `cwl-pseudo-voigt`, `cwl-pseudo-voigt-empirical-asymmetry`,
 `cwl-thompson-cox-hastings`, `tof-pseudo-voigt`, etc.
 
-The Example experiment "hrpt" is constant-wavelength, so the
-canonical tag is `cwl-pseudo-voigt`.
+The Example experiment "hrpt" is constant-wavelength, so the canonical
+tag is `cwl-pseudo-voigt`.
 
 **Action.** Updated the Example CIF block:
 
@@ -34,12 +34,11 @@ canonical tag is `cwl-pseudo-voigt`.
 _peak.type                cwl-pseudo-voigt
 ```
 
-Added a sentence to the surrounding prose noting that CIF stores
-the canonical tag while the writable Python setter
-`experiment.peak.type` accepts the alias too and canonicalizes
-before persisting. The Python surface block keeps
-`peak.type = 'pseudo-voigt'` because that is exactly the alias-
-accepting behaviour the ADR proposes.
+Added a sentence to the surrounding prose noting that CIF stores the
+canonical tag while the writable Python setter `experiment.peak.type`
+accepts the alias too and canonicalizes before persisting. The Python
+surface block keeps `peak.type = 'pseudo-voigt'` because that is exactly
+the alias- accepting behaviour the ADR proposes.
 
 ### F2 — Renderer Shape 2 template was unimplementable and omitted `auto`
 
@@ -47,13 +46,13 @@ accepting behaviour the ADR proposes.
 
 [`src/easydiffraction/display/base.py:138-141`](../../../src/easydiffraction/display/base.py)
 defines `descriptions()` as returning `list[tuple[str, str]]`, not a
-mapping; my sketch called `.get(engine, '')` on it, which would
-raise `AttributeError`. Separately,
+mapping; my sketch called `.get(engine, '')` on it, which would raise
+`AttributeError`. Separately,
 [`src/easydiffraction/project/categories/rendering/default.py:23-24`](../../../src/easydiffraction/project/categories/rendering/default.py)
-defines the supported set as `[AUTO_ENGINE, *engine_enum_values]`,
-with `'auto'` as the default value. Omitting `'auto'` from
-`_supported_types()` means `show_supported()` cannot mark the
-current row when the chart/table type is at its default.
+defines the supported set as `[AUTO_ENGINE, *engine_enum_values]`, with
+`'auto'` as the default value. Omitting `'auto'` from
+`_supported_types()` means `show_supported()` cannot mark the current
+row when the chart/table type is at its default.
 
 **Action.** Rewrote the Shape 2 template:
 
@@ -71,10 +70,10 @@ class ChartBase(CategoryItem, SwitchableCategoryBase):
 
 Three concrete corrections compared to the prior sketch:
 
-1. `descriptions()` is used as a list (its actual return type), not
-   a dict. Its rows are spliced directly into the result.
-2. The `'auto'` sentinel is prepended as a row so it can be marked
-   with `'*'` when it is the active value (it is the default).
+1. `descriptions()` is used as a list (its actual return type), not a
+   dict. Its rows are spliced directly into the result.
+2. The `'auto'` sentinel is prepended as a row so it can be marked with
+   `'*'` when it is the active value (it is the default).
 3. The auto-row description lives on a `ClassVar` so `TableBase`
    inherits the same string by re-using the pattern with its own
    factory.
@@ -95,25 +94,25 @@ anchor were already correct.
 
 ## Pattern note
 
-All three findings are the same shape: example-correctness slips at
-the boundary between what the ADR proposes and what the source
-actually exposes. This is the third consecutive review to surface a
-batch of these (Reply 1 fix-up caught invented `_peak.broadening_*`
-tags and missing `Calculator` rename; Reply 2 addendum caught the
-`background.create(Chebyshev_order=...)` CIF-vs-Python keyword
-mix-up). Each ADR example must be grepped against the source before
-being committed.
+All three findings are the same shape: example-correctness slips at the
+boundary between what the ADR proposes and what the source actually
+exposes. This is the third consecutive review to surface a batch of
+these (Reply 1 fix-up caught invented `_peak.broadening_*` tags and
+missing `Calculator` rename; Reply 2 addendum caught the
+`background.create(Chebyshev_order=...)` CIF-vs-Python keyword mix-up).
+Each ADR example must be grepped against the source before being
+committed.
 
 ## Verification
 
-This reply is a static one. No tests, lint, build, formatting, or
-`pixi` commands were run, matching the reviewer's own constraint.
-No markdown formatter was run on this reply or the ADR per the
+This reply is a static one. No tests, lint, build, formatting, or `pixi`
+commands were run, matching the reviewer's own constraint. No markdown
+formatter was run on this reply or the ADR per the
 [`.github/copilot-instructions.md`](../../../../.github/copilot-instructions.md)
 review/reply formatting rule.
 
-The implementing plan (separate file, drafted only after ADR
-acceptance) will include the standard Phase-2 verification suite.
+The implementing plan (separate file, drafted only after ADR acceptance)
+will include the standard Phase-2 verification suite.
 
 ## Summary of files touched by this reply
 

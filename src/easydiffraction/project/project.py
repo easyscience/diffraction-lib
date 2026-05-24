@@ -175,7 +175,7 @@ def _load_project_analysis(project: Project, project_path: pathlib.Path) -> None
         project._analysis._restore_live_parameter_state(project._build_parameter_map())
 
 
-class Project(GuardedBase):
+class Project(GuardedBase):  # noqa: PLR0904
     """
     Central API for managing a diffraction data analysis project.
 
@@ -220,7 +220,8 @@ class Project(GuardedBase):
         self._chart._parent = self
         self._table._parent = self
 
-    def _supported_filters_for(self, category: object) -> dict[str, object]:
+    @staticmethod
+    def _supported_filters_for(category: object) -> dict[str, object]:
         """Return owner context filters for a switchable category."""
         del category
         return {}

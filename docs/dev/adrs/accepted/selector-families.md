@@ -38,17 +38,17 @@ or activates sibling categories.
 
 Recognize three selector families:
 
-| Family                       | User intent                     | Examples                                                                                |
-| ---------------------------- | ------------------------------- | --------------------------------------------------------------------------------------- |
-| Backend selector             | Pick an execution backend       | `experiment.calculator.type`, `project.chart.type`, `project.table.type`                |
-| Switchable-category selector | Swap a category implementation  | `analysis.minimizer.type`, `experiment.background.type`, `experiment.peak.type`         |
-| Active-sibling selector      | Pick the active sibling surface | `analysis.fitting_mode.type`                                                            |
+| Family                       | User intent                     | Examples                                                                        |
+| ---------------------------- | ------------------------------- | ------------------------------------------------------------------------------- |
+| Backend selector             | Pick an execution backend       | `experiment.calculator.type`, `project.chart.type`, `project.table.type`        |
+| Switchable-category selector | Swap a category implementation  | `analysis.minimizer.type`, `experiment.background.type`, `experiment.peak.type` |
+| Active-sibling selector      | Pick the active sibling surface | `analysis.fitting_mode.type`                                                    |
 
 Backend selectors live on dedicated configuration categories.
 Switchable-category selectors live on the category they replace, and the
-owner swaps the instance behind the same public property.
-Active-sibling selectors also live on a category and the owner decides
-which sibling categories are visible, authoritative, and serialized.
+owner swaps the instance behind the same public property. Active-sibling
+selectors also live on a category and the owner decides which sibling
+categories are visible, authoritative, and serialized.
 
 ## Consequences
 

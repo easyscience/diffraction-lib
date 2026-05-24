@@ -37,8 +37,8 @@ class ExtinctionBase(CategoryItem, SwitchableCategoryBase):
             cif_handler=CifHandler(names=['_extinction.type']),
         )
 
+    @staticmethod
     def _supported_types(
-        self,
         filters: dict[str, object],
     ) -> list[tuple[str, str]]:
         """Return extinction types supported for owner filters."""

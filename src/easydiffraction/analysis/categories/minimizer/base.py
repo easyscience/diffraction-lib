@@ -40,8 +40,8 @@ class MinimizerCategoryBase(CategoryItem, SwitchableCategoryBase):
             cif_handler=CifHandler(names=['_minimizer.type']),
         )
 
+    @staticmethod
     def _supported_types(
-        self,
         filters: dict[str, object],
     ) -> list[tuple[str, str]]:
         """Return minimizer types supported by the factory."""

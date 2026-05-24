@@ -31,7 +31,10 @@
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
-│   │   ├── 📁 fit_state
+│   │   ├── 📁 fitting_mode
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   └── 📄 factory.py
 │   │   ├── 📁 joint_fit
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -98,6 +101,7 @@
 │   ├── 📄 metadata.py
 │   ├── 📄 posterior.py
 │   ├── 📄 singleton.py
+│   ├── 📄 switchable.py
 │   ├── 📄 validation.py
 │   └── 📄 variable.py
 ├── 📁 crystallography
@@ -114,7 +118,7 @@
 │   │   │   │   ├── 📄 enums.py
 │   │   │   │   ├── 📄 factory.py
 │   │   │   │   └── 📄 line_segment.py
-│   │   │   ├── 📁 calculation
+│   │   │   ├── 📁 calculator
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 default.py
 │   │   │   │   └── 📄 factory.py
@@ -137,6 +141,7 @@
 │   │   │   │   └── 📄 factory.py
 │   │   │   ├── 📁 extinction
 │   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 base.py
 │   │   │   │   ├── 📄 becker_coppens.py
 │   │   │   │   └── 📄 factory.py
 │   │   │   ├── 📁 instrument
@@ -234,11 +239,15 @@
 │   └── 📄 results_sidecar.py
 ├── 📁 project
 │   ├── 📁 categories
+│   │   ├── 📁 chart
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   └── 📄 factory.py
 │   │   ├── 📁 info
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
-│   │   ├── 📁 rendering
+│   │   ├── 📁 table
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py

@@ -154,8 +154,6 @@ class TestLoadAnalysis:
         original.analysis.fit_result._set_iterations(37)
         original.analysis.fit_result._set_fitting_time(1.82)
         original.analysis.fit_result._set_reduced_chi_square(1.031)
-        original.analysis.minimizer._set_optimizer_name('lmfit')
-        original.analysis.minimizer._set_method_name('leastsq')
         original.analysis._set_has_persisted_fit_state(value=True)
         original.save_as(str(tmp_path / 'proj'))
 
@@ -213,8 +211,6 @@ class TestLoadAnalysis:
         original.analysis.fit_result._set_iterations(21)
         original.analysis.fit_result._set_fitting_time(0.74)
         original.analysis.fit_result._set_reduced_chi_square(1.031)
-        original.analysis.minimizer._set_optimizer_name('lmfit')
-        original.analysis.minimizer._set_method_name('leastsq')
         original.analysis.minimizer._set_objective_name('chi-square')
         original.analysis.minimizer._set_objective_value(1.031)
         original.analysis.minimizer._set_n_data_points(120)

@@ -42,15 +42,11 @@ class PeakBase(CategoryItem, SwitchableCategoryBase):
 
     def _canonicalize(self, value: str) -> str:
         """Resolve a context-local peak alias to a canonical tag."""
-        context = (
-            self._parent._peak_profile_context()
-            if self._parent is not None
-            else {}
-        )
+        context = self._parent._peak_profile_context() if self._parent is not None else {}
         return PeakFactory._canonical_tag_for(value, **context)
 
+    @staticmethod
     def _supported_types(
-        self,
         filters: dict[str, object],
     ) -> list[tuple[str, str]]:
         """Return peak profile types supported for owner filters."""
@@ -67,16 +63,8 @@ class PeakBase(CategoryItem, SwitchableCategoryBase):
 
     def show_supported(self) -> None:
         """Print supported peak profiles with context-local aliases."""
-        filters = (
-            self._parent._supported_filters_for(self)
-            if self._parent is not None
-            else {}
-        )
-        context = (
-            self._parent._peak_profile_context()
-            if self._parent is not None
-            else {}
-        )
+        filters = self._parent._supported_filters_for(self) if self._parent is not None else {}
+        context = self._parent._peak_profile_context() if self._parent is not None else {}
         rows = self._supported_types(filters)
         aliases = [PeakFactory._local_alias_for(tag, **context) for tag, _ in rows]
         show_aliases = any(alias != tag for alias, (tag, _) in zip(aliases, rows, strict=True))
@@ -92,8 +80,7 @@ class PeakBase(CategoryItem, SwitchableCategoryBase):
             columns_headers = ['', 'Type', 'Description']
             columns_alignment = ['left', 'left', 'left']
             columns_data = [
-                ['*' if tag == self.type else '', tag, description]
-                for tag, description in rows
+                ['*' if tag == self.type else '', tag, description] for tag, description in rows
             ]
 
         console.paragraph('Peak types')

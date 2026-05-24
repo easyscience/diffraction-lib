@@ -40,7 +40,7 @@ def test_from_cif_str_restores_non_default_peak_profile_type():
         name='test',
         sample_form='powder',
         beam_mode='constant wavelength',
-        radiation_probe='x-ray',
+        radiation_probe='xray',
         scattering_type='bragg',
     )
     expt.peak.type = 'pseudo-voigt + empirical asymmetry'
@@ -52,7 +52,7 @@ def test_from_cif_str_restores_non_default_peak_profile_type():
 
     loaded = ExperimentFactory.from_cif_str(cif_str)
 
-    assert loaded.peak.type == 'pseudo-voigt + empirical asymmetry'
+    assert loaded.peak.type == 'cwl-pseudo-voigt-empirical-asymmetry'
     assert loaded.peak.__class__.__name__ == 'CwlPseudoVoigtEmpiricalAsymmetry'
     assert abs(loaded.peak.asym_empir_1.value - (-0.005)) < 1e-6
     assert abs(loaded.peak.asym_empir_2.value - 0.067) < 1e-6

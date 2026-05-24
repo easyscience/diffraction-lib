@@ -15,8 +15,8 @@ Analysis and fitting.
 ## Context
 
 `analysis/analysis.cif` already persists analysis configuration such as
-`_minimizer.type`, `_fitting_mode.type`, aliases, constraints,
-and active fit-mode settings. That configuration alone is not enough to
+`_minimizer.type`, `_fitting_mode.type`, aliases, constraints, and
+active fit-mode settings. That configuration alone is not enough to
 reopen a saved project and continue the same fit-result, plotting, and
 command-line workflow.
 

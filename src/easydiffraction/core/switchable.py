@@ -28,10 +28,7 @@ class SwitchableCategoryBase(ABC):
     def type(self, value: str) -> None:
         """Request an owner-mediated switch to a new category type."""
         if self._parent is None:
-            msg = (
-                f'{type(self).__name__} is detached; '
-                'cannot change type on a stale instance.'
-            )
+            msg = f'{type(self).__name__} is detached; cannot change type on a stale instance.'
             raise RuntimeError(msg)
 
         live = getattr(self._parent, self._owner_attr_name)
@@ -46,7 +43,8 @@ class SwitchableCategoryBase(ABC):
         canonical = self._canonicalize(value)
         getattr(self._parent, self._swap_method_name)(canonical)
 
-    def _canonicalize(self, value: str) -> str:
+    @staticmethod
+    def _canonicalize(value: str) -> str:
         """
         Resolve a user-supplied tag to its canonical factory tag.
 
@@ -79,16 +77,18 @@ class SwitchableCategoryBase(ABC):
         -------
         list[tuple[str, str]]
             Supported type tags and descriptions.
+
+        Raises
+        ------
+        NotImplementedError
+            If a concrete switchable category does not implement the
+            supported-types lookup.
         """
         raise NotImplementedError
 
     def show_supported(self) -> None:
         """Print supported types and mark the active one."""
-        filters = (
-            self._parent._supported_filters_for(self)
-            if self._parent is not None
-            else {}
-        )
+        filters = self._parent._supported_filters_for(self) if self._parent is not None else {}
         current = self.type
         columns_data = [
             ['*' if tag == current else '', tag, description]

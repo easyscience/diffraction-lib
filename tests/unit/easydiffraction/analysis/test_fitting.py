@@ -90,6 +90,9 @@ def test_fitter_fit_does_not_call_process_fit_results(monkeypatch):
         def _sync_result_to_parameters(self, params, engine_params):
             pass
 
+        def _finalize_timing(self):
+            pass
+
         def _stop_tracking(self):
             return None
 
@@ -155,6 +158,9 @@ def test_fitter_fit_defers_minimizer_tracking_until_postprocessing(monkeypatch):
 
         def _stop_tracking(self):
             self.stop_calls += 1
+
+        def _finalize_timing(self):
+            pass
 
     analysis_events: list[str] = []
     analysis = SimpleNamespace(

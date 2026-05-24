@@ -44,8 +44,8 @@ class BackgroundBase(CategoryCollection, SwitchableCategoryBase):
             cif_handler=CifHandler(names=['_background.type']),
         )
 
+    @staticmethod
     def _supported_types(
-        self,
         filters: dict[str, object],
     ) -> list[tuple[str, str]]:
         """Return background types supported for owner filters."""

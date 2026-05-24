@@ -43,8 +43,8 @@ class FittingMode(CategoryItem, SwitchableCategoryBase):
             cif_handler=CifHandler(names=['_fitting_mode.type']),
         )
 
+    @staticmethod
     def _supported_types(
-        self,
         filters: dict[str, object],
     ) -> list[tuple[str, str]]:
         """Return supported fitting modes."""

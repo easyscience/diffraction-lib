@@ -30,11 +30,12 @@ acceptance because they would mislead the implementing plan.
 
 ### F1 - Peak CIF example still persists an alias, not the canonical tag
 
-Reply 2 says the user decision for peak aliases is: Python setters accept
-either aliases or canonical tags, but CIF persists the canonical tag so
-round-trips are stable. The ADR text now says the same in the alias
-section (`../accepted/switchable-category-owned-selectors.md:329`) and in the mixin
-docstring (`../accepted/switchable-category-owned-selectors.md:236`).
+Reply 2 says the user decision for peak aliases is: Python setters
+accept either aliases or canonical tags, but CIF persists the canonical
+tag so round-trips are stable. The ADR text now says the same in the
+alias section (`../accepted/switchable-category-owned-selectors.md:329`)
+and in the mixin docstring
+(`../accepted/switchable-category-owned-selectors.md:236`).
 
 The end-state CIF example still shows:
 
@@ -42,9 +43,10 @@ The end-state CIF example still shows:
 _peak.type                'pseudo-voigt'
 ```
 
-(`../accepted/switchable-category-owned-selectors.md:918`). In the current peak
-system, `pseudo-voigt` is a context-local alias, while canonical tags
-are values such as `cwl-pseudo-voigt` and `tof-pseudo-voigt`
+(`../accepted/switchable-category-owned-selectors.md:918`). In the
+current peak system, `pseudo-voigt` is a context-local alias, while
+canonical tags are values such as `cwl-pseudo-voigt` and
+`tof-pseudo-voigt`
 (`src/easydiffraction/datablocks/experiment/categories/peak/factory.py:34`,
 `src/easydiffraction/datablocks/experiment/item/enums.py:159`). The
 Python example may keep `peak.type = 'pseudo-voigt'` because the setter
@@ -65,8 +67,9 @@ return [
 ]
 ```
 
-(`../accepted/switchable-category-owned-selectors.md:305`). `RendererFactoryBase.descriptions()`
-returns a `list[tuple[str, str]]`, not a mapping, so `.get()` will fail
+(`../accepted/switchable-category-owned-selectors.md:305`).
+`RendererFactoryBase.descriptions()` returns a `list[tuple[str, str]]`,
+not a mapping, so `.get()` will fail
 (`src/easydiffraction/display/base.py:141`). The template also omits the
 `'auto'` sentinel even though §8a says `project.chart.type` and
 `project.table.type` include `'auto'`, and the current rendering
@@ -86,9 +89,9 @@ The Family-D catalog lists verbosity as:
 project.config.verbosity.fit
 ```
 
-(`../accepted/switchable-category-owned-selectors.md:728`). The public project API
-does not expose `config`; `Project` stores `_config` privately and
-exposes `project.verbosity` directly
+(`../accepted/switchable-category-owned-selectors.md:728`). The public
+project API does not expose `config`; `Project` stores `_config`
+privately and exposes `project.verbosity` directly
 (`src/easydiffraction/project/project.py:199`,
 `src/easydiffraction/project/project.py:317`). The underlying
 `Verbosity.fit` descriptor is public on that category

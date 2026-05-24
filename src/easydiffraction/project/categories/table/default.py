@@ -72,8 +72,8 @@ class Table(CategoryItem, SwitchableCategoryBase):
         """Live table-rendering facade."""
         return self._tabler
 
+    @staticmethod
     def _supported_types(
-        self,
         filters: dict[str, object],
     ) -> list[tuple[str, str]]:
         """Return supported table renderer backends."""

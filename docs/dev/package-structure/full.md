@@ -51,7 +51,12 @@
 │   │   │   │   └── 🏷️ class FitResult
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class FitResultFactory
-│   │   ├── 📁 fit_state
+│   │   ├── 📁 fitting_mode
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   └── 🏷️ class FittingMode
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class FittingModeFactory
 │   │   ├── 📁 joint_fit
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -195,6 +200,8 @@
 │   ├── 📄 singleton.py
 │   │   ├── 🏷️ class SingletonBase
 │   │   └── 🏷️ class ConstraintsHandler
+│   ├── 📄 switchable.py
+│   │   └── 🏷️ class SwitchableCategoryBase
 │   ├── 📄 validation.py
 │   │   ├── 🏷️ class DataTypeHints
 │   │   ├── 🏷️ class DataTypes
@@ -239,12 +246,12 @@
 │   │   │   │   └── 📄 line_segment.py
 │   │   │   │       ├── 🏷️ class LineSegment
 │   │   │   │       └── 🏷️ class LineSegmentBackground
-│   │   │   ├── 📁 calculation
+│   │   │   ├── 📁 calculator
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 default.py
-│   │   │   │   │   └── 🏷️ class Calculation
+│   │   │   │   │   └── 🏷️ class Calculator
 │   │   │   │   └── 📄 factory.py
-│   │   │   │       └── 🏷️ class CalculationFactory
+│   │   │   │       └── 🏷️ class CalculatorCategoryFactory
 │   │   │   ├── 📁 data
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 bragg_pd.py
@@ -283,6 +290,8 @@
 │   │   │   │       └── 🏷️ class ExperimentTypeFactory
 │   │   │   ├── 📁 extinction
 │   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 base.py
+│   │   │   │   │   └── 🏷️ class ExtinctionBase
 │   │   │   │   ├── 📄 becker_coppens.py
 │   │   │   │   │   └── 🏷️ class BeckerCoppensExtinction
 │   │   │   │   └── 📄 factory.py
@@ -481,18 +490,24 @@
 │   └── 📄 results_sidecar.py
 ├── 📁 project
 │   ├── 📁 categories
+│   │   ├── 📁 chart
+│   │   │   ├── 📄 __init__.py
+│   │   │   ├── 📄 default.py
+│   │   │   │   └── 🏷️ class Chart
+│   │   │   └── 📄 factory.py
+│   │   │       └── 🏷️ class ChartFactory
 │   │   ├── 📁 info
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   │   └── 🏷️ class ProjectInfo
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class ProjectInfoFactory
-│   │   ├── 📁 rendering
+│   │   ├── 📁 table
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
-│   │   │   │   └── 🏷️ class Rendering
+│   │   │   │   └── 🏷️ class Table
 │   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class RenderingFactory
+│   │   │       └── 🏷️ class TableFactory
 │   │   ├── 📁 verbosity
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py

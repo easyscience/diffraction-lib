@@ -219,14 +219,13 @@ the `type` swap path is now safe.
 
 ## Addendum — design clarifications raised after the initial reply
 
-Three of the review-1 findings were revisited in a follow-up
-discussion. The ADR is amended again to reflect the revised
-positions:
+Three of the review-1 findings were revisited in a follow-up discussion.
+The ADR is amended again to reflect the revised positions:
 
 ### F6 walked back — `_minimizer.optimizer_name` / `_minimizer.method_name` are dropped after all
 
-My original reply accepted the reviewer's claim that these fields
-"carry information beyond the tag". Re-reading the engine sources
+My original reply accepted the reviewer's claim that these fields "carry
+information beyond the tag". Re-reading the engine sources
 ([`src/easydiffraction/analysis/minimizers/lmfit_leastsq.py`](../../../src/easydiffraction/analysis/minimizers/lmfit_leastsq.py)
 and the matching `bumps_lm.py`, `dfols.py`, …) shows that:
 
@@ -235,100 +234,97 @@ and the matching `bumps_lm.py`, `dfols.py`, …) shows that:
   (`DEFAULT_METHOD = 'leastsq'` etc.).
 - The public API never overrides them at construction.
 
-So in practice the persisted values are **deterministic functions
-of the tag**, exactly the duplication this ADR is built to remove.
-Dropping them and deriving `FitResults.optimizer_name` /
-`FitResults.method_name` from the active minimizer class on restore
-is the consistent move.
+So in practice the persisted values are **deterministic functions of the
+tag**, exactly the duplication this ADR is built to remove. Dropping
+them and deriving `FitResults.optimizer_name` / `FitResults.method_name`
+from the active minimizer class on restore is the consistent move.
 
 ADR amendment: §3 now drops both fields; the Consequences list adds
-[`analysis-cif-fit-state.md`](../accepted/analysis-cif-fit-state.md)
-to the ADRs that need to be amended.
+[`analysis-cif-fit-state.md`](../accepted/analysis-cif-fit-state.md) to
+the ADRs that need to be amended.
 
 ### F3 refined — `show_supported()` renders in the mixin
 
 My original reply pushed the rendering through a per-owner
-`_show_supported_for_<cat>()` method, which would have duplicated
-the table-building code across every owner. Concrete factoring is
-cleaner: the mixin's `show_supported()` builds the
-`['*', tag, description]` table itself; the owner only contributes a
-context-filter dict through `_supported_filters_for(category)`.
-Every existing `show_<cat>_types()` method on an owner is **deleted**
-(not renamed) because the rendering moves to the mixin.
+`_show_supported_for_<cat>()` method, which would have duplicated the
+table-building code across every owner. Concrete factoring is cleaner:
+the mixin's `show_supported()` builds the `['*', tag, description]`
+table itself; the owner only contributes a context-filter dict through
+`_supported_filters_for(category)`. Every existing `show_<cat>_types()`
+method on an owner is **deleted** (not renamed) because the rendering
+moves to the mixin.
 
 ADR amendment: §4 contains the refined mixin body and the matching
 owner-side `_supported_filters_for()` dispatch sketch.
 
 ### F2 expanded — `calculation` is brought in scope via the mechanism-vs-surface framing
 
-My original reply removed `calculation` from scope on the grounds
-that the reviewer was correct: it is a backend selector (engine
-swap), not a category instance swap. That is true at the mechanism
-level. But from the user's perspective, setting
-`calculation.calculator_type = 'cryspy'` is exactly the same
-gesture as setting `analysis.minimizer_type = 'bumps (lm)'`. The
-distinction matters internally; the public surface should be
-uniform.
+My original reply removed `calculation` from scope on the grounds that
+the reviewer was correct: it is a backend selector (engine swap), not a
+category instance swap. That is true at the mechanism level. But from
+the user's perspective, setting `calculation.calculator_type = 'cryspy'`
+is exactly the same gesture as setting
+`analysis.minimizer_type = 'bumps (lm)'`. The distinction matters
+internally; the public surface should be uniform.
 
-The ADR is re-shaped around a **mechanism-vs-surface** framing.
-Three families per
-[`selector-families.md`](../accepted/selector-families.md) all
-present the same writable `category.type` surface; the family
-distinction documents what happens behind the setter (instance
-swap, engine swap, sibling activation). `calculation` is brought
-back in scope as a Family-B row, alongside two new structural
-changes (rendering split into `chart` + `table`, and `fitting_mode`
-promotion from bare descriptor to category) that bring the rest of
-the codebase under the same rule.
+The ADR is re-shaped around a **mechanism-vs-surface** framing. Three
+families per [`selector-families.md`](../accepted/selector-families.md)
+all present the same writable `category.type` surface; the family
+distinction documents what happens behind the setter (instance swap,
+engine swap, sibling activation). `calculation` is brought back in scope
+as a Family-B row, alongside two new structural changes (rendering split
+into `chart` + `table`, and `fitting_mode` promotion from bare
+descriptor to category) that bring the rest of the codebase under the
+same rule.
 
 ADR amendments:
 
 - §3 CIF mapping table grows from 5 rows to 8.
-- §6 scope rewritten as "every selector with a writable type
-  surface", grouped by mechanism behind the surface rather than by
-  whether it is in scope.
+- §6 scope rewritten as "every selector with a writable type surface",
+  grouped by mechanism behind the surface rather than by whether it is
+  in scope.
 - New §8 records the two structural changes (rendering split,
   fitting_mode promotion).
-- Catalog of selectors collapses Families A/B/C into one in-scope
-  8-row table; Family D stays as a separate out-of-scope table.
+- Catalog of selectors collapses Families A/B/C into one in-scope 8-row
+  table; Family D stays as a separate out-of-scope table.
 - Consequences widens the list of ADRs to amend (selector-families,
   fit-mode-categories, analysis-cif-fit-state).
 - Example CIF section now shows all three files post-migration.
 
 ### Naming consistency — `Calculation` → `Calculator`
 
-A follow-up question pointed out that every other in-scope category
-is named after the **thing being selected** (`minimizer` =
-minimizer, `peak` = peak, `background` = background, `extinction` =
-extinction, `chart` = chart, `table` = table, `fitting_mode` =
-fitting mode). `calculation` was the odd one out — the thing whose
-type is selected is a calculator, not a calculation. The
-mismatched category name is the only reason the descriptor today
-is called `calculator_type` rather than `type`.
+A follow-up question pointed out that every other in-scope category is
+named after the **thing being selected** (`minimizer` = minimizer,
+`peak` = peak, `background` = background, `extinction` = extinction,
+`chart` = chart, `table` = table, `fitting_mode` = fitting mode).
+`calculation` was the odd one out — the thing whose type is selected is
+a calculator, not a calculation. The mismatched category name is the
+only reason the descriptor today is called `calculator_type` rather than
+`type`.
 
-Renaming the Python class `Calculation` → `Calculator`, the
-owner attribute `experiment.calculation` → `experiment.calculator`,
-the descriptor `calculator_type` → `type`, and the CIF block
-`_calculation.*` → `_calculator.*` is the consistent move. The
-mechanism stays Family B (engine swap) — only the user-facing
-surface and the CIF block name change.
+Renaming the Python class `Calculation` → `Calculator`, the owner
+attribute `experiment.calculation` → `experiment.calculator`, the
+descriptor `calculator_type` → `type`, and the CIF block
+`_calculation.*` → `_calculator.*` is the consistent move. The mechanism
+stays Family B (engine swap) — only the user-facing surface and the CIF
+block name change.
 
 ADR amendments:
 
 - §8 grows a third structural change, §8c.
-- Catalog row 5 updates Python/CIF columns and marks the mechanism
-  as "B + §8 rename".
-- §3 table, §6 in-scope list, §4 mechanism example, and Example
-  CIF / Python sections all updated.
+- Catalog row 5 updates Python/CIF columns and marks the mechanism as
+  "B + §8 rename".
+- §3 table, §6 in-scope list, §4 mechanism example, and Example CIF /
+  Python sections all updated.
 - ADRs to amend now also includes
   [`python-cif-category-correspondence.md`](../accepted/python-cif-category-correspondence.md)
   to reflect the category rename.
 
 ### Example accuracy — peak and background descriptor names
 
-The first version of the Example section used invented descriptor
-names (`_peak.broadening_u/v/w`, `_pd_background.order/coeff`).
-Grepping the source shows the real spellings:
+The first version of the Example section used invented descriptor names
+(`_peak.broadening_u/v/w`, `_pd_background.order/coeff`). Grepping the
+source shows the real spellings:
 
 - Peak (CWL profile parameters per
   [`peak/cwl_mixins.py`](../../../src/easydiffraction/datablocks/experiment/categories/peak/cwl_mixins.py)):
@@ -339,26 +335,25 @@ Grepping the source shows the real spellings:
   `_pd_background.id`, `_pd_background.Chebyshev_order`,
   `_pd_background.Chebyshev_coef`.
 
-The Example CIF and Python surface sections in the ADR are updated
-to use the real names so the document is usable as a concrete
-reference for the implementing plan. Going forward every CIF tag
-and descriptor name in ADR examples is grepped from the source
-before being written.
+The Example CIF and Python surface sections in the ADR are updated to
+use the real names so the document is usable as a concrete reference for
+the implementing plan. Going forward every CIF tag and descriptor name
+in ADR examples is grepped from the source before being written.
 
 ### Net effect
 
 Eight selectors, one rule. The user types
 `<owner>.<category>.type = 'X'` and runs
-`<owner>.<category>.show_supported()` for every selector in the
-project; the CIF reads `_<cat>.type` everywhere. The mechanism
-families (A/B/C) remain a useful internal classification but no
-longer leak into the public API.
+`<owner>.<category>.show_supported()` for every selector in the project;
+the CIF reads `_<cat>.type` everywhere. The mechanism families (A/B/C)
+remain a useful internal classification but no longer leak into the
+public API.
 
 ## Verification
 
 This reply is a static one. No tests, lint, build, or `pixi` commands
-were run, matching the reviewer's own constraint. Markdown files in
-this review cycle were also not run through `prettier` per the new
+were run, matching the reviewer's own constraint. Markdown files in this
+review cycle were also not run through `prettier` per the new
 review/reply formatting rule in
 [`.github/copilot-instructions.md`](../../../../.github/copilot-instructions.md)
 → **Change Discipline**.
@@ -369,7 +364,7 @@ acceptance) will include the standard Phase-2 verification suite.
 ## Summary of files touched by this reply
 
 - [`docs/dev/adrs/accepted/switchable-category-owned-selectors.md`](../accepted/switchable-category-owned-selectors.md)
-  — amended per F1–F7 in the initial pass; re-amended per the
-  addendum above.
+  — amended per F1–F7 in the initial pass; re-amended per the addendum
+  above.
 - [`docs/dev/adrs/suggestions/switchable-category-owned-selectors_reply-1.md`](switchable-category-owned-selectors_reply-1.md)
   — this file.
