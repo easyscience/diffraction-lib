@@ -7,8 +7,8 @@ from __future__ import annotations
 import multiprocessing
 import os
 import pickle  # noqa: S403 - used only to test whether multiprocessing can serialize a callable.
-from collections.abc import Callable
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import emcee
 import numpy as np
@@ -32,12 +32,184 @@ DEFAULT_NSTEPS = 5000
 DEFAULT_NBURN = 1000
 DEFAULT_THIN = 5
 DEFAULT_NWALKERS = 32
-DEFAULT_PARALLEL_WORKERS = 0
+DEFAULT_PARALLEL_WORKERS = 1
 DEFAULT_INITIALIZATION_METHOD = InitializationMethodEnum.BALL
 DEFAULT_PROPOSAL_MOVES = 'stretch'
 MAX_RANDOM_SEED = int(np.iinfo(np.uint32).max)
 EMCEE_CHAIN_GROUP = 'emcee_chain'
 EMCEE_FAILURES = (ArithmeticError, RuntimeError, TypeError, ValueError)
+EMCEE_SAMPLE_ARRAY_NDIM = 3
+TOTAL_PROGRESS_POINTS = 25
+SUPPORTED_INITIALIZATION_METHODS = (
+    InitializationMethodEnum.BALL,
+    InitializationMethodEnum.UNIFORM,
+    InitializationMethodEnum.PRIOR,
+)
+SUPPORTED_INITIALIZATION_METHOD_SET = frozenset(SUPPORTED_INITIALIZATION_METHODS)
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+
+class _EmceeProgressReporter:
+    """
+    Translate emcee iteration states into sampler progress rows.
+    """
+
+    def __init__(
+        self,
+        *,
+        tracker: object,
+        total_steps: int,
+        burn_steps: int,
+    ) -> None:
+        self._tracker = tracker
+        self._total_steps = max(1, total_steps)
+        self._burn_steps = min(max(0, burn_steps), self._total_steps)
+        burn_target_count, sampling_target_count = self._phase_progress_point_counts(
+            total_steps=self._total_steps,
+            burn_steps=self._burn_steps,
+        )
+        self._burn_targets = self._progress_targets(
+            start=1,
+            stop=self._burn_steps,
+            target_count=burn_target_count,
+        )
+        self._sampling_targets = self._progress_targets(
+            start=self._burn_steps + 1,
+            stop=self._total_steps,
+            target_count=sampling_target_count,
+        )
+        self._next_burn_target_index = 0
+        self._next_sampling_target_index = 0
+
+    def report(self, *, iteration: int, state: object) -> None:
+        """
+        Forward one emcee state when it reaches a report target.
+        """
+        clamped_iteration = min(max(1, iteration), self._total_steps)
+        if not self._should_report(clamped_iteration):
+            return
+
+        self._tracker.track_sampler_progress(
+            SamplerProgressUpdate(
+                iteration=clamped_iteration,
+                total_iterations=self._total_steps,
+                phase=self._phase_name(clamped_iteration),
+                progress_percent=self._progress_percent(clamped_iteration),
+                log_posterior=self._log_posterior_from_state(state),
+                reduced_chi2=self._reduced_chi2_from_tracker(),
+                elapsed_time=self._tracker._current_elapsed_time(),
+                force_report=True,
+            )
+        )
+
+    @staticmethod
+    def _phase_progress_point_counts(
+        *,
+        total_steps: int,
+        burn_steps: int,
+    ) -> tuple[int, int]:
+        """Return proportional burn and sampling progress counts."""
+        total_points = min(TOTAL_PROGRESS_POINTS, max(1, total_steps))
+        burn_steps = min(max(0, burn_steps), total_steps)
+        sampling_steps = max(total_steps - burn_steps, 0)
+
+        if burn_steps == 0:
+            return 0, total_points
+        if sampling_steps == 0:
+            return total_points, 0
+
+        burn_target_count = round(total_points * burn_steps / total_steps)
+        burn_target_count = min(
+            max(burn_target_count, 1),
+            burn_steps,
+            total_points - 1,
+        )
+        sampling_target_count = min(
+            max(total_points - burn_target_count, 1),
+            sampling_steps,
+        )
+        return burn_target_count, sampling_target_count
+
+    @staticmethod
+    def _progress_targets(
+        *,
+        start: int,
+        stop: int,
+        target_count: int,
+    ) -> list[int]:
+        """Return monotonically increasing reporting targets."""
+        if target_count < 1 or stop < start:
+            return []
+
+        targets = np.linspace(start, stop, num=target_count)
+        rounded = np.rint(targets).astype(int)
+        unique_targets = sorted({int(value) for value in rounded if start <= value <= stop})
+        if start not in unique_targets:
+            unique_targets.insert(0, start)
+        if stop not in unique_targets:
+            unique_targets.append(stop)
+        return unique_targets
+
+    def _should_report(self, iteration: int) -> bool:
+        """Return whether this iteration should be rendered."""
+        if self._phase_name(iteration) == 'burn-in':
+            return self._consume_progress_target(
+                iteration,
+                phase_targets=self._burn_targets,
+                target_index_name='_next_burn_target_index',
+            )
+
+        return self._consume_progress_target(
+            iteration,
+            phase_targets=self._sampling_targets,
+            target_index_name='_next_sampling_target_index',
+        )
+
+    def _consume_progress_target(
+        self,
+        iteration: int,
+        *,
+        phase_targets: list[int],
+        target_index_name: str,
+    ) -> bool:
+        """Advance a phase target pointer when iteration reaches it."""
+        target_index = getattr(self, target_index_name)
+        should_report = False
+        while target_index < len(phase_targets) and iteration >= phase_targets[target_index]:
+            target_index += 1
+            should_report = True
+        setattr(self, target_index_name, target_index)
+        return should_report
+
+    def _phase_name(self, iteration: int) -> str:
+        """Return the current emcee phase name."""
+        if iteration <= self._burn_steps:
+            return 'burn-in'
+        return 'sampling'
+
+    def _progress_percent(self, iteration: int) -> float:
+        """Return emcee progress as a percentage."""
+        return 100.0 * min(iteration, self._total_steps) / self._total_steps
+
+    @staticmethod
+    def _log_posterior_from_state(state: object) -> float:
+        """Return the best finite log posterior from an emcee state."""
+        log_probability = getattr(state, 'log_prob', None)
+        if log_probability is None:
+            return float('-inf')
+
+        values = np.asarray(log_probability, dtype=float)
+        finite_values = values[np.isfinite(values)]
+        if finite_values.size == 0:
+            return float('-inf')
+        return float(np.max(finite_values))
+
+    def _reduced_chi2_from_tracker(self) -> float:
+        """Return the current best reduced chi-square, if available."""
+        best_chi2 = getattr(self._tracker, 'best_chi2', None)
+        return float(best_chi2) if best_chi2 is not None else float('nan')
 
 
 @MinimizerFactory.register
@@ -91,7 +263,7 @@ class EmceeMinimizer(MinimizerBase):
 
     @property
     def thin(self) -> int:
-        """emcee thinning interval."""
+        """Emcee thinning interval."""
         return self._thin
 
     @thin.setter
@@ -109,7 +281,9 @@ class EmceeMinimizer(MinimizerBase):
 
     @property
     def parallel_workers(self) -> int:
-        """Worker count; ``0`` asks for all CPUs and ``1`` runs serially."""
+        """
+        Worker count; ``0`` asks for all CPUs and ``1`` runs serially.
+        """
         return self._parallel_workers
 
     @parallel_workers.setter
@@ -118,7 +292,7 @@ class EmceeMinimizer(MinimizerBase):
 
     @property
     def initialization_method(self) -> InitializationMethodEnum:
-        """emcee walker initialization method."""
+        """Emcee walker initialization method."""
         return self._initialization_method
 
     @initialization_method.setter
@@ -127,14 +301,14 @@ class EmceeMinimizer(MinimizerBase):
 
     @property
     def proposal_moves(self) -> str:
-        """emcee proposal move name."""
+        """Emcee proposal move name."""
         return self._proposal_moves
 
     @proposal_moves.setter
     def proposal_moves(self, value: str) -> None:
         self._proposal_moves = self._validated_proposal_moves(value)
 
-    def fit(
+    def fit(  # noqa: PLR0913
         self,
         parameters: list[object],
         objective_function: Callable[..., object],
@@ -223,7 +397,9 @@ class EmceeMinimizer(MinimizerBase):
         cls,
         parameters: list[object],
     ) -> None:
-        """Validate finite ordered bounds for sampled emcee parameters."""
+        """
+        Validate finite ordered bounds for sampled emcee parameters.
+        """
         issues: list[str] = []
         for parameter in parameters:
             parameter_name = cls._parameter_name_for_bound_validation(parameter)
@@ -309,7 +485,9 @@ class EmceeMinimizer(MinimizerBase):
 
     @staticmethod
     def _validated_non_negative_integer(name: str, value: float) -> int:
-        """Validate an emcee setting that must be a non-negative integer."""
+        """
+        Validate an emcee setting that must be a non-negative integer.
+        """
         if isinstance(value, bool):
             msg = f"emcee setting '{name}' must be a non-negative integer."
             raise TypeError(msg)
@@ -333,28 +511,14 @@ class EmceeMinimizer(MinimizerBase):
             method = InitializationMethodEnum(value)
         except ValueError:
             valid_values = ', '.join(
-                initialization.value
-                for initialization in (
-                    InitializationMethodEnum.BALL,
-                    InitializationMethodEnum.UNIFORM,
-                    InitializationMethodEnum.PRIOR,
-                )
+                initialization.value for initialization in SUPPORTED_INITIALIZATION_METHODS
             )
             msg = f"emcee setting 'initialization_method' must be one of: {valid_values}."
             raise ValueError(msg) from None
 
-        if method not in (
-            InitializationMethodEnum.BALL,
-            InitializationMethodEnum.UNIFORM,
-            InitializationMethodEnum.PRIOR,
-        ):
+        if method not in SUPPORTED_INITIALIZATION_METHOD_SET:
             valid_values = ', '.join(
-                initialization.value
-                for initialization in (
-                    InitializationMethodEnum.BALL,
-                    InitializationMethodEnum.UNIFORM,
-                    InitializationMethodEnum.PRIOR,
-                )
+                initialization.value for initialization in SUPPORTED_INITIALIZATION_METHODS
             )
             msg = f"emcee setting 'initialization_method' must be one of: {valid_values}."
             raise ValueError(msg)
@@ -381,7 +545,7 @@ class EmceeMinimizer(MinimizerBase):
         parameters = list(kwargs['parameters'])
         parameter_names = list(kwargs['parameter_names'])
         random_seed = int(kwargs['random_seed'])
-        resume = bool(kwargs.get('resume', False))
+        resume = bool(kwargs.get('resume'))
         extra_steps = kwargs.get('extra_steps')
 
         self._validate_walker_count(n_parameters=len(parameter_names))
@@ -408,35 +572,17 @@ class EmceeMinimizer(MinimizerBase):
         )
         pool = self._build_pool(log_prob)
         try:
-            if resume:
-                self._validate_resume(
-                    backend=backend,
-                    n_parameters=len(parameter_names),
-                    extra_steps=extra_steps,
-                )
-            else:
-                backend.reset(self.nwalkers, len(parameter_names))
-
-            sampler = emcee.EnsembleSampler(
-                nwalkers=self.nwalkers,
-                ndim=len(parameter_names),
-                log_prob_fn=log_prob,
-                pool=pool,
-                moves=self._resolve_moves(self.proposal_moves),
+            sampler = self._run_sampler(
                 backend=backend,
+                log_prob=log_prob,
+                pool=pool,
+                parameters=parameters,
+                n_parameters=len(parameter_names),
+                random_seed=random_seed,
+                resume=resume,
+                extra_steps=extra_steps,
+                total_iterations=total_iterations,
             )
-            self._sampler = sampler
-
-            if resume:
-                sampler.run_mcmc(
-                    None,
-                    nsteps=int(extra_steps),
-                    skip_initial_state_check=True,
-                    progress=False,
-                )
-            else:
-                initial_state = self._initial_state(parameters, random_seed=random_seed)
-                sampler.run_mcmc(initial_state, nsteps=self.nsteps, progress=False)
         except EMCEE_FAILURES as error:
             return self._failure_result(
                 message=f'emcee sampling failed: {error}',
@@ -465,6 +611,87 @@ class EmceeMinimizer(MinimizerBase):
             starting_values=kwargs['starting_values'],
             starting_uncertainties=kwargs['starting_uncertainties'],
         )
+
+    def _run_sampler(  # noqa: PLR0913
+        self,
+        *,
+        backend: emcee.backends.HDFBackend,
+        log_prob: Callable[[np.ndarray], float],
+        pool: object | None,
+        parameters: list[object],
+        n_parameters: int,
+        random_seed: int,
+        resume: bool,
+        extra_steps: object,
+        total_iterations: int,
+    ) -> emcee.EnsembleSampler:
+        """Configure emcee, run sampling, and return the sampler."""
+        if resume:
+            self._validate_resume(
+                backend=backend,
+                n_parameters=n_parameters,
+                extra_steps=extra_steps,
+            )
+        else:
+            backend.reset(self.nwalkers, n_parameters)
+
+        sampler = emcee.EnsembleSampler(
+            nwalkers=self.nwalkers,
+            ndim=n_parameters,
+            log_prob_fn=log_prob,
+            pool=pool,
+            moves=self._resolve_moves(self.proposal_moves),
+            backend=backend,
+        )
+        self._sampler = sampler
+
+        reporter = _EmceeProgressReporter(
+            tracker=self.tracker,
+            total_steps=total_iterations,
+            burn_steps=0 if resume else self.nburn,
+        )
+        if resume:
+            self._sample_with_progress(
+                sampler=sampler,
+                initial_state=None,
+                iterations=int(extra_steps),
+                reporter=reporter,
+                skip_initial_state_check=True,
+            )
+            return sampler
+
+        initial_state = self._initial_state(parameters, random_seed=random_seed)
+        self._sample_with_progress(
+            sampler=sampler,
+            initial_state=initial_state,
+            iterations=self.nsteps,
+            reporter=reporter,
+            skip_initial_state_check=False,
+        )
+        return sampler
+
+    @staticmethod
+    def _sample_with_progress(
+        *,
+        sampler: emcee.EnsembleSampler,
+        initial_state: object | None,
+        iterations: int,
+        reporter: _EmceeProgressReporter,
+        skip_initial_state_check: bool,
+    ) -> None:
+        """
+        Run emcee one iteration at a time and report sampler progress.
+        """
+        for iteration, state in enumerate(
+            sampler.sample(
+                initial_state,
+                iterations=iterations,
+                skip_initial_state_check=skip_initial_state_check,
+                progress=False,
+            ),
+            start=1,
+        ):
+            reporter.report(iteration=iteration, state=state)
 
     @staticmethod
     def _backend_iteration(backend: object) -> int:
@@ -566,7 +793,7 @@ class EmceeMinimizer(MinimizerBase):
             return None
 
         try:
-            pickle.dumps(log_prob)  # noqa: S301 - no untrusted data is deserialized.
+            pickle.dumps(log_prob)
         except (AttributeError, TypeError, pickle.PickleError):
             self._warn_after_tracking(
                 'emcee parallel evaluation requires a picklable objective; '
@@ -648,7 +875,9 @@ class EmceeMinimizer(MinimizerBase):
         raw_state: object,
         sampler_completed: bool,
     ) -> OptimizeResult:
-        """Build a normalized failure result for an incomplete emcee run."""
+        """
+        Build a normalized failure result for an incomplete emcee run.
+        """
         return OptimizeResult(
             x=np.asarray(starting_values, dtype=float),
             dx=None,
@@ -668,7 +897,7 @@ class EmceeMinimizer(MinimizerBase):
             starting_uncertainties=list(starting_uncertainties),
         )
 
-    def _build_success_result(
+    def _build_success_result(  # noqa: PLR0914
         self,
         *,
         sampler: emcee.EnsembleSampler,
@@ -693,7 +922,11 @@ class EmceeMinimizer(MinimizerBase):
             n_parameters=len(parameter_names),
         )
 
-        if chain.ndim != 3 or chain.size == 0 or log_posterior.shape != chain.shape[:2]:
+        if (
+            chain.ndim != EMCEE_SAMPLE_ARRAY_NDIM
+            or chain.size == 0
+            or log_posterior.shape != chain.shape[:2]
+        ):
             return self._failure_result(
                 message='emcee sampling did not return usable posterior samples.',
                 starting_values=starting_values,
@@ -772,7 +1005,9 @@ class EmceeMinimizer(MinimizerBase):
         posterior_samples: PosteriorSamples,
         sampler: emcee.EnsembleSampler,
     ) -> dict[str, object]:
-        """Compute convergence diagnostics and add emcee acceptance rate."""
+        """
+        Compute convergence diagnostics and add emcee acceptance rate.
+        """
         try:
             convergence_diagnostics = compute_convergence_diagnostics(posterior_samples)
         except (TypeError, ValueError, RuntimeError) as error:
@@ -897,6 +1132,6 @@ class EmceeMinimizer(MinimizerBase):
         fit_results.result = raw_result
         return fit_results
 
-    def _check_success(self, raw_result: object) -> bool:
+    def _check_success(self, raw_result: object) -> bool:  # noqa: PLR6301
         """Determine success from normalized emcee result."""
         return bool(getattr(raw_result, 'success', False))

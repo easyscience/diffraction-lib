@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import warnings
 from dataclasses import dataclass
 
 import arviz as az
@@ -158,7 +159,14 @@ class PosteriorSamples:
         if sample_stats is not None:
             data['sample_stats'] = sample_stats
 
-        return az.from_dict(data)
+        with warnings.catch_warnings():
+            warnings.filterwarnings(
+                'ignore',
+                message='Found chain dimension to be longer than draw dimension.*',
+                category=UserWarning,
+                module='arviz_base.base',
+            )
+            return az.from_dict(data)
 
 
 SummaryList = list[PosteriorParameterSummary] | None

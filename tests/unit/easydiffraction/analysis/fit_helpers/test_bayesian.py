@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+import warnings
+
 import numpy as np
 import pytest
 
@@ -55,6 +57,24 @@ def test_posterior_samples_flatten_and_to_arviz():
     assert set(inference_data.posterior.data_vars) == {'a', 'b'}
     assert inference_data.posterior['a'].shape == (2, 2)
     assert inference_data.sample_stats['lp'].shape == (2, 2)
+
+
+def test_posterior_samples_to_arviz_allows_more_chains_than_draws_without_warning():
+    from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
+
+    posterior_samples = PosteriorSamples(
+        parameter_names=['a'],
+        parameter_samples=np.ones((2, 32, 1), dtype=float),
+        log_posterior=np.ones((2, 32), dtype=float),
+    )
+
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        warnings.simplefilter('always')
+        inference_data = posterior_samples.to_arviz()
+
+    warning_messages = [str(warning.message) for warning in caught_warnings]
+    assert not any('Found chain dimension' in message for message in warning_messages)
+    assert inference_data.posterior['a'].shape == (32, 2)
 
 
 def test_posterior_samples_to_arviz_validates_shapes():
