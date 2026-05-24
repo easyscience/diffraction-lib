@@ -974,13 +974,16 @@ class Analysis(
             resume=resume,
             extra_steps=extra_steps,
         )
+        resolved_extra_steps = (
+            self._resolved_resume_extra_steps(extra_steps) if resume else extra_steps
+        )
         verb = VerbosityEnum(self.project.verbosity.fit.value)
         try:
             with notebook_fit_stop_control(verbosity=verb):
                 self._run_fit_mode(
                     mode=mode,
                     resume=resume,
-                    extra_steps=extra_steps,
+                    extra_steps=resolved_extra_steps,
                 )
         except KeyboardInterrupt:
             self._handle_fit_interrupted(verbosity=verb)
@@ -1038,11 +1041,11 @@ class Analysis(
                 'before analysis.fit().'
             )
             raise ValueError(msg)
-        if resume:
+        if resume and extra_steps is not None:
             self._validate_resume_extra_steps(extra_steps)
 
     @staticmethod
-    def _validate_resume_extra_steps(extra_steps: int | None) -> None:
+    def _validate_resume_extra_steps(extra_steps: object) -> int:
         """Validate the emcee resume step count."""
         if extra_steps is None or isinstance(extra_steps, bool):
             msg = 'extra_steps must be a positive integer when resume=True.'
@@ -1056,6 +1059,13 @@ class Analysis(
         if integer_steps != extra_steps or integer_steps < 1:
             msg = 'extra_steps must be a positive integer when resume=True.'
             raise ValueError(msg)
+        return integer_steps
+
+    def _resolved_resume_extra_steps(self, extra_steps: int | None) -> int:
+        """Return explicit or minimizer-default emcee resume steps."""
+        if extra_steps is not None:
+            return self._validate_resume_extra_steps(extra_steps)
+        return self._validate_resume_extra_steps(self.minimizer.sampling_steps.value)
 
     def _prepare_results_sidecar_for_new_fit(self) -> None:
         """Remove persisted sidecar arrays before a fresh fit."""

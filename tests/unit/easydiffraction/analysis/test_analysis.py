@@ -188,6 +188,48 @@ def test_fit_interrupt_cleans_state_and_prints_message(monkeypatch, capsys):
     assert 'Fitting stopped by user.' in capsys.readouterr().out
 
 
+def test_fit_resume_defaults_extra_steps_to_sampling_steps(monkeypatch, tmp_path):
+    from easydiffraction.analysis.analysis import Analysis
+
+    analysis = Analysis(project=_make_project_with_names(['e1']))
+    analysis.project.verbosity = SimpleNamespace(fit=SimpleNamespace(value='silent'))
+    analysis.project.info = SimpleNamespace(path=tmp_path)
+    analysis.minimizer.type = 'emcee'
+    analysis.minimizer.sampling_steps = 123
+    captured: dict[str, object] = {}
+
+    monkeypatch.setattr(
+        analysis,
+        '_run_single',
+        lambda **kwargs: captured.update(kwargs),
+    )
+
+    analysis.fit(resume=True)
+
+    assert captured == {'resume': True, 'extra_steps': 123}
+
+
+def test_fit_resume_preserves_explicit_extra_steps(monkeypatch, tmp_path):
+    from easydiffraction.analysis.analysis import Analysis
+
+    analysis = Analysis(project=_make_project_with_names(['e1']))
+    analysis.project.verbosity = SimpleNamespace(fit=SimpleNamespace(value='silent'))
+    analysis.project.info = SimpleNamespace(path=tmp_path)
+    analysis.minimizer.type = 'emcee'
+    analysis.minimizer.sampling_steps = 123
+    captured: dict[str, object] = {}
+
+    monkeypatch.setattr(
+        analysis,
+        '_run_single',
+        lambda **kwargs: captured.update(kwargs),
+    )
+
+    analysis.fit(resume=True, extra_steps=10)
+
+    assert captured == {'resume': True, 'extra_steps': 10}
+
+
 def test_fitting_mode_type_invalid_assignment_raises_and_preserves_state():
     import pytest
 
