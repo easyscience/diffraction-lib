@@ -70,20 +70,63 @@ before proceeding.
    `EmceeMinimizer._native_key_map` (overrides the DREAM-style
    defaults on `BayesianMinimizerBase._native_key_map`):
 
-   | Verbose | emcee native |
+   | Verbose | emcee native engine attribute |
    | --- | --- |
    | `sampling_steps` | `nsteps` |
    | `burn_in_steps` | `nburn` |
    | `thinning_interval` | `thin` |
    | `population_size` | `nwalkers` |
-   | `parallel_workers` | `pool` |
+   | `parallel_workers` | `parallel_workers` (engine integer; **not** mapped directly to emcee's `pool`) |
    | `initialization_method` | (custom — see §6) |
    | `random_seed` | `random_seed` |
+
+   **`parallel_workers` semantics.** The category persists an
+   integer; the engine class holds it under the same name. emcee's
+   `EnsembleSampler` takes a `pool=` argument that is a pool object
+   (anything with a `.map` method) or `None` for serial execution —
+   not an integer. The engine builds the actual pool around
+   `run_mcmc`:
+
+   | `parallel_workers` value | Engine behaviour |
+   | --- | --- |
+   | `1` | `pool=None` (serial); single process |
+   | `0` | `multiprocessing.Pool(os.cpu_count())` |
+   | `N > 1` | `multiprocessing.Pool(N)` |
+
+   The pool is closed in a `finally:` block after `run_mcmc` returns.
+   `Analysis._sync_engine_from_minimizer_category` must therefore
+   skip `parallel_workers` from the native-attribute sync (it
+   already skips `random_seed` for the same "engine handles it"
+   reason; add `parallel_workers` to the
+   `_engine_sync_skip_keys` frozenset introduced in P1.5).
 4. Resume uses emcee's `HDFBackend` against the `/emcee_chain` group
    of the same `analysis/results.h5` file used by the snapshot
    writer. No separate sidecar file. A non-resume `fit()` follows
    the prerequisite plan's lifecycle and **truncates** `results.h5`
    (after the standard warning); resume opens it in append mode.
+
+   **`Project.save()` must not delete `/emcee_chain`.** The current
+   `write_analysis_results_sidecar`
+   ([`results_sidecar.py:282`](../../../src/easydiffraction/io/results_sidecar.py))
+   opens `results.h5` with mode `'w'` (full truncate). Every save
+   after a fit will erase the emcee chain unless this writer is
+   modified. After this plan, the writer opens the file in append
+   mode (`'a'`) and replaces only the EasyDiffraction-canonical
+   groups (`/posterior`, `/distribution_cache`, `/pair_cache`,
+   `/predictive`) by deleting them first if present, leaving any
+   other top-level groups (currently only `/emcee_chain`) untouched.
+
+   **Non-resume truncate must still happen — and explicitly.** The
+   current `_warn_results_sidecar_overwrite`
+   ([`analysis.py:943-953`](../../../src/easydiffraction/analysis/analysis.py))
+   /
+   [`warn_analysis_results_sidecar_overwrite`](../../../src/easydiffraction/io/results_sidecar.py)
+   only **warns**; it does not delete. With the writer switched to
+   append mode, a fresh non-resume emcee fit after an older emcee
+   run would otherwise leave the stale `/emcee_chain` group in
+   `results.h5`. This plan therefore adds a real preparation step
+   that warns **and removes** the file before the engine starts. See
+   P1.5a; the resume path bypasses it.
 5. `Analysis.fit()` gains an optional `resume=True, extra_steps=N`
    call shape for minimizers that support incremental sampling. For
    other minimizers, passing `resume=True` raises immediately.
@@ -194,7 +237,11 @@ When the matching open-issue is fully resolved, move it to
 - `tests/integration/fitting/test_emcee.py` (cross-check vs DREAM on
   a shared toy fit; assert posterior medians agree to within
   tolerance).
-- `docs/docs/tutorials/ed-23.py` (emcee + resume tutorial).
+- `docs/docs/tutorials/ed-25.py` (emcee + resume tutorial). The
+  next free tutorial slot — `ed-23` is already the "Co2SiO4
+  Sequential Fit" tutorial and `ed-24` is the "LBCO Bayesian
+  Display" tutorial. Verify `ed-25.py` is unused before creating
+  it at P1.7 start; bump if a newer slot is already occupied.
 
 ### Modified
 
@@ -217,7 +264,10 @@ When the matching open-issue is fully resolved, move it to
   `/emcee_chain` is present, expose a helper to construct an
   `emcee.backends.HDFBackend(path, name='emcee_chain',
   read_only=True)` for inspection/visualisation.
-- `pyproject.toml` and `pixi.toml` — add `emcee>=3.1` dependency.
+- `pyproject.toml`, `pixi.toml`, and `pixi.lock` — add `emcee>=3.1`
+  as a direct runtime dependency and refresh the lockfile via
+  `pixi lock` (CI installs from the lockfile, not from the manifest
+  files alone).
 
 ### Deleted
 
@@ -227,9 +277,19 @@ When the matching open-issue is fully resolved, move it to
 
 Mark `[x]` as each step lands.
 
-- [ ] **P1.1 — Add emcee dependency.** Add `emcee>=3.1` to
-      `pyproject.toml` and `pixi.toml`. Run `pixi install` locally
-      to verify resolution. Commit: `Add emcee dependency`
+- [ ] **P1.1 — Add emcee dependency and refresh the lockfile.**
+  - Add `emcee>=3.1` to `pyproject.toml` (runtime dependencies, not
+    just the `doc` extra — the existing lockfile carries emcee only
+    as `extra == 'doc'` which CI does not install for runtime).
+  - Add the same dependency to `pixi.toml` (runtime feature).
+  - Run `pixi lock` to regenerate `pixi.lock` with `emcee` as a
+    direct runtime dependency. The refreshed `pixi.lock` is the
+    artifact CI consumes; `pixi install` is a local sanity check
+    only.
+  - Stage `pyproject.toml`, `pixi.toml`, and `pixi.lock` together.
+
+  Files modified by this step: `pyproject.toml`, `pixi.toml`,
+  `pixi.lock`. Commit: `Add emcee runtime dependency`
 
 - [ ] **P1.2 — Register `MinimizerTypeEnum.EMCEE`.** Add the enum
       member with value `'emcee'` to
@@ -282,43 +342,163 @@ Mark `[x]` as each step lands.
       that `Analysis._sync_engine_from_minimizer_category` writes to
       from the category's `_native_kwargs()`. The descriptor names
       on the engine must match the keys returned by
-      `EmceeMinimizer._native_kwargs()` (i.e. emcee's native names —
-      `nsteps`, `nburn`, `nwalkers`, `pool`).
+      `EmceeMinimizer._native_kwargs()`, which are: `nsteps`,
+      `nburn`, `thin`, `nwalkers`, `parallel_workers`,
+      `random_seed`, plus `initialization_method` and
+      `proposal_moves` handled by custom hooks (see §3 for the
+      mapping table and the `parallel_workers` semantics — the
+      engine attribute is an integer; the actual emcee `pool`
+      object is built and torn down inside `EmceeMinimizer.fit`,
+      not by the native-key sync).
+
+      **Engine-facing contract.** `EmceeMinimizer.fit` matches the
+      existing
+      [`MinimizerBase.fit`](../../../src/easydiffraction/analysis/minimizers/base.py)
+      contract — `Fitter.fit` (the layer that owns `structures`,
+      `experiments`, `weights`, and `analysis`) calls every engine
+      uniformly. The engine receives only `parameters` and the
+      already-built `objective_function`:
+
+      ```python
+      MinimizerBase.fit(
+          parameters: list[Parameter],
+          objective_function: Callable[[dict[str, object]], np.ndarray],
+          verbosity: VerbosityEnum = VerbosityEnum.FULL,
+          *,
+          finalize_tracking: bool = True,
+          use_physical_limits: bool = False,
+          random_seed: int | None = None,
+          resume: bool = False,           # added by P1.5
+          extra_steps: int | None = None, # added by P1.5
+      ) -> FitResults
+      ```
+
+      The base implementation raises `NotImplementedError` only when
+      `resume=True` (see P1.5). `EmceeMinimizer.fit` overrides with
+      the same signature and honours `resume` / `extra_steps`.
+
+      **Sidecar path.** emcee's `HDFBackend` needs a file path, but
+      the engine signature deliberately does not carry one. The
+      engine reads it from a private attribute
+      `self._sidecar_path: Path | None` that `Fitter.fit` sets on
+      the engine before calling `engine.fit(...)`, derived from
+      `analysis.project.info.path / 'analysis' / 'results.h5'`.
+      Engines that do not need it ignore the attribute; the
+      attribute defaults to `None` and `EmceeMinimizer.fit` raises
+      `RuntimeError` if it is `None` when needed.
+
+      **Residual-to-log-probability adapter.** emcee expects a
+      scalar log probability from a flat walker coordinate
+      (`np.ndarray` shape `(ndim,)`), but the `objective_function`
+      `Fitter.fit` passes us returns a residual array from an
+      `engine_params` dict. The engine class builds an adapter
+      `log_prob(theta)` that:
+
+      1. Maps `theta` (the walker vector) onto an `engine_params`
+         dict using a fixed ordered list of free-parameter unique
+         names captured **once** at sampler construction (from the
+         `parameters` argument to `fit`).
+      2. Rejects values outside
+         `[parameter.fit_min, parameter.fit_max]` by returning
+         `-np.inf` immediately — does not call the calculator for
+         invalid proposals.
+      3. Calls the **passed-in** `objective_function(engine_params)`
+         (do **not** call `Fitter._build_objective_function` from
+         the engine — that is a `Fitter` helper, not engine API).
+      4. Returns Gaussian log likelihood
+         `-0.5 * np.sum(r**2)`. The current fit weights are already
+         folded into the residuals by the objective function; this
+         step does **not** re-weight.
+      5. Returns `-np.inf` on calculator exceptions (rare; emcee
+         re-proposes).
+      6. Treats the prior as flat over the box-bounded parameter
+         volume — no informative priors in v1; deferred to a
+         follow-on plan.
+
+      The adapter must **not** mutate live `Parameter.value` state
+      on `-np.inf` returns. Implement by passing an
+      `engine_params` dict to `objective_function` (the existing
+      objective writes the values into live parameters internally;
+      that mutation only happens once `objective_function` is
+      invoked, so the bounds check above must guard every call).
 
       Engine method shape (sketch):
 
       ```python
-      class EmceeMinimizer(BayesianMinimizerEngineBase):
+      class EmceeMinimizer(MinimizerBase):
           name = MinimizerTypeEnum.EMCEE
           method = 'stretch'
 
-          def fit(self, *, structures, experiments, analysis,
-                  resume=False, extra_steps=None, ...):
+          # Set by Fitter.fit before this fit() call:
+          _sidecar_path: Path | None = None
+
+          def fit(
+              self,
+              parameters: list[Parameter],
+              objective_function: Callable[..., object],
+              verbosity: VerbosityEnum = VerbosityEnum.FULL,
+              *,
+              finalize_tracking: bool = True,
+              use_physical_limits: bool = False,
+              random_seed: int | None = None,
+              resume: bool = False,
+              extra_steps: int | None = None,
+          ) -> FitResults:
+              if self._sidecar_path is None:
+                  msg = ('emcee engine requires Fitter.fit to set '
+                         '_sidecar_path; was Analysis configured?')
+                  raise RuntimeError(msg)
+
+              free_param_names = [p.unique_name for p in parameters]
+              param_by_name = {p.unique_name: p for p in parameters}
+
+              def log_prob(theta):
+                  for name, value in zip(free_param_names, theta):
+                      p = param_by_name[name]
+                      if not (p.fit_min <= value <= p.fit_max):
+                          return -np.inf
+                  engine_params = dict(zip(free_param_names, theta))
+                  try:
+                      r = objective_function(engine_params)
+                  except Exception:
+                      return -np.inf
+                  return -0.5 * float(np.sum(np.asarray(r) ** 2))
+
               backend = emcee.backends.HDFBackend(
-                  path=analysis.project.info.path
-                       / 'analysis' / 'results.h5',
-                  name='emcee_chain',
+                  self._sidecar_path, name='emcee_chain',
                   read_only=False,
               )
-              sampler = emcee.EnsembleSampler(
-                  nwalkers=self.nwalkers,
-                  ndim=len(free_params),
-                  log_prob_fn=log_prob,
-                  pool=self.pool,
-                  moves=...,  # from proposal_moves
-                  backend=backend,
-              )
-              if resume:
-                  self._validate_resume(backend, free_params)
-                  sampler.run_mcmc(None, nsteps=extra_steps,
-                                   skip_initial_state_check=True,
-                                   progress=True)
-              else:
-                  initial_state = self._initial_state(...)
-                  sampler.run_mcmc(initial_state,
-                                   nsteps=self.nsteps,
-                                   progress=True)
-              return self._build_results(sampler, ...)
+              pool = self._build_pool(self.parallel_workers)
+              try:
+                  sampler = emcee.EnsembleSampler(
+                      nwalkers=self.nwalkers,
+                      ndim=len(free_param_names),
+                      log_prob_fn=log_prob,
+                      pool=pool,
+                      moves=self._resolve_moves(self.proposal_moves),
+                      backend=backend,
+                  )
+                  if resume:
+                      self._validate_resume(backend, free_param_names)
+                      sampler.run_mcmc(
+                          None, nsteps=extra_steps,
+                          skip_initial_state_check=True,
+                          progress=True,
+                      )
+                  else:
+                      initial_state = self._initial_state(
+                          parameters, self.nwalkers,
+                          self.init, random_seed,
+                      )
+                      sampler.run_mcmc(
+                          initial_state, nsteps=self.nsteps,
+                          progress=True,
+                      )
+              finally:
+                  if pool is not None:
+                      pool.close()
+                      pool.join()
+              return self._build_results(sampler, parameters)
       ```
 
       Register with the engine `MinimizerFactory` and update
@@ -327,34 +507,154 @@ Mark `[x]` as each step lands.
 
       Commit: `Add EmceeMinimizer engine class`
 
-- [ ] **P1.5 — Wire `fit(resume=True, extra_steps=N)` on
-      `Analysis`.** In
-      `src/easydiffraction/analysis/analysis.py`:
-  - `Analysis.fit()` gains keyword args `resume: bool = False,
-    extra_steps: int | None = None`. Default behaviour (no resume)
-    is unchanged.
-  - When `resume=True`:
-    - Validate that `self.minimizer.type ==
-      MinimizerTypeEnum.EMCEE.value` (only emcee supports resume in
-      v1). Raise `ValueError` with a clear message otherwise.
-    - Require `extra_steps` to be a positive integer.
-    - **Bypass** the `_warn_results_sidecar_overwrite` step and the
-      `_clear_persisted_fit_state` reset — both would clobber the
-      backend.
-    - Forward `resume=True, extra_steps=N` to the live engine via
-      the existing `Fitter` plumbing.
+- [ ] **P1.5 — Wire `fit(resume=True, extra_steps=N)` end-to-end.**
+      The current fit stack does not accept `resume` / `extra_steps`
+      anywhere. Every signature and call site listed below must be
+      updated in this step. Each item is one short edit; the step
+      lands as a single commit because the signatures must change in
+      lockstep.
 
-  Also address open issue #103: introduce
-  `_engine_sync_skip_keys: ClassVar[frozenset[str]] = frozenset({'random_seed'})`
+  **`Fitter` stays the layer that owns `structures`, `experiments`,
+  `weights`, parameter collection, and objective construction.**
+  Engines receive only `parameters` and `objective_function`
+  (already-built) via the existing `MinimizerBase.fit` shape. This
+  plan adds `resume` and `extra_steps` to the same shape.
+
+  **Signatures (add `resume: bool = False, extra_steps: int | None = None`):**
+
+  - `Analysis.fit`
+    ([analysis.py:929](../../../src/easydiffraction/analysis/analysis.py)).
+    User-facing entry point.
+  - `Analysis._run_single`, `Analysis._run_joint`,
+    `Analysis._prepare_fit_run`, `Analysis._fit_single`,
+    `Analysis._fit_joint` (every internal helper that takes the
+    fit through to `Fitter.fit`).
+  - `Fitter.fit`
+    ([fitting.py:140-150](../../../src/easydiffraction/analysis/fitting.py))
+    — adds the keyword pair to its existing signature
+    (`structures`, `experiments`, `weights`, `analysis`,
+    `verbosity`, `use_physical_limits`, `random_seed`, **+
+    `resume`, `extra_steps`**). Forwards the pair to
+    `self.minimizer.fit(...)`.
+  - `MinimizerBase.fit`
+    ([base.py:351-360](../../../src/easydiffraction/analysis/minimizers/base.py))
+    — adds the keyword pair to its existing engine-facing shape
+    (`parameters`, `objective_function`, `verbosity`, *keyword*:
+    `finalize_tracking`, `use_physical_limits`, `random_seed`,
+    **+ `resume`, `extra_steps`**). The base implementation
+    handles non-resume calls unchanged and raises
+    `NotImplementedError(f"Minimizer '{self.name}' does not
+    support resume.")` when `resume=True`. `EmceeMinimizer.fit`
+    overrides with the same signature and honours both args.
+
+  **Sidecar-path plumbing.** `Fitter.fit` resolves the sidecar
+  path from `analysis.project.info.path` (when both are non-None)
+  and sets `self.minimizer._sidecar_path` on the engine before
+  calling `self.minimizer.fit(...)`. Engines that do not need it
+  ignore the attribute; `EmceeMinimizer.fit` reads it (and raises
+  `RuntimeError` if `None` as defence in depth — but normal users
+  never hit that path because of the upfront save-required guard
+  in the next bullet).
+
+  **Behaviour rules:**
+
+  - **Single mode only for v1.** `Analysis._run_joint` raises
+    `ValueError('Resume is supported in single fit mode only')`
+    when `resume=True`. Joint-mode resume is deferred; recorded
+    explicitly in §"Open questions".
+  - **Validate the active minimizer.** `Analysis.fit` raises
+    `ValueError` when `resume=True` and
+    `self.minimizer.type != MinimizerTypeEnum.EMCEE.value`. Match
+    the clear-error pattern used elsewhere.
+  - **Require a saved project for emcee.** Unlike DREAM (which
+    keeps the chain in memory), emcee's `HDFBackend` is the
+    sampler's live chain store — it needs a real file path.
+    `Analysis.fit` raises `ValueError` when
+    `self.minimizer.type == MinimizerTypeEnum.EMCEE.value` and
+    `self.project.info.path is None`, with a clear scientist-facing
+    message that points at the fix:
+    `"emcee requires a saved project; call project.save_as(<path>)
+    before analysis.fit()."` The check fires for both the initial
+    run and `resume=True`. The engine's `_sidecar_path is None`
+    `RuntimeError` (per P1.4) remains as defence-in-depth for
+    direct engine calls outside the `Analysis` flow but is not
+    reachable from the user-facing path.
+  - **Validate `extra_steps`.** Require positive integer when
+    `resume=True`. Raise on `None`, `0`, or negative.
+  - **Bypass reset.** Skip the new
+    `prepare_analysis_results_sidecar_for_new_fit` helper (see
+    P1.5a) and `_clear_persisted_fit_state` when `resume=True` —
+    both would clobber the chain and the persisted fit state.
+  - **Defence in depth.** `MinimizerBase.fit`'s
+    `NotImplementedError` on `resume=True` only matters if an
+    engine is called directly outside the `Analysis` flow — the
+    `Analysis.fit` guard above fires first in normal use.
+
+  **Open issue #103 cleanup.** Introduce
+  `_engine_sync_skip_keys: ClassVar[frozenset[str]] = frozenset({'random_seed', 'parallel_workers'})`
   on `MinimizerCategoryBase`, and update
   `_sync_engine_from_minimizer_category`
   ([analysis.py:1134-1146](../../../src/easydiffraction/analysis/analysis.py))
-  to use it. `BayesianMinimizerBase` (or `EmceeMinimizer`
-  directly) overrides the frozenset to include `'proposal_moves'`
-  if/when the engine consumes that key under a different name than
-  the category attribute.
+  to use it. `EmceeMinimizer` (category) overrides the frozenset to
+  add `'proposal_moves'` if the engine consumes that key
+  differently from the category attribute (sketch in P1.4).
 
-  Commit: `Wire emcee resume into Analysis.fit`
+  Commit: `Wire emcee resume through fit stack`
+
+- [ ] **P1.5a — Make `results.h5` append-on-save and add an
+      explicit truncate-on-new-fit prep step.** Two coordinated
+      changes that land in a single commit because they jointly
+      preserve the ADR lifecycle (resume keeps `/emcee_chain`;
+      new fit removes it).
+
+  In
+  [`src/easydiffraction/io/results_sidecar.py`](../../../src/easydiffraction/io/results_sidecar.py):
+
+  - Replace `h5py.File(sidecar_path, 'w')` (line 282) with
+    `h5py.File(sidecar_path, 'a')`. Before writing each
+    EasyDiffraction-canonical group (`/posterior`,
+    `/distribution_cache`, `/pair_cache`, `/predictive`), delete
+    that group first if present so the writer's behaviour for those
+    groups is unchanged.
+  - Do **not** touch any other top-level group from the writer.
+    `/emcee_chain` survives every save.
+  - **Add a new helper** `prepare_analysis_results_sidecar_for_new_fit(*, analysis_dir: Path) -> None`
+    that takes the same `analysis_dir` shape as
+    `warn_analysis_results_sidecar_overwrite`, **warns** when the
+    file exists (matching the current warning text), and then
+    **removes** the file entirely so a fresh fit starts from a
+    clean slate. The old `warn_analysis_results_sidecar_overwrite`
+    becomes a thin wrapper that delegates to the new helper, or is
+    replaced outright by the new helper at every call site.
+
+  In
+  [`src/easydiffraction/analysis/analysis.py`](../../../src/easydiffraction/analysis/analysis.py):
+
+  - Replace `_warn_results_sidecar_overwrite` (lines 943-953) with
+    a call to the new `prepare_analysis_results_sidecar_for_new_fit`
+    helper. Same call sites in `_run_single` and `_run_joint`.
+  - **Bypass on resume.** The `resume=True` branch in
+    `Analysis._prepare_fit_run` (added by P1.5) must **not** call
+    this helper — that is the whole point of resume keeping the
+    chain alive. The bypass rule listed in P1.5 "Behaviour rules
+    → Bypass reset" therefore now also covers the
+    `prepare_analysis_results_sidecar_for_new_fit` call.
+
+  Add focused unit tests in Phase 2 (P2.1) covering:
+
+  - **Append preserves `/emcee_chain`.** Write a sidecar payload,
+    create a stub `/emcee_chain` group on the same file, re-write
+    the sidecar — the `/emcee_chain` group must survive.
+  - **New-fit prep removes the file.** Create a sidecar with a
+    stub `/emcee_chain` group; call
+    `prepare_analysis_results_sidecar_for_new_fit`; assert the
+    file is gone (or empty) and the stale group is unreachable.
+  - **Resume bypass.** Set up an `Analysis` with a saved project,
+    invoke the resume code path (mocked engine), and assert
+    `prepare_analysis_results_sidecar_for_new_fit` was **not**
+    called.
+
+  Commit: `Append-on-save plus explicit truncate-on-new-fit prep`
 
 - [ ] **P1.6 — Route emcee outputs into the existing fit_result and
       sidecar pipeline.** Verify the existing
@@ -378,8 +678,17 @@ Mark `[x]` as each step lands.
 
       Commit: `Route emcee posterior through fit_result and sidecar`
 
-- [ ] **P1.7 — Add `ed-23.py` tutorial.** New notebook source at
-      `docs/docs/tutorials/ed-23.py` covering:
+- [ ] **P1.7 — Add `ed-25.py` tutorial.** Verify first that
+      `docs/docs/tutorials/ed-25.py` is unused. `ed-23.py` is the
+      "Co2SiO4 Sequential Fit" tutorial and `ed-24.py` is the
+      "LBCO Bayesian Display" tutorial — do **not** overwrite
+      either. If `ed-25.py` already exists by the time this step
+      runs, pick the next free integer slot and adjust the file
+      name + references below to match.
+
+      New notebook source at `docs/docs/tutorials/ed-25.py`
+      covering:
+
   - `project.analysis.minimizer.type = 'emcee'` (post-switchable
     syntax).
   - `project.analysis.minimizer.sampling_steps = 1000` (small for
@@ -390,16 +699,29 @@ Mark `[x]` as each step lands.
     the chain.
   - Final posterior plot after resume.
 
+  Update the docs navigation in the same step:
+
+  - Add an entry under "MCMC / Bayesian" (or the appropriate
+    section) in
+    [`docs/docs/tutorials/index.md`](../../docs/tutorials/index.md)
+    pointing at `ed-25.ipynb`.
+  - Add a navigation entry under the matching section in
+    [`docs/mkdocs.yml`](../../../docs/mkdocs.yml).
+
   Run `pixi run notebook-prepare` to regenerate the `.ipynb`.
 
-  Verification grep (must return empty against
-  `docs/docs/tutorials/ed-23.py`):
+  Verification greps:
 
   ```
-  git grep -nE '\banalysis\.minimizer_type\b|\bminimizer\.runtime_seconds\b|\bminimizer\.gelman_rubin_max\b' docs/docs/tutorials/ed-23.py
+  test -f docs/docs/tutorials/ed-25.py
+  git grep -nE '\banalysis\.minimizer_type\b|\bminimizer\.runtime_seconds\b|\bminimizer\.gelman_rubin_max\b' docs/docs/tutorials/ed-25.py
+  git grep -n 'ed-25' docs/docs/tutorials/index.md docs/mkdocs.yml
   ```
 
-  Commit: `Add ed-23 emcee tutorial`
+  The first must be true; the second must be empty; the third must
+  return at least one hit in each file.
+
+  Commit: `Add ed-25 emcee tutorial`
 
 - [ ] **P1.8 — Phase 1 review gate.** No code change. Stop and
       request user review. After approval, proceed to Phase 2.
@@ -417,6 +739,16 @@ required by `.github/copilot-instructions.md` → **Workflow**.
   - `tests/unit/easydiffraction/analysis/minimizers/test_emcee.py`:
     engine-class registration, descriptor defaults, native kwargs
     plumbing.
+  - `tests/unit/easydiffraction/analysis/test_analysis.py` (or
+    matching coverage file): assert `Analysis.fit()` raises
+    `ValueError` with a save-prompt message when emcee is the
+    active minimizer and `project.info.path is None`, for both
+    initial fits and `resume=True`.
+  - `tests/unit/easydiffraction/io/test_results_sidecar.py`: the
+    save-after-resume invariant from P1.5a — write a sidecar
+    payload, then write a stub `/emcee_chain` group on the same
+    file, then re-write the sidecar; the `/emcee_chain` group
+    must survive.
   - `tests/integration/fitting/test_emcee.py`: end-to-end fit on a
     small synthetic problem; resume; assert posterior medians
     agree with a DREAM run within tolerance.
@@ -503,5 +835,5 @@ single-file affair. Plots, parameter posteriors, and tables work the
 same as for DREAM, so switching between samplers to cross-check
 results is straightforward.
 
-A new tutorial (`ed-23`) walks through a short run, saving the
+A new tutorial (`ed-25`) walks through a short run, saving the
 project, and resuming for additional steps.
