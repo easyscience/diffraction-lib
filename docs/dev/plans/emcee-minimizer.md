@@ -695,7 +695,7 @@ Mark `[x]` as each step lands.
 
   Commit: `Add ed-25 emcee tutorial`
 
-- [ ] **P1.8 — Phase 1 review gate.** No code change. Stop and request
+- [x] **P1.8 — Phase 1 review gate.** No code change. Stop and request
       user review. After approval, proceed to Phase 2.
 
 ## Verification (Phase 2)
