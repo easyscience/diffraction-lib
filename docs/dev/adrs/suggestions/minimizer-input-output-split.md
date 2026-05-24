@@ -37,18 +37,20 @@ The current shape on the live category surfaces:
   `sampler_completed`, `acceptance_rate_mean`, `gelman_rubin_max`,
   `effective_sample_size_min`, `best_log_posterior` (Bayesian).
 
-Three of the output fields already overlap with `analysis.fit_result`:
+Three current output fields straddle `analysis.minimizer` and
+`analysis.fit_result`:
 
-| Concept | Field on `analysis.minimizer` | Field on `analysis.fit_result` |
-| ------- | ----------------------------- | ------------------------------ |
-| Wall time | `runtime_seconds` | `fitting_time` |
-| Iteration count | `iterations_performed` (LSQ) | `iterations` |
-| χ² | `objective_value` | `reduced_chi_square` |
+| Output concept | Field on `analysis.minimizer` | Field on `analysis.fit_result` | Relationship |
+| -------------- | ----------------------------- | ------------------------------ | ------------ |
+| Wall time | `runtime_seconds` | `fitting_time` | Real duplication — same scalar in two places. |
+| Iteration count | `iterations_performed` (LSQ) | `iterations` | Real duplication — same scalar in two places. |
+| Objective vs reduced χ² | `objective_value` (raw χ²) | `reduced_chi_square` (χ² / dof) | Cross-category misplacement — two related but distinct scalars where the raw value sits on `minimizer` instead of with the rest of the fit outputs. |
 
 So a reader who wants "how long did the fit take" must already pick
 between two places. The current layout has both **input/output mixed
-inside `minimizer`** and **output duplication between `minimizer` and
-`fit_result`**.
+inside `minimizer`** and **fit-output content split across `minimizer`
+and `fit_result`** (whether the two scalars per row are the same value
+or not). §2 resolves each row above explicitly.
 
 The consolidation ADR's two-line argument for keeping inputs and outputs
 together was:
@@ -133,24 +135,20 @@ making the input/output boundary unambiguous.
 - LSQ: `max_iterations`.
 - Bayesian: `sampling_steps`, `burn_in_steps`, `thinning_interval`,
   `population_size`, `parallel_workers`, `initialization_method`,
-  `random_seed`, `credible_interval_inner`, `credible_interval_outer`.
+  `random_seed`.
 
-`credible_interval_inner` and `credible_interval_outer` are
-**promoted from output-only to writable input** by this ADR. Today
-they have only an internal `_set_*` and are written from
-`_store_posterior_fit_projection`, which makes them effectively
-hard-coded to `0.68` / `0.95`. After the split, the user sets them
-before `analysis.fit()`; the Bayesian posterior-summary path reads
-the two values when generating the per-parameter interval columns
+`credible_interval_inner` and `credible_interval_outer` **stay on the
+output side** in this ADR, attached to `BayesianFitResult` (see
+below). They are persisted with the fixed values `0.68` and `0.95`,
+matching the per-parameter interval columns
 (`posterior_interval_68_low/high`, `posterior_interval_95_low/high`).
-The column names stay numeric (`68`, `95`) for backwards compatibility
-with deterministic-fit rows that have empty values there; mismatching
-user-supplied levels (e.g. `credible_interval_inner = 0.5`) are
-warned about at fit time so the column names do not silently lie.
-
-A separate suggestion ADR can later generalise the interval column
-naming (e.g. `posterior_interval_low_<level>`); that is deferred work
-and not in scope here.
+Promoting the levels to user-writable settings would let the user
+choose a 50% interval that then gets persisted under a column named
+`posterior_interval_68_low` — a data-integrity problem rather than a
+UX problem. A future suggestion ADR can promote them to settings and
+generalise the column naming (e.g. `posterior_interval_low_<level>`)
+in one combined change; doing one without the other is unsafe and
+out of scope here.
 
 **`analysis.fit_result` after the split** (outputs only). Common fields
 live on `FitResultBase`; family-specific fields on the concrete classes:
@@ -162,6 +160,7 @@ live on `FitResultBase`; family-specific fields on the concrete classes:
   `degrees_of_freedom`, `covariance_available`, `correlation_available`,
   `exit_reason`.
 - `BayesianFitResult` adds: `point_estimate_name`, `sampler_completed`,
+  `credible_interval_inner`, `credible_interval_outer`,
   `acceptance_rate_mean`, `gelman_rubin_max`,
   `effective_sample_size_min`, `best_log_posterior`.
 
@@ -225,8 +224,6 @@ _minimizer.population_size            4
 _minimizer.parallel_workers           0
 _minimizer.initialization_method      latin_hypercube
 _minimizer.random_seed                ?
-_minimizer.credible_interval_inner    0.68
-_minimizer.credible_interval_outer    0.95
 
 _fit_result.result_kind                bayesian
 _fit_result.success                    true
@@ -236,6 +233,8 @@ _fit_result.fitting_time               124.7
 _fit_result.reduced_chi_square         1.18
 _fit_result.point_estimate_name        best_sample
 _fit_result.sampler_completed          true
+_fit_result.credible_interval_inner    0.68
+_fit_result.credible_interval_outer    0.95
 _fit_result.acceptance_rate_mean       0.27
 _fit_result.gelman_rubin_max           1.03
 _fit_result.effective_sample_size_min  482
@@ -366,13 +365,14 @@ class independently of the minimizer.
   future categories grow the same input/output asymmetry (e.g.
   extinction, peak), apply the same pattern then; do not generalise
   pre-emptively.
-- **Generalising the posterior-interval column naming.** Today the
-  per-parameter posterior summary uses fixed numeric column names
-  (`posterior_interval_68_low`, etc.). Promoting
-  `credible_interval_inner/outer` to user settings raises the
-  question of whether the column names should follow. Deferred to a
-  separate suggestion ADR so this proposal stays focused on the
-  input/output split.
+- **User-configurable credible-interval levels.** The two interval
+  levels currently stay at the hardcoded `0.68` / `0.95`, matching the
+  fixed per-parameter column names (`posterior_interval_68_low` etc.).
+  Promoting the levels to user settings requires generalising the
+  column naming at the same time to avoid the data-integrity hole
+  where a `0.50` level lands in a column called
+  `posterior_interval_68_low`. Both pieces belong in a follow-on ADR
+  so this proposal stays focused on the input/output split.
 - **CIF compatibility helper for ID 35 archive.** The
   `_normalize_id35_archive_for_tutorial` helper in `ed-24.py` already
   has a roadmap to deletion; the new CIF layout extends the rename map
