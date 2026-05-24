@@ -381,7 +381,7 @@ Mark `[x]` as each step lands.
 
       Commit: `Remove LSQ output descriptors from minimizer base`
 
-- [ ] **P1.10 — Remove duplicate fields from Bayesian minimizer
+- [x] **P1.10 — Remove duplicate fields from Bayesian minimizer
       base.** In
       `src/easydiffraction/analysis/categories/minimizer/bayesian_base.py`,
       delete the descriptor declarations and properties for
