@@ -266,7 +266,7 @@ When the matching open-issue is fully resolved, move it to
 
 Mark `[x]` as each step lands.
 
-- [ ] **P1.1 — Add emcee dependency and refresh the lockfile.**
+- [x] **P1.1 — Add emcee dependency and refresh the lockfile.**
   - Add `emcee>=3.1` to `pyproject.toml` (runtime dependencies, not just
     the `doc` extra — the existing lockfile carries emcee only as
     `extra == 'doc'` which CI does not install for runtime).
