@@ -226,13 +226,13 @@ class Project(GuardedBase):  # noqa: PLR0904
         del category
         return {}
 
-    def _swap_chart(self, new_type: str) -> None:
+    def _swap_chart(self, new_type: str, *, strict: bool = True) -> None:
         """Switch the active chart renderer."""
-        self._chart._set_type(new_type)
+        self._chart._set_type(new_type, strict=strict)
 
-    def _swap_table(self, new_type: str) -> None:
+    def _swap_table(self, new_type: str, *, strict: bool = True) -> None:
         """Switch the active table renderer."""
-        self._table._set_type(new_type)
+        self._table._set_type(new_type, strict=strict)
 
     @classmethod
     def current_project_path(cls) -> pathlib.Path | None:

@@ -16,6 +16,7 @@ from easydiffraction.display.tables import TableRendererFactory
 from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.io.cif.parse import read_cif_str
 from easydiffraction.project.categories.table.factory import TableFactory
+from easydiffraction.utils.logging import log
 
 AUTO_ENGINE = 'auto'
 AUTO_DESCRIPTION = 'Environment default table engine'
@@ -57,9 +58,16 @@ class Table(CategoryItem, SwitchableCategoryBase):
             return TableEngineEnum.default().value
         return value
 
-    def _set_type(self, value: str) -> None:
+    def _set_type(self, value: str, *, strict: bool = True) -> None:
         if value not in TABLE_ENGINE_OPTIONS:
-            self._tabler.engine = value
+            msg = (
+                f"Unsupported table type '{value}'. "
+                f'Supported: {TABLE_ENGINE_OPTIONS}. '
+                f"For more information, use 'table.show_supported()'"
+            )
+            if strict:
+                raise ValueError(msg)
+            log.warning(msg)
             return
 
         resolved_engine = self._resolved_engine(value)
@@ -86,8 +94,4 @@ class Table(CategoryItem, SwitchableCategoryBase):
         table_type = read_cif_str(block, '_table.type')
         if table_type is None:
             return
-        parent = getattr(self, '_parent', None)
-        if parent is None:
-            self._set_type(table_type)
-            return
-        parent._swap_table(table_type)
+        self._parent._swap_table(table_type, strict=False)

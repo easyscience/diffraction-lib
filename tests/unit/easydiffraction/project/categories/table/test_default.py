@@ -37,10 +37,34 @@ def test_table_from_cif_restores_type():
     from easydiffraction.project.categories.table.default import Table
 
     table = Table()
+
+    swapped: list[tuple[str, dict]] = []
+
+    class _Parent:
+        def _swap_table(self, new_type, *, strict):
+            swapped.append((new_type, {'strict': strict}))
+            table._set_type(new_type, strict=strict)
+
+    table._parent = _Parent()
     block = gemmi.cif.read_string(
         'data_test\n_table.type rich\n',
     ).sole_block()
 
     table.from_cif(block)
 
+    assert swapped == [('rich', {'strict': False})]
     assert table.type == 'rich'
+
+
+def test_table_invalid_type_assignment_raises():
+    import pytest
+
+    from easydiffraction.project.categories.table.default import Table
+
+    table = Table()
+    initial_type = table.type
+
+    with pytest.raises(ValueError, match='Unsupported table type'):
+        table._set_type('bogus-engine')
+
+    assert table.type == initial_type

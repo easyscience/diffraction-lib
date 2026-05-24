@@ -16,6 +16,7 @@ from easydiffraction.display.plotting import PlotterFactory
 from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.io.cif.parse import read_cif_str
 from easydiffraction.project.categories.chart.factory import ChartFactory
+from easydiffraction.utils.logging import log
 
 AUTO_ENGINE = 'auto'
 AUTO_DESCRIPTION = 'Environment default chart engine'
@@ -57,9 +58,16 @@ class Chart(CategoryItem, SwitchableCategoryBase):
             return PlotterEngineEnum.default().value
         return value
 
-    def _set_type(self, value: str) -> None:
+    def _set_type(self, value: str, *, strict: bool = True) -> None:
         if value not in CHART_ENGINE_OPTIONS:
-            self._plotter.engine = value
+            msg = (
+                f"Unsupported chart type '{value}'. "
+                f'Supported: {CHART_ENGINE_OPTIONS}. '
+                f"For more information, use 'chart.show_supported()'"
+            )
+            if strict:
+                raise ValueError(msg)
+            log.warning(msg)
             return
 
         resolved_engine = self._resolved_engine(value)
@@ -89,8 +97,4 @@ class Chart(CategoryItem, SwitchableCategoryBase):
         chart_type = read_cif_str(block, '_chart.type')
         if chart_type is None:
             return
-        parent = getattr(self, '_parent', None)
-        if parent is None:
-            self._set_type(chart_type)
-            return
-        parent._swap_chart(chart_type)
+        self._parent._swap_chart(chart_type, strict=False)
