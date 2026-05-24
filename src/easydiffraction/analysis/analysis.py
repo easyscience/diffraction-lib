@@ -736,13 +736,13 @@ class Analysis(
                 starting_parameters=list(restored_parameters),
                 fitting_time=fitting_time,
                 sampler_name=sampler_name,
-                point_estimate_name=self.minimizer.point_estimate_name.value,
+                point_estimate_name=self.fit_result.point_estimate_name.value,
                 posterior_samples=posterior_samples,
                 posterior_parameter_summaries=self._restored_posterior_summaries(),
                 posterior_predictive=self._restored_predictive_summaries(),
                 credible_interval_levels=(
-                    float(self.minimizer.credible_interval_inner.value),
-                    float(self.minimizer.credible_interval_outer.value),
+                    float(self.fit_result.credible_interval_inner.value),
+                    float(self.fit_result.credible_interval_outer.value),
                 ),
                 sampler_settings={
                     'steps': int(sampler_settings.get('steps', 0)),
@@ -755,14 +755,14 @@ class Analysis(
                 },
                 convergence_diagnostics={
                     'converged': False,
-                    'max_r_hat': self.minimizer.gelman_rubin_max.value,
-                    'min_ess_bulk': self.minimizer.effective_sample_size_min.value,
+                    'max_r_hat': self.fit_result.gelman_rubin_max.value,
+                    'min_ess_bulk': self.fit_result.effective_sample_size_min.value,
                     'n_draws': int(sample_shape[0]),
                     'n_chains': int(sample_shape[1]),
                     'n_parameters': int(sample_shape[2]),
                 },
-                sampler_completed=bool(self.minimizer.sampler_completed.value),
-                best_log_posterior=self.minimizer.best_log_posterior.value,
+                sampler_completed=bool(self.fit_result.sampler_completed.value),
+                best_log_posterior=self.fit_result.best_log_posterior.value,
             )
             restored_results.message = self.fit_result.message.value
             restored_results.iterations = int(self.fit_result.iterations.value)
@@ -1682,15 +1682,14 @@ class Analysis(
         point_estimate_name = results.point_estimate_name or 'best_sample'
         convergence = results.convergence_diagnostics
 
-        self.minimizer._set_runtime_seconds(results.fitting_time)
-        self.minimizer._set_point_estimate_name(point_estimate_name)
-        self.minimizer._set_sampler_completed(value=results.sampler_completed)
-        self.minimizer._set_best_log_posterior(results.best_log_posterior)
-        self.minimizer._set_credible_interval_inner(credible_interval_inner)
-        self.minimizer._set_credible_interval_outer(credible_interval_outer)
-        self.minimizer._set_gelman_rubin_max(convergence.get('max_r_hat'))
-        self.minimizer._set_effective_sample_size_min(convergence.get('min_ess_bulk'))
-        self.minimizer._set_acceptance_rate_mean(convergence.get('acceptance_rate_mean'))
+        self.fit_result._set_point_estimate_name(point_estimate_name)
+        self.fit_result._set_sampler_completed(value=results.sampler_completed)
+        self.fit_result._set_best_log_posterior(results.best_log_posterior)
+        self.fit_result._set_credible_interval_inner(credible_interval_inner)
+        self.fit_result._set_credible_interval_outer(credible_interval_outer)
+        self.fit_result._set_gelman_rubin_max(convergence.get('max_r_hat'))
+        self.fit_result._set_effective_sample_size_min(convergence.get('min_ess_bulk'))
+        self.fit_result._set_acceptance_rate_mean(convergence.get('acceptance_rate_mean'))
         self._store_posterior_samples_sidecar_projection(results)
 
         live_parameters = {

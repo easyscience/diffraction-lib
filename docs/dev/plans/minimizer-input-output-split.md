@@ -351,7 +351,7 @@ Mark `[x]` as each step lands.
       to `self.fit_result.<name>.value`). Commit:
       `Route LSQ result writers to fit_result`
 
-- [ ] **P1.8 — Route Bayesian result writers to `fit_result`.** Same
+- [x] **P1.8 — Route Bayesian result writers to `fit_result`.** Same
       treatment for `_store_posterior_fit_projection` and the
       Bayesian branch of `_restore_fit_results_from_projection`.
       Includes the `_set_credible_interval_*` calls — they now target
