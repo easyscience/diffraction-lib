@@ -150,7 +150,7 @@ expt47.instrument.calib_d_to_tof_quad = -0.47488
 # #### Set Peak Profile
 
 # %%
-expt56.show_peak_profile_types()
+expt56.peak.show_supported()
 expt56.peak.broad_gauss_sigma_0 = 0.0
 expt56.peak.broad_gauss_sigma_1 = 0.0
 expt56.peak.broad_gauss_sigma_2 = 15.5
@@ -172,8 +172,8 @@ expt47.peak.exp_rise_alpha_1 = 0.1
 # #### Set Background
 
 # %%
-expt56.show_background_types()
-expt56.background_type = 'line-segment'
+expt56.background.show_supported()
+expt56.background.type = 'line-segment'
 for idx, (x, y) in enumerate(
     [
         (9162, 465),
@@ -210,7 +210,7 @@ for idx, (x, y) in enumerate(
     expt56.background.create(id=str(idx), x=x, y=y)
 
 # %%
-expt47.background_type = 'line-segment'
+expt47.background.type = 'line-segment'
 for idx, (x, y) in enumerate(
     [
         (9090, 488),
@@ -298,8 +298,8 @@ project.experiments.add(expt47)
 # #### Set Fit Mode
 
 # %%
-project.analysis.show_fitting_mode_types()
-project.analysis.fitting_mode_type = 'joint'
+project.analysis.fitting_mode.show_supported()
+project.analysis.fitting_mode.type = 'joint'
 
 # %% [markdown]
 # #### Set Free Parameters

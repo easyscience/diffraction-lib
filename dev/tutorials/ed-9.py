@@ -164,7 +164,7 @@ experiment.peak.exp_rise_alpha_1 = 0.0097
 # Select the background type.
 
 # %%
-experiment.background_type = 'line-segment'
+experiment.background.type = 'line-segment'
 
 # %% [markdown]
 # Add background points.

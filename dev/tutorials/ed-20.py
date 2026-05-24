@@ -123,10 +123,10 @@ expt_n2.instrument.calib_d_to_tof_linear = extract_metadata(
 # #### Set Peak Profile
 
 # %%
-expt_s2.show_peak_profile_types()
+expt_s2.peak.show_supported()
 
 # %%
-expt_s2.peak_profile_type = 'pseudo-voigt'
+expt_s2.peak.type = 'pseudo-voigt'
 
 # %%
 expt_s2.peak.broad_gauss_sigma_0 = 300
@@ -134,7 +134,7 @@ expt_s2.peak.broad_gauss_sigma_1 = 1200
 expt_s2.peak.broad_gauss_sigma_2 = 900
 
 # %%
-expt_n2.peak_profile_type = 'pseudo-voigt'
+expt_n2.peak.type = 'pseudo-voigt'
 
 # %%
 expt_n2.peak.broad_gauss_sigma_0 = 300
@@ -145,10 +145,10 @@ expt_n2.peak.broad_gauss_sigma_2 = 900
 # #### Set Background
 
 # %%
-expt_s2.show_background_types()
+expt_s2.background.show_supported()
 
 # %%
-# expt_s2.background_type = 'line-segment'
+# expt_s2.background.type = 'line-segment'
 
 # %%
 for idx, (x, y) in enumerate(
@@ -259,10 +259,10 @@ project.display.pattern(expt_name='expt_n2')
 # #### Set Fit Mode
 
 # %%
-project.analysis.show_fitting_mode_types()
+project.analysis.fitting_mode.show_supported()
 
 # %%
-project.analysis.fitting_mode_type = 'joint'
+project.analysis.fitting_mode.type = 'joint'
 
 # %% [markdown]
 # #### Set Free Parameters

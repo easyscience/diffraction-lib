@@ -130,10 +130,10 @@ expt.instrument.calib_twotheta_offset = 0.1
 # #### Set Peak Profile
 
 # %%
-expt.show_peak_profile_types()
+expt.peak.show_supported()
 
 # %%
-expt.peak_profile_type = 'pseudo-voigt + empirical asymmetry'
+expt.peak.type = 'pseudo-voigt + empirical asymmetry'
 
 # %%
 expt.peak.broad_gauss_u = 0.3
@@ -144,7 +144,7 @@ expt.peak.broad_gauss_w = 0.4
 # #### Set Background
 
 # %%
-expt.show_background_types()
+expt.background.show_supported()
 
 # %%
 expt.background.create(id='1', x=8, y=500)

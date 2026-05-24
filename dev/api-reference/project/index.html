@@ -2645,6 +2645,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#easydiffraction.project.categories.chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        chart
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#easydiffraction.project.categories.info" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2656,10 +2667,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#easydiffraction.project.categories.rendering" class="md-nav__link">
+  <a href="#easydiffraction.project.categories.table" class="md-nav__link">
     <span class="md-ellipsis">
       
-        rendering
+        table
       
     </span>
   </a>
@@ -2998,6 +3009,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#easydiffraction.project.categories.chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        chart
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#easydiffraction.project.categories.info" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3009,10 +3031,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#easydiffraction.project.categories.rendering" class="md-nav__link">
+  <a href="#easydiffraction.project.categories.table" class="md-nav__link">
     <span class="md-ellipsis">
       
-        rendering
+        table
       
     </span>
   </a>
@@ -3263,6 +3285,474 @@
 
 
 
+
+<div class="doc doc-object doc-module">
+
+
+
+<h3 id="easydiffraction.project.categories.chart" class="doc doc-heading">
+            <code>chart</code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+        <p>Project chart category exports.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<h4 id="easydiffraction.project.categories.chart.default" class="doc doc-heading">
+            <code>default</code>
+
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+        <p>Project chart category.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h5 id="easydiffraction.project.categories.chart.default.Chart" class="doc doc-heading">
+            <code>Chart</code>
+
+
+</h5>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code&gt;CategoryItem&lt;/code&gt; (&lt;code&gt;easydiffraction.core.category.CategoryItem&lt;/code&gt;)" href="../core/#easydiffraction.core.category.CategoryItem">CategoryItem</a></code>, <code><a class="autorefs autorefs-internal" title="&lt;code&gt;SwitchableCategoryBase&lt;/code&gt; (&lt;code&gt;easydiffraction.core.switchable.SwitchableCategoryBase&lt;/code&gt;)" href="../core/#easydiffraction.core.switchable.SwitchableCategoryBase">SwitchableCategoryBase</a></code></p>
+
+
+
+        <p>Chart engine selection for a project.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+
+
+
+
+
+
+              <details class="mkdocstrings-source">
+                <summary>Source code in <code>src/easydiffraction/project/categories/chart/default.py</code></summary>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@ChartFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Chart</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">,</span> <span class="n">SwitchableCategoryBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Chart engine selection for a project.&quot;&quot;&quot;</span>
+
+    <span class="n">_category_code</span> <span class="o">=</span> <span class="s1">&#39;chart&#39;</span>
+    <span class="n">_owner_attr_name</span> <span class="o">=</span> <span class="s1">&#39;chart&#39;</span>
+    <span class="n">_swap_method_name</span> <span class="o">=</span> <span class="s1">&#39;_swap_chart&#39;</span>
+
+    <span class="n">type_info</span> <span class="o">=</span> <span class="n">TypeInfo</span><span class="p">(</span>
+        <span class="n">tag</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Project chart category&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plotter</span> <span class="o">=</span> <span class="n">Plotter</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;type&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Chart renderer backend type&#39;</span><span class="p">,</span>
+            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
+                <span class="n">default</span><span class="o">=</span><span class="n">AUTO_ENGINE</span><span class="p">,</span>
+                <span class="n">validator</span><span class="o">=</span><span class="n">MembershipValidator</span><span class="p">(</span>
+                    <span class="n">allowed</span><span class="o">=</span><span class="n">CHART_ENGINE_OPTIONS</span><span class="p">,</span>
+                <span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_chart.type&#39;</span><span class="p">]),</span>
+        <span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolved_engine</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="n">AUTO_ENGINE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">PlotterEngineEnum</span><span class="o">.</span><span class="n">default</span><span class="p">()</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">CHART_ENGINE_OPTIONS</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Unsupported chart type &#39;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
+                <span class="sa">f</span><span class="s1">&#39;Supported: </span><span class="si">{</span><span class="n">CHART_ENGINE_OPTIONS</span><span class="si">}</span><span class="s1">. &#39;</span>
+                <span class="sa">f</span><span class="s2">&quot;For more information, use &#39;chart.show_supported()&#39;&quot;</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">strict</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">resolved_engine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolved_engine</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plotter</span><span class="o">.</span><span class="n">engine</span> <span class="o">!=</span> <span class="n">resolved_engine</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_plotter</span><span class="o">.</span><span class="n">engine</span> <span class="o">=</span> <span class="n">resolved_engine</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_type</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plotter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Plotter</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Live plotting facade bound to the owning project.&quot;&quot;&quot;</span>
+        <span class="n">owner</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_parent&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">owner</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_plotter</span><span class="o">.</span><span class="n">_set_project</span><span class="p">(</span><span class="n">owner</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plotter</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_supported_types</span><span class="p">(</span>
+        <span class="n">filters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return supported chart renderer backends.&quot;&quot;&quot;</span>
+        <span class="k">del</span> <span class="n">filters</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="n">AUTO_ENGINE</span><span class="p">,</span> <span class="n">AUTO_DESCRIPTION</span><span class="p">),</span> <span class="o">*</span><span class="n">PlotterFactory</span><span class="o">.</span><span class="n">descriptions</span><span class="p">()]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Populate this chart category from a CIF block.&quot;&quot;&quot;</span>
+        <span class="k">del</span> <span class="n">idx</span>
+        <span class="n">chart_type</span> <span class="o">=</span> <span class="n">read_cif_str</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="s1">&#39;_chart.type&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">chart_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">_swap_chart</span><span class="p">(</span><span class="n">chart_type</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h6 id="easydiffraction.project.categories.chart.default.Chart.plotter" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">plotter</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Live plotting facade bound to the owning project.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h6 id="easydiffraction.project.categories.chart.default.Chart.from_cif" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">from_cif</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">idx</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></code>
+
+</h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Populate this chart category from a <abbr title="Crystallographic Information File.">CIF</abbr> block.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/project/categories/chart/default.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">from_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Populate this chart category from a CIF block.&quot;&quot;&quot;</span>
+    <span class="k">del</span> <span class="n">idx</span>
+    <span class="n">chart_type</span> <span class="o">=</span> <span class="n">read_cif_str</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="s1">&#39;_chart.type&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">chart_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">_swap_chart</span><span class="p">(</span><span class="n">chart_type</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h4 id="easydiffraction.project.categories.chart.factory" class="doc doc-heading">
+            <code>factory</code>
+
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+        <p>Factory for project chart categories.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h5 id="easydiffraction.project.categories.chart.factory.ChartFactory" class="doc doc-heading">
+            <code>ChartFactory</code>
+
+
+</h5>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code&gt;FactoryBase&lt;/code&gt; (&lt;code&gt;easydiffraction.core.factory.FactoryBase&lt;/code&gt;)" href="../core/#easydiffraction.core.factory.FactoryBase">FactoryBase</a></code></p>
+
+
+
+        <p>Create project chart category instances.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+
+
+
+
+
+
+              <details class="mkdocstrings-source">
+                <summary>Source code in <code>src/easydiffraction/project/categories/chart/factory.py</code></summary>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ChartFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create project chart category instances.&quot;&quot;&quot;</span>
+
+    <span class="n">_default_rules</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="nb">frozenset</span><span class="p">():</span> <span class="s1">&#39;default&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+  </div>
+
+    </div>
+
+</div>
 
 <div class="doc doc-object doc-module">
 
@@ -4097,15 +4587,15 @@
 
 
 
-<h3 id="easydiffraction.project.categories.rendering" class="doc doc-heading">
-            <code>rendering</code>
+<h3 id="easydiffraction.project.categories.table" class="doc doc-heading">
+            <code>table</code>
 
 
 </h3>
 
     <div class="doc doc-contents ">
 
-        <p>Project rendering category exports.</p>
+        <p>Project table category exports.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -4135,7 +4625,7 @@
 
 
 
-<h4 id="easydiffraction.project.categories.rendering.default" class="doc doc-heading">
+<h4 id="easydiffraction.project.categories.table.default" class="doc doc-heading">
             <code>default</code>
 
 
@@ -4143,7 +4633,7 @@
 
     <div class="doc doc-contents ">
 
-        <p>Project rendering category.</p>
+        <p>Project table category.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -4171,8 +4661,8 @@
 
 
 
-<h5 id="easydiffraction.project.categories.rendering.default.Rendering" class="doc doc-heading">
-            <code>Rendering</code>
+<h5 id="easydiffraction.project.categories.table.default.Table" class="doc doc-heading">
+            <code>Table</code>
 
 
 </h5>
@@ -4180,11 +4670,11 @@
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code&gt;CategoryItem&lt;/code&gt; (&lt;code&gt;easydiffraction.core.category.CategoryItem&lt;/code&gt;)" href="../core/#easydiffraction.core.category.CategoryItem">CategoryItem</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="&lt;code&gt;CategoryItem&lt;/code&gt; (&lt;code&gt;easydiffraction.core.category.CategoryItem&lt;/code&gt;)" href="../core/#easydiffraction.core.category.CategoryItem">CategoryItem</a></code>, <code><a class="autorefs autorefs-internal" title="&lt;code&gt;SwitchableCategoryBase&lt;/code&gt; (&lt;code&gt;easydiffraction.core.switchable.SwitchableCategoryBase&lt;/code&gt;)" href="../core/#easydiffraction.core.switchable.SwitchableCategoryBase">SwitchableCategoryBase</a></code></p>
 
 
 
-        <p>Chart and table engine selection for a project.</p>
+        <p>Table engine selection for a project.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -4197,176 +4687,97 @@
 
 
               <details class="mkdocstrings-source">
-                <summary>Source code in <code>src/easydiffraction/project/categories/rendering/default.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 27</span>
-<span class="normal"> 28</span>
-<span class="normal"> 29</span>
-<span class="normal"> 30</span>
-<span class="normal"> 31</span>
-<span class="normal"> 32</span>
-<span class="normal"> 33</span>
-<span class="normal"> 34</span>
-<span class="normal"> 35</span>
-<span class="normal"> 36</span>
-<span class="normal"> 37</span>
-<span class="normal"> 38</span>
-<span class="normal"> 39</span>
-<span class="normal"> 40</span>
-<span class="normal"> 41</span>
-<span class="normal"> 42</span>
-<span class="normal"> 43</span>
-<span class="normal"> 44</span>
-<span class="normal"> 45</span>
-<span class="normal"> 46</span>
-<span class="normal"> 47</span>
-<span class="normal"> 48</span>
-<span class="normal"> 49</span>
-<span class="normal"> 50</span>
-<span class="normal"> 51</span>
-<span class="normal"> 52</span>
-<span class="normal"> 53</span>
-<span class="normal"> 54</span>
-<span class="normal"> 55</span>
-<span class="normal"> 56</span>
-<span class="normal"> 57</span>
-<span class="normal"> 58</span>
-<span class="normal"> 59</span>
-<span class="normal"> 60</span>
-<span class="normal"> 61</span>
-<span class="normal"> 62</span>
-<span class="normal"> 63</span>
-<span class="normal"> 64</span>
-<span class="normal"> 65</span>
-<span class="normal"> 66</span>
-<span class="normal"> 67</span>
-<span class="normal"> 68</span>
-<span class="normal"> 69</span>
-<span class="normal"> 70</span>
-<span class="normal"> 71</span>
-<span class="normal"> 72</span>
-<span class="normal"> 73</span>
-<span class="normal"> 74</span>
-<span class="normal"> 75</span>
-<span class="normal"> 76</span>
-<span class="normal"> 77</span>
-<span class="normal"> 78</span>
-<span class="normal"> 79</span>
-<span class="normal"> 80</span>
-<span class="normal"> 81</span>
-<span class="normal"> 82</span>
-<span class="normal"> 83</span>
-<span class="normal"> 84</span>
-<span class="normal"> 85</span>
-<span class="normal"> 86</span>
-<span class="normal"> 87</span>
-<span class="normal"> 88</span>
-<span class="normal"> 89</span>
-<span class="normal"> 90</span>
-<span class="normal"> 91</span>
-<span class="normal"> 92</span>
-<span class="normal"> 93</span>
-<span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@RenderingFactory</span><span class="o">.</span><span class="n">register</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">Rendering</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Chart and table engine selection for a project.&quot;&quot;&quot;</span>
+                <summary>Source code in <code>src/easydiffraction/project/categories/table/default.py</code></summary>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span>
+<span class="normal">95</span>
+<span class="normal">96</span>
+<span class="normal">97</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@TableFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Table</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">,</span> <span class="n">SwitchableCategoryBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Table engine selection for a project.&quot;&quot;&quot;</span>
 
-    <span class="n">_category_code</span> <span class="o">=</span> <span class="s1">&#39;rendering&#39;</span>
+    <span class="n">_category_code</span> <span class="o">=</span> <span class="s1">&#39;table&#39;</span>
+    <span class="n">_owner_attr_name</span> <span class="o">=</span> <span class="s1">&#39;table&#39;</span>
+    <span class="n">_swap_method_name</span> <span class="o">=</span> <span class="s1">&#39;_swap_table&#39;</span>
 
     <span class="n">type_info</span> <span class="o">=</span> <span class="n">TypeInfo</span><span class="p">(</span>
         <span class="n">tag</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Project rendering category&#39;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Project table category&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_plotter</span> <span class="o">=</span> <span class="n">Plotter</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tabler</span> <span class="o">=</span> <span class="n">TableRenderer</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
-
-        <span class="c1"># Persist symbolic &quot;auto&quot; so project.cif stays portable.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_chart_engine</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;chart_engine&#39;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Chart renderer backend type&#39;</span><span class="p">,</span>
-            <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
-                <span class="n">default</span><span class="o">=</span><span class="n">AUTO_ENGINE</span><span class="p">,</span>
-                <span class="n">validator</span><span class="o">=</span><span class="n">MembershipValidator</span><span class="p">(</span>
-                    <span class="n">allowed</span><span class="o">=</span><span class="n">CHART_ENGINE_OPTIONS</span><span class="p">,</span>
-                <span class="p">),</span>
-            <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_rendering.chart_engine&#39;</span><span class="p">]),</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_table_engine</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;table_engine&#39;</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;type&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Table renderer backend type&#39;</span><span class="p">,</span>
             <span class="n">value_spec</span><span class="o">=</span><span class="n">AttributeSpec</span><span class="p">(</span>
                 <span class="n">default</span><span class="o">=</span><span class="n">AUTO_ENGINE</span><span class="p">,</span>
@@ -4374,107 +4785,52 @@
                     <span class="n">allowed</span><span class="o">=</span><span class="n">TABLE_ENGINE_OPTIONS</span><span class="p">,</span>
                 <span class="p">),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_rendering.table_engine&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_table.type&#39;</span><span class="p">]),</span>
         <span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_resolved_chart_engine</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="n">AUTO_ENGINE</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">PlotterEngineEnum</span><span class="o">.</span><span class="n">default</span><span class="p">()</span><span class="o">.</span><span class="n">value</span>
-        <span class="k">return</span> <span class="n">value</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_resolved_table_engine</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolved_engine</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="n">AUTO_ENGINE</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">TableEngineEnum</span><span class="o">.</span><span class="n">default</span><span class="p">()</span><span class="o">.</span><span class="n">value</span>
         <span class="k">return</span> <span class="n">value</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_set_chart_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">CHART_ENGINE_OPTIONS</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_plotter</span><span class="o">.</span><span class="n">engine</span> <span class="o">=</span> <span class="n">value</span>
-            <span class="k">return</span>
-
-        <span class="n">resolved_engine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolved_chart_engine</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plotter</span><span class="o">.</span><span class="n">engine</span> <span class="o">!=</span> <span class="n">resolved_engine</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_plotter</span><span class="o">.</span><span class="n">engine</span> <span class="o">=</span> <span class="n">resolved_engine</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_chart_engine</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_set_table_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">TABLE_ENGINE_OPTIONS</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_tabler</span><span class="o">.</span><span class="n">engine</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Unsupported table type &#39;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
+                <span class="sa">f</span><span class="s1">&#39;Supported: </span><span class="si">{</span><span class="n">TABLE_ENGINE_OPTIONS</span><span class="si">}</span><span class="s1">. &#39;</span>
+                <span class="sa">f</span><span class="s2">&quot;For more information, use &#39;table.show_supported()&#39;&quot;</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">strict</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="n">resolved_engine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolved_table_engine</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">resolved_engine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolved_engine</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tabler</span><span class="o">.</span><span class="n">engine</span> <span class="o">!=</span> <span class="n">resolved_engine</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_tabler</span><span class="o">.</span><span class="n">engine</span> <span class="o">=</span> <span class="n">resolved_engine</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_table_engine</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">chart_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StringDescriptor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Chart renderer backend type.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chart_engine</span>
-
-    <span class="nd">@chart_engine</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">chart_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_chart_engine</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">table_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StringDescriptor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Table renderer backend type.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table_engine</span>
-
-    <span class="nd">@table_engine</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">table_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_table_engine</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">plotter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Plotter</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Live plotting facade bound to the owning project.&quot;&quot;&quot;</span>
-        <span class="n">direct_parent</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_parent&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">owner</span> <span class="o">=</span> <span class="n">direct_parent</span>
-        <span class="k">while</span> <span class="n">owner</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">owner</span><span class="p">,</span> <span class="s1">&#39;structures&#39;</span><span class="p">):</span>
-            <span class="n">owner</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">owner</span><span class="p">,</span> <span class="s1">&#39;_parent&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">owner</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">owner</span> <span class="o">=</span> <span class="n">direct_parent</span>
-        <span class="k">if</span> <span class="n">owner</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_plotter</span><span class="o">.</span><span class="n">_set_project</span><span class="p">(</span><span class="n">owner</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plotter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_type</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">tabler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TableRenderer</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Live table-rendering facade.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tabler</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">show_chart_engines</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print supported chart renderer backends.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">show_supported_engines</span><span class="p">()</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">show_table_engines</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print supported table renderer backends.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tabler</span><span class="o">.</span><span class="n">show_supported_engines</span><span class="p">()</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">show_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print the current rendering configuration.&quot;&quot;&quot;</span>
-        <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Current rendering configuration&#39;</span><span class="p">)</span>
-        <span class="n">render_table</span><span class="p">(</span>
-            <span class="n">columns_headers</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Setting&#39;</span><span class="p">,</span> <span class="s1">&#39;Value&#39;</span><span class="p">],</span>
-            <span class="n">columns_alignment</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">],</span>
-            <span class="n">columns_data</span><span class="o">=</span><span class="p">[</span>
-                <span class="p">[</span><span class="s1">&#39;Chart engine&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">chart_engine</span><span class="o">.</span><span class="n">value</span><span class="p">],</span>
-                <span class="p">[</span><span class="s1">&#39;Table engine&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">table_engine</span><span class="o">.</span><span class="n">value</span><span class="p">],</span>
-            <span class="p">],</span>
-        <span class="p">)</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_supported_types</span><span class="p">(</span>
+        <span class="n">filters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return supported table renderer backends.&quot;&quot;&quot;</span>
+        <span class="k">del</span> <span class="n">filters</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="n">AUTO_ENGINE</span><span class="p">,</span> <span class="n">AUTO_DESCRIPTION</span><span class="p">),</span> <span class="o">*</span><span class="n">TableRendererFactory</span><span class="o">.</span><span class="n">descriptions</span><span class="p">()]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">from_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Populate this rendering category from a CIF block.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Populate this table category from a CIF block.&quot;&quot;&quot;</span>
         <span class="k">del</span> <span class="n">idx</span>
-        <span class="n">chart_engine</span> <span class="o">=</span> <span class="n">read_cif_str</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="s1">&#39;_rendering.chart_engine&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">chart_engine</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_set_chart_engine</span><span class="p">(</span><span class="n">chart_engine</span><span class="p">)</span>
-
-        <span class="n">table_engine</span> <span class="o">=</span> <span class="n">read_cif_str</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="s1">&#39;_rendering.table_engine&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">table_engine</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_set_table_engine</span><span class="p">(</span><span class="n">table_engine</span><span class="p">)</span>
+        <span class="n">table_type</span> <span class="o">=</span> <span class="n">read_cif_str</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="s1">&#39;_table.type&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">table_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">_swap_table</span><span class="p">(</span><span class="n">table_type</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -4492,84 +4848,7 @@
 
 
 
-<h6 id="easydiffraction.project.categories.rendering.default.Rendering.chart_engine" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">chart_engine</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
-
-</h6>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Chart renderer backend type.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h6 id="easydiffraction.project.categories.rendering.default.Rendering.table_engine" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">table_engine</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-      <small class="doc doc-label doc-label-writable"><code>writable</code></small>
-  </span>
-
-</h6>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Table renderer backend type.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h6 id="easydiffraction.project.categories.rendering.default.Rendering.plotter" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">plotter</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-  </span>
-
-</h6>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Live plotting facade bound to the owning project.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h6 id="easydiffraction.project.categories.rendering.default.Rendering.tabler" class="doc doc-heading">
+<h6 id="easydiffraction.project.categories.table.default.Table.tabler" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">tabler</span></code>
 
   <span class="doc doc-labels">
@@ -4596,113 +4875,7 @@
 <div class="doc doc-object doc-function">
 
 
-<h6 id="easydiffraction.project.categories.rendering.default.Rendering.show_chart_engines" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">show_chart_engines</span><span class="p">()</span></code>
-
-</h6>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Print supported chart renderer backends.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-
-
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>src/easydiffraction/project/categories/rendering/default.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_chart_engines</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Print supported chart renderer backends.&quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">show_supported_engines</span><span class="p">()</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h6 id="easydiffraction.project.categories.rendering.default.Rendering.show_table_engines" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">show_table_engines</span><span class="p">()</span></code>
-
-</h6>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Print supported table renderer backends.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-
-
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>src/easydiffraction/project/categories/rendering/default.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_table_engines</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Print supported table renderer backends.&quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">tabler</span><span class="o">.</span><span class="n">show_supported_engines</span><span class="p">()</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h6 id="easydiffraction.project.categories.rendering.default.Rendering.show_config" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">show_config</span><span class="p">()</span></code>
-
-</h6>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Print the current rendering configuration.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-
-
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>src/easydiffraction/project/categories/rendering/default.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Print the current rendering configuration.&quot;&quot;&quot;</span>
-    <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="s1">&#39;Current rendering configuration&#39;</span><span class="p">)</span>
-    <span class="n">render_table</span><span class="p">(</span>
-        <span class="n">columns_headers</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Setting&#39;</span><span class="p">,</span> <span class="s1">&#39;Value&#39;</span><span class="p">],</span>
-        <span class="n">columns_alignment</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">],</span>
-        <span class="n">columns_data</span><span class="o">=</span><span class="p">[</span>
-            <span class="p">[</span><span class="s1">&#39;Chart engine&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">chart_engine</span><span class="o">.</span><span class="n">value</span><span class="p">],</span>
-            <span class="p">[</span><span class="s1">&#39;Table engine&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">table_engine</span><span class="o">.</span><span class="n">value</span><span class="p">],</span>
-        <span class="p">],</span>
-    <span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h6 id="easydiffraction.project.categories.rendering.default.Rendering.from_cif" class="doc doc-heading">
+<h6 id="easydiffraction.project.categories.table.default.Table.from_cif" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">from_cif</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">idx</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></code>
 
 </h6>
@@ -4710,33 +4883,27 @@
 
     <div class="doc doc-contents ">
 
-        <p>Populate this rendering category from a <abbr title="Crystallographic Information File.">CIF</abbr> block.</p>
+        <p>Populate this table category from a <abbr title="Crystallographic Information File.">CIF</abbr> block.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
 
 
             <details class="mkdocstrings-source">
-              <summary>Source code in <code>src/easydiffraction/project/categories/rendering/default.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">from_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Populate this rendering category from a CIF block.&quot;&quot;&quot;</span>
+              <summary>Source code in <code>src/easydiffraction/project/categories/table/default.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span>
+<span class="normal">95</span>
+<span class="normal">96</span>
+<span class="normal">97</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">from_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Populate this table category from a CIF block.&quot;&quot;&quot;</span>
     <span class="k">del</span> <span class="n">idx</span>
-    <span class="n">chart_engine</span> <span class="o">=</span> <span class="n">read_cif_str</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="s1">&#39;_rendering.chart_engine&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">chart_engine</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_chart_engine</span><span class="p">(</span><span class="n">chart_engine</span><span class="p">)</span>
-
-    <span class="n">table_engine</span> <span class="o">=</span> <span class="n">read_cif_str</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="s1">&#39;_rendering.table_engine&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">table_engine</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_table_engine</span><span class="p">(</span><span class="n">table_engine</span><span class="p">)</span>
+    <span class="n">table_type</span> <span class="o">=</span> <span class="n">read_cif_str</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="s1">&#39;_table.type&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">table_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">_swap_table</span><span class="p">(</span><span class="n">table_type</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -4764,7 +4931,7 @@
 
 
 
-<h4 id="easydiffraction.project.categories.rendering.factory" class="doc doc-heading">
+<h4 id="easydiffraction.project.categories.table.factory" class="doc doc-heading">
             <code>factory</code>
 
 
@@ -4772,7 +4939,7 @@
 
     <div class="doc doc-contents ">
 
-        <p>Factory for project rendering categories.</p>
+        <p>Factory for project table categories.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -4800,8 +4967,8 @@
 
 
 
-<h5 id="easydiffraction.project.categories.rendering.factory.RenderingFactory" class="doc doc-heading">
-            <code>RenderingFactory</code>
+<h5 id="easydiffraction.project.categories.table.factory.TableFactory" class="doc doc-heading">
+            <code>TableFactory</code>
 
 
 </h5>
@@ -4813,7 +4980,7 @@
 
 
 
-        <p>Create project rendering category instances.</p>
+        <p>Create project table category instances.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -4826,14 +4993,14 @@
 
 
               <details class="mkdocstrings-source">
-                <summary>Source code in <code>src/easydiffraction/project/categories/rendering/factory.py</code></summary>
+                <summary>Source code in <code>src/easydiffraction/project/categories/table/factory.py</code></summary>
                 <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">12</span>
 <span class="normal">13</span>
 <span class="normal">14</span>
 <span class="normal">15</span>
 <span class="normal">16</span>
-<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RenderingFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create project rendering category instances.&quot;&quot;&quot;</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TableFactory</span><span class="p">(</span><span class="n">FactoryBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create project table category instances.&quot;&quot;&quot;</span>
 
     <span class="n">_default_rules</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
         <span class="nb">frozenset</span><span class="p">():</span> <span class="s1">&#39;default&#39;</span><span class="p">,</span>
@@ -5764,7 +5931,7 @@
         <span class="n">show_diagonal</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Show parameter correlations from the latest fit.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">rendering</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">plot_param_correlations</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">plot_param_correlations</span><span class="p">(</span>
             <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span>
             <span class="n">precision</span><span class="o">=</span><span class="n">precision</span><span class="p">,</span>
             <span class="n">max_parameters</span><span class="o">=</span><span class="n">max_parameters</span><span class="p">,</span>
@@ -5786,9 +5953,9 @@
 <span class="sd">            another.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">param</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">rendering</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">plot_all_param_series</span><span class="p">(</span><span class="n">versus</span><span class="o">=</span><span class="n">versus</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">plot_all_param_series</span><span class="p">(</span><span class="n">versus</span><span class="o">=</span><span class="n">versus</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">rendering</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">plot_param_series</span><span class="p">(</span><span class="n">param</span><span class="o">=</span><span class="n">param</span><span class="p">,</span> <span class="n">versus</span><span class="o">=</span><span class="n">versus</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">plot_param_series</span><span class="p">(</span><span class="n">param</span><span class="o">=</span><span class="n">param</span><span class="p">,</span> <span class="n">versus</span><span class="o">=</span><span class="n">versus</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">help</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Print available fit-display methods.&quot;&quot;&quot;</span>
@@ -5881,7 +6048,7 @@
     <span class="n">show_diagonal</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Show parameter correlations from the latest fit.&quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">rendering</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">plot_param_correlations</span><span class="p">(</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">plot_param_correlations</span><span class="p">(</span>
         <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span>
         <span class="n">precision</span><span class="o">=</span><span class="n">precision</span><span class="p">,</span>
         <span class="n">max_parameters</span><span class="o">=</span><span class="n">max_parameters</span><span class="p">,</span>
@@ -5950,9 +6117,9 @@ another.
 <span class="sd">        another.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">param</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">rendering</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">plot_all_param_series</span><span class="p">(</span><span class="n">versus</span><span class="o">=</span><span class="n">versus</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">plot_all_param_series</span><span class="p">(</span><span class="n">versus</span><span class="o">=</span><span class="n">versus</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">rendering</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">plot_param_series</span><span class="p">(</span><span class="n">param</span><span class="o">=</span><span class="n">param</span><span class="p">,</span> <span class="n">versus</span><span class="o">=</span><span class="n">versus</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">plot_param_series</span><span class="p">(</span><span class="n">param</span><span class="o">=</span><span class="n">param</span><span class="p">,</span> <span class="n">versus</span><span class="o">=</span><span class="n">versus</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -6171,7 +6338,8 @@ another.
 <span class="normal">274</span>
 <span class="normal">275</span>
 <span class="normal">276</span>
-<span class="normal">277</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PosteriorDisplay</span><span class="p">:</span>
+<span class="normal">277</span>
+<span class="normal">278</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PosteriorDisplay</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Posterior-plot namespace under ``project.display``.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">:</span> <span class="n">Project</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -6189,13 +6357,13 @@ another.
             <span class="k">return</span> <span class="kc">True</span>
 
         <span class="n">analysis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">analysis</span>
+        <span class="n">fit_results</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">analysis</span><span class="p">,</span> <span class="s1">&#39;fit_results&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">runtime_pair_caches</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">fit_results</span><span class="p">,</span> <span class="s1">&#39;posterior_pair_caches&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">runtime_pair_caches</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
         <span class="n">sidecar_data</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">analysis</span><span class="p">,</span> <span class="s1">&#39;_persisted_fit_state_sidecar&#39;</span><span class="p">,</span> <span class="p">{})</span>
-        <span class="n">pair_caches</span> <span class="o">=</span> <span class="n">sidecar_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;pair_caches&#39;</span><span class="p">,</span> <span class="p">{})</span>
-        <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span>
-            <span class="n">analysis</span><span class="o">.</span><span class="n">bayesian_result</span><span class="o">.</span><span class="n">has_pair_cache</span><span class="o">.</span><span class="n">value</span>
-            <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">analysis</span><span class="o">.</span><span class="n">bayesian_pair_caches</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
-            <span class="ow">and</span> <span class="nb">bool</span><span class="p">(</span><span class="n">pair_caches</span><span class="p">)</span>
-        <span class="p">)</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="n">sidecar_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;pair_caches&#39;</span><span class="p">,</span> <span class="p">{}))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_predictive_needs_processing_indicator</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -6206,38 +6374,39 @@ another.
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return whether predictive plotting still needs processing.&quot;&quot;&quot;</span>
         <span class="n">analysis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">analysis</span>
-        <span class="n">sidecar_data</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">analysis</span><span class="p">,</span> <span class="s1">&#39;_persisted_fit_state_sidecar&#39;</span><span class="p">,</span> <span class="p">{})</span>
-        <span class="n">predictive_datasets</span> <span class="o">=</span> <span class="n">sidecar_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;predictive_datasets&#39;</span><span class="p">,</span> <span class="p">{})</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
-            <span class="n">analysis</span><span class="o">.</span><span class="n">bayesian_result</span><span class="o">.</span><span class="n">has_posterior_predictive</span><span class="o">.</span><span class="n">value</span>
-            <span class="ow">and</span> <span class="nb">bool</span><span class="p">(</span><span class="n">predictive_datasets</span><span class="p">)</span>
-            <span class="ow">and</span> <span class="n">expt_name</span> <span class="ow">in</span> <span class="n">predictive_datasets</span>
-        <span class="p">):</span>
-            <span class="k">return</span> <span class="kc">True</span>
-
         <span class="n">experiment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="n">expt_name</span><span class="p">]</span>
-        <span class="n">plotter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">rendering</span><span class="o">.</span><span class="n">plotter</span>
+        <span class="n">plotter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">plotter</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">x_axis_name</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">plotter</span><span class="o">.</span><span class="n">_resolve_x_axis</span><span class="p">(</span><span class="n">experiment</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="n">x_axis_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">x_axis_name</span><span class="p">)</span>
         <span class="n">require_draws</span> <span class="o">=</span> <span class="n">plotter</span><span class="o">.</span><span class="n">engine</span> <span class="o">==</span> <span class="n">PlotterEngineEnum</span><span class="o">.</span><span class="n">PLOTLY</span><span class="o">.</span><span class="n">value</span> <span class="ow">and</span> <span class="n">style</span> <span class="ow">in</span> <span class="p">{</span>
             <span class="s1">&#39;draws&#39;</span><span class="p">,</span>
             <span class="s1">&#39;band+draws&#39;</span><span class="p">,</span>
         <span class="p">}</span>
 
-        <span class="n">matching_rows</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">row</span>
-            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">analysis</span><span class="o">.</span><span class="n">bayesian_predictive_datasets</span>
-            <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">experiment_name</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">expt_name</span>
-            <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">x_axis_name</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">x_axis_name</span><span class="p">)</span>
-        <span class="p">]</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">matching_rows</span><span class="p">:</span>
+        <span class="n">sidecar_data</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">analysis</span><span class="p">,</span> <span class="s1">&#39;_persisted_fit_state_sidecar&#39;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">predictive_dataset</span> <span class="o">=</span> <span class="n">sidecar_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;predictive_datasets&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">expt_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">predictive_dataset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dataset_axis_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">predictive_dataset</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;x_axis_name&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">dataset_axis_name</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">x_axis_name</span><span class="p">}:</span>
+                <span class="k">return</span> <span class="n">require_draws</span> <span class="ow">and</span> <span class="n">predictive_dataset</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;draws&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
+
+        <span class="n">fit_results</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">analysis</span><span class="p">,</span> <span class="s1">&#39;fit_results&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">posterior_predictive</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">fit_results</span><span class="p">,</span> <span class="s1">&#39;posterior_predictive&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">posterior_predictive</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">require_draws</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">return</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span>
-            <span class="n">row</span><span class="o">.</span><span class="n">draws_path</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="ow">and</span> <span class="n">predictive_datasets</span><span class="p">[</span><span class="n">expt_name</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;draws&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">matching_rows</span>
-        <span class="p">)</span>
+
+        <span class="n">cache_keys</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">plotter</span><span class="o">.</span><span class="n">_posterior_predictive_key</span><span class="p">(</span><span class="n">expt_name</span><span class="p">,</span> <span class="n">x_axis_name</span><span class="p">,</span> <span class="n">include_draws</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+            <span class="n">plotter</span><span class="o">.</span><span class="n">_posterior_predictive_key</span><span class="p">(</span><span class="n">expt_name</span><span class="p">,</span> <span class="n">x_axis_name</span><span class="p">,</span> <span class="n">include_draws</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+            <span class="n">expt_name</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="k">for</span> <span class="n">cache_key</span> <span class="ow">in</span> <span class="n">cache_keys</span><span class="p">:</span>
+            <span class="n">summary</span> <span class="o">=</span> <span class="n">posterior_predictive</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cache_key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">summary</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">summary</span><span class="p">,</span> <span class="s1">&#39;x_axis_name&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span> <span class="o">!=</span> <span class="n">x_axis_name</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">return</span> <span class="n">require_draws</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">summary</span><span class="p">,</span> <span class="s1">&#39;draws&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="kc">True</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">pairs</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -6257,7 +6426,7 @@ another.
             <span class="k">else</span> <span class="n">nullcontext</span><span class="p">()</span>
         <span class="p">)</span>
         <span class="k">with</span> <span class="n">indicator_context</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">rendering</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">plot_posterior_pairs</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">plot_posterior_pairs</span><span class="p">(</span>
                 <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
                 <span class="n">style</span><span class="o">=</span><span class="n">style</span><span class="p">,</span>
                 <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span>
@@ -6268,7 +6437,7 @@ another.
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plot posterior distributions for one or all free parameters.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">plotter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">rendering</span><span class="o">.</span><span class="n">plotter</span>
+        <span class="n">plotter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">plotter</span>
         <span class="k">if</span> <span class="n">param</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">plotter</span><span class="o">.</span><span class="n">plot_param_distribution</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
             <span class="k">return</span>
@@ -6305,7 +6474,7 @@ another.
             <span class="k">else</span> <span class="n">nullcontext</span><span class="p">()</span>
         <span class="p">)</span>
         <span class="k">with</span> <span class="n">indicator_context</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">rendering</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">plot_posterior_predictive</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">plot_posterior_predictive</span><span class="p">(</span>
                 <span class="n">expt_name</span><span class="o">=</span><span class="n">expt_name</span><span class="p">,</span>
                 <span class="n">style</span><span class="o">=</span><span class="n">style</span><span class="p">,</span>
                 <span class="n">x_min</span><span class="o">=</span><span class="n">x_min</span><span class="p">,</span>
@@ -6352,8 +6521,7 @@ another.
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/project/display.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">200</span>
-<span class="normal">201</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">201</span>
 <span class="normal">202</span>
 <span class="normal">203</span>
 <span class="normal">204</span>
@@ -6375,7 +6543,8 @@ another.
 <span class="normal">220</span>
 <span class="normal">221</span>
 <span class="normal">222</span>
-<span class="normal">223</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">pairs</span><span class="p">(</span>
+<span class="normal">223</span>
+<span class="normal">224</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">pairs</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">parameters</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">style</span><span class="p">:</span> <span class="n">PosteriorPairPlotStyleEnum</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">PosteriorPairPlotStyleEnum</span><span class="o">.</span><span class="n">AUTO</span><span class="p">,</span>
@@ -6393,7 +6562,7 @@ another.
         <span class="k">else</span> <span class="n">nullcontext</span><span class="p">()</span>
     <span class="p">)</span>
     <span class="k">with</span> <span class="n">indicator_context</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">rendering</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">plot_posterior_pairs</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">plot_posterior_pairs</span><span class="p">(</span>
             <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
             <span class="n">style</span><span class="o">=</span><span class="n">style</span><span class="p">,</span>
             <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span>
@@ -6424,8 +6593,7 @@ another.
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/project/display.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">225</span>
-<span class="normal">226</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">226</span>
 <span class="normal">227</span>
 <span class="normal">228</span>
 <span class="normal">229</span>
@@ -6439,11 +6607,12 @@ another.
 <span class="normal">237</span>
 <span class="normal">238</span>
 <span class="normal">239</span>
-<span class="normal">240</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">distribution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">240</span>
+<span class="normal">241</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">distribution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot posterior distributions for one or all free parameters.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">plotter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">rendering</span><span class="o">.</span><span class="n">plotter</span>
+    <span class="n">plotter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">plotter</span>
     <span class="k">if</span> <span class="n">param</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">plotter</span><span class="o">.</span><span class="n">plot_param_distribution</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
         <span class="k">return</span>
@@ -6480,8 +6649,7 @@ another.
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/project/display.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">242</span>
-<span class="normal">243</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">243</span>
 <span class="normal">244</span>
 <span class="normal">245</span>
 <span class="normal">246</span>
@@ -6511,7 +6679,8 @@ another.
 <span class="normal">270</span>
 <span class="normal">271</span>
 <span class="normal">272</span>
-<span class="normal">273</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">predictive</span><span class="p">(</span>
+<span class="normal">273</span>
+<span class="normal">274</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">predictive</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">expt_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">style</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;band&#39;</span><span class="p">,</span>
@@ -6535,7 +6704,7 @@ another.
         <span class="k">else</span> <span class="n">nullcontext</span><span class="p">()</span>
     <span class="p">)</span>
     <span class="k">with</span> <span class="n">indicator_context</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">rendering</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">plot_posterior_predictive</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">plot_posterior_predictive</span><span class="p">(</span>
             <span class="n">expt_name</span><span class="o">=</span><span class="n">expt_name</span><span class="p">,</span>
             <span class="n">style</span><span class="o">=</span><span class="n">style</span><span class="p">,</span>
             <span class="n">x_min</span><span class="o">=</span><span class="n">x_min</span><span class="p">,</span>
@@ -6568,9 +6737,9 @@ another.
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/project/display.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">275</span>
-<span class="normal">276</span>
-<span class="normal">277</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">help</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">help</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print available posterior-display methods.&quot;&quot;&quot;</span>
     <span class="n">render_object_help</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -6616,8 +6785,7 @@ another.
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/project/display.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">280</span>
-<span class="normal">281</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">281</span>
 <span class="normal">282</span>
 <span class="normal">283</span>
 <span class="normal">284</span>
@@ -7247,7 +7415,7 @@ another.
                     <span class="k">else</span> <span class="n">nullcontext</span><span class="p">()</span>
                 <span class="p">)</span>
                 <span class="k">with</span> <span class="n">indicator_context</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">rendering</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">_plot_posterior_predictive_request</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">_plot_posterior_predictive_request</span><span class="p">(</span>
                         <span class="n">expt_name</span><span class="o">=</span><span class="n">expt_name</span><span class="p">,</span>
                         <span class="n">style</span><span class="o">=</span><span class="s1">&#39;band&#39;</span><span class="p">,</span>
                         <span class="n">plot_options</span><span class="o">=</span><span class="n">_MeasVsCalcPlotOptions</span><span class="p">(</span>
@@ -7290,7 +7458,7 @@ another.
                 <span class="k">else</span> <span class="n">nullcontext</span><span class="p">()</span>
             <span class="p">)</span>
             <span class="k">with</span> <span class="n">indicator_context</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">rendering</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">_plot_posterior_predictive_request</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">_plot_posterior_predictive_request</span><span class="p">(</span>
                     <span class="n">expt_name</span><span class="o">=</span><span class="n">expt_name</span><span class="p">,</span>
                     <span class="n">style</span><span class="o">=</span><span class="s1">&#39;band&#39;</span><span class="p">,</span>
                     <span class="n">plot_options</span><span class="o">=</span><span class="n">_MeasVsCalcPlotOptions</span><span class="p">(</span>
@@ -7464,7 +7632,7 @@ another.
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_requested_include</span><span class="p">(</span><span class="n">statuses</span><span class="p">,</span> <span class="n">include</span><span class="p">)</span>
         <span class="n">include_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">include</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">include_set</span> <span class="o">==</span> <span class="p">{</span><span class="s1">&#39;measured&#39;</span><span class="p">}:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">rendering</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">plot_meas</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">plot_meas</span><span class="p">(</span>
                 <span class="n">expt_name</span><span class="o">=</span><span class="n">expt_name</span><span class="p">,</span>
                 <span class="n">x_min</span><span class="o">=</span><span class="n">x_min</span><span class="p">,</span>
                 <span class="n">x_max</span><span class="o">=</span><span class="n">x_max</span><span class="p">,</span>
@@ -7473,7 +7641,7 @@ another.
             <span class="p">)</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="n">include_set</span> <span class="o">==</span> <span class="p">{</span><span class="s1">&#39;measured&#39;</span><span class="p">,</span> <span class="s1">&#39;excluded&#39;</span><span class="p">}:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">rendering</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">plot_meas</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">plot_meas</span><span class="p">(</span>
                 <span class="n">expt_name</span><span class="o">=</span><span class="n">expt_name</span><span class="p">,</span>
                 <span class="n">x_min</span><span class="o">=</span><span class="n">x_min</span><span class="p">,</span>
                 <span class="n">x_max</span><span class="o">=</span><span class="n">x_max</span><span class="p">,</span>
@@ -7482,7 +7650,7 @@ another.
             <span class="p">)</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="n">include_set</span> <span class="o">==</span> <span class="p">{</span><span class="s1">&#39;calculated&#39;</span><span class="p">}:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">rendering</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">plot_calc</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">plot_calc</span><span class="p">(</span>
                 <span class="n">expt_name</span><span class="o">=</span><span class="n">expt_name</span><span class="p">,</span>
                 <span class="n">x_min</span><span class="o">=</span><span class="n">x_min</span><span class="p">,</span>
                 <span class="n">x_max</span><span class="o">=</span><span class="n">x_max</span><span class="p">,</span>
@@ -7491,7 +7659,7 @@ another.
             <span class="p">)</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="n">include_set</span> <span class="o">==</span> <span class="p">{</span><span class="s1">&#39;calculated&#39;</span><span class="p">,</span> <span class="s1">&#39;excluded&#39;</span><span class="p">}:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">rendering</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">plot_calc</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">plot_calc</span><span class="p">(</span>
                 <span class="n">expt_name</span><span class="o">=</span><span class="n">expt_name</span><span class="p">,</span>
                 <span class="n">x_min</span><span class="o">=</span><span class="n">x_min</span><span class="p">,</span>
                 <span class="n">x_max</span><span class="o">=</span><span class="n">x_max</span><span class="p">,</span>
@@ -7500,7 +7668,7 @@ another.
             <span class="p">)</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="p">{</span><span class="s1">&#39;measured&#39;</span><span class="p">,</span> <span class="s1">&#39;calculated&#39;</span><span class="p">}</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">include_set</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">rendering</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">_plot_meas_vs_calc_request</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">_plot_meas_vs_calc_request</span><span class="p">(</span>
                 <span class="n">expt_name</span><span class="o">=</span><span class="n">expt_name</span><span class="p">,</span>
                 <span class="n">plot_options</span><span class="o">=</span><span class="n">_MeasVsCalcPlotOptions</span><span class="p">(</span>
                     <span class="n">x_min</span><span class="o">=</span><span class="n">x_min</span><span class="p">,</span>
@@ -7522,7 +7690,7 @@ another.
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_pattern_option_statuses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expt_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">PatternOptionStatus</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return availability details for the requested experiment.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">rendering</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">_update_project_categories</span><span class="p">(</span><span class="n">expt_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">_update_project_categories</span><span class="p">(</span><span class="n">expt_name</span><span class="p">)</span>
         <span class="n">experiment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">experiments</span><span class="p">[</span><span class="n">expt_name</span><span class="p">]</span>
         <span class="n">pattern</span> <span class="o">=</span> <span class="n">intensity_category_for</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span>
         <span class="n">sample_form</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">sample_form</span><span class="o">.</span><span class="n">value</span>
@@ -7746,10 +7914,9 @@ another.
         <span class="k">if</span> <span class="ow">not</span> <span class="n">posterior_predictive</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;Posterior predictive data is unavailable.&#39;</span>
 
-        <span class="n">active_chart_engine</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">rendering</span><span class="o">.</span><span class="n">plotter</span><span class="p">,</span> <span class="s1">&#39;engine&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">active_chart_engine</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">plotter</span><span class="p">,</span> <span class="s1">&#39;engine&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">active_chart_engine</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">chart_engine</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">rendering</span><span class="p">,</span> <span class="s1">&#39;chart_engine&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="n">active_chart_engine</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">chart_engine</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">active_chart_engine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">type</span>
 
         <span class="k">if</span> <span class="n">active_chart_engine</span> <span class="o">!=</span> <span class="n">PlotterEngineEnum</span><span class="o">.</span><span class="n">PLOTLY</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;Uncertainty bands currently require the Plotly chart engine.&#39;</span>
@@ -7865,9 +8032,9 @@ another.
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/project/display.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">304</span>
-<span class="normal">305</span>
-<span class="normal">306</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">help</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">help</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print display namespaces and methods.&quot;&quot;&quot;</span>
     <span class="n">render_object_help</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -7895,8 +8062,7 @@ another.
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/project/display.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">308</span>
-<span class="normal">309</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">309</span>
 <span class="normal">310</span>
 <span class="normal">311</span>
 <span class="normal">312</span>
@@ -7994,7 +8160,8 @@ another.
 <span class="normal">404</span>
 <span class="normal">405</span>
 <span class="normal">406</span>
-<span class="normal">407</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">pattern</span><span class="p">(</span>
+<span class="normal">407</span>
+<span class="normal">408</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">pattern</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">expt_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">x_min</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -8028,7 +8195,7 @@ another.
                 <span class="k">else</span> <span class="n">nullcontext</span><span class="p">()</span>
             <span class="p">)</span>
             <span class="k">with</span> <span class="n">indicator_context</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">rendering</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">_plot_posterior_predictive_request</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">_plot_posterior_predictive_request</span><span class="p">(</span>
                     <span class="n">expt_name</span><span class="o">=</span><span class="n">expt_name</span><span class="p">,</span>
                     <span class="n">style</span><span class="o">=</span><span class="s1">&#39;band&#39;</span><span class="p">,</span>
                     <span class="n">plot_options</span><span class="o">=</span><span class="n">_MeasVsCalcPlotOptions</span><span class="p">(</span>
@@ -8071,7 +8238,7 @@ another.
             <span class="k">else</span> <span class="n">nullcontext</span><span class="p">()</span>
         <span class="p">)</span>
         <span class="k">with</span> <span class="n">indicator_context</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">rendering</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">_plot_posterior_predictive_request</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">plotter</span><span class="o">.</span><span class="n">_plot_posterior_predictive_request</span><span class="p">(</span>
                 <span class="n">expt_name</span><span class="o">=</span><span class="n">expt_name</span><span class="p">,</span>
                 <span class="n">style</span><span class="o">=</span><span class="s1">&#39;band&#39;</span><span class="p">,</span>
                 <span class="n">plot_options</span><span class="o">=</span><span class="n">_MeasVsCalcPlotOptions</span><span class="p">(</span>
@@ -8119,8 +8286,7 @@ another.
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/project/display.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">409</span>
-<span class="normal">410</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">410</span>
 <span class="normal">411</span>
 <span class="normal">412</span>
 <span class="normal">413</span>
@@ -8135,7 +8301,8 @@ another.
 <span class="normal">422</span>
 <span class="normal">423</span>
 <span class="normal">424</span>
-<span class="normal">425</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_pattern_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expt_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">425</span>
+<span class="normal">426</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_pattern_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expt_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Show available ``pattern(include=...)`` options.&quot;&quot;&quot;</span>
     <span class="n">statuses</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pattern_option_statuses</span><span class="p">(</span><span class="n">expt_name</span><span class="p">)</span>
     <span class="n">render_table</span><span class="p">(</span>
@@ -8243,8 +8410,7 @@ another.
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/project/project.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">177</span>
-<span class="normal">178</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">178</span>
 <span class="normal">179</span>
 <span class="normal">180</span>
 <span class="normal">181</span>
@@ -8687,7 +8853,37 @@ another.
 <span class="normal">618</span>
 <span class="normal">619</span>
 <span class="normal">620</span>
-<span class="normal">621</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Project</span><span class="p">(</span><span class="n">GuardedBase</span><span class="p">):</span>
+<span class="normal">621</span>
+<span class="normal">622</span>
+<span class="normal">623</span>
+<span class="normal">624</span>
+<span class="normal">625</span>
+<span class="normal">626</span>
+<span class="normal">627</span>
+<span class="normal">628</span>
+<span class="normal">629</span>
+<span class="normal">630</span>
+<span class="normal">631</span>
+<span class="normal">632</span>
+<span class="normal">633</span>
+<span class="normal">634</span>
+<span class="normal">635</span>
+<span class="normal">636</span>
+<span class="normal">637</span>
+<span class="normal">638</span>
+<span class="normal">639</span>
+<span class="normal">640</span>
+<span class="normal">641</span>
+<span class="normal">642</span>
+<span class="normal">643</span>
+<span class="normal">644</span>
+<span class="normal">645</span>
+<span class="normal">646</span>
+<span class="normal">647</span>
+<span class="normal">648</span>
+<span class="normal">649</span>
+<span class="normal">650</span>
+<span class="normal">651</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Project</span><span class="p">(</span><span class="n">GuardedBase</span><span class="p">):</span>  <span class="c1"># noqa: PLR0904</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Central API for managing a diffraction data analysis project.</span>
 
@@ -8713,7 +8909,8 @@ another.
         <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_info&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">info</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_structures</span> <span class="o">=</span> <span class="n">Structures</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_experiments</span> <span class="o">=</span> <span class="n">Experiments</span><span class="p">()</span>
-        <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_rendering&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">rendering</span><span class="p">)</span>
+        <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_chart&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">chart</span><span class="p">)</span>
+        <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_table&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">table</span><span class="p">)</span>
         <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_verbosity&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">verbosity</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_display</span> <span class="o">=</span> <span class="n">ProjectDisplay</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_analysis</span> <span class="o">=</span> <span class="n">Analysis</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -8721,6 +8918,29 @@ another.
         <span class="bp">self</span><span class="o">.</span><span class="n">_saved</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_varname</span> <span class="o">=</span> <span class="s1">&#39;project&#39;</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_loading</span> <span class="k">else</span> <span class="n">varname</span><span class="p">()</span>
         <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_current_project</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attach_category_parents</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_attach_category_parents</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Link directly owned project sections back to this project.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_structures</span><span class="o">.</span><span class="n">_parent</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_experiments</span><span class="o">.</span><span class="n">_parent</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_analysis</span><span class="o">.</span><span class="n">_parent</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_chart</span><span class="o">.</span><span class="n">_parent</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_table</span><span class="o">.</span><span class="n">_parent</span> <span class="o">=</span> <span class="bp">self</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_supported_filters_for</span><span class="p">(</span><span class="n">category</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return owner context filters for a switchable category.&quot;&quot;&quot;</span>
+        <span class="k">del</span> <span class="n">category</span>
+        <span class="k">return</span> <span class="p">{}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_swap_chart</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Switch the active chart renderer.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_chart</span><span class="o">.</span><span class="n">_set_type</span><span class="p">(</span><span class="n">new_type</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_swap_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Switch the active table renderer.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_table</span><span class="o">.</span><span class="n">_set_type</span><span class="p">(</span><span class="n">new_type</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">current_project_path</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
@@ -8792,9 +9012,14 @@ another.
         <span class="bp">self</span><span class="o">.</span><span class="n">_experiments</span> <span class="o">=</span> <span class="n">experiments</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">rendering</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Rendering</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Rendering configuration bound to the project.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rendering</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">chart</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Chart</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Chart configuration bound to the project.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chart</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Table</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Table configuration bound to the project.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProjectDisplay</span><span class="p">:</span>
@@ -9302,8 +9527,8 @@ another.
 
 
 
-<h4 id="easydiffraction.project.project.Project.rendering" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">rendering</span></code>
+<h4 id="easydiffraction.project.project.Project.chart" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">chart</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
@@ -9314,7 +9539,32 @@ another.
 
     <div class="doc doc-contents ">
 
-        <p>Rendering configuration bound to the project.</p>
+        <p>Chart configuration bound to the project.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="easydiffraction.project.project.Project.table" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">table</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Table configuration bound to the project.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -9525,13 +9775,13 @@ another.
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/project/project.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">212</span>
-<span class="normal">213</span>
-<span class="normal">214</span>
-<span class="normal">215</span>
-<span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">current_project_path</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the saved path of the current project, if any.&quot;&quot;&quot;</span>
     <span class="n">current_project</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_current_project</span>
@@ -9563,17 +9813,17 @@ another.
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/project/project.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">223</span>
-<span class="normal">224</span>
-<span class="normal">225</span>
-<span class="normal">226</span>
-<span class="normal">227</span>
-<span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span>
-<span class="normal">232</span>
-<span class="normal">233</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Human-readable representation.&quot;&quot;&quot;</span>
     <span class="n">class_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
     <span class="n">project_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
@@ -9704,37 +9954,7 @@ display configuration.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/project/project.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">339</span>
-<span class="normal">340</span>
-<span class="normal">341</span>
-<span class="normal">342</span>
-<span class="normal">343</span>
-<span class="normal">344</span>
-<span class="normal">345</span>
-<span class="normal">346</span>
-<span class="normal">347</span>
-<span class="normal">348</span>
-<span class="normal">349</span>
-<span class="normal">350</span>
-<span class="normal">351</span>
-<span class="normal">352</span>
-<span class="normal">353</span>
-<span class="normal">354</span>
-<span class="normal">355</span>
-<span class="normal">356</span>
-<span class="normal">357</span>
-<span class="normal">358</span>
-<span class="normal">359</span>
-<span class="normal">360</span>
-<span class="normal">361</span>
-<span class="normal">362</span>
-<span class="normal">363</span>
-<span class="normal">364</span>
-<span class="normal">365</span>
-<span class="normal">366</span>
-<span class="normal">367</span>
-<span class="normal">368</span>
-<span class="normal">369</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">369</span>
 <span class="normal">370</span>
 <span class="normal">371</span>
 <span class="normal">372</span>
@@ -9752,7 +9972,37 @@ display configuration.</p>
 <span class="normal">384</span>
 <span class="normal">385</span>
 <span class="normal">386</span>
-<span class="normal">387</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span>
+<span class="normal">397</span>
+<span class="normal">398</span>
+<span class="normal">399</span>
+<span class="normal">400</span>
+<span class="normal">401</span>
+<span class="normal">402</span>
+<span class="normal">403</span>
+<span class="normal">404</span>
+<span class="normal">405</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span>
+<span class="normal">417</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">dir_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Project</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load a project from a saved directory.</span>
@@ -9826,37 +10076,7 @@ display configuration.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/project/project.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">430</span>
-<span class="normal">431</span>
-<span class="normal">432</span>
-<span class="normal">433</span>
-<span class="normal">434</span>
-<span class="normal">435</span>
-<span class="normal">436</span>
-<span class="normal">437</span>
-<span class="normal">438</span>
-<span class="normal">439</span>
-<span class="normal">440</span>
-<span class="normal">441</span>
-<span class="normal">442</span>
-<span class="normal">443</span>
-<span class="normal">444</span>
-<span class="normal">445</span>
-<span class="normal">446</span>
-<span class="normal">447</span>
-<span class="normal">448</span>
-<span class="normal">449</span>
-<span class="normal">450</span>
-<span class="normal">451</span>
-<span class="normal">452</span>
-<span class="normal">453</span>
-<span class="normal">454</span>
-<span class="normal">455</span>
-<span class="normal">456</span>
-<span class="normal">457</span>
-<span class="normal">458</span>
-<span class="normal">459</span>
-<span class="normal">460</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">460</span>
 <span class="normal">461</span>
 <span class="normal">462</span>
 <span class="normal">463</span>
@@ -9894,7 +10114,37 @@ display configuration.</p>
 <span class="normal">495</span>
 <span class="normal">496</span>
 <span class="normal">497</span>
-<span class="normal">498</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">498</span>
+<span class="normal">499</span>
+<span class="normal">500</span>
+<span class="normal">501</span>
+<span class="normal">502</span>
+<span class="normal">503</span>
+<span class="normal">504</span>
+<span class="normal">505</span>
+<span class="normal">506</span>
+<span class="normal">507</span>
+<span class="normal">508</span>
+<span class="normal">509</span>
+<span class="normal">510</span>
+<span class="normal">511</span>
+<span class="normal">512</span>
+<span class="normal">513</span>
+<span class="normal">514</span>
+<span class="normal">515</span>
+<span class="normal">516</span>
+<span class="normal">517</span>
+<span class="normal">518</span>
+<span class="normal">519</span>
+<span class="normal">520</span>
+<span class="normal">521</span>
+<span class="normal">522</span>
+<span class="normal">523</span>
+<span class="normal">524</span>
+<span class="normal">525</span>
+<span class="normal">526</span>
+<span class="normal">527</span>
+<span class="normal">528</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Save the project into the existing project directory.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Project path not specified. Use save_as() to define the path first.&#39;</span><span class="p">)</span>
@@ -10061,37 +10311,7 @@ saving.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/project/project.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">500</span>
-<span class="normal">501</span>
-<span class="normal">502</span>
-<span class="normal">503</span>
-<span class="normal">504</span>
-<span class="normal">505</span>
-<span class="normal">506</span>
-<span class="normal">507</span>
-<span class="normal">508</span>
-<span class="normal">509</span>
-<span class="normal">510</span>
-<span class="normal">511</span>
-<span class="normal">512</span>
-<span class="normal">513</span>
-<span class="normal">514</span>
-<span class="normal">515</span>
-<span class="normal">516</span>
-<span class="normal">517</span>
-<span class="normal">518</span>
-<span class="normal">519</span>
-<span class="normal">520</span>
-<span class="normal">521</span>
-<span class="normal">522</span>
-<span class="normal">523</span>
-<span class="normal">524</span>
-<span class="normal">525</span>
-<span class="normal">526</span>
-<span class="normal">527</span>
-<span class="normal">528</span>
-<span class="normal">529</span>
-<span class="normal">530</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">530</span>
 <span class="normal">531</span>
 <span class="normal">532</span>
 <span class="normal">533</span>
@@ -10100,7 +10320,37 @@ saving.</p>
 <span class="normal">536</span>
 <span class="normal">537</span>
 <span class="normal">538</span>
-<span class="normal">539</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save_as</span><span class="p">(</span>
+<span class="normal">539</span>
+<span class="normal">540</span>
+<span class="normal">541</span>
+<span class="normal">542</span>
+<span class="normal">543</span>
+<span class="normal">544</span>
+<span class="normal">545</span>
+<span class="normal">546</span>
+<span class="normal">547</span>
+<span class="normal">548</span>
+<span class="normal">549</span>
+<span class="normal">550</span>
+<span class="normal">551</span>
+<span class="normal">552</span>
+<span class="normal">553</span>
+<span class="normal">554</span>
+<span class="normal">555</span>
+<span class="normal">556</span>
+<span class="normal">557</span>
+<span class="normal">558</span>
+<span class="normal">559</span>
+<span class="normal">560</span>
+<span class="normal">561</span>
+<span class="normal">562</span>
+<span class="normal">563</span>
+<span class="normal">564</span>
+<span class="normal">565</span>
+<span class="normal">566</span>
+<span class="normal">567</span>
+<span class="normal">568</span>
+<span class="normal">569</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save_as</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">dir_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
@@ -10246,37 +10496,7 @@ indexing (e.g. <code>-1</code> for the last row).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/project/project.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">541</span>
-<span class="normal">542</span>
-<span class="normal">543</span>
-<span class="normal">544</span>
-<span class="normal">545</span>
-<span class="normal">546</span>
-<span class="normal">547</span>
-<span class="normal">548</span>
-<span class="normal">549</span>
-<span class="normal">550</span>
-<span class="normal">551</span>
-<span class="normal">552</span>
-<span class="normal">553</span>
-<span class="normal">554</span>
-<span class="normal">555</span>
-<span class="normal">556</span>
-<span class="normal">557</span>
-<span class="normal">558</span>
-<span class="normal">559</span>
-<span class="normal">560</span>
-<span class="normal">561</span>
-<span class="normal">562</span>
-<span class="normal">563</span>
-<span class="normal">564</span>
-<span class="normal">565</span>
-<span class="normal">566</span>
-<span class="normal">567</span>
-<span class="normal">568</span>
-<span class="normal">569</span>
-<span class="normal">570</span>
-<span class="normal">571</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">571</span>
 <span class="normal">572</span>
 <span class="normal">573</span>
 <span class="normal">574</span>
@@ -10326,7 +10546,37 @@ indexing (e.g. <code>-1</code> for the last row).</p>
 <span class="normal">618</span>
 <span class="normal">619</span>
 <span class="normal">620</span>
-<span class="normal">621</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">apply_params_from_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">621</span>
+<span class="normal">622</span>
+<span class="normal">623</span>
+<span class="normal">624</span>
+<span class="normal">625</span>
+<span class="normal">626</span>
+<span class="normal">627</span>
+<span class="normal">628</span>
+<span class="normal">629</span>
+<span class="normal">630</span>
+<span class="normal">631</span>
+<span class="normal">632</span>
+<span class="normal">633</span>
+<span class="normal">634</span>
+<span class="normal">635</span>
+<span class="normal">636</span>
+<span class="normal">637</span>
+<span class="normal">638</span>
+<span class="normal">639</span>
+<span class="normal">640</span>
+<span class="normal">641</span>
+<span class="normal">642</span>
+<span class="normal">643</span>
+<span class="normal">644</span>
+<span class="normal">645</span>
+<span class="normal">646</span>
+<span class="normal">647</span>
+<span class="normal">648</span>
+<span class="normal">649</span>
+<span class="normal">650</span>
+<span class="normal">651</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">apply_params_from_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load a single CSV row and apply its parameters to the project.</span>
 
@@ -10497,9 +10747,7 @@ indexing (e.g. <code>-1</code> for the last row).</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/project/project_config.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
 <span class="normal">19</span>
 <span class="normal">20</span>
 <span class="normal">21</span>
@@ -10536,7 +10784,15 @@ indexing (e.g. <code>-1</code> for the last row).</p>
 <span class="normal">52</span>
 <span class="normal">53</span>
 <span class="normal">54</span>
-<span class="normal">55</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ProjectConfig</span><span class="p">(</span><span class="n">CategoryOwner</span><span class="p">):</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ProjectConfig</span><span class="p">(</span><span class="n">CategoryOwner</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Own singleton project configuration categories.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -10552,7 +10808,8 @@ indexing (e.g. <code>-1</code> for the last row).</p>
             <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_rendering</span> <span class="o">=</span> <span class="n">RenderingFactory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">RenderingFactory</span><span class="o">.</span><span class="n">default_tag</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_chart</span> <span class="o">=</span> <span class="n">ChartFactory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">ChartFactory</span><span class="o">.</span><span class="n">default_tag</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_table</span> <span class="o">=</span> <span class="n">TableFactory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">TableFactory</span><span class="o">.</span><span class="n">default_tag</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_verbosity</span> <span class="o">=</span> <span class="n">VerbosityFactory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">VerbosityFactory</span><span class="o">.</span><span class="n">default_tag</span><span class="p">())</span>
 
     <span class="nd">@property</span>
@@ -10561,9 +10818,14 @@ indexing (e.g. <code>-1</code> for the last row).</p>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_info</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">rendering</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Rendering</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Rendering configuration category.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rendering</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">chart</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Chart</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Chart configuration category.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chart</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Table</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Table configuration category.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">verbosity</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Verbosity</span><span class="p">:</span>
@@ -10618,8 +10880,8 @@ indexing (e.g. <code>-1</code> for the last row).</p>
 
 
 
-<h4 id="easydiffraction.project.project_config.ProjectConfig.rendering" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">rendering</span></code>
+<h4 id="easydiffraction.project.project_config.ProjectConfig.chart" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">chart</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
@@ -10630,7 +10892,32 @@ indexing (e.g. <code>-1</code> for the last row).</p>
 
     <div class="doc doc-contents ">
 
-        <p>Rendering configuration category.</p>
+        <p>Chart configuration category.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="easydiffraction.project.project_config.ProjectConfig.table" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">table</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Table configuration category.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->

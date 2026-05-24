@@ -2739,6 +2739,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#easydiffraction.io.results_sidecar.warn_analysis_results_sidecar_overwrite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        warn_analysis_results_sidecar_overwrite
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#easydiffraction.io.results_sidecar.write_analysis_results_sidecar" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3090,6 +3101,17 @@
   
     <nav class="md-nav" aria-label="results_sidecar">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#easydiffraction.io.results_sidecar.warn_analysis_results_sidecar_overwrite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        warn_analysis_results_sidecar_overwrite
+      
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#easydiffraction.io.results_sidecar.write_analysis_results_sidecar" class="md-nav__link">
@@ -4828,7 +4850,7 @@ can derive a stable uid if needed.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p><abbr title="Crystallographic Information File.">CIF</abbr> tag to look up (e.g. <code>'_peak.profile_type'</code>).</p>
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> tag to look up (e.g. <code>'_peak.type'</code>).</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -4911,7 +4933,7 @@ can derive a stable uid if needed.</p>
 <span class="sd">    block : gemmi.cif.Block</span>
 <span class="sd">        Parsed CIF data block to read from.</span>
 <span class="sd">    tag : str</span>
-<span class="sd">        CIF tag to look up (e.g. ``&#39;_peak.profile_type&#39;``).</span>
+<span class="sd">        CIF tag to look up (e.g. ``&#39;_peak.type&#39;``).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -5529,7 +5551,9 @@ this many rows (half from the start, half from the end) with an
 <span class="normal">273</span>
 <span class="normal">274</span>
 <span class="normal">275</span>
-<span class="normal">276</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">category_collection_to_cif</span><span class="p">(</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">category_collection_to_cif</span><span class="p">(</span>
     <span class="n">collection</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="n">max_display</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -5552,15 +5576,17 @@ this many rows (half from the start, half from the end) with an
 <span class="sd">    str</span>
 <span class="sd">        CIF text representing the collection as a loop.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">collection</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s1">&#39;&#39;</span>
-
     <span class="c1"># Allow collections to conditionally suppress CIF output</span>
     <span class="n">skip</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">collection</span><span class="p">,</span> <span class="s1">&#39;_skip_cif_serialization&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">skip</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">skip</span><span class="p">():</span>
         <span class="k">return</span> <span class="s1">&#39;&#39;</span>
 
     <span class="n">lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">scalar_descriptors</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">collection</span><span class="p">,</span> <span class="s1">&#39;scalar_descriptors&#39;</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="n">lines</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">param_to_cif</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">scalar_descriptors</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">collection</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
 
     <span class="c1"># Header — use first item&#39;s CIF tag names as the canonical columns</span>
     <span class="n">first_item</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">collection</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
@@ -5610,9 +5636,7 @@ this many rows (half from the start, half from the end) with an
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/io/cif/serialize.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">279</span>
-<span class="normal">280</span>
-<span class="normal">281</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">281</span>
 <span class="normal">282</span>
 <span class="normal">283</span>
 <span class="normal">284</span>
@@ -5640,7 +5664,9 @@ this many rows (half from the start, half from the end) with an
 <span class="normal">306</span>
 <span class="normal">307</span>
 <span class="normal">308</span>
-<span class="normal">309</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">category_owner_to_cif</span><span class="p">(</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">category_owner_to_cif</span><span class="p">(</span>
     <span class="n">owner</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="n">max_loop_display</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -5777,9 +5803,7 @@ emits all rows (used for serialisation).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/io/cif/serialize.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">312</span>
-<span class="normal">313</span>
-<span class="normal">314</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">314</span>
 <span class="normal">315</span>
 <span class="normal">316</span>
 <span class="normal">317</span>
@@ -5803,7 +5827,9 @@ emits all rows (used for serialisation).</p>
 <span class="normal">335</span>
 <span class="normal">336</span>
 <span class="normal">337</span>
-<span class="normal">338</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">datablock_item_to_cif</span><span class="p">(</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">datablock_item_to_cif</span><span class="p">(</span>
     <span class="n">datablock</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="n">max_loop_display</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -5855,9 +5881,9 @@ emits all rows (used for serialisation).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/io/cif/serialize.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">341</span>
-<span class="normal">342</span>
-<span class="normal">343</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">datablock_collection_to_cif</span><span class="p">(</span><span class="n">collection</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">datablock_collection_to_cif</span><span class="p">(</span><span class="n">collection</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Render a collection of datablocks by joining their CIF blocks.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">block</span><span class="o">.</span><span class="n">as_cif</span> <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">collection</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
 </code></pre></div></td></tr></table></div>
@@ -5885,9 +5911,7 @@ emits all rows (used for serialisation).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/io/cif/serialize.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">366</span>
-<span class="normal">367</span>
-<span class="normal">368</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">368</span>
 <span class="normal">369</span>
 <span class="normal">370</span>
 <span class="normal">371</span>
@@ -5904,7 +5928,9 @@ emits all rows (used for serialisation).</p>
 <span class="normal">382</span>
 <span class="normal">383</span>
 <span class="normal">384</span>
-<span class="normal">385</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">project_info_to_cif</span><span class="p">(</span><span class="n">info</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">project_info_to_cif</span><span class="p">(</span><span class="n">info</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Render ProjectInfo to CIF text (id, title, description).&quot;&quot;&quot;</span>
     <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
 
@@ -5949,9 +5975,7 @@ emits all rows (used for serialisation).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/io/cif/serialize.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">394</span>
-<span class="normal">395</span>
-<span class="normal">396</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">396</span>
 <span class="normal">397</span>
 <span class="normal">398</span>
 <span class="normal">399</span>
@@ -5959,16 +5983,24 @@ emits all rows (used for serialisation).</p>
 <span class="normal">401</span>
 <span class="normal">402</span>
 <span class="normal">403</span>
-<span class="normal">404</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">project_config_to_cif</span><span class="p">(</span><span class="n">project</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">404</span>
+<span class="normal">405</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">project_config_to_cif</span><span class="p">(</span><span class="n">project</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Render project-level configuration to ``project.cif`` text.&quot;&quot;&quot;</span>
     <span class="n">config</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="s1">&#39;_config&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">category_owner_to_cif</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 
     <span class="n">lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">_as_cif_text</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">info</span><span class="p">)]</span>
-    <span class="n">rendering</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="s1">&#39;rendering&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">rendering</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">extend</span><span class="p">((</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">_as_cif_text</span><span class="p">(</span><span class="n">rendering</span><span class="p">)))</span>
+    <span class="n">chart</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="s1">&#39;chart&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">chart</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">extend</span><span class="p">((</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">_as_cif_text</span><span class="p">(</span><span class="n">chart</span><span class="p">)))</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="s1">&#39;table&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">table</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">extend</span><span class="p">((</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">_as_cif_text</span><span class="p">(</span><span class="n">table</span><span class="p">)))</span>
     <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -5995,12 +6027,7 @@ emits all rows (used for serialisation).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/io/cif/serialize.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">407</span>
-<span class="normal">408</span>
-<span class="normal">409</span>
-<span class="normal">410</span>
-<span class="normal">411</span>
-<span class="normal">412</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">412</span>
 <span class="normal">413</span>
 <span class="normal">414</span>
 <span class="normal">415</span>
@@ -6008,7 +6035,12 @@ emits all rows (used for serialisation).</p>
 <span class="normal">417</span>
 <span class="normal">418</span>
 <span class="normal">419</span>
-<span class="normal">420</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">project_to_cif</span><span class="p">(</span><span class="n">project</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">420</span>
+<span class="normal">421</span>
+<span class="normal">422</span>
+<span class="normal">423</span>
+<span class="normal">424</span>
+<span class="normal">425</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">project_to_cif</span><span class="p">(</span><span class="n">project</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Render a whole project by concatenating sections when present.&quot;&quot;&quot;</span>
     <span class="n">parts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="s1">&#39;info&#39;</span><span class="p">):</span>
@@ -6047,9 +6079,9 @@ emits all rows (used for serialisation).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/io/cif/serialize.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">423</span>
-<span class="normal">424</span>
-<span class="normal">425</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">experiment_to_cif</span><span class="p">(</span><span class="n">experiment</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">428</span>
+<span class="normal">429</span>
+<span class="normal">430</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">experiment_to_cif</span><span class="p">(</span><span class="n">experiment</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Render an experiment: datablock part plus measured data.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">datablock_item_to_cif</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -6077,61 +6109,11 @@ emits all rows (used for serialisation).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/io/cif/serialize.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">428</span>
-<span class="normal">429</span>
-<span class="normal">430</span>
-<span class="normal">431</span>
-<span class="normal">432</span>
-<span class="normal">433</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">433</span>
 <span class="normal">434</span>
-<span class="normal">435</span>
-<span class="normal">436</span>
-<span class="normal">437</span>
-<span class="normal">438</span>
-<span class="normal">439</span>
-<span class="normal">440</span>
-<span class="normal">441</span>
-<span class="normal">442</span>
-<span class="normal">443</span>
-<span class="normal">444</span>
-<span class="normal">445</span>
-<span class="normal">446</span>
-<span class="normal">447</span>
-<span class="normal">448</span>
-<span class="normal">449</span>
-<span class="normal">450</span>
-<span class="normal">451</span>
-<span class="normal">452</span>
-<span class="normal">453</span>
-<span class="normal">454</span>
-<span class="normal">455</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">analysis_to_cif</span><span class="p">(</span><span class="n">analysis</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">435</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">analysis_to_cif</span><span class="p">(</span><span class="n">analysis</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Render analysis metadata, aliases, and constraints to CIF.&quot;&quot;&quot;</span>
-    <span class="n">parts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;_fitting.mode_type </span><span class="si">{</span><span class="n">format_value</span><span class="p">(</span><span class="n">analysis</span><span class="o">.</span><span class="n">fitting_mode_type</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span>
-
-    <span class="n">body</span> <span class="o">=</span> <span class="n">category_owner_to_cif</span><span class="p">(</span><span class="n">analysis</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">body</span><span class="p">:</span>
-        <span class="n">fallback_sections</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="nb">getattr</span><span class="p">(</span><span class="n">analysis</span><span class="p">,</span> <span class="s1">&#39;fitting&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-            <span class="nb">getattr</span><span class="p">(</span><span class="n">analysis</span><span class="p">,</span> <span class="s1">&#39;aliases&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-            <span class="nb">getattr</span><span class="p">(</span><span class="n">analysis</span><span class="p">,</span> <span class="s1">&#39;constraints&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-        <span class="p">]</span>
-
-        <span class="k">if</span> <span class="n">analysis</span><span class="o">.</span><span class="n">fitting_mode_type</span> <span class="o">==</span> <span class="s1">&#39;joint&#39;</span><span class="p">:</span>
-            <span class="n">fallback_sections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">analysis</span><span class="p">,</span> <span class="s1">&#39;joint_fit&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="n">analysis</span><span class="o">.</span><span class="n">fitting_mode_type</span> <span class="o">==</span> <span class="s1">&#39;sequential&#39;</span><span class="p">:</span>
-            <span class="n">fallback_sections</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span>
-                <span class="nb">getattr</span><span class="p">(</span><span class="n">analysis</span><span class="p">,</span> <span class="s1">&#39;sequential_fit&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-                <span class="nb">getattr</span><span class="p">(</span><span class="n">analysis</span><span class="p">,</span> <span class="s1">&#39;sequential_fit_extract&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-            <span class="p">])</span>
-
-        <span class="n">body</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
-            <span class="n">_as_cif_text</span><span class="p">(</span><span class="n">section</span><span class="p">)</span> <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">fallback_sections</span> <span class="k">if</span> <span class="n">section</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-        <span class="p">])</span>
-
-    <span class="k">if</span> <span class="n">body</span><span class="p">:</span>
-        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">category_owner_to_cif</span><span class="p">(</span><span class="n">analysis</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -6157,9 +6139,9 @@ emits all rows (used for serialisation).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/io/cif/serialize.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">458</span>
-<span class="normal">459</span>
-<span class="normal">460</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">summary_to_cif</span><span class="p">(</span><span class="n">_summary</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">438</span>
+<span class="normal">439</span>
+<span class="normal">440</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">summary_to_cif</span><span class="p">(</span><span class="n">_summary</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Render a summary CIF block (placeholder for now).&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="s1">&#39;To be added...&#39;</span>
 </code></pre></div></td></tr></table></div>
@@ -6241,22 +6223,22 @@ emits all rows (used for serialisation).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/io/cif/serialize.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">514</span>
-<span class="normal">515</span>
-<span class="normal">516</span>
-<span class="normal">517</span>
-<span class="normal">518</span>
-<span class="normal">519</span>
-<span class="normal">520</span>
-<span class="normal">521</span>
-<span class="normal">522</span>
-<span class="normal">523</span>
-<span class="normal">524</span>
-<span class="normal">525</span>
-<span class="normal">526</span>
-<span class="normal">527</span>
-<span class="normal">528</span>
-<span class="normal">529</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">project_info_from_cif</span><span class="p">(</span><span class="n">info</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">cif_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">494</span>
+<span class="normal">495</span>
+<span class="normal">496</span>
+<span class="normal">497</span>
+<span class="normal">498</span>
+<span class="normal">499</span>
+<span class="normal">500</span>
+<span class="normal">501</span>
+<span class="normal">502</span>
+<span class="normal">503</span>
+<span class="normal">504</span>
+<span class="normal">505</span>
+<span class="normal">506</span>
+<span class="normal">507</span>
+<span class="normal">508</span>
+<span class="normal">509</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">project_info_from_cif</span><span class="p">(</span><span class="n">info</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">cif_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Populate a ProjectInfo instance from CIF text.</span>
 
@@ -6297,21 +6279,25 @@ emits all rows (used for serialisation).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/io/cif/serialize.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">532</span>
-<span class="normal">533</span>
-<span class="normal">534</span>
-<span class="normal">535</span>
-<span class="normal">536</span>
-<span class="normal">537</span>
-<span class="normal">538</span>
-<span class="normal">539</span>
-<span class="normal">540</span>
-<span class="normal">541</span>
-<span class="normal">542</span>
-<span class="normal">543</span>
-<span class="normal">544</span>
-<span class="normal">545</span>
-<span class="normal">546</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">project_config_from_cif</span><span class="p">(</span><span class="n">project</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">cif_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">512</span>
+<span class="normal">513</span>
+<span class="normal">514</span>
+<span class="normal">515</span>
+<span class="normal">516</span>
+<span class="normal">517</span>
+<span class="normal">518</span>
+<span class="normal">519</span>
+<span class="normal">520</span>
+<span class="normal">521</span>
+<span class="normal">522</span>
+<span class="normal">523</span>
+<span class="normal">524</span>
+<span class="normal">525</span>
+<span class="normal">526</span>
+<span class="normal">527</span>
+<span class="normal">528</span>
+<span class="normal">529</span>
+<span class="normal">530</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">project_config_from_cif</span><span class="p">(</span><span class="n">project</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">cif_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Populate project-level configuration from ``project.cif`` text.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -6319,9 +6305,13 @@ emits all rows (used for serialisation).</p>
 
     <span class="n">_populate_project_info_from_block</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">block</span><span class="p">)</span>
 
-    <span class="n">rendering</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="s1">&#39;rendering&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">rendering</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">rendering</span><span class="o">.</span><span class="n">from_cif</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
+    <span class="n">chart</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="s1">&#39;chart&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">chart</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">chart</span><span class="o">.</span><span class="n">from_cif</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
+
+    <span class="n">table</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="s1">&#39;table&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">table</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">from_cif</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
 
     <span class="n">verbosity</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="s1">&#39;verbosity&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">verbosity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -6406,7 +6396,23 @@ experiment weights from the given <abbr title="Crystallographic Information File
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/io/cif/serialize.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">549</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">533</span>
+<span class="normal">534</span>
+<span class="normal">535</span>
+<span class="normal">536</span>
+<span class="normal">537</span>
+<span class="normal">538</span>
+<span class="normal">539</span>
+<span class="normal">540</span>
+<span class="normal">541</span>
+<span class="normal">542</span>
+<span class="normal">543</span>
+<span class="normal">544</span>
+<span class="normal">545</span>
+<span class="normal">546</span>
+<span class="normal">547</span>
+<span class="normal">548</span>
+<span class="normal">549</span>
 <span class="normal">550</span>
 <span class="normal">551</span>
 <span class="normal">552</span>
@@ -6424,24 +6430,7 @@ experiment weights from the given <abbr title="Crystallographic Information File
 <span class="normal">564</span>
 <span class="normal">565</span>
 <span class="normal">566</span>
-<span class="normal">567</span>
-<span class="normal">568</span>
-<span class="normal">569</span>
-<span class="normal">570</span>
-<span class="normal">571</span>
-<span class="normal">572</span>
-<span class="normal">573</span>
-<span class="normal">574</span>
-<span class="normal">575</span>
-<span class="normal">576</span>
-<span class="normal">577</span>
-<span class="normal">578</span>
-<span class="normal">579</span>
-<span class="normal">580</span>
-<span class="normal">581</span>
-<span class="normal">582</span>
-<span class="normal">583</span>
-<span class="normal">584</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">analysis_from_cif</span><span class="p">(</span><span class="n">analysis</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">cif_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">567</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">analysis_from_cif</span><span class="p">(</span><span class="n">analysis</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">cif_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Populate an Analysis instance from CIF text.</span>
 
@@ -6462,9 +6451,8 @@ experiment weights from the given <abbr title="Crystallographic Information File
 
     <span class="n">_raise_for_legacy_analysis_tags</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
     <span class="n">analysis</span><span class="o">.</span><span class="n">_set_fitting_mode_type</span><span class="p">(</span><span class="n">_analysis_mode_from_cif_block</span><span class="p">(</span><span class="n">block</span><span class="p">))</span>
-
-    <span class="c1"># Restore fit configuration</span>
-    <span class="n">analysis</span><span class="o">.</span><span class="n">fitting</span><span class="o">.</span><span class="n">from_cif</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
+    <span class="n">analysis</span><span class="o">.</span><span class="n">_set_minimizer_type</span><span class="p">(</span><span class="n">_analysis_minimizer_from_cif_block</span><span class="p">(</span><span class="n">block</span><span class="p">))</span>
+    <span class="n">analysis</span><span class="o">.</span><span class="n">minimizer</span><span class="o">.</span><span class="n">from_cif</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
     <span class="n">_restore_mode_specific_analysis_sections</span><span class="p">(</span><span class="n">analysis</span><span class="p">,</span> <span class="n">block</span><span class="p">)</span>
 
     <span class="c1"># Restore aliases (loop)</span>
@@ -6574,40 +6562,41 @@ experiment weights from the given <abbr title="Crystallographic Information File
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/io/cif/serialize.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">817</span>
-<span class="normal">818</span>
-<span class="normal">819</span>
-<span class="normal">820</span>
-<span class="normal">821</span>
-<span class="normal">822</span>
-<span class="normal">823</span>
-<span class="normal">824</span>
-<span class="normal">825</span>
-<span class="normal">826</span>
-<span class="normal">827</span>
-<span class="normal">828</span>
-<span class="normal">829</span>
-<span class="normal">830</span>
-<span class="normal">831</span>
-<span class="normal">832</span>
-<span class="normal">833</span>
-<span class="normal">834</span>
-<span class="normal">835</span>
-<span class="normal">836</span>
-<span class="normal">837</span>
-<span class="normal">838</span>
-<span class="normal">839</span>
-<span class="normal">840</span>
-<span class="normal">841</span>
-<span class="normal">842</span>
-<span class="normal">843</span>
-<span class="normal">844</span>
-<span class="normal">845</span>
-<span class="normal">846</span>
-<span class="normal">847</span>
-<span class="normal">848</span>
-<span class="normal">849</span>
-<span class="normal">850</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">param_from_cif</span><span class="p">(</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">778</span>
+<span class="normal">779</span>
+<span class="normal">780</span>
+<span class="normal">781</span>
+<span class="normal">782</span>
+<span class="normal">783</span>
+<span class="normal">784</span>
+<span class="normal">785</span>
+<span class="normal">786</span>
+<span class="normal">787</span>
+<span class="normal">788</span>
+<span class="normal">789</span>
+<span class="normal">790</span>
+<span class="normal">791</span>
+<span class="normal">792</span>
+<span class="normal">793</span>
+<span class="normal">794</span>
+<span class="normal">795</span>
+<span class="normal">796</span>
+<span class="normal">797</span>
+<span class="normal">798</span>
+<span class="normal">799</span>
+<span class="normal">800</span>
+<span class="normal">801</span>
+<span class="normal">802</span>
+<span class="normal">803</span>
+<span class="normal">804</span>
+<span class="normal">805</span>
+<span class="normal">806</span>
+<span class="normal">807</span>
+<span class="normal">808</span>
+<span class="normal">809</span>
+<span class="normal">810</span>
+<span class="normal">811</span>
+<span class="normal">812</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">param_from_cif</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">:</span> <span class="n">GenericDescriptorBase</span><span class="p">,</span>
     <span class="n">block</span><span class="p">:</span> <span class="n">gemmi</span><span class="o">.</span><span class="n">cif</span><span class="o">.</span><span class="n">Block</span><span class="p">,</span>
     <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
@@ -6634,8 +6623,9 @@ experiment weights from the given <abbr title="Crystallographic Information File
             <span class="n">found_values</span> <span class="o">=</span> <span class="n">candidates</span>
             <span class="k">break</span>
 
-    <span class="c1"># If no values found, the parameter keeps its default value.</span>
+    <span class="c1"># If no values found, use the descriptor default when available.</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">found_values</span><span class="p">:</span>
+        <span class="n">_set_param_to_default_from_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
         <span class="k">return</span>
 
     <span class="c1"># If found, pick the one at the given index.</span>
@@ -6666,14 +6656,14 @@ experiment weights from the given <abbr title="Crystallographic Information File
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/io/cif/serialize.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">853</span>
-<span class="normal">854</span>
-<span class="normal">855</span>
-<span class="normal">856</span>
-<span class="normal">857</span>
-<span class="normal">858</span>
-<span class="normal">859</span>
-<span class="normal">860</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">category_item_from_cif</span><span class="p">(</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">842</span>
+<span class="normal">843</span>
+<span class="normal">844</span>
+<span class="normal">845</span>
+<span class="normal">846</span>
+<span class="normal">847</span>
+<span class="normal">848</span>
+<span class="normal">849</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">category_item_from_cif</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">:</span> <span class="n">CategoryItem</span><span class="p">,</span>
     <span class="n">block</span><span class="p">:</span> <span class="n">gemmi</span><span class="o">.</span><span class="n">cif</span><span class="o">.</span><span class="n">Block</span><span class="p">,</span>
     <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
@@ -6785,7 +6775,17 @@ experiment weights from the given <abbr title="Crystallographic Information File
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/io/cif/serialize.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 943</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 933</span>
+<span class="normal"> 934</span>
+<span class="normal"> 935</span>
+<span class="normal"> 936</span>
+<span class="normal"> 937</span>
+<span class="normal"> 938</span>
+<span class="normal"> 939</span>
+<span class="normal"> 940</span>
+<span class="normal"> 941</span>
+<span class="normal"> 942</span>
+<span class="normal"> 943</span>
 <span class="normal"> 944</span>
 <span class="normal"> 945</span>
 <span class="normal"> 946</span>
@@ -6845,10 +6845,7 @@ experiment weights from the given <abbr title="Crystallographic Information File
 <span class="normal">1000</span>
 <span class="normal">1001</span>
 <span class="normal">1002</span>
-<span class="normal">1003</span>
-<span class="normal">1004</span>
-<span class="normal">1005</span>
-<span class="normal">1006</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">category_collection_from_cif</span><span class="p">(</span>
+<span class="normal">1003</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">category_collection_from_cif</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">:</span> <span class="n">CategoryCollection</span><span class="p">,</span>
     <span class="n">block</span><span class="p">:</span> <span class="n">gemmi</span><span class="o">.</span><span class="n">cif</span><span class="o">.</span><span class="n">Block</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -6873,6 +6870,9 @@ experiment weights from the given <abbr title="Crystallographic Information File
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Child class is not defined.&#39;</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scalar_descriptors</span><span class="p">:</span>
+        <span class="n">param</span><span class="o">.</span><span class="n">from_cif</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
 
     <span class="c1"># Create a temporary instance to access its parameters and</span>
     <span class="c1"># parameter CIF names</span>
@@ -6899,13 +6899,17 @@ experiment weights from the given <abbr title="Crystallographic Information File
     <span class="k">for</span> <span class="n">row_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_rows</span><span class="p">):</span>
         <span class="n">current_item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">[</span><span class="n">row_idx</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">current_item</span><span class="o">.</span><span class="n">parameters</span><span class="p">:</span>
+            <span class="n">tag_found</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">for</span> <span class="n">cif_name</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">_cif_handler</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">cif_name</span> <span class="ow">in</span> <span class="n">loop</span><span class="o">.</span><span class="n">tags</span><span class="p">:</span>
                     <span class="n">col_idx</span> <span class="o">=</span> <span class="n">loop</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">cif_name</span><span class="p">)</span>
                     <span class="c1"># TODO: The following is duplication of</span>
                     <span class="c1">#  param_from_cif</span>
                     <span class="n">_set_param_from_raw_cif_value</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">array</span><span class="p">[</span><span class="n">row_idx</span><span class="p">][</span><span class="n">col_idx</span><span class="p">])</span>
+                    <span class="n">tag_found</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="k">break</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">tag_found</span><span class="p">:</span>
+                <span class="n">_set_param_to_default_from_cif</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
     <span class="n">after_from_cif</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_after_from_cif&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">after_from_cif</span><span class="p">):</span>
@@ -6969,6 +6973,50 @@ experiment weights from the given <abbr title="Crystallographic Information File
 
 
 
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="easydiffraction.io.results_sidecar.warn_analysis_results_sidecar_overwrite" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">warn_analysis_results_sidecar_overwrite</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">analysis_dir</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Warn when a new fit will overwrite existing sidecar arrays.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/io/results_sidecar.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">warn_analysis_results_sidecar_overwrite</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">analysis_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Warn when a new fit will overwrite existing sidecar arrays.&quot;&quot;&quot;</span>
+    <span class="n">sidecar_path</span> <span class="o">=</span> <span class="n">_sidecar_path</span><span class="p">(</span><span class="n">analysis_dir</span><span class="o">=</span><span class="n">analysis_dir</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">sidecar_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">or</span> <span class="n">sidecar_path</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Existing fit results sidecar &#39;</span><span class="si">{</span><span class="n">sidecar_path</span><span class="si">}</span><span class="s2">&#39; will be overwritten &quot;</span>
+        <span class="s1">&#39;when the new fit is saved.&#39;</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
 
 <div class="doc doc-object doc-function">
 
@@ -7041,90 +7089,40 @@ results.</p>
     </table>
 
 
-<p><span class="doc-section-title">Raises:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="Exception">Exception</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Propagated when sidecar writing fails after temporary-file
-cleanup.</p>
-<!-- prettier-ignore-start -->
-
-<!-- prettier-ignore-end -->
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/io/results_sidecar.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">408</span>
-<span class="normal">409</span>
-<span class="normal">410</span>
-<span class="normal">411</span>
-<span class="normal">412</span>
-<span class="normal">413</span>
-<span class="normal">414</span>
-<span class="normal">415</span>
-<span class="normal">416</span>
-<span class="normal">417</span>
-<span class="normal">418</span>
-<span class="normal">419</span>
-<span class="normal">420</span>
-<span class="normal">421</span>
-<span class="normal">422</span>
-<span class="normal">423</span>
-<span class="normal">424</span>
-<span class="normal">425</span>
-<span class="normal">426</span>
-<span class="normal">427</span>
-<span class="normal">428</span>
-<span class="normal">429</span>
-<span class="normal">430</span>
-<span class="normal">431</span>
-<span class="normal">432</span>
-<span class="normal">433</span>
-<span class="normal">434</span>
-<span class="normal">435</span>
-<span class="normal">436</span>
-<span class="normal">437</span>
-<span class="normal">438</span>
-<span class="normal">439</span>
-<span class="normal">440</span>
-<span class="normal">441</span>
-<span class="normal">442</span>
-<span class="normal">443</span>
-<span class="normal">444</span>
-<span class="normal">445</span>
-<span class="normal">446</span>
-<span class="normal">447</span>
-<span class="normal">448</span>
-<span class="normal">449</span>
-<span class="normal">450</span>
-<span class="normal">451</span>
-<span class="normal">452</span>
-<span class="normal">453</span>
-<span class="normal">454</span>
-<span class="normal">455</span>
-<span class="normal">456</span>
-<span class="normal">457</span>
-<span class="normal">458</span>
-<span class="normal">459</span>
-<span class="normal">460</span>
-<span class="normal">461</span>
-<span class="normal">462</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">write_analysis_results_sidecar</span><span class="p">(</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">write_analysis_results_sidecar</span><span class="p">(</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">analysis</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="n">analysis_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
@@ -7139,14 +7137,8 @@ cleanup.</p>
 <span class="sd">        results.</span>
 <span class="sd">    analysis_dir : Path</span>
 <span class="sd">        The project ``analysis/`` directory.</span>
-
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    Exception</span>
-<span class="sd">        Propagated when sidecar writing fails after temporary-file</span>
-<span class="sd">        cleanup.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">sidecar_path</span> <span class="o">=</span> <span class="n">_sidecar_path</span><span class="p">(</span><span class="n">analysis</span><span class="o">=</span><span class="n">analysis</span><span class="p">,</span> <span class="n">analysis_dir</span><span class="o">=</span><span class="n">analysis_dir</span><span class="p">)</span>
+    <span class="n">sidecar_path</span> <span class="o">=</span> <span class="n">_sidecar_path</span><span class="p">(</span><span class="n">analysis_dir</span><span class="o">=</span><span class="n">analysis_dir</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_should_use_sidecar</span><span class="p">(</span><span class="n">analysis</span><span class="p">):</span>
         <span class="n">_delete_stale_sidecar</span><span class="p">(</span><span class="n">sidecar_path</span><span class="p">)</span>
         <span class="k">return</span>
@@ -7154,31 +7146,14 @@ cleanup.</p>
     <span class="kn">import</span><span class="w"> </span><span class="nn">h5py</span>  <span class="c1"># noqa: PLC0415</span>
 
     <span class="n">analysis_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">with</span> <span class="n">NamedTemporaryFile</span><span class="p">(</span>
-        <span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="nb">dir</span><span class="o">=</span><span class="n">analysis_dir</span><span class="p">,</span>
-        <span class="n">prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">sidecar_path</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">,</span>
-        <span class="n">suffix</span><span class="o">=</span><span class="n">sidecar_path</span><span class="o">.</span><span class="n">suffix</span><span class="p">,</span>
-    <span class="p">)</span> <span class="k">as</span> <span class="n">temporary_file</span><span class="p">:</span>
-        <span class="n">temporary_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">temporary_file</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">temporary_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
-            <span class="n">wrote_any</span> <span class="o">=</span> <span class="n">_write_posterior_payload</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">analysis</span><span class="p">)</span>
-            <span class="n">wrote_any</span> <span class="o">=</span> <span class="n">_write_distribution_caches</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">analysis</span><span class="p">)</span> <span class="ow">or</span> <span class="n">wrote_any</span>
-            <span class="n">wrote_any</span> <span class="o">=</span> <span class="n">_write_pair_caches</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">analysis</span><span class="p">)</span> <span class="ow">or</span> <span class="n">wrote_any</span>
-            <span class="n">wrote_any</span> <span class="o">=</span> <span class="n">_write_predictive_datasets</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">analysis</span><span class="p">)</span> <span class="ow">or</span> <span class="n">wrote_any</span>
-    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">temporary_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-            <span class="n">temporary_path</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
-        <span class="k">raise</span>
+    <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">sidecar_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
+        <span class="n">wrote_any</span> <span class="o">=</span> <span class="n">_write_posterior_payload</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">analysis</span><span class="p">)</span>
+        <span class="n">wrote_any</span> <span class="o">=</span> <span class="n">_write_distribution_caches</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">analysis</span><span class="p">)</span> <span class="ow">or</span> <span class="n">wrote_any</span>
+        <span class="n">wrote_any</span> <span class="o">=</span> <span class="n">_write_pair_caches</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">analysis</span><span class="p">)</span> <span class="ow">or</span> <span class="n">wrote_any</span>
+        <span class="n">wrote_any</span> <span class="o">=</span> <span class="n">_write_predictive_datasets</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">analysis</span><span class="p">)</span> <span class="ow">or</span> <span class="n">wrote_any</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">wrote_any</span><span class="p">:</span>
-        <span class="n">temporary_path</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
         <span class="n">_delete_stale_sidecar</span><span class="p">(</span><span class="n">sidecar_path</span><span class="p">)</span>
-        <span class="k">return</span>
-
-    <span class="n">temporary_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">sidecar_path</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -7257,55 +7232,55 @@ cleanup.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/io/results_sidecar.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">604</span>
-<span class="normal">605</span>
-<span class="normal">606</span>
-<span class="normal">607</span>
-<span class="normal">608</span>
-<span class="normal">609</span>
-<span class="normal">610</span>
-<span class="normal">611</span>
-<span class="normal">612</span>
-<span class="normal">613</span>
-<span class="normal">614</span>
-<span class="normal">615</span>
-<span class="normal">616</span>
-<span class="normal">617</span>
-<span class="normal">618</span>
-<span class="normal">619</span>
-<span class="normal">620</span>
-<span class="normal">621</span>
-<span class="normal">622</span>
-<span class="normal">623</span>
-<span class="normal">624</span>
-<span class="normal">625</span>
-<span class="normal">626</span>
-<span class="normal">627</span>
-<span class="normal">628</span>
-<span class="normal">629</span>
-<span class="normal">630</span>
-<span class="normal">631</span>
-<span class="normal">632</span>
-<span class="normal">633</span>
-<span class="normal">634</span>
-<span class="normal">635</span>
-<span class="normal">636</span>
-<span class="normal">637</span>
-<span class="normal">638</span>
-<span class="normal">639</span>
-<span class="normal">640</span>
-<span class="normal">641</span>
-<span class="normal">642</span>
-<span class="normal">643</span>
-<span class="normal">644</span>
-<span class="normal">645</span>
-<span class="normal">646</span>
-<span class="normal">647</span>
-<span class="normal">648</span>
-<span class="normal">649</span>
-<span class="normal">650</span>
-<span class="normal">651</span>
-<span class="normal">652</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">read_analysis_results_sidecar</span><span class="p">(</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span>
+<span class="normal">397</span>
+<span class="normal">398</span>
+<span class="normal">399</span>
+<span class="normal">400</span>
+<span class="normal">401</span>
+<span class="normal">402</span>
+<span class="normal">403</span>
+<span class="normal">404</span>
+<span class="normal">405</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span>
+<span class="normal">417</span>
+<span class="normal">418</span>
+<span class="normal">419</span>
+<span class="normal">420</span>
+<span class="normal">421</span>
+<span class="normal">422</span>
+<span class="normal">423</span>
+<span class="normal">424</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">read_analysis_results_sidecar</span><span class="p">(</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">analysis</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="n">analysis_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
@@ -7324,7 +7299,7 @@ cleanup.</p>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_should_use_sidecar</span><span class="p">(</span><span class="n">analysis</span><span class="p">):</span>
         <span class="k">return</span>
 
-    <span class="n">sidecar_path</span> <span class="o">=</span> <span class="n">_sidecar_path</span><span class="p">(</span><span class="n">analysis</span><span class="o">=</span><span class="n">analysis</span><span class="p">,</span> <span class="n">analysis_dir</span><span class="o">=</span><span class="n">analysis_dir</span><span class="p">)</span>
+    <span class="n">sidecar_path</span> <span class="o">=</span> <span class="n">_sidecar_path</span><span class="p">(</span><span class="n">analysis_dir</span><span class="o">=</span><span class="n">analysis_dir</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">sidecar_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
         <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
             <span class="s1">&#39;Expected Bayesian results sidecar is missing: &#39;</span>
@@ -7337,19 +7312,19 @@ cleanup.</p>
     <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">sidecar_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
         <span class="n">sidecar_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="n">posterior_payload</span> <span class="o">=</span> <span class="n">_read_posterior_payload</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">analysis</span><span class="p">)</span>
+        <span class="n">posterior_payload</span> <span class="o">=</span> <span class="n">_read_posterior_payload</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">posterior_payload</span><span class="p">:</span>
             <span class="n">sidecar_data</span><span class="p">[</span><span class="s1">&#39;posterior&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">posterior_payload</span>
 
-        <span class="n">distribution_caches</span> <span class="o">=</span> <span class="n">_read_distribution_caches</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">analysis</span><span class="p">)</span>
+        <span class="n">distribution_caches</span> <span class="o">=</span> <span class="n">_read_distribution_caches</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">distribution_caches</span><span class="p">:</span>
             <span class="n">sidecar_data</span><span class="p">[</span><span class="s1">&#39;distribution_caches&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">distribution_caches</span>
 
-        <span class="n">pair_caches</span> <span class="o">=</span> <span class="n">_read_pair_caches</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">analysis</span><span class="p">)</span>
+        <span class="n">pair_caches</span> <span class="o">=</span> <span class="n">_read_pair_caches</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">pair_caches</span><span class="p">:</span>
             <span class="n">sidecar_data</span><span class="p">[</span><span class="s1">&#39;pair_caches&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pair_caches</span>
 
-        <span class="n">predictive_datasets</span> <span class="o">=</span> <span class="n">_read_predictive_datasets</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">analysis</span><span class="p">)</span>
+        <span class="n">predictive_datasets</span> <span class="o">=</span> <span class="n">_read_predictive_datasets</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">predictive_datasets</span><span class="p">:</span>
             <span class="n">sidecar_data</span><span class="p">[</span><span class="s1">&#39;predictive_datasets&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">predictive_datasets</span>
 

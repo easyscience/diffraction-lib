@@ -18444,11 +18444,7 @@ consistent configuration surface and engine handling.</p>
 <span class="normal">5949</span>
 <span class="normal">5950</span>
 <span class="normal">5951</span>
-<span class="normal">5952</span>
-<span class="normal">5953</span>
-<span class="normal">5954</span>
-<span class="normal">5955</span>
-<span class="normal">5956</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Plotter</span><span class="p">(</span><span class="n">RendererBase</span><span class="p">):</span>
+<span class="normal">5952</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Plotter</span><span class="p">(</span><span class="n">RendererBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;User-facing plotting facade backed by concrete plotters.&quot;&quot;&quot;</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
@@ -20846,15 +20842,11 @@ consistent configuration surface and engine handling.</p>
         <span class="n">analysis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="o">.</span><span class="n">analysis</span>
         <span class="n">sidecar_data</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">analysis</span><span class="p">,</span> <span class="s1">&#39;_persisted_fit_state_sidecar&#39;</span><span class="p">,</span> <span class="p">{})</span>
         <span class="n">pair_caches</span> <span class="o">=</span> <span class="n">sidecar_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;pair_caches&#39;</span><span class="p">,</span> <span class="p">{})</span>
-        <span class="k">for</span> <span class="n">cache</span> <span class="ow">in</span> <span class="n">analysis</span><span class="o">.</span><span class="n">bayesian_pair_caches</span><span class="p">:</span>
-            <span class="n">cache_x</span> <span class="o">=</span> <span class="n">cache</span><span class="o">.</span><span class="n">param_unique_name_x</span><span class="o">.</span><span class="n">value</span>
-            <span class="n">cache_y</span> <span class="o">=</span> <span class="n">cache</span><span class="o">.</span><span class="n">param_unique_name_y</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">for</span> <span class="n">cache_data</span> <span class="ow">in</span> <span class="n">pair_caches</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">cache_x</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cache_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;param_unique_name_x&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
+            <span class="n">cache_y</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cache_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;param_unique_name_y&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
             <span class="k">if</span> <span class="p">{</span><span class="n">cache_x</span><span class="p">,</span> <span class="n">cache_y</span><span class="p">}</span> <span class="o">!=</span> <span class="p">{</span><span class="n">x_parameter_name</span><span class="p">,</span> <span class="n">y_parameter_name</span><span class="p">}:</span>
                 <span class="k">continue</span>
-
-            <span class="n">cache_data</span> <span class="o">=</span> <span class="n">pair_caches</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cache</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">cache_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">return</span> <span class="kc">None</span>
 
             <span class="n">x_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">cache_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
             <span class="n">y_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">cache_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
@@ -26303,7 +26295,11 @@ adds CSV output to the existing fit loop).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">5853</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">5849</span>
+<span class="normal">5850</span>
+<span class="normal">5851</span>
+<span class="normal">5852</span>
+<span class="normal">5853</span>
 <span class="normal">5854</span>
 <span class="normal">5855</span>
 <span class="normal">5856</span>
@@ -26369,11 +26365,7 @@ adds CSV output to the existing fit loop).</p>
 <span class="normal">5916</span>
 <span class="normal">5917</span>
 <span class="normal">5918</span>
-<span class="normal">5919</span>
-<span class="normal">5920</span>
-<span class="normal">5921</span>
-<span class="normal">5922</span>
-<span class="normal">5923</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_param_series_from_snapshots</span><span class="p">(</span>
+<span class="normal">5919</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_param_series_from_snapshots</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">unique_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">versus_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
@@ -26489,7 +26481,11 @@ adds CSV output to the existing fit loop).</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">5959</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">5955</span>
+<span class="normal">5956</span>
+<span class="normal">5957</span>
+<span class="normal">5958</span>
+<span class="normal">5959</span>
 <span class="normal">5960</span>
 <span class="normal">5961</span>
 <span class="normal">5962</span>
@@ -26499,11 +26495,7 @@ adds CSV output to the existing fit loop).</p>
 <span class="normal">5966</span>
 <span class="normal">5967</span>
 <span class="normal">5968</span>
-<span class="normal">5969</span>
-<span class="normal">5970</span>
-<span class="normal">5971</span>
-<span class="normal">5972</span>
-<span class="normal">5973</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PlotterFactory</span><span class="p">(</span><span class="n">RendererFactoryBase</span><span class="p">):</span>
+<span class="normal">5969</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PlotterFactory</span><span class="p">(</span><span class="n">RendererFactoryBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Factory for plotter implementations.&quot;&quot;&quot;</span>
 
     <span class="nd">@classmethod</span>

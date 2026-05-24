@@ -269,7 +269,7 @@ analysis.constraints.create(expression='biso_Co2 = biso_Co1')
 # #### Set Minimizer
 
 # %%
-analysis.fitting.minimizer_type = 'bumps (lm)'
+analysis.minimizer.type = 'bumps (lm)'
 
 # %% [markdown]
 # #### Run Single Fitting
@@ -327,7 +327,7 @@ analysis.sequential_fit_extract.create(
 # Set the sequential fitting parameters.
 
 # %%
-analysis.fitting_mode_type = 'sequential'
+analysis.fitting_mode.type = 'sequential'
 analysis.sequential_fit.data_dir = scan_data_dir
 analysis.sequential_fit.max_workers = 'auto'
 analysis.sequential_fit.reverse = True

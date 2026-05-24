@@ -85,7 +85,7 @@ expt.instrument.calib_d_to_tof_quad = -1.54
 # #### Set Peak Profile
 
 # %%
-expt.show_peak_profile_types()
+expt.peak.show_supported()
 expt.peak.broad_gauss_sigma_0 = 3.0
 expt.peak.broad_gauss_sigma_1 = 40.0
 expt.peak.broad_gauss_sigma_2 = 2.0
@@ -98,7 +98,7 @@ expt.peak.exp_rise_alpha_1 = 0.5971
 # #### Set Background
 
 # %%
-expt.background_type = 'line-segment'
+expt.background.type = 'line-segment'
 for x in range(0, 35000, 5000):
     expt.background.create(id=str(x), x=x, y=200)
 
@@ -296,19 +296,19 @@ project.display.pattern(expt_name='sepd', x='d_spacing')
 # #### Switch calculator engine
 
 # %%
-expt.calculation.show_calculator_types()
+expt.calculator.show_supported()
 
 # %%
-expt.calculation.calculator_type = 'crysfml'
+expt.calculator.type = 'crysfml'
 
 # %% [markdown]
 # #### Change peak profile type
 
 # %%
-expt.show_peak_profile_types()
+expt.peak.show_supported()
 
 # %%
-expt.peak_profile_type = 'jorgensen-von-dreele'
+expt.peak.type = 'jorgensen-von-dreele'
 
 # %%
 expt.peak.broad_gauss_sigma_0 = 3.0148

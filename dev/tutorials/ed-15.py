@@ -74,14 +74,14 @@ experiment.linked_crystal.scale.free = True
 experiment.extinction.radius.free = True
 
 # %%
-project.analysis.fitting.show_minimizer_types()
+project.analysis.minimizer.show_supported()
 
 # %%
-project.analysis.fitting.minimizer_type = 'bumps'
+project.analysis.minimizer.type = 'bumps'
 
 # %%
 # Limit number of iterations to prevent long calculation time in this tutorial.
-project.analysis.fitting.minimizer.max_iterations = 500
+project.analysis.minimizer.max_iterations = 500
 
 # %%
 # Start refinement. All parameters, which have standard uncertainties
