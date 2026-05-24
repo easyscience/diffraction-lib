@@ -60,13 +60,27 @@
 - Concrete classes use `@Factory.register`. Each package's `__init__.py`
   must explicitly import every concrete class to trigger registration —
   always update it when adding a class.
-- Switchable categories (factory-swappable at runtime) follow this fixed
-  API on the owner (experiment / structure / analysis): `<category>`
-  (read-only), `<category>_type` (getter+setter),
-  `show_supported_<category>_types()`, `show_current_<category>_type()`.
-  The owner owns the type setter and show methods; show methods delegate
-  to `Factory.show_supported(...)`. Required even if only one
-  implementation exists.
+- Switchable categories (factory-swappable at runtime) follow the
+  category-owned selector contract from
+  [`switchable-category-owned-selectors.md`](../docs/dev/adrs/accepted/switchable-category-owned-selectors.md):
+  the owner exposes `<category>` (read-only attribute on the owner),
+  and the category itself exposes `<category>.type` (writable
+  property) and `<category>.show_supported()`. There are no
+  owner-level `<owner>.<cat>_type` setters and no owner-level
+  `show_supported_<cat>_types()` / `show_current_<cat>_type()`
+  methods. The owner provides a private `_swap_<name>` hook that
+  the category's `type` setter calls through a back-reference;
+  inside the hook the owner replaces the category instance
+  (Family A), rebinds the live engine (Family B), or activates
+  sibling categories (Family C) — the user-facing surface stays
+  uniform. Required even if only one implementation exists.
+- Result-output categories paired with a switchable input category
+  (today: `analysis.fit_result` paired with `analysis.minimizer`
+  via `<minimizer-class>._fit_result_class`) are **internal pairs**,
+  not user-facing switchables: they do not expose `type` or
+  `show_supported()`; the owner swaps them in lockstep with the
+  paired input category. See
+  [`minimizer-input-output-split.md`](../docs/dev/adrs/accepted/minimizer-input-output-split.md).
 - Categories are flat siblings within their owner. Never nest a category
   as a child of another category of a different type; cross-reference
   via IDs instead.
@@ -143,6 +157,11 @@
   etc.).
 - Each change is atomic and single-commit-sized: make one change,
   suggest the commit message, then stop and wait for confirmation.
+  Exception: when the user invokes an **Agent Shortcut** (see that
+  section), the matching loop runs autonomously per its own
+  termination rule — neither a per-commit pause nor a per-tick
+  pause applies inside that loop. The default applies again as soon
+  as the shortcut terminates.
 - When in doubt, ask.
 
 ## Commits
@@ -207,9 +226,10 @@ When asked to create a plan:
   example, `docs/dev/adrs/suggestions/foo.md` maps to
   `docs/dev/plans/foo.md`. If a plan has no corresponding ADR or spans
   multiple ADRs, choose a concise feature slug and list all related ADRs
-  in the plan. Use the same `<feature-name>` for the implementation
-  branch (`feature/<feature-name>`). Do not push the branch unless
-  asked.
+  in the plan. Use the same `<feature-name>` as a **flat-slug
+  implementation branch** off `develop` (no `feature/` prefix —
+  e.g. `emcee-minimizer`, not `feature/emcee-minimizer`). PRs target
+  `develop`, not `master`. Do not push the branch unless asked.
 - Include a status checklist with `[ ]` items; mark `[x]` as completed
   during implementation.
 - Apply the two-phase workflow (Phase 1 implementation, Phase 2
