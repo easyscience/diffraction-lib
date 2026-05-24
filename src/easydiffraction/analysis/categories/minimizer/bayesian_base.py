@@ -6,6 +6,7 @@ from __future__ import annotations
 
 from typing import ClassVar
 
+from easydiffraction.analysis.categories.fit_result.bayesian import BayesianFitResult
 from easydiffraction.analysis.categories.minimizer.base import MinimizerCategoryBase
 from easydiffraction.analysis.minimizers.enums import InitializationMethodEnum
 from easydiffraction.core.validation import AttributeSpec
@@ -21,6 +22,7 @@ from easydiffraction.io.cif.handler import CifHandler
 class BayesianMinimizerBase(MinimizerCategoryBase):
     """Shared behavior for Bayesian minimizer categories."""
 
+    _fit_result_class: ClassVar[type] = BayesianFitResult
     _expected_descriptor_names: ClassVar[tuple[str, ...]] = (
         'sampling_steps',
         'burn_in_steps',

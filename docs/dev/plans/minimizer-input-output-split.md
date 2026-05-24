@@ -280,7 +280,7 @@ Mark `[x]` as each step lands.
       paired, per ADR §1. Commit:
       `Register fit-result family classes with factory`
 
-- [ ] **P1.5 — Declare `_fit_result_class` on minimizer bases.** In
+- [x] **P1.5 — Declare `_fit_result_class` on minimizer bases.** In
       `src/easydiffraction/analysis/categories/minimizer/lsq_base.py`,
       add `_fit_result_class: ClassVar[type] = LeastSquaresFitResult`.
       In

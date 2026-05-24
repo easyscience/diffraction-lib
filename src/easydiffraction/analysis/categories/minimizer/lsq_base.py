@@ -6,6 +6,7 @@ from __future__ import annotations
 
 from typing import ClassVar
 
+from easydiffraction.analysis.categories.fit_result.lsq import LeastSquaresFitResult
 from easydiffraction.analysis.categories.minimizer.base import MinimizerCategoryBase
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
@@ -20,6 +21,7 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
     """Shared behavior for least-squares minimizer categories."""
 
     _default_max_iterations: ClassVar[int] = 1000
+    _fit_result_class: ClassVar[type] = LeastSquaresFitResult
     _expected_descriptor_names: ClassVar[tuple[str, ...]] = (
         'max_iterations',
         'objective_name',
