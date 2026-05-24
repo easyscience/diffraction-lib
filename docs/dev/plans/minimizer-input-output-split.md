@@ -358,7 +358,7 @@ Mark `[x]` as each step lands.
       `self.fit_result._set_credible_interval_*`. Commit:
       `Route Bayesian result writers to fit_result`
 
-- [ ] **P1.9 — Remove output fields from LSQ minimizer base.** In
+- [x] **P1.9 — Remove output fields from LSQ minimizer base.** In
       `src/easydiffraction/analysis/categories/minimizer/lsq_base.py`,
       delete the descriptor declarations and properties for
       `objective_name`, `objective_value`, `n_data_points`,
