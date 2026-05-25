@@ -29,6 +29,8 @@ from easydiffraction.analysis.categories.sequential_fit_extract import (
 from easydiffraction.analysis.enums import FitCorrelationSourceEnum
 from easydiffraction.analysis.enums import FitModeEnum
 from easydiffraction.analysis.enums import FitResultKindEnum
+from easydiffraction.analysis.fit_helpers.bayesian import ESS_BULK_CONVERGENCE_THRESHOLD
+from easydiffraction.analysis.fit_helpers.bayesian import R_HAT_CONVERGENCE_THRESHOLD
 from easydiffraction.analysis.fit_helpers.bayesian import BayesianFitResults
 from easydiffraction.analysis.fit_helpers.bayesian import PosteriorPredictiveSummary
 from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
@@ -52,6 +54,7 @@ from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import _help_method_rows
 from easydiffraction.utils.utils import _help_property_rows
+from easydiffraction.utils.utils import format_bulleted_warning
 from easydiffraction.utils.utils import render_cif
 from easydiffraction.utils.utils import render_object_help
 from easydiffraction.utils.utils import render_table
@@ -671,9 +674,141 @@ class Analysis(
                         experiment_name,
                         x_axis_name,
                         include_draws=True,
-                    )
-                ] = summary
+                )
+            ] = summary
         return restored_predictive
+
+    @staticmethod
+    def _finite_float(value: object) -> float | None:
+        """Return a finite float or ``None``."""
+        if value is None:
+            return None
+        try:
+            numeric_value = float(value)
+        except (TypeError, ValueError):
+            return None
+        return numeric_value if np.isfinite(numeric_value) else None
+
+    @classmethod
+    def _restored_bayesian_converged(
+        cls,
+        *,
+        max_r_hat: object,
+        min_ess_bulk: object,
+    ) -> bool:
+        """Return restored convergence status."""
+        r_hat = cls._finite_float(max_r_hat)
+        ess_bulk = cls._finite_float(min_ess_bulk)
+        if r_hat is None or ess_bulk is None:
+            return False
+        return (
+            r_hat <= R_HAT_CONVERGENCE_THRESHOLD
+            and ess_bulk >= ESS_BULK_CONVERGENCE_THRESHOLD
+        )
+
+    def _restored_bayesian_convergence_diagnostics(
+        self,
+        *,
+        sample_shape: tuple[int, int, int],
+        n_parameters: int,
+    ) -> dict[str, object]:
+        """Return restored convergence diagnostics."""
+        max_r_hat = self.fit_result.gelman_rubin_max.value
+        min_ess_bulk = self.fit_result.effective_sample_size_min.value
+        diagnostics: dict[str, object] = {
+            'converged': self._restored_bayesian_converged(
+                max_r_hat=max_r_hat,
+                min_ess_bulk=min_ess_bulk,
+            ),
+            'max_r_hat': max_r_hat,
+            'min_ess_bulk': min_ess_bulk,
+            'n_draws': int(sample_shape[0]),
+            'n_chains': int(sample_shape[1]),
+            'n_parameters': int(n_parameters),
+        }
+
+        acceptance_rate_mean = self.fit_result.acceptance_rate_mean.value
+        if acceptance_rate_mean is not None:
+            diagnostics['acceptance_rate_mean'] = acceptance_rate_mean
+        return diagnostics
+
+    def _restored_bayesian_reduced_chi_square(
+        self,
+        value: object,
+        *,
+        restored_parameters: list[Parameter],
+    ) -> float | None:
+        """Return restored Bayesian reduced chi-square."""
+        persisted_value = self._finite_float(value)
+        if persisted_value is not None:
+            return persisted_value
+
+        best_log_posterior = self._finite_float(self.fit_result.best_log_posterior.value)
+        if best_log_posterior is None:
+            return None
+
+        n_data_points = self._fit_data_point_count(self.project.experiments)
+        degrees_of_freedom = n_data_points - len(restored_parameters)
+        if degrees_of_freedom <= 0:
+            return None
+        return -2.0 * best_log_posterior / degrees_of_freedom
+
+    def _restore_bayesian_fit_results_from_projection(
+        self,
+        *,
+        restored_parameters: list[Parameter],
+        fitting_time: float | None,
+        reduced_chi_square: float | None,
+    ) -> BayesianFitResults:
+        """Rebuild a Bayesian runtime result from saved state."""
+        posterior_samples = self._restored_posterior_samples()
+        sample_shape = (
+            np.asarray(posterior_samples.parameter_samples).shape
+            if posterior_samples is not None
+            else (0, 0, 0)
+        )
+        posterior_summaries = self._restored_posterior_summaries()
+        n_parameters = int(sample_shape[2]) or len(posterior_summaries)
+        sampler_settings = self.minimizer._native_kwargs()
+        resolved_random_seed = self._restored_bayesian_random_seed(sampler_settings)
+        sampler_name = (
+            'dream'
+            if self.minimizer.type == MinimizerTypeEnum.BUMPS_DREAM.value
+            else str(self.minimizer.type)
+        )
+        restored_results = BayesianFitResults(
+            success=bool(self.fit_result.success.value),
+            parameters=restored_parameters,
+            reduced_chi_square=self._restored_bayesian_reduced_chi_square(
+                reduced_chi_square,
+                restored_parameters=restored_parameters,
+            ),
+            starting_parameters=list(restored_parameters),
+            fitting_time=fitting_time,
+            sampler_name=sampler_name,
+            point_estimate_name=self.fit_result.point_estimate_name.value or 'best_sample',
+            posterior_samples=posterior_samples,
+            posterior_parameter_summaries=posterior_summaries,
+            posterior_predictive=self._restored_predictive_summaries(),
+            credible_interval_levels=(
+                float(self.fit_result.credible_interval_inner.value),
+                float(self.fit_result.credible_interval_outer.value),
+            ),
+            sampler_settings=self._restored_bayesian_sampler_settings(
+                sampler_settings,
+                random_seed=resolved_random_seed,
+                n_parameters=n_parameters,
+            ),
+            convergence_diagnostics=self._restored_bayesian_convergence_diagnostics(
+                sample_shape=sample_shape,
+                n_parameters=n_parameters,
+            ),
+            sampler_completed=bool(self.fit_result.sampler_completed.value),
+            best_log_posterior=self.fit_result.best_log_posterior.value,
+        )
+        restored_results.message = self.fit_result.message.value or ''
+        restored_results.iterations = _int_or_none(self.fit_result.iterations.value) or 0
+        return restored_results
 
     def _restore_fit_results_from_projection(self) -> object | None:
         """Rebuild a runtime fit-result object from saved state."""
@@ -708,51 +843,11 @@ class Analysis(
         reduced_chi_square = self.fit_result.reduced_chi_square.value
 
         if self.fit_result.result_kind.value == FitResultKindEnum.BAYESIAN.value:
-            posterior_samples = self._restored_posterior_samples()
-            sample_shape = (
-                np.asarray(posterior_samples.parameter_samples).shape
-                if posterior_samples is not None
-                else (0, 0, 0)
-            )
-            sampler_settings = self.minimizer._native_kwargs()
-            resolved_random_seed = self._restored_bayesian_random_seed(sampler_settings)
-            sampler_name = (
-                'dream'
-                if self.minimizer.type == MinimizerTypeEnum.BUMPS_DREAM.value
-                else str(self.minimizer.type)
-            )
-            restored_results = BayesianFitResults(
-                success=bool(self.fit_result.success.value),
-                parameters=restored_parameters,
-                reduced_chi_square=reduced_chi_square,
-                starting_parameters=list(restored_parameters),
+            restored_results = self._restore_bayesian_fit_results_from_projection(
+                restored_parameters=restored_parameters,
                 fitting_time=fitting_time,
-                sampler_name=sampler_name,
-                point_estimate_name=self.fit_result.point_estimate_name.value or 'best_sample',
-                posterior_samples=posterior_samples,
-                posterior_parameter_summaries=self._restored_posterior_summaries(),
-                posterior_predictive=self._restored_predictive_summaries(),
-                credible_interval_levels=(
-                    float(self.fit_result.credible_interval_inner.value),
-                    float(self.fit_result.credible_interval_outer.value),
-                ),
-                sampler_settings=self._restored_bayesian_sampler_settings(
-                    sampler_settings,
-                    random_seed=resolved_random_seed,
-                ),
-                convergence_diagnostics={
-                    'converged': False,
-                    'max_r_hat': self.fit_result.gelman_rubin_max.value,
-                    'min_ess_bulk': self.fit_result.effective_sample_size_min.value,
-                    'n_draws': int(sample_shape[0]),
-                    'n_chains': int(sample_shape[1]),
-                    'n_parameters': int(sample_shape[2]),
-                },
-                sampler_completed=bool(self.fit_result.sampler_completed.value),
-                best_log_posterior=self.fit_result.best_log_posterior.value,
+                reduced_chi_square=reduced_chi_square,
             )
-            restored_results.message = self.fit_result.message.value or ''
-            restored_results.iterations = _int_or_none(self.fit_result.iterations.value) or 0
             self.fit_results = restored_results
             return restored_results
 
@@ -788,10 +883,11 @@ class Analysis(
         sampler_settings: dict[str, object],
         *,
         random_seed: object | None = None,
+        n_parameters: int = 0,
     ) -> dict[str, object]:
         """Return display settings for restored Bayesian results."""
         if self.minimizer.type == MinimizerTypeEnum.EMCEE.value:
-            return {
+            restored_settings = {
                 'steps': self._int_sampler_setting(sampler_settings, 'nsteps'),
                 'burn': self._int_sampler_setting(sampler_settings, 'nburn'),
                 'thin': self._int_sampler_setting(sampler_settings, 'thin'),
@@ -801,8 +897,13 @@ class Analysis(
                 'proposal_moves': str(sampler_settings.get('proposal_moves', '')),
                 'random_seed': random_seed,
             }
+            restored_settings['samples'] = self._sampler_sample_count(
+                restored_settings,
+                n_parameters=n_parameters,
+            )
+            return restored_settings
 
-        return {
+        restored_settings = {
             'steps': self._int_sampler_setting(sampler_settings, 'steps'),
             'burn': self._int_sampler_setting(sampler_settings, 'burn'),
             'thin': self._int_sampler_setting(sampler_settings, 'thin'),
@@ -811,6 +912,11 @@ class Analysis(
             'init': str(sampler_settings.get('init', '')),
             'random_seed': random_seed,
         }
+        restored_settings['samples'] = self._sampler_sample_count(
+            restored_settings,
+            n_parameters=n_parameters,
+        )
+        return restored_settings
 
     def _restored_bayesian_random_seed(
         self,
@@ -830,6 +936,17 @@ class Analysis(
         """Return an integer sampler setting with a zero fallback."""
         value = sampler_settings.get(key, 0)
         return 0 if value is None else int(value)
+
+    @staticmethod
+    def _sampler_sample_count(
+        sampler_settings: dict[str, object],
+        *,
+        n_parameters: int,
+    ) -> int:
+        """Return restored total sampled scalar count."""
+        steps = int(sampler_settings.get('steps') or 0)
+        population = int(sampler_settings.get('pop') or 0)
+        return max(0, steps) * max(0, population) * max(0, int(n_parameters))
 
     def help(self) -> None:
         """Print a summary of analysis properties and methods."""
@@ -1260,8 +1377,8 @@ class Analysis(
         on ``new_minimizer`` (a value the user previously customised is
         no longer applicable). ``added`` lists settings introduced by
         the new minimizer with their default value. ``changed`` lists
-        settings shared by both whose default value differs, in the
-        ``'{name}={old!r}->{new!r}'`` form.
+        settings shared by both whose default value differs, in a
+        ``'{name}: {old!r} -> {new!r}'`` form.
         """
         old_values = old_minimizer._descriptor_values(old_minimizer._setting_descriptor_names)
         new_values = new_minimizer._descriptor_values(new_minimizer._setting_descriptor_names)
@@ -1270,7 +1387,7 @@ class Analysis(
         removed = sorted(old_keys - new_keys)
         added = sorted(f'{name}={new_values[name]!r}' for name in (new_keys - old_keys))
         changed = sorted(
-            f'{name}={old_values[name]!r}->{new_values[name]!r}'
+            f'{name}: {old_values[name]!r} -> {new_values[name]!r}'
             for name in (old_keys & new_keys)
             if old_values[name] != new_values[name]
         )
@@ -1293,14 +1410,25 @@ class Analysis(
         """
         removed, added, changed = cls._minimizer_swap_diff(old_minimizer, new_minimizer)
         if removed:
-            log.warning(f'Switching minimizer type removes these settings: {", ".join(removed)}.')
+            log.warning(
+                format_bulleted_warning(
+                    'Switching minimizer type removes these settings:',
+                    removed,
+                )
+            )
         if added:
             log.warning(
-                f'Switching minimizer type adds these settings with defaults: {", ".join(added)}.'
+                format_bulleted_warning(
+                    'Switching minimizer type adds these settings with defaults:',
+                    added,
+                )
             )
         if changed:
             log.warning(
-                f'Switching minimizer type changes these default values: {", ".join(changed)}.'
+                format_bulleted_warning(
+                    'Switching minimizer type changes these default values:',
+                    changed,
+                )
             )
 
     def _sync_engine_from_minimizer_category(self) -> None:

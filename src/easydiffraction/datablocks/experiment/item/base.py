@@ -30,6 +30,7 @@ from easydiffraction.io.cif.parse import read_cif_str
 from easydiffraction.io.cif.serialize import experiment_to_cif
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
+from easydiffraction.utils.utils import format_bulleted_warning
 from easydiffraction.utils.utils import render_cif
 
 if TYPE_CHECKING:
@@ -618,8 +619,16 @@ class PdExperimentBase(ExperimentBase):
             return
 
         if self._peak is not None and announce:
+            old_profile = PeakFactory._local_alias_for(self._peak.type, **context)
+            new_profile = PeakFactory._local_alias_for(canonical_type, **context)
             log.warning(
-                'Switching peak profile type discards existing peak parameters.',
+                format_bulleted_warning(
+                    'Switching peak profile type changes profile:',
+                    [
+                        f'{old_profile} -> {new_profile}',
+                        'existing peak parameters will be discarded.',
+                    ],
+                )
             )
 
         old_peak = self._peak
