@@ -888,12 +888,15 @@ class Analysis(
         """Return display settings for restored Bayesian results."""
         if self.minimizer.type == MinimizerTypeEnum.EMCEE.value:
             restored_settings = {
-                'steps': self._int_sampler_setting(sampler_settings, 'nsteps'),
-                'burn': self._int_sampler_setting(sampler_settings, 'nburn'),
+                'nsteps': self._int_sampler_setting(sampler_settings, 'nsteps'),
+                'nburn': self._int_sampler_setting(sampler_settings, 'nburn'),
                 'thin': self._int_sampler_setting(sampler_settings, 'thin'),
-                'pop': self._int_sampler_setting(sampler_settings, 'nwalkers'),
-                'parallel': self._int_sampler_setting(sampler_settings, 'parallel_workers'),
-                'init': str(sampler_settings.get('initialization_method', '')),
+                'nwalkers': self._int_sampler_setting(sampler_settings, 'nwalkers'),
+                'parallel_workers': self._int_sampler_setting(
+                    sampler_settings,
+                    'parallel_workers',
+                ),
+                'initialization_method': str(sampler_settings.get('initialization_method', '')),
                 'proposal_moves': str(sampler_settings.get('proposal_moves', '')),
                 'random_seed': random_seed,
             }
@@ -944,8 +947,8 @@ class Analysis(
         n_parameters: int,
     ) -> int:
         """Return restored total sampled scalar count."""
-        steps = int(sampler_settings.get('steps') or 0)
-        population = int(sampler_settings.get('pop') or 0)
+        steps = int(sampler_settings.get('steps') or sampler_settings.get('nsteps') or 0)
+        population = int(sampler_settings.get('pop') or sampler_settings.get('nwalkers') or 0)
         return max(0, steps) * max(0, population) * max(0, int(n_parameters))
 
     def help(self) -> None:

@@ -968,13 +968,7 @@ class EmceeMinimizer(MinimizerBase):
         samples = self.nsteps * self.nwalkers * n_parameters
         return {
             'random_seed': int(random_seed),
-            'steps': int(self.nsteps),
-            'burn': int(self.nburn),
             'thin': int(self.thin),
-            'pop': int(self.nwalkers),
-            'parallel': int(self.parallel_workers),
-            'init': self.initialization_method.value,
-            'proposal_moves': self.proposal_moves,
             'samples': int(samples),
             'total_steps': int(total_steps),
             'nsteps': int(self.nsteps),
@@ -982,6 +976,7 @@ class EmceeMinimizer(MinimizerBase):
             'nwalkers': int(self.nwalkers),
             'parallel_workers': int(self.parallel_workers),
             'initialization_method': self.initialization_method.value,
+            'proposal_moves': self.proposal_moves,
         }
 
     @staticmethod
@@ -1271,7 +1266,7 @@ class EmceeMinimizer(MinimizerBase):
             best_log_posterior=getattr(raw_result, 'best_log_posterior', None),
         )
         fit_results.message = getattr(raw_result, 'message', '')
-        fit_results.iterations = int(fit_results.sampler_settings.get('steps', self.nsteps))
+        fit_results.iterations = int(fit_results.sampler_settings.get('nsteps', self.nsteps))
         fit_results.result = raw_result
         return fit_results
 
