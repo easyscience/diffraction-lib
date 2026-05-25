@@ -143,13 +143,13 @@ reconciliation), stop and ask before proceeding.
      This mirrors the existing `BumpsDreamMinimizer` split between
      `categories/minimizer/bumps_dream.py` and
      `minimizers/bumps_dream.py`.
-8. Phase 2 resolved the `PLR0913` signature-width check by replacing
-   the internal explicit execution keyword set on `MinimizerBase.fit`
-   and `Fitter.fit` with `MinimizerFitOptions` and `FitterFitOptions`
-   parameter objects. `Analysis.fit(resume=True, extra_steps=N)`
-   remains the user-facing API. This is a deliberate refinement of P1.5
-   that follows `AGENTS.md`'s refactor guidance instead of raising
-   thresholds or suppressing the lint rule.
+8. Phase 2 resolved the `PLR0913` signature-width check by replacing the
+   internal explicit execution keyword set on `MinimizerBase.fit` and
+   `Fitter.fit` with `MinimizerFitOptions` and `FitterFitOptions`
+   parameter objects. `Analysis.fit(resume=True, extra_steps=N)` remains
+   the user-facing API. This is a deliberate refinement of P1.5 that
+   follows `AGENTS.md`'s refactor guidance instead of raising thresholds
+   or suppressing the lint rule.
 
 ## Open questions
 
