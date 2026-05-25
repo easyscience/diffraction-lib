@@ -787,6 +787,14 @@ required by `AGENTS.md` → **Workflow**.
     exit $script_tests_exit_code
   ```
 
+## Phase 2 review notes
+
+- Phase 2 bug fixes found by verification should be committed separately
+  from checklist updates. The result-synchronization fix is retained,
+  but a future equivalent commit should describe the behavior change
+  directly, for example: reorder result-sync branches so
+  `OptimizeResult` takes the `.x` path.
+
 ## Suggested Pull Request
 
 **Title:** Add emcee Bayesian sampler with resumable runs
