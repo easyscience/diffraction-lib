@@ -794,6 +794,10 @@ required by `AGENTS.md` → **Workflow**.
   but a future equivalent commit should describe the behavior change
   directly, for example: reorder result-sync branches so
   `OptimizeResult` takes the `.x` path.
+- Script-test fixes should also be split from checklist-only commits
+  when practical. The `ed-17` save-path change is retained because it
+  avoids a project-path collision with `ed-5`; notebook metadata
+  reordering came from the required `notebook-prepare` regeneration.
 
 ## Suggested Pull Request
 
