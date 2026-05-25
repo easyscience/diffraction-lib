@@ -46,6 +46,10 @@ class EmceeMinimizer(BayesianMinimizerBase):
         'random_seed': 'random_seed',
         'proposal_moves': 'proposal_moves',
     }
+    _engine_sync_skip_keys: ClassVar[frozenset[str]] = frozenset({
+        'random_seed',
+        'parallel_workers',
+    })
     _setting_descriptor_names: ClassVar[tuple[str, ...]] = (
         *BayesianMinimizerBase._setting_descriptor_names,
         'proposal_moves',
