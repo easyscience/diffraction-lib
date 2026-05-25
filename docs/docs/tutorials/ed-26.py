@@ -35,7 +35,7 @@ import easydiffraction as ed
 # caches.
 
 # %%
-project_dir = ed.download_data(id=35, destination='projects')
+project_dir = ed.download_data(id=38, destination='projects')
 
 # %% [markdown]
 # ## Load the Saved Bayesian Project
@@ -110,6 +110,9 @@ project.display.fit.results()
 # ## Inspect the Resumed Posterior
 #
 # After resume, the posterior plots use the extended chain.
+
+# %%
+project.display.posterior.pairs()
 
 # %%
 project.display.posterior.distribution()
