@@ -747,9 +747,7 @@ class NotebookFitStopControl(AbstractContextManager):
             return ''
 
         with suppress(Exception):
-            return NotebookFitStopControl._kernel_id_from_connection_file(
-                get_connection_file()
-            )
+            return NotebookFitStopControl._kernel_id_from_connection_file(get_connection_file())
         return ''
 
     @staticmethod

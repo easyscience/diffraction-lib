@@ -841,8 +841,7 @@ class EmceeMinimizer(MinimizerBase):
         backend_shape = getattr(backend, 'shape', None)
         if backend_shape != (self.nwalkers, n_parameters):
             msg = (
-                'Existing emcee chain shape does not match current parameters; '
-                'start a fresh run.'
+                'Existing emcee chain shape does not match current parameters; start a fresh run.'
             )
             raise ValueError(msg)
 

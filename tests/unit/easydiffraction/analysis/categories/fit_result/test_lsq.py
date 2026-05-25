@@ -82,7 +82,4 @@ def test_least_squares_fit_result_keeps_distinct_exit_reason():
     cif_text = fit_result.as_cif
 
     assert '_fit_result.message "Fit failed."' in cif_text
-    assert (
-        '_fit_result.exit_reason "maximum number of evaluations reached"'
-        in cif_text
-    )
+    assert '_fit_result.exit_reason "maximum number of evaluations reached"' in cif_text

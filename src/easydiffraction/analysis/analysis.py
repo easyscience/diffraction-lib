@@ -676,8 +676,8 @@ class Analysis(
                         experiment_name,
                         x_axis_name,
                         include_draws=True,
-                )
-            ] = summary
+                    )
+                ] = summary
         return restored_predictive
 
     @staticmethod
@@ -703,10 +703,7 @@ class Analysis(
         ess_bulk = cls._finite_float(min_ess_bulk)
         if r_hat is None or ess_bulk is None:
             return False
-        return (
-            r_hat <= R_HAT_CONVERGENCE_THRESHOLD
-            and ess_bulk >= ESS_BULK_CONVERGENCE_THRESHOLD
-        )
+        return r_hat <= R_HAT_CONVERGENCE_THRESHOLD and ess_bulk >= ESS_BULK_CONVERGENCE_THRESHOLD
 
     def _restored_bayesian_convergence_diagnostics(
         self,
@@ -1985,9 +1982,7 @@ class Analysis(
         self.fit_result._set_best_log_posterior(results.best_log_posterior)
         self.fit_result._set_credible_interval_inner(credible_interval_inner)
         self.fit_result._set_credible_interval_outer(credible_interval_outer)
-        self.fit_result._set_resolved_random_seed(
-            self._bayesian_result_random_seed(results)
-        )
+        self.fit_result._set_resolved_random_seed(self._bayesian_result_random_seed(results))
         self.fit_result._set_gelman_rubin_max(convergence.get('max_r_hat'))
         self.fit_result._set_effective_sample_size_min(convergence.get('min_ess_bulk'))
         self.fit_result._set_acceptance_rate_mean(convergence.get('acceptance_rate_mean'))

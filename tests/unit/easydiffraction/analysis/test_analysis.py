@@ -103,8 +103,7 @@ def test_minimizer_selector_swap_warns_for_different_defaults(monkeypatch):
     removed_warning = next(w for w in warnings if 'removes these settings' in w)
     added_warning = next(w for w in warnings if 'adds these settings' in w)
     assert removed_warning == (
-        'Switching minimizer type removes these settings:\n'
-        '• max_iterations'
+        'Switching minimizer type removes these settings:\n• max_iterations'
     )
     assert added_warning.splitlines() == [
         'Switching minimizer type adds these settings with defaults:',

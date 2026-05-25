@@ -350,13 +350,11 @@ def download_data(
             return str(project_dir)
         if not overwrite:
             console.print(
-                f"✅ Data #{id} already present at '{display_path(file_path)}'. "
-                'Keeping existing.'
+                f"✅ Data #{id} already present at '{display_path(file_path)}'. Keeping existing."
             )
             return str(file_path)
         log.debug(
-            f"Data #{id} already present at '{display_path(file_path)}', "
-            'but will be overwritten.'
+            f"Data #{id} already present at '{display_path(file_path)}', but will be overwritten."
         )
         file_path.unlink()
 
@@ -376,9 +374,7 @@ def download_data(
     if is_project_archive:
         project_dir = extract_project_from_zip(file_path, destination=extraction_dir)
         file_path.unlink()
-        console.print(
-            f"✅ Data #{id} downloaded and extracted to '{display_path(project_dir)}'"
-        )
+        console.print(f"✅ Data #{id} downloaded and extracted to '{display_path(project_dir)}'")
         return str(project_dir)
 
     console.print(f"✅ Data #{id} downloaded to '{display_path(file_path)}'")
@@ -718,7 +714,7 @@ def download_all_tutorials(
 
     resolved_destination = resolve_artifact_path(destination)
     console.print(
-        f"✅ Downloaded {len(downloaded_paths)} tutorials to "
+        f'✅ Downloaded {len(downloaded_paths)} tutorials to '
         f"'{display_path(resolved_destination)}'"
     )
     return downloaded_paths

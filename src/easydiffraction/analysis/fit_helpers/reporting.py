@@ -194,8 +194,7 @@ class FitResults:
             )
         if any(_is_uncertainty_large(p) for p in self.parameters):
             notes.append(
-                '⚠️ [red]Red s.u.:[/red] exceeds the refined value '
-                '(consider adding constraints)'
+                '⚠️ [red]Red s.u.:[/red] exceeds the refined value (consider adding constraints)'
             )
         if notes:
             console.small(*notes)

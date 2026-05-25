@@ -9,12 +9,20 @@ from typing import ClassVar
 from easydiffraction.analysis.categories.minimizer.bayesian_base import BayesianMinimizerBase
 from easydiffraction.analysis.categories.minimizer.factory import MinimizerCategoryFactory
 from easydiffraction.analysis.minimizers.emcee_defaults import DEFAULT_INITIALIZATION_METHOD
-from easydiffraction.analysis.minimizers.emcee_defaults import DEFAULT_NBURN as DEFAULT_BURN_IN_STEPS
-from easydiffraction.analysis.minimizers.emcee_defaults import DEFAULT_NSTEPS as DEFAULT_SAMPLING_STEPS
-from easydiffraction.analysis.minimizers.emcee_defaults import DEFAULT_NWALKERS as DEFAULT_POPULATION_SIZE
+from easydiffraction.analysis.minimizers.emcee_defaults import (
+    DEFAULT_NBURN as DEFAULT_BURN_IN_STEPS,
+)
+from easydiffraction.analysis.minimizers.emcee_defaults import (
+    DEFAULT_NSTEPS as DEFAULT_SAMPLING_STEPS,
+)
+from easydiffraction.analysis.minimizers.emcee_defaults import (
+    DEFAULT_NWALKERS as DEFAULT_POPULATION_SIZE,
+)
 from easydiffraction.analysis.minimizers.emcee_defaults import DEFAULT_PARALLEL_WORKERS
 from easydiffraction.analysis.minimizers.emcee_defaults import DEFAULT_PROPOSAL_MOVES
-from easydiffraction.analysis.minimizers.emcee_defaults import DEFAULT_THIN as DEFAULT_THINNING_INTERVAL
+from easydiffraction.analysis.minimizers.emcee_defaults import (
+    DEFAULT_THIN as DEFAULT_THINNING_INTERVAL,
+)
 from easydiffraction.analysis.minimizers.emcee_defaults import SUPPORTED_PROPOSAL_MOVES
 from easydiffraction.analysis.minimizers.enums import InitializationMethodEnum
 from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
@@ -23,6 +31,7 @@ from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.io.cif.handler import CifHandler
+
 
 @MinimizerCategoryFactory.register
 class EmceeMinimizer(BayesianMinimizerBase):

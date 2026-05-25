@@ -367,10 +367,7 @@ class FitParameters(CategoryCollection):
 
     def _include_uncertainty_multiplier_cif_descriptor(self) -> bool:
         """Return whether CIF output includes the bounds multiplier."""
-        return any(
-            item.fit_bounds_uncertainty_multiplier.value is not None
-            for item in self
-        )
+        return any(item.fit_bounds_uncertainty_multiplier.value is not None for item in self)
 
     def _cif_loop_parameters(self, item: FitParameterItem) -> list[object]:
         """Return CIF loop descriptors for the current fit kind."""

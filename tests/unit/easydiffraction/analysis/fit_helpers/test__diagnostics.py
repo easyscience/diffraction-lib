@@ -53,10 +53,7 @@ def test_r_hat_close_to_one_for_well_mixed_independent_chains():
 
 def test_r_hat_above_one_when_chains_disagree():
     rng = np.random.default_rng(1)
-    chains_with_offsets = (
-        rng.standard_normal((1000, 4))
-        + np.array([-2.0, -1.0, 1.0, 2.0])
-    )
+    chains_with_offsets = rng.standard_normal((1000, 4)) + np.array([-2.0, -1.0, 1.0, 2.0])
     r_hat = compute_r_hat(chains_with_offsets)
 
     assert math.isfinite(r_hat)

@@ -39,14 +39,12 @@ class _FakeSampler:
         skip_initial_state_check: bool,
         progress: bool,
     ) -> object:
-        self.calls.append(
-            {
-                'initial_state': initial_state,
-                'iterations': iterations,
-                'skip_initial_state_check': skip_initial_state_check,
-                'progress': progress,
-            }
-        )
+        self.calls.append({
+            'initial_state': initial_state,
+            'iterations': iterations,
+            'skip_initial_state_check': skip_initial_state_check,
+            'progress': progress,
+        })
         for index in range(iterations):
             yield SimpleNamespace(log_prob=np.array([float(index)], dtype=float))
 

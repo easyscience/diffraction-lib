@@ -219,26 +219,38 @@ def test_bayesian_format_helpers_cover_edge_cases():
 
     # Two-state overall-status helper: 'success' only when sampler
     # completed AND convergence passed.
-    assert _bayesian_overall_status(
-        success=False,
-        sampler_completed=False,
-        convergence_diagnostics={},
-    ) == 'failed'
-    assert _bayesian_overall_status(
-        success=True,
-        sampler_completed=False,
-        convergence_diagnostics={'converged': False},
-    ) == 'failed'
-    assert _bayesian_overall_status(
-        success=True,
-        sampler_completed=True,
-        convergence_diagnostics={'converged': True},
-    ) == 'success'
-    assert _bayesian_overall_status(
-        success=True,
-        sampler_completed=False,
-        convergence_diagnostics={},
-    ) == 'failed'
+    assert (
+        _bayesian_overall_status(
+            success=False,
+            sampler_completed=False,
+            convergence_diagnostics={},
+        )
+        == 'failed'
+    )
+    assert (
+        _bayesian_overall_status(
+            success=True,
+            sampler_completed=False,
+            convergence_diagnostics={'converged': False},
+        )
+        == 'failed'
+    )
+    assert (
+        _bayesian_overall_status(
+            success=True,
+            sampler_completed=True,
+            convergence_diagnostics={'converged': True},
+        )
+        == 'success'
+    )
+    assert (
+        _bayesian_overall_status(
+            success=True,
+            sampler_completed=False,
+            convergence_diagnostics={},
+        )
+        == 'failed'
+    )
 
     metrics = _calculate_fit_quality_metrics(
         y_obs=[10.0, 20.0],
