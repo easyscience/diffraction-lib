@@ -753,7 +753,7 @@ required by `AGENTS.md` → **Workflow**.
     exit $check_exit_code
   ```
 
-- [ ] **P2.3 — Unit tests.**
+- [x] **P2.3 — Unit tests.**
 
   ```
   pixi run unit-tests > /tmp/easydiffraction-unit-tests.log 2>&1; \
