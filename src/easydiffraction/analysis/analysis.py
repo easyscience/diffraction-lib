@@ -8,6 +8,7 @@ from itertools import combinations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+import h5py
 import numpy as np
 import pandas as pd
 
@@ -37,6 +38,7 @@ from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
 from easydiffraction.analysis.fit_helpers.bayesian import posterior_predictive_cache_key
 from easydiffraction.analysis.fit_helpers.reporting import FitResults
 from easydiffraction.analysis.fitting import Fitter
+from easydiffraction.analysis.minimizers.emcee import EMCEE_CHAIN_GROUP
 from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.core.category_owner import CategoryOwner
 from easydiffraction.core.guard import _apply_help_filter
@@ -1218,12 +1220,6 @@ class Analysis(
             return False
 
         try:
-            import h5py  # noqa: PLC0415
-
-            from easydiffraction.analysis.minimizers.emcee import (  # noqa: PLC0415
-                EMCEE_CHAIN_GROUP,
-            )
-
             with h5py.File(sidecar_path, 'r') as handle:
                 group = handle.get(EMCEE_CHAIN_GROUP)
                 if group is None:
