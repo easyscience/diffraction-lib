@@ -20,6 +20,7 @@ from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
 from easydiffraction.analysis.fit_helpers.bayesian import compute_convergence_diagnostics
 from easydiffraction.analysis.fit_helpers.bayesian import standard_deviations_from_summaries
 from easydiffraction.analysis.fit_helpers.bayesian import summarize_posterior_parameters
+from easydiffraction.analysis.fit_helpers.metrics import calculate_reduced_chi_square
 from easydiffraction.analysis.fit_helpers.tracking import SamplerProgressUpdate
 from easydiffraction.analysis.minimizers.base import MinimizerBase
 from easydiffraction.analysis.minimizers.enums import InitializationMethodEnum
@@ -674,6 +675,12 @@ class EmceeMinimizer(MinimizerBase):
             starting_values=kwargs['starting_values'],
             starting_uncertainties=kwargs['starting_uncertainties'],
         )
+        if getattr(result, 'success', False):
+            result.reduced_chi_square = self._best_sample_reduced_chi_square(
+                objective_function=objective_function,
+                parameter_names=parameter_names,
+                best_sample_values=np.asarray(result.x, dtype=float),
+            )
         self.tracker.start_sampler_post_processing()
         return result
 
@@ -1094,6 +1101,7 @@ class EmceeMinimizer(MinimizerBase):
         self._track_sampler_completion(
             total_steps=total_steps,
             best_log_posterior=best_log_posterior,
+            reduced_chi_square=None,
         )
 
         return OptimizeResult(
@@ -1114,6 +1122,26 @@ class EmceeMinimizer(MinimizerBase):
             starting_values=np.asarray(starting_values, dtype=float),
             starting_uncertainties=list(starting_uncertainties),
         )
+
+    @staticmethod
+    def _best_sample_reduced_chi_square(
+        *,
+        objective_function: Callable[[dict[str, object]], object],
+        parameter_names: list[str],
+        best_sample_values: np.ndarray,
+    ) -> float | None:
+        """Evaluate reduced chi-square at the committed sample."""
+        engine_params = {
+            name: float(value)
+            for name, value in zip(parameter_names, best_sample_values, strict=True)
+        }
+        try:
+            residuals = np.asarray(objective_function(engine_params), dtype=float)
+        except Exception:  # noqa: BLE001 - calculator failures leave chi-square unknown.
+            return None
+        if residuals.size == 0 or not np.all(np.isfinite(residuals)):
+            return None
+        return calculate_reduced_chi_square(residuals, len(parameter_names))
 
     def _convergence_diagnostics(
         self,
@@ -1157,9 +1185,12 @@ class EmceeMinimizer(MinimizerBase):
         *,
         total_steps: int,
         best_log_posterior: float,
+        reduced_chi_square: float | None,
     ) -> None:
         """Record one final sampler progress row."""
-        reduced_chi2 = self.tracker.best_chi2
+        reduced_chi2 = reduced_chi_square
+        if reduced_chi2 is None:
+            reduced_chi2 = self.tracker.best_chi2
         if reduced_chi2 is None:
             reduced_chi2 = np.nan
         self.tracker.track_sampler_progress(
@@ -1228,7 +1259,7 @@ class EmceeMinimizer(MinimizerBase):
         fit_results = BayesianFitResults(
             success=success,
             parameters=parameters,
-            reduced_chi_square=self.tracker.best_chi2,
+            reduced_chi_square=getattr(raw_result, 'reduced_chi_square', self.tracker.best_chi2),
             engine_result=getattr(raw_result, 'raw_state', raw_result),
             starting_parameters=parameters,
             fitting_time=self.tracker.fitting_time,

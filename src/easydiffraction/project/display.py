@@ -103,7 +103,7 @@ class FitDisplay:
         if not rows:
             return
 
-        console.paragraph('Settings used')
+        console.print('⚙️ Settings used:')
         render_table(
             columns_headers=['Name', 'Value', 'Description'],
             columns_alignment=['left', 'right', 'left'],

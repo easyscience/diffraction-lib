@@ -66,6 +66,19 @@ def test_bayesian_fit_result_omits_optional_unknown_outputs():
     assert '_fit_result.resolved_random_seed' not in cif_text
 
 
+def test_bayesian_fit_result_omits_redundant_iterations():
+    from easydiffraction.analysis.categories.fit_result.bayesian import (
+        BayesianFitResult,
+    )
+
+    fit_result = BayesianFitResult()
+    fit_result._set_iterations(100)
+
+    cif_text = fit_result.as_cif
+
+    assert '_fit_result.iterations' not in cif_text
+
+
 def test_bayesian_fit_result_keeps_optional_outputs_when_populated():
     from easydiffraction.analysis.categories.fit_result.bayesian import (
         BayesianFitResult,

@@ -74,6 +74,45 @@ def test_emcee_minimizer_defaults_to_de_without_thinning():
     assert minimizer.thin == 1
 
 
+def test_emcee_best_sample_reduced_chi_square_uses_objective_residuals():
+    from easydiffraction.analysis.minimizers.emcee import EmceeMinimizer
+
+    reduced_chi_square = EmceeMinimizer._best_sample_reduced_chi_square(
+        objective_function=lambda params: np.asarray(
+            [params['a'] - 1.0, params['b'] - 2.0, 2.0, 4.0],
+            dtype=float,
+        ),
+        parameter_names=['a', 'b'],
+        best_sample_values=np.asarray([2.0, 4.0], dtype=float),
+    )
+
+    assert reduced_chi_square == pytest.approx(12.5)
+
+
+def test_emcee_build_fit_results_prefers_raw_reduced_chi_square():
+    from easydiffraction.analysis.minimizers.emcee import EmceeMinimizer
+
+    minimizer = EmceeMinimizer()
+    raw_result = SimpleNamespace(
+        reduced_chi_square=1.25,
+        raw_state=object(),
+        sampler_settings={},
+        convergence_diagnostics={},
+        posterior_parameter_summaries=[],
+        sampler_completed=True,
+        best_log_posterior=-10.0,
+        message='emcee sampling completed',
+    )
+
+    fit_results = minimizer._build_fit_results(
+        parameters=[],
+        raw_result=raw_result,
+        success=True,
+    )
+
+    assert fit_results.reduced_chi_square == 1.25
+
+
 def test_emcee_pool_context_uses_fork_worker_for_unpicklable_objective(monkeypatch):
     from easydiffraction.analysis.minimizers.emcee import EmceeMinimizer
     from easydiffraction.analysis.minimizers.emcee import _emcee_log_prob_worker

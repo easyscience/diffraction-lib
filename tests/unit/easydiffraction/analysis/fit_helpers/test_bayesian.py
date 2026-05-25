@@ -208,22 +208,24 @@ def test_bayesian_fit_results_display_results_prints_sampler_and_convergence(cap
 
     out = capsys.readouterr().out
     assert 'Bayesian fit results' in out
-    assert 'Overall status: completed with warnings' in out
-    assert 'Sampler status: DREAM sampling completed' in out
-    assert 'Sampler: dream' in out
-    assert 'Sampler completed: yes' in out
-    assert 'steps=200' in out
-    assert 'init=lhs' in out
-    assert 'random_seed=1313900679' not in out
-    assert 'status=failed' in out
-    assert 'max_r_hat=1.107' in out
-    assert 'min_ess_bulk=125.9' in out
-    assert 'Posterior parameter summaries:' in out
+    assert 'Overall status' in out
+    assert 'failed' in out  # convergence failed → overall failed
+    assert 'DREAM sampling completed' in out  # engine message
+    assert 'Sampler' in out
+    assert 'Convergence status' in out
+    assert 'Max r-hat' in out
+    assert '1.107' in out
+    assert 'Min ess bulk' in out
+    assert '125.9' in out
+    assert 'Posterior distribution:' in out
     assert 'Success: True' not in out
+    assert 'Sampler completed' not in out  # dropped — redundant with Overall status
+    assert 'Sampler settings' not in out  # dropped — covered by Settings used table
+    assert 'Committed point estimate' not in out  # dropped — covered by footnote
     assert 'datablock' in out
     assert 'category' in out
     assert 'entry' in out
-    assert '95% interval' in out
+    assert '95% CI' in out
     assert '68% interval' not in out
     assert 'std' not in out
 
@@ -285,8 +287,8 @@ def test_render_committed_parameter_table_places_units_after_parameter(monkeypat
         'parameter',
         'units',
         'start',
-        'best posterior sample',
-        'uncertainty',
+        'value',
+        's.u.',
         'change',
     ]
     assert captured['columns_alignment'] == [
@@ -352,7 +354,7 @@ def test_render_posterior_summary_table_places_units_after_parameter(monkeypatch
         'parameter',
         'units',
         'median',
-        '95% interval',
+        '95% CI',
         'r-hat',
         'ess bulk',
     ]

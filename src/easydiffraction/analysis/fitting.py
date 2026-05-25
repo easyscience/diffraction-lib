@@ -127,6 +127,7 @@ class Fitter:
         self.results.message = _resolve_fit_result_message(self.results)
         self.results.iterations = _resolve_fit_result_iterations(self.results)
         self.results.chi_square = _resolve_fit_result_chi_square(self.results)
+        self.results.minimizer_type = self.selection
 
         if analysis is None:
             return

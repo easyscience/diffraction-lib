@@ -100,10 +100,22 @@ def test_minimizer_selector_swap_warns_for_different_defaults(monkeypatch):
     # Inter-family swap should split warnings into "removed"/"added"
     # lines rather than emitting "<not available>" sentinels per
     # finding F3.
-    assert any('removes these settings' in w and 'max_iterations' in w for w in warnings)
-    assert any(
-        'adds these settings with defaults' in w and 'sampling_steps' in w for w in warnings
+    removed_warning = next(w for w in warnings if 'removes these settings' in w)
+    added_warning = next(w for w in warnings if 'adds these settings' in w)
+    assert removed_warning == (
+        'Switching minimizer type removes these settings:\n'
+        '• max_iterations'
     )
+    assert added_warning.splitlines() == [
+        'Switching minimizer type adds these settings with defaults:',
+        '• burn_in_steps=600',
+        "• initialization_method='latin_hypercube'",
+        '• parallel_workers=0',
+        '• population_size=4',
+        '• random_seed=None',
+        '• sampling_steps=3000',
+        '• thinning_interval=1',
+    ]
     assert not any('<not available>' in w for w in warnings)
 
 
@@ -141,6 +153,79 @@ def test_store_posterior_projection_persists_resolved_random_seed():
     analysis._store_posterior_fit_projection(results)
 
     assert analysis.fit_result.resolved_random_seed.value == 12345
+
+
+def test_restored_bayesian_diagnostics_reconstruct_passed_status():
+    from easydiffraction.analysis.analysis import Analysis
+    from easydiffraction.analysis.categories.fit_result.bayesian import BayesianFitResult
+
+    analysis = Analysis(project=_make_project_with_names([]))
+    analysis._fit_result._parent = None
+    analysis._fit_result = BayesianFitResult()
+    analysis._fit_result._parent = analysis
+    analysis.fit_result._set_gelman_rubin_max(1.002)
+    analysis.fit_result._set_effective_sample_size_min(8810.5)
+    analysis.fit_result._set_acceptance_rate_mean(0.3)
+
+    diagnostics = analysis._restored_bayesian_convergence_diagnostics(
+        sample_shape=(10001, 16, 5),
+        n_parameters=5,
+    )
+
+    assert diagnostics['converged'] is True
+    assert diagnostics['max_r_hat'] == 1.002
+    assert diagnostics['min_ess_bulk'] == 8810.5
+    assert diagnostics['acceptance_rate_mean'] == 0.3
+    assert diagnostics['n_draws'] == 10001
+    assert diagnostics['n_chains'] == 16
+    assert diagnostics['n_parameters'] == 5
+
+
+def test_restored_bayesian_sampler_settings_reconstruct_sample_count():
+    from easydiffraction.analysis.analysis import Analysis
+
+    analysis = Analysis(project=_make_project_with_names([]))
+    analysis.minimizer.type = 'emcee'
+
+    settings = analysis._restored_bayesian_sampler_settings(
+        {
+            'nsteps': 10000,
+            'nburn': 2000,
+            'thin': 1,
+            'nwalkers': 16,
+            'parallel_workers': 0,
+            'initialization_method': 'ball',
+            'proposal_moves': 'de',
+        },
+        random_seed=123,
+        n_parameters=5,
+    )
+
+    assert settings['steps'] == 10000
+    assert settings['burn'] == 2000
+    assert settings['thin'] == 1
+    assert settings['pop'] == 16
+    assert settings['samples'] == 800000
+    assert settings['random_seed'] == 123
+
+
+def test_restored_bayesian_reduced_chi_square_recovers_from_log_posterior(monkeypatch):
+    from easydiffraction.analysis.analysis import Analysis
+    from easydiffraction.analysis.categories.fit_result.bayesian import BayesianFitResult
+
+    analysis = Analysis(project=_make_project_with_names([]))
+    analysis._fit_result._parent = None
+    analysis._fit_result = BayesianFitResult()
+    analysis._fit_result._parent = analysis
+    analysis.fit_result._set_best_log_posterior(-50.0)
+    monkeypatch.setattr(analysis, '_fit_data_point_count', lambda experiments: 102)
+
+    reduced_chi_square = analysis._restored_bayesian_reduced_chi_square(
+        float('nan'),
+        restored_parameters=[object(), object()],
+    )
+
+    assert reduced_chi_square == 1.0
 
 
 def test_fit_interrupt_cleans_state_and_prints_message(monkeypatch, capsys):

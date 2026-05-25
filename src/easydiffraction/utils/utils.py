@@ -120,7 +120,7 @@ def format_bulleted_warning(header: str, items: list[str]) -> str:
     """
     if not items:
         return header
-    bullet_lines = [f'    • {item}' for item in items]
+    bullet_lines = [f'• {item}' for item in items]
     return '\n'.join([header, *bullet_lines])
 
 

@@ -9,18 +9,16 @@ from dataclasses import dataclass
 
 import arviz as az
 import numpy as np
-from rich.text import Text
-
 from easydiffraction.analysis.fit_helpers.metrics import calculate_r_factor
 from easydiffraction.analysis.fit_helpers.metrics import calculate_r_factor_squared
 from easydiffraction.analysis.fit_helpers.metrics import calculate_rb_factor
 from easydiffraction.analysis.fit_helpers.metrics import calculate_weighted_r_factor
 from easydiffraction.analysis.fit_helpers.reporting import FitResults
 from easydiffraction.analysis.fit_helpers.reporting import _build_parameter_row
-from easydiffraction.analysis.fit_helpers.reporting import _format_optional_float
 from easydiffraction.core.posterior import PosteriorParameterSummary
 from easydiffraction.utils.logging import console
-from easydiffraction.utils.logging import log
+from easydiffraction.utils.utils import print_metrics_table
+from easydiffraction.utils.utils import print_table_footnote
 from easydiffraction.utils.utils import render_table
 
 R_HAT_CONVERGENCE_THRESHOLD = 1.01
@@ -303,60 +301,82 @@ class BayesianFitResults(FitResults):
             f_calc=f_calc,
         )
 
-        self._display_summary_header()
-        _print_fit_quality_metrics(metrics)
+        console.print('📋 Bayesian fit results:')
+        print_metrics_table(self._build_fit_results_rows(metrics))
 
         console.print('📈 Committed parameters:')
         _render_committed_parameter_table(self.parameters)
+        print_table_footnote(_COMMITTED_PARAMETERS_FOOTNOTE)
 
-        console.print('📊 Posterior parameter summaries:')
+        console.print('📊 Posterior distribution:')
         _render_posterior_summary_table(
             parameters=self.parameters,
             posterior_parameter_summaries=self.posterior_parameter_summaries,
         )
+        print_table_footnote(_POSTERIOR_DISTRIBUTION_FOOTNOTE)
 
         self._print_table_notes()
+
+    def _build_fit_results_rows(self, metrics: dict[str, float | None]) -> list[list[str]]:
+        """Return the rows for the 'Bayesian fit results' table."""
+        overall_status = _bayesian_overall_status(
+            success=self.success,
+            sampler_completed=self.sampler_completed,
+            convergence_diagnostics=self.convergence_diagnostics,
+        )
+
+        rows: list[list[str]] = []
+        sampler_label = self.minimizer_type or self.sampler_name
+        if sampler_label:
+            rows.append(['🧪 Sampler', str(sampler_label)])
+        rows.append(['✅ Overall status', overall_status])
+        if self.message:
+            rows.append(['💬 Engine message', self.message])
+        if self.fitting_time is not None:
+            rows.append(['⏱️ Fitting time (seconds)', f'{self.fitting_time:.2f}'])
+        if self.reduced_chi_square is not None:
+            rows.append(['📏 Goodness-of-fit (reduced χ²)', f'{self.reduced_chi_square:.2f}'])
+        rf = metrics.get('rf')
+        rf2 = metrics.get('rf2')
+        wr = metrics.get('wr')
+        br = metrics.get('br')
+        if rf is not None:
+            rows.append(['📏 R-factor (Rf, %)', f'{rf:.2f}'])
+        if rf2 is not None:
+            rows.append(['📏 R-factor squared (Rf², %)', f'{rf2:.2f}'])
+        if wr is not None:
+            rows.append(['📏 Weighted R-factor (wR, %)', f'{wr:.2f}'])
+        if br is not None:
+            rows.append(['📏 Bragg R-factor (BR, %)', f'{br:.2f}'])
+        if self.best_log_posterior is not None:
+            rows.append(['📉 Best log-posterior', f'{self.best_log_posterior:.2f}'])
+
+        diagnostics = self.convergence_diagnostics or {}
+        converged = diagnostics.get('converged')
+        if converged is not None:
+            rows.append(['📊 Convergence status', 'passed' if converged else 'failed'])
+        max_r_hat = diagnostics.get('max_r_hat')
+        if max_r_hat is not None:
+            rows.append(['📊 Max r-hat', f'{max_r_hat:.3f}'])
+        min_ess_bulk = diagnostics.get('min_ess_bulk')
+        if min_ess_bulk is not None:
+            rows.append(['📊 Min ess bulk', f'{min_ess_bulk:.1f}'])
+        n_draws = diagnostics.get('n_draws')
+        if n_draws is not None:
+            rows.append(['📊 Draws per chain', str(n_draws)])
+        n_chains = diagnostics.get('n_chains')
+        if n_chains is not None:
+            rows.append(['📊 Chains', str(n_chains)])
+        return rows
 
     def _print_table_notes(self) -> None:
         """
         Print parameter and posterior-diagnostic notes below tables.
         """
         super()._print_table_notes()
-        for note in _posterior_table_notes(self.posterior_parameter_summaries):
-            log.warning(note)
-
-    def _display_summary_header(self) -> None:
-        """Render the high-level Bayesian fit summary."""
-        status_icon, overall_status = _format_bayesian_overall_status(
-            success=self.success,
-            sampler_completed=self.sampler_completed,
-            convergence_diagnostics=self.convergence_diagnostics,
-        )
-        fitting_time = _format_optional_float(self.fitting_time, suffix=' seconds')
-        goodness_of_fit = _format_optional_float(self.reduced_chi_square)
-
-        console.paragraph('Bayesian fit results')
-        console.print(f'{status_icon} Overall status: {overall_status}')
-        if self.message:
-            console.print(f'💬 Sampler status: {self.message}')
-        console.print(f'🧪 Sampler: {self.sampler_name}')
-        console.print(
-            f'🎯 Committed point estimate: {_format_point_estimate_name(self.point_estimate_name)}'
-        )
-        sampler_completed = 'yes' if self.sampler_completed else 'no'
-        console.print(f'🔁 Sampler completed: {sampler_completed}')
-        console.print(f'⏱️ Fitting time: {fitting_time}')
-        console.print(f'📏 Goodness-of-fit (reduced χ²): {goodness_of_fit}')
-        if self.best_log_posterior is not None:
-            console.print(f'📉 Best log-posterior: {self.best_log_posterior:.2f}')
-
-        sampler_settings = _format_sampler_settings(self.sampler_settings)
-        if sampler_settings is not None:
-            console.print(Text(f'⚙️ Sampler settings: {sampler_settings}'))
-
-        convergence_summary = _format_convergence_summary(self.convergence_diagnostics)
-        if convergence_summary is not None:
-            console.print(Text.from_markup(f'📊 Convergence: {convergence_summary}'))
+        notes = _posterior_table_notes(self.posterior_parameter_summaries)
+        if notes:
+            console.small(*notes)
 
 
 def compute_convergence_diagnostics(posterior_samples: PosteriorSamples) -> dict[str, object]:
@@ -518,18 +538,6 @@ def _maybe_scalar(value: object) -> float | None:
     return scalar
 
 
-def _format_sampler_settings(sampler_settings: dict[str, object]) -> str | None:
-    if not sampler_settings:
-        return None
-
-    parts = [
-        f'{key}={sampler_settings[key]}'
-        for key in ('steps', 'burn', 'thin', 'pop', 'init', 'samples')
-        if key in sampler_settings
-    ]
-    return ', '.join(parts) if parts else None
-
-
 def _calculate_fit_quality_metrics(
     *,
     y_obs: list[float] | None,
@@ -555,69 +563,41 @@ def _calculate_fit_quality_metrics(
     return metrics
 
 
-def _print_fit_quality_metrics(metrics: dict[str, float | None]) -> None:
-    """Render any available fit-quality metrics."""
-    metric_labels = (
-        ('📏 R-factor (Rf)', metrics['rf']),
-        ('📏 R-factor squared (Rf²)', metrics['rf2']),
-        ('📏 Weighted R-factor (wR)', metrics['wr']),
-        ('📏 Bragg R-factor (BR)', metrics['br']),
-    )
-    for label, value in metric_labels:
-        if value is not None:
-            console.print(f'{label}: {value:.2f}%')
-
-
-def _format_point_estimate_name(point_estimate_name: str) -> str:
-    """Return a user-facing label for the committed point estimate."""
-    normalized_name = point_estimate_name.strip().lower().replace('_', ' ')
-    if normalized_name in {'best sample', 'map'}:
-        return 'Best posterior sample'
-    return point_estimate_name.replace('_', ' ').title()
-
-
-def _format_bayesian_overall_status(
+def _bayesian_overall_status(
     *,
     success: bool,
     sampler_completed: bool,
     convergence_diagnostics: dict[str, object],
-) -> tuple[str, str]:
-    """Return icon and text for Bayesian run status."""
-    if not success:
-        return '❌', 'failed'
+) -> str:
+    """
+    Return ``'success'`` or ``'failed'`` for the Bayesian run.
 
-    converged = convergence_diagnostics.get('converged')
+    Bayesian success requires both the sampler to have completed and
+    the convergence diagnostics to have passed. Anything else is
+    rendered as ``failed`` in the overall row; the per-metric
+    convergence rows below carry the detail.
+    """
+    if not success or not sampler_completed:
+        return 'failed'
+    converged = convergence_diagnostics.get('converged') if convergence_diagnostics else None
     if converged is False:
-        return '⚠️', 'completed with warnings'
-    if sampler_completed:
-        return '✅', 'completed'
-    return '✅', 'posterior available'
+        return 'failed'
+    return 'success'
 
 
-def _format_convergence_summary(convergence_diagnostics: dict[str, object]) -> str | None:
-    if not convergence_diagnostics:
-        return None
+_COMMITTED_PARAMETERS_FOOTNOTE: list[tuple[str, str]] = [
+    ('start', 'parameter value before sampling'),
+    ('value', 'estimate written back to the project (best posterior sample)'),
+    ('s.u.', 'standard uncertainty (1σ), the posterior standard deviation'),
+    ('change', 'relative change from start, in %; ↑ = increase, ↓ = decrease'),
+]
 
-    parts: list[str] = []
-    converged = convergence_diagnostics.get('converged')
-    if converged is not None:
-        status = 'passed' if converged else '[red]failed[/red]'
-        parts.append(f'status={status}')
-
-    max_r_hat = _maybe_scalar(convergence_diagnostics.get('max_r_hat'))
-    if max_r_hat is not None:
-        parts.append(f'max_r_hat={_format_r_hat(max_r_hat)}')
-
-    min_ess_bulk = _maybe_scalar(convergence_diagnostics.get('min_ess_bulk'))
-    if min_ess_bulk is not None:
-        parts.append(f'min_ess_bulk={_format_ess_bulk(min_ess_bulk)}')
-
-    n_draws = convergence_diagnostics.get('n_draws')
-    n_chains = convergence_diagnostics.get('n_chains')
-    if n_draws is not None and n_chains is not None:
-        parts.append(f'draws={n_draws}, chains={n_chains}')
-
-    return ', '.join(parts) if parts else None
+_POSTERIOR_DISTRIBUTION_FOOTNOTE: list[tuple[str, str]] = [
+    ('median', '50th percentile of the marginal posterior'),
+    ('95% CI', '95% credible interval (2.5%–97.5%, asymmetric)'),
+    ('r-hat', 'Gelman–Rubin diagnostic R̂ (good convergence: r-hat ≤ 1.01)'),
+    ('ess bulk', 'bulk effective sample size (typically ≥ 400)'),
+]
 
 
 def _render_committed_parameter_table(parameters: list[object]) -> None:
@@ -628,8 +608,8 @@ def _render_committed_parameter_table(parameters: list[object]) -> None:
         'parameter',
         'units',
         'start',
-        'best posterior sample',
-        'uncertainty',
+        'value',
+        's.u.',
         'change',
     ]
     alignments = [
@@ -668,7 +648,7 @@ def _render_posterior_summary_table(
         'parameter',
         'units',
         'median',
-        '95% interval',
+        '95% CI',
         'r-hat',
         'ess bulk',
     ]
@@ -763,12 +743,13 @@ def _posterior_table_notes(
     notes: list[str] = []
     if has_failed_r_hat:
         notes.append(
-            f'[red]r-hat > {R_HAT_CONVERGENCE_THRESHOLD:.2f}[/red]: '
-            'Consider longer sampling, better initialization, or reparameterization.'
+            f'⚠️ [red]r-hat > {R_HAT_CONVERGENCE_THRESHOLD:.2f}[/red]: '
+            'Consider longer sampling, better initialization, or '
+            'reparameterization.'
         )
     if has_failed_ess_bulk:
         notes.append(
-            f'[red]ess bulk < {ESS_BULK_CONVERGENCE_THRESHOLD:.0f}[/red]: '
+            f'⚠️ [red]ess bulk < {ESS_BULK_CONVERGENCE_THRESHOLD:.0f}[/red]: '
             'Consider longer sampling or reparameterization.'
         )
     return notes

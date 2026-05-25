@@ -24,6 +24,7 @@ from typing import ClassVar
 if TYPE_CHECKING:  # pragma: no cover
     from types import TracebackType
 
+import html
 import re
 import sys
 from pathlib import Path
@@ -641,6 +642,37 @@ class Logger:
 # ======================================================================
 
 
+_RICH_RED_MARKUP_PATTERN = re.compile(r'\[red\](.*?)\[/red\]')
+_RICH_DIM_MARKUP_PATTERN = re.compile(r'\[/?dim\]')
+
+
+def _rich_markup_to_inline_html(markup: str) -> str:
+    """
+    Translate a narrow subset of Rich markup to inline HTML.
+
+    Handles ``[red]…[/red]`` (→ a red ``<span>``) and silently
+    strips ``[dim]`` / ``[/dim]`` tags (the surrounding container
+    already conveys dimness via CSS opacity). Other Rich markup
+    passes through unescaped — callers must only emit markup from
+    this allow-list when calling ``ConsolePrinter.small`` in
+    Jupyter.
+
+    Parameters
+    ----------
+    markup : str
+        Rich markup string.
+
+    Returns
+    -------
+    str
+        HTML-escaped string with the allow-listed Rich tags
+        translated to inline ``<span>`` styles.
+    """
+    escaped = html.escape(markup)
+    without_dim = _RICH_DIM_MARKUP_PATTERN.sub('', escaped)
+    return _RICH_RED_MARKUP_PATTERN.sub(r'<span style="color:#dc3545">\1</span>', without_dim)
+
+
 class ConsolePrinter:
     """Printer utility for the shared console with left padding."""
 
@@ -705,6 +737,48 @@ class ConsolePrinter:
         if not in_jupyter():
             formatted = f'\n{formatted}'
         cls._console.print(formatted)
+
+    @classmethod
+    def small(cls, *lines: str) -> None:
+        """
+        Print one or more lines as dim, smaller supplementary text.
+
+        Intended for table footnote glossaries and inline warning
+        notes that should read as subordinate to the table or
+        block they sit beneath. In Jupyter the lines render inside a
+        single ``<small>``-style HTML element so the font size
+        matches Jupyter's ``.dataframe`` table-cell text. In a
+        terminal the lines render with Rich's ``dim`` style. Rich
+        ``[red]…[/red]`` markup inside ``lines`` is preserved in
+        both renderers.
+
+        Parameters
+        ----------
+        *lines : str
+            Pre-formatted display lines. Each may contain Rich
+            ``[red]…[/red]`` markup; other Rich markup is rendered
+            in the terminal and stripped in the HTML output.
+        """
+        if not lines:
+            return
+        if in_jupyter():
+            try:
+                from IPython.display import HTML  # noqa: PLC0415
+                from IPython.display import display  # noqa: PLC0415
+
+                body = '<br>'.join(_rich_markup_to_inline_html(line) for line in lines)
+                display(
+                    HTML(
+                        '<div style="font-size:smaller;opacity:0.7;'
+                        'font-family:monospace;white-space:pre">'
+                        f'{body}</div>'
+                    )
+                )
+                return
+            except ImportError:  # pragma: no cover
+                pass
+        for line in lines:
+            cls._console.print(f'[dim]{line}[/dim]')
 
     @classmethod
     def chapter(cls, title: str) -> None:

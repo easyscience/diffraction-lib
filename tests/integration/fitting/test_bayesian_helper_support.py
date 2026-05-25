@@ -217,12 +217,9 @@ def test_standard_deviations_from_summaries_returns_float_array():
 
 
 def test_bayesian_format_helpers_cover_edge_cases():
+    from easydiffraction.analysis.fit_helpers.bayesian import _bayesian_overall_status
     from easydiffraction.analysis.fit_helpers.bayesian import _calculate_fit_quality_metrics
     from easydiffraction.analysis.fit_helpers.bayesian import _dataset_to_scalar_dict
-    from easydiffraction.analysis.fit_helpers.bayesian import _format_bayesian_overall_status
-    from easydiffraction.analysis.fit_helpers.bayesian import _format_convergence_summary
-    from easydiffraction.analysis.fit_helpers.bayesian import _format_point_estimate_name
-    from easydiffraction.analysis.fit_helpers.bayesian import _format_sampler_settings
     from easydiffraction.analysis.fit_helpers.bayesian import _maybe_scalar
 
     dataset = type(
@@ -235,44 +232,29 @@ def test_bayesian_format_helpers_cover_edge_cases():
     assert _maybe_scalar(float('inf')) is None
     assert _maybe_scalar(3.0) == pytest.approx(3.0)
     assert _dataset_to_scalar_dict(dataset) == {'a': None, 'b': 3.0}
-    assert _format_sampler_settings({}) is None
-    assert (
-        _format_sampler_settings({'steps': 10, 'burn': 2, 'samples': 40})
-        == 'steps=10, burn=2, samples=40'
-    )
-    assert _format_point_estimate_name('map') == 'Best posterior sample'
-    assert _format_point_estimate_name('best_sample') == 'Best posterior sample'
-    assert _format_bayesian_overall_status(
+
+    # Two-state overall-status helper: 'success' only when sampler
+    # completed AND convergence passed.
+    assert _bayesian_overall_status(
         success=False,
         sampler_completed=False,
         convergence_diagnostics={},
-    ) == ('❌', 'failed')
-    assert _format_bayesian_overall_status(
+    ) == 'failed'
+    assert _bayesian_overall_status(
         success=True,
         sampler_completed=False,
         convergence_diagnostics={'converged': False},
-    ) == ('⚠️', 'completed with warnings')
-    assert _format_bayesian_overall_status(
+    ) == 'failed'
+    assert _bayesian_overall_status(
         success=True,
         sampler_completed=True,
         convergence_diagnostics={'converged': True},
-    ) == ('✅', 'completed')
-    assert _format_bayesian_overall_status(
+    ) == 'success'
+    assert _bayesian_overall_status(
         success=True,
         sampler_completed=False,
         convergence_diagnostics={},
-    ) == ('✅', 'posterior available')
-    assert _format_convergence_summary({}) is None
-    assert _format_convergence_summary({
-        'converged': False,
-        'max_r_hat': 1.02,
-        'min_ess_bulk': 200.0,
-        'n_draws': 30,
-        'n_chains': 8,
-    }) == (
-        'status=[red]failed[/red], max_r_hat=[red]1.020[/red], '
-        'min_ess_bulk=[red]200.0[/red], draws=30, chains=8'
-    )
+    ) == 'failed'
 
     metrics = _calculate_fit_quality_metrics(
         y_obs=[10.0, 20.0],
@@ -339,22 +321,24 @@ def test_bayesian_fit_results_display_results_prints_sampler_and_convergence(cap
 
     out = _unstyled_output(capsys.readouterr().out)
     assert 'Bayesian fit results' in out
-    assert 'Overall status: completed with warnings' in out
-    assert 'Sampler status: DREAM sampling completed' in out
-    assert 'Sampler: dream' in out
-    assert 'Sampler completed: yes' in out
-    assert 'steps=200' in out
-    assert 'init=lhs' in out
-    assert 'random_seed=1313900679' not in out
-    assert 'status=failed' in out
-    assert 'max_r_hat=1.107' in out
-    assert 'min_ess_bulk=125.9' in out
-    assert 'Posterior parameter summaries:' in out
+    assert 'Overall status' in out
+    assert 'failed' in out  # convergence failed → overall failed
+    assert 'DREAM sampling completed' in out  # engine message
+    assert 'Sampler' in out
+    assert 'Convergence status' in out
+    assert 'Max r-hat' in out
+    assert '1.107' in out
+    assert 'Min ess bulk' in out
+    assert '125.9' in out
+    assert 'Posterior distribution:' in out
     assert 'Success: True' not in out
+    assert 'Sampler completed' not in out  # dropped — redundant with Overall status
+    assert 'Sampler settings' not in out  # dropped — covered by Settings used table
+    assert 'Committed point estimate' not in out  # dropped — covered by footnote
     assert 'datablock' in out
     assert 'category' in out
     assert 'entry' in out
-    assert '95% interval' in out
+    assert '95% CI' in out
     assert '68% interval' not in out
     assert 'std' not in out
 
@@ -424,8 +408,8 @@ def test_render_committed_parameter_table_places_units_after_parameter(monkeypat
         'parameter',
         'units',
         'start',
-        'best posterior sample',
-        'uncertainty',
+        'value',
+        's.u.',
         'change',
     ]
     assert captured['columns_alignment'] == [
@@ -491,7 +475,7 @@ def test_render_posterior_summary_table_places_units_after_parameter(monkeypatch
         'parameter',
         'units',
         'median',
-        '95% interval',
+        '95% CI',
         'r-hat',
         'ess bulk',
     ]
@@ -605,14 +589,16 @@ def test_fitresults_display_results_prints_and_table(capsys):
     )
 
     out = _unstyled_output(capsys.readouterr().out)
-    assert 'Fit results' in out
-    assert 'Success: True' in out
+    assert 'Least-squares fit results:' in out
+    assert 'Overall status' in out
+    assert 'success' in out
     assert 'reduced χ²' in out
-    assert 'R-factor (Rf)' in out
-    assert 'R-factor squared (Rf²)' in out
-    assert 'Weighted R-factor (wR)' in out
-    assert 'Bragg R-factor (BR)' in out
-    assert 'Fitted parameters:' in out
+    assert 'R-factor (Rf' in out
+    assert 'R-factor squared (Rf²' in out
+    assert 'Weighted R-factor (wR' in out
+    assert 'Bragg R-factor (BR' in out
+    assert 'Refined parameters:' in out
+    assert 'Success: True' not in out  # replaced by Overall status row
     assert any(char in out for char in ('╒', '┌', '+', '─'))
 
 
@@ -640,8 +626,8 @@ def test_fitresults_display_results_places_units_after_parameter(monkeypatch):
         'parameter',
         'units',
         'start',
-        'fitted',
-        'uncertainty',
+        'value',
+        's.u.',
         'change',
     ]
     assert captured['columns_alignment'] == [

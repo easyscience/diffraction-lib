@@ -13,6 +13,14 @@ def test_module_import():
     assert expected_module_name == actual_module_name
 
 
+def test_format_bulleted_warning():
+    import easydiffraction.utils.utils as MUT
+
+    warning = MUT.format_bulleted_warning('Header:', ['first', 'second'])
+
+    assert warning == 'Header:\n• first\n• second'
+
+
 def test_twotheta_to_d_scalar_and_array():
     import easydiffraction.utils.utils as MUT
 

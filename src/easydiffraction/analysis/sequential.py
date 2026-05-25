@@ -26,6 +26,7 @@ from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import build_table_renderable
+from easydiffraction.utils.utils import display_path
 
 # ------------------------------------------------------------------
 #  Template dataclass (picklable for ProcessPoolExecutor)
@@ -893,7 +894,7 @@ def _print_sequential_completion(
         return
 
     console.print(f'✅ Sequential fitting complete: {processed_count} files processed.')
-    console.print(f'📄 Results saved to:\n{csv_path}')
+    console.print(f"📄 Results saved to '{display_path(csv_path)}'")
 
 
 def _prepare_sequential_run(

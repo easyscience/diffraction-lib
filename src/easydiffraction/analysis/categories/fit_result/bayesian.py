@@ -41,6 +41,7 @@ class BayesianFitResult(FitResultBase):
         'acceptance_rate_mean',
         'resolved_random_seed',
     )
+    _omitted_result_descriptor_names: ClassVar[tuple[str, ...]] = ('iterations',)
     _expected_descriptor_names: ClassVar[tuple[str, ...]] = _result_descriptor_names
 
     def __init__(self) -> None:
@@ -234,6 +235,9 @@ class BayesianFitResult(FitResultBase):
 
     def _cif_parameters(self) -> list[object]:
         """Return Bayesian fit-result descriptors for CIF output."""
+        omitted_descriptor_ids = {
+            id(getattr(self, name)) for name in self._omitted_result_descriptor_names
+        }
         optional_descriptor_ids = {
             id(getattr(self, name))
             for name in self._optional_result_descriptor_names
@@ -242,5 +246,5 @@ class BayesianFitResult(FitResultBase):
         return [
             descriptor
             for descriptor in self.parameters
-            if id(descriptor) not in optional_descriptor_ids
+            if id(descriptor) not in omitted_descriptor_ids | optional_descriptor_ids
         ]
