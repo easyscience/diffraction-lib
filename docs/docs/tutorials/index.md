@@ -49,8 +49,8 @@ The tutorials are organized into the following categories:
 
 See also under [Bayesian Analysis](#bayesian-analysis):
 [LBCO Bayesian Display (`bumps-dream`)](ed-24.ipynb) and
-[LBCO Bayesian Resume (`emcee`)](ed-26.ipynb) — both load saved
-projects containing Bayesian fit state.
+[LBCO Bayesian Resume (`emcee`)](ed-26.ipynb) — both load saved projects
+containing Bayesian fit state.
 
 ## Powder Diffraction
 
@@ -112,11 +112,11 @@ projects containing Bayesian fit state.
 
 - [LBCO Bayesian (`bumps-dream`)](ed-21.ipynb) – Demonstrates how to
   perform a Bayesian analysis of the La0.5Ba0.5CoO3 crystal structure
-  using constant wavelength neutron powder diffraction data from HRPT
-  at PSI. Covers the use of Markov Chain Monte Carlo (MCMC) sampling
-  with the bumps-DREAM minimizer to explore the posterior distribution
-  of the refined parameters, providing insights into parameter
-  uncertainties and correlations.
+  using constant wavelength neutron powder diffraction data from HRPT at
+  PSI. Covers the use of Markov Chain Monte Carlo (MCMC) sampling with
+  the bumps-DREAM minimizer to explore the posterior distribution of the
+  refined parameters, providing insights into parameter uncertainties
+  and correlations.
 - [LBCO Bayesian Display (`bumps-dream`)](ed-24.ipynb) – Shows how to
   reopen the saved Bayesian project produced by the LBCO Bayesian
   tutorial and inspect persisted fit summaries, correlation matrix,
@@ -131,13 +131,13 @@ projects containing Bayesian fit state.
 - [LBCO Bayesian Resume (`emcee`)](ed-26.ipynb) – Loads a Bayesian
   project that already contains an emcee chain, inspects the posterior,
   and resumes sampling with additional steps. The full project state
-  (parameters, chain, plot caches) round-trips through disk. Resuming
-  is currently supported only for emcee, not for bumps-DREAM.
-- [Tb2TiO7 Bayesian (`bumps-dream`)](ed-22.ipynb) – Another example of
-  a Bayesian analysis, focused on the Tb2TiO7 crystal structure using
-  constant wavelength neutron single crystal diffraction data from
-  HEiDi at FRM II. Similar to the LBCO Bayesian tutorial, it covers
-  MCMC sampling to explore the posterior distribution of the refined
+  (parameters, chain, plot caches) round-trips through disk. Resuming is
+  currently supported only for emcee, not for bumps-DREAM.
+- [Tb2TiO7 Bayesian (`emcee`)](ed-22.ipynb) – Another example of a
+  Bayesian analysis, focused on the Tb2TiO7 crystal structure using
+  constant wavelength neutron single crystal diffraction data from HEiDi
+  at FRM II. Similar to the LBCO Bayesian tutorial, it covers MCMC
+  sampling to explore the posterior distribution of the refined
   parameters, providing insights into parameter uncertainties and
   correlations in the context of single crystal diffraction data.
 

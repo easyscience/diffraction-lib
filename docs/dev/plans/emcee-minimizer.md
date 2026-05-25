@@ -259,9 +259,9 @@ When the matching open-issue is fully resolved, move it to
   `/emcee_chain` is present, expose a helper to construct an
   `emcee.backends.HDFBackend(path, name='emcee_chain', read_only=True)`
   for inspection/visualisation.
-- `pyproject.toml` — add `emcee` as a
-  direct runtime dependency and refresh the lockfile via `pixi lock` (CI
-  installs from the lockfile, not from the manifest files alone).
+- `pyproject.toml` — add `emcee` as a direct runtime dependency and
+  refresh the lockfile via `pixi lock` (CI installs from the lockfile,
+  not from the manifest files alone).
 
 ### Deleted
 
@@ -272,8 +272,8 @@ When the matching open-issue is fully resolved, move it to
 Mark `[x]` as each step lands.
 
 - [x] **P1.1 — Add emcee dependency and refresh the lockfile.**
-  - Add `emcee` to `pyproject.toml` (runtime dependencies, not just
-    the `doc` extra — the existing lockfile carries emcee only as
+  - Add `emcee` to `pyproject.toml` (runtime dependencies, not just the
+    `doc` extra — the existing lockfile carries emcee only as
     `extra == 'doc'` which CI does not install for runtime).
   - Add the same dependency to `pixi.toml` (runtime feature).
   - Run `pixi lock` to regenerate `pixi.lock` with `emcee` as a direct
@@ -300,8 +300,7 @@ Mark `[x]` as each step lands.
     native kwargs (see §"Decisions already made" point 3).
   - Class-level defaults for emcee-specific values:
     `sampling_steps=5000`, `burn_in_steps=1000`, `thinning_interval=1`,
-    `population_size=32`, `parallel_workers=0`,
-    `proposal_moves='de'`.
+    `population_size=32`, `parallel_workers=0`, `proposal_moves='de'`.
   - `__init__` constructs descriptors via the inherited helpers
     (`_sampling_steps_descriptor(default)`, etc. from
     `BayesianMinimizerBase`) and adds a new `proposal_moves` descriptor
@@ -671,8 +670,9 @@ Mark `[x]` as each step lands.
     (post-switchable syntax), tutorial-sized sampler settings,
     `project.analysis.fit()`, posterior plots, and `project.save()`.
   - `ed-26.py`: reopening the saved project, displaying restored
-    Bayesian results, and `project.analysis.fit(resume=True, extra_steps=500)`
-    to continue the chain.
+    Bayesian results, and
+    `project.analysis.fit(resume=True, extra_steps=500)` to continue the
+    chain.
 
   Update the docs navigation in the same step:
   - Add an entry under "MCMC / Bayesian" (or the appropriate section) in
@@ -808,5 +808,5 @@ single-file affair. Plots, parameter posteriors, and tables work the
 same as for DREAM, so switching between samplers to cross-check results
 is straightforward.
 
-New tutorials walk through a short run (`ed-25`) and reopening the
-saved project to resume for additional steps (`ed-26`).
+New tutorials walk through a short run (`ed-25`) and reopening the saved
+project to resume for additional steps (`ed-26`).

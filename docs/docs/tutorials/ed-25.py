@@ -278,11 +278,9 @@ project.display.parameters.free()
 # walkers are initialized, how many walkers are used, and which proposal
 # move drives the ensemble.
 #
-# The default emcee proposal is the stretch move. This tutorial uses the
-# differential-evolution move instead, because it mixes better for the
-# strongly correlated LBCO/HRPT parameters. The walker count is kept
-# below the default to keep runtime close to the DREAM tutorial while
-# retaining good convergence diagnostics for this five-parameter example.
+# The `burn` setting is auto-resolved when left unset. Here we override
+# `steps` with a smaller value to keep the tutorial fast, and the
+# effective burn-in is recomputed automatically.
 
 # %%
 project.analysis.minimizer.show_supported()

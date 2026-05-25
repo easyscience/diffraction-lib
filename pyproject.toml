@@ -34,7 +34,7 @@ dependencies = [
   'sympy',          # Symbolic mathematics library
   'lmfit',          # Non-linear optimization and curve fitting
   'bumps',          # Non-linear optimization and curve fitting
-  'emcee',     # Affine-invariant MCMC sampler
+  'emcee',          # Affine-invariant MCMC sampler
   'dfo-ls',         # Non-linear optimization and curve fitting
   'gemmi',          # Crystallography library
   'cryspy',         # Calculations of diffraction patterns

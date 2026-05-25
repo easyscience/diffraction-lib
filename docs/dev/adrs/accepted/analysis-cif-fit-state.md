@@ -66,8 +66,8 @@ pre-fit scalar snapshots:
 - `start_value`
 - `start_uncertainty`
 
-When any row has uncertainty-derived bounds, `_fit_parameter` also stores
-the provenance field:
+When any row has uncertainty-derived bounds, `_fit_parameter` also
+stores the provenance field:
 
 - `fit_bounds_uncertainty_multiplier`
 
