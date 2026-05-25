@@ -30,6 +30,7 @@ from easydiffraction.io.cif.parse import read_cif_str
 from easydiffraction.io.cif.serialize import experiment_to_cif
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
+from easydiffraction.utils.utils import format_bulleted_warning
 from easydiffraction.utils.utils import render_cif
 
 if TYPE_CHECKING:
@@ -617,13 +618,12 @@ class PdExperimentBase(ExperimentBase):
             log.warning(msg)
             return
 
-        if self._peak is not None and announce:
-            log.warning(
-                'Switching peak profile type discards existing peak parameters.',
-            )
-
         old_peak = self._peak
-        self._peak = PeakFactory.create(canonical_type)
+        new_peak = PeakFactory.create(canonical_type)
+        if old_peak is not None and announce:
+            self._warn_about_peak_profile_swap(old_peak, new_peak)
+
+        self._peak = new_peak
         if old_peak is not None:
             old_peak._parent = None
         self._peak._parent = self
@@ -673,3 +673,62 @@ class PdExperimentBase(ExperimentBase):
         peak_type = read_cif_str(block, '_peak.type')
         if peak_type is not None:
             self._set_peak_profile_type(peak_type)
+
+    @staticmethod
+    def _peak_parameter_values(peak: object) -> dict[str, object]:
+        """Return peak parameter values excluding the selector type."""
+        return {
+            parameter.name: parameter.value
+            for parameter in getattr(peak, 'parameters', [])
+            if parameter.name != 'type'
+        }
+
+    @classmethod
+    def _peak_profile_swap_diff(
+        cls,
+        old_peak: object,
+        new_peak: object,
+    ) -> tuple[list[str], list[str], list[str]]:
+        """Return removed, added, and reset peak-setting rows."""
+        old_values = cls._peak_parameter_values(old_peak)
+        new_values = cls._peak_parameter_values(new_peak)
+        old_keys = set(old_values)
+        new_keys = set(new_values)
+        removed = sorted(old_keys - new_keys)
+        added = sorted(f'{name}={new_values[name]!r}' for name in (new_keys - old_keys))
+        reset = sorted(
+            f'{name}: {old_values[name]!r} -> {new_values[name]!r}'
+            for name in (old_keys & new_keys)
+            if old_values[name] != new_values[name]
+        )
+        return removed, added, reset
+
+    @classmethod
+    def _warn_about_peak_profile_swap(
+        cls,
+        old_peak: object,
+        new_peak: object,
+    ) -> None:
+        """Warn about peak settings changed by a profile swap."""
+        removed, added, reset = cls._peak_profile_swap_diff(old_peak, new_peak)
+        if removed:
+            log.warning(
+                format_bulleted_warning(
+                    'Switching peak profile type removes these settings:',
+                    removed,
+                )
+            )
+        if added:
+            log.warning(
+                format_bulleted_warning(
+                    'Switching peak profile type adds these settings with defaults:',
+                    added,
+                )
+            )
+        if reset:
+            log.warning(
+                format_bulleted_warning(
+                    'Switching peak profile type resets these settings to defaults:',
+                    reset,
+                )
+            )

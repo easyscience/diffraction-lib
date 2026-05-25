@@ -164,6 +164,32 @@ def test_write_analysis_results_sidecar_truncates_stale_payloads(tmp_path):
         assert 'hrpt' in handle['predictive']
 
 
+def test_write_analysis_results_sidecar_preserves_emcee_chain_group(tmp_path):
+    from easydiffraction.analysis.minimizers.emcee import EMCEE_CHAIN_GROUP
+    from easydiffraction.io import results_sidecar as results_sidecar_mod
+
+    analysis_dir = Path(tmp_path) / 'analysis'
+    analysis = _analysis_with_sidecar_payload()
+    results_sidecar_mod.write_analysis_results_sidecar(
+        analysis=analysis,
+        analysis_dir=analysis_dir,
+    )
+
+    import h5py
+
+    with h5py.File(analysis_dir / 'results.h5', 'a') as handle:
+        chain = handle.require_group(EMCEE_CHAIN_GROUP)
+        chain.attrs['iteration'] = 7
+
+    results_sidecar_mod.write_analysis_results_sidecar(
+        analysis=analysis,
+        analysis_dir=analysis_dir,
+    )
+
+    with h5py.File(analysis_dir / 'results.h5', 'r') as handle:
+        assert handle[EMCEE_CHAIN_GROUP].attrs['iteration'] == 7
+
+
 def test_should_use_sidecar_compares_to_fit_result_kind_enum():
     """`_should_use_sidecar` must read from `FitResultKindEnum`, not a literal."""
     from easydiffraction.analysis.enums import FitResultKindEnum

@@ -4,6 +4,7 @@
 from abc import ABC
 from abc import abstractmethod
 from collections.abc import Callable
+from dataclasses import dataclass
 from typing import Any
 
 import numpy as np
@@ -14,6 +15,17 @@ from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.logging import log
 
 BOUNDARY_PROXIMITY_FRACTION = 0.01
+
+
+@dataclass(frozen=True, slots=True)
+class MinimizerFitOptions:
+    """Execution options for one minimizer run."""
+
+    finalize_tracking: bool = True
+    use_physical_limits: bool = False
+    random_seed: int | None = None
+    resume: bool = False
+    extra_steps: int | None = None
 
 
 class MinimizerBase(ABC):
@@ -354,9 +366,7 @@ class MinimizerBase(ABC):
         objective_function: Callable[..., object],
         verbosity: VerbosityEnum = VerbosityEnum.FULL,
         *,
-        finalize_tracking: bool = True,
-        use_physical_limits: bool = False,
-        random_seed: int | None = None,
+        options: MinimizerFitOptions | None = None,
     ) -> FitResults:
         """
         Run the full minimization workflow.
@@ -370,24 +380,31 @@ class MinimizerBase(ABC):
             arguments.
         verbosity : VerbosityEnum, default=VerbosityEnum.FULL
             Console output verbosity.
-        finalize_tracking : bool, default=True
-            Whether to stop and finalize live tracking before returning.
-        use_physical_limits : bool, default=False
-            When ``True``, fall back to physical limits from the value
-            spec for parameters whose ``fit_min``/``fit_max`` are
-            unbounded.
-        random_seed : int | None, default=None
-            Optional random seed passed to stochastic minimizers.
+        options : MinimizerFitOptions | None, default=None
+            Execution options controlling limits, randomness, resume,
+            and tracker finalization.
 
         Returns
         -------
         FitResults
             FitResults with success flag, best chi2 and timing.
+
+        Raises
+        ------
+        NotImplementedError
+            If resume is requested for a minimizer that does not support
+            it.
         """
-        if use_physical_limits:
+        fit_options = options or MinimizerFitOptions()
+        if fit_options.resume:
+            minimizer_name = self.name or self.__class__.__name__
+            msg = f"Minimizer '{minimizer_name}' does not support resume."
+            raise NotImplementedError(msg)
+
+        if fit_options.use_physical_limits:
             self._apply_physical_limits(parameters)
 
-        resolved_random_seed = self._resolve_random_seed(random_seed)
+        resolved_random_seed = self._resolve_random_seed(fit_options.random_seed)
 
         minimizer_name = self.name or 'Unnamed Minimizer'
         if self.method is not None and f'({self.method})' not in minimizer_name:
@@ -402,7 +419,7 @@ class MinimizerBase(ABC):
             raw_result = self._run_solver(objective_function, **solver_args)
             return self._finalize_fit(parameters, raw_result)
         finally:
-            if finalize_tracking:
+            if fit_options.finalize_tracking:
                 self._stop_tracking()
 
     def _objective_function(

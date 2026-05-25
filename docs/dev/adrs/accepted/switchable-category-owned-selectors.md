@@ -564,10 +564,9 @@ categories and their swap hooks at the start of Phase 1.
 
 ### 7. Beta posture: hard cutover, no shims
 
-[`.github/copilot-instructions.md`](../../../../.github/copilot-instructions.md)
-→ **Change Discipline**: "Project is in beta: no legacy shims, no
-deprecation warnings — update tests and tutorials to the current API."
-This ADR keeps that posture:
+[`AGENTS.md`](../../../../AGENTS.md) → **Change Discipline**: "Project
+is in beta: no legacy shims, no deprecation warnings — update tests and
+tutorials to the current API." This ADR keeps that posture:
 
 - `<owner>.<cat>_type` is **deleted**, not deprecated.
 - `show_supported_<cat>_types()` / `show_current_<cat>_type()` are
@@ -872,10 +871,9 @@ full grep results.)
 
 Replace `self.__class__` with the new concrete class so the user's
 reference keeps pointing at "the same object". Rejected:
-[`.github/copilot-instructions.md`](../../../../.github/copilot-instructions.md)
-→ **Architecture** forbids it ("no monkey-patching or runtime class
-mutation"). It would also confuse `isinstance` checks and break
-descriptor introspection.
+[`AGENTS.md`](../../../../AGENTS.md) → **Architecture** forbids it ("no
+monkey-patching or runtime class mutation"). It would also confuse
+`isinstance` checks and break descriptor introspection.
 
 ### B. Single category class with internal mode switching
 
@@ -983,16 +981,21 @@ _minimizer.population_size            4
 _minimizer.parallel_workers           0
 _minimizer.initialization_method      latin_hypercube
 _minimizer.random_seed                ?
-_minimizer.runtime_seconds            124.7
-_minimizer.acceptance_rate_mean       0.27
-_minimizer.gelman_rubin_max           1.03
-_minimizer.effective_sample_size_min  482
-_minimizer.best_log_posterior        -1234.56
-_minimizer.reduced_chi2               1.18
+
+_fit_result.result_kind                bayesian
+_fit_result.fitting_time               124.7
+_fit_result.reduced_chi_square         1.18
+_fit_result.acceptance_rate_mean       0.27
+_fit_result.gelman_rubin_max           1.03
+_fit_result.effective_sample_size_min  482
+_fit_result.best_log_posterior        -1234.56
 ```
 
 The `_fitting.*` block is gone (`_fitting.minimizer_type` →
 `_minimizer.type`; `_fitting.mode_type` → `_fitting_mode.type`).
+Fit-result outputs live under `_fit_result.*` per
+[`minimizer-input-output-split.md`](minimizer-input-output-split.md);
+`_minimizer.*` carries only user-writable settings.
 
 ### `analysis.cif` (deterministic fit)
 
@@ -1003,11 +1006,13 @@ _fitting_mode.type        single
 
 _minimizer.type                       'lmfit (leastsq)'
 _minimizer.max_iterations             1000
-_minimizer.objective_value            1532.4
-_minimizer.runtime_seconds            12.34
-_minimizer.iterations_performed       87
-_minimizer.exit_reason                converged
-_minimizer.reduced_chi2               1.42
+
+_fit_result.result_kind                deterministic
+_fit_result.fitting_time               12.34
+_fit_result.iterations                 87
+_fit_result.exit_reason                converged
+_fit_result.reduced_chi_square         1.42
+_fit_result.objective_value            1532.4
 ```
 
 `_minimizer.optimizer_name` and `_minimizer.method_name` are gone — they

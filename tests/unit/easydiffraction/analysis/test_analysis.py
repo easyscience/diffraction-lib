@@ -24,6 +24,7 @@ def _make_project_with_names(names):
     class P:
         experiments = ExpCol(names)
         structures = object()
+        info = SimpleNamespace(path=None)
         _varname = 'proj'
 
     return P()
@@ -100,10 +101,21 @@ def test_minimizer_selector_swap_warns_for_different_defaults(monkeypatch):
     # Inter-family swap should split warnings into "removed"/"added"
     # lines rather than emitting "<not available>" sentinels per
     # finding F3.
-    assert any('removes these settings' in w and 'max_iterations' in w for w in warnings)
-    assert any(
-        'adds these settings with defaults' in w and 'sampling_steps' in w for w in warnings
+    removed_warning = next(w for w in warnings if 'removes these settings' in w)
+    added_warning = next(w for w in warnings if 'adds these settings' in w)
+    assert removed_warning == (
+        'Switching minimizer type removes these settings:\n• max_iterations'
     )
+    assert added_warning.splitlines() == [
+        'Switching minimizer type adds these settings with defaults:',
+        '• burn_in_steps=600',
+        "• initialization_method='latin_hypercube'",
+        '• parallel_workers=0',
+        '• population_size=4',
+        '• random_seed=None',
+        '• sampling_steps=3000',
+        '• thinning_interval=1',
+    ]
     assert not any('<not available>' in w for w in warnings)
 
 
@@ -119,6 +131,235 @@ def test_minimizer_type_invalid_assignment_raises_and_preserves_state():
         a.minimizer.type = 'bogus-minimizer'
 
     assert a.minimizer.type == initial_type
+
+
+def test_store_posterior_projection_persists_resolved_random_seed():
+    from easydiffraction.analysis.analysis import Analysis
+    from easydiffraction.analysis.categories.fit_result.bayesian import BayesianFitResult
+    from easydiffraction.analysis.fit_helpers.bayesian import BayesianFitResults
+
+    analysis = Analysis(project=_make_project_with_names([]))
+    analysis._fit_result._parent = None
+    analysis._fit_result = BayesianFitResult()
+    analysis._fit_result._parent = analysis
+    results = BayesianFitResults(
+        success=True,
+        convergence_diagnostics={},
+        sampler_settings={'random_seed': 12345},
+        posterior_samples=None,
+        posterior_parameter_summaries=[],
+    )
+
+    analysis._store_posterior_fit_projection(results)
+
+    assert analysis.fit_result.resolved_random_seed.value == 12345
+
+
+def test_restored_bayesian_diagnostics_reconstruct_passed_status():
+    from easydiffraction.analysis.analysis import Analysis
+    from easydiffraction.analysis.categories.fit_result.bayesian import BayesianFitResult
+
+    analysis = Analysis(project=_make_project_with_names([]))
+    analysis._fit_result._parent = None
+    analysis._fit_result = BayesianFitResult()
+    analysis._fit_result._parent = analysis
+    analysis.fit_result._set_gelman_rubin_max(1.002)
+    analysis.fit_result._set_effective_sample_size_min(8810.5)
+    analysis.fit_result._set_acceptance_rate_mean(0.3)
+
+    diagnostics = analysis._restored_bayesian_convergence_diagnostics(
+        sample_shape=(10001, 16, 5),
+        n_parameters=5,
+    )
+
+    assert diagnostics['converged'] is True
+    assert diagnostics['max_r_hat'] == 1.002
+    assert diagnostics['min_ess_bulk'] == 8810.5
+    assert diagnostics['acceptance_rate_mean'] == 0.3
+    assert diagnostics['n_draws'] == 10001
+    assert diagnostics['n_chains'] == 16
+    assert diagnostics['n_parameters'] == 5
+
+
+def test_restored_bayesian_sampler_settings_reconstruct_sample_count():
+    from easydiffraction.analysis.analysis import Analysis
+
+    analysis = Analysis(project=_make_project_with_names([]))
+    analysis.minimizer.type = 'emcee'
+
+    settings = analysis._restored_bayesian_sampler_settings(
+        {
+            'nsteps': 10000,
+            'nburn': 2000,
+            'thin': 1,
+            'nwalkers': 16,
+            'parallel_workers': 0,
+            'initialization_method': 'ball',
+            'proposal_moves': 'de',
+        },
+        random_seed=123,
+        n_parameters=5,
+    )
+
+    assert settings['nsteps'] == 10000
+    assert settings['nburn'] == 2000
+    assert settings['thin'] == 1
+    assert settings['nwalkers'] == 16
+    assert settings['parallel_workers'] == 0
+    assert settings['initialization_method'] == 'ball'
+    assert settings['proposal_moves'] == 'de'
+    assert settings['samples'] == 800000
+    assert settings['random_seed'] == 123
+
+
+def test_emcee_fit_requires_saved_project_for_new_and_resume_runs():
+    import pytest
+
+    from easydiffraction.analysis.analysis import Analysis
+
+    analysis = Analysis(project=_make_project_with_names([]))
+    analysis.minimizer.type = 'emcee'
+
+    with pytest.raises(ValueError, match='emcee requires a saved project'):
+        analysis.fit()
+
+    with pytest.raises(ValueError, match='emcee requires a saved project'):
+        analysis.fit(resume=True)
+
+
+def test_restored_bayesian_reduced_chi_square_recovers_from_log_posterior(monkeypatch):
+    from easydiffraction.analysis.analysis import Analysis
+    from easydiffraction.analysis.categories.fit_result.bayesian import BayesianFitResult
+
+    analysis = Analysis(project=_make_project_with_names([]))
+    analysis._fit_result._parent = None
+    analysis._fit_result = BayesianFitResult()
+    analysis._fit_result._parent = analysis
+    analysis.fit_result._set_best_log_posterior(-50.0)
+    monkeypatch.setattr(analysis, '_fit_data_point_count', lambda experiments: 102)
+
+    reduced_chi_square = analysis._restored_bayesian_reduced_chi_square(
+        float('nan'),
+        restored_parameters=[object(), object()],
+    )
+
+    assert reduced_chi_square == 1.0
+
+
+def test_fit_interrupt_cleans_state_and_prints_message(monkeypatch, capsys):
+    from easydiffraction.analysis import analysis as analysis_mod
+    from easydiffraction.analysis.analysis import Analysis
+
+    events: list[object] = []
+
+    class FakeStopControl:
+        def __enter__(self) -> object:
+            events.append('enter')
+            return self
+
+        def __exit__(self, exc_type, exc_value, traceback) -> None:
+            del exc_value
+            del traceback
+            events.append(exc_type)
+
+    analysis = Analysis(project=_make_project_with_names([]))
+    analysis.project.verbosity = SimpleNamespace(fit=SimpleNamespace(value='full'))
+    analysis.fit_results = object()
+    analysis.fitter.results = object()
+
+    monkeypatch.setattr(
+        analysis_mod,
+        'notebook_fit_stop_control',
+        lambda *, verbosity: FakeStopControl(),
+    )
+    monkeypatch.setattr(
+        analysis,
+        '_run_single',
+        lambda **kwargs: (_ for _ in ()).throw(KeyboardInterrupt),
+    )
+    monkeypatch.setattr(
+        analysis,
+        '_prepare_results_sidecar_for_new_fit',
+        lambda: events.append('sidecar-cleanup'),
+    )
+
+    analysis.fit()
+
+    assert events == ['enter', KeyboardInterrupt, 'sidecar-cleanup']
+    assert analysis.fit_results is None
+    assert analysis.fitter.results is None
+    assert 'Fitting stopped by user.' in capsys.readouterr().out
+
+
+def test_fit_resume_defaults_extra_steps_to_sampling_steps(monkeypatch, tmp_path):
+    from easydiffraction.analysis.analysis import Analysis
+
+    analysis = Analysis(project=_make_project_with_names(['e1']))
+    analysis.project.verbosity = SimpleNamespace(fit=SimpleNamespace(value='silent'))
+    analysis.project.info = SimpleNamespace(path=tmp_path)
+    analysis.minimizer.type = 'emcee'
+    analysis.minimizer.sampling_steps = 123
+    captured: dict[str, object] = {}
+
+    monkeypatch.setattr(analysis, '_has_resumable_emcee_sidecar', lambda: True)
+    monkeypatch.setattr(
+        analysis,
+        '_run_single',
+        lambda **kwargs: captured.update(kwargs),
+    )
+
+    analysis.fit(resume=True)
+
+    assert captured == {'resume': True, 'extra_steps': 123}
+
+
+def test_fit_resume_preserves_explicit_extra_steps(monkeypatch, tmp_path):
+    from easydiffraction.analysis.analysis import Analysis
+
+    analysis = Analysis(project=_make_project_with_names(['e1']))
+    analysis.project.verbosity = SimpleNamespace(fit=SimpleNamespace(value='silent'))
+    analysis.project.info = SimpleNamespace(path=tmp_path)
+    analysis.minimizer.type = 'emcee'
+    analysis.minimizer.sampling_steps = 123
+    captured: dict[str, object] = {}
+
+    monkeypatch.setattr(analysis, '_has_resumable_emcee_sidecar', lambda: True)
+    monkeypatch.setattr(
+        analysis,
+        '_run_single',
+        lambda **kwargs: captured.update(kwargs),
+    )
+
+    analysis.fit(resume=True, extra_steps=10)
+
+    assert captured == {'resume': True, 'extra_steps': 10}
+
+
+def test_fit_resume_missing_sidecar_warns_and_starts_fresh(
+    monkeypatch,
+    tmp_path,
+):
+    from easydiffraction.analysis import analysis as analysis_mod
+    from easydiffraction.analysis.analysis import Analysis
+
+    analysis = Analysis(project=_make_project_with_names(['e1']))
+    analysis.project.verbosity = SimpleNamespace(fit=SimpleNamespace(value='silent'))
+    analysis.project.info = SimpleNamespace(path=tmp_path)
+    analysis.minimizer.type = 'emcee'
+    captured: dict[str, object] = {}
+    warnings: list[str] = []
+
+    monkeypatch.setattr(analysis_mod.log, 'warning', warnings.append)
+    monkeypatch.setattr(
+        analysis,
+        '_run_single',
+        lambda **kwargs: captured.update(kwargs),
+    )
+
+    analysis.fit(resume=True)
+
+    assert captured == {'resume': False, 'extra_steps': None}
+    assert any('no saved emcee chain' in message for message in warnings)
 
 
 def test_fitting_mode_type_invalid_assignment_raises_and_preserves_state():
@@ -234,6 +475,7 @@ def test_display_fit_results_calls_process_fit_results(monkeypatch):
 
 def test_fit_single_short_reuses_tracker_display_handle(monkeypatch):
     from easydiffraction.analysis.analysis import Analysis
+    from easydiffraction.analysis.fitting import FitterFitOptions
     from easydiffraction.utils.enums import VerbosityEnum
 
     class Handle:
@@ -281,10 +523,15 @@ def test_fit_single_short_reuses_tracker_display_handle(monkeypatch):
         *,
         analysis: object,
         verbosity: object,
-        use_physical_limits: bool,
-        random_seed: int | None,
+        options: FitterFitOptions,
     ) -> None:
-        del structures, experiments, analysis, verbosity, use_physical_limits, random_seed
+        del (
+            structures,
+            experiments,
+            analysis,
+            verbosity,
+            options,
+        )
         analysis_obj = fake_fit.analysis_obj
         analysis_obj.fitter.results = SimpleNamespace(
             reduced_chi_square=1.23,
@@ -316,8 +563,7 @@ def test_fit_single_short_reuses_tracker_display_handle(monkeypatch):
         VerbosityEnum.SHORT,
         project.structures,
         project.experiments,
-        use_physical_limits=False,
-        random_seed=None,
+        fit_options=FitterFitOptions(),
     )
 
     assert tracker.display_handles == [handle, None]

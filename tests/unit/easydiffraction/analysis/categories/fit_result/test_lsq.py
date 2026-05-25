@@ -53,3 +53,33 @@ def test_least_squares_fit_result_round_trips_cif_outputs():
     assert restored.covariance_available.value is True
     assert restored.correlation_available.value is False
     assert restored.exit_reason.value == 'converged'
+
+
+def test_least_squares_fit_result_omits_duplicate_exit_reason():
+    from easydiffraction.analysis.categories.fit_result.lsq import (
+        LeastSquaresFitResult,
+    )
+
+    fit_result = LeastSquaresFitResult()
+    fit_result._set_message('Fit succeeded.')
+    fit_result._set_exit_reason('Fit succeeded.')
+
+    cif_text = fit_result.as_cif
+
+    assert '_fit_result.message "Fit succeeded."' in cif_text
+    assert '_fit_result.exit_reason' not in cif_text
+
+
+def test_least_squares_fit_result_keeps_distinct_exit_reason():
+    from easydiffraction.analysis.categories.fit_result.lsq import (
+        LeastSquaresFitResult,
+    )
+
+    fit_result = LeastSquaresFitResult()
+    fit_result._set_message('Fit failed.')
+    fit_result._set_exit_reason('maximum number of evaluations reached')
+
+    cif_text = fit_result.as_cif
+
+    assert '_fit_result.message "Fit failed."' in cif_text
+    assert '_fit_result.exit_reason "maximum number of evaluations reached"' in cif_text

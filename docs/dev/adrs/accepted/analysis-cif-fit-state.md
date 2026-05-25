@@ -63,9 +63,17 @@ pre-fit scalar snapshots:
 - `param_unique_name`
 - `fit_min`
 - `fit_max`
-- `fit_bounds_uncertainty_multiplier`
 - `start_value`
 - `start_uncertainty`
+
+When any row has uncertainty-derived bounds, `_fit_parameter` also
+stores the provenance field:
+
+- `fit_bounds_uncertainty_multiplier`
+
+For Bayesian fit projections, `_fit_parameter` also stores per-parameter
+posterior summaries:
+
 - `posterior_best_sample_value`
 - `posterior_median`
 - `posterior_uncertainty`
@@ -104,6 +112,10 @@ Deterministic fit-result classes add compact fit output counts:
 - `degrees_of_freedom`
 - `covariance_available`
 - `correlation_available`
+
+When the LSQ backend provides a termination reason that differs from the
+common `_fit_result.message`, deterministic fit results also store:
+
 - `exit_reason`
 
 Do not persist a `_deterministic_parameter_result` category. Final
@@ -127,10 +139,15 @@ Bayesian fit-result classes store scalar outputs under `_fit_result.*`:
 - `sampler_completed`
 - `credible_interval_inner`
 - `credible_interval_outer`
-- `acceptance_rate_mean`
+- `resolved_random_seed`
 - `gelman_rubin_max`
 - `effective_sample_size_min`
 - `best_log_posterior`
+
+When the backend reports an acceptance rate, Bayesian fit results also
+store:
+
+- `acceptance_rate_mean`
 
 Bayesian per-parameter posterior summaries are stored on the
 corresponding `_fit_parameter` rows. Their row order defines the saved

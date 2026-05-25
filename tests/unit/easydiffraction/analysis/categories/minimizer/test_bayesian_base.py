@@ -43,6 +43,29 @@ def test_bayesian_minimizer_rejects_unsupported_initialization_method():
         minimizer.initialization_method = 'ball'
 
 
+def test_bayesian_minimizer_keeps_unset_random_seed_in_cif():
+    from easydiffraction.analysis.categories.minimizer.bumps_dream import (
+        BumpsDreamMinimizer,
+    )
+
+    cif_text = BumpsDreamMinimizer().as_cif
+
+    assert '_minimizer.random_seed ?' in cif_text
+
+
+def test_bayesian_minimizer_keeps_configured_random_seed_in_cif():
+    from easydiffraction.analysis.categories.minimizer.bumps_dream import (
+        BumpsDreamMinimizer,
+    )
+
+    minimizer = BumpsDreamMinimizer()
+    minimizer.random_seed = 123
+
+    cif_text = minimizer.as_cif
+
+    assert '_minimizer.random_seed 123' in cif_text
+
+
 def test_bayesian_minimizer_reads_cif_unknown_values_as_defaults():
     from easydiffraction.analysis.categories.minimizer.bumps_dream import (
         BumpsDreamMinimizer,

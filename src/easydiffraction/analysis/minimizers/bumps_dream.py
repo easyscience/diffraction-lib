@@ -737,6 +737,9 @@ class BumpsDreamMinimizer(BumpsMinimizer):
                 trim=DEFAULT_TRIM,
             )
             driver.clip()
+        except KeyboardInterrupt:
+            MPMapper.stop_mapper()
+            raise
         except Exception:
             MPMapper.stop_mapper()
             raise

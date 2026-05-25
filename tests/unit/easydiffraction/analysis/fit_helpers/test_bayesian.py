@@ -31,7 +31,7 @@ def test_module_import():
     assert MUT.__name__ == 'easydiffraction.analysis.fit_helpers.bayesian'
 
 
-def test_posterior_samples_flatten_and_to_arviz():
+def test_posterior_samples_flatten():
     from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
 
     posterior_samples = PosteriorSamples(
@@ -47,17 +47,25 @@ def test_posterior_samples_flatten_and_to_arviz():
     )
 
     flattened = posterior_samples.flattened()
-    inference_data = posterior_samples.to_arviz()
 
     assert flattened.shape == (4, 2)
     np.testing.assert_allclose(flattened[:, 0], np.array([1.0, 2.0, 3.0, 4.0]))
     np.testing.assert_allclose(flattened[:, 1], np.array([10.0, 20.0, 30.0, 40.0]))
-    assert set(inference_data.posterior.data_vars) == {'a', 'b'}
-    assert inference_data.posterior['a'].shape == (2, 2)
-    assert inference_data.sample_stats['lp'].shape == (2, 2)
 
 
-def test_posterior_samples_to_arviz_validates_shapes():
+def test_posterior_samples_validate_shapes_returns_dimensions():
+    from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
+
+    posterior_samples = PosteriorSamples(
+        parameter_names=['a'],
+        parameter_samples=np.ones((2, 32, 1), dtype=float),
+        log_posterior=np.ones((2, 32), dtype=float),
+    )
+
+    assert posterior_samples.validate_shapes() == (2, 32, 1)
+
+
+def test_posterior_samples_validate_shapes_rejects_wrong_ndim():
     from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
 
     posterior_samples = PosteriorSamples(
@@ -69,7 +77,7 @@ def test_posterior_samples_to_arviz_validates_shapes():
         ValueError,
         match=r'Posterior sample array must have shape \(n_draws, n_chains, n_parameters\)\.',
     ):
-        posterior_samples.to_arviz()
+        posterior_samples.validate_shapes()
 
 
 def test_compute_convergence_diagnostics_treats_non_finite_values_as_not_converged(monkeypatch):
@@ -81,17 +89,13 @@ def test_compute_convergence_diagnostics_treats_non_finite_values_as_not_converg
         parameter_samples=np.ones((4, 2, 1), dtype=float),
     )
 
-    fake_dataset = type('FakeDataset', (), {'data_vars': {'a': np.array([np.nan], dtype=float)}})
-
     monkeypatch.setattr(
-        'easydiffraction.analysis.fit_helpers.bayesian.az.rhat',
-        lambda inference_data: fake_dataset,
+        'easydiffraction.analysis.fit_helpers.bayesian.compute_r_hat',
+        lambda _samples: float('nan'),
     )
     monkeypatch.setattr(
-        'easydiffraction.analysis.fit_helpers.bayesian.az.ess',
-        lambda inference_data, method='bulk': type(
-            'FakeDataset', (), {'data_vars': {'a': np.array([4000.0], dtype=float)}}
-        ),
+        'easydiffraction.analysis.fit_helpers.bayesian.compute_ess_bulk',
+        lambda _samples: 4000.0,
     )
 
     diagnostics = compute_convergence_diagnostics(posterior_samples)
@@ -188,22 +192,25 @@ def test_bayesian_fit_results_display_results_prints_sampler_and_convergence(cap
 
     out = capsys.readouterr().out
     assert 'Bayesian fit results' in out
-    assert 'Overall status: completed with warnings' in out
-    assert 'Sampler status: DREAM sampling completed' in out
-    assert 'Sampler: dream' in out
-    assert 'Sampler completed: yes' in out
-    assert 'steps=200' in out
-    assert 'init=lhs' in out
-    assert 'random_seed=1313900679' not in out
-    assert 'status=failed' in out
-    assert 'max_r_hat=1.107' in out
-    assert 'min_ess_bulk=125.9' in out
-    assert 'Posterior parameter summaries:' in out
+    assert '❌ Overall status' in out
+    assert '✅ Overall status' not in out
+    assert 'failed' in out  # convergence failed → overall failed
+    assert 'DREAM sampling completed' in out  # engine message
+    assert 'Sampler' in out
+    assert 'Convergence status' in out
+    assert 'Max r-hat' in out
+    assert '1.107' in out
+    assert 'Min ess bulk' in out
+    assert '125.9' in out
+    assert 'Posterior distribution:' in out
     assert 'Success: True' not in out
+    assert 'Sampler completed' not in out  # dropped — redundant with Overall status
+    assert 'Sampler settings' not in out  # dropped — covered by Settings used table
+    assert 'Committed point estimate' not in out  # dropped — covered by footnote
     assert 'datablock' in out
     assert 'category' in out
     assert 'entry' in out
-    assert '95% interval' in out
+    assert '95% CI' in out
     assert '68% interval' not in out
     assert 'std' not in out
 
@@ -265,8 +272,8 @@ def test_render_committed_parameter_table_places_units_after_parameter(monkeypat
         'parameter',
         'units',
         'start',
-        'best posterior sample',
-        'uncertainty',
+        'value',
+        's.u.',
         'change',
     ]
     assert captured['columns_alignment'] == [
@@ -332,7 +339,7 @@ def test_render_posterior_summary_table_places_units_after_parameter(monkeypatch
         'parameter',
         'units',
         'median',
-        '95% interval',
+        '95% CI',
         'r-hat',
         'ess bulk',
     ]

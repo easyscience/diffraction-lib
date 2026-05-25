@@ -46,10 +46,11 @@ The tutorials are organized into the following categories:
 - [Co2SiO4 Sequential Fit](ed-23.ipynb) – Resumes a sequential
   refinement from an existing `analysis/results.csv` after an incomplete
   previous run.
-- [LBCO Bayesian Display](ed-24.ipynb) – Shows how to load the saved
-  project after a Bayesian analysis and inspect the persisted fit
-  summary, correlation matrix, posterior plots, and predictive checks
-  without rerunning MCMC sampling.
+
+See also under [Bayesian Analysis](#bayesian-analysis):
+[LBCO Bayesian Display (`bumps-dream`)](ed-24.ipynb) and
+[LBCO Bayesian Resume (`emcee`)](ed-26.ipynb) — both load saved projects
+containing Bayesian fit state.
 
 ## Powder Diffraction
 
@@ -76,7 +77,7 @@ The tutorials are organized into the following categories:
   refinement of Taurine using time-of-flight neutron single crystal
   diffraction data from SENJU at J-PARC.
 
-## Pair Distribution Function (PDF)
+## Pair Distribution Function
 
 - [Ni `pd-neut-cwl`](ed-10.ipynb) – Demonstrates a PDF analysis of Ni
   using data collected from a constant wavelength neutron powder
@@ -87,7 +88,7 @@ The tutorials are organized into the following categories:
 - [NaCl `pd-xray`](ed-12.ipynb) – Demonstrates a PDF analysis of NaCl
   using data collected from an X-ray powder diffraction experiment.
 
-## Multi-Structure & Multi-Experiment Refinement
+## Multiple Data Blocks
 
 - [PbSO4 NPD+XRD](ed-4.ipynb) – Joint fit of PbSO4 using X-ray and
   neutron constant wavelength powder diffraction data.
@@ -109,17 +110,34 @@ The tutorials are organized into the following categories:
 
 ## Bayesian Analysis
 
-- [LBCO Bayesian](ed-21.ipynb) – Demonstrates how to perform a Bayesian
-  analysis of the La0.5Ba0.5CoO3 crystal structure using constant
-  wavelength neutron powder diffraction data from HRPT at PSI. This
-  tutorial covers the use of Markov Chain Monte Carlo (MCMC) sampling to
-  explore the posterior distribution of the refined parameters,
-  providing insights into parameter uncertainties and correlations.
-- [Tb2TiO7 Bayesian](ed-22.ipynb) – Another example of a Bayesian
-  analysis. This tutorial focuses on the Tb2TiO7 crystal structure using
+- [LBCO Bayesian (`bumps-dream`)](ed-21.ipynb) – Demonstrates how to
+  perform a Bayesian analysis of the La0.5Ba0.5CoO3 crystal structure
+  using constant wavelength neutron powder diffraction data from HRPT at
+  PSI. Covers the use of Markov Chain Monte Carlo (MCMC) sampling with
+  the bumps-DREAM minimizer to explore the posterior distribution of the
+  refined parameters, providing insights into parameter uncertainties
+  and correlations.
+- [LBCO Bayesian Display (`bumps-dream`)](ed-24.ipynb) – Shows how to
+  reopen the saved Bayesian project produced by the LBCO Bayesian
+  tutorial and inspect persisted fit summaries, correlation matrix,
+  posterior distribution plots, and predictive checks — without
+  rerunning MCMC sampling.
+- [LBCO Bayesian (`emcee`)](ed-25.ipynb) – Two-stage workflow on the
+  LBCO HRPT dataset: first a quick local refinement to obtain a point
+  estimate and uncertainties, then full posterior sampling with the
+  emcee minimizer. Covers credible intervals, parameter correlations,
+  and propagation of uncertainty into the calculated diffraction
+  pattern.
+- [LBCO Bayesian Resume (`emcee`)](ed-26.ipynb) – Loads a Bayesian
+  project that already contains an emcee chain, inspects the posterior,
+  and resumes sampling with additional steps. The full project state
+  (parameters, chain, plot caches) round-trips through disk. Resuming is
+  currently supported only for emcee, not for bumps-DREAM.
+- [Tb2TiO7 Bayesian (`emcee`)](ed-22.ipynb) – Another example of a
+  Bayesian analysis, focused on the Tb2TiO7 crystal structure using
   constant wavelength neutron single crystal diffraction data from HEiDi
-  at FRM II. Similar to the LBCO Bayesian tutorial, it covers the use of
-  MCMC sampling to explore the posterior distribution of the refined
+  at FRM II. Similar to the LBCO Bayesian tutorial, it covers MCMC
+  sampling to explore the posterior distribution of the refined
   parameters, providing insights into parameter uncertainties and
   correlations in the context of single crystal diffraction data.
 

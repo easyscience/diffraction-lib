@@ -144,30 +144,38 @@ def test_fitter_fit_defers_minimizer_tracking_until_postprocessing(monkeypatch):
             self.fit_calls: list[dict[str, object]] = []
             self.stop_calls = 0
             self.tracker = SimpleNamespace(track=lambda residuals, parameters: residuals)
+            self.result = None
 
         def fit(self, params, obj, verbosity=None, **kwargs):
             del params, obj
             self.fit_calls.append({'verbosity': verbosity, **kwargs})
-            return BayesianFitResults(
+            self.result = BayesianFitResults(
                 success=True,
                 reduced_chi_square=1.2,
                 convergence_diagnostics={'converged': False},
                 sampler_settings={'steps': 300},
                 best_log_posterior=-10.0,
             )
+            return self.result
 
         def _stop_tracking(self):
+            analysis_events.append('stop')
             self.stop_calls += 1
 
         def _finalize_timing(self):
-            pass
+            analysis_events.append('finalize')
+            self.result.fitting_time = 12.5
 
     analysis_events: list[str] = []
+    fit_result = SimpleNamespace(
+        _set_fitting_time=lambda value: analysis_events.append(('time', value)),
+    )
     analysis = SimpleNamespace(
         _capture_fit_parameter_state=lambda params: analysis_events.append('capture'),
         _store_fit_result_projection=lambda results, experiments, fitted_parameters: (
             analysis_events.append('store')
         ),
+        fit_result=fit_result,
     )
 
     fitter = Fitter()
@@ -185,9 +193,9 @@ def test_fitter_fit_defers_minimizer_tracking_until_postprocessing(monkeypatch):
         verbosity=VerbosityEnum.FULL,
     )
 
-    assert fitter.minimizer.fit_calls[0]['finalize_tracking'] is False
+    assert fitter.minimizer.fit_calls[0]['options'].finalize_tracking is False
     assert fitter.minimizer.stop_calls == 1
-    assert analysis_events == ['capture', 'store']
+    assert analysis_events == ['capture', 'store', 'finalize', ('time', 12.5), 'stop']
 
 
 def test_fitter_fit_stops_tracking_when_minimizer_fit_raises(monkeypatch):

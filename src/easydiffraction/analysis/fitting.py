@@ -3,12 +3,14 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 from typing import Any
 
 import numpy as np
 
 from easydiffraction.analysis.fit_helpers.metrics import get_reliability_inputs
+from easydiffraction.analysis.minimizers.base import MinimizerFitOptions
 from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 from easydiffraction.core.variable import Parameter
@@ -19,6 +21,26 @@ if TYPE_CHECKING:
     from easydiffraction.analysis.fit_helpers.reporting import FitResults
     from easydiffraction.datablocks.experiment.item.base import ExperimentBase
     from easydiffraction.datablocks.structure.collection import Structures
+
+
+@dataclass(frozen=True, slots=True)
+class FitterFitOptions:
+    """Execution options for one fitter run."""
+
+    use_physical_limits: bool = False
+    random_seed: int | None = None
+    resume: bool = False
+    extra_steps: int | None = None
+
+    def as_minimizer_options(self) -> MinimizerFitOptions:
+        """Return equivalent minimizer options for this fitter run."""
+        return MinimizerFitOptions(
+            finalize_tracking=False,
+            use_physical_limits=self.use_physical_limits,
+            random_seed=self.random_seed,
+            resume=self.resume,
+            extra_steps=self.extra_steps,
+        )
 
 
 def _resolve_fit_result_message(results: FitResults) -> str:
@@ -127,6 +149,7 @@ class Fitter:
         self.results.message = _resolve_fit_result_message(self.results)
         self.results.iterations = _resolve_fit_result_iterations(self.results)
         self.results.chi_square = _resolve_fit_result_chi_square(self.results)
+        self.results.minimizer_type = self.selection
 
         if analysis is None:
             return
@@ -145,8 +168,7 @@ class Fitter:
         analysis: object = None,
         verbosity: VerbosityEnum = VerbosityEnum.FULL,
         *,
-        use_physical_limits: bool = False,
-        random_seed: int | None = None,
+        options: FitterFitOptions | None = None,
     ) -> None:
         """
         Run the fitting process.
@@ -169,13 +191,16 @@ class Fitter:
             fitting.
         verbosity : VerbosityEnum, default=VerbosityEnum.FULL
             Console output verbosity.
-        use_physical_limits : bool, default=False
-            When ``True``, fall back to physical limits from the value
-            spec for parameters whose ``fit_min``/``fit_max`` are
-            unbounded.
-        random_seed : int | None, default=None
-            Optional random seed passed to stochastic minimizers.
+        options : FitterFitOptions | None, default=None
+            Execution options controlling limits, randomness and resume.
+
+        Raises
+        ------
+        ValueError
+            If resume is requested without the same free parameter set
+            used by the saved emcee chain.
         """
+        fit_options = options or FitterFitOptions()
         # Enforce symmetry constraints (e.g. ADP) before collecting
         # free parameters so that components fixed by site symmetry are
         # excluded from the minimizer's parameter set.
@@ -186,6 +211,9 @@ class Fitter:
         params = self._collect_fit_parameters(structures, experiments)
 
         if not params:
+            if fit_options.resume:
+                msg = 'Resume requires the same free parameters used by the saved emcee chain.'
+                raise ValueError(msg)
             if analysis is not None:
                 analysis._clear_persisted_fit_state()
                 analysis.fit_results = None
@@ -193,8 +221,10 @@ class Fitter:
             print('⚠️ No parameters selected for fitting.')
             return
 
-        if analysis is not None:
+        if analysis is not None and not fit_options.resume:
             analysis._capture_fit_parameter_state(params)
+        if analysis is not None and fit_options.resume:
+            self._validate_resume_parameter_set(params=params, analysis=analysis)
 
         for param in params:
             param._fit_start_value = param.value
@@ -207,6 +237,8 @@ class Fitter:
             analysis=analysis,
         )
 
+        self._set_minimizer_sidecar_path(analysis)
+
         try:
             # Keep tracker finalization in this layer so post-processing
             # can run before the live display is closed.
@@ -214,22 +246,57 @@ class Fitter:
                 params,
                 objective_function,
                 verbosity=verbosity,
-                finalize_tracking=False,
-                use_physical_limits=use_physical_limits,
-                random_seed=random_seed,
+                options=fit_options.as_minimizer_options(),
             )
-            # Stop the timer and backfill results.fitting_time now so
-            # post-processing projects a real duration into persisted
-            # categories. The live display is still torn down in the
-            # finally below.
-            self.minimizer._finalize_timing()
             self._postprocess_fit_results(
                 analysis=analysis,
                 experiments=experiments,
                 fitted_parameters=params,
             )
+            # Keep the timer open through post-processing so the final
+            # sampler row and persisted fitting_time include the heavy
+            # Bayesian projection/cache work.
+            self.minimizer._finalize_timing()
+            self._backfill_persisted_fitting_time(analysis)
         finally:
             self.minimizer._stop_tracking()
+
+    def _set_minimizer_sidecar_path(self, analysis: object) -> None:
+        """Set the analysis results sidecar path when supported."""
+        if analysis is None or not hasattr(self.minimizer, '_sidecar_path'):
+            return
+
+        project_info = getattr(getattr(analysis, 'project', None), 'info', None)
+        project_path = getattr(project_info, 'path', None)
+        sidecar_path = None if project_path is None else project_path / 'analysis' / 'results.h5'
+        self.minimizer._sidecar_path = sidecar_path
+
+    def _backfill_persisted_fitting_time(self, analysis: object) -> None:
+        """Update persisted fit-result time after post-processing."""
+        if analysis is None or self.results is None:
+            return
+        fit_result = getattr(analysis, 'fit_result', None)
+        set_fitting_time = getattr(fit_result, '_set_fitting_time', None)
+        if callable(set_fitting_time):
+            set_fitting_time(self.results.fitting_time)
+
+    @staticmethod
+    def _validate_resume_parameter_set(
+        *,
+        params: list[Parameter],
+        analysis: object,
+    ) -> None:
+        """Ensure resume uses the same persisted free-parameter set."""
+        persisted_names = [
+            item.param_unique_name.value for item in getattr(analysis, 'fit_parameters', [])
+        ]
+        if not persisted_names:
+            return
+
+        current_names = [param.unique_name for param in params]
+        if persisted_names != current_names:
+            msg = 'Resume parameter set differs from the saved emcee chain; start a fresh run.'
+            raise ValueError(msg)
 
     def _process_fit_results(
         self,

@@ -30,6 +30,7 @@ from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.environment import resolve_artifact_path
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
+from easydiffraction.utils.utils import display_path
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -463,8 +464,7 @@ class Project(GuardedBase):  # noqa: PLR0904
             log.error('Project path not specified. Use save_as() to define the path first.')
             return
 
-        console.paragraph(f"Saving project 📦 '{self.name}' to")
-        console.print(self.info.path.resolve())
+        console.paragraph(f"Saving project 📦 '{self.name}' to '{display_path(self.info.path)}'")
 
         # Apply constraints so dependent parameters are flagged
         # before serialization (user-constrained params are written

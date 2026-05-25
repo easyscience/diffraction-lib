@@ -24,6 +24,7 @@ class MinimizerCategoryBase(CategoryItem, SwitchableCategoryBase):
     _owner_attr_name = 'minimizer'
     _swap_method_name = '_swap_minimizer'
     _native_key_map: ClassVar[dict[str, str]] = {}
+    _engine_sync_skip_keys: ClassVar[frozenset[str]] = frozenset({'random_seed'})
     _setting_descriptor_names: ClassVar[tuple[str, ...]] = ()
     _result_descriptor_names: ClassVar[tuple[str, ...]] = ()
     _fit_result_class: ClassVar[type[FitResultBase]] = FitResultBase

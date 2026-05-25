@@ -6,20 +6,30 @@ import argparse
 import csv
 import os
 import platform
+import re
 import subprocess  # noqa: S404
 import sys
+import tempfile
 import time
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from pathlib import PurePosixPath
 
+SECONDS_PER_MINUTE = 60
+
 ROOT = Path(__file__).resolve().parents[1]
 SRC_ROOT = ROOT / 'src'
 DEFAULT_TUTORIAL_DIR = ROOT / 'docs' / 'docs' / 'tutorials'
 DEFAULT_OUTPUT_DIR = ROOT / 'docs' / 'dev' / 'benchmarking'
 CHECKPOINT_DIR_NAME = '.ipynb_checkpoints'
-CSV_HEADER = ['tutorial_name', 'elapsed_seconds', 'status', 'return_code']
+CSV_HEADER = ['tutorial_name', 'elapsed_seconds', 'status']
+
+# Layout for the live single-line table. The name column is sized
+# from the longest tutorial name encountered.
+STATUS_COLUMN_WIDTH = 10
+TIME_COLUMN_WIDTH = 10  # includes trailing 's'
+PROGRESS_POLL_SECONDS = 0.2
 
 
 @dataclass(frozen=True)
@@ -29,7 +39,6 @@ class TutorialBenchmarkResult:
     tutorial_name: str
     elapsed_seconds: float
     status: str
-    return_code: int
 
 
 def _relative_display_path(path: Path, start_path: Path) -> str:
@@ -55,12 +64,56 @@ def _build_env() -> dict[str, str]:
     return env
 
 
+def _natural_sort_key(path: Path) -> list[object]:
+    """
+    Return a sort key for natural ordering.
+
+    Splits the path string into alternating text and integer tokens
+    so ``ed-1.py``, ``ed-2.py``, ``ed-10.py`` sort numerically
+    instead of lexicographically.
+    """
+    return [
+        int(token) if token.isdigit() else token.lower()
+        for token in re.split(r'(\d+)', str(path))
+    ]
+
+
 def _discover_tutorials(tutorial_dir: Path) -> list[Path]:
     return [
         path
-        for path in sorted(tutorial_dir.rglob('*.py'))
+        for path in sorted(tutorial_dir.rglob('*.py'), key=_natural_sort_key)
         if CHECKPOINT_DIR_NAME not in path.parts
     ]
+
+
+def _format_elapsed(seconds: float) -> str:
+    """
+    Format elapsed time for table display.
+
+    Rounds to the nearest whole second. Values that round to less
+    than one minute render as ``Xs`` (e.g. ``20s``); values that
+    round to a minute or more render as ``Xm Ys`` (e.g. ``1m 18s``,
+    ``20m 1s``).
+    """
+    total_seconds = int(round(seconds))
+    if total_seconds < SECONDS_PER_MINUTE:
+        return f'{total_seconds}s'
+    minutes, remaining_seconds = divmod(total_seconds, SECONDS_PER_MINUTE)
+    return f'{minutes}m {remaining_seconds:>2}s'
+
+
+def _format_counter(index: int | None, total: int) -> str:
+    """
+    Format the ``[n/N]`` counter cell for the progress table.
+
+    Returns a blank string of the same width when *index* is
+    ``None`` so the total-time summary row aligns with the data
+    rows.
+    """
+    width = len(str(total))
+    if index is None:
+        return ' ' * (width * 2 + 3)  # length of '[n/N]'
+    return f'[{index:>{width}}/{total}]'
 
 
 def _matches_requested_patterns(
@@ -75,37 +128,112 @@ def _matches_requested_patterns(
     return any(rel_path.match(pattern) or script_path.name == pattern for pattern in patterns)
 
 
+def _format_progress_line(
+    *,
+    counter: str,
+    name: str,
+    name_width: int,
+    status: str,
+    elapsed_text: str,
+) -> str:
+    """Format one row for the live progress table."""
+    return (
+        f'{counter}  '
+        f'{name:<{name_width}}  '
+        f'{status:<{STATUS_COLUMN_WIDTH}}  '
+        f'{elapsed_text:>{TIME_COLUMN_WIDTH}}'
+    )
+
+
+def _emit_progress_line(*, line: str, final: bool, is_tty: bool) -> None:
+    """
+    Render one progress line.
+
+    On a TTY the same line is rewritten in place via carriage return so
+    the elapsed-seconds field updates while the tutorial is running;
+    only the final write terminates with a newline. When stdout is not
+    a TTY (CI, log file), only the final row is printed so the log
+    stays one-line-per-tutorial without carriage-return noise.
+    """
+    if is_tty:
+        terminator = '\n' if final else ''
+        sys.stdout.write('\r' + line + terminator)
+        sys.stdout.flush()
+    elif final:
+        print(line)
+
+
 def _run_tutorial(
     script_path: Path,
     tutorial_dir: Path,
     env: dict[str, str],
+    *,
+    index: int,
+    total: int,
+    name_width: int,
+    is_tty: bool,
 ) -> TutorialBenchmarkResult:
+    """Run one tutorial with a live single-line progress indicator."""
     tutorial_name = _relative_display_path(script_path, tutorial_dir)
     start_time = time.perf_counter()
-    result = subprocess.run(  # noqa: S603
-        [sys.executable, str(script_path)],
-        cwd=str(ROOT),
-        env=env,
-        capture_output=True,
-        text=True,
-        encoding='utf-8',
-    )
-    elapsed_seconds = time.perf_counter() - start_time
-    status = 'ok' if result.returncode == 0 else 'failed'
 
-    if result.returncode == 0:
-        print(f'        OK      {elapsed_seconds:.1f}s')
-    else:
-        print(f'        FAILED  {elapsed_seconds:.1f}s', file=sys.stderr)
-        details = ((result.stdout or '') + (result.stderr or '')).strip()
-        if details:
-            print(details, file=sys.stderr)
+    # Combined stdout+stderr land in a temp file so the OS pipe buffer
+    # cannot fill up and stall the subprocess while we poll. We only
+    # read the contents back if the tutorial fails.
+    with tempfile.TemporaryFile(mode='wb+') as out_file:
+        proc = subprocess.Popen(  # noqa: S603
+            [sys.executable, str(script_path)],
+            cwd=str(ROOT),
+            env=env,
+            stdout=out_file,
+            stderr=subprocess.STDOUT,
+        )
+
+        counter = _format_counter(index, total)
+        last_displayed_second = -1
+        while proc.poll() is None:
+            elapsed = time.perf_counter() - start_time
+            current_second = int(elapsed)
+            if current_second != last_displayed_second:
+                _emit_progress_line(
+                    line=_format_progress_line(
+                        counter=counter,
+                        name=tutorial_name,
+                        name_width=name_width,
+                        status='Running...',
+                        elapsed_text=_format_elapsed(elapsed),
+                    ),
+                    final=False,
+                    is_tty=is_tty,
+                )
+                last_displayed_second = current_second
+            time.sleep(PROGRESS_POLL_SECONDS)
+
+        elapsed_seconds = time.perf_counter() - start_time
+        success = proc.returncode == 0
+        status_word = 'OK' if success else 'FAILED'
+        _emit_progress_line(
+            line=_format_progress_line(
+                counter=counter,
+                name=tutorial_name,
+                name_width=name_width,
+                status=status_word,
+                elapsed_text=_format_elapsed(elapsed_seconds),
+            ),
+            final=True,
+            is_tty=is_tty,
+        )
+
+        if not success:
+            out_file.seek(0)
+            details = out_file.read().decode('utf-8', errors='replace').strip()
+            if details:
+                print(details, file=sys.stderr)
 
     return TutorialBenchmarkResult(
         tutorial_name=tutorial_name,
         elapsed_seconds=elapsed_seconds,
-        status=status,
-        return_code=result.returncode,
+        status='ok' if success else 'failed',
     )
 
 
@@ -136,7 +264,6 @@ def _append_result(output_path: Path, result: TutorialBenchmarkResult) -> None:
                 result.tutorial_name,
                 f'{result.elapsed_seconds:.3f}',
                 result.status,
-                result.return_code,
             ]
         )
 
@@ -191,19 +318,38 @@ def main() -> int:
     _write_csv_header(output_path)
 
     env = _build_env()
+    is_tty = sys.stdout.isatty()
+    name_width = max(
+        len(_relative_display_path(path, tutorial_dir)) for path in tutorials
+    )
+
     results: list[TutorialBenchmarkResult] = []
     for index, tutorial_path in enumerate(tutorials, start=1):
-        tutorial_name = _relative_display_path(tutorial_path, tutorial_dir)
-        print(f'[{index:2}/{len(tutorials)}] Running {tutorial_name}')
-        result = _run_tutorial(tutorial_path, tutorial_dir, env)
+        result = _run_tutorial(
+            tutorial_path,
+            tutorial_dir,
+            env,
+            index=index,
+            total=len(tutorials),
+            name_width=name_width,
+            is_tty=is_tty,
+        )
         results.append(result)
         _append_result(output_path, result)
 
     total_elapsed = sum(result.elapsed_seconds for result in results)
     failure_count = sum(result.status == 'failed' for result in results)
 
-    print(f'Wrote benchmark results to {_relative_display_path(output_path, ROOT)}')
-    print(f'Total elapsed time: {total_elapsed:.3f}s')
+    print(
+        _format_progress_line(
+            counter=_format_counter(None, len(tutorials)),
+            name='Total',
+            name_width=name_width,
+            status='',
+            elapsed_text=_format_elapsed(total_elapsed),
+        )
+    )
+    print(f'Save results to: {_relative_display_path(output_path, ROOT)}')
 
     if failure_count:
         print(f'Failed tutorials: {failure_count}', file=sys.stderr)

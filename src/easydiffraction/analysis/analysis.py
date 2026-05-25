@@ -8,6 +8,7 @@ from itertools import combinations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+import h5py
 import numpy as np
 import pandas as pd
 
@@ -29,11 +30,16 @@ from easydiffraction.analysis.categories.sequential_fit_extract import (
 from easydiffraction.analysis.enums import FitCorrelationSourceEnum
 from easydiffraction.analysis.enums import FitModeEnum
 from easydiffraction.analysis.enums import FitResultKindEnum
+from easydiffraction.analysis.fit_helpers.bayesian import ESS_BULK_CONVERGENCE_THRESHOLD
+from easydiffraction.analysis.fit_helpers.bayesian import R_HAT_CONVERGENCE_THRESHOLD
 from easydiffraction.analysis.fit_helpers.bayesian import BayesianFitResults
 from easydiffraction.analysis.fit_helpers.bayesian import PosteriorPredictiveSummary
 from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
+from easydiffraction.analysis.fit_helpers.bayesian import posterior_predictive_cache_key
 from easydiffraction.analysis.fit_helpers.reporting import FitResults
 from easydiffraction.analysis.fitting import Fitter
+from easydiffraction.analysis.fitting import FitterFitOptions
+from easydiffraction.analysis.minimizers.emcee import EMCEE_CHAIN_GROUP
 from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.core.category_owner import CategoryOwner
 from easydiffraction.core.guard import _apply_help_filter
@@ -43,6 +49,7 @@ from easydiffraction.core.variable import Parameter
 from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.datablocks.experiment.item.base import intensity_category_for
 from easydiffraction.display.progress import make_display_handle
+from easydiffraction.display.progress import notebook_fit_stop_control
 from easydiffraction.display.tables import TableRenderer
 from easydiffraction.io.cif.serialize import analysis_to_cif
 from easydiffraction.utils.enums import VerbosityEnum
@@ -50,6 +57,7 @@ from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import _help_method_rows
 from easydiffraction.utils.utils import _help_property_rows
+from easydiffraction.utils.utils import format_bulleted_warning
 from easydiffraction.utils.utils import render_cif
 from easydiffraction.utils.utils import render_object_help
 from easydiffraction.utils.utils import render_table
@@ -524,17 +532,6 @@ class Analysis(
         """Switch the active fitting-mode category."""
         self._replace_fitting_mode(new_type, announce=True)
 
-    @staticmethod
-    def _predictive_cache_key(
-        experiment_name: str,
-        x_axis_name: str,
-        *,
-        include_draws: bool = True,
-    ) -> str:
-        """Return the runtime cache key for one predictive summary."""
-        key_suffix = 'draws' if include_draws else 'band'
-        return f'{experiment_name}:{x_axis_name}:{key_suffix}'
-
     def _live_parameter_map(self) -> dict[str, Parameter]:
         """Return live parameters keyed by unique name."""
         all_parameters = self.project.structures.parameters + self.project.experiments.parameters
@@ -668,7 +665,7 @@ class Analysis(
             )
             restored_predictive[experiment_name] = summary
             restored_predictive[
-                self._predictive_cache_key(
+                posterior_predictive_cache_key(
                     experiment_name,
                     x_axis_name,
                     include_draws=False,
@@ -676,13 +673,142 @@ class Analysis(
             ] = summary
             if summary.draws is not None:
                 restored_predictive[
-                    self._predictive_cache_key(
+                    posterior_predictive_cache_key(
                         experiment_name,
                         x_axis_name,
                         include_draws=True,
                     )
                 ] = summary
         return restored_predictive
+
+    @staticmethod
+    def _finite_float(value: object) -> float | None:
+        """Return a finite float or ``None``."""
+        if value is None:
+            return None
+        try:
+            numeric_value = float(value)
+        except (TypeError, ValueError):
+            return None
+        return numeric_value if np.isfinite(numeric_value) else None
+
+    @classmethod
+    def _restored_bayesian_converged(
+        cls,
+        *,
+        max_r_hat: object,
+        min_ess_bulk: object,
+    ) -> bool:
+        """Return restored convergence status."""
+        r_hat = cls._finite_float(max_r_hat)
+        ess_bulk = cls._finite_float(min_ess_bulk)
+        if r_hat is None or ess_bulk is None:
+            return False
+        return r_hat <= R_HAT_CONVERGENCE_THRESHOLD and ess_bulk >= ESS_BULK_CONVERGENCE_THRESHOLD
+
+    def _restored_bayesian_convergence_diagnostics(
+        self,
+        *,
+        sample_shape: tuple[int, int, int],
+        n_parameters: int,
+    ) -> dict[str, object]:
+        """Return restored convergence diagnostics."""
+        max_r_hat = self.fit_result.gelman_rubin_max.value
+        min_ess_bulk = self.fit_result.effective_sample_size_min.value
+        diagnostics: dict[str, object] = {
+            'converged': self._restored_bayesian_converged(
+                max_r_hat=max_r_hat,
+                min_ess_bulk=min_ess_bulk,
+            ),
+            'max_r_hat': max_r_hat,
+            'min_ess_bulk': min_ess_bulk,
+            'n_draws': int(sample_shape[0]),
+            'n_chains': int(sample_shape[1]),
+            'n_parameters': int(n_parameters),
+        }
+
+        acceptance_rate_mean = self.fit_result.acceptance_rate_mean.value
+        if acceptance_rate_mean is not None:
+            diagnostics['acceptance_rate_mean'] = acceptance_rate_mean
+        return diagnostics
+
+    def _restored_bayesian_reduced_chi_square(
+        self,
+        value: object,
+        *,
+        restored_parameters: list[Parameter],
+    ) -> float | None:
+        """Return restored Bayesian reduced chi-square."""
+        persisted_value = self._finite_float(value)
+        if persisted_value is not None:
+            return persisted_value
+
+        best_log_posterior = self._finite_float(self.fit_result.best_log_posterior.value)
+        if best_log_posterior is None:
+            return None
+
+        n_data_points = self._fit_data_point_count(self.project.experiments)
+        degrees_of_freedom = n_data_points - len(restored_parameters)
+        if degrees_of_freedom <= 0:
+            return None
+        return -2.0 * best_log_posterior / degrees_of_freedom
+
+    def _restore_bayesian_fit_results_from_projection(
+        self,
+        *,
+        restored_parameters: list[Parameter],
+        fitting_time: float | None,
+        reduced_chi_square: float | None,
+    ) -> BayesianFitResults:
+        """Rebuild a Bayesian runtime result from saved state."""
+        posterior_samples = self._restored_posterior_samples()
+        sample_shape = (
+            np.asarray(posterior_samples.parameter_samples).shape
+            if posterior_samples is not None
+            else (0, 0, 0)
+        )
+        posterior_summaries = self._restored_posterior_summaries()
+        n_parameters = int(sample_shape[2]) or len(posterior_summaries)
+        sampler_settings = self.minimizer._native_kwargs()
+        resolved_random_seed = self._restored_bayesian_random_seed(sampler_settings)
+        sampler_name = (
+            'dream'
+            if self.minimizer.type == MinimizerTypeEnum.BUMPS_DREAM.value
+            else str(self.minimizer.type)
+        )
+        restored_results = BayesianFitResults(
+            success=bool(self.fit_result.success.value),
+            parameters=restored_parameters,
+            reduced_chi_square=self._restored_bayesian_reduced_chi_square(
+                reduced_chi_square,
+                restored_parameters=restored_parameters,
+            ),
+            starting_parameters=list(restored_parameters),
+            fitting_time=fitting_time,
+            sampler_name=sampler_name,
+            point_estimate_name=self.fit_result.point_estimate_name.value or 'best_sample',
+            posterior_samples=posterior_samples,
+            posterior_parameter_summaries=posterior_summaries,
+            posterior_predictive=self._restored_predictive_summaries(),
+            credible_interval_levels=(
+                float(self.fit_result.credible_interval_inner.value),
+                float(self.fit_result.credible_interval_outer.value),
+            ),
+            sampler_settings=self._restored_bayesian_sampler_settings(
+                sampler_settings,
+                random_seed=resolved_random_seed,
+                n_parameters=n_parameters,
+            ),
+            convergence_diagnostics=self._restored_bayesian_convergence_diagnostics(
+                sample_shape=sample_shape,
+                n_parameters=n_parameters,
+            ),
+            sampler_completed=bool(self.fit_result.sampler_completed.value),
+            best_log_posterior=self.fit_result.best_log_posterior.value,
+        )
+        restored_results.message = self.fit_result.message.value or ''
+        restored_results.iterations = _int_or_none(self.fit_result.iterations.value) or 0
+        return restored_results
 
     def _restore_fit_results_from_projection(self) -> object | None:
         """Rebuild a runtime fit-result object from saved state."""
@@ -717,55 +843,11 @@ class Analysis(
         reduced_chi_square = self.fit_result.reduced_chi_square.value
 
         if self.fit_result.result_kind.value == FitResultKindEnum.BAYESIAN.value:
-            posterior_samples = self._restored_posterior_samples()
-            sample_shape = (
-                np.asarray(posterior_samples.parameter_samples).shape
-                if posterior_samples is not None
-                else (0, 0, 0)
-            )
-            sampler_settings = self.minimizer._native_kwargs()
-            sampler_name = (
-                'dream'
-                if self.minimizer.type == MinimizerTypeEnum.BUMPS_DREAM.value
-                else str(self.minimizer.type)
-            )
-            restored_results = BayesianFitResults(
-                success=bool(self.fit_result.success.value),
-                parameters=restored_parameters,
-                reduced_chi_square=reduced_chi_square,
-                starting_parameters=list(restored_parameters),
+            restored_results = self._restore_bayesian_fit_results_from_projection(
+                restored_parameters=restored_parameters,
                 fitting_time=fitting_time,
-                sampler_name=sampler_name,
-                point_estimate_name=self.fit_result.point_estimate_name.value or 'best_sample',
-                posterior_samples=posterior_samples,
-                posterior_parameter_summaries=self._restored_posterior_summaries(),
-                posterior_predictive=self._restored_predictive_summaries(),
-                credible_interval_levels=(
-                    float(self.fit_result.credible_interval_inner.value),
-                    float(self.fit_result.credible_interval_outer.value),
-                ),
-                sampler_settings={
-                    'steps': int(sampler_settings.get('steps', 0)),
-                    'burn': int(sampler_settings.get('burn', 0)),
-                    'thin': int(sampler_settings.get('thin', 0)),
-                    'pop': int(sampler_settings.get('pop', 0)),
-                    'parallel': int(sampler_settings.get('parallel', 0)),
-                    'init': str(sampler_settings.get('init', '')),
-                    'random_seed': sampler_settings.get('random_seed'),
-                },
-                convergence_diagnostics={
-                    'converged': False,
-                    'max_r_hat': self.fit_result.gelman_rubin_max.value,
-                    'min_ess_bulk': self.fit_result.effective_sample_size_min.value,
-                    'n_draws': int(sample_shape[0]),
-                    'n_chains': int(sample_shape[1]),
-                    'n_parameters': int(sample_shape[2]),
-                },
-                sampler_completed=bool(self.fit_result.sampler_completed.value),
-                best_log_posterior=self.fit_result.best_log_posterior.value,
+                reduced_chi_square=reduced_chi_square,
             )
-            restored_results.message = self.fit_result.message.value or ''
-            restored_results.iterations = _int_or_none(self.fit_result.iterations.value) or 0
             self.fit_results = restored_results
             return restored_results
 
@@ -795,6 +877,79 @@ class Analysis(
         restored_results.chi_square = self.fit_result.objective_value.value
         self.fit_results = restored_results
         return restored_results
+
+    def _restored_bayesian_sampler_settings(
+        self,
+        sampler_settings: dict[str, object],
+        *,
+        random_seed: object | None = None,
+        n_parameters: int = 0,
+    ) -> dict[str, object]:
+        """Return display settings for restored Bayesian results."""
+        if self.minimizer.type == MinimizerTypeEnum.EMCEE.value:
+            restored_settings = {
+                'nsteps': self._int_sampler_setting(sampler_settings, 'nsteps'),
+                'nburn': self._int_sampler_setting(sampler_settings, 'nburn'),
+                'thin': self._int_sampler_setting(sampler_settings, 'thin'),
+                'nwalkers': self._int_sampler_setting(sampler_settings, 'nwalkers'),
+                'parallel_workers': self._int_sampler_setting(
+                    sampler_settings,
+                    'parallel_workers',
+                ),
+                'initialization_method': str(sampler_settings.get('initialization_method', '')),
+                'proposal_moves': str(sampler_settings.get('proposal_moves', '')),
+                'random_seed': random_seed,
+            }
+            restored_settings['samples'] = self._sampler_sample_count(
+                restored_settings,
+                n_parameters=n_parameters,
+            )
+            return restored_settings
+
+        restored_settings = {
+            'steps': self._int_sampler_setting(sampler_settings, 'steps'),
+            'burn': self._int_sampler_setting(sampler_settings, 'burn'),
+            'thin': self._int_sampler_setting(sampler_settings, 'thin'),
+            'pop': self._int_sampler_setting(sampler_settings, 'pop'),
+            'parallel': self._int_sampler_setting(sampler_settings, 'parallel'),
+            'init': str(sampler_settings.get('init', '')),
+            'random_seed': random_seed,
+        }
+        restored_settings['samples'] = self._sampler_sample_count(
+            restored_settings,
+            n_parameters=n_parameters,
+        )
+        return restored_settings
+
+    def _restored_bayesian_random_seed(
+        self,
+        sampler_settings: dict[str, object],
+    ) -> object | None:
+        """Return persisted runtime or configured sampler seed."""
+        resolved_seed = self.fit_result.resolved_random_seed.value
+        if resolved_seed is not None:
+            return int(resolved_seed)
+        return sampler_settings.get('random_seed')
+
+    @staticmethod
+    def _int_sampler_setting(
+        sampler_settings: dict[str, object],
+        key: str,
+    ) -> int:
+        """Return an integer sampler setting with a zero fallback."""
+        value = sampler_settings.get(key, 0)
+        return 0 if value is None else int(value)
+
+    @staticmethod
+    def _sampler_sample_count(
+        sampler_settings: dict[str, object],
+        *,
+        n_parameters: int,
+    ) -> int:
+        """Return restored total sampled scalar count."""
+        steps = int(sampler_settings.get('steps') or sampler_settings.get('nsteps') or 0)
+        population = int(sampler_settings.get('pop') or sampler_settings.get('nwalkers') or 0)
+        return max(0, steps) * max(0, population) * max(0, int(n_parameters))
 
     def help(self) -> None:
         """Print a summary of analysis properties and methods."""
@@ -926,31 +1081,162 @@ class Analysis(
         df.columns = pd.MultiIndex.from_tuples(df.columns)
         return df
 
-    def fit(self) -> None:
+    def fit(
+        self,
+        *,
+        resume: bool = False,
+        extra_steps: int | None = None,
+    ) -> None:
         """Execute fitting for the currently selected fitting mode."""
         mode = FitModeEnum(self._fitting_mode.type)
+        self._validate_fit_request(
+            mode=mode,
+            resume=resume,
+            extra_steps=extra_steps,
+        )
+        resolved_resume, resolved_extra_steps = self._resolved_resume_request(
+            resume=resume,
+            extra_steps=extra_steps,
+        )
+        verb = VerbosityEnum(self.project.verbosity.fit.value)
+        try:
+            with notebook_fit_stop_control(verbosity=verb):
+                self._run_fit_mode(
+                    mode=mode,
+                    resume=resolved_resume,
+                    extra_steps=resolved_extra_steps,
+                )
+        except KeyboardInterrupt:
+            self._handle_fit_interrupted(verbosity=verb)
+
+    def _run_fit_mode(
+        self,
+        *,
+        mode: FitModeEnum,
+        resume: bool,
+        extra_steps: int | None,
+    ) -> None:
+        """Dispatch a validated fit request to the selected mode."""
         if mode is FitModeEnum.SINGLE:
-            self._run_single()
+            self._run_single(resume=resume, extra_steps=extra_steps)
         elif mode is FitModeEnum.JOINT:
             self._prepare_joint_fit()
-            self._run_joint()
+            self._run_joint(resume=resume, extra_steps=extra_steps)
         elif mode is FitModeEnum.SEQUENTIAL:
             self._run_sequential()
         else:  # pragma: no cover
             msg = f'Unknown fit mode: {mode!r}'
             raise ValueError(msg)
 
-    def _warn_results_sidecar_overwrite(self) -> None:
-        """Warn before persisted sidecar arrays are overwritten."""
+    def _handle_fit_interrupted(self, *, verbosity: VerbosityEnum) -> None:
+        """Clean up in-memory fit state after a user interrupt."""
+        self.fit_results = None
+        self.fitter.results = None
+        self._clear_persisted_fit_state()
+        self._prepare_results_sidecar_for_new_fit()
+        if verbosity is not VerbosityEnum.SILENT:
+            console.print('⏹️ Fitting stopped by user.')
+
+    def _resolved_resume_request(
+        self,
+        *,
+        resume: bool,
+        extra_steps: int | None,
+    ) -> tuple[bool, int | None]:
+        """Return executable resume flags for this fit request."""
+        if not resume:
+            return False, extra_steps
+
+        if not self._has_resumable_emcee_sidecar():
+            log.warning(
+                'resume=True requested, but no saved emcee chain was found; '
+                'starting a fresh fit instead.'
+            )
+            return False, None
+
+        return True, self._resolved_resume_extra_steps(extra_steps)
+
+    def _validate_fit_request(
+        self,
+        *,
+        mode: FitModeEnum,
+        resume: bool,
+        extra_steps: int | None,
+    ) -> None:
+        """Validate fit options before dispatching to a fitting mode."""
+        if extra_steps is not None and not resume:
+            msg = 'extra_steps is only valid when resume=True.'
+            raise ValueError(msg)
+        if resume and mode is not FitModeEnum.SINGLE:
+            msg = 'Resume is supported in single fit mode only.'
+            raise ValueError(msg)
+
+        is_emcee = self.minimizer.type == MinimizerTypeEnum.EMCEE.value
+        if resume and not is_emcee:
+            msg = "Resume is supported only when analysis.minimizer.type = 'emcee'."
+            raise ValueError(msg)
+        if is_emcee and self.project.info.path is None:
+            msg = (
+                'emcee requires a saved project; call project.save_as(<path>) '
+                'before analysis.fit().'
+            )
+            raise ValueError(msg)
+        if resume and extra_steps is not None:
+            self._validate_resume_extra_steps(extra_steps)
+
+    @staticmethod
+    def _validate_resume_extra_steps(extra_steps: object) -> int:
+        """Validate the emcee resume step count."""
+        if extra_steps is None or isinstance(extra_steps, bool):
+            msg = 'extra_steps must be a positive integer when resume=True.'
+            raise ValueError(msg)
+
+        try:
+            integer_steps = int(extra_steps)
+        except (TypeError, ValueError):
+            msg = 'extra_steps must be a positive integer when resume=True.'
+            raise ValueError(msg) from None
+        if integer_steps != extra_steps or integer_steps < 1:
+            msg = 'extra_steps must be a positive integer when resume=True.'
+            raise ValueError(msg)
+        return integer_steps
+
+    def _resolved_resume_extra_steps(self, extra_steps: int | None) -> int:
+        """Return explicit or minimizer-default emcee resume steps."""
+        if extra_steps is not None:
+            return self._validate_resume_extra_steps(extra_steps)
+        return self._validate_resume_extra_steps(self.minimizer.sampling_steps.value)
+
+    def _has_resumable_emcee_sidecar(self) -> bool:
+        """Return whether the saved project has a resumable chain."""
+        project_path = self.project.info.path
+        if project_path is None:
+            return False
+
+        sidecar_path = project_path / 'analysis' / 'results.h5'
+        if not sidecar_path.is_file():
+            return False
+
+        try:
+            with h5py.File(sidecar_path, 'r') as handle:
+                group = handle.get(EMCEE_CHAIN_GROUP)
+                if group is None:
+                    return False
+                return int(group.attrs.get('iteration', 0)) > 0
+        except (OSError, TypeError, ValueError):
+            return False
+
+    def _prepare_results_sidecar_for_new_fit(self) -> None:
+        """Remove persisted sidecar arrays before a fresh fit."""
         project_path = self.project.info.path
         if project_path is None:
             return
 
         from easydiffraction.io.results_sidecar import (  # noqa: PLC0415
-            warn_analysis_results_sidecar_overwrite,
+            prepare_analysis_results_sidecar_for_new_fit,
         )
 
-        warn_analysis_results_sidecar_overwrite(analysis_dir=project_path / 'analysis')
+        prepare_analysis_results_sidecar_for_new_fit(analysis_dir=project_path / 'analysis')
 
     def _prepare_joint_fit(self) -> None:
         """
@@ -1088,8 +1374,8 @@ class Analysis(
         on ``new_minimizer`` (a value the user previously customised is
         no longer applicable). ``added`` lists settings introduced by
         the new minimizer with their default value. ``changed`` lists
-        settings shared by both whose default value differs, in the
-        ``'{name}={old!r}->{new!r}'`` form.
+        settings shared by both whose default value differs, in a
+        ``'{name}: {old!r} -> {new!r}'`` form.
         """
         old_values = old_minimizer._descriptor_values(old_minimizer._setting_descriptor_names)
         new_values = new_minimizer._descriptor_values(new_minimizer._setting_descriptor_names)
@@ -1098,7 +1384,7 @@ class Analysis(
         removed = sorted(old_keys - new_keys)
         added = sorted(f'{name}={new_values[name]!r}' for name in (new_keys - old_keys))
         changed = sorted(
-            f'{name}={old_values[name]!r}->{new_values[name]!r}'
+            f'{name}: {old_values[name]!r} -> {new_values[name]!r}'
             for name in (old_keys & new_keys)
             if old_values[name] != new_values[name]
         )
@@ -1121,21 +1407,33 @@ class Analysis(
         """
         removed, added, changed = cls._minimizer_swap_diff(old_minimizer, new_minimizer)
         if removed:
-            log.warning(f'Switching minimizer type removes these settings: {", ".join(removed)}.')
+            log.warning(
+                format_bulleted_warning(
+                    'Switching minimizer type removes these settings:',
+                    removed,
+                )
+            )
         if added:
             log.warning(
-                f'Switching minimizer type adds these settings with defaults: {", ".join(added)}.'
+                format_bulleted_warning(
+                    'Switching minimizer type adds these settings with defaults:',
+                    added,
+                )
             )
         if changed:
             log.warning(
-                f'Switching minimizer type changes these default values: {", ".join(changed)}.'
+                format_bulleted_warning(
+                    'Switching minimizer type changes these default values:',
+                    changed,
+                )
             )
 
     def _sync_engine_from_minimizer_category(self) -> None:
         """Apply minimizer category settings to the live engine."""
         engine = self.fitter.minimizer
+        skip_keys = type(self.minimizer)._engine_sync_skip_keys
         for key, value in self.minimizer._native_kwargs().items():
-            if key == 'random_seed':
+            if key in skip_keys:
                 continue
             if not hasattr(engine, key):
                 log.warning(
@@ -1190,16 +1488,13 @@ class Analysis(
         ]
 
         try:
-            result_kind = FitResultKindEnum(self.fit_result.result_kind.value)
+            FitResultKindEnum(self.fit_result.result_kind.value)
         except ValueError:
             log.warning(
                 'Unsupported fit_result.result_kind while serializing analysis CIF: '
                 f'{self.fit_result.result_kind.value!r}. '
                 'Saving only common fit-state categories.',
             )
-            return categories
-
-        if result_kind is FitResultKindEnum.DETERMINISTIC:
             return categories
 
         return categories
@@ -1585,7 +1880,7 @@ class Analysis(
 
             results.posterior_predictive[summary.experiment_name] = summary
             results.posterior_predictive[
-                self._predictive_cache_key(
+                posterior_predictive_cache_key(
                     summary.experiment_name,
                     str(x_axis_name),
                     include_draws=False,
@@ -1688,6 +1983,7 @@ class Analysis(
         self.fit_result._set_best_log_posterior(results.best_log_posterior)
         self.fit_result._set_credible_interval_inner(credible_interval_inner)
         self.fit_result._set_credible_interval_outer(credible_interval_outer)
+        self.fit_result._set_resolved_random_seed(self._bayesian_result_random_seed(results))
         self.fit_result._set_gelman_rubin_max(convergence.get('max_r_hat'))
         self.fit_result._set_effective_sample_size_min(convergence.get('min_ess_bulk'))
         self.fit_result._set_acceptance_rate_mean(convergence.get('acceptance_rate_mean'))
@@ -1719,6 +2015,12 @@ class Analysis(
             correlation_matrix=correlation_matrix,
             source_kind=FitCorrelationSourceEnum.POSTERIOR,
         )
+
+    @staticmethod
+    def _bayesian_result_random_seed(results: BayesianFitResults) -> int | None:
+        """Return the runtime seed from Bayesian result settings."""
+        seed = results.sampler_settings.get('random_seed')
+        return None if seed is None else int(seed)
 
     def _store_fit_result_projection(
         self,
@@ -1766,7 +2068,11 @@ class Analysis(
 
         return project_path / data_dir
 
-    def _prepare_fit_run(self) -> tuple[VerbosityEnum, object, object] | None:
+    def _prepare_fit_run(
+        self,
+        *,
+        resume: bool = False,
+    ) -> tuple[VerbosityEnum, object, object] | None:
         """Resolve common inputs for single and joint fitting."""
         verb = VerbosityEnum(self.project.verbosity.fit.value)
         structures = self.project.structures
@@ -1779,7 +2085,8 @@ class Analysis(
             log.warning('No experiments found in the project. Cannot run fit.')
             return None
 
-        self._warn_results_sidecar_overwrite()
+        if not resume:
+            self._prepare_results_sidecar_for_new_fit()
 
         # Apply constraints before fitting so that user-constrained
         # parameters are marked and excluded from the free parameter
@@ -1789,11 +2096,16 @@ class Analysis(
 
         return verb, structures, experiments
 
-    def _run_single(self) -> None:
+    def _run_single(
+        self,
+        *,
+        resume: bool = False,
+        extra_steps: int | None = None,
+    ) -> None:
         """
         Execute single-mode fitting with current project verbosity.
         """
-        prepared = self._prepare_fit_run()
+        prepared = self._prepare_fit_run(resume=resume)
         if prepared is None:
             return
 
@@ -1802,16 +2114,24 @@ class Analysis(
             verb,
             structures,
             experiments,
-            use_physical_limits=False,
-            random_seed=None,
+            fit_options=FitterFitOptions(resume=resume, extra_steps=extra_steps),
         )
 
         if self.project.info.path is not None:
             self.project.save()
 
-    def _run_joint(self) -> None:
+    def _run_joint(
+        self,
+        *,
+        resume: bool = False,
+        extra_steps: int | None = None,
+    ) -> None:
         """Execute joint-mode fitting with current project verbosity."""
-        prepared = self._prepare_fit_run()
+        if resume:
+            msg = 'Resume is supported in single fit mode only.'
+            raise ValueError(msg)
+
+        prepared = self._prepare_fit_run(resume=resume)
         if prepared is None:
             return
 
@@ -1820,8 +2140,7 @@ class Analysis(
             verb,
             structures,
             experiments,
-            use_physical_limits=False,
-            random_seed=None,
+            fit_options=FitterFitOptions(resume=resume, extra_steps=extra_steps),
         )
 
         if self.project.info.path is not None:
@@ -1835,7 +2154,7 @@ class Analysis(
 
         self._set_fitting_mode_type(FitModeEnum.SEQUENTIAL.value)
         self._update_categories()
-        self._warn_results_sidecar_overwrite()
+        self._prepare_results_sidecar_for_new_fit()
         self._clear_persisted_fit_state()
 
         max_workers_value = self._sequential_fit.max_workers.value
@@ -1870,8 +2189,7 @@ class Analysis(
         structures: object,
         experiments: object,
         *,
-        use_physical_limits: bool,
-        random_seed: int | None,
+        fit_options: FitterFitOptions,
     ) -> None:
         """
         Run joint fitting across all experiments with weights.
@@ -1884,11 +2202,18 @@ class Analysis(
             Project structures collection.
         experiments : object
             Project experiments collection.
-        use_physical_limits : bool
-            Whether to use physical limits as fit bounds.
-        random_seed : int | None
-            Optional random seed passed to stochastic minimizers.
+        fit_options : FitterFitOptions
+            Execution options controlling limits, randomness and resume.
+
+        Raises
+        ------
+        ValueError
+            If resume is requested for joint fitting.
         """
+        if fit_options.resume:
+            msg = 'Resume is supported in single fit mode only.'
+            raise ValueError(msg)
+
         mode = FitModeEnum.JOINT
         # Auto-populate joint_fit if empty
         if not len(self._joint_fit):
@@ -1908,8 +2233,12 @@ class Analysis(
             weights=weights_array,
             analysis=self,
             verbosity=verb,
-            use_physical_limits=use_physical_limits,
-            random_seed=self._resolved_fit_random_seed(random_seed),
+            options=FitterFitOptions(
+                use_physical_limits=fit_options.use_physical_limits,
+                random_seed=self._resolved_fit_random_seed(fit_options.random_seed),
+                resume=fit_options.resume,
+                extra_steps=fit_options.extra_steps,
+            ),
         )
 
         # After fitting, get the results
@@ -1921,8 +2250,7 @@ class Analysis(
         structures: object,
         experiments: object,
         *,
-        use_physical_limits: bool,
-        random_seed: int | None,
+        fit_options: FitterFitOptions,
     ) -> None:
         """
         Run single-mode fitting for each experiment independently.
@@ -1935,13 +2263,20 @@ class Analysis(
             Project structures collection.
         experiments : object
             Project experiments collection.
-        use_physical_limits : bool
-            Whether to use physical limits as fit bounds.
-        random_seed : int | None
-            Optional random seed passed to stochastic minimizers.
+        fit_options : FitterFitOptions
+            Execution options controlling limits, randomness and resume.
+
+        Raises
+        ------
+        ValueError
+            If resume is requested for more than one single-fit
+            experiment.
         """
         mode = FitModeEnum.SINGLE
         expt_names = experiments.names
+        if fit_options.resume and len(expt_names) != 1:
+            msg = 'Resume is supported for one single-fit experiment at a time.'
+            raise ValueError(msg)
 
         short_display_handle = self._fit_single_print_header(verb, expt_names, mode)
         short_rows: list[list[str]] = []
@@ -1952,8 +2287,7 @@ class Analysis(
                 verb,
                 structures,
                 experiments,
-                use_physical_limits=use_physical_limits,
-                random_seed=random_seed,
+                fit_options=fit_options,
                 short_state=(short_rows, short_display_handle),
             )
         finally:
@@ -1970,8 +2304,7 @@ class Analysis(
         structures: object,
         experiments: object,
         *,
-        use_physical_limits: bool,
-        random_seed: int | None,
+        fit_options: FitterFitOptions,
         short_state: tuple[list[list[str]], object],
     ) -> None:
         """Run the per-experiment loop for single-fit mode."""
@@ -1989,8 +2322,12 @@ class Analysis(
                 [experiment],
                 analysis=self,
                 verbosity=verb,
-                use_physical_limits=use_physical_limits,
-                random_seed=self._resolved_fit_random_seed(random_seed),
+                options=FitterFitOptions(
+                    use_physical_limits=fit_options.use_physical_limits,
+                    random_seed=self._resolved_fit_random_seed(fit_options.random_seed),
+                    resume=fit_options.resume,
+                    extra_steps=fit_options.extra_steps,
+                ),
             )
 
             results = self.fitter.results

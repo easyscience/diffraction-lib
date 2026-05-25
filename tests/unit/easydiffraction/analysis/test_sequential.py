@@ -576,6 +576,8 @@ def test_fit_sequential_non_silent_starts_indicator_with_progress_table(
     tmp_path,
     verbosity,
 ):
+    from easydiffraction.utils.utils import display_path
+
     events = _run_non_silent_fit(
         monkeypatch,
         tmp_path,
@@ -601,7 +603,11 @@ def test_fit_sequential_non_silent_starts_indicator_with_progress_table(
     assert events[8] == ('stop',)
     assert events[9:] == [
         ('console_print', ('✅ Sequential fitting complete: 1 files processed.',), {}),
-        ('console_print', (f'📄 Results saved to:\n{tmp_path / "results.csv"}',), {}),
+        (
+            'console_print',
+            (f"📄 Results saved to '{display_path(tmp_path / 'results.csv')}'",),
+            {},
+        ),
     ]
 
 

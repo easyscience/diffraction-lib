@@ -159,7 +159,7 @@ live on `FitResultBase`; family-specific fields on the concrete classes:
   `exit_reason`.
 - `BayesianFitResult` adds: `point_estimate_name`, `sampler_completed`,
   `credible_interval_inner`, `credible_interval_outer`,
-  `acceptance_rate_mean`, `gelman_rubin_max`,
+  `resolved_random_seed`, `acceptance_rate_mean`, `gelman_rubin_max`,
   `effective_sample_size_min`, `best_log_posterior`.
 
 The three overlapping pairs from §"Context" are resolved by **dropping

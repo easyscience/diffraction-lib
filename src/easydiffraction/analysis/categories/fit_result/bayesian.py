@@ -11,6 +11,7 @@ from easydiffraction.analysis.categories.fit_result.factory import FitResultFact
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.variable import BoolDescriptor
+from easydiffraction.core.variable import IntegerDescriptor
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.io.cif.handler import CifHandler
@@ -30,11 +31,17 @@ class BayesianFitResult(FitResultBase):
         'sampler_completed',
         'credible_interval_inner',
         'credible_interval_outer',
+        'resolved_random_seed',
         'acceptance_rate_mean',
         'gelman_rubin_max',
         'effective_sample_size_min',
         'best_log_posterior',
     )
+    _optional_result_descriptor_names: ClassVar[tuple[str, ...]] = (
+        'acceptance_rate_mean',
+        'resolved_random_seed',
+    )
+    _omitted_result_descriptor_names: ClassVar[tuple[str, ...]] = ('iterations',)
     _expected_descriptor_names: ClassVar[tuple[str, ...]] = _result_descriptor_names
 
     def __init__(self) -> None:
@@ -43,6 +50,7 @@ class BayesianFitResult(FitResultBase):
         self._sampler_completed = self._sampler_completed_descriptor()
         self._credible_interval_inner = self._credible_interval_inner_descriptor()
         self._credible_interval_outer = self._credible_interval_outer_descriptor()
+        self._resolved_random_seed = self._resolved_random_seed_descriptor()
         self._acceptance_rate_mean = self._acceptance_rate_mean_descriptor()
         self._gelman_rubin_max = self._gelman_rubin_max_descriptor()
         self._effective_sample_size_min = self._effective_sample_size_min_descriptor()
@@ -96,6 +104,16 @@ class BayesianFitResult(FitResultBase):
             description='Mean sampler acceptance rate.',
             value_spec=AttributeSpec(default=None, allow_none=True),
             cif_handler=CifHandler(names=['_fit_result.acceptance_rate_mean']),
+        )
+
+    @staticmethod
+    def _resolved_random_seed_descriptor() -> IntegerDescriptor:
+        """Create a resolved-random-seed descriptor."""
+        return IntegerDescriptor(
+            name='resolved_random_seed',
+            description='Runtime random seed used by the sampler.',
+            value_spec=AttributeSpec(default=None, allow_none=True),
+            cif_handler=CifHandler(names=['_fit_result.resolved_random_seed']),
         )
 
     @staticmethod
@@ -169,6 +187,15 @@ class BayesianFitResult(FitResultBase):
         self._credible_interval_outer.value = value
 
     @property
+    def resolved_random_seed(self) -> IntegerDescriptor:
+        """Runtime random seed used by the sampler."""
+        return self._resolved_random_seed
+
+    def _set_resolved_random_seed(self, value: int | None) -> None:
+        """Set the resolved random seed for internal callers."""
+        self._resolved_random_seed.value = value
+
+    @property
     def acceptance_rate_mean(self) -> NumericDescriptor:
         """Mean sampler acceptance rate."""
         return self._acceptance_rate_mean
@@ -205,3 +232,19 @@ class BayesianFitResult(FitResultBase):
     def _set_best_log_posterior(self, value: float | None) -> None:
         """Set the best log-posterior for internal callers."""
         self._best_log_posterior.value = value
+
+    def _cif_parameters(self) -> list[object]:
+        """Return Bayesian fit-result descriptors for CIF output."""
+        omitted_descriptor_ids = {
+            id(getattr(self, name)) for name in self._omitted_result_descriptor_names
+        }
+        optional_descriptor_ids = {
+            id(getattr(self, name))
+            for name in self._optional_result_descriptor_names
+            if getattr(self, name).value is None
+        }
+        return [
+            descriptor
+            for descriptor in self.parameters
+            if id(descriptor) not in omitted_descriptor_ids | optional_descriptor_ids
+        ]

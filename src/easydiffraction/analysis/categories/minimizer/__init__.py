@@ -9,6 +9,7 @@ from easydiffraction.analysis.categories.minimizer.bumps_de import BumpsDeMinimi
 from easydiffraction.analysis.categories.minimizer.bumps_dream import BumpsDreamMinimizer
 from easydiffraction.analysis.categories.minimizer.bumps_lm import BumpsLmMinimizer
 from easydiffraction.analysis.categories.minimizer.dfols import DfolsMinimizer
+from easydiffraction.analysis.categories.minimizer.emcee import EmceeMinimizer
 from easydiffraction.analysis.categories.minimizer.factory import MinimizerCategoryFactory
 from easydiffraction.analysis.categories.minimizer.lmfit import LmfitMinimizer
 from easydiffraction.analysis.categories.minimizer.lmfit_least_squares import (

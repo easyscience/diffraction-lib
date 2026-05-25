@@ -8,6 +8,7 @@ from contextlib import nullcontext
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from easydiffraction.analysis.fit_helpers.bayesian import posterior_predictive_cache_key
 from easydiffraction.datablocks.experiment.item.base import intensity_category_for
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
@@ -102,7 +103,7 @@ class FitDisplay:
         if not rows:
             return
 
-        console.paragraph('Settings used')
+        console.print('⚙️ Settings used:')
         render_table(
             columns_headers=['Name', 'Value', 'Description'],
             columns_alignment=['left', 'right', 'left'],
@@ -219,8 +220,8 @@ class PosteriorDisplay:
             return True
 
         cache_keys = [
-            plotter._posterior_predictive_key(expt_name, x_axis_name, include_draws=True),
-            plotter._posterior_predictive_key(expt_name, x_axis_name, include_draws=False),
+            posterior_predictive_cache_key(expt_name, x_axis_name, include_draws=True),
+            posterior_predictive_cache_key(expt_name, x_axis_name, include_draws=False),
             expt_name,
         ]
         for cache_key in cache_keys:

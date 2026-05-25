@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Bayesian Analysis: LBCO, HRPT
+# # Bayesian Analysis (`bumps-dream`): LBCO, HRPT
 #
 # This tutorial demonstrates a practical two-stage workflow for powder
 # diffraction analysis with EasyDiffraction.
@@ -41,7 +41,7 @@ import easydiffraction as ed
 project = ed.Project()
 
 # %%
-project.save_as('projects/lbco_hrpt_bayesian')
+project.save_as('projects/lbco_hrpt_bumps-dream')
 
 # %% [markdown]
 # ## Step 2: Build the Structural Model

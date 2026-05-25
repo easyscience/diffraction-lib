@@ -7,8 +7,15 @@ from easydiffraction.analysis.fit_helpers.metrics import calculate_r_factor_squa
 from easydiffraction.analysis.fit_helpers.metrics import calculate_rb_factor
 from easydiffraction.analysis.fit_helpers.metrics import calculate_weighted_r_factor
 from easydiffraction.utils.logging import console
-from easydiffraction.utils.logging import log
+from easydiffraction.utils.utils import print_metrics_table
+from easydiffraction.utils.utils import print_table_footnote
 from easydiffraction.utils.utils import render_table
+
+
+def _overall_status_row_label(status: str) -> str:
+    """Return the metric label for an overall status row."""
+    icon = '✅' if status == 'success' else '❌'
+    return f'{icon} Overall status'
 
 
 class FitResults:
@@ -65,6 +72,7 @@ class FitResults:
             starting_parameters if starting_parameters is not None else []
         )
         self.fitting_time: float | None = fitting_time
+        self.minimizer_type: str | None = None
 
         if 'redchi' in kwargs and self.reduced_chi_square is None:
             self.reduced_chi_square = kwargs.get('redchi')
@@ -96,7 +104,6 @@ class FitResults:
         f_calc : list[float] | None, default=None
             Calculated structure-factor magnitudes for Bragg R.
         """
-        status_icon = '✅' if self.success else '❌'
         rf = rf2 = wr = br = None
         if y_obs is not None and y_calc is not None:
             rf = calculate_r_factor(y_obs, y_calc) * 100
@@ -106,21 +113,10 @@ class FitResults:
         if f_obs is not None and f_calc is not None:
             br = calculate_rb_factor(f_obs, f_calc) * 100
 
-        console.paragraph('Fit results')
-        console.print(f'{status_icon} Success: {self.success}')
-        fitting_time = _format_optional_float(self.fitting_time, suffix=' seconds')
-        goodness_of_fit = _format_optional_float(self.reduced_chi_square)
-        console.print(f'⏱️ Fitting time: {fitting_time}')
-        console.print(f'📏 Goodness-of-fit (reduced χ²): {goodness_of_fit}')
-        if rf is not None:
-            console.print(f'📏 R-factor (Rf): {rf:.2f}%')
-        if rf2 is not None:
-            console.print(f'📏 R-factor squared (Rf²): {rf2:.2f}%')
-        if wr is not None:
-            console.print(f'📏 Weighted R-factor (wR): {wr:.2f}%')
-        if br is not None:
-            console.print(f'📏 Bragg R-factor (BR): {br:.2f}%')
-        console.print('📈 Fitted parameters:')
+        console.print('📋 Least-squares fit results:')
+        print_metrics_table(self._build_fit_results_rows(rf=rf, rf2=rf2, wr=wr, br=br))
+
+        console.print('📈 Refined parameters:')
 
         headers = [
             'datablock',
@@ -129,8 +125,8 @@ class FitResults:
             'parameter',
             'units',
             'start',
-            'fitted',
-            'uncertainty',
+            'value',
+            's.u.',
             'change',
         ]
         alignments = [
@@ -153,23 +149,63 @@ class FitResults:
             columns_data=rows,
         )
 
+        print_table_footnote(_REFINED_PARAMETERS_FOOTNOTE)
         self._print_table_notes()
 
+    def _build_fit_results_rows(
+        self,
+        *,
+        rf: float | None,
+        rf2: float | None,
+        wr: float | None,
+        br: float | None,
+    ) -> list[list[str]]:
+        """Return the rows for the 'Least-squares fit results' table."""
+        rows: list[list[str]] = []
+        if self.minimizer_type is not None:
+            rows.append(['🧪 Minimizer', str(self.minimizer_type)])
+        overall_status = 'success' if self.success else 'failed'
+        rows.append([_overall_status_row_label(overall_status), overall_status])
+        if self.fitting_time is not None:
+            rows.append(['⏱️ Fitting time (seconds)', f'{self.fitting_time:.2f}'])
+        if self.iterations:
+            rows.append(['🔁 Iterations', str(self.iterations)])
+        if self.reduced_chi_square is not None:
+            rows.append(['📏 Goodness-of-fit (reduced χ²)', f'{self.reduced_chi_square:.2f}'])
+        if rf is not None:
+            rows.append(['📏 R-factor (Rf, %)', f'{rf:.2f}'])
+        if rf2 is not None:
+            rows.append(['📏 R-factor squared (Rf², %)', f'{rf2:.2f}'])
+        if wr is not None:
+            rows.append(['📏 Weighted R-factor (wR, %)', f'{wr:.2f}'])
+        if br is not None:
+            rows.append(['📏 Bragg R-factor (BR, %)', f'{br:.2f}'])
+        return rows
+
     def _print_table_notes(self) -> None:
-        """Print color-coded notes below the fitted parameters table."""
+        """
+        Print color-coded warnings below the refined parameters table.
+        """
         notes: list[str] = []
         if any(getattr(p, '_outside_physical_limits', False) for p in self.parameters):
             notes.append(
-                '[red]Red fitted value:[/red] outside expected physical limits (consider '
-                'adding constraints)'
+                '⚠️ [red]Red value:[/red] outside expected physical limits '
+                '(consider adding constraints)'
             )
         if any(_is_uncertainty_large(p) for p in self.parameters):
             notes.append(
-                '[red]Red uncertainty:[/red] exceeds the fitted value (consider adding '
-                'constraints)'
+                '⚠️ [red]Red s.u.:[/red] exceeds the refined value (consider adding constraints)'
             )
-        for note in notes:
-            log.warning(note)
+        if notes:
+            console.small(*notes)
+
+
+_REFINED_PARAMETERS_FOOTNOTE: list[tuple[str, str]] = [
+    ('start', 'parameter value before refinement'),
+    ('value', 'refined value from least-squares minimization'),
+    ('s.u.', 'standard uncertainty (one sigma), from the covariance matrix'),
+    ('change', 'relative change from start, in %; ↑ = increase, ↓ = decrease'),
+]
 
 
 def _is_uncertainty_large(param: object) -> bool:
@@ -250,29 +286,3 @@ def _compute_relative_change(param: object) -> str:
     change = ((param.value - param._fit_start_value) / param._fit_start_value) * 100
     arrow = '↑' if change > 0 else '↓'
     return f'{abs(change):.2f} % {arrow}'
-
-
-def _format_optional_float(
-    value: float | None,
-    *,
-    suffix: str = '',
-) -> str:
-    """
-    Format an optional float for console output.
-
-    Parameters
-    ----------
-    value : float | None
-        Value to format.
-    suffix : str, default=''
-        Optional suffix appended to formatted numeric values.
-
-    Returns
-    -------
-    str
-        ``'N/A'`` when the value is ``None``; otherwise a formatted
-        string with two decimal places.
-    """
-    if value is None:
-        return 'N/A'
-    return f'{value:.2f}{suffix}'

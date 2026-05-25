@@ -6,20 +6,21 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-import arviz as az
 import numpy as np
-from rich.text import Text
 
+from easydiffraction.analysis.fit_helpers._diagnostics import compute_ess_bulk
+from easydiffraction.analysis.fit_helpers._diagnostics import compute_r_hat
 from easydiffraction.analysis.fit_helpers.metrics import calculate_r_factor
 from easydiffraction.analysis.fit_helpers.metrics import calculate_r_factor_squared
 from easydiffraction.analysis.fit_helpers.metrics import calculate_rb_factor
 from easydiffraction.analysis.fit_helpers.metrics import calculate_weighted_r_factor
 from easydiffraction.analysis.fit_helpers.reporting import FitResults
 from easydiffraction.analysis.fit_helpers.reporting import _build_parameter_row
-from easydiffraction.analysis.fit_helpers.reporting import _format_optional_float
+from easydiffraction.analysis.fit_helpers.reporting import _overall_status_row_label
 from easydiffraction.core.posterior import PosteriorParameterSummary
 from easydiffraction.utils.logging import console
-from easydiffraction.utils.logging import log
+from easydiffraction.utils.utils import print_metrics_table
+from easydiffraction.utils.utils import print_table_footnote
 from easydiffraction.utils.utils import render_table
 
 R_HAT_CONVERGENCE_THRESHOLD = 1.01
@@ -30,6 +31,17 @@ DEFAULT_CREDIBLE_INTERVAL_LEVELS = DEFAULT_CI_LEVELS
 IntervalLevels = tuple[float, ...]
 SettingsMap = dict[str, object] | None
 DiagnosticsMap = dict[str, object] | None
+
+
+def posterior_predictive_cache_key(
+    experiment_name: str,
+    x_axis_name: str,
+    *,
+    include_draws: bool = True,
+) -> str:
+    """Return the cache key for one posterior predictive summary."""
+    key_suffix = 'draws' if include_draws else 'band'
+    return f'{experiment_name}:{x_axis_name}:{key_suffix}'
 
 
 @dataclass(slots=True)
@@ -105,20 +117,21 @@ class PosteriorSamples:
         """
         return np.asarray(self.parameter_samples).reshape(-1, len(self.parameter_names))
 
-    def to_arviz(self) -> object:
+    def validate_shapes(self) -> tuple[int, int, int]:
         """
-        Convert posterior samples to an ArviZ ``InferenceData`` object.
+        Validate stored sample shapes.
 
         Returns
         -------
-        object
-            ArviZ ``InferenceData`` instance built from the stored
-            posterior samples.
+        tuple[int, int, int]
+            Tuple ``(n_draws, n_chains, n_parameters)``.
 
         Raises
         ------
         ValueError
-            If the stored arrays do not have the expected shapes.
+            If the sample array is not 3-D, the parameter axis does not
+            match ``parameter_names``, or ``log_posterior`` (when
+            present) does not match the first two sample axes.
         """
         posterior_array = np.asarray(self.parameter_samples, dtype=float)
         if posterior_array.ndim != POSTERIOR_SAMPLE_NDIM:
@@ -130,24 +143,13 @@ class PosteriorSamples:
             msg = 'Posterior sample array does not match the parameter name list length.'
             raise ValueError(msg)
 
-        posterior_dict = {
-            name: np.transpose(posterior_array[:, :, index], (1, 0))
-            for index, name in enumerate(self.parameter_names)
-        }
-
-        sample_stats: dict[str, np.ndarray] | None = None
         if self.log_posterior is not None:
             log_posterior = np.asarray(self.log_posterior, dtype=float)
             if log_posterior.shape != (n_draws, n_chains):
                 msg = 'Log-posterior array must match the first two posterior sample axes.'
                 raise ValueError(msg)
-            sample_stats = {'lp': np.transpose(log_posterior, (1, 0))}
 
-        data = {'posterior': posterior_dict}
-        if sample_stats is not None:
-            data['sample_stats'] = sample_stats
-
-        return az.from_dict(data)
+        return n_draws, n_chains, n_parameters
 
 
 SummaryList = list[PosteriorParameterSummary] | None
@@ -284,60 +286,131 @@ class BayesianFitResults(FitResults):
             f_calc=f_calc,
         )
 
-        self._display_summary_header()
-        _print_fit_quality_metrics(metrics)
+        console.print('📋 Bayesian fit results:')
+        print_metrics_table(self._build_fit_results_rows(metrics))
 
         console.print('📈 Committed parameters:')
         _render_committed_parameter_table(self.parameters)
+        print_table_footnote(_COMMITTED_PARAMETERS_FOOTNOTE)
 
-        console.print('📊 Posterior parameter summaries:')
+        console.print('📊 Posterior distribution:')
         _render_posterior_summary_table(
             parameters=self.parameters,
             posterior_parameter_summaries=self.posterior_parameter_summaries,
         )
+        print_table_footnote(_POSTERIOR_DISTRIBUTION_FOOTNOTE)
 
         self._print_table_notes()
+
+    def _build_fit_results_rows(self, metrics: dict[str, float | None]) -> list[list[str]]:
+        """Return the rows for the 'Bayesian fit results' table."""
+        overall_status = _bayesian_overall_status(
+            success=self.success,
+            sampler_completed=self.sampler_completed,
+            convergence_diagnostics=self.convergence_diagnostics,
+        )
+
+        rows: list[list[str]] = []
+        _append_bayesian_identity_rows(results=self, rows=rows, overall_status=overall_status)
+        _append_fit_quality_rows(results=self, rows=rows, metrics=metrics)
+        _append_convergence_rows(rows=rows, diagnostics=self.convergence_diagnostics or {})
+        return rows
 
     def _print_table_notes(self) -> None:
         """
         Print parameter and posterior-diagnostic notes below tables.
         """
         super()._print_table_notes()
-        for note in _posterior_table_notes(self.posterior_parameter_summaries):
-            log.warning(note)
+        notes = _posterior_table_notes(self.posterior_parameter_summaries)
+        if notes:
+            console.small(*notes)
 
-    def _display_summary_header(self) -> None:
-        """Render the high-level Bayesian fit summary."""
-        status_icon, overall_status = _format_bayesian_overall_status(
-            success=self.success,
-            sampler_completed=self.sampler_completed,
-            convergence_diagnostics=self.convergence_diagnostics,
-        )
-        fitting_time = _format_optional_float(self.fitting_time, suffix=' seconds')
-        goodness_of_fit = _format_optional_float(self.reduced_chi_square)
 
-        console.paragraph('Bayesian fit results')
-        console.print(f'{status_icon} Overall status: {overall_status}')
-        if self.message:
-            console.print(f'💬 Sampler status: {self.message}')
-        console.print(f'🧪 Sampler: {self.sampler_name}')
-        console.print(
-            f'🎯 Committed point estimate: {_format_point_estimate_name(self.point_estimate_name)}'
-        )
-        sampler_completed = 'yes' if self.sampler_completed else 'no'
-        console.print(f'🔁 Sampler completed: {sampler_completed}')
-        console.print(f'⏱️ Fitting time: {fitting_time}')
-        console.print(f'📏 Goodness-of-fit (reduced χ²): {goodness_of_fit}')
-        if self.best_log_posterior is not None:
-            console.print(f'📉 Best log-posterior: {self.best_log_posterior:.2f}')
+def _append_bayesian_identity_rows(
+    *,
+    results: BayesianFitResults,
+    rows: list[list[str]],
+    overall_status: str,
+) -> None:
+    """Append sampler identity and status rows."""
+    sampler_label = results.minimizer_type or results.sampler_name
+    if sampler_label:
+        rows.append(['🧪 Sampler', str(sampler_label)])
+    rows.append([_overall_status_row_label(overall_status), overall_status])
+    if results.message:
+        rows.append(['💬 Engine message', results.message])
 
-        sampler_settings = _format_sampler_settings(self.sampler_settings)
-        if sampler_settings is not None:
-            console.print(Text(f'⚙️ Sampler settings: {sampler_settings}'))
 
-        convergence_summary = _format_convergence_summary(self.convergence_diagnostics)
-        if convergence_summary is not None:
-            console.print(Text.from_markup(f'📊 Convergence: {convergence_summary}'))
+def _append_fit_quality_rows(
+    *,
+    results: BayesianFitResults,
+    rows: list[list[str]],
+    metrics: dict[str, float | None],
+) -> None:
+    """Append fit-quality and best-posterior rows."""
+    if results.fitting_time is not None:
+        rows.append(['⏱️ Fitting time (seconds)', f'{results.fitting_time:.2f}'])
+    if results.reduced_chi_square is not None:
+        rows.append([
+            '📏 Goodness-of-fit (reduced χ²)',
+            f'{results.reduced_chi_square:.2f}',
+        ])
+    for key, label in (
+        ('rf', '📏 R-factor (Rf, %)'),
+        ('rf2', '📏 R-factor squared (Rf², %)'),
+        ('wr', '📏 Weighted R-factor (wR, %)'),
+        ('br', '📏 Bragg R-factor (BR, %)'),
+    ):
+        value = metrics.get(key)
+        if value is not None:
+            rows.append([label, f'{value:.2f}'])
+    if results.best_log_posterior is not None:
+        rows.append(['📉 Best log-posterior', f'{results.best_log_posterior:.2f}'])
+
+
+def _append_convergence_rows(
+    *,
+    rows: list[list[str]],
+    diagnostics: dict[str, object],
+) -> None:
+    """Append Bayesian convergence rows."""
+    converged = diagnostics.get('converged')
+    if converged is not None:
+        rows.append(['📊 Convergence status', 'passed' if converged else 'failed'])
+    _append_optional_row(rows=rows, label='📊 Max r-hat', value=diagnostics.get('max_r_hat'))
+    _append_optional_row(
+        rows=rows,
+        label='📊 Min ess bulk',
+        value=diagnostics.get('min_ess_bulk'),
+    )
+    _append_optional_row(
+        rows=rows,
+        label='📊 Draws per chain',
+        value=diagnostics.get('n_draws'),
+        precision=None,
+    )
+    _append_optional_row(
+        rows=rows,
+        label='📊 Chains',
+        value=diagnostics.get('n_chains'),
+        precision=None,
+    )
+
+
+def _append_optional_row(
+    *,
+    rows: list[list[str]],
+    label: str,
+    value: object,
+    precision: int | None = 3,
+) -> None:
+    """Append a formatted row when ``value`` is present."""
+    if value is None:
+        return
+    if precision is None:
+        rows.append([label, str(value)])
+        return
+    rows.append([label, f'{float(value):.{precision}f}'])
 
 
 def compute_convergence_diagnostics(posterior_samples: PosteriorSamples) -> dict[str, object]:
@@ -354,12 +427,15 @@ def compute_convergence_diagnostics(posterior_samples: PosteriorSamples) -> dict
     dict[str, object]
         Convergence metrics keyed by diagnostic name.
     """
-    inference_data = posterior_samples.to_arviz()
-    rhat_dataset = az.rhat(inference_data)
-    ess_dataset = az.ess(inference_data, method='bulk')
+    n_draws, n_chains, _n_parameters = posterior_samples.validate_shapes()
+    parameter_samples = np.asarray(posterior_samples.parameter_samples, dtype=float)
 
-    r_hat_by_parameter = _dataset_to_scalar_dict(rhat_dataset)
-    ess_bulk_by_parameter = _dataset_to_scalar_dict(ess_dataset)
+    r_hat_by_parameter: dict[str, float | None] = {}
+    ess_bulk_by_parameter: dict[str, float | None] = {}
+    for index, name in enumerate(posterior_samples.parameter_names):
+        per_parameter = parameter_samples[:, :, index]
+        r_hat_by_parameter[name] = _maybe_scalar(compute_r_hat(per_parameter))
+        ess_bulk_by_parameter[name] = _maybe_scalar(compute_ess_bulk(per_parameter))
 
     finite_r_hat = [value for value in r_hat_by_parameter.values() if value is not None]
     finite_ess_bulk = [value for value in ess_bulk_by_parameter.values() if value is not None]
@@ -381,8 +457,8 @@ def compute_convergence_diagnostics(posterior_samples: PosteriorSamples) -> dict
         'ess_bulk_by_parameter': ess_bulk_by_parameter,
         'max_r_hat': max_r_hat,
         'min_ess_bulk': min_ess_bulk,
-        'n_draws': int(posterior_samples.parameter_samples.shape[0]),
-        'n_chains': int(posterior_samples.parameter_samples.shape[1]),
+        'n_draws': n_draws,
+        'n_chains': n_chains,
         'n_parameters': len(posterior_samples.parameter_names),
     }
 
@@ -483,13 +559,6 @@ def standard_deviations_from_summaries(
     return np.array([summary.standard_deviation for summary in summaries], dtype=float)
 
 
-def _dataset_to_scalar_dict(dataset: object) -> dict[str, float | None]:
-    values: dict[str, float | None] = {}
-    for name, data_array in dataset.data_vars.items():
-        values[name] = _maybe_scalar(np.asarray(data_array).reshape(-1)[0])
-    return values
-
-
 def _maybe_scalar(value: object) -> float | None:
     if value is None:
         return None
@@ -497,18 +566,6 @@ def _maybe_scalar(value: object) -> float | None:
     if not np.isfinite(scalar):
         return None
     return scalar
-
-
-def _format_sampler_settings(sampler_settings: dict[str, object]) -> str | None:
-    if not sampler_settings:
-        return None
-
-    parts = [
-        f'{key}={sampler_settings[key]}'
-        for key in ('steps', 'burn', 'thin', 'pop', 'init', 'samples')
-        if key in sampler_settings
-    ]
-    return ', '.join(parts) if parts else None
 
 
 def _calculate_fit_quality_metrics(
@@ -536,69 +593,41 @@ def _calculate_fit_quality_metrics(
     return metrics
 
 
-def _print_fit_quality_metrics(metrics: dict[str, float | None]) -> None:
-    """Render any available fit-quality metrics."""
-    metric_labels = (
-        ('📏 R-factor (Rf)', metrics['rf']),
-        ('📏 R-factor squared (Rf²)', metrics['rf2']),
-        ('📏 Weighted R-factor (wR)', metrics['wr']),
-        ('📏 Bragg R-factor (BR)', metrics['br']),
-    )
-    for label, value in metric_labels:
-        if value is not None:
-            console.print(f'{label}: {value:.2f}%')
-
-
-def _format_point_estimate_name(point_estimate_name: str) -> str:
-    """Return a user-facing label for the committed point estimate."""
-    normalized_name = point_estimate_name.strip().lower().replace('_', ' ')
-    if normalized_name in {'best sample', 'map'}:
-        return 'Best posterior sample'
-    return point_estimate_name.replace('_', ' ').title()
-
-
-def _format_bayesian_overall_status(
+def _bayesian_overall_status(
     *,
     success: bool,
     sampler_completed: bool,
     convergence_diagnostics: dict[str, object],
-) -> tuple[str, str]:
-    """Return icon and text for Bayesian run status."""
-    if not success:
-        return '❌', 'failed'
+) -> str:
+    """
+    Return ``'success'`` or ``'failed'`` for the Bayesian run.
 
-    converged = convergence_diagnostics.get('converged')
+    Bayesian success requires both the sampler to have completed and the
+    convergence diagnostics to have passed. Anything else is rendered as
+    ``failed`` in the overall row; the per-metric convergence rows below
+    carry the detail.
+    """
+    if not success or not sampler_completed:
+        return 'failed'
+    converged = convergence_diagnostics.get('converged') if convergence_diagnostics else None
     if converged is False:
-        return '⚠️', 'completed with warnings'
-    if sampler_completed:
-        return '✅', 'completed'
-    return '✅', 'posterior available'
+        return 'failed'
+    return 'success'
 
 
-def _format_convergence_summary(convergence_diagnostics: dict[str, object]) -> str | None:
-    if not convergence_diagnostics:
-        return None
+_COMMITTED_PARAMETERS_FOOTNOTE: list[tuple[str, str]] = [
+    ('start', 'parameter value before sampling'),
+    ('value', 'estimate written back to the project (best posterior sample)'),
+    ('s.u.', 'standard uncertainty (one sigma), posterior standard deviation'),
+    ('change', 'relative change from start, in %; ↑ = increase, ↓ = decrease'),
+]
 
-    parts: list[str] = []
-    converged = convergence_diagnostics.get('converged')
-    if converged is not None:
-        status = 'passed' if converged else '[red]failed[/red]'
-        parts.append(f'status={status}')
-
-    max_r_hat = _maybe_scalar(convergence_diagnostics.get('max_r_hat'))
-    if max_r_hat is not None:
-        parts.append(f'max_r_hat={_format_r_hat(max_r_hat)}')
-
-    min_ess_bulk = _maybe_scalar(convergence_diagnostics.get('min_ess_bulk'))
-    if min_ess_bulk is not None:
-        parts.append(f'min_ess_bulk={_format_ess_bulk(min_ess_bulk)}')
-
-    n_draws = convergence_diagnostics.get('n_draws')
-    n_chains = convergence_diagnostics.get('n_chains')
-    if n_draws is not None and n_chains is not None:
-        parts.append(f'draws={n_draws}, chains={n_chains}')
-
-    return ', '.join(parts) if parts else None
+_POSTERIOR_DISTRIBUTION_FOOTNOTE: list[tuple[str, str]] = [
+    ('median', '50th percentile of the marginal posterior'),
+    ('95% CI', '95% credible interval (2.5%-97.5%, asymmetric)'),
+    ('r-hat', 'Gelman-Rubin diagnostic (good convergence: r-hat <= 1.01)'),
+    ('ess bulk', 'bulk effective sample size (typically >= 400)'),
+]
 
 
 def _render_committed_parameter_table(parameters: list[object]) -> None:
@@ -609,8 +638,8 @@ def _render_committed_parameter_table(parameters: list[object]) -> None:
         'parameter',
         'units',
         'start',
-        'best posterior sample',
-        'uncertainty',
+        'value',
+        's.u.',
         'change',
     ]
     alignments = [
@@ -649,7 +678,7 @@ def _render_posterior_summary_table(
         'parameter',
         'units',
         'median',
-        '95% interval',
+        '95% CI',
         'r-hat',
         'ess bulk',
     ]
@@ -744,12 +773,13 @@ def _posterior_table_notes(
     notes: list[str] = []
     if has_failed_r_hat:
         notes.append(
-            f'[red]r-hat > {R_HAT_CONVERGENCE_THRESHOLD:.2f}[/red]: '
-            'Consider longer sampling, better initialization, or reparameterization.'
+            f'⚠️ [red]r-hat > {R_HAT_CONVERGENCE_THRESHOLD:.2f}[/red]: '
+            'Consider longer sampling, better initialization, or '
+            'reparameterization.'
         )
     if has_failed_ess_bulk:
         notes.append(
-            f'[red]ess bulk < {ESS_BULK_CONVERGENCE_THRESHOLD:.0f}[/red]: '
+            f'⚠️ [red]ess bulk < {ESS_BULK_CONVERGENCE_THRESHOLD:.0f}[/red]: '
             'Consider longer sampling or reparameterization.'
         )
     return notes

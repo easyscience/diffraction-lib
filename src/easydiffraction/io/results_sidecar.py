@@ -22,6 +22,12 @@ _POSTERIOR_DRAW_INDEX_PATH = '/posterior/draw_index'
 _DISTRIBUTION_CACHE_GROUP = '/distribution_cache'
 _PAIR_CACHE_GROUP = '/pair_cache'
 _PREDICTIVE_GROUP = '/predictive'
+_CANONICAL_GROUPS = (
+    'posterior',
+    'distribution_cache',
+    'pair_cache',
+    'predictive',
+)
 _POSTERIOR_SAMPLE_NDIM = 3
 
 
@@ -54,9 +60,8 @@ def _delete_stale_sidecar(sidecar_path: Path) -> None:
         sidecar_path.unlink()
 
 
-def warn_analysis_results_sidecar_overwrite(*, analysis_dir: Path) -> None:
+def _warn_existing_sidecar_overwrite(sidecar_path: Path) -> None:
     """Warn when a new fit will overwrite existing sidecar arrays."""
-    sidecar_path = _sidecar_path(analysis_dir=analysis_dir)
     if not sidecar_path.is_file() or sidecar_path.stat().st_size == 0:
         return
 
@@ -64,6 +69,14 @@ def warn_analysis_results_sidecar_overwrite(*, analysis_dir: Path) -> None:
         f"Existing fit results sidecar '{sidecar_path}' will be overwritten "
         'when the new fit is saved.'
     )
+
+
+def prepare_analysis_results_sidecar_for_new_fit(*, analysis_dir: Path) -> None:
+    """Warn and remove the results sidecar before a fresh fit starts."""
+    sidecar_path = _sidecar_path(analysis_dir=analysis_dir)
+    _warn_existing_sidecar_overwrite(sidecar_path)
+    if sidecar_path.is_file():
+        sidecar_path.unlink()
 
 
 def _create_dataset(handle: object, path: str, data: np.ndarray) -> None:
@@ -74,6 +87,22 @@ def _create_dataset(handle: object, path: str, data: np.ndarray) -> None:
     if dataset_name in group:
         del group[dataset_name]
     group.create_dataset(dataset_name, data=data)
+
+
+def _delete_group_if_present(handle: object, group_name: str) -> None:
+    """
+    Delete one top-level group from an open HDF5 file when present.
+    """
+    if group_name in handle:
+        del handle[group_name]
+
+
+def _delete_canonical_groups(handle: object) -> None:
+    """
+    Delete EasyDiffraction-owned top-level groups before append writes.
+    """
+    for group_name in _CANONICAL_GROUPS:
+        _delete_group_if_present(handle, group_name)
 
 
 def _read_dataset(handle: object, path: str) -> np.ndarray | None:
@@ -299,7 +328,8 @@ def write_analysis_results_sidecar(
     import h5py  # noqa: PLC0415
 
     analysis_dir.mkdir(parents=True, exist_ok=True)
-    with h5py.File(sidecar_path, 'w') as handle:
+    with h5py.File(sidecar_path, 'a') as handle:
+        _delete_canonical_groups(handle)
         wrote_any = _write_posterior_payload(handle, analysis)
         wrote_any = _write_distribution_caches(handle, analysis) or wrote_any
         wrote_any = _write_pair_caches(handle, analysis) or wrote_any

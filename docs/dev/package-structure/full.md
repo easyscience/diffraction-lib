@@ -87,6 +87,8 @@
 │   │   │   │   └── 🏷️ class BumpsLmMinimizer
 │   │   │   ├── 📄 dfols.py
 │   │   │   │   └── 🏷️ class DfolsMinimizer
+│   │   │   ├── 📄 emcee.py
+│   │   │   │   └── 🏷️ class EmceeMinimizer
 │   │   │   ├── 📄 factory.py
 │   │   │   │   └── 🏷️ class MinimizerCategoryFactory
 │   │   │   ├── 📄 lmfit.py
@@ -113,6 +115,7 @@
 │   │   └── 📄 __init__.py
 │   ├── 📁 fit_helpers
 │   │   ├── 📄 __init__.py
+│   │   ├── 📄 _diagnostics.py
 │   │   ├── 📄 bayesian.py
 │   │   │   ├── 🏷️ class PosteriorPredictiveSummary
 │   │   │   ├── 🏷️ class PosteriorSamples
@@ -126,6 +129,7 @@
 │   ├── 📁 minimizers
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 base.py
+│   │   │   ├── 🏷️ class MinimizerFitOptions
 │   │   │   └── 🏷️ class MinimizerBase
 │   │   ├── 📄 bumps.py
 │   │   │   ├── 🏷️ class _BumpsEvaluationLimitError
@@ -145,6 +149,12 @@
 │   │   │   └── 🏷️ class BumpsLmMinimizer
 │   │   ├── 📄 dfols.py
 │   │   │   └── 🏷️ class DfolsMinimizer
+│   │   ├── 📄 emcee.py
+│   │   │   ├── 🏷️ class _EmceePoolContext
+│   │   │   ├── 🏷️ class _EmceeLogProbability
+│   │   │   ├── 🏷️ class _EmceeProgressReporter
+│   │   │   └── 🏷️ class EmceeMinimizer
+│   │   ├── 📄 emcee_defaults.py
 │   │   ├── 📄 enums.py
 │   │   │   ├── 🏷️ class MinimizerTypeEnum
 │   │   │   ├── 🏷️ class InitializationMethodEnum
@@ -168,6 +178,7 @@
 │   │   ├── 🏷️ class FitResultKindEnum
 │   │   └── 🏷️ class FitCorrelationSourceEnum
 │   ├── 📄 fitting.py
+│   │   ├── 🏷️ class FitterFitOptions
 │   │   └── 🏷️ class Fitter
 │   └── 📄 sequential.py
 │       ├── 🏷️ class SequentialFitExtractRule
@@ -476,7 +487,8 @@
 │   ├── 📄 progress.py
 │   │   ├── 🏷️ class _TerminalLiveHandle
 │   │   ├── 🏷️ class ActivityIndicator
-│   │   └── 🏷️ class _ActivityIndicatorContext
+│   │   ├── 🏷️ class _ActivityIndicatorContext
+│   │   └── 🏷️ class NotebookFitStopControl
 │   ├── 📄 tables.py
 │   │   ├── 🏷️ class TableEngineEnum
 │   │   ├── 🏷️ class TableRenderer
