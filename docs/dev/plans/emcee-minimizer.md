@@ -825,3 +825,6 @@ is straightforward.
 
 New tutorials walk through a short run (`ed-25`) and reopening the saved
 project to resume for additional steps (`ed-26`).
+
+Phase 2 also includes a small benchmark-runner elapsed-time display
+improvement that landed alongside the emcee verification work.
