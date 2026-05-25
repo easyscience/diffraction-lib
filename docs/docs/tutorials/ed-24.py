@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Load Saved Bayesian Project: LBCO, HRPT
+# # Bayesian Analysis Display (`bumps-dream`): LBCO, HRPT
 #
 # This tutorial shows how to reopen the Bayesian project created in
 # `ed-21.py` and inspect the saved fit results without rerunning DREAM.

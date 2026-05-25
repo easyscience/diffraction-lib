@@ -1,18 +1,25 @@
 # %% [markdown]
-# # Bayesian Analysis with emcee: LBCO, HRPT
+# # Bayesian Analysis (`emcee`): LBCO, HRPT
 #
-# This tutorial demonstrates how to run Bayesian sampling with the
-# emcee minimizer and then resume the same chain from the saved project.
+# This tutorial demonstrates a practical two-stage workflow for powder
+# diffraction analysis with EasyDiffraction.
 #
-# The workflow uses the same La0.5Ba0.5CoO3 powder diffraction example
-# as the DREAM Bayesian tutorial:
+# In the first stage, we run a fast local refinement to obtain a sensible
+# point estimate and parameter uncertainties. In the second stage, we use
+# these refined values to define fit bounds and then sample the posterior
+# distribution with emcee.
 #
-# - run a short local refinement,
-# - derive finite fit bounds for the sampled parameters,
-# - switch to emcee and sample the posterior,
-# - save the project with the emcee chain,
-# - resume the chain with additional steps,
-# - inspect posterior plots after each sampling stage.
+# The example uses constant-wavelength neutron powder diffraction data
+# for La0.5Ba0.5CoO3 measured on HRPT at PSI.
+#
+# The goal is not only to obtain a good fit, but also to answer Bayesian
+# questions such as:
+#
+# - Which parameter values are most probable?
+# - How broad are the credible intervals?
+# - Which parameters are strongly correlated?
+# - How much uncertainty propagates into the calculated diffraction
+#   pattern?
 
 # %% [markdown]
 # ## Import Library
@@ -21,10 +28,14 @@
 import easydiffraction as ed
 
 # %% [markdown]
-# ## Create a Project Container
+# ## Step 1: Create a Project Container
 #
-# The project is saved before sampling because emcee stores its chain in
-# the project's analysis sidecar file.
+# The project object keeps structures, experiments, fit settings, and
+# plotting utilities together in a single place. We will build the full
+# workflow inside this object.
+#
+# Save the project to a directory early on so that you can easily reload
+# it later if needed.
 
 # %%
 project = ed.Project()
@@ -33,9 +44,11 @@ project = ed.Project()
 project.save_as('projects/lbco_hrpt_emcee')
 
 # %% [markdown]
-# ## Build the Structural Model
+# ## Step 2: Build the Structural Model
 #
-# Define a compact cubic perovskite model for La0.5Ba0.5CoO3.
+# We define a simple cubic perovskite model for LBCO. La and Ba share the
+# same crystallographic site with equal occupancy, while Co and O occupy
+# the remaining ideal perovskite positions.
 
 # %%
 project.structures.create(name='lbco')
@@ -49,6 +62,11 @@ structure.space_group.it_coordinate_system_code = '1'
 
 # %%
 structure.cell.length_a = 3.88
+
+# %% [markdown]
+# The atom-site definitions below form the starting structural model. The
+# parameters are intentionally reasonable rather than fully optimized,
+# because the refinement step will improve them.
 
 # %%
 structure.atom_sites.create(
@@ -95,13 +113,23 @@ structure.atom_sites.create(
 )
 
 # %% [markdown]
-# ## Define the Diffraction Experiment
+# ## Step 3: Define the Diffraction Experiment
 #
-# Download the HRPT powder pattern, create a neutron powder experiment,
-# and set the key instrument, peak-profile, and background values.
+# Next we download the measured powder pattern, create a neutron powder
+# experiment, and configure the instrument, profile, background, and
+# excluded regions.
+
+# %% [markdown]
+# Download the measured data from the repository. Alternatively, you
+# could use your own data file by providing the path to it instead of
+# downloading from the repository.
 
 # %%
 data_path = ed.download_data(id=3, destination='data')
+
+# %% [markdown]
+# Create the experiment object and specify the sample form, beam mode,
+# and radiation probe.
 
 # %%
 project.experiments.add_from_data_path(
@@ -115,8 +143,17 @@ project.experiments.add_from_data_path(
 # %%
 experiment = project.experiments['hrpt']
 
+# %% [markdown]
+# Link the structural phase to the experiment.
+
 # %%
 experiment.linked_phases.create(id='lbco', scale=9.1351)
+
+# %% [markdown]
+# Set instrument and peak profile parameters.
+#
+# These values provide the initial instrument description for the local
+# refinement. Later, a subset of them will be refined.
 
 # %%
 experiment.instrument.setup_wavelength = 1.494
@@ -127,6 +164,12 @@ experiment.peak.broad_gauss_u = 0.1
 experiment.peak.broad_gauss_v = -0.1
 experiment.peak.broad_gauss_w = 0.1204
 experiment.peak.broad_lorentz_y = 0.0844
+
+# %% [markdown]
+# Add background points and excluded regions.
+#
+# The line-segment background is defined by a few anchor points. We also
+# exclude regions that are not intended to contribute to the fit.
 
 # %%
 experiment.background.create(id='1', x=10, y=168.5585)
@@ -139,10 +182,18 @@ experiment.excluded_regions.create(id='1', start=0, end=10)
 experiment.excluded_regions.create(id='2', start=100, end=180)
 
 # %% [markdown]
-# ## Run a Local Refinement First
+# ## Step 4: Run an Initial Local Refinement
 #
-# The local fit provides starting values and uncertainties that are used
-# to build finite bounds for emcee.
+# Before Bayesian sampling, it is useful to run a deterministic fit. This
+# gives us:
+#
+# - a good point estimate near the best-fit region,
+# - uncertainties from the local optimizer,
+# - a quick check that the model and experiment are configured
+#   sensibly.
+#
+# In this tutorial we refine only a small set of parameters that are easy
+# to interpret in the later Bayesian stage.
 
 # %%
 structure.cell.length_a.free = True
@@ -153,8 +204,13 @@ experiment.peak.broad_gauss_u.free = True
 experiment.peak.broad_gauss_v.free = True
 experiment.instrument.calib_twotheta_offset.free = True
 
+# %% [markdown]
+# We keep LMFIT Levenberg-Marquardt minimizer as a fast local optimizer.
+# Its main purpose here is to provide a stable starting point and
+# uncertainty estimates for the Bayesian run.
+
 # %%
-project.analysis.minimizer.type = 'bumps (lm)'
+project.analysis.minimizer.show_supported()
 
 # %%
 project.analysis.fit()
@@ -162,81 +218,135 @@ project.analysis.fit()
 # %%
 project.display.fit.results()
 
+# %% [markdown]
+# The correlation plot shows how strongly the fitted parameters move
+# together in the local refinement. The measured-vs-calculated plots show
+# how well the refined model reproduces the data globally and in a zoomed
+# region.
+
 # %%
-for param in project.free_parameters:
-    param.set_fit_bounds_from_uncertainty()
+project.display.fit.correlations()
+
+# %%
+project.display.pattern(expt_name='hrpt')
+
+# %% [markdown]
+# ## Step 5: Prepare for Bayesian Sampling
+#
+# Bayesian samplers require finite bounds for the free parameters. Instead of
+# setting them manually, we derive them from the uncertainties estimated
+# in the local refinement.
+#
+# The helper method `set_fit_bounds_from_uncertainty` centers the bounds
+# on the current parameter value and expands them by a chosen multiple of
+# the reported uncertainty.
+#
+# The default `multiplier` is 4. If the local refinement is very tight,
+# or if you expect a broader posterior, increase it explicitly.
+#
+# Show unset fit bounds before setting them from the local refinement uncertainties.
 
 # %%
 project.display.parameters.free()
 
 # %% [markdown]
-# ## Run emcee Sampling
+# Set fit bounds for all free parameters using the default multiplier of
+# 4. In this tutorial that means the posterior pair plot will later
+# refer to a `±4 × uncertainty` region in its title. To use a different
+# region, pass another value, for example `multiplier=6`.
+
+# %%
+for param in project.free_parameters:
+    param.set_fit_bounds_from_uncertainty()
+
+# %% [markdown]
+# Displaying the free parameters again is a convenient way to confirm
+# that the fit bounds have been assigned as expected before launching the
+# sampler.
+
+# %%
+project.display.parameters.free()
+
+# %% [markdown]
+# ## Step 6: Configure and Run emcee
 #
-# The sampling settings are intentionally small for tutorial runtime.
-# Use more steps and inspect convergence diagnostics for production
-# analysis.
+# We now switch from the local minimizer to the Bayesian emcee sampler.
+#
+# The settings below are intentionally small so the tutorial runs
+# quickly. For production analysis you would usually increase the number
+# of steps and often the burn-in as well. emcee also lets you tune how
+# walkers are initialized, how many walkers are used, and which proposal
+# move drives the ensemble.
+#
+# The default emcee proposal is the stretch move. This tutorial uses the
+# differential-evolution move instead, because it mixes better for the
+# strongly correlated LBCO/HRPT parameters. The walker count is kept
+# below the default to keep runtime close to the DREAM tutorial while
+# retaining good convergence diagnostics for this five-parameter example.
+
+# %%
+project.analysis.minimizer.show_supported()
 
 # %%
 project.analysis.minimizer.type = 'emcee'
 
 # %%
-project.analysis.minimizer.sampling_steps = 1000
-project.analysis.minimizer.burn_in_steps = 200
-project.analysis.minimizer.thinning_interval = 10
-project.analysis.minimizer.population_size = 32
-project.analysis.minimizer.initialization_method = 'ball'
-project.analysis.minimizer.random_seed = 12345
+project.analysis.minimizer.sampling_steps = 10000  # lower than the default 5000
+project.analysis.minimizer.burn_in_steps = 2000  # lower than the default 1000
 
 # %%
-project.analysis.fit()
+project.analysis.fit(resume=False)
+
+# %% [markdown]
+# ## Step 7: Inspect Bayesian Results
+#
+# The fit-results display now includes sampler settings, convergence
+# diagnostics, committed parameter values, and posterior summary
+# statistics.
 
 # %%
 project.display.fit.results()
 
 # %% [markdown]
-# ## Inspect the Posterior
+# The correlation and posterior-pair plots are complementary:
 #
-# The posterior distribution plot shows the sampled marginal
-# distributions after the first emcee run.
+# - `plot_param_correlations` summarizes pairwise structure in a compact
+#   matrix.
+# - `plot_posterior_pairs` shows marginal densities on the diagonal and
+#   posterior contours off-diagonal. In this tutorial its title also
+#   reminds you that the display region follows the `±4 × uncertainty`
+#   bounds defined above, while numeric subplot ranges are omitted to
+#   keep the grid readable.
+
+# %%
+project.display.fit.correlations()
+
+# %%
+project.display.posterior.pairs()
+
+# %% [markdown]
+# The one-dimensional posterior distributions below make it easier to
+# inspect individual parameters in isolation, including asymmetry or
+# multimodality.
 
 # %%
 project.display.posterior.distribution()
 
 # %% [markdown]
-# The posterior predictive plot propagates the sampled parameter
-# uncertainty into the calculated diffraction pattern.
+# Finally, the posterior predictive plot propagates the sampled parameter
+# uncertainty into the calculated diffraction pattern. Comparing this to
+# the zoomed measured-vs-calculated view helps assess whether the sampled
+# model family explains the data in the region of interest.
 
 # %%
 project.display.posterior.predictive(expt_name='hrpt')
 
 # %% [markdown]
-# ## Save the Sampled Project
-#
-# Saving persists both the analysis state and the emcee chain sidecar so
-# the same chain can be resumed later.
+# A final zoomed measured-vs-calculated plot is useful for checking how
+# the posterior-supported model behaves in a narrow region of the pattern
+# after the Bayesian run.
 
 # %%
-project.save()
-
-# %% [markdown]
-# ## Resume emcee Sampling
-#
-# Resume from the saved backend and append 500 more emcee steps to the
-# existing chain.
+project.display.posterior.predictive(expt_name='hrpt', x_min=92, x_max=93)
 
 # %%
-project.analysis.fit(resume=True, extra_steps=500)
-
-# %%
-project.display.fit.results()
-
-# %% [markdown]
-# ## Inspect the Resumed Posterior
-#
-# After resume, the posterior plots use the extended chain.
-
-# %%
-project.display.posterior.distribution()
-
-# %%
-project.display.posterior.predictive(expt_name='hrpt')

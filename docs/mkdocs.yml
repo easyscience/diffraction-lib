@@ -199,7 +199,6 @@ nav:
       - Load Project:
           - LBCO Single: tutorials/ed-18.ipynb
           - Co2SiO4 Sequential: tutorials/ed-23.ipynb
-          - LBCO Bayesian: tutorials/ed-24.ipynb
       - Powder Diffraction:
           - Co2SiO4 pd-neut-cwl: tutorials/ed-5.ipynb
           - HS pd-neut-cwl: tutorials/ed-6.ipynb
@@ -220,9 +219,11 @@ nav:
           - LBCO+Si McStas: tutorials/ed-9.ipynb
           - BEER McStas: tutorials/ed-20.ipynb
       - Bayesian Analysis:
-          - LBCO Bayesian: tutorials/ed-21.ipynb
-          - LBCO emcee Resume: tutorials/ed-25.ipynb
-          - Tb2TiO7 Bayesian: tutorials/ed-22.ipynb
+          - LBCO pd bumps-dream: tutorials/ed-21.ipynb
+          - LBCO pd bumps-dream Display: tutorials/ed-24.ipynb
+          - LBCO pd emcee: tutorials/ed-25.ipynb
+          - LBCO pd emcee Resume: tutorials/ed-26.ipynb
+          - Tb2TiO7 sg bumps-dream: tutorials/ed-22.ipynb
       - Workshops & Schools:
           - DMSC Summer School: tutorials/ed-13.ipynb
   - Command-Line:

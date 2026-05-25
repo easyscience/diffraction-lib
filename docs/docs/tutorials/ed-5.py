@@ -179,6 +179,9 @@ expt.linked_phases.create(id='cosio', scale=1.0)
 # %%
 project = Project()
 
+# %%
+project.save_as('projects/cosio_d20')
+
 # %% [markdown]
 # #### Add Structure
 
