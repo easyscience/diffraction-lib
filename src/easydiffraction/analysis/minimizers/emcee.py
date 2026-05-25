@@ -1202,15 +1202,6 @@ class EmceeMinimizer(MinimizerBase):
         """
         Sync proposed or best posterior values to live parameters.
         """
-        if isinstance(raw_result, dict):
-            for parameter in parameters:
-                value = raw_result.get(parameter.unique_name)
-                if value is None:
-                    value = raw_result.get(getattr(parameter, '_minimizer_uid', ''))
-                if value is not None:
-                    parameter._set_value_from_minimizer(float(value))
-            return
-
         if hasattr(raw_result, 'x'):
             if getattr(raw_result, 'success', False):
                 values = raw_result.x
@@ -1218,6 +1209,14 @@ class EmceeMinimizer(MinimizerBase):
             else:
                 values = getattr(raw_result, 'starting_values', raw_result.x)
                 uncertainties = getattr(raw_result, 'starting_uncertainties', None)
+        elif isinstance(raw_result, dict):
+            for parameter in parameters:
+                value = raw_result.get(parameter.unique_name)
+                if value is None:
+                    value = raw_result.get(getattr(parameter, '_minimizer_uid', ''))
+                if value is not None:
+                    parameter._set_value_from_minimizer(float(value))
+            return
         else:
             values = raw_result
             uncertainties = None

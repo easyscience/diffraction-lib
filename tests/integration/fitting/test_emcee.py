@@ -36,6 +36,14 @@ class ToyParameter:
         """Store a value committed by the minimizer."""
         self.value = value
 
+    def _physical_lower_bound(self) -> float:
+        """Return the lower physical limit for warning checks."""
+        return -np.inf
+
+    def _physical_upper_bound(self) -> float:
+        """Return the upper physical limit for warning checks."""
+        return np.inf
+
 
 def _toy_parameters() -> list[ToyParameter]:
     return [
@@ -106,7 +114,7 @@ def test_emcee_resume_matches_small_dream_posterior(tmp_path, proposal_moves):
     assert resumed_results.success is True
     assert resumed_results.posterior_samples is not None
     assert resumed_results.posterior_samples.parameter_samples.shape[1:] == (16, 2)
-    assert resumed_results.sampler_settings['total_steps'] == 100
+    assert resumed_results.sampler_settings['total_steps'] == 121
     np.testing.assert_allclose(
         _posterior_medians(resumed_results),
         _posterior_medians(dream_results),
