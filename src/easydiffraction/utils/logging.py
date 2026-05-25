@@ -650,12 +650,11 @@ def _rich_markup_to_inline_html(markup: str) -> str:
     """
     Translate a narrow subset of Rich markup to inline HTML.
 
-    Handles ``[red]…[/red]`` (→ a red ``<span>``) and silently
-    strips ``[dim]`` / ``[/dim]`` tags (the surrounding container
-    already conveys dimness via CSS opacity). Other Rich markup
-    passes through unescaped — callers must only emit markup from
-    this allow-list when calling ``ConsolePrinter.small`` in
-    Jupyter.
+    Handles ``[red]…[/red]`` (→ a red ``<span>``) and silently strips
+    ``[dim]`` / ``[/dim]`` tags (the surrounding container already
+    conveys dimness via CSS opacity). Other Rich markup passes through
+    unescaped — callers must only emit markup from this allow-list when
+    calling ``ConsolePrinter.small`` in Jupyter.
 
     Parameters
     ----------
@@ -665,8 +664,8 @@ def _rich_markup_to_inline_html(markup: str) -> str:
     Returns
     -------
     str
-        HTML-escaped string with the allow-listed Rich tags
-        translated to inline ``<span>`` styles.
+        HTML-escaped string with the allow-listed Rich tags translated
+        to inline ``<span>`` styles.
     """
     escaped = html.escape(markup)
     without_dim = _RICH_DIM_MARKUP_PATTERN.sub('', escaped)
@@ -743,21 +742,20 @@ class ConsolePrinter:
         """
         Print one or more lines as dim, smaller supplementary text.
 
-        Intended for table footnote glossaries and inline warning
-        notes that should read as subordinate to the table or
-        block they sit beneath. In Jupyter the lines render inside a
-        single ``<small>``-style HTML element so the font size
-        matches Jupyter's ``.dataframe`` table-cell text. In a
-        terminal the lines render with Rich's ``dim`` style. Rich
-        ``[red]…[/red]`` markup inside ``lines`` is preserved in
-        both renderers.
+        Intended for table footnote glossaries and inline warning notes
+        that should read as subordinate to the table or block they sit
+        beneath. In Jupyter the lines render inside a single
+        ``<small>``-style HTML element so the font size matches
+        Jupyter's ``.dataframe`` table-cell text. In a terminal the
+        lines render with Rich's ``dim`` style. Rich ``[red]…[/red]``
+        markup inside ``lines`` is preserved in both renderers.
 
         Parameters
         ----------
         *lines : str
             Pre-formatted display lines. Each may contain Rich
-            ``[red]…[/red]`` markup; other Rich markup is rendered
-            in the terminal and stripped in the HTML output.
+            ``[red]…[/red]`` markup; other Rich markup is rendered in
+            the terminal and stripped in the HTML output.
         """
         if not lines:
             return

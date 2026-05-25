@@ -3,18 +3,18 @@
 """
 MCMC convergence diagnostics computed in pure NumPy + SciPy.
 
-The two diagnostics this module produces — split-chain Gelman–Rubin
-R̂ and bulk effective sample size (ESS) — are the only Bayesian
-diagnostics EasyDiffraction reports. The implementations follow the
-standard formulas described in Vehtari, Gelman, Simpson, Carpenter
-and Bürkner (2019), *Rank-normalization, folding, and localization:
-An improved R̂ for assessing convergence of MCMC*
-(https://arxiv.org/abs/1903.08008), Stan's reference manual, and
-Geyer (1992), *Practical Markov chain Monte Carlo*.
+The two diagnostics this module produces — split-chain Gelman–Rubin R̂
+and bulk effective sample size (ESS) — are the only Bayesian diagnostics
+EasyDiffraction reports. The implementations follow the standard
+formulas described in Vehtari, Gelman, Simpson, Carpenter and Bürkner
+(2019), *Rank-normalization, folding, and localization: An improved R̂
+for assessing convergence of MCMC* (https://arxiv.org/abs/1903.08008),
+Stan's reference manual, and Geyer (1992), *Practical Markov chain Monte
+Carlo*.
 
-Inputs use the project's preserved layout: a 2-D NumPy array of
-shape ``(n_draws, n_chains)`` per parameter, never an ArviZ
-``InferenceData`` object.
+Inputs use the project's preserved layout: a 2-D NumPy array of shape
+``(n_draws, n_chains)`` per parameter, never an ArviZ ``InferenceData``
+object.
 """
 
 from __future__ import annotations
@@ -29,22 +29,22 @@ def compute_r_hat(samples: np.ndarray) -> float:
     """
     Split-chain Gelman–Rubin R̂ for one parameter.
 
-    Each chain is split in half (the standard "split R̂" variant);
-    the within-chain (W) and between-chain (B) variances are
-    computed on the doubled chain set, and R̂ is returned as
-    ``sqrt(V̂ / W)`` where ``V̂ = ((n-1)/n) · W + B/n``.
+    Each chain is split in half (the standard "split R̂" variant); the
+    within-chain (W) and between-chain (B) variances are computed on the
+    doubled chain set, and R̂ is returned as ``sqrt(V̂ / W)`` where ``V̂
+    = ((n-1)/n) · W + B/n``.
 
     Parameters
     ----------
     samples : np.ndarray
-        Posterior samples for one parameter with shape
-        ``(n_draws, n_chains)``.
+        Posterior samples for one parameter with shape ``(n_draws,
+        n_chains)``.
 
     Returns
     -------
     float
-        R̂ value. ``nan`` when there are fewer than 4 draws, fewer
-        than 2 chains, or zero within-chain variance.
+        R̂ value. ``nan`` when there are fewer than 4 draws, fewer than
+        2 chains, or zero within-chain variance.
 
     Raises
     ------
@@ -83,25 +83,24 @@ def compute_ess_bulk(samples: np.ndarray) -> float:
     Bulk effective sample size for one parameter.
 
     Samples are rank-normalized across all chain/draw pairs (so the
-    diagnostic is robust to heavy-tailed marginals); the
-    autocorrelation function is then averaged across chains and
-    summed with Geyer's initial positive sequence: pairs of
-    consecutive lags are added to the running variance estimate
-    until a pair first becomes non-positive (Geyer 1992; Vehtari
-    et al. 2019 §3.1).
+    diagnostic is robust to heavy-tailed marginals); the autocorrelation
+    function is then averaged across chains and summed with Geyer's
+    initial positive sequence: pairs of consecutive lags are added to
+    the running variance estimate until a pair first becomes
+    non-positive (Geyer 1992; Vehtari et al. 2019 §3.1).
 
     Parameters
     ----------
     samples : np.ndarray
-        Posterior samples for one parameter with shape
-        ``(n_draws, n_chains)``.
+        Posterior samples for one parameter with shape ``(n_draws,
+        n_chains)``.
 
     Returns
     -------
     float
-        Effective sample size in the bulk of the posterior. ``nan``
-        when there are fewer than 4 draws, no chains, zero
-        variance, or the autocorrelation sum is non-positive.
+        Effective sample size in the bulk of the posterior. ``nan`` when
+        there are fewer than 4 draws, no chains, zero variance, or the
+        autocorrelation sum is non-positive.
 
     Raises
     ------
@@ -147,10 +146,10 @@ def _autocorr_fft(series: np.ndarray) -> np.ndarray:
     """
     Return the normalized autocorrelation function via FFT.
 
-    Pads to the next power of two so the FFT is well-conditioned
-    for arbitrary chain lengths. The returned ACF has the same
-    length as the input series and starts at ``rho[0] = 1`` when
-    the input has non-zero variance.
+    Pads to the next power of two so the FFT is well-conditioned for
+    arbitrary chain lengths. The returned ACF has the same length as the
+    input series and starts at ``rho[0] = 1`` when the input has
+    non-zero variance.
 
     Parameters
     ----------

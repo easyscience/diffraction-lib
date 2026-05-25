@@ -119,7 +119,8 @@ class PosteriorSamples:
 
     def validate_shapes(self) -> tuple[int, int, int]:
         """
-        Validate stored sample shapes and return ``(n_draws, n_chains, n_parameters)``.
+        Validate stored sample shapes and return ``(n_draws, n_chains,
+        n_parameters)``.
 
         Returns
         -------
@@ -129,8 +130,8 @@ class PosteriorSamples:
         Raises
         ------
         ValueError
-            If the sample array is not 3-D, the parameter axis does
-            not match ``parameter_names``, or ``log_posterior`` (when
+            If the sample array is not 3-D, the parameter axis does not
+            match ``parameter_names``, or ``log_posterior`` (when
             present) does not match the first two sample axes.
         """
         posterior_array = np.asarray(self.parameter_samples, dtype=float)
@@ -553,10 +554,10 @@ def _bayesian_overall_status(
     """
     Return ``'success'`` or ``'failed'`` for the Bayesian run.
 
-    Bayesian success requires both the sampler to have completed and
-    the convergence diagnostics to have passed. Anything else is
-    rendered as ``failed`` in the overall row; the per-metric
-    convergence rows below carry the detail.
+    Bayesian success requires both the sampler to have completed and the
+    convergence diagnostics to have passed. Anything else is rendered as
+    ``failed`` in the overall row; the per-metric convergence rows below
+    carry the detail.
     """
     if not success or not sampler_completed:
         return 'failed'

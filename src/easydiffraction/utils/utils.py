@@ -34,12 +34,12 @@ def display_path(path: pathlib.Path | str) -> str:
     Format a filesystem path for user-facing display.
 
     Returns the path relative to the current working directory so
-    messages stay compact and avoid forced line breaks. Paths
-    outside the cwd subtree use ``..`` segments to walk up to a
-    common ancestor (e.g. ``../sibling/data.cif``) rather than
-    falling back to an absolute path. The absolute path is only
-    used when no relative form is possible — on Windows that
-    happens when the path is on a different drive from the cwd.
+    messages stay compact and avoid forced line breaks. Paths outside
+    the cwd subtree use ``..`` segments to walk up to a common ancestor
+    (e.g. ``../sibling/data.cif``) rather than falling back to an
+    absolute path. The absolute path is only used when no relative form
+    is possible — on Windows that happens when the path is on a
+    different drive from the cwd.
 
     Parameters
     ----------
@@ -86,14 +86,14 @@ def print_table_footnote(entries: list[tuple[str, str]]) -> None:
     Print a glossary block below a fit-results-style table.
 
     Each entry renders as a left-aligned ``• header = description``
-    bullet line. The block uses :meth:`ConsolePrinter.small` so it
-    shows as dim, smaller supplementary text — in Jupyter the font
-    size matches the table-cell text.
+    bullet line. The block uses :meth:`ConsolePrinter.small` so it shows
+    as dim, smaller supplementary text — in Jupyter the font size
+    matches the table-cell text.
 
     Parameters
     ----------
     entries : list[tuple[str, str]]
-        Each tuple is `(column header, one-line description)`.
+        Each tuple is ``(column header, one-line description)``.
     """
     if not entries:
         return

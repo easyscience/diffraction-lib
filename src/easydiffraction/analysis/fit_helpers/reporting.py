@@ -183,7 +183,9 @@ class FitResults:
         return rows
 
     def _print_table_notes(self) -> None:
-        """Print color-coded warnings below the refined parameters table."""
+        """
+        Print color-coded warnings below the refined parameters table.
+        """
         notes: list[str] = []
         if any(getattr(p, '_outside_physical_limits', False) for p in self.parameters):
             notes.append(

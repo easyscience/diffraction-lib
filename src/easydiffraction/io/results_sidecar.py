@@ -90,13 +90,17 @@ def _create_dataset(handle: object, path: str, data: np.ndarray) -> None:
 
 
 def _delete_group_if_present(handle: object, group_name: str) -> None:
-    """Delete one top-level group from an open HDF5 file when present."""
+    """
+    Delete one top-level group from an open HDF5 file when present.
+    """
     if group_name in handle:
         del handle[group_name]
 
 
 def _delete_canonical_groups(handle: object) -> None:
-    """Delete EasyDiffraction-owned top-level groups before append writes."""
+    """
+    Delete EasyDiffraction-owned top-level groups before append writes.
+    """
     for group_name in _CANONICAL_GROUPS:
         _delete_group_if_present(handle, group_name)
 
