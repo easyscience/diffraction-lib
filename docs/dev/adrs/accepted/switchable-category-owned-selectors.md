@@ -981,16 +981,21 @@ _minimizer.population_size            4
 _minimizer.parallel_workers           0
 _minimizer.initialization_method      latin_hypercube
 _minimizer.random_seed                ?
-_minimizer.runtime_seconds            124.7
-_minimizer.acceptance_rate_mean       0.27
-_minimizer.gelman_rubin_max           1.03
-_minimizer.effective_sample_size_min  482
-_minimizer.best_log_posterior        -1234.56
-_minimizer.reduced_chi2               1.18
+
+_fit_result.result_kind                bayesian
+_fit_result.fitting_time               124.7
+_fit_result.reduced_chi_square         1.18
+_fit_result.acceptance_rate_mean       0.27
+_fit_result.gelman_rubin_max           1.03
+_fit_result.effective_sample_size_min  482
+_fit_result.best_log_posterior        -1234.56
 ```
 
 The `_fitting.*` block is gone (`_fitting.minimizer_type` →
 `_minimizer.type`; `_fitting.mode_type` → `_fitting_mode.type`).
+Fit-result outputs live under `_fit_result.*` per
+[`minimizer-input-output-split.md`](minimizer-input-output-split.md);
+`_minimizer.*` carries only user-writable settings.
 
 ### `analysis.cif` (deterministic fit)
 
@@ -1001,11 +1006,13 @@ _fitting_mode.type        single
 
 _minimizer.type                       'lmfit (leastsq)'
 _minimizer.max_iterations             1000
-_minimizer.objective_value            1532.4
-_minimizer.runtime_seconds            12.34
-_minimizer.iterations_performed       87
-_minimizer.exit_reason                converged
-_minimizer.reduced_chi2               1.42
+
+_fit_result.result_kind                deterministic
+_fit_result.fitting_time               12.34
+_fit_result.iterations                 87
+_fit_result.exit_reason                converged
+_fit_result.reduced_chi_square         1.42
+_fit_result.objective_value            1532.4
 ```
 
 `_minimizer.optimizer_name` and `_minimizer.method_name` are gone — they

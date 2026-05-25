@@ -304,6 +304,11 @@ swap warnings.
 
 ### 9. Example CIF layouts
 
+The fit-result outputs in these examples live under `_fit_result.*`
+per
+[`minimizer-input-output-split.md`](minimizer-input-output-split.md);
+`_minimizer.*` carries only user-writable settings.
+
 `bumps (lm)`:
 
 ```
@@ -313,10 +318,12 @@ _fitting.mode_type        joint
 _fitting.minimizer_type  'bumps (lm)'
 
 _minimizer.max_iterations           200
-_minimizer.runtime_seconds          12.34
-_minimizer.iterations_performed     87
-_minimizer.exit_reason              converged
-_minimizer.reduced_chi2             1.42
+
+_fit_result.result_kind             deterministic
+_fit_result.fitting_time            12.34
+_fit_result.iterations              87
+_fit_result.exit_reason             converged
+_fit_result.reduced_chi_square      1.42
 ```
 
 `bumps (dream)`:
@@ -334,12 +341,14 @@ _minimizer.population_size            4
 _minimizer.parallel_workers           0
 _minimizer.initialization_method      latin_hypercube
 _minimizer.random_seed                ?
-_minimizer.runtime_seconds            124.7
-_minimizer.acceptance_rate_mean       0.27
-_minimizer.gelman_rubin_max           1.03
-_minimizer.effective_sample_size_min  482
-_minimizer.best_log_posterior        -1234.56
-_minimizer.reduced_chi2               1.18
+
+_fit_result.result_kind                bayesian
+_fit_result.fitting_time               124.7
+_fit_result.reduced_chi_square         1.18
+_fit_result.acceptance_rate_mean       0.27
+_fit_result.gelman_rubin_max           1.03
+_fit_result.effective_sample_size_min  482
+_fit_result.best_log_posterior        -1234.56
 ```
 
 `emcee` (added by the follow-up plan):
@@ -358,12 +367,14 @@ _minimizer.proposal_moves             de
 _minimizer.parallel_workers           0
 _minimizer.initialization_method      ball
 _minimizer.random_seed                42
-_minimizer.runtime_seconds            87.3
-_minimizer.acceptance_rate_mean       0.31
-_minimizer.gelman_rubin_max           1.02
-_minimizer.effective_sample_size_min  612
-_minimizer.best_log_posterior        -1237.89
-_minimizer.reduced_chi2               1.22
+
+_fit_result.result_kind                bayesian
+_fit_result.fitting_time               87.3
+_fit_result.reduced_chi_square         1.22
+_fit_result.acceptance_rate_mean       0.31
+_fit_result.gelman_rubin_max           1.02
+_fit_result.effective_sample_size_min  612
+_fit_result.best_log_posterior        -1237.89
 ```
 
 emcee's resumable chain state lives in the `/emcee_chain` group of the
