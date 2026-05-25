@@ -23,31 +23,27 @@ from easydiffraction.analysis.fit_helpers.bayesian import summarize_posterior_pa
 from easydiffraction.analysis.fit_helpers.metrics import calculate_reduced_chi_square
 from easydiffraction.analysis.fit_helpers.tracking import SamplerProgressUpdate
 from easydiffraction.analysis.minimizers.base import MinimizerBase
+from easydiffraction.analysis.minimizers.emcee_defaults import DEFAULT_INITIALIZATION_METHOD
+from easydiffraction.analysis.minimizers.emcee_defaults import DEFAULT_METHOD
+from easydiffraction.analysis.minimizers.emcee_defaults import DEFAULT_NBURN
+from easydiffraction.analysis.minimizers.emcee_defaults import DEFAULT_NSTEPS
+from easydiffraction.analysis.minimizers.emcee_defaults import DEFAULT_NWALKERS
+from easydiffraction.analysis.minimizers.emcee_defaults import DEFAULT_PARALLEL_WORKERS
+from easydiffraction.analysis.minimizers.emcee_defaults import DEFAULT_PROPOSAL_MOVES
+from easydiffraction.analysis.minimizers.emcee_defaults import DEFAULT_THIN
+from easydiffraction.analysis.minimizers.emcee_defaults import MAX_RANDOM_SEED
+from easydiffraction.analysis.minimizers.emcee_defaults import SUPPORTED_INITIALIZATION_METHOD_SET
+from easydiffraction.analysis.minimizers.emcee_defaults import SUPPORTED_INITIALIZATION_METHODS
 from easydiffraction.analysis.minimizers.enums import InitializationMethodEnum
 from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.utils.enums import VerbosityEnum
 
-DEFAULT_METHOD = 'de'
-DEFAULT_NSTEPS = 5000
-DEFAULT_NBURN = 1000
-DEFAULT_THIN = 1
-DEFAULT_NWALKERS = 32
-DEFAULT_PARALLEL_WORKERS = 0
-DEFAULT_INITIALIZATION_METHOD = InitializationMethodEnum.BALL
-DEFAULT_PROPOSAL_MOVES = 'de'
-MAX_RANDOM_SEED = int(np.iinfo(np.uint32).max)
 EMCEE_CHAIN_GROUP = 'emcee_chain'
 EMCEE_FAILURES = (ArithmeticError, RuntimeError, TypeError, ValueError)
 EMCEE_SAMPLE_ARRAY_NDIM = 3
 TOTAL_PROGRESS_POINTS = 25
-SUPPORTED_INITIALIZATION_METHODS = (
-    InitializationMethodEnum.BALL,
-    InitializationMethodEnum.UNIFORM,
-    InitializationMethodEnum.PRIOR,
-)
-SUPPORTED_INITIALIZATION_METHOD_SET = frozenset(SUPPORTED_INITIALIZATION_METHODS)
 
 if TYPE_CHECKING:
     from collections.abc import Callable
