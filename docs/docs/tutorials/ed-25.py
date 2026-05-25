@@ -347,5 +347,3 @@ project.display.posterior.predictive(expt_name='hrpt')
 
 # %%
 project.display.posterior.predictive(expt_name='hrpt', x_min=92, x_max=93)
-
-# %%
