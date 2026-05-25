@@ -388,10 +388,17 @@ def test_emcee_sampler_settings_record_sampling_and_total_steps():
         n_parameters=2,
     )
 
-    assert settings['steps'] == 100
-    assert settings['burn'] == 20
+    assert settings['nsteps'] == 100
+    assert settings['nburn'] == 20
+    assert settings['nwalkers'] == minimizer.nwalkers
+    assert settings['parallel_workers'] == minimizer.parallel_workers
+    assert settings['initialization_method'] == 'ball'
+    assert settings['proposal_moves'] == 'de'
     assert settings['total_steps'] == 121
     assert settings['samples'] == 100 * minimizer.nwalkers * 2
+    assert 'steps' not in settings
+    assert 'burn' not in settings
+    assert 'pop' not in settings
 
 
 def test_sample_with_progress_iterates_sampler_and_reports_each_state():

@@ -201,12 +201,30 @@ def test_restored_bayesian_sampler_settings_reconstruct_sample_count():
         n_parameters=5,
     )
 
-    assert settings['steps'] == 10000
-    assert settings['burn'] == 2000
+    assert settings['nsteps'] == 10000
+    assert settings['nburn'] == 2000
     assert settings['thin'] == 1
-    assert settings['pop'] == 16
+    assert settings['nwalkers'] == 16
+    assert settings['parallel_workers'] == 0
+    assert settings['initialization_method'] == 'ball'
+    assert settings['proposal_moves'] == 'de'
     assert settings['samples'] == 800000
     assert settings['random_seed'] == 123
+
+
+def test_emcee_fit_requires_saved_project_for_new_and_resume_runs():
+    import pytest
+
+    from easydiffraction.analysis.analysis import Analysis
+
+    analysis = Analysis(project=_make_project_with_names([]))
+    analysis.minimizer.type = 'emcee'
+
+    with pytest.raises(ValueError, match='emcee requires a saved project'):
+        analysis.fit()
+
+    with pytest.raises(ValueError, match='emcee requires a saved project'):
+        analysis.fit(resume=True)
 
 
 def test_restored_bayesian_reduced_chi_square_recovers_from_log_posterior(monkeypatch):

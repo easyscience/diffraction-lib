@@ -705,7 +705,7 @@ Mark `[x]` as each step lands.
 Each command captures its log with a zsh-safe exit-code variable as
 required by `AGENTS.md` → **Workflow**.
 
-- [ ] **P2.1 — Add unit + integration tests.**
+- [x] **P2.1 — Add unit + integration tests.**
   - `tests/unit/easydiffraction/analysis/categories/minimizer/test_emcee.py`:
     category-class descriptor defaults; `_native_key_map` override;
     pairing with `BayesianFitResult`; swap behavior; resume
