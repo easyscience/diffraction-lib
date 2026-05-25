@@ -606,7 +606,9 @@ def download_tutorial(
     id : int | str
         Numeric tutorial id (e.g. 1).
     destination : str, default='tutorials'
-        Directory to save the file into (created if missing).
+        Directory to save the file into (created if missing). Relative
+        destinations are resolved against the configured artifact root
+        when ``EASYDIFFRACTION_ARTIFACT_ROOT`` is set.
     overwrite : bool, default=False
         Whether to overwrite the file if it already exists.
 
@@ -637,7 +639,7 @@ def download_tutorial(
 
     fname = f'ed-{id}.ipynb'
 
-    dest_path = pathlib.Path(destination)
+    dest_path = resolve_artifact_path(destination)
     dest_path.mkdir(parents=True, exist_ok=True)
     file_path = dest_path / fname
 
@@ -683,7 +685,9 @@ def download_all_tutorials(
     Parameters
     ----------
     destination : str, default='tutorials'
-        Directory to save the files into (created if missing).
+        Directory to save the files into (created if missing). Relative
+        destinations are resolved against the configured artifact root
+        when ``EASYDIFFRACTION_ARTIFACT_ROOT`` is set.
     overwrite : bool, default=False
         Whether to overwrite files if they already exist.
 
@@ -712,8 +716,10 @@ def download_all_tutorials(
         except (OSError, ValueError) as e:
             log.warning(f'Failed to download tutorial #{tutorial_id}: {e}')
 
+    resolved_destination = resolve_artifact_path(destination)
     console.print(
-        f"✅ Downloaded {len(downloaded_paths)} tutorials to '{display_path(destination)}'"
+        f"✅ Downloaded {len(downloaded_paths)} tutorials to "
+        f"'{display_path(resolved_destination)}'"
     )
     return downloaded_paths
 

@@ -4,17 +4,19 @@
 
 from __future__ import annotations
 
-import warnings
 from dataclasses import dataclass
 
-import arviz as az
 import numpy as np
+
+from easydiffraction.analysis.fit_helpers._diagnostics import compute_ess_bulk
+from easydiffraction.analysis.fit_helpers._diagnostics import compute_r_hat
 from easydiffraction.analysis.fit_helpers.metrics import calculate_r_factor
 from easydiffraction.analysis.fit_helpers.metrics import calculate_r_factor_squared
 from easydiffraction.analysis.fit_helpers.metrics import calculate_rb_factor
 from easydiffraction.analysis.fit_helpers.metrics import calculate_weighted_r_factor
 from easydiffraction.analysis.fit_helpers.reporting import FitResults
 from easydiffraction.analysis.fit_helpers.reporting import _build_parameter_row
+from easydiffraction.analysis.fit_helpers.reporting import _overall_status_row_label
 from easydiffraction.core.posterior import PosteriorParameterSummary
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.utils import print_metrics_table
@@ -115,20 +117,21 @@ class PosteriorSamples:
         """
         return np.asarray(self.parameter_samples).reshape(-1, len(self.parameter_names))
 
-    def to_arviz(self) -> object:
+    def validate_shapes(self) -> tuple[int, int, int]:
         """
-        Convert posterior samples to an ArviZ ``InferenceData`` object.
+        Validate stored sample shapes and return ``(n_draws, n_chains, n_parameters)``.
 
         Returns
         -------
-        object
-            ArviZ ``InferenceData`` instance built from the stored
-            posterior samples.
+        tuple[int, int, int]
+            Tuple ``(n_draws, n_chains, n_parameters)``.
 
         Raises
         ------
         ValueError
-            If the stored arrays do not have the expected shapes.
+            If the sample array is not 3-D, the parameter axis does
+            not match ``parameter_names``, or ``log_posterior`` (when
+            present) does not match the first two sample axes.
         """
         posterior_array = np.asarray(self.parameter_samples, dtype=float)
         if posterior_array.ndim != POSTERIOR_SAMPLE_NDIM:
@@ -140,31 +143,13 @@ class PosteriorSamples:
             msg = 'Posterior sample array does not match the parameter name list length.'
             raise ValueError(msg)
 
-        posterior_dict = {
-            name: np.transpose(posterior_array[:, :, index], (1, 0))
-            for index, name in enumerate(self.parameter_names)
-        }
-
-        sample_stats: dict[str, np.ndarray] | None = None
         if self.log_posterior is not None:
             log_posterior = np.asarray(self.log_posterior, dtype=float)
             if log_posterior.shape != (n_draws, n_chains):
                 msg = 'Log-posterior array must match the first two posterior sample axes.'
                 raise ValueError(msg)
-            sample_stats = {'lp': np.transpose(log_posterior, (1, 0))}
 
-        data = {'posterior': posterior_dict}
-        if sample_stats is not None:
-            data['sample_stats'] = sample_stats
-
-        with warnings.catch_warnings():
-            warnings.filterwarnings(
-                'ignore',
-                message='Found chain dimension to be longer than draw dimension.*',
-                category=UserWarning,
-                module='arviz_base.base',
-            )
-            return az.from_dict(data)
+        return n_draws, n_chains, n_parameters
 
 
 SummaryList = list[PosteriorParameterSummary] | None
@@ -329,7 +314,7 @@ class BayesianFitResults(FitResults):
         sampler_label = self.minimizer_type or self.sampler_name
         if sampler_label:
             rows.append(['🧪 Sampler', str(sampler_label)])
-        rows.append(['✅ Overall status', overall_status])
+        rows.append([_overall_status_row_label(overall_status), overall_status])
         if self.message:
             rows.append(['💬 Engine message', self.message])
         if self.fitting_time is not None:
@@ -393,12 +378,15 @@ def compute_convergence_diagnostics(posterior_samples: PosteriorSamples) -> dict
     dict[str, object]
         Convergence metrics keyed by diagnostic name.
     """
-    inference_data = posterior_samples.to_arviz()
-    rhat_dataset = az.rhat(inference_data)
-    ess_dataset = az.ess(inference_data, method='bulk')
+    n_draws, n_chains, _n_parameters = posterior_samples.validate_shapes()
+    parameter_samples = np.asarray(posterior_samples.parameter_samples, dtype=float)
 
-    r_hat_by_parameter = _dataset_to_scalar_dict(rhat_dataset)
-    ess_bulk_by_parameter = _dataset_to_scalar_dict(ess_dataset)
+    r_hat_by_parameter: dict[str, float | None] = {}
+    ess_bulk_by_parameter: dict[str, float | None] = {}
+    for index, name in enumerate(posterior_samples.parameter_names):
+        per_parameter = parameter_samples[:, :, index]
+        r_hat_by_parameter[name] = _maybe_scalar(compute_r_hat(per_parameter))
+        ess_bulk_by_parameter[name] = _maybe_scalar(compute_ess_bulk(per_parameter))
 
     finite_r_hat = [value for value in r_hat_by_parameter.values() if value is not None]
     finite_ess_bulk = [value for value in ess_bulk_by_parameter.values() if value is not None]
@@ -420,8 +408,8 @@ def compute_convergence_diagnostics(posterior_samples: PosteriorSamples) -> dict
         'ess_bulk_by_parameter': ess_bulk_by_parameter,
         'max_r_hat': max_r_hat,
         'min_ess_bulk': min_ess_bulk,
-        'n_draws': int(posterior_samples.parameter_samples.shape[0]),
-        'n_chains': int(posterior_samples.parameter_samples.shape[1]),
+        'n_draws': n_draws,
+        'n_chains': n_chains,
         'n_parameters': len(posterior_samples.parameter_names),
     }
 
@@ -520,13 +508,6 @@ def standard_deviations_from_summaries(
         Standard deviations in the same order.
     """
     return np.array([summary.standard_deviation for summary in summaries], dtype=float)
-
-
-def _dataset_to_scalar_dict(dataset: object) -> dict[str, float | None]:
-    values: dict[str, float | None] = {}
-    for name, data_array in dataset.data_vars.items():
-        values[name] = _maybe_scalar(np.asarray(data_array).reshape(-1)[0])
-    return values
 
 
 def _maybe_scalar(value: object) -> float | None:

@@ -231,6 +231,19 @@ Verbose CIF tags are user-facing. The canonical MCMC abbreviation
 field so it appears in `help()` output but does not become a Python
 attribute or a CIF tag.
 
+**Implementation note (2026-05-25).** The per-parameter R̂ and bulk
+ESS values feeding `gelman_rubin_max` and
+`effective_sample_size_min` are computed by an in-tree helper at
+[`analysis/fit_helpers/_diagnostics.py`](../../../../src/easydiffraction/analysis/fit_helpers/_diagnostics.py)
+— pure NumPy + SciPy implementations of split R̂ and
+rank-normalized bulk ESS (Vehtari, Gelman, Simpson, Carpenter and
+Bürkner 2019; Geyer 1992). The earlier `arviz` dependency, which
+the library only used to call `az.rhat()` and `az.ess(method='bulk')`,
+has been removed; the diagnostics' public surface
+(`gelman_rubin_max`, `effective_sample_size_min`,
+`r_hat_by_parameter`, `ess_bulk_by_parameter`) and the convergence
+thresholds (R̂ ≤ 1.01, ESS ≥ 400) are unchanged.
+
 ### 6. Unified `initialization_method` enum
 
 A single `(str, Enum)` `InitializationMethodEnum` with members:

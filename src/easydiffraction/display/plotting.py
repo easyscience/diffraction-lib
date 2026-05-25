@@ -86,7 +86,7 @@ DEFAULT_RESIDUAL_HEIGHT_FRACTION = 0.25
 DEFAULT_BRAGG_PEAKS_HEIGHT_FRACTION = 0.10
 DEFAULT_RESID_HEIGHT = DEFAULT_RESIDUAL_HEIGHT_FRACTION
 DEFAULT_BRAGG_ROW = DEFAULT_BRAGG_PEAKS_HEIGHT_FRACTION
-DEFAULT_POSTERIOR_PREDICTIVE_DRAWS = 200
+DEFAULT_POSTERIOR_PREDICTIVE_DRAWS = 50
 DEFAULT_POSTERIOR_PREDICTIVE_DRAW_PLOT_CAP = 50
 FULL_POSTERIOR_PAIR_COVARIANCE_RANK = 2
 POSTERIOR_FLATTENED_SAMPLE_NDIM = 2
@@ -3819,33 +3819,6 @@ class Plotter(RendererBase):
                 dtype=int,
             )
         )
-
-    def _get_posterior_inference_data(
-        self,
-    ) -> tuple[object | None, object | None]:
-        """
-        Return posterior inference data for the current Bayesian fit.
-
-        Returns
-        -------
-        tuple[object | None, object | None]
-            ``(inference_data, fit_results)`` when posterior samples are
-            available, otherwise ``(None, None)``.
-        """
-        if self.engine != PlotterEngineEnum.PLOTLY.value:
-            log.warning('Posterior plots currently require the Plotly plotting backend.')
-            return None, None
-
-        fit_results = self._get_fit_result_for_correlation()
-        if fit_results is None:
-            return None, None
-
-        posterior_samples = getattr(fit_results, 'posterior_samples', None)
-        if posterior_samples is None:
-            log.warning('Posterior samples are unavailable. Run a Bayesian fit first.')
-            return None, None
-
-        return posterior_samples.to_arviz(), fit_results
 
     def _get_posterior_samples_and_fit_results(
         self,

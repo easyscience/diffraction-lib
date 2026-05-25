@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 
-import warnings
-
 import numpy as np
 import pytest
 
@@ -33,7 +31,7 @@ def test_module_import():
     assert MUT.__name__ == 'easydiffraction.analysis.fit_helpers.bayesian'
 
 
-def test_posterior_samples_flatten_and_to_arviz():
+def test_posterior_samples_flatten():
     from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
 
     posterior_samples = PosteriorSamples(
@@ -49,17 +47,13 @@ def test_posterior_samples_flatten_and_to_arviz():
     )
 
     flattened = posterior_samples.flattened()
-    inference_data = posterior_samples.to_arviz()
 
     assert flattened.shape == (4, 2)
     np.testing.assert_allclose(flattened[:, 0], np.array([1.0, 2.0, 3.0, 4.0]))
     np.testing.assert_allclose(flattened[:, 1], np.array([10.0, 20.0, 30.0, 40.0]))
-    assert set(inference_data.posterior.data_vars) == {'a', 'b'}
-    assert inference_data.posterior['a'].shape == (2, 2)
-    assert inference_data.sample_stats['lp'].shape == (2, 2)
 
 
-def test_posterior_samples_to_arviz_allows_more_chains_than_draws_without_warning():
+def test_posterior_samples_validate_shapes_returns_dimensions():
     from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
 
     posterior_samples = PosteriorSamples(
@@ -68,16 +62,10 @@ def test_posterior_samples_to_arviz_allows_more_chains_than_draws_without_warnin
         log_posterior=np.ones((2, 32), dtype=float),
     )
 
-    with warnings.catch_warnings(record=True) as caught_warnings:
-        warnings.simplefilter('always')
-        inference_data = posterior_samples.to_arviz()
-
-    warning_messages = [str(warning.message) for warning in caught_warnings]
-    assert not any('Found chain dimension' in message for message in warning_messages)
-    assert inference_data.posterior['a'].shape == (32, 2)
+    assert posterior_samples.validate_shapes() == (2, 32, 1)
 
 
-def test_posterior_samples_to_arviz_validates_shapes():
+def test_posterior_samples_validate_shapes_rejects_wrong_ndim():
     from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
 
     posterior_samples = PosteriorSamples(
@@ -89,7 +77,7 @@ def test_posterior_samples_to_arviz_validates_shapes():
         ValueError,
         match=r'Posterior sample array must have shape \(n_draws, n_chains, n_parameters\)\.',
     ):
-        posterior_samples.to_arviz()
+        posterior_samples.validate_shapes()
 
 
 def test_compute_convergence_diagnostics_treats_non_finite_values_as_not_converged(monkeypatch):
@@ -101,17 +89,13 @@ def test_compute_convergence_diagnostics_treats_non_finite_values_as_not_converg
         parameter_samples=np.ones((4, 2, 1), dtype=float),
     )
 
-    fake_dataset = type('FakeDataset', (), {'data_vars': {'a': np.array([np.nan], dtype=float)}})
-
     monkeypatch.setattr(
-        'easydiffraction.analysis.fit_helpers.bayesian.az.rhat',
-        lambda inference_data: fake_dataset,
+        'easydiffraction.analysis.fit_helpers.bayesian.compute_r_hat',
+        lambda _samples: float('nan'),
     )
     monkeypatch.setattr(
-        'easydiffraction.analysis.fit_helpers.bayesian.az.ess',
-        lambda inference_data, method='bulk': type(
-            'FakeDataset', (), {'data_vars': {'a': np.array([4000.0], dtype=float)}}
-        ),
+        'easydiffraction.analysis.fit_helpers.bayesian.compute_ess_bulk',
+        lambda _samples: 4000.0,
     )
 
     diagnostics = compute_convergence_diagnostics(posterior_samples)
@@ -208,7 +192,8 @@ def test_bayesian_fit_results_display_results_prints_sampler_and_convergence(cap
 
     out = capsys.readouterr().out
     assert 'Bayesian fit results' in out
-    assert 'Overall status' in out
+    assert '❌ Overall status' in out
+    assert '✅ Overall status' not in out
     assert 'failed' in out  # convergence failed → overall failed
     assert 'DREAM sampling completed' in out  # engine message
     assert 'Sampler' in out

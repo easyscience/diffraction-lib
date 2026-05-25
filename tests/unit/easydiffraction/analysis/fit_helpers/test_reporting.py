@@ -10,6 +10,13 @@ def test_module_import():
     assert expected_module_name == actual_module_name
 
 
+def test_overall_status_row_label_uses_failure_icon():
+    from easydiffraction.analysis.fit_helpers.reporting import _overall_status_row_label
+
+    assert _overall_status_row_label('success') == '✅ Overall status'
+    assert _overall_status_row_label('failed') == '❌ Overall status'
+
+
 def test_fitresults_display_results_prints_and_table(capsys, monkeypatch):
     # Arrange: build a minimal fake parameter object with required attributes
     class Identity:
@@ -50,7 +57,7 @@ def test_fitresults_display_results_prints_and_table(capsys, monkeypatch):
     # Assert: key lines printed and a table rendered
     out = capsys.readouterr().out
     assert 'Least-squares fit results:' in out
-    assert 'Overall status' in out
+    assert '✅ Overall status' in out
     assert 'success' in out
     assert 'reduced χ²' in out
     assert 'R-factor (Rf' in out

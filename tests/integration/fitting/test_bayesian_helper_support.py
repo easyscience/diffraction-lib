@@ -33,7 +33,7 @@ class Param:
         self.units = 'arb'
 
 
-def test_posterior_samples_flatten_and_to_arviz():
+def test_posterior_samples_flatten():
     from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
 
     posterior_samples = PosteriorSamples(
@@ -49,17 +49,13 @@ def test_posterior_samples_flatten_and_to_arviz():
     )
 
     flattened = posterior_samples.flattened()
-    inference_data = posterior_samples.to_arviz()
 
     assert flattened.shape == (4, 2)
     np.testing.assert_allclose(flattened[:, 0], np.array([1.0, 2.0, 3.0, 4.0]))
     np.testing.assert_allclose(flattened[:, 1], np.array([10.0, 20.0, 30.0, 40.0]))
-    assert set(inference_data.posterior.data_vars) == {'a', 'b'}
-    assert inference_data.posterior['a'].shape == (2, 2)
-    assert inference_data.sample_stats['lp'].shape == (2, 2)
 
 
-def test_posterior_samples_to_arviz_validates_shapes():
+def test_posterior_samples_validate_shapes_rejects_wrong_ndim():
     from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
 
     posterior_samples = PosteriorSamples(
@@ -71,10 +67,10 @@ def test_posterior_samples_to_arviz_validates_shapes():
         ValueError,
         match=r'Posterior sample array must have shape \(n_draws, n_chains, n_parameters\)\.',
     ):
-        posterior_samples.to_arviz()
+        posterior_samples.validate_shapes()
 
 
-def test_posterior_samples_to_arviz_validates_name_and_log_posterior_lengths():
+def test_posterior_samples_validate_shapes_rejects_name_and_log_posterior_mismatches():
     from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
 
     wrong_names = PosteriorSamples(
@@ -85,7 +81,7 @@ def test_posterior_samples_to_arviz_validates_name_and_log_posterior_lengths():
         ValueError,
         match=r'Posterior sample array does not match the parameter name list length\.',
     ):
-        wrong_names.to_arviz()
+        wrong_names.validate_shapes()
 
     wrong_log_posterior = PosteriorSamples(
         parameter_names=['a'],
@@ -96,7 +92,7 @@ def test_posterior_samples_to_arviz_validates_name_and_log_posterior_lengths():
         ValueError,
         match=r'Log-posterior array must match the first two posterior sample axes\.',
     ):
-        wrong_log_posterior.to_arviz()
+        wrong_log_posterior.validate_shapes()
 
 
 def test_compute_convergence_diagnostics_treats_non_finite_values_as_not_converged(
@@ -110,17 +106,13 @@ def test_compute_convergence_diagnostics_treats_non_finite_values_as_not_converg
         parameter_samples=np.ones((4, 2, 1), dtype=float),
     )
 
-    fake_dataset = type('FakeDataset', (), {'data_vars': {'a': np.array([np.nan], dtype=float)}})
-
     monkeypatch.setattr(
-        'easydiffraction.analysis.fit_helpers.bayesian.az.rhat',
-        lambda inference_data: fake_dataset,
+        'easydiffraction.analysis.fit_helpers.bayesian.compute_r_hat',
+        lambda _samples: float('nan'),
     )
     monkeypatch.setattr(
-        'easydiffraction.analysis.fit_helpers.bayesian.az.ess',
-        lambda inference_data, method='bulk': type(
-            'FakeDataset', (), {'data_vars': {'a': np.array([4000.0], dtype=float)}}
-        ),
+        'easydiffraction.analysis.fit_helpers.bayesian.compute_ess_bulk',
+        lambda _samples: 4000.0,
     )
 
     diagnostics = compute_convergence_diagnostics(posterior_samples)
@@ -219,19 +211,11 @@ def test_standard_deviations_from_summaries_returns_float_array():
 def test_bayesian_format_helpers_cover_edge_cases():
     from easydiffraction.analysis.fit_helpers.bayesian import _bayesian_overall_status
     from easydiffraction.analysis.fit_helpers.bayesian import _calculate_fit_quality_metrics
-    from easydiffraction.analysis.fit_helpers.bayesian import _dataset_to_scalar_dict
     from easydiffraction.analysis.fit_helpers.bayesian import _maybe_scalar
-
-    dataset = type(
-        'FakeDataset',
-        (),
-        {'data_vars': {'a': np.array([np.nan], dtype=float), 'b': np.array([3.0], dtype=float)}},
-    )
 
     assert _maybe_scalar(None) is None
     assert _maybe_scalar(float('inf')) is None
     assert _maybe_scalar(3.0) == pytest.approx(3.0)
-    assert _dataset_to_scalar_dict(dataset) == {'a': None, 'b': 3.0}
 
     # Two-state overall-status helper: 'success' only when sampler
     # completed AND convergence passed.

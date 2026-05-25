@@ -12,6 +12,12 @@ from easydiffraction.utils.utils import print_table_footnote
 from easydiffraction.utils.utils import render_table
 
 
+def _overall_status_row_label(status: str) -> str:
+    """Return the metric label for an overall status row."""
+    icon = '✅' if status == 'success' else '❌'
+    return f'{icon} Overall status'
+
+
 class FitResults:
     """
     Container for results of a single optimization run.
@@ -158,7 +164,8 @@ class FitResults:
         rows: list[list[str]] = []
         if self.minimizer_type is not None:
             rows.append(['🧪 Minimizer', str(self.minimizer_type)])
-        rows.append(['✅ Overall status', 'success' if self.success else 'failed'])
+        overall_status = 'success' if self.success else 'failed'
+        rows.append([_overall_status_row_label(overall_status), overall_status])
         if self.fitting_time is not None:
             rows.append(['⏱️ Fitting time (seconds)', f'{self.fitting_time:.2f}'])
         if self.iterations:
@@ -278,5 +285,3 @@ def _compute_relative_change(param: object) -> str:
     change = ((param.value - param._fit_start_value) / param._fit_start_value) * 100
     arrow = '↑' if change > 0 else '↓'
     return f'{abs(change):.2f} % {arrow}'
-
-
