@@ -304,8 +304,7 @@ swap warnings.
 
 ### 9. Example CIF layouts
 
-The fit-result outputs in these examples live under `_fit_result.*`
-per
+The fit-result outputs in these examples live under `_fit_result.*` per
 [`minimizer-input-output-split.md`](minimizer-input-output-split.md);
 `_minimizer.*` carries only user-writable settings.
 
