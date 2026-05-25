@@ -8,6 +8,7 @@ import os
 import platform
 import subprocess  # noqa: S404
 import sys
+import tempfile
 import time
 from dataclasses import dataclass
 from datetime import datetime
@@ -20,6 +21,12 @@ DEFAULT_TUTORIAL_DIR = ROOT / 'docs' / 'docs' / 'tutorials'
 DEFAULT_OUTPUT_DIR = ROOT / 'docs' / 'dev' / 'benchmarking'
 CHECKPOINT_DIR_NAME = '.ipynb_checkpoints'
 CSV_HEADER = ['tutorial_name', 'elapsed_seconds', 'status', 'return_code']
+
+# Layout for the live single-line table. The name column is sized
+# from the longest tutorial name encountered.
+STATUS_COLUMN_WIDTH = 10
+TIME_COLUMN_WIDTH = 10  # includes trailing 's'
+PROGRESS_POLL_SECONDS = 0.2
 
 
 @dataclass(frozen=True)
@@ -75,37 +82,118 @@ def _matches_requested_patterns(
     return any(rel_path.match(pattern) or script_path.name == pattern for pattern in patterns)
 
 
+def _format_progress_line(
+    *,
+    index: int,
+    total: int,
+    name: str,
+    name_width: int,
+    status: str,
+    elapsed_seconds: float,
+) -> str:
+    """Format one tutorial row for the live progress table."""
+    index_width = len(str(total))
+    counter = f'[{index:>{index_width}}/{total}]'
+    time_field_width = TIME_COLUMN_WIDTH - 1  # reserve one column for trailing 's'
+    return (
+        f'{counter}  '
+        f'{name:<{name_width}}  '
+        f'{status:<{STATUS_COLUMN_WIDTH}}  '
+        f'{elapsed_seconds:>{time_field_width}.1f}s'
+    )
+
+
+def _emit_progress_line(*, line: str, final: bool, is_tty: bool) -> None:
+    """
+    Render one progress line.
+
+    On a TTY the same line is rewritten in place via carriage return so
+    the elapsed-seconds field updates while the tutorial is running;
+    only the final write terminates with a newline. When stdout is not
+    a TTY (CI, log file), only the final row is printed so the log
+    stays one-line-per-tutorial without carriage-return noise.
+    """
+    if is_tty:
+        terminator = '\n' if final else ''
+        sys.stdout.write('\r' + line + terminator)
+        sys.stdout.flush()
+    elif final:
+        print(line)
+
+
 def _run_tutorial(
     script_path: Path,
     tutorial_dir: Path,
     env: dict[str, str],
+    *,
+    index: int,
+    total: int,
+    name_width: int,
+    is_tty: bool,
 ) -> TutorialBenchmarkResult:
+    """Run one tutorial with a live single-line progress indicator."""
     tutorial_name = _relative_display_path(script_path, tutorial_dir)
     start_time = time.perf_counter()
-    result = subprocess.run(  # noqa: S603
-        [sys.executable, str(script_path)],
-        cwd=str(ROOT),
-        env=env,
-        capture_output=True,
-        text=True,
-        encoding='utf-8',
-    )
-    elapsed_seconds = time.perf_counter() - start_time
-    status = 'ok' if result.returncode == 0 else 'failed'
 
-    if result.returncode == 0:
-        print(f'        OK      {elapsed_seconds:.1f}s')
-    else:
-        print(f'        FAILED  {elapsed_seconds:.1f}s', file=sys.stderr)
-        details = ((result.stdout or '') + (result.stderr or '')).strip()
-        if details:
-            print(details, file=sys.stderr)
+    # Combined stdout+stderr land in a temp file so the OS pipe buffer
+    # cannot fill up and stall the subprocess while we poll. We only
+    # read the contents back if the tutorial fails.
+    with tempfile.TemporaryFile(mode='wb+') as out_file:
+        proc = subprocess.Popen(  # noqa: S603
+            [sys.executable, str(script_path)],
+            cwd=str(ROOT),
+            env=env,
+            stdout=out_file,
+            stderr=subprocess.STDOUT,
+        )
+
+        last_displayed_second = -1
+        while proc.poll() is None:
+            elapsed = time.perf_counter() - start_time
+            current_second = int(elapsed)
+            if current_second != last_displayed_second:
+                _emit_progress_line(
+                    line=_format_progress_line(
+                        index=index,
+                        total=total,
+                        name=tutorial_name,
+                        name_width=name_width,
+                        status='Running...',
+                        elapsed_seconds=elapsed,
+                    ),
+                    final=False,
+                    is_tty=is_tty,
+                )
+                last_displayed_second = current_second
+            time.sleep(PROGRESS_POLL_SECONDS)
+
+        elapsed_seconds = time.perf_counter() - start_time
+        success = proc.returncode == 0
+        status_word = 'OK' if success else 'FAILED'
+        _emit_progress_line(
+            line=_format_progress_line(
+                index=index,
+                total=total,
+                name=tutorial_name,
+                name_width=name_width,
+                status=status_word,
+                elapsed_seconds=elapsed_seconds,
+            ),
+            final=True,
+            is_tty=is_tty,
+        )
+
+        if not success:
+            out_file.seek(0)
+            details = out_file.read().decode('utf-8', errors='replace').strip()
+            if details:
+                print(details, file=sys.stderr)
 
     return TutorialBenchmarkResult(
         tutorial_name=tutorial_name,
         elapsed_seconds=elapsed_seconds,
-        status=status,
-        return_code=result.returncode,
+        status='ok' if success else 'failed',
+        return_code=proc.returncode,
     )
 
 
@@ -191,11 +279,22 @@ def main() -> int:
     _write_csv_header(output_path)
 
     env = _build_env()
+    is_tty = sys.stdout.isatty()
+    name_width = max(
+        len(_relative_display_path(path, tutorial_dir)) for path in tutorials
+    )
+
     results: list[TutorialBenchmarkResult] = []
     for index, tutorial_path in enumerate(tutorials, start=1):
-        tutorial_name = _relative_display_path(tutorial_path, tutorial_dir)
-        print(f'[{index:2}/{len(tutorials)}] Running {tutorial_name}')
-        result = _run_tutorial(tutorial_path, tutorial_dir, env)
+        result = _run_tutorial(
+            tutorial_path,
+            tutorial_dir,
+            env,
+            index=index,
+            total=len(tutorials),
+            name_width=name_width,
+            is_tty=is_tty,
+        )
         results.append(result)
         _append_result(output_path, result)
 
@@ -203,7 +302,7 @@ def main() -> int:
     failure_count = sum(result.status == 'failed' for result in results)
 
     print(f'Wrote benchmark results to {_relative_display_path(output_path, ROOT)}')
-    print(f'Total elapsed time: {total_elapsed:.3f}s')
+    print(f'Total elapsed time: {total_elapsed:.1f}s')
 
     if failure_count:
         print(f'Failed tutorials: {failure_count}', file=sys.stderr)
