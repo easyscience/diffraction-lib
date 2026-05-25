@@ -652,7 +652,7 @@ Mark `[x]` as each step lands.
 
       Commit: `Route emcee posterior through fit_result and sidecar`
 
-- [x] **P1.7 — Add `ed-25.py` tutorial.** Verify first that
+- [x] **P1.7 — Add emcee tutorials.** Verify first that
       `docs/docs/tutorials/ed-25.py` is unused. `ed-23.py` is the
       "Co2SiO4 Sequential Fit" tutorial and `ed-24.py` is the "LBCO
       Bayesian Display" tutorial — do **not** overwrite either. If
@@ -660,23 +660,20 @@ Mark `[x]` as each step lands.
       next free integer slot and adjust the file name + references below
       to match.
 
-      New notebook source at `docs/docs/tutorials/ed-25.py`
-      covering:
+      New notebook sources at `docs/docs/tutorials/ed-25.py` and
+      `docs/docs/tutorials/ed-26.py` covering:
 
-  - `project.analysis.minimizer.type = 'emcee'` (post-switchable
-    syntax).
-  - `project.analysis.minimizer.sampling_steps = 1000` (small for
-    tutorial speed).
-  - `project.analysis.fit()` and a posterior plot.
-  - `project.save()`.
-  - `project.analysis.fit(resume=True, extra_steps=500)` continues the
-    chain.
-  - Final posterior plot after resume.
+  - `ed-25.py`: `project.analysis.minimizer.type = 'emcee'`
+    (post-switchable syntax), tutorial-sized sampler settings,
+    `project.analysis.fit()`, posterior plots, and `project.save()`.
+  - `ed-26.py`: reopening the saved project, displaying restored
+    Bayesian results, and `project.analysis.fit(resume=True, extra_steps=500)`
+    to continue the chain.
 
   Update the docs navigation in the same step:
   - Add an entry under "MCMC / Bayesian" (or the appropriate section) in
     [`docs/docs/tutorials/index.md`](../../docs/tutorials/index.md)
-    pointing at `ed-25.ipynb`.
+    pointing at `ed-25.ipynb` and `ed-26.ipynb`.
   - Add a navigation entry under the matching section in
     [`docs/mkdocs.yml`](../../../docs/mkdocs.yml).
 
@@ -686,14 +683,15 @@ Mark `[x]` as each step lands.
 
   ```
   test -f docs/docs/tutorials/ed-25.py
-  git grep -nE '\banalysis\.minimizer_type\b|\bminimizer\.runtime_seconds\b|\bminimizer\.gelman_rubin_max\b' docs/docs/tutorials/ed-25.py
-  git grep -n 'ed-25' docs/docs/tutorials/index.md docs/mkdocs.yml
+  test -f docs/docs/tutorials/ed-26.py
+  git grep -nE '\banalysis\.minimizer_type\b|\bminimizer\.runtime_seconds\b|\bminimizer\.gelman_rubin_max\b' docs/docs/tutorials/ed-25.py docs/docs/tutorials/ed-26.py
+  git grep -n 'ed-2[56]' docs/docs/tutorials/index.md docs/mkdocs.yml
   ```
 
-  The first must be true; the second must be empty; the third must
-  return at least one hit in each file.
+  The first two must be true; the third must be empty; the fourth must
+  return at least one hit for both tutorial files.
 
-  Commit: `Add ed-25 emcee tutorial`
+  Commit: `Introduce emcee minimizer tutorials`
 
 - [x] **P1.8 — Phase 1 review gate.** No code change. Stop and request
       user review. After approval, proceed to Phase 2.
@@ -806,5 +804,5 @@ single-file affair. Plots, parameter posteriors, and tables work the
 same as for DREAM, so switching between samplers to cross-check results
 is straightforward.
 
-A new tutorial (`ed-25`) walks through a short run, saving the project,
-and resuming for additional steps.
+New tutorials walk through a short run (`ed-25`) and reopening the
+saved project to resume for additional steps (`ed-26`).
