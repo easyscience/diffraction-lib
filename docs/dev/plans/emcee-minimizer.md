@@ -771,7 +771,7 @@ required by `AGENTS.md` → **Workflow**.
     exit $integration_tests_exit_code
   ```
 
-- [ ] **P2.5 — Script tests.**
+- [x] **P2.5 — Script tests.**
 
   ```
   pixi run script-tests > /tmp/easydiffraction-script-tests.log 2>&1; \

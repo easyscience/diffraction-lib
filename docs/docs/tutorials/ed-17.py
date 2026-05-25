@@ -29,7 +29,7 @@ display = project.display
 # results can be written to `analysis/results.csv`.
 
 # %%
-project.save_as(dir_path='projects/cosio_d20')
+project.save_as(dir_path='projects/cosio_d20_scan')
 
 # %% [markdown]
 # ## Step 2: Define Crystal Structure
