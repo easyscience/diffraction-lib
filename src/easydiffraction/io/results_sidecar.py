@@ -71,11 +71,6 @@ def _warn_existing_sidecar_overwrite(sidecar_path: Path) -> None:
     )
 
 
-def warn_analysis_results_sidecar_overwrite(*, analysis_dir: Path) -> None:
-    """Warn when a new fit will overwrite existing sidecar arrays."""
-    _warn_existing_sidecar_overwrite(_sidecar_path(analysis_dir=analysis_dir))
-
-
 def prepare_analysis_results_sidecar_for_new_fit(*, analysis_dir: Path) -> None:
     """Warn and remove the results sidecar before a fresh fit starts."""
     sidecar_path = _sidecar_path(analysis_dir=analysis_dir)
