@@ -227,13 +227,17 @@ When the matching open-issue is fully resolved, move it to
   the `HDFBackend`.
 - `tests/unit/easydiffraction/analysis/categories/minimizer/test_emcee.py`.
 - `tests/unit/easydiffraction/analysis/minimizers/test_emcee.py`.
-- `tests/integration/fitting/test_emcee.py` (cross-check vs DREAM on a
-  shared toy fit; assert posterior medians agree to within tolerance).
-- `docs/docs/tutorials/ed-25.py` (emcee + resume tutorial). The next
-  free tutorial slot — `ed-23` is already the "Co2SiO4 Sequential Fit"
+- `docs/docs/tutorials/ed-25.py` and `docs/docs/tutorials/ed-26.py`
+  (emcee fresh-run tutorial and resume/reload tutorial). The next free
+  tutorial slot — `ed-23` is already the "Co2SiO4 Sequential Fit"
   tutorial and `ed-24` is the "LBCO Bayesian Display" tutorial. Verify
   `ed-25.py` is unused before creating it at P1.7 start; bump if a newer
   slot is already occupied.
+
+### Phase 2 verification files
+
+- `tests/integration/fitting/test_emcee.py` (cross-check vs DREAM on a
+  shared toy fit; assert posterior medians agree to within tolerance).
 
 ### Modified
 
