@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Bayesian Analysis: Tb2TiO7, HEiDi
+# # Bayesian Analysis: Tb2TiO7 (`bumps-dream`), HEiDi
 #
 # This tutorial demonstrates a practical two-stage workflow for single-crystal
 # diffraction analysis with EasyDiffraction.
