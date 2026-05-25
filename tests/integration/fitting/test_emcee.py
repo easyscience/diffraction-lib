@@ -63,6 +63,7 @@ def _posterior_medians(results: object) -> np.ndarray:
 
 @pytest.mark.parametrize('proposal_moves', ['de'])
 def test_emcee_resume_matches_small_dream_posterior(tmp_path, proposal_moves):
+    from easydiffraction.analysis.minimizers.base import MinimizerFitOptions
     from easydiffraction.analysis.minimizers.bumps_dream import BumpsDreamMinimizer
     from easydiffraction.analysis.minimizers.emcee import EmceeMinimizer
 
@@ -76,7 +77,7 @@ def test_emcee_resume_matches_small_dream_posterior(tmp_path, proposal_moves):
         _toy_parameters(),
         _array_residuals,
         verbosity=VerbosityEnum.SILENT,
-        random_seed=123,
+        options=MinimizerFitOptions(random_seed=123),
     )
 
     emcee = EmceeMinimizer()
@@ -91,15 +92,13 @@ def test_emcee_resume_matches_small_dream_posterior(tmp_path, proposal_moves):
         _toy_parameters(),
         _mapping_residuals,
         verbosity=VerbosityEnum.SILENT,
-        random_seed=123,
+        options=MinimizerFitOptions(random_seed=123),
     )
     resumed_results = emcee.fit(
         _toy_parameters(),
         _mapping_residuals,
         verbosity=VerbosityEnum.SILENT,
-        random_seed=123,
-        resume=True,
-        extra_steps=20,
+        options=MinimizerFitOptions(random_seed=123, resume=True, extra_steps=20),
     )
 
     assert dream_results.success is True

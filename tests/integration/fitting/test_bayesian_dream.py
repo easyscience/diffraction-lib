@@ -11,6 +11,7 @@ from easydiffraction import ExperimentFactory
 from easydiffraction import Project
 from easydiffraction import StructureFactory
 from easydiffraction import download_data
+from easydiffraction.analysis.fitting import FitterFitOptions
 
 TEMP_DIR = tempfile.gettempdir()
 
@@ -107,8 +108,7 @@ def _run_single_fit(project: Project, *, random_seed: int | None = None) -> None
         verb,
         structures,
         experiments,
-        use_physical_limits=False,
-        random_seed=random_seed,
+        fit_options=FitterFitOptions(random_seed=random_seed),
     )
 
 

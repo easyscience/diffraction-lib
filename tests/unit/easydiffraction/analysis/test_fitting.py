@@ -193,7 +193,7 @@ def test_fitter_fit_defers_minimizer_tracking_until_postprocessing(monkeypatch):
         verbosity=VerbosityEnum.FULL,
     )
 
-    assert fitter.minimizer.fit_calls[0]['finalize_tracking'] is False
+    assert fitter.minimizer.fit_calls[0]['options'].finalize_tracking is False
     assert fitter.minimizer.stop_calls == 1
     assert analysis_events == ['capture', 'store', 'finalize', ('time', 12.5), 'stop']
 

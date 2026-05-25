@@ -119,8 +119,7 @@ class PosteriorSamples:
 
     def validate_shapes(self) -> tuple[int, int, int]:
         """
-        Validate stored sample shapes and return ``(n_draws, n_chains,
-        n_parameters)``.
+        Validate stored sample shapes.
 
         Returns
         -------
@@ -312,47 +311,9 @@ class BayesianFitResults(FitResults):
         )
 
         rows: list[list[str]] = []
-        sampler_label = self.minimizer_type or self.sampler_name
-        if sampler_label:
-            rows.append(['🧪 Sampler', str(sampler_label)])
-        rows.append([_overall_status_row_label(overall_status), overall_status])
-        if self.message:
-            rows.append(['💬 Engine message', self.message])
-        if self.fitting_time is not None:
-            rows.append(['⏱️ Fitting time (seconds)', f'{self.fitting_time:.2f}'])
-        if self.reduced_chi_square is not None:
-            rows.append(['📏 Goodness-of-fit (reduced χ²)', f'{self.reduced_chi_square:.2f}'])
-        rf = metrics.get('rf')
-        rf2 = metrics.get('rf2')
-        wr = metrics.get('wr')
-        br = metrics.get('br')
-        if rf is not None:
-            rows.append(['📏 R-factor (Rf, %)', f'{rf:.2f}'])
-        if rf2 is not None:
-            rows.append(['📏 R-factor squared (Rf², %)', f'{rf2:.2f}'])
-        if wr is not None:
-            rows.append(['📏 Weighted R-factor (wR, %)', f'{wr:.2f}'])
-        if br is not None:
-            rows.append(['📏 Bragg R-factor (BR, %)', f'{br:.2f}'])
-        if self.best_log_posterior is not None:
-            rows.append(['📉 Best log-posterior', f'{self.best_log_posterior:.2f}'])
-
-        diagnostics = self.convergence_diagnostics or {}
-        converged = diagnostics.get('converged')
-        if converged is not None:
-            rows.append(['📊 Convergence status', 'passed' if converged else 'failed'])
-        max_r_hat = diagnostics.get('max_r_hat')
-        if max_r_hat is not None:
-            rows.append(['📊 Max r-hat', f'{max_r_hat:.3f}'])
-        min_ess_bulk = diagnostics.get('min_ess_bulk')
-        if min_ess_bulk is not None:
-            rows.append(['📊 Min ess bulk', f'{min_ess_bulk:.1f}'])
-        n_draws = diagnostics.get('n_draws')
-        if n_draws is not None:
-            rows.append(['📊 Draws per chain', str(n_draws)])
-        n_chains = diagnostics.get('n_chains')
-        if n_chains is not None:
-            rows.append(['📊 Chains', str(n_chains)])
+        _append_bayesian_identity_rows(results=self, rows=rows, overall_status=overall_status)
+        _append_fit_quality_rows(results=self, rows=rows, metrics=metrics)
+        _append_convergence_rows(rows=rows, diagnostics=self.convergence_diagnostics or {})
         return rows
 
     def _print_table_notes(self) -> None:
@@ -363,6 +324,93 @@ class BayesianFitResults(FitResults):
         notes = _posterior_table_notes(self.posterior_parameter_summaries)
         if notes:
             console.small(*notes)
+
+
+def _append_bayesian_identity_rows(
+    *,
+    results: BayesianFitResults,
+    rows: list[list[str]],
+    overall_status: str,
+) -> None:
+    """Append sampler identity and status rows."""
+    sampler_label = results.minimizer_type or results.sampler_name
+    if sampler_label:
+        rows.append(['🧪 Sampler', str(sampler_label)])
+    rows.append([_overall_status_row_label(overall_status), overall_status])
+    if results.message:
+        rows.append(['💬 Engine message', results.message])
+
+
+def _append_fit_quality_rows(
+    *,
+    results: BayesianFitResults,
+    rows: list[list[str]],
+    metrics: dict[str, float | None],
+) -> None:
+    """Append fit-quality and best-posterior rows."""
+    if results.fitting_time is not None:
+        rows.append(['⏱️ Fitting time (seconds)', f'{results.fitting_time:.2f}'])
+    if results.reduced_chi_square is not None:
+        rows.append([
+            '📏 Goodness-of-fit (reduced χ²)',
+            f'{results.reduced_chi_square:.2f}',
+        ])
+    for key, label in (
+        ('rf', '📏 R-factor (Rf, %)'),
+        ('rf2', '📏 R-factor squared (Rf², %)'),
+        ('wr', '📏 Weighted R-factor (wR, %)'),
+        ('br', '📏 Bragg R-factor (BR, %)'),
+    ):
+        value = metrics.get(key)
+        if value is not None:
+            rows.append([label, f'{value:.2f}'])
+    if results.best_log_posterior is not None:
+        rows.append(['📉 Best log-posterior', f'{results.best_log_posterior:.2f}'])
+
+
+def _append_convergence_rows(
+    *,
+    rows: list[list[str]],
+    diagnostics: dict[str, object],
+) -> None:
+    """Append Bayesian convergence rows."""
+    converged = diagnostics.get('converged')
+    if converged is not None:
+        rows.append(['📊 Convergence status', 'passed' if converged else 'failed'])
+    _append_optional_row(rows=rows, label='📊 Max r-hat', value=diagnostics.get('max_r_hat'))
+    _append_optional_row(
+        rows=rows,
+        label='📊 Min ess bulk',
+        value=diagnostics.get('min_ess_bulk'),
+    )
+    _append_optional_row(
+        rows=rows,
+        label='📊 Draws per chain',
+        value=diagnostics.get('n_draws'),
+        precision=None,
+    )
+    _append_optional_row(
+        rows=rows,
+        label='📊 Chains',
+        value=diagnostics.get('n_chains'),
+        precision=None,
+    )
+
+
+def _append_optional_row(
+    *,
+    rows: list[list[str]],
+    label: str,
+    value: object,
+    precision: int | None = 3,
+) -> None:
+    """Append a formatted row when ``value`` is present."""
+    if value is None:
+        return
+    if precision is None:
+        rows.append([label, str(value)])
+        return
+    rows.append([label, f'{float(value):.{precision}f}'])
 
 
 def compute_convergence_diagnostics(posterior_samples: PosteriorSamples) -> dict[str, object]:
@@ -570,15 +618,15 @@ def _bayesian_overall_status(
 _COMMITTED_PARAMETERS_FOOTNOTE: list[tuple[str, str]] = [
     ('start', 'parameter value before sampling'),
     ('value', 'estimate written back to the project (best posterior sample)'),
-    ('s.u.', 'standard uncertainty (1σ), the posterior standard deviation'),
+    ('s.u.', 'standard uncertainty (one sigma), posterior standard deviation'),
     ('change', 'relative change from start, in %; ↑ = increase, ↓ = decrease'),
 ]
 
 _POSTERIOR_DISTRIBUTION_FOOTNOTE: list[tuple[str, str]] = [
     ('median', '50th percentile of the marginal posterior'),
-    ('95% CI', '95% credible interval (2.5%–97.5%, asymmetric)'),
-    ('r-hat', 'Gelman–Rubin diagnostic R̂ (good convergence: r-hat ≤ 1.01)'),
-    ('ess bulk', 'bulk effective sample size (typically ≥ 400)'),
+    ('95% CI', '95% credible interval (2.5%-97.5%, asymmetric)'),
+    ('r-hat', 'Gelman-Rubin diagnostic (good convergence: r-hat <= 1.01)'),
+    ('ess bulk', 'bulk effective sample size (typically >= 400)'),
 ]
 
 

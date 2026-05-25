@@ -2,14 +2,18 @@
 # # Bayesian Analysis Resume (`emcee`): LBCO, HRPT
 #
 # This tutorial shows how to reopen the Bayesian project created previously,
-# inspect the saved fit results and then run more sampling steps to extend the existing chain.
-# Resuming only works with EMCEE because the current BUMPS-DREAM implementation does not support
-# saving and resuming its state.
+# inspect the saved fit results and then run more sampling steps to
+# extend the existing chain. Resuming only works with EMCEE because the
+# current BUMPS-DREAM implementation does not support saving and
+# resuming its state.
 #
 # This workflow is useful when:
 # - the initial sampling run has not yet converged and more steps are needed,
-# - the initial sampling run has converged but more steps are desired for better posterior resolution,
-# - the initial sampling run has converged but the posterior plots have not yet been inspected and the user wants to see the plots before deciding whether to run more steps.
+# - the initial sampling run has converged but more steps are desired
+#   for better posterior resolution,
+# - the initial sampling run has converged but the posterior plots have
+#   not yet been inspected and the user wants to see the plots before
+#   deciding whether to run more steps.
 #
 # The workflow uses the same La0.5Ba0.5CoO3 powder diffraction example
 # as the DREAM Bayesian tutorial:
@@ -98,7 +102,9 @@ project.display.posterior.predictive(expt_name='hrpt', x_min=92, x_max=93)
 # ## Resume emcee Sampling
 #
 # Resume from the saved backend and append 100 more emcee steps to the
-# existing chain. We use only 100 steps here to keep the tutorial fast, but in practice you would typically run more steps to ensure convergence and better posterior resolution.
+# existing chain. We use only 100 steps here to keep the tutorial fast,
+# but in practice you would typically run more steps to ensure
+# convergence and better posterior resolution.
 
 # %%
 project.analysis.fit(resume=True, extra_steps=100)

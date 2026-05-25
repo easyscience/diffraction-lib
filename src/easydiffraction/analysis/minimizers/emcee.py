@@ -23,6 +23,7 @@ from easydiffraction.analysis.fit_helpers.bayesian import summarize_posterior_pa
 from easydiffraction.analysis.fit_helpers.metrics import calculate_reduced_chi_square
 from easydiffraction.analysis.fit_helpers.tracking import SamplerProgressUpdate
 from easydiffraction.analysis.minimizers.base import MinimizerBase
+from easydiffraction.analysis.minimizers.base import MinimizerFitOptions
 from easydiffraction.analysis.minimizers.emcee_defaults import DEFAULT_INITIALIZATION_METHOD
 from easydiffraction.analysis.minimizers.emcee_defaults import DEFAULT_METHOD
 from easydiffraction.analysis.minimizers.emcee_defaults import DEFAULT_NBURN
@@ -367,37 +368,34 @@ class EmceeMinimizer(MinimizerBase):
     def proposal_moves(self, value: str) -> None:
         self._proposal_moves = self._validated_proposal_moves(value)
 
-    def fit(  # noqa: PLR0913
+    def fit(
         self,
         parameters: list[object],
         objective_function: Callable[..., object],
         verbosity: VerbosityEnum = VerbosityEnum.FULL,
         *,
-        finalize_tracking: bool = True,
-        use_physical_limits: bool = False,
-        random_seed: int | None = None,
-        resume: bool = False,
-        extra_steps: int | None = None,
+        options: MinimizerFitOptions | None = None,
     ) -> BayesianFitResults:
         """
         Run emcee sampling and return Bayesian fit results.
         """
-        if use_physical_limits:
+        fit_options = options or MinimizerFitOptions()
+        if fit_options.use_physical_limits:
             self._apply_physical_limits(parameters)
 
-        resolved_random_seed = self._resolve_random_seed(random_seed)
+        resolved_random_seed = self._resolve_random_seed(fit_options.random_seed)
         minimizer_name = self.name or 'emcee'
         self._start_tracking(minimizer_name, verbosity=verbosity)
 
         try:
             solver_args = self._prepare_solver_args(parameters)
             solver_args['random_seed'] = resolved_random_seed
-            solver_args['resume'] = resume
-            solver_args['extra_steps'] = extra_steps
+            solver_args['resume'] = fit_options.resume
+            solver_args['extra_steps'] = fit_options.extra_steps
             raw_result = self._run_solver(objective_function, **solver_args)
             return self._finalize_fit(parameters, raw_result)
         finally:
-            if finalize_tracking:
+            if fit_options.finalize_tracking:
                 self._stop_tracking()
 
     @staticmethod

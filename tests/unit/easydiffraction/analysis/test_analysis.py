@@ -24,6 +24,7 @@ def _make_project_with_names(names):
     class P:
         experiments = ExpCol(names)
         structures = object()
+        info = SimpleNamespace(path=None)
         _varname = 'proj'
 
     return P()
@@ -474,6 +475,7 @@ def test_display_fit_results_calls_process_fit_results(monkeypatch):
 
 def test_fit_single_short_reuses_tracker_display_handle(monkeypatch):
     from easydiffraction.analysis.analysis import Analysis
+    from easydiffraction.analysis.fitting import FitterFitOptions
     from easydiffraction.utils.enums import VerbosityEnum
 
     class Handle:
@@ -521,20 +523,14 @@ def test_fit_single_short_reuses_tracker_display_handle(monkeypatch):
         *,
         analysis: object,
         verbosity: object,
-        use_physical_limits: bool,
-        random_seed: int | None,
-        resume: bool,
-        extra_steps: int | None,
+        options: FitterFitOptions,
     ) -> None:
         del (
             structures,
             experiments,
             analysis,
             verbosity,
-            use_physical_limits,
-            random_seed,
-            resume,
-            extra_steps,
+            options,
         )
         analysis_obj = fake_fit.analysis_obj
         analysis_obj.fitter.results = SimpleNamespace(
@@ -567,8 +563,7 @@ def test_fit_single_short_reuses_tracker_display_handle(monkeypatch):
         VerbosityEnum.SHORT,
         project.structures,
         project.experiments,
-        use_physical_limits=False,
-        random_seed=None,
+        fit_options=FitterFitOptions(),
     )
 
     assert tracker.display_handles == [handle, None]

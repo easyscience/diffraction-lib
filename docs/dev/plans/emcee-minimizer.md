@@ -735,7 +735,7 @@ required by `AGENTS.md` → **Workflow**.
     exit $test_structure_check_exit_code
   ```
 
-- [ ] **P2.2 — Auto-fixes and static checks.**
+- [x] **P2.2 — Auto-fixes and static checks.**
 
   ```
   pixi run fix > /tmp/easydiffraction-fix.log 2>&1; \

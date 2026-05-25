@@ -3,14 +3,14 @@
 """
 MCMC convergence diagnostics computed in pure NumPy + SciPy.
 
-The two diagnostics this module produces — split-chain Gelman–Rubin R̂
-and bulk effective sample size (ESS) — are the only Bayesian diagnostics
-EasyDiffraction reports. The implementations follow the standard
-formulas described in Vehtari, Gelman, Simpson, Carpenter and Bürkner
-(2019), *Rank-normalization, folding, and localization: An improved R̂
-for assessing convergence of MCMC* (https://arxiv.org/abs/1903.08008),
-Stan's reference manual, and Geyer (1992), *Practical Markov chain Monte
-Carlo*.
+The two diagnostics this module produces - split-chain Gelman-Rubin
+R-hat and bulk effective sample size (ESS) - are the only Bayesian
+diagnostics EasyDiffraction reports. The implementations follow the
+standard formulas described in Vehtari, Gelman, Simpson, Carpenter and
+Buerkner (2019), *Rank-normalization, folding, and localization: An
+improved R-hat for assessing convergence of MCMC*
+(https://arxiv.org/abs/1903.08008), Stan's reference manual, and Geyer
+(1992), *Practical Markov chain Monte Carlo*.
 
 Inputs use the project's preserved layout: a 2-D NumPy array of shape
 ``(n_draws, n_chains)`` per parameter, never an ArviZ ``InferenceData``
@@ -23,16 +23,19 @@ import numpy as np
 from scipy import stats
 
 _MIN_DRAWS = 4
+_SAMPLE_NDIM = 2
+_MIN_RHAT_CHAINS = 2
+_MIN_ESS_CHAINS = 1
 
 
 def compute_r_hat(samples: np.ndarray) -> float:
     """
-    Split-chain Gelman–Rubin R̂ for one parameter.
+    Split-chain Gelman-Rubin R-hat for one parameter.
 
-    Each chain is split in half (the standard "split R̂" variant); the
-    within-chain (W) and between-chain (B) variances are computed on the
-    doubled chain set, and R̂ is returned as ``sqrt(V̂ / W)`` where ``V̂
-    = ((n-1)/n) · W + B/n``.
+    Each chain is split in half (the standard "split R-hat" variant);
+    the within-chain (W) and between-chain (B) variances are computed on
+    the doubled chain set, and R-hat is returned as ``sqrt(Vhat / W)``
+    where ``Vhat = ((n-1)/n) * W + B/n``.
 
     Parameters
     ----------
@@ -43,22 +46,22 @@ def compute_r_hat(samples: np.ndarray) -> float:
     Returns
     -------
     float
-        R̂ value. ``nan`` when there are fewer than 4 draws, fewer than
-        2 chains, or zero within-chain variance.
+        R-hat value. ``nan`` when there are too few draws or chains, or
+        zero within-chain variance.
 
     Raises
     ------
     ValueError
         If ``samples`` is not 2-D.
     """
-    if samples.ndim != 2:
+    if samples.ndim != _SAMPLE_NDIM:
         msg = 'samples must have shape (n_draws, n_chains)'
         raise ValueError(msg)
     n_draws, n_chains = samples.shape
-    if n_draws < _MIN_DRAWS or n_chains < 2:
+    if n_draws < _MIN_DRAWS or n_chains < _MIN_RHAT_CHAINS:
         return float('nan')
 
-    # Split each chain in half. With odd n_draws, drop the middle sample.
+    # Split each chain in half. For odd draws, drop the middle sample.
     half = n_draws // 2
     splits = np.concatenate(
         [samples[:half, :], samples[-half:, :]],
@@ -87,7 +90,7 @@ def compute_ess_bulk(samples: np.ndarray) -> float:
     function is then averaged across chains and summed with Geyer's
     initial positive sequence: pairs of consecutive lags are added to
     the running variance estimate until a pair first becomes
-    non-positive (Geyer 1992; Vehtari et al. 2019 §3.1).
+    non-positive (Geyer 1992; Vehtari et al. 2019 section 3.1).
 
     Parameters
     ----------
@@ -107,16 +110,16 @@ def compute_ess_bulk(samples: np.ndarray) -> float:
     ValueError
         If ``samples`` is not 2-D.
     """
-    if samples.ndim != 2:
+    if samples.ndim != _SAMPLE_NDIM:
         msg = 'samples must have shape (n_draws, n_chains)'
         raise ValueError(msg)
     n_draws, n_chains = samples.shape
-    if n_draws < _MIN_DRAWS or n_chains < 1:
+    if n_draws < _MIN_DRAWS or n_chains < _MIN_ESS_CHAINS:
         return float('nan')
 
     total = n_draws * n_chains
 
-    # Rank-normalize across all samples → standard normal scores.
+    # Rank-normalize across all samples into standard normal scores.
     ranks = stats.rankdata(samples.ravel()).reshape(samples.shape)
     z = stats.norm.ppf((ranks - 0.5) / total)
 

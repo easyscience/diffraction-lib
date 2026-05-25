@@ -765,6 +765,9 @@ class ConsolePrinter:
                 from IPython.display import display  # noqa: PLC0415
 
                 body = '<br>'.join(_rich_markup_to_inline_html(line) for line in lines)
+            except ImportError:  # pragma: no cover
+                pass
+            else:
                 display(
                     HTML(
                         '<div style="font-size:smaller;opacity:0.7;'
@@ -773,8 +776,6 @@ class ConsolePrinter:
                     )
                 )
                 return
-            except ImportError:  # pragma: no cover
-                pass
         for line in lines:
             cls._console.print(f'[dim]{line}[/dim]')
 

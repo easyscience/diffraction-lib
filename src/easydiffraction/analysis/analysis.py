@@ -38,6 +38,7 @@ from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
 from easydiffraction.analysis.fit_helpers.bayesian import posterior_predictive_cache_key
 from easydiffraction.analysis.fit_helpers.reporting import FitResults
 from easydiffraction.analysis.fitting import Fitter
+from easydiffraction.analysis.fitting import FitterFitOptions
 from easydiffraction.analysis.minimizers.emcee import EMCEE_CHAIN_GROUP
 from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.core.category_owner import CategoryOwner
@@ -2113,10 +2114,7 @@ class Analysis(
             verb,
             structures,
             experiments,
-            use_physical_limits=False,
-            random_seed=None,
-            resume=resume,
-            extra_steps=extra_steps,
+            fit_options=FitterFitOptions(resume=resume, extra_steps=extra_steps),
         )
 
         if self.project.info.path is not None:
@@ -2142,10 +2140,7 @@ class Analysis(
             verb,
             structures,
             experiments,
-            use_physical_limits=False,
-            random_seed=None,
-            resume=resume,
-            extra_steps=extra_steps,
+            fit_options=FitterFitOptions(resume=resume, extra_steps=extra_steps),
         )
 
         if self.project.info.path is not None:
@@ -2194,10 +2189,7 @@ class Analysis(
         structures: object,
         experiments: object,
         *,
-        use_physical_limits: bool,
-        random_seed: int | None,
-        resume: bool = False,
-        extra_steps: int | None = None,
+        fit_options: FitterFitOptions,
     ) -> None:
         """
         Run joint fitting across all experiments with weights.
@@ -2210,16 +2202,15 @@ class Analysis(
             Project structures collection.
         experiments : object
             Project experiments collection.
-        use_physical_limits : bool
-            Whether to use physical limits as fit bounds.
-        random_seed : int | None
-            Optional random seed passed to stochastic minimizers.
-        resume : bool, default=False
-            Whether to resume a sampler state.
-        extra_steps : int | None, default=None
-            Additional sampler steps for resume-capable minimizers.
+        fit_options : FitterFitOptions
+            Execution options controlling limits, randomness and resume.
+
+        Raises
+        ------
+        ValueError
+            If resume is requested for joint fitting.
         """
-        if resume:
+        if fit_options.resume:
             msg = 'Resume is supported in single fit mode only.'
             raise ValueError(msg)
 
@@ -2242,10 +2233,12 @@ class Analysis(
             weights=weights_array,
             analysis=self,
             verbosity=verb,
-            use_physical_limits=use_physical_limits,
-            random_seed=self._resolved_fit_random_seed(random_seed),
-            resume=resume,
-            extra_steps=extra_steps,
+            options=FitterFitOptions(
+                use_physical_limits=fit_options.use_physical_limits,
+                random_seed=self._resolved_fit_random_seed(fit_options.random_seed),
+                resume=fit_options.resume,
+                extra_steps=fit_options.extra_steps,
+            ),
         )
 
         # After fitting, get the results
@@ -2257,10 +2250,7 @@ class Analysis(
         structures: object,
         experiments: object,
         *,
-        use_physical_limits: bool,
-        random_seed: int | None,
-        resume: bool = False,
-        extra_steps: int | None = None,
+        fit_options: FitterFitOptions,
     ) -> None:
         """
         Run single-mode fitting for each experiment independently.
@@ -2273,18 +2263,18 @@ class Analysis(
             Project structures collection.
         experiments : object
             Project experiments collection.
-        use_physical_limits : bool
-            Whether to use physical limits as fit bounds.
-        random_seed : int | None
-            Optional random seed passed to stochastic minimizers.
-        resume : bool, default=False
-            Whether to resume a sampler state.
-        extra_steps : int | None, default=None
-            Additional sampler steps for resume-capable minimizers.
+        fit_options : FitterFitOptions
+            Execution options controlling limits, randomness and resume.
+
+        Raises
+        ------
+        ValueError
+            If resume is requested for more than one single-fit
+            experiment.
         """
         mode = FitModeEnum.SINGLE
         expt_names = experiments.names
-        if resume and len(expt_names) != 1:
+        if fit_options.resume and len(expt_names) != 1:
             msg = 'Resume is supported for one single-fit experiment at a time.'
             raise ValueError(msg)
 
@@ -2297,10 +2287,7 @@ class Analysis(
                 verb,
                 structures,
                 experiments,
-                use_physical_limits=use_physical_limits,
-                random_seed=random_seed,
-                resume=resume,
-                extra_steps=extra_steps,
+                fit_options=fit_options,
                 short_state=(short_rows, short_display_handle),
             )
         finally:
@@ -2317,10 +2304,7 @@ class Analysis(
         structures: object,
         experiments: object,
         *,
-        use_physical_limits: bool,
-        random_seed: int | None,
-        resume: bool,
-        extra_steps: int | None,
+        fit_options: FitterFitOptions,
         short_state: tuple[list[list[str]], object],
     ) -> None:
         """Run the per-experiment loop for single-fit mode."""
@@ -2338,10 +2322,12 @@ class Analysis(
                 [experiment],
                 analysis=self,
                 verbosity=verb,
-                use_physical_limits=use_physical_limits,
-                random_seed=self._resolved_fit_random_seed(random_seed),
-                resume=resume,
-                extra_steps=extra_steps,
+                options=FitterFitOptions(
+                    use_physical_limits=fit_options.use_physical_limits,
+                    random_seed=self._resolved_fit_random_seed(fit_options.random_seed),
+                    resume=fit_options.resume,
+                    extra_steps=fit_options.extra_steps,
+                ),
             )
 
             results = self.fitter.results

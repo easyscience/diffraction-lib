@@ -52,6 +52,7 @@
 │   │   │   ├── 📄 bumps_dream.py
 │   │   │   ├── 📄 bumps_lm.py
 │   │   │   ├── 📄 dfols.py
+│   │   │   ├── 📄 emcee.py
 │   │   │   ├── 📄 factory.py
 │   │   │   ├── 📄 lmfit.py
 │   │   │   ├── 📄 lmfit_least_squares.py
@@ -68,6 +69,7 @@
 │   │   └── 📄 __init__.py
 │   ├── 📁 fit_helpers
 │   │   ├── 📄 __init__.py
+│   │   ├── 📄 _diagnostics.py
 │   │   ├── 📄 bayesian.py
 │   │   ├── 📄 metrics.py
 │   │   ├── 📄 reporting.py
@@ -81,6 +83,8 @@
 │   │   ├── 📄 bumps_dream.py
 │   │   ├── 📄 bumps_lm.py
 │   │   ├── 📄 dfols.py
+│   │   ├── 📄 emcee.py
+│   │   ├── 📄 emcee_defaults.py
 │   │   ├── 📄 enums.py
 │   │   ├── 📄 factory.py
 │   │   ├── 📄 lmfit.py

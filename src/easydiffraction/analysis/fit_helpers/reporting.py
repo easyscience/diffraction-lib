@@ -203,7 +203,7 @@ class FitResults:
 _REFINED_PARAMETERS_FOOTNOTE: list[tuple[str, str]] = [
     ('start', 'parameter value before refinement'),
     ('value', 'refined value from least-squares minimization'),
-    ('s.u.', 'standard uncertainty (1σ), from the covariance matrix'),
+    ('s.u.', 'standard uncertainty (one sigma), from the covariance matrix'),
     ('change', 'relative change from start, in %; ↑ = increase, ↓ = decrease'),
 ]
 

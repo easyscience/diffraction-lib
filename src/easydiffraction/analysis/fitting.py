@@ -3,12 +3,14 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 from typing import Any
 
 import numpy as np
 
 from easydiffraction.analysis.fit_helpers.metrics import get_reliability_inputs
+from easydiffraction.analysis.minimizers.base import MinimizerFitOptions
 from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 from easydiffraction.core.variable import Parameter
@@ -19,6 +21,26 @@ if TYPE_CHECKING:
     from easydiffraction.analysis.fit_helpers.reporting import FitResults
     from easydiffraction.datablocks.experiment.item.base import ExperimentBase
     from easydiffraction.datablocks.structure.collection import Structures
+
+
+@dataclass(frozen=True, slots=True)
+class FitterFitOptions:
+    """Execution options for one fitter run."""
+
+    use_physical_limits: bool = False
+    random_seed: int | None = None
+    resume: bool = False
+    extra_steps: int | None = None
+
+    def as_minimizer_options(self) -> MinimizerFitOptions:
+        """Return equivalent minimizer options for this fitter run."""
+        return MinimizerFitOptions(
+            finalize_tracking=False,
+            use_physical_limits=self.use_physical_limits,
+            random_seed=self.random_seed,
+            resume=self.resume,
+            extra_steps=self.extra_steps,
+        )
 
 
 def _resolve_fit_result_message(results: FitResults) -> str:
@@ -146,10 +168,7 @@ class Fitter:
         analysis: object = None,
         verbosity: VerbosityEnum = VerbosityEnum.FULL,
         *,
-        use_physical_limits: bool = False,
-        random_seed: int | None = None,
-        resume: bool = False,
-        extra_steps: int | None = None,
+        options: FitterFitOptions | None = None,
     ) -> None:
         """
         Run the fitting process.
@@ -172,17 +191,16 @@ class Fitter:
             fitting.
         verbosity : VerbosityEnum, default=VerbosityEnum.FULL
             Console output verbosity.
-        use_physical_limits : bool, default=False
-            When ``True``, fall back to physical limits from the value
-            spec for parameters whose ``fit_min``/``fit_max`` are
-            unbounded.
-        random_seed : int | None, default=None
-            Optional random seed passed to stochastic minimizers.
-        resume : bool, default=False
-            Whether to resume a sampler state.
-        extra_steps : int | None, default=None
-            Additional sampler steps for resume-capable minimizers.
+        options : FitterFitOptions | None, default=None
+            Execution options controlling limits, randomness and resume.
+
+        Raises
+        ------
+        ValueError
+            If resume is requested without the same free parameter set
+            used by the saved emcee chain.
         """
+        fit_options = options or FitterFitOptions()
         # Enforce symmetry constraints (e.g. ADP) before collecting
         # free parameters so that components fixed by site symmetry are
         # excluded from the minimizer's parameter set.
@@ -193,7 +211,7 @@ class Fitter:
         params = self._collect_fit_parameters(structures, experiments)
 
         if not params:
-            if resume:
+            if fit_options.resume:
                 msg = 'Resume requires the same free parameters used by the saved emcee chain.'
                 raise ValueError(msg)
             if analysis is not None:
@@ -203,9 +221,9 @@ class Fitter:
             print('⚠️ No parameters selected for fitting.')
             return
 
-        if analysis is not None and not resume:
+        if analysis is not None and not fit_options.resume:
             analysis._capture_fit_parameter_state(params)
-        if analysis is not None and resume:
+        if analysis is not None and fit_options.resume:
             self._validate_resume_parameter_set(params=params, analysis=analysis)
 
         for param in params:
@@ -228,11 +246,7 @@ class Fitter:
                 params,
                 objective_function,
                 verbosity=verbosity,
-                finalize_tracking=False,
-                use_physical_limits=use_physical_limits,
-                random_seed=random_seed,
-                resume=resume,
-                extra_steps=extra_steps,
+                options=fit_options.as_minimizer_options(),
             )
             self._postprocess_fit_results(
                 analysis=analysis,
