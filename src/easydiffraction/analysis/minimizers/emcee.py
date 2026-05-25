@@ -28,14 +28,14 @@ from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.utils.enums import VerbosityEnum
 
-DEFAULT_METHOD = 'stretch'
+DEFAULT_METHOD = 'de'
 DEFAULT_NSTEPS = 5000
 DEFAULT_NBURN = 1000
-DEFAULT_THIN = 5
+DEFAULT_THIN = 1
 DEFAULT_NWALKERS = 32
 DEFAULT_PARALLEL_WORKERS = 0
 DEFAULT_INITIALIZATION_METHOD = InitializationMethodEnum.BALL
-DEFAULT_PROPOSAL_MOVES = 'stretch'
+DEFAULT_PROPOSAL_MOVES = 'de'
 MAX_RANDOM_SEED = int(np.iinfo(np.uint32).max)
 EMCEE_CHAIN_GROUP = 'emcee_chain'
 EMCEE_FAILURES = (ArithmeticError, RuntimeError, TypeError, ValueError)

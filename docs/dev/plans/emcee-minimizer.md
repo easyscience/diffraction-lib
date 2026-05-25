@@ -289,15 +289,15 @@ Mark `[x]` as each step lands.
       `src/easydiffraction/analysis/categories/minimizer/emcee.py`.
       `EmceeMinimizer(BayesianMinimizerBase)` declares:
   - `type_info` with `tag=MinimizerTypeEnum.EMCEE` and a description.
-  - `_engine_metadata: ClassVar[dict[str, str]] = {'optimizer_name': 'emcee', 'method_name': 'stretch'}`
+  - `_engine_metadata: ClassVar[dict[str, str]] = {'optimizer_name': 'emcee', 'method_name': 'de'}`
     (matching the `BumpsDreamMinimizer` precedent for the
     `_restore_fit_results_from_projection` lookup).
   - `_native_key_map` override mapping the verbose names to emcee's
     native kwargs (see §"Decisions already made" point 3).
   - Class-level defaults for emcee-specific values:
-    `sampling_steps=5000`, `burn_in_steps=1000`, `thinning_interval=5`,
+    `sampling_steps=5000`, `burn_in_steps=1000`, `thinning_interval=1`,
     `population_size=32`, `parallel_workers=0`,
-    `proposal_moves='stretch'`.
+    `proposal_moves='de'`.
   - `__init__` constructs descriptors via the inherited helpers
     (`_sampling_steps_descriptor(default)`, etc. from
     `BayesianMinimizerBase`) and adds a new `proposal_moves` descriptor
@@ -412,7 +412,7 @@ Mark `[x]` as each step lands.
       ```python
       class EmceeMinimizer(MinimizerBase):
           name = MinimizerTypeEnum.EMCEE
-          method = 'stretch'
+          method = 'de'
 
           # Set by Fitter.fit before this fit() call:
           _sidecar_path: Path | None = None

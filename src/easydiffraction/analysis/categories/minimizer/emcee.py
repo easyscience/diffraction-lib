@@ -18,11 +18,11 @@ from easydiffraction.io.cif.handler import CifHandler
 
 DEFAULT_SAMPLING_STEPS = 5000
 DEFAULT_BURN_IN_STEPS = 1000
-DEFAULT_THINNING_INTERVAL = 5
+DEFAULT_THINNING_INTERVAL = 1
 DEFAULT_POPULATION_SIZE = 32
 DEFAULT_PARALLEL_WORKERS = 0
 DEFAULT_INITIALIZATION_METHOD = InitializationMethodEnum.BALL
-DEFAULT_PROPOSAL_MOVES = 'stretch'
+DEFAULT_PROPOSAL_MOVES = 'de'
 SUPPORTED_PROPOSAL_MOVES = ('stretch', 'de', 'de_snooker', 'walk')
 
 
@@ -32,7 +32,7 @@ class EmceeMinimizer(BayesianMinimizerBase):
 
     _engine_metadata: ClassVar[dict[str, str]] = {
         'optimizer_name': 'emcee',
-        'method_name': 'stretch',
+        'method_name': 'de',
     }
     _expected_descriptor_names: ClassVar[tuple[str, ...]] = (
         *BayesianMinimizerBase._expected_descriptor_names,

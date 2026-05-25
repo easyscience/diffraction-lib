@@ -280,7 +280,7 @@ differs.
 class EmceeMinimizer(BayesianMinimizerBase):
     _default_sampling_steps = 5000
     _default_population_size = 32
-    _default_proposal_moves = 'stretch'
+    _default_proposal_moves = 'de'
 ```
 
 When `analysis.minimizer_type` changes, the underlying instance is
@@ -339,9 +339,9 @@ _fitting.minimizer_type   emcee
 
 _minimizer.sampling_steps             5000
 _minimizer.burn_in_steps              1000
-_minimizer.thinning_interval          5
+_minimizer.thinning_interval          1
 _minimizer.population_size            32
-_minimizer.proposal_moves             stretch
+_minimizer.proposal_moves             de
 _minimizer.parallel_workers           0
 _minimizer.initialization_method      ball
 _minimizer.random_seed                42

@@ -61,6 +61,19 @@ def test_emcee_minimizer_defaults_to_max_parallel_workers():
     assert minimizer.parallel_workers == 0
 
 
+def test_emcee_minimizer_defaults_to_de_without_thinning():
+    from easydiffraction.analysis.minimizers.emcee import DEFAULT_PROPOSAL_MOVES
+    from easydiffraction.analysis.minimizers.emcee import DEFAULT_THIN
+    from easydiffraction.analysis.minimizers.emcee import EmceeMinimizer
+
+    minimizer = EmceeMinimizer()
+
+    assert DEFAULT_PROPOSAL_MOVES == 'de'
+    assert DEFAULT_THIN == 1
+    assert minimizer.proposal_moves == 'de'
+    assert minimizer.thin == 1
+
+
 def test_emcee_pool_context_uses_fork_worker_for_unpicklable_objective(monkeypatch):
     from easydiffraction.analysis.minimizers.emcee import EmceeMinimizer
     from easydiffraction.analysis.minimizers.emcee import _emcee_log_prob_worker
