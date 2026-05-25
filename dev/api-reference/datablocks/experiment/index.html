@@ -1109,8 +1109,6 @@
       
         
       
-        
-      
     
     
     
@@ -1194,34 +1192,6 @@
     
   
     Co2SiO4 Sequential
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../tutorials/ed-24/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    LBCO Bayesian
   
 
     
@@ -1961,6 +1931,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -2015,7 +1991,91 @@
   <span class="md-ellipsis">
     
   
-    LBCO Bayesian
+    LBCO pd bumps-dream
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/ed-24/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LBCO pd bumps-dream Display
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/ed-25/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LBCO pd emcee
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/ed-26/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LBCO pd emcee Resume
   
 
     
@@ -2043,7 +2103,7 @@
   <span class="md-ellipsis">
     
   
-    Tb2TiO7 Bayesian
+    Tb2TiO7 sg bumps-dream
   
 
     
@@ -23953,8 +24013,7 @@ helper methods for simple presentation of collection contents.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 59</span>
-<span class="normal"> 60</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 60</span>
 <span class="normal"> 61</span>
 <span class="normal"> 62</span>
 <span class="normal"> 63</span>
@@ -24270,7 +24329,8 @@ helper methods for simple presentation of collection contents.</p>
 <span class="normal">373</span>
 <span class="normal">374</span>
 <span class="normal">375</span>
-<span class="normal">376</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExperimentBase</span><span class="p">(</span><span class="n">DatablockItem</span><span class="p">):</span>
+<span class="normal">376</span>
+<span class="normal">377</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExperimentBase</span><span class="p">(</span><span class="n">DatablockItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for all experiment datablock items.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -24751,11 +24811,11 @@ live calculator backend instance.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">292</span>
-<span class="normal">293</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">293</span>
 <span class="normal">294</span>
 <span class="normal">295</span>
-<span class="normal">296</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">296</span>
+<span class="normal">297</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_as_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Pretty-print the experiment as CIF text.&quot;&quot;&quot;</span>
     <span class="n">paragraph_title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Experiment 🔬 &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; as cif&quot;</span>
     <span class="n">console</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="n">paragraph_title</span><span class="p">)</span>
@@ -24805,8 +24865,7 @@ live calculator backend instance.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">379</span>
-<span class="normal">380</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">380</span>
 <span class="normal">381</span>
 <span class="normal">382</span>
 <span class="normal">383</span>
@@ -24895,7 +24954,8 @@ live calculator backend instance.</p>
 <span class="normal">466</span>
 <span class="normal">467</span>
 <span class="normal">468</span>
-<span class="normal">469</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ScExperimentBase</span><span class="p">(</span><span class="n">ExperimentBase</span><span class="p">):</span>
+<span class="normal">469</span>
+<span class="normal">470</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ScExperimentBase</span><span class="p">(</span><span class="n">ExperimentBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for all single crystal experiments.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -25141,8 +25201,7 @@ live calculator backend instance.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">472</span>
-<span class="normal">473</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">473</span>
 <span class="normal">474</span>
 <span class="normal">475</span>
 <span class="normal">476</span>
@@ -25344,7 +25403,66 @@ live calculator backend instance.</p>
 <span class="normal">672</span>
 <span class="normal">673</span>
 <span class="normal">674</span>
-<span class="normal">675</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PdExperimentBase</span><span class="p">(</span><span class="n">ExperimentBase</span><span class="p">):</span>
+<span class="normal">675</span>
+<span class="normal">676</span>
+<span class="normal">677</span>
+<span class="normal">678</span>
+<span class="normal">679</span>
+<span class="normal">680</span>
+<span class="normal">681</span>
+<span class="normal">682</span>
+<span class="normal">683</span>
+<span class="normal">684</span>
+<span class="normal">685</span>
+<span class="normal">686</span>
+<span class="normal">687</span>
+<span class="normal">688</span>
+<span class="normal">689</span>
+<span class="normal">690</span>
+<span class="normal">691</span>
+<span class="normal">692</span>
+<span class="normal">693</span>
+<span class="normal">694</span>
+<span class="normal">695</span>
+<span class="normal">696</span>
+<span class="normal">697</span>
+<span class="normal">698</span>
+<span class="normal">699</span>
+<span class="normal">700</span>
+<span class="normal">701</span>
+<span class="normal">702</span>
+<span class="normal">703</span>
+<span class="normal">704</span>
+<span class="normal">705</span>
+<span class="normal">706</span>
+<span class="normal">707</span>
+<span class="normal">708</span>
+<span class="normal">709</span>
+<span class="normal">710</span>
+<span class="normal">711</span>
+<span class="normal">712</span>
+<span class="normal">713</span>
+<span class="normal">714</span>
+<span class="normal">715</span>
+<span class="normal">716</span>
+<span class="normal">717</span>
+<span class="normal">718</span>
+<span class="normal">719</span>
+<span class="normal">720</span>
+<span class="normal">721</span>
+<span class="normal">722</span>
+<span class="normal">723</span>
+<span class="normal">724</span>
+<span class="normal">725</span>
+<span class="normal">726</span>
+<span class="normal">727</span>
+<span class="normal">728</span>
+<span class="normal">729</span>
+<span class="normal">730</span>
+<span class="normal">731</span>
+<span class="normal">732</span>
+<span class="normal">733</span>
+<span class="normal">734</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PdExperimentBase</span><span class="p">(</span><span class="n">ExperimentBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for all powder experiments.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -25492,13 +25610,12 @@ live calculator backend instance.</p>
             <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_peak</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">announce</span><span class="p">:</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="s1">&#39;Switching peak profile type discards existing peak parameters.&#39;</span><span class="p">,</span>
-            <span class="p">)</span>
-
         <span class="n">old_peak</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_peak</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_peak</span> <span class="o">=</span> <span class="n">PeakFactory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">canonical_type</span><span class="p">)</span>
+        <span class="n">new_peak</span> <span class="o">=</span> <span class="n">PeakFactory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">canonical_type</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">old_peak</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">announce</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_warn_about_peak_profile_swap</span><span class="p">(</span><span class="n">old_peak</span><span class="p">,</span> <span class="n">new_peak</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_peak</span> <span class="o">=</span> <span class="n">new_peak</span>
         <span class="k">if</span> <span class="n">old_peak</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">old_peak</span><span class="o">.</span><span class="n">_parent</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_peak</span><span class="o">.</span><span class="n">_parent</span> <span class="o">=</span> <span class="bp">self</span>
@@ -25548,6 +25665,65 @@ live calculator backend instance.</p>
         <span class="n">peak_type</span> <span class="o">=</span> <span class="n">read_cif_str</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="s1">&#39;_peak.type&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">peak_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_set_peak_profile_type</span><span class="p">(</span><span class="n">peak_type</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_peak_parameter_values</span><span class="p">(</span><span class="n">peak</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return peak parameter values excluding the selector type.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="n">parameter</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">parameter</span><span class="o">.</span><span class="n">value</span>
+            <span class="k">for</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">peak</span><span class="p">,</span> <span class="s1">&#39;parameters&#39;</span><span class="p">,</span> <span class="p">[])</span>
+            <span class="k">if</span> <span class="n">parameter</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;type&#39;</span>
+        <span class="p">}</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_peak_profile_swap_diff</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">old_peak</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+        <span class="n">new_peak</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return removed, added, and reset peak-setting rows.&quot;&quot;&quot;</span>
+        <span class="n">old_values</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_peak_parameter_values</span><span class="p">(</span><span class="n">old_peak</span><span class="p">)</span>
+        <span class="n">new_values</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_peak_parameter_values</span><span class="p">(</span><span class="n">new_peak</span><span class="p">)</span>
+        <span class="n">old_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">old_values</span><span class="p">)</span>
+        <span class="n">new_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">new_values</span><span class="p">)</span>
+        <span class="n">removed</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">old_keys</span> <span class="o">-</span> <span class="n">new_keys</span><span class="p">)</span>
+        <span class="n">added</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">=</span><span class="si">{</span><span class="n">new_values</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="si">!r}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="n">new_keys</span> <span class="o">-</span> <span class="n">old_keys</span><span class="p">))</span>
+        <span class="n">reset</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">old_values</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="si">!r}</span><span class="s1"> -&gt; </span><span class="si">{</span><span class="n">new_values</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="si">!r}</span><span class="s1">&#39;</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="n">old_keys</span> <span class="o">&amp;</span> <span class="n">new_keys</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">old_values</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">!=</span> <span class="n">new_values</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">removed</span><span class="p">,</span> <span class="n">added</span><span class="p">,</span> <span class="n">reset</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_warn_about_peak_profile_swap</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">old_peak</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+        <span class="n">new_peak</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Warn about peak settings changed by a profile swap.&quot;&quot;&quot;</span>
+        <span class="n">removed</span><span class="p">,</span> <span class="n">added</span><span class="p">,</span> <span class="n">reset</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_peak_profile_swap_diff</span><span class="p">(</span><span class="n">old_peak</span><span class="p">,</span> <span class="n">new_peak</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">removed</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="n">format_bulleted_warning</span><span class="p">(</span>
+                    <span class="s1">&#39;Switching peak profile type removes these settings:&#39;</span><span class="p">,</span>
+                    <span class="n">removed</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">added</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="n">format_bulleted_warning</span><span class="p">(</span>
+                    <span class="s1">&#39;Switching peak profile type adds these settings with defaults:&#39;</span><span class="p">,</span>
+                    <span class="n">added</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">reset</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="n">format_bulleted_warning</span><span class="p">(</span>
+                    <span class="s1">&#39;Switching peak profile type resets these settings to defaults:&#39;</span><span class="p">,</span>
+                    <span class="n">reset</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -25692,8 +25868,7 @@ live calculator backend instance.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/item/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">40</span>
-<span class="normal">41</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">41</span>
 <span class="normal">42</span>
 <span class="normal">43</span>
 <span class="normal">44</span>
@@ -25708,7 +25883,8 @@ live calculator backend instance.</p>
 <span class="normal">53</span>
 <span class="normal">54</span>
 <span class="normal">55</span>
-<span class="normal">56</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">intensity_category_for</span><span class="p">(</span><span class="n">experiment</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
+<span class="normal">56</span>
+<span class="normal">57</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">intensity_category_for</span><span class="p">(</span><span class="n">experiment</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the category exposing measured and calculated values.&quot;&quot;&quot;</span>
     <span class="n">resolver</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">experiment</span><span class="p">,</span> <span class="s1">&#39;_intensity_category&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">resolver</span><span class="p">):</span>

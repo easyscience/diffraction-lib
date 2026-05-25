@@ -1109,8 +1109,6 @@
       
         
       
-        
-      
     
     
     
@@ -1194,34 +1192,6 @@
     
   
     Co2SiO4 Sequential
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../tutorials/ed-24/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    LBCO Bayesian
   
 
     
@@ -1961,6 +1931,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -2015,7 +1991,91 @@
   <span class="md-ellipsis">
     
   
-    LBCO Bayesian
+    LBCO pd bumps-dream
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/ed-24/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LBCO pd bumps-dream Display
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/ed-25/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LBCO pd emcee
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/ed-26/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LBCO pd emcee Resume
   
 
     
@@ -2043,7 +2103,7 @@
   <span class="md-ellipsis">
     
   
-    Tb2TiO7 Bayesian
+    Tb2TiO7 sg bumps-dream
   
 
     
@@ -2750,6 +2810,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#easydiffraction.display.progress.NotebookFitStopControl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NotebookFitStopControl
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#easydiffraction.display.progress.resolve_activity_terminal_style" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2776,6 +2847,17 @@
     <span class="md-ellipsis">
       
         activity_indicator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#easydiffraction.display.progress.notebook_fit_stop_control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        notebook_fit_stop_control
       
     </span>
   </a>
@@ -3309,6 +3391,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#easydiffraction.display.progress.NotebookFitStopControl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NotebookFitStopControl
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#easydiffraction.display.progress.resolve_activity_terminal_style" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3335,6 +3428,17 @@
     <span class="md-ellipsis">
       
         activity_indicator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#easydiffraction.display.progress.notebook_fit_stop_control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        notebook_fit_stop_control
       
     </span>
   </a>
@@ -12510,8 +12614,7 @@ consistent configuration surface and engine handling.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">49</span>
-<span class="normal">50</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">50</span>
 <span class="normal">51</span>
 <span class="normal">52</span>
 <span class="normal">53</span>
@@ -12531,7 +12634,8 @@ consistent configuration surface and engine handling.</p>
 <span class="normal">67</span>
 <span class="normal">68</span>
 <span class="normal">69</span>
-<span class="normal">70</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PlotterEngineEnum</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+<span class="normal">70</span>
+<span class="normal">71</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PlotterEngineEnum</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Available plotting engine backends.&quot;&quot;&quot;</span>
 
     <span class="n">ASCII</span> <span class="o">=</span> <span class="s1">&#39;asciichartpy&#39;</span>
@@ -12592,14 +12696,14 @@ consistent configuration surface and engine handling.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">55</span>
-<span class="normal">56</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">56</span>
 <span class="normal">57</span>
 <span class="normal">58</span>
 <span class="normal">59</span>
 <span class="normal">60</span>
 <span class="normal">61</span>
-<span class="normal">62</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">62</span>
+<span class="normal">63</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">default</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PlotterEngineEnum</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Select default engine based on environment.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">in_jupyter</span><span class="p">():</span>
@@ -12632,13 +12736,13 @@ consistent configuration surface and engine handling.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">64</span>
-<span class="normal">65</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">65</span>
 <span class="normal">66</span>
 <span class="normal">67</span>
 <span class="normal">68</span>
 <span class="normal">69</span>
-<span class="normal">70</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">70</span>
+<span class="normal">71</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Human-readable description for UI listings.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="bp">self</span> <span class="ow">is</span> <span class="n">PlotterEngineEnum</span><span class="o">.</span><span class="n">ASCII</span><span class="p">:</span>
         <span class="k">return</span> <span class="s1">&#39;Console ASCII line charts&#39;</span>
@@ -12690,12 +12794,12 @@ consistent configuration surface and engine handling.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">73</span>
-<span class="normal">74</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">74</span>
 <span class="normal">75</span>
 <span class="normal">76</span>
 <span class="normal">77</span>
-<span class="normal">78</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PosteriorPairPlotStyleEnum</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+<span class="normal">78</span>
+<span class="normal">79</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PosteriorPairPlotStyleEnum</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Available posterior pair-plot rendering modes.&quot;&quot;&quot;</span>
 
     <span class="n">AUTO</span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span>
@@ -12756,8 +12860,7 @@ consistent configuration surface and engine handling.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 264</span>
-<span class="normal"> 265</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 265</span>
 <span class="normal"> 266</span>
 <span class="normal"> 267</span>
 <span class="normal"> 268</span>
@@ -18434,44 +18537,7 @@ consistent configuration surface and engine handling.</p>
 <span class="normal">5939</span>
 <span class="normal">5940</span>
 <span class="normal">5941</span>
-<span class="normal">5942</span>
-<span class="normal">5943</span>
-<span class="normal">5944</span>
-<span class="normal">5945</span>
-<span class="normal">5946</span>
-<span class="normal">5947</span>
-<span class="normal">5948</span>
-<span class="normal">5949</span>
-<span class="normal">5950</span>
-<span class="normal">5951</span>
-<span class="normal">5952</span>
-<span class="normal">5953</span>
-<span class="normal">5954</span>
-<span class="normal">5955</span>
-<span class="normal">5956</span>
-<span class="normal">5957</span>
-<span class="normal">5958</span>
-<span class="normal">5959</span>
-<span class="normal">5960</span>
-<span class="normal">5961</span>
-<span class="normal">5962</span>
-<span class="normal">5963</span>
-<span class="normal">5964</span>
-<span class="normal">5965</span>
-<span class="normal">5966</span>
-<span class="normal">5967</span>
-<span class="normal">5968</span>
-<span class="normal">5969</span>
-<span class="normal">5970</span>
-<span class="normal">5971</span>
-<span class="normal">5972</span>
-<span class="normal">5973</span>
-<span class="normal">5974</span>
-<span class="normal">5975</span>
-<span class="normal">5976</span>
-<span class="normal">5977</span>
-<span class="normal">5978</span>
-<span class="normal">5979</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Plotter</span><span class="p">(</span><span class="n">RendererBase</span><span class="p">):</span>
+<span class="normal">5942</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Plotter</span><span class="p">(</span><span class="n">RendererBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;User-facing plotting facade backed by concrete plotters.&quot;&quot;&quot;</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
@@ -21752,12 +21818,12 @@ consistent configuration surface and engine handling.</p>
             <span class="k">return</span> <span class="kc">None</span>
 
         <span class="n">x_axis_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">x_axis</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="n">x_axis</span><span class="p">)</span>
-        <span class="n">draw_cache_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_posterior_predictive_key</span><span class="p">(</span>
+        <span class="n">draw_cache_key</span> <span class="o">=</span> <span class="n">posterior_predictive_cache_key</span><span class="p">(</span>
             <span class="n">expt_name</span><span class="p">,</span>
             <span class="nb">str</span><span class="p">(</span><span class="n">x_axis_name</span><span class="p">),</span>
             <span class="n">include_draws</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">band_cache_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_posterior_predictive_key</span><span class="p">(</span>
+        <span class="n">band_cache_key</span> <span class="o">=</span> <span class="n">posterior_predictive_cache_key</span><span class="p">(</span>
             <span class="n">expt_name</span><span class="p">,</span>
             <span class="nb">str</span><span class="p">(</span><span class="n">x_axis_name</span><span class="p">),</span>
             <span class="n">include_draws</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -22028,44 +22094,6 @@ consistent configuration surface and engine handling.</p>
                 <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_posterior_predictive_key</span><span class="p">(</span>
-        <span class="n">expt_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">x_axis_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="o">*</span><span class="p">,</span>
-        <span class="n">include_draws</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the cache key for a posterior predictive summary.&quot;&quot;&quot;</span>
-        <span class="n">key_suffix</span> <span class="o">=</span> <span class="s1">&#39;draws&#39;</span> <span class="k">if</span> <span class="n">include_draws</span> <span class="k">else</span> <span class="s1">&#39;band&#39;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">expt_name</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">x_axis_name</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">key_suffix</span><span class="si">}</span><span class="s1">&#39;</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_posterior_inference_data</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return posterior inference data for the current Bayesian fit.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        tuple[object | None, object | None]</span>
-<span class="sd">            ``(inference_data, fit_results)`` when posterior samples are</span>
-<span class="sd">            available, otherwise ``(None, None)``.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">engine</span> <span class="o">!=</span> <span class="n">PlotterEngineEnum</span><span class="o">.</span><span class="n">PLOTLY</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Posterior plots currently require the Plotly plotting backend.&#39;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
-
-        <span class="n">fit_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_fit_result_for_correlation</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">fit_results</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
-
-        <span class="n">posterior_samples</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">fit_results</span><span class="p">,</span> <span class="s1">&#39;posterior_samples&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">posterior_samples</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Posterior samples are unavailable. Run a Bayesian fit first.&#39;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
-
-        <span class="k">return</span> <span class="n">posterior_samples</span><span class="o">.</span><span class="n">to_arviz</span><span class="p">(),</span> <span class="n">fit_results</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_posterior_samples_and_fit_results</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -24300,8 +24328,7 @@ consistent configuration surface and engine handling.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">580</span>
-<span class="normal">581</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">581</span>
 <span class="normal">582</span>
 <span class="normal">583</span>
 <span class="normal">584</span>
@@ -24313,7 +24340,8 @@ consistent configuration surface and engine handling.</p>
 <span class="normal">590</span>
 <span class="normal">591</span>
 <span class="normal">592</span>
-<span class="normal">593</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">593</span>
+<span class="normal">594</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Display the current plotting configuration.&quot;&quot;&quot;</span>
     <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">(</span><span class="s1">&#39;Parameter&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">),</span>
@@ -24462,8 +24490,7 @@ consistent configuration surface and engine handling.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">595</span>
-<span class="normal">596</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">596</span>
 <span class="normal">597</span>
 <span class="normal">598</span>
 <span class="normal">599</span>
@@ -24501,7 +24528,8 @@ consistent configuration surface and engine handling.</p>
 <span class="normal">631</span>
 <span class="normal">632</span>
 <span class="normal">633</span>
-<span class="normal">634</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_meas</span><span class="p">(</span>
+<span class="normal">634</span>
+<span class="normal">635</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_meas</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">expt_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">x_min</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -24676,8 +24704,7 @@ consistent configuration surface and engine handling.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">636</span>
-<span class="normal">637</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">637</span>
 <span class="normal">638</span>
 <span class="normal">639</span>
 <span class="normal">640</span>
@@ -24715,7 +24742,8 @@ consistent configuration surface and engine handling.</p>
 <span class="normal">672</span>
 <span class="normal">673</span>
 <span class="normal">674</span>
-<span class="normal">675</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_calc</span><span class="p">(</span>
+<span class="normal">675</span>
+<span class="normal">676</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_calc</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">expt_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">x_min</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -24911,8 +24939,7 @@ historical no-residual default.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">677</span>
-<span class="normal">678</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">678</span>
 <span class="normal">679</span>
 <span class="normal">680</span>
 <span class="normal">681</span>
@@ -24948,7 +24975,8 @@ historical no-residual default.</p>
 <span class="normal">711</span>
 <span class="normal">712</span>
 <span class="normal">713</span>
-<span class="normal">714</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_meas_vs_calc</span><span class="p">(</span>
+<span class="normal">714</span>
+<span class="normal">715</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_meas_vs_calc</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">expt_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">x_min</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -25072,8 +25100,7 @@ sequence number is used instead.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">731</span>
-<span class="normal">732</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">732</span>
 <span class="normal">733</span>
 <span class="normal">734</span>
 <span class="normal">735</span>
@@ -25122,7 +25149,8 @@ sequence number is used instead.</p>
 <span class="normal">778</span>
 <span class="normal">779</span>
 <span class="normal">780</span>
-<span class="normal">781</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_param_series</span><span class="p">(</span>
+<span class="normal">781</span>
+<span class="normal">782</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_param_series</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">param</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="n">versus</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -25238,8 +25266,7 @@ sequence number is used instead.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">813</span>
-<span class="normal">814</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">814</span>
 <span class="normal">815</span>
 <span class="normal">816</span>
 <span class="normal">817</span>
@@ -25269,7 +25296,8 @@ sequence number is used instead.</p>
 <span class="normal">841</span>
 <span class="normal">842</span>
 <span class="normal">843</span>
-<span class="normal">844</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_all_param_series</span><span class="p">(</span>
+<span class="normal">844</span>
+<span class="normal">845</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_all_param_series</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">versus</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -25429,8 +25457,7 @@ lower-triangle matrix.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 929</span>
-<span class="normal"> 930</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 930</span>
 <span class="normal"> 931</span>
 <span class="normal"> 932</span>
 <span class="normal"> 933</span>
@@ -25508,7 +25535,8 @@ lower-triangle matrix.</p>
 <span class="normal">1005</span>
 <span class="normal">1006</span>
 <span class="normal">1007</span>
-<span class="normal">1008</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_param_correlations</span><span class="p">(</span>
+<span class="normal">1008</span>
+<span class="normal">1009</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_param_correlations</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">DEFAULT_CORRELATION_THRESHOLD</span><span class="p">,</span>
     <span class="n">precision</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
@@ -25714,8 +25742,7 @@ Must be at least <code>2</code>.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1127</span>
-<span class="normal">1128</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1128</span>
 <span class="normal">1129</span>
 <span class="normal">1130</span>
 <span class="normal">1131</span>
@@ -25757,7 +25784,8 @@ Must be at least <code>2</code>.</p>
 <span class="normal">1167</span>
 <span class="normal">1168</span>
 <span class="normal">1169</span>
-<span class="normal">1170</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_posterior_pairs</span><span class="p">(</span>
+<span class="normal">1170</span>
+<span class="normal">1171</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_posterior_pairs</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">parameters</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">style</span><span class="p">:</span> <span class="n">PosteriorPairPlotStyleEnum</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span><span class="p">,</span>
@@ -25862,8 +25890,7 @@ user-facing labels.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1172</span>
-<span class="normal">1173</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1173</span>
 <span class="normal">1174</span>
 <span class="normal">1175</span>
 <span class="normal">1176</span>
@@ -25883,7 +25910,8 @@ user-facing labels.</p>
 <span class="normal">1190</span>
 <span class="normal">1191</span>
 <span class="normal">1192</span>
-<span class="normal">1193</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_param_distribution</span><span class="p">(</span>
+<span class="normal">1193</span>
+<span class="normal">1194</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_param_distribution</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">param</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -26111,8 +26139,7 @@ composite plots.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1195</span>
-<span class="normal">1196</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1196</span>
 <span class="normal">1197</span>
 <span class="normal">1198</span>
 <span class="normal">1199</span>
@@ -26170,7 +26197,8 @@ composite plots.</p>
 <span class="normal">1251</span>
 <span class="normal">1252</span>
 <span class="normal">1253</span>
-<span class="normal">1254</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_posterior_predictive</span><span class="p">(</span>
+<span class="normal">1254</span>
+<span class="normal">1255</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_posterior_predictive</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">expt_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">style</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;band&#39;</span><span class="p">,</span>
@@ -26349,7 +26377,44 @@ adds CSV output to the existing fit loop).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">5876</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">5839</span>
+<span class="normal">5840</span>
+<span class="normal">5841</span>
+<span class="normal">5842</span>
+<span class="normal">5843</span>
+<span class="normal">5844</span>
+<span class="normal">5845</span>
+<span class="normal">5846</span>
+<span class="normal">5847</span>
+<span class="normal">5848</span>
+<span class="normal">5849</span>
+<span class="normal">5850</span>
+<span class="normal">5851</span>
+<span class="normal">5852</span>
+<span class="normal">5853</span>
+<span class="normal">5854</span>
+<span class="normal">5855</span>
+<span class="normal">5856</span>
+<span class="normal">5857</span>
+<span class="normal">5858</span>
+<span class="normal">5859</span>
+<span class="normal">5860</span>
+<span class="normal">5861</span>
+<span class="normal">5862</span>
+<span class="normal">5863</span>
+<span class="normal">5864</span>
+<span class="normal">5865</span>
+<span class="normal">5866</span>
+<span class="normal">5867</span>
+<span class="normal">5868</span>
+<span class="normal">5869</span>
+<span class="normal">5870</span>
+<span class="normal">5871</span>
+<span class="normal">5872</span>
+<span class="normal">5873</span>
+<span class="normal">5874</span>
+<span class="normal">5875</span>
+<span class="normal">5876</span>
 <span class="normal">5877</span>
 <span class="normal">5878</span>
 <span class="normal">5879</span>
@@ -26382,44 +26447,7 @@ adds CSV output to the existing fit loop).</p>
 <span class="normal">5906</span>
 <span class="normal">5907</span>
 <span class="normal">5908</span>
-<span class="normal">5909</span>
-<span class="normal">5910</span>
-<span class="normal">5911</span>
-<span class="normal">5912</span>
-<span class="normal">5913</span>
-<span class="normal">5914</span>
-<span class="normal">5915</span>
-<span class="normal">5916</span>
-<span class="normal">5917</span>
-<span class="normal">5918</span>
-<span class="normal">5919</span>
-<span class="normal">5920</span>
-<span class="normal">5921</span>
-<span class="normal">5922</span>
-<span class="normal">5923</span>
-<span class="normal">5924</span>
-<span class="normal">5925</span>
-<span class="normal">5926</span>
-<span class="normal">5927</span>
-<span class="normal">5928</span>
-<span class="normal">5929</span>
-<span class="normal">5930</span>
-<span class="normal">5931</span>
-<span class="normal">5932</span>
-<span class="normal">5933</span>
-<span class="normal">5934</span>
-<span class="normal">5935</span>
-<span class="normal">5936</span>
-<span class="normal">5937</span>
-<span class="normal">5938</span>
-<span class="normal">5939</span>
-<span class="normal">5940</span>
-<span class="normal">5941</span>
-<span class="normal">5942</span>
-<span class="normal">5943</span>
-<span class="normal">5944</span>
-<span class="normal">5945</span>
-<span class="normal">5946</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_param_series_from_snapshots</span><span class="p">(</span>
+<span class="normal">5909</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_param_series_from_snapshots</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">unique_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">versus_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
@@ -26535,21 +26563,21 @@ adds CSV output to the existing fit loop).</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/display/plotting.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">5982</span>
-<span class="normal">5983</span>
-<span class="normal">5984</span>
-<span class="normal">5985</span>
-<span class="normal">5986</span>
-<span class="normal">5987</span>
-<span class="normal">5988</span>
-<span class="normal">5989</span>
-<span class="normal">5990</span>
-<span class="normal">5991</span>
-<span class="normal">5992</span>
-<span class="normal">5993</span>
-<span class="normal">5994</span>
-<span class="normal">5995</span>
-<span class="normal">5996</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PlotterFactory</span><span class="p">(</span><span class="n">RendererFactoryBase</span><span class="p">):</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">5945</span>
+<span class="normal">5946</span>
+<span class="normal">5947</span>
+<span class="normal">5948</span>
+<span class="normal">5949</span>
+<span class="normal">5950</span>
+<span class="normal">5951</span>
+<span class="normal">5952</span>
+<span class="normal">5953</span>
+<span class="normal">5954</span>
+<span class="normal">5955</span>
+<span class="normal">5956</span>
+<span class="normal">5957</span>
+<span class="normal">5958</span>
+<span class="normal">5959</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PlotterFactory</span><span class="p">(</span><span class="n">RendererFactoryBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Factory for plotter implementations.&quot;&quot;&quot;</span>
 
     <span class="nd">@classmethod</span>
@@ -26774,14 +26802,7 @@ terminal flicker for multi-line live regions.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/display/progress.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">153</span>
 <span class="normal">154</span>
 <span class="normal">155</span>
 <span class="normal">156</span>
@@ -27073,7 +27094,14 @@ terminal flicker for multi-line live regions.</p>
 <span class="normal">442</span>
 <span class="normal">443</span>
 <span class="normal">444</span>
-<span class="normal">445</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ActivityIndicator</span><span class="p">:</span>
+<span class="normal">445</span>
+<span class="normal">446</span>
+<span class="normal">447</span>
+<span class="normal">448</span>
+<span class="normal">449</span>
+<span class="normal">450</span>
+<span class="normal">451</span>
+<span class="normal">452</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ActivityIndicator</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Render a live activity indicator for long-running work.</span>
 
@@ -27434,14 +27462,7 @@ terminal flicker for multi-line live regions.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/progress.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">189</span>
-<span class="normal">190</span>
-<span class="normal">191</span>
-<span class="normal">192</span>
-<span class="normal">193</span>
-<span class="normal">194</span>
-<span class="normal">195</span>
-<span class="normal">196</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">196</span>
 <span class="normal">197</span>
 <span class="normal">198</span>
 <span class="normal">199</span>
@@ -27470,7 +27491,14 @@ terminal flicker for multi-line live regions.</p>
 <span class="normal">222</span>
 <span class="normal">223</span>
 <span class="normal">224</span>
-<span class="normal">225</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Start the live activity indicator.</span>
 
@@ -27587,14 +27615,7 @@ label.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/progress.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">227</span>
-<span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span>
-<span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">234</span>
 <span class="normal">235</span>
 <span class="normal">236</span>
 <span class="normal">237</span>
@@ -27609,7 +27630,14 @@ label.</p>
 <span class="normal">246</span>
 <span class="normal">247</span>
 <span class="normal">248</span>
-<span class="normal">249</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -27692,14 +27720,7 @@ omitted, only the current content remains visible.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/progress.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span>
-<span class="normal">254</span>
-<span class="normal">255</span>
-<span class="normal">256</span>
-<span class="normal">257</span>
-<span class="normal">258</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">258</span>
 <span class="normal">259</span>
 <span class="normal">260</span>
 <span class="normal">261</span>
@@ -27713,7 +27734,14 @@ omitted, only the current content remains visible.</p>
 <span class="normal">269</span>
 <span class="normal">270</span>
 <span class="normal">271</span>
-<span class="normal">272</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">final_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">final_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Stop live rendering and keep optional final content visible.</span>
 
@@ -27734,6 +27762,744 @@ omitted, only the current content remains visible.</p>
         <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_live</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_live</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_display_handle</span> <span class="o">=</span> <span class="kc">None</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="easydiffraction.display.progress.NotebookFitStopControl" class="doc doc-heading">
+            <code>NotebookFitStopControl</code>
+
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="contextlib.AbstractContextManager">AbstractContextManager</span></code></p>
+
+
+
+        <p>Display a Jupyter stop button for fitting runs.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+
+
+
+
+
+
+              <details class="mkdocstrings-source">
+                <summary>Source code in <code>src/easydiffraction/display/progress.py</code></summary>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">501</span>
+<span class="normal">502</span>
+<span class="normal">503</span>
+<span class="normal">504</span>
+<span class="normal">505</span>
+<span class="normal">506</span>
+<span class="normal">507</span>
+<span class="normal">508</span>
+<span class="normal">509</span>
+<span class="normal">510</span>
+<span class="normal">511</span>
+<span class="normal">512</span>
+<span class="normal">513</span>
+<span class="normal">514</span>
+<span class="normal">515</span>
+<span class="normal">516</span>
+<span class="normal">517</span>
+<span class="normal">518</span>
+<span class="normal">519</span>
+<span class="normal">520</span>
+<span class="normal">521</span>
+<span class="normal">522</span>
+<span class="normal">523</span>
+<span class="normal">524</span>
+<span class="normal">525</span>
+<span class="normal">526</span>
+<span class="normal">527</span>
+<span class="normal">528</span>
+<span class="normal">529</span>
+<span class="normal">530</span>
+<span class="normal">531</span>
+<span class="normal">532</span>
+<span class="normal">533</span>
+<span class="normal">534</span>
+<span class="normal">535</span>
+<span class="normal">536</span>
+<span class="normal">537</span>
+<span class="normal">538</span>
+<span class="normal">539</span>
+<span class="normal">540</span>
+<span class="normal">541</span>
+<span class="normal">542</span>
+<span class="normal">543</span>
+<span class="normal">544</span>
+<span class="normal">545</span>
+<span class="normal">546</span>
+<span class="normal">547</span>
+<span class="normal">548</span>
+<span class="normal">549</span>
+<span class="normal">550</span>
+<span class="normal">551</span>
+<span class="normal">552</span>
+<span class="normal">553</span>
+<span class="normal">554</span>
+<span class="normal">555</span>
+<span class="normal">556</span>
+<span class="normal">557</span>
+<span class="normal">558</span>
+<span class="normal">559</span>
+<span class="normal">560</span>
+<span class="normal">561</span>
+<span class="normal">562</span>
+<span class="normal">563</span>
+<span class="normal">564</span>
+<span class="normal">565</span>
+<span class="normal">566</span>
+<span class="normal">567</span>
+<span class="normal">568</span>
+<span class="normal">569</span>
+<span class="normal">570</span>
+<span class="normal">571</span>
+<span class="normal">572</span>
+<span class="normal">573</span>
+<span class="normal">574</span>
+<span class="normal">575</span>
+<span class="normal">576</span>
+<span class="normal">577</span>
+<span class="normal">578</span>
+<span class="normal">579</span>
+<span class="normal">580</span>
+<span class="normal">581</span>
+<span class="normal">582</span>
+<span class="normal">583</span>
+<span class="normal">584</span>
+<span class="normal">585</span>
+<span class="normal">586</span>
+<span class="normal">587</span>
+<span class="normal">588</span>
+<span class="normal">589</span>
+<span class="normal">590</span>
+<span class="normal">591</span>
+<span class="normal">592</span>
+<span class="normal">593</span>
+<span class="normal">594</span>
+<span class="normal">595</span>
+<span class="normal">596</span>
+<span class="normal">597</span>
+<span class="normal">598</span>
+<span class="normal">599</span>
+<span class="normal">600</span>
+<span class="normal">601</span>
+<span class="normal">602</span>
+<span class="normal">603</span>
+<span class="normal">604</span>
+<span class="normal">605</span>
+<span class="normal">606</span>
+<span class="normal">607</span>
+<span class="normal">608</span>
+<span class="normal">609</span>
+<span class="normal">610</span>
+<span class="normal">611</span>
+<span class="normal">612</span>
+<span class="normal">613</span>
+<span class="normal">614</span>
+<span class="normal">615</span>
+<span class="normal">616</span>
+<span class="normal">617</span>
+<span class="normal">618</span>
+<span class="normal">619</span>
+<span class="normal">620</span>
+<span class="normal">621</span>
+<span class="normal">622</span>
+<span class="normal">623</span>
+<span class="normal">624</span>
+<span class="normal">625</span>
+<span class="normal">626</span>
+<span class="normal">627</span>
+<span class="normal">628</span>
+<span class="normal">629</span>
+<span class="normal">630</span>
+<span class="normal">631</span>
+<span class="normal">632</span>
+<span class="normal">633</span>
+<span class="normal">634</span>
+<span class="normal">635</span>
+<span class="normal">636</span>
+<span class="normal">637</span>
+<span class="normal">638</span>
+<span class="normal">639</span>
+<span class="normal">640</span>
+<span class="normal">641</span>
+<span class="normal">642</span>
+<span class="normal">643</span>
+<span class="normal">644</span>
+<span class="normal">645</span>
+<span class="normal">646</span>
+<span class="normal">647</span>
+<span class="normal">648</span>
+<span class="normal">649</span>
+<span class="normal">650</span>
+<span class="normal">651</span>
+<span class="normal">652</span>
+<span class="normal">653</span>
+<span class="normal">654</span>
+<span class="normal">655</span>
+<span class="normal">656</span>
+<span class="normal">657</span>
+<span class="normal">658</span>
+<span class="normal">659</span>
+<span class="normal">660</span>
+<span class="normal">661</span>
+<span class="normal">662</span>
+<span class="normal">663</span>
+<span class="normal">664</span>
+<span class="normal">665</span>
+<span class="normal">666</span>
+<span class="normal">667</span>
+<span class="normal">668</span>
+<span class="normal">669</span>
+<span class="normal">670</span>
+<span class="normal">671</span>
+<span class="normal">672</span>
+<span class="normal">673</span>
+<span class="normal">674</span>
+<span class="normal">675</span>
+<span class="normal">676</span>
+<span class="normal">677</span>
+<span class="normal">678</span>
+<span class="normal">679</span>
+<span class="normal">680</span>
+<span class="normal">681</span>
+<span class="normal">682</span>
+<span class="normal">683</span>
+<span class="normal">684</span>
+<span class="normal">685</span>
+<span class="normal">686</span>
+<span class="normal">687</span>
+<span class="normal">688</span>
+<span class="normal">689</span>
+<span class="normal">690</span>
+<span class="normal">691</span>
+<span class="normal">692</span>
+<span class="normal">693</span>
+<span class="normal">694</span>
+<span class="normal">695</span>
+<span class="normal">696</span>
+<span class="normal">697</span>
+<span class="normal">698</span>
+<span class="normal">699</span>
+<span class="normal">700</span>
+<span class="normal">701</span>
+<span class="normal">702</span>
+<span class="normal">703</span>
+<span class="normal">704</span>
+<span class="normal">705</span>
+<span class="normal">706</span>
+<span class="normal">707</span>
+<span class="normal">708</span>
+<span class="normal">709</span>
+<span class="normal">710</span>
+<span class="normal">711</span>
+<span class="normal">712</span>
+<span class="normal">713</span>
+<span class="normal">714</span>
+<span class="normal">715</span>
+<span class="normal">716</span>
+<span class="normal">717</span>
+<span class="normal">718</span>
+<span class="normal">719</span>
+<span class="normal">720</span>
+<span class="normal">721</span>
+<span class="normal">722</span>
+<span class="normal">723</span>
+<span class="normal">724</span>
+<span class="normal">725</span>
+<span class="normal">726</span>
+<span class="normal">727</span>
+<span class="normal">728</span>
+<span class="normal">729</span>
+<span class="normal">730</span>
+<span class="normal">731</span>
+<span class="normal">732</span>
+<span class="normal">733</span>
+<span class="normal">734</span>
+<span class="normal">735</span>
+<span class="normal">736</span>
+<span class="normal">737</span>
+<span class="normal">738</span>
+<span class="normal">739</span>
+<span class="normal">740</span>
+<span class="normal">741</span>
+<span class="normal">742</span>
+<span class="normal">743</span>
+<span class="normal">744</span>
+<span class="normal">745</span>
+<span class="normal">746</span>
+<span class="normal">747</span>
+<span class="normal">748</span>
+<span class="normal">749</span>
+<span class="normal">750</span>
+<span class="normal">751</span>
+<span class="normal">752</span>
+<span class="normal">753</span>
+<span class="normal">754</span>
+<span class="normal">755</span>
+<span class="normal">756</span>
+<span class="normal">757</span>
+<span class="normal">758</span>
+<span class="normal">759</span>
+<span class="normal">760</span>
+<span class="normal">761</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">NotebookFitStopControl</span><span class="p">(</span><span class="n">AbstractContextManager</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Display a Jupyter stop button for fitting runs.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">verbosity</span><span class="p">:</span> <span class="n">VerbosityEnum</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verbosity</span> <span class="o">=</span> <span class="n">verbosity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_display_handle</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_element_id</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;ed-fit-stop-</span><span class="si">{</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_kernel_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_kernel_id</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Show the stop button.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">exc_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="ne">BaseException</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">exc_value</span><span class="p">:</span> <span class="ne">BaseException</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">traceback</span><span class="p">:</span> <span class="n">TracebackType</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update or clear the stop button when leaving the context.&quot;&quot;&quot;</span>
+        <span class="k">del</span> <span class="n">exc_type</span>
+        <span class="k">del</span> <span class="n">exc_value</span>
+        <span class="k">del</span> <span class="n">traceback</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Render the stop button when running in a notebook.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_can_display</span><span class="p">():</span>
+            <span class="k">return</span>
+
+        <span class="n">handle</span> <span class="o">=</span> <span class="n">DisplayHandle</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_display_handle</span> <span class="o">=</span> <span class="n">handle</span>
+        <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+            <span class="n">handle</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_active_html</span><span class="p">()))</span>
+            <span class="n">display</span><span class="p">(</span><span class="n">Javascript</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_interrupt_javascript</span><span class="p">()))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear the stop button when fitting ends.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_display_handle</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">HTML</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_display_handle</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_display_handle</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_can_display</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_verbosity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">VerbosityEnum</span><span class="o">.</span><span class="n">SILENT</span>
+            <span class="ow">and</span> <span class="n">in_jupyter</span><span class="p">()</span>
+            <span class="ow">and</span> <span class="n">DisplayHandle</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">HTML</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">Javascript</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">display</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_active_html</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="s1">&#39;&lt;style&gt;&#39;</span>
+            <span class="s1">&#39;.ed-fit-stop-control {&#39;</span>
+            <span class="s1">&#39;display: inline-flex;&#39;</span>
+            <span class="s1">&#39;align-items: center;&#39;</span>
+            <span class="s1">&#39;gap: 0.5rem;&#39;</span>
+            <span class="s1">&#39;margin: 0.35rem 0 0.45rem 0;&#39;</span>
+            <span class="s1">&#39;font-family: var(--jp-ui-font-family, -apple-system, BlinkMacSystemFont, &#39;</span>
+            <span class="s1">&#39;&quot;Segoe UI&quot;, sans-serif);&#39;</span>
+            <span class="s1">&#39;}&#39;</span>
+            <span class="s1">&#39;.ed-fit-stop-button {&#39;</span>
+            <span class="s1">&#39;border: 1px solid #b91c1c;&#39;</span>
+            <span class="s1">&#39;border-radius: 4px;&#39;</span>
+            <span class="s1">&#39;background: #dc2626;&#39;</span>
+            <span class="s1">&#39;color: white;&#39;</span>
+            <span class="s1">&#39;font-size: 0.9rem;&#39;</span>
+            <span class="s1">&#39;line-height: 1.1;&#39;</span>
+            <span class="s1">&#39;padding: 0.35rem 0.65rem;&#39;</span>
+            <span class="s1">&#39;cursor: pointer;&#39;</span>
+            <span class="s1">&#39;}&#39;</span>
+            <span class="s1">&#39;.ed-fit-stop-button:disabled {&#39;</span>
+            <span class="s1">&#39;cursor: default;&#39;</span>
+            <span class="s1">&#39;opacity: 0.65;&#39;</span>
+            <span class="s1">&#39;}&#39;</span>
+            <span class="s1">&#39;.ed-fit-stop-status {&#39;</span>
+            <span class="s1">&#39;color: var(--jp-ui-font-color2, #6b7280);&#39;</span>
+            <span class="s1">&#39;font-size: 0.85rem;&#39;</span>
+            <span class="s1">&#39;}&#39;</span>
+            <span class="s1">&#39;&lt;/style&gt;&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;&lt;div id=&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_element_id</span><span class="si">}</span><span class="s1">&quot; class=&quot;ed-fit-stop-control&quot;&gt;&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;&lt;button id=&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_element_id</span><span class="si">}</span><span class="s1">-button&quot; &#39;</span>
+            <span class="s1">&#39;class=&quot;ed-fit-stop-button&quot; type=&quot;button&quot;&gt;Stop fitting&lt;/button&gt;&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;&lt;span id=&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_element_id</span><span class="si">}</span><span class="s1">-status&quot; class=&quot;ed-fit-stop-status&quot;&gt;&lt;/span&gt;&#39;</span>
+            <span class="s1">&#39;&lt;/div&gt;&#39;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_interrupt_javascript</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">button_id</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_element_id</span><span class="si">}</span><span class="s1">-button&#39;</span>
+        <span class="n">status_id</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_element_id</span><span class="si">}</span><span class="s1">-status&#39;</span>
+        <span class="n">kernel_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kernel_id</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">(function() </span><span class="se">{{</span>
+<span class="s2">  const button = document.getElementById(</span><span class="si">{</span><span class="n">button_id</span><span class="si">!r}</span><span class="s2">);</span>
+<span class="s2">  const status = document.getElementById(</span><span class="si">{</span><span class="n">status_id</span><span class="si">!r}</span><span class="s2">);</span>
+<span class="s2">  const kernelId = </span><span class="si">{</span><span class="n">kernel_id</span><span class="si">!r}</span><span class="s2">;</span>
+<span class="s2">  if (!button) </span><span class="se">{{</span>
+<span class="s2">    return;</span>
+<span class="s2">  </span><span class="se">}}</span>
+
+<span class="s2">  function setStatus(text) </span><span class="se">{{</span>
+<span class="s2">    if (status) </span><span class="se">{{</span>
+<span class="s2">      status.textContent = text;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">  </span><span class="se">}}</span>
+
+<span class="s2">  function pageConfig() </span><span class="se">{{</span>
+<span class="s2">    const element = document.getElementById(&#39;jupyter-config-data&#39;);</span>
+<span class="s2">    if (!element || !element.textContent) </span><span class="se">{{</span>
+<span class="s2">      return </span><span class="se">{{}}</span><span class="s2">;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    try </span><span class="se">{{</span>
+<span class="s2">      return JSON.parse(element.textContent);</span>
+<span class="s2">    </span><span class="se">}}</span><span class="s2"> catch (error) </span><span class="se">{{</span>
+<span class="s2">      return </span><span class="se">{{}}</span><span class="s2">;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">  </span><span class="se">}}</span>
+
+<span class="s2">  function baseUrl(config) </span><span class="se">{{</span>
+<span class="s2">    const configured = config.baseUrl || config.base_url ||</span>
+<span class="s2">      (window.Jupyter &amp;&amp; Jupyter.notebook &amp;&amp; Jupyter.notebook.base_url);</span>
+<span class="s2">    if (configured) </span><span class="se">{{</span>
+<span class="s2">      return configured.endsWith(&#39;/&#39;) ? configured : configured + &#39;/&#39;;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    const markers = [&#39;/lab/&#39;, &#39;/notebooks/&#39;, &#39;/tree/&#39;];</span>
+<span class="s2">    for (const marker of markers) </span><span class="se">{{</span>
+<span class="s2">      const index = window.location.pathname.indexOf(marker);</span>
+<span class="s2">      if (index &gt;= 0) </span><span class="se">{{</span>
+<span class="s2">        return window.location.pathname.slice(0, index + 1);</span>
+<span class="s2">      </span><span class="se">}}</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    return &#39;/&#39;;</span>
+<span class="s2">  </span><span class="se">}}</span>
+
+<span class="s2">  function token(config) </span><span class="se">{{</span>
+<span class="s2">    return config.token || new URLSearchParams(window.location.search).get(&#39;token&#39;) || &#39;&#39;;</span>
+<span class="s2">  </span><span class="se">}}</span>
+
+<span class="s2">  function cookie(name) </span><span class="se">{{</span>
+<span class="s2">    const prefix = name + &#39;=&#39;;</span>
+<span class="s2">    for (const part of document.cookie.split(&#39;;&#39;)) </span><span class="se">{{</span>
+<span class="s2">      const trimmed = part.trim();</span>
+<span class="s2">      if (trimmed.startsWith(prefix)) </span><span class="se">{{</span>
+<span class="s2">        return decodeURIComponent(trimmed.slice(prefix.length));</span>
+<span class="s2">      </span><span class="se">}}</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    return &#39;&#39;;</span>
+<span class="s2">  </span><span class="se">}}</span>
+
+<span class="s2">  function notebookPath() </span><span class="se">{{</span>
+<span class="s2">    const decoded = decodeURIComponent(window.location.pathname);</span>
+<span class="s2">    const markers = [&#39;/lab/tree/&#39;, &#39;/notebooks/&#39;, &#39;/tree/&#39;];</span>
+<span class="s2">    for (const marker of markers) </span><span class="se">{{</span>
+<span class="s2">      const index = decoded.indexOf(marker);</span>
+<span class="s2">      if (index &gt;= 0) </span><span class="se">{{</span>
+<span class="s2">        return decoded.slice(index + marker.length);</span>
+<span class="s2">      </span><span class="se">}}</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    return &#39;&#39;;</span>
+<span class="s2">  </span><span class="se">}}</span>
+
+<span class="s2">  async function kernelFromSessions(config) </span><span class="se">{{</span>
+<span class="s2">    const url = new URL(baseUrl(config) + &#39;api/sessions&#39;, window.location.origin);</span>
+<span class="s2">    const authToken = token(config);</span>
+<span class="s2">    if (authToken) </span><span class="se">{{</span>
+<span class="s2">      url.searchParams.set(&#39;token&#39;, authToken);</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    const response = await fetch(url, </span><span class="se">{{</span><span class="s2">credentials: &#39;same-origin&#39;</span><span class="se">}}</span><span class="s2">);</span>
+<span class="s2">    if (!response.ok) </span><span class="se">{{</span>
+<span class="s2">      return &#39;&#39;;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    const sessions = await response.json();</span>
+<span class="s2">    const path = notebookPath();</span>
+<span class="s2">    const session = sessions.find((item) =&gt; item.path === path) || sessions[0];</span>
+<span class="s2">    return session &amp;&amp; session.kernel ? session.kernel.id : &#39;&#39;;</span>
+<span class="s2">  </span><span class="se">}}</span>
+
+<span class="s2">  async function interruptKernel(config, resolvedKernelId) </span><span class="se">{{</span>
+<span class="s2">    const url = new URL(</span>
+<span class="s2">      baseUrl(config) + &#39;api/kernels/&#39; + resolvedKernelId + &#39;/interrupt&#39;,</span>
+<span class="s2">      window.location.origin</span>
+<span class="s2">    );</span>
+<span class="s2">    const authToken = token(config);</span>
+<span class="s2">    if (authToken) </span><span class="se">{{</span>
+<span class="s2">      url.searchParams.set(&#39;token&#39;, authToken);</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    const xsrfToken = cookie(&#39;_xsrf&#39;);</span>
+<span class="s2">    const headers = </span><span class="se">{{}}</span><span class="s2">;</span>
+<span class="s2">    if (xsrfToken) </span><span class="se">{{</span>
+<span class="s2">      headers[&#39;X-XSRFToken&#39;] = xsrfToken;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    const response = await fetch(url, </span><span class="se">{{</span>
+<span class="s2">      method: &#39;POST&#39;,</span>
+<span class="s2">      credentials: &#39;same-origin&#39;,</span>
+<span class="s2">      headers: headers</span>
+<span class="s2">    </span><span class="se">}}</span><span class="s2">);</span>
+<span class="s2">    return response.ok;</span>
+<span class="s2">  </span><span class="se">}}</span>
+
+<span class="s2">  button.addEventListener(&#39;click&#39;, async function() </span><span class="se">{{</span>
+<span class="s2">    button.disabled = true;</span>
+<span class="s2">    setStatus(&#39;Stopping...&#39;);</span>
+<span class="s2">    const config = pageConfig();</span>
+<span class="s2">    try </span><span class="se">{{</span>
+<span class="s2">      const resolvedKernelId = kernelId || await kernelFromSessions(config);</span>
+<span class="s2">      if (!resolvedKernelId) </span><span class="se">{{</span>
+<span class="s2">        throw new Error(&#39;Could not resolve the current kernel id.&#39;);</span>
+<span class="s2">      </span><span class="se">}}</span>
+<span class="s2">      const interrupted = await interruptKernel(config, resolvedKernelId);</span>
+<span class="s2">      if (!interrupted) </span><span class="se">{{</span>
+<span class="s2">        throw new Error(&#39;Jupyter Server rejected the interrupt request.&#39;);</span>
+<span class="s2">      </span><span class="se">}}</span>
+<span class="s2">      setStatus(&#39;Interrupt sent...&#39;);</span>
+<span class="s2">    </span><span class="se">}}</span><span class="s2"> catch (error) </span><span class="se">{{</span>
+<span class="s2">      button.disabled = false;</span>
+<span class="s2">      setStatus(&#39;Use Kernel &gt; Interrupt to stop this fit.&#39;);</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">  </span><span class="se">}}</span><span class="s2">);</span>
+<span class="se">}}</span><span class="s2">)();</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_current_kernel_id</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the active ipykernel id when available.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">IPython</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_ipython</span>  <span class="c1"># type: ignore[import-not-found]  # noqa: PLC0415</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>  <span class="c1"># pragma: no cover - optional dependency</span>
+            <span class="k">return</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="n">shell</span> <span class="o">=</span> <span class="n">get_ipython</span><span class="p">()</span>
+        <span class="n">kernel</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s1">&#39;kernel&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">kernel_id</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="s1">&#39;kernel_id&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">kernel_id</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">kernel_id</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">ipykernel.connect</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>  <span class="c1"># type: ignore[import-not-found]  # noqa: PLC0415</span>
+                <span class="n">get_connection_file</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>  <span class="c1"># pragma: no cover - optional dependency</span>
+            <span class="k">return</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">NotebookFitStopControl</span><span class="o">.</span><span class="n">_kernel_id_from_connection_file</span><span class="p">(</span><span class="n">get_connection_file</span><span class="p">())</span>
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_kernel_id_from_connection_file</span><span class="p">(</span><span class="n">connection_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract the kernel id from an ipykernel connection file.&quot;&quot;&quot;</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">connection_file</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;kernel-&#39;</span>
+        <span class="n">suffix</span> <span class="o">=</span> <span class="s1">&#39;.json&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">file_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">file_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">suffix</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">file_name</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="p">:</span> <span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">suffix</span><span class="p">)]</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="easydiffraction.display.progress.NotebookFitStopControl.__enter__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__enter__</span><span class="p">()</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Show the stop button.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/display/progress.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">510</span>
+<span class="normal">511</span>
+<span class="normal">512</span>
+<span class="normal">513</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Show the stop button.&quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="k">return</span> <span class="bp">self</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="easydiffraction.display.progress.NotebookFitStopControl.__exit__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__exit__</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Update or clear the stop button when leaving the context.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/display/progress.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">515</span>
+<span class="normal">516</span>
+<span class="normal">517</span>
+<span class="normal">518</span>
+<span class="normal">519</span>
+<span class="normal">520</span>
+<span class="normal">521</span>
+<span class="normal">522</span>
+<span class="normal">523</span>
+<span class="normal">524</span>
+<span class="normal">525</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">exc_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="ne">BaseException</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">exc_value</span><span class="p">:</span> <span class="ne">BaseException</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">traceback</span><span class="p">:</span> <span class="n">TracebackType</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update or clear the stop button when leaving the context.&quot;&quot;&quot;</span>
+    <span class="k">del</span> <span class="n">exc_type</span>
+    <span class="k">del</span> <span class="n">exc_value</span>
+    <span class="k">del</span> <span class="n">traceback</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="easydiffraction.display.progress.NotebookFitStopControl.show" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">show</span><span class="p">()</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Render the stop button when running in a notebook.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/display/progress.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">527</span>
+<span class="normal">528</span>
+<span class="normal">529</span>
+<span class="normal">530</span>
+<span class="normal">531</span>
+<span class="normal">532</span>
+<span class="normal">533</span>
+<span class="normal">534</span>
+<span class="normal">535</span>
+<span class="normal">536</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Render the stop button when running in a notebook.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_can_display</span><span class="p">():</span>
+        <span class="k">return</span>
+
+    <span class="n">handle</span> <span class="o">=</span> <span class="n">DisplayHandle</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_display_handle</span> <span class="o">=</span> <span class="n">handle</span>
+    <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+        <span class="n">handle</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_active_html</span><span class="p">()))</span>
+        <span class="n">display</span><span class="p">(</span><span class="n">Javascript</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_interrupt_javascript</span><span class="p">()))</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="easydiffraction.display.progress.NotebookFitStopControl.close" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">close</span><span class="p">()</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Clear the stop button when fitting ends.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/display/progress.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">538</span>
+<span class="normal">539</span>
+<span class="normal">540</span>
+<span class="normal">541</span>
+<span class="normal">542</span>
+<span class="normal">543</span>
+<span class="normal">544</span>
+<span class="normal">545</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Clear the stop button when fitting ends.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_display_handle</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">HTML</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_display_handle</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">))</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_display_handle</span> <span class="o">=</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -27830,14 +28596,7 @@ the accent color can be rendered directly.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/progress.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">65</span>
 <span class="normal">66</span>
 <span class="normal">67</span>
 <span class="normal">68</span>
@@ -27848,7 +28607,14 @@ the accent color can be rendered directly.</p>
 <span class="normal">73</span>
 <span class="normal">74</span>
 <span class="normal">75</span>
-<span class="normal">76</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">resolve_activity_terminal_style</span><span class="p">(</span><span class="n">console</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">resolve_activity_terminal_style</span><span class="p">(</span><span class="n">console</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a terminal-safe activity indicator style.</span>
 
@@ -27953,14 +28719,7 @@ handle in the console, or <code>None</code> if neither is available.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/progress.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">129</span>
 <span class="normal">130</span>
 <span class="normal">131</span>
 <span class="normal">132</span>
@@ -27974,7 +28733,14 @@ handle in the console, or <code>None</code> if neither is available.</p>
 <span class="normal">140</span>
 <span class="normal">141</span>
 <span class="normal">142</span>
-<span class="normal">143</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">make_display_handle</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">auto_refresh</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">make_display_handle</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">auto_refresh</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a generic in-place display handle for the active environment.</span>
 
@@ -28101,14 +28867,7 @@ on exit.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/display/progress.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">470</span>
-<span class="normal">471</span>
-<span class="normal">472</span>
-<span class="normal">473</span>
-<span class="normal">474</span>
-<span class="normal">475</span>
-<span class="normal">476</span>
-<span class="normal">477</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">477</span>
 <span class="normal">478</span>
 <span class="normal">479</span>
 <span class="normal">480</span>
@@ -28122,7 +28881,14 @@ on exit.</p>
 <span class="normal">488</span>
 <span class="normal">489</span>
 <span class="normal">490</span>
-<span class="normal">491</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">activity_indicator</span><span class="p">(</span>
+<span class="normal">491</span>
+<span class="normal">492</span>
+<span class="normal">493</span>
+<span class="normal">494</span>
+<span class="normal">495</span>
+<span class="normal">496</span>
+<span class="normal">497</span>
+<span class="normal">498</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">activity_indicator</span><span class="p">(</span>
     <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">ACTIVITY_LABEL_PROCESSING</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">verbosity</span><span class="p">:</span> <span class="n">VerbosityEnum</span><span class="p">,</span>
@@ -28144,6 +28910,42 @@ on exit.</p>
 <span class="sd">        on exit.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_ActivityIndicatorContext</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="n">verbosity</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="easydiffraction.display.progress.notebook_fit_stop_control" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">notebook_fit_stop_control</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">verbosity</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return a notebook stop-control context for fitting runs.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/easydiffraction/display/progress.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">764</span>
+<span class="normal">765</span>
+<span class="normal">766</span>
+<span class="normal">767</span>
+<span class="normal">768</span>
+<span class="normal">769</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">notebook_fit_stop_control</span><span class="p">(</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">verbosity</span><span class="p">:</span> <span class="n">VerbosityEnum</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NotebookFitStopControl</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a notebook stop-control context for fitting runs.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">NotebookFitStopControl</span><span class="p">(</span><span class="n">verbosity</span><span class="o">=</span><span class="n">verbosity</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>

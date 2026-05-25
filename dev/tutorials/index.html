@@ -1111,8 +1111,6 @@
       
         
       
-        
-      
     
     
     
@@ -1196,34 +1194,6 @@
     
   
     Co2SiO4 Sequential
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="ed-24/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    LBCO Bayesian
   
 
     
@@ -1963,6 +1933,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -2017,7 +1993,91 @@
   <span class="md-ellipsis">
     
   
-    LBCO Bayesian
+    LBCO pd bumps-dream
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ed-24/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LBCO pd bumps-dream Display
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ed-25/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LBCO pd emcee
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ed-26/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LBCO pd emcee Resume
   
 
     
@@ -2045,7 +2105,7 @@
   <span class="md-ellipsis">
     
   
-    Tb2TiO7 Bayesian
+    Tb2TiO7 sg bumps-dream
   
 
     
@@ -2794,10 +2854,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#pair-distribution-function-pdf" class="md-nav__link">
+  <a href="#pair-distribution-function" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Pair Distribution Function (PDF)
+        Pair Distribution Function
       
     </span>
   </a>
@@ -2805,10 +2865,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#multi-structure-multi-experiment-refinement" class="md-nav__link">
+  <a href="#multiple-data-blocks" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Multi-Structure &amp; Multi-Experiment Refinement
+        Multiple Data Blocks
       
     </span>
   </a>
@@ -2912,11 +2972,11 @@ section of the documentation.</p>
 <li><a href="ed-23/">Co2SiO4 Sequential Fit</a> – Resumes a sequential
   refinement from an existing <code>analysis/results.csv</code> after an incomplete
   previous run.</li>
-<li><a href="ed-24/">LBCO Bayesian Display</a> – Shows how to load the saved
-  project after a Bayesian analysis and inspect the persisted fit
-  summary, correlation matrix, posterior plots, and predictive checks
-  without rerunning MCMC sampling.</li>
 </ul>
+<p>See also under <a href="#bayesian-analysis">Bayesian Analysis</a>:
+<a href="ed-24/">LBCO Bayesian Display (<code>bumps-dream</code>)</a> and
+<a href="ed-26/">LBCO Bayesian Resume (<code>emcee</code>)</a> — both load saved projects
+containing Bayesian fit state.</p>
 <h2 id="powder-diffraction">Powder Diffraction</h2>
 <ul>
 <li><a href="ed-5/">Co2SiO4 <code>pd-neut-cwl</code></a> – Demonstrates a Rietveld
@@ -2942,7 +3002,7 @@ section of the documentation.</p>
   refinement of Taurine using time-of-flight neutron single crystal
   diffraction data from SENJU at J-PARC.</li>
 </ul>
-<h2 id="pair-distribution-function-pdf">Pair Distribution Function (PDF)</h2>
+<h2 id="pair-distribution-function">Pair Distribution Function</h2>
 <ul>
 <li><a href="ed-10/">Ni <code>pd-neut-cwl</code></a> – Demonstrates a PDF analysis of Ni
   using data collected from a constant wavelength neutron powder
@@ -2953,7 +3013,7 @@ section of the documentation.</p>
 <li><a href="ed-12/">NaCl <code>pd-xray</code></a> – Demonstrates a PDF analysis of NaCl
   using data collected from an X-ray powder diffraction experiment.</li>
 </ul>
-<h2 id="multi-structure-multi-experiment-refinement">Multi-Structure &amp; Multi-Experiment Refinement</h2>
+<h2 id="multiple-data-blocks">Multiple Data Blocks</h2>
 <ul>
 <li><a href="ed-4/">PbSO4 NPD+XRD</a> – Joint fit of PbSO4 using X-ray and
   neutron constant wavelength powder diffraction data.</li>
@@ -2975,17 +3035,34 @@ section of the documentation.</p>
 </ul>
 <h2 id="bayesian-analysis">Bayesian Analysis</h2>
 <ul>
-<li><a href="ed-21/">LBCO Bayesian</a> – Demonstrates how to perform a Bayesian
-  analysis of the La0.5Ba0.5CoO3 crystal structure using constant
-  wavelength neutron powder diffraction data from HRPT at PSI. This
-  tutorial covers the use of Markov Chain Monte Carlo (MCMC) sampling to
-  explore the posterior distribution of the refined parameters,
-  providing insights into parameter uncertainties and correlations.</li>
-<li><a href="ed-22/">Tb2TiO7 Bayesian</a> – Another example of a Bayesian
-  analysis. This tutorial focuses on the Tb2TiO7 crystal structure using
+<li><a href="ed-21/">LBCO Bayesian (<code>bumps-dream</code>)</a> – Demonstrates how to
+  perform a Bayesian analysis of the La0.5Ba0.5CoO3 crystal structure
+  using constant wavelength neutron powder diffraction data from HRPT at
+  PSI. Covers the use of Markov Chain Monte Carlo (MCMC) sampling with
+  the bumps-DREAM minimizer to explore the posterior distribution of the
+  refined parameters, providing insights into parameter uncertainties
+  and correlations.</li>
+<li><a href="ed-24/">LBCO Bayesian Display (<code>bumps-dream</code>)</a> – Shows how to
+  reopen the saved Bayesian project produced by the LBCO Bayesian
+  tutorial and inspect persisted fit summaries, correlation matrix,
+  posterior distribution plots, and predictive checks — without
+  rerunning MCMC sampling.</li>
+<li><a href="ed-25/">LBCO Bayesian (<code>emcee</code>)</a> – Two-stage workflow on the
+  LBCO HRPT dataset: first a quick local refinement to obtain a point
+  estimate and uncertainties, then full posterior sampling with the
+  emcee minimizer. Covers credible intervals, parameter correlations,
+  and propagation of uncertainty into the calculated diffraction
+  pattern.</li>
+<li><a href="ed-26/">LBCO Bayesian Resume (<code>emcee</code>)</a> – Loads a Bayesian
+  project that already contains an emcee chain, inspects the posterior,
+  and resumes sampling with additional steps. The full project state
+  (parameters, chain, plot caches) round-trips through disk. Resuming is
+  currently supported only for emcee, not for bumps-DREAM.</li>
+<li><a href="ed-22/">Tb2TiO7 Bayesian (<code>emcee</code>)</a> – Another example of a
+  Bayesian analysis, focused on the Tb2TiO7 crystal structure using
   constant wavelength neutron single crystal diffraction data from HEiDi
-  at FRM II. Similar to the LBCO Bayesian tutorial, it covers the use of
-  MCMC sampling to explore the posterior distribution of the refined
+  at FRM II. Similar to the LBCO Bayesian tutorial, it covers MCMC
+  sampling to explore the posterior distribution of the refined
   parameters, providing insights into parameter uncertainties and
   correlations in the context of single crystal diffraction data.</li>
 </ul>
