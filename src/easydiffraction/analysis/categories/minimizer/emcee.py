@@ -59,12 +59,6 @@ class EmceeMinimizer(BayesianMinimizerBase):
         InitializationMethodEnum.UNIFORM,
         InitializationMethodEnum.PRIOR,
     )
-    _native_initialization_methods: ClassVar[dict[InitializationMethodEnum, str]] = {
-        InitializationMethodEnum.BALL: InitializationMethodEnum.BALL.value,
-        InitializationMethodEnum.UNIFORM: InitializationMethodEnum.UNIFORM.value,
-        InitializationMethodEnum.PRIOR: InitializationMethodEnum.PRIOR.value,
-    }
-
     type_info = TypeInfo(
         tag=MinimizerTypeEnum.EMCEE,
         description='emcee affine-invariant ensemble Bayesian sampling',
