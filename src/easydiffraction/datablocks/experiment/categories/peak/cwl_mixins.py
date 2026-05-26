@@ -28,7 +28,10 @@ class CwlBroadeningMixin:
                 default=0.01,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.broad_gauss_u']),
+            cif_handler=CifHandler(
+                names=['_peak.broad_gauss_u'],
+                iucr_name='_easydiffraction_peak.broad_gauss_u',
+            ),
         )
         self._broad_gauss_v: Parameter = Parameter(
             name='broad_gauss_v',
@@ -38,7 +41,10 @@ class CwlBroadeningMixin:
                 default=-0.01,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.broad_gauss_v']),
+            cif_handler=CifHandler(
+                names=['_peak.broad_gauss_v'],
+                iucr_name='_easydiffraction_peak.broad_gauss_v',
+            ),
         )
         self._broad_gauss_w: Parameter = Parameter(
             name='broad_gauss_w',
@@ -48,7 +54,10 @@ class CwlBroadeningMixin:
                 default=0.02,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.broad_gauss_w']),
+            cif_handler=CifHandler(
+                names=['_peak.broad_gauss_w'],
+                iucr_name='_easydiffraction_peak.broad_gauss_w',
+            ),
         )
         self._broad_lorentz_x: Parameter = Parameter(
             name='broad_lorentz_x',
@@ -58,7 +67,10 @@ class CwlBroadeningMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.broad_lorentz_x']),
+            cif_handler=CifHandler(
+                names=['_peak.broad_lorentz_x'],
+                iucr_name='_easydiffraction_peak.broad_lorentz_x',
+            ),
         )
         self._broad_lorentz_y: Parameter = Parameter(
             name='broad_lorentz_y',
@@ -68,7 +80,10 @@ class CwlBroadeningMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.broad_lorentz_y']),
+            cif_handler=CifHandler(
+                names=['_peak.broad_lorentz_y'],
+                iucr_name='_easydiffraction_peak.broad_lorentz_y',
+            ),
         )
 
     # ------------------------------------------------------------------
@@ -160,7 +175,10 @@ class EmpiricalAsymmetryMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.asym_empir_1']),
+            cif_handler=CifHandler(
+                names=['_peak.asym_empir_1'],
+                iucr_name='_easydiffraction_peak.asym_empir_1',
+            ),
         )
         self._asym_empir_2: Parameter = Parameter(
             name='asym_empir_2',
@@ -170,7 +188,10 @@ class EmpiricalAsymmetryMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.asym_empir_2']),
+            cif_handler=CifHandler(
+                names=['_peak.asym_empir_2'],
+                iucr_name='_easydiffraction_peak.asym_empir_2',
+            ),
         )
         self._asym_empir_3: Parameter = Parameter(
             name='asym_empir_3',
@@ -180,7 +201,10 @@ class EmpiricalAsymmetryMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.asym_empir_3']),
+            cif_handler=CifHandler(
+                names=['_peak.asym_empir_3'],
+                iucr_name='_easydiffraction_peak.asym_empir_3',
+            ),
         )
         self._asym_empir_4: Parameter = Parameter(
             name='asym_empir_4',
@@ -190,7 +214,10 @@ class EmpiricalAsymmetryMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.asym_empir_4']),
+            cif_handler=CifHandler(
+                names=['_peak.asym_empir_4'],
+                iucr_name='_easydiffraction_peak.asym_empir_4',
+            ),
         )
 
     # ------------------------------------------------------------------
@@ -268,7 +295,10 @@ class FcjAsymmetryMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.asym_fcj_1']),
+            cif_handler=CifHandler(
+                names=['_peak.asym_fcj_1'],
+                iucr_name='_easydiffraction_peak.asym_fcj_1',
+            ),
         )
         self._asym_fcj_2: Parameter = Parameter(
             name='asym_fcj_2',
@@ -278,7 +308,10 @@ class FcjAsymmetryMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.asym_fcj_2']),
+            cif_handler=CifHandler(
+                names=['_peak.asym_fcj_2'],
+                iucr_name='_easydiffraction_peak.asym_fcj_2',
+            ),
         )
 
     # ------------------------------------------------------------------

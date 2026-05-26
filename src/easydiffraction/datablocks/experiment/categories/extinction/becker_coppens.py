@@ -59,7 +59,10 @@ class BeckerCoppensExtinction(ExtinctionBase):
                     allowed=[member.value for member in ExtinctionModelEnum],
                 ),
             ),
-            cif_handler=CifHandler(names=['_extinction.model']),
+            cif_handler=CifHandler(
+                names=['_extinction.model'],
+                iucr_name='_easydiffraction_extinction.model',
+            ),
         )
 
         self._mosaicity = Parameter(
@@ -70,7 +73,10 @@ class BeckerCoppensExtinction(ExtinctionBase):
                 default=1.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_extinction.mosaicity']),
+            cif_handler=CifHandler(
+                names=['_extinction.mosaicity'],
+                iucr_name='_easydiffraction_extinction.mosaicity',
+            ),
         )
         self._radius = Parameter(
             name='radius',
@@ -80,7 +86,10 @@ class BeckerCoppensExtinction(ExtinctionBase):
                 default=1.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_extinction.radius']),
+            cif_handler=CifHandler(
+                names=['_extinction.radius'],
+                iucr_name='_easydiffraction_extinction.radius',
+            ),
         )
 
     # ------------------------------------------------------------------

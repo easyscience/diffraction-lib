@@ -43,7 +43,10 @@ class LinkedCrystal(CategoryItem):
                 default='Si',
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(names=['_sc_crystal_block.id']),
+            cif_handler=CifHandler(
+                names=['_sc_crystal_block.id'],
+                iucr_name='_easydiffraction_sc_crystal_block.id',
+            ),
         )
         self._scale = Parameter(
             name='scale',
@@ -52,7 +55,10 @@ class LinkedCrystal(CategoryItem):
                 default=1.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_sc_crystal_block.scale']),
+            cif_handler=CifHandler(
+                names=['_sc_crystal_block.scale'],
+                iucr_name='_easydiffraction_sc_crystal_block.scale',
+            ),
         )
 
     # ------------------------------------------------------------------

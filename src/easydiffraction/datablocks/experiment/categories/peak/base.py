@@ -37,7 +37,10 @@ class PeakBase(CategoryItem, SwitchableCategoryBase):
                     allowed=[member.value for member in PeakProfileTypeEnum],
                 ),
             ),
-            cif_handler=CifHandler(names=['_peak.type']),
+            cif_handler=CifHandler(
+                names=['_peak.type'],
+                iucr_name='_easydiffraction_peak.type',
+            ),
         )
 
     def _canonicalize(self, value: str) -> str:

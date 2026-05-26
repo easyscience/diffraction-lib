@@ -47,7 +47,10 @@ class Calculator(CategoryItem, SwitchableCategoryBase):
                     allowed=[member.value for member in CalculatorEnum],
                 ),
             ),
-            cif_handler=CifHandler(names=['_calculator.type']),
+            cif_handler=CifHandler(
+                names=['_calculator.type'],
+                iucr_name='_easydiffraction_calculator.type',
+            ),
         )
 
     @property

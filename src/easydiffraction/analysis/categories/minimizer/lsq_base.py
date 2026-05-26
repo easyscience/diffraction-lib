@@ -37,7 +37,10 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
             name='max_iterations',
             description='Maximum solver iterations.',
             value_spec=AttributeSpec(default=default, validator=RangeValidator(ge=1)),
-            cif_handler=CifHandler(names=['_minimizer.max_iterations']),
+            cif_handler=CifHandler(
+                names=['_minimizer.max_iterations'],
+                iucr_name='_easydiffraction_minimizer.max_iterations',
+            ),
         )
 
     @property

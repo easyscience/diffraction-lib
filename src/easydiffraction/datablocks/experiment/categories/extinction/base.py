@@ -34,7 +34,10 @@ class ExtinctionBase(CategoryItem, SwitchableCategoryBase):
                     allowed=ExtinctionFactory.supported_tags(),
                 ),
             ),
-            cif_handler=CifHandler(names=['_extinction.type']),
+            cif_handler=CifHandler(
+                names=['_extinction.type'],
+                iucr_name='_easydiffraction_extinction.type',
+            ),
         )
 
     @staticmethod

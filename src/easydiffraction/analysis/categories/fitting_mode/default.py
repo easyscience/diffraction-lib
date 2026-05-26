@@ -40,7 +40,10 @@ class FittingMode(CategoryItem, SwitchableCategoryBase):
                     allowed=[mode.value for mode in FitModeEnum],
                 ),
             ),
-            cif_handler=CifHandler(names=['_fitting_mode.type']),
+            cif_handler=CifHandler(
+                names=['_fitting_mode.type'],
+                iucr_name='_easydiffraction_fitting_mode.type',
+            ),
         )
 
     @staticmethod

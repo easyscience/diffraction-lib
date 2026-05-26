@@ -44,7 +44,10 @@ class ExcludedRegion(CategoryItem):
                 #  Do we need conversion between CIF and internal label?
                 validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(names=['_excluded_region.id']),
+            cif_handler=CifHandler(
+                names=['_excluded_region.id'],
+                iucr_name='_easydiffraction_excluded_region.id',
+            ),
         )
         self._start = NumericDescriptor(
             name='start',
@@ -53,7 +56,10 @@ class ExcludedRegion(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_excluded_region.start']),
+            cif_handler=CifHandler(
+                names=['_excluded_region.start'],
+                iucr_name='_easydiffraction_excluded_region.start',
+            ),
         )
         self._end = NumericDescriptor(
             name='end',
@@ -62,7 +68,10 @@ class ExcludedRegion(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_excluded_region.end']),
+            cif_handler=CifHandler(
+                names=['_excluded_region.end'],
+                iucr_name='_easydiffraction_excluded_region.end',
+            ),
         )
 
     # ------------------------------------------------------------------

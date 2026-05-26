@@ -60,7 +60,10 @@ class DefaultDiffrn(CategoryItem):
                 allow_none=True,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_diffrn.ambient_magnetic_field']),
+            cif_handler=CifHandler(
+                names=['_diffrn.ambient_magnetic_field'],
+                iucr_name='_easydiffraction_diffrn.ambient_magnetic_field',
+            ),
         )
 
         self._ambient_electric_field = NumericDescriptor(
@@ -72,7 +75,10 @@ class DefaultDiffrn(CategoryItem):
                 allow_none=True,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_diffrn.ambient_electric_field']),
+            cif_handler=CifHandler(
+                names=['_diffrn.ambient_electric_field'],
+                iucr_name='_easydiffraction_diffrn.ambient_electric_field',
+            ),
         )
 
     # ------------------------------------------------------------------

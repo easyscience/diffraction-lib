@@ -46,7 +46,10 @@ class ExperimentType(CategoryItem):
                 default=SampleFormEnum.default().value,
                 validator=MembershipValidator(allowed=[member.value for member in SampleFormEnum]),
             ),
-            cif_handler=CifHandler(names=['_expt_type.sample_form']),
+            cif_handler=CifHandler(
+                names=['_expt_type.sample_form'],
+                iucr_name='_easydiffraction_experiment_type.sample_form',
+            ),
         )
 
         self._beam_mode = StringDescriptor(
@@ -56,7 +59,10 @@ class ExperimentType(CategoryItem):
                 default=BeamModeEnum.default().value,
                 validator=MembershipValidator(allowed=[member.value for member in BeamModeEnum]),
             ),
-            cif_handler=CifHandler(names=['_expt_type.beam_mode']),
+            cif_handler=CifHandler(
+                names=['_expt_type.beam_mode'],
+                iucr_name='_easydiffraction_experiment_type.beam_mode',
+            ),
         )
         self._radiation_probe = StringDescriptor(
             name='radiation_probe',
@@ -67,7 +73,10 @@ class ExperimentType(CategoryItem):
                     allowed=[member.value for member in RadiationProbeEnum]
                 ),
             ),
-            cif_handler=CifHandler(names=['_expt_type.radiation_probe']),
+            cif_handler=CifHandler(
+                names=['_expt_type.radiation_probe'],
+                iucr_name='_easydiffraction_experiment_type.radiation_probe',
+            ),
         )
         self._scattering_type = StringDescriptor(
             name='scattering_type',
@@ -78,7 +87,10 @@ class ExperimentType(CategoryItem):
                     allowed=[member.value for member in ScatteringTypeEnum]
                 ),
             ),
-            cif_handler=CifHandler(names=['_expt_type.scattering_type']),
+            cif_handler=CifHandler(
+                names=['_expt_type.scattering_type'],
+                iucr_name='_easydiffraction_experiment_type.scattering_type',
+            ),
         )
 
     # ------------------------------------------------------------------

@@ -28,7 +28,10 @@ class TotalBroadeningMixin:
                 default=0.05,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.damp_q']),
+            cif_handler=CifHandler(
+                names=['_peak.damp_q'],
+                iucr_name='_easydiffraction_peak.damp_q',
+            ),
         )
         self._broad_q = Parameter(
             name='broad_q',
@@ -38,7 +41,10 @@ class TotalBroadeningMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.broad_q']),
+            cif_handler=CifHandler(
+                names=['_peak.broad_q'],
+                iucr_name='_easydiffraction_peak.broad_q',
+            ),
         )
         self._cutoff_q = Parameter(
             name='cutoff_q',
@@ -48,7 +54,10 @@ class TotalBroadeningMixin:
                 default=25.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.cutoff_q']),
+            cif_handler=CifHandler(
+                names=['_peak.cutoff_q'],
+                iucr_name='_easydiffraction_peak.cutoff_q',
+            ),
         )
         self._sharp_delta_1 = Parameter(
             name='sharp_delta_1',
@@ -58,7 +67,10 @@ class TotalBroadeningMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.sharp_delta_1']),
+            cif_handler=CifHandler(
+                names=['_peak.sharp_delta_1'],
+                iucr_name='_easydiffraction_peak.sharp_delta_1',
+            ),
         )
         self._sharp_delta_2 = Parameter(
             name='sharp_delta_2',
@@ -68,7 +80,10 @@ class TotalBroadeningMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.sharp_delta_2']),
+            cif_handler=CifHandler(
+                names=['_peak.sharp_delta_2'],
+                iucr_name='_easydiffraction_peak.sharp_delta_2',
+            ),
         )
         self._damp_particle_diameter = Parameter(
             name='damp_particle_diameter',
@@ -78,7 +93,10 @@ class TotalBroadeningMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.damp_particle_diameter']),
+            cif_handler=CifHandler(
+                names=['_peak.damp_particle_diameter'],
+                iucr_name='_easydiffraction_peak.damp_particle_diameter',
+            ),
         )
 
     # ------------------------------------------------------------------

@@ -43,7 +43,10 @@ class Alias(CategoryItem):
                 default='_',  # TODO, Maybe None?
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(names=['_alias.label']),
+            cif_handler=CifHandler(
+                names=['_alias.label'],
+                iucr_name='_easydiffraction_alias.label',
+            ),
         )
         self._param_unique_name = StringDescriptor(
             name='param_unique_name',
@@ -52,7 +55,10 @@ class Alias(CategoryItem):
                 default='_',
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_.]*$'),
             ),
-            cif_handler=CifHandler(names=['_alias.param_unique_name']),
+            cif_handler=CifHandler(
+                names=['_alias.param_unique_name'],
+                iucr_name='_easydiffraction_alias.param_unique_name',
+            ),
         )
 
         # Direct reference to the Parameter object (runtime only).
