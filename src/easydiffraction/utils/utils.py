@@ -1073,7 +1073,7 @@ def str_to_ufloat(s: str | None, default: float | None = None) -> UFloat:
     if '(' not in s and ')' not in s:
         s = f'{s}(nan)'
     elif s.endswith('()'):
-        # Empty brackets mark refinement intent, not a measured zero esd.
+        # Empty brackets mark refinement intent, not a zero esd.
         s = s[:-2] + '(nan)'
     try:
         return ufloat_fromstr(s)
