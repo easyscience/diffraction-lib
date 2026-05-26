@@ -991,21 +991,27 @@ to rendering-stack quirks, not data choices.
   closes naturally as Chrome/Chromium becomes near-universal.
 - v1's ~30 MB footprint is genuinely smaller than v0.2's ~80 MB
   bundled-Chromium build.
-- The runtime browser requirement is a host prerequisite rather
-  than a project-level Pixi dependency: conda-forge does not
-  provide a `chromium` package for the workspace's supported
-  platforms. Machines without Chrome/Chromium get a clear install
-  hint from the report path. This differs from the LaTeX-engine
-  install in §3.4, where `tectonic` is available on conda-forge.
+- The runtime browser requirement is handled by a system-browser
+  fast path plus Kaleido's own one-time bootstrap, rather than a
+  project-level Pixi dependency: conda-forge does not provide a
+  `chromium` package for the workspace's supported platforms.
+  Machines with Chrome, Chromium, or Edge installed need no extra
+  step. Machines without one can run
+  `python -c "import kaleido; kaleido.get_chrome()"` once to
+  download Kaleido-managed Chromium into the user cache. The
+  report path raises a clear hint for that setup when static-image
+  export cannot find a browser. This differs from the
+  LaTeX-engine install in §3.4, where `tectonic` is available on
+  conda-forge.
 
 Practical install matrix:
 
 | Environment              | kaleido v1 install     | Browser already present? | Extra step                   |
 | ------------------------ | ---------------------- | ------------------------ | ---------------------------- |
-| Developer laptop         | `pip install kaleido`  | Yes (Chrome/Edge/Safari) | None                         |
-| `pixi` dev shell         | added through editable install | System browser required | Install Chrome/Chromium if absent |
-| CI runner (GitHub, etc.) | added through editable install | Runner browser required | Install Chrome/Chromium in CI image |
-| Bare HPC node            | `pip install kaleido`  | Usually no               | Install Chromium separately  |
+| Developer laptop         | `pip install kaleido`  | Usually yes (Chrome/Chromium/Edge) | None when present |
+| `pixi` dev shell         | added through editable install | System browser preferred | Run `python -c "import kaleido; kaleido.get_chrome()"` once if absent |
+| CI runner (GitHub, etc.) | added through editable install | Runner-dependent         | Add the same one-line bootstrap before report-export checks |
+| Bare HPC node            | `pip install kaleido`  | Usually no               | Bootstrap once where cache/network policy allows, or install a system browser |
 
 **Dependencies named by this ADR.** The implementation plan must
 name two dependencies before any `/draft-impl-1` or
@@ -1019,9 +1025,10 @@ name two dependencies before any `/draft-impl-1` or
 
 `chromium` is deliberately not a dependency: conda-forge has no
 package with that name for the supported workspace platforms. The
-implementation treats Chrome/Chromium as a host-level Kaleido
-prerequisite and reports a clear install hint when static-image
-export cannot find a browser.
+implementation treats Chrome/Chromium/Edge as the fast path and
+reports a clear install hint that points to Kaleido's one-time
+`get_chrome()` bootstrap when static-image export cannot find a
+browser.
 
 Per AGENTS.md §Architecture, "an accepted plan that **names the
 specific dependency** … combined with the user invoking
@@ -1567,13 +1574,15 @@ beyond what already exists.
   the same Plotly engine (interactive in HTML, static PDF via
   kaleido), so any visual difference is bounded by
   browser/runtime/export quirks rather than two unrelated
-  rendering toolkits drifting on data choices. v1 relies on the
-  host
-  browser for rendering; the project's `pixi.toml` adds
-  `tectonic`, while Chrome/Chromium remains a host-level
-  prerequisite because conda-forge has no `chromium` package for
-  the workspace platforms. End users on machines without a
-  browser get a clear install hint at first use.
+  rendering toolkits drifting on data choices. v1 relies on
+  Chrome/Chromium for rendering; the project's `pixi.toml` adds
+  `tectonic`, while Chromium is not modeled as a conda dependency
+  because conda-forge has no `chromium` package for the workspace
+  platforms. Developers and CI can use an installed
+  Chrome/Chromium/Edge browser or run
+  `python -c "import kaleido; kaleido.get_chrome()"` once to
+  download Kaleido-managed Chromium. End users on machines without
+  a browser get a clear install hint at first use.
 - PDF compilation is opportunistic — works when `tectonic`,
   `latexmk`, or `pdflatex` is on `PATH`; otherwise the `.tex` and
   figures are still written and the user gets a clear one-line

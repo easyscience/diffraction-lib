@@ -29,8 +29,10 @@ _TEX_SPECIAL_CHARS = {
     '^': r'\textasciicircum{}',
 }
 _BROWSER_HINT = (
-    'Kaleido v1 requires a Chrome/Chromium browser for static image '
-    'export. Install Chrome or Chromium and re-run report generation.'
+    'Kaleido v1 requires Chrome/Chromium for static image export. Use '
+    'an installed Chrome, Chromium, or Edge browser, or run '
+    '`python -c "import kaleido; kaleido.get_chrome()"` once to '
+    'download Kaleido-managed Chromium, then re-run report generation.'
 )
 
 

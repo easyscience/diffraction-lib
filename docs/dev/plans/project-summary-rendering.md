@@ -107,8 +107,10 @@ re-litigate them, only implements them:
   (Python, runtime, `pyproject.toml`) and `tectonic`
   (pixi/conda, dev/docs feature). `chromium` was investigated
   during implementation but is not added because conda-forge
-  provides no package for the workspace platforms; Kaleido uses a
-  host browser and the report path raises a clear install hint
+  provides no package for the workspace platforms; Kaleido uses an
+  installed Chrome/Chromium/Edge browser when present, and the
+  report path raises a clear install hint for the one-time
+  `python -c "import kaleido; kaleido.get_chrome()"` bootstrap
   when one is missing.
   Per AGENTS.md §Architecture, naming them in this accepted
   plan plus a `/draft-impl-1` invocation counts as
@@ -639,7 +641,9 @@ generated-artifact exceptions.
   - Add `tectonic` to the dev/docs feature group in
     `pixi.toml`. Do not add `chromium`: `pixi search chromium`
     found no conda-forge package for the workspace platforms, so
-    the browser remains a host-level Kaleido prerequisite.
+    system Chrome/Chromium/Edge remains Kaleido's fast path, with
+    `python -c "import kaleido; kaleido.get_chrome()"` as the
+    one-time bootstrap for machines without a system browser.
   - Regenerate `pixi.lock`.
   - Copy the 12 upstream style files into the vendored
     directory.
