@@ -2,16 +2,16 @@
 icon: material/clipboard-text
 ---
 
-# :material-clipboard-text: Summary
+# :material-clipboard-text: Report
 
-The **Summary** section represents the final step in the data processing
-workflow. It involves generating a **summary report** that consolidates
+The **Report** section represents the final step in the data processing
+workflow. It involves generating a **report** that consolidates
 the results of the diffraction data analysis, providing a comprehensive
 overview of the model refinement process and its outcomes.
 
-## Contents of the Summary Report
+## Contents of the Report
 
-The summary report includes key details such as:
+The report includes key details such as:
 
 - Final refined model parameters – Optimized crystallographic and
   instrumental parameters.
@@ -20,30 +20,36 @@ The summary report includes key details such as:
 - Graphical representation – Visualization of experimental vs.
   calculated diffraction patterns.
 
-## Viewing the Summary Report
+## Viewing the Report
 
-Users can print the summary report using:
+Users can print the report using:
 
 ```python
-# Generate and print the summary report
-project.summary.show_report()
+# Generate and print the report
+project.report.show_report()
 ```
 
 <!--
-This command will display a structured summary of the analysis results,
+This command will display a structured report of the analysis results,
 including model parameters, fit statistics, and data visualizations.
 -->
 
-## Saving a Summary
+## Saving a Submission Report
 
-Saving the project, as described in the [Project](project.md) section,
-will also save the summary report to the `summary.cif` inside the
+Regular project saves do not write a report file. To write an IUCr
+journal-submission CIF, use:
+
+```python
+project.save(report=True)
+```
+
+The report is written to `reports/<project>.cif` inside the saved
 project directory.
 
 <!--
-## Exporting the Summary Report
+## Exporting the Report
 
-EasyDiffraction allows exporting the summary report in various formats for
+EasyDiffraction allows exporting the report in various formats for
 further analysis and documentation:
 
 - Human-readable text format (.txt)

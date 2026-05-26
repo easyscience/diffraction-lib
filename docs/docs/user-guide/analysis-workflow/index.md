@@ -9,7 +9,7 @@ flowchart LR
     b(Model)
     c(Experiment)
     d(Analysis)
-    e(Summary)
+    e(Report)
     a --> b
     b --> c
     c --> d
@@ -28,7 +28,7 @@ flowchart LR
 - [:material-calculator: Analysis](analysis.md) – **Calculate the
   diffraction pattern** and **optimize the structural model** by
   refining its parameters to match experimental measurements.
-- [:material-clipboard-text: Summary](summary.md) – Generate a
+- [:material-clipboard-text: Report](report.md) – Generate a
   **report** summarizing the results of the analysis, including refined
   parameters.
 

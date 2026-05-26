@@ -339,12 +339,12 @@ project.display.pattern(expt_name='hrpt')
 project.display.pattern(expt_name='hrpt', x_min=48, x_max=51)
 
 # %% [markdown]
-# ## Summary
+# ## Report
 #
 # This final section shows how to review the results of the analysis.
 
 # %% [markdown]
-# #### Show Project Summary
+# #### Show Project Report
 
 # %%
-project.summary.show_report()
+project.report.show_report()

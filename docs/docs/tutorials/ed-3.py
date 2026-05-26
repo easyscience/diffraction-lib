@@ -620,18 +620,21 @@ project.display.pattern(expt_name='hrpt')
 project.display.pattern(expt_name='hrpt', x_min=38, x_max=41)
 
 # %% [markdown]
-# #### Save Project State
+# #### Save Project State and Submission Report
 
 # %%
-project.save()
+project.save(report=True)
 
 # %% [markdown]
-# ## Step 5: Summary
+# ## Step 5: Report
 #
 # This final section shows how to review the results of the analysis.
+#
+# The saved IUCr submission CIF is available under `reports/<project>.cif`
+# inside the project directory.
 
 # %% [markdown]
-# #### Show Project Summary
+# #### Show Project Report
 
 # %%
-project.summary.show_report()
+project.report.show_report()

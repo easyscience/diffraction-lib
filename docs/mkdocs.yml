@@ -189,7 +189,7 @@ nav:
           - Structure: user-guide/analysis-workflow/model.md
           - Experiment: user-guide/analysis-workflow/experiment.md
           - Analysis: user-guide/analysis-workflow/analysis.md
-          - Summary: user-guide/analysis-workflow/summary.md
+          - Report: user-guide/analysis-workflow/report.md
   - Tutorials:
       - Tutorials: tutorials/index.md
       - Getting Started:
@@ -239,7 +239,7 @@ nav:
       - display: api-reference/display.md
       - io: api-reference/io.md
       - project: api-reference/project.md
-      - summary: api-reference/summary.md
+      - report: api-reference/report.md
       - utils: api-reference/utils.md
   - Quick Reference:
       - Quick Reference: quick-reference/index.md
