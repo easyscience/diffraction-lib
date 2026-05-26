@@ -247,11 +247,19 @@ class ExtinctionTransformer(IucrCategoryTransformer):
             ),
         )
 
-        return (
-            IucrItem('_refine_ls.extinction_method', _extinction_method(extinction)),
-            IucrItem('_refine_ls.extinction_coef', _extinction_coefficient(extinction)),
-            *extension_items,
-        )
+        return (*_standard_extinction_items(extinction), *extension_items)
+
+
+def _standard_extinction_items(extinction: object) -> tuple[IucrItem, ...]:
+    """Return coreCIF extinction items."""
+    items = [
+        IucrItem('_refine_ls.extinction_method', _extinction_method(extinction)),
+        IucrItem('_refine_ls.extinction_coef', _extinction_coefficient(extinction)),
+    ]
+    special_details = _extinction_special_details(extinction)
+    if special_details is not None:
+        items.append(IucrItem('_refine.special_details', special_details))
+    return tuple(items)
 
 
 def _extinction_method(extinction: object) -> object:
@@ -259,22 +267,102 @@ def _extinction_method(extinction: object) -> object:
     extinction_type = _attribute_value(extinction, 'type')
     if extinction_type is None:
         return '?'
-    if extinction_type == 'becker-coppens':
-        model = _attribute_value(extinction, 'model')
-        model_text = str(model or '').replace('_', ' ')
-        if model_text:
-            return f'Becker-Coppens {model_text} isotropic'
-        return 'Becker-Coppens'
-    return str(extinction_type).replace('_', ' ').title()
+    extinction_name = _normalised_text(extinction_type)
+    if extinction_name == 'becker coppens':
+        return _becker_coppens_method(extinction)
+    if extinction_name == 'zachariasen':
+        return 'Zachariasen'
+    return str(extinction_type).replace('_', ' ').replace('-', ' ').title()
 
 
 def _extinction_coefficient(extinction: object) -> object:
     """Return the coreCIF extinction coefficient."""
     mosaicity = _attribute_value(extinction, 'mosaicity')
+    radius = _attribute_value(extinction, 'radius')
+    if _is_becker_coppens(extinction) and _is_mixed_extinction(extinction):
+        return '?'
+    if _becker_coppens_kind(extinction) == 'type 2' and radius is not None:
+        return radius
     if mosaicity is not None:
         return mosaicity
-    radius = _attribute_value(extinction, 'radius')
     return radius if radius is not None else '?'
+
+
+def _extinction_special_details(extinction: object) -> object | None:
+    """Return mixed Becker-Coppens extinction details."""
+    if not _is_becker_coppens(extinction):
+        return None
+    if not _is_mixed_extinction(extinction):
+        return None
+    mosaicity = _attribute_value(extinction, 'mosaicity')
+    radius = _attribute_value(extinction, 'radius')
+    return (
+        'Becker-Coppens mixed extinction with '
+        f'mosaicity={mosaicity} and radius={radius}.'
+    )
+
+
+def _becker_coppens_method(extinction: object) -> str:
+    """Return Becker-Coppens method text."""
+    kind = _becker_coppens_kind(extinction)
+    distribution = _becker_coppens_distribution(extinction)
+    anisotropy = _becker_coppens_anisotropy(extinction)
+    return f'Becker-Coppens {kind} {distribution} {anisotropy}'
+
+
+def _becker_coppens_kind(extinction: object) -> str:
+    """Return the Becker-Coppens type marker."""
+    model_text = _normalised_text(_attribute_value(extinction, 'model'))
+    if 'mixed' in model_text:
+        return 'mixed'
+    if 'type2' in model_text or 'type 2' in model_text:
+        return 'type 2'
+    if 'type1' in model_text or 'type 1' in model_text:
+        return 'type 1'
+    if _is_mixed_extinction(extinction):
+        return 'mixed'
+    if _attribute_value(extinction, 'radius') is not None:
+        return 'type 2'
+    return 'type 1'
+
+
+def _becker_coppens_distribution(extinction: object) -> str:
+    """Return the Becker-Coppens distribution text."""
+    model = _attribute_value(extinction, 'model')
+    model_text = _normalised_text(model)
+    if 'lorentz' in model_text:
+        return 'Lorentzian'
+    if 'gauss' in model_text:
+        return 'Gaussian'
+    if model is not None:
+        return str(model).replace('_', ' ').replace('-', ' ').title()
+    return 'Gaussian'
+
+
+def _becker_coppens_anisotropy(extinction: object) -> str:
+    """Return the Becker-Coppens isotropy marker."""
+    model_text = _normalised_text(_attribute_value(extinction, 'model'))
+    if 'anisotropic' in model_text:
+        return 'anisotropic'
+    return 'isotropic'
+
+
+def _is_becker_coppens(extinction: object) -> bool:
+    """Return whether the extinction category is Becker-Coppens."""
+    extinction_type = _attribute_value(extinction, 'type')
+    return _normalised_text(extinction_type) == 'becker coppens'
+
+
+def _is_mixed_extinction(extinction: object) -> bool:
+    """Return whether both Becker-Coppens coefficient channels exist."""
+    mosaicity = _attribute_value(extinction, 'mosaicity')
+    radius = _attribute_value(extinction, 'radius')
+    return mosaicity is not None and radius is not None
+
+
+def _normalised_text(value: object) -> str:
+    """Return a normalized lower-case token string."""
+    return str(value or '').replace('_', ' ').replace('-', ' ').lower()
 
 
 def _attribute_value(owner: object, attr_name: str) -> object:
