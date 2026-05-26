@@ -82,7 +82,7 @@ class UndoFitOutcome:
     """
     Summary of one undo-fit operation.
 
-    Parameters
+    Attributes
     ----------
     restored_parameter_names : tuple[str, ...]
         Unique names of parameters restored to pre-fit values.
