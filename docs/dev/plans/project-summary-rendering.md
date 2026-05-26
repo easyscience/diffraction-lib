@@ -776,7 +776,7 @@ generated-artifact exceptions.
     on `ed save`.
   - Commit: `Add ed save-report CLI subcommand`.
 
-- [ ] **P1.23 — Update tutorials and user-guide docs**
+- [x] **P1.23 — Update tutorials and user-guide docs**
   - Files: `docs/docs/tutorials/*.py`,
     `docs/docs/tutorials/*.ipynb` (regenerated artefacts —
     explicitly staged because `pixi run notebook-prepare`

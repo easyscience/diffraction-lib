@@ -34,17 +34,58 @@ This command will display a structured report of the analysis results,
 including model parameters, fit statistics, and data visualizations.
 -->
 
-## Saving a Submission Report
+## Configuring Saved Reports
 
-Regular project saves do not write a report file. To write an IUCr
-journal-submission CIF, use:
+Report output is controlled by `project.report`, a project-level
+configuration category that is saved in `project.cif`. Regular
+`project.save()` calls read this configuration and write the selected
+report formats.
+
+| Setting | Type | Meaning |
+| --- | --- | --- |
+| `project.report.cif` | `bool` | Write an IUCr submission CIF. |
+| `project.report.html` | `bool` | Write an HTML report. |
+| `project.report.tex` | `bool` | Write a TeX report bundle. |
+| `project.report.pdf` | `bool` | Write a PDF report when a TeX engine is available. |
+| `project.report.style` | `str` | TeX/PDF template style: `'iucr'` or `'revtex'`. |
+| `project.report.html_offline` | `bool` | Embed HTML assets instead of using CDN links. |
+
+The `formats` property is a compact way to set the four format flags:
 
 ```python
-project.save(report=True)
+project.report.formats = ['html', 'cif']
+project.save()
 ```
 
-The report is written to `reports/<project>.cif` inside the saved
-project directory.
+This writes `reports/<project>.html` and `reports/<project>.cif` inside
+the project directory.
+
+## One-Off Report Saves
+
+Per-format methods write a report without changing the saved
+configuration:
+
+```python
+project.report.save_html()
+project.report.save_cif()
+project.report.save_tex(style='iucr')
+project.report.save_pdf(style='iucr')
+```
+
+`save_pdf()` always writes the TeX bundle first. If no TeX engine is on
+`PATH`, EasyDiffraction leaves the TeX files in `reports/tex/`, prints
+a short install hint, and does not raise.
+
+The command line mirrors the same split:
+
+```bash
+ed save path/to/project
+ed save-report path/to/project --html --tex --pdf --style iucr
+```
+
+`ed save` uses the persisted `project.report` configuration.
+`ed save-report` is for one-off exports and requires at least one of
+`--cif`, `--html`, `--tex`, or `--pdf`.
 
 <!--
 ## Exporting the Report
