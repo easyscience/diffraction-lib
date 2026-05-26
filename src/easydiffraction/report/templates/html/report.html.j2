@@ -182,6 +182,36 @@
           </table>
         </div>
         {% endif %}
+        {% if structure.atom_site_aniso %}
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Label</th>
+                <th>ADP 11</th>
+                <th>ADP 22</th>
+                <th>ADP 33</th>
+                <th>ADP 12</th>
+                <th>ADP 13</th>
+                <th>ADP 23</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for aniso in structure.atom_site_aniso %}
+              <tr>
+                <td>{{ aniso.label }}</td>
+                <td>{{ base.format_number(aniso.adp_11) }}</td>
+                <td>{{ base.format_number(aniso.adp_22) }}</td>
+                <td>{{ base.format_number(aniso.adp_33) }}</td>
+                <td>{{ base.format_number(aniso.adp_12) }}</td>
+                <td>{{ base.format_number(aniso.adp_13) }}</td>
+                <td>{{ base.format_number(aniso.adp_23) }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% endif %}
       </article>
       {% endfor %}
     </section>

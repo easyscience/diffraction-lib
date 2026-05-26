@@ -362,3 +362,101 @@ def test_iucr_loop_rows_are_not_padded_to_tag_width():
         '  Tb 0.00658189',
         '  O1 0.',
     ]
+
+
+def test_iucr_atom_site_rows_preserve_parameter_uncertainties():
+    from easydiffraction.datablocks.structure.categories.atom_sites.default import (
+        AtomSite,
+    )
+    from easydiffraction.io.cif.iucr_writer import _atom_site_row
+    from easydiffraction.io.cif.iucr_writer import _atom_site_tags
+    from easydiffraction.io.cif.iucr_writer import _write_loop
+    from easydiffraction.io.cif.serialize import format_param_value
+
+    atom_site = AtomSite()
+    atom_site.label = 'Si1'
+    atom_site.type_symbol = 'Si'
+    atom_site.fract_x = 11.98509310
+    atom_site.fract_x.free = True
+    atom_site.fract_x.uncertainty = 0.03069505
+    lines = []
+
+    _write_loop(lines, _atom_site_tags('B'), (_atom_site_row(atom_site),))
+
+    assert format_param_value(atom_site.fract_x) in lines[-1].split()
+
+
+def test_iucr_atom_site_aniso_rows_preserve_parameter_uncertainties():
+    from easydiffraction.datablocks.structure.categories.atom_site_aniso.default import (
+        AtomSiteAniso,
+    )
+    from easydiffraction.io.cif.iucr_writer import _atom_site_aniso_row
+    from easydiffraction.io.cif.iucr_writer import _atom_site_aniso_tags
+    from easydiffraction.io.cif.iucr_writer import _write_loop
+    from easydiffraction.io.cif.serialize import format_param_value
+
+    aniso_site = AtomSiteAniso()
+    aniso_site.label = 'Si1'
+    aniso_site.adp_11 = 0.00658189
+    aniso_site.adp_11.free = True
+    aniso_site.adp_11.uncertainty = 0.00014
+    lines = []
+
+    _write_loop(lines, _atom_site_aniso_tags('B'), (_atom_site_aniso_row(aniso_site),))
+
+    assert format_param_value(aniso_site.adp_11) in lines[-1].split()
+
+
+def test_iucr_extension_items_preserve_parameter_uncertainties():
+    from easydiffraction.core.validation import AttributeSpec
+    from easydiffraction.core.variable import Parameter
+    from easydiffraction.io.cif.iucr_writer import _iucr_items
+    from easydiffraction.io.cif.iucr_writer import _write_item
+    from easydiffraction.io.cif.serialize import format_param_value
+
+    scale = Parameter(
+        name='scale',
+        value_spec=AttributeSpec(default=1.0),
+        cif_handler=CifHandler(
+            names=['_sc_crystal_block.scale'],
+            iucr_name='_easydiffraction_sc_crystal_block.scale',
+        ),
+    )
+    scale.value = 2.87438284
+    scale.free = True
+    scale.uncertainty = 0.0274
+    owner = SimpleNamespace(scale=scale)
+    tag, value = _iucr_items(owner, ('scale',))[0]
+    lines = []
+
+    _write_item(lines, tag, value)
+
+    assert format_param_value(scale) in lines[0]
+
+
+def test_iucr_extinction_extensions_preserve_parameter_uncertainties():
+    from easydiffraction.datablocks.experiment.categories.extinction.becker_coppens import (
+        BeckerCoppensExtinction,
+    )
+    from easydiffraction.io.cif.iucr_writer import _extinction_items
+    from easydiffraction.io.cif.iucr_writer import _write_item
+    from easydiffraction.io.cif.serialize import format_param_value
+
+    extinction = BeckerCoppensExtinction()
+    extinction.radius = 24.83171997
+    extinction.radius.free = True
+    extinction.radius.uncertainty = 0.4931
+    experiment = SimpleNamespace(extinction=extinction)
+    items = {
+        item.tag: item.value
+        for item in _extinction_items(experiment, extension=True)
+    }
+    lines = []
+
+    _write_item(
+        lines,
+        '_easydiffraction_extinction.radius',
+        items['_easydiffraction_extinction.radius'],
+    )
+
+    assert format_param_value(extinction.radius) in lines[0]

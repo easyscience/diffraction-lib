@@ -15,6 +15,7 @@ from datetime import datetime
 
 from easydiffraction.io.cif.iucr_transformers import IucrCategoryTransformer
 from easydiffraction.io.cif.iucr_transformers import IucrItem
+from easydiffraction.io.cif.serialize import format_param_value
 from easydiffraction.io.cif.serialize import format_value
 from easydiffraction.report.check import _validate_iucr_cif
 from easydiffraction.utils.utils import package_version
@@ -796,6 +797,8 @@ def _section(lines: list[str], title: str) -> None:
 
 def _format_item_value(value: object) -> str:
     """Format a CIF item value for report output."""
+    if _is_cif_descriptor(value):
+        return _format_descriptor_value(value)
     if not isinstance(value, str):
         return format_value(value)
     if value in {'?', '.'}:
@@ -807,6 +810,15 @@ def _format_item_value(value: object) -> str:
     if _needs_quotes(value):
         return _quote_string(value)
     return value
+
+
+def _format_descriptor_value(value: object) -> str:
+    """Format a descriptor while preserving parameter uncertainty."""
+    from easydiffraction.core.variable import Parameter  # noqa: PLC0415
+
+    if isinstance(value, Parameter):
+        return format_param_value(value)
+    return _format_item_value(_descriptor_value(value))
 
 
 def _format_loop_value(value: object) -> str:
@@ -983,6 +995,13 @@ def _attribute_value(owner: object, attr_name: str) -> object:
     return _descriptor_value(getattr(owner, attr_name, None))
 
 
+def _attribute_descriptor(owner: object, attr_name: str) -> object:
+    """Return raw owner attr; preserve descriptor metadata."""
+    if owner is None:
+        return None
+    return getattr(owner, attr_name, None)
+
+
 def _fit_result(project: object) -> object:
     """Return the persisted fit-result category."""
     analysis = getattr(project, 'analysis', None)
@@ -1007,15 +1026,15 @@ def _atom_site_tags(family: str) -> tuple[str, ...]:
 def _atom_site_row(atom_site: object) -> tuple[object, ...]:
     """Return one atom-site loop row."""
     return (
-        _attribute_value(atom_site, 'label'),
-        _attribute_value(atom_site, 'type_symbol'),
-        _attribute_value(atom_site, 'fract_x'),
-        _attribute_value(atom_site, 'fract_y'),
-        _attribute_value(atom_site, 'fract_z'),
-        _attribute_value(atom_site, 'occupancy'),
-        _attribute_value(atom_site, 'adp_type'),
-        _attribute_value(atom_site, 'adp_iso'),
-        _attribute_value(atom_site, 'wyckoff_letter'),
+        _attribute_descriptor(atom_site, 'label'),
+        _attribute_descriptor(atom_site, 'type_symbol'),
+        _attribute_descriptor(atom_site, 'fract_x'),
+        _attribute_descriptor(atom_site, 'fract_y'),
+        _attribute_descriptor(atom_site, 'fract_z'),
+        _attribute_descriptor(atom_site, 'occupancy'),
+        _attribute_descriptor(atom_site, 'adp_type'),
+        _attribute_descriptor(atom_site, 'adp_iso'),
+        _attribute_descriptor(atom_site, 'wyckoff_letter'),
     )
 
 
@@ -1035,13 +1054,13 @@ def _atom_site_aniso_tags(family: str) -> tuple[str, ...]:
 def _atom_site_aniso_row(aniso_site: object) -> tuple[object, ...]:
     """Return one anisotropic-ADP loop row."""
     return (
-        _attribute_value(aniso_site, 'label'),
-        _attribute_value(aniso_site, 'adp_11'),
-        _attribute_value(aniso_site, 'adp_22'),
-        _attribute_value(aniso_site, 'adp_33'),
-        _attribute_value(aniso_site, 'adp_12'),
-        _attribute_value(aniso_site, 'adp_13'),
-        _attribute_value(aniso_site, 'adp_23'),
+        _attribute_descriptor(aniso_site, 'label'),
+        _attribute_descriptor(aniso_site, 'adp_11'),
+        _attribute_descriptor(aniso_site, 'adp_22'),
+        _attribute_descriptor(aniso_site, 'adp_33'),
+        _attribute_descriptor(aniso_site, 'adp_12'),
+        _attribute_descriptor(aniso_site, 'adp_13'),
+        _attribute_descriptor(aniso_site, 'adp_23'),
     )
 
 
@@ -1119,11 +1138,23 @@ def _sc_extension_items(experiment: object) -> list[tuple[str, object]]:
 def _extinction_items(experiment: object, *, extension: bool) -> list[IucrItem]:
     """Return transformed extinction items filtered by namespace."""
     transformer = IucrCategoryTransformer.create('extinction')
-    return [
+    items = [
         item
         for item in transformer.items(experiment)
         if item.tag.startswith('_easydiffraction_') == extension
     ]
+    if not extension:
+        return items
+    return [_with_extension_descriptor(experiment, item) for item in items]
+
+
+def _with_extension_descriptor(experiment: object, item: IucrItem) -> IucrItem:
+    """Return an extension item with its descriptor when available."""
+    extinction = getattr(experiment, 'extinction', None)
+    descriptor = _iucr_descriptor_for_tag(extinction, item.tag)
+    if descriptor is None:
+        return item
+    return IucrItem(item.tag, descriptor)
 
 
 def _powder_rietveld_experiments(project: object) -> list[object]:
@@ -1417,6 +1448,11 @@ def _descriptor_value(value: object) -> object:
     return getattr(value, 'value', value)
 
 
+def _is_cif_descriptor(value: object) -> bool:
+    """Return whether value is a CIF descriptor or parameter."""
+    return hasattr(value, 'value') and hasattr(value, '_cif_handler')
+
+
 def _iucr_items(owner: object, attr_names: tuple[str, ...]) -> list[tuple[str, object]]:
     """Return IUCr-tagged descriptor values from *owner*."""
     if owner is None:
@@ -1427,7 +1463,7 @@ def _iucr_items(owner: object, attr_names: tuple[str, ...]) -> list[tuple[str, o
 def _iucr_item(owner: object, attr_name: str) -> tuple[str, object]:
     """Return one ``(iucr_name, value)`` pair for a descriptor."""
     descriptor = _iucr_descriptor(owner, attr_name)
-    return descriptor._cif_handler.iucr_name, _descriptor_value(descriptor)
+    return descriptor._cif_handler.iucr_name, descriptor
 
 
 def _iucr_descriptor(owner: object, attr_name: str) -> object:
@@ -1442,6 +1478,29 @@ def _iucr_descriptor(owner: object, attr_name: str) -> object:
 
     msg = f'{type(owner).__name__}.{attr_name} has no CIF handler.'
     raise AttributeError(msg)
+
+
+def _iucr_descriptor_for_tag(owner: object, tag: str) -> object | None:
+    """Return the descriptor carrying one IUCr tag."""
+    if owner is None:
+        return None
+
+    private_type = getattr(owner, '_type', None)
+    if _descriptor_iucr_name(private_type) == tag:
+        return private_type
+
+    for descriptor in _owner_descriptors(owner):
+        if _descriptor_iucr_name(descriptor) == tag:
+            return descriptor
+    return None
+
+
+def _descriptor_iucr_name(descriptor: object) -> str | None:
+    """Return a descriptor's IUCr tag name, if present."""
+    handler = getattr(descriptor, '_cif_handler', None)
+    if handler is None:
+        return None
+    return handler.iucr_name
 
 
 def _owner_descriptors(owner: object) -> Iterable[object]:

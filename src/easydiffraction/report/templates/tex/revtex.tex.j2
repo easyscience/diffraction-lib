@@ -79,6 +79,14 @@ Label & Type & $x$ & $y$ & $z$ & Occ. & ADP \\
 {% endfor %}
 \end{tabular}
 {% endif %}
+{% if structure.atom_site_aniso %}
+\begin{tabular}{lllllll}
+Label & ADP 11 & ADP 22 & ADP 33 & ADP 12 & ADP 13 & ADP 23 \\
+{% for aniso in structure.atom_site_aniso %}
+{{ aniso.label | tex }} & {{ aniso.adp_11 | tex_number }} & {{ aniso.adp_22 | tex_number }} & {{ aniso.adp_33 | tex_number }} & {{ aniso.adp_12 | tex_number }} & {{ aniso.adp_13 | tex_number }} & {{ aniso.adp_23 | tex_number }} \\
+{% endfor %}
+\end{tabular}
+{% endif %}
 {% endfor %}
 
 \section{Experiments}

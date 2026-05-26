@@ -65,3 +65,53 @@ def test_render_tex_report_keeps_latex_graphicspath_braces():
         tex = render_tex_report(_minimal_context(), style=style)
 
         assert r'\graphicspath{{figures/}}' in tex
+
+
+def test_render_tex_report_preserves_structure_uncertainty_text():
+    from easydiffraction.report.tex_renderer import render_tex_report
+
+    context = _minimal_context()
+    context['structures'] = [
+        {
+            'id': 'phase',
+            'space_group': 'P 1',
+            'crystal_system': 'triclinic',
+            'cell': {
+                'length_a': '11.985(31)',
+                'length_b': '2.()',
+                'length_c': '3.()',
+                'angle_alpha': '90.()',
+                'angle_beta': '90.()',
+                'angle_gamma': '90.()',
+            },
+            'atom_sites': [
+                {
+                    'label': 'Si1',
+                    'type_symbol': 'Si',
+                    'fract_x': '11.985(31)',
+                    'fract_y': '0.',
+                    'fract_z': '0.',
+                    'occupancy': '1.',
+                    'adp_iso': '0.00658(14)',
+                }
+            ],
+            'atom_site_aniso': [
+                {
+                    'label': 'Si1',
+                    'adp_11': '0.00658(14)',
+                    'adp_22': '0.00488(29)',
+                    'adp_33': '0.00488144',
+                    'adp_12': '-0.00048(25)',
+                    'adp_13': '0.',
+                    'adp_23': '0.00189(13)',
+                }
+            ],
+        }
+    ]
+
+    for style in ('iucr', 'revtex'):
+        tex = render_tex_report(context, style=style)
+
+        assert '11.985(31)' in tex
+        assert '0.00658(14)' in tex
+        assert '-0.00048(25)' in tex
