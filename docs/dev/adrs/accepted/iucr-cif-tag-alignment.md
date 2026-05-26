@@ -973,6 +973,12 @@ default. The
 [`type-neutral-adp-parameters.md`](type-neutral-adp-parameters.md)
 Python contract is unchanged.
 
+The writer no longer propagates one file-wide B/U convention across
+all atom sites before serialisation. If a structure contains both
+B-convention and U-convention atoms, the emitted CIF contains one
+`_atom_site_aniso.B_*` loop and one `_atom_site_aniso.U_*` loop,
+each containing only the rows whose `ADP_type` matches that family.
+
 ### 5. Loop-tag style — dotted DDLm on write, dual-name on read
 
 Both reference dictionaries declare every item in dotted DDLm form
