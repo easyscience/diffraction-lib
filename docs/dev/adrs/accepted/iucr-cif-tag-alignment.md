@@ -1,17 +1,17 @@
 # ADR: IUCr CIF Tag Alignment
 
-**Status:** Proposed  
+**Status:** Accepted  
 **Date:** 2026-05-26
 
 Reframes the earlier "IUCr CIF Tag Alignment for Fit Outputs"
 suggestion (2026-05-24, PR #181) into a tiered policy. The default
 saved CIFs stay optimised for day-to-day UX; a separate IUCr export
 path produces journal-submission CIFs on demand. Amends parts of
-[`analysis-cif-fit-state.md`](../accepted/analysis-cif-fit-state.md)
+[`analysis-cif-fit-state.md`](analysis-cif-fit-state.md)
 and
-[`minimizer-input-output-split.md`](../accepted/minimizer-input-output-split.md);
+[`minimizer-input-output-split.md`](minimizer-input-output-split.md);
 runs alongside the
-[`python-cif-category-correspondence.md`](python-cif-category-correspondence.md)
+[`python-cif-category-correspondence.md`](../suggestions/python-cif-category-correspondence.md)
 suggestion (Python-side correspondence).
 
 Grounded in:
@@ -74,9 +74,9 @@ two pressures.
 
 Two earlier ADRs already touch this surface:
 
-- [`loop-category-key-identity.md`](../accepted/loop-category-key-identity.md)
+- [`loop-category-key-identity.md`](loop-category-key-identity.md)
   pins loop-key naming on COMCIFS conventions.
-- [`python-cif-category-correspondence.md`](python-cif-category-correspondence.md)
+- [`python-cif-category-correspondence.md`](../suggestions/python-cif-category-correspondence.md)
   catalogues Python-vs-CIF category mismatches and chooses which
   side should bend.
 
@@ -104,7 +104,7 @@ Out of scope:
 
 - Python attribute renames. This ADR changes CIF emission only.
   Cross-reference
-  [`python-cif-category-correspondence.md`](python-cif-category-correspondence.md)
+  [`python-cif-category-correspondence.md`](../suggestions/python-cif-category-correspondence.md)
   for Python-side decisions.
 - Adding new CIF categories the project does not currently track
   (`_chemical.*`, `_publ.*`, `_journal.*`) **for the default
@@ -242,7 +242,7 @@ In `analysis/analysis.cif`:
   spans multiple experiments with different sample forms, so
   a per-experiment-driven schema choice cannot be made at the
   project level. Topology-neutral `_fit_result.*` round-trips
-  cleanly under [`analysis-cif-fit-state.md`](../accepted/analysis-cif-fit-state.md)'s
+  cleanly under [`analysis-cif-fit-state.md`](analysis-cif-fit-state.md)'s
   single common projection.
 - Existing items keep their names verbatim
   (`_fit_result.reduced_chi_square`, `_fit_result.n_data_points`,
@@ -970,7 +970,7 @@ to **both** default save and IUCr export:
 
 The choice is per-row based on `ADP_type`, not a project-wide
 default. The
-[`type-neutral-adp-parameters.md`](../accepted/type-neutral-adp-parameters.md)
+[`type-neutral-adp-parameters.md`](type-neutral-adp-parameters.md)
 Python contract is unchanged.
 
 ### 5. Loop-tag style — dotted DDLm on write, dual-name on read
@@ -1054,7 +1054,7 @@ Policy:
 
 ### ADRs amended by this ADR
 
-- [`analysis-cif-fit-state.md`](../accepted/analysis-cif-fit-state.md)
+- [`analysis-cif-fit-state.md`](analysis-cif-fit-state.md)
   — new IUCr-named fields added under `_fit_result.*` in the
   default save (R-factors, restraint/constraint counts,
   shift_over_su, profile/background function descriptors,
@@ -1062,9 +1062,9 @@ Policy:
   in `analysis/analysis.cif`; per-topology renaming to
   `_refine_ls.*` / `_pd_proc_ls.*` happens only in the IUCr
   export (§1.2, §3 transformers).
-- [`minimizer-input-output-split.md`](../accepted/minimizer-input-output-split.md)
+- [`minimizer-input-output-split.md`](minimizer-input-output-split.md)
   — `_fit_result.*` examples updated for the new fields.
-- [`project-facade-and-persistence.md`](../accepted/project-facade-and-persistence.md)
+- [`project-facade-and-persistence.md`](project-facade-and-persistence.md)
   — `project.summary` facade slot is removed and replaced by
   `project.report`. `summary.cif` is no longer written by
   default `Project.save()`; the slot is repurposed for IUCr /
@@ -1075,7 +1075,7 @@ Policy:
   is removed as part of the implementation plan; no summary
   content survives the transition because nothing was being
   written there in the first place.
-- [`help-discoverability.md`](../accepted/help-discoverability.md)
+- [`help-discoverability.md`](help-discoverability.md)
   — `project.summary.help()` is removed from the documented
   help surface and replaced by `project.report.help()` (same
   responsibilities, new slot name). All other entries in the
