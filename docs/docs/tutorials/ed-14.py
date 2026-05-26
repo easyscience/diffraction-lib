@@ -16,6 +16,7 @@ import easydiffraction as ed
 # %%
 # Create minimal project without name and description
 project = ed.Project()
+project.save_as('projects/tbti_heidi')
 
 # %% [markdown]
 # ## Step 2: Define Structure
