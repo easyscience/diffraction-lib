@@ -328,7 +328,8 @@ single-purpose and align 1-to-1 with their step.
      cleared_fit_result=False, cleared_sidecar=False,
      was_no_op=True)` without mutating any state.
   2. Otherwise, scalar rollback. For each row in
-     `self.fit_parameters` (i.e. `_fit_parameter` entries):
+     `self.fit_parameters` (i.e. `_fit_parameter` entries) whose
+     `row.start_value.value` is not `None`:
      - Look up the live `Parameter` by
        `row.param_unique_name.value`.
      - Restore `parameter.value` from `row.start_value.value`.
@@ -347,7 +348,10 @@ single-purpose and align 1-to-1 with their step.
      these fields are fit-derived, not user-owned, and would
      otherwise project stale posterior data back onto live
      `Parameter.posterior` after an undo+save+reload+restore
-     cycle via P1.3's posterior helper.
+     cycle via P1.3's posterior helper. This helper still visits
+     every `_fit_parameter` row, including rows without
+     `start_value` anchors, because posterior summaries are
+     fit-derived even when scalar rollback has no safe anchor.
   4. Track `cleared_fit_result = self._has_persisted_fit_state()`
      **before** mutating state — this captures whether the call
      actually discarded a committed fit-result vs only rolled
