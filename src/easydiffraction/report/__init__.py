@@ -4,4 +4,6 @@
 
 from __future__ import annotations
 
+from easydiffraction.report.enums import ReportFormatEnum
+from easydiffraction.report.enums import ReportStyleEnum
 from easydiffraction.report.report import Report

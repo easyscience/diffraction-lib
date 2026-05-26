@@ -273,7 +273,7 @@ generated-artifact exceptions.
 
 ## Implementation steps (Phase 1)
 
-- [ ] **P1.1 — Add `ReportFormatEnum` and `ReportStyleEnum`**
+- [x] **P1.1 — Add `ReportFormatEnum` and `ReportStyleEnum`**
   - Files: new `src/easydiffraction/report/enums.py`.
   - Define `ReportFormatEnum(str, Enum)` with members `CIF`,
     `HTML`, `TEX`, `PDF` (string values `'cif'`, `'html'`,
