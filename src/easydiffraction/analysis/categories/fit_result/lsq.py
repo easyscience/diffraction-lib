@@ -366,7 +366,9 @@ class LeastSquaresFitResult(FitResultBase):
         return False
 
     def _has_reflection_result(self) -> bool:
-        """Return whether reflection-result descriptors are populated."""
+        """
+        Return whether reflection-result descriptors are populated.
+        """
         return any(
             self._has_value(getattr(self, name))
             for name in (

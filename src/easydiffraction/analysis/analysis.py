@@ -1812,7 +1812,9 @@ class Analysis(
         observed: np.ndarray,
         uncertainties: np.ndarray,
     ) -> np.ndarray:
-        """Return observations greater than three standard uncertainties."""
+        """
+        Return observations greater than three standard uncertainties.
+        """
         return observed > (_GT_REFLECTION_THRESHOLD_SIGMA * uncertainties)
 
     @staticmethod

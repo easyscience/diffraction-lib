@@ -39,9 +39,9 @@ def check_report(
 
     Parameters
     ----------
-    path : str or pathlib.Path
+    path : str | pathlib.Path
         Report CIF path.
-    dictionary_paths : Iterable[str or pathlib.Path], optional
+    dictionary_paths : Iterable[str | pathlib.Path] | None, default=None
         Dictionary files to load. Defaults to local ``tmp/iucr-dicts``
         copies when present.
 

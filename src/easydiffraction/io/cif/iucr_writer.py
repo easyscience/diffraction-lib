@@ -91,7 +91,7 @@ def write_iucr_cif(
     ----------
     project : object
         Project instance to export.
-    path : str or pathlib.Path, optional
+    path : str | pathlib.Path | None, default=None
         Target CIF path. When omitted, the report is written to
         ``<project.info.path>/reports/<project.name>.cif``.
 
@@ -117,7 +117,7 @@ def iucr_report_path(
     ----------
     project : object
         Project instance.
-    path : str or pathlib.Path, optional
+    path : str | pathlib.Path | None, default=None
         Explicit report path.
 
     Returns
@@ -435,7 +435,9 @@ def _write_sc_refln_loop(lines: list[str], experiment: object) -> None:
 
 
 def _write_sc_project_extensions(lines: list[str], experiment: object) -> None:
-    """Append EasyDiffraction extension values for a single-crystal block."""
+    """
+    Append EasyDiffraction extension values for a single-crystal block.
+    """
     extension_rows = [
         *_sc_extension_items(experiment),
         *[
@@ -1204,7 +1206,9 @@ def _powder_x_value(experiment: object, data_point: object) -> object:
 
 
 def _powder_weight(data_point: object) -> object:
-    """Return least-squares weight from intensity standard uncertainty."""
+    """
+    Return least-squares weight from intensity standard uncertainty.
+    """
     sigma = _finite_number(_attribute_value(data_point, 'intensity_meas_su'))
     if sigma is None or sigma <= 0:
         return '?'

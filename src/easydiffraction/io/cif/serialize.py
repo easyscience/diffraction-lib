@@ -320,7 +320,9 @@ def _adp_collection_to_cif(
     collection: object,
     max_display: int | None,
 ) -> str | None:
-    """Render ADP-sensitive structure loops with one tag family per row."""
+    """
+    Render ADP-sensitive structure loops with one tag family per row.
+    """
     items = list(collection.values())
     category_code = collection._item_type._category_code
     if category_code == 'atom_site':

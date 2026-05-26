@@ -139,7 +139,8 @@ class TofCalibrationTransformer(IucrCategoryTransformer):
         Returns
         -------
         IucrLoop | None
-            Calibration loop, or ``None`` when all coefficients are zero.
+            Calibration loop, or ``None`` when all coefficients are
+            zero.
         """
         instrument = getattr(experiment, 'instrument', None)
         diffractogram_id = getattr(experiment, 'name', '1')

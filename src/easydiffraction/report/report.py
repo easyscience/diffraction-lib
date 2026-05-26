@@ -269,7 +269,7 @@ class Report:
 
         Parameters
         ----------
-        path : str or pathlib.Path, optional
+        path : str | pathlib.Path | None, default=None
             Report path. Defaults to ``reports/<project>.cif``.
 
         Returns
