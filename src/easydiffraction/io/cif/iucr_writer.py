@@ -13,6 +13,8 @@ from dataclasses import dataclass
 from datetime import UTC
 from datetime import datetime
 
+from easydiffraction.io.cif.iucr_transformers import IucrCategoryTransformer
+from easydiffraction.io.cif.iucr_transformers import IucrItem
 from easydiffraction.io.cif.serialize import format_value
 from easydiffraction.utils.utils import package_version
 
@@ -203,12 +205,12 @@ def _write_sc_block(
     _write_chemical_formula_section(lines, _structure_formula_values(structure))
     _write_cell_section(lines, structure)
     _write_space_group_section(lines, structure)
-    _write_symmetry_operations_section(lines)
+    _write_symmetry_operations_section(lines, structure)
     _write_diffrn_section(lines, experiment)
     _write_wavelength_section(lines, experiment)
     _write_atom_site_sections(lines, structure)
     _write_atom_site_aniso_sections(lines, structure)
-    _write_sc_refinement_section(lines, project)
+    _write_sc_refinement_section(lines, project, experiment)
     _write_reflns_section(lines, project, experiment)
     _write_sc_refln_loop(lines, experiment)
     _write_sc_project_extensions(lines, experiment)
@@ -247,14 +249,12 @@ def _write_space_group_section(lines: list[str], structure: object) -> None:
     _write_item(lines, '_space_group.crystal_system', '?')
 
 
-def _write_symmetry_operations_section(lines: list[str]) -> None:
+def _write_symmetry_operations_section(lines: list[str], structure: object) -> None:
     """Append symmetry operations."""
+    transformer = IucrCategoryTransformer.create('symmetry_operations')
+    loop = transformer.loop(structure)
     _section(lines, 'Symmetry operations')
-    _write_loop(
-        lines,
-        ('_space_group_symop.id', '_space_group_symop.operation_xyz'),
-        [('1', 'x,y,z')],
-    )
+    _write_loop(lines, loop.tags, loop.rows)
 
 
 def _write_diffrn_section(lines: list[str], experiment: object) -> None:
@@ -288,16 +288,13 @@ def _write_wavelength_section(lines: list[str], experiment: object) -> None:
     if wavelength is None:
         return
 
+    transformer = IucrCategoryTransformer.create('wavelength')
+    loop = transformer.loop(experiment)
+    if loop is None:
+        return
+
     _section(lines, 'Wavelength')
-    _write_loop(
-        lines,
-        (
-            '_diffrn_radiation_wavelength.id',
-            '_diffrn_radiation_wavelength.value',
-            '_diffrn_radiation_wavelength.wt',
-        ),
-        [('1', wavelength, 1.0)],
-    )
+    _write_loop(lines, loop.tags, loop.rows)
 
 
 def _write_atom_site_sections(lines: list[str], structure: object) -> None:
@@ -335,7 +332,11 @@ def _write_atom_site_aniso_sections(lines: list[str], structure: object) -> None
         _write_loop(lines, _atom_site_aniso_tags(family), rows)
 
 
-def _write_sc_refinement_section(lines: list[str], project: object) -> None:
+def _write_sc_refinement_section(
+    lines: list[str],
+    project: object,
+    experiment: object,
+) -> None:
     """Append single-crystal refinement statistics."""
     fit_result = _fit_result(project)
     _section(lines, 'Refinement')
@@ -349,6 +350,8 @@ def _write_sc_refinement_section(lines: list[str], project: object) -> None:
         ('_refine_ls.number_constraints', 'number_constraints'),
     ):
         _write_item(lines, tag, _attribute_value(fit_result, attr_name))
+    for item in _extinction_items(experiment, extension=False):
+        _write_item(lines, item.tag, item.value)
 
 
 def _write_reflns_section(
@@ -404,7 +407,13 @@ def _write_sc_refln_loop(lines: list[str], experiment: object) -> None:
 
 def _write_sc_project_extensions(lines: list[str], experiment: object) -> None:
     """Append EasyDiffraction extension values for a single-crystal block."""
-    extension_rows = _sc_extension_items(experiment)
+    extension_rows = [
+        *_sc_extension_items(experiment),
+        *[
+            (item.tag, item.value)
+            for item in _extinction_items(experiment, extension=True)
+        ],
+    ]
     if not extension_rows:
         return
 
@@ -475,7 +484,7 @@ def _write_powder_phase_block(phase: _PowderPhase) -> str:
     _write_chemical_formula_section(lines, _structure_formula_values(phase.structure))
     _write_cell_section(lines, phase.structure)
     _write_space_group_section(lines, phase.structure)
-    _write_symmetry_operations_section(lines)
+    _write_symmetry_operations_section(lines, phase.structure)
     _write_atom_site_sections(lines, phase.structure)
     _write_atom_site_aniso_sections(lines, phase.structure)
     _write_powder_phase_reference_section(lines, phase)
@@ -553,7 +562,9 @@ def _write_powder_proc_section(lines: list[str], experiment: object) -> None:
     _section(lines, 'Powder processing')
     _write_item(lines, '_pd_proc.info_data_reduction', '?')
     _write_item(lines, '_pd_proc.info_datetime', _iso_creation_datetime())
-    _write_item(lines, '_pd_proc.info_excluded_regions', '?')
+    transformer = IucrCategoryTransformer.create('excluded_regions')
+    for item in transformer.items(experiment):
+        _write_item(lines, item.tag, item.value)
 
     if _is_tof_experiment(experiment):
         _write_tof_calibration_loop(lines, experiment)
@@ -635,22 +646,13 @@ def _write_powder_project_extensions(lines: list[str], experiment: object) -> No
 
 def _write_tof_calibration_loop(lines: list[str], experiment: object) -> None:
     """Append TOF calibration rows for a powder pattern."""
-    rows = _tof_calibration_rows(experiment)
-    if not rows:
+    transformer = IucrCategoryTransformer.create('tof_calibration')
+    loop = transformer.loop(experiment)
+    if loop is None:
         return
 
     _section(lines, 'TOF calibration')
-    _write_loop(
-        lines,
-        (
-            '_pd_calib_d_to_tof.id',
-            '_pd_calib_d_to_tof.power',
-            '_pd_calib_d_to_tof.coeff',
-            '_pd_calib_d_to_tof.coeff_su',
-            '_pd_calib_d_to_tof.diffractogram_id',
-        ),
-        rows,
-    )
+    _write_loop(lines, loop.tags, loop.rows)
 
 
 def _write_placeholder_items(
@@ -1030,6 +1032,16 @@ def _sc_extension_items(experiment: object) -> list[tuple[str, object]]:
     ]
 
 
+def _extinction_items(experiment: object, *, extension: bool) -> list[IucrItem]:
+    """Return transformed extinction items filtered by namespace."""
+    transformer = IucrCategoryTransformer.create('extinction')
+    return [
+        item
+        for item in transformer.items(experiment)
+        if item.tag.startswith('_easydiffraction_') == extension
+    ]
+
+
 def _powder_rietveld_experiments(project: object) -> list[object]:
     """Return powder Bragg experiments in project order."""
     experiments = _collection_values(getattr(project, 'experiments', None))
@@ -1229,24 +1241,6 @@ def _powder_extension_items(experiment: object) -> list[tuple[str, object]]:
         ('_easydiffraction_peak.type', _attribute_value(peak, 'type')),
         ('_easydiffraction_background.type', _attribute_value(background, 'type')),
     ]
-
-
-def _tof_calibration_rows(experiment: object) -> list[tuple[object, ...]]:
-    """Return TOF d-to-TOF calibration rows."""
-    instrument = getattr(experiment, 'instrument', None)
-    diffractogram_id = getattr(experiment, 'name', '1')
-    rows: list[tuple[object, ...]] = []
-    for row_id, power, attr_name in (
-        ('offset', 0, 'calib_d_to_tof_offset'),
-        ('linear', 1, 'calib_d_to_tof_linear'),
-        ('quad', 2, 'calib_d_to_tof_quad'),
-        ('recip', -1, 'calib_d_to_tof_recip'),
-    ):
-        coeff = _attribute_value(instrument, attr_name)
-        if _finite_number(coeff) == 0:
-            continue
-        rows.append((row_id, power, coeff, '?', diffractogram_id))
-    return rows
 
 
 @dataclass(frozen=True)
