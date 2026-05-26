@@ -547,8 +547,11 @@ class Analysis(
         """
         return [row.param_unique_name.value for row in self.fit_parameters]
 
-    def _restore_live_parameter_state(self, param_map: dict[str, Parameter]) -> None:
-        """Restore saved fit metadata onto live parameter objects."""
+    def _restore_live_parameter_bounds_and_anchors(
+        self,
+        param_map: dict[str, Parameter],
+    ) -> None:
+        """Restore saved fit controls onto live parameter objects."""
         for row in self.fit_parameters:
             parameter = param_map.get(row.param_unique_name.value)
             if parameter is None:
@@ -565,10 +568,23 @@ class Analysis(
             )
             parameter._fit_start_value = row.start_value.value
             parameter._fit_start_uncertainty = row.start_uncertainty.value
+
+    def _restore_live_parameter_posterior(self, param_map: dict[str, Parameter]) -> None:
+        """Restore saved posterior summaries onto live parameters."""
+        for row in self.fit_parameters:
+            parameter = param_map.get(row.param_unique_name.value)
+            if parameter is None:
+                continue
+
             posterior = row.posterior_summary(display_name=parameter.name)
             parameter._set_posterior(posterior)
             if posterior is not None and np.isfinite(posterior.standard_deviation):
                 parameter.uncertainty = posterior.standard_deviation
+
+    def _restore_live_parameter_state(self, param_map: dict[str, Parameter]) -> None:
+        """Restore saved fit metadata onto live parameter objects."""
+        self._restore_live_parameter_bounds_and_anchors(param_map)
+        self._restore_live_parameter_posterior(param_map)
 
     def _restored_fit_parameters(self, param_map: dict[str, Parameter]) -> list[Parameter]:
         """Return live parameters in the persisted fit-result order."""

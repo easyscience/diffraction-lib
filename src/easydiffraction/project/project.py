@@ -172,8 +172,11 @@ def _load_project_analysis(project: Project, project_path: pathlib.Path) -> None
         analysis=project._analysis,
         analysis_dir=analysis_cif_path.parent,
     )
+    param_map = project._build_parameter_map()
+    if project._analysis.fit_parameters:
+        project._analysis._restore_live_parameter_bounds_and_anchors(param_map)
     if project._analysis._has_persisted_fit_state():
-        project._analysis._restore_live_parameter_state(project._build_parameter_map())
+        project._analysis._restore_live_parameter_posterior(param_map)
 
 
 class Project(GuardedBase):  # noqa: PLR0904
