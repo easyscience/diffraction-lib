@@ -354,7 +354,7 @@ generated-artifact exceptions.
     owns that extension (see next step).
   - Commit: `Refactor Report into a ProjectConfig CategoryItem`.
 
-- [ ] **P1.3 — Wire `_report.*` into the `project.cif` loader (with legacy defaults)**
+- [x] **P1.3 — Wire `_report.*` into the `project.cif` loader (with legacy defaults)**
   - File:
     `src/easydiffraction/io/cif/serialize.py` (the existing
     `project_config_from_cif()` function at

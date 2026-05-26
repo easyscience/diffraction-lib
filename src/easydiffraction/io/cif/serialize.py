@@ -684,6 +684,11 @@ def project_config_from_cif(project: object, cif_text: str) -> None:
     if chart is not None:
         chart.from_cif(block)
 
+    report = getattr(project, 'report', None)
+    if report is not None:
+        # Missing _report.* items intentionally keep legacy defaults.
+        report.from_cif(block)
+
     table = getattr(project, 'table', None)
     if table is not None:
         table.from_cif(block)
