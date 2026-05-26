@@ -811,7 +811,7 @@ generated-artifact exceptions.
   - Commit:
     `Promote project-summary-rendering ADR to accepted`.
 
-- [ ] **P1.25 — Reach Phase 1 review gate**
+- [x] **P1.25 — Reach Phase 1 review gate**
   - No-code step. Mark every `[ ]` above as `[x]`; commit the
     plan-file update alone.
   - Commit: `Reach Phase 1 review gate`.
