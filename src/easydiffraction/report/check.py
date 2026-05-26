@@ -6,10 +6,13 @@ from __future__ import annotations
 
 import pathlib
 import re
-from collections.abc import Iterable
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 import gemmi
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 _REPORT_TAG_RE = re.compile(r'(?m)^\s*(_[A-Za-z][A-Za-z0-9_.-]*)\b')
 _DICT_SAVE_RE = re.compile(r'(?m)^save_(_[^\s]+)\s*$')

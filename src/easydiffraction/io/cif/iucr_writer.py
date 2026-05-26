@@ -159,9 +159,7 @@ def _write_computing_section(lines: list[str], project: object) -> None:
     framework = _software_label('EasyDiffraction', package_name='easydiffraction')
     calculator = _calculator_label(project)
     minimizer = _minimizer_label(project)
-    refinement = (
-        f'{framework} with {minimizer} minimizer and {calculator} calculator'
-    )
+    refinement = f'{framework} with {minimizer} minimizer and {calculator} calculator'
 
     _section(lines, 'Computing')
     _write_item(lines, '_computing.structure_refinement', refinement)
@@ -352,8 +350,7 @@ def _write_atom_site_aniso_sections(lines: list[str], structure: object) -> None
         rows = [
             _atom_site_aniso_row(aniso_site)
             for aniso_site in aniso_sites
-            if _adp_family(_atom_site_for_aniso(atom_site_by_label, aniso_site))
-            == family
+            if _adp_family(_atom_site_for_aniso(atom_site_by_label, aniso_site)) == family
         ]
         if not rows:
             continue
@@ -412,8 +409,7 @@ def _write_reflns_section(
 def _write_sc_refln_loop(lines: list[str], experiment: object) -> None:
     """Append the single-crystal reflection loop."""
     rows = [
-        _sc_refln_row(refln)
-        for refln in _collection_values(getattr(experiment, 'refln', None))
+        _sc_refln_row(refln) for refln in _collection_values(getattr(experiment, 'refln', None))
     ]
     if not rows:
         return
@@ -440,10 +436,7 @@ def _write_sc_project_extensions(lines: list[str], experiment: object) -> None:
     """
     extension_rows = [
         *_sc_extension_items(experiment),
-        *[
-            (item.tag, item.value)
-            for item in _extinction_items(experiment, extension=True)
-        ],
+        *[(item.tag, item.value) for item in _extinction_items(experiment, extension=True)],
     ]
     if not extension_rows:
         return
@@ -464,10 +457,7 @@ def _write_rietveld_blocks(project: object) -> list[str]:
     return [
         _write_rietveld_overall_block(project, phases, patterns),
         *[_write_powder_phase_block(phase) for phase in phases],
-        *[
-            _write_powder_pattern_block(project, pattern, phases)
-            for pattern in patterns
-        ],
+        *[_write_powder_pattern_block(project, pattern, phases) for pattern in patterns],
     ]
 
 
@@ -704,19 +694,13 @@ def _write_loop(
 ) -> None:
     """Append a CIF loop with aligned columns."""
     tag_list = list(tags)
-    formatted_rows = [
-        tuple(_format_loop_value(value) for value in row)
-        for row in rows
-    ]
+    formatted_rows = [tuple(_format_loop_value(value) for value in row) for row in rows]
     widths = _loop_widths(tag_list, formatted_rows)
 
     lines.append('loop_')
     lines.extend(tag_list)
     for row in formatted_rows:
-        cells = [
-            cell.ljust(widths[index])
-            for index, cell in enumerate(row)
-        ]
+        cells = [cell.ljust(widths[index]) for index, cell in enumerate(row)]
         lines.append(f'  {"  ".join(cells).rstrip()}')
 
 
@@ -732,7 +716,7 @@ def _write_item(lines: list[str], tag: str, value: object) -> None:
 
 def _section(lines: list[str], title: str) -> None:
     """Append a logical section header."""
-    if lines and lines[-1] != '':
+    if lines and lines[-1]:
         lines.append('')
     lines.append(f'# ---- {title} ----')
 
@@ -862,8 +846,7 @@ def _single_crystal_experiments(project: object) -> list[object]:
         experiment
         for experiment in experiments
         if (
-            _attribute_value(getattr(experiment, 'type', None), 'sample_form')
-            == 'single crystal'
+            _attribute_value(getattr(experiment, 'type', None), 'sample_form') == 'single crystal'
             and _attribute_value(
                 getattr(experiment, 'type', None),
                 'scattering_type',
@@ -1061,8 +1044,7 @@ def _powder_rietveld_experiments(project: object) -> list[object]:
         experiment
         for experiment in experiments
         if (
-            _attribute_value(getattr(experiment, 'type', None), 'sample_form')
-            == 'powder'
+            _attribute_value(getattr(experiment, 'type', None), 'sample_form') == 'powder'
             and _attribute_value(
                 getattr(experiment, 'type', None),
                 'scattering_type',
@@ -1133,10 +1115,7 @@ def _linked_powder_structures(
         return [(structure_values[0], linked_phases[0] if linked_phases else None)]
 
     experiment_name = getattr(experiment, 'name', type(experiment).__name__)
-    linked_ids = [
-        _attribute_value(linked_phase, 'id')
-        for linked_phase in linked_phases
-    ]
+    linked_ids = [_attribute_value(linked_phase, 'id') for linked_phase in linked_phases]
     msg = (
         f"Experiment '{experiment_name}' links phases {linked_ids}, "
         f'but project structures are {list(names)}.'
@@ -1159,8 +1138,7 @@ def _phase_block_names_for_experiment(
     """Return phase block names linked to one powder pattern."""
     linked_structures = _linked_powder_structures(project, experiment)
     linked_names = {
-        getattr(structure, 'name', None)
-        for structure, _linked_phase in linked_structures
+        getattr(structure, 'name', None) for structure, _linked_phase in linked_structures
     }
     return [
         phase.block_name
@@ -1171,10 +1149,7 @@ def _phase_block_names_for_experiment(
 
 def _is_tof_experiment(experiment: object) -> bool:
     """Return whether a pattern uses time-of-flight x coordinates."""
-    return (
-        _attribute_value(getattr(experiment, 'type', None), 'beam_mode')
-        == 'time-of-flight'
-    )
+    return _attribute_value(getattr(experiment, 'type', None), 'beam_mode') == 'time-of-flight'
 
 
 def _powder_x_tag(experiment: object) -> str:
@@ -1295,9 +1270,7 @@ def _formula_values_from_structures(structures: Iterable[object]) -> _FormulaVal
             if not symbol:
                 continue
             occupancy = _descriptor_value(getattr(atom_site, 'occupancy', None))
-            counts[str(symbol)] = counts.get(str(symbol), 0.0) + _formula_count(
-                occupancy
-            )
+            counts[str(symbol)] = counts.get(str(symbol), 0.0) + _formula_count(occupancy)
 
     if not counts:
         return _FormulaValues(
@@ -1346,7 +1319,7 @@ def _format_formula_suffix(count: float) -> str:
     if math.isclose(count, 1.0):
         return ''
     if math.isclose(count, round(count)):
-        return str(int(round(count)))
+        return str(round(count))
     return f'{count:.4g}'
 
 

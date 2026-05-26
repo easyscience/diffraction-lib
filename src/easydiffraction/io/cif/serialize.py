@@ -230,18 +230,19 @@ def _emit_rows_without_tag_validation(
     max_display: int | None,
 ) -> list[str]:
     """Build rows for loops whose tag family is chosen externally."""
-    lines: list[str] = []
     if max_display is not None and len(items) > max_display:
         half = max_display // 2
-        for item in items[:half]:
-            lines.append(' '.join(row_fn(item)))
-        lines.append('...')
-        for item in items[-half:]:
-            lines.append(' '.join(row_fn(item)))
-    else:
-        for item in items:
-            lines.append(' '.join(row_fn(item)))
-    return lines
+        return [
+            *_rows_without_tag_validation(items[:half], row_fn),
+            '...',
+            *_rows_without_tag_validation(items[-half:], row_fn),
+        ]
+    return _rows_without_tag_validation(items, row_fn)
+
+
+def _rows_without_tag_validation(items: list, row_fn: object) -> list[str]:
+    """Return formatted row strings without header-tag validation."""
+    return [' '.join(row_fn(item)) for item in items]
 
 
 def _adp_family_from_type(adp_type: str) -> str:
@@ -383,20 +384,39 @@ def category_collection_to_cif(
     if skip is not None and skip():
         return ''
 
-    lines: list[str] = []
-    scalar_descriptors = getattr(collection, 'scalar_descriptors', [])
-    lines.extend(param_to_cif(p) for p in scalar_descriptors)
+    lines = _scalar_descriptor_lines(collection)
 
     if not len(collection):
         return '\n'.join(lines)
 
     adp_cif = _adp_collection_to_cif(collection, max_display)
     if adp_cif is not None:
-        if lines:
-            lines.append('')
-        lines.append(adp_cif)
-        return '\n'.join(lines)
+        return _join_scalar_and_loop_lines(lines, adp_cif)
 
+    loop_cif = _standard_collection_loop_to_cif(collection, max_display)
+    return _join_scalar_and_loop_lines(lines, loop_cif)
+
+
+def _scalar_descriptor_lines(collection: object) -> list[str]:
+    """Return scalar descriptor CIF lines for a collection."""
+    scalar_descriptors = getattr(collection, 'scalar_descriptors', [])
+    return [param_to_cif(p) for p in scalar_descriptors]
+
+
+def _join_scalar_and_loop_lines(scalar_lines: list[str], loop_cif: str) -> str:
+    """Join optional scalar lines with a loop CIF body."""
+    lines = list(scalar_lines)
+    if lines:
+        lines.append('')
+    lines.append(loop_cif)
+    return '\n'.join(lines)
+
+
+def _standard_collection_loop_to_cif(
+    collection: object,
+    max_display: int | None,
+) -> str:
+    """Render a non-ADP collection loop."""
     loop_parameters_hook = getattr(collection, '_cif_loop_parameters', None)
 
     def _loop_parameters(item: object) -> list[GenericDescriptorBase]:
@@ -406,7 +426,7 @@ def category_collection_to_cif(
 
     # Header — use first item's CIF tag names as the canonical columns
     first_item = next(iter(collection.values()))
-    lines.append('loop_')
+    lines = ['loop_']
     header_tags: list[str] = []
     for p in _loop_parameters(first_item):
         tags = p._cif_handler.names  # type: ignore[attr-defined]
@@ -425,7 +445,6 @@ def category_collection_to_cif(
 
     items = list(collection.values())
     lines.extend(_emit_loop_rows(items, _row, _loop_parameters, header_tags, max_display))
-
     return '\n'.join(lines)
 
 

@@ -16,8 +16,231 @@ from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.io.cif.handler import CifHandler
 
 
+class _LeastSquaresCoreProperties:
+    """Core deterministic least-squares result descriptors."""
+
+    @property
+    def objective_name(self) -> StringDescriptor:
+        """
+        Objective function name for the persisted deterministic fit.
+        """
+        return self._objective_name
+
+    def _set_objective_name(self, value: str | None) -> None:
+        self._objective_name.value = value
+
+    @property
+    def objective_value(self) -> NumericDescriptor:
+        """Objective value for the persisted deterministic fit."""
+        return self._objective_value
+
+    def _set_objective_value(self, value: float | None) -> None:
+        self._objective_value.value = value
+
+    @property
+    def n_data_points(self) -> NumericDescriptor:
+        """
+        Number of data points used in the persisted deterministic fit.
+        """
+        return self._n_data_points
+
+    def _set_n_data_points(self, value: float | None) -> None:
+        self._n_data_points.value = value
+
+    @property
+    def n_parameters(self) -> NumericDescriptor:
+        """Number of parameters in the persisted deterministic fit."""
+        return self._n_parameters
+
+    def _set_n_parameters(self, value: float | None) -> None:
+        self._n_parameters.value = value
+
+    @property
+    def n_free_parameters(self) -> NumericDescriptor:
+        """
+        Number of free parameters in the persisted deterministic fit.
+        """
+        return self._n_free_parameters
+
+    def _set_n_free_parameters(self, value: float | None) -> None:
+        self._n_free_parameters.value = value
+
+    @property
+    def degrees_of_freedom(self) -> NumericDescriptor:
+        """Degrees of freedom for the persisted deterministic fit."""
+        return self._degrees_of_freedom
+
+    def _set_degrees_of_freedom(self, value: float | None) -> None:
+        self._degrees_of_freedom.value = value
+
+    @property
+    def covariance_available(self) -> BoolDescriptor:
+        """Whether deterministic covariance was available."""
+        return self._covariance_available
+
+    def _set_covariance_available(self, *, value: bool | None) -> None:
+        self._covariance_available.value = value
+
+    @property
+    def correlation_available(self) -> BoolDescriptor:
+        """Whether deterministic correlations were available."""
+        return self._correlation_available
+
+    def _set_correlation_available(self, *, value: bool | None) -> None:
+        self._correlation_available.value = value
+
+    @property
+    def exit_reason(self) -> StringDescriptor:
+        """Backend exit reason for the persisted deterministic fit."""
+        return self._exit_reason
+
+    def _set_exit_reason(self, value: str | None) -> None:
+        self._exit_reason.value = value
+
+
+class _LeastSquaresReflectionProperties:
+    """Single-crystal reflection aggregate result descriptors."""
+
+    @property
+    def r_factor_all(self) -> NumericDescriptor:
+        """R factor for all observed data."""
+        return self._r_factor_all
+
+    def _set_r_factor_all(self, value: float | None) -> None:
+        self._r_factor_all.value = value
+
+    @property
+    def wr_factor_all(self) -> NumericDescriptor:
+        """Weighted R factor for all observed data."""
+        return self._wr_factor_all
+
+    def _set_wr_factor_all(self, value: float | None) -> None:
+        self._wr_factor_all.value = value
+
+    @property
+    def r_factor_gt(self) -> NumericDescriptor:
+        """R factor for observations above the threshold."""
+        return self._r_factor_gt
+
+    def _set_r_factor_gt(self, value: float | None) -> None:
+        self._r_factor_gt.value = value
+
+    @property
+    def wr_factor_gt(self) -> NumericDescriptor:
+        """Weighted R factor for observations above the threshold."""
+        return self._wr_factor_gt
+
+    def _set_wr_factor_gt(self, value: float | None) -> None:
+        self._wr_factor_gt.value = value
+
+    @property
+    def threshold_expression(self) -> StringDescriptor:
+        """Expression defining the observed-reflection threshold."""
+        return self._threshold_expression
+
+    def _set_threshold_expression(self, value: str | None) -> None:
+        self._threshold_expression.value = value
+
+    @property
+    def number_reflns_total(self) -> NumericDescriptor:
+        """Total number of reflections represented in the fit."""
+        return self._number_reflns_total
+
+    def _set_number_reflns_total(self, value: float | None) -> None:
+        self._number_reflns_total.value = value
+
+    @property
+    def number_reflns_gt(self) -> NumericDescriptor:
+        """Number of reflections above the observed threshold."""
+        return self._number_reflns_gt
+
+    def _set_number_reflns_gt(self, value: float | None) -> None:
+        self._number_reflns_gt.value = value
+
+
+class _LeastSquaresPowderProperties:
+    """Powder-profile and fit-control aggregate descriptors."""
+
+    @property
+    def prof_r_factor(self) -> NumericDescriptor:
+        """Profile R factor for powder fits."""
+        return self._prof_r_factor
+
+    def _set_prof_r_factor(self, value: float | None) -> None:
+        self._prof_r_factor.value = value
+
+    @property
+    def prof_wr_factor(self) -> NumericDescriptor:
+        """Weighted profile R factor for powder fits."""
+        return self._prof_wr_factor
+
+    def _set_prof_wr_factor(self, value: float | None) -> None:
+        self._prof_wr_factor.value = value
+
+    @property
+    def prof_wr_expected(self) -> NumericDescriptor:
+        """Expected weighted profile R factor for powder fits."""
+        return self._prof_wr_expected
+
+    def _set_prof_wr_expected(self, value: float | None) -> None:
+        self._prof_wr_expected.value = value
+
+    @property
+    def number_restraints(self) -> NumericDescriptor:
+        """Number of restraints used in the deterministic fit."""
+        return self._number_restraints
+
+    def _set_number_restraints(self, value: float | None) -> None:
+        self._number_restraints.value = value
+
+    @property
+    def number_constraints(self) -> NumericDescriptor:
+        """Number of constraints used in the deterministic fit."""
+        return self._number_constraints
+
+    def _set_number_constraints(self, value: float | None) -> None:
+        self._number_constraints.value = value
+
+    @property
+    def shift_over_su_max(self) -> NumericDescriptor:
+        """Maximum absolute parameter shift divided by s.u."""
+        return self._shift_over_su_max
+
+    def _set_shift_over_su_max(self, value: float | None) -> None:
+        self._shift_over_su_max.value = value
+
+    @property
+    def shift_over_su_mean(self) -> NumericDescriptor:
+        """Mean absolute parameter shift divided by s.u."""
+        return self._shift_over_su_mean
+
+    def _set_shift_over_su_mean(self, value: float | None) -> None:
+        self._shift_over_su_mean.value = value
+
+    @property
+    def profile_function(self) -> StringDescriptor:
+        """Active profile function names."""
+        return self._profile_function
+
+    def _set_profile_function(self, value: str | None) -> None:
+        self._profile_function.value = value
+
+    @property
+    def background_function(self) -> StringDescriptor:
+        """Active background function names."""
+        return self._background_function
+
+    def _set_background_function(self, value: str | None) -> None:
+        self._background_function.value = value
+
+
 @FitResultFactory.register
-class LeastSquaresFitResult(FitResultBase):
+class LeastSquaresFitResult(
+    _LeastSquaresCoreProperties,
+    _LeastSquaresReflectionProperties,
+    _LeastSquaresPowderProperties,
+    FitResultBase,
+):
     """Persisted least-squares fit-result metadata."""
 
     type_info = TypeInfo(
@@ -265,76 +488,6 @@ class LeastSquaresFitResult(FitResultBase):
             cif_handler=CifHandler(names=[f'_fit_result.{name}']),
         )
 
-    @property
-    def objective_name(self) -> StringDescriptor:
-        """
-        Objective function name for the persisted deterministic fit.
-        """
-        return self._objective_name
-
-    def _set_objective_name(self, value: str | None) -> None:
-        self._objective_name.value = value
-
-    @property
-    def objective_value(self) -> NumericDescriptor:
-        """Objective value for the persisted deterministic fit."""
-        return self._objective_value
-
-    def _set_objective_value(self, value: float | None) -> None:
-        self._objective_value.value = value
-
-    @property
-    def n_data_points(self) -> NumericDescriptor:
-        """
-        Number of data points used in the persisted deterministic fit.
-        """
-        return self._n_data_points
-
-    def _set_n_data_points(self, value: float | None) -> None:
-        self._n_data_points.value = value
-
-    @property
-    def n_parameters(self) -> NumericDescriptor:
-        """Number of parameters in the persisted deterministic fit."""
-        return self._n_parameters
-
-    def _set_n_parameters(self, value: float | None) -> None:
-        self._n_parameters.value = value
-
-    @property
-    def n_free_parameters(self) -> NumericDescriptor:
-        """
-        Number of free parameters in the persisted deterministic fit.
-        """
-        return self._n_free_parameters
-
-    def _set_n_free_parameters(self, value: float | None) -> None:
-        self._n_free_parameters.value = value
-
-    @property
-    def degrees_of_freedom(self) -> NumericDescriptor:
-        """Degrees of freedom for the persisted deterministic fit."""
-        return self._degrees_of_freedom
-
-    def _set_degrees_of_freedom(self, value: float | None) -> None:
-        self._degrees_of_freedom.value = value
-
-    @property
-    def covariance_available(self) -> BoolDescriptor:
-        """Whether deterministic covariance was available."""
-        return self._covariance_available
-
-    def _set_covariance_available(self, *, value: bool | None) -> None:
-        self._covariance_available.value = value
-
-    @property
-    def correlation_available(self) -> BoolDescriptor:
-        """Whether deterministic correlations were available."""
-        return self._correlation_available
-
-    def _set_correlation_available(self, *, value: bool | None) -> None:
-        self._correlation_available.value = value
-
     def _include_exit_reason_cif_descriptor(self) -> bool:
         """Return whether exit_reason adds distinct information."""
         exit_reason = self.exit_reason.value
@@ -384,8 +537,7 @@ class LeastSquaresFitResult(FitResultBase):
     def _has_powder_result(self) -> bool:
         """Return whether powder-profile descriptors are populated."""
         return any(
-            self._has_value(getattr(self, name))
-            for name in self._cif_powder_descriptor_names
+            self._has_value(getattr(self, name)) for name in self._cif_powder_descriptor_names
         )
 
     @staticmethod
@@ -398,139 +550,3 @@ class LeastSquaresFitResult(FitResultBase):
         """Return whether a count descriptor is positive."""
         value = descriptor.value
         return isinstance(value, (int, float)) and value > 0
-
-    @property
-    def exit_reason(self) -> StringDescriptor:
-        """Backend exit reason for the persisted deterministic fit."""
-        return self._exit_reason
-
-    def _set_exit_reason(self, value: str | None) -> None:
-        self._exit_reason.value = value
-
-    @property
-    def r_factor_all(self) -> NumericDescriptor:
-        """R factor for all observed data."""
-        return self._r_factor_all
-
-    def _set_r_factor_all(self, value: float | None) -> None:
-        self._r_factor_all.value = value
-
-    @property
-    def wr_factor_all(self) -> NumericDescriptor:
-        """Weighted R factor for all observed data."""
-        return self._wr_factor_all
-
-    def _set_wr_factor_all(self, value: float | None) -> None:
-        self._wr_factor_all.value = value
-
-    @property
-    def r_factor_gt(self) -> NumericDescriptor:
-        """R factor for observations above the threshold."""
-        return self._r_factor_gt
-
-    def _set_r_factor_gt(self, value: float | None) -> None:
-        self._r_factor_gt.value = value
-
-    @property
-    def wr_factor_gt(self) -> NumericDescriptor:
-        """Weighted R factor for observations above the threshold."""
-        return self._wr_factor_gt
-
-    def _set_wr_factor_gt(self, value: float | None) -> None:
-        self._wr_factor_gt.value = value
-
-    @property
-    def prof_r_factor(self) -> NumericDescriptor:
-        """Profile R factor for powder fits."""
-        return self._prof_r_factor
-
-    def _set_prof_r_factor(self, value: float | None) -> None:
-        self._prof_r_factor.value = value
-
-    @property
-    def prof_wr_factor(self) -> NumericDescriptor:
-        """Weighted profile R factor for powder fits."""
-        return self._prof_wr_factor
-
-    def _set_prof_wr_factor(self, value: float | None) -> None:
-        self._prof_wr_factor.value = value
-
-    @property
-    def prof_wr_expected(self) -> NumericDescriptor:
-        """Expected weighted profile R factor for powder fits."""
-        return self._prof_wr_expected
-
-    def _set_prof_wr_expected(self, value: float | None) -> None:
-        self._prof_wr_expected.value = value
-
-    @property
-    def number_restraints(self) -> NumericDescriptor:
-        """Number of restraints used in the deterministic fit."""
-        return self._number_restraints
-
-    def _set_number_restraints(self, value: float | None) -> None:
-        self._number_restraints.value = value
-
-    @property
-    def number_constraints(self) -> NumericDescriptor:
-        """Number of constraints used in the deterministic fit."""
-        return self._number_constraints
-
-    def _set_number_constraints(self, value: float | None) -> None:
-        self._number_constraints.value = value
-
-    @property
-    def shift_over_su_max(self) -> NumericDescriptor:
-        """Maximum absolute parameter shift divided by s.u."""
-        return self._shift_over_su_max
-
-    def _set_shift_over_su_max(self, value: float | None) -> None:
-        self._shift_over_su_max.value = value
-
-    @property
-    def shift_over_su_mean(self) -> NumericDescriptor:
-        """Mean absolute parameter shift divided by s.u."""
-        return self._shift_over_su_mean
-
-    def _set_shift_over_su_mean(self, value: float | None) -> None:
-        self._shift_over_su_mean.value = value
-
-    @property
-    def profile_function(self) -> StringDescriptor:
-        """Active profile function names."""
-        return self._profile_function
-
-    def _set_profile_function(self, value: str | None) -> None:
-        self._profile_function.value = value
-
-    @property
-    def background_function(self) -> StringDescriptor:
-        """Active background function names."""
-        return self._background_function
-
-    def _set_background_function(self, value: str | None) -> None:
-        self._background_function.value = value
-
-    @property
-    def threshold_expression(self) -> StringDescriptor:
-        """Expression defining the observed-reflection threshold."""
-        return self._threshold_expression
-
-    def _set_threshold_expression(self, value: str | None) -> None:
-        self._threshold_expression.value = value
-
-    @property
-    def number_reflns_total(self) -> NumericDescriptor:
-        """Total number of reflections represented in the fit."""
-        return self._number_reflns_total
-
-    def _set_number_reflns_total(self, value: float | None) -> None:
-        self._number_reflns_total.value = value
-
-    @property
-    def number_reflns_gt(self) -> NumericDescriptor:
-        """Number of reflections above the observed threshold."""
-        return self._number_reflns_gt
-
-    def _set_number_reflns_gt(self, value: float | None) -> None:
-        self._number_reflns_gt.value = value

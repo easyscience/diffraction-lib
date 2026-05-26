@@ -20,25 +20,15 @@ def test_check_report_warns_for_unknown_non_extension_tags(tmp_path):
 
     report_path = tmp_path / 'report.cif'
     report_path.write_text(
-        '\n'.join(
-            [
-                'data_test',
-                '_audit.creation_method EasyDiffraction',
-                '_easydiffraction_custom.value 1',
-                '_unknown.bad 2',
-            ]
-        ),
+        'data_test\n'
+        '_audit.creation_method EasyDiffraction\n'
+        '_easydiffraction_custom.value 1\n'
+        '_unknown.bad 2',
         encoding='utf-8',
     )
     dictionary_path = tmp_path / 'core.dic'
     dictionary_path.write_text(
-        '\n'.join(
-            [
-                'data_core',
-                'save__audit.creation_method',
-                'save_',
-            ]
-        ),
+        'data_core\nsave__audit.creation_method\nsave_',
         encoding='utf-8',
     )
 

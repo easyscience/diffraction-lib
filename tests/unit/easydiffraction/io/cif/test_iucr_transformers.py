@@ -22,9 +22,7 @@ def _items_by_tag(items):
 def test_wavelength_transformer_emits_monochromatic_items():
     from easydiffraction.io.cif.iucr_transformers import WavelengthTransformer
 
-    experiment = SimpleNamespace(
-        instrument=SimpleNamespace(setup_wavelength=_Descriptor(1.5406))
-    )
+    experiment = SimpleNamespace(instrument=SimpleNamespace(setup_wavelength=_Descriptor(1.5406)))
     transformer = WavelengthTransformer()
 
     assert tuple((item.tag, item.value) for item in transformer.items(experiment)) == (
@@ -108,9 +106,7 @@ def test_extinction_transformer_emits_becker_coppens_type_1():
     )
     items = _items_by_tag(ExtinctionTransformer().items(SimpleNamespace(extinction=extinction)))
 
-    assert items['_refine_ls.extinction_method'] == (
-        'Becker-Coppens type 1 Gaussian isotropic'
-    )
+    assert items['_refine_ls.extinction_method'] == ('Becker-Coppens type 1 Gaussian isotropic')
     assert items['_refine_ls.extinction_coef'] == 0.12
     assert items['_easydiffraction_extinction.type'] == 'becker-coppens'
     assert items['_easydiffraction_extinction.model'] == 'gaussian_isotropic_type1'
@@ -166,9 +162,7 @@ def test_extinction_transformer_emits_mixed_becker_coppens_details():
     )
     items = _items_by_tag(ExtinctionTransformer().items(SimpleNamespace(extinction=extinction)))
 
-    assert items['_refine_ls.extinction_method'] == (
-        'Becker-Coppens mixed Gaussian isotropic'
-    )
+    assert items['_refine_ls.extinction_method'] == ('Becker-Coppens mixed Gaussian isotropic')
     assert items['_refine_ls.extinction_coef'] == '?'
     assert items['_refine.special_details'] == (
         'Becker-Coppens mixed extinction with mosaicity=0.12 and radius=2.5.'

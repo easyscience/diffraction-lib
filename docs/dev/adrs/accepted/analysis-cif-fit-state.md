@@ -87,8 +87,8 @@ posterior summaries:
 `_fit_result` stores the latest saved fit header and scalar
 family-specific fit outputs. In the default project save this category
 is topology-neutral: single-crystal and powder fits both persist under
-`_fit_result.*`. The IUCr submission export may remap these same
-values to topology-specific dictionary categories (`_refine_ls.*`,
+`_fit_result.*`. The IUCr submission export may remap these same values
+to topology-specific dictionary categories (`_refine_ls.*`,
 `_pd_proc_ls.*`, `_reflns.*`) as described by
 [`iucr-cif-tag-alignment.md`](iucr-cif-tag-alignment.md), but the
 round-trip project schema remains common.
@@ -122,8 +122,8 @@ Deterministic fit-result classes add compact fit output counts:
 These deterministic fields are always written once a deterministic
 fit-result projection exists.
 
-Reflection-result fields are written only when a fitted experiment
-has persisted reflection rows:
+Reflection-result fields are written only when a fitted experiment has
+persisted reflection rows:
 
 - `R_factor_all`
 - `wR_factor_all`
@@ -133,8 +133,8 @@ has persisted reflection rows:
 - `number_reflns_total`
 - `number_reflns_gt`
 
-Powder-profile fields are written only when the result contains
-powder profile diagnostics:
+Powder-profile fields are written only when the result contains powder
+profile diagnostics:
 
 - `prof_R_factor`
 - `prof_wR_factor`
@@ -148,13 +148,13 @@ Restraint and constraint counts are written only when positive:
 - `number_constraints`
 
 The deterministic R-factor, profile, restraint / constraint, and
-reflection-aggregate fields use dictionary-canonical item names
-where those exist, including uppercase `R` / `wR`, while retaining
-the project-side `_fit_result` category prefix in the default save.
-Live deterministic fit results may also carry transient diagnostics
-such as `shift_over_su_max` and `shift_over_su_mean`; those are not
-written to `analysis/analysis.cif` until a topology-specific
-persistence contract needs them.
+reflection-aggregate fields use dictionary-canonical item names where
+those exist, including uppercase `R` / `wR`, while retaining the
+project-side `_fit_result` category prefix in the default save. Live
+deterministic fit results may also carry transient diagnostics such as
+`shift_over_su_max` and `shift_over_su_mean`; those are not written to
+`analysis/analysis.cif` until a topology-specific persistence contract
+needs them.
 
 When the LSQ backend provides a termination reason that differs from the
 common `_fit_result.message`, deterministic fit results also store:

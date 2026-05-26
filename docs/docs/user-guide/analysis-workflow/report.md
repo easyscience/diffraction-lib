@@ -5,8 +5,8 @@ icon: material/clipboard-text
 # :material-clipboard-text: Report
 
 The **Report** section represents the final step in the data processing
-workflow. It involves generating a **report** that consolidates
-the results of the diffraction data analysis, providing a comprehensive
+workflow. It involves generating a **report** that consolidates the
+results of the diffraction data analysis, providing a comprehensive
 overview of the model refinement process and its outcomes.
 
 ## Contents of the Report

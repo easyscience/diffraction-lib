@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+from collections import UserDict
 from types import SimpleNamespace
 
 from easydiffraction.io.cif.handler import CifHandler
@@ -15,14 +16,14 @@ class _Descriptor:
         self._cif_handler = CifHandler(names=[tag], iucr_name=iucr_name)
 
 
-class _Collection(dict):
+class _Collection(UserDict):
     @property
     def names(self):
-        return list(self.keys())
+        return list(self.data)
 
 
 def _collection(*items):
-    return _Collection((item.name, item) for item in items)
+    return _Collection({item.name: item for item in items})
 
 
 def _descriptor(value, tag='_x.value', iucr_name=None):

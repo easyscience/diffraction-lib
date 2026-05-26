@@ -77,7 +77,8 @@ class WavelengthTransformer(IucrCategoryTransformer):
 
     tag = 'wavelength'
 
-    def items(self, experiment: object) -> tuple[IucrItem, ...] | None:
+    @staticmethod
+    def items(experiment: object) -> tuple[IucrItem, ...] | None:
         """
         Return wavelength items for a monochromatic experiment.
 
@@ -103,7 +104,8 @@ class WavelengthTransformer(IucrCategoryTransformer):
             IucrItem('_diffrn_radiation_wavelength.wt', 1.0),
         )
 
-    def loop(self, experiment: object) -> IucrLoop | None:
+    @staticmethod
+    def loop(experiment: object) -> IucrLoop | None:
         """
         Return a wavelength loop for multi-wavelength experiments.
 
@@ -127,7 +129,8 @@ class TofCalibrationTransformer(IucrCategoryTransformer):
 
     tag = 'tof_calibration'
 
-    def loop(self, experiment: object) -> IucrLoop | None:
+    @staticmethod
+    def loop(experiment: object) -> IucrLoop | None:
         """
         Return a d-to-TOF calibration loop.
 
@@ -176,7 +179,8 @@ class ExcludedRegionsTransformer(IucrCategoryTransformer):
 
     tag = 'excluded_regions'
 
-    def items(self, experiment: object) -> tuple[IucrItem, ...]:
+    @staticmethod
+    def items(experiment: object) -> tuple[IucrItem, ...]:
         """
         Return the excluded-region free-text item.
 
@@ -192,7 +196,7 @@ class ExcludedRegionsTransformer(IucrCategoryTransformer):
         """
         regions = _collection_values(getattr(experiment, 'excluded_regions', None))
         labels = [
-            f"{_attribute_value(region, 'start')} to {_attribute_value(region, 'end')}"
+            f'{_attribute_value(region, "start")} to {_attribute_value(region, "end")}'
             for region in regions
         ]
         value = '; '.join(labels) if labels else '?'
@@ -205,7 +209,8 @@ class SymmetryOperationsTransformer(IucrCategoryTransformer):
 
     tag = 'symmetry_operations'
 
-    def loop(self, structure: object) -> IucrLoop:
+    @staticmethod
+    def loop(structure: object) -> IucrLoop:
         """
         Return symmetry operations for a structure.
 
@@ -232,7 +237,8 @@ class ExtinctionTransformer(IucrCategoryTransformer):
 
     tag = 'extinction'
 
-    def items(self, experiment: object) -> tuple[IucrItem, ...]:
+    @staticmethod
+    def items(experiment: object) -> tuple[IucrItem, ...]:
         """
         Return standard and extension extinction items.
 
@@ -311,10 +317,7 @@ def _extinction_special_details(extinction: object) -> object | None:
         return None
     mosaicity = _attribute_value(extinction, 'mosaicity')
     radius = _attribute_value(extinction, 'radius')
-    return (
-        'Becker-Coppens mixed extinction with '
-        f'mosaicity={mosaicity} and radius={radius}.'
-    )
+    return f'Becker-Coppens mixed extinction with mosaicity={mosaicity} and radius={radius}.'
 
 
 def _becker_coppens_method(extinction: object) -> str:

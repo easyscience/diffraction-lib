@@ -4,10 +4,9 @@
 
 from __future__ import annotations
 
-import pathlib
 from textwrap import wrap
+from typing import TYPE_CHECKING
 
-from easydiffraction.core.variable import Parameter
 from easydiffraction.io.cif.iucr_writer import iucr_report_path
 from easydiffraction.io.cif.iucr_writer import write_iucr_cif
 from easydiffraction.report.check import ReportCheckResult
@@ -16,6 +15,11 @@ from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_object_help
 from easydiffraction.utils.utils import render_table
+
+if TYPE_CHECKING:
+    import pathlib
+
+    from easydiffraction.core.variable import Parameter
 
 
 class Report:

@@ -9,8 +9,8 @@ Accepted and implemented.
 EasyDiffraction is used by scientists who often explore the API in
 notebooks. The main object graph already exposes many focused objects:
 projects, project metadata, structures, experiments, categories,
-parameters, analysis helpers, reports, and display facades. Users need
-a consistent way to discover the next useful operation from any of these
+parameters, analysis helpers, reports, and display facades. Users need a
+consistent way to discover the next useful operation from any of these
 objects without reading source code.
 
 Most model objects inherit `GuardedBase`, `CategoryItem`,
