@@ -122,3 +122,33 @@ def test_project_to_cif_assembles_present_sections():
     p = Project()
     out = MUT.project_to_cif(p)
     assert out == 'I\n\nE'
+
+
+def test_analysis_from_cif_restores_fit_parameters_without_fit_result():
+    import easydiffraction.io.cif.serialize as MUT
+
+    from easydiffraction.analysis.analysis import Analysis
+
+    class Project:
+        structures = type('Structures', (), {'parameters': []})()
+        experiments = type('Experiments', (), {'parameters': [], 'names': []})()
+        _varname = 'proj'
+
+    analysis = Analysis(project=Project())
+    cif_text = """
+_fitting_mode.type single
+_minimizer.type 'lmfit (leastsq)'
+loop_
+_fit_parameter.param_unique_name
+_fit_parameter.fit_min
+_fit_parameter.fit_max
+_fit_parameter.start_value
+_fit_parameter.start_uncertainty
+scale 0.0 2.0 1.0 0.1
+"""
+
+    MUT.analysis_from_cif(analysis, cif_text)
+
+    assert analysis._has_persisted_fit_state() is False
+    assert len(analysis.fit_parameters) == 1
+    assert analysis.fit_parameters['scale'].start_value.value == 1.0

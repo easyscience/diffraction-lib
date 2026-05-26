@@ -261,3 +261,113 @@ def test_cli_fit_dry_clears_path(monkeypatch, tmp_path):
     result = runner.invoke(main_mod.app, ['fit', '--dry', str(proj_dir)])
     assert result.exit_code == 0
     assert fake_project.info._path is None
+
+
+def test_cli_undo_noop_exits_zero_and_does_not_save(monkeypatch, tmp_path):
+    import easydiffraction.__main__ as main_mod
+    from easydiffraction.analysis import UndoFitOutcome
+
+    calls: list[str] = []
+
+    class FakeAnalysis:
+        @staticmethod
+        def undo_fit():
+            calls.append('UNDO')
+            return UndoFitOutcome(
+                restored_parameter_names=(),
+                cleared_fit_result=False,
+                cleared_sidecar=False,
+                was_no_op=True,
+            )
+
+    class FakeProject:
+        name = 'demo_project'
+        analysis = FakeAnalysis()
+
+        @staticmethod
+        def save():
+            calls.append('SAVE')
+
+    proj_dir = tmp_path / 'proj'
+    monkeypatch.setattr(main_mod, '_load_project', lambda project_dir: FakeProject())
+
+    result = runner.invoke(main_mod.app, ['undo', str(proj_dir)])
+
+    assert result.exit_code == 0
+    assert calls == ['UNDO']
+    assert "No fit to undo for 'demo_project'. Project state is unchanged." in result.stdout
+
+
+def test_cli_undo_dry_uses_outcome_summary_without_saving(monkeypatch, tmp_path):
+    import easydiffraction.__main__ as main_mod
+    from easydiffraction.analysis import UndoFitOutcome
+
+    calls: list[str] = []
+
+    class FakeAnalysis:
+        @staticmethod
+        def undo_fit():
+            calls.append('UNDO')
+            return UndoFitOutcome(
+                restored_parameter_names=('a', 'b'),
+                cleared_fit_result=True,
+                cleared_sidecar=True,
+                was_no_op=False,
+            )
+
+    class FakeProject:
+        name = 'demo_project'
+        analysis = FakeAnalysis()
+
+        @staticmethod
+        def save():
+            calls.append('SAVE')
+
+    proj_dir = tmp_path / 'proj'
+    monkeypatch.setattr(main_mod, '_load_project', lambda project_dir: FakeProject())
+
+    result = runner.invoke(main_mod.app, ['undo', '--dry', str(proj_dir)])
+
+    assert result.exit_code == 0
+    assert calls == ['UNDO']
+    assert "Would undo last fit for 'demo_project'" in result.stdout
+    assert '2 parameters would be restored to pre-fit values' in result.stdout
+    assert 'analysis.fit_results would be cleared' in result.stdout
+    assert 'analysis/results.h5 (Bayesian sidecar) would be cleared' in result.stdout
+
+
+def test_cli_undo_saves_after_real_rollback(monkeypatch, tmp_path):
+    import easydiffraction.__main__ as main_mod
+    from easydiffraction.analysis import UndoFitOutcome
+
+    calls: list[str] = []
+
+    class FakeAnalysis:
+        @staticmethod
+        def undo_fit():
+            calls.append('UNDO')
+            return UndoFitOutcome(
+                restored_parameter_names=('a',),
+                cleared_fit_result=True,
+                cleared_sidecar=False,
+                was_no_op=False,
+            )
+
+    class FakeProject:
+        name = 'demo_project'
+        analysis = FakeAnalysis()
+
+        @staticmethod
+        def save():
+            calls.append('SAVE')
+
+    proj_dir = tmp_path / 'proj'
+    monkeypatch.setattr(main_mod, '_load_project', lambda project_dir: FakeProject())
+
+    result = runner.invoke(main_mod.app, ['undo', str(proj_dir)])
+
+    assert result.exit_code == 0
+    assert calls == ['UNDO', 'SAVE']
+    assert 'Restored 1 parameters to their pre-fit values.' in result.stdout
+    assert 'Cleared analysis.fit_results.' in result.stdout
+    assert f'Saved project to {proj_dir}.' in result.stdout
