@@ -156,11 +156,24 @@ live on `FitResultBase`; family-specific fields on the concrete classes:
 - `LeastSquaresFitResult` adds: `objective_name`, `objective_value`,
   `n_data_points`, `n_parameters`, `n_free_parameters`,
   `degrees_of_freedom`, `covariance_available`, `correlation_available`,
-  `exit_reason`.
+  `exit_reason`, `r_factor_all`, `wr_factor_all`, `r_factor_gt`,
+  `wr_factor_gt`, `prof_r_factor`, `prof_wr_factor`, `prof_wr_expected`,
+  `number_restraints`, `number_constraints`, `shift_over_su_max`,
+  `shift_over_su_mean`, `profile_function`, `background_function`,
+  `threshold_expression`, `number_reflns_total`, `number_reflns_gt`.
 - `BayesianFitResult` adds: `point_estimate_name`, `sampler_completed`,
   `credible_interval_inner`, `credible_interval_outer`,
   `resolved_random_seed`, `acceptance_rate_mean`, `gelman_rubin_max`,
   `effective_sample_size_min`, `best_log_posterior`.
+
+The live deterministic result class may expose more descriptors than are
+written for a specific saved result. `analysis/analysis.cif` serializes
+the active subset: common LSQ descriptors, reflection descriptors only
+when reflection rows exist, powder-profile descriptors only for
+powder-profile results, and restraint / constraint counts only when
+positive. Transient convergence diagnostics such as `shift_over_su_max`
+and `shift_over_su_mean` remain live-result/report concerns and are not
+part of the default fit-result CIF projection.
 
 The three overlapping pairs from §"Context" are resolved by **dropping
 the `minimizer` copy** and keeping the `fit_result` copy:
@@ -209,6 +222,19 @@ _fit_result.degrees_of_freedom     1016
 _fit_result.covariance_available   true
 _fit_result.correlation_available  true
 _fit_result.exit_reason            converged
+_fit_result.R_factor_all           0.041
+_fit_result.wR_factor_all          0.052
+_fit_result.R_factor_gt            0.038
+_fit_result.wR_factor_gt           0.049
+_fit_result.prof_R_factor          0.041
+_fit_result.prof_wR_factor         0.052
+_fit_result.prof_wR_expected       0.031
+_fit_result.number_constraints     2
+_fit_result.profile_function       pseudo_voigt
+_fit_result.background_function    chebyshev
+_fit_result.threshold_expression   I>3\s(I)
+_fit_result.number_reflns_total    128
+_fit_result.number_reflns_gt       121
 ```
 
 Example Bayesian fit:

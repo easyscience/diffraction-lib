@@ -13,3 +13,22 @@ def test_space_group_name_updates_it_code():
     # changing name resets the code again
     sg.name_h_m = 'P -1'
     assert sg.it_coordinate_system_code.value == sg._it_coordinate_system_code_allowed_values[0]
+
+
+def test_space_group_uses_iucr_casing_with_legacy_aliases():
+    sg = SpaceGroup()
+
+    assert sg.name_h_m._cif_handler.names == [
+        '_space_group.name_H-M_alt',
+        '_space_group.name_h_m',
+        '_space_group_name_H-M_alt',
+        '_symmetry.space_group_name_H-M',
+        '_symmetry_space_group_name_H-M',
+    ]
+    assert sg.it_coordinate_system_code._cif_handler.names == [
+        '_space_group.IT_coordinate_system_code',
+        '_space_group.it_coordinate_system_code',
+        '_space_group_IT_coordinate_system_code',
+        '_symmetry.IT_coordinate_system_code',
+        '_symmetry_IT_coordinate_system_code',
+    ]

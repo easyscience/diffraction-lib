@@ -36,13 +36,19 @@ class SequentialFit(CategoryItem):
             name='data_dir',
             description='Directory containing sequential-fit data files.',
             value_spec=AttributeSpec(default=''),
-            cif_handler=CifHandler(names=['_sequential_fit.data_dir']),
+            cif_handler=CifHandler(
+                names=['_sequential_fit.data_dir'],
+                iucr_name='_easydiffraction_sequential_fit.data_dir',
+            ),
         )
         self._file_pattern = StringDescriptor(
             name='file_pattern',
             description='Glob pattern selecting sequential-fit files.',
             value_spec=AttributeSpec(default='*'),
-            cif_handler=CifHandler(names=['_sequential_fit.file_pattern']),
+            cif_handler=CifHandler(
+                names=['_sequential_fit.file_pattern'],
+                iucr_name='_easydiffraction_sequential_fit.file_pattern',
+            ),
         )
         self._max_workers = StringDescriptor(
             name='max_workers',
@@ -51,7 +57,10 @@ class SequentialFit(CategoryItem):
                 default='1',
                 validator=RegexValidator(pattern=r'^(auto|[1-9]\d*)$'),
             ),
-            cif_handler=CifHandler(names=['_sequential_fit.max_workers']),
+            cif_handler=CifHandler(
+                names=['_sequential_fit.max_workers'],
+                iucr_name='_easydiffraction_sequential_fit.max_workers',
+            ),
         )
         self._chunk_size = StringDescriptor(
             name='chunk_size',
@@ -60,13 +69,19 @@ class SequentialFit(CategoryItem):
                 default='.',
                 validator=RegexValidator(pattern=r'^([1-9]\d*|\.)$'),
             ),
-            cif_handler=CifHandler(names=['_sequential_fit.chunk_size']),
+            cif_handler=CifHandler(
+                names=['_sequential_fit.chunk_size'],
+                iucr_name='_easydiffraction_sequential_fit.chunk_size',
+            ),
         )
         self._reverse = BoolDescriptor(
             name='reverse',
             description='Whether to process sequential-fit files in reverse.',
             value_spec=AttributeSpec(default=False),
-            cif_handler=CifHandler(names=['_sequential_fit.reverse']),
+            cif_handler=CifHandler(
+                names=['_sequential_fit.reverse'],
+                iucr_name='_easydiffraction_sequential_fit.reverse',
+            ),
         )
 
     @property

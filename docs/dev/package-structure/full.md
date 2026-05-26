@@ -55,6 +55,9 @@
 │   │   │   ├── 📄 factory.py
 │   │   │   │   └── 🏷️ class FitResultFactory
 │   │   │   └── 📄 lsq.py
+│   │   │       ├── 🏷️ class _LeastSquaresCoreProperties
+│   │   │       ├── 🏷️ class _LeastSquaresReflectionProperties
+│   │   │       ├── 🏷️ class _LeastSquaresPowderProperties
 │   │   │       └── 🏷️ class LeastSquaresFitResult
 │   │   ├── 📁 fitting_mode
 │   │   │   ├── 📄 __init__.py
@@ -501,6 +504,19 @@
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 handler.py
 │   │   │   └── 🏷️ class CifHandler
+│   │   ├── 📄 iucr_transformers.py
+│   │   │   ├── 🏷️ class IucrItem
+│   │   │   ├── 🏷️ class IucrLoop
+│   │   │   ├── 🏷️ class IucrCategoryTransformer
+│   │   │   ├── 🏷️ class WavelengthTransformer
+│   │   │   ├── 🏷️ class TofCalibrationTransformer
+│   │   │   ├── 🏷️ class ExcludedRegionsTransformer
+│   │   │   ├── 🏷️ class SymmetryOperationsTransformer
+│   │   │   └── 🏷️ class ExtinctionTransformer
+│   │   ├── 📄 iucr_writer.py
+│   │   │   ├── 🏷️ class _FormulaValues
+│   │   │   ├── 🏷️ class _PowderPhase
+│   │   │   └── 🏷️ class _PowderPattern
 │   │   ├── 📄 parse.py
 │   │   └── 📄 serialize.py
 │   ├── 📄 __init__.py
@@ -546,10 +562,13 @@
 │   ├── 📄 project_config.py
 │   │   └── 🏷️ class ProjectConfig
 │   └── 📄 project_info.py
-├── 📁 summary
+├── 📁 report
 │   ├── 📄 __init__.py
-│   └── 📄 summary.py
-│       └── 🏷️ class Summary
+│   ├── 📄 check.py
+│   │   ├── 🏷️ class ReportCheckResult
+│   │   └── 🏷️ class _GemmiLogger
+│   └── 📄 report.py
+│       └── 🏷️ class Report
 ├── 📁 utils
 │   ├── 📁 _vendored
 │   │   ├── 📁 jupyter_dark_detect

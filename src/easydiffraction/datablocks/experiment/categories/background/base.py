@@ -41,7 +41,10 @@ class BackgroundBase(CategoryCollection, SwitchableCategoryBase):
                     allowed=[member.value for member in BackgroundTypeEnum],
                 ),
             ),
-            cif_handler=CifHandler(names=['_background.type']),
+            cif_handler=CifHandler(
+                names=['_background.type'],
+                iucr_name='_easydiffraction_background.type',
+            ),
         )
 
     @staticmethod

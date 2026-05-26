@@ -25,7 +25,7 @@ from easydiffraction.io.results_sidecar import read_analysis_results_sidecar
 from easydiffraction.io.results_sidecar import write_analysis_results_sidecar
 from easydiffraction.project.display import ProjectDisplay
 from easydiffraction.project.project_config import ProjectConfig
-from easydiffraction.summary.summary import Summary
+from easydiffraction.report import Report
 from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.environment import resolve_artifact_path
 from easydiffraction.utils.logging import console
@@ -183,7 +183,7 @@ class Project(GuardedBase):  # noqa: PLR0904
     """
     Central API for managing a diffraction data analysis project.
 
-    Provides access to structures, experiments, analysis, and summary.
+    Provides access to structures, experiments, analysis, and reports.
     """
 
     # ------------------------------------------------------------------
@@ -210,7 +210,7 @@ class Project(GuardedBase):  # noqa: PLR0904
         object.__setattr__(self, '_verbosity', self._config.verbosity)
         self._display = ProjectDisplay(self)
         self._analysis = Analysis(self)
-        self._summary = Summary(self)
+        self._report = Report(self)
         self._saved = False
         self._varname = 'project' if type(self)._loading else varname()
         type(self)._current_project = self
@@ -328,9 +328,9 @@ class Project(GuardedBase):  # noqa: PLR0904
         return self._analysis
 
     @property
-    def summary(self) -> Summary:
-        """Summary report builder bound to the project."""
-        return self._summary
+    def report(self) -> Report:
+        """Submission report builder bound to the project."""
+        return self._report
 
     @property
     def parameters(self) -> list:
@@ -461,8 +461,17 @@ class Project(GuardedBase):  # noqa: PLR0904
                 param_map[unique_name] = param
         return param_map
 
-    def save(self) -> None:
-        """Save the project into the existing project directory."""
+    def save(self, *, report: bool = False, check: bool = False) -> None:
+        """
+        Save the project into the existing project directory.
+
+        Parameters
+        ----------
+        report : bool, default=False
+            Whether to write the IUCr submission report.
+        check : bool, default=False
+            Whether to validate the IUCr submission report.
+        """
         if self.info.path is None:
             log.error('Project path not specified. Use save_as() to define the path first.')
             return
@@ -522,10 +531,10 @@ class Project(GuardedBase):  # noqa: PLR0904
             branch = '└──' if index == len(analysis_file_names) - 1 else '├──'
             console.print(f'│   {branch} 📄 {file_name}')
 
-        # Save summary
-        with (self.info.path / 'summary.cif').open('w') as f:
-            f.write(self.summary.as_cif())
-            console.print('└── 📄 summary.cif')
+        if report:
+            report_path = self.report.save(check=check)
+            console.print('└── 📁 reports/')
+            console.print(f'    └── 📄 {report_path.name}')
 
         self.info.update_last_modified()
         self._saved = True

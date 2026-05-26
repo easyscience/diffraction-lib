@@ -39,7 +39,10 @@ class Constraint(CategoryItem):
                 default='_',
                 validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(names=['_constraint.id']),
+            cif_handler=CifHandler(
+                names=['_constraint.id'],
+                iucr_name='_easydiffraction_constraint.id',
+            ),
         )
         self._expression = StringDescriptor(
             name='expression',
@@ -48,7 +51,10 @@ class Constraint(CategoryItem):
                 default='_',  # TODO, Maybe None?
                 validator=RegexValidator(pattern=r'.*'),
             ),
-            cif_handler=CifHandler(names=['_constraint.expression']),
+            cif_handler=CifHandler(
+                names=['_constraint.expression'],
+                iucr_name='_easydiffraction_constraint.expression',
+            ),
         )
 
     # ------------------------------------------------------------------

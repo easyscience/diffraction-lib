@@ -1,16 +1,28 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Project report display facade."""
+
+from __future__ import annotations
 
 from textwrap import wrap
+from typing import TYPE_CHECKING
 
-from easydiffraction.core.variable import Parameter
-from easydiffraction.io.cif.serialize import summary_to_cif
+from easydiffraction.io.cif.iucr_writer import iucr_report_path
+from easydiffraction.io.cif.iucr_writer import write_iucr_cif
+from easydiffraction.report.check import ReportCheckResult
+from easydiffraction.report.check import check_report
 from easydiffraction.utils.logging import console
+from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_object_help
 from easydiffraction.utils.utils import render_table
 
+if TYPE_CHECKING:
+    import pathlib
 
-class Summary:
+    from easydiffraction.core.variable import Parameter
+
+
+class Report:
     """
     Generates reports and exports results from the project.
 
@@ -20,17 +32,17 @@ class Summary:
 
     def __init__(self, project: object) -> None:
         """
-        Initialize the summary with a reference to the project.
+        Initialize the report with a reference to the project.
 
         Parameters
         ----------
         project : object
-            The Project instance this summary belongs to.
+            The Project instance this report belongs to.
         """
         self.project = project
 
     def help(self) -> None:
-        """Print available summary-report methods."""
+        """Print available report methods."""
         render_object_help(self)
 
     @staticmethod
@@ -87,12 +99,12 @@ class Summary:
             columns_headers = ['Parameter', 'Value', 'Uncertainty']
             columns_alignment = ['left', 'right', 'right']
             columns_data = [
-                Summary._fmt_row('a', structure.cell.length_a),
-                Summary._fmt_row('b', structure.cell.length_a),
-                Summary._fmt_row('c', structure.cell.length_a),
-                Summary._fmt_row('α', structure.cell.angle_alpha),  # noqa: RUF001
-                Summary._fmt_row('β', structure.cell.angle_beta),
-                Summary._fmt_row('γ', structure.cell.angle_gamma),  # noqa: RUF001
+                Report._fmt_row('a', structure.cell.length_a),
+                Report._fmt_row('b', structure.cell.length_a),
+                Report._fmt_row('c', structure.cell.length_a),
+                Report._fmt_row('α', structure.cell.angle_alpha),  # noqa: RUF001
+                Report._fmt_row('β', structure.cell.angle_beta),
+                Report._fmt_row('γ', structure.cell.angle_gamma),  # noqa: RUF001
             ]
             render_table(
                 columns_headers=columns_headers,
@@ -174,9 +186,9 @@ class Summary:
                     columns_headers = ['Parameter', 'Value', 'Uncertainty']
                     columns_alignment = ['left', 'right', 'right']
                     columns_data = [
-                        Summary._fmt_row('U', expt.peak.broad_gauss_u),
-                        Summary._fmt_row('V', expt.peak.broad_gauss_v),
-                        Summary._fmt_row('W', expt.peak.broad_gauss_w),
+                        Report._fmt_row('U', expt.peak.broad_gauss_u),
+                        Report._fmt_row('V', expt.peak.broad_gauss_v),
+                        Report._fmt_row('W', expt.peak.broad_gauss_w),
                     ]
                     render_table(
                         columns_headers=columns_headers,
@@ -190,8 +202,8 @@ class Summary:
                     columns_headers = ['Parameter', 'Value', 'Uncertainty']
                     columns_alignment = ['left', 'right', 'right']
                     columns_data = [
-                        Summary._fmt_row('X', expt.peak.broad_lorentz_x),
-                        Summary._fmt_row('Y', expt.peak.broad_lorentz_y),
+                        Report._fmt_row('X', expt.peak.broad_lorentz_x),
+                        Report._fmt_row('Y', expt.peak.broad_lorentz_y),
                     ]
                     render_table(
                         columns_headers=columns_headers,
@@ -203,10 +215,10 @@ class Summary:
                     columns_headers = ['Parameter', 'Value', 'Uncertainty']
                     columns_alignment = ['left', 'right', 'right']
                     columns_data = [
-                        Summary._fmt_row('p1', expt.peak.asym_empir_1),
-                        Summary._fmt_row('p2', expt.peak.asym_empir_2),
-                        Summary._fmt_row('p3', expt.peak.asym_empir_3),
-                        Summary._fmt_row('p4', expt.peak.asym_empir_4),
+                        Report._fmt_row('p1', expt.peak.asym_empir_1),
+                        Report._fmt_row('p2', expt.peak.asym_empir_2),
+                        Report._fmt_row('p3', expt.peak.asym_empir_3),
+                        Report._fmt_row('p4', expt.peak.asym_empir_4),
                     ]
                     render_table(
                         columns_headers=columns_headers,
@@ -236,10 +248,43 @@ class Summary:
             columns_data=fit_metrics,
         )
 
-    # ------------------------------------------
-    #  Exporting
-    # ------------------------------------------
+    def save(self, *, check: bool = False) -> pathlib.Path:
+        """
+        Write the IUCr submission report.
 
-    def as_cif(self) -> str:
-        """Export fitted data and analysis results as CIF."""
-        return summary_to_cif(self)
+        Parameters
+        ----------
+        check : bool, default=False
+            Whether to validate the written report.
+
+        Returns
+        -------
+        pathlib.Path
+            Path of the written report CIF.
+        """
+        report_path = write_iucr_cif(self.project)
+        if check:
+            self.check(path=report_path)
+        return report_path
+
+    def check(self, path: str | pathlib.Path | None = None) -> ReportCheckResult:
+        """
+        Validate the IUCr submission report.
+
+        Parameters
+        ----------
+        path : str | pathlib.Path | None, default=None
+            Report path. Defaults to ``reports/<project>.cif``.
+
+        Returns
+        -------
+        ReportCheckResult
+            Validation result with errors and warnings.
+        """
+        report_path = iucr_report_path(self.project, path)
+        result = check_report(report_path)
+        for warning in result.warnings:
+            log.warning(warning)
+        if result.errors:
+            log.error('\n'.join(result.errors), exc_type=ValueError)
+        return result

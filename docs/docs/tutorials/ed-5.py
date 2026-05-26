@@ -292,12 +292,12 @@ project.display.pattern(expt_name='d20')
 project.display.pattern(expt_name='d20', x_min=42, x_max=52)
 
 # %% [markdown]
-# ## Summary
+# ## Report
 #
 # This final section shows how to review the results of the analysis.
 
 # %% [markdown]
-# #### Show Project Summary
+# #### Show Project Report
 
 # %%
-project.summary.show_report()
+project.report.show_report()

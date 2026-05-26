@@ -23,4 +23,4 @@ available in EasyDiffraction:
 - [project](project.md) – Defines the project and manages its state.
 - [analysis](analysis.md) – Provides tools for analyzing diffraction
   data, including fitting and minimization.
-- [summary](summary.md) – Provides a summary of the project.
+- [report](report.md) – Provides project report and submission helpers.

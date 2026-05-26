@@ -71,25 +71,37 @@ class SequentialFitExtractItem(CategoryItem):
                 default='_',
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(names=['_sequential_fit_extract.id']),
+            cif_handler=CifHandler(
+                names=['_sequential_fit_extract.id'],
+                iucr_name='_easydiffraction_sequential_fit_extract.id',
+            ),
         )
         self._target = StringDescriptor(
             name='target',
             description='diffrn attribute updated by this extract rule.',
             value_spec=AttributeSpec(default='diffrn._'),
-            cif_handler=CifHandler(names=['_sequential_fit_extract.target']),
+            cif_handler=CifHandler(
+                names=['_sequential_fit_extract.target'],
+                iucr_name='_easydiffraction_sequential_fit_extract.target',
+            ),
         )
         self._pattern = StringDescriptor(
             name='pattern',
             description='Regex used to extract one numeric capture group.',
             value_spec=AttributeSpec(default='(.*)'),
-            cif_handler=CifHandler(names=['_sequential_fit_extract.pattern']),
+            cif_handler=CifHandler(
+                names=['_sequential_fit_extract.pattern'],
+                iucr_name='_easydiffraction_sequential_fit_extract.pattern',
+            ),
         )
         self._required = BoolDescriptor(
             name='required',
             description='Whether this extract rule must match every file.',
             value_spec=AttributeSpec(default=False),
-            cif_handler=CifHandler(names=['_sequential_fit_extract.required']),
+            cif_handler=CifHandler(
+                names=['_sequential_fit_extract.required'],
+                iucr_name='_easydiffraction_sequential_fit_extract.required',
+            ),
         )
 
     @property

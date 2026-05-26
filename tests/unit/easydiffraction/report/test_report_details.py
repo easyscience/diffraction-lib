@@ -1,7 +1,7 @@
-# SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
+# SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
-# -- Stub classes for test_summary_crystallographic_and_experimental ---
+# -- Stub classes for test_report_crystallographic_and_experimental ---
 
 
 class _Val:
@@ -128,13 +128,13 @@ class _StubProject:
 # ----------------------------------------------------------------------
 
 
-def test_summary_crystallographic_and_experimental_sections(capsys):
-    from easydiffraction.summary.summary import Summary
+def test_report_crystallographic_and_experimental_sections(capsys):
+    from easydiffraction.report.report import Report
 
-    s = Summary(_StubProject())
+    report = Report(_StubProject())
     # Run both sections separately for targeted assertions
-    s.show_crystallographic_data()
-    s.show_experimental_data()
+    report.show_crystallographic_data()
+    report.show_experimental_data()
     out = capsys.readouterr().out
 
     # Crystallographic section

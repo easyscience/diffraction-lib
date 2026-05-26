@@ -95,7 +95,10 @@ class EmceeMinimizer(BayesianMinimizerBase):
                 default=DEFAULT_INITIALIZATION_METHOD.value,
                 validator=MembershipValidator(allowed=allowed),
             ),
-            cif_handler=CifHandler(names=['_minimizer.initialization_method']),
+            cif_handler=CifHandler(
+                names=['_minimizer.initialization_method'],
+                iucr_name='_easydiffraction_minimizer.initialization_method',
+            ),
         )
 
     @staticmethod
@@ -108,7 +111,10 @@ class EmceeMinimizer(BayesianMinimizerBase):
                 default=DEFAULT_PROPOSAL_MOVES,
                 validator=MembershipValidator(allowed=SUPPORTED_PROPOSAL_MOVES),
             ),
-            cif_handler=CifHandler(names=['_minimizer.proposal_moves']),
+            cif_handler=CifHandler(
+                names=['_minimizer.proposal_moves'],
+                iucr_name='_easydiffraction_minimizer.proposal_moves',
+            ),
         )
 
     @property

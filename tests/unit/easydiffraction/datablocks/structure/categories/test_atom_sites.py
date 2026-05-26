@@ -118,6 +118,21 @@ class TestAtomSite:
         allowed = site._wyckoff_letter_allowed_values
         assert 'a' in allowed
 
+    def test_uses_iucr_casing_with_legacy_aliases(self):
+        from easydiffraction.datablocks.structure.categories.atom_sites.default import AtomSite
+
+        site = AtomSite()
+
+        assert site.adp_type._cif_handler.names == [
+            '_atom_site.ADP_type',
+            '_atom_site.adp_type',
+        ]
+        assert site.wyckoff_letter._cif_handler.names == [
+            '_atom_site.Wyckoff_symbol',
+            '_atom_site.Wyckoff_letter',
+            '_atom_site.wyckoff_letter',
+        ]
+
 
 class TestAtomSites:
     def test_type_info(self):

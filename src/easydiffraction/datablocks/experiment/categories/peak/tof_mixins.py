@@ -35,7 +35,10 @@ class TofGaussianBroadeningMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.gauss_sigma_0']),
+            cif_handler=CifHandler(
+                names=['_peak.gauss_sigma_0'],
+                iucr_name='_easydiffraction_peak.gauss_sigma_0',
+            ),
         )
         self._broad_gauss_sigma_1 = Parameter(
             name='gauss_sigma_1',
@@ -45,7 +48,10 @@ class TofGaussianBroadeningMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.gauss_sigma_1']),
+            cif_handler=CifHandler(
+                names=['_peak.gauss_sigma_1'],
+                iucr_name='_easydiffraction_peak.gauss_sigma_1',
+            ),
         )
         self._broad_gauss_sigma_2 = Parameter(
             name='gauss_sigma_2',
@@ -55,7 +61,10 @@ class TofGaussianBroadeningMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.gauss_sigma_2']),
+            cif_handler=CifHandler(
+                names=['_peak.gauss_sigma_2'],
+                iucr_name='_easydiffraction_peak.gauss_sigma_2',
+            ),
         )
 
     @property
@@ -115,7 +124,10 @@ class TofLorentzianBroadeningMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.lorentz_gamma_0']),
+            cif_handler=CifHandler(
+                names=['_peak.lorentz_gamma_0'],
+                iucr_name='_easydiffraction_peak.lorentz_gamma_0',
+            ),
         )
         self._broad_lorentz_gamma_1 = Parameter(
             name='lorentz_gamma_1',
@@ -125,7 +137,10 @@ class TofLorentzianBroadeningMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.lorentz_gamma_1']),
+            cif_handler=CifHandler(
+                names=['_peak.lorentz_gamma_1'],
+                iucr_name='_easydiffraction_peak.lorentz_gamma_1',
+            ),
         )
         self._broad_lorentz_gamma_2 = Parameter(
             name='lorentz_gamma_2',
@@ -135,7 +150,10 @@ class TofLorentzianBroadeningMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.lorentz_gamma_2']),
+            cif_handler=CifHandler(
+                names=['_peak.lorentz_gamma_2'],
+                iucr_name='_easydiffraction_peak.lorentz_gamma_2',
+            ),
         )
 
     @property
@@ -200,7 +218,10 @@ class TofBackToBackExponentialMixin:
                 default=0.01,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.rise_alpha_0']),
+            cif_handler=CifHandler(
+                names=['_peak.rise_alpha_0'],
+                iucr_name='_easydiffraction_peak.rise_alpha_0',
+            ),
         )
         self._exp_rise_alpha_1 = Parameter(
             name='rise_alpha_1',
@@ -210,7 +231,10 @@ class TofBackToBackExponentialMixin:
                 default=0.02,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.rise_alpha_1']),
+            cif_handler=CifHandler(
+                names=['_peak.rise_alpha_1'],
+                iucr_name='_easydiffraction_peak.rise_alpha_1',
+            ),
         )
         self._exp_decay_beta_0 = Parameter(
             name='decay_beta_0',
@@ -220,7 +244,10 @@ class TofBackToBackExponentialMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.decay_beta_0']),
+            cif_handler=CifHandler(
+                names=['_peak.decay_beta_0'],
+                iucr_name='_easydiffraction_peak.decay_beta_0',
+            ),
         )
         self._exp_decay_beta_1 = Parameter(
             name='decay_beta_1',
@@ -230,7 +257,10 @@ class TofBackToBackExponentialMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.decay_beta_1']),
+            cif_handler=CifHandler(
+                names=['_peak.decay_beta_1'],
+                iucr_name='_easydiffraction_peak.decay_beta_1',
+            ),
         )
 
     @property
@@ -310,7 +340,10 @@ class TofDoubleExponentialMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.dexp_rise_alpha_1']),
+            cif_handler=CifHandler(
+                names=['_peak.dexp_rise_alpha_1'],
+                iucr_name='_easydiffraction_peak.dexp_rise_alpha_1',
+            ),
         )
         self._dexp_rise_alpha_2 = Parameter(
             name='dexp_rise_alpha_2',
@@ -320,7 +353,10 @@ class TofDoubleExponentialMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.dexp_rise_alpha_2']),
+            cif_handler=CifHandler(
+                names=['_peak.dexp_rise_alpha_2'],
+                iucr_name='_easydiffraction_peak.dexp_rise_alpha_2',
+            ),
         )
         self._dexp_decay_beta_00 = Parameter(
             name='dexp_decay_beta_00',
@@ -330,7 +366,10 @@ class TofDoubleExponentialMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.dexp_decay_beta_00']),
+            cif_handler=CifHandler(
+                names=['_peak.dexp_decay_beta_00'],
+                iucr_name='_easydiffraction_peak.dexp_decay_beta_00',
+            ),
         )
         self._dexp_decay_beta_01 = Parameter(
             name='dexp_decay_beta_01',
@@ -340,7 +379,10 @@ class TofDoubleExponentialMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.dexp_decay_beta_01']),
+            cif_handler=CifHandler(
+                names=['_peak.dexp_decay_beta_01'],
+                iucr_name='_easydiffraction_peak.dexp_decay_beta_01',
+            ),
         )
         self._dexp_decay_beta_10 = Parameter(
             name='dexp_decay_beta_10',
@@ -350,7 +392,10 @@ class TofDoubleExponentialMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.dexp_decay_beta_10']),
+            cif_handler=CifHandler(
+                names=['_peak.dexp_decay_beta_10'],
+                iucr_name='_easydiffraction_peak.dexp_decay_beta_10',
+            ),
         )
         self._dexp_switch_r_01 = Parameter(
             name='dexp_switch_r_01',
@@ -360,7 +405,10 @@ class TofDoubleExponentialMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.dexp_switch_r_01']),
+            cif_handler=CifHandler(
+                names=['_peak.dexp_switch_r_01'],
+                iucr_name='_easydiffraction_peak.dexp_switch_r_01',
+            ),
         )
         self._dexp_switch_r_02 = Parameter(
             name='dexp_switch_r_02',
@@ -370,7 +418,10 @@ class TofDoubleExponentialMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.dexp_switch_r_02']),
+            cif_handler=CifHandler(
+                names=['_peak.dexp_switch_r_02'],
+                iucr_name='_easydiffraction_peak.dexp_switch_r_02',
+            ),
         )
         self._dexp_switch_r_03 = Parameter(
             name='dexp_switch_r_03',
@@ -380,7 +431,10 @@ class TofDoubleExponentialMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_peak.dexp_switch_r_03']),
+            cif_handler=CifHandler(
+                names=['_peak.dexp_switch_r_03'],
+                iucr_name='_easydiffraction_peak.dexp_switch_r_03',
+            ),
         )
 
     @property

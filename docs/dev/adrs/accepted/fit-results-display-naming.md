@@ -51,8 +51,8 @@ Both converge on `s.u.` as the appropriate cross-method label.
 
 [`display-ux.md`](display-ux.md) defines facade method names but not
 column headers or footnotes;
-[`iucr-cif-tag-alignment.md`](../suggestions/iucr-cif-tag-alignment.md)
-defines persisted CIF tag names but not display labels;
+[`iucr-cif-tag-alignment.md`](iucr-cif-tag-alignment.md) defines
+persisted CIF tag names but not display labels;
 [`analysis-cif-fit-state.md`](analysis-cif-fit-state.md) defines Python
 and CIF attribute names but not user-visible labels. Display naming for
 fit-results tables is a real gap.
@@ -281,9 +281,9 @@ None directly amended. This ADR complements:
 
 - [`display-ux.md`](display-ux.md) — defines facade method names; this
   ADR fills in the column-header layer underneath.
-- [`iucr-cif-tag-alignment.md`](../suggestions/iucr-cif-tag-alignment.md)
-  — defines persisted CIF tag names; this ADR is the matching
-  display-time label layer.
+- [`iucr-cif-tag-alignment.md`](iucr-cif-tag-alignment.md) — defines
+  persisted CIF tag names; this ADR is the matching display-time label
+  layer.
 - [`analysis-cif-fit-state.md`](analysis-cif-fit-state.md) — defines
   Python / CIF attribute names (e.g. `Parameter.uncertainty`,
   `posterior_uncertainty`); display headers map to those without

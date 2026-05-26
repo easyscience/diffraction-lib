@@ -40,7 +40,10 @@ class MinimizerCategoryBase(CategoryItem, SwitchableCategoryBase):
                     allowed=[member.value for member in MinimizerTypeEnum],
                 ),
             ),
-            cif_handler=CifHandler(names=['_minimizer.type']),
+            cif_handler=CifHandler(
+                names=['_minimizer.type'],
+                iucr_name='_easydiffraction_minimizer.type',
+            ),
         )
 
     @staticmethod

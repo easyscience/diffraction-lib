@@ -72,7 +72,10 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
             name='sampling_steps',
             description='Total sampler iterations per chain.',
             value_spec=AttributeSpec(default=default, validator=RangeValidator(ge=1)),
-            cif_handler=CifHandler(names=['_minimizer.sampling_steps']),
+            cif_handler=CifHandler(
+                names=['_minimizer.sampling_steps'],
+                iucr_name='_easydiffraction_minimizer.sampling_steps',
+            ),
         )
 
     @staticmethod
@@ -82,7 +85,10 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
             name='burn_in_steps',
             description='Sampler iterations discarded as warm-up.',
             value_spec=AttributeSpec(default=default, validator=RangeValidator(ge=0)),
-            cif_handler=CifHandler(names=['_minimizer.burn_in_steps']),
+            cif_handler=CifHandler(
+                names=['_minimizer.burn_in_steps'],
+                iucr_name='_easydiffraction_minimizer.burn_in_steps',
+            ),
         )
 
     @staticmethod
@@ -92,7 +98,10 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
             name='thinning_interval',
             description='Sampler thinning interval.',
             value_spec=AttributeSpec(default=default, validator=RangeValidator(ge=1)),
-            cif_handler=CifHandler(names=['_minimizer.thinning_interval']),
+            cif_handler=CifHandler(
+                names=['_minimizer.thinning_interval'],
+                iucr_name='_easydiffraction_minimizer.thinning_interval',
+            ),
         )
 
     @staticmethod
@@ -102,7 +111,10 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
             name='population_size',
             description='Number of chains or walkers.',
             value_spec=AttributeSpec(default=default, validator=RangeValidator(ge=1)),
-            cif_handler=CifHandler(names=['_minimizer.population_size']),
+            cif_handler=CifHandler(
+                names=['_minimizer.population_size'],
+                iucr_name='_easydiffraction_minimizer.population_size',
+            ),
         )
 
     @staticmethod
@@ -112,7 +124,10 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
             name='parallel_workers',
             description='Worker count; 0 uses all available CPUs.',
             value_spec=AttributeSpec(default=default, validator=RangeValidator(ge=0)),
-            cif_handler=CifHandler(names=['_minimizer.parallel_workers']),
+            cif_handler=CifHandler(
+                names=['_minimizer.parallel_workers'],
+                iucr_name='_easydiffraction_minimizer.parallel_workers',
+            ),
         )
 
     @classmethod
@@ -126,7 +141,10 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
                 default=InitializationMethodEnum.LATIN_HYPERCUBE.value,
                 validator=MembershipValidator(allowed=allowed),
             ),
-            cif_handler=CifHandler(names=['_minimizer.initialization_method']),
+            cif_handler=CifHandler(
+                names=['_minimizer.initialization_method'],
+                iucr_name='_easydiffraction_minimizer.initialization_method',
+            ),
         )
 
     @staticmethod
@@ -136,7 +154,10 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
             name='random_seed',
             description='Random seed; None uses a system-derived seed.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(names=['_minimizer.random_seed']),
+            cif_handler=CifHandler(
+                names=['_minimizer.random_seed'],
+                iucr_name='_easydiffraction_minimizer.random_seed',
+            ),
         )
 
     @property

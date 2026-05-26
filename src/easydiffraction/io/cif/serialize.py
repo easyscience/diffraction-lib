@@ -31,6 +31,9 @@ _CIF_UNCERTAINTY_SIG_DIGITS = 2
 # Maximum CIF description length before using semicolon-delimited block
 _CIF_DESCRIPTION_WRAP_LEN = 60
 
+_ADP_FAMILY_B = 'B'
+_ADP_FAMILY_U = 'U'
+
 
 def format_value(value: object) -> str:
     """
@@ -221,6 +224,138 @@ def _emit_loop_rows(
     return lines
 
 
+def _emit_rows_without_tag_validation(
+    items: list,
+    row_fn: object,
+    max_display: int | None,
+) -> list[str]:
+    """Build rows for loops whose tag family is chosen externally."""
+    if max_display is not None and len(items) > max_display:
+        half = max_display // 2
+        return [
+            *_rows_without_tag_validation(items[:half], row_fn),
+            '...',
+            *_rows_without_tag_validation(items[-half:], row_fn),
+        ]
+    return _rows_without_tag_validation(items, row_fn)
+
+
+def _rows_without_tag_validation(items: list, row_fn: object) -> list[str]:
+    """Return formatted row strings without header-tag validation."""
+    return [' '.join(row_fn(item)) for item in items]
+
+
+def _adp_family_from_type(adp_type: str) -> str:
+    """Return the CIF ADP tag family for an atom-site ADP type."""
+    from easydiffraction.datablocks.structure.categories.atom_sites.enums import (  # noqa: PLC0415
+        AdpTypeEnum,
+    )
+
+    adp_type_enum = AdpTypeEnum(adp_type)
+    if adp_type_enum in {AdpTypeEnum.UISO, AdpTypeEnum.UANI}:
+        return _ADP_FAMILY_U
+    return _ADP_FAMILY_B
+
+
+def _adp_family_for_atom_site(item: object) -> str:
+    """Return the ADP tag family for an atom-site row."""
+    return _adp_family_from_type(item.adp_type.value)
+
+
+def _adp_family_for_atom_site_aniso(collection: object, item: object) -> str:
+    """Return the ADP tag family for an atom-site-aniso row."""
+    structure = collection._parent
+    atom_site = structure.atom_sites[item.label.value]
+    return _adp_family_from_type(atom_site.adp_type.value)
+
+
+def _group_items_by_adp_family(
+    items: list,
+    family_fn: object,
+) -> list[tuple[str, list]]:
+    """Group items by B/U ADP tag family in deterministic order."""
+    groups = {
+        _ADP_FAMILY_B: [],
+        _ADP_FAMILY_U: [],
+    }
+    for item in items:
+        groups[family_fn(item)].append(item)
+    return [(family, group) for family, group in groups.items() if group]
+
+
+def _atom_site_tag_for_adp_family(parameter: object, family: str) -> str:
+    """Return the atom_site tag for the selected ADP family."""
+    if parameter.name == 'adp_iso':
+        return f'_atom_site.{family}_iso_or_equiv'
+    return parameter._cif_handler.names[0]
+
+
+def _atom_site_aniso_tag_for_adp_family(parameter: object, family: str) -> str:
+    """Return the atom_site_aniso tag for the selected ADP family."""
+    if parameter.name.startswith('adp_'):
+        suffix = parameter.name.removeprefix('adp_')
+        return f'_atom_site_aniso.{family}_{suffix}'
+    return parameter._cif_handler.names[0]
+
+
+def _adp_family_loop_to_cif(
+    items: list,
+    family: str,
+    tag_fn: object,
+    max_display: int | None,
+) -> str:
+    """Render one B-family or U-family ADP loop."""
+    first_item = items[0]
+    parameters = list(first_item.parameters)
+    lines: list[str] = ['loop_']
+    lines.extend(tag_fn(parameter, family) for parameter in parameters)
+
+    def _row(item: object) -> list[str]:
+        return [format_param_value(parameter) for parameter in item.parameters]
+
+    lines.extend(_emit_rows_without_tag_validation(items, _row, max_display))
+    return '\n'.join(lines)
+
+
+def _adp_collection_to_cif(
+    collection: object,
+    max_display: int | None,
+) -> str | None:
+    """
+    Render ADP-sensitive structure loops with one tag family per row.
+    """
+    items = list(collection.values())
+    category_code = collection._item_type._category_code
+    if category_code == 'atom_site':
+        groups = _group_items_by_adp_family(items, _adp_family_for_atom_site)
+        loops = [
+            _adp_family_loop_to_cif(
+                group,
+                family,
+                _atom_site_tag_for_adp_family,
+                max_display,
+            )
+            for family, group in groups
+        ]
+        return '\n\n'.join(loops)
+    if category_code == 'atom_site_aniso':
+        groups = _group_items_by_adp_family(
+            items,
+            lambda item: _adp_family_for_atom_site_aniso(collection, item),
+        )
+        loops = [
+            _adp_family_loop_to_cif(
+                group,
+                family,
+                _atom_site_aniso_tag_for_adp_family,
+                max_display,
+            )
+            for family, group in groups
+        ]
+        return '\n\n'.join(loops)
+    return None
+
+
 def category_collection_to_cif(
     collection: object,
     max_display: int | None = None,
@@ -249,13 +384,39 @@ def category_collection_to_cif(
     if skip is not None and skip():
         return ''
 
-    lines: list[str] = []
-    scalar_descriptors = getattr(collection, 'scalar_descriptors', [])
-    lines.extend(param_to_cif(p) for p in scalar_descriptors)
+    lines = _scalar_descriptor_lines(collection)
 
     if not len(collection):
         return '\n'.join(lines)
 
+    adp_cif = _adp_collection_to_cif(collection, max_display)
+    if adp_cif is not None:
+        return _join_scalar_and_loop_lines(lines, adp_cif)
+
+    loop_cif = _standard_collection_loop_to_cif(collection, max_display)
+    return _join_scalar_and_loop_lines(lines, loop_cif)
+
+
+def _scalar_descriptor_lines(collection: object) -> list[str]:
+    """Return scalar descriptor CIF lines for a collection."""
+    scalar_descriptors = getattr(collection, 'scalar_descriptors', [])
+    return [param_to_cif(p) for p in scalar_descriptors]
+
+
+def _join_scalar_and_loop_lines(scalar_lines: list[str], loop_cif: str) -> str:
+    """Join optional scalar lines with a loop CIF body."""
+    lines = list(scalar_lines)
+    if lines:
+        lines.append('')
+    lines.append(loop_cif)
+    return '\n'.join(lines)
+
+
+def _standard_collection_loop_to_cif(
+    collection: object,
+    max_display: int | None,
+) -> str:
+    """Render a non-ADP collection loop."""
     loop_parameters_hook = getattr(collection, '_cif_loop_parameters', None)
 
     def _loop_parameters(item: object) -> list[GenericDescriptorBase]:
@@ -265,7 +426,7 @@ def category_collection_to_cif(
 
     # Header — use first item's CIF tag names as the canonical columns
     first_item = next(iter(collection.values()))
-    lines.append('loop_')
+    lines = ['loop_']
     header_tags: list[str] = []
     for p in _loop_parameters(first_item):
         tags = p._cif_handler.names  # type: ignore[attr-defined]
@@ -284,7 +445,6 @@ def category_collection_to_cif(
 
     items = list(collection.values())
     lines.extend(_emit_loop_rows(items, _row, _loop_parameters, header_tags, max_display))
-
     return '\n'.join(lines)
 
 
@@ -430,8 +590,6 @@ def project_to_cif(project: object) -> str:
         parts.append(_as_cif_text(project.experiments))
     if getattr(project, 'analysis', None):
         parts.append(_as_cif_text(project.analysis))
-    if getattr(project, 'summary', None):
-        parts.append(project.summary.as_cif())
     return '\n\n'.join([p for p in parts if p])
 
 
@@ -443,11 +601,6 @@ def experiment_to_cif(experiment: object) -> str:
 def analysis_to_cif(analysis: object) -> str:
     """Render analysis metadata, aliases, and constraints to CIF."""
     return category_owner_to_cif(analysis)
-
-
-def summary_to_cif(_summary: object) -> str:
-    """Render a summary CIF block (placeholder for now)."""
-    return 'To be added...'
 
 
 def _wrap_in_data_block(cif_text: str, block_name: str = '_') -> str:

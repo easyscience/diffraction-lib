@@ -177,3 +177,43 @@ scale 0.0 2.0 1.0 0.1
     assert analysis._has_persisted_fit_state() is False
     assert len(analysis.fit_parameters) == 1
     assert analysis.fit_parameters['scale'].start_value.value == 1.0
+
+
+def test_atom_site_cif_emits_one_adp_family_per_row():
+    from easydiffraction.datablocks.structure.item.base import Structure
+
+    structure = Structure(name='mixed')
+    structure.atom_sites.create(label='B1', type_symbol='Si', adp_type='Biso', adp_iso=0.4)
+    structure.atom_sites.create(label='U1', type_symbol='O', adp_type='Uiso', adp_iso=0.01)
+
+    b_loop, u_loop = structure.atom_sites.as_cif.split('\n\n')
+
+    assert '_atom_site.B_iso_or_equiv' in b_loop
+    assert '_atom_site.U_iso_or_equiv' not in b_loop
+    assert 'B1' in b_loop
+    assert 'U1' not in b_loop
+    assert '_atom_site.U_iso_or_equiv' in u_loop
+    assert '_atom_site.B_iso_or_equiv' not in u_loop
+    assert 'U1' in u_loop
+    assert 'B1' not in u_loop
+
+
+def test_atom_site_aniso_cif_emits_one_adp_family_per_row():
+    from easydiffraction.datablocks.structure.item.base import Structure
+
+    structure = Structure(name='mixed')
+    structure.atom_sites.create(label='B1', type_symbol='Si', adp_iso=0.4)
+    structure.atom_sites.create(label='U1', type_symbol='O', adp_iso=0.01)
+    structure.atom_sites['B1'].adp_type = 'Bani'
+    structure.atom_sites['U1'].adp_type = 'Uani'
+
+    b_loop, u_loop = structure.atom_site_aniso.as_cif.split('\n\n')
+
+    assert '_atom_site_aniso.B_11' in b_loop
+    assert '_atom_site_aniso.U_11' not in b_loop
+    assert 'B1' in b_loop
+    assert 'U1' not in b_loop
+    assert '_atom_site_aniso.U_11' in u_loop
+    assert '_atom_site_aniso.B_11' not in u_loop
+    assert 'U1' in u_loop
+    assert 'B1' not in u_loop

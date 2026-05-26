@@ -101,8 +101,9 @@ class AtomSite(CategoryItem):
             ),
             cif_handler=CifHandler(
                 names=[
-                    '_atom_site.Wyckoff_letter',
                     '_atom_site.Wyckoff_symbol',
+                    '_atom_site.Wyckoff_letter',
+                    '_atom_site.wyckoff_letter',
                 ]
             ),
         )
@@ -139,7 +140,7 @@ class AtomSite(CategoryItem):
                 default=AdpTypeEnum.default(),
                 validator=MembershipValidator(allowed=[m.value for m in AdpTypeEnum]),
             ),
-            cif_handler=CifHandler(names=['_atom_site.adp_type']),
+            cif_handler=CifHandler(names=['_atom_site.ADP_type', '_atom_site.adp_type']),
         )
 
     # ------------------------------------------------------------------
@@ -393,9 +394,6 @@ class AtomSite(CategoryItem):
         if old_type != new_type:
             self._convert_adp_values(old_type, new_type)
             self._reorder_adp_cif_names(new_type)
-            parent = getattr(self, '_parent', None)
-            if parent is not None:
-                parent._propagate_adp_convention(self)
 
     @property
     def wyckoff_letter(self) -> StringDescriptor:
@@ -517,39 +515,6 @@ class AtomSites(CategoryCollection):
     # ------------------------------------------------------------------
     #  Private helper methods
     # ------------------------------------------------------------------
-
-    def _propagate_adp_convention(self, source: AtomSite) -> None:
-        """
-        Align all atoms to the B/U convention of *source*.
-
-        When an atom switches between B and U convention, all siblings
-        are converted to the same convention so that CIF loop headers
-        remain consistent.
-
-        Parameters
-        ----------
-        source : AtomSite
-            The atom whose convention just changed.
-        """
-        new_enum = AdpTypeEnum(source._adp_type.value)
-        target_is_u = new_enum in {AdpTypeEnum.UISO, AdpTypeEnum.UANI}
-
-        for atom in self._items:
-            if atom is source:
-                continue
-            sib_enum = AdpTypeEnum(atom._adp_type.value)
-            sib_is_u = sib_enum in {AdpTypeEnum.UISO, AdpTypeEnum.UANI}
-            if sib_is_u == target_is_u:
-                continue
-            sib_is_iso = sib_enum in {AdpTypeEnum.BISO, AdpTypeEnum.UISO}
-            if target_is_u:
-                target = AdpTypeEnum.UISO if sib_is_iso else AdpTypeEnum.UANI
-            else:
-                target = AdpTypeEnum.BISO if sib_is_iso else AdpTypeEnum.BANI
-            old_sib = atom._adp_type.value
-            atom._adp_type._value = target.value
-            atom._convert_adp_values(old_sib, target.value)
-            atom._reorder_adp_cif_names(target.value)
 
     def _apply_atomic_coordinates_symmetry_constraints(self) -> None:
         """

@@ -38,6 +38,7 @@ from easydiffraction.analysis.fit_helpers.bayesian import BayesianFitResults
 from easydiffraction.analysis.fit_helpers.bayesian import PosteriorPredictiveSummary
 from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
 from easydiffraction.analysis.fit_helpers.bayesian import posterior_predictive_cache_key
+from easydiffraction.analysis.fit_helpers.metrics import calculate_r_factor
 from easydiffraction.analysis.fit_helpers.reporting import FitResults
 from easydiffraction.analysis.fitting import Fitter
 from easydiffraction.analysis.fitting import FitterFitOptions
@@ -50,6 +51,7 @@ from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import Parameter
 from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.datablocks.experiment.item.base import intensity_category_for
+from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.display.progress import make_display_handle
 from easydiffraction.display.progress import notebook_fit_stop_control
 from easydiffraction.display.tables import TableRenderer
@@ -75,6 +77,8 @@ _FLATTENED_POSTERIOR_SAMPLE_NDIM = 2
 _CREDIBLE_INTERVAL_LEVEL_COUNT = 2
 _UNDO_REL_TOL = 1e-12
 _UNDO_ABS_TOL = 0.0
+_GT_REFLECTION_THRESHOLD_SIGMA = 3.0
+_GT_REFLECTION_THRESHOLD_EXPRESSION = r'I>3\s(I)'
 
 
 @dataclass(frozen=True)
@@ -1731,6 +1735,167 @@ class Analysis(
         return total
 
     @staticmethod
+    def _fit_intensity_arrays(
+        experiments: list[object],
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """Return finite measured, calculated, and s.u. arrays."""
+        observed: list[float] = []
+        calculated: list[float] = []
+        uncertainties: list[float] = []
+        for experiment in experiments:
+            intensity_category = intensity_category_for(experiment)
+            y_obs = np.asarray(intensity_category.intensity_meas, dtype=float)
+            y_calc = np.asarray(intensity_category.intensity_calc, dtype=float)
+            y_su = np.asarray(intensity_category.intensity_meas_su, dtype=float)
+            finite = np.isfinite(y_obs) & np.isfinite(y_calc) & np.isfinite(y_su)
+            finite &= y_su > 0.0
+            observed.extend(y_obs[finite])
+            calculated.extend(y_calc[finite])
+            uncertainties.extend(y_su[finite])
+        return (
+            np.asarray(observed, dtype=float),
+            np.asarray(calculated, dtype=float),
+            np.asarray(uncertainties, dtype=float),
+        )
+
+    @staticmethod
+    def _finite_metric(value: float) -> float | None:
+        """Return finite metric values, otherwise ``None``."""
+        return float(value) if np.isfinite(value) else None
+
+    @classmethod
+    def _r_factor_or_none(
+        cls,
+        observed: np.ndarray,
+        calculated: np.ndarray,
+    ) -> float | None:
+        """Return an R factor when inputs are available."""
+        if observed.size == 0:
+            return None
+        return cls._finite_metric(calculate_r_factor(observed, calculated))
+
+    @staticmethod
+    def _weighted_r_factor_or_none(
+        observed: np.ndarray,
+        calculated: np.ndarray,
+        uncertainties: np.ndarray,
+    ) -> float | None:
+        """Return a weighted R factor when inputs are available."""
+        if observed.size == 0:
+            return None
+        weights = 1.0 / uncertainties**2
+        denominator = float(np.sum(weights * observed**2))
+        if denominator <= 0.0:
+            return None
+        numerator = float(np.sum(weights * (observed - calculated) ** 2))
+        value = np.sqrt(numerator / denominator)
+        return float(value) if np.isfinite(value) else None
+
+    @staticmethod
+    def _expected_weighted_r_factor(
+        observed: np.ndarray,
+        uncertainties: np.ndarray,
+        degrees_of_freedom: int,
+    ) -> float | None:
+        """Return expected weighted profile R factor."""
+        if observed.size == 0 or degrees_of_freedom <= 0:
+            return None
+        weights = 1.0 / uncertainties**2
+        denominator = float(np.sum(weights * observed**2))
+        if denominator <= 0.0:
+            return None
+        value = np.sqrt(degrees_of_freedom / denominator)
+        return float(value) if np.isfinite(value) else None
+
+    @staticmethod
+    def _gt_observation_mask(
+        observed: np.ndarray,
+        uncertainties: np.ndarray,
+    ) -> np.ndarray:
+        """
+        Return observations greater than three standard uncertainties.
+        """
+        return observed > (_GT_REFLECTION_THRESHOLD_SIGMA * uncertainties)
+
+    @staticmethod
+    def _is_powder_fit(experiments: list[object]) -> bool:
+        """Return whether any experiment in the fit is powder data."""
+        return any(
+            experiment.type.sample_form.value == SampleFormEnum.POWDER.value
+            for experiment in experiments
+        )
+
+    @staticmethod
+    def _unique_category_type_names(
+        experiments: list[object],
+        category_name: str,
+    ) -> str | None:
+        """Return comma-separated active category type names."""
+        names: list[str] = []
+        for experiment in experiments:
+            category = getattr(experiment, category_name, None)
+            if category is None:
+                continue
+            type_value = getattr(category, 'type', None)
+            type_value = getattr(type_value, 'value', type_value)
+            if type_value is None or type_value in names:
+                continue
+            names.append(str(type_value))
+        return ', '.join(names) if names else None
+
+    @staticmethod
+    def _shift_over_su_values(fitted_parameters: list[Parameter]) -> np.ndarray:
+        """Return absolute fitted shifts divided by s.u."""
+        values: list[float] = []
+        for parameter in fitted_parameters:
+            start = parameter._fit_start_value
+            uncertainty = parameter.uncertainty
+            if start is None or parameter.value is None or uncertainty is None:
+                continue
+            if uncertainty <= 0.0:
+                continue
+            values.append(abs((parameter.value - start) / uncertainty))
+        return np.asarray(values, dtype=float)
+
+    @classmethod
+    def _shift_over_su_summary(
+        cls,
+        fitted_parameters: list[Parameter],
+    ) -> tuple[float | None, float | None]:
+        """Return max and mean absolute shift over s.u."""
+        values = cls._shift_over_su_values(fitted_parameters)
+        if values.size == 0:
+            return None, None
+        return float(np.max(values)), float(np.mean(values))
+
+    @staticmethod
+    def _reflection_counts(experiments: list[object]) -> tuple[int | None, int | None]:
+        """Return total and thresholded reflection counts."""
+        total = 0
+        greater_than = 0
+        has_reflections = False
+        for experiment in experiments:
+            refln = getattr(experiment, 'refln', None)
+            if refln is None or len(refln) == 0:
+                continue
+            has_reflections = True
+            total += len(refln)
+            observed = np.asarray(getattr(refln, 'intensity_meas', []), dtype=float)
+            uncertainties = np.asarray(
+                getattr(refln, 'intensity_meas_su', []),
+                dtype=float,
+            )
+            if observed.shape != uncertainties.shape or observed.size == 0:
+                continue
+            finite = np.isfinite(observed) & np.isfinite(uncertainties)
+            finite &= uncertainties > 0.0
+            mask = observed[finite] > (_GT_REFLECTION_THRESHOLD_SIGMA * uncertainties[finite])
+            greater_than += int(np.sum(mask))
+        if not has_reflections:
+            return None, None
+        return total, greater_than
+
+    @staticmethod
     def _resolve_covariance_matrix(results: FitResults) -> np.ndarray | None:
         """
         Return a covariance matrix when the raw fit result exposes one.
@@ -1846,6 +2011,11 @@ class Analysis(
         self.fit_result._set_covariance_available(value=covariance is not None)
         self.fit_result._set_correlation_available(value=correlation_matrix is not None)
         self.fit_result._set_exit_reason(results.message)
+        self._store_least_squares_iucr_statistics(
+            experiments=experiments,
+            fitted_parameters=fitted_parameters,
+            degrees_of_freedom=degrees_of_freedom,
+        )
 
         if correlation_matrix is not None:
             self._store_correlation_projection(
@@ -1853,6 +2023,66 @@ class Analysis(
                 correlation_matrix=correlation_matrix,
                 source_kind=FitCorrelationSourceEnum.DETERMINISTIC,
             )
+
+    def _store_least_squares_iucr_statistics(
+        self,
+        *,
+        experiments: list[object],
+        fitted_parameters: list[Parameter],
+        degrees_of_freedom: int,
+    ) -> None:
+        """Store IUCr-canonical deterministic fit statistics."""
+        observed, calculated, uncertainties = self._fit_intensity_arrays(experiments)
+        gt_mask = self._gt_observation_mask(observed, uncertainties)
+        is_powder = self._is_powder_fit(experiments)
+        shift_max, shift_mean = self._shift_over_su_summary(fitted_parameters)
+        reflns_total, reflns_gt = self._reflection_counts(experiments)
+        constraints_count = len(self.constraints) if self.constraints.enabled else 0
+
+        self.fit_result._set_r_factor_all(self._r_factor_or_none(observed, calculated))
+        self.fit_result._set_wr_factor_all(
+            self._weighted_r_factor_or_none(observed, calculated, uncertainties)
+        )
+        self.fit_result._set_r_factor_gt(
+            self._r_factor_or_none(observed[gt_mask], calculated[gt_mask])
+        )
+        self.fit_result._set_wr_factor_gt(
+            self._weighted_r_factor_or_none(
+                observed[gt_mask],
+                calculated[gt_mask],
+                uncertainties[gt_mask],
+            )
+        )
+        self.fit_result._set_prof_r_factor(
+            self._r_factor_or_none(observed, calculated) if is_powder else None
+        )
+        self.fit_result._set_prof_wr_factor(
+            self._weighted_r_factor_or_none(observed, calculated, uncertainties)
+            if is_powder
+            else None
+        )
+        self.fit_result._set_prof_wr_expected(
+            self._expected_weighted_r_factor(
+                observed,
+                uncertainties,
+                degrees_of_freedom,
+            )
+            if is_powder
+            else None
+        )
+        self.fit_result._set_number_restraints(0)
+        self.fit_result._set_number_constraints(constraints_count)
+        self.fit_result._set_shift_over_su_max(shift_max)
+        self.fit_result._set_shift_over_su_mean(shift_mean)
+        self.fit_result._set_profile_function(
+            self._unique_category_type_names(experiments, 'peak')
+        )
+        self.fit_result._set_background_function(
+            self._unique_category_type_names(experiments, 'background')
+        )
+        self.fit_result._set_threshold_expression(_GT_REFLECTION_THRESHOLD_EXPRESSION)
+        self.fit_result._set_number_reflns_total(reflns_total)
+        self.fit_result._set_number_reflns_gt(reflns_gt)
 
     @staticmethod
     def _store_posterior_distribution_cache_projection(
