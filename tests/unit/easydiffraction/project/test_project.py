@@ -22,7 +22,8 @@ def test_project_help(capsys):
     out = capsys.readouterr().out
     assert 'experiments' in out
     assert 'analysis' in out
-    assert 'summary' in out
+    assert 'report' in out
+    assert 'summary' not in out
 
 
 def test_project_verbosity_default():
@@ -71,12 +72,17 @@ def test_project_exposes_chart_table_and_display_facades():
     from easydiffraction.project.categories.table import Table
     from easydiffraction.project.display import ProjectDisplay
     from easydiffraction.project.project import Project
+    from easydiffraction.report import Report
 
     project = Project()
 
     assert isinstance(project.chart, Chart)
     assert isinstance(project.table, Table)
     assert isinstance(project.display, ProjectDisplay)
+    assert isinstance(project.report, Report)
+    assert hasattr(project.report, 'save')
+    assert hasattr(project.report, 'check')
+    assert hasattr(project.report, 'show_report')
 
 
 def test_apply_params_from_csv_resolves_relative_file_paths(tmp_path):
@@ -178,3 +184,33 @@ def test_undo_fit_save_reload_preserves_fit_parameter_controls(tmp_path):
     assert loaded_parameter._fit_start_value == 3.87
     assert loaded_parameter._fit_start_uncertainty == 0.02
     assert second_outcome.was_no_op is True
+
+
+def test_project_save_report_writes_submission_cif(tmp_path):
+    from easydiffraction.project.project import Project
+
+    project = Project(name='report_project')
+    project.save_as(str(tmp_path / 'proj'))
+    project.save(report=True)
+
+    assert not (tmp_path / 'proj' / 'summary.cif').exists()
+    assert (tmp_path / 'proj' / 'reports' / 'report_project.cif').is_file()
+
+
+def test_project_save_report_check_runs_validation(tmp_path, monkeypatch):
+    from easydiffraction.project.project import Project
+
+    project = Project(name='checked_report')
+    checked_paths = []
+
+    def fake_check(*, path=None):
+        checked_paths.append(path)
+
+    project.save_as(str(tmp_path / 'proj'))
+    monkeypatch.setattr(project.report, 'check', fake_check)
+
+    project.save(report=True, check=True)
+
+    assert checked_paths == [
+        tmp_path / 'proj' / 'reports' / 'checked_report.cif',
+    ]

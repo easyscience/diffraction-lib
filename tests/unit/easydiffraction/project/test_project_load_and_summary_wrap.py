@@ -25,8 +25,8 @@ def test_project_load_reads_project_info(tmp_path):
     assert loaded.info.path is not None
 
 
-def test_summary_show_project_info_wraps_description(capsys):
-    from easydiffraction.summary.summary import Summary
+def test_report_show_project_info_wraps_description(capsys):
+    from easydiffraction.report.report import Report
 
     long_desc = ' '.join(['desc'] * 50)  # long text to trigger wrapping
 
@@ -38,8 +38,8 @@ def test_summary_show_project_info_wraps_description(capsys):
         def __init__(self):
             self.info = Info()
 
-    s = Summary(Project())
-    s.show_project_info()
+    report = Report(Project())
+    report.show_project_info()
     out = capsys.readouterr().out
     # Title and Description paragraph headers present
     assert 'PROJECT INFO' in out

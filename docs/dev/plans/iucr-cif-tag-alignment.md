@@ -534,10 +534,10 @@ Per AGENTS.md §Testing, every new module, class, and bug fix
 ships with tests; unit tests mirror the source tree. Before
 running the verification commands below, add or update:
 
-- [ ] **`tests/unit/easydiffraction/io/cif/test_handler.py`** —
+- [x] **`tests/unit/easydiffraction/io/cif/test_handler.py`** —
   `CifHandler.iucr_name` resolver: explicit value used when set,
   fallback to `names[0]` when unset. P1.1 surface.
-- [ ] **`tests/unit/easydiffraction/io/cif/test_iucr_writer.py`** —
+- [x] **`tests/unit/easydiffraction/io/cif/test_iucr_writer.py`** —
   fixture-driven golden tests for each topology covered in §2.3
   / §2.2 worked examples: single-crystal (Example A), single-
   experiment Rietveld CWL (Example B), joint Rietveld multi-
@@ -547,7 +547,7 @@ running the verification commands below, add or update:
   `data_global` content, profile-data / reflections loop
   columns, project-extension `_easydiffraction_*` grouping at
   end of block, 80-char wrap. P1.11–P1.13 surface.
-- [ ] **`tests/unit/easydiffraction/io/cif/test_iucr_transformers.py`** —
+- [x] **`tests/unit/easydiffraction/io/cif/test_iucr_transformers.py`** —
   per-transformer unit tests: wavelength scalar vs loop based on
   multiplicity; TOF calibration loop with `id = offset / linear
   / quad / recip` and powers 0, 1, 2, −1; range-form excluded
@@ -558,20 +558,20 @@ running the verification commands below, add or update:
   `_refine_ls.extinction_coef` value per the ADR §3 mapping
   table (Becker-Coppens type 1 / type 2 / mixed, Zachariasen).
   P1.14 surface.
-- [ ] **`tests/unit/easydiffraction/io/cif/test_serialize.py`** —
+- [x] **`tests/unit/easydiffraction/io/cif/test_serialize.py`** —
   update to cover ADP single-tag emission: rows with
   `ADP_type='Biso'` / `'Bani'` emit only the `B_*` family; rows
   with `ADP_type='Uiso'` / `'Uani'` emit only the `U_*` family.
   P1.3 surface.
-- [ ] **`tests/unit/easydiffraction/datablocks/structure/categories/atom_sites/test_default.py`** —
+- [x] **`tests/unit/easydiffraction/datablocks/structure/categories/atom_sites/test_default.py`** —
   update for the casing fixes from P1.2:
   `_atom_site.ADP_type` (uppercase ADP),
   `_atom_site.Wyckoff_symbol` (uppercase W, "symbol"); legacy
   lowercase forms still loadable on read.
-- [ ] **`tests/unit/easydiffraction/datablocks/structure/categories/space_group/test_default.py`** —
+- [x] **`tests/unit/easydiffraction/datablocks/structure/categories/space_group/test_default.py`** —
   update for `_space_group.name_H-M_alt` and
   `_space_group.IT_coordinate_system_code` casing fixes (P1.2).
-- [ ] **`tests/unit/easydiffraction/analysis/categories/fit_result/test_lsq.py`** —
+- [x] **`tests/unit/easydiffraction/analysis/categories/fit_result/test_lsq.py`** —
   update for the new `_fit_result.*` fields from P1.4: each
   new descriptor (`R_factor_all`, `wR_factor_all`,
   `R_factor_gt`, `wR_factor_gt`, `prof_R_factor`,
@@ -582,7 +582,7 @@ running the verification commands below, add or update:
   `number_reflns_total`, `number_reflns_gt`) is read /
   written round-trip; fields unset for inapplicable
   experiment families remain `None`.
-- [ ] **`tests/unit/easydiffraction/report/test_report.py`** —
+- [x] **`tests/unit/easydiffraction/report/test_report.py`** —
   new `Report` class: `save()` writes
   `reports/<project>.cif`; preserved display methods
   (`show_report`, `show_project_info`,
@@ -591,20 +591,20 @@ running the verification commands below, add or update:
   (port the relevant assertions from the current
   `tests/unit/easydiffraction/summary/`-equivalent tests if
   any exist; otherwise add coverage). P1.8 surface.
-- [ ] **`tests/unit/easydiffraction/report/test_check.py`** —
+- [x] **`tests/unit/easydiffraction/report/test_check.py`** —
   `Report.check()` validates the generated CIF against
   `cif_core.dic` / `cif_pow.dic` via gemmi; surfaces unknown-
   tag warnings for non-extension categories; ignores the
   `_easydiffraction_*` namespace per the configured skip
   list. P1.16 surface.
-- [ ] **`tests/unit/easydiffraction/project/test_project.py`** —
+- [x] **`tests/unit/easydiffraction/project/test_project.py`** —
   update / extend: `Project.save()` no longer writes
   `summary.cif`; `Project.save(report=True)` writes
   `reports/<project>.cif`; `Project.save(report=True,
   check=True)` runs validation; the `project.report` facade
   exposes `save`, `check`, and the preserved display
   methods. P1.8, P1.15, P1.16 surface.
-- [ ] **`tests/unit/easydiffraction/analysis/test_analysis.py`** —
+- [x] **`tests/unit/easydiffraction/analysis/test_analysis.py`** —
   update for the project-extension `iucr_name` settings on
   `_minimizer.*`, `_calculator.*`, `_fitting_mode.*` (P1.7):
   default-save CIF tags unchanged; IUCr-export `iucr_name`
