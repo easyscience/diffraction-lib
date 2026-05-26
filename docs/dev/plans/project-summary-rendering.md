@@ -383,7 +383,7 @@ generated-artifact exceptions.
   - Commit:
     `Load _report.* from project.cif with legacy defaults`.
 
-- [ ] **P1.4 — Move gemmi validation internal (CIF only)**
+- [x] **P1.4 — Move gemmi validation internal (CIF only)**
   - Files: `src/easydiffraction/io/cif/iucr_writer.py`,
     `src/easydiffraction/report/check.py` (or move/rename).
   - Refactor the existing `Report.check()` body into a private

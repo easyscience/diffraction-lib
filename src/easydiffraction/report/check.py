@@ -8,14 +8,18 @@ import pathlib
 import re
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
+from typing import NoReturn
 
 import gemmi
+
+from easydiffraction.core.errors import EasyDiffractionWriterError
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
 _REPORT_TAG_RE = re.compile(r'(?m)^\s*(_[A-Za-z][A-Za-z0-9_.-]*)\b')
 _DICT_SAVE_RE = re.compile(r'(?m)^save_(_[^\s]+)\s*$')
+_WRITER_ERROR_HINT = 'Please file a bug with the full diagnostic.'
 
 
 @dataclass(frozen=True)
@@ -88,6 +92,20 @@ def _dictionary_paths(
     return tuple(path for path in candidates if path.is_file())
 
 
+def _read_dictionary_documents(
+    dictionary_paths: tuple[pathlib.Path, ...],
+) -> tuple[tuple[gemmi.cif.Document, ...], tuple[str, ...]]:
+    """Return parsed dictionaries and any load diagnostics."""
+    documents = []
+    errors = []
+    for dictionary_path in dictionary_paths:
+        try:
+            documents.append(gemmi.cif.read_file(str(dictionary_path)))
+        except Exception as exc:  # noqa: BLE001
+            errors.append(f'Failed to load CIF dictionary {dictionary_path}: {exc}')
+    return tuple(documents), tuple(errors)
+
+
 def _gemmi_dictionary_warnings(
     document: gemmi.cif.Document,
     dictionary_paths: tuple[pathlib.Path, ...],
@@ -101,6 +119,22 @@ def _gemmi_dictionary_warnings(
         ddl.validate_cif(document)
     except Exception as exc:  # noqa: BLE001
         return [f'Gemmi dictionary validation skipped: {exc}']
+    return logger.messages
+
+
+def _gemmi_dictionary_errors(
+    document: gemmi.cif.Document,
+    dictionary_documents: tuple[gemmi.cif.Document, ...],
+) -> list[str]:
+    """Return gemmi dictionary-validation diagnostics."""
+    logger = _GemmiLogger()
+    ddl = gemmi.cif.Ddl(logger, print_unknown_tags=False)
+    try:
+        for dictionary_document in dictionary_documents:
+            ddl.read_ddl(dictionary_document)
+        ddl.validate_cif(document)
+    except Exception as exc:  # noqa: BLE001
+        return [f'Gemmi dictionary validation failed: {exc}']
     return logger.messages
 
 
@@ -122,6 +156,20 @@ def _unknown_tag_warnings(
     return [f'Unknown IUCr tag: {tag}' for tag in unknown_tags]
 
 
+def _unknown_tag_errors(content: str, known_tags: set[str]) -> list[str]:
+    """Return unknown-tag diagnostics from CIF content."""
+    if not known_tags:
+        return []
+
+    report_tags = set(_REPORT_TAG_RE.findall(content))
+    unknown_tags = sorted(
+        tag
+        for tag in report_tags
+        if not tag.startswith('_easydiffraction_') and tag not in known_tags
+    )
+    return [f'Unknown IUCr tag: {tag}' for tag in unknown_tags]
+
+
 def _known_dictionary_tags(dictionary_paths: tuple[pathlib.Path, ...]) -> set[str]:
     """Return item names declared by dictionary save frames."""
     tags: set[str] = set()
@@ -129,6 +177,37 @@ def _known_dictionary_tags(dictionary_paths: tuple[pathlib.Path, ...]) -> set[st
         text = dictionary_path.read_text(encoding='utf-8')
         tags.update(_DICT_SAVE_RE.findall(text))
     return tags
+
+
+_CACHED_DICTIONARY_PATHS = _dictionary_paths(None)
+_CACHED_DICTIONARY_DOCUMENTS, _CACHED_DICTIONARY_LOAD_ERRORS = (
+    _read_dictionary_documents(_CACHED_DICTIONARY_PATHS)
+)
+_CACHED_DICTIONARY_TAGS = _known_dictionary_tags(_CACHED_DICTIONARY_PATHS)
+
+
+def _validate_iucr_cif(content: str) -> None:
+    """Validate IUCr CIF content before it is written."""
+    try:
+        document = gemmi.cif.read_string(content)
+    except Exception as exc:  # noqa: BLE001
+        _raise_writer_error(f'Failed to parse generated IUCr CIF: {exc}')
+
+    diagnostics = list(_CACHED_DICTIONARY_LOAD_ERRORS)
+    if _CACHED_DICTIONARY_DOCUMENTS:
+        diagnostics.extend(
+            _gemmi_dictionary_errors(document, _CACHED_DICTIONARY_DOCUMENTS)
+        )
+        diagnostics.extend(_unknown_tag_errors(content, _CACHED_DICTIONARY_TAGS))
+
+    if diagnostics:
+        _raise_writer_error('\n'.join(diagnostics))
+
+
+def _raise_writer_error(diagnostic: str) -> NoReturn:
+    """Raise a writer error with bug-report guidance."""
+    msg = f'Generated IUCr CIF failed validation. {_WRITER_ERROR_HINT}\n{diagnostic}'
+    raise EasyDiffractionWriterError(msg)
 
 
 class _GemmiLogger:
