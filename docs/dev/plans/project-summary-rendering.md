@@ -401,7 +401,7 @@ generated-artifact exceptions.
     is paid once per session.
   - Commit: `Move IUCr CIF validation inside the writer`.
 
-- [ ] **P1.5 — Remove public `check()` and `check=True`**
+- [x] **P1.5 — Remove public `check()` and `check=True`**
   - Files: `src/easydiffraction/project/categories/report/default.py`
     (the moved `Report` class — same target for P1.6, P1.7,
     P1.20),

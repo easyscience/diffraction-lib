@@ -462,7 +462,7 @@ class Project(GuardedBase):  # noqa: PLR0904
                 param_map[unique_name] = param
         return param_map
 
-    def save(self, *, report: bool = False, check: bool = False) -> None:
+    def save(self, *, report: bool = False) -> None:
         """
         Save the project into the existing project directory.
 
@@ -470,8 +470,6 @@ class Project(GuardedBase):  # noqa: PLR0904
         ----------
         report : bool, default=False
             Whether to write the IUCr submission report.
-        check : bool, default=False
-            Whether to validate the IUCr submission report.
         """
         if self.info.path is None:
             log.error('Project path not specified. Use save_as() to define the path first.')
@@ -533,7 +531,7 @@ class Project(GuardedBase):  # noqa: PLR0904
             console.print(f'│   {branch} 📄 {file_name}')
 
         if report:
-            report_path = self.report.save(check=check)
+            report_path = self.report.save()
             console.print('└── 📁 reports/')
             console.print(f'    └── 📄 {report_path.name}')
 

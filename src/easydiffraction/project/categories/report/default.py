@@ -14,16 +14,12 @@ from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.variable import BoolDescriptor
 from easydiffraction.core.variable import StringDescriptor
-from easydiffraction.io.cif.iucr_writer import iucr_report_path
 from easydiffraction.io.cif.iucr_writer import write_iucr_cif
 from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.project.categories.report.factory import ReportFactory
-from easydiffraction.report.check import ReportCheckResult
-from easydiffraction.report.check import check_report
 from easydiffraction.report.enums import ReportFormatEnum
 from easydiffraction.report.enums import ReportStyleEnum
 from easydiffraction.utils.logging import console
-from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_object_help
 from easydiffraction.utils.utils import render_table
 
@@ -391,43 +387,13 @@ class Report(CategoryItem):
             columns_data=fit_metrics,
         )
 
-    def save(self, *, check: bool = False) -> pathlib.Path:
+    def save(self) -> pathlib.Path:
         """
         Write the IUCr submission report.
-
-        Parameters
-        ----------
-        check : bool, default=False
-            Whether to validate the written report.
 
         Returns
         -------
         pathlib.Path
             Path of the written report CIF.
         """
-        report_path = write_iucr_cif(self.project)
-        if check:
-            self.check(path=report_path)
-        return report_path
-
-    def check(self, path: str | pathlib.Path | None = None) -> ReportCheckResult:
-        """
-        Validate the IUCr submission report.
-
-        Parameters
-        ----------
-        path : str | pathlib.Path | None, default=None
-            Report path. Defaults to ``reports/<project>.cif``.
-
-        Returns
-        -------
-        ReportCheckResult
-            Validation result with errors and warnings.
-        """
-        report_path = iucr_report_path(self.project, path)
-        result = check_report(report_path)
-        for warning in result.warnings:
-            log.warning(warning)
-        if result.errors:
-            log.error('\n'.join(result.errors), exc_type=ValueError)
-        return result
+        return write_iucr_cif(self.project)
