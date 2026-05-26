@@ -518,7 +518,7 @@ generated-artifact exceptions.
     identification accordingly.
   - Commit: `Amend iucr-cif-tag-alignment for project.report`.
 
-- [ ] **P1.12 — Add `project.publication` top-level owner**
+- [x] **P1.12 — Add `project.publication` top-level owner**
   - Files: new
     `src/easydiffraction/project/categories/publication/`
     package; modify `src/easydiffraction/project/project.py`.
