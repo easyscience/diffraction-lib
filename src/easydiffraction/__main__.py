@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import pathlib
 import sys
 
 # Ensure UTF-8 output on all platforms (e.g. Windows with cp1252)
@@ -13,11 +14,12 @@ if hasattr(sys.stdout, 'reconfigure'):
 import typer
 
 import easydiffraction as ed
+from easydiffraction.report.enums import ReportStyleEnum
 
 app = typer.Typer(add_completion=False)
 
 _MIN_PROJECT_FIRST_ARG_COUNT = 2
-_PROJECT_COMMAND_NAMES = frozenset({'fit', 'display', 'undo'})
+_PROJECT_COMMAND_NAMES = frozenset({'fit', 'display', 'undo', 'save', 'save-report'})
 _GLOBAL_COMMAND_NAMES = frozenset({
     'list-data',
     'download-data',
@@ -132,6 +134,51 @@ def _display_undo_summary(
         typer.echo('✅ Cleared analysis/results.h5 (Bayesian sidecar).')
     project.save()
     typer.echo(f'✅ Saved project to {project_dir}.')
+
+
+def _selected_report_flags(
+    *,
+    cif: bool,
+    html: bool,
+    tex: bool,
+    pdf: bool,
+) -> bool:
+    """Return whether at least one report format was selected."""
+    return cif or html or tex or pdf
+
+
+def _save_report_outputs(
+    project: object,
+    *,
+    cif: bool,
+    html: bool,
+    tex: bool,
+    pdf: bool,
+    style: str,
+    offline: bool,
+) -> list[pathlib.Path]:
+    """Write selected one-off report outputs."""
+    report = project.report
+    report_paths = []
+    if cif:
+        report_paths.append(report.save_cif())
+    if html:
+        report_paths.append(report.save_html(offline=offline))
+    if tex:
+        report_paths.append(report.save_tex(style=style))
+    if pdf:
+        report_paths.append(report.save_pdf(style=style))
+    return report_paths
+
+
+def _validated_report_style(style: str) -> str:
+    """Return a valid report style value."""
+    try:
+        return ReportStyleEnum(style).value
+    except ValueError as exc:
+        allowed = ', '.join(member.value for member in ReportStyleEnum)
+        msg = f"Unknown report style '{style}'. Supported styles: {allowed}."
+        raise typer.BadParameter(msg) from exc
 
 
 def run_cli(args: list[str] | None = None) -> None:
@@ -282,6 +329,79 @@ def undo(
     """Undo the last fit: easydiffraction PROJECT_DIR undo [--dry]."""
     project = _load_project(project_dir)
     _display_undo_summary(project=project, project_dir=project_dir, dry=dry)
+
+
+@app.command('save')
+def save(
+    project_dir: str = typer.Argument(
+        ...,
+        help='Path to the project directory (must contain project.cif).',
+    ),
+) -> None:
+    """Save a project using its persisted report configuration."""
+    project = _load_project(project_dir)
+    project.save()
+
+
+@app.command('save-report')
+def save_report(
+    project_dir: str = typer.Argument(
+        ...,
+        help='Path to the project directory (must contain project.cif).',
+    ),
+    cif: bool = typer.Option(  # noqa: FBT001
+        False,  # noqa: FBT003
+        '--cif',
+        help='Write the IUCr CIF report.',
+    ),
+    html: bool = typer.Option(  # noqa: FBT001
+        False,  # noqa: FBT003
+        '--html',
+        help='Write the HTML report.',
+    ),
+    tex: bool = typer.Option(  # noqa: FBT001
+        False,  # noqa: FBT003
+        '--tex',
+        help='Write the TeX report bundle.',
+    ),
+    pdf: bool = typer.Option(  # noqa: FBT001
+        False,  # noqa: FBT003
+        '--pdf',
+        help='Write the PDF report.',
+    ),
+    style: str = typer.Option(
+        'iucr',
+        '--style',
+        help='Report template style.',
+    ),
+    offline: bool = typer.Option(  # noqa: FBT001
+        False,  # noqa: FBT003
+        '--offline',
+        help='Embed HTML assets instead of loading them from a CDN.',
+    ),
+) -> None:
+    """Write one-off reports without changing saved configuration."""
+    if not _selected_report_flags(cif=cif, html=html, tex=tex, pdf=pdf):
+        typer.echo(
+            'No report format selected. Use --cif, --html, --tex, or --pdf; '
+            'or configure project.report.formats and save the project.',
+            err=True,
+        )
+        raise typer.Exit(code=1)
+
+    style = _validated_report_style(style)
+    project = _load_project(project_dir)
+    report_paths = _save_report_outputs(
+        project,
+        cif=cif,
+        html=html,
+        tex=tex,
+        pdf=pdf,
+        style=style,
+        offline=offline,
+    )
+    for report_path in report_paths:
+        typer.echo(f'Saved report: {report_path}')
 
 
 if __name__ == '__main__':

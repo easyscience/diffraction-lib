@@ -243,10 +243,10 @@ re-litigate them, only implements them:
   equivalent — add `measured_range` property).
 
 **CLI (P1.22):**
-- `src/easydiffraction/cli/save.py` (existing — match
-  `project.save()` no-arg behaviour reading config).
-- `src/easydiffraction/cli/save_report.py` (new — `ed save-report
-  --cif --html --tex --pdf --style iucr` subcommand).
+- `src/easydiffraction/__main__.py` (existing Typer module —
+  add config-driven `ed save PROJECT_DIR` and one-off
+  `ed save-report --cif --html --tex --pdf --style iucr`;
+  no `src/easydiffraction/cli/` package exists in this tree).
 
 **Tutorials / docs (P1.23):**
 - `docs/docs/tutorials/*.py` (audit for `project.report` usage;
@@ -410,8 +410,8 @@ generated-artifact exceptions.
     (the moved `Report` class — same target for P1.6, P1.7,
     P1.20),
     `src/easydiffraction/project/project.py`,
-    `src/easydiffraction/cli/` (any commands exposing
-    `--check`).
+    `src/easydiffraction/__main__.py` (any commands exposing
+    `--check`; no such flag existed in the current CLI).
   - Delete `Report.check()` method.
   - Drop the `check=False` keyword from `Project.save()`.
   - Update any docstrings / tutorials that reference the
@@ -761,9 +761,10 @@ generated-artifact exceptions.
     purely to feed the renderers via `data_context()`.
   - Commit: `Add crystal_system and measured_range properties for reports`.
 
-- [ ] **P1.22 — CLI `ed save-report` subcommand**
-  - Files: new `src/easydiffraction/cli/save_report.py`;
-    modify `src/easydiffraction/cli/save.py`.
+- [x] **P1.22 — CLI `ed save-report` subcommand**
+  - Files: modify `src/easydiffraction/__main__.py`
+    (the current Typer command module; there is no
+    `src/easydiffraction/cli/` package in this tree).
   - Add an `ed save-report` subcommand accepting `--cif`,
     `--html`, `--tex`, `--pdf`, `--style iucr`,
     `--offline` flags. Dispatches to
@@ -771,8 +772,8 @@ generated-artifact exceptions.
   - `ed save-report` with no flags → clear error pointing at
     the configuration category (matches the Python
     `ValueError` from P1.6).
-  - `ed save` continues to read the persisted config; no flag
-    surface added on `ed save`.
+  - `ed save` reads the persisted config; no flag surface added
+    on `ed save`.
   - Commit: `Add ed save-report CLI subcommand`.
 
 - [ ] **P1.23 — Update tutorials and user-guide docs**
