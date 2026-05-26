@@ -406,6 +406,8 @@ Run a saved project from the command line:
 python -m easydiffraction lbco_hrpt fit
 python -m easydiffraction lbco_hrpt fit --dry
 python -m easydiffraction lbco_hrpt display
+python -m easydiffraction lbco_hrpt undo
+python -m easydiffraction lbco_hrpt undo --dry
 ```
 
 Load a saved example project straight from `download_data()`:
@@ -427,4 +429,5 @@ python -m easydiffraction download-tutorial 1 --destination tutorials
 python -m easydiffraction download-all-tutorials --destination tutorials
 python -m easydiffraction PROJECT_DIR fit
 python -m easydiffraction PROJECT_DIR display
+python -m easydiffraction PROJECT_DIR undo
 ```

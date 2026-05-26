@@ -150,10 +150,29 @@ when the active chart engine is Plotly.
 
 ### Undo the Last Fit
 
-The CLI already reserves the project-first undo command shape:
+Roll back the most recent fit to the parameter values and
+uncertainties captured just before it started:
 
 ```bash
 python -m easydiffraction PROJECT_DIR undo
 ```
 
-This command currently reports that undo support is not implemented yet.
+The command restores each refined parameter to its saved pre-fit
+`start_value` / `start_uncertainty`, clears `analysis.fit_results`,
+truncates `analysis/results.h5` (the Bayesian sidecar), and **saves
+the rolled-back state back** to the project directory by default.
+
+Use the `--dry` flag to preview the rollback **without overwriting**
+any file:
+
+```bash
+python -m easydiffraction PROJECT_DIR undo --dry
+```
+
+Undo is single-level: only the most recently committed fit is
+addressable. Calling `undo` a second time, or running it on a project
+that has never been fit, prints `No fit to undo for '<project>'.
+Project state is unchanged.` and exits cleanly (status 0). Fit
+bounds, aliases, constraints, the minimizer choice, the fit mode,
+and joint-fit weights are **not** reverted by undo — only fit output
+is rolled back.
