@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import math
 import pathlib
+import re
 import textwrap
 from collections.abc import Iterable
 from dataclasses import dataclass
@@ -106,6 +107,7 @@ def write_iucr_cif(
 def _render_iucr_cif(project: object) -> str:
     """Render all IUCr CIF blocks for *project*."""
     blocks = [_write_global_block(project)]
+    blocks.extend(_write_sc_blocks(project))
     return f'\n{_BLOCK_SEPARATOR}\n'.join(blocks) + '\n'
 
 
@@ -165,11 +167,249 @@ def _write_publication_sections(lines: list[str]) -> None:
 def _write_formula_section(lines: list[str], project: object) -> None:
     """Append chemical-formula summary metadata."""
     formula = _chemical_formula_values(project)
+    _write_chemical_formula_section(lines, formula)
+
+
+def _write_chemical_formula_section(
+    lines: list[str],
+    formula: _FormulaValues,
+) -> None:
+    """Append one chemical-formula section."""
     _section(lines, 'Chemical formula')
     _write_item(lines, '_chemical_formula.sum', formula.sum_formula)
     _write_item(lines, '_chemical_formula.moiety', formula.moiety)
     _write_item(lines, '_chemical_formula.weight', formula.weight)
     _write_item(lines, '_chemical_formula.IUPAC', formula.iupac)
+
+
+def _write_sc_blocks(project: object) -> list[str]:
+    """Render single-crystal structure/experiment blocks."""
+    blocks: list[str] = []
+    for experiment in _single_crystal_experiments(project):
+        structure = _linked_structure(project, experiment)
+        blocks.append(_write_sc_block(project, structure, experiment))
+    return blocks
+
+
+def _write_sc_block(
+    project: object,
+    structure: object,
+    experiment: object,
+) -> str:
+    """Render one single-crystal data block."""
+    block_name = _block_name(getattr(structure, 'name', None) or 'I')
+    lines = [f'data_{block_name}']
+    _write_chemical_formula_section(lines, _structure_formula_values(structure))
+    _write_cell_section(lines, structure)
+    _write_space_group_section(lines, structure)
+    _write_symmetry_operations_section(lines)
+    _write_diffrn_section(lines, experiment)
+    _write_wavelength_section(lines, experiment)
+    _write_atom_site_sections(lines, structure)
+    _write_atom_site_aniso_sections(lines, structure)
+    _write_sc_refinement_section(lines, project)
+    _write_reflns_section(lines, project, experiment)
+    _write_sc_refln_loop(lines, experiment)
+    _write_sc_project_extensions(lines, experiment)
+    return '\n'.join(lines)
+
+
+def _write_cell_section(lines: list[str], structure: object) -> None:
+    """Append unit-cell parameters."""
+    cell = getattr(structure, 'cell', None)
+    _section(lines, 'Cell')
+    for tag, attr_name in (
+        ('_cell.length_a', 'length_a'),
+        ('_cell.length_b', 'length_b'),
+        ('_cell.length_c', 'length_c'),
+        ('_cell.angle_alpha', 'angle_alpha'),
+        ('_cell.angle_beta', 'angle_beta'),
+        ('_cell.angle_gamma', 'angle_gamma'),
+    ):
+        _write_item(lines, tag, _attribute_value(cell, attr_name))
+
+
+def _write_space_group_section(lines: list[str], structure: object) -> None:
+    """Append space-group metadata."""
+    space_group = getattr(structure, 'space_group', None)
+    _section(lines, 'Space group')
+    _write_item(
+        lines,
+        '_space_group.name_H-M_alt',
+        _attribute_value(space_group, 'name_h_m'),
+    )
+    _write_item(
+        lines,
+        '_space_group.IT_coordinate_system_code',
+        _attribute_value(space_group, 'it_coordinate_system_code'),
+    )
+    _write_item(lines, '_space_group.crystal_system', '?')
+
+
+def _write_symmetry_operations_section(lines: list[str]) -> None:
+    """Append symmetry operations."""
+    _section(lines, 'Symmetry operations')
+    _write_loop(
+        lines,
+        ('_space_group_symop.id', '_space_group_symop.operation_xyz'),
+        [('1', 'x,y,z')],
+    )
+
+
+def _write_diffrn_section(lines: list[str], experiment: object) -> None:
+    """Append diffraction metadata."""
+    diffrn = getattr(experiment, 'diffrn', None)
+    expt_type = getattr(experiment, 'type', None)
+    _section(lines, 'Diffraction')
+    _write_item(
+        lines,
+        '_diffrn.ambient_temperature',
+        _attribute_value(diffrn, 'ambient_temperature'),
+    )
+    _write_item(
+        lines,
+        '_diffrn.ambient_pressure',
+        _attribute_value(diffrn, 'ambient_pressure'),
+    )
+    _write_item(
+        lines,
+        '_diffrn_radiation.probe',
+        _attribute_value(expt_type, 'radiation_probe'),
+    )
+
+
+def _write_wavelength_section(lines: list[str], experiment: object) -> None:
+    """Append wavelength metadata when available."""
+    wavelength = _attribute_value(
+        getattr(experiment, 'instrument', None),
+        'setup_wavelength',
+    )
+    if wavelength is None:
+        return
+
+    _section(lines, 'Wavelength')
+    _write_loop(
+        lines,
+        (
+            '_diffrn_radiation_wavelength.id',
+            '_diffrn_radiation_wavelength.value',
+            '_diffrn_radiation_wavelength.wt',
+        ),
+        [('1', wavelength, 1.0)],
+    )
+
+
+def _write_atom_site_sections(lines: list[str], structure: object) -> None:
+    """Append atom-site loops grouped by ADP convention."""
+    atom_sites = list(_collection_values(getattr(structure, 'atom_sites', None)))
+    for family in ('B', 'U'):
+        rows = [
+            _atom_site_row(atom_site)
+            for atom_site in atom_sites
+            if _adp_family(atom_site) == family
+        ]
+        if not rows:
+            continue
+        _section(lines, f'Atom sites ({family})')
+        _write_loop(lines, _atom_site_tags(family), rows)
+
+
+def _write_atom_site_aniso_sections(lines: list[str], structure: object) -> None:
+    """Append anisotropic ADP loops grouped by ADP convention."""
+    aniso_sites = list(_collection_values(getattr(structure, 'atom_site_aniso', None)))
+    atom_site_by_label = {
+        str(_attribute_value(atom_site, 'label')): atom_site
+        for atom_site in _collection_values(getattr(structure, 'atom_sites', None))
+    }
+    for family in ('B', 'U'):
+        rows = [
+            _atom_site_aniso_row(aniso_site)
+            for aniso_site in aniso_sites
+            if _adp_family(_atom_site_for_aniso(atom_site_by_label, aniso_site))
+            == family
+        ]
+        if not rows:
+            continue
+        _section(lines, f'Anisotropic ADP ({family})')
+        _write_loop(lines, _atom_site_aniso_tags(family), rows)
+
+
+def _write_sc_refinement_section(lines: list[str], project: object) -> None:
+    """Append single-crystal refinement statistics."""
+    fit_result = _fit_result(project)
+    _section(lines, 'Refinement')
+    for tag, attr_name in (
+        ('_refine_ls.R_factor_all', 'r_factor_all'),
+        ('_refine_ls.wR_factor_all', 'wr_factor_all'),
+        ('_refine_ls.R_factor_gt', 'r_factor_gt'),
+        ('_refine_ls.wR_factor_gt', 'wr_factor_gt'),
+        ('_refine_ls.number_parameters', 'n_parameters'),
+        ('_refine_ls.number_restraints', 'number_restraints'),
+        ('_refine_ls.number_constraints', 'number_constraints'),
+    ):
+        _write_item(lines, tag, _attribute_value(fit_result, attr_name))
+
+
+def _write_reflns_section(
+    lines: list[str],
+    project: object,
+    experiment: object,
+) -> None:
+    """Append reflection-set aggregate statistics."""
+    fit_result = _fit_result(project)
+    reflns = list(_collection_values(getattr(experiment, 'refln', None)))
+    _section(lines, 'Reflection summary')
+    _write_item(
+        lines,
+        '_reflns.number_total',
+        _attribute_value(fit_result, 'number_reflns_total') or len(reflns),
+    )
+    _write_item(
+        lines,
+        '_reflns.number_gt',
+        _attribute_value(fit_result, 'number_reflns_gt'),
+    )
+    _write_item(
+        lines,
+        '_reflns.threshold_expression',
+        _attribute_value(fit_result, 'threshold_expression'),
+    )
+
+
+def _write_sc_refln_loop(lines: list[str], experiment: object) -> None:
+    """Append the single-crystal reflection loop."""
+    rows = [
+        _sc_refln_row(refln)
+        for refln in _collection_values(getattr(experiment, 'refln', None))
+    ]
+    if not rows:
+        return
+
+    _section(lines, 'Reflections')
+    _write_loop(
+        lines,
+        (
+            '_refln.index_h',
+            '_refln.index_k',
+            '_refln.index_l',
+            '_refln.F_squared_meas',
+            '_refln.F_squared_calc',
+            '_refln.F_squared_meas_su',
+            '_refln.include_status',
+        ),
+        rows,
+    )
+
+
+def _write_sc_project_extensions(lines: list[str], experiment: object) -> None:
+    """Append EasyDiffraction extension values for a single-crystal block."""
+    extension_rows = _sc_extension_items(experiment)
+    if not extension_rows:
+        return
+
+    _section(lines, 'EasyDiffraction project extensions')
+    for tag, value in extension_rows:
+        _write_item(lines, tag, value)
 
 
 def _write_placeholder_items(
@@ -341,6 +581,214 @@ def _base_engine_name(name: str) -> str:
     return name.split(' ', maxsplit=1)[0].split('(', maxsplit=1)[0].lower()
 
 
+def _single_crystal_experiments(project: object) -> list[object]:
+    """Return single-crystal Bragg experiments in project order."""
+    experiments = _collection_values(getattr(project, 'experiments', None))
+    return [
+        experiment
+        for experiment in experiments
+        if (
+            _attribute_value(getattr(experiment, 'type', None), 'sample_form')
+            == 'single crystal'
+            and _attribute_value(
+                getattr(experiment, 'type', None),
+                'scattering_type',
+            )
+            == 'bragg'
+        )
+    ]
+
+
+def _linked_structure(project: object, experiment: object) -> object:
+    """Return the structure linked to a single-crystal experiment."""
+    structures = getattr(project, 'structures', None)
+    names = getattr(structures, 'names', ())
+    linked_id = _attribute_value(getattr(experiment, 'linked_crystal', None), 'id')
+    if linked_id in names:
+        return structures[linked_id]
+
+    structure_values = list(_collection_values(structures))
+    if len(structure_values) == 1:
+        return structure_values[0]
+
+    experiment_name = getattr(experiment, 'name', type(experiment).__name__)
+    msg = (
+        f"Experiment '{experiment_name}' links crystal '{linked_id}', "
+        f'but project structures are {list(names)}.'
+    )
+    raise ValueError(msg)
+
+
+def _block_name(value: object) -> str:
+    """Return a CIF-safe data-block code."""
+    raw_name = str(value or 'I').strip()
+    block_name = re.sub(r'[^A-Za-z0-9_]+', '_', raw_name).strip('_')
+    if not block_name:
+        return 'I'
+    if block_name[0].isdigit():
+        return f'block_{block_name}'
+    return block_name
+
+
+def _attribute_value(owner: object, attr_name: str) -> object:
+    """Return ``owner.<attr_name>.value`` when available."""
+    if owner is None:
+        return None
+    return _descriptor_value(getattr(owner, attr_name, None))
+
+
+def _fit_result(project: object) -> object:
+    """Return the persisted fit-result category."""
+    analysis = getattr(project, 'analysis', None)
+    return getattr(analysis, 'fit_result', None)
+
+
+def _atom_site_tags(family: str) -> tuple[str, ...]:
+    """Return atom-site loop tags for one ADP family."""
+    return (
+        '_atom_site.label',
+        '_atom_site.type_symbol',
+        '_atom_site.fract_x',
+        '_atom_site.fract_y',
+        '_atom_site.fract_z',
+        '_atom_site.occupancy',
+        '_atom_site.ADP_type',
+        f'_atom_site.{family}_iso_or_equiv',
+        '_atom_site.Wyckoff_symbol',
+    )
+
+
+def _atom_site_row(atom_site: object) -> tuple[object, ...]:
+    """Return one atom-site loop row."""
+    return (
+        _attribute_value(atom_site, 'label'),
+        _attribute_value(atom_site, 'type_symbol'),
+        _attribute_value(atom_site, 'fract_x'),
+        _attribute_value(atom_site, 'fract_y'),
+        _attribute_value(atom_site, 'fract_z'),
+        _attribute_value(atom_site, 'occupancy'),
+        _attribute_value(atom_site, 'adp_type'),
+        _attribute_value(atom_site, 'adp_iso'),
+        _attribute_value(atom_site, 'wyckoff_letter'),
+    )
+
+
+def _atom_site_aniso_tags(family: str) -> tuple[str, ...]:
+    """Return atom-site-aniso loop tags for one ADP family."""
+    return (
+        '_atom_site_aniso.label',
+        f'_atom_site_aniso.{family}_11',
+        f'_atom_site_aniso.{family}_22',
+        f'_atom_site_aniso.{family}_33',
+        f'_atom_site_aniso.{family}_12',
+        f'_atom_site_aniso.{family}_13',
+        f'_atom_site_aniso.{family}_23',
+    )
+
+
+def _atom_site_aniso_row(aniso_site: object) -> tuple[object, ...]:
+    """Return one anisotropic-ADP loop row."""
+    return (
+        _attribute_value(aniso_site, 'label'),
+        _attribute_value(aniso_site, 'adp_11'),
+        _attribute_value(aniso_site, 'adp_22'),
+        _attribute_value(aniso_site, 'adp_33'),
+        _attribute_value(aniso_site, 'adp_12'),
+        _attribute_value(aniso_site, 'adp_13'),
+        _attribute_value(aniso_site, 'adp_23'),
+    )
+
+
+def _atom_site_for_aniso(
+    atom_site_by_label: dict[str, object],
+    aniso_site: object,
+) -> object | None:
+    """Return the atom-site row that owns an anisotropic-ADP row."""
+    label = str(_attribute_value(aniso_site, 'label'))
+    return atom_site_by_label.get(label)
+
+
+def _adp_family(atom_site: object) -> str:
+    """Return ``B`` or ``U`` for an atom-site ADP convention."""
+    adp_type = _attribute_value(atom_site, 'adp_type')
+    return 'B' if str(adp_type).lower().startswith('b') else 'U'
+
+
+def _sc_refln_row(refln: object) -> tuple[object, ...]:
+    """Return one single-crystal reflection loop row."""
+    return (
+        _attribute_value(refln, 'index_h'),
+        _attribute_value(refln, 'index_k'),
+        _attribute_value(refln, 'index_l'),
+        _attribute_value(refln, 'intensity_meas'),
+        _attribute_value(refln, 'intensity_calc'),
+        _attribute_value(refln, 'intensity_meas_su'),
+        _include_status(refln),
+    )
+
+
+def _include_status(refln: object) -> str:
+    """Return the IUCr include status for one reflection."""
+    measured = _finite_number(_attribute_value(refln, 'intensity_meas'))
+    sigma = _finite_number(_attribute_value(refln, 'intensity_meas_su'))
+    if measured is None or sigma is None:
+        return '?'
+    if sigma <= 0:
+        return 'o'
+    return 'o' if measured > 3 * sigma else '<'
+
+
+def _finite_number(value: object) -> float | None:
+    """Return *value* as a finite float when possible."""
+    if not isinstance(value, (int, float)):
+        return None
+    number = float(value)
+    return number if math.isfinite(number) else None
+
+
+def _sc_extension_items(experiment: object) -> list[tuple[str, object]]:
+    """Return EasyDiffraction extension items for a SC block."""
+    linked_crystal = getattr(experiment, 'linked_crystal', None)
+    diffrn = getattr(experiment, 'diffrn', None)
+    expt_type = getattr(experiment, 'type', None)
+    calculator = getattr(experiment, 'calculator', None)
+    return [
+        (
+            '_easydiffraction_sc_crystal_block.id',
+            _attribute_value(linked_crystal, 'id'),
+        ),
+        (
+            '_easydiffraction_sc_crystal_block.scale',
+            _attribute_value(linked_crystal, 'scale'),
+        ),
+        (
+            '_easydiffraction_diffrn.ambient_magnetic_field',
+            _attribute_value(diffrn, 'ambient_magnetic_field'),
+        ),
+        (
+            '_easydiffraction_diffrn.ambient_electric_field',
+            _attribute_value(diffrn, 'ambient_electric_field'),
+        ),
+        (
+            '_easydiffraction_experiment_type.sample_form',
+            _attribute_value(expt_type, 'sample_form'),
+        ),
+        (
+            '_easydiffraction_experiment_type.beam_mode',
+            _attribute_value(expt_type, 'beam_mode'),
+        ),
+        (
+            '_easydiffraction_experiment_type.radiation_probe',
+            _attribute_value(expt_type, 'radiation_probe'),
+        ),
+        (
+            '_easydiffraction_experiment_type.scattering_type',
+            _attribute_value(expt_type, 'scattering_type'),
+        ),
+        ('_easydiffraction_calculator.type', _attribute_value(calculator, 'type')),
+    ]
+
+
 @dataclass(frozen=True)
 class _FormulaValues:
     """Chemical formula fields for global report metadata."""
@@ -353,8 +801,20 @@ class _FormulaValues:
 
 def _chemical_formula_values(project: object) -> _FormulaValues:
     """Derive chemical formula values from atom sites where possible."""
+    return _formula_values_from_structures(
+        _collection_values(getattr(project, 'structures', None))
+    )
+
+
+def _structure_formula_values(structure: object) -> _FormulaValues:
+    """Derive chemical formula values from one structure."""
+    return _formula_values_from_structures((structure,))
+
+
+def _formula_values_from_structures(structures: Iterable[object]) -> _FormulaValues:
+    """Derive chemical formula values from structure atom sites."""
     counts: dict[str, float] = {}
-    for structure in _collection_values(getattr(project, 'structures', None)):
+    for structure in structures:
         for atom_site in _collection_values(getattr(structure, 'atom_sites', None)):
             symbol = _descriptor_value(getattr(atom_site, 'type_symbol', None))
             if not symbol:
