@@ -38,3 +38,4 @@ from easydiffraction.analysis.categories.sequential_fit_extract import Sequentia
 from easydiffraction.analysis.enums import FitCorrelationSourceEnum
 from easydiffraction.analysis.enums import FitModeEnum
 from easydiffraction.analysis.enums import FitResultKindEnum
+from easydiffraction.analysis.analysis import UndoFitOutcome
