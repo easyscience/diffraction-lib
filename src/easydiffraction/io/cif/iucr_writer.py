@@ -23,51 +23,52 @@ _BLOCK_SEPARATOR = '#====================================================='
 _TEXT_WRAP_WIDTH = 80
 _ITEM_WIDTH = 38
 
-_JOURNAL_TAGS = (
-    '_journal.name_full',
-    '_journal.year',
-    '_journal.volume',
-    '_journal.issue',
-    '_journal.page_first',
-    '_journal.page_last',
-    '_journal.paper_category',
-    '_journal.paper_DOI',
-    '_journal.coden_ASTM',
-    '_journal.suppl_publ_number',
+_JOURNAL_ITEMS = (
+    ('_journal.name_full', 'name_full'),
+    ('_journal.year', 'year'),
+    ('_journal.volume', 'volume'),
+    ('_journal.issue', 'issue'),
+    ('_journal.page_first', 'page_first'),
+    ('_journal.page_last', 'page_last'),
+    ('_journal.paper_category', 'paper_category'),
+    ('_journal.paper_DOI', 'paper_doi'),
+    ('_journal.coden_ASTM', 'coden_astm'),
+    ('_journal.suppl_publ_number', 'suppl_publ_number'),
 )
 
-_JOURNAL_DATE_TAGS = (
-    '_journal_date.accepted',
-    '_journal_date.from_coeditor',
-    '_journal_date.printers_final',
+_JOURNAL_DATE_ITEMS = (
+    ('_journal_date.accepted', 'accepted'),
+    ('_journal_date.from_coeditor', 'from_coeditor'),
+    ('_journal_date.printers_final', 'printers_final'),
 )
 
-_JOURNAL_COEDITOR_TAGS = (
-    '_journal_coeditor.code',
-    '_journal_coeditor.name',
-    '_journal_coeditor.notes',
+_JOURNAL_COEDITOR_ITEMS = (
+    ('_journal_coeditor.code', 'code'),
+    ('_journal_coeditor.name', 'name'),
+    ('_journal_coeditor.notes', 'notes'),
 )
 
-_PUBL_CONTACT_AUTHOR_TAGS = (
-    '_publ_contact_author.name',
-    '_publ_contact_author.address',
-    '_publ_contact_author.email',
-    '_publ_contact_author.phone',
-    '_publ_contact_author.id_ORCID',
-    '_publ_contact_author.id_IUCr',
+_PUBL_CONTACT_AUTHOR_ITEMS = (
+    ('_publ_contact_author.name', 'name'),
+    ('_publ_contact_author.address', 'address'),
+    ('_publ_contact_author.email', 'email'),
+    ('_publ_contact_author.phone', 'phone'),
+    ('_publ_contact_author.id_ORCID', 'id_orcid'),
+    ('_publ_contact_author.id_IUCr', 'id_iucr'),
 )
 
-_PUBL_AUTHOR_TAGS = (
-    '_publ_author.name',
-    '_publ_author.address',
-    '_publ_author.footnote',
-    '_publ_author.id_ORCID',
-    '_publ_author.id_IUCr',
+_PUBL_AUTHOR_ITEMS = (
+    ('_publ_author.name', 'name'),
+    ('_publ_author.address', 'address'),
+    ('_publ_author.footnote', 'footnote'),
+    ('_publ_author.id_ORCID', 'id_orcid'),
+    ('_publ_author.id_IUCr', 'id_iucr'),
 )
+_PUBL_AUTHOR_TAGS = tuple(tag for tag, _ in _PUBL_AUTHOR_ITEMS)
 
-_PUBL_BODY_TAGS = (
-    '_publ_body.title',
-    '_publ_body.contents',
+_PUBL_BODY_ITEMS = (
+    ('_publ_body.title', 'title'),
+    ('_publ_body.contents', 'contents'),
 )
 
 _PACKAGE_BY_ENGINE = {
@@ -144,7 +145,7 @@ def _write_global_block(project: object) -> str:
     lines = ['data_global']
     _write_audit_section(lines)
     _write_computing_section(lines, project)
-    _write_publication_sections(lines)
+    _write_publication_sections(lines, project)
     _write_formula_section(lines, project)
     return '\n'.join(lines)
 
@@ -176,21 +177,41 @@ def _write_computing_section(lines: list[str], project: object) -> None:
         _write_item(lines, '_easydiffraction_software.fit_datetime', fit_datetime)
 
 
-def _write_publication_sections(lines: list[str]) -> None:
-    """Append publication placeholders."""
-    _write_placeholder_items(lines, 'Journal', _JOURNAL_TAGS)
-    _write_placeholder_items(lines, 'Journal dates', _JOURNAL_DATE_TAGS)
-    _write_placeholder_items(lines, 'Journal coeditor', _JOURNAL_COEDITOR_TAGS)
-    _write_placeholder_items(
+def _write_publication_sections(lines: list[str], project: object) -> None:
+    """Append publication metadata from the project publication owner."""
+    publication = getattr(project, 'publication', None)
+    _write_publication_item_section(
+        lines,
+        'Journal',
+        getattr(publication, 'journal', None),
+        _JOURNAL_ITEMS,
+    )
+    _write_publication_item_section(
+        lines,
+        'Journal dates',
+        getattr(publication, 'journal_date', None),
+        _JOURNAL_DATE_ITEMS,
+    )
+    _write_publication_item_section(
+        lines,
+        'Journal coeditor',
+        getattr(publication, 'journal_coeditor', None),
+        _JOURNAL_COEDITOR_ITEMS,
+    )
+    _write_publication_item_section(
         lines,
         'Publication contact author',
-        _PUBL_CONTACT_AUTHOR_TAGS,
+        getattr(publication, 'contact_author', None),
+        _PUBL_CONTACT_AUTHOR_ITEMS,
     )
 
     _section(lines, 'Publication authors')
-    _write_loop(lines, _PUBL_AUTHOR_TAGS, [tuple('?' for _ in _PUBL_AUTHOR_TAGS)])
+    _write_loop(lines, _PUBL_AUTHOR_TAGS, _publication_author_rows(publication))
 
-    _write_placeholder_items(lines, 'Publication body', _PUBL_BODY_TAGS)
+    _write_publication_body_section(
+        lines,
+        getattr(publication, 'body', None),
+    )
 
 
 def _write_formula_section(lines: list[str], project: object) -> None:
@@ -682,15 +703,63 @@ def _write_tof_calibration_loop(lines: list[str], experiment: object) -> None:
     _write_loop(lines, loop.tags, loop.rows)
 
 
-def _write_placeholder_items(
+def _write_publication_item_section(
     lines: list[str],
     title: str,
-    tags: Iterable[str],
+    category: object,
+    items: Iterable[tuple[str, str]],
 ) -> None:
-    """Append one placeholder category section."""
+    """Append one scalar publication metadata section."""
     _section(lines, title)
-    for tag in tags:
-        _write_item(lines, tag, '?')
+    for tag, attr_name in items:
+        _write_item(lines, tag, _attribute_value(category, attr_name))
+
+
+def _write_publication_body_section(lines: list[str], body: object) -> None:
+    """Append publication body metadata."""
+    _section(lines, 'Publication body')
+    for tag, attr_name in _PUBL_BODY_ITEMS:
+        _write_item(lines, tag, _publication_body_value(body, attr_name))
+
+
+def _publication_body_value(body: object, attr_name: str) -> object:
+    """Return one publication-body value."""
+    if attr_name != 'contents':
+        return _attribute_value(body, attr_name)
+
+    return _publication_body_contents(body)
+
+
+def _publication_body_contents(body: object) -> str | None:
+    """Return IUCr publication body contents from discrete fields."""
+    if body is None:
+        return None
+
+    sections = []
+    for attr_name in ('synopsis', 'abstract'):
+        value = _attribute_value(body, attr_name)
+        if value not in {None, ''}:
+            sections.append(str(value))
+
+    keywords = getattr(body, 'keywords', [])
+    if keywords:
+        sections.append(f'Keywords: {", ".join(keywords)}')
+
+    if not sections:
+        return None
+    return '\n\n'.join(sections)
+
+
+def _publication_author_rows(publication: object) -> list[tuple[object, ...]]:
+    """Return publication author rows or one empty placeholder row."""
+    authors = getattr(publication, 'authors', None)
+    rows = [
+        tuple(_attribute_value(author, attr_name) for _, attr_name in _PUBL_AUTHOR_ITEMS)
+        for author in _collection_values(authors)
+    ]
+    if rows:
+        return rows
+    return [tuple(None for _ in _PUBL_AUTHOR_ITEMS)]
 
 
 def _write_loop(

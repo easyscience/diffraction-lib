@@ -571,7 +571,7 @@ generated-artifact exceptions.
       `ValueError(<key>)`.
   - Commit: `Add Publication.load TOML/JSON entry point`.
 
-- [ ] **P1.15 — Wire IUCr writer to read from `project.publication.*` + amend ADRs**
+- [x] **P1.15 — Wire IUCr writer to read from `project.publication.*` + amend ADRs**
   - Files: `src/easydiffraction/io/cif/iucr_writer.py`,
     `docs/dev/adrs/accepted/project-facade-and-persistence.md`,
     `docs/dev/adrs/suggestions/python-cif-category-correspondence.md`.

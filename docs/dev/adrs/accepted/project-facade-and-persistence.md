@@ -16,7 +16,8 @@ Persistence.
 
 `Project` is the top-level user facade. It owns project metadata,
 structures, experiments, rendering preferences, display helpers,
-analysis, report helpers, verbosity, and save/load behavior.
+analysis, report helpers, publication metadata, verbosity, and save/load
+behavior.
 
 A later proposal considered renaming this facade to `Workspace` so that
 `project` could be reserved for the scientific project information
@@ -50,9 +51,18 @@ through `project.report` and written only when requested, using
 `reports/<project>.cif`; default project saves do not write
 `summary.cif`.
 
-Expose submission-report helpers as `project.report`. The previous
-`project.summary` placeholder and its `summary.cif` output are not part
-of the persistence layout.
+Expose submission-report helpers as `project.report`. This facade is a
+hybrid surface: its scalar output configuration persists to
+`project.cif` as `_report.*`, while its methods render report artifacts
+under `reports/`. The previous `project.summary` placeholder and its
+`summary.cif` output are not part of the persistence layout.
+
+Expose journal-submission metadata as `project.publication`. It is a
+top-level owner with CIF-aligned sibling categories for `_journal.*`,
+`_journal_date.*`, `_journal_coeditor.*`,
+`_publ_contact_author.*`, `_publ_body.*`, and the `_publ_author.*`
+loop. These singleton publication categories persist in `project.cif`
+and feed report exports; `reports/<project>.cif` remains export-only.
 
 Keep project information available as `project.info`. The Python name
 avoids a confusing `project.project` access path, while the persisted
@@ -78,6 +88,12 @@ while `Project` remains the root facade. Do not rename it to
 The saved project directory path is runtime file-I/O state, not a
 serialized project-information field. If the path is exposed in Python,
 it must not emit a `_project.path` CIF item.
+
+The project-level singleton categories currently persisted in
+`project.cif` are `_project.*`, `_chart.*`, `_report.*`, `_table.*`,
+`_verbosity.*`, `_journal.*`, `_journal_date.*`,
+`_journal_coeditor.*`, `_publ_contact_author.*`, `_publ_body.*`, and
+the `_publ_author.*` loop.
 
 ## Consequences
 

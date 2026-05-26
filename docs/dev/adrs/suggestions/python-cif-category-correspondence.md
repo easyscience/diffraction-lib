@@ -56,6 +56,8 @@ to objects reached from the current `Project` root, for example
 | Current Python surface                           | Current saved location   | Current CIF block form | Notes                                                                               |
 | ------------------------------------------------ | ------------------------ | ---------------------- | ----------------------------------------------------------------------------------- |
 | `project.info`, `project.chart`, `project.table` | `project.cif`            | bare categories        | Project-level singleton config.                                                     |
+| `project.report`                                 | `project.cif`            | bare category          | Project-owned report-output config; report methods render artifacts under `reports/`. |
+| `project.publication`                            | `project.cif`            | bare categories + loop | Journal-submission metadata under `_journal_*` / `_publ_*` categories.              |
 | `project.verbosity`                              | `project.cif`            | bare category          | Project-owned fit-output verbosity category backed by `VerbosityEnum`.              |
 | `project.structures[name]`                       | `structures/<name>.cif`  | `data_<name>`          | Each structure is one CIF data block.                                               |
 | `project.experiments[name]`                      | `experiments/<name>.cif` | `data_<name>`          | Each experiment is one CIF data block.                                              |
@@ -75,6 +77,8 @@ to objects reached from the current `Project` root, for example
 | `project.info.last_modified` | `_project.last_modified` | Partly | Field name matches, category name does not.                                                        |
 | `project.info.path`          | none                     | No     | Runtime storage path, not a CIF field.                                                             |
 | `project.chart.type`         | `_chart.type`            | Yes    | Direct category-owned selector mapping.                                                            |
+| `project.report.*`           | `_report.*`              | Yes    | Direct project-owned report-output configuration mapping.                                           |
+| `project.publication.*`      | `_journal.*` / `_publ_*` | Partly | Python keeps one owner with sibling categories; CIF uses journal and publication dictionary names.   |
 | `project.table.type`         | `_table.type`            | Yes    | Direct category-owned selector mapping.                                                            |
 | `project.verbosity.fit`      | `_verbosity.fit`         | Yes    | Direct category and field mapping for fitting process output verbosity.                            |
 
