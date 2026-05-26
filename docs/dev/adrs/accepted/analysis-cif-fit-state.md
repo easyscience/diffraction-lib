@@ -25,6 +25,7 @@ Analysis-owned fit state needs to persist:
 - fit bounds and bound provenance
 - pre-fit scalar snapshots for recovery workflows
 - compact status metadata for the latest saved fit projection
+- software-provenance snapshot for the latest successful fit
 - deterministic correlation summaries
 - minimizer-specific fit outputs on the paired `_fit_result.*` category
 - per-parameter posterior summaries on `_fit_parameter`
@@ -103,6 +104,34 @@ round-trip project schema remains common.
 `_fit_parameter_correlation` stores pairwise deterministic or posterior
 correlation summaries keyed by a persisted `id`. Only unique parameter
 pairs are stored.
+
+### Software provenance
+
+`_software` stores the runtime software snapshot recorded after a
+successful fit. It is part of the project save / load contract and feeds
+report rendering plus the IUCr export software labels. It is not a user
+configuration category.
+
+The category stores name, version, and URL triples for:
+
+- `framework`
+- `calculator`
+- `minimizer`
+
+Each role is persisted as scalar items on the same category:
+
+- `<role>_name`
+- `<role>_version`
+- `<role>_url`
+
+The category also stores:
+
+- `timestamp`
+
+`timestamp` is an ISO-8601 UTC string for the fit that produced the
+snapshot. Projects saved before this category existed load with all
+software fields unset and `timestamp` set to `None`; rerunning a fit
+populates the snapshot.
 
 ### Minimizer fit projection
 
@@ -230,9 +259,10 @@ Load order is:
 
 1. standard analysis configuration
 2. `_minimizer.*` settings according to the active `_minimizer.type`
-3. common and family-specific `_fit_result.*` fields on the paired class
-4. `_fit_parameter` and `_fit_parameter_correlation`
-5. posterior sidecar arrays when a Bayesian result is expected
+3. `_software.*` provenance fields when present
+4. common and family-specific `_fit_result.*` fields on the paired class
+5. `_fit_parameter` and `_fit_parameter_correlation`
+6. posterior sidecar arrays when a Bayesian result is expected
 
 Persist backend runtime objects, optimizer instances, and raw driver
 payloads nowhere in this design.

@@ -496,7 +496,7 @@ generated-artifact exceptions.
     only) when calculator / minimizer details are unset.
   - Commit: `Populate analysis.software at fit time and emit fit_datetime`.
 
-- [ ] **P1.10 — Amend `analysis-cif-fit-state.md` ADR**
+- [x] **P1.10 — Amend `analysis-cif-fit-state.md` ADR**
   - File: `docs/dev/adrs/accepted/analysis-cif-fit-state.md`.
   - Document the new `analysis.software` persisted category
     (framework / calculator / minimizer triples + timestamp).
