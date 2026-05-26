@@ -1337,8 +1337,28 @@ def _iucr_items(owner: object, attr_names: tuple[str, ...]) -> list[tuple[str, o
 
 def _iucr_item(owner: object, attr_name: str) -> tuple[str, object]:
     """Return one ``(iucr_name, value)`` pair for a descriptor."""
-    descriptor = getattr(owner, attr_name)
+    descriptor = _iucr_descriptor(owner, attr_name)
     return descriptor._cif_handler.iucr_name, _descriptor_value(descriptor)
+
+
+def _iucr_descriptor(owner: object, attr_name: str) -> object:
+    """Return the descriptor carrying CIF metadata for *attr_name*."""
+    descriptor = getattr(owner, attr_name)
+    if hasattr(descriptor, '_cif_handler'):
+        return descriptor
+
+    for descriptor in _owner_descriptors(owner):
+        if getattr(descriptor, 'name', None) == attr_name:
+            return descriptor
+
+    msg = f'{type(owner).__name__}.{attr_name} has no CIF handler.'
+    raise AttributeError(msg)
+
+
+def _owner_descriptors(owner: object) -> Iterable[object]:
+    """Yield descriptors exposed by category-style containers."""
+    for source_name in ('parameters', 'scalar_descriptors'):
+        yield from getattr(owner, source_name, ())
 
 
 def _collection_values(collection: object) -> Iterable[object]:

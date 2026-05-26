@@ -12,8 +12,38 @@ from easydiffraction.io.cif.handler import CifHandler
 
 class _Descriptor:
     def __init__(self, value, tag='_x.value', iucr_name=None):
+        self.name = tag.rsplit('.', maxsplit=1)[-1]
         self.value = value
         self._cif_handler = CifHandler(names=[tag], iucr_name=iucr_name)
+
+
+class _SwitchableCategory:
+    def __init__(
+        self,
+        value,
+        tag,
+        iucr_name,
+        *,
+        descriptor_source='parameters',
+    ):
+        self._type = _descriptor(value, tag, iucr_name)
+        self._descriptor_source = descriptor_source
+
+    @property
+    def type(self):
+        return self._type.value
+
+    @property
+    def parameters(self):
+        if self._descriptor_source == 'parameters':
+            return [self._type]
+        return []
+
+    @property
+    def scalar_descriptors(self):
+        if self._descriptor_source == 'scalar_descriptors':
+            return [self._type]
+        return []
 
 
 class _Collection(UserDict):
@@ -140,12 +170,10 @@ def _single_crystal_experiment(name='sc1'):
             ),
         ),
         instrument=SimpleNamespace(setup_wavelength=_descriptor(1.5406)),
-        calculator=SimpleNamespace(
-            type=_descriptor(
-                'cryspy',
-                '_calculator.type',
-                '_easydiffraction_calculator.type',
-            )
+        calculator=_SwitchableCategory(
+            'cryspy',
+            '_calculator.type',
+            '_easydiffraction_calculator.type',
         ),
         extinction=None,
         refln=[
@@ -201,22 +229,22 @@ def _powder_experiment(name, *, beam_mode='constant wavelength'):
             calib_d_to_tof_quad=_descriptor(3.0),
             calib_d_to_tof_recip=_descriptor(4.0),
         ),
-        calculator=SimpleNamespace(
-            type=_descriptor(
-                'cryspy',
-                '_calculator.type',
-                '_easydiffraction_calculator.type',
-            )
+        calculator=_SwitchableCategory(
+            'cryspy',
+            '_calculator.type',
+            '_easydiffraction_calculator.type',
         ),
-        peak=SimpleNamespace(
-            type=_descriptor('pseudo-Voigt', '_peak.type', '_easydiffraction_peak.type')
+        peak=_SwitchableCategory(
+            'pseudo-Voigt',
+            '_peak.type',
+            '_easydiffraction_peak.type',
+            descriptor_source='scalar_descriptors',
         ),
-        background=SimpleNamespace(
-            type=_descriptor(
-                'chebyshev',
-                '_background.type',
-                '_easydiffraction_background.type',
-            )
+        background=_SwitchableCategory(
+            'chebyshev',
+            '_background.type',
+            '_easydiffraction_background.type',
+            descriptor_source='scalar_descriptors',
         ),
         excluded_regions=[
             SimpleNamespace(start=_descriptor(15.0), end=_descriptor(17.0)),

@@ -29,8 +29,9 @@ def test_show_fitting_details(lbco_fitted_project):
     project.report.show_fitting_details()
 
 
-def test_report_save(lbco_fitted_project):
+def test_report_save(lbco_fitted_project, tmp_path):
     project = lbco_fitted_project
+    project.save_as(str(tmp_path / 'proj'))
     report_path = project.report.save()
     assert report_path.is_file()
     assert report_path.read_text(encoding='utf-8').startswith('data_global\n')
