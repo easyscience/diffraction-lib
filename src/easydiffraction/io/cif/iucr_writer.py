@@ -108,6 +108,7 @@ def _render_iucr_cif(project: object) -> str:
     """Render all IUCr CIF blocks for *project*."""
     blocks = [_write_global_block(project)]
     blocks.extend(_write_sc_blocks(project))
+    blocks.extend(_write_rietveld_blocks(project))
     return f'\n{_BLOCK_SEPARATOR}\n'.join(blocks) + '\n'
 
 
@@ -410,6 +411,246 @@ def _write_sc_project_extensions(lines: list[str], experiment: object) -> None:
     _section(lines, 'EasyDiffraction project extensions')
     for tag, value in extension_rows:
         _write_item(lines, tag, value)
+
+
+def _write_rietveld_blocks(project: object) -> list[str]:
+    """Render powder Rietveld overall, phase, and pattern blocks."""
+    experiments = _powder_rietveld_experiments(project)
+    if not experiments:
+        return []
+
+    phases = _powder_phases(project, experiments)
+    patterns = _powder_patterns(project, experiments)
+    return [
+        _write_rietveld_overall_block(project, phases, patterns),
+        *[_write_powder_phase_block(phase) for phase in phases],
+        *[
+            _write_powder_pattern_block(project, pattern, phases)
+            for pattern in patterns
+        ],
+    ]
+
+
+def _write_rietveld_overall_block(
+    project: object,
+    phases: list[_PowderPhase],
+    patterns: list[_PowderPattern],
+) -> str:
+    """Render the powder Rietveld overall block."""
+    lines = [f'data_{_block_name(project.name)}_overall']
+    fit_result = _fit_result(project)
+
+    _section(lines, 'Rietveld overall')
+    _write_item(lines, '_pd_calc.method', 'Rietveld Refinement')
+    _write_item(
+        lines,
+        '_pd_block_id',
+        _pipe_ids([phase.block_name for phase in phases]),
+    )
+    _write_item(
+        lines,
+        '_pd_block_diffractogram_id',
+        _pipe_ids([pattern.block_name for pattern in patterns]),
+    )
+
+    _section(lines, 'Powder refinement')
+    for tag, attr_name in (
+        ('_pd_proc_ls.prof_R_factor', 'prof_r_factor'),
+        ('_pd_proc_ls.prof_wR_factor', 'prof_wr_factor'),
+        ('_pd_proc_ls.prof_wR_expected', 'prof_wr_expected'),
+        ('_pd_proc_ls.profile_function', 'profile_function'),
+        ('_pd_proc_ls.background_function', 'background_function'),
+        ('_refine_ls.number_parameters', 'n_parameters'),
+        ('_refine_ls.number_restraints', 'number_restraints'),
+        ('_refine_ls.number_constraints', 'number_constraints'),
+    ):
+        _write_item(lines, tag, _attribute_value(fit_result, attr_name))
+
+    return '\n'.join(lines)
+
+
+def _write_powder_phase_block(phase: _PowderPhase) -> str:
+    """Render one powder phase block."""
+    lines = [f'data_{phase.block_name}']
+    _write_chemical_formula_section(lines, _structure_formula_values(phase.structure))
+    _write_cell_section(lines, phase.structure)
+    _write_space_group_section(lines, phase.structure)
+    _write_symmetry_operations_section(lines)
+    _write_atom_site_sections(lines, phase.structure)
+    _write_atom_site_aniso_sections(lines, phase.structure)
+    _write_powder_phase_reference_section(lines, phase)
+    return '\n'.join(lines)
+
+
+def _write_powder_phase_reference_section(
+    lines: list[str],
+    phase: _PowderPhase,
+) -> None:
+    """Append phase-block cross-reference values."""
+    _section(lines, 'Powder phase')
+    _write_item(lines, '_pd_phase_block.id', phase.block_name)
+    _write_item(
+        lines,
+        '_pd_phase_block.scale',
+        _attribute_value(phase.linked_phase, 'scale'),
+    )
+
+
+def _write_powder_pattern_block(
+    project: object,
+    pattern: _PowderPattern,
+    phases: list[_PowderPhase],
+) -> str:
+    """Render one powder pattern block."""
+    experiment = pattern.experiment
+    lines = [f'data_{pattern.block_name}']
+    _write_powder_pattern_reference_section(lines, project, pattern, phases)
+    _write_powder_measurement_section(lines, experiment)
+    _write_diffrn_section(lines, experiment)
+    _write_wavelength_section(lines, experiment)
+    _write_powder_proc_section(lines, experiment)
+    _write_powder_pattern_refinement_section(lines, project)
+    _write_powder_profile_loop(lines, experiment)
+    _write_powder_refln_loop(lines, experiment)
+    _write_powder_project_extensions(lines, experiment)
+    return '\n'.join(lines)
+
+
+def _write_powder_pattern_reference_section(
+    lines: list[str],
+    project: object,
+    pattern: _PowderPattern,
+    phases: list[_PowderPhase],
+) -> None:
+    """Append powder pattern cross-reference values."""
+    phase_ids = _phase_block_names_for_experiment(
+        project,
+        pattern.experiment,
+        phases,
+    )
+    _section(lines, 'Powder pattern')
+    _write_item(lines, '_pd_block_id', _pipe_ids(phase_ids))
+    _write_item(lines, '_pd_block_diffractogram_id', pattern.block_name)
+
+
+def _write_powder_measurement_section(
+    lines: list[str],
+    experiment: object,
+) -> None:
+    """Append powder measurement metadata."""
+    data_items = list(_collection_values(getattr(experiment, 'data', None)))
+    expt_type = getattr(experiment, 'type', None)
+    _section(lines, 'Powder measurement')
+    _write_item(lines, '_pd_meas.scan_method', _attribute_value(expt_type, 'beam_mode'))
+    _write_item(lines, '_pd_meas.number_of_points', len(data_items))
+    _write_item(lines, '_pd_meas.info_author_name', '?')
+    _write_item(lines, '_pd_meas.info_author_email', '?')
+    _write_item(lines, '_pd_meas.info_author_phone', '?')
+
+
+def _write_powder_proc_section(lines: list[str], experiment: object) -> None:
+    """Append powder processing metadata."""
+    _section(lines, 'Powder processing')
+    _write_item(lines, '_pd_proc.info_data_reduction', '?')
+    _write_item(lines, '_pd_proc.info_datetime', _iso_creation_datetime())
+    _write_item(lines, '_pd_proc.info_excluded_regions', '?')
+
+    if _is_tof_experiment(experiment):
+        _write_tof_calibration_loop(lines, experiment)
+
+
+def _write_powder_pattern_refinement_section(
+    lines: list[str],
+    project: object,
+) -> None:
+    """Append powder pattern refinement statistics."""
+    fit_result = _fit_result(project)
+    _section(lines, 'Powder pattern refinement')
+    for tag, attr_name in (
+        ('_pd_proc_ls.prof_R_factor', 'prof_r_factor'),
+        ('_pd_proc_ls.prof_wR_factor', 'prof_wr_factor'),
+        ('_pd_proc_ls.prof_wR_expected', 'prof_wr_expected'),
+    ):
+        _write_item(lines, tag, _attribute_value(fit_result, attr_name))
+
+
+def _write_powder_profile_loop(lines: list[str], experiment: object) -> None:
+    """Append powder profile data."""
+    rows = [
+        _powder_profile_row(experiment, data_point)
+        for data_point in _collection_values(getattr(experiment, 'data', None))
+    ]
+    if not rows:
+        return
+
+    _section(lines, 'Profile data')
+    _write_loop(
+        lines,
+        (
+            _powder_x_tag(experiment),
+            '_pd_meas.intensity_total',
+            '_pd_calc.intensity_total',
+            '_pd_proc.intensity_bkg_calc',
+            '_pd_proc_ls.weight',
+        ),
+        rows,
+    )
+
+
+def _write_powder_refln_loop(lines: list[str], experiment: object) -> None:
+    """Append powder reflection data."""
+    rows = [
+        _powder_refln_row(refln)
+        for refln in _collection_values(getattr(experiment, 'refln', None))
+    ]
+    if not rows:
+        return
+
+    _section(lines, 'Powder reflections')
+    _write_loop(
+        lines,
+        (
+            '_refln.index_h',
+            '_refln.index_k',
+            '_refln.index_l',
+            '_refln.F_squared_meas',
+            '_refln.F_squared_calc',
+            '_refln.phase_calc',
+            '_refln.d_spacing',
+        ),
+        rows,
+    )
+
+
+def _write_powder_project_extensions(lines: list[str], experiment: object) -> None:
+    """Append powder EasyDiffraction extension values."""
+    extension_rows = _powder_extension_items(experiment)
+    if not extension_rows:
+        return
+
+    _section(lines, 'EasyDiffraction project extensions')
+    for tag, value in extension_rows:
+        _write_item(lines, tag, value)
+
+
+def _write_tof_calibration_loop(lines: list[str], experiment: object) -> None:
+    """Append TOF calibration rows for a powder pattern."""
+    rows = _tof_calibration_rows(experiment)
+    if not rows:
+        return
+
+    _section(lines, 'TOF calibration')
+    _write_loop(
+        lines,
+        (
+            '_pd_calib_d_to_tof.id',
+            '_pd_calib_d_to_tof.power',
+            '_pd_calib_d_to_tof.coeff',
+            '_pd_calib_d_to_tof.coeff_su',
+            '_pd_calib_d_to_tof.diffractogram_id',
+        ),
+        rows,
+    )
 
 
 def _write_placeholder_items(
@@ -789,6 +1030,225 @@ def _sc_extension_items(experiment: object) -> list[tuple[str, object]]:
     ]
 
 
+def _powder_rietveld_experiments(project: object) -> list[object]:
+    """Return powder Bragg experiments in project order."""
+    experiments = _collection_values(getattr(project, 'experiments', None))
+    return [
+        experiment
+        for experiment in experiments
+        if (
+            _attribute_value(getattr(experiment, 'type', None), 'sample_form')
+            == 'powder'
+            and _attribute_value(
+                getattr(experiment, 'type', None),
+                'scattering_type',
+            )
+            == 'bragg'
+        )
+    ]
+
+
+def _powder_phases(
+    project: object,
+    experiments: list[object],
+) -> list[_PowderPhase]:
+    """Return unique powder phase blocks for the given experiments."""
+    phases: list[_PowderPhase] = []
+    seen_structure_names: set[str] = set()
+    for experiment in experiments:
+        for structure, linked_phase in _linked_powder_structures(project, experiment):
+            structure_name = str(getattr(structure, 'name', len(phases) + 1))
+            if structure_name in seen_structure_names:
+                continue
+            seen_structure_names.add(structure_name)
+            block_name = f'{_block_name(project.name)}_phase_{len(phases) + 1}'
+            phases.append(
+                _PowderPhase(
+                    block_name=block_name,
+                    structure=structure,
+                    linked_phase=linked_phase,
+                )
+            )
+    return phases
+
+
+def _powder_patterns(
+    project: object,
+    experiments: list[object],
+) -> list[_PowderPattern]:
+    """Return powder pattern blocks for the given experiments."""
+    return [
+        _PowderPattern(
+            block_name=f'{_block_name(project.name)}_pwd_{index}',
+            experiment=experiment,
+        )
+        for index, experiment in enumerate(experiments, start=1)
+    ]
+
+
+def _linked_powder_structures(
+    project: object,
+    experiment: object,
+) -> list[tuple[object, object | None]]:
+    """Return structures linked to a powder experiment."""
+    structures = getattr(project, 'structures', None)
+    names = getattr(structures, 'names', ())
+    linked_phases = list(_collection_values(getattr(experiment, 'linked_phases', None)))
+    linked_structures: list[tuple[object, object | None]] = []
+
+    for linked_phase in linked_phases:
+        phase_id = _attribute_value(linked_phase, 'id')
+        if phase_id in names:
+            linked_structures.append((structures[phase_id], linked_phase))
+
+    if linked_structures:
+        return linked_structures
+
+    structure_values = list(_collection_values(structures))
+    if len(structure_values) == 1:
+        return [(structure_values[0], linked_phases[0] if linked_phases else None)]
+
+    experiment_name = getattr(experiment, 'name', type(experiment).__name__)
+    linked_ids = [
+        _attribute_value(linked_phase, 'id')
+        for linked_phase in linked_phases
+    ]
+    msg = (
+        f"Experiment '{experiment_name}' links phases {linked_ids}, "
+        f'but project structures are {list(names)}.'
+    )
+    raise ValueError(msg)
+
+
+def _pipe_ids(values: list[str]) -> str:
+    """Return pipe-delimited block identifiers."""
+    if not values:
+        return '?'
+    return '|' + '|'.join(values) + '|'
+
+
+def _phase_block_names_for_experiment(
+    project: object,
+    experiment: object,
+    phases: list[_PowderPhase],
+) -> list[str]:
+    """Return phase block names linked to one powder pattern."""
+    linked_structures = _linked_powder_structures(project, experiment)
+    linked_names = {
+        getattr(structure, 'name', None)
+        for structure, _linked_phase in linked_structures
+    }
+    return [
+        phase.block_name
+        for phase in phases
+        if getattr(phase.structure, 'name', None) in linked_names
+    ]
+
+
+def _is_tof_experiment(experiment: object) -> bool:
+    """Return whether a pattern uses time-of-flight x coordinates."""
+    return (
+        _attribute_value(getattr(experiment, 'type', None), 'beam_mode')
+        == 'time-of-flight'
+    )
+
+
+def _powder_x_tag(experiment: object) -> str:
+    """Return the powder profile-data x-axis tag."""
+    if _is_tof_experiment(experiment):
+        return '_pd_meas.time_of_flight'
+    return '_pd_meas.2theta_scan'
+
+
+def _powder_profile_row(
+    experiment: object,
+    data_point: object,
+) -> tuple[object, ...]:
+    """Return one powder profile-data row."""
+    return (
+        _powder_x_value(experiment, data_point),
+        _attribute_value(data_point, 'intensity_meas'),
+        _attribute_value(data_point, 'intensity_calc'),
+        _attribute_value(data_point, 'intensity_bkg'),
+        _powder_weight(data_point),
+    )
+
+
+def _powder_x_value(experiment: object, data_point: object) -> object:
+    """Return the x coordinate for one powder data row."""
+    if _is_tof_experiment(experiment):
+        return _attribute_value(data_point, 'time_of_flight')
+    return _attribute_value(data_point, 'two_theta')
+
+
+def _powder_weight(data_point: object) -> object:
+    """Return least-squares weight from intensity standard uncertainty."""
+    sigma = _finite_number(_attribute_value(data_point, 'intensity_meas_su'))
+    if sigma is None or sigma <= 0:
+        return '?'
+    return 1.0 / sigma**2
+
+
+def _powder_refln_row(refln: object) -> tuple[object, ...]:
+    """Return one powder reflection row."""
+    return (
+        _attribute_value(refln, 'index_h'),
+        _attribute_value(refln, 'index_k'),
+        _attribute_value(refln, 'index_l'),
+        '?',
+        _attribute_value(refln, 'f_squared_calc'),
+        _attribute_value(refln, 'phase_id'),
+        _attribute_value(refln, 'd_spacing'),
+    )
+
+
+def _powder_extension_items(experiment: object) -> list[tuple[str, object]]:
+    """Return EasyDiffraction extension items for a powder block."""
+    expt_type = getattr(experiment, 'type', None)
+    calculator = getattr(experiment, 'calculator', None)
+    peak = getattr(experiment, 'peak', None)
+    background = getattr(experiment, 'background', None)
+    return [
+        (
+            '_easydiffraction_experiment_type.sample_form',
+            _attribute_value(expt_type, 'sample_form'),
+        ),
+        (
+            '_easydiffraction_experiment_type.beam_mode',
+            _attribute_value(expt_type, 'beam_mode'),
+        ),
+        (
+            '_easydiffraction_experiment_type.radiation_probe',
+            _attribute_value(expt_type, 'radiation_probe'),
+        ),
+        (
+            '_easydiffraction_experiment_type.scattering_type',
+            _attribute_value(expt_type, 'scattering_type'),
+        ),
+        ('_easydiffraction_calculator.type', _attribute_value(calculator, 'type')),
+        ('_easydiffraction_peak.type', _attribute_value(peak, 'type')),
+        ('_easydiffraction_background.type', _attribute_value(background, 'type')),
+    ]
+
+
+def _tof_calibration_rows(experiment: object) -> list[tuple[object, ...]]:
+    """Return TOF d-to-TOF calibration rows."""
+    instrument = getattr(experiment, 'instrument', None)
+    diffractogram_id = getattr(experiment, 'name', '1')
+    rows: list[tuple[object, ...]] = []
+    for row_id, power, attr_name in (
+        ('offset', 0, 'calib_d_to_tof_offset'),
+        ('linear', 1, 'calib_d_to_tof_linear'),
+        ('quad', 2, 'calib_d_to_tof_quad'),
+        ('recip', -1, 'calib_d_to_tof_recip'),
+    ):
+        coeff = _attribute_value(instrument, attr_name)
+        if _finite_number(coeff) == 0:
+            continue
+        rows.append((row_id, power, coeff, '?', diffractogram_id))
+    return rows
+
+
 @dataclass(frozen=True)
 class _FormulaValues:
     """Chemical formula fields for global report metadata."""
@@ -797,6 +1257,23 @@ class _FormulaValues:
     moiety: str
     weight: str
     iupac: str
+
+
+@dataclass(frozen=True)
+class _PowderPhase:
+    """One phase block in a Rietveld report."""
+
+    block_name: str
+    structure: object
+    linked_phase: object | None
+
+
+@dataclass(frozen=True)
+class _PowderPattern:
+    """One powder pattern block in a Rietveld report."""
+
+    block_name: str
+    experiment: object
 
 
 def _chemical_formula_values(project: object) -> _FormulaValues:
