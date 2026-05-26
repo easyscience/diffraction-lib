@@ -569,8 +569,6 @@ def project_to_cif(project: object) -> str:
         parts.append(_as_cif_text(project.experiments))
     if getattr(project, 'analysis', None):
         parts.append(_as_cif_text(project.analysis))
-    if getattr(project, 'summary', None):
-        parts.append(project.summary.as_cif())
     return '\n\n'.join([p for p in parts if p])
 
 
@@ -582,11 +580,6 @@ def experiment_to_cif(experiment: object) -> str:
 def analysis_to_cif(analysis: object) -> str:
     """Render analysis metadata, aliases, and constraints to CIF."""
     return category_owner_to_cif(analysis)
-
-
-def summary_to_cif(_summary: object) -> str:
-    """Render a summary CIF block (placeholder for now)."""
-    return 'To be added...'
 
 
 def _wrap_in_data_block(cif_text: str, block_name: str = '_') -> str:

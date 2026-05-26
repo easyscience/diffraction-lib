@@ -1,16 +1,18 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Project report display facade."""
+
+from __future__ import annotations
 
 from textwrap import wrap
 
 from easydiffraction.core.variable import Parameter
-from easydiffraction.io.cif.serialize import summary_to_cif
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.utils import render_object_help
 from easydiffraction.utils.utils import render_table
 
 
-class Summary:
+class Report:
     """
     Generates reports and exports results from the project.
 
@@ -20,17 +22,17 @@ class Summary:
 
     def __init__(self, project: object) -> None:
         """
-        Initialize the summary with a reference to the project.
+        Initialize the report with a reference to the project.
 
         Parameters
         ----------
         project : object
-            The Project instance this summary belongs to.
+            The Project instance this report belongs to.
         """
         self.project = project
 
     def help(self) -> None:
-        """Print available summary-report methods."""
+        """Print available report methods."""
         render_object_help(self)
 
     @staticmethod
@@ -87,12 +89,12 @@ class Summary:
             columns_headers = ['Parameter', 'Value', 'Uncertainty']
             columns_alignment = ['left', 'right', 'right']
             columns_data = [
-                Summary._fmt_row('a', structure.cell.length_a),
-                Summary._fmt_row('b', structure.cell.length_a),
-                Summary._fmt_row('c', structure.cell.length_a),
-                Summary._fmt_row('α', structure.cell.angle_alpha),  # noqa: RUF001
-                Summary._fmt_row('β', structure.cell.angle_beta),
-                Summary._fmt_row('γ', structure.cell.angle_gamma),  # noqa: RUF001
+                Report._fmt_row('a', structure.cell.length_a),
+                Report._fmt_row('b', structure.cell.length_a),
+                Report._fmt_row('c', structure.cell.length_a),
+                Report._fmt_row('α', structure.cell.angle_alpha),  # noqa: RUF001
+                Report._fmt_row('β', structure.cell.angle_beta),
+                Report._fmt_row('γ', structure.cell.angle_gamma),  # noqa: RUF001
             ]
             render_table(
                 columns_headers=columns_headers,
@@ -174,9 +176,9 @@ class Summary:
                     columns_headers = ['Parameter', 'Value', 'Uncertainty']
                     columns_alignment = ['left', 'right', 'right']
                     columns_data = [
-                        Summary._fmt_row('U', expt.peak.broad_gauss_u),
-                        Summary._fmt_row('V', expt.peak.broad_gauss_v),
-                        Summary._fmt_row('W', expt.peak.broad_gauss_w),
+                        Report._fmt_row('U', expt.peak.broad_gauss_u),
+                        Report._fmt_row('V', expt.peak.broad_gauss_v),
+                        Report._fmt_row('W', expt.peak.broad_gauss_w),
                     ]
                     render_table(
                         columns_headers=columns_headers,
@@ -190,8 +192,8 @@ class Summary:
                     columns_headers = ['Parameter', 'Value', 'Uncertainty']
                     columns_alignment = ['left', 'right', 'right']
                     columns_data = [
-                        Summary._fmt_row('X', expt.peak.broad_lorentz_x),
-                        Summary._fmt_row('Y', expt.peak.broad_lorentz_y),
+                        Report._fmt_row('X', expt.peak.broad_lorentz_x),
+                        Report._fmt_row('Y', expt.peak.broad_lorentz_y),
                     ]
                     render_table(
                         columns_headers=columns_headers,
@@ -203,10 +205,10 @@ class Summary:
                     columns_headers = ['Parameter', 'Value', 'Uncertainty']
                     columns_alignment = ['left', 'right', 'right']
                     columns_data = [
-                        Summary._fmt_row('p1', expt.peak.asym_empir_1),
-                        Summary._fmt_row('p2', expt.peak.asym_empir_2),
-                        Summary._fmt_row('p3', expt.peak.asym_empir_3),
-                        Summary._fmt_row('p4', expt.peak.asym_empir_4),
+                        Report._fmt_row('p1', expt.peak.asym_empir_1),
+                        Report._fmt_row('p2', expt.peak.asym_empir_2),
+                        Report._fmt_row('p3', expt.peak.asym_empir_3),
+                        Report._fmt_row('p4', expt.peak.asym_empir_4),
                     ]
                     render_table(
                         columns_headers=columns_headers,
@@ -236,10 +238,14 @@ class Summary:
             columns_data=fit_metrics,
         )
 
-    # ------------------------------------------
-    #  Exporting
-    # ------------------------------------------
+    def save(self) -> None:
+        """
+        Write the IUCr submission report.
 
-    def as_cif(self) -> str:
-        """Export fitted data and analysis results as CIF."""
-        return summary_to_cif(self)
+        Raises
+        ------
+        NotImplementedError
+            Until the report writer is connected.
+        """
+        msg = 'Report CIF export is not implemented yet.'
+        raise NotImplementedError(msg)
