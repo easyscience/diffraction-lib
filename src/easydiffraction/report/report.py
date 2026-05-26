@@ -4,9 +4,11 @@
 
 from __future__ import annotations
 
+import pathlib
 from textwrap import wrap
 
 from easydiffraction.core.variable import Parameter
+from easydiffraction.io.cif.iucr_writer import write_iucr_cif
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.utils import render_object_help
 from easydiffraction.utils.utils import render_table
@@ -238,14 +240,13 @@ class Report:
             columns_data=fit_metrics,
         )
 
-    def save(self) -> None:
+    def save(self) -> pathlib.Path:
         """
         Write the IUCr submission report.
 
-        Raises
-        ------
-        NotImplementedError
-            Until the report writer is connected.
+        Returns
+        -------
+        pathlib.Path
+            Path of the written report CIF.
         """
-        msg = 'Report CIF export is not implemented yet.'
-        raise NotImplementedError(msg)
+        return write_iucr_cif(self.project)
