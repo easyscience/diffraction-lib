@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from easydiffraction.analysis.analysis import UndoFitOutcome
 from easydiffraction.analysis.categories.fit_parameter_correlations import (
     FitParameterCorrelationItem,
 )
@@ -38,4 +39,3 @@ from easydiffraction.analysis.categories.sequential_fit_extract import Sequentia
 from easydiffraction.analysis.enums import FitCorrelationSourceEnum
 from easydiffraction.analysis.enums import FitModeEnum
 from easydiffraction.analysis.enums import FitResultKindEnum
-from easydiffraction.analysis.analysis import UndoFitOutcome

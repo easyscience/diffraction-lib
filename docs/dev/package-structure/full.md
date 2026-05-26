@@ -169,6 +169,7 @@
 │   │       └── 🏷️ class LmfitLeastsqMinimizer
 │   ├── 📄 __init__.py
 │   ├── 📄 analysis.py
+│   │   ├── 🏷️ class UndoFitOutcome
 │   │   ├── 🏷️ class AnalysisDisplay
 │   │   ├── 🏷️ class _AnalysisOwnerAccessorsMixin
 │   │   ├── 🏷️ class _AnalysisPersistedCategoryAccessorsMixin

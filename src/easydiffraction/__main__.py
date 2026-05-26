@@ -116,12 +116,8 @@ def _display_undo_summary(
 
     restored_count = len(outcome.restored_parameter_names)
     if dry:
-        typer.echo(
-            f"Would undo last fit for '{project_name}' (dry run, no files written):"
-        )
-        typer.echo(
-            f'  - {restored_count} parameters would be restored to pre-fit values'
-        )
+        typer.echo(f"Would undo last fit for '{project_name}' (dry run, no files written):")
+        typer.echo(f'  - {restored_count} parameters would be restored to pre-fit values')
         if outcome.cleared_fit_result:
             typer.echo('  - analysis.fit_results would be cleared')
         if outcome.cleared_sidecar:

@@ -79,7 +79,8 @@ _UNDO_ABS_TOL = 0.0
 
 @dataclass(frozen=True)
 class UndoFitOutcome:
-    """Summary of one undo-fit operation.
+    """
+    Summary of one undo-fit operation.
 
     Parameters
     ----------
@@ -1153,7 +1154,8 @@ class Analysis(
             self._handle_fit_interrupted(verbosity=verb)
 
     def undo_fit(self) -> UndoFitOutcome:
-        """Roll back the latest fit output and scalar state.
+        """
+        Roll back the latest fit output and scalar state.
 
         Returns
         -------
@@ -1195,10 +1197,7 @@ class Analysis(
             return True
 
         param_map = self._live_parameter_map()
-        return all(
-            self._is_parameter_at_undo_start(row=row, param_map=param_map)
-            for row in rows
-        )
+        return all(self._is_parameter_at_undo_start(row=row, param_map=param_map) for row in rows)
 
     @staticmethod
     def _is_parameter_at_undo_start(
@@ -1644,7 +1643,9 @@ class Analysis(
         return [self.fit_parameters]
 
     def _fit_result_state_categories(self) -> list[object]:
-        """Return fit-result state categories for the current result kind."""
+        """
+        Return fit-result state categories for the current result kind.
+        """
         categories: list[object] = [
             self.fit_result,
             self.fit_parameter_correlations,
