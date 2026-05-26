@@ -105,8 +105,12 @@ re-litigate them, only implements them:
   --style iucr` is the one-off subcommand. `ed save-report`
   with no flags raises a clear error.
 - **Dependencies named by the ADR** (§3.2, §3.4): `kaleido`
-  (Python, runtime, `pyproject.toml`), `chromium` (pixi/conda,
-  dev/docs feature), `tectonic` (pixi/conda, dev/docs feature).
+  (Python, runtime, `pyproject.toml`) and `tectonic`
+  (pixi/conda, dev/docs feature). `chromium` was investigated
+  during implementation but is not added because conda-forge
+  provides no package for the workspace platforms; Kaleido uses a
+  host browser and the report path raises a clear install hint
+  when one is missing.
   Per AGENTS.md §Architecture, naming them in this accepted
   plan plus a `/draft-impl-1` invocation counts as
   pre-approval for the implementation steps to edit
@@ -221,7 +225,7 @@ re-litigate them, only implements them:
 
 **LaTeX + PDF (P1.18–P1.20):**
 - `pyproject.toml` (add `kaleido`).
-- `pixi.toml` (add `chromium`, `tectonic` to dev/docs feature).
+- `pixi.toml` (add `tectonic` to dev/docs feature).
 - `pixi.lock` (regenerated).
 - `src/easydiffraction/report/templates/tex/iucr.tex.j2` (new).
 - `src/easydiffraction/report/templates/tex/revtex.tex.j2` (new).
@@ -621,7 +625,7 @@ generated-artifact exceptions.
     already declared.
   - Commit: `Add HTML renderer with CDN and offline Plotly modes`.
 
-- [ ] **P1.18 — Vendor LaTeX styles + add `kaleido` / `chromium` / `tectonic` deps**
+- [x] **P1.18 — Vendor LaTeX styles + add `kaleido` / `tectonic` deps**
   - Files: `pyproject.toml`, `pixi.toml`, `pixi.lock`; new
     `src/easydiffraction/report/templates/tex/styles/` (12
     files: `iucrjournals.cls`, `harvard.sty`, `revtex4-2.cls`,
@@ -633,8 +637,10 @@ generated-artifact exceptions.
     `THIRD_PARTY_LICENSES.md` at repository root.
   - Add `kaleido` (v1.0+) to the runtime dependency list in
     `pyproject.toml`.
-  - Add `chromium` and `tectonic` to the dev/docs feature
-    group in `pixi.toml`.
+  - Add `tectonic` to the dev/docs feature group in
+    `pixi.toml`. Do not add `chromium`: `pixi search chromium`
+    found no conda-forge package for the workspace platforms, so
+    the browser remains a host-level Kaleido prerequisite.
   - Regenerate `pixi.lock`.
   - Copy the 12 upstream style files into the vendored
     directory.
@@ -682,7 +688,7 @@ generated-artifact exceptions.
     re-verify. Do **not** add
     `[tool.setuptools.package-data]` — this project does not
     use setuptools.
-  - Commit: `Vendor LaTeX styles with licenses and add kaleido/chromium/tectonic deps`.
+  - Commit: `Vendor LaTeX styles with licenses and add report deps`.
 
 - [ ] **P1.19 — LaTeX renderer + `save_tex(style='iucr')`**
   - Files: new

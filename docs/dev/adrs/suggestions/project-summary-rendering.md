@@ -991,33 +991,37 @@ to rendering-stack quirks, not data choices.
   closes naturally as Chrome/Chromium becomes near-universal.
 - v1's ~30 MB footprint is genuinely smaller than v0.2's ~80 MB
   bundled-Chromium build.
-- The runtime browser requirement is solved cleanly via
-  conda-forge: `pixi add chromium` (or `conda install -c conda-forge chromium`)
-  on machines that don't already have a browser. Same pattern as
-  the LaTeX-engine install in §3.4.
+- The runtime browser requirement is a host prerequisite rather
+  than a project-level Pixi dependency: conda-forge does not
+  provide a `chromium` package for the workspace's supported
+  platforms. Machines without Chrome/Chromium get a clear install
+  hint from the report path. This differs from the LaTeX-engine
+  install in §3.4, where `tectonic` is available on conda-forge.
 
 Practical install matrix:
 
 | Environment              | kaleido v1 install     | Browser already present? | Extra step                   |
 | ------------------------ | ---------------------- | ------------------------ | ---------------------------- |
 | Developer laptop         | `pip install kaleido`  | Yes (Chrome/Edge/Safari) | None                         |
-| `pixi` dev shell         | added to `pixi.toml`   | Add `chromium` to pixi   | One line in `pixi.toml`      |
-| CI runner (GitHub, etc.) | added to `pixi.toml`   | Install via pixi/conda   | Already managed by pixi.lock |
+| `pixi` dev shell         | added through editable install | System browser required | Install Chrome/Chromium if absent |
+| CI runner (GitHub, etc.) | added through editable install | Runner browser required | Install Chrome/Chromium in CI image |
 | Bare HPC node            | `pip install kaleido`  | Usually no               | Install Chromium separately  |
 
 **Dependencies named by this ADR.** The implementation plan must
-name three dependencies before any `/draft-impl-1` or
+name two dependencies before any `/draft-impl-1` or
 `/draft-impl-2` invocation edits `pyproject.toml`, `pixi.toml`, or
 `pixi.lock`:
 
 - `kaleido` (v1.0+) — Python package, runtime dependency for
   rasterising Plotly figures to vector PDF for LaTeX inclusion.
-- `chromium` — pixi/conda package, head-of-Plotly's static-image
-  pipeline. Goes into the project's dev/docs feature group so
-  `pixi run script-tests` can validate end-to-end PDF figure
-  generation.
 - `tectonic` — pixi/conda package, lightweight TeX engine for §3.4
   PDF compilation in the project dev environment.
+
+`chromium` is deliberately not a dependency: conda-forge has no
+package with that name for the supported workspace platforms. The
+implementation treats Chrome/Chromium as a host-level Kaleido
+prerequisite and reports a clear install hint when static-image
+export cannot find a browser.
 
 Per AGENTS.md §Architecture, "an accepted plan that **names the
 specific dependency** … combined with the user invoking
@@ -1566,8 +1570,9 @@ beyond what already exists.
   rendering toolkits drifting on data choices. v1 relies on the
   host
   browser for rendering; the project's `pixi.toml` adds
-  `chromium` alongside `tectonic` to its dev/docs feature so CI
-  has a known-good Chromium. End users on machines without a
+  `tectonic`, while Chrome/Chromium remains a host-level
+  prerequisite because conda-forge has no `chromium` package for
+  the workspace platforms. End users on machines without a
   browser get a clear install hint at first use.
 - PDF compilation is opportunistic — works when `tectonic`,
   `latexmk`, or `pdflatex` is on `PATH`; otherwise the `.tex` and
