@@ -170,7 +170,7 @@ generated-artifact exceptions.
 
 ## Implementation steps (Phase 1)
 
-- [ ] **P1.1 — Extend `CifHandler` with `iucr_name`**
+- [x] **P1.1 — Extend `CifHandler` with `iucr_name`**
   - File: `src/easydiffraction/io/cif/handler.py`.
   - Add an optional keyword `iucr_name: str | None = None` to
     `CifHandler.__init__`.
@@ -180,7 +180,7 @@ generated-artifact exceptions.
     leaves every existing handler emitting its current name.
   - Commit: `Add iucr_name to CifHandler`.
 
-- [ ] **P1.2 — Structure-tier casing fixes**
+- [x] **P1.2 — Structure-tier casing fixes**
   - Files:
     `src/easydiffraction/datablocks/structure/categories/atom_sites/default.py`,
     `src/easydiffraction/datablocks/structure/categories/space_group/default.py`.
@@ -195,7 +195,7 @@ generated-artifact exceptions.
   - Commit:
     `Adopt IUCr casing for atom_site and space_group CIF tags`.
 
-- [ ] **P1.3 — ADP single-tag emission per row**
+- [x] **P1.3 — ADP single-tag emission per row**
   - File: `src/easydiffraction/io/cif/serialize.py` (and any
     helper called by it).
   - When emitting `_atom_site_aniso.*` and
@@ -205,7 +205,7 @@ generated-artifact exceptions.
   - Read side unchanged (both families still accepted).
   - Commit: `Emit one ADP family per atom_site row on save`.
 
-- [ ] **P1.4 — Analysis tier: new `_fit_result.*` fields**
+- [x] **P1.4 — Analysis tier: new `_fit_result.*` fields**
   - Files:
     `src/easydiffraction/analysis/categories/fit_result/lsq.py`,
     `src/easydiffraction/analysis/categories/fit_result/base.py`,
@@ -230,7 +230,7 @@ generated-artifact exceptions.
   - Commit:
     `Add IUCr-canonical fit_result fields to LeastSquaresFitResult`.
 
-- [ ] **P1.5 — Amend `analysis-cif-fit-state.md`**
+- [x] **P1.5 — Amend `analysis-cif-fit-state.md`**
   - File:
     `docs/dev/adrs/accepted/analysis-cif-fit-state.md`.
   - Document the new `_fit_result.*` fields, the
@@ -239,14 +239,14 @@ generated-artifact exceptions.
     iucr-cif-tag-alignment ADR.
   - Commit: `Amend analysis-cif-fit-state ADR for new fit_result fields`.
 
-- [ ] **P1.6 — Amend `minimizer-input-output-split.md`**
+- [x] **P1.6 — Amend `minimizer-input-output-split.md`**
   - File:
     `docs/dev/adrs/accepted/minimizer-input-output-split.md`.
   - Update the `_fit_result.*` examples in §3 to reflect the new
     field set from P1.4.
   - Commit: `Amend minimizer-input-output-split ADR examples`.
 
-- [ ] **P1.7 — Set `iucr_name` on project-extension descriptors**
+- [x] **P1.7 — Set `iucr_name` on project-extension descriptors**
   - No new category. The ADR's `_easydiffraction_software` triple
     is a **report-only projection**: it is derived inline by the
     IUCr writer in P1.11 from existing state (`easydiffraction`
@@ -302,7 +302,7 @@ generated-artifact exceptions.
   - Commit:
     `Set iucr_name on project-extension descriptors`.
 
-- [ ] **P1.8 — Rename `project.summary` → `project.report`, preserve display methods**
+- [x] **P1.8 — Rename `project.summary` → `project.report`, preserve display methods**
   - Files:
     `src/easydiffraction/project/project.py`,
     `src/easydiffraction/summary/` (renamed / migrated),
@@ -350,7 +350,7 @@ generated-artifact exceptions.
     `project.summary.show_report()` are updated in **P1.17**.
   - Commit: `Replace project.summary with project.report facade`.
 
-- [ ] **P1.9 — Amend `project-facade-and-persistence.md`**
+- [x] **P1.9 — Amend `project-facade-and-persistence.md`**
   - File:
     `docs/dev/adrs/accepted/project-facade-and-persistence.md`.
   - Document the `project.report` facade slot, removal of
@@ -359,14 +359,14 @@ generated-artifact exceptions.
   - Commit:
     `Amend project-facade-and-persistence ADR for project.report`.
 
-- [ ] **P1.10 — Amend `help-discoverability.md`**
+- [x] **P1.10 — Amend `help-discoverability.md`**
   - File: `docs/dev/adrs/accepted/help-discoverability.md`.
   - Replace `project.summary.help()` with
     `project.report.help()` in the help-surface enumeration.
   - Commit:
     `Amend help-discoverability ADR for project.report`.
 
-- [ ] **P1.11 — IUCr writer foundation + `data_global` content**
+- [x] **P1.11 — IUCr writer foundation + `data_global` content**
   - New file: `src/easydiffraction/io/cif/iucr_writer.py`.
   - Implement the multi-datablock orchestrator skeleton:
     a `write_iucr_cif(project, path)` entry point that opens
@@ -389,7 +389,7 @@ generated-artifact exceptions.
     `write_iucr_cif`.
   - Commit: `Add IUCr CIF writer with data_global block`.
 
-- [ ] **P1.12 — Single-crystal block layout**
+- [x] **P1.12 — Single-crystal block layout**
   - Same file as P1.11; add `_write_sc_block` helper.
   - Per-structure block emission per §2.3b: `_chemical_formula.*`,
     `_cell.*`, `_space_group.*` + `_space_group_symop.*` loop,
@@ -405,7 +405,7 @@ generated-artifact exceptions.
     emitted via the transformer (added in P1.14).
   - Commit: `Emit single-crystal blocks in IUCr CIF writer`.
 
-- [ ] **P1.13 — Powder Rietveld block layout (CWL + TOF)**
+- [x] **P1.13 — Powder Rietveld block layout (CWL + TOF)**
   - Same writer file; add `_write_rietveld_blocks` helper.
   - Emit `data_<project>_overall`, `data_<project>_phase_N`
     (one per phase), `data_<project>_pwd_N` (one per pattern)
@@ -426,7 +426,7 @@ generated-artifact exceptions.
   - Commit:
     `Emit powder Rietveld blocks in IUCr CIF writer`.
 
-- [ ] **P1.14 — `IucrCategoryTransformer` subclasses**
+- [x] **P1.14 — `IucrCategoryTransformer` subclasses**
   - New file:
     `src/easydiffraction/io/cif/iucr_transformers.py`.
   - Implement and register five transformers per §3 of the ADR:
@@ -454,7 +454,7 @@ generated-artifact exceptions.
   - Commit:
     `Add IUCr category transformers for restructured emissions`.
 
-- [ ] **P1.15 — Wire `Project.save(report=True)` end-to-end**
+- [x] **P1.15 — Wire `Project.save(report=True)` end-to-end**
   - File: `src/easydiffraction/project/project.py`,
     `src/easydiffraction/report/report.py`.
   - `Project.save(report=False)` continues to write the regular
@@ -466,7 +466,7 @@ generated-artifact exceptions.
     existing report file (no round-trip).
   - Commit: `Wire report=True kwarg on Project.save`.
 
-- [ ] **P1.16 — Submission-side validation via gemmi**
+- [x] **P1.16 — Submission-side validation via gemmi**
   - New file: `src/easydiffraction/report/check.py`.
   - Implement `Report.check()` using `gemmi.cif.read_doc`
     against the shipped (or downloaded) `cif_core.dic` and
@@ -482,7 +482,7 @@ generated-artifact exceptions.
     named dependency).
   - Commit: `Add Report.check() validation via gemmi`.
 
-- [ ] **P1.17 — Update tutorials / CLI / docs references**
+- [x] **P1.17 — Update tutorials / CLI / docs references**
   - Source files in `docs/docs/tutorials/*.py` and CLI commands
     in `src/easydiffraction/cli/`.
   - Replace every `project.summary.*` call site with the
@@ -509,7 +509,7 @@ generated-artifact exceptions.
   - Commit:
     `Update tutorials and CLI for project.report rename`.
 
-- [ ] **P1.18 — Promote ADR to `accepted/`**
+- [x] **P1.18 — Promote ADR to `accepted/`**
   - Move
     `docs/dev/adrs/suggestions/iucr-cif-tag-alignment.md`
     to
@@ -523,7 +523,7 @@ generated-artifact exceptions.
   - Commit:
     `Promote iucr-cif-tag-alignment ADR to accepted`.
 
-- [ ] **P1.19 — Reach Phase 1 review gate**
+- [x] **P1.19 — Reach Phase 1 review gate**
   - No-code step. Mark every `[ ]` above as `[x]`; commit the
     plan-file update alone.
   - Commit: `Reach Phase 1 review gate`.
