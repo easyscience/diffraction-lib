@@ -1022,8 +1022,9 @@ class Analysis(
                 self.sequential_fit_extract,
             ])
 
+        categories.extend(self._fit_parameter_state_categories())
         if self._has_persisted_fit_state():
-            categories.extend(self._fit_state_categories())
+            categories.extend(self._fit_result_state_categories())
 
         return categories
 
@@ -1479,10 +1480,15 @@ class Analysis(
         """Set the persisted fit-state presence flag."""
         self._has_persisted_fit_state_data = value
 
-    def _fit_state_categories(self) -> list[object]:
-        """Return fit-state categories for the current result kind."""
+    def _fit_parameter_state_categories(self) -> list[object]:
+        """Return persisted fit-parameter rows when present."""
+        if not self.fit_parameters:
+            return []
+        return [self.fit_parameters]
+
+    def _fit_result_state_categories(self) -> list[object]:
+        """Return fit-result state categories for the current result kind."""
         categories: list[object] = [
-            self.fit_parameters,
             self.fit_result,
             self.fit_parameter_correlations,
         ]
