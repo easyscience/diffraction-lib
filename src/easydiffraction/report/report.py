@@ -280,11 +280,6 @@ class Report:
         -------
         ReportCheckResult
             Validation result with errors and warnings.
-
-        Raises
-        ------
-        ValueError
-            If validation finds parse errors.
         """
         report_path = iucr_report_path(self.project, path)
         result = check_report(report_path)
