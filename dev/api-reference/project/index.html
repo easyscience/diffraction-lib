@@ -14,7 +14,7 @@
         <link rel="prev" href="../io/">
       
       
-        <link rel="next" href="../summary/">
+        <link rel="next" href="../report/">
       
       
         
@@ -829,7 +829,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../user-guide/analysis-workflow/summary/" class="md-nav__link">
+      <a href="../../user-guide/analysis-workflow/report/" class="md-nav__link">
         
   
   
@@ -838,7 +838,7 @@
   <span class="md-ellipsis">
     
   
-    Summary
+    Report
   
 
     
@@ -2908,14 +2908,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../summary/" class="md-nav__link">
+      <a href="../report/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    summary
+    report
   
 
     
@@ -8532,7 +8532,7 @@ another.
 
 
         <p>Central API for managing a diffraction data analysis project.</p>
-<p>Provides access to structures, experiments, analysis, and summary.</p>
+<p>Provides access to structures, experiments, analysis, and reports.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -9018,11 +9018,20 @@ another.
 <span class="normal">651</span>
 <span class="normal">652</span>
 <span class="normal">653</span>
-<span class="normal">654</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Project</span><span class="p">(</span><span class="n">GuardedBase</span><span class="p">):</span>  <span class="c1"># noqa: PLR0904</span>
+<span class="normal">654</span>
+<span class="normal">655</span>
+<span class="normal">656</span>
+<span class="normal">657</span>
+<span class="normal">658</span>
+<span class="normal">659</span>
+<span class="normal">660</span>
+<span class="normal">661</span>
+<span class="normal">662</span>
+<span class="normal">663</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Project</span><span class="p">(</span><span class="n">GuardedBase</span><span class="p">):</span>  <span class="c1"># noqa: PLR0904</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Central API for managing a diffraction data analysis project.</span>
 
-<span class="sd">    Provides access to structures, experiments, analysis, and summary.</span>
+<span class="sd">    Provides access to structures, experiments, analysis, and reports.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
@@ -9049,7 +9058,7 @@ another.
         <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_verbosity&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">verbosity</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_display</span> <span class="o">=</span> <span class="n">ProjectDisplay</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_analysis</span> <span class="o">=</span> <span class="n">Analysis</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_summary</span> <span class="o">=</span> <span class="n">Summary</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_report</span> <span class="o">=</span> <span class="n">Report</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_saved</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_varname</span> <span class="o">=</span> <span class="s1">&#39;project&#39;</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_loading</span> <span class="k">else</span> <span class="n">varname</span><span class="p">()</span>
         <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_current_project</span> <span class="o">=</span> <span class="bp">self</span>
@@ -9167,9 +9176,9 @@ another.
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_analysis</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">summary</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Summary</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Summary report builder bound to the project.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_summary</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">report</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Report</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Submission report builder bound to the project.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_report</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
@@ -9300,8 +9309,17 @@ another.
                 <span class="n">param_map</span><span class="p">[</span><span class="n">unique_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span>
         <span class="k">return</span> <span class="n">param_map</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the project into the existing project directory.&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">report</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">check</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save the project into the existing project directory.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        report : bool, default=False</span>
+<span class="sd">            Whether to write the IUCr submission report.</span>
+<span class="sd">        check : bool, default=False</span>
+<span class="sd">            Whether to validate the IUCr submission report.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Project path not specified. Use save_as() to define the path first.&#39;</span><span class="p">)</span>
             <span class="k">return</span>
@@ -9361,10 +9379,10 @@ another.
             <span class="n">branch</span> <span class="o">=</span> <span class="s1">&#39;└──&#39;</span> <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">analysis_file_names</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">else</span> <span class="s1">&#39;├──&#39;</span>
             <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;│   </span><span class="si">{</span><span class="n">branch</span><span class="si">}</span><span class="s1"> 📄 </span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
-        <span class="c1"># Save summary</span>
-        <span class="k">with</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">path</span> <span class="o">/</span> <span class="s1">&#39;summary.cif&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">as_cif</span><span class="p">())</span>
-            <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;└── 📄 summary.cif&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">report</span><span class="p">:</span>
+            <span class="n">report_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">check</span><span class="o">=</span><span class="n">check</span><span class="p">)</span>
+            <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;└── 📁 reports/&#39;</span><span class="p">)</span>
+            <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;    └── 📄 </span><span class="si">{</span><span class="n">report_path</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">update_last_modified</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_saved</span> <span class="o">=</span> <span class="kc">True</span>
@@ -9761,8 +9779,8 @@ another.
 
 
 
-<h4 id="easydiffraction.project.project.Project.summary" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">summary</span></code>
+<h4 id="easydiffraction.project.project.Project.report" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">report</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
@@ -9773,7 +9791,7 @@ another.
 
     <div class="doc doc-contents ">
 
-        <p>Summary report builder bound to the project.</p>
+        <p>Submission report builder bound to the project.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -10195,7 +10213,7 @@ display configuration.</p>
 
 
 <h4 id="easydiffraction.project.project.Project.save" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">save</span><span class="p">()</span></code>
+            <code class="highlight language-python"><span class="n">save</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">report</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 
 </h4>
 
@@ -10206,6 +10224,59 @@ display configuration.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>report</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to write the <abbr title="International Union of Crystallography.">IUCr</abbr> submission report.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>check</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to validate the <abbr title="International Union of Crystallography.">IUCr</abbr> submission report.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="mkdocstrings-source">
@@ -10277,8 +10348,26 @@ display configuration.</p>
 <span class="normal">528</span>
 <span class="normal">529</span>
 <span class="normal">530</span>
-<span class="normal">531</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Save the project into the existing project directory.&quot;&quot;&quot;</span>
+<span class="normal">531</span>
+<span class="normal">532</span>
+<span class="normal">533</span>
+<span class="normal">534</span>
+<span class="normal">535</span>
+<span class="normal">536</span>
+<span class="normal">537</span>
+<span class="normal">538</span>
+<span class="normal">539</span>
+<span class="normal">540</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">report</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">check</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Save the project into the existing project directory.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    report : bool, default=False</span>
+<span class="sd">        Whether to write the IUCr submission report.</span>
+<span class="sd">    check : bool, default=False</span>
+<span class="sd">        Whether to validate the IUCr submission report.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Project path not specified. Use save_as() to define the path first.&#39;</span><span class="p">)</span>
         <span class="k">return</span>
@@ -10338,10 +10427,10 @@ display configuration.</p>
         <span class="n">branch</span> <span class="o">=</span> <span class="s1">&#39;└──&#39;</span> <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">analysis_file_names</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">else</span> <span class="s1">&#39;├──&#39;</span>
         <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;│   </span><span class="si">{</span><span class="n">branch</span><span class="si">}</span><span class="s1"> 📄 </span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
-    <span class="c1"># Save summary</span>
-    <span class="k">with</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">path</span> <span class="o">/</span> <span class="s1">&#39;summary.cif&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">as_cif</span><span class="p">())</span>
-        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;└── 📄 summary.cif&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">report</span><span class="p">:</span>
+        <span class="n">report_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">check</span><span class="o">=</span><span class="n">check</span><span class="p">)</span>
+        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;└── 📁 reports/&#39;</span><span class="p">)</span>
+        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;    └── 📄 </span><span class="si">{</span><span class="n">report_path</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">update_last_modified</span><span class="p">()</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_saved</span> <span class="o">=</span> <span class="kc">True</span>
@@ -10443,16 +10532,7 @@ saving.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/project/project.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">533</span>
-<span class="normal">534</span>
-<span class="normal">535</span>
-<span class="normal">536</span>
-<span class="normal">537</span>
-<span class="normal">538</span>
-<span class="normal">539</span>
-<span class="normal">540</span>
-<span class="normal">541</span>
-<span class="normal">542</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">542</span>
 <span class="normal">543</span>
 <span class="normal">544</span>
 <span class="normal">545</span>
@@ -10482,7 +10562,16 @@ saving.</p>
 <span class="normal">569</span>
 <span class="normal">570</span>
 <span class="normal">571</span>
-<span class="normal">572</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save_as</span><span class="p">(</span>
+<span class="normal">572</span>
+<span class="normal">573</span>
+<span class="normal">574</span>
+<span class="normal">575</span>
+<span class="normal">576</span>
+<span class="normal">577</span>
+<span class="normal">578</span>
+<span class="normal">579</span>
+<span class="normal">580</span>
+<span class="normal">581</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save_as</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">dir_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
@@ -10628,16 +10717,7 @@ indexing (e.g. <code>-1</code> for the last row).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/project/project.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">574</span>
-<span class="normal">575</span>
-<span class="normal">576</span>
-<span class="normal">577</span>
-<span class="normal">578</span>
-<span class="normal">579</span>
-<span class="normal">580</span>
-<span class="normal">581</span>
-<span class="normal">582</span>
-<span class="normal">583</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">583</span>
 <span class="normal">584</span>
 <span class="normal">585</span>
 <span class="normal">586</span>
@@ -10708,7 +10788,16 @@ indexing (e.g. <code>-1</code> for the last row).</p>
 <span class="normal">651</span>
 <span class="normal">652</span>
 <span class="normal">653</span>
-<span class="normal">654</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">apply_params_from_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">654</span>
+<span class="normal">655</span>
+<span class="normal">656</span>
+<span class="normal">657</span>
+<span class="normal">658</span>
+<span class="normal">659</span>
+<span class="normal">660</span>
+<span class="normal">661</span>
+<span class="normal">662</span>
+<span class="normal">663</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">apply_params_from_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load a single CSV row and apply its parameters to the project.</span>
 
@@ -11234,13 +11323,13 @@ indexing (e.g. <code>-1</code> for the last row).</p>
         
         
           
-          <a href="../summary/" class="md-footer__link md-footer__link--next" aria-label="Next: summary">
+          <a href="../report/" class="md-footer__link md-footer__link--next" aria-label="Next: report">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                summary
+                report
               </div>
             </div>
             <div class="md-footer__button md-icon">

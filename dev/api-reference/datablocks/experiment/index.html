@@ -829,7 +829,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../user-guide/analysis-workflow/summary/" class="md-nav__link">
+      <a href="../../../user-guide/analysis-workflow/report/" class="md-nav__link">
         
   
   
@@ -838,7 +838,7 @@
   <span class="md-ellipsis">
     
   
-    Summary
+    Report
   
 
     
@@ -2970,14 +2970,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../summary/" class="md-nav__link">
+      <a href="../../report/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    summary
+    report
   
 
     
@@ -3613,7 +3613,10 @@ compute background intensities on the experiment grid.</p>
 <span class="normal">63</span>
 <span class="normal">64</span>
 <span class="normal">65</span>
-<span class="normal">66</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BackgroundBase</span><span class="p">(</span><span class="n">CategoryCollection</span><span class="p">,</span> <span class="n">SwitchableCategoryBase</span><span class="p">):</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BackgroundBase</span><span class="p">(</span><span class="n">CategoryCollection</span><span class="p">,</span> <span class="n">SwitchableCategoryBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract base for background subcategories in experiments.</span>
 
@@ -3639,7 +3642,10 @@ compute background intensities on the experiment grid.</p>
                     <span class="n">allowed</span><span class="o">=</span><span class="p">[</span><span class="n">member</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">BackgroundTypeEnum</span><span class="p">],</span>
                 <span class="p">),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_background.type&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_background.type&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_background.type&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
@@ -3701,9 +3707,9 @@ compute background intensities on the experiment grid.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/background/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print a human-readable view of background components.&quot;&quot;&quot;</span>
 </code></pre></div></td></tr></table></div>
@@ -5431,7 +5437,10 @@ object. Assigning to it updates the parameter value.</p>
 <span class="normal">90</span>
 <span class="normal">91</span>
 <span class="normal">92</span>
-<span class="normal">93</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@CalculatorCategoryFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">93</span>
+<span class="normal">94</span>
+<span class="normal">95</span>
+<span class="normal">96</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@CalculatorCategoryFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Calculator</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">,</span> <span class="n">SwitchableCategoryBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculator selection and access for an experiment.&quot;&quot;&quot;</span>
 
@@ -5460,7 +5469,10 @@ object. Assigning to it updates the parameter value.</p>
                     <span class="n">allowed</span><span class="o">=</span><span class="p">[</span><span class="n">member</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">CalculatorEnum</span><span class="p">],</span>
                 <span class="p">),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_calculator.type&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_calculator.type&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_calculator.type&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
 
     <span class="nd">@property</span>
@@ -5564,17 +5576,17 @@ object. Assigning to it updates the parameter value.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/calculator/default.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">86</span>
 <span class="normal">87</span>
 <span class="normal">88</span>
 <span class="normal">89</span>
 <span class="normal">90</span>
 <span class="normal">91</span>
 <span class="normal">92</span>
-<span class="normal">93</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">from_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">93</span>
+<span class="normal">94</span>
+<span class="normal">95</span>
+<span class="normal">96</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">from_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Populate this calculator category from a CIF block.&quot;&quot;&quot;</span>
     <span class="k">del</span> <span class="n">idx</span>
     <span class="n">tag</span> <span class="o">=</span> <span class="n">read_cif_str</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="s1">&#39;_calculator.type&#39;</span><span class="p">)</span>
@@ -9688,7 +9700,13 @@ transformed to r-space.</p>
 <span class="normal">133</span>
 <span class="normal">134</span>
 <span class="normal">135</span>
-<span class="normal">136</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@DiffrnFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@DiffrnFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">DefaultDiffrn</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Ambient conditions recorded during diffraction measurement.&quot;&quot;&quot;</span>
 
@@ -9735,7 +9753,10 @@ transformed to r-space.</p>
                 <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_diffrn.ambient_magnetic_field&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_diffrn.ambient_magnetic_field&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_diffrn.ambient_magnetic_field&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_ambient_electric_field</span> <span class="o">=</span> <span class="n">NumericDescriptor</span><span class="p">(</span>
@@ -9747,7 +9768,10 @@ transformed to r-space.</p>
                 <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_diffrn.ambient_electric_field&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_diffrn.ambient_electric_field&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_diffrn.ambient_electric_field&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
@@ -10260,7 +10284,16 @@ transformed to r-space.</p>
 <span class="normal">112</span>
 <span class="normal">113</span>
 <span class="normal">114</span>
-<span class="normal">115</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExcludedRegion</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExcludedRegion</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Closed interval [start, end] to be excluded.&quot;&quot;&quot;</span>
 
     <span class="n">_category_code</span> <span class="o">=</span> <span class="s1">&#39;excluded_regions&#39;</span>
@@ -10280,7 +10313,10 @@ transformed to r-space.</p>
                 <span class="c1">#  Do we need conversion between CIF and internal label?</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RegexValidator</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;^[A-Za-z0-9_]*$&#39;</span><span class="p">),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_excluded_region.id&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_excluded_region.id&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_excluded_region.id&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start</span> <span class="o">=</span> <span class="n">NumericDescriptor</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;start&#39;</span><span class="p">,</span>
@@ -10289,7 +10325,10 @@ transformed to r-space.</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_excluded_region.start&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_excluded_region.start&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_excluded_region.start&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_end</span> <span class="o">=</span> <span class="n">NumericDescriptor</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;end&#39;</span><span class="p">,</span>
@@ -10298,7 +10337,10 @@ transformed to r-space.</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_excluded_region.end&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_excluded_region.end&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_excluded_region.end&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
@@ -10494,16 +10536,7 @@ fitting and plotting.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/excluded_regions/default.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">127</span>
 <span class="normal">128</span>
 <span class="normal">129</span>
 <span class="normal">130</span>
@@ -10555,7 +10588,16 @@ fitting and plotting.</p>
 <span class="normal">176</span>
 <span class="normal">177</span>
 <span class="normal">178</span>
-<span class="normal">179</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@ExcludedRegionsFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@ExcludedRegionsFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ExcludedRegions</span><span class="p">(</span><span class="n">CategoryCollection</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Collection of ExcludedRegion instances.</span>
@@ -10652,21 +10694,21 @@ fitting and plotting.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/excluded_regions/default.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span>
-<span class="normal">171</span>
-<span class="normal">172</span>
-<span class="normal">173</span>
-<span class="normal">174</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">174</span>
 <span class="normal">175</span>
 <span class="normal">176</span>
 <span class="normal">177</span>
 <span class="normal">178</span>
-<span class="normal">179</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print a table of excluded [start, end] intervals.&quot;&quot;&quot;</span>
     <span class="c1"># TODO: Consider moving this to the base class</span>
     <span class="c1">#  to avoid code duplication with implementations in Background,</span>
@@ -11039,7 +11081,19 @@ experiment configuration and handles <abbr title="Crystallographic Information F
 <span class="normal">139</span>
 <span class="normal">140</span>
 <span class="normal">141</span>
-<span class="normal">142</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@ExperimentTypeFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@ExperimentTypeFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ExperimentType</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Container of attributes defining the experiment type.&quot;&quot;&quot;</span>
 
@@ -11060,7 +11114,10 @@ experiment configuration and handles <abbr title="Crystallographic Information F
                 <span class="n">default</span><span class="o">=</span><span class="n">SampleFormEnum</span><span class="o">.</span><span class="n">default</span><span class="p">()</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">MembershipValidator</span><span class="p">(</span><span class="n">allowed</span><span class="o">=</span><span class="p">[</span><span class="n">member</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">SampleFormEnum</span><span class="p">]),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_expt_type.sample_form&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_expt_type.sample_form&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_experiment_type.sample_form&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_beam_mode</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
@@ -11070,7 +11127,10 @@ experiment configuration and handles <abbr title="Crystallographic Information F
                 <span class="n">default</span><span class="o">=</span><span class="n">BeamModeEnum</span><span class="o">.</span><span class="n">default</span><span class="p">()</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">MembershipValidator</span><span class="p">(</span><span class="n">allowed</span><span class="o">=</span><span class="p">[</span><span class="n">member</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">BeamModeEnum</span><span class="p">]),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_expt_type.beam_mode&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_expt_type.beam_mode&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_experiment_type.beam_mode&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_radiation_probe</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;radiation_probe&#39;</span><span class="p">,</span>
@@ -11081,7 +11141,10 @@ experiment configuration and handles <abbr title="Crystallographic Information F
                     <span class="n">allowed</span><span class="o">=</span><span class="p">[</span><span class="n">member</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">RadiationProbeEnum</span><span class="p">]</span>
                 <span class="p">),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_expt_type.radiation_probe&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_expt_type.radiation_probe&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_experiment_type.radiation_probe&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_scattering_type</span> <span class="o">=</span> <span class="n">StringDescriptor</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;scattering_type&#39;</span><span class="p">,</span>
@@ -11092,7 +11155,10 @@ experiment configuration and handles <abbr title="Crystallographic Information F
                     <span class="n">allowed</span><span class="o">=</span><span class="p">[</span><span class="n">member</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">ScatteringTypeEnum</span><span class="p">]</span>
                 <span class="p">),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_expt_type.scattering_type&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_expt_type.scattering_type&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_experiment_type.scattering_type&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
@@ -11551,7 +11617,10 @@ experiment configuration and handles <abbr title="Crystallographic Information F
 <span class="normal">51</span>
 <span class="normal">52</span>
 <span class="normal">53</span>
-<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtinctionBase</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">,</span> <span class="n">SwitchableCategoryBase</span><span class="p">):</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtinctionBase</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">,</span> <span class="n">SwitchableCategoryBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for extinction correction categories.&quot;&quot;&quot;</span>
 
     <span class="n">_category_code</span> <span class="o">=</span> <span class="s1">&#39;extinction&#39;</span>
@@ -11572,7 +11641,10 @@ experiment configuration and handles <abbr title="Crystallographic Information F
                     <span class="n">allowed</span><span class="o">=</span><span class="n">ExtinctionFactory</span><span class="o">.</span><span class="n">supported_tags</span><span class="p">(),</span>
                 <span class="p">),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_extinction.type&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_extinction.type&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_extinction.type&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
@@ -11802,7 +11874,16 @@ either Gaussian (<code>'gauss'</code>) or Lorentzian (<code>'lorentz'</code>).</
 <span class="normal">128</span>
 <span class="normal">129</span>
 <span class="normal">130</span>
-<span class="normal">131</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@ExtinctionFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@ExtinctionFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">BeckerCoppensExtinction</span><span class="p">(</span><span class="n">ExtinctionBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Becker-Coppens spherical extinction correction for single crystals.</span>
@@ -11839,7 +11920,10 @@ either Gaussian (<code>'gauss'</code>) or Lorentzian (<code>'lorentz'</code>).</
                     <span class="n">allowed</span><span class="o">=</span><span class="p">[</span><span class="n">member</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">ExtinctionModelEnum</span><span class="p">],</span>
                 <span class="p">),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_extinction.model&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_extinction.model&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_extinction.model&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_mosaicity</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
@@ -11850,7 +11934,10 @@ either Gaussian (<code>'gauss'</code>) or Lorentzian (<code>'lorentz'</code>).</
                 <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_extinction.mosaicity&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_extinction.mosaicity&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_extinction.mosaicity&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_radius</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;radius&#39;</span><span class="p">,</span>
@@ -11860,7 +11947,10 @@ either Gaussian (<code>'gauss'</code>) or Lorentzian (<code>'lorentz'</code>).</
                 <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_extinction.radius&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_extinction.radius&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_extinction.radius&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
@@ -13726,7 +13816,13 @@ object. Assigning to it updates the parameter value.</p>
 <span class="normal">86</span>
 <span class="normal">87</span>
 <span class="normal">88</span>
-<span class="normal">89</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@LinkedCrystalFactory</span><span class="o">.</span><span class="n">register</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span>
+<span class="normal">95</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@LinkedCrystalFactory</span><span class="o">.</span><span class="n">register</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">LinkedCrystal</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Linked crystal reference for single-crystal diffraction.&quot;&quot;&quot;</span>
 
@@ -13750,7 +13846,10 @@ object. Assigning to it updates the parameter value.</p>
                 <span class="n">default</span><span class="o">=</span><span class="s1">&#39;Si&#39;</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RegexValidator</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;^[A-Za-z_][A-Za-z0-9_]*$&#39;</span><span class="p">),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_sc_crystal_block.id&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_sc_crystal_block.id&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_sc_crystal_block.id&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_scale</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;scale&#39;</span><span class="p">,</span>
@@ -13759,7 +13858,10 @@ object. Assigning to it updates the parameter value.</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_sc_crystal_block.scale&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_sc_crystal_block.scale&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_sc_crystal_block.scale&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
@@ -14715,7 +14817,10 @@ object. Assigning to it updates the parameter value.</p>
 <span class="normal">88</span>
 <span class="normal">89</span>
 <span class="normal">90</span>
-<span class="normal">91</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PeakBase</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">,</span> <span class="n">SwitchableCategoryBase</span><span class="p">):</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PeakBase</span><span class="p">(</span><span class="n">CategoryItem</span><span class="p">,</span> <span class="n">SwitchableCategoryBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for peak profile categories.&quot;&quot;&quot;</span>
 
     <span class="n">_category_code</span> <span class="o">=</span> <span class="s1">&#39;peak&#39;</span>
@@ -14736,7 +14841,10 @@ object. Assigning to it updates the parameter value.</p>
                     <span class="n">allowed</span><span class="o">=</span><span class="p">[</span><span class="n">member</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">PeakProfileTypeEnum</span><span class="p">],</span>
                 <span class="p">),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.type&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.type&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.type&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_canonicalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -14823,10 +14931,7 @@ object. Assigning to it updates the parameter value.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/peak/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">67</span>
 <span class="normal">68</span>
 <span class="normal">69</span>
 <span class="normal">70</span>
@@ -14850,7 +14955,10 @@ object. Assigning to it updates the parameter value.</p>
 <span class="normal">88</span>
 <span class="normal">89</span>
 <span class="normal">90</span>
-<span class="normal">91</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_supported</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print supported peak profiles with context-local aliases.&quot;&quot;&quot;</span>
     <span class="n">filters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">_supported_filters_for</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}</span>
     <span class="n">context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">_peak_profile_context</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}</span>
@@ -15435,7 +15543,22 @@ multiple inheritance.</p>
 <span class="normal">143</span>
 <span class="normal">144</span>
 <span class="normal">145</span>
-<span class="normal">146</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CwlBroadeningMixin</span><span class="p">:</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CwlBroadeningMixin</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;CWL Gaussian and Lorentz broadening parameters.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -15449,7 +15572,10 @@ multiple inheritance.</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.broad_gauss_u&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.broad_gauss_u&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.broad_gauss_u&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_broad_gauss_v</span><span class="p">:</span> <span class="n">Parameter</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;broad_gauss_v&#39;</span><span class="p">,</span>
@@ -15459,7 +15585,10 @@ multiple inheritance.</p>
                 <span class="n">default</span><span class="o">=-</span><span class="mf">0.01</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.broad_gauss_v&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.broad_gauss_v&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.broad_gauss_v&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_broad_gauss_w</span><span class="p">:</span> <span class="n">Parameter</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;broad_gauss_w&#39;</span><span class="p">,</span>
@@ -15469,7 +15598,10 @@ multiple inheritance.</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.broad_gauss_w&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.broad_gauss_w&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.broad_gauss_w&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_broad_lorentz_x</span><span class="p">:</span> <span class="n">Parameter</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;broad_lorentz_x&#39;</span><span class="p">,</span>
@@ -15479,7 +15611,10 @@ multiple inheritance.</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.broad_lorentz_x&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.broad_lorentz_x&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.broad_lorentz_x&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_broad_lorentz_y</span><span class="p">:</span> <span class="n">Parameter</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;broad_lorentz_y&#39;</span><span class="p">,</span>
@@ -15489,7 +15624,10 @@ multiple inheritance.</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.broad_lorentz_y&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.broad_lorentz_y&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.broad_lorentz_y&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
@@ -15758,22 +15896,7 @@ object. Assigning to it updates the parameter value.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/peak/cwl_mixins.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">164</span>
 <span class="normal">165</span>
 <span class="normal">166</span>
 <span class="normal">167</span>
@@ -15863,7 +15986,34 @@ object. Assigning to it updates the parameter value.</p>
 <span class="normal">251</span>
 <span class="normal">252</span>
 <span class="normal">253</span>
-<span class="normal">254</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">EmpiricalAsymmetryMixin</span><span class="p">:</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">EmpiricalAsymmetryMixin</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Empirical CWL peak asymmetry parameters.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -15877,7 +16027,10 @@ object. Assigning to it updates the parameter value.</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.asym_empir_1&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.asym_empir_1&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.asym_empir_1&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_asym_empir_2</span><span class="p">:</span> <span class="n">Parameter</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;asym_empir_2&#39;</span><span class="p">,</span>
@@ -15887,7 +16040,10 @@ object. Assigning to it updates the parameter value.</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.asym_empir_2&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.asym_empir_2&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.asym_empir_2&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_asym_empir_3</span><span class="p">:</span> <span class="n">Parameter</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;asym_empir_3&#39;</span><span class="p">,</span>
@@ -15897,7 +16053,10 @@ object. Assigning to it updates the parameter value.</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.asym_empir_3&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.asym_empir_3&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.asym_empir_3&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_asym_empir_4</span><span class="p">:</span> <span class="n">Parameter</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;asym_empir_4&#39;</span><span class="p">,</span>
@@ -15907,7 +16066,10 @@ object. Assigning to it updates the parameter value.</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.asym_empir_4&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.asym_empir_4&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.asym_empir_4&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
@@ -16134,34 +16296,7 @@ object. Assigning to it updates the parameter value.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/peak/cwl_mixins.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">257</span>
-<span class="normal">258</span>
-<span class="normal">259</span>
-<span class="normal">260</span>
-<span class="normal">261</span>
-<span class="normal">262</span>
-<span class="normal">263</span>
-<span class="normal">264</span>
-<span class="normal">265</span>
-<span class="normal">266</span>
-<span class="normal">267</span>
-<span class="normal">268</span>
-<span class="normal">269</span>
-<span class="normal">270</span>
-<span class="normal">271</span>
-<span class="normal">272</span>
-<span class="normal">273</span>
-<span class="normal">274</span>
-<span class="normal">275</span>
-<span class="normal">276</span>
-<span class="normal">277</span>
-<span class="normal">278</span>
-<span class="normal">279</span>
-<span class="normal">280</span>
-<span class="normal">281</span>
-<span class="normal">282</span>
-<span class="normal">283</span>
-<span class="normal">284</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">284</span>
 <span class="normal">285</span>
 <span class="normal">286</span>
 <span class="normal">287</span>
@@ -16191,7 +16326,40 @@ object. Assigning to it updates the parameter value.</p>
 <span class="normal">311</span>
 <span class="normal">312</span>
 <span class="normal">313</span>
-<span class="normal">314</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">FcjAsymmetryMixin</span><span class="p">:</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">FcjAsymmetryMixin</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Finger-Cox-Jephcoat (FCJ) asymmetry parameters.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -16205,7 +16373,10 @@ object. Assigning to it updates the parameter value.</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.asym_fcj_1&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.asym_fcj_1&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.asym_fcj_1&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_asym_fcj_2</span><span class="p">:</span> <span class="n">Parameter</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;asym_fcj_2&#39;</span><span class="p">,</span>
@@ -16215,7 +16386,10 @@ object. Assigning to it updates the parameter value.</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.asym_fcj_2&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.asym_fcj_2&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.asym_fcj_2&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
@@ -17545,7 +17719,16 @@ back-to-back exponential (BBE) formalism:</p>
 <span class="normal"> 98</span>
 <span class="normal"> 99</span>
 <span class="normal">100</span>
-<span class="normal">101</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TofGaussianBroadeningMixin</span><span class="p">:</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TofGaussianBroadeningMixin</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;TOF Gaussian broadening parameters σ₀, σ₁, σ₂.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -17559,7 +17742,10 @@ back-to-back exponential (BBE) formalism:</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.gauss_sigma_0&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.gauss_sigma_0&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.gauss_sigma_0&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_broad_gauss_sigma_1</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;gauss_sigma_1&#39;</span><span class="p">,</span>
@@ -17569,7 +17755,10 @@ back-to-back exponential (BBE) formalism:</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.gauss_sigma_1&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.gauss_sigma_1&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.gauss_sigma_1&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_broad_gauss_sigma_2</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;gauss_sigma_2&#39;</span><span class="p">,</span>
@@ -17579,7 +17768,10 @@ back-to-back exponential (BBE) formalism:</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.gauss_sigma_2&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.gauss_sigma_2&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.gauss_sigma_2&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
 
     <span class="nd">@property</span>
@@ -17760,16 +17952,7 @@ object. Assigning to it updates the parameter value.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/peak/tof_mixins.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">113</span>
 <span class="normal">114</span>
 <span class="normal">115</span>
 <span class="normal">116</span>
@@ -17837,7 +18020,25 @@ object. Assigning to it updates the parameter value.</p>
 <span class="normal">178</span>
 <span class="normal">179</span>
 <span class="normal">180</span>
-<span class="normal">181</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TofLorentzianBroadeningMixin</span><span class="p">:</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TofLorentzianBroadeningMixin</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;TOF Lorentzian broadening parameters γ₀, γ₁, γ₂.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -17851,7 +18052,10 @@ object. Assigning to it updates the parameter value.</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.lorentz_gamma_0&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.lorentz_gamma_0&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.lorentz_gamma_0&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_broad_lorentz_gamma_1</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;lorentz_gamma_1&#39;</span><span class="p">,</span>
@@ -17861,7 +18065,10 @@ object. Assigning to it updates the parameter value.</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.lorentz_gamma_1&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.lorentz_gamma_1&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.lorentz_gamma_1&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_broad_lorentz_gamma_2</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;lorentz_gamma_2&#39;</span><span class="p">,</span>
@@ -17871,7 +18078,10 @@ object. Assigning to it updates the parameter value.</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.lorentz_gamma_2&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.lorentz_gamma_2&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.lorentz_gamma_2&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
 
     <span class="nd">@property</span>
@@ -18054,25 +18264,7 @@ Dreele, Jorgensen &amp; Windsor, J. Appl. Cryst. 15, 581 (1982).</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/peak/tof_mixins.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span>
-<span class="normal">191</span>
-<span class="normal">192</span>
-<span class="normal">193</span>
-<span class="normal">194</span>
-<span class="normal">195</span>
-<span class="normal">196</span>
-<span class="normal">197</span>
-<span class="normal">198</span>
-<span class="normal">199</span>
-<span class="normal">200</span>
-<span class="normal">201</span>
-<span class="normal">202</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">202</span>
 <span class="normal">203</span>
 <span class="normal">204</span>
 <span class="normal">205</span>
@@ -18160,7 +18352,37 @@ Dreele, Jorgensen &amp; Windsor, J. Appl. Cryst. 15, 581 (1982).</p>
 <span class="normal">287</span>
 <span class="normal">288</span>
 <span class="normal">289</span>
-<span class="normal">290</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TofBackToBackExponentialMixin</span><span class="p">:</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TofBackToBackExponentialMixin</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Back-to-back exponential (BBE) rise and decay parameters.</span>
 
@@ -18179,7 +18401,10 @@ Dreele, Jorgensen &amp; Windsor, J. Appl. Cryst. 15, 581 (1982).</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.rise_alpha_0&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.rise_alpha_0&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.rise_alpha_0&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_exp_rise_alpha_1</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;rise_alpha_1&#39;</span><span class="p">,</span>
@@ -18189,7 +18414,10 @@ Dreele, Jorgensen &amp; Windsor, J. Appl. Cryst. 15, 581 (1982).</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.rise_alpha_1&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.rise_alpha_1&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.rise_alpha_1&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_exp_decay_beta_0</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;decay_beta_0&#39;</span><span class="p">,</span>
@@ -18199,7 +18427,10 @@ Dreele, Jorgensen &amp; Windsor, J. Appl. Cryst. 15, 581 (1982).</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.decay_beta_0&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.decay_beta_0&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.decay_beta_0&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_exp_decay_beta_1</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;decay_beta_1&#39;</span><span class="p">,</span>
@@ -18209,7 +18440,10 @@ Dreele, Jorgensen &amp; Windsor, J. Appl. Cryst. 15, 581 (1982).</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.decay_beta_1&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.decay_beta_1&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.decay_beta_1&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
 
     <span class="nd">@property</span>
@@ -18435,37 +18669,7 @@ r₀₃.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/easydiffraction/datablocks/experiment/categories/peak/tof_mixins.py</code></summary>
-                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">293</span>
-<span class="normal">294</span>
-<span class="normal">295</span>
-<span class="normal">296</span>
-<span class="normal">297</span>
-<span class="normal">298</span>
-<span class="normal">299</span>
-<span class="normal">300</span>
-<span class="normal">301</span>
-<span class="normal">302</span>
-<span class="normal">303</span>
-<span class="normal">304</span>
-<span class="normal">305</span>
-<span class="normal">306</span>
-<span class="normal">307</span>
-<span class="normal">308</span>
-<span class="normal">309</span>
-<span class="normal">310</span>
-<span class="normal">311</span>
-<span class="normal">312</span>
-<span class="normal">313</span>
-<span class="normal">314</span>
-<span class="normal">315</span>
-<span class="normal">316</span>
-<span class="normal">317</span>
-<span class="normal">318</span>
-<span class="normal">319</span>
-<span class="normal">320</span>
-<span class="normal">321</span>
-<span class="normal">322</span>
-<span class="normal">323</span>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">323</span>
 <span class="normal">324</span>
 <span class="normal">325</span>
 <span class="normal">326</span>
@@ -18638,7 +18842,61 @@ r₀₃.</p>
 <span class="normal">493</span>
 <span class="normal">494</span>
 <span class="normal">495</span>
-<span class="normal">496</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TofDoubleExponentialMixin</span><span class="p">:</span>
+<span class="normal">496</span>
+<span class="normal">497</span>
+<span class="normal">498</span>
+<span class="normal">499</span>
+<span class="normal">500</span>
+<span class="normal">501</span>
+<span class="normal">502</span>
+<span class="normal">503</span>
+<span class="normal">504</span>
+<span class="normal">505</span>
+<span class="normal">506</span>
+<span class="normal">507</span>
+<span class="normal">508</span>
+<span class="normal">509</span>
+<span class="normal">510</span>
+<span class="normal">511</span>
+<span class="normal">512</span>
+<span class="normal">513</span>
+<span class="normal">514</span>
+<span class="normal">515</span>
+<span class="normal">516</span>
+<span class="normal">517</span>
+<span class="normal">518</span>
+<span class="normal">519</span>
+<span class="normal">520</span>
+<span class="normal">521</span>
+<span class="normal">522</span>
+<span class="normal">523</span>
+<span class="normal">524</span>
+<span class="normal">525</span>
+<span class="normal">526</span>
+<span class="normal">527</span>
+<span class="normal">528</span>
+<span class="normal">529</span>
+<span class="normal">530</span>
+<span class="normal">531</span>
+<span class="normal">532</span>
+<span class="normal">533</span>
+<span class="normal">534</span>
+<span class="normal">535</span>
+<span class="normal">536</span>
+<span class="normal">537</span>
+<span class="normal">538</span>
+<span class="normal">539</span>
+<span class="normal">540</span>
+<span class="normal">541</span>
+<span class="normal">542</span>
+<span class="normal">543</span>
+<span class="normal">544</span>
+<span class="normal">545</span>
+<span class="normal">546</span>
+<span class="normal">547</span>
+<span class="normal">548</span>
+<span class="normal">549</span>
+<span class="normal">550</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TofDoubleExponentialMixin</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Double back-to-back exponential parameters for Z-Rietveld type0m.</span>
 
@@ -18658,7 +18916,10 @@ r₀₃.</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.dexp_rise_alpha_1&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.dexp_rise_alpha_1&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.dexp_rise_alpha_1&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dexp_rise_alpha_2</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;dexp_rise_alpha_2&#39;</span><span class="p">,</span>
@@ -18668,7 +18929,10 @@ r₀₃.</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.dexp_rise_alpha_2&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.dexp_rise_alpha_2&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.dexp_rise_alpha_2&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dexp_decay_beta_00</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;dexp_decay_beta_00&#39;</span><span class="p">,</span>
@@ -18678,7 +18942,10 @@ r₀₃.</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.dexp_decay_beta_00&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.dexp_decay_beta_00&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.dexp_decay_beta_00&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dexp_decay_beta_01</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;dexp_decay_beta_01&#39;</span><span class="p">,</span>
@@ -18688,7 +18955,10 @@ r₀₃.</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.dexp_decay_beta_01&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.dexp_decay_beta_01&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.dexp_decay_beta_01&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dexp_decay_beta_10</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;dexp_decay_beta_10&#39;</span><span class="p">,</span>
@@ -18698,7 +18968,10 @@ r₀₃.</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.dexp_decay_beta_10&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.dexp_decay_beta_10&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.dexp_decay_beta_10&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dexp_switch_r_01</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;dexp_switch_r_01&#39;</span><span class="p">,</span>
@@ -18708,7 +18981,10 @@ r₀₃.</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.dexp_switch_r_01&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.dexp_switch_r_01&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.dexp_switch_r_01&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dexp_switch_r_02</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;dexp_switch_r_02&#39;</span><span class="p">,</span>
@@ -18718,7 +18994,10 @@ r₀₃.</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.dexp_switch_r_02&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.dexp_switch_r_02&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.dexp_switch_r_02&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dexp_switch_r_03</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;dexp_switch_r_03&#39;</span><span class="p">,</span>
@@ -18728,7 +19007,10 @@ r₀₃.</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.dexp_switch_r_03&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.dexp_switch_r_03&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.dexp_switch_r_03&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
 
     <span class="nd">@property</span>
@@ -19467,7 +19749,25 @@ multiple inheritance.</p>
 <span class="normal">167</span>
 <span class="normal">168</span>
 <span class="normal">169</span>
-<span class="normal">170</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TotalBroadeningMixin</span><span class="p">:</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TotalBroadeningMixin</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;PDF broadening/damping/sharpening parameters.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -19481,7 +19781,10 @@ multiple inheritance.</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.damp_q&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.damp_q&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.damp_q&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_broad_q</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;broad_q&#39;</span><span class="p">,</span>
@@ -19491,7 +19794,10 @@ multiple inheritance.</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.broad_q&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.broad_q&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.broad_q&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cutoff_q</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cutoff_q&#39;</span><span class="p">,</span>
@@ -19501,7 +19807,10 @@ multiple inheritance.</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">25.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.cutoff_q&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.cutoff_q&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.cutoff_q&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sharp_delta_1</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;sharp_delta_1&#39;</span><span class="p">,</span>
@@ -19511,7 +19820,10 @@ multiple inheritance.</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.sharp_delta_1&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.sharp_delta_1&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.sharp_delta_1&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sharp_delta_2</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;sharp_delta_2&#39;</span><span class="p">,</span>
@@ -19521,7 +19833,10 @@ multiple inheritance.</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.sharp_delta_2&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.sharp_delta_2&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.sharp_delta_2&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_damp_particle_diameter</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;damp_particle_diameter&#39;</span><span class="p">,</span>
@@ -19531,7 +19846,10 @@ multiple inheritance.</p>
                 <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                 <span class="n">validator</span><span class="o">=</span><span class="n">RangeValidator</span><span class="p">(),</span>
             <span class="p">),</span>
-            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.damp_particle_diameter&#39;</span><span class="p">]),</span>
+            <span class="n">cif_handler</span><span class="o">=</span><span class="n">CifHandler</span><span class="p">(</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_peak.damp_particle_diameter&#39;</span><span class="p">],</span>
+                <span class="n">iucr_name</span><span class="o">=</span><span class="s1">&#39;_easydiffraction_peak.damp_particle_diameter&#39;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>

@@ -356,12 +356,12 @@ project.display.pattern(expt_name='wish_5_6')
 project.display.pattern(expt_name='wish_4_7')
 
 # %% [markdown]
-# ## Summary
+# ## Report
 #
 # This final section shows how to review the results of the analysis.
 
 # %% [markdown]
-# #### Show Project Summary
+# #### Show Project Report
 
 # %%
-project.summary.show_report()
+project.report.show_report()

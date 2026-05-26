@@ -1461,7 +1461,7 @@ project_2.display.pattern(expt_name='sim_lbco', x_min=88000, x_max=101000)
 # when relevant.
 
 # %%
-project_2.summary.show_report()
+project_2.report.show_report()
 
 # %% [markdown]
 # Finally, we save the project to disk to preserve the current state of
