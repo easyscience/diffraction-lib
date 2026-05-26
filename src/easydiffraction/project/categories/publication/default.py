@@ -619,3 +619,15 @@ class Publication(CategoryOwner):
     def authors(self) -> PublicationAuthors:
         """Publication author rows."""
         return self._authors
+
+    def from_cif(self, block: object) -> None:
+        """
+        Populate publication metadata from a project CIF block.
+
+        Parameters
+        ----------
+        block : object
+            Parsed CIF block containing project-level publication tags.
+        """
+        for category in self.categories:
+            category.from_cif(block)

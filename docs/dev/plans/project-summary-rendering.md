@@ -544,7 +544,7 @@ generated-artifact exceptions.
   - No CIF write wiring yet (that's P1.13).
   - Commit: `Add project.publication facade and sub-categories`.
 
-- [ ] **P1.13 — Persist `project.publication.*` to `project.cif`**
+- [x] **P1.13 — Persist `project.publication.*` to `project.cif`**
   - Files: `src/easydiffraction/project/project.py` (and the
     project-CIF serializer).
   - Extend the project-CIF write path to include the

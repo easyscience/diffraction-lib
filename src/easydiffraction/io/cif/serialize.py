@@ -565,18 +565,22 @@ def _as_cif_text(section: object) -> str:
 
 def project_config_to_cif(project: object) -> str:
     """Render project-level configuration to ``project.cif`` text."""
-    config = getattr(project, '_config', None)
-    if config is not None:
-        return category_owner_to_cif(config)
+    sections: list[str] = []
+    for attr_name in ('info', 'chart', 'report'):
+        section = getattr(project, attr_name, None)
+        if section is not None:
+            sections.append(_as_cif_text(section))
 
-    lines: list[str] = [_as_cif_text(project.info)]
-    chart = getattr(project, 'chart', None)
-    if chart is not None:
-        lines.extend(('', _as_cif_text(chart)))
-    table = getattr(project, 'table', None)
-    if table is not None:
-        lines.extend(('', _as_cif_text(table)))
-    return '\n'.join(lines)
+    publication = getattr(project, 'publication', None)
+    if publication is not None:
+        sections.append(category_owner_to_cif(publication))
+
+    for attr_name in ('table', 'verbosity'):
+        section = getattr(project, attr_name, None)
+        if section is not None:
+            sections.append(_as_cif_text(section))
+
+    return '\n\n'.join(section for section in sections if section)
 
 
 def project_to_cif(project: object) -> str:
@@ -688,6 +692,10 @@ def project_config_from_cif(project: object, cif_text: str) -> None:
     if report is not None:
         # Missing _report.* items intentionally keep legacy defaults.
         report.from_cif(block)
+
+    publication = getattr(project, 'publication', None)
+    if publication is not None:
+        publication.from_cif(block)
 
     table = getattr(project, 'table', None)
     if table is not None:
