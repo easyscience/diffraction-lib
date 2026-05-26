@@ -20,6 +20,7 @@ class BumpsDeMinimizer(LeastSquaresMinimizerBase):
         'optimizer_name': 'bumps (de)',
         'method_name': 'de',
     }
+    url: str = 'https://bumps.readthedocs.io'
 
     type_info = TypeInfo(
         tag=MinimizerTypeEnum.BUMPS_DE,

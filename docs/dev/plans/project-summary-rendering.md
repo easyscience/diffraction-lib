@@ -453,7 +453,7 @@ generated-artifact exceptions.
     in code via the docstrings and the error message.
   - Commit: `Lock empty-config behaviour in Report API`.
 
-- [ ] **P1.8 — Add `analysis.software` category + URL constants**
+- [x] **P1.8 — Add `analysis.software` category + URL constants**
   - Files: new
     `src/easydiffraction/analysis/categories/software/`
     package (`__init__.py`, `base.py`, `default.py`,

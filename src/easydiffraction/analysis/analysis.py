@@ -29,6 +29,8 @@ from easydiffraction.analysis.categories.sequential_fit import SequentialFitFact
 from easydiffraction.analysis.categories.sequential_fit_extract import (
     SequentialFitExtractCollection,
 )
+from easydiffraction.analysis.categories.software import Software
+from easydiffraction.analysis.categories.software import SoftwareFactory
 from easydiffraction.analysis.enums import FitCorrelationSourceEnum
 from easydiffraction.analysis.enums import FitModeEnum
 from easydiffraction.analysis.enums import FitResultKindEnum
@@ -477,6 +479,11 @@ class _AnalysisPersistedCategoryAccessorsMixin:
         """Persisted fit-parameter correlation summaries."""
         return self._fit_parameter_correlations
 
+    @property
+    def software(self) -> Software:
+        """Software-provenance snapshot for the latest successful fit."""
+        return self._software
+
 
 class Analysis(
     _AnalysisOwnerAccessorsMixin,
@@ -521,6 +528,7 @@ class Analysis(
         self._fit_parameters = FitParameters()
         self._fit_result = self._minimizer._fit_result_class()
         self._fit_parameter_correlations = FitParameterCorrelations()
+        self._software: Software = SoftwareFactory.create(SoftwareFactory.default_tag())
         self._has_persisted_fit_state_data = False
         self._persisted_fit_state_sidecar: dict[str, object] = {}
         self._fitter = Fitter(self.minimizer.type)
@@ -541,6 +549,7 @@ class Analysis(
         self._fit_parameters._parent = self
         self._fit_result._parent = self
         self._fit_parameter_correlations._parent = self
+        self._software._parent = self
 
     @staticmethod
     def _supported_filters_for(category: object) -> dict[str, object]:

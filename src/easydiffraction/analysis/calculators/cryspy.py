@@ -55,6 +55,7 @@ class CryspyCalculator(CalculatorBase):
         description='CrysPy library for crystallographic calculations',
     )
     engine_imported: bool = cryspy is not None
+    url: str = 'https://www.cryspy.fr'
 
     @property
     def name(self) -> str:

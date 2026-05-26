@@ -20,6 +20,7 @@ class BumpsLmMinimizer(LeastSquaresMinimizerBase):
         'optimizer_name': 'bumps (lm)',
         'method_name': 'lm',
     }
+    url: str = 'https://bumps.readthedocs.io'
 
     type_info = TypeInfo(
         tag=MinimizerTypeEnum.BUMPS_LM,

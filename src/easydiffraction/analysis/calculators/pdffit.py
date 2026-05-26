@@ -7,6 +7,8 @@ The class adapts the engine to EasyDiffraction calculator interface and
 silences stdio on import to avoid noisy output in notebooks and logs.
 """
 
+from __future__ import annotations
+
 import os
 import re
 from pathlib import Path
@@ -54,6 +56,7 @@ class PdffitCalculator(CalculatorBase):
         description='PDFfit2 for pair distribution function calculations',
     )
     engine_imported: bool = PdfFit is not None
+    url: str = 'https://www.diffpy.org/products/pdffit2.html'
 
     @property
     def name(self) -> str:

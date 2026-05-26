@@ -41,6 +41,7 @@ class EmceeMinimizer(BayesianMinimizerBase):
         'optimizer_name': 'emcee',
         'method_name': 'de',
     }
+    url: str = 'https://emcee.readthedocs.io'
     _expected_descriptor_names: ClassVar[tuple[str, ...]] = (
         *BayesianMinimizerBase._expected_descriptor_names,
         'proposal_moves',

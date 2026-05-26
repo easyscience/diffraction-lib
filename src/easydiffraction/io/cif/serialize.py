@@ -721,6 +721,7 @@ def analysis_from_cif(analysis: object, cif_text: str) -> None:
     analysis._set_fitting_mode_type(_analysis_mode_from_cif_block(block))
     analysis._set_minimizer_type(_analysis_minimizer_from_cif_block(block))
     analysis.minimizer.from_cif(block)
+    analysis.software.from_cif(block)
     _restore_mode_specific_analysis_sections(analysis, block)
 
     # Restore aliases (loop)

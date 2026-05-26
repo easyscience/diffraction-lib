@@ -20,6 +20,7 @@ class LmfitMinimizer(LeastSquaresMinimizerBase):
         'optimizer_name': 'lmfit',
         'method_name': 'leastsq',
     }
+    url: str = 'https://lmfit.github.io/lmfit-py'
 
     type_info = TypeInfo(
         tag=MinimizerTypeEnum.LMFIT,

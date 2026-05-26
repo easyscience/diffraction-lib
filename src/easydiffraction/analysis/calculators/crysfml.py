@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from __future__ import annotations
+
 from typing import Any
 
 import numpy as np
@@ -70,6 +72,7 @@ class CrysfmlCalculator(CalculatorBase):
         description='CrysFML library for crystallographic calculations',
     )
     engine_imported: bool = cfml_py_utilities is not None
+    url: str = 'https://code.ill.fr/scientific-software/crysfml'
 
     @property
     def name(self) -> str:
