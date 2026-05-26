@@ -159,10 +159,10 @@ def _write_audit_section(lines: list[str]) -> None:
 
 def _write_computing_section(lines: list[str], project: object) -> None:
     """Append software-stack metadata."""
-    framework = _software_label('EasyDiffraction', package_name='easydiffraction')
-    calculator = _calculator_label(project)
-    minimizer = _minimizer_label(project)
-    refinement = f'{framework} with {minimizer} minimizer and {calculator} calculator'
+    framework = _software_role_label(project, 'framework')
+    calculator = _software_role_label(project, 'calculator')
+    minimizer = _software_role_label(project, 'minimizer')
+    refinement = _structure_refinement_label(framework, calculator, minimizer)
 
     _section(lines, 'Computing')
     _write_item(lines, '_computing.structure_refinement', refinement)
@@ -171,6 +171,9 @@ def _write_computing_section(lines: list[str], project: object) -> None:
     _write_item(lines, '_easydiffraction_software.framework', framework)
     _write_item(lines, '_easydiffraction_software.calculator', calculator)
     _write_item(lines, '_easydiffraction_software.minimizer', minimizer)
+    fit_datetime = _software_fit_datetime(project)
+    if fit_datetime is not None:
+        _write_item(lines, '_easydiffraction_software.fit_datetime', fit_datetime)
 
 
 def _write_publication_sections(lines: list[str]) -> None:
@@ -812,29 +815,57 @@ def _software_label(name: str, *, package_name: str | None = None) -> str:
     return f'{name} {version}' if version else name
 
 
-def _calculator_label(project: object) -> str:
-    """Return the active calculator label for the report."""
-    names: list[str] = []
-    for experiment in _collection_values(getattr(project, 'experiments', None)):
-        calculator = getattr(experiment, 'calculator', None)
-        calculator_name = _descriptor_value(getattr(calculator, 'type', None))
-        if calculator_name not in {None, ''}:
-            names.append(str(calculator_name))
-
-    unique_names = sorted(set(names))
-    if not unique_names:
-        return '?'
-    return ', '.join(_software_label(name) for name in unique_names)
-
-
-def _minimizer_label(project: object) -> str:
-    """Return the active minimizer label for the report."""
+def _analysis_software(project: object) -> object | None:
+    """Return the project's persisted software snapshot."""
     analysis = getattr(project, 'analysis', None)
-    minimizer = getattr(analysis, 'minimizer', None)
-    minimizer_name = _descriptor_value(getattr(minimizer, 'type', None))
-    if minimizer_name in {None, ''}:
+    return getattr(analysis, 'software', None)
+
+
+def _role_descriptor_value(role: object, attr_name: str) -> object:
+    """Return one software-role descriptor value."""
+    return _descriptor_value(getattr(role, attr_name, None))
+
+
+def _software_role_label(project: object, role_name: str) -> str:
+    """Return a persisted software role label or CIF unknown."""
+    software = _analysis_software(project)
+    role = getattr(software, role_name, None)
+    name = _role_descriptor_value(role, 'name')
+    if name in {None, ''}:
         return '?'
-    return _software_label(str(minimizer_name))
+
+    version = _role_descriptor_value(role, 'version')
+    if version in {None, ''}:
+        return str(name)
+    return f'{name} {version}'
+
+
+def _software_fit_datetime(project: object) -> object | None:
+    """Return the persisted fit timestamp, if available."""
+    software = _analysis_software(project)
+    timestamp = _descriptor_value(getattr(software, 'timestamp', None))
+    if timestamp in {None, ''}:
+        return None
+    return timestamp
+
+
+def _framework_refinement_label(framework: str) -> str:
+    """Return framework label for ``_computing`` fallback text."""
+    if framework == '?':
+        return _software_label('EasyDiffraction', package_name='easydiffraction')
+    return framework
+
+
+def _structure_refinement_label(
+    framework: str,
+    calculator: str,
+    minimizer: str,
+) -> str:
+    """Return the free-text refinement software label."""
+    framework_label = _framework_refinement_label(framework)
+    if calculator == '?' or minimizer == '?':
+        return framework_label
+    return f'{framework_label} with {minimizer} minimizer and {calculator} calculator'
 
 
 def _base_engine_name(name: str) -> str:

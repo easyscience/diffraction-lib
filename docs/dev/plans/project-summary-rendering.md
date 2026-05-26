@@ -472,7 +472,7 @@ generated-artifact exceptions.
   - Commit:
     `Add analysis.software category and engine URL constants`.
 
-- [ ] **P1.9 — Populate `analysis.software` at fit time + `fit_datetime` emission**
+- [x] **P1.9 — Populate `analysis.software` at fit time + `fit_datetime` emission**
   - Files:
     `src/easydiffraction/analysis/analysis.py`,
     `src/easydiffraction/io/cif/iucr_writer.py`.
