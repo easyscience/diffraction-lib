@@ -101,8 +101,9 @@ class AtomSite(CategoryItem):
             ),
             cif_handler=CifHandler(
                 names=[
-                    '_atom_site.Wyckoff_letter',
                     '_atom_site.Wyckoff_symbol',
+                    '_atom_site.Wyckoff_letter',
+                    '_atom_site.wyckoff_letter',
                 ]
             ),
         )
@@ -139,7 +140,7 @@ class AtomSite(CategoryItem):
                 default=AdpTypeEnum.default(),
                 validator=MembershipValidator(allowed=[m.value for m in AdpTypeEnum]),
             ),
-            cif_handler=CifHandler(names=['_atom_site.adp_type']),
+            cif_handler=CifHandler(names=['_atom_site.ADP_type', '_atom_site.adp_type']),
         )
 
     # ------------------------------------------------------------------
