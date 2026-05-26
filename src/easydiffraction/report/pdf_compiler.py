@@ -78,11 +78,18 @@ def _compile_pdf(
 ) -> None:
     """Compile one TeX document with a discovered engine."""
     engine_name, executable = engine
-    command = _compile_command(engine_name, executable, tex_path, pdf_path.parent)
+    compile_tex_path = tex_path.resolve()
+    compile_pdf_path = pdf_path.resolve()
+    command = _compile_command(
+        engine_name,
+        executable,
+        compile_tex_path,
+        compile_pdf_path.parent,
+    )
     result = subprocess.run(
         command,
-        cwd=tex_path.parent,
-        env=_compile_environment(tex_path),
+        cwd=compile_tex_path.parent,
+        env=_compile_environment(compile_tex_path),
         text=True,
         capture_output=True,
         check=False,
@@ -90,7 +97,7 @@ def _compile_pdf(
     if result.returncode != 0:
         msg = _compiler_error_message(engine_name, tex_path, result)
         raise RuntimeError(msg)
-    if not pdf_path.is_file():
+    if not compile_pdf_path.is_file():
         msg = (
             f"TeX engine '{engine_name}' completed but did not write "
             f"'{pdf_path}'."

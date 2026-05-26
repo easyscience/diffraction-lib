@@ -342,3 +342,23 @@ def test_write_iucr_cif_emits_joint_tof_pattern_blocks(tmp_path):
     assert '_pd_calib_d_to_tof.power' in text
     assert 'recip' in text
     assert '-1' in text
+
+
+def test_iucr_loop_rows_are_not_padded_to_tag_width():
+    from easydiffraction.io.cif.iucr_writer import _write_loop
+
+    lines = []
+
+    _write_loop(
+        lines,
+        ('_atom_site_aniso.label', '_atom_site_aniso.U_11'),
+        (('Tb', 0.00658189), ('O1', 0.0)),
+    )
+
+    assert lines == [
+        'loop_',
+        '_atom_site_aniso.label',
+        '_atom_site_aniso.U_11',
+        '  Tb 0.00658189',
+        '  O1 0.',
+    ]

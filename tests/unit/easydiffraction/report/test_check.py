@@ -36,3 +36,17 @@ def test_check_report_warns_for_unknown_non_extension_tags(tmp_path):
 
     assert 'Unknown IUCr tag: _unknown.bad' in result.warnings
     assert all('_easydiffraction_custom.value' not in warning for warning in result.warnings)
+
+
+def test_validate_iucr_cif_skips_unloadable_optional_dictionaries(monkeypatch):
+    from easydiffraction.report import check as check_mod
+
+    monkeypatch.setattr(
+        check_mod,
+        '_CACHED_DICTIONARY_LOAD_ERRORS',
+        ('Failed to load CIF dictionary tmp/iucr-dicts/cif_core.dic',),
+    )
+    monkeypatch.setattr(check_mod, '_CACHED_DICTIONARY_DOCUMENTS', ())
+    monkeypatch.setattr(check_mod, '_CACHED_DICTIONARY_TAGS', set())
+
+    check_mod._validate_iucr_cif('data_test\n_audit.creation_method EasyDiffraction\n')

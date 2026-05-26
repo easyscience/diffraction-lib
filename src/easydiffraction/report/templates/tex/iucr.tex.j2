@@ -1,5 +1,5 @@
 \documentclass{styles/iucrjournals}
-\graphicspath{{figures/}}
+{% raw %}\graphicspath{{figures/}}{% endraw %}
 
 \title{ {{- (publication.body.title or project.title or project.name or "EasyDiffraction report") | tex -}} }
 {% if publication.authors %}

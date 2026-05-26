@@ -63,7 +63,8 @@ re-litigate them, only implements them:
   - **Convenience save** (`project.report.save()`): reads
     config, raises `ValueError` when no formats are enabled.
 - **Validation moves internal — CIF only** (§1.4): the gemmi
-  dictionary-spec pass runs before every CIF write
+  parse check runs before every CIF write, with the gemmi
+  dictionary-spec pass used when local dictionaries load
   (`save_cif()` and the `cif` branch under `project.save()`);
   HTML/TeX/PDF get no pre-write validation. Public
   `project.report.check()` and `check=True` are **removed**;
@@ -394,11 +395,13 @@ generated-artifact exceptions.
   - Refactor the existing `Report.check()` body into a private
     pre-write helper (e.g. `_validate_iucr_cif(content)`)
     invoked from inside the CIF emission path.
-  - On gemmi failure, raise
-    `EasyDiffractionWriterError(<gemmi diagnostic>)` —
-    a new exception in `src/easydiffraction/core/errors.py`
-    (or wherever project exceptions live) — instead of writing
-    a broken file.
+  - On generated-CIF parse failure or dictionary diagnostics,
+    raise `EasyDiffractionWriterError(<gemmi diagnostic>)` — a
+    new exception in `src/easydiffraction/core/errors.py` (or
+    wherever project exceptions live) — instead of writing a
+    broken file. If the optional local dictionary cache cannot be
+    loaded, skip dictionary-specific checks after generated-CIF
+    parse succeeds.
   - The validation function is **only** wired into the CIF
     write paths (`save_cif()`, the `cif` branch under
     `project.save()`). HTML/TeX/PDF paths do not call it.
@@ -846,6 +849,7 @@ running the verification commands below, add or update:
 - [ ] **`tests/unit/easydiffraction/io/cif/test_iucr_writer.py`**
   (extend) — internal gemmi validation runs on CIF emission;
   malformed-tag injection triggers `EasyDiffractionWriterError`;
+  unloadable optional dictionaries do not block report writing;
   HTML/TeX/PDF paths do not invoke gemmi. P1.4 surface.
 - [ ] **`tests/unit/easydiffraction/analysis/categories/software/test_software.py`**
   (new) — `Software` category shape; `framework`/

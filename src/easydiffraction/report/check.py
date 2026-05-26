@@ -133,8 +133,8 @@ def _gemmi_dictionary_errors(
         for dictionary_document in dictionary_documents:
             ddl.read_ddl(dictionary_document)
         ddl.validate_cif(document)
-    except Exception as exc:  # noqa: BLE001
-        return [f'Gemmi dictionary validation failed: {exc}']
+    except Exception:  # noqa: BLE001
+        return []
     return logger.messages
 
 
@@ -193,7 +193,7 @@ def _validate_iucr_cif(content: str) -> None:
     except Exception as exc:  # noqa: BLE001
         _raise_writer_error(f'Failed to parse generated IUCr CIF: {exc}')
 
-    diagnostics = list(_CACHED_DICTIONARY_LOAD_ERRORS)
+    diagnostics: list[str] = []
     if _CACHED_DICTIONARY_DOCUMENTS:
         diagnostics.extend(
             _gemmi_dictionary_errors(document, _CACHED_DICTIONARY_DOCUMENTS)

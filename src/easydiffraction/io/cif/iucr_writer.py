@@ -767,16 +767,14 @@ def _write_loop(
     tags: Iterable[str],
     rows: Iterable[tuple[object, ...]],
 ) -> None:
-    """Append a CIF loop with aligned columns."""
+    """Append a CIF loop with compact data rows."""
     tag_list = list(tags)
     formatted_rows = [tuple(_format_loop_value(value) for value in row) for row in rows]
-    widths = _loop_widths(tag_list, formatted_rows)
 
     lines.append('loop_')
     lines.extend(tag_list)
     for row in formatted_rows:
-        cells = [cell.ljust(widths[index]) for index, cell in enumerate(row)]
-        lines.append(f'  {"  ".join(cells).rstrip()}')
+        lines.append(f'  {" ".join(row)}')
 
 
 def _write_item(lines: list[str], tag: str, value: object) -> None:
@@ -840,18 +838,6 @@ def _quote_string(value: str) -> str:
     if '"' not in value:
         return f'"{value}"'
     return _format_text_field(value)
-
-
-def _loop_widths(
-    tags: list[str],
-    rows: list[tuple[str, ...]],
-) -> list[int]:
-    """Return per-column widths for loop rows."""
-    widths = [len(tag) for tag in tags]
-    for row in rows:
-        for index, cell in enumerate(row):
-            widths[index] = max(widths[index], len(cell))
-    return widths
 
 
 def _report_path(

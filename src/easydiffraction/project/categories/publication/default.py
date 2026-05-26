@@ -623,6 +623,13 @@ class Publication(CategoryOwner):
         """Publication author rows."""
         return self._authors
 
+    @property
+    def as_cif(self) -> str:
+        """Serialize publication metadata to CIF."""
+        from easydiffraction.io.cif.serialize import category_owner_to_cif  # noqa: PLC0415
+
+        return category_owner_to_cif(self)
+
     def from_cif(self, block: object) -> None:
         """
         Populate publication metadata from a project CIF block.
