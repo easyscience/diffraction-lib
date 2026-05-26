@@ -240,13 +240,19 @@ class Report:
             columns_data=fit_metrics,
         )
 
-    def save(self) -> pathlib.Path:
+    def save(self, *, check: bool = False) -> pathlib.Path:
         """
         Write the IUCr submission report.
+
+        Parameters
+        ----------
+        check : bool, default=False
+            Whether to validate the written report.
 
         Returns
         -------
         pathlib.Path
             Path of the written report CIF.
         """
+        del check
         return write_iucr_cif(self.project)
