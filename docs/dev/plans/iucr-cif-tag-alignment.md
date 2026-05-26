@@ -1,15 +1,14 @@
 # Plan: IUCr CIF Tag Alignment
 
 Implementation plan for the
-[`iucr-cif-tag-alignment`](../adrs/suggestions/iucr-cif-tag-alignment.md)
+[`iucr-cif-tag-alignment`](../adrs/accepted/iucr-cif-tag-alignment.md)
 ADR. Follows [`AGENTS.md`](../../../AGENTS.md) — no deliberate
 exceptions to those instructions.
 
 ## ADR cross-reference
 
-- Primary ADR: `iucr-cif-tag-alignment.md` (currently in `suggestions/`;
-  this plan promotes it to `accepted/` as its final implementation step
-  before the Phase 1 review gate).
+- Primary ADR: `iucr-cif-tag-alignment.md` (accepted; this plan promoted
+  it from `suggestions/` during Phase 1).
 - Amends (per the ADR's "ADRs amended by this ADR" section):
   - [`analysis-cif-fit-state.md`](../adrs/accepted/analysis-cif-fit-state.md)
     — new `_fit_result.*` fields; topology-neutral default save.
@@ -626,8 +625,7 @@ before the upload.
 The PR also amends four accepted ADRs (`analysis-cif-fit-state`,
 `minimizer-input-output-split`, `project-facade-and-persistence`,
 `help-discoverability`) to reflect the new facade and field set, and
-promotes the `iucr-cif-tag-alignment` ADR from `suggestions/` to
-`accepted/`.
+promotes the `iucr-cif-tag-alignment` ADR to `accepted/`.
 
 **Scope label:** `[analysis]` or `[io]` — pick whichever the maintainers
 prefer for the IUCr-export work; the field renames in `analysis.cif`
