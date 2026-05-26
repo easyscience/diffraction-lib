@@ -16,7 +16,7 @@ Persistence.
 
 `Project` is the top-level user facade. It owns project metadata,
 structures, experiments, rendering preferences, display helpers,
-analysis, summaries, verbosity, and save/load behavior.
+analysis, report helpers, verbosity, and save/load behavior.
 
 A later proposal considered renaming this facade to `Workspace` so that
 `project` could be reserved for the scientific project information
@@ -35,16 +35,24 @@ directory of CIF files:
 ```text
 project_dir/
 |-- project.cif
-|-- summary.cif
 |-- structures/
 |-- experiments/
-`-- analysis/
-    `-- analysis.cif
+|-- analysis/
+|   `-- analysis.cif
+`-- reports/
+    `-- <project>.cif
 ```
 
 Real structures and experiments serialize as `data_<id>` datablocks.
-Singleton sections such as project configuration, analysis, and summary
-serialize without fake `data_` headers.
+Singleton sections such as project configuration and analysis serialize
+without fake `data_` headers. Journal-submission reports are generated
+through `project.report` and written only when requested, using
+`reports/<project>.cif`; default project saves do not write
+`summary.cif`.
+
+Expose submission-report helpers as `project.report`. The previous
+`project.summary` placeholder and its `summary.cif` output are not part
+of the persistence layout.
 
 Keep project information available as `project.info`. The Python name
 avoids a confusing `project.project` access path, while the persisted
