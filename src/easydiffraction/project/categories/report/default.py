@@ -4,13 +4,24 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from textwrap import wrap
 from typing import TYPE_CHECKING
 
+from easydiffraction.core.category import CategoryItem
+from easydiffraction.core.metadata import TypeInfo
+from easydiffraction.core.validation import AttributeSpec
+from easydiffraction.core.validation import MembershipValidator
+from easydiffraction.core.variable import BoolDescriptor
+from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.io.cif.iucr_writer import iucr_report_path
 from easydiffraction.io.cif.iucr_writer import write_iucr_cif
+from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.project.categories.report.factory import ReportFactory
 from easydiffraction.report.check import ReportCheckResult
 from easydiffraction.report.check import check_report
+from easydiffraction.report.enums import ReportFormatEnum
+from easydiffraction.report.enums import ReportStyleEnum
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_object_help
@@ -22,7 +33,11 @@ if TYPE_CHECKING:
     from easydiffraction.core.variable import Parameter
 
 
-class Report:
+REPORT_STYLE_OPTIONS = [member.value for member in ReportStyleEnum]
+
+
+@ReportFactory.register
+class Report(CategoryItem):
     """
     Generates reports and exports results from the project.
 
@@ -30,16 +45,144 @@ class Report:
     fitted model, experiments, and analysis results.
     """
 
-    def __init__(self, project: object) -> None:
-        """
-        Initialize the report with a reference to the project.
+    _category_code = 'report'
 
-        Parameters
-        ----------
-        project : object
-            The Project instance this report belongs to.
-        """
-        self.project = project
+    type_info = TypeInfo(
+        tag='default',
+        description='Project report category',
+    )
+
+    def __init__(self) -> None:
+        """Initialize report-output configuration descriptors."""
+        super().__init__()
+
+        self._cif = BoolDescriptor(
+            name='cif',
+            description='Whether to write CIF reports when saving.',
+            value_spec=AttributeSpec(default=False),
+            cif_handler=CifHandler(names=['_report.cif']),
+        )
+        self._html = BoolDescriptor(
+            name='html',
+            description='Whether to write HTML reports when saving.',
+            value_spec=AttributeSpec(default=False),
+            cif_handler=CifHandler(names=['_report.html']),
+        )
+        self._tex = BoolDescriptor(
+            name='tex',
+            description='Whether to write TeX reports when saving.',
+            value_spec=AttributeSpec(default=False),
+            cif_handler=CifHandler(names=['_report.tex']),
+        )
+        self._pdf = BoolDescriptor(
+            name='pdf',
+            description='Whether to write PDF reports when saving.',
+            value_spec=AttributeSpec(default=False),
+            cif_handler=CifHandler(names=['_report.pdf']),
+        )
+        self._style = StringDescriptor(
+            name='style',
+            description='Report template style.',
+            value_spec=AttributeSpec(
+                default=ReportStyleEnum.default().value,
+                validator=MembershipValidator(allowed=REPORT_STYLE_OPTIONS),
+            ),
+            cif_handler=CifHandler(names=['_report.style']),
+        )
+        self._html_offline = BoolDescriptor(
+            name='html_offline',
+            description='Whether HTML reports should embed assets.',
+            value_spec=AttributeSpec(default=False),
+            cif_handler=CifHandler(names=['_report.html_offline']),
+        )
+
+    @property
+    def cif(self) -> BoolDescriptor:
+        """Whether to write CIF reports when saving."""
+        return self._cif
+
+    @cif.setter
+    def cif(self, value: bool) -> None:
+        self._cif.value = value
+
+    @property
+    def html(self) -> BoolDescriptor:
+        """Whether to write HTML reports when saving."""
+        return self._html
+
+    @html.setter
+    def html(self, value: bool) -> None:
+        self._html.value = value
+
+    @property
+    def tex(self) -> BoolDescriptor:
+        """Whether to write TeX reports when saving."""
+        return self._tex
+
+    @tex.setter
+    def tex(self, value: bool) -> None:
+        self._tex.value = value
+
+    @property
+    def pdf(self) -> BoolDescriptor:
+        """Whether to write PDF reports when saving."""
+        return self._pdf
+
+    @pdf.setter
+    def pdf(self, value: bool) -> None:
+        self._pdf.value = value
+
+    @property
+    def style(self) -> StringDescriptor:
+        """Report template style."""
+        return self._style
+
+    @style.setter
+    def style(self, value: str) -> None:
+        self._style.value = ReportStyleEnum(value).value
+
+    @property
+    def html_offline(self) -> BoolDescriptor:
+        """Whether HTML reports should embed assets."""
+        return self._html_offline
+
+    @html_offline.setter
+    def html_offline(self, value: bool) -> None:
+        self._html_offline.value = value
+
+    @property
+    def formats(self) -> list[ReportFormatEnum]:
+        """Enabled report-output formats."""
+        formats = []
+        if self._cif.value:
+            formats.append(ReportFormatEnum.CIF)
+        if self._html.value:
+            formats.append(ReportFormatEnum.HTML)
+        if self._tex.value:
+            formats.append(ReportFormatEnum.TEX)
+        if self._pdf.value:
+            formats.append(ReportFormatEnum.PDF)
+        return formats
+
+    @formats.setter
+    def formats(
+        self,
+        formats: Iterable[ReportFormatEnum | str] | ReportFormatEnum | str,
+    ) -> None:
+        if isinstance(formats, (ReportFormatEnum, str)):
+            values = [formats]
+        else:
+            values = list(formats)
+        enabled = {ReportFormatEnum(value) for value in values}
+        self.cif = ReportFormatEnum.CIF in enabled
+        self.html = ReportFormatEnum.HTML in enabled
+        self.tex = ReportFormatEnum.TEX in enabled
+        self.pdf = ReportFormatEnum.PDF in enabled
+
+    @property
+    def project(self) -> object:
+        """Project owning this report category."""
+        return self._parent
 
     def help(self) -> None:
         """Print available report methods."""

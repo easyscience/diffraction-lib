@@ -283,7 +283,7 @@ generated-artifact exceptions.
   - Re-export from `src/easydiffraction/report/__init__.py`.
   - Commit: `Add ReportFormatEnum and ReportStyleEnum`.
 
-- [ ] **P1.2 — Refactor `Report` into a `CategoryItem` and register it on `ProjectConfig`**
+- [x] **P1.2 — Refactor `Report` into a `CategoryItem` and register it on `ProjectConfig`**
   - Files: existing `src/easydiffraction/report/report.py`;
     new `src/easydiffraction/project/categories/report/`
     package (`__init__.py`, `default.py`, `factory.py`); modify

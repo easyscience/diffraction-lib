@@ -208,9 +208,9 @@ class Project(GuardedBase):  # noqa: PLR0904
         object.__setattr__(self, '_chart', self._config.chart)
         object.__setattr__(self, '_table', self._config.table)
         object.__setattr__(self, '_verbosity', self._config.verbosity)
+        object.__setattr__(self, '_report', self._config.report)
         self._display = ProjectDisplay(self)
         self._analysis = Analysis(self)
-        self._report = Report(self)
         self._saved = False
         self._varname = 'project' if type(self)._loading else varname()
         type(self)._current_project = self
@@ -223,6 +223,7 @@ class Project(GuardedBase):  # noqa: PLR0904
         self._analysis._parent = self
         self._chart._parent = self
         self._table._parent = self
+        self._report._parent = self
 
     @staticmethod
     def _supported_filters_for(category: object) -> dict[str, object]:

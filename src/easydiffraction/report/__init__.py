@@ -6,4 +6,13 @@ from __future__ import annotations
 
 from easydiffraction.report.enums import ReportFormatEnum
 from easydiffraction.report.enums import ReportStyleEnum
-from easydiffraction.report.report import Report
+
+
+def __getattr__(name: str) -> object:
+    """Load report objects that would otherwise form import cycles."""
+    if name == 'Report':
+        from easydiffraction.project.categories.report.default import Report
+
+        return Report
+    msg = f"module {__name__!r} has no attribute {name!r}"
+    raise AttributeError(msg)
