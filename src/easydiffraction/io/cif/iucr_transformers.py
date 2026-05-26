@@ -77,9 +77,9 @@ class WavelengthTransformer(IucrCategoryTransformer):
 
     tag = 'wavelength'
 
-    def loop(self, experiment: object) -> IucrLoop | None:
+    def items(self, experiment: object) -> tuple[IucrItem, ...] | None:
         """
-        Return a wavelength loop for a monochromatic experiment.
+        Return wavelength items for a monochromatic experiment.
 
         Parameters
         ----------
@@ -88,8 +88,8 @@ class WavelengthTransformer(IucrCategoryTransformer):
 
         Returns
         -------
-        IucrLoop | None
-            Wavelength loop, or ``None`` when no wavelength exists.
+        tuple[IucrItem, ...] | None
+            Wavelength items, or ``None`` when no wavelength exists.
         """
         wavelength = _attribute_value(
             getattr(experiment, 'instrument', None),
@@ -97,14 +97,28 @@ class WavelengthTransformer(IucrCategoryTransformer):
         )
         if wavelength is None:
             return None
-        return IucrLoop(
-            tags=(
-                '_diffrn_radiation_wavelength.id',
-                '_diffrn_radiation_wavelength.value',
-                '_diffrn_radiation_wavelength.wt',
-            ),
-            rows=(('1', wavelength, 1.0),),
+        return (
+            IucrItem('_diffrn_radiation_wavelength.id', '1'),
+            IucrItem('_diffrn_radiation_wavelength.value', wavelength),
+            IucrItem('_diffrn_radiation_wavelength.wt', 1.0),
         )
+
+    def loop(self, experiment: object) -> IucrLoop | None:
+        """
+        Return a wavelength loop for multi-wavelength experiments.
+
+        Parameters
+        ----------
+        experiment : object
+            Experiment whose instrument may expose multiple wavelengths.
+
+        Returns
+        -------
+        IucrLoop | None
+            Wavelength loop, or ``None`` for monochromatic experiments.
+        """
+        del experiment
+        return None
 
 
 @IucrCategoryTransformer.register

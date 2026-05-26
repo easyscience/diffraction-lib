@@ -311,6 +311,13 @@ def _write_wavelength_section(lines: list[str], experiment: object) -> None:
         return
 
     transformer = IucrCategoryTransformer.create('wavelength')
+    items = transformer.items(experiment)
+    if items is not None:
+        _section(lines, 'Wavelength')
+        for item in items:
+            _write_item(lines, item.tag, item.value)
+        return
+
     loop = transformer.loop(experiment)
     if loop is None:
         return
