@@ -198,7 +198,7 @@ single-purpose and align 1-to-1 with their step.
 
 ## Implementation steps (Phase 1)
 
-- [ ] **P1.1 — Split fit-state persistence gate (save side).**
+- [x] **P1.1 — Split fit-state persistence gate (save side).**
 
   In `src/easydiffraction/analysis/analysis.py`, change the save
   gate so `_fit_parameter` rows are serialized whenever they have
@@ -222,7 +222,7 @@ single-purpose and align 1-to-1 with their step.
 
   Commit: `Split fit-state save gate from _fit_parameter rows`
 
-- [ ] **P1.2 — Split fit-state persistence gate (load side).**
+- [x] **P1.2 — Split fit-state persistence gate (load side).**
 
   In `src/easydiffraction/io/cif/serialize.py`, change
   `_has_persisted_fit_state_sections()` to detect
@@ -246,7 +246,7 @@ single-purpose and align 1-to-1 with their step.
 
   Commit: `Use _fit_result.result_kind as the fit-state load marker`
 
-- [ ] **P1.3 — Decouple live-parameter restoration from fit-result flag.**
+- [x] **P1.3 — Decouple live-parameter restoration from fit-result flag.**
 
   P1.2 ensures `_fit_parameter` rows load from CIF independently
   of the fit-result flag, but the rows are projected onto live
@@ -291,7 +291,7 @@ single-purpose and align 1-to-1 with their step.
 
   Commit: `Decouple live-bound restoration from fit-result flag`
 
-- [ ] **P1.4 — Add `Analysis.undo_fit()` public method.**
+- [x] **P1.4 — Add `Analysis.undo_fit()` public method.**
 
   In `src/easydiffraction/analysis/analysis.py`, add a new public
   method on `Analysis` and the `UndoFitOutcome` frozen dataclass
@@ -381,7 +381,7 @@ single-purpose and align 1-to-1 with their step.
 
   Commit: `Add Analysis.undo_fit() rollback operation`
 
-- [ ] **P1.5 — Wire the CLI `undo` command.**
+- [x] **P1.5 — Wire the CLI `undo` command.**
 
   In `src/easydiffraction/__main__.py`, replace the stub at lines
   230-242 with a real implementation:
@@ -417,7 +417,7 @@ single-purpose and align 1-to-1 with their step.
 
   Commit: `Wire CLI undo to Analysis.undo_fit()`
 
-- [ ] **P1.6 — Promote `undo-fit` ADR to accepted.**
+- [x] **P1.6 — Promote `undo-fit` ADR to accepted.**
 
   This step intentionally runs **after**
   `/draft-impl-1`'s Phase A cleanup commit. Phase A
@@ -458,7 +458,7 @@ single-purpose and align 1-to-1 with their step.
 
   Commit: `Promote undo-fit ADR to accepted`
 
-- [ ] **P1.7 — Phase 1 review gate.**
+- [x] **P1.7 — Phase 1 review gate.**
 
   No code change. Mark every preceding `[ ]` in this section as
   `[x]`, stage `docs/dev/plans/undo-fit.md`, and commit the
