@@ -30,6 +30,51 @@ def _make_project_with_names(names):
     return P()
 
 
+def _make_parameter(name, value):
+    from easydiffraction.core.validation import AttributeSpec
+    from easydiffraction.core.variable import Parameter
+    from easydiffraction.io.cif.handler import CifHandler
+
+    return Parameter(
+        name=name,
+        value_spec=AttributeSpec(default=value),
+        cif_handler=CifHandler(names=[f'_{name}.value']),
+    )
+
+
+def _make_project_with_parameters(parameters):
+    class ParamContainer:
+        def __init__(self, parameters):
+            self.parameters = list(parameters)
+
+    class Experiments(ParamContainer):
+        names = []
+
+        def values(self):
+            return []
+
+    return SimpleNamespace(
+        structures=ParamContainer(parameters),
+        experiments=Experiments([]),
+        info=SimpleNamespace(path=None),
+        _varname='proj',
+    )
+
+
+def _posterior_field_values(row):
+    return (
+        row.posterior_best_sample_value.value,
+        row.posterior_median.value,
+        row.posterior_uncertainty.value,
+        row.posterior_interval_68_low.value,
+        row.posterior_interval_68_high.value,
+        row.posterior_interval_95_low.value,
+        row.posterior_interval_95_high.value,
+        row.posterior_gelman_rubin.value,
+        row.posterior_effective_sample_size_bulk.value,
+    )
+
+
 def test_minimizer_show_supported_prints(capsys):
     from easydiffraction.analysis.analysis import Analysis
 
@@ -117,6 +162,152 @@ def test_minimizer_selector_swap_warns_for_different_defaults(monkeypatch):
         '• thinning_interval=1',
     ]
     assert not any('<not available>' in w for w in warnings)
+
+
+def test_undo_fit_restores_scalars_and_clears_fit_outputs():
+    from easydiffraction.analysis.analysis import Analysis
+    from easydiffraction.core.posterior import PosteriorParameterSummary
+
+    length_a = _make_parameter('length_a', 3.90)
+    length_b = _make_parameter('length_b', 3.95)
+    project = _make_project_with_parameters([length_a, length_b])
+    analysis = Analysis(project=project)
+
+    length_a.value = 4.10
+    length_a.uncertainty = 0.08
+    length_b.value = 4.15
+    length_b.uncertainty = 0.09
+    for parameter, start_value, start_uncertainty in (
+        (length_a, 3.90, 0.02),
+        (length_b, 3.95, 0.03),
+    ):
+        parameter.fit_min = 3.5
+        parameter.fit_max = 4.5
+        parameter._set_fit_bounds_uncertainty_multiplier(4.0)
+        summary = PosteriorParameterSummary(
+            unique_name=parameter.unique_name,
+            display_name=parameter.name,
+            best_sample_value=parameter.value,
+            median=parameter.value,
+            standard_deviation=0.01,
+            interval_68=(parameter.value - 0.01, parameter.value + 0.01),
+            interval_95=(parameter.value - 0.02, parameter.value + 0.02),
+            ess_bulk=100.0,
+            r_hat=1.01,
+        )
+        parameter._set_posterior(summary)
+        analysis.fit_parameters.create(
+            param_unique_name=parameter.unique_name,
+            fit_min=parameter.fit_min,
+            fit_max=parameter.fit_max,
+            fit_bounds_uncertainty_multiplier=4.0,
+            start_value=start_value,
+            start_uncertainty=start_uncertainty,
+        )
+        analysis.fit_parameters[parameter.unique_name]._set_posterior_summary(summary)
+
+    analysis.fit_result._set_result_kind('deterministic')
+    analysis.fit_result._set_success(value=True)
+    analysis.fit_parameter_correlations.create(
+        source_kind='deterministic',
+        param_unique_name_i=length_a.unique_name,
+        param_unique_name_j=length_b.unique_name,
+        correlation=0.25,
+    )
+    analysis._persisted_fit_state_sidecar = {'posterior': {'draws': object()}}
+    analysis._set_has_persisted_fit_state(value=True)
+    analysis.fit_results = object()
+    analysis.fitter.results = object()
+
+    outcome = analysis.undo_fit()
+
+    assert outcome.restored_parameter_names == (length_a.unique_name, length_b.unique_name)
+    assert outcome.cleared_fit_result is True
+    assert outcome.cleared_sidecar is True
+    assert outcome.was_no_op is False
+    assert length_a.value == 3.90
+    assert length_a.uncertainty == 0.02
+    assert length_a.posterior is None
+    assert length_b.value == 3.95
+    assert length_b.uncertainty == 0.03
+    assert length_b.posterior is None
+    assert _posterior_field_values(analysis.fit_parameters[length_a.unique_name]) == (None,) * 9
+    assert _posterior_field_values(analysis.fit_parameters[length_b.unique_name]) == (None,) * 9
+    assert analysis.fit_results is None
+    assert analysis.fitter.results is None
+    assert analysis._has_persisted_fit_state() is False
+    assert len(analysis.fit_parameter_correlations) == 0
+    assert analysis._persisted_fit_state_sidecar == {}
+
+
+def test_undo_fit_second_call_is_noop(monkeypatch):
+    from easydiffraction.analysis import analysis as analysis_mod
+    from easydiffraction.analysis.analysis import Analysis
+
+    parameter = _make_parameter('scale', 1.0)
+    project = _make_project_with_parameters([parameter])
+    analysis = Analysis(project=project)
+    parameter.value = 1.5
+    analysis.fit_parameters.create(
+        param_unique_name=parameter.unique_name,
+        fit_min=0.0,
+        fit_max=2.0,
+        start_value=1.0,
+        start_uncertainty=0.1,
+    )
+    analysis.fit_result._set_result_kind('deterministic')
+    analysis._set_has_persisted_fit_state(value=True)
+    messages: list[str] = []
+    monkeypatch.setattr(analysis_mod.log, 'info', messages.append)
+
+    first_outcome = analysis.undo_fit()
+    second_outcome = analysis.undo_fit()
+
+    assert first_outcome.was_no_op is False
+    assert second_outcome.was_no_op is True
+    assert second_outcome.restored_parameter_names == ()
+    assert messages == ['No fit to undo.']
+
+
+def test_undo_fit_never_fit_project_is_noop(monkeypatch):
+    from easydiffraction.analysis import analysis as analysis_mod
+    from easydiffraction.analysis.analysis import Analysis
+
+    analysis = Analysis(project=_make_project_with_parameters([_make_parameter('scale', 1.0)]))
+    messages: list[str] = []
+    monkeypatch.setattr(analysis_mod.log, 'info', messages.append)
+
+    outcome = analysis.undo_fit()
+
+    assert outcome.was_no_op is True
+    assert outcome.restored_parameter_names == ()
+    assert outcome.cleared_fit_result is False
+    assert outcome.cleared_sidecar is False
+    assert messages == ['No fit to undo.']
+
+
+def test_undo_fit_loaded_no_movement_fit_is_not_noop():
+    from easydiffraction.analysis.analysis import Analysis
+
+    parameter = _make_parameter('scale', 1.0)
+    project = _make_project_with_parameters([parameter])
+    analysis = Analysis(project=project)
+    analysis.fit_parameters.create(
+        param_unique_name=parameter.unique_name,
+        fit_min=0.0,
+        fit_max=2.0,
+        start_value=1.0,
+        start_uncertainty=0.1,
+    )
+    analysis.fit_result._set_result_kind('deterministic')
+    analysis._set_has_persisted_fit_state(value=True)
+
+    outcome = analysis.undo_fit()
+
+    assert outcome.was_no_op is False
+    assert outcome.restored_parameter_names == (parameter.unique_name,)
+    assert outcome.cleared_fit_result is True
+    assert analysis._has_persisted_fit_state() is False
 
 
 def test_minimizer_type_invalid_assignment_raises_and_preserves_state():

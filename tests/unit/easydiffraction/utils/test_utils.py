@@ -460,7 +460,8 @@ def test_download_all_tutorials_reports_resolved_artifact_root(
     assert (expected_dir / 'ed-1.ipynb').exists()
     out = capsys.readouterr().out
     assert 'Downloaded 1 tutorials' in out
-    assert 'artifacts/tutorials' in out
+    normalized_out = out.replace('\\', '/').replace('\n', '')
+    assert str(expected_dir).replace('\\', '/') in normalized_out
 
 
 def test_resolve_tutorial_url():

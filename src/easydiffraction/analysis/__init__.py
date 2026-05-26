@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from easydiffraction.analysis.analysis import UndoFitOutcome
 from easydiffraction.analysis.categories.fit_parameter_correlations import (
     FitParameterCorrelationItem,
 )

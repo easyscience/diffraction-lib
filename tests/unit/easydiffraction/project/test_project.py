@@ -122,3 +122,59 @@ def test_apply_params_from_csv_resolves_relative_file_paths(tmp_path):
     project.apply_params_from_csv(0)
 
     assert loaded_paths == [str(data_path)]
+
+
+def test_undo_fit_save_reload_preserves_fit_parameter_controls(tmp_path):
+    from easydiffraction.project.project import Project
+
+    project = Project(name='undo_reload')
+    project.structures.create(name='lbco')
+    structure = project.structures['lbco']
+    structure.space_group.name_h_m = 'P m -3 m'
+    parameter = structure.cell.length_a
+    parameter.free = True
+    parameter.value = 3.91
+    parameter.uncertainty = 0.04
+    parameter.fit_min = 3.8
+    parameter.fit_max = 4.0
+    parameter._set_fit_bounds_uncertainty_multiplier(4.0)
+
+    project.analysis.fit_parameters.create(
+        param_unique_name=parameter.unique_name,
+        fit_min=parameter.fit_min,
+        fit_max=parameter.fit_max,
+        fit_bounds_uncertainty_multiplier=4.0,
+        start_value=3.87,
+        start_uncertainty=0.02,
+    )
+    project.analysis.fit_result._set_result_kind('deterministic')
+    project.analysis.fit_result._set_success(value=True)
+    project.analysis.fit_result._set_message('Fit converged')
+    project.analysis.fit_result._set_iterations(12)
+    project.analysis.fit_result._set_fitting_time(0.5)
+    project.analysis.fit_result._set_reduced_chi_square(1.1)
+    project.analysis._set_has_persisted_fit_state(value=True)
+    project.save_as(str(tmp_path / 'proj'))
+
+    outcome = project.analysis.undo_fit()
+    project.save()
+    loaded = Project.load(str(tmp_path / 'proj'))
+    loaded_parameter = loaded.structures['lbco'].cell.length_a
+    loaded_row = loaded.analysis.fit_parameters[loaded_parameter.unique_name]
+    second_outcome = loaded.analysis.undo_fit()
+
+    assert outcome.was_no_op is False
+    assert loaded.analysis._has_persisted_fit_state() is False
+    assert loaded.analysis.fit_results is None
+    assert loaded_row.fit_min.value == 3.8
+    assert loaded_row.fit_max.value == 4.0
+    assert loaded_row.fit_bounds_uncertainty_multiplier.value == 4.0
+    assert loaded_row.start_value.value == 3.87
+    assert loaded_row.start_uncertainty.value == 0.02
+    assert loaded_parameter.value == 3.87
+    assert loaded_parameter.fit_min == 3.8
+    assert loaded_parameter.fit_max == 4.0
+    assert loaded_parameter.fit_bounds_uncertainty_multiplier == 4.0
+    assert loaded_parameter._fit_start_value == 3.87
+    assert loaded_parameter._fit_start_uncertainty == 0.02
+    assert second_outcome.was_no_op is True

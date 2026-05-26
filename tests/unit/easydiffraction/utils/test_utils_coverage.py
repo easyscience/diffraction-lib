@@ -255,12 +255,17 @@ def test_str_to_ufloat_none_no_default_raises():
         MUT.str_to_ufloat(None)
 
 
-def test_str_to_ufloat_empty_brackets_zero_uncertainty():
+def test_str_to_ufloat_empty_brackets_mark_missing_uncertainty():
+    import warnings
+
     import easydiffraction.utils.utils as MUT
 
-    u = MUT.str_to_ufloat('3.566()')
+    with warnings.catch_warnings():
+        warnings.simplefilter('error')
+        u = MUT.str_to_ufloat('3.566()')
+
     assert np.isclose(u.nominal_value, 3.566)
-    assert np.isclose(u.std_dev, 0.0)
+    assert np.isnan(u.std_dev)
 
 
 def test_str_to_ufloat_invalid_string_returns_default():

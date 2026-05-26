@@ -4,7 +4,9 @@
 from __future__ import annotations
 
 from contextlib import suppress
+from dataclasses import dataclass
 from itertools import combinations
+from math import isclose
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -71,6 +73,31 @@ _SUMMARY_HIDDEN_PARAMETER_CATEGORIES = frozenset({'pd_data', 'total_data', 'refl
 _POSTERIOR_SAMPLE_NDIM = 3
 _FLATTENED_POSTERIOR_SAMPLE_NDIM = 2
 _CREDIBLE_INTERVAL_LEVEL_COUNT = 2
+_UNDO_REL_TOL = 1e-12
+_UNDO_ABS_TOL = 0.0
+
+
+@dataclass(frozen=True)
+class UndoFitOutcome:
+    """
+    Summary of one undo-fit operation.
+
+    Attributes
+    ----------
+    restored_parameter_names : tuple[str, ...]
+        Unique names of parameters restored to pre-fit values.
+    cleared_fit_result : bool
+        Whether a committed fit-result projection was cleared.
+    cleared_sidecar : bool
+        Whether in-memory sidecar arrays were cleared.
+    was_no_op : bool
+        Whether the call found no fit to undo.
+    """
+
+    restored_parameter_names: tuple[str, ...]
+    cleared_fit_result: bool
+    cleared_sidecar: bool
+    was_no_op: bool
 
 
 # LSQ result descriptors default to ``None`` (review-8 F6); the CIF
@@ -547,8 +574,11 @@ class Analysis(
         """
         return [row.param_unique_name.value for row in self.fit_parameters]
 
-    def _restore_live_parameter_state(self, param_map: dict[str, Parameter]) -> None:
-        """Restore saved fit metadata onto live parameter objects."""
+    def _restore_live_parameter_bounds_and_anchors(
+        self,
+        param_map: dict[str, Parameter],
+    ) -> None:
+        """Restore saved fit controls onto live parameter objects."""
         for row in self.fit_parameters:
             parameter = param_map.get(row.param_unique_name.value)
             if parameter is None:
@@ -565,10 +595,23 @@ class Analysis(
             )
             parameter._fit_start_value = row.start_value.value
             parameter._fit_start_uncertainty = row.start_uncertainty.value
+
+    def _restore_live_parameter_posterior(self, param_map: dict[str, Parameter]) -> None:
+        """Restore saved posterior summaries onto live parameters."""
+        for row in self.fit_parameters:
+            parameter = param_map.get(row.param_unique_name.value)
+            if parameter is None:
+                continue
+
             posterior = row.posterior_summary(display_name=parameter.name)
             parameter._set_posterior(posterior)
             if posterior is not None and np.isfinite(posterior.standard_deviation):
                 parameter.uncertainty = posterior.standard_deviation
+
+    def _restore_live_parameter_state(self, param_map: dict[str, Parameter]) -> None:
+        """Restore saved fit metadata onto live parameter objects."""
+        self._restore_live_parameter_bounds_and_anchors(param_map)
+        self._restore_live_parameter_posterior(param_map)
 
     def _restored_fit_parameters(self, param_map: dict[str, Parameter]) -> list[Parameter]:
         """Return live parameters in the persisted fit-result order."""
@@ -1022,8 +1065,9 @@ class Analysis(
                 self.sequential_fit_extract,
             ])
 
+        categories.extend(self._fit_parameter_state_categories())
         if self._has_persisted_fit_state():
-            categories.extend(self._fit_state_categories())
+            categories.extend(self._fit_result_state_categories())
 
         return categories
 
@@ -1108,6 +1152,119 @@ class Analysis(
                 )
         except KeyboardInterrupt:
             self._handle_fit_interrupted(verbosity=verb)
+
+    def undo_fit(self) -> UndoFitOutcome:
+        """
+        Roll back the latest fit output and scalar state.
+
+        Returns
+        -------
+        UndoFitOutcome
+            Summary of the rollback operation.
+        """
+        if self._undo_is_noop():
+            log.info('No fit to undo.')
+            return UndoFitOutcome(
+                restored_parameter_names=(),
+                cleared_fit_result=False,
+                cleared_sidecar=False,
+                was_no_op=True,
+            )
+
+        cleared_fit_result = self._has_persisted_fit_state()
+        restored_names = self._undo_scalar_rollback()
+        self._undo_clear_per_row_posterior_fields()
+        cleared_sidecar = bool(self._persisted_fit_state_sidecar)
+        self._undo_clear_fit_result_state()
+        return UndoFitOutcome(
+            restored_parameter_names=restored_names,
+            cleared_fit_result=cleared_fit_result,
+            cleared_sidecar=cleared_sidecar,
+            was_no_op=False,
+        )
+
+    def _undo_start_rows(self) -> list[object]:
+        """Return fit-parameter rows with saved start values."""
+        return [row for row in self.fit_parameters if row.start_value.value is not None]
+
+    def _undo_is_noop(self) -> bool:
+        """Return whether undo has no work to perform."""
+        if self._has_persisted_fit_state():
+            return False
+
+        rows = self._undo_start_rows()
+        if not rows:
+            return True
+
+        param_map = self._live_parameter_map()
+        return all(self._is_parameter_at_undo_start(row=row, param_map=param_map) for row in rows)
+
+    @staticmethod
+    def _is_parameter_at_undo_start(
+        *,
+        row: object,
+        param_map: dict[str, Parameter],
+    ) -> bool:
+        """Return whether one live parameter is already at start."""
+        parameter = param_map.get(row.param_unique_name.value)
+        if parameter is None:
+            return True
+        return isclose(
+            float(parameter.value),
+            float(row.start_value.value),
+            rel_tol=_UNDO_REL_TOL,
+            abs_tol=_UNDO_ABS_TOL,
+        )
+
+    def _undo_scalar_rollback(self) -> tuple[str, ...]:
+        """Restore live scalar values from fit-parameter rows."""
+        restored_names: list[str] = []
+        param_map = self._live_parameter_map()
+        logged_missing_uncertainty = False
+        for row in self._undo_start_rows():
+            parameter = param_map.get(row.param_unique_name.value)
+            if parameter is None:
+                log.warning(
+                    'Persisted fit-state references unknown parameter '
+                    f'{row.param_unique_name.value!r}.'
+                )
+                continue
+
+            parameter.value = row.start_value.value
+            if row.start_uncertainty.value is None:
+                parameter.uncertainty = None
+                if not logged_missing_uncertainty:
+                    log.info(
+                        'No saved pre-fit uncertainties found; '
+                        'clearing restored parameter uncertainties.'
+                    )
+                    logged_missing_uncertainty = True
+            else:
+                parameter.uncertainty = row.start_uncertainty.value
+            parameter._set_posterior(None)
+            restored_names.append(row.param_unique_name.value)
+        return tuple(restored_names)
+
+    def _undo_clear_per_row_posterior_fields(self) -> None:
+        """Clear fit-derived posterior fields on fit-parameter rows."""
+        for row in self.fit_parameters:
+            row._set_posterior_best_sample_value(None)
+            row._set_posterior_median(None)
+            row._set_posterior_uncertainty(None)
+            row._set_posterior_interval_68_low(None)
+            row._set_posterior_interval_68_high(None)
+            row._set_posterior_interval_95_low(None)
+            row._set_posterior_interval_95_high(None)
+            row._set_posterior_gelman_rubin(None)
+            row._set_posterior_effective_sample_size_bulk(None)
+
+    def _undo_clear_fit_result_state(self) -> None:
+        """Clear fit-derived analysis state after scalar rollback."""
+        self._clear_fit_result_projection()
+        self._fit_parameter_correlations = FitParameterCorrelations()
+        self._persisted_fit_state_sidecar = {}
+        self._set_has_persisted_fit_state(value=False)
+        self.fit_results = None
 
     def _run_fit_mode(
         self,
@@ -1479,10 +1636,17 @@ class Analysis(
         """Set the persisted fit-state presence flag."""
         self._has_persisted_fit_state_data = value
 
-    def _fit_state_categories(self) -> list[object]:
-        """Return fit-state categories for the current result kind."""
+    def _fit_parameter_state_categories(self) -> list[object]:
+        """Return persisted fit-parameter rows when present."""
+        if not self.fit_parameters:
+            return []
+        return [self.fit_parameters]
+
+    def _fit_result_state_categories(self) -> list[object]:
+        """
+        Return fit-result state categories for the current result kind.
+        """
         categories: list[object] = [
-            self.fit_parameters,
             self.fit_result,
             self.fit_parameter_correlations,
         ]

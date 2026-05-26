@@ -68,6 +68,31 @@ def test_format_param_value_with_large_uncertainty_is_readable():
     assert MUT.format_param_value(p) == '882(58)'
 
 
+def test_param_from_cif_empty_brackets_marks_free_without_uncertainty():
+    import warnings
+
+    import gemmi
+
+    from easydiffraction.core.validation import AttributeSpec
+    from easydiffraction.core.variable import Parameter
+    from easydiffraction.io.cif.handler import CifHandler
+
+    p = Parameter(
+        name='2theta_offset',
+        value_spec=AttributeSpec(default=0.0),
+        cif_handler=CifHandler(names=['_instr.2theta_offset']),
+    )
+    doc = gemmi.cif.read_string('data_test\n_instr.2theta_offset 0.5()\n')
+
+    with warnings.catch_warnings():
+        warnings.simplefilter('error')
+        p.from_cif(doc.sole_block())
+
+    assert p.value == 0.5
+    assert p.free is True
+    assert p.uncertainty is None
+
+
 def test_category_collection_to_cif_empty_and_one_row():
     import easydiffraction.io.cif.serialize as MUT
     from easydiffraction.core.category import CategoryCollection
@@ -122,3 +147,33 @@ def test_project_to_cif_assembles_present_sections():
     p = Project()
     out = MUT.project_to_cif(p)
     assert out == 'I\n\nE'
+
+
+def test_analysis_from_cif_restores_fit_parameters_without_fit_result():
+    import easydiffraction.io.cif.serialize as MUT
+
+    from easydiffraction.analysis.analysis import Analysis
+
+    class Project:
+        structures = type('Structures', (), {'parameters': []})()
+        experiments = type('Experiments', (), {'parameters': [], 'names': []})()
+        _varname = 'proj'
+
+    analysis = Analysis(project=Project())
+    cif_text = """
+_fitting_mode.type single
+_minimizer.type 'lmfit (leastsq)'
+loop_
+_fit_parameter.param_unique_name
+_fit_parameter.fit_min
+_fit_parameter.fit_max
+_fit_parameter.start_value
+_fit_parameter.start_uncertainty
+scale 0.0 2.0 1.0 0.1
+"""
+
+    MUT.analysis_from_cif(analysis, cif_text)
+
+    assert analysis._has_persisted_fit_state() is False
+    assert len(analysis.fit_parameters) == 1
+    assert analysis.fit_parameters['scale'].start_value.value == 1.0

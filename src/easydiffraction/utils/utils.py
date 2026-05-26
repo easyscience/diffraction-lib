@@ -1040,13 +1040,13 @@ def str_to_ufloat(s: str | None, default: float | None = None) -> UFloat:
     Parse a CIF-style numeric string into a ufloat.
 
     Examples of supported input: - "3.566" → ufloat(3.566, nan) -
-    "3.566(2)" → ufloat(3.566, 0.002) - "3.566()" → ufloat(3.566, 0.0) -
+    "3.566(2)" → ufloat(3.566, 0.002) - "3.566()" → ufloat(3.566, nan) -
     None → ufloat(default, nan)
 
     Behavior: - If the input string contains a value with parentheses
     (e.g. "3.566(2)"), the number in parentheses is interpreted as an
     estimated standard deviation (esd) in the last digit(s). - Empty
-    parentheses (e.g. "3.566()") are treated as zero uncertainty. - If
+    parentheses (e.g. "3.566()") are treated as "no esd provided". - If
     the input string has no parentheses, an uncertainty of NaN is
     assigned to indicate "no esd provided". - If parsing fails, the
     function falls back to the given ``default`` value with uncertainty
@@ -1073,8 +1073,8 @@ def str_to_ufloat(s: str | None, default: float | None = None) -> UFloat:
     if '(' not in s and ')' not in s:
         s = f'{s}(nan)'
     elif s.endswith('()'):
-        # Empty brackets → zero uncertainty (free parameter, no esd yet)
-        s = s[:-2] + '(0)'
+        # Empty brackets mark refinement intent, not a zero esd.
+        s = s[:-2] + '(nan)'
     try:
         return ufloat_fromstr(s)
     except ValueError:
