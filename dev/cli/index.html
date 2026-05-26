@@ -3035,10 +3035,25 @@ saved state is Bayesian also posterior distributions and predictive
 checks. Plotly-only views such as posterior pair plots are shown only
 when the active chart engine is Plotly.</p>
 <h3 id="undo-the-last-fit">Undo the Last Fit</h3>
-<p>The CLI already reserves the project-first undo command shape:</p>
+<p>Roll back the most recent fit to the parameter values and uncertainties
+captured just before it started:</p>
 <div class="language-bash highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>easydiffraction<span class="w"> </span>PROJECT_DIR<span class="w"> </span>undo
 </code></pre></div>
-<p>This command currently reports that undo support is not implemented yet.</p>
+<p>The command restores each refined parameter to its saved pre-fit
+<code>start_value</code> / <code>start_uncertainty</code>, clears <code>analysis.fit_results</code>,
+truncates <code>analysis/results.h5</code> (the Bayesian sidecar), and <strong>saves the
+rolled-back state back</strong> to the project directory by default.</p>
+<p>Use the <code>--dry</code> flag to preview the rollback <strong>without overwriting</strong> any
+file:</p>
+<div class="language-bash highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>easydiffraction<span class="w"> </span>PROJECT_DIR<span class="w"> </span>undo<span class="w"> </span>--dry
+</code></pre></div>
+<p>Undo is single-level: only the most recently committed fit is
+addressable. Calling <code>undo</code> a second time, or running it on a project
+that has never been fit, prints
+<code>No fit to undo for '&lt;project&gt;'. Project state is unchanged.</code> and exits
+cleanly (status 0). Fit bounds, aliases, constraints, the minimizer
+choice, the fit mode, and joint-fit weights are <strong>not</strong> reverted by undo
+— only fit output is rolled back.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->

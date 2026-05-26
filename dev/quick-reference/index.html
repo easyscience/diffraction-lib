@@ -3227,6 +3227,8 @@ expression using those aliases:</p>
 <div class="language-bash highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>easydiffraction<span class="w"> </span>lbco_hrpt<span class="w"> </span>fit
 python<span class="w"> </span>-m<span class="w"> </span>easydiffraction<span class="w"> </span>lbco_hrpt<span class="w"> </span>fit<span class="w"> </span>--dry
 python<span class="w"> </span>-m<span class="w"> </span>easydiffraction<span class="w"> </span>lbco_hrpt<span class="w"> </span>display
+python<span class="w"> </span>-m<span class="w"> </span>easydiffraction<span class="w"> </span>lbco_hrpt<span class="w"> </span>undo
+python<span class="w"> </span>-m<span class="w"> </span>easydiffraction<span class="w"> </span>lbco_hrpt<span class="w"> </span>undo<span class="w"> </span>--dry
 </code></pre></div>
 <p>Load a saved example project straight from <code>download_data()</code>:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">saved_project_dir</span> <span class="o">=</span> <span class="n">ed</span><span class="o">.</span><span class="n">download_data</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="s1">&#39;projects&#39;</span><span class="p">)</span>
@@ -3242,6 +3244,7 @@ python<span class="w"> </span>-m<span class="w"> </span>easydiffraction<span cla
 python<span class="w"> </span>-m<span class="w"> </span>easydiffraction<span class="w"> </span>download-all-tutorials<span class="w"> </span>--destination<span class="w"> </span>tutorials
 python<span class="w"> </span>-m<span class="w"> </span>easydiffraction<span class="w"> </span>PROJECT_DIR<span class="w"> </span>fit
 python<span class="w"> </span>-m<span class="w"> </span>easydiffraction<span class="w"> </span>PROJECT_DIR<span class="w"> </span>display
+python<span class="w"> </span>-m<span class="w"> </span>easydiffraction<span class="w"> </span>PROJECT_DIR<span class="w"> </span>undo
 </code></pre></div>
 <!-- prettier-ignore-start -->
 
