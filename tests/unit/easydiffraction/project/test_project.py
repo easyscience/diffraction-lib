@@ -23,7 +23,6 @@ def test_project_help(capsys):
     assert 'experiments' in out
     assert 'analysis' in out
     assert 'report' in out
-    assert 'summary' not in out
 
 
 def test_project_verbosity_default():

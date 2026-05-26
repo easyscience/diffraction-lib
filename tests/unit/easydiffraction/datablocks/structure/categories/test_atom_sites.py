@@ -129,6 +129,7 @@ class TestAtomSite:
         ]
         assert site.wyckoff_letter._cif_handler.names == [
             '_atom_site.Wyckoff_symbol',
+            '_atom_site.Wyckoff_letter',
             '_atom_site.wyckoff_letter',
         ]
 

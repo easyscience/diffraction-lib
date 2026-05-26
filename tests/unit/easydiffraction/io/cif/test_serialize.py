@@ -202,9 +202,10 @@ def test_atom_site_aniso_cif_emits_one_adp_family_per_row():
     from easydiffraction.datablocks.structure.item.base import Structure
 
     structure = Structure(name='mixed')
-    structure.atom_sites.create(label='B1', type_symbol='Si', adp_type='Bani', adp_iso=0.4)
-    structure.atom_sites.create(label='U1', type_symbol='O', adp_type='Uani', adp_iso=0.01)
-    structure._sync_atom_site_aniso()
+    structure.atom_sites.create(label='B1', type_symbol='Si', adp_iso=0.4)
+    structure.atom_sites.create(label='U1', type_symbol='O', adp_iso=0.01)
+    structure.atom_sites['B1'].adp_type = 'Bani'
+    structure.atom_sites['U1'].adp_type = 'Uani'
 
     b_loop, u_loop = structure.atom_site_aniso.as_cif.split('\n\n')
 

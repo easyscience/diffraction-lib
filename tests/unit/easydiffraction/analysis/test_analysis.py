@@ -92,14 +92,14 @@ def test_analysis_extension_descriptors_keep_save_tags_and_iucr_names():
     analysis = Analysis(project=_make_project_with_names([]))
     calculator = Calculator(type='cryspy')
 
-    assert analysis.minimizer.type._cif_handler.names == ['_minimizer.type']
-    assert analysis.minimizer.type._cif_handler.iucr_name == '_easydiffraction_minimizer.type'
-    assert analysis.fitting_mode.type._cif_handler.names == ['_fitting_mode.type']
+    assert analysis.minimizer._type._cif_handler.names == ['_minimizer.type']
+    assert analysis.minimizer._type._cif_handler.iucr_name == '_easydiffraction_minimizer.type'
+    assert analysis.fitting_mode._type._cif_handler.names == ['_fitting_mode.type']
     assert (
-        analysis.fitting_mode.type._cif_handler.iucr_name == '_easydiffraction_fitting_mode.type'
+        analysis.fitting_mode._type._cif_handler.iucr_name == '_easydiffraction_fitting_mode.type'
     )
-    assert calculator.type._cif_handler.names == ['_calculator.type']
-    assert calculator.type._cif_handler.iucr_name == '_easydiffraction_calculator.type'
+    assert calculator._type._cif_handler.names == ['_calculator.type']
+    assert calculator._type._cif_handler.iucr_name == '_easydiffraction_calculator.type'
 
 
 def test_fit_mode_category_and_joint_fit(monkeypatch, capsys):

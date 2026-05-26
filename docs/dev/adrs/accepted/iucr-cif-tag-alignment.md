@@ -267,10 +267,8 @@ In `analysis/analysis.cif`:
 - Bayesian diagnostics, success/message/iterations/fitting*time,
   `result_kind`, `point_estimate_name`, fit-parameter posterior
   summaries, and the `_alias` / `_constraint` / `_joint_fit` /
-  `_sequential_fit*` registries — **stay under their current category
-  names**. File-scoping to `analysis/analysis.cif` carries the
-  disambiguation; no `\_easydiffraction*\*` prefix is added in the
-  default save.
+  `\_sequential_fit*`registries — **stay under their current category names**. File-scoping to`analysis/analysis.cif`carries the disambiguation; no`\_easydiffraction\*\*`
+  prefix is added in the default save.
 - The `_minimizer.*`, `_fitting_mode.*`, `_calculator.*` selectors stay
   under their current names for the same reason.
 
