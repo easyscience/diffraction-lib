@@ -1,0 +1,119 @@
+\documentclass[aps,preprint]{styles/revtex4-2}
+\usepackage{graphicx}
+\graphicspath{{figures/}}
+
+\begin{document}
+
+\title{ {{- (publication.body.title or project.title or project.name or "EasyDiffraction report") | tex -}} }
+{% if publication.authors %}
+{% for author in publication.authors %}
+\author{ {{- author.name | tex -}} }
+{% if author.address %}
+\affiliation{ {{- author.address | tex -}} }
+{% endif %}
+{% endfor %}
+{% else %}
+\author{EasyDiffraction user}
+{% endif %}
+
+{% if publication.body.abstract or publication.body.synopsis %}
+\begin{abstract}
+{{ (publication.body.abstract or publication.body.synopsis) | tex }}
+\end{abstract}
+{% endif %}
+
+\maketitle
+
+\section{Project summary}
+
+\begin{tabular}{ll}
+Project & {{ project.name | tex }} \\
+Title & {{ project.title | tex }} \\
+Phases & {{ project.n_phases }} \\
+Experiments & {{ project.n_experiments }} \\
+Generated & {{ metadata.generated_at | tex }} \\
+EasyDiffraction version & {{ metadata.easydiffraction_version | tex }} \\
+\end{tabular}
+
+\section{Refinement}
+
+\begin{tabular}{ll}
+Reduced chi-square & {{ refinement.fit_result.reduced_chi_square | tex_number }} \\
+Free parameters & {{ refinement.parameters.free | tex_number }} \\
+Total parameters & {{ refinement.parameters.total | tex_number }} \\
+Constraints & {{ refinement.constraints | tex_number }} \\
+R factor & {{ refinement.fit_result.r_factor_all | tex_number }} \\
+Weighted R factor & {{ refinement.fit_result.wr_factor_all | tex_number }} \\
+\end{tabular}
+
+\section{Software}
+
+\begin{tabular}{lll}
+Role & Name & Version \\
+Framework & {{ software.framework.name | tex }} & {{ software.framework.version | tex }} \\
+Calculator & {{ software.calculator.name | tex }} & {{ software.calculator.version | tex }} \\
+Minimizer & {{ software.minimizer.name | tex }} & {{ software.minimizer.version | tex }} \\
+\end{tabular}
+
+\section{Structures}
+
+{% for structure in structures %}
+\subsection{ {{- structure.id | tex -}} }
+
+\begin{tabular}{ll}
+Space group & {{ structure.space_group | tex }} \\
+Crystal system & {{ structure.crystal_system | tex }} \\
+$a$ & {{ structure.cell.length_a | tex_number }} \\
+$b$ & {{ structure.cell.length_b | tex_number }} \\
+$c$ & {{ structure.cell.length_c | tex_number }} \\
+$\alpha$ & {{ structure.cell.angle_alpha | tex_number }} \\
+$\beta$ & {{ structure.cell.angle_beta | tex_number }} \\
+$\gamma$ & {{ structure.cell.angle_gamma | tex_number }} \\
+\end{tabular}
+
+{% if structure.atom_sites %}
+\begin{tabular}{lllllll}
+Label & Type & $x$ & $y$ & $z$ & Occ. & ADP \\
+{% for atom in structure.atom_sites %}
+{{ atom.label | tex }} & {{ atom.type_symbol | tex }} & {{ atom.fract_x | tex_number }} & {{ atom.fract_y | tex_number }} & {{ atom.fract_z | tex_number }} & {{ atom.occupancy | tex_number }} & {{ atom.adp_iso | tex_number }} \\
+{% endfor %}
+\end{tabular}
+{% endif %}
+{% endfor %}
+
+\section{Experiments}
+
+{% for experiment in experiments %}
+\subsection{ {{- experiment.id | tex -}} }
+
+\begin{tabular}{ll}
+Sample form & {{ experiment.type.sample_form | tex }} \\
+Probe & {{ experiment.type.radiation_probe | tex }} \\
+Beam mode & {{ experiment.type.beam_mode | tex }} \\
+Scattering type & {{ experiment.type.scattering_type | tex }} \\
+Calculator & {{ experiment.calculator.type | tex }} \\
+Temperature & {{ experiment.diffrn.ambient_temperature | tex_number }} \\
+Pressure & {{ experiment.diffrn.ambient_pressure | tex_number }} \\
+\end{tabular}
+
+{% if tex.fit_figure_paths[experiment.id] %}
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{ {{- tex.fit_figure_paths[experiment.id] -}} }
+\caption{Observed and calculated fit for {{ experiment.id | tex }}.}
+\end{figure}
+{% endif %}
+{% endfor %}
+
+\section{Publication metadata}
+
+\begin{tabular}{ll}
+Journal & {{ publication.journal.name_full | tex }} \\
+Year & {{ publication.journal.year | tex }} \\
+DOI & {{ publication.journal.paper_doi | tex }} \\
+Contact author & {{ publication.contact_author.name | tex }} \\
+Contact email & {{ publication.contact_author.email | tex }} \\
+Keywords & {{ publication.body.keywords | tex }} \\
+\end{tabular}
+
+\end{document}

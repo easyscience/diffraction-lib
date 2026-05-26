@@ -467,14 +467,28 @@ class Report(CategoryItem):
         -------
         pathlib.Path
             Path of the written TeX report.
-
-        Raises
-        ------
-        NotImplementedError
-            Until the TeX writer lands in a later step.
         """
-        del style
-        raise NotImplementedError('lands in P1.17 / P1.19 / P1.20')
+        from easydiffraction.report.tex_renderer import save_tex_report  # noqa: PLC0415
+
+        return save_tex_report(self.project, self.data_context(), style=style)
+
+    def as_tex(self, style: str = 'iucr') -> str:
+        """
+        Render the TeX report.
+
+        Parameters
+        ----------
+        style : str, default='iucr'
+            Report template style.
+
+        Returns
+        -------
+        str
+            Complete TeX report document.
+        """
+        from easydiffraction.report.tex_renderer import render_tex_report  # noqa: PLC0415
+
+        return render_tex_report(self.data_context(), style=style)
 
     def save_pdf(self, style: str = 'iucr') -> pathlib.Path:
         """

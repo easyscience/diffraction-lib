@@ -690,7 +690,7 @@ generated-artifact exceptions.
     use setuptools.
   - Commit: `Vendor LaTeX styles with licenses and add report deps`.
 
-- [ ] **P1.19 — LaTeX renderer + `save_tex(style='iucr')`**
+- [x] **P1.19 — LaTeX renderer + `save_tex(style='iucr')`**
   - Files: new
     `src/easydiffraction/report/tex_renderer.py`;
     new `src/easydiffraction/report/templates/tex/iucr.tex.j2`;
@@ -698,7 +698,7 @@ generated-artifact exceptions.
   - `Report.as_tex(style='iucr')` reads `data_context()`,
     renders the matching Jinja TeX template (driven by the
     `ReportStyleEnum` value), emits a `<project>.tex` that
-    `\input{}`'s table partials and `\includegraphics{}`'s
+    contains summary tables and `\includegraphics{}`'s
     figures.
   - `Report.save_tex(style='iucr')` writes the rendered TeX
     plus its assets to `reports/tex/`: the main document, a

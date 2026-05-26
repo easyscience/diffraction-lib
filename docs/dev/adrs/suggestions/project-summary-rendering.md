@@ -727,7 +727,7 @@ rebuilding the PDF.
     <project>.html                  # ← 'html' in project.report.formats (this ADR §2)
     <project>.pdf                   # ← 'pdf' in project.report.formats (this ADR §3.4)
     tex/                            # ← 'tex' or 'pdf' in project.report.formats (this ADR §3)
-      <project>.tex                 #   main document; \input{}'s tables, \includegraphics figures
+      <project>.tex                 #   main document; tables, \includegraphics figures
       figures/
         fit_<expt_id>.pdf           #   one per experiment, vector PDF (kaleido)
       styles/                       #   always-bundled — minimum to compile both styles
