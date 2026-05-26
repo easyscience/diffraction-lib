@@ -8,8 +8,12 @@ import pathlib
 from textwrap import wrap
 
 from easydiffraction.core.variable import Parameter
+from easydiffraction.io.cif.iucr_writer import iucr_report_path
 from easydiffraction.io.cif.iucr_writer import write_iucr_cif
+from easydiffraction.report.check import ReportCheckResult
+from easydiffraction.report.check import check_report
 from easydiffraction.utils.logging import console
+from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_object_help
 from easydiffraction.utils.utils import render_table
 
@@ -254,5 +258,34 @@ class Report:
         pathlib.Path
             Path of the written report CIF.
         """
-        del check
-        return write_iucr_cif(self.project)
+        report_path = write_iucr_cif(self.project)
+        if check:
+            self.check(path=report_path)
+        return report_path
+
+    def check(self, path: str | pathlib.Path | None = None) -> ReportCheckResult:
+        """
+        Validate the IUCr submission report.
+
+        Parameters
+        ----------
+        path : str or pathlib.Path, optional
+            Report path. Defaults to ``reports/<project>.cif``.
+
+        Returns
+        -------
+        ReportCheckResult
+            Validation result with errors and warnings.
+
+        Raises
+        ------
+        ValueError
+            If validation finds parse errors.
+        """
+        report_path = iucr_report_path(self.project, path)
+        result = check_report(report_path)
+        for warning in result.warnings:
+            log.warning(warning)
+        if result.errors:
+            log.error('\n'.join(result.errors), exc_type=ValueError)
+        return result

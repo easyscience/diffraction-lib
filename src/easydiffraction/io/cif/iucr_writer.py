@@ -100,10 +100,32 @@ def write_iucr_cif(
     pathlib.Path
         Path of the written report CIF.
     """
-    output_path = _report_path(project, path)
+    output_path = iucr_report_path(project, path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(_render_iucr_cif(project), encoding='utf-8')
     return output_path
+
+
+def iucr_report_path(
+    project: object,
+    path: str | pathlib.Path | None = None,
+) -> pathlib.Path:
+    """
+    Return the target IUCr report path for a project.
+
+    Parameters
+    ----------
+    project : object
+        Project instance.
+    path : str or pathlib.Path, optional
+        Explicit report path.
+
+    Returns
+    -------
+    pathlib.Path
+        Resolved report path.
+    """
+    return _report_path(project, path)
 
 
 def _render_iucr_cif(project: object) -> str:
