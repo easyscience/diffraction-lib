@@ -17,6 +17,7 @@ from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.io.cif.iucr_writer import write_iucr_cif
 from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.project.categories.report.factory import ReportFactory
+from easydiffraction.report.data_context import build_report_data_context
 from easydiffraction.report.enums import ReportFormatEnum
 from easydiffraction.report.enums import ReportStyleEnum
 from easydiffraction.utils.logging import console
@@ -185,6 +186,10 @@ class Report(CategoryItem):
     def project(self) -> object:
         """Project owning this report category."""
         return self._parent
+
+    def data_context(self) -> dict[str, object]:
+        """Return shared report-rendering data."""
+        return build_report_data_context(self.project)
 
     def help(self) -> None:
         """Print available report methods."""

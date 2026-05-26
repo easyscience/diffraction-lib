@@ -592,7 +592,7 @@ generated-artifact exceptions.
   - Commit:
     `Read publication metadata from project.publication in IUCr writer`.
 
-- [ ] **P1.16 — `ReportDataContext` builder + Jinja base templates**
+- [x] **P1.16 — `ReportDataContext` builder + Jinja base templates**
   - Files: new `src/easydiffraction/report/data_context.py`;
     new `src/easydiffraction/report/templates/base.j2`.
   - `data_context()` builds the dict per §6 of the ADR
