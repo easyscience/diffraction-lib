@@ -1,0 +1,225 @@
+{% import "base.j2" as base %}
+{% macro metadata_table(title, values) -%}
+<article class="metadata-card">
+  <h3>{{ title }}</h3>
+  <table>
+    <tbody>
+      {% for key, value in values.items() if value %}
+      <tr>
+        <th>{{ key | replace("_", " ") }}</th>
+        <td>
+          {% if value is sequence and value is not string %}
+          {{ value | join(", ") }}
+          {% else %}
+          {{ value }}
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</article>
+{%- endmacro %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ project.title or project.name or "EasyDiffraction report" }}</title>
+  <style>{{ stylesheet | safe }}</style>
+</head>
+<body>
+  <main class="report-shell">
+    <header class="report-header">
+      <p class="eyebrow">EasyDiffraction report</p>
+      <h1>{{ project.title or project.name or "Untitled project" }}</h1>
+      {% if project.description %}
+      <p class="lede">{{ project.description }}</p>
+      {% endif %}
+      <dl class="summary-grid">
+        <div>
+          <dt>Phases</dt>
+          <dd>{{ project.n_phases }}</dd>
+        </div>
+        <div>
+          <dt>Experiments</dt>
+          <dd>{{ project.n_experiments }}</dd>
+        </div>
+        <div>
+          <dt>Generated</dt>
+          <dd>{{ metadata.generated_at }}</dd>
+        </div>
+        <div>
+          <dt>Version</dt>
+          <dd>{{ metadata.easydiffraction_version or "not available" }}</dd>
+        </div>
+      </dl>
+    </header>
+
+    <section>
+      <h2>Refinement</h2>
+      <div class="metrics">
+        <div>
+          <span>Reduced chi-square</span>
+          <strong>{{ base.format_number(refinement.fit_result.reduced_chi_square) }}</strong>
+        </div>
+        <div>
+          <span>Parameters</span>
+          <strong>
+            {{ refinement.parameters.free or 0 }} /
+            {{ refinement.parameters.total or 0 }}
+          </strong>
+        </div>
+        <div>
+          <span>Constraints</span>
+          <strong>{{ refinement.constraints }}</strong>
+        </div>
+      </div>
+      <table>
+        <tbody>
+          {% for key, value in refinement.fit_result.items() if value is not none %}
+          <tr>
+            <th>{{ key | replace("_", " ") }}</th>
+            <td>{{ value }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Software</h2>
+      <div class="software-grid">
+        {% for role_name, role in software.items() if role_name != "fit_datetime" %}
+        <article>
+          <h3>{{ role_name | replace("_", " ") }}</h3>
+          <p>{{ role.name or "not available" }}</p>
+          {% if role.version %}<p class="muted">Version {{ role.version }}</p>{% endif %}
+          {% if role.url %}<p class="muted">{{ role.url }}</p>{% endif %}
+        </article>
+        {% endfor %}
+      </div>
+      {% if software.fit_datetime %}
+      <p class="muted">Fit timestamp: {{ software.fit_datetime }}</p>
+      {% endif %}
+    </section>
+
+    <section>
+      <h2>Publication</h2>
+      <div class="publication-grid">
+        {{ metadata_table("Journal", publication.journal) }}
+        {{ metadata_table("Contact author", publication.contact_author) }}
+        {{ metadata_table("Body", publication.body) }}
+      </div>
+      {% if publication.authors %}
+      <h3>Authors</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>ORCID</th>
+            <th>IUCr</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for author in publication.authors %}
+          <tr>
+            <td>{{ author.name }}</td>
+            <td>{{ author.id_orcid or "" }}</td>
+            <td>{{ author.id_iucr or "" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+    </section>
+
+    <section>
+      <h2>Structures</h2>
+      {% for structure in structures %}
+      <article class="record">
+        <header>
+          <h3>{{ structure.id }}</h3>
+          <p>{{ structure.space_group or "space group not available" }}</p>
+        </header>
+        <table>
+          <tbody>
+            {% for key, value in structure.cell.items() %}
+            <tr>
+              <th>{{ key | replace("_", " ") }}</th>
+              <td>{{ base.format_number(value) }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% if structure.atom_sites %}
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Label</th>
+                <th>Type</th>
+                <th>x</th>
+                <th>y</th>
+                <th>z</th>
+                <th>Occ.</th>
+                <th>ADP</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for atom in structure.atom_sites %}
+              <tr>
+                <td>{{ atom.label }}</td>
+                <td>{{ atom.type_symbol }}</td>
+                <td>{{ base.format_number(atom.fract_x) }}</td>
+                <td>{{ base.format_number(atom.fract_y) }}</td>
+                <td>{{ base.format_number(atom.fract_z) }}</td>
+                <td>{{ base.format_number(atom.occupancy) }}</td>
+                <td>{{ base.format_number(atom.adp_iso) }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% endif %}
+      </article>
+      {% endfor %}
+    </section>
+
+    <section>
+      <h2>Experiments</h2>
+      {% for experiment in experiments %}
+      <article class="record">
+        <header>
+          <h3>{{ experiment.id }}</h3>
+          <p>
+            {{ experiment.type.sample_form or "sample form not available" }},
+            {{ experiment.type.radiation_probe or "probe not available" }},
+            {{ experiment.type.beam_mode or "beam mode not available" }}
+          </p>
+        </header>
+        <table>
+          <tbody>
+            <tr>
+              <th>Calculator</th>
+              <td>{{ experiment.calculator.type or "not available" }}</td>
+            </tr>
+            <tr>
+              <th>Temperature</th>
+              <td>{{ base.format_number(experiment.diffrn.ambient_temperature) }}</td>
+            </tr>
+            <tr>
+              <th>Pressure</th>
+              <td>{{ base.format_number(experiment.diffrn.ambient_pressure) }}</td>
+            </tr>
+          </tbody>
+        </table>
+        {% if figures.fit_per_experiment[experiment.id] %}
+        <div class="figure">{{ figures.fit_per_experiment[experiment.id] | safe }}</div>
+        {% endif %}
+      </article>
+      {% endfor %}
+    </section>
+  </main>
+</body>
+</html>

@@ -605,7 +605,7 @@ generated-artifact exceptions.
     foundation.
   - Commit: `Add ReportDataContext builder and Jinja base macros`.
 
-- [ ] **P1.17 — HTML renderer + `save_html(offline=False)`**
+- [x] **P1.17 — HTML renderer + `save_html(offline=False)`**
   - Files: new
     `src/easydiffraction/report/html_renderer.py`;
     new `src/easydiffraction/report/templates/html/report.html.j2`;

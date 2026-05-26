@@ -428,13 +428,31 @@ class Report(CategoryItem):
         pathlib.Path
             Path of the written HTML report.
 
-        Raises
-        ------
-        NotImplementedError
-            Until the HTML writer lands in a later step.
         """
-        del offline
-        raise NotImplementedError('lands in P1.17 / P1.19 / P1.20')
+        from easydiffraction.report.html_renderer import html_report_path  # noqa: PLC0415
+
+        output_path = html_report_path(self.project)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(self.as_html(offline=offline), encoding='utf-8')
+        return output_path
+
+    def as_html(self, offline: bool = False) -> str:
+        """
+        Render the HTML report.
+
+        Parameters
+        ----------
+        offline : bool, default=False
+            Whether to embed Plotly JavaScript assets.
+
+        Returns
+        -------
+        str
+            Complete HTML report document.
+        """
+        from easydiffraction.report.html_renderer import render_html_report  # noqa: PLC0415
+
+        return render_html_report(self.data_context(), offline=offline)
 
     def save_tex(self, style: str = 'iucr') -> pathlib.Path:
         """
