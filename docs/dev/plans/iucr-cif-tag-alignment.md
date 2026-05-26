@@ -560,7 +560,7 @@ verification commands below, add or update:
       `_minimizer.*`, `_calculator.*`, `_fitting_mode.*` (P1.7):
       default-save CIF tags unchanged; IUCr-export `iucr_name` resolves
       to `_easydiffraction_*` prefix.
-- [ ] **Script / tutorial coverage.** Verify `pixi run script-tests`
+- [x] **Script / tutorial coverage.** Verify `pixi run script-tests`
       exercises at least one tutorial that calls
       `project.save(report=True)` and the resulting
       `reports/<project>.cif` is non-empty and gemmi-valid. If no
