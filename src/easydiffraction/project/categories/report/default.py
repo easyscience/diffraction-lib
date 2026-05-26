@@ -30,6 +30,12 @@ if TYPE_CHECKING:
 
 
 REPORT_STYLE_OPTIONS = [member.value for member in ReportStyleEnum]
+_NO_REPORT_FORMATS_MESSAGE = (
+    'project.report.save() called with no formats enabled. '
+    'Set project.report.{cif,html,tex,pdf} = True (or assign a '
+    'list via project.report.formats), or call a per-format '
+    'method directly (project.report.save_html(), etc.).'
+)
 
 
 @ReportFactory.register
@@ -481,11 +487,12 @@ class Report(CategoryItem):
         Raises
         ------
         ValueError
-            If no report formats are configured.
+            If no report formats are configured. ``project.save()``
+            is the no-op-on-empty entry point.
         """
         report_paths = self._save_configured()
         if not report_paths:
-            raise ValueError('No report formats configured.')
+            raise ValueError(_NO_REPORT_FORMATS_MESSAGE)
         return report_paths
 
     def _save_configured(self) -> list[pathlib.Path]:

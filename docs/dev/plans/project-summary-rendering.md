@@ -435,7 +435,7 @@ generated-artifact exceptions.
     format, returning quietly when none are configured.
   - Commit: `Add per-format save methods and Report.save dispatch`.
 
-- [ ] **P1.7 — Empty-config behaviour tests-of-intent**
+- [x] **P1.7 — Empty-config behaviour tests-of-intent**
   - Files: `src/easydiffraction/project/categories/report/default.py`
     (assertion docstrings / runtime checks).
   - Add the explicit `ValueError` message from §1.2 of the
