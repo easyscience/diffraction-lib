@@ -557,7 +557,7 @@ generated-artifact exceptions.
     `None`.
   - Commit: `Persist project.publication to project.cif`.
 
-- [ ] **P1.14 — TOML/JSON loader for publication metadata**
+- [x] **P1.14 — TOML/JSON loader for publication metadata**
   - File: new
     `src/easydiffraction/project/publication_loader.py`.
   - Implement `Publication.load(path: str | Path)`:

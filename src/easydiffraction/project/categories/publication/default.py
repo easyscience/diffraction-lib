@@ -4,6 +4,8 @@
 
 from __future__ import annotations
 
+import pathlib
+
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.category_owner import CategoryOwner
@@ -12,6 +14,7 @@ from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.project.categories.publication.factory import PublicationFactory
+from easydiffraction.project.publication_loader import load_publication
 
 
 class PublicationItemBase(CategoryItem):
@@ -631,3 +634,19 @@ class Publication(CategoryOwner):
         """
         for category in self.categories:
             category.from_cif(block)
+
+    def load(self, path: str | pathlib.Path) -> None:
+        """
+        Load publication metadata from a TOML or JSON file.
+
+        Parameters
+        ----------
+        path : str | pathlib.Path
+            File path ending in ``.toml`` or ``.json``.
+
+        Raises
+        ------
+        ValueError
+            If the file extension, top-level shape, or any key is invalid.
+        """
+        load_publication(self, path)
