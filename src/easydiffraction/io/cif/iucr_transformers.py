@@ -237,13 +237,20 @@ class ExtinctionTransformer(IucrCategoryTransformer):
         mosaicity = _attribute_value(extinction, 'mosaicity')
         radius = _attribute_value(extinction, 'radius')
 
+        extension_items = _iucr_items(
+            extinction,
+            (
+                ('type', extinction_type),
+                ('model', model),
+                ('mosaicity', mosaicity),
+                ('radius', radius),
+            ),
+        )
+
         return (
             IucrItem('_refine_ls.extinction_method', _extinction_method(extinction)),
             IucrItem('_refine_ls.extinction_coef', _extinction_coefficient(extinction)),
-            IucrItem('_easydiffraction_extinction.type', extinction_type),
-            IucrItem('_easydiffraction_extinction.model', model),
-            IucrItem('_easydiffraction_extinction.mosaicity', mosaicity),
-            IucrItem('_easydiffraction_extinction.radius', radius),
+            *extension_items,
         )
 
 
@@ -280,6 +287,26 @@ def _attribute_value(owner: object, attr_name: str) -> object:
 def _descriptor_value(value: object) -> object:
     """Return ``value.value`` for descriptors, otherwise *value*."""
     return getattr(value, 'value', value)
+
+
+def _iucr_items(
+    owner: object,
+    values: tuple[tuple[str, object], ...],
+) -> tuple[IucrItem, ...]:
+    """Return IUCr-tagged descriptor values from *owner*."""
+    if owner is None:
+        return ()
+    items: list[IucrItem] = []
+    for attr_name, value in values:
+        descriptor = getattr(owner, attr_name, None)
+        if descriptor is not None:
+            items.append(_iucr_item(descriptor, value))
+    return tuple(items)
+
+
+def _iucr_item(descriptor: object, value: object) -> IucrItem:
+    """Return one IUCr-tagged item for a descriptor."""
+    return IucrItem(descriptor._cif_handler.iucr_name, value)
 
 
 def _collection_values(collection: object) -> Iterable[object]:

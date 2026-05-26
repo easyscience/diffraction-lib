@@ -1017,41 +1017,22 @@ def _sc_extension_items(experiment: object) -> list[tuple[str, object]]:
     diffrn = getattr(experiment, 'diffrn', None)
     expt_type = getattr(experiment, 'type', None)
     calculator = getattr(experiment, 'calculator', None)
-    return [
-        (
-            '_easydiffraction_sc_crystal_block.id',
-            _attribute_value(linked_crystal, 'id'),
-        ),
-        (
-            '_easydiffraction_sc_crystal_block.scale',
-            _attribute_value(linked_crystal, 'scale'),
-        ),
-        (
-            '_easydiffraction_diffrn.ambient_magnetic_field',
-            _attribute_value(diffrn, 'ambient_magnetic_field'),
-        ),
-        (
-            '_easydiffraction_diffrn.ambient_electric_field',
-            _attribute_value(diffrn, 'ambient_electric_field'),
-        ),
-        (
-            '_easydiffraction_experiment_type.sample_form',
-            _attribute_value(expt_type, 'sample_form'),
-        ),
-        (
-            '_easydiffraction_experiment_type.beam_mode',
-            _attribute_value(expt_type, 'beam_mode'),
-        ),
-        (
-            '_easydiffraction_experiment_type.radiation_probe',
-            _attribute_value(expt_type, 'radiation_probe'),
-        ),
-        (
-            '_easydiffraction_experiment_type.scattering_type',
-            _attribute_value(expt_type, 'scattering_type'),
-        ),
-        ('_easydiffraction_calculator.type', _attribute_value(calculator, 'type')),
-    ]
+    items: list[tuple[str, object]] = []
+    items.extend(_iucr_items(linked_crystal, ('id', 'scale')))
+    items.extend(
+        _iucr_items(
+            diffrn,
+            ('ambient_magnetic_field', 'ambient_electric_field'),
+        )
+    )
+    items.extend(
+        _iucr_items(
+            expt_type,
+            ('sample_form', 'beam_mode', 'radiation_probe', 'scattering_type'),
+        )
+    )
+    items.extend(_iucr_items(calculator, ('type',)))
+    return items
 
 
 def _extinction_items(experiment: object, *, extension: bool) -> list[IucrItem]:
@@ -1242,27 +1223,17 @@ def _powder_extension_items(experiment: object) -> list[tuple[str, object]]:
     calculator = getattr(experiment, 'calculator', None)
     peak = getattr(experiment, 'peak', None)
     background = getattr(experiment, 'background', None)
-    return [
-        (
-            '_easydiffraction_experiment_type.sample_form',
-            _attribute_value(expt_type, 'sample_form'),
-        ),
-        (
-            '_easydiffraction_experiment_type.beam_mode',
-            _attribute_value(expt_type, 'beam_mode'),
-        ),
-        (
-            '_easydiffraction_experiment_type.radiation_probe',
-            _attribute_value(expt_type, 'radiation_probe'),
-        ),
-        (
-            '_easydiffraction_experiment_type.scattering_type',
-            _attribute_value(expt_type, 'scattering_type'),
-        ),
-        ('_easydiffraction_calculator.type', _attribute_value(calculator, 'type')),
-        ('_easydiffraction_peak.type', _attribute_value(peak, 'type')),
-        ('_easydiffraction_background.type', _attribute_value(background, 'type')),
-    ]
+    items: list[tuple[str, object]] = []
+    items.extend(
+        _iucr_items(
+            expt_type,
+            ('sample_form', 'beam_mode', 'radiation_probe', 'scattering_type'),
+        )
+    )
+    items.extend(_iucr_items(calculator, ('type',)))
+    items.extend(_iucr_items(peak, ('type',)))
+    items.extend(_iucr_items(background, ('type',)))
+    return items
 
 
 @dataclass(frozen=True)
@@ -1371,6 +1342,19 @@ def _format_formula_suffix(count: float) -> str:
 def _descriptor_value(value: object) -> object:
     """Return ``value.value`` for descriptors, otherwise *value*."""
     return getattr(value, 'value', value)
+
+
+def _iucr_items(owner: object, attr_names: tuple[str, ...]) -> list[tuple[str, object]]:
+    """Return IUCr-tagged descriptor values from *owner*."""
+    if owner is None:
+        return []
+    return [_iucr_item(owner, attr_name) for attr_name in attr_names]
+
+
+def _iucr_item(owner: object, attr_name: str) -> tuple[str, object]:
+    """Return one ``(iucr_name, value)`` pair for a descriptor."""
+    descriptor = getattr(owner, attr_name)
+    return descriptor._cif_handler.iucr_name, _descriptor_value(descriptor)
 
 
 def _collection_values(collection: object) -> Iterable[object]:
