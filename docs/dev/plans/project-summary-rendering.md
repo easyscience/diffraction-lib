@@ -1,15 +1,14 @@
 # Plan: Project Summary Rendering
 
 Implementation plan for the
-[`project-summary-rendering`](../adrs/suggestions/project-summary-rendering.md)
+[`project-summary-rendering`](../adrs/accepted/project-summary-rendering.md)
 ADR. Follows [`AGENTS.md`](../../../AGENTS.md) — no deliberate
 exceptions to those instructions.
 
 ## ADR cross-reference
 
-- **Primary ADR:** `project-summary-rendering.md` (currently in
-  `suggestions/`; this plan promotes it to `accepted/` as the
-  final P1 step before the review gate).
+- **Primary ADR:** `project-summary-rendering.md` (accepted during
+  P1.24).
 - **Amends** (per the ADR's "ADRs amended by this ADR" section):
   - [`iucr-cif-tag-alignment.md`](../adrs/accepted/iucr-cif-tag-alignment.md)
     — five amendments: removes `project.save(report=True)`
@@ -258,8 +257,8 @@ re-litigate them, only implements them:
   the new save methods, enums, configuration fields).
 
 **ADR promotion (P1.24):**
-- `docs/dev/adrs/suggestions/project-summary-rendering.md` →
-  moved to `docs/dev/adrs/accepted/`.
+- `docs/dev/adrs/accepted/project-summary-rendering.md`
+  (moved from `docs/dev/adrs/suggestions/`).
 - `docs/dev/adrs/index.md` (row updated to `accepted/`).
 
 ## Commit discipline
@@ -799,7 +798,7 @@ generated-artifact exceptions.
   - Commit:
     `Update tutorials and user-guide docs for project.report`.
 
-- [ ] **P1.24 — Promote ADR to `accepted/`**
+- [x] **P1.24 — Promote ADR to `accepted/`**
   - Files: move
     `docs/dev/adrs/suggestions/project-summary-rendering.md`
     to `docs/dev/adrs/accepted/`; update

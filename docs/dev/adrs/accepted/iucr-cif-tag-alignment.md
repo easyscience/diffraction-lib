@@ -1050,7 +1050,7 @@ Policy:
   and replaced by `project.report.help()` (same responsibilities, new
   slot name). All other entries in the help-surface table are
   unaffected.
-- [`project-summary-rendering.md`](../suggestions/project-summary-rendering.md)
+- [`project-summary-rendering.md`](project-summary-rendering.md)
   — amends this ADR's report API: public `check()` / `check=True` are
   removed, gemmi validation moves inside CIF write paths, the
   `_easydiffraction_software.*` triple is read from `analysis.software`,

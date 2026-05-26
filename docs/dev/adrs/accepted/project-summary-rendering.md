@@ -1,6 +1,6 @@
 # ADR: Project Summary Rendering
 
-**Status:** Proposed  
+**Status:** Accepted  
 **Date:** 2026-05-26
 
 Defines the **non-CIF** human-readable rendering surface for a project:
