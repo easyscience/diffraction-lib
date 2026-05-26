@@ -85,7 +85,13 @@ posterior summaries:
 - `posterior_effective_sample_size_bulk`
 
 `_fit_result` stores the latest saved fit header and scalar
-family-specific fit outputs:
+family-specific fit outputs. In the default project save this category
+is topology-neutral: single-crystal and powder fits both persist under
+`_fit_result.*`. The IUCr submission export may remap these same
+values to topology-specific dictionary categories (`_refine_ls.*`,
+`_pd_proc_ls.*`, `_reflns.*`) as described by
+[`iucr-cif-tag-alignment.md`](iucr-cif-tag-alignment.md), but the
+round-trip project schema remains common.
 
 - `result_kind`
 - `success`
@@ -112,6 +118,27 @@ Deterministic fit-result classes add compact fit output counts:
 - `degrees_of_freedom`
 - `covariance_available`
 - `correlation_available`
+- `R_factor_all`
+- `wR_factor_all`
+- `R_factor_gt`
+- `wR_factor_gt`
+- `prof_R_factor`
+- `prof_wR_factor`
+- `prof_wR_expected`
+- `number_restraints`
+- `number_constraints`
+- `shift_over_su_max`
+- `shift_over_su_mean`
+- `profile_function`
+- `background_function`
+- `threshold_expression`
+- `number_reflns_total`
+- `number_reflns_gt`
+
+The deterministic R-factor, profile, restraint / constraint, shift, and
+reflection-aggregate fields use dictionary-canonical item names where
+those exist, including uppercase `R` / `wR`, while retaining the
+project-side `_fit_result` category prefix in the default save.
 
 When the LSQ backend provides a termination reason that differs from the
 common `_fit_result.message`, deterministic fit results also store:
