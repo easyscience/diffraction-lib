@@ -53,6 +53,37 @@ class LeastSquaresFitResult(FitResultBase):
         'number_reflns_gt',
     )
     _expected_descriptor_names: ClassVar[tuple[str, ...]] = _result_descriptor_names
+    _cif_required_descriptor_names: ClassVar[tuple[str, ...]] = (
+        *FitResultBase._result_descriptor_names,
+        'objective_name',
+        'objective_value',
+        'n_data_points',
+        'n_parameters',
+        'n_free_parameters',
+        'degrees_of_freedom',
+        'covariance_available',
+        'correlation_available',
+    )
+    _cif_reflection_descriptor_names: ClassVar[tuple[str, ...]] = (
+        'r_factor_all',
+        'wr_factor_all',
+        'r_factor_gt',
+        'wr_factor_gt',
+        'threshold_expression',
+        'number_reflns_total',
+        'number_reflns_gt',
+    )
+    _cif_powder_descriptor_names: ClassVar[tuple[str, ...]] = (
+        'prof_r_factor',
+        'prof_wr_factor',
+        'prof_wr_expected',
+        'profile_function',
+        'background_function',
+    )
+    _cif_positive_count_descriptor_names: ClassVar[tuple[str, ...]] = (
+        'number_restraints',
+        'number_constraints',
+    )
 
     def __init__(self) -> None:
         super().__init__()
@@ -316,8 +347,55 @@ class LeastSquaresFitResult(FitResultBase):
         return [
             descriptor
             for descriptor in self.parameters
-            if descriptor is not self.exit_reason or self._include_exit_reason_cif_descriptor()
+            if self._include_cif_descriptor(descriptor)
         ]
+
+    def _include_cif_descriptor(self, descriptor: object) -> bool:
+        """Return whether *descriptor* belongs in analysis CIF."""
+        name = descriptor.name
+        if name in self._cif_required_descriptor_names:
+            return True
+        if name == 'exit_reason':
+            return self._include_exit_reason_cif_descriptor()
+        if name in self._cif_reflection_descriptor_names:
+            return self._has_reflection_result()
+        if name in self._cif_powder_descriptor_names:
+            return self._has_powder_result()
+        if name in self._cif_positive_count_descriptor_names:
+            return self._has_positive_value(descriptor)
+        return False
+
+    def _has_reflection_result(self) -> bool:
+        """Return whether reflection-result descriptors are populated."""
+        return any(
+            self._has_value(getattr(self, name))
+            for name in (
+                'r_factor_all',
+                'wr_factor_all',
+                'r_factor_gt',
+                'wr_factor_gt',
+                'number_reflns_total',
+                'number_reflns_gt',
+            )
+        )
+
+    def _has_powder_result(self) -> bool:
+        """Return whether powder-profile descriptors are populated."""
+        return any(
+            self._has_value(getattr(self, name))
+            for name in self._cif_powder_descriptor_names
+        )
+
+    @staticmethod
+    def _has_value(descriptor: object) -> bool:
+        """Return whether a descriptor carries a persisted value."""
+        return descriptor.value is not None
+
+    @staticmethod
+    def _has_positive_value(descriptor: object) -> bool:
+        """Return whether a count descriptor is positive."""
+        value = descriptor.value
+        return isinstance(value, (int, float)) and value > 0
 
     @property
     def exit_reason(self) -> StringDescriptor:
