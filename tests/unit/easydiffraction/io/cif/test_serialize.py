@@ -68,6 +68,31 @@ def test_format_param_value_with_large_uncertainty_is_readable():
     assert MUT.format_param_value(p) == '882(58)'
 
 
+def test_param_from_cif_empty_brackets_marks_free_without_uncertainty():
+    import warnings
+
+    import gemmi
+
+    from easydiffraction.core.validation import AttributeSpec
+    from easydiffraction.core.variable import Parameter
+    from easydiffraction.io.cif.handler import CifHandler
+
+    p = Parameter(
+        name='2theta_offset',
+        value_spec=AttributeSpec(default=0.0),
+        cif_handler=CifHandler(names=['_instr.2theta_offset']),
+    )
+    doc = gemmi.cif.read_string('data_test\n_instr.2theta_offset 0.5()\n')
+
+    with warnings.catch_warnings():
+        warnings.simplefilter('error')
+        p.from_cif(doc.sole_block())
+
+    assert p.value == 0.5
+    assert p.free is True
+    assert p.uncertainty is None
+
+
 def test_category_collection_to_cif_empty_and_one_row():
     import easydiffraction.io.cif.serialize as MUT
     from easydiffraction.core.category import CategoryCollection
