@@ -387,7 +387,7 @@ class Report(CategoryItem):
             columns_data=fit_metrics,
         )
 
-    def save(self) -> pathlib.Path:
+    def save_cif(self) -> pathlib.Path:
         """
         Write the IUCr submission report.
 
@@ -395,5 +395,111 @@ class Report(CategoryItem):
         -------
         pathlib.Path
             Path of the written report CIF.
+
+        Raises
+        ------
+        EasyDiffractionWriterError
+            If the generated IUCr CIF fails validation.
         """
         return write_iucr_cif(self.project)
+
+    def save_html(self, offline: bool = False) -> pathlib.Path:
+        """
+        Write the HTML report.
+
+        Parameters
+        ----------
+        offline : bool, default=False
+            Whether to embed assets in the HTML report.
+
+        Returns
+        -------
+        pathlib.Path
+            Path of the written HTML report.
+
+        Raises
+        ------
+        NotImplementedError
+            Until the HTML writer lands in a later step.
+        """
+        del offline
+        raise NotImplementedError('lands in P1.17 / P1.19 / P1.20')
+
+    def save_tex(self, style: str = 'iucr') -> pathlib.Path:
+        """
+        Write the TeX report.
+
+        Parameters
+        ----------
+        style : str, default='iucr'
+            Report template style.
+
+        Returns
+        -------
+        pathlib.Path
+            Path of the written TeX report.
+
+        Raises
+        ------
+        NotImplementedError
+            Until the TeX writer lands in a later step.
+        """
+        del style
+        raise NotImplementedError('lands in P1.17 / P1.19 / P1.20')
+
+    def save_pdf(self, style: str = 'iucr') -> pathlib.Path:
+        """
+        Write the PDF report.
+
+        Parameters
+        ----------
+        style : str, default='iucr'
+            Report template style.
+
+        Returns
+        -------
+        pathlib.Path
+            Path of the written PDF report.
+
+        Raises
+        ------
+        NotImplementedError
+            Until the PDF writer lands in a later step.
+        """
+        del style
+        raise NotImplementedError('lands in P1.17 / P1.19 / P1.20')
+
+    def save(self) -> list[pathlib.Path]:
+        """
+        Write all configured report formats.
+
+        Returns
+        -------
+        list[pathlib.Path]
+            Paths of written report files.
+
+        Raises
+        ------
+        ValueError
+            If no report formats are configured.
+        """
+        report_paths = self._save_configured()
+        if not report_paths:
+            raise ValueError('No report formats configured.')
+        return report_paths
+
+    def _save_configured(self) -> list[pathlib.Path]:
+        """Write enabled formats, returning quietly when none are set."""
+        report_paths = []
+        for report_format in self.formats:
+            if report_format is ReportFormatEnum.CIF:
+                report_paths.append(self.save_cif())
+            elif report_format is ReportFormatEnum.HTML:
+                report_paths.append(
+                    self.save_html(offline=bool(self.html_offline.value))
+                )
+            elif report_format is ReportFormatEnum.TEX:
+                report_paths.append(self.save_tex(style=str(self.style.value)))
+            elif report_format is ReportFormatEnum.PDF:
+                report_paths.append(self.save_pdf(style=str(self.style.value)))
+        return report_paths

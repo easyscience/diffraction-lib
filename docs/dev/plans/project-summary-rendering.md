@@ -414,7 +414,7 @@ generated-artifact exceptions.
     removed surface (P1.23 will sweep tutorials).
   - Commit: `Remove public Report.check() and check=True flag`.
 
-- [ ] **P1.6 — Per-format `save_*()` methods + `Report.save()`**
+- [x] **P1.6 — Per-format `save_*()` methods + `Report.save()`**
   - Files: `src/easydiffraction/project/categories/report/default.py`,
     `src/easydiffraction/project/project.py`.
   - Add `save_cif()`, `save_html(offline=False)`,
