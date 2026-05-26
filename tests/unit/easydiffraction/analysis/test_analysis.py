@@ -61,6 +61,20 @@ def _make_project_with_parameters(parameters):
     )
 
 
+def _posterior_field_values(row):
+    return (
+        row.posterior_best_sample_value.value,
+        row.posterior_median.value,
+        row.posterior_uncertainty.value,
+        row.posterior_interval_68_low.value,
+        row.posterior_interval_68_high.value,
+        row.posterior_interval_95_low.value,
+        row.posterior_interval_95_high.value,
+        row.posterior_gelman_rubin.value,
+        row.posterior_effective_sample_size_bulk.value,
+    )
+
+
 def test_minimizer_show_supported_prints(capsys):
     from easydiffraction.analysis.analysis import Analysis
 
@@ -170,17 +184,18 @@ def test_undo_fit_restores_scalars_and_clears_fit_outputs():
         parameter.fit_min = 3.5
         parameter.fit_max = 4.5
         parameter._set_fit_bounds_uncertainty_multiplier(4.0)
-        parameter._set_posterior(
-            PosteriorParameterSummary(
-                unique_name=parameter.unique_name,
-                display_name=parameter.name,
-                best_sample_value=parameter.value,
-                median=parameter.value,
-                standard_deviation=0.01,
-                interval_68=(parameter.value - 0.01, parameter.value + 0.01),
-                interval_95=(parameter.value - 0.02, parameter.value + 0.02),
-            )
+        summary = PosteriorParameterSummary(
+            unique_name=parameter.unique_name,
+            display_name=parameter.name,
+            best_sample_value=parameter.value,
+            median=parameter.value,
+            standard_deviation=0.01,
+            interval_68=(parameter.value - 0.01, parameter.value + 0.01),
+            interval_95=(parameter.value - 0.02, parameter.value + 0.02),
+            ess_bulk=100.0,
+            r_hat=1.01,
         )
+        parameter._set_posterior(summary)
         analysis.fit_parameters.create(
             param_unique_name=parameter.unique_name,
             fit_min=parameter.fit_min,
@@ -189,7 +204,7 @@ def test_undo_fit_restores_scalars_and_clears_fit_outputs():
             start_value=start_value,
             start_uncertainty=start_uncertainty,
         )
-        analysis.fit_parameters[parameter.unique_name]._set_posterior_median(parameter.value)
+        analysis.fit_parameters[parameter.unique_name]._set_posterior_summary(summary)
 
     analysis.fit_result._set_result_kind('deterministic')
     analysis.fit_result._set_success(value=True)
@@ -216,8 +231,8 @@ def test_undo_fit_restores_scalars_and_clears_fit_outputs():
     assert length_b.value == 3.95
     assert length_b.uncertainty == 0.03
     assert length_b.posterior is None
-    assert analysis.fit_parameters[length_a.unique_name].posterior_median.value is None
-    assert analysis.fit_parameters[length_b.unique_name].posterior_median.value is None
+    assert _posterior_field_values(analysis.fit_parameters[length_a.unique_name]) == (None,) * 9
+    assert _posterior_field_values(analysis.fit_parameters[length_b.unique_name]) == (None,) * 9
     assert analysis.fit_results is None
     assert analysis.fitter.results is None
     assert analysis._has_persisted_fit_state() is False
