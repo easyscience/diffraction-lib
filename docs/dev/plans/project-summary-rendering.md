@@ -729,7 +729,7 @@ generated-artifact exceptions.
     `Report.save_pdf()` with the real call.
   - Commit: `Add opportunistic PDF compilation via TeX subprocess`.
 
-- [ ] **P1.21 — Add `crystal_system` and `measured_range` properties**
+- [x] **P1.21 — Add `crystal_system` and `measured_range` properties**
   - Files:
     `src/easydiffraction/datablocks/structure/categories/space_group/default.py`,
     `src/easydiffraction/datablocks/experiment/item/base.py`.
