@@ -502,7 +502,7 @@ generated-artifact exceptions.
     (framework / calculator / minimizer triples + timestamp).
   - Commit: `Amend analysis-cif-fit-state for analysis.software`.
 
-- [ ] **P1.11 — Amend `iucr-cif-tag-alignment.md` ADR**
+- [x] **P1.11 — Amend `iucr-cif-tag-alignment.md` ADR**
   - File: `docs/dev/adrs/accepted/iucr-cif-tag-alignment.md`.
   - Five amendments per the ADR's amended-list entry:
     (1) `project.save(report=True)` flag removal;

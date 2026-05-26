@@ -142,20 +142,21 @@ observation drives the policy:
   coefficient loop indexed by integer `power`), and pdCIF has no
   parametric peak-shape items at all. File path scopes them; no prefix
   needed.
-- **Reports** — a separate write path, `project.save(report=True)`, that
-  pulls live Python state and emits a single journal-submission CIF to
-  `reports/<project>.cif`. This path applies all IUCr renames,
+- **Reports** — a separate `project.report` facade that pulls live
+  Python state and emits journal report artifacts under `reports/`.
+  The IUCr CIF one-off method is `project.report.save_cif()`; the
+  regular `project.save()` call emits configured reports from
+  `project.report.formats`. This path applies all IUCr renames,
   structural reshapings, multi-datablock layout, and project-extension
-  namespacing (`_easydiffraction_*`). Lives under the new
-  `project.report` facade slot (replaces the unimplemented
-  `project.summary` placeholder). **Export only — no round-trip.**
+  namespacing (`_easydiffraction_*`). It replaces the unimplemented
+  `project.summary` placeholder. **Export only — no round-trip.**
 
 ## Current State
 
 Project CIF categories audited against `cif_core.dic` v3.4.0 and
 `cif_pow.dic` v2.5.0. The "Default-save tier" column shows whether the
 category changes in the default save; the "IUCr export" column shows the
-dotted DDLm tag emitted under `project.save(report=True)`.
+dotted DDLm tag emitted by the IUCr CIF report writer.
 
 | Category (current)                                                                              | IUCr dictionary                                                             | Default-save tier                           | IUCr export (dotted DDLm)                                                                                                                                                                   |
 | ----------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -182,7 +183,8 @@ dotted DDLm tag emitted under `project.save(report=True)`.
 | `_extinction.*`                                                                                 | core (`_refine_ls.extinction_*` items)                                      | Experiment — unchanged                      | `_easydiffraction_extinction.*` + dual emit `_refine_ls.extinction_{method,coef,expression}`.                                                                                               |
 | `_excluded_region.*`                                                                            | pdCIF (`_pd_proc.info_excluded_regions` free-text)                          | Experiment — unchanged                      | `_easydiffraction_excluded_region.*` + `_pd_proc.info_excluded_regions` free-text rendering.                                                                                                |
 | `_expt_type.*`                                                                                  | none                                                                        | Experiment — unchanged                      | `_easydiffraction_experiment_type.*`.                                                                                                                                                       |
-| `_calculator.type`, `_minimizer.type`                                                           | none                                                                        | Analysis — unchanged                        | Identification rolled into the `_easydiffraction_software.{framework, calculator, minimizer}` category; `_computing.structure_refinement` carries the same info as IUCr-standard free text. |
+| `_calculator.type`, `_minimizer.type`                                                           | none                                                                        | Analysis — unchanged                        | Selection fields remain settings only; identity is read from `analysis.software` for `_easydiffraction_software.{framework, calculator, minimizer}` and `_computing.structure_refinement`. |
+| `_software.*`                                                                                    | none                                                                        | Analysis — new provenance category          | Source for `_easydiffraction_software.{framework, calculator, minimizer}`, `_easydiffraction_software.fit_datetime`, and `_computing.structure_refinement` in `data_global`.               |
 | `_minimizer.*` settings (tolerances, max_iter, …)                                               | none                                                                        | Analysis — unchanged                        | `_easydiffraction_minimizer.*` (settings only, separate from the identification triple).                                                                                                    |
 | `_fitting_mode.type`, `_background.type`                                                        | none                                                                        | Analysis / Experiment — unchanged           | `_easydiffraction_fitting_mode.type`, `_easydiffraction_background.type` selectors.                                                                                                         |
 | `_fit_result.reduced_chi_square`, `n_data_points`, `n_parameters`                               | core (`_refine_ls.*`) and pdCIF (`_pd_proc_ls.*`)                           | Analysis — unchanged (topology-neutral)     | Shape-shifting per topology: see §1.2 and §3 transformers.                                                                                                                                  |
@@ -193,7 +195,7 @@ dotted DDLm tag emitted under `project.save(report=True)`.
 | `_joint_fit`, `_sequential_fit*`                                                                | none                                                                        | Analysis — unchanged                        | `_easydiffraction_joint_fit*`, `_easydiffraction_sequential_fit*`.                                                                                                                          |
 | reflection-set aggregates                                                                       | core (`_reflns.*`)                                                          | Analysis — new fields                       | `_reflns.number_total`, `_reflns.number_gt`, `_reflns.threshold_expression` (e.g. `'I>3\s(I)'`).                                                                                            |
 | publication metadata                                                                            | core (`_journal.*`, `_publ_author.*`, `_publ_contact_author.*`, `_audit.*`) | (not emitted today)                         | Emitted in `data_global` block per §2.3a with `?` placeholders.                                                                                                                             |
-| analysis-stack identification                                                                   | core (`_computing.structure_refinement`)                                    | (not emitted today)                         | `_easydiffraction_software.{framework, calculator, minimizer}` triple + `_computing.structure_refinement` derived string in `data_global` (see §2.3a-i).                                    |
+| analysis-stack identification                                                                   | core (`_computing.structure_refinement`)                                    | Analysis — `_software.*` persisted          | `_easydiffraction_software.{framework, calculator, minimizer}` triple + `_easydiffraction_software.fit_datetime` + `_computing.structure_refinement` derived from `analysis.software`.       |
 
 ## Decision
 
@@ -298,18 +300,19 @@ Specifically:
 #### 2.1 API
 
 ```python
-project.save()                          # regular project save only
-project.save(report=True)               # regular save + reports/<project>.cif
-project.report.save()                   # write reports only, no regular save
-project.report.check()                  # validate reports (see §2.5)
+project.save()                          # project files + configured reports
+project.report.save_cif()               # one-off reports/<project>.cif
+project.report.save()                   # write configured reports only
 ```
 
 `project.summary` (currently an unimplemented placeholder) is removed
-and replaced by `project.report` — a new facade slot that owns the
-journal-submission CIF generation and validation. The slot is named
-generically because the same path can host additional report types in
-the future (mmCIF export, figure bundles, etc.); the IUCr CIF is the
-only kind shipped today.
+and replaced by `project.report` — a facade slot that owns journal
+report generation. `project.report.formats` controls which reports
+`project.save()` emits. Per-format methods (`save_cif()`,
+`save_html()`, `save_tex()`, `save_pdf()`) write one-off artifacts
+without changing that configuration. The no-arg `project.report.save()`
+uses `project.report.formats` and raises `ValueError` when no formats
+are enabled.
 
 #### 2.2 Output location
 
@@ -330,7 +333,7 @@ example files in the corpus).
     pd_xray.cif
   analysis/
     analysis.cif
-  reports/                              # written by save(report=True)
+  reports/                              # written by report config or save_cif()
     <project_name>.cif                  # single multi-block IUCr CIF
 ```
 
@@ -504,13 +507,15 @@ the project has source data, otherwise `?`.
 
 - `_audit.creation_method 'EasyDiffraction <version>'`,
   `_audit.creation_date <iso8601>`.
-- `_computing.structure_refinement` (single string concatenating the
-  framework + calculator + minimizer names and versions, e.g.
+- `_computing.structure_refinement` (single string derived from
+  `analysis.software`; when calculator or minimizer provenance is unset
+  it falls back to the framework label only, e.g.
   `'EasyDiffraction 0.17.0 with lmfit 1.0.0 minimizer and cryspy 1.2.3 calculator'`).
   coreCIF standard channel for advertising the analysis-software stack
   to IUCr-aware tooling.
 - `_easydiffraction_software.*` triple holding the same three roles in
-  structured form (see §2.3a-i below).
+  structured form, plus `_easydiffraction_software.fit_datetime` when a
+  fit timestamp is available (see §2.3a-i below).
 - `_journal.*` placeholders, written as `?` when the project has no
   source data: `_journal.name_full`, `_journal.year`, `_journal.volume`,
   `_journal.issue`, `_journal.page_first`, `_journal.page_last`,
@@ -540,13 +545,15 @@ similar) is deferred — see Deferred Work.
 #### 2.3a-i `_easydiffraction_software` framework
 
 The IUCr submission needs to identify the analysis stack. The project
-emits one structured category in `data_global` carrying three role-keyed
-strings:
+emits one structured category in `data_global` from
+`analysis.software`, carrying three role-keyed strings and an optional
+fit timestamp:
 
 ```
 _easydiffraction_software.framework    'EasyDiffraction 0.17.0'
 _easydiffraction_software.calculator  'cryspy 1.2.3'
 _easydiffraction_software.minimizer   'lmfit 1.0.0'
+_easydiffraction_software.fit_datetime 2026-05-26T13:45:00+00:00
 ```
 
 - `_easydiffraction_software.framework` — EasyDiffraction itself, the
@@ -556,6 +563,9 @@ _easydiffraction_software.minimizer   'lmfit 1.0.0'
 - `_easydiffraction_software.minimizer` — the active minimizer (lmfit,
   scipy-lstsq, dfo-ls, emcee, …) with version. Bayesian sampler runs use
   the sampler name and version here.
+- `_easydiffraction_software.fit_datetime` — ISO-8601 UTC timestamp of
+  the successful fit that populated `analysis.software`. Omitted when no
+  timestamp is recorded.
 
 The same three values are concatenated into the
 `_computing.structure_refinement` free-text string for IUCr-tooling
@@ -775,21 +785,18 @@ The IUCr writer pass differs from the default writer:
 
 #### 2.5 Submission-side validation
 
-`project.report.check()` runs the generated `reports/<project>.cif`
-through `gemmi` (already a project dependency per `pyproject.toml`) for
-dictionary-compliance validation before submission.
-
-```python
-project.report.check()                  # validate reports/<project>.cif
-project.save(report=True, check=True)   # save + validate in one step
-```
+The IUCr CIF writer runs generated content through `gemmi` (already a
+project dependency per `pyproject.toml`) before writing
+`reports/<project>.cif`. Public `project.report.check()` and
+`check=True` entry points are removed; dictionary compliance is a writer
+self-check, not a user choice.
 
 Validation checks performed by `gemmi`:
 
 - Every emitted tag exists in `cif_core.dic` or `cif_pow.dic` (the
   shipped reference dictionaries, or fresh copies fetched on demand).
   Unknown tags outside the project's `_easydiffraction_*` namespace
-  produce a warning.
+  raise `EasyDiffractionWriterError`.
 - Value types match the dictionary's `_type.contents` declaration (Real,
   Integer, Code, Text, …).
 - Required category keys (`_category_key.name` per `_pd_calib_d_to_tof`,
@@ -803,7 +810,7 @@ Validation does **not** cover:
 - Crystallographic sanity checks (bond lengths, void volumes, density
   plausibility, missed-symmetry detection, anisotropic-ADP
   positive-definiteness). These need a full `checkCIF` implementation,
-  which `gemmi` does not provide. Treat `project.report.check()` as a
+  which `gemmi` does not provide. Treat the internal gemmi pass as a
   "spec compliance" pass, not a "scientific sanity" pass — a separate
   IUCr-server upload remains the final check before submission.
 - Verifying that `?` placeholders in `_journal.*` / `_publ_*` have been
@@ -811,8 +818,8 @@ Validation does **not** cover:
   which are mandatory per journal). Flagged as a separate concern.
 
 The `_easydiffraction_*` project-extension namespace is excluded from
-the unknown-tag warning by passing `gemmi`'s validator a prefix-skip
-list.
+unknown-tag failures by a prefix-skip rule in the writer validation
+helper.
 
 ### 3. Handler mechanism — `iucr_name` + `IucrCategoryTransformer`
 
@@ -976,10 +983,11 @@ Policy:
   recognisable to scientists familiar with `_refine_ls.*` /
   `_pd_proc_ls.*` from Rietveld publications; the IUCr export carries
   the matching dictionary-canonical category prefixes per topology.
-- IUCr submission becomes a single command, with no manual editing
-  required: `project.save(report=True)` produces an upload-ready file at
-  `reports/<project>.cif` matching the multi-datablock publication
-  convention.
+- IUCr submission becomes a single explicit report command, with no
+  manual editing required: `project.report.save_cif()` produces an
+  upload-ready file at `reports/<project>.cif` matching the
+  multi-datablock publication convention. Users who want CIF reports on
+  every project save can set `project.report.formats = ['cif']`.
 - Publication-metadata placeholders are emitted as `?` in `data_global`
   so users know where to fill in journal-required info before
   submission.
@@ -1005,8 +1013,8 @@ Policy:
   `hb8169.cif` at 50K lines (DDL1 form; DDLm form would be of comparable
   size).
 - IUCr export is one-way. A user who hand-edits a file in `reports/`
-  loses those edits on the next `project.save(report=True)`. Documented
-  as such; treat `reports/` as generated output.
+  loses those edits on the next configured report save. Documented as
+  such; treat `reports/` as generated output.
 - Some external tooling chains (publCIF, journal in-house scripts) may
   still expect DDL1 underscore form. The dotted DDLm form is the
   dictionary spec; if real submissions surface a problem, a downstream
@@ -1020,14 +1028,18 @@ Policy:
   function descriptors, reflns aggregates). `_fit_result.*` stays
   topology-neutral in `analysis/analysis.cif`; per-topology renaming to
   `_refine_ls.*` / `_pd_proc_ls.*` happens only in the IUCr export
-  (§1.2, §3 transformers).
+  (§1.2, §3 transformers). A later project-report amendment adds
+  `_software.*` as the persisted source for report software provenance.
 - [`minimizer-input-output-split.md`](minimizer-input-output-split.md) —
   `_fit_result.*` examples updated for the new fields.
 - [`project-facade-and-persistence.md`](project-facade-and-persistence.md)
   — `project.summary` facade slot is removed and replaced by
-  `project.report`. `summary.cif` is no longer written by default
-  `Project.save()`; the slot is repurposed for IUCr / journal report
-  generation in `reports/<project>.cif` (see §2). The unimplemented
+  `project.report`. The accepted `project.save(report=True)` flag is
+  superseded by `project.report.formats` for configured reports and
+  `project.report.save_cif()` for the IUCr CIF one-off path.
+  `summary.cif` is no longer written by default `Project.save()`; the
+  slot is repurposed for IUCr / journal report generation in
+  `reports/<project>.cif` (see §2). The unimplemented
   `summary_to_cif()` placeholder code path
   ([`project.py:464`](../../../../src/easydiffraction/project/project.py))
   is removed as part of the implementation plan; no summary content
@@ -1038,6 +1050,12 @@ Policy:
   and replaced by `project.report.help()` (same responsibilities, new
   slot name). All other entries in the help-surface table are
   unaffected.
+- [`project-summary-rendering.md`](../suggestions/project-summary-rendering.md)
+  — amends this ADR's report API: public `check()` / `check=True` are
+  removed, gemmi validation moves inside CIF write paths, the
+  `_easydiffraction_software.*` triple is read from `analysis.software`,
+  and `_easydiffraction_software.fit_datetime` is added when fit
+  provenance has a timestamp.
 
 ## Open Questions
 
@@ -1104,7 +1122,7 @@ it.
 
 - **Publication-metadata override hook.** A user-supplied
   `reports/publ_info.json` (or `publ_info.toml`) read by
-  `project.save(report=True)` to replace the `?` placeholders in
+  the IUCr report writer to replace the `?` placeholders in
   `data_global` (`_journal.*`, `_publ_*`, `_publ_author.*` loop
   entries). Out of scope for the first pass; revisit once the IUCr
   export is shipping and users have feedback on workflow friction.
