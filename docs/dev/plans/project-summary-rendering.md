@@ -709,7 +709,7 @@ generated-artifact exceptions.
     `Report.save_tex()` with the real call.
   - Commit: `Add LaTeX renderer and save_tex with vendored styles`.
 
-- [ ] **P1.20 — PDF compilation + `save_pdf(style='iucr')`**
+- [x] **P1.20 — PDF compilation + `save_pdf(style='iucr')`**
   - Files: new
     `src/easydiffraction/report/pdf_compiler.py`;
     modify

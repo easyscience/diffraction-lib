@@ -502,15 +502,12 @@ class Report(CategoryItem):
         Returns
         -------
         pathlib.Path
-            Path of the written PDF report.
-
-        Raises
-        ------
-        NotImplementedError
-            Until the PDF writer lands in a later step.
+            Path of the PDF report, or the intended PDF path when no
+            TeX engine is available.
         """
-        del style
-        raise NotImplementedError('lands in P1.17 / P1.19 / P1.20')
+        from easydiffraction.report.pdf_compiler import save_pdf_report  # noqa: PLC0415
+
+        return save_pdf_report(self.project, self.data_context(), style=style)
 
     def save(self) -> list[pathlib.Path]:
         """
