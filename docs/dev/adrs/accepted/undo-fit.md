@@ -265,7 +265,7 @@ saves the rolled-back state back to the same directory:
 
 ```
 $ python -m easydiffraction projects/lbco_hrpt undo
-Undoing last fit for 'lbco_hrpt'…
+Undoing last fit for 'lbco_hrpt'...
 ✅ Restored 8 parameters to their pre-fit values.
 ✅ Cleared analysis.fit_results.
 ✅ Cleared analysis/results.h5 (Bayesian sidecar).
