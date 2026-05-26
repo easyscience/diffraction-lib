@@ -35,6 +35,22 @@ class LeastSquaresFitResult(FitResultBase):
         'covariance_available',
         'correlation_available',
         'exit_reason',
+        'r_factor_all',
+        'wr_factor_all',
+        'r_factor_gt',
+        'wr_factor_gt',
+        'prof_r_factor',
+        'prof_wr_factor',
+        'prof_wr_expected',
+        'number_restraints',
+        'number_constraints',
+        'shift_over_su_max',
+        'shift_over_su_mean',
+        'profile_function',
+        'background_function',
+        'threshold_expression',
+        'number_reflns_total',
+        'number_reflns_gt',
     )
     _expected_descriptor_names: ClassVar[tuple[str, ...]] = _result_descriptor_names
 
@@ -76,9 +92,85 @@ class LeastSquaresFitResult(FitResultBase):
             'exit_reason',
             'Backend exit reason for the persisted deterministic fit.',
         )
+        self._r_factor_all = self._numeric_result_descriptor(
+            'r_factor_all',
+            'R factor for all observed data in the deterministic fit.',
+            cif_name='R_factor_all',
+        )
+        self._wr_factor_all = self._numeric_result_descriptor(
+            'wr_factor_all',
+            'Weighted R factor for all observed data in the fit.',
+            cif_name='wR_factor_all',
+        )
+        self._r_factor_gt = self._numeric_result_descriptor(
+            'r_factor_gt',
+            'R factor for observations above the threshold.',
+            cif_name='R_factor_gt',
+        )
+        self._wr_factor_gt = self._numeric_result_descriptor(
+            'wr_factor_gt',
+            'Weighted R factor for observations above the threshold.',
+            cif_name='wR_factor_gt',
+        )
+        self._prof_r_factor = self._numeric_result_descriptor(
+            'prof_r_factor',
+            'Profile R factor for powder deterministic fits.',
+            cif_name='prof_R_factor',
+        )
+        self._prof_wr_factor = self._numeric_result_descriptor(
+            'prof_wr_factor',
+            'Weighted profile R factor for powder deterministic fits.',
+            cif_name='prof_wR_factor',
+        )
+        self._prof_wr_expected = self._numeric_result_descriptor(
+            'prof_wr_expected',
+            'Expected weighted profile R factor for powder fits.',
+            cif_name='prof_wR_expected',
+        )
+        self._number_restraints = self._integer_result_descriptor(
+            'number_restraints',
+            'Number of restraints used in the deterministic fit.',
+        )
+        self._number_constraints = self._integer_result_descriptor(
+            'number_constraints',
+            'Number of constraints used in the deterministic fit.',
+        )
+        self._shift_over_su_max = self._numeric_result_descriptor(
+            'shift_over_su_max',
+            'Maximum absolute parameter shift divided by s.u.',
+        )
+        self._shift_over_su_mean = self._numeric_result_descriptor(
+            'shift_over_su_mean',
+            'Mean absolute parameter shift divided by s.u.',
+        )
+        self._profile_function = self._string_result_descriptor(
+            'profile_function',
+            'Active profile function names for the deterministic fit.',
+        )
+        self._background_function = self._string_result_descriptor(
+            'background_function',
+            'Active background function names for the deterministic fit.',
+        )
+        self._threshold_expression = self._string_result_descriptor(
+            'threshold_expression',
+            'Expression defining the observed-reflection threshold.',
+        )
+        self._number_reflns_total = self._integer_result_descriptor(
+            'number_reflns_total',
+            'Total number of reflections represented in the fit.',
+        )
+        self._number_reflns_gt = self._integer_result_descriptor(
+            'number_reflns_gt',
+            'Number of reflections above the observed threshold.',
+        )
 
     @staticmethod
-    def _string_result_descriptor(name: str, description: str) -> StringDescriptor:
+    def _string_result_descriptor(
+        name: str,
+        description: str,
+        *,
+        cif_name: str | None = None,
+    ) -> StringDescriptor:
         """
         Create a string-valued result descriptor.
 
@@ -90,7 +182,7 @@ class LeastSquaresFitResult(FitResultBase):
             name=name,
             description=description,
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(names=[f'_fit_result.{name}']),
+            cif_handler=CifHandler(names=[f'_fit_result.{cif_name or name}']),
         )
 
     @staticmethod
@@ -100,13 +192,14 @@ class LeastSquaresFitResult(FitResultBase):
         *,
         default: float | None = None,
         allow_none: bool = True,
+        cif_name: str | None = None,
     ) -> NumericDescriptor:
         """Create a numeric result descriptor."""
         return NumericDescriptor(
             name=name,
             description=description,
             value_spec=AttributeSpec(default=default, allow_none=allow_none),
-            cif_handler=CifHandler(names=[f'_fit_result.{name}']),
+            cif_handler=CifHandler(names=[f'_fit_result.{cif_name or name}']),
         )
 
     @staticmethod
@@ -233,3 +326,131 @@ class LeastSquaresFitResult(FitResultBase):
 
     def _set_exit_reason(self, value: str | None) -> None:
         self._exit_reason.value = value
+
+    @property
+    def r_factor_all(self) -> NumericDescriptor:
+        """R factor for all observed data."""
+        return self._r_factor_all
+
+    def _set_r_factor_all(self, value: float | None) -> None:
+        self._r_factor_all.value = value
+
+    @property
+    def wr_factor_all(self) -> NumericDescriptor:
+        """Weighted R factor for all observed data."""
+        return self._wr_factor_all
+
+    def _set_wr_factor_all(self, value: float | None) -> None:
+        self._wr_factor_all.value = value
+
+    @property
+    def r_factor_gt(self) -> NumericDescriptor:
+        """R factor for observations above the threshold."""
+        return self._r_factor_gt
+
+    def _set_r_factor_gt(self, value: float | None) -> None:
+        self._r_factor_gt.value = value
+
+    @property
+    def wr_factor_gt(self) -> NumericDescriptor:
+        """Weighted R factor for observations above the threshold."""
+        return self._wr_factor_gt
+
+    def _set_wr_factor_gt(self, value: float | None) -> None:
+        self._wr_factor_gt.value = value
+
+    @property
+    def prof_r_factor(self) -> NumericDescriptor:
+        """Profile R factor for powder fits."""
+        return self._prof_r_factor
+
+    def _set_prof_r_factor(self, value: float | None) -> None:
+        self._prof_r_factor.value = value
+
+    @property
+    def prof_wr_factor(self) -> NumericDescriptor:
+        """Weighted profile R factor for powder fits."""
+        return self._prof_wr_factor
+
+    def _set_prof_wr_factor(self, value: float | None) -> None:
+        self._prof_wr_factor.value = value
+
+    @property
+    def prof_wr_expected(self) -> NumericDescriptor:
+        """Expected weighted profile R factor for powder fits."""
+        return self._prof_wr_expected
+
+    def _set_prof_wr_expected(self, value: float | None) -> None:
+        self._prof_wr_expected.value = value
+
+    @property
+    def number_restraints(self) -> NumericDescriptor:
+        """Number of restraints used in the deterministic fit."""
+        return self._number_restraints
+
+    def _set_number_restraints(self, value: float | None) -> None:
+        self._number_restraints.value = value
+
+    @property
+    def number_constraints(self) -> NumericDescriptor:
+        """Number of constraints used in the deterministic fit."""
+        return self._number_constraints
+
+    def _set_number_constraints(self, value: float | None) -> None:
+        self._number_constraints.value = value
+
+    @property
+    def shift_over_su_max(self) -> NumericDescriptor:
+        """Maximum absolute parameter shift divided by s.u."""
+        return self._shift_over_su_max
+
+    def _set_shift_over_su_max(self, value: float | None) -> None:
+        self._shift_over_su_max.value = value
+
+    @property
+    def shift_over_su_mean(self) -> NumericDescriptor:
+        """Mean absolute parameter shift divided by s.u."""
+        return self._shift_over_su_mean
+
+    def _set_shift_over_su_mean(self, value: float | None) -> None:
+        self._shift_over_su_mean.value = value
+
+    @property
+    def profile_function(self) -> StringDescriptor:
+        """Active profile function names."""
+        return self._profile_function
+
+    def _set_profile_function(self, value: str | None) -> None:
+        self._profile_function.value = value
+
+    @property
+    def background_function(self) -> StringDescriptor:
+        """Active background function names."""
+        return self._background_function
+
+    def _set_background_function(self, value: str | None) -> None:
+        self._background_function.value = value
+
+    @property
+    def threshold_expression(self) -> StringDescriptor:
+        """Expression defining the observed-reflection threshold."""
+        return self._threshold_expression
+
+    def _set_threshold_expression(self, value: str | None) -> None:
+        self._threshold_expression.value = value
+
+    @property
+    def number_reflns_total(self) -> NumericDescriptor:
+        """Total number of reflections represented in the fit."""
+        return self._number_reflns_total
+
+    def _set_number_reflns_total(self, value: float | None) -> None:
+        self._number_reflns_total.value = value
+
+    @property
+    def number_reflns_gt(self) -> NumericDescriptor:
+        """Number of reflections above the observed threshold."""
+        return self._number_reflns_gt
+
+    def _set_number_reflns_gt(self, value: float | None) -> None:
+        self._number_reflns_gt.value = value
