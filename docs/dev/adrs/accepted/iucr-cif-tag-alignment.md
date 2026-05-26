@@ -192,7 +192,7 @@ shows the dotted DDLm tag emitted under
 | `_minimizer.*` settings (tolerances, max_iter, …)             | none                                                  | Analysis — unchanged           | `_easydiffraction_minimizer.*` (settings only, separate from the identification triple).                              |
 | `_fitting_mode.type`, `_background.type`                      | none                                                  | Analysis / Experiment — unchanged | `_easydiffraction_fitting_mode.type`, `_easydiffraction_background.type` selectors.                                  |
 | `_fit_result.reduced_chi_square`, `n_data_points`, `n_parameters` | core (`_refine_ls.*`) and pdCIF (`_pd_proc_ls.*`)     | Analysis — unchanged (topology-neutral) | Shape-shifting per topology: see §1.2 and §3 transformers.                                                            |
-| `_fit_result.*` (R-factors, counts, shift_over_su, profile/background function) | core / pdCIF                                          | Analysis — new fields under `_fit_result.*` | IUCr export remaps to per-topology `_refine_ls.*` / `_pd_proc_ls.*`; item names already match dictionary casing (§1.2). |
+| `_fit_result.*` (R-factors, counts, profile/background function) | core / pdCIF                                          | Analysis — new fields under `_fit_result.*` | IUCr export remaps to per-topology `_refine_ls.*` / `_pd_proc_ls.*`; item names already match dictionary casing (§1.2). |
 | `_fit_result.*` (Bayesian diagnostics, success, message, fitting_time, iterations, result_kind) | none                                                  | Analysis — unchanged           | `_easydiffraction_fit_result.*`.                                                                                      |
 | `_fit_parameter`, `_fit_parameter_correlation`                | none / partial                                         | Analysis — unchanged           | `_easydiffraction_fit_parameter*` (no IUCr counterpart for per-parameter posterior).                                  |
 | `_alias`, `_constraint`                                       | none                                                  | Analysis — unchanged           | `_easydiffraction_alias*`, `_easydiffraction_constraint*`.                                                            |
@@ -259,9 +259,7 @@ In `analysis/analysis.cif`:
     `_fit_result.prof_wR_expected` (powder-only, derived from
     profile residuals).
   - `_fit_result.number_restraints`,
-    `_fit_result.number_constraints`.
-  - `_fit_result.shift_over_su_max`,
-    `_fit_result.shift_over_su_mean`.
+    `_fit_result.number_constraints` (written only when positive).
   - `_fit_result.profile_function`,
     `_fit_result.background_function` (powder; free-text
     descriptors of the active peak and background categories).
@@ -271,8 +269,11 @@ In `analysis/analysis.cif`:
     R-factor pair interpretable.
   Fields that are not meaningful for a given experiment family
   (e.g., `prof_R_factor` for a single-crystal-only refinement)
-  are left unset in `_fit_result.*`; the IUCr export omits them
-  per block.
+  are omitted from `_fit_result.*`; the IUCr export omits them
+  per block. Live deterministic fit results may still carry
+  runtime-only convergence diagnostics such as `shift_over_su_max`
+  and `shift_over_su_mean`, but those are not part of the default
+  `analysis/analysis.cif` fit-result projection.
 - Bayesian diagnostics, success/message/iterations/fitting_time,
   `result_kind`, `point_estimate_name`, fit-parameter posterior
   summaries, and the `_alias` / `_constraint` /
@@ -1062,12 +1063,11 @@ Policy:
 
 - [`analysis-cif-fit-state.md`](analysis-cif-fit-state.md)
   — new IUCr-named fields added under `_fit_result.*` in the
-  default save (R-factors, restraint/constraint counts,
-  shift_over_su, profile/background function descriptors,
-  reflns aggregates). `_fit_result.*` stays topology-neutral
-  in `analysis/analysis.cif`; per-topology renaming to
-  `_refine_ls.*` / `_pd_proc_ls.*` happens only in the IUCr
-  export (§1.2, §3 transformers).
+  default save (R-factors, positive restraint/constraint counts,
+  profile/background function descriptors, reflns aggregates).
+  `_fit_result.*` stays topology-neutral in `analysis/analysis.cif`;
+  per-topology renaming to `_refine_ls.*` / `_pd_proc_ls.*`
+  happens only in the IUCr export (§1.2, §3 transformers).
 - [`minimizer-input-output-split.md`](minimizer-input-output-split.md)
   — `_fit_result.*` examples updated for the new fields.
 - [`project-facade-and-persistence.md`](project-facade-and-persistence.md)

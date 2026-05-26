@@ -118,27 +118,43 @@ Deterministic fit-result classes add compact fit output counts:
 - `degrees_of_freedom`
 - `covariance_available`
 - `correlation_available`
+
+These deterministic fields are always written once a deterministic
+fit-result projection exists.
+
+Reflection-result fields are written only when a fitted experiment
+has persisted reflection rows:
+
 - `R_factor_all`
 - `wR_factor_all`
 - `R_factor_gt`
 - `wR_factor_gt`
-- `prof_R_factor`
-- `prof_wR_factor`
-- `prof_wR_expected`
-- `number_restraints`
-- `number_constraints`
-- `shift_over_su_max`
-- `shift_over_su_mean`
-- `profile_function`
-- `background_function`
 - `threshold_expression`
 - `number_reflns_total`
 - `number_reflns_gt`
 
-The deterministic R-factor, profile, restraint / constraint, shift, and
-reflection-aggregate fields use dictionary-canonical item names where
-those exist, including uppercase `R` / `wR`, while retaining the
-project-side `_fit_result` category prefix in the default save.
+Powder-profile fields are written only when the result contains
+powder profile diagnostics:
+
+- `prof_R_factor`
+- `prof_wR_factor`
+- `prof_wR_expected`
+- `profile_function`
+- `background_function`
+
+Restraint and constraint counts are written only when positive:
+
+- `number_restraints`
+- `number_constraints`
+
+The deterministic R-factor, profile, restraint / constraint, and
+reflection-aggregate fields use dictionary-canonical item names
+where those exist, including uppercase `R` / `wR`, while retaining
+the project-side `_fit_result` category prefix in the default save.
+Live deterministic fit results may also carry transient diagnostics
+such as `shift_over_su_max` and `shift_over_su_mean`; those are not
+written to `analysis/analysis.cif` until a topology-specific
+persistence contract needs them.
 
 When the LSQ backend provides a termination reason that differs from the
 common `_fit_result.message`, deterministic fit results also store:

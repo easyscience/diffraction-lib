@@ -167,6 +167,16 @@ live on `FitResultBase`; family-specific fields on the concrete classes:
   `resolved_random_seed`, `acceptance_rate_mean`, `gelman_rubin_max`,
   `effective_sample_size_min`, `best_log_posterior`.
 
+The live deterministic result class may expose more descriptors than
+are written for a specific saved result. `analysis/analysis.cif`
+serializes the active subset: common LSQ descriptors, reflection
+descriptors only when reflection rows exist, powder-profile
+descriptors only for powder-profile results, and restraint /
+constraint counts only when positive. Transient convergence
+diagnostics such as `shift_over_su_max` and `shift_over_su_mean`
+remain live-result/report concerns and are not part of the default
+fit-result CIF projection.
+
 The three overlapping pairs from §"Context" are resolved by **dropping
 the `minimizer` copy** and keeping the `fit_result` copy:
 
@@ -221,10 +231,7 @@ _fit_result.wR_factor_gt           0.049
 _fit_result.prof_R_factor          0.041
 _fit_result.prof_wR_factor         0.052
 _fit_result.prof_wR_expected       0.031
-_fit_result.number_restraints      0
 _fit_result.number_constraints     2
-_fit_result.shift_over_su_max      0.12
-_fit_result.shift_over_su_mean     0.03
 _fit_result.profile_function       pseudo_voigt
 _fit_result.background_function    chebyshev
 _fit_result.threshold_expression   I>3\s(I)
