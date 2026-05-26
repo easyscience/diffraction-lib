@@ -573,26 +573,29 @@ def analysis_from_cif(analysis: object, cif_text: str) -> None:
     if analysis.constraints._items:
         analysis.constraints.enable()
 
+    if _has_fit_parameter_state_sections(block):
+        _restore_fit_parameter_state(analysis, block)
     if _has_persisted_fit_state_sections(block):
         _restore_persisted_fit_state(analysis, block)
 
 
+def _has_fit_parameter_state_sections(block: object) -> bool:
+    """Return True when persisted fit-parameter rows are present."""
+    return _has_cif_loop(block, '_fit_parameter.param_unique_name')
+
+
 def _has_persisted_fit_state_sections(block: object) -> bool:
-    """Return True when any persisted fit-state section is present."""
-    scalar_tags = ('_fit_result.result_kind',)
-    loop_tags = (
-        '_fit_parameter.param_unique_name',
-        '_fit_parameter_correlation.param_unique_name_i',
-    )
-
-    return any(_has_cif_value(block, tag) for tag in scalar_tags) or any(
-        _has_cif_loop(block, tag) for tag in loop_tags
-    )
+    """Return True when a fit-result projection is present."""
+    return _has_cif_value(block, '_fit_result.result_kind')
 
 
-def _restore_common_fit_state(analysis: object, block: object) -> None:
-    """Restore fit-state categories shared by both fit kinds."""
+def _restore_fit_parameter_state(analysis: object, block: object) -> None:
+    """Restore fit-parameter rows independently of fit results."""
     analysis.fit_parameters.from_cif(block)
+
+
+def _restore_fit_result_state(analysis: object, block: object) -> None:
+    """Restore categories that describe the latest fit result."""
     analysis.fit_result.from_cif(block)
     analysis.fit_parameter_correlations.from_cif(block)
 
@@ -604,7 +607,7 @@ def _restore_persisted_fit_state(analysis: object, block: object) -> None:
     from easydiffraction.analysis.enums import FitResultKindEnum  # noqa: PLC0415
 
     analysis._set_has_persisted_fit_state(value=True)
-    _restore_common_fit_state(analysis, block)
+    _restore_fit_result_state(analysis, block)
 
     result_kind_value = analysis.fit_result.result_kind.value
     try:
