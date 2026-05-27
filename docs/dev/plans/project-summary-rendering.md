@@ -545,7 +545,7 @@ exceptions.
   - Commit:
     `Migrate descriptor units to ASCII codes with DisplayHandler`.
 
-- [ ] **P1.11 — Migrate table-rendering paths to read via `DisplayHandler`**
+- [x] **P1.11 — Migrate table-rendering paths to read via `DisplayHandler`**
   - Files: existing
     `src/easydiffraction/project/categories/report/default.py`,
     `src/easydiffraction/report/data_context.py`,

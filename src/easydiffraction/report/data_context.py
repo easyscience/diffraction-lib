@@ -23,11 +23,33 @@ _STRUCTURE_CELL_FIELDS = (
     'angle_beta',
     'angle_gamma',
 )
+_ATOM_SITE_FIELDS = (
+    'label',
+    'type_symbol',
+    'fract_x',
+    'fract_y',
+    'fract_z',
+    'occupancy',
+    'adp_iso',
+)
+_ATOM_SITE_ANISO_FIELDS = (
+    'label',
+    'adp_11',
+    'adp_22',
+    'adp_33',
+    'adp_12',
+    'adp_13',
+    'adp_23',
+)
 _EXPERIMENT_TYPE_FIELDS = (
     'sample_form',
     'beam_mode',
     'radiation_probe',
     'scattering_type',
+)
+_EXPERIMENT_DIFFRN_FIELDS = (
+    'ambient_temperature',
+    'ambient_pressure',
 )
 _FIT_RESULT_FIELDS = (
     'result_kind',
@@ -157,24 +179,55 @@ class ReportDataContext:
     def _structure_context(self, structure: object) -> dict[str, object]:
         """Return one structure summary."""
         space_group = _safe_attr(structure, 'space_group')
+        cell = _safe_attr(structure, 'cell')
+        atom_sites = list(_collection_values(_safe_attr(structure, 'atom_sites')))
+        aniso_sites = list(_collection_values(_safe_attr(structure, 'atom_site_aniso')))
         return {
             'id': _safe_attr(structure, 'name'),
             'space_group': _attr_value(space_group, 'name_h_m'),
             'crystal_system': _attr_value(space_group, 'crystal_system'),
             'cell': _display_field_values(
-                _safe_attr(structure, 'cell'),
+                cell,
                 _STRUCTURE_CELL_FIELDS,
+            ),
+            'cell_display': _display_field_metadata(
+                cell,
+                _STRUCTURE_CELL_FIELDS,
+                context='html',
+            ),
+            'cell_latex': _display_field_metadata(
+                cell,
+                _STRUCTURE_CELL_FIELDS,
+                context='latex',
             ),
             'atom_sites': [
                 self._atom_site_context(atom_site)
-                for atom_site in _collection_values(_safe_attr(structure, 'atom_sites'))
+                for atom_site in atom_sites
             ],
+            'atom_site_display': _display_field_metadata(
+                atom_sites[0] if atom_sites else None,
+                _ATOM_SITE_FIELDS,
+                context='html',
+            ),
+            'atom_site_latex': _display_field_metadata(
+                atom_sites[0] if atom_sites else None,
+                _ATOM_SITE_FIELDS,
+                context='latex',
+            ),
             'atom_site_aniso': [
                 self._atom_site_aniso_context(aniso_site)
-                for aniso_site in _collection_values(
-                    _safe_attr(structure, 'atom_site_aniso')
-                )
+                for aniso_site in aniso_sites
             ],
+            'atom_site_aniso_display': _display_field_metadata(
+                aniso_sites[0] if aniso_sites else None,
+                _ATOM_SITE_ANISO_FIELDS,
+                context='html',
+            ),
+            'atom_site_aniso_latex': _display_field_metadata(
+                aniso_sites[0] if aniso_sites else None,
+                _ATOM_SITE_ANISO_FIELDS,
+                context='latex',
+            ),
         }
 
     def _atom_site_context(self, atom_site: object) -> dict[str, object]:
@@ -205,6 +258,7 @@ class ReportDataContext:
     def _experiment_context(self, experiment: object) -> dict[str, object]:
         """Return one experiment summary."""
         calculator = _safe_attr(experiment, 'calculator')
+        diffrn = _safe_attr(experiment, 'diffrn')
         return {
             'id': _safe_attr(experiment, 'name'),
             'type': _field_values(
@@ -216,14 +270,24 @@ class ReportDataContext:
             },
             'diffrn': {
                 'ambient_temperature': _attr_value(
-                    _safe_attr(experiment, 'diffrn'),
+                    diffrn,
                     'ambient_temperature',
                 ),
                 'ambient_pressure': _attr_value(
-                    _safe_attr(experiment, 'diffrn'),
+                    diffrn,
                     'ambient_pressure',
                 ),
             },
+            'diffrn_display': _display_field_metadata(
+                diffrn,
+                _EXPERIMENT_DIFFRN_FIELDS,
+                context='html',
+            ),
+            'diffrn_latex': _display_field_metadata(
+                diffrn,
+                _EXPERIMENT_DIFFRN_FIELDS,
+                context='latex',
+            ),
             'measured_range': _value(_safe_attr(experiment, 'measured_range')),
         }
 
@@ -360,6 +424,28 @@ def _field_values(owner: object, fields: tuple[str, ...]) -> dict[str, object]:
 def _display_field_values(owner: object, fields: tuple[str, ...]) -> dict[str, object]:
     """Return display values for a fixed field list."""
     return {field: _attr_display_value(owner, field) for field in fields}
+
+
+def _display_field_metadata(
+    owner: object,
+    fields: tuple[str, ...],
+    *,
+    context: str,
+) -> dict[str, dict[str, str]]:
+    """Return display labels and units for a fixed field list."""
+    return {
+        field: _display_metadata(_safe_attr(owner, field), context=context)
+        for field in fields
+    }
+
+
+def _display_metadata(value: object, *, context: str) -> dict[str, str]:
+    """Return display label and units for one descriptor."""
+    name_resolver = getattr(value, 'resolve_display_name', None)
+    units_resolver = getattr(value, 'resolve_display_units', None)
+    label = name_resolver(context) if callable(name_resolver) else ''
+    units = units_resolver(context) if callable(units_resolver) else ''
+    return {'label': label, 'units': units}
 
 
 def _software_role_context(role: object) -> dict[str, object]:

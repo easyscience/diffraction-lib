@@ -1,5 +1,8 @@
 \documentclass{styles/iucrjournals}
 {% raw %}\graphicspath{{figures/}}{% endraw %}
+{% macro tex_field_header(field, fallback) -%}
+{{ field.label or fallback }}{% if field.units %} ({{ field.units }}){% endif %}
+{%- endmacro %}
 
 \title{ {{- (publication.body.title or project.title or project.name or "EasyDiffraction report") | tex -}} }
 {% if publication.authors %}
@@ -58,17 +61,14 @@ Minimizer & {{ software.minimizer.name | tex }} & {{ software.minimizer.version 
 \begin{tabular}{ll}
 Space group & {{ structure.space_group | tex }} \\
 Crystal system & {{ structure.crystal_system | tex }} \\
-$a$ & {{ structure.cell.length_a | tex_number }} \\
-$b$ & {{ structure.cell.length_b | tex_number }} \\
-$c$ & {{ structure.cell.length_c | tex_number }} \\
-$\alpha$ & {{ structure.cell.angle_alpha | tex_number }} \\
-$\beta$ & {{ structure.cell.angle_beta | tex_number }} \\
-$\gamma$ & {{ structure.cell.angle_gamma | tex_number }} \\
+{% for key, value in structure.cell.items() %}
+{{ tex_field_header(structure.cell_latex[key], key | replace("_", " ")) }} & {{ value | tex_number }} \\
+{% endfor %}
 \end{tabular}
 
 {% if structure.atom_sites %}
 \begin{tabular}{lllllll}
-Label & Type & $x$ & $y$ & $z$ & Occ. & ADP \\
+Label & Type & $x$ & $y$ & $z$ & Occ. & {{ tex_field_header(structure.atom_site_latex.adp_iso, "ADP") }} \\
 {% for atom in structure.atom_sites %}
 {{ atom.label | tex }} & {{ atom.type_symbol | tex }} & {{ atom.fract_x | tex_number }} & {{ atom.fract_y | tex_number }} & {{ atom.fract_z | tex_number }} & {{ atom.occupancy | tex_number }} & {{ atom.adp_iso | tex_number }} \\
 {% endfor %}
@@ -77,7 +77,7 @@ Label & Type & $x$ & $y$ & $z$ & Occ. & ADP \\
 {% endif %}
 {% if structure.atom_site_aniso %}
 \begin{tabular}{lllllll}
-Label & ADP 11 & ADP 22 & ADP 33 & ADP 12 & ADP 13 & ADP 23 \\
+Label & {{ tex_field_header(structure.atom_site_aniso_latex.adp_11, "ADP 11") }} & {{ tex_field_header(structure.atom_site_aniso_latex.adp_22, "ADP 22") }} & {{ tex_field_header(structure.atom_site_aniso_latex.adp_33, "ADP 33") }} & {{ tex_field_header(structure.atom_site_aniso_latex.adp_12, "ADP 12") }} & {{ tex_field_header(structure.atom_site_aniso_latex.adp_13, "ADP 13") }} & {{ tex_field_header(structure.atom_site_aniso_latex.adp_23, "ADP 23") }} \\
 {% for aniso in structure.atom_site_aniso %}
 {{ aniso.label | tex }} & {{ aniso.adp_11 | tex_number }} & {{ aniso.adp_22 | tex_number }} & {{ aniso.adp_33 | tex_number }} & {{ aniso.adp_12 | tex_number }} & {{ aniso.adp_13 | tex_number }} & {{ aniso.adp_23 | tex_number }} \\
 {% endfor %}
@@ -97,8 +97,8 @@ Probe & {{ experiment.type.radiation_probe | tex }} \\
 Beam mode & {{ experiment.type.beam_mode | tex }} \\
 Scattering type & {{ experiment.type.scattering_type | tex }} \\
 Calculator & {{ experiment.calculator.type | tex }} \\
-Temperature & {{ experiment.diffrn.ambient_temperature | tex_number }} \\
-Pressure & {{ experiment.diffrn.ambient_pressure | tex_number }} \\
+{{ tex_field_header(experiment.diffrn_latex.ambient_temperature, "Temperature") }} & {{ experiment.diffrn.ambient_temperature | tex_number }} \\
+{{ tex_field_header(experiment.diffrn_latex.ambient_pressure, "Pressure") }} & {{ experiment.diffrn.ambient_pressure | tex_number }} \\
 \end{tabular}
 
 {% if tex.fit_figure_paths[experiment.id] %}

@@ -20,6 +20,9 @@
   </table>
 </article>
 {%- endmacro %}
+{% macro field_header(field, fallback) -%}
+{{ field.label or fallback }}{% if field.units %} ({{ field.units }}){% endif %}
+{%- endmacro %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -146,7 +149,7 @@
           <tbody>
             {% for key, value in structure.cell.items() %}
             <tr>
-              <th>{{ key | replace("_", " ") }}</th>
+              <th>{{ field_header(structure.cell_display[key], key | replace("_", " ")) }}</th>
               <td>{{ base.format_number(value) }}</td>
             </tr>
             {% endfor %}
@@ -159,11 +162,11 @@
               <tr>
                 <th>Label</th>
                 <th>Type</th>
-                <th>x</th>
-                <th>y</th>
-                <th>z</th>
+                <th>{{ field_header(structure.atom_site_display.fract_x, "x") }}</th>
+                <th>{{ field_header(structure.atom_site_display.fract_y, "y") }}</th>
+                <th>{{ field_header(structure.atom_site_display.fract_z, "z") }}</th>
                 <th>Occ.</th>
-                <th>ADP</th>
+                <th>{{ field_header(structure.atom_site_display.adp_iso, "ADP") }}</th>
               </tr>
             </thead>
             <tbody>
@@ -188,12 +191,12 @@
             <thead>
               <tr>
                 <th>Label</th>
-                <th>ADP 11</th>
-                <th>ADP 22</th>
-                <th>ADP 33</th>
-                <th>ADP 12</th>
-                <th>ADP 13</th>
-                <th>ADP 23</th>
+                <th>{{ field_header(structure.atom_site_aniso_display.adp_11, "ADP 11") }}</th>
+                <th>{{ field_header(structure.atom_site_aniso_display.adp_22, "ADP 22") }}</th>
+                <th>{{ field_header(structure.atom_site_aniso_display.adp_33, "ADP 33") }}</th>
+                <th>{{ field_header(structure.atom_site_aniso_display.adp_12, "ADP 12") }}</th>
+                <th>{{ field_header(structure.atom_site_aniso_display.adp_13, "ADP 13") }}</th>
+                <th>{{ field_header(structure.atom_site_aniso_display.adp_23, "ADP 23") }}</th>
               </tr>
             </thead>
             <tbody>
@@ -235,11 +238,11 @@
               <td>{{ experiment.calculator.type or "not available" }}</td>
             </tr>
             <tr>
-              <th>Temperature</th>
+              <th>{{ field_header(experiment.diffrn_display.ambient_temperature, "Temperature") }}</th>
               <td>{{ base.format_number(experiment.diffrn.ambient_temperature) }}</td>
             </tr>
             <tr>
-              <th>Pressure</th>
+              <th>{{ field_header(experiment.diffrn_display.ambient_pressure, "Pressure") }}</th>
               <td>{{ base.format_number(experiment.diffrn.ambient_pressure) }}</td>
             </tr>
           </tbody>

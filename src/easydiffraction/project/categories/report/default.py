@@ -182,7 +182,8 @@ class Report(CategoryItem):
         value = f'{parameter.value:.{digits}f}'
         uncertainty = parameter.uncertainty
         uncertainty = f'{uncertainty:.{digits}f}' if uncertainty is not None else ''
-        return [pretty_name, value, uncertainty]
+        units = parameter.resolve_display_units('gui')
+        return [pretty_name, value, uncertainty, units]
 
     # ------------------------------------------
     #  Report Generation
@@ -224,8 +225,8 @@ class Report(CategoryItem):
             console.paragraph('Space group')
             console.print(structure.space_group.name_h_m.value)
 
-            columns_headers = ['Parameter', 'Value', 'Uncertainty']
-            columns_alignment = ['left', 'right', 'right']
+            columns_headers = ['Parameter', 'Value', 'Uncertainty', 'Unit']
+            columns_alignment = ['left', 'right', 'right', 'left']
             columns_data = [
                 Report._fmt_row('a', structure.cell.length_a),
                 Report._fmt_row('b', structure.cell.length_a),
@@ -311,8 +312,8 @@ class Report(CategoryItem):
             if 'peak' in expt._public_attrs():
                 if 'broad_gauss_u' in expt.peak._public_attrs():
                     console.paragraph('Peak broadening (Gaussian)')
-                    columns_headers = ['Parameter', 'Value', 'Uncertainty']
-                    columns_alignment = ['left', 'right', 'right']
+                    columns_headers = ['Parameter', 'Value', 'Uncertainty', 'Unit']
+                    columns_alignment = ['left', 'right', 'right', 'left']
                     columns_data = [
                         Report._fmt_row('U', expt.peak.broad_gauss_u),
                         Report._fmt_row('V', expt.peak.broad_gauss_v),
@@ -327,8 +328,8 @@ class Report(CategoryItem):
                     console.paragraph('Peak broadening (Lorentzian)')
                     # TODO: Some headers capitalize, some don't -
                     #  be consistent
-                    columns_headers = ['Parameter', 'Value', 'Uncertainty']
-                    columns_alignment = ['left', 'right', 'right']
+                    columns_headers = ['Parameter', 'Value', 'Uncertainty', 'Unit']
+                    columns_alignment = ['left', 'right', 'right', 'left']
                     columns_data = [
                         Report._fmt_row('X', expt.peak.broad_lorentz_x),
                         Report._fmt_row('Y', expt.peak.broad_lorentz_y),
@@ -340,8 +341,8 @@ class Report(CategoryItem):
                     )
                 if 'asym_empir_1' in expt.peak._public_attrs():
                     console.paragraph('Asymmetry (Empirical)')
-                    columns_headers = ['Parameter', 'Value', 'Uncertainty']
-                    columns_alignment = ['left', 'right', 'right']
+                    columns_headers = ['Parameter', 'Value', 'Uncertainty', 'Unit']
+                    columns_alignment = ['left', 'right', 'right', 'left']
                     columns_data = [
                         Report._fmt_row('p1', expt.peak.asym_empir_1),
                         Report._fmt_row('p2', expt.peak.asym_empir_2),
