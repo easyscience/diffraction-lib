@@ -620,22 +620,22 @@ project.display.pattern(expt_name='hrpt')
 project.display.pattern(expt_name='hrpt', x_min=38, x_max=41)
 
 # %% [markdown]
-# #### Save Project State and HTML Report
-
-# %%
-project.report.formats = ['html']
-project.save()
-
-# %% [markdown]
-# ## Step 5: Report
+# ## Step 5: Generate Report
 #
 # This final section shows how to review the results of the analysis.
 #
-# The saved HTML report is available under `reports/<project>.html`
-# inside the project directory.
-
-# %% [markdown]
-# #### Show Project Report
+# By default, no report files are generated. Here we enable all
+# supported report formats. The generated report files will be saved in
+# the `reports` folder of the project directory.
 
 # %%
-project.report.show_report()
+# project.report.formats = ['cif', 'html', 'tex', 'pdf'] # Need this?
+project.report.cif = True
+project.report.html = True
+project.report.tex = True
+project.report.pdf = True
+
+project.save()
+
+# %%
+# project.report.show_report() # Need this?

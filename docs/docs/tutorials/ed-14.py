@@ -158,3 +158,18 @@ project.display.pattern(expt_name='heidi')
 
 # %%
 structure.show_as_cif()
+
+# %% [markdown]
+# ## Step 6: Generate Report
+#
+# By default, no report files are generated. Here we enable all
+# supported report formats. The generated report files will be saved in
+# the `reports` folder of the project directory.
+
+# %%
+project.report.cif = True
+project.report.html = True
+project.report.tex = True
+project.report.pdf = True
+
+project.save()
