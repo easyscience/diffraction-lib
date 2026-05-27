@@ -406,7 +406,7 @@ exceptions.
     works.
   - Commit: `Add DisplayHandler value object for descriptors`.
 
-- [ ] **P1.7 — Wire `display_handler` slot + resolution helpers on `Descriptor`**
+- [x] **P1.7 — Wire `display_handler` slot + resolution helpers on `Descriptor`**
   - Files: existing
     `src/easydiffraction/core/descriptor.py` (or
     `parameter.py` / `base_descriptor.py`, whichever owns
