@@ -23,14 +23,6 @@ _TEX_SPECIAL_CHARS = {
     '~': r'\textasciitilde{}',
     '^': r'\textasciicircum{}',
 }
-_BROWSER_HINT = (
-    'Kaleido v1 requires Chrome/Chromium for static image export. Use '
-    'an installed Chrome, Chromium, or Edge browser, or run '
-    '`python -c "import kaleido; kaleido.get_chrome()"` once to '
-    'download Kaleido-managed Chromium, then re-run report generation.'
-)
-
-
 def tex_report_path(
     project: object,
     path: str | pathlib.Path | None = None,
@@ -82,9 +74,7 @@ def render_tex_report(context: dict[str, object]) -> str:
         Complete LaTeX document.
     """
     template_context = dict(context)
-    template_context['tex'] = {
-        'fit_figure_paths': _fit_figure_paths(context),
-    }
+    template_context['tex'] = {'fit_figure_paths': {}}
     return _environment().get_template(_TEMPLATE_NAME).render(**template_context)
 
 
@@ -113,16 +103,13 @@ def save_tex_report(
     """
     output_path = tex_report_path(project, path)
     tex_dir = output_path.parent
-    figures_dir = tex_dir / 'figures'
     styles_dir = tex_dir / 'styles'
 
     tex_dir.mkdir(parents=True, exist_ok=True)
-    figures_dir.mkdir(parents=True, exist_ok=True)
     styles_dir.mkdir(parents=True, exist_ok=True)
 
-    figure_paths = _write_fit_figures(context, figures_dir)
     template_context = dict(context)
-    template_context['tex'] = {'fit_figure_paths': figure_paths}
+    template_context['tex'] = {'fit_figure_paths': {}}
     output_path.write_text(
         _render_prepared_context(template_context),
         encoding='utf-8',
@@ -149,88 +136,6 @@ def _environment() -> Environment:
     return environment
 
 
-def _fit_figure_paths(context: dict[str, object]) -> dict[str, str]:
-    """Return relative TeX paths for fit figures."""
-    return {
-        experiment_id: f'figures/{filename}'
-        for experiment_id, filename in _fit_figure_filenames(context).items()
-    }
-
-
-def _write_fit_figures(
-    context: dict[str, object],
-    figures_dir: pathlib.Path,
-) -> dict[str, str]:
-    """Write fit figures as vector PDFs and return relative paths."""
-    figures = _fit_figures(context)
-    filenames = _fit_figure_filenames(context)
-    figure_paths = {}
-    for experiment_id, figure in figures.items():
-        filename = filenames[experiment_id]
-        output_path = figures_dir / filename
-        _write_plotly_figure(figure, output_path, experiment_id=experiment_id)
-        figure_paths[experiment_id] = f'figures/{filename}'
-    return figure_paths
-
-
-def _fit_figure_filenames(context: dict[str, object]) -> dict[str, str]:
-    """Return collision-safe filenames for fit figures."""
-    used: set[str] = set()
-    filenames = {}
-    for experiment_id in _fit_figures(context):
-        stem = _safe_file_stem(experiment_id)
-        filename = f'fit_{stem}.pdf'
-        suffix = 2
-        while filename in used:
-            filename = f'fit_{stem}_{suffix}.pdf'
-            suffix += 1
-        used.add(filename)
-        filenames[experiment_id] = filename
-    return filenames
-
-
-def _fit_figures(context: dict[str, object]) -> dict[str, object]:
-    """Return figure objects keyed by experiment id."""
-    figures = context.get('figures')
-    if not isinstance(figures, dict):
-        return {}
-
-    fit_figures = figures.get('fit_per_experiment')
-    if not isinstance(fit_figures, dict):
-        return {}
-
-    return {
-        str(experiment_id): figure
-        for experiment_id, figure in fit_figures.items()
-        if figure is not None
-    }
-
-
-def _write_plotly_figure(
-    figure: object,
-    output_path: pathlib.Path,
-    *,
-    experiment_id: str,
-) -> None:
-    """Write one Plotly-like figure to PDF."""
-    write_image = getattr(figure, 'write_image', None)
-    if not callable(write_image):
-        msg = (
-            f"Report figure for experiment '{experiment_id}' does not provide "
-            'write_image().'
-        )
-        raise TypeError(msg)
-
-    try:
-        write_image(str(output_path))
-    except Exception as exc:
-        msg = (
-            f"Could not export report figure for experiment '{experiment_id}' "
-            f"to '{output_path}'. {_BROWSER_HINT}"
-        )
-        raise RuntimeError(msg) from exc
-
-
 def _copy_style_files(styles_dir: pathlib.Path) -> None:
     """Copy vendored LaTeX style files into a report bundle."""
     source = files('easydiffraction.report').joinpath(
@@ -241,15 +146,6 @@ def _copy_style_files(styles_dir: pathlib.Path) -> None:
     for resource in source.iterdir():
         if resource.is_file():
             (styles_dir / resource.name).write_bytes(resource.read_bytes())
-
-
-def _safe_file_stem(value: object) -> str:
-    """Return a filesystem-safe stem for generated report assets."""
-    text = str(value)
-    safe = ''.join(
-        char if char.isalnum() or char in {'-', '_', '.'} else '_' for char in text
-    )
-    return safe.strip('._-') or 'figure'
 
 
 def _tex_number(value: object, digits: int = 6) -> str:

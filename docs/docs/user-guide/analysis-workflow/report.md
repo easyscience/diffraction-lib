@@ -76,15 +76,6 @@ project.report.save_pdf(style='iucr')
 `PATH`, EasyDiffraction leaves the TeX files in `reports/tex/`, prints
 a short install hint, and does not raise.
 
-TeX/PDF figures are exported through Kaleido. Kaleido uses an installed
-Chrome, Chromium, or Edge browser when one is available. On machines
-without a browser, run this once before generating reports. Kaleido
-caches the downloaded browser for future exports.
-
-```bash
-python -c "import kaleido; kaleido.get_chrome()"
-```
-
 The command line mirrors the same split:
 
 ```bash

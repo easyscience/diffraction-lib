@@ -373,7 +373,7 @@ exceptions.
   - Commit:
     `Rename TeX template to single canonical report.tex.j2`.
 
-- [ ] **P1.5 — Drop `kaleido` runtime dependency**
+- [x] **P1.5 — Drop `kaleido` runtime dependency**
   - Files: `pyproject.toml`, `pixi.lock` (regenerated);
     `src/easydiffraction/report/tex_renderer.py`;
     `docs/docs/user-guide/analysis-workflow/report.md`.

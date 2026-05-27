@@ -47,7 +47,6 @@ dependencies = [
   'darkdetect',     # Detecting dark mode (system-level)
   'pandas',         # Displaying tables in Jupyter notebooks
   'plotly',         # Interactive plots
-  'kaleido>=1.0',   # Static image export for report figures
   'py3Dmol',        # Visualisation of crystal structures
 ]
 
