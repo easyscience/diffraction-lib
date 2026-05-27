@@ -11,15 +11,12 @@ from typing import TYPE_CHECKING
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
-from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.variable import BoolDescriptor
-from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.io.cif.iucr_writer import write_iucr_cif
 from easydiffraction.io.cif.handler import CifHandler
 from easydiffraction.project.categories.report.factory import ReportFactory
 from easydiffraction.report.data_context import build_report_data_context
 from easydiffraction.report.enums import ReportFormatEnum
-from easydiffraction.report.enums import ReportStyleEnum
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.utils import render_object_help
 from easydiffraction.utils.utils import render_table
@@ -30,7 +27,6 @@ if TYPE_CHECKING:
     from easydiffraction.core.variable import Parameter
 
 
-REPORT_STYLE_OPTIONS = [member.value for member in ReportStyleEnum]
 _NO_REPORT_FORMATS_MESSAGE = (
     'project.report.save() called with no formats enabled. '
     'Set project.report.{cif,html,tex,pdf} = True (or assign a '
@@ -83,15 +79,6 @@ class Report(CategoryItem):
             value_spec=AttributeSpec(default=False),
             cif_handler=CifHandler(names=['_report.pdf']),
         )
-        self._style = StringDescriptor(
-            name='style',
-            description='Report template style.',
-            value_spec=AttributeSpec(
-                default=ReportStyleEnum.default().value,
-                validator=MembershipValidator(allowed=REPORT_STYLE_OPTIONS),
-            ),
-            cif_handler=CifHandler(names=['_report.style']),
-        )
         self._html_offline = BoolDescriptor(
             name='html_offline',
             description='Whether HTML reports should embed assets.',
@@ -134,15 +121,6 @@ class Report(CategoryItem):
     @pdf.setter
     def pdf(self, value: bool) -> None:
         self._pdf.value = value
-
-    @property
-    def style(self) -> StringDescriptor:
-        """Report template style."""
-        return self._style
-
-    @style.setter
-    def style(self, value: str) -> None:
-        self._style.value = ReportStyleEnum(value).value
 
     @property
     def html_offline(self) -> BoolDescriptor:

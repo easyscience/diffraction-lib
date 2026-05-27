@@ -318,7 +318,7 @@ exceptions.
 
 ## Implementation steps (Phase 1)
 
-- [ ] **P1.1 — Remove `ReportStyleEnum` and `style` field**
+- [x] **P1.1 — Remove `ReportStyleEnum` and `style` field**
   - Files:
     `src/easydiffraction/report/enums.py`,
     `src/easydiffraction/report/__init__.py`,

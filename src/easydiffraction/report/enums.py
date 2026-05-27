@@ -19,15 +19,3 @@ class ReportFormatEnum(StrEnum):
     def default(cls) -> ReportFormatEnum:
         """Return the default report format."""
         return cls.CIF
-
-
-class ReportStyleEnum(StrEnum):
-    """Report template style."""
-
-    IUCR = 'iucr'
-    REVTEX = 'revtex'
-
-    @classmethod
-    def default(cls) -> ReportStyleEnum:
-        """Return the default report style."""
-        return cls.IUCR

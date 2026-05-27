@@ -5,7 +5,6 @@
 from __future__ import annotations
 
 from easydiffraction.report.enums import ReportFormatEnum
-from easydiffraction.report.enums import ReportStyleEnum
 
 
 def __getattr__(name: str) -> object:
