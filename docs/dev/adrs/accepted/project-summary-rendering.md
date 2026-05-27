@@ -21,12 +21,15 @@ ADR (landed as PR #184). The alignment ADR established:
 That ADR currently scopes `project.report` to **CIF only** — the
 multi-datablock IUCr submission CIF written to
 `reports/<project>.cif`. This ADR keeps the facade and adds a
-**`project.report` configuration category** with six scalar
-persisted fields (`cif`, `html`, `tex`, `pdf`, `style`,
-`html_offline`) on `project.cif`, plus ad-hoc per-format
-methods (`save_html()`, `save_cif()`, `save_tex()`,
-`save_pdf()`). The Python-side `project.report.formats` is a
-convenience property view over the four format booleans. The
+**`project.report` configuration category** with five scalar
+persisted fields (`cif`, `html`, `tex`, `pdf`, `html_offline`)
+on `project.cif`, plus ad-hoc per-format methods
+(`save_html()`, `save_cif()`, `save_tex()`, `save_pdf()`). The
+Python-side `project.report.formats` is a convenience property
+view over the four format booleans. The LaTeX writer hardcodes
+`iucrjournals` as its document class — there is no style
+selector, no `_report.style` field, no `style=` arg on
+`save_tex()` / `save_pdf()`. The
 accepted IUCr `project.save(report=True)` flag is **removed**;
 reports come from the config category, not from boolean flags.
 All four format booleans default to `False` so `project.save()`
@@ -84,7 +87,7 @@ Also touches:
 - [`python-cif-category-correspondence.md`](python-cif-category-correspondence.md)
   — owns the Python↔CIF correspondence rule for **two** new
   project-level singleton surfaces:
-  `project.report.* ↔ _report.*` (six scalar items, §1.3) and
+  `project.report.* ↔ _report.*` (five scalar items, §1.3) and
   `project.publication.*` sibling categories ↔ `_journal.*`,
   `_publ_author.*`, `_publ_contact_author.*`, etc. (§5).
 
@@ -143,11 +146,11 @@ In scope:
 
 - Extend the alignment ADR's `project.report` facade with
   terminal/Jupyter, HTML, and LaTeX rendering surfaces, a
-  configuration category (six scalar fields —
-  `project.report.{cif, html, tex, pdf, style, html_offline}` —
+  configuration category (five scalar fields —
+  `project.report.{cif, html, tex, pdf, html_offline}` —
   persisted in `project.cif`; `project.report.formats` is a
-  property view over the four booleans), and ad-hoc per-format
-  save methods. **All report formats are opt-in via the
+  property view over the four format booleans), and ad-hoc
+  per-format save methods. **All report formats are opt-in via the
   configuration; every format defaults to `False` so
   `project.save()` writes nothing under `reports/` until a
   format is enabled** — see §1 and §2 for the rationale.
@@ -166,8 +169,10 @@ In scope:
   the IUCr writer otherwise emits as `?` placeholders. See §5;
   amends `project-facade-and-persistence.md` and complements
   `python-cif-category-correspondence.md`.
-- Sketch the journal-style selector hook for LaTeX (start with one
-  style; add more by template, not by code change).
+- Ship exactly one LaTeX style (`iucrjournals`) — no style
+  selector, no `ReportStyleEnum`, no `_report.style` field.
+  Multi-style support (REVTeX, Elsevier, etc.) is deferred
+  to a follow-up ADR; see "Deferred Work".
 
 Out of scope:
 
@@ -204,8 +209,8 @@ analysis.software           (new — see §4)
   ReportDataContext          (in-memory dict, single source of truth)
         │
         ├──► terminal/Jupyter renderer  (existing show_*; on demand)
-        ├──► HTML renderer              (Jinja; opt-in via html_report)
-        ├──► LaTeX renderer             (Jinja; opt-in via tex_report/pdf_report, style-selectable)
+        ├──► HTML renderer              (Jinja + Plotly + MathJax; opt-in via project.report.html)
+        ├──► LaTeX renderer             (Jinja + pgfplots; opt-in via project.report.tex/pdf; iucrjournals style only)
         └──► GUI Summary tab            (programmatic; eventual)
 ```
 
@@ -246,17 +251,21 @@ once and read by `project.save()` thereafter:
 | --------------------------- | ------------ | --------- | ------------------------------------------------------------------------------------------------------ |
 | `project.report.cif`        | `bool`       | `False`   | When `True`, `project.save()` writes `reports/<project>.cif`.                                          |
 | `project.report.html`       | `bool`       | `False`   | When `True`, `project.save()` writes `reports/<project>.html`.                                         |
-| `project.report.tex`        | `bool`       | `False`   | When `True`, `project.save()` writes `reports/tex/{<project>.tex, figures/, styles/}`.                 |
+| `project.report.tex`        | `bool`       | `False`   | When `True`, `project.save()` writes `reports/tex/{<project>.tex, data/, styles/}`.                    |
 | `project.report.pdf`        | `bool`       | `False`   | When `True`, `project.save()` writes `reports/<project>.pdf` (and `tex/` as a side-effect).            |
-| `project.report.style`      | `str` (Enum) | `'iucr'`  | LaTeX style. Values: `'iucr'`, `'revtex'`. Only meaningful when `tex` or `pdf` is `True`.              |
-| `project.report.html_offline` | `bool`     | `False`   | When `True`, the HTML report inline-bundles Plotly (~3 MB extra). Otherwise loads Plotly from CDN.     |
+| `project.report.html_offline` | `bool`     | `False`   | When `True`, the HTML report is **fully self-contained** — inline-bundles both Plotly and MathJax (~3 MB + ~1.5 MB on top of the otherwise-empty document). Otherwise both load from CDN. |
 
 Four per-format scalar booleans (`cif`, `html`, `tex`, `pdf`)
-plus two scalars (`style`, `html_offline`) — six fields total,
-all single-row in CIF. Matches the existing `project.chart`,
-`project.table`, `project.verbosity` scalar-config shape
-verbatim. All booleans default to `False`, so an unconfigured
-project produces no `reports/` directory at all.
+plus `html_offline` — **five fields total**, all single-row in
+CIF. Matches the existing `project.chart`, `project.table`,
+`project.verbosity` scalar-config shape verbatim. All booleans
+default to `False`, so an unconfigured project produces no
+`reports/` directory at all.
+
+There is no `style` field. The LaTeX output ships exactly one
+class (`iucrjournals`); adding another style is deferred
+work, not a v1 selector. See §3 for the reasoning behind the
+single-style choice.
 
 For convenience, `project.report.formats` is exposed as a
 **property view** — reading it returns a list of the
@@ -288,7 +297,6 @@ project.report.formats = ['cif', 'html']
 # or, equivalently:
 #   project.report.cif = True
 #   project.report.html = True
-project.report.style = 'iucr'
 project.report.html_offline = False
 
 # Every subsequent save now emits the configured reports too.
@@ -301,10 +309,10 @@ project.save()
 
 ##### Enum backing per the closed-values ADR
 
-Both the format set and the style selector are finite closed
-sets, so per the accepted
+The set of report formats is a finite closed set, so per the
+accepted
 [`enum-backed-closed-values.md`](../accepted/enum-backed-closed-values.md)
-contract they are represented internally as `(str, Enum)`:
+contract it is represented internally as `(str, Enum)`:
 
 ```python
 class ReportFormatEnum(str, Enum):
@@ -312,29 +320,21 @@ class ReportFormatEnum(str, Enum):
     HTML = 'html'
     TEX = 'tex'
     PDF = 'pdf'
-
-class ReportStyleEnum(str, Enum):
-    IUCR = 'iucr'
-    REVTEX = 'revtex'
 ```
 
 The four per-format booleans (`project.report.cif`, `.html`,
 `.tex`, `.pdf`) carry one `ReportFormatEnum` member each as a
 class-level constant identifying which format they enable. The
-`project.report.style` setter accepts either an Enum member or
-the string value (the project's existing convenience pattern);
-dispatch and equality checks use enum members, not raw strings.
-The `formats` property view returns a list of
-`ReportFormatEnum` members (`[ReportFormatEnum.CIF,
-ReportFormatEnum.HTML]`), which compare equal to the bare
-string values for ergonomic user code (`'cif' in
-project.report.formats` still works because `(str, Enum)`
-inherits string equality).
+`formats` property view returns a list of `ReportFormatEnum`
+members (`[ReportFormatEnum.CIF, ReportFormatEnum.HTML]`),
+which compare equal to the bare string values for ergonomic
+user code (`'cif' in project.report.formats` still works
+because `(str, Enum)` inherits string equality).
 
-CIF serialisation uses the enum string values verbatim
-(`_report.style iucr`); the writer rejects any value not in the
-declared enum at write-time, matching the gemmi pass's
-dictionary-spec check.
+There is no `ReportStyleEnum`. The LaTeX writer hardcodes
+`iucrjournals` as its document class (see §3); when a future
+ADR adds a second style, the `ReportStyleEnum` is reintroduced
+together with a new `_report.style` config field.
 
 #### 1.2 Ad-hoc per-format methods
 
@@ -346,16 +346,16 @@ configuration.
 ```python
 project.report.save_cif()                        # writes reports/<project>.cif
 project.report.save_html(offline: bool = False)  # writes reports/<project>.html
-project.report.save_tex(style: str = 'iucr')     # writes reports/tex/{<project>.tex, ...}
-project.report.save_pdf(style: str = 'iucr')     # writes reports/<project>.pdf (compiles TeX too)
+project.report.save_tex()                        # writes reports/tex/{<project>.tex, ...}
+project.report.save_pdf()                        # writes reports/<project>.pdf (compiles TeX too)
 
 # Convenience: write everything currently in project.report.formats.
 # Raises ValueError if no formats are configured (see below).
 project.report.save()                            # reads config, no flags
 
-# Ad-hoc string returns (unchanged from the earlier draft):
+# Ad-hoc string returns:
 project.report.as_html(offline: bool = False) -> str
-project.report.as_tex(style: str = 'iucr') -> str
+project.report.as_tex() -> str
 
 # Shared data context (for GUI Summary tab + Jinja templates):
 project.report.data_context() -> dict
@@ -370,11 +370,12 @@ project.report.show_fitting_details()
 ```
 
 Per-format method signatures only carry the args that apply to
-that format — `save_pdf(style='revtex')` is unambiguous; there
-is no `save_html(style=...)` because HTML has no journal style.
-The cross-format mixing that the earlier flag-based draft had
-(`html_offline` ignored when `html=False`, `style=` ignored
-without `tex=True`) is gone.
+that format — `save_html(offline=True)` is unambiguous; there
+is no `save_tex(style=...)` because the LaTeX writer ships
+exactly one style (`iucrjournals`), so a style selector would
+be dead weight. The cross-format mixing that the earlier
+flag-based draft had (`html_offline` ignored when
+`html=False`, `style=` ignored without `tex=True`) is gone.
 
 `project.save()` itself takes no report-related arguments. The
 accepted IUCr `project.save(report=True)` flag is removed (see
@@ -430,7 +431,7 @@ their format unconditionally. They are explicit one-offs.
 The configuration category serialises to `project.cif` next to
 the other project-level singleton categories (`_info.*`,
 `_chart.*`, `_table.*`, `_verbosity.*`). The CIF tag prefix is
-`_report.*` — a Set category with six scalar items, no loops:
+`_report.*` — a Set category with five scalar items, no loops:
 
 ```text
 data_<project>
@@ -451,20 +452,21 @@ _report.cif           yes
 _report.html          yes
 _report.tex           no
 _report.pdf           no
-_report.style         iucr
 _report.html_offline  no
 ```
 
-All six items are scalar DDLm dotted entries — the category is
-declared `_definition.class Set` so a single value per item, no
-loops permitted. Matches the existing `_chart.*`, `_table.*`,
-`_verbosity.*` category shape exactly. The `yes`/`no` boolean
-encoding follows the project's existing CIF boolean convention.
+All five items are scalar DDLm dotted entries — the category
+is declared `_definition.class Set` so a single value per
+item, no loops permitted. Matches the existing `_chart.*`,
+`_table.*`, `_verbosity.*` category shape exactly. The
+`yes`/`no` boolean encoding follows the project's existing CIF
+boolean convention.
 
-The default unconfigured state writes four explicit `no` values
-(not an absent or empty representation), so the "no formats
-enabled" condition is always a concrete CIF value, never an
-empty loop or missing block:
+The default unconfigured state writes four explicit `no`
+values for the format booleans (not an absent or empty
+representation), so the "no formats enabled" condition is
+always a concrete CIF value, never an empty loop or missing
+block:
 
 ```text
 # Default (project.report.formats = []):
@@ -472,7 +474,6 @@ _report.cif           no
 _report.html          no
 _report.tex           no
 _report.pdf           no
-_report.style         iucr
 _report.html_offline  no
 ```
 
@@ -510,7 +511,7 @@ owner with its own CIF file. The split is summarised below.
 | `project.chart`                        | A       | `project.cif` (`_chart.*`)                  | `CategoryItem` (one field)                                  |
 | `project.table`                        | A       | `project.cif` (`_table.*`)                  | `CategoryItem` (one field)                                  |
 | `project.verbosity`                    | A       | `project.cif` (`_verbosity.*`)              | `CategoryItem` (one field)                                  |
-| **`project.report`** (this ADR)        | **A**   | **`project.cif` (`_report.*`)**             | **`CategoryItem` (six fields) plus action methods**         |
+| **`project.report`** (this ADR)        | **A**   | **`project.cif` (`_report.*`)**             | **`CategoryItem` (five fields) plus action methods**        |
 | `project.publication` (this ADR, §5)   | A       | `project.cif` (`_publ_*` / `_journal_*`)    | `CategoryOwner` of six sibling categories                   |
 | `project.analysis`                     | B       | `analysis/analysis.cif`                     | `CategoryOwner` (heavy datablock)                           |
 | `project.structures[name]`             | B       | `structures/<name>.cif`                     | `CategoryOwner` (heavy datablock)                           |
@@ -518,8 +519,8 @@ owner with its own CIF file. The split is summarised below.
 
 Reasons `project.report` is Pattern A, not Pattern B:
 
-- Six scalar config items do not justify a separate file
-  (`reports/report.cif` would be a tiny file holding six lines).
+- Five scalar config items do not justify a separate file
+  (`reports/report.cif` would be a tiny file holding five lines).
 - A `reports/report.cif` would force the `reports/` directory to
   exist even when every format boolean is `False` and no reports
   are written — breaks the "no surprise files" property the
@@ -566,7 +567,7 @@ project.save()
 | `reports/<project>.cif` | gemmi parse always; dictionary checks when local dictionaries load | `EasyDiffractionWriterError` for malformed generated CIF or dictionary diagnostics |
 | `reports/<project>.html` | none at write time                                       | n/a — HTML is a render of the data context, not a typed format             |
 | `reports/tex/`           | none at write time                                       | n/a — LaTeX errors surface at PDF-compile time, with the engine's message  |
-| `reports/<project>.pdf`  | TeX engine's own compilation (returns non-zero on error) | engine-specific message; the `.tex` and figures are still written          |
+| `reports/<project>.pdf`  | TeX engine's own compilation (returns non-zero on error) | engine-specific message; the `.tex` and `data/` CSVs are still written     |
 
 The dictionaries under `tmp/iucr-dicts/` are optional local
 validation aids, not report inputs. If Gemmi cannot load those
@@ -604,6 +605,205 @@ which is a publication-readiness question rather than a
 writer-correctness one — is a different concern and stays in
 Deferred Work.
 
+#### 1.5 Descriptor display metadata — `DisplayHandler`
+
+Parameter names like `u_iso` and unit strings like `Å²` need
+prettier representations for the HTML and PDF renderers. The
+ADR introduces a new optional handler on the descriptor base
+classes (`Parameter`, `NumericDescriptor`, `StringDescriptor`)
+that carries the typeset variants in a single place, sibling
+to the existing `cif_handler`:
+
+```python
+from dataclasses import dataclass
+
+@dataclass(frozen=True, slots=True)
+class DisplayHandler:
+    """Pretty-printing metadata for descriptors.
+
+    All four fields are optional strings. Renderers fall back
+    to the descriptor's plain ``name`` / ``units`` when a
+    field is unset; missing fields never raise.
+    """
+    display_name: str | None = None   # HTML / GUI / show() label
+    display_units: str | None = None  # HTML / GUI / show() unit string
+    latex_name: str | None = None     # LaTeX inline-math label
+    latex_units: str | None = None    # LaTeX text/math unit string
+```
+
+`DisplayHandler` lives at
+`src/easydiffraction/core/display_handler.py` alongside the
+existing `CifHandler` in `src/easydiffraction/io/cif/handler.py`
+— a frozen dataclass per the project's value-object convention
+(matches `TypeInfo`, `Compatibility`, `CalculatorSupport` per
+AGENTS.md). `slots=True` keeps memory overhead constant per
+attached descriptor.
+
+The plain `name` and `units` fields keep their existing role
+on the descriptor, but their **content convention changes**:
+
+- `name` — Python identifier; ASCII snake_case; unchanged.
+- `units` — **ASCII only**, following the CIF DDLm
+  `_units.code` vocabulary from
+  [`cif_core.dic`](../../../../tmp/iucr-dicts/cif_core.dic)
+  **verbatim** when the dictionary defines a value for the
+  unit. The dictionary's vocabulary is a single source of
+  truth, but it is **not** uniformly plural — singular and
+  plural forms appear mixed across units (each unit is whatever
+  the dictionary actually says). Verified codes from
+  `cif_core.dic`:
+
+  | What we need     | `_units.code` value     | Source line in cif_core.dic     |
+  | ---------------- | ----------------------- | ------------------------------- |
+  | Å (length)       | `angstroms` (plural)    | line 1213                       |
+  | Å² (area)        | `angstrom_squared` (singular `angstrom`) | line 1178      |
+  | ° (angle)        | `degrees` (plural)      | line 500, 519, 1247, …          |
+  | K (temperature)  | `kelvins` (plural)      | line 210, 232, 287, 316         |
+  | Pa (pressure)    | `kilopascals` (plural)  | line 115, 136, 161, 184         |
+  | µs (time)        | `microseconds` (plural) | (from `cif_pow.dic` TOF text)   |
+  | Da (mass)        | `dalton` (singular)     | line 753                        |
+  | MGy (dose)       | `megagray` (singular)   | line 592, 607                   |
+  | Å⁻¹ (reciprocal) | `reciprocal_angstroms`  | line 795, 825                   |
+  | Å⁻² (reciprocal area) | `reciprocal_angstrom_squared` | line 1552, 1587      |
+  | dimensionless    | `none`                  | line 459, 480, …                |
+
+- **Units the dictionary does not define.** The crystallographic
+  vocabulary includes a handful of compound units that
+  `cif_core.dic` does not assign a `_units.code` to — the one
+  example currently in scope is `deg²` (squared degrees, used
+  for some angular variance metrics). Convention for these:
+  extend the same naming pattern (`degrees_squared`) as a
+  **project-internal code** with no `_units.code` round-trip.
+  The implementation plan keeps a small `units_vocabulary.py`
+  module listing every code (dictionary and project-internal)
+  so a sweep can validate every `units=` string at
+  descriptor-declaration time.
+
+The Unicode-symbol form (`Å²`) moves into `display_units`;
+the LaTeX form (`\AA$^2$`) into `latex_units`.
+
+##### Worked example — `u_iso`
+
+```python
+self._u_iso = Parameter(
+    name='u_iso',
+    description='Isotropic atomic displacement parameter',
+    units='angstrom_squared',
+    value_spec=AttributeSpec(default=0.0, validator=RangeValidator(ge=0.0)),
+    cif_handler=CifHandler(names=['_atom_site.U_iso_or_equiv']),
+    display_handler=DisplayHandler(
+        display_name='Uiso',
+        display_units='Å²',
+        latex_name=r'$U_{\mathrm{iso}}$',
+        latex_units=r'\AA$^2$',
+    ),
+)
+```
+
+| Renderer / context        | Name uses                          | Units uses           |
+| ------------------------- | ---------------------------------- | -------------------- |
+| LaTeX (`save_tex`)        | `$U_{\mathrm{iso}}$`               | `\AA$^2$`            |
+| HTML (`save_html`, MathJax-rendered) | `$U_{\mathrm{iso}}$`    | `\AA$^2$`            |
+| HTML pre-MathJax / GUI / `show_report()` | `Uiso`              | `Å²`                 |
+| `project.report.data_context()` raw dict | both available    | both available       |
+| CIF emission              | `_atom_site.U_iso_or_equiv`        | (no `_units.code` row today) |
+| Python code / repr        | `u_iso`                            | `angstrom_squared`  |
+
+##### Resolution rules
+
+The renderers consult the `DisplayHandler` (if attached) using
+a per-context fallback chain:
+
+- **LaTeX context** (`save_tex`, `save_pdf`, `as_tex`):
+  `handler.latex_name or descriptor.name`,
+  `handler.latex_units or descriptor.units`.
+- **HTML context** (`save_html`, `as_html`):
+  `handler.display_name or descriptor.name`,
+  `handler.display_units or descriptor.units`.
+  The HTML template additionally surrounds `handler.latex_name`
+  / `handler.latex_units` with `\(...\)` math delimiters so
+  MathJax picks them up where the descriptor has typeset
+  variants — i.e., HTML can show the same `$U_{\mathrm{iso}}$`
+  the PDF shows, while a GUI tooltip or `show_report()`
+  printout falls back to `display_*`.
+- **GUI / terminal / `show_*()` context**:
+  `handler.display_name or descriptor.name`,
+  `handler.display_units or descriptor.units`.
+
+Each chain falls through to the descriptor's plain fields, so
+**descriptors without a `display_handler` continue to work
+unchanged** — they simply render as `u_iso` / `angstrom_squared`
+in all contexts. Adding a `display_handler` is opt-in per
+descriptor.
+
+**Table-rendering paths MUST read through the resolution chain
+above, not the plain `descriptor.units` field directly.** This
+is a strict requirement because `units=` now holds ASCII CIF
+DDLm codes (`'angstrom_squared'`) that would look ridiculous
+as a column header. Concretely the following call sites
+migrate in the implementation sweep:
+
+- Every `show_*()` method on `Report` (terminal / Jupyter
+  table builders) — the unit column or row header is built
+  from `display_units or units`, not `units` alone.
+- Every Jinja macro in `templates/base.j2` that formats a
+  parameter row — same resolution rule.
+- The HTML template (`templates/html/report.html.j2`) uses
+  `display_units` for non-math contexts and the latex_units
+  variant inside `\(...\)` math delimiters where the
+  descriptor declares both.
+- The LaTeX template (`templates/tex/report.tex.j2`) uses
+  `latex_units` (falling through `display_units` then `units`
+  if not declared).
+- The shared `data_context()` (§6) builder exposes both
+  rendered strings per parameter so neither template has to
+  re-derive the fallback chain — the resolution happens once
+  in the builder.
+
+External / third-party readers that hard-coded
+`parameter.units` to compare against `'Å²'` (the prior Unicode
+form) are flagged in the Open Questions section for a
+project-wide audit before the sweep lands.
+
+##### Why a handler class instead of four kwargs
+
+Two design pressures:
+
+- The fields cluster — they are all "how to display this
+  parameter" — so a single handler keeps the descriptor
+  constructor flat. `display_handler=DisplayHandler(latex_name=...,
+  display_name=...)` reads cleaner than four sibling kwargs.
+- Future display targets (Markdown export, GUI tooltips, an
+  ASCII-fallback for terminal narrow-mode) can add fields to
+  `DisplayHandler` without growing the descriptor constructor
+  signature.
+
+The mechanism mirrors the existing `cif_handler=CifHandler(...)`
+pattern, so anyone reading the descriptor declarations sees the
+same shape for CIF metadata and display metadata.
+
+##### Migration sweep
+
+Existing descriptors use `units='Å'` / `'Å²'` / `'°'` etc.
+(Unicode short forms). The implementation plan owns the sweep
+that:
+
+- Converts every existing `units=` Unicode string to the
+  ASCII CIF DDLm form (`'Å²'` → `'angstrom_squared'`).
+- Adds `display_handler=DisplayHandler(...)` to descriptors
+  the renderers benefit from prettifying (atom-site
+  positions / ADPs, cell parameters, fit-result R-factors,
+  refinement statistics, peak parameters, …). Descriptors
+  the renderers don't show (CIF-only internal state) get no
+  handler — the fallback to `name`/`units` is fine.
+- Verifies the `_chart`, `_table`, `_verbosity` enum values
+  and other singleton-config CIF strings don't accidentally
+  collide with the new units vocabulary (they shouldn't —
+  those are tag values, not unit codes).
+
+The sweep is a Phase 1 step in the implementation plan, not
+an ADR-level decision.
+
 ### 2. HTML report — config-driven via `project.report.formats`
 
 `'html' in project.report.formats` causes `project.save()` to
@@ -618,23 +818,42 @@ project.report.formats = ['html']
 project.report.html_offline = False    # CDN-Plotly (default)
 project.save()                         # → reports/<project>.html
 
-# Persistent + air-gapped readers — inline-bundle Plotly.
+# Persistent + air-gapped readers — fully self-contained:
+# inline Plotly AND inline MathJax.
 project.report.html_offline = True
-project.save()                         # → reports/<project>.html (~3 MB)
+project.save()                         # → reports/<project>.html (~4.5 MB)
 
 # One-off, ignoring config.
-project.report.save_html()                 # CDN-Plotly
-project.report.save_html(offline=True)     # inline bundle
+project.report.save_html()                 # CDN: Plotly + MathJax both from CDN
+project.report.save_html(offline=True)     # inline: Plotly + MathJax both inlined
 ```
 
-Plotly bundle modes:
+Asset-bundling modes — `html_offline` controls **both** assets
+together (single switch, single contract):
 
-- **CDN mode (default)** — `include_plotlyjs='cdn'`. File size
-  ~50-300 KB depending on chart count. Requires internet to view.
+- **CDN mode (default)** — Plotly via
+  `include_plotlyjs='cdn'` (~50-300 KB on top of the
+  otherwise-empty document, depending on chart count);
+  MathJax from `https://cdn.jsdelivr.net/npm/mathjax@3/...`
+  via `<script src="...">`. The HTML file itself is small
+  (~50 KB body + tags); both assets stream in at page open.
+  **Requires internet to view.**
 - **Offline mode** (`project.report.html_offline = True` or
-  `save_html(offline=True)`) — `include_plotlyjs=True`. Adds
-  ~3 MB per HTML. Use when readers are air-gapped or when the
-  user wants to archive a fully self-contained report.
+  `save_html(offline=True)`) — **fully self-contained**.
+  Plotly inlines via `include_plotlyjs=True` (~3 MB); MathJax
+  inlines as a `<script>` block holding the
+  `tex-mml-chtml` component bundle (~1.5 MB) read from a
+  vendored asset under
+  `src/easydiffraction/report/templates/html/vendor/mathjax-tex-mml-chtml.js`.
+  Total HTML size ~4.5 MB. Use when readers are air-gapped
+  or when the user wants to archive a fully self-contained
+  report.
+
+The `mathjax-tex-mml-chtml.js` bundle is vendored once
+during the implementation plan (Apache-2.0 license, ~1.5 MB
+minified) and refreshed on the same cadence as
+`iucrjournals.cls`. No new Python dependency — it's a
+static JavaScript asset shipped with the wheel.
 
 `reports/` is created lazily — only when at least one format is
 configured (or an ad-hoc method is called). A user iterating on
@@ -655,9 +874,30 @@ flag-based and "auto on every save" positions):
   in-memory, not the HTML file — so the GUI-consistency story
   does not depend on the HTML file existing at any particular
   moment.
-- No new dependencies for HTML: `plotly`, `jinja2`, `pandas`
-  are already declared in
-  [pyproject.toml](../../../../pyproject.toml).
+- No new Python dependencies for HTML: `plotly`, `jinja2`,
+  `pandas` are already declared in
+  [pyproject.toml](../../../../pyproject.toml). MathJax
+  loads from CDN by default, or from a vendored
+  `tex-mml-chtml` bundle (~1.5 MB) inside the HTML when
+  `html_offline=True` — same single switch that controls
+  Plotly's CDN/inline mode (see the asset-bundling block
+  above). MathJax renders inline math (`$U_{\mathrm{iso}}$`,
+  `$\AA$`, etc.) identically to the LaTeX output. This is
+  what makes the "HTML and PDF look the same" story work:
+  column headers, units, and parameter labels are the same
+  LaTeX-math strings on both sides, just rendered by
+  MathJax in the browser and by the TeX engine in the PDF.
+
+**Visual consistency with the PDF.** The HTML template
+applies academic-paper CSS — top/middle/bottom table rules
+that mimic `booktabs`, a serif body font, narrow margins,
+table cells in a tabular sans-serif numeric face — so a
+reader scrolling the HTML page sees roughly the same
+layout the compiled PDF gives them. Plots stay
+format-specific (Plotly interactive in HTML, pgfplots
+static in PDF), but every label, header, and unit string
+matches because both renderers consume the same
+`DisplayHandler` data per §1.5.
 
 Content (one HTML page per project — per-project granularity matches
 the IUCr "one CIF per article" convention):
@@ -671,39 +911,52 @@ the IUCr "one CIF per article" convention):
 - Refinement — calculation engine + version + URL, minimization
   engine + version + URL, goodness-of-fit, parameter counts
   (total/free/fixed), constraint count.
-- Fit charts per experiment — Plotly figures embedded inline via
-  `fig.to_html(include_plotlyjs=<cdn|True>)`. Reuses the existing
-  `display/plotters/plotly.py` figures.
+- Fit charts per experiment — Plotly figures built at template-
+  render time from the shared fit-data series in
+  `data_context()` (see §6 — `experiments[i].fit_data` carries
+  an `x` sub-dict (values + descriptor name / display label /
+  LaTeX label / units, all four label forms pre-resolved at
+  builder time per §1.5) and a `series` sub-dict (`meas`,
+  `calc`, `diff`, optional `bkg`, each carrying values + label
+  + optional `su` uncertainty array). The descriptor-driven
+  `x` payload covers Bragg powder CWL `two_theta`, TOF
+  `time_of_flight`, and total-scattering `r` uniformly — any
+  experiment whose x-axis descriptor exposes a
+  `DisplayHandler` drops in without further ADR changes. The
+  Jinja template feeds the dict to
+  `display/plotters/plotly.py` and embeds the resulting figure
+  via `fig.to_html(include_plotlyjs=<cdn|True>)`. The same
+  `fit_data` series feeds the pgfplots CSV emitter for the
+  LaTeX renderer — one source of truth.
 - Footer — EasyDiffraction version, save timestamp.
 
-### 3. LaTeX + figures + PDF — config-driven via `project.report.formats`
+### 3. LaTeX + PDF — config-driven via `project.report.formats`
 
 LaTeX is a **publish-time** artifact. `'tex'` and `'pdf'` are
 added to `project.report.formats` when the user wants them.
-`project.report.style` selects the journal style — only
-meaningful when `'tex'` or `'pdf'` is in `formats` (or when an
-ad-hoc method is called); HTML and CIF have no style choice.
+There is no style selector: the LaTeX writer ships exactly one
+document class (`iucrjournals`); the **content layout
+deliberately does not replicate IUCr's published journal
+format** — it mirrors the project's own category-based
+structure (project info, software, refinement, structures,
+experiments) section by section. Think "typeset Python state"
+rather than "ready-to-submit manuscript".
 
 ```python
 # Persistent — every save writes TeX + assets.
 project.report.formats = ['tex']
-project.report.style = 'iucr'
 project.save()                              # → reports/tex/{...}
 
 # Persistent — every save writes the compiled PDF too.
 project.report.formats = ['tex', 'pdf']
 project.save()                              # → reports/tex/{...} + reports/<project>.pdf
 
-# Persistent — switch style.
-project.report.style = 'revtex'
-project.save()                              # → reports/tex/{...} (REVTeX class)
-
 # One-off, ignoring config.
-project.report.save_tex(style='iucr')       # TeX + figures + styles only
-project.report.save_pdf(style='revtex')     # TeX + PDF (PDF implies TeX)
+project.report.save_tex()                   # TeX + data + style only
+project.report.save_pdf()                   # TeX + PDF (PDF implies TeX)
 
 # Ad-hoc string return.
-project.report.as_tex(style='iucr') -> str
+project.report.as_tex() -> str
 ```
 
 **`'pdf' in formats` implies the TeX source is also written** —
@@ -716,13 +969,21 @@ Future `project.report.html_style` (dark mode, journal-mimicking
 HTML layout) can land separately without collision because it
 lives in the config category, not in a method signature.
 
+**Plots use `pgfplots` with external CSV data, not pre-rendered
+images.** The figure-rendering pipeline produces CSV files
+under `reports/tex/data/`; the `.tex` document references them
+with `\addplot table {data/fit_<expt>.csv};`. This removes the
+Plotly + kaleido + headless-Chromium dependency chain entirely
+— the LaTeX bundle compiles to PDF using only `tectonic` (or
+another local TeX engine) plus the `pgfplots` package, which
+`tectonic` resolves on demand. See §3.3 for the figure
+emission detail.
+
 #### 3.1 Folder layout
 
 Per-project filenames (`<project>.{cif,html,pdf}`) share a root in
 `reports/`; the LaTeX source plus its assets sit in `reports/tex/`.
-Single-style today; multi-style ships all class files together so
-the user can swap styles by editing one line in `<project>.tex` and
-rebuilding the PDF.
+Single style (`iucrjournals`) — no multi-style infrastructure.
 
 **Full reports/ tree when all formats are configured.**
 `project.report.formats = ['cif', 'html', 'tex', 'pdf']`:
@@ -734,24 +995,13 @@ rebuilding the PDF.
     <project>.html                  # ← 'html' in project.report.formats (this ADR §2)
     <project>.pdf                   # ← 'pdf' in project.report.formats (this ADR §3.4)
     tex/                            # ← 'tex' or 'pdf' in project.report.formats (this ADR §3)
-      <project>.tex                 #   main document; tables, \includegraphics figures
-      figures/
-        fit_<expt_id>.pdf           #   one per experiment, vector PDF (kaleido)
-      styles/                       #   always-bundled — minimum to compile both styles
+      <project>.tex                 #   main document; tables + pgfplots figures
+      data/
+        fit_<expt_id>.csv           #   one per experiment, plotted via pgfplots
+      styles/                       #   vendored — required to compile the TeX
         iucrjournals.cls            #     IUCr unified class (CC0 1.0)
         harvard.sty                 #     IUCr companion bibliography style
-        revtex4-2.cls               #     REVTeX class (LPPL 1.3c)
-        ltxgrid.sty                 #     REVTeX page-grid dep
-        ltxutil.sty                 #     REVTeX utilities dep
-        ltxfront.sty                #     REVTeX front-matter dep
-        ltxdocext.sty               #     REVTeX document-ext dep
-        revsymb4-2.sty              #     REVTeX symbols
-        aps4-2.rtx                  #     REVTeX: APS journals (PRB, PRA, PRL, PRD)
-        aps10pt4-2.rtx              #     REVTeX: 10pt font size
-        aps11pt4-2.rtx              #     REVTeX: 11pt font size
-        aps12pt4-2.rtx              #     REVTeX: 12pt font size
-                                    # 12 files, ~420 KB. AIP/AAPM/SOR/RMP .rtx and
-                                    # all .bst BibTeX files excluded; see §3.2.1.
+                                    # 2 files, ~70 KB. See §3.2.1.
 ```
 
 **Examples by configuration.**
@@ -792,8 +1042,8 @@ rebuilding the PDF.
     <project>.html                  # ~3 MB, Plotly inlined
 ```
 
-`project.report.formats = ['cif', 'html', 'pdf']`
-+ `style = 'iucr'` (typical pre-submission bundle):
+`project.report.formats = ['cif', 'html', 'pdf']` (typical
+pre-submission bundle):
 
 ```
 <project_root>/
@@ -804,18 +1054,17 @@ rebuilding the PDF.
   reports/
     <project>.cif                   # journal-submission CIF
     <project>.html                  # interactive inspection page
-    <project>.pdf                   # IUCr-style typeset refinement table
+    <project>.pdf                   # typeset PDF, iucrjournals class
     tex/                            # source for the PDF (kept editable)
       <project>.tex
-      figures/fit_<expt_id>.pdf
-      styles/iucrjournals.cls       # only the IUCr files are referenced;
-      styles/harvard.sty            # the REVTeX files still ship in the bundle
-      ...                           # so the user can swap style with one edit
+      data/fit_<expt_id>.csv        # pgfplots data per experiment
+      styles/iucrjournals.cls
+      styles/harvard.sty
 ```
 
 `reports/` is created lazily — only when at least one format
 sits in `project.report.formats` (or an ad-hoc method is called).
-The `tex/`, `tex/figures/`, and `tex/styles/` subfolders appear
+The `tex/`, `tex/data/`, and `tex/styles/` subfolders appear
 only when `'tex'` or `'pdf'` is in `project.report.formats` (or
 `save_tex()` / `save_pdf()` is invoked).
 
@@ -827,84 +1076,60 @@ chars) are sanitized; case, dots, underscores, and parentheses are
 preserved so the user recognises their project name in the file
 listing.
 
-#### 3.2 Style selection — two slugs (`iucr`, `revtex`), mixed bundling strategy
+#### 3.2 Single style — `iucrjournals`
 
-Two style slugs ship in v1:
+The LaTeX writer ships exactly one document class:
+`\documentclass[11pt,a4paper]{iucrjournals}`. No style selector,
+no slug enum, no `_report.style` config field. Picking
+`iucrjournals` is a convenience — it gives the typeset PDF a
+clean academic look without committing to journal-submission
+fidelity.
 
-| Slug              | Class file            | Default `\documentclass`             | License        | Distribution                          |
-| ----------------- | --------------------- | ------------------------------------ | -------------- | ------------------------------------- |
-| `iucr` (default)  | `iucrjournals.cls`    | `\documentclass{iucrjournals}`       | CC0 1.0        | Bundled in wheel (no CTAN package)    |
-| `revtex`          | `revtex4-2.cls`       | `\documentclass[prb]{revtex4-2}`     | LPPL 1.3c      | Bundled in wheel (also on CTAN `revtex`) |
+**The LaTeX content is NOT a journal-submission manuscript.**
+It mirrors the project's own category-based structure
+section-by-section: Project Summary, Software, Refinement,
+Structures (one subsection per phase), Experiments (one
+subsection per experiment). Tables use `booktabs`
+(`\toprule`/`\midrule`/`\bottomrule`) and `float`'s `[H]`
+placement; math uses inline LaTeX (`$Fd\bar{3}m$`, `\AA`,
+`$\deg$`). Reference example at
+[`tmp/latex/example.tex`](../../../../tmp/latex/example.tex).
 
-The two styles differ in **how the sub-journal is selected**:
+The `iucrjournals.cls` choice has two practical advantages
+over a bare `article`:
 
-- **`iucr` is a unified class.** `iucrjournals.cls` does not use
-  document-class options. The same class is used across all IUCr
-  journals (Acta Cryst E/B/C/D/F, J. Appl. Cryst.,
-  J. Synchrotron Rad., IUCrData) — the sub-journal designation
-  is decided at submission via IUCr's web form, not in the `.tex`.
-- **`revtex` uses an option letter.** `\documentclass[prb]{revtex4-2}`
-  for Phys. Rev. B; the user changes the letter (`pra`, `prl`,
-  `prd`, `reprint`, …) to swap sub-journal and rebuilds. The
-  library emits a comment block immediately above the
-  `\documentclass` line listing the alternatives:
+- IUCr's class handles crystallographic typography
+  (`\AA`, space-group symbols, structure-factor formatting)
+  cleanly out of the box.
+- Vendored document-class files (`iucrjournals.cls` +
+  `harvard.sty`) ship with the wheel, so an IUCr TeX-
+  distribution install is not required — the document class
+  is local. The TeX engine itself must still supply
+  `pgfplots` and its `pgf` / `tikz` dependencies, which
+  `tectonic` resolves from CTAN on first compile and which
+  TeX Live / MiKTeX ship in their default sets; see §3.3 for
+  the compile-time dependency story.
 
-  ```latex
-  % Change the option letter to target a different APS journal:
-  %   prb     = Phys. Rev. B   [default]
-  %   pra     = Phys. Rev. A
-  %   prl     = Phys. Rev. Letters
-  %   prd     = Phys. Rev. D
-  %   reprint = generic reprint format
-  \documentclass[prb]{revtex4-2}
-  ```
-
-Unknown slugs raise `ValueError(f"Unknown style: {style!r}. "
-"Supported: 'iucr', 'revtex'")` — explicit failure beats a silent
-fallback.
-
-**Distribution: bundle every style every time.**
-
-`reports/tex/styles/` is populated with the **full set of supported
-styles** on every report save — both `iucr` and `revtex` files,
-regardless of which slug the user picked. The selected style's
-class is `\input` by `<project>.tex`'s `\documentclass{...}` line;
-the other style's files sit alongside, ready for a one-line swap.
-
-Rationale:
-
-- Self-contained `reports/tex/` — can be zipped or emailed to a
-  co-author who doesn't have EasyDiffraction, rebuilt anywhere
-  with a TeX engine.
-- Style swap is a `<project>.tex` edit, not a library
-  round-trip. Matches the workflow established earlier in
-  ADR review.
-- No dependency on user's TeX install having `revtex` installed,
-  no dependency on tectonic having internet access at compile
-  time.
-- Single mental model: `tex/styles/` always contains the same set
-  of files; not "depends on what you asked for".
-
-Total footprint per save: ~420 KB across 12 files (IUCr ~20 KB +
-REVTeX ~400 KB, default APS journal coverage only). Negligible
-against the project's data files, the compiled PDF, and the HTML
-report. See §3.2.1 for the file list and what's deliberately
-excluded.
+Multi-style support (REVTeX, Elsevier `elsarticle`, …) is
+**deferred work** — see "Deferred Work" below. A future ADR
+adds a style selector when there is a concrete second style
+to ship.
 
 #### 3.2.1 Source provenance and bundled files
 
-Both upstream sources are vendored under
-`src/easydiffraction/report/styles/` in the repository and copied
-into `reports/tex/styles/` on report save. Download URLs, dates,
-licenses, and file lists below; the implementation plan refreshes
-the vendored snapshot when upstream releases a new version.
+The IUCr source is vendored under
+`src/easydiffraction/report/templates/tex/styles/` in the
+repository and copied into `reports/tex/styles/` on report
+save. Download URL, date, license, and file list below; the
+implementation plan refreshes the vendored snapshot when
+upstream releases a new version.
 
 **IUCr** (`iucrjournals.cls`)
 
 - Source: https://journals.iucr.org/j/services/latexstyle.html
 - Snapshot downloaded: 2026-05-26
-- License: CC0 1.0 Universal (public domain dedication); declared
-  in the `iucrjournals.cls` file header.
+- License: CC0 1.0 Universal (public domain dedication);
+  declared in the `iucrjournals.cls` file header.
 - Files included (2):
   - `iucrjournals.cls` — unified IUCr class
     (11 KB, dated 2024-12-02).
@@ -912,139 +1137,112 @@ the vendored snapshot when upstream releases a new version.
     `iucrjournals.cls` via `\RequirePackage{harvard}`
     (9 KB, Peter Williams, 2001-10-25).
 - Files excluded: `iucr.bib`, `iucr.bst`, `fig1.png`,
-  `template.tex` (bibliography / example assets, not needed for
-  the refinement-table use case).
+  `template.tex` (bibliography / example assets, not needed
+  for the category-mirror layout).
 
-**REVTeX 4.2** (`revtex4-2.cls`)
+Total footprint per save: ~20 KB across 2 files. The CC0 1.0
+licence text is copied into the package's licensing
+documentation per the implementation plan, with attribution to
+Peter Williams where the file headers carry it.
 
-- Sources:
-  https://journals.aps.org/revtex (canonical, APS) and
-  https://ctan.org/pkg/revtex (CTAN mirror).
-- Snapshot downloaded: 2026-05-26 (REVTeX 4.2f, 2022-06-05).
-- License: LPPL 1.3c; declared in the `revtex4-2.cls` file
-  header (Copyright APS 1999–2022, derived from Arthur Ogawa's
-  original v4.0).
-- Files included (10 — the minimum to compile the default PRB
-  output and let the user swap among PRB/PRA/PRL/PRD via
-  documentclass option):
-  - Class: `revtex4-2.cls` (203 KB).
-  - Companion `.sty` (all loaded by `revtex4-2.cls` via
-    `\RequirePackage`): `ltxgrid.sty` (74 KB), `ltxutil.sty`
-    (55 KB), `ltxfront.sty` (30 KB), `ltxdocext.sty` (10 KB),
-    `revsymb4-2.sty` (6 KB).
-  - APS journal config: `aps4-2.rtx` (16 KB) — covers
-    PRB / PRA / PRL / PRD via documentclass options.
-  - Font-size configs: `aps10pt4-2.rtx`, `aps11pt4-2.rtx`,
-    `aps12pt4-2.rtx` (5 KB each).
-- Files excluded:
-  - `apsrmp4-2.rtx` (Rev. Mod. Phys. — defer until a user
-    asks).
-  - `aip4-2.rtx`, `aapm4-2.rtx`, `sor4-2.rtx` (AIP, AAPM,
-    Society of Rheology — out of the typical condensed-matter /
-    diffraction audience; defer).
-  - `bibtex/bst/revtex/*.bst` (BibTeX styles — refinement
-    appendix has no citations).
-  - `doc/latex/revtex/*` (documentation).
+REVTeX and other styles are **not** vendored — only
+`iucrjournals.cls` ships. See "Deferred Work" for
+multi-style addition.
 
-Both license texts (CC0 1.0 and LPPL 1.3c) are copied into the
-package's licensing documentation alongside the wheel's
-BSD-3-Clause `LICENSE`, with attribution to APS and Peter Williams
-where the file headers carry it.
+#### 3.3 Plot generation — `pgfplots` with external CSV data
 
-Template content for `style='iucr'` (unified IUCr class):
+Plots inside the LaTeX output are rendered by the
+[`pgfplots`](https://www.overleaf.com/learn/latex/Pgfplots_package)
+package directly, not by a pre-rendered raster or vector
+image. Each fit plot becomes a `\begin{tikzpicture}` block in
+`<project>.tex` that loads its data from a sibling CSV file:
 
-- Refinement-data table in the journal's conventional layout (cell
-  parameters with uncertainties, space group, refinement
-  statistics, parameter counts, R-factors).
-- Atom-site fractional-coordinate table.
-- Anisotropic ADP table (when anisotropic ADPs present).
-- Per-experiment fit figure via
-  `\includegraphics{figures/fit_<expt_id>.pdf}` with the figure
-  caption rendered from the experiment metadata.
-
-#### 3.3 Static-image generation — kaleido (same Plotly figures as HTML)
-
-LaTeX figures are produced by the **same Plotly figure objects**
-that the HTML report embeds, rendered to vector PDF via Plotly's
-official static-image backend `kaleido`:
-
-```python
-fig = build_fit_figure(experiment, fit_results)   # existing plotly path
-fig.write_html(...)                                # → reports/<project>.html (interactive)
-fig.write_image('reports/tex/figures/fit_<id>.pdf')   # → kaleido → vector PDF
+```latex
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=\linewidth, xlabel={$2\theta$ (deg)},
+             ylabel={Intensity (arb. units)},
+             legend pos=north east]
+  \addplot[only marks, mark size=0.5pt]
+    table[x=two_theta, y=meas, col sep=comma]
+    {data/fit_<expt>.csv};
+  \addlegendentry{Measured};
+  \addplot[no markers]
+    table[x=two_theta, y=calc, col sep=comma]
+    {data/fit_<expt>.csv};
+  \addlegendentry{Calculated};
+  \addplot[no markers, dashed]
+    table[x=two_theta, y=diff, col sep=comma]
+    {data/fit_<expt>.csv};
+  \addlegendentry{Difference};
+\end{axis}
+\end{tikzpicture}
+\caption{Fit quality for experiment <expt>.}
+\end{figure}
 ```
 
-The HTML's interactive Plotly chart and the LaTeX's static PDF
-come from the **same Plotly figure specification rendered by
-the same Plotly engine** (kaleido shares Plotly.js with the
-browser-side renderer). They are visually consistent — same
-trace shapes, same colour mapping, same axis layout — though
-exact pixel equality across an interactive HTML target and a
-static PDF export cannot be guaranteed (font hinting, anti-
-aliasing, and DPI handling differ between the browser and
-kaleido's headless Chromium). Sharing the figure spec is
-nevertheless the core argument for picking kaleido over a
-second rendering toolkit: any visual difference is constrained
-to rendering-stack quirks, not data choices.
+Data files at `reports/tex/data/fit_<expt_id>.csv` carry one
+column per series (`x`, `meas`, `calc`, `diff`, optionally
+`background`). Powder profiles with thousands of points stay
+in CSV; pgfplots reads them at compile time.
 
-**`kaleido` v1.0+ is the chosen release line.** Rationale:
+**Why pgfplots and not pre-rendered images.**
 
-- v1 is the actively maintained line upstream. Bug fixes and
-  security patches land here; the v0.2 line is in legacy
-  maintenance.
-- Pinning a project's long-term static-image pipeline to a legacy
-  release just to dodge a runtime browser dependency is the wrong
-  trade-off — the migration debt accumulates and the runtime gap
-  closes naturally as Chrome/Chromium becomes near-universal.
-- v1's ~30 MB footprint is genuinely smaller than v0.2's ~80 MB
-  bundled-Chromium build.
-- The runtime browser requirement is handled by a system-browser
-  fast path plus Kaleido's own one-time bootstrap, rather than a
-  project-level Pixi dependency: conda-forge does not provide a
-  `chromium` package for the workspace's supported platforms.
-  Machines with Chrome, Chromium, or Edge installed need no extra
-  step. Machines without one can run
-  `python -c "import kaleido; kaleido.get_chrome()"` once to
-  download Kaleido-managed Chromium into the user cache. The
-  report path raises a clear hint for that setup when static-image
-  export cannot find a browser. This differs from the
-  LaTeX-engine install in §3.4, where `tectonic` is available on
-  conda-forge.
+- **No Python image renderer needed.** Removes `kaleido` and
+  the headless-Chromium dependency chain that earlier drafts
+  carried, plus the cross-platform `chromium` packaging
+  problem on conda-forge.
+- **Editable.** A user opening the PDF source can tweak
+  axis labels, colours, legend, or marker size by editing
+  the `\begin{axis}[...]` options directly in
+  `<project>.tex`. The CSV stays untouched.
+- **Native LaTeX typography.** Axis labels, legends, and
+  captions render in the same font family as the surrounding
+  document. No font-hinting mismatch the way there would be
+  with a Plotly-rendered PNG/PDF.
+- **`pgfplots` is on every modern TeX distribution.**
+  `tectonic` resolves it on demand from CTAN; TeX Live and
+  MiKTeX ship it in their default sets. No extra
+  vendoring.
 
-Practical install matrix:
+**Caveats.**
 
-| Environment              | kaleido v1 install     | Browser already present? | Extra step                   |
-| ------------------------ | ---------------------- | ------------------------ | ---------------------------- |
-| Developer laptop         | `pip install kaleido`  | Usually yes (Chrome/Chromium/Edge) | None when present |
-| `pixi` dev shell         | added through editable install | System browser preferred | Run `python -c "import kaleido; kaleido.get_chrome()"` once if absent |
-| CI runner (GitHub, etc.) | added through editable install | Runner-dependent         | Add the same one-line bootstrap before report-export checks |
-| Bare HPC node            | `pip install kaleido`  | Usually no               | Bootstrap once where cache/network policy allows, or install a system browser |
+- Compile-time scales with the data-point count. Powder
+  patterns with ~50K points compile in seconds, not
+  milliseconds; the implementer can downsample for very
+  large patterns via a `pgfplots` `each nth point=N` option
+  if compile time becomes noticeable. This is a tuning knob
+  for the renderer, not an ADR-level decision.
+- The HTML output remains Plotly-based (interactive in the
+  browser); the LaTeX output is pgfplots-based (static in
+  the PDF). The two have **different visual styling** by
+  design — there is no shared figure-rendering library and
+  no "pixel-identical" claim. Sharing the same source data
+  (the project state via the data context) is the only
+  consistency guarantee.
 
-**Dependencies named by this ADR.** The implementation plan must
-name two dependencies before any `/draft-impl-1` or
-`/draft-impl-2` invocation edits `pyproject.toml`, `pixi.toml`, or
-`pixi.lock`:
+**Dependencies named by this ADR.** The implementation plan
+must name one dependency before any `/draft-impl-1` or
+`/draft-impl-2` invocation edits `pyproject.toml`, `pixi.toml`,
+or `pixi.lock`:
 
-- `kaleido` (v1.0+) — Python package, runtime dependency for
-  rasterising Plotly figures to vector PDF for LaTeX inclusion.
-- `tectonic` — pixi/conda package, lightweight TeX engine for §3.4
-  PDF compilation in the project dev environment.
+- `tectonic` — pixi/conda package, lightweight TeX engine for
+  §3.4 PDF compilation in the project dev environment.
+  `tectonic` auto-resolves `pgfplots` and any other
+  TeX-package dependency from CTAN on first use.
 
-`chromium` is deliberately not a dependency: conda-forge has no
-package with that name for the supported workspace platforms. The
-implementation treats Chrome/Chromium/Edge as the fast path and
-reports a clear install hint that points to Kaleido's one-time
-`get_chrome()` bootstrap when static-image export cannot find a
-browser.
+Neither `kaleido` nor a browser is a dependency. The earlier
+draft's `kaleido` + `chromium` chain is dropped wholesale.
 
-Per AGENTS.md §Architecture, "an accepted plan that **names the
-specific dependency** … combined with the user invoking
+Per AGENTS.md §Architecture, "an accepted plan that **names
+the specific dependency** … combined with the user invoking
 `/draft-impl-1` or `/draft-impl-2` for that plan … counts as
 pre-approval." This ADR does **not** itself pre-approve the
-dependency edits; the plan does. The ADR names them here so the
-plan author has the canonical list and the implementer can edit
-dependency files autonomously once the plan is accepted and the
-implementation shortcut is invoked.
+dependency edits; the plan does. The ADR names `tectonic`
+here so the plan author has the canonical list and the
+implementer can edit dependency files autonomously once the
+plan is accepted and the implementation shortcut is invoked.
 
 #### 3.4 PDF compilation — opportunistic subprocess call
 
@@ -1070,7 +1268,7 @@ Behaviour:
   `reports/<project>.pdf` (one directory up from the .tex source).
   Promoting the compiled artifact to `reports/` keeps the
   filename-root trio (`.cif`, `.html`, `.pdf`) co-located.
-- If none is found, the `.tex`, `figures/`, and `styles/` are still
+- If none is found, the `.tex`, `data/`, and `styles/` are still
   written; the save log emits a single clear warning, for example:
 
   ```
@@ -1403,7 +1601,12 @@ next save reflects the edits; the library does not auto-import.
 
 ### 6. Shared `ReportDataContext` + Jinja templates
 
-One context-builder method on the `project.report` facade:
+One context-builder method on the `project.report` facade.
+Descriptors expose their `DisplayHandler` (§1.5) through the
+context so the templates can consume `display_name` /
+`display_units` for HTML / GUI rendering and `latex_name` /
+`latex_units` for LaTeX, with graceful fallback to plain
+`name` / `units` when no handler is attached:
 
 ```python
 def data_context(self) -> dict:
@@ -1427,7 +1630,53 @@ def data_context(self) -> dict:
             }
             for s in self.project.structures.values()
         ],
-        'experiments': [...],
+        # Raw, serialisable fit data per experiment — the
+        # single source of truth for both the HTML Plotly
+        # builder and the LaTeX pgfplots CSV emitter. No
+        # pre-rendered Plotly HTML in the context; that would
+        # bind the data to one renderer.
+        'experiments': [
+            {
+                ...,
+                'fit_data': {
+                    # X-axis carries values + labels pre-resolved
+                    # through the DisplayHandler chain from §1.5.
+                    # `name`/`units` are the **descriptor**'s
+                    # underlying strings — both ASCII Python
+                    # identifiers (`name` snake_case, `units` from
+                    # the DDLm `_units.code` vocabulary). They are
+                    # not CIF tags or tag fragments. `display_*` /
+                    # `latex_*` are resolved once at builder time
+                    # so neither template has to re-derive them.
+                    # No enumerated `x_label` — any descriptor
+                    # (Bragg powder `two_theta`, TOF
+                    # `time_of_flight`, total-scattering `r`,
+                    # future `q`, …) drops in by exposing a
+                    # `DisplayHandler` and falls back gracefully if
+                    # none is attached.
+                    'x': {
+                        'values':        [...],
+                        'name':          'two_theta', # or 'time_of_flight', 'r', …
+                        'units':         'degrees',   # ASCII CIF DDLm unit code
+                        'display_name':  '2θ',
+                        'latex_name':    r'$2\theta$',
+                        'display_units': '°',
+                        'latex_units':   r'$\deg$',
+                    },
+                    # Each y-series carries values + an optional
+                    # uncertainty array + a label string. The label
+                    # is the resolved display/latex form for the
+                    # current renderer, picked at builder time.
+                    'series': {
+                        'meas': {'values': [...], 'su': [...], 'label': 'Measured'},
+                        'calc': {'values': [...], 'label': 'Calculated'},
+                        'diff': {'values': [...], 'label': 'Difference'},
+                        'bkg':  {'values': [...], 'label': 'Background'},  # optional
+                    },
+                },
+            }
+            for e in self.project.experiments.values()
+        ],
         'refinement': {
             'calculation_engine': {...},
             'minimization_engine': {...},
@@ -1444,9 +1693,6 @@ def data_context(self) -> dict:
             'body':             {...},   # _publ_body.{title, synopsis, abstract, keywords}
             'authors':          [...],   # _publ_author.* loop
         },
-        'figures': {
-            'fit_per_experiment': {expt_id: plotly_html_div, ...},
-        },
         'metadata': {
             'easydiffraction_version': ...,
             'generated_at': ...,
@@ -1454,8 +1700,7 @@ def data_context(self) -> dict:
     }
 ```
 
-Templates live under `src/easydiffraction/report/templates/`, keyed by
-style slug:
+Templates live under `src/easydiffraction/report/templates/`:
 
 ```
 templates/
@@ -1464,8 +1709,11 @@ templates/
     report.html.j2
     style.css
   tex/
-    iucr.tex.j2                 # ships in v1; emits \documentclass{iucrjournals}
-    revtex.tex.j2               # ships in v1; emits \documentclass[prb]{revtex4-2}
+    report.tex.j2               # single LaTeX template — emits
+                                # \documentclass[11pt,a4paper]{iucrjournals}
+                                # and the project-category-based body
+                                # (Project Summary, Software, Refinement,
+                                # Structures, Experiments).
 ```
 
 GUI consumes `project.report.data_context()` directly — no CIF
@@ -1480,7 +1728,6 @@ Two subcommands match the Python `project.save()` vs
 ed save                                            # project files + whatever is in project.report.formats
 ed save-report --html                              # one-off — write reports/<project>.html only
 ed save-report --cif --tex --pdf                   # one-off — full LaTeX bundle + CIF
-ed save-report --cif --tex --pdf --style iucr
 ```
 
 `ed save-report` with no `--cif`/`--html`/`--tex`/`--pdf` exits
@@ -1503,15 +1750,15 @@ stay symmetric:
 | ----------------------------------------- | ------------------------------------ | ------------------------------------- |
 | `project.report.formats = ['html']`       | `project.report.save_html()`         | `ed save-report --html`               |
 | `project.report.formats = ['cif']`        | `project.report.save_cif()`          | `ed save-report --cif`                |
-| `project.report.formats = ['tex']`        | `project.report.save_tex(style=…)`   | `ed save-report --tex --style iucr`   |
-| `project.report.formats = ['pdf']`        | `project.report.save_pdf(style=…)`   | `ed save-report --pdf --style iucr`   |
-| `project.report.style = 'iucr'`           | (passed as `style=…` per-call)       | `--style iucr`                        |
+| `project.report.formats = ['tex']`        | `project.report.save_tex()`          | `ed save-report --tex`                 |
+| `project.report.formats = ['pdf']`        | `project.report.save_pdf()`          | `ed save-report --pdf`                 |
 | `project.report.html_offline = True`      | `save_html(offline=True)`            | `--html --offline`                    |
 
 ### 8. Fields the library currently lacks
 
-The HTML/LaTeX renderers need three fields the library does not
-expose today; this ADR scopes them as in-scope work:
+The HTML/LaTeX renderers need three derived fields plus the
+display-metadata mechanism from §1.5; this ADR scopes them all as
+in-scope work:
 
 - `structures[i].crystal_system` — derivable from
   `space_group.name_h_m`, but not currently exposed as a property.
@@ -1522,9 +1769,19 @@ expose today; this ADR scopes them as in-scope work:
   Free and fixed are derivable from
   `project.free_parameters`; total and constrained need a single
   aggregating helper.
+- **Descriptor display metadata (§1.5).** The
+  `display_handler=DisplayHandler(...)` kwarg is added to every
+  descriptor base class. The implementation plan sweeps existing
+  `units=` Unicode strings to ASCII (CIF DDLm `_units.code`
+  vocabulary) and attaches `DisplayHandler` instances to atom-site,
+  cell, fit-result, peak, and other parameters the renderers
+  surface. Descriptors without a handler keep working — they
+  fall back to plain `name`/`units` in every renderer.
 
-All three are pure derived properties — no new state, no persistence
-beyond what already exists.
+The first three are pure derived properties — no new state, no
+persistence beyond what already exists. The fourth is the
+descriptor-level mechanism from §1.5; it is library-wide and
+benefits every renderer (HTML, PDF, terminal, GUI) simultaneously.
 
 ## Consequences
 
@@ -1546,9 +1803,10 @@ beyond what already exists.
   shown".
 - New summary fields are added in one place
   (`project.report.data_context()`); all renderers pick them up.
-- Style selector is a template registration, not a code path.
-  Adding `'prb'`, `'jac'`, etc. is a Jinja file + one-line
-  registration.
+- Single LaTeX style (`iucrjournals`) keeps the v1 surface
+  small: no style enum, no `_report.style` config field, no
+  multi-class vendored bundle. Future styles add via a new
+  ADR alongside the new class files.
 
 ### Trade-offs
 
@@ -1559,41 +1817,33 @@ beyond what already exists.
 - HTML is small (~50–300 KB CDN-mode, ~few MB offline); users
   who want it on every save add `'html'` to
   `project.report.formats` once.
-- LaTeX bundle (`reports/tex/` + `reports/<project>.pdf`) is
-  several files (`.tex`, figures, compiled PDF, full styles
-  directory) — only written when `'tex'` or `'pdf'` is in
-  `project.report.formats` (or an ad-hoc `save_tex()` /
-  `save_pdf()` call is made). The `tex/styles/` directory
-  always contains
-  every supported style's files (12 files, ~420 KB) so the user
-  can swap styles by editing one line in `<project>.tex` and
-  rebuilding, without re-running the library. Negligible against
-  project data files, the PDF, and the HTML report.
-- Two upstream snapshots vendored in the repository
-  (`iucrjournals.cls` family CC0 1.0; REVTeX 4.2 family LPPL
-  1.3c). The plan refreshes the snapshot when upstream releases
-  a new version; license texts are copied into the package's
+- LaTeX bundle (`reports/tex/` + `reports/<project>.pdf`) is a
+  handful of files (`.tex`, CSV data per experiment, two
+  vendored class/style files, compiled PDF) — only written
+  when `'tex'` or `'pdf'` is in `project.report.formats` (or
+  an ad-hoc `save_tex()` / `save_pdf()` call is made). Total
+  per-save footprint is dominated by the CSVs; the
+  `tex/styles/` directory holds ~20 KB across 2 files.
+- One upstream snapshot vendored in the repository
+  (`iucrjournals.cls` + `harvard.sty`, CC0 1.0). The plan
+  refreshes the snapshot when upstream releases a new
+  version; the licence text is copied into the package's
   licensing documentation alongside the wheel's BSD-3-Clause
   `LICENSE` with attribution.
-- Adds **kaleido v1.0+** as a direct dependency (~30 MB).
-  Justified by the visual-consistency win: the HTML and LaTeX
-  figures come from the same Plotly figure objects rendered by
-  the same Plotly engine (interactive in HTML, static PDF via
-  kaleido), so any visual difference is bounded by
-  browser/runtime/export quirks rather than two unrelated
-  rendering toolkits drifting on data choices. v1 relies on
-  Chrome/Chromium for rendering; the project's `pixi.toml` adds
-  `tectonic`, while Chromium is not modeled as a conda dependency
-  because conda-forge has no `chromium` package for the workspace
-  platforms. Developers and CI can use an installed
-  Chrome/Chromium/Edge browser or run
-  `python -c "import kaleido; kaleido.get_chrome()"` once to
-  download Kaleido-managed Chromium. End users on machines without
-  a browser get a clear install hint at first use.
+- **No Python image renderer in the LaTeX path.** The earlier
+  draft's `kaleido` runtime dependency and the matching
+  Chrome/Chromium browser requirement are both dropped in
+  favour of `pgfplots` reading the project's CSV data
+  directly. The HTML output remains Plotly-based (interactive
+  in the browser); the LaTeX output is pgfplots-based (static
+  in the PDF). The two renderings share the underlying data
+  but not the visual styling — see §3 and §3.3 for the
+  rationale.
 - PDF compilation is opportunistic — works when `tectonic`,
-  `latexmk`, or `pdflatex` is on `PATH`; otherwise the `.tex` and
-  figures are still written and the user gets a clear one-line
-  install hint (`pixi add tectonic` is the recommended path).
+  `latexmk`, or `pdflatex` is on `PATH`; otherwise the `.tex`
+  and the `data/` CSV files are still written and the user
+  gets a clear one-line install hint (`pixi add tectonic` is
+  the recommended path).
 - The `data_context` dict is a public API surface. Renaming a key
   affects every renderer. Treated like a public method signature.
 - `analysis.software` adds a new category to persist on every save.
@@ -1609,9 +1859,9 @@ beyond what already exists.
   1. **`project.save()` flag removal.** The accepted
      `project.save(report=True)` flag is **removed**. Reports
      come from the new `project.report` configuration category
-     (§1.1, §1.3) — six scalar items persisted to `project.cif`
+     (§1.1, §1.3) — five scalar items persisted to `project.cif`
      (`_report.cif`, `_report.html`, `_report.tex`, `_report.pdf`,
-     `_report.style`, `_report.html_offline`). The Python-side
+     `_report.html_offline`). The Python-side
      `project.report.formats` is a property view over the four
      format booleans. Set the configuration once; `project.save()`
      applies it on every save thereafter. Replaces the flag with
@@ -1624,9 +1874,9 @@ beyond what already exists.
      `ValueError` when no formats are enabled — §1.2). Per-format
      ad-hoc writes use new explicit methods:
      `project.report.save_cif()`, `save_html(offline=False)`,
-     `save_tex(style='iucr')`, `save_pdf(style='iucr')`. The
-     earlier draft's `save(cif=True, html=True, tex=True,
-     pdf=True, style=, check=)` flag bundle is dropped.
+     `save_tex()`, `save_pdf()`. The earlier draft's
+     `save(cif=True, html=True, tex=True, pdf=True, style=,
+     check=)` flag bundle is dropped.
      `project.report.check()` and the `check=True` flag are
      **removed**: dictionary-spec validation runs internally
      **before every CIF write only** (`save_cif()` and the
@@ -1694,7 +1944,7 @@ beyond what already exists.
      The accepted ADR scoped `project.report` as a CIF-write helper
      (single output: `reports/<project>.cif`). This ADR extends
      it with a configuration category (`_report.*` in
-     `project.cif`, six scalar items per §1.1 / §1.3) that the
+     `project.cif`, five scalar items per §1.1 / §1.3) that the
      existing `Project.save()` reads on every save. The facade
      becomes a hybrid — helper methods (`save_*()`) **and**
      persisted configuration on the same Python object.
@@ -1713,8 +1963,8 @@ beyond what already exists.
 - [`python-cif-category-correspondence.md`](python-cif-category-correspondence.md)
   — owns the Python-to-CIF correspondence rule for two new
   project-level singleton surfaces:
-  - `project.report.*` ↔ `_report.*` — six scalar items (four
-    format booleans, `style`, `html_offline`) per §1.3.
+  - `project.report.*` ↔ `_report.*` — five scalar items (four
+    format booleans plus `html_offline`) per §1.3.
   - `project.publication.*` ↔ `_publ_*` / `_journal_*` sibling
     categories per §5. Python attributes are lowercase
     snake_case (`id_orcid`); CIF tags retain dictionary casing
@@ -1740,6 +1990,19 @@ beyond what already exists.
   configuration / ad-hoc split in §1; the exact GUI layout
   (single dialog vs. inline checkboxes, button labels,
   post-save action) decides at GUI-integration time, not here.
+- **`units=` sweep — backward compatibility.** Existing
+  descriptors use Unicode short-form units (`'Å'`, `'Å²'`,
+  `'°'`). The §1.5 convention is ASCII (CIF DDLm `_units.code`:
+  `'angstroms'`, `'angstrom_squared'`, `'degrees'`).
+  Audit the project for external readers of `descriptor.units`
+  before the plan runs the sweep — tutorial sources, the
+  display layer, third-party scripts that may depend on the
+  Unicode value via `parameter.units`. Confirm whether any
+  consumer hard-codes the Unicode strings (literal `'Å²'`
+  comparison) and would need updating alongside the sweep.
+  Recommendation: project-internal callers move to
+  `parameter.display_handler.display_units` when present, with
+  fallback to `parameter.units`; the sweep is a same-PR change.
 
 ## Alternatives Considered
 
@@ -1789,35 +2052,38 @@ HTML to PDF from a browser anyway. Deferred.
 ## Deferred Work
 
 - Markdown rendering as a third Jinja target.
-- Additional style slugs beyond v1's `iucr` and `revtex`
-  (e.g. ICDD, Elsevier `elsarticle`, Springer `svjour3`). Each new
-  slug ships as one new Jinja template + a registration row; no
-  code restructuring needed.
-- **Bibliography support** (`iucr.bib` / `iucr.bst`,
-  REVTeX `*.bst` files). Both upstream distributions ship
-  bibliography styles for citing IUCr / APS publications. Not
-  bundled in v1 because the refinement-table appendix use case
-  has no citations. Add when users start producing full
-  manuscripts from the library.
-- **Extended REVTeX journal coverage.** v1 bundles `aps4-2.rtx`
-  (covers PRB/PRA/PRL/PRD). The four upstream `.rtx` files for
-  Rev. Mod. Phys. (`apsrmp4-2.rtx`), AIP (`aip4-2.rtx`), AAPM
-  (`aapm4-2.rtx`), and Society of Rheology (`sor4-2.rtx`) total
-  ~76 KB and are skipped to stay minimal. Add them when users
-  in those communities ask. Users on the deferred journals can
-  install REVTeX from TeX Live (full coverage is in the default
-  install) and the swap-with-one-line-edit workflow then works.
+- **Multi-style LaTeX support.** v1 ships only `iucrjournals`
+  with no style selector and no `_report.style` config field.
+  Adding a second style (REVTeX 4.2, Elsevier `elsarticle`,
+  Springer `svjour3`, etc.) is a follow-up ADR that
+  reintroduces:
+  - a `ReportStyleEnum` (per the closed-values ADR),
+  - a `_report.style` config field on `project.report`,
+  - a `style=` arg on `save_tex()` / `save_pdf()`,
+  - a `--style` CLI flag on `ed save-report`,
+  - vendored class files for the new style.
+  
+  The renderer in v1 hardcodes `iucrjournals`; reintroducing
+  the selector is a contained change, not a rewrite, but it
+  is its own ADR so the design conversation does not relitigate
+  on each new template request.
+- **Bibliography support** (`iucr.bib` / `iucr.bst`). IUCr
+  ships bibliography styles for citing IUCr publications.
+  Not bundled in v1 because the v1 report mirrors internal
+  category structure rather than producing a manuscript with
+  references. Add when users produce full manuscripts from
+  the library.
 - **Snapshot-refresh automation.** A small `pixi` task to
-  re-fetch upstream sources and diff against the vendored
-  snapshot would help track when IUCr or APS releases a new
-  version. v1 refreshes by hand during plan work.
-- **Per-style subfolder layout.** v1 flattens all 12 style files
-  into one `reports/tex/styles/` directory. As more styles ship
-  (Elsevier `elsarticle`, Springer `svjour3`, …), a per-style
-  subfolder layout (`styles/iucr/*`, `styles/revtex/*`,
-  `styles/elsarticle/*`) becomes cleaner — needs `TEXINPUTS=./styles//:`
-  configured for the TeX engine. Defer until the file count
-  becomes uncomfortable.
+  re-fetch the upstream IUCr source and diff against the
+  vendored snapshot would help track when IUCr releases a
+  new version. v1 refreshes by hand during plan work.
+- **Larger-pattern pgfplots tuning.** Powder patterns with
+  ~50K points compile in pgfplots in seconds. If users
+  produce significantly larger patterns and compile time
+  becomes uncomfortable, the renderer can downsample via
+  `pgfplots`'s `each nth point=N` option, or switch to
+  matplotlib-rendered PDF figures for the LaTeX path while
+  keeping pgfplots as the default. Tune when needed.
 - Tab/accordion navigation in HTML for projects with many
   experiments.
 - `project.report.check_completeness()` — complements the
@@ -1848,7 +2114,6 @@ configuration category on the project (persisted in
 
 ```python
 project.report.formats = ['cif', 'html']    # which formats project.save() emits
-project.report.style = 'iucr'               # LaTeX style (when 'tex' or 'pdf' is in formats)
 project.report.html_offline = False         # Plotly via CDN (default) or inlined
 
 project.save()
@@ -1860,34 +2125,31 @@ project.save()
 Per-format ad-hoc methods cover one-offs without changing the
 persisted config:
 `project.report.save_html(offline=False)`,
-`save_cif()`, `save_tex(style='revtex')`, `save_pdf()`.
+`save_cif()`, `save_tex()`, `save_pdf()`.
 The CLI mirrors with a new subcommand,
-`ed save-report --cif --html --tex --pdf --style iucr` (also a
-one-off; `ed save` reads the persisted config).
+`ed save-report --cif --html --tex --pdf` (also a one-off;
+`ed save` reads the persisted config).
 
-The LaTeX bundle ships `<project>.tex`, vector-PDF figures, and
-the full set of supported style files under `reports/tex/`. The
-compiled `<project>.pdf` is written one level up (next to the
-CIF and HTML) when a TeX engine — `tectonic` (recommended,
-conda-forge), `latexmk`, or `pdflatex` — is on `PATH`. v1 ships
-two styles, both **fully bundled** in `reports/tex/styles/` on
-every report save (~420 KB across 12 files):
+The LaTeX bundle ships `<project>.tex`, CSV data per
+experiment, and the `iucrjournals` vendored style under
+`reports/tex/`. The compiled `<project>.pdf` is written one
+level up (next to the CIF and HTML) when a TeX engine —
+`tectonic` (recommended, conda-forge), `latexmk`, or `pdflatex`
+— is on `PATH`. The `.tex` document mirrors the project's own
+category-based structure (Project Summary, Software,
+Refinement, Structures, Experiments) rather than imitating an
+IUCr journal-submission manuscript — "typeset Python state",
+not a ready-to-submit manuscript.
 
-- `iucr` (default) — IUCr's `iucrjournals.cls` (CC0 1.0,
-  https://journals.iucr.org/j/services/latexstyle.html), unified
-  across Acta Cryst E/B/C/D/F, J. Appl. Cryst., J. Synchrotron
-  Rad., IUCrData. Sub-journal is decided at submission, not in
-  the `.tex`.
-- `revtex` — APS's `revtex4-2.cls` family (LPPL 1.3c,
-  https://journals.aps.org/revtex / https://ctan.org/pkg/revtex).
-  PRB by default; user changes the documentclass option letter
-  to switch to PRA / PRL / PRD / Rev. Mod. Phys. / AIP / AAPM /
-  SOR / generic reprint.
-
-Bundling both styles regardless of the active selection makes
-`reports/tex/` self-contained — the user (or a collaborator
-without EasyDiffraction) can rebuild in any style by editing
-one line in `<project>.tex` and rerunning the TeX engine.
+Plots inside the LaTeX output are rendered by `pgfplots`
+reading the CSV data at compile time. The HTML output stays
+Plotly-based (interactive in the browser); the LaTeX output
+is pgfplots-based (static in the PDF). The two share the
+underlying data but not the visual styling — there is no
+shared figure-rendering library, no pixel-equality claim, and
+no Python image-rendering dependency in the LaTeX path
+(`kaleido` and the browser dependency from earlier drafts are
+both gone).
 
 Adds an `analysis.software` Python category — three-role triple
 (framework / calculator / minimizer) matching the alignment ADR's
