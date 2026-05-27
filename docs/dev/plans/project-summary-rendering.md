@@ -390,7 +390,7 @@ exceptions.
     (which explicitly says kaleido is gone).
   - Commit: `Drop kaleido runtime dependency`.
 
-- [ ] **P1.6 — Add `DisplayHandler` dataclass**
+- [x] **P1.6 — Add `DisplayHandler` dataclass**
   - Files: new
     `src/easydiffraction/core/display_handler.py`;
     existing `src/easydiffraction/core/__init__.py`.
