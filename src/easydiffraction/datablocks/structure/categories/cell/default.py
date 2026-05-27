@@ -6,6 +6,7 @@ from __future__ import annotations
 
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.metadata import TypeInfo
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.variable import Parameter
@@ -37,7 +38,13 @@ class Cell(CategoryItem):
         self._length_a = Parameter(
             name='length_a',
             description='Length of the a axis of the unit cell',
-            units='Å',
+            units='angstroms',
+            display_handler=DisplayHandler(
+                display_name='a',
+                display_units='Å',
+                latex_name=r'$a$',
+                latex_units=r'\AA',
+            ),
             value_spec=AttributeSpec(
                 default=10.0,
                 validator=RangeValidator(ge=0, le=30),
@@ -47,7 +54,13 @@ class Cell(CategoryItem):
         self._length_b = Parameter(
             name='length_b',
             description='Length of the b axis of the unit cell',
-            units='Å',
+            units='angstroms',
+            display_handler=DisplayHandler(
+                display_name='b',
+                display_units='Å',
+                latex_name=r'$b$',
+                latex_units=r'\AA',
+            ),
             value_spec=AttributeSpec(
                 default=10.0,
                 validator=RangeValidator(ge=0, le=30),
@@ -57,7 +70,13 @@ class Cell(CategoryItem):
         self._length_c = Parameter(
             name='length_c',
             description='Length of the c axis of the unit cell',
-            units='Å',
+            units='angstroms',
+            display_handler=DisplayHandler(
+                display_name='c',
+                display_units='Å',
+                latex_name=r'$c$',
+                latex_units=r'\AA',
+            ),
             value_spec=AttributeSpec(
                 default=10.0,
                 validator=RangeValidator(ge=0, le=30),
@@ -67,7 +86,13 @@ class Cell(CategoryItem):
         self._angle_alpha = Parameter(
             name='angle_alpha',
             description='Angle between edges b and c',
-            units='deg',
+            units='degrees',
+            display_handler=DisplayHandler(
+                display_name='α',
+                display_units='deg',
+                latex_name=r'$\alpha$',
+                latex_units=r'$^\circ$',
+            ),
             value_spec=AttributeSpec(
                 default=90.0,
                 validator=RangeValidator(ge=0, le=180),
@@ -77,7 +102,13 @@ class Cell(CategoryItem):
         self._angle_beta = Parameter(
             name='angle_beta',
             description='Angle between edges a and c',
-            units='deg',
+            units='degrees',
+            display_handler=DisplayHandler(
+                display_name='β',
+                display_units='deg',
+                latex_name=r'$\beta$',
+                latex_units=r'$^\circ$',
+            ),
             value_spec=AttributeSpec(
                 default=90.0,
                 validator=RangeValidator(ge=0, le=180),
@@ -87,7 +118,13 @@ class Cell(CategoryItem):
         self._angle_gamma = Parameter(
             name='angle_gamma',
             description='Angle between edges a and b',
-            units='deg',
+            units='degrees',
+            display_handler=DisplayHandler(
+                display_name='γ',
+                display_units='deg',
+                latex_name=r'$\gamma$',
+                latex_units=r'$^\circ$',
+            ),
             value_spec=AttributeSpec(
                 default=90.0,
                 validator=RangeValidator(ge=0, le=180),

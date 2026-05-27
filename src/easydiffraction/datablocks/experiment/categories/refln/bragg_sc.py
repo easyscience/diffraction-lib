@@ -10,6 +10,7 @@ from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.metadata import CalculatorSupport
 from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
@@ -49,7 +50,11 @@ class Refln(CategoryItem):
         self._d_spacing = NumericDescriptor(
             name='d_spacing',
             description='Distance between lattice planes for this reflection',
-            units='Å',
+            units='angstroms',
+            display_handler=DisplayHandler(
+                display_units='Å',
+                latex_units=r'\AA',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
@@ -59,7 +64,11 @@ class Refln(CategoryItem):
         self._sin_theta_over_lambda = NumericDescriptor(
             name='sin_theta_over_lambda',
             description='The sin(θ)/λ value for this reflection',
-            units='Å⁻¹',
+            units='reciprocal_angstroms',
+            display_handler=DisplayHandler(
+                display_units='Å⁻¹',
+                latex_units=r'\AA$^{-1}$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),
@@ -123,7 +132,11 @@ class Refln(CategoryItem):
         self._wavelength = NumericDescriptor(
             name='wavelength',
             description='Mean wavelength of radiation for this reflection',
-            units='Å',
+            units='angstroms',
+            display_handler=DisplayHandler(
+                display_units='Å',
+                latex_units=r'\AA',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),

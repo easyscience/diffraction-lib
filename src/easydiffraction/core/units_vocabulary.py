@@ -30,24 +30,6 @@ VALID_UNITS_CODES: frozenset[str] = frozenset(
 
 _LEGACY_UNITS_ALIASES: dict[str, str] = {
     '': 'none',
-    'K': 'kelvins',
-    'T': 'teslas',
-    'V/m': 'volts_per_metre',
-    'arcmin': 'arcminutes',
-    'deg': 'degrees',
-    'deg²': 'degrees_squared',
-    'kPa': 'kilopascals',
-    'Å': 'angstroms',
-    'Å²': 'angstrom_squared',
-    'Å⁻¹': 'reciprocal_angstroms',
-    'Å⁻²': 'reciprocal_angstrom_squared',
-    'μm': 'micrometres',
-    'μs': 'microseconds',
-    'μs/Å': 'microseconds_per_angstrom',
-    'μs/Å²': 'microseconds_per_angstrom_squared',
-    'μs²': 'microseconds_squared',
-    'μs²/Å²': 'microseconds_squared_per_angstrom_squared',
-    'μs·Å': 'microsecond_angstroms',
 }
 
 
@@ -58,7 +40,7 @@ def normalize_units_code(code: str) -> str:
     Parameters
     ----------
     code : str
-        Units code or legacy display symbol.
+        Units code. Empty strings are treated as ``'none'``.
 
     Returns
     -------

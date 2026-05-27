@@ -4,6 +4,7 @@
 from easydiffraction.core.metadata import CalculatorSupport
 from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.variable import Parameter
@@ -60,7 +61,11 @@ class TofPdInstrument(InstrumentBase):
         self._setup_twotheta_bank: Parameter = Parameter(
             name='twotheta_bank',
             description='Detector bank position',
-            units='deg',
+            units='degrees',
+            display_handler=DisplayHandler(
+                display_units='deg',
+                latex_units=r'$^\circ$',
+            ),
             value_spec=AttributeSpec(
                 default=150.0,
                 validator=RangeValidator(),
@@ -70,7 +75,11 @@ class TofPdInstrument(InstrumentBase):
         self._calib_d_to_tof_offset: Parameter = Parameter(
             name='d_to_tof_offset',
             description='TOF offset',
-            units='μs',
+            units='microseconds',
+            display_handler=DisplayHandler(
+                display_units='μs',
+                latex_units=r'$\mu\mathrm{s}$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -80,7 +89,11 @@ class TofPdInstrument(InstrumentBase):
         self._calib_d_to_tof_linear: Parameter = Parameter(
             name='d_to_tof_linear',
             description='TOF linear conversion',
-            units='μs/Å',
+            units='microseconds_per_angstrom',
+            display_handler=DisplayHandler(
+                display_units='μs/Å',
+                latex_units=r'$\mu\mathrm{s}/\mathrm{\AA}$',
+            ),
             value_spec=AttributeSpec(
                 default=10000.0,
                 validator=RangeValidator(),
@@ -90,7 +103,11 @@ class TofPdInstrument(InstrumentBase):
         self._calib_d_to_tof_quad: Parameter = Parameter(
             name='d_to_tof_quad',
             description='TOF quadratic correction',
-            units='μs/Å²',
+            units='microseconds_per_angstrom_squared',
+            display_handler=DisplayHandler(
+                display_units='μs/Å²',
+                latex_units=r'$\mu\mathrm{s}/\mathrm{\AA}^2$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
@@ -100,7 +117,11 @@ class TofPdInstrument(InstrumentBase):
         self._calib_d_to_tof_recip: Parameter = Parameter(
             name='d_to_tof_recip',
             description='TOF reciprocal velocity correction',
-            units='μs·Å',
+            units='microsecond_angstroms',
+            display_handler=DisplayHandler(
+                display_units='μs·Å',
+                latex_units=r'$\mu\mathrm{s}\,\mathrm{\AA}$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),

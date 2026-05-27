@@ -11,6 +11,7 @@ from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.metadata import CalculatorSupport
 from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.validation import RangeValidator
@@ -55,7 +56,11 @@ class TotalDataPoint(CategoryItem):
         self._r = NumericDescriptor(
             name='r',
             description='Interatomic distance in real space',
-            units='Å',
+            units='angstroms',
+            display_handler=DisplayHandler(
+                display_units='Å',
+                latex_units=r'\AA',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),

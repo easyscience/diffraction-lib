@@ -12,6 +12,7 @@ from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.metadata import CalculatorSupport
 from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.validation import RangeValidator
@@ -210,7 +211,13 @@ class PdCwlDataPointMixin:
         self._two_theta = NumericDescriptor(
             name='two_theta',
             description='Measured 2θ diffraction angle.',
-            units='deg',
+            units='degrees',
+            display_handler=DisplayHandler(
+                display_name='2θ',
+                display_units='deg',
+                latex_name=r'$2\theta$',
+                latex_units=r'$^\circ$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0, le=180),
@@ -247,7 +254,11 @@ class PdTofDataPointMixin:
         self._time_of_flight = NumericDescriptor(
             name='time_of_flight',
             description='Measured time for time-of-flight neutron measurement.',
-            units='μs',
+            units='microseconds',
+            display_handler=DisplayHandler(
+                display_units='μs',
+                latex_units=r'$\mu\mathrm{s}$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),

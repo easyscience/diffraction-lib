@@ -11,6 +11,7 @@ from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.metadata import CalculatorSupport
 from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.variable import NumericDescriptor
@@ -102,7 +103,13 @@ class PowderCwlRefln(PowderReflnBase):
         self._two_theta = NumericDescriptor(
             name='two_theta',
             description='Calculated 2theta position for this reflection',
-            units='deg',
+            units='degrees',
+            display_handler=DisplayHandler(
+                display_name='2θ',
+                display_units='deg',
+                latex_name=r'$2\theta$',
+                latex_units=r'$^\circ$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0, le=180),
@@ -130,7 +137,11 @@ class PowderTofRefln(PowderReflnBase):
         self._time_of_flight = NumericDescriptor(
             name='time_of_flight',
             description='Calculated time-of-flight position for this reflection',
-            units='μs',
+            units='microseconds',
+            display_handler=DisplayHandler(
+                display_units='μs',
+                latex_units=r'$\mu\mathrm{s}$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0),

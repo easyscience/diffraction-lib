@@ -516,7 +516,7 @@ exceptions.
   - Commit:
     `Add units vocabulary validator at descriptor construction`.
 
-- [ ] **P1.10 — Sweep `units=` strings across `src/` + attach `DisplayHandler`**
+- [x] **P1.10 — Sweep `units=` strings across `src/` + attach `DisplayHandler`**
   - Files: every descriptor declaration in
     `src/easydiffraction/` from the P1.8 inventory. The
     sites are concentrated under

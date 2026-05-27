@@ -16,6 +16,7 @@ from cryspy.A_functions_base.database import DATABASE
 from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.metadata import TypeInfo
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.validation import RangeValidator
@@ -120,7 +121,13 @@ class AtomSite(CategoryItem):
         self._adp_iso = Parameter(
             name='adp_iso',
             description='Isotropic atomic displacement parameter (ADP) for the atom site.',
-            units='Å²',
+            units='angstrom_squared',
+            display_handler=DisplayHandler(
+                display_name='Uiso',
+                display_units='Å²',
+                latex_name=r'$U_{\mathrm{iso}}$',
+                latex_units=r'\AA$^2$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(ge=0.0, le=10.0),

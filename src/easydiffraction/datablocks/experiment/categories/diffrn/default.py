@@ -6,6 +6,7 @@ from __future__ import annotations
 
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.metadata import TypeInfo
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.variable import NumericDescriptor
@@ -30,7 +31,11 @@ class DefaultDiffrn(CategoryItem):
         self._ambient_temperature = NumericDescriptor(
             name='ambient_temperature',
             description='Mean temperature during measurement',
-            units='K',
+            units='kelvins',
+            display_handler=DisplayHandler(
+                display_units='K',
+                latex_units='K',
+            ),
             value_spec=AttributeSpec(
                 default=None,
                 allow_none=True,
@@ -42,7 +47,11 @@ class DefaultDiffrn(CategoryItem):
         self._ambient_pressure = NumericDescriptor(
             name='ambient_pressure',
             description='Mean hydrostatic pressure during measurement',
-            units='kPa',
+            units='kilopascals',
+            display_handler=DisplayHandler(
+                display_units='kPa',
+                latex_units='kPa',
+            ),
             value_spec=AttributeSpec(
                 default=None,
                 allow_none=True,
@@ -54,7 +63,11 @@ class DefaultDiffrn(CategoryItem):
         self._ambient_magnetic_field = NumericDescriptor(
             name='ambient_magnetic_field',
             description='Mean magnetic field during measurement',
-            units='T',
+            units='teslas',
+            display_handler=DisplayHandler(
+                display_units='T',
+                latex_units='T',
+            ),
             value_spec=AttributeSpec(
                 default=None,
                 allow_none=True,
@@ -69,7 +82,11 @@ class DefaultDiffrn(CategoryItem):
         self._ambient_electric_field = NumericDescriptor(
             name='ambient_electric_field',
             description='Mean electric field during measurement',
-            units='V/m',
+            units='volts_per_metre',
+            display_handler=DisplayHandler(
+                display_units='V/m',
+                latex_units=r'\mathrm{V}/\mathrm{m}',
+            ),
             value_spec=AttributeSpec(
                 default=None,
                 allow_none=True,

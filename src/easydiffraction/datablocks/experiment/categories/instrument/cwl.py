@@ -4,6 +4,7 @@
 from easydiffraction.core.metadata import CalculatorSupport
 from easydiffraction.core.metadata import Compatibility
 from easydiffraction.core.metadata import TypeInfo
+from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.variable import Parameter
@@ -25,7 +26,11 @@ class CwlInstrumentBase(InstrumentBase):
         self._setup_wavelength: Parameter = Parameter(
             name='wavelength',
             description='Incident neutron or X-ray wavelength',
-            units='Å',
+            units='angstroms',
+            display_handler=DisplayHandler(
+                display_units='Å',
+                latex_units=r'\AA',
+            ),
             value_spec=AttributeSpec(
                 default=1.5406,
                 validator=RangeValidator(ge=0.0),
@@ -100,7 +105,11 @@ class CwlPdInstrument(CwlInstrumentBase):
         self._calib_twotheta_offset: Parameter = Parameter(
             name='twotheta_offset',
             description='Instrument misalignment offset',
-            units='deg',
+            units='degrees',
+            display_handler=DisplayHandler(
+                display_units='deg',
+                latex_units=r'$^\circ$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
