@@ -10,7 +10,7 @@ from importlib.resources import files
 from jinja2 import Environment
 from jinja2 import PackageLoader
 
-_TEMPLATE_NAME = 'tex/iucr.tex.j2'
+_TEMPLATE_NAME = 'tex/report.tex.j2'
 _TEX_SPECIAL_CHARS = {
     '\\': r'\textbackslash{}',
     '&': r'\&',

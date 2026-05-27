@@ -363,7 +363,7 @@ exceptions.
   - Commit:
     `Drop REVTeX style files from vendored TeX bundle`.
 
-- [ ] **P1.4 — Rename TeX template to a single canonical name**
+- [x] **P1.4 — Rename TeX template to a single canonical name**
   - Files: rename
     `src/easydiffraction/report/templates/tex/iucr.tex.j2`
     → `report.tex.j2`. Delete
