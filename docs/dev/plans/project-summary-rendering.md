@@ -345,7 +345,7 @@ exceptions.
     `ReportStyleEnum`-driven dispatch.
   - Commit: `Drop style= parameter from save_tex/save_pdf and CLI`.
 
-- [ ] **P1.3 — Reduce vendored TeX bundle (12 → 2 files)**
+- [x] **P1.3 — Reduce vendored TeX bundle (12 → 2 files)**
   - Files: delete
     `src/easydiffraction/report/templates/tex/styles/revtex4-2.cls`,
     `ltxgrid.sty`, `ltxutil.sty`, `ltxfront.sty`,
