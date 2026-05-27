@@ -429,7 +429,7 @@ exceptions.
   - Commit:
     `Wire display_handler slot and resolution helpers on Descriptor`.
 
-- [ ] **P1.8 — Inventory every `units=` string and build the vocabulary table**
+- [x] **P1.8 — Inventory every `units=` string and build the vocabulary table**
   - Files: new
     `docs/dev/plans/project-summary-rendering_units-inventory.md`
     (working scratch — **not committed**); read-only
@@ -481,7 +481,7 @@ exceptions.
     suffix so it's clearly disposable; leave it untracked
     or delete after P1.10.
 
-- [ ] **P1.9 — Add `units_vocabulary.py` validator covering every inventoried code**
+- [x] **P1.9 — Add `units_vocabulary.py` validator covering every inventoried code**
   - Files: new
     `src/easydiffraction/core/units_vocabulary.py`;
     existing `src/easydiffraction/core/__init__.py`.

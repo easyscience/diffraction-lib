@@ -10,6 +10,7 @@ import numpy as np
 from easydiffraction.core.diagnostic import Diagnostics
 from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.guard import GuardedBase
+from easydiffraction.core.units_vocabulary import normalize_units_code
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import DataTypes
 from easydiffraction.core.validation import RangeValidator
@@ -327,13 +328,13 @@ class GenericNumericDescriptor(GenericDescriptorBase):
         **kwargs: object,
     ) -> None:
         super().__init__(**kwargs)
-        self._units: str = units
+        self._units: str = normalize_units_code(units)
 
     def __str__(self) -> str:
         """Return the string representation including units."""
         s: str = super().__str__()
         s = s[1:-1]  # strip <>
-        if self.units:
+        if self.units != 'none':
             s += f' {self.units}'
         return f'<{s}>'
 
@@ -416,7 +417,7 @@ class GenericParameter(GenericNumericDescriptor):
         s = s[1:-1]  # strip <>
         if self.uncertainty is not None:
             s += f' ± {self.uncertainty}'
-        if self.units is not None:
+        if self.units != 'none':
             s += f' {self.units}'
         s += f' (free={self.free})'
         return f'<{s}>'
