@@ -432,14 +432,9 @@ class Report(CategoryItem):
 
         return render_html_report(self.data_context(), offline=offline)
 
-    def save_tex(self, style: str = 'iucr') -> pathlib.Path:
+    def save_tex(self) -> pathlib.Path:
         """
         Write the TeX report.
-
-        Parameters
-        ----------
-        style : str, default='iucr'
-            Report template style.
 
         Returns
         -------
@@ -448,16 +443,11 @@ class Report(CategoryItem):
         """
         from easydiffraction.report.tex_renderer import save_tex_report  # noqa: PLC0415
 
-        return save_tex_report(self.project, self.data_context(), style=style)
+        return save_tex_report(self.project, self.data_context())
 
-    def as_tex(self, style: str = 'iucr') -> str:
+    def as_tex(self) -> str:
         """
         Render the TeX report.
-
-        Parameters
-        ----------
-        style : str, default='iucr'
-            Report template style.
 
         Returns
         -------
@@ -466,16 +456,11 @@ class Report(CategoryItem):
         """
         from easydiffraction.report.tex_renderer import render_tex_report  # noqa: PLC0415
 
-        return render_tex_report(self.data_context(), style=style)
+        return render_tex_report(self.data_context())
 
-    def save_pdf(self, style: str = 'iucr') -> pathlib.Path:
+    def save_pdf(self) -> pathlib.Path:
         """
         Write the PDF report.
-
-        Parameters
-        ----------
-        style : str, default='iucr'
-            Report template style.
 
         Returns
         -------
@@ -485,7 +470,7 @@ class Report(CategoryItem):
         """
         from easydiffraction.report.pdf_compiler import save_pdf_report  # noqa: PLC0415
 
-        return save_pdf_report(self.project, self.data_context(), style=style)
+        return save_pdf_report(self.project, self.data_context())
 
     def save(self) -> list[pathlib.Path]:
         """
@@ -519,11 +504,11 @@ class Report(CategoryItem):
                     self.save_html(offline=bool(self.html_offline.value))
                 )
             elif report_format is ReportFormatEnum.TEX:
-                tex_path = self.save_tex(style=str(self.style.value))
+                tex_path = self.save_tex()
                 report_paths.append(tex_path)
             elif report_format is ReportFormatEnum.PDF:
                 if tex_path is None:
-                    report_paths.append(self.save_pdf(style=str(self.style.value)))
+                    report_paths.append(self.save_pdf())
                 else:
                     from easydiffraction.report.pdf_compiler import (  # noqa: PLC0415
                         compile_pdf_report,

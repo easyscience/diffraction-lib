@@ -14,7 +14,6 @@ if hasattr(sys.stdout, 'reconfigure'):
 import typer
 
 import easydiffraction as ed
-from easydiffraction.report.enums import ReportStyleEnum
 
 app = typer.Typer(add_completion=False)
 
@@ -154,7 +153,6 @@ def _save_report_outputs(
     html: bool,
     tex: bool,
     pdf: bool,
-    style: str,
     offline: bool,
 ) -> list[pathlib.Path]:
     """Write selected one-off report outputs."""
@@ -166,26 +164,16 @@ def _save_report_outputs(
     if html:
         report_paths.append(report.save_html(offline=offline))
     if tex:
-        tex_path = report.save_tex(style=style)
+        tex_path = report.save_tex()
         report_paths.append(tex_path)
     if pdf:
         if tex_path is None:
-            report_paths.append(report.save_pdf(style=style))
+            report_paths.append(report.save_pdf())
         else:
             from easydiffraction.report.pdf_compiler import compile_pdf_report  # noqa: PLC0415
 
             report_paths.append(compile_pdf_report(tex_path))
     return report_paths
-
-
-def _validated_report_style(style: str) -> str:
-    """Return a valid report style value."""
-    try:
-        return ReportStyleEnum(style).value
-    except ValueError as exc:
-        allowed = ', '.join(member.value for member in ReportStyleEnum)
-        msg = f"Unknown report style '{style}'. Supported styles: {allowed}."
-        raise typer.BadParameter(msg) from exc
 
 
 def run_cli(args: list[str] | None = None) -> None:
@@ -376,11 +364,6 @@ def save_report(
         '--pdf',
         help='Write the PDF report.',
     ),
-    style: str = typer.Option(
-        'iucr',
-        '--style',
-        help='Report template style.',
-    ),
     offline: bool = typer.Option(  # noqa: FBT001
         False,  # noqa: FBT003
         '--offline',
@@ -396,7 +379,6 @@ def save_report(
         )
         raise typer.Exit(code=1)
 
-    style = _validated_report_style(style)
     project = _load_project(project_dir)
     report_paths = _save_report_outputs(
         project,
@@ -404,7 +386,6 @@ def save_report(
         html=html,
         tex=tex,
         pdf=pdf,
-        style=style,
         offline=offline,
     )
     for report_path in report_paths:

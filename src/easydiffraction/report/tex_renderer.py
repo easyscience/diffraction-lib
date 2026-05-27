@@ -10,12 +10,7 @@ from importlib.resources import files
 from jinja2 import Environment
 from jinja2 import PackageLoader
 
-from easydiffraction.report.enums import ReportStyleEnum
-
-_STYLE_TEMPLATE_NAMES = {
-    ReportStyleEnum.IUCR: 'tex/iucr.tex.j2',
-    ReportStyleEnum.REVTEX: 'tex/revtex.tex.j2',
-}
+_TEMPLATE_NAME = 'tex/iucr.tex.j2'
 _TEX_SPECIAL_CHARS = {
     '\\': r'\textbackslash{}',
     '&': r'\&',
@@ -72,11 +67,7 @@ def tex_report_path(
     return pathlib.Path(project_path) / 'reports' / 'tex' / f'{project_name}.tex'
 
 
-def render_tex_report(
-    context: dict[str, object],
-    *,
-    style: str = 'iucr',
-) -> str:
+def render_tex_report(context: dict[str, object]) -> str:
     """
     Render a report data context as LaTeX.
 
@@ -84,28 +75,23 @@ def render_tex_report(
     ----------
     context : dict[str, object]
         Data returned by ``Report.data_context()``.
-    style : str, default='iucr'
-        Report template style.
 
     Returns
     -------
     str
         Complete LaTeX document.
     """
-    style_member = ReportStyleEnum(style)
     template_context = dict(context)
     template_context['tex'] = {
         'fit_figure_paths': _fit_figure_paths(context),
     }
-    template_name = _STYLE_TEMPLATE_NAMES[style_member]
-    return _environment().get_template(template_name).render(**template_context)
+    return _environment().get_template(_TEMPLATE_NAME).render(**template_context)
 
 
 def save_tex_report(
     project: object,
     context: dict[str, object],
     *,
-    style: str = 'iucr',
     path: str | pathlib.Path | None = None,
 ) -> pathlib.Path:
     """
@@ -117,8 +103,6 @@ def save_tex_report(
         Project instance.
     context : dict[str, object]
         Data returned by ``Report.data_context()``.
-    style : str, default='iucr'
-        Report template style.
     path : str | pathlib.Path | None, default=None
         Explicit report path.
 
@@ -140,22 +124,16 @@ def save_tex_report(
     template_context = dict(context)
     template_context['tex'] = {'fit_figure_paths': figure_paths}
     output_path.write_text(
-        _render_prepared_context(template_context, style=style),
+        _render_prepared_context(template_context),
         encoding='utf-8',
     )
     _copy_style_files(styles_dir)
     return output_path
 
 
-def _render_prepared_context(
-    context: dict[str, object],
-    *,
-    style: str,
-) -> str:
+def _render_prepared_context(context: dict[str, object]) -> str:
     """Render a context that already contains TeX asset paths."""
-    style_member = ReportStyleEnum(style)
-    template_name = _STYLE_TEMPLATE_NAMES[style_member]
-    return _environment().get_template(template_name).render(**context)
+    return _environment().get_template(_TEMPLATE_NAME).render(**context)
 
 
 def _environment() -> Environment:

@@ -25,8 +25,6 @@ project.report.save_pdf()."""
 def save_pdf_report(
     project: object,
     context: dict[str, object],
-    *,
-    style: str = 'iucr',
 ) -> pathlib.Path:
     """
     Write a TeX bundle and compile it to PDF when possible.
@@ -37,8 +35,6 @@ def save_pdf_report(
         Project instance.
     context : dict[str, object]
         Data returned by ``Report.data_context()``.
-    style : str, default='iucr'
-        Report template style.
 
     Returns
     -------
@@ -51,7 +47,7 @@ def save_pdf_report(
     RuntimeError
         If a discovered TeX engine fails to compile the report.
     """
-    tex_path = save_tex_report(project, context, style=style)
+    tex_path = save_tex_report(project, context)
     return compile_pdf_report(tex_path)
 
 

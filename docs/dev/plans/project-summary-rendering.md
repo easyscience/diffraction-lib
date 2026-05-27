@@ -330,7 +330,7 @@ exceptions.
     drop any "style selector" prose.
   - Commit: `Drop ReportStyleEnum and _report.style field`.
 
-- [ ] **P1.2 — Drop `style=` from `save_tex` / `save_pdf` / CLI**
+- [x] **P1.2 — Drop `style=` from `save_tex` / `save_pdf` / CLI**
   - Files:
     `src/easydiffraction/project/categories/report/default.py`,
     `src/easydiffraction/__main__.py`,
