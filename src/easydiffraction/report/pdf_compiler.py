@@ -52,6 +52,29 @@ def save_pdf_report(
         If a discovered TeX engine fails to compile the report.
     """
     tex_path = save_tex_report(project, context, style=style)
+    return compile_pdf_report(tex_path)
+
+
+def compile_pdf_report(tex_path: pathlib.Path) -> pathlib.Path:
+    """
+    Compile an existing TeX report bundle into a PDF report.
+
+    Parameters
+    ----------
+    tex_path : pathlib.Path
+        Path of the written main TeX document.
+
+    Returns
+    -------
+    pathlib.Path
+        Path of the PDF report, or the intended PDF path when no TeX
+        engine is available.
+
+    Raises
+    ------
+    RuntimeError
+        If a discovered TeX engine fails to compile the report.
+    """
     pdf_path = tex_path.parent.parent / f'{tex_path.stem}.pdf'
     engine = _find_engine()
     if engine is None:

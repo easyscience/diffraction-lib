@@ -73,6 +73,7 @@ Label & Type & $x$ & $y$ & $z$ & Occ. & ADP \\
 {{ atom.label | tex }} & {{ atom.type_symbol | tex }} & {{ atom.fract_x | tex_number }} & {{ atom.fract_y | tex_number }} & {{ atom.fract_z | tex_number }} & {{ atom.occupancy | tex_number }} & {{ atom.adp_iso | tex_number }} \\
 {% endfor %}
 \end{tabular}
+
 {% endif %}
 {% if structure.atom_site_aniso %}
 \begin{tabular}{lllllll}
@@ -81,6 +82,7 @@ Label & ADP 11 & ADP 22 & ADP 33 & ADP 12 & ADP 13 & ADP 23 \\
 {{ aniso.label | tex }} & {{ aniso.adp_11 | tex_number }} & {{ aniso.adp_22 | tex_number }} & {{ aniso.adp_33 | tex_number }} & {{ aniso.adp_12 | tex_number }} & {{ aniso.adp_13 | tex_number }} & {{ aniso.adp_23 | tex_number }} \\
 {% endfor %}
 \end{tabular}
+
 {% endif %}
 {% endfor %}
 

@@ -532,6 +532,7 @@ class Report(CategoryItem):
     def _save_configured(self) -> list[pathlib.Path]:
         """Write enabled formats, returning quietly when none are set."""
         report_paths = []
+        tex_path = None
         for report_format in self.formats:
             if report_format is ReportFormatEnum.CIF:
                 report_paths.append(self.save_cif())
@@ -540,7 +541,15 @@ class Report(CategoryItem):
                     self.save_html(offline=bool(self.html_offline.value))
                 )
             elif report_format is ReportFormatEnum.TEX:
-                report_paths.append(self.save_tex(style=str(self.style.value)))
+                tex_path = self.save_tex(style=str(self.style.value))
+                report_paths.append(tex_path)
             elif report_format is ReportFormatEnum.PDF:
-                report_paths.append(self.save_pdf(style=str(self.style.value)))
+                if tex_path is None:
+                    report_paths.append(self.save_pdf(style=str(self.style.value)))
+                else:
+                    from easydiffraction.report.pdf_compiler import (  # noqa: PLC0415
+                        compile_pdf_report,
+                    )
+
+                    report_paths.append(compile_pdf_report(tex_path))
         return report_paths

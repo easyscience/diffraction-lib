@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+from types import SimpleNamespace
+
 from typer.testing import CliRunner
 
 runner = CliRunner()
@@ -76,6 +78,51 @@ def test_cli_subcommands_call_utils(monkeypatch):
     assert res3.exit_code == 0
     assert res4.exit_code == 0
     assert logs == ['LIST_DATA', 'DATA_30_projects_False', 'LIST', 'DOWNLOAD_ALL', 'DOWNLOAD_1']
+
+
+def test_save_report_outputs_reuses_tex_bundle_for_pdf(tmp_path, monkeypatch):
+    import easydiffraction.__main__ as main_mod
+    from easydiffraction.report import pdf_compiler
+
+    tex_path = tmp_path / 'reports' / 'tex' / 'demo.tex'
+    pdf_path = tmp_path / 'reports' / 'demo.pdf'
+    calls = []
+
+    def fake_save_tex(*, style):
+        calls.append(('tex', style))
+        return tex_path
+
+    def fake_save_pdf(*, style):
+        del style
+        msg = 'save_pdf should not regenerate TeX when tex was already saved.'
+        raise AssertionError(msg)
+
+    def fake_compile_pdf_report(path):
+        calls.append(('pdf', path))
+        return pdf_path
+
+    project = SimpleNamespace(
+        report=SimpleNamespace(
+            save_cif=None,
+            save_html=None,
+            save_tex=fake_save_tex,
+            save_pdf=fake_save_pdf,
+        )
+    )
+    monkeypatch.setattr(pdf_compiler, 'compile_pdf_report', fake_compile_pdf_report)
+
+    report_paths = main_mod._save_report_outputs(
+        project,
+        cif=False,
+        html=False,
+        tex=True,
+        pdf=True,
+        style='revtex',
+        offline=False,
+    )
+
+    assert report_paths == [tex_path, pdf_path]
+    assert calls == [('tex', 'revtex'), ('pdf', tex_path)]
 
 
 def test_cli_project_first_argument_normalization_supports_global_data_commands():

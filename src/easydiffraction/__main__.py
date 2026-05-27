@@ -160,14 +160,21 @@ def _save_report_outputs(
     """Write selected one-off report outputs."""
     report = project.report
     report_paths = []
+    tex_path = None
     if cif:
         report_paths.append(report.save_cif())
     if html:
         report_paths.append(report.save_html(offline=offline))
     if tex:
-        report_paths.append(report.save_tex(style=style))
+        tex_path = report.save_tex(style=style)
+        report_paths.append(tex_path)
     if pdf:
-        report_paths.append(report.save_pdf(style=style))
+        if tex_path is None:
+            report_paths.append(report.save_pdf(style=style))
+        else:
+            from easydiffraction.report.pdf_compiler import compile_pdf_report  # noqa: PLC0415
+
+            report_paths.append(compile_pdf_report(tex_path))
     return report_paths
 
 

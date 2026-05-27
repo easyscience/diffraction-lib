@@ -115,3 +115,7 @@ def test_render_tex_report_preserves_structure_uncertainty_text():
         assert '11.985(31)' in tex
         assert '0.00658(14)' in tex
         assert '-0.00048(25)' in tex
+        assert (
+            r'\end{tabular}' '\n\n' r'\begin{tabular}{lllllll}'
+            '\nLabel & ADP 11'
+        ) in tex
