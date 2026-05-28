@@ -780,7 +780,7 @@ exceptions.
     every kaleido call site are gone.
   - Commit: `Emit pgfplots CSV and replace includegraphics with pgfplots blocks`.
 
-- [ ] **P1.17 — HTML Plotly builder consumes `fit_data` directly**
+- [x] **P1.17 — HTML Plotly builder consumes `fit_data` directly**
   - Files: existing
     `src/easydiffraction/report/html_renderer.py`;
     existing

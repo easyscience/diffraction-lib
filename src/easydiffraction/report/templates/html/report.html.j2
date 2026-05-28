@@ -252,8 +252,8 @@
             </tr>
           </tbody>
         </table>
-        {% if figures.fit_per_experiment[experiment.id] %}
-        <div class="figure">{{ figures.fit_per_experiment[experiment.id] | safe }}</div>
+        {% if fit_figures[experiment.id] %}
+        <div class="figure">{{ fit_figures[experiment.id] | safe }}</div>
         {% endif %}
       </article>
       {% endfor %}
