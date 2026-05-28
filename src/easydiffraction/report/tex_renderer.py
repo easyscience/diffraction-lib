@@ -15,6 +15,7 @@ from jinja2 import PackageLoader
 from easydiffraction.report.downsample import MAX_FIGURE_POINTS
 from easydiffraction.report.downsample import downsample_min_max_indices
 from easydiffraction.report.fit_plot import fit_bragg_tick_styles
+from easydiffraction.report.fit_plot import fit_plot_geometry
 from easydiffraction.report.fit_plot import fit_plot_ranges
 from easydiffraction.report.fit_plot import fit_plot_styles
 
@@ -252,6 +253,7 @@ def _write_fit_figure_tex(
         'experiment': experiment,
         'fit_data': fit_data,
         'csv_filename': csv_path.name,
+        'geometry': fit_plot_geometry(fit_data),
         'ranges': fit_plot_ranges(fit_data),
         'styles': fit_plot_styles(),
         'bragg_styles': fit_bragg_tick_styles(),

@@ -18,10 +18,11 @@
 \begin{groupplot}[
 group style={
 group size=1 by {% if bragg_tick_sets %}3{% else %}2{% endif %},
-vertical sep=8pt,
+vertical sep={{ geometry.vertical_sep_cm | tex_number }}cm,
 x descriptions at=edge bottom,
 },
-width=12cm,
+width={{ geometry.axis_width_cm | tex_number }}cm,
+scale only axis,
 xmin={{ ranges.x_min | tex_number }},
 xmax={{ ranges.x_max | tex_number }},
 mark layer=like plot,
@@ -30,7 +31,7 @@ label style={font=\footnotesize},
 tick label style={font=\footnotesize},
 ]
 \nextgroupplot[
-height=4.2cm,
+height={{ geometry.main_height_cm | tex_number }}cm,
 ymin={{ ranges.y_min | tex_number }},
 ymax={{ ranges.y_max | tex_number }},
 xticklabels=\empty,
@@ -44,7 +45,7 @@ legend style={draw=none, fill=white, fill opacity=0.5, text opacity=1, font=\foo
 \addlegendentry{ {{- styles.calc.name | tex -}} }
 {% if bragg_tick_sets %}
 \nextgroupplot[
-height=1.6cm,
+height={{ geometry.bragg_height_cm | tex_number }}cm,
 ymin=0.5,
 ymax={{ (bragg_tick_sets | length) + 0.5 }},
 y dir=reverse,
@@ -64,7 +65,7 @@ xticklabels=\empty,
 {% endfor %}
 {% endif %}
 \nextgroupplot[
-height=1.8cm,
+height={{ geometry.residual_height_cm | tex_number }}cm,
 ymin={{ ranges.residual_y_min | tex_number }},
 ymax={{ ranges.residual_y_max | tex_number }},
 ytick={-{{ ranges.residual_y_tick | tex_number }},0,{{ ranges.residual_y_tick | tex_number }}},

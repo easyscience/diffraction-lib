@@ -1026,6 +1026,11 @@ exceptions.
     collide — the demo symptom where "Bragg", "lbco", and
     "Residual" overprinted). Re-run steps 1–4 until the
     geometry matches the Plotly figure.
+  - Follow-up adjustment: derive pgfplots panel heights and
+    vertical spacing from the Plotly row-height constants. Use
+    `scale only axis` so the axes rectangles preserve Plotly's
+    main/Bragg/residual ratios, with total axis height equal to
+    the axis width.
   - Commit one geometry fix per logical change, e.g.
     `Match pgfplots figure geometry to Plotly layout`.
 

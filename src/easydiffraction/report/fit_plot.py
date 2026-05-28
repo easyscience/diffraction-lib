@@ -9,18 +9,27 @@ from typing import Any
 
 import numpy as np
 
+from easydiffraction.display.plotters.base import DEFAULT_HEIGHT
 from easydiffraction.display.plotters.base import SERIES_CONFIG
 from easydiffraction.display.plotters.plotly import BACKGROUND_LINE_WIDTH
 from easydiffraction.display.plotters.plotly import BRAGG_TICK_COLORS
+from easydiffraction.display.plotters.plotly import BRAGG_TICK_MARKER_LINE_WIDTH
+from easydiffraction.display.plotters.plotly import BRAGG_TICK_MARKER_SIZE
+from easydiffraction.display.plotters.plotly import BRAGG_TICK_SYMBOL_HEIGHT_SCALE
 from easydiffraction.display.plotters.plotly import CALCULATED_LINE_WIDTH
+from easydiffraction.display.plotters.plotly import COMPOSITE_MARGIN_BOTTOM
+from easydiffraction.display.plotters.plotly import COMPOSITE_MARGIN_TOP
+from easydiffraction.display.plotters.plotly import COMPOSITE_VERTICAL_SPACING
 from easydiffraction.display.plotters.plotly import DEFAULT_COLORS
 from easydiffraction.display.plotters.plotly import DISPLAY_TICK_FRACTIONS
 from easydiffraction.display.plotters.plotly import MAIN_INTENSITY_RANGE_MARGIN_FRACTION
 from easydiffraction.display.plotters.plotly import MEASURED_LINE_WIDTH
+from easydiffraction.display.plotters.plotly import PLOTLY_HEIGHT_PER_UNIT
 from easydiffraction.display.plotters.plotly import RESIDUAL_LINE_WIDTH
 from easydiffraction.display.plotting import DEFAULT_RESIDUAL_HEIGHT_FRACTION
 
 _COLOR_PATTERN = re.compile(r'rgb\((\d+),\s*(\d+),\s*(\d+)\)')
+_FIGURE_AXIS_WIDTH_CM = 12.0
 _STYLE_SOURCE_KEYS = {
     'meas': 'meas',
     'bkg': 'bkg',
@@ -77,6 +86,38 @@ def fit_plot_ranges(fit_data: dict[str, Any]) -> dict[str, float]:
     }
 
 
+def fit_plot_geometry(fit_data: dict[str, Any]) -> dict[str, float]:
+    """Return Plotly-matched pgfplots axis geometry."""
+    bragg_tick_sets = fit_data.get('bragg_tick_sets') or []
+    has_bragg_ticks = bool(bragg_tick_sets)
+    has_residual = _has_residual(fit_data)
+    row_count = 1 + int(has_bragg_ticks) + int(has_residual)
+    main_pixels, residual_pixels = _non_bragg_row_heights(
+        row_count=row_count,
+        has_bragg_ticks=has_bragg_ticks,
+        has_residual=has_residual,
+    )
+
+    row_heights = [main_pixels]
+    if has_bragg_ticks:
+        row_heights.append(_bragg_row_height_pixels(len(bragg_tick_sets)))
+    if has_residual and residual_pixels is not None:
+        row_heights.append(residual_pixels)
+
+    height_sum = sum(row_heights)
+    scaled_heights = [
+        _FIGURE_AXIS_WIDTH_CM * row_height / height_sum
+        for row_height in row_heights
+    ]
+    return {
+        'axis_width_cm': _FIGURE_AXIS_WIDTH_CM,
+        'main_height_cm': scaled_heights[0],
+        'bragg_height_cm': scaled_heights[1] if has_bragg_ticks else 0.0,
+        'residual_height_cm': scaled_heights[-1] if has_residual else 0.0,
+        'vertical_sep_cm': _vertical_sep_cm(row_count),
+    }
+
+
 def fit_bragg_tick_styles() -> list[dict[str, str]]:
     """Return Plotly-derived Bragg tick colors for pgfplots."""
     return [
@@ -107,6 +148,63 @@ def _residual_limit(*, main_y_min: float, main_y_max: float) -> float:
     if residual_limit > 0.0:
         return residual_limit
     return 1.0
+
+
+def _has_residual(fit_data: dict[str, Any]) -> bool:
+    series = fit_data.get('series')
+    return isinstance(series, dict) and 'diff' in series
+
+
+def _non_bragg_row_heights(
+    *,
+    row_count: int,
+    has_bragg_ticks: bool,
+    has_residual: bool,
+) -> tuple[float, float | None]:
+    plot_area_height = _composite_plot_area_height()
+    available_row_pixels = plot_area_height * _subplot_available_height_fraction(row_count)
+    baseline_bragg_pixels = (
+        _bragg_tick_symbol_height_pixels() if has_bragg_ticks else 0.0
+    )
+    non_bragg_pixels = max(available_row_pixels - baseline_bragg_pixels, 1.0)
+
+    if not has_residual:
+        return non_bragg_pixels, None
+
+    main_pixels = non_bragg_pixels / (1.0 + DEFAULT_RESIDUAL_HEIGHT_FRACTION)
+    residual_pixels = main_pixels * DEFAULT_RESIDUAL_HEIGHT_FRACTION
+    return main_pixels, residual_pixels
+
+
+def _composite_plot_area_height() -> float:
+    full_height = float(DEFAULT_HEIGHT * PLOTLY_HEIGHT_PER_UNIT)
+    return max(full_height - COMPOSITE_MARGIN_TOP - COMPOSITE_MARGIN_BOTTOM, 1.0)
+
+
+def _subplot_available_height_fraction(row_count: int) -> float:
+    return 1.0 - COMPOSITE_VERTICAL_SPACING * max(row_count - 1, 0)
+
+
+def _bragg_tick_symbol_height_pixels() -> float:
+    return (
+        BRAGG_TICK_MARKER_SIZE * BRAGG_TICK_SYMBOL_HEIGHT_SCALE
+        + BRAGG_TICK_MARKER_LINE_WIDTH
+    )
+
+
+def _bragg_row_height_pixels(tick_set_count: int) -> float:
+    return float(tick_set_count) * _bragg_tick_symbol_height_pixels()
+
+
+def _vertical_sep_cm(row_count: int) -> float:
+    available_fraction = _subplot_available_height_fraction(row_count)
+    if available_fraction <= 0.0:
+        return 0.0
+    return (
+        _FIGURE_AXIS_WIDTH_CM
+        * COMPOSITE_VERTICAL_SPACING
+        / available_fraction
+    )
 
 
 def _display_tick_limit(raw_limit: float) -> float:
