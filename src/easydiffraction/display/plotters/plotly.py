@@ -46,6 +46,14 @@ MEASURED_LINE_WIDTH = 2.0
 BACKGROUND_LINE_WIDTH = 1.0
 CALCULATED_LINE_WIDTH = 2.0
 RESIDUAL_LINE_WIDTH = 2.0
+MEASURED_MARKER_SIZE = 6
+MEASURED_MARKER_LINE_WIDTH = 0
+MEASURED_ERROR_BAR_THICKNESS = 2
+MEASURED_ERROR_BAR_WIDTH = 4
+LIGHT_AXIS_FRAME_COLOR = 'rgba(120, 140, 160, 0.28)'
+DARK_AXIS_FRAME_COLOR = 'rgba(110, 145, 190, 0.35)'
+LIGHT_LEGEND_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.5)'
+DARK_LEGEND_BACKGROUND_COLOR = 'rgba(0, 0, 0, 0.5)'
 
 BRAGG_TICK_COLORS = (
     'rgb(255, 127, 14)',
@@ -165,8 +173,8 @@ class PlotlyPlotter(PlotterBase):
             RGBA color string tuned for the active theme.
         """
         if cls._is_dark_mode():
-            return 'rgba(110, 145, 190, 0.35)'
-        return 'rgba(120, 140, 160, 0.28)'
+            return DARK_AXIS_FRAME_COLOR
+        return LIGHT_AXIS_FRAME_COLOR
 
     @classmethod
     def _axis_frame_color(cls) -> str:
@@ -177,8 +185,24 @@ class PlotlyPlotter(PlotterBase):
     def _legend_background_color(cls) -> str:
         """Return a half-transparent legend background color."""
         if cls._is_dark_mode():
-            return 'rgba(0, 0, 0, 0.5)'
-        return 'rgba(255, 255, 255, 0.5)'
+            return DARK_LEGEND_BACKGROUND_COLOR
+        return LIGHT_LEGEND_BACKGROUND_COLOR
+
+    @staticmethod
+    def _axis_frame_color_for_template(template: str) -> str | None:
+        if template == 'plotly_white':
+            return LIGHT_AXIS_FRAME_COLOR
+        if template == 'plotly_dark':
+            return DARK_AXIS_FRAME_COLOR
+        return None
+
+    @staticmethod
+    def _legend_background_color_for_template(template: str) -> str | None:
+        if template == 'plotly_white':
+            return LIGHT_LEGEND_BACKGROUND_COLOR
+        if template == 'plotly_dark':
+            return DARK_LEGEND_BACKGROUND_COLOR
+        return None
 
     def plot_correlation_heatmap(
         self,
@@ -428,6 +452,14 @@ class PlotlyPlotter(PlotterBase):
             'resid': RESIDUAL_LINE_WIDTH,
         }[label]
         line = {'color': color, 'width': line_width}
+        marker = None
+        if label == 'meas':
+            marker = {
+                'symbol': 'circle',
+                'size': MEASURED_MARKER_SIZE,
+                'line': {'width': MEASURED_MARKER_LINE_WIDTH},
+                'color': color,
+            }
         legend_rank = {
             'meas': 10,
             'bkg': 20,
@@ -442,6 +474,7 @@ class PlotlyPlotter(PlotterBase):
             mode=mode,
             name=name,
             legendrank=legend_rank,
+            marker=marker,
             customdata=customdata,
             hovertemplate=(
                 hovertemplate
@@ -989,6 +1022,13 @@ window.requestAnimationFrame(installLegendToggleButton);
         """
         if force_template is not None:
             fig.update_layout(template=force_template)
+            axis_frame_color = cls._axis_frame_color_for_template(force_template)
+            if axis_frame_color is not None:
+                fig.update_xaxes(linecolor=axis_frame_color)
+                fig.update_yaxes(linecolor=axis_frame_color)
+            legend_bgcolor = cls._legend_background_color_for_template(force_template)
+            if legend_bgcolor is not None:
+                fig.update_layout(legend={'bgcolor': legend_bgcolor})
         html_fig = pio.to_html(
             fig,
             include_plotlyjs=include_plotlyjs,
@@ -1533,6 +1573,8 @@ window.requestAnimationFrame(installLegendToggleButton);
                 'array': plot_spec.y_meas_su,
                 'visible': True,
                 'color': DEFAULT_COLORS['meas'],
+                'thickness': MEASURED_ERROR_BAR_THICKNESS,
+                'width': MEASURED_ERROR_BAR_WIDTH,
             }
         fig.add_trace(meas_trace, row=1, col=1)
 

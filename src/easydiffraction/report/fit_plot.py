@@ -22,7 +22,11 @@ from easydiffraction.display.plotters.plotly import COMPOSITE_MARGIN_TOP
 from easydiffraction.display.plotters.plotly import COMPOSITE_VERTICAL_SPACING
 from easydiffraction.display.plotters.plotly import DEFAULT_COLORS
 from easydiffraction.display.plotters.plotly import DISPLAY_TICK_FRACTIONS
+from easydiffraction.display.plotters.plotly import MEASURED_ERROR_BAR_THICKNESS
+from easydiffraction.display.plotters.plotly import MEASURED_ERROR_BAR_WIDTH
 from easydiffraction.display.plotters.plotly import MAIN_INTENSITY_RANGE_MARGIN_FRACTION
+from easydiffraction.display.plotters.plotly import MEASURED_MARKER_LINE_WIDTH
+from easydiffraction.display.plotters.plotly import MEASURED_MARKER_SIZE
 from easydiffraction.display.plotters.plotly import MEASURED_LINE_WIDTH
 from easydiffraction.display.plotters.plotly import PLOTLY_HEIGHT_PER_UNIT
 from easydiffraction.display.plotters.plotly import RESIDUAL_LINE_WIDTH
@@ -30,6 +34,10 @@ from easydiffraction.display.plotting import DEFAULT_RESIDUAL_HEIGHT_FRACTION
 
 _COLOR_PATTERN = re.compile(r'rgb\((\d+),\s*(\d+),\s*(\d+)\)')
 _FIGURE_AXIS_WIDTH_CM = 12.0
+_FIGURE_AXIS_HEIGHT_TO_WIDTH = 0.70
+_PLOTLY_GRID_RGB = '235,240,248'
+_PLOTLY_AXIS_RGB = '217,223,228'
+_PIXEL_TO_POINT = 0.75
 _STYLE_SOURCE_KEYS = {
     'meas': 'meas',
     'bkg': 'bkg',
@@ -105,8 +113,10 @@ def fit_plot_geometry(fit_data: dict[str, Any]) -> dict[str, float]:
         row_heights.append(residual_pixels)
 
     height_sum = sum(row_heights)
+    stack_height = _FIGURE_AXIS_WIDTH_CM * _FIGURE_AXIS_HEIGHT_TO_WIDTH
+    row_area_height = stack_height * _subplot_available_height_fraction(row_count)
     scaled_heights = [
-        _FIGURE_AXIS_WIDTH_CM * row_height / height_sum
+        row_area_height * row_height / height_sum
         for row_height in row_heights
     ]
     return {
@@ -114,7 +124,7 @@ def fit_plot_geometry(fit_data: dict[str, Any]) -> dict[str, float]:
         'main_height_cm': scaled_heights[0],
         'bragg_height_cm': scaled_heights[1] if has_bragg_ticks else 0.0,
         'residual_height_cm': scaled_heights[-1] if has_residual else 0.0,
-        'vertical_sep_cm': _vertical_sep_cm(row_count),
+        'vertical_sep_cm': _vertical_sep_cm(stack_height),
     }
 
 
@@ -129,17 +139,38 @@ def fit_bragg_tick_styles() -> list[dict[str, str]]:
     ]
 
 
+def fit_plot_axis_styles() -> dict[str, str]:
+    """Return Plotly-derived axis colors for report figures."""
+    return {
+        'axis_rgb': _PLOTLY_AXIS_RGB,
+        'grid_rgb': _PLOTLY_GRID_RGB,
+    }
+
+
 def _fit_plot_style(key: str, source_key: str) -> dict[str, Any]:
     color = DEFAULT_COLORS[source_key]
-    return {
+    style = {
         'name': SERIES_CONFIG[source_key]['name'],
         'mode': SERIES_CONFIG[source_key]['mode'],
         'plotly_color': color,
         'rgb': _rgb_channels(color),
         'color_name': f'ed_{key}',
         'line_width': _LINE_WIDTHS[key],
+        'line_width_pt': _plotly_px_to_pt(_LINE_WIDTHS[key]),
         'legend_rank': _LEGEND_RANKS[key],
     }
+    if key == 'meas':
+        style.update({
+            'marker_size': MEASURED_MARKER_SIZE,
+            'marker_size_pt': _plotly_marker_size_pt(MEASURED_MARKER_SIZE),
+            'marker_line_width': MEASURED_MARKER_LINE_WIDTH,
+            'marker_line_width_pt': _plotly_px_to_pt(MEASURED_MARKER_LINE_WIDTH),
+            'error_bar_thickness': MEASURED_ERROR_BAR_THICKNESS,
+            'error_bar_thickness_pt': _plotly_px_to_pt(MEASURED_ERROR_BAR_THICKNESS),
+            'error_bar_width': MEASURED_ERROR_BAR_WIDTH,
+            'error_bar_cap_size_pt': _plotly_px_to_pt(MEASURED_ERROR_BAR_WIDTH),
+        })
+    return style
 
 
 def _residual_limit(*, main_y_min: float, main_y_max: float) -> float:
@@ -162,7 +193,9 @@ def _non_bragg_row_heights(
     has_residual: bool,
 ) -> tuple[float, float | None]:
     plot_area_height = _composite_plot_area_height()
-    available_row_pixels = plot_area_height * _subplot_available_height_fraction(row_count)
+    available_row_pixels = (
+        plot_area_height * _subplot_available_height_fraction(row_count)
+    )
     baseline_bragg_pixels = (
         _bragg_tick_symbol_height_pixels() if has_bragg_ticks else 0.0
     )
@@ -196,15 +229,16 @@ def _bragg_row_height_pixels(tick_set_count: int) -> float:
     return float(tick_set_count) * _bragg_tick_symbol_height_pixels()
 
 
-def _vertical_sep_cm(row_count: int) -> float:
-    available_fraction = _subplot_available_height_fraction(row_count)
-    if available_fraction <= 0.0:
-        return 0.0
-    return (
-        _FIGURE_AXIS_WIDTH_CM
-        * COMPOSITE_VERTICAL_SPACING
-        / available_fraction
-    )
+def _vertical_sep_cm(stack_height: float) -> float:
+    return stack_height * COMPOSITE_VERTICAL_SPACING
+
+
+def _plotly_px_to_pt(value: float) -> float:
+    return value * _PIXEL_TO_POINT
+
+
+def _plotly_marker_size_pt(value: float) -> float:
+    return 0.5 * _plotly_px_to_pt(value)
 
 
 def _display_tick_limit(raw_limit: float) -> float:

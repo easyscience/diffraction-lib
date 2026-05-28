@@ -9,10 +9,15 @@
 {% for style in bragg_styles %}
 \definecolor{ {{- style.color_name -}} }{RGB}{ {{- style.rgb -}} }
 {% endfor %}
+\definecolor{ed_axis}{RGB}{ {{- axis_styles.axis_rgb -}} }
+\definecolor{ed_grid}{RGB}{ {{- axis_styles.grid_rgb -}} }
 {% set axes_labels = fit_data.axes_labels | default(["", "Intensity"], true) -%}
 {% set x_label = axes_labels[0] | tex_axis_label -%}
 {% set y_label = axes_labels[1] | tex_axis_label -%}
 {% set bragg_tick_sets = fit_data.bragg_tick_sets | default([], true) -%}
+{% set has_bkg = fit_data.series.bkg is not none -%}
+{% set has_meas_su = fit_data.series.meas.su is not none -%}
+{% set has_error_bars = has_meas_su and errorbar_csv_filename is not none -%}
 \begin{document}
 \begin{tikzpicture}
 \begin{groupplot}[
@@ -26,23 +31,45 @@ scale only axis,
 xmin={{ ranges.x_min | tex_number }},
 xmax={{ ranges.x_max | tex_number }},
 mark layer=like plot,
-tick align=outside,
+axis line style={draw=ed_axis},
+tick style={draw=none},
 label style={font=\footnotesize},
 tick label style={font=\footnotesize},
+major grid style={draw=ed_grid, line width=0.4pt},
+xmajorgrids=true,
 ]
 \nextgroupplot[
 height={{ geometry.main_height_cm | tex_number }}cm,
 ymin={{ ranges.y_min | tex_number }},
 ymax={{ ranges.y_max | tex_number }},
+ymajorgrids=true,
 xticklabels=\empty,
 ylabel={ {{ y_label }} },
 legend pos=north east,
 legend style={draw=none, fill=white, fill opacity=0.5, text opacity=1, font=\footnotesize},
 ]
-\addplot+[mark=*, mark size=0.75pt, color={{ styles.meas.color_name }}, line width=0.5pt, line join=bevel, mark options={line width=0pt}] table[x=x, y=meas, col sep=comma] { {{- csv_filename -}} };
+{% if has_error_bars %}
+\addplot+[forget plot, color={{ styles.meas.color_name }}, line width={{ styles.meas.line_width_pt | tex_number }}pt, line join=bevel, no markers] table[x=x, y=meas, col sep=comma] { {{- csv_filename -}} };
+\addlegendimage{mark=*, mark size={{ styles.meas.marker_size_pt | tex_number }}pt, color={{ styles.meas.color_name }}, line width={{ styles.meas.line_width_pt | tex_number }}pt, mark options={line width={{ styles.meas.marker_line_width_pt | tex_number }}pt}}
 \addlegendentry{ {{- styles.meas.name | tex -}} }
-\addplot+[color={{ styles.calc.color_name }}, line width=0.75pt, line join=bevel, no markers] table[x=x, y=calc, col sep=comma] { {{- csv_filename -}} };
+\addplot+[forget plot, only marks, mark=*, mark size={{ styles.meas.marker_size_pt | tex_number }}pt, color={{ styles.meas.color_name }}, mark options={line width={{ styles.meas.marker_line_width_pt | tex_number }}pt}, error bars/.cd, y dir=both, y explicit, error bar style={line width={{ styles.meas.error_bar_thickness_pt | tex_number }}pt}, error mark=|, error mark options={mark size={{ styles.meas.error_bar_cap_size_pt | tex_number }}pt}] table[x=x, y=meas, y error=meas_su, col sep=comma] { {{- errorbar_csv_filename -}} };
+{% else %}
+\addplot+[mark=*, mark size={{ styles.meas.marker_size_pt | tex_number }}pt, color={{ styles.meas.color_name }}, line width={{ styles.meas.line_width_pt | tex_number }}pt, line join=bevel, mark options={line width={{ styles.meas.marker_line_width_pt | tex_number }}pt}] table[x=x, y=meas, col sep=comma] { {{- csv_filename -}} };
+\addlegendentry{ {{- styles.meas.name | tex -}} }
+{% endif %}
+{% if has_bkg %}
+\addplot+[color={{ styles.bkg.color_name }}, line width={{ styles.bkg.line_width_pt | tex_number }}pt, line join=bevel, no markers] table[x=x, y=bkg, col sep=comma] { {{- csv_filename -}} };
+\addlegendentry{ {{- styles.bkg.name | tex -}} }
+{% endif %}
+\addplot+[color={{ styles.calc.color_name }}, line width={{ styles.calc.line_width_pt | tex_number }}pt, line join=bevel, no markers] table[x=x, y=calc, col sep=comma] { {{- csv_filename -}} };
 \addlegendentry{ {{- styles.calc.name | tex -}} }
+\addlegendimage{color={{ styles.diff.color_name }}, line width={{ styles.diff.line_width_pt | tex_number }}pt, line join=bevel, no markers}
+\addlegendentry{ {{- styles.diff.name | tex -}} }
+{% for tick_set in bragg_tick_sets %}
+{% set tick_style = bragg_styles[loop.index0 % (bragg_styles | length)] -%}
+\addlegendimage{color={{ tick_style.color_name }}, only marks, mark=|, mark size=5pt}
+\addlegendentry{Bragg peaks: {{ tick_set.phase_id | tex }}}
+{% endfor %}
 {% if bragg_tick_sets %}
 \nextgroupplot[
 height={{ geometry.bragg_height_cm | tex_number }}cm,
@@ -52,6 +79,7 @@ y dir=reverse,
 ytick={{ "{" }}{% for tick_set in bragg_tick_sets %}{{ loop.index }}{% if not loop.last %},{% endif %}{% endfor %}{{ "}" }},
 yticklabels={{ "{" }}{% for tick_set in bragg_tick_sets %}{{ "{" }}{{ tick_set.phase_id | tex }}{{ "}" }}{% if not loop.last %},{% endif %}{% endfor %}{{ "}" }},
 yticklabel style={font=\footnotesize},
+ymajorgrids=false,
 xticklabels=\empty,
 ]
 {% for tick_set in bragg_tick_sets %}
@@ -69,10 +97,11 @@ height={{ geometry.residual_height_cm | tex_number }}cm,
 ymin={{ ranges.residual_y_min | tex_number }},
 ymax={{ ranges.residual_y_max | tex_number }},
 ytick={-{{ ranges.residual_y_tick | tex_number }},0,{{ ranges.residual_y_tick | tex_number }}},
+ymajorgrids=true,
 xlabel={ {{ x_label }} },
 yticklabel style={font=\footnotesize},
 ]
-\addplot+[color={{ styles.diff.color_name }}, line width=0.5pt, line join=bevel, no markers] table[x=x, y=diff, col sep=comma] { {{- csv_filename -}} };
+\addplot+[color={{ styles.diff.color_name }}, line width={{ styles.diff.line_width_pt | tex_number }}pt, line join=bevel, no markers] table[x=x, y=diff, col sep=comma] { {{- csv_filename -}} };
 \end{groupplot}
 \end{tikzpicture}
 \end{document}
