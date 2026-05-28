@@ -77,16 +77,15 @@ plan does not re-litigate them:
   `fit_<expt_id>.pdf` and pulled into the main report via
   `\includegraphics` — no inline pgfplots in `<project>.tex`,
   and per-figure compiles isolate the TeX memory pool. The
-  fit-quality figure reuses the Plotly styling contract as
-  far as `pgfplots` can support it: measured line + sampled
-  markers/error bars, background line, calculated line,
-  Bragg tick row, and residual panel. The TeX renderer caps
-  the measured marker/error-bar overlay at 300
-  peak-preserving points to stay inside Tectonic's fixed
-  memory pool; the full measured/background/calculated/
-  residual traces still use the regular figure CSV. The TeX
-  engine (Tectonic / TeX Live / MiKTeX) supplies `pgfplots` +
-  `standalone` + TikZ deps from CTAN or its default sets.
+  fit-quality figure uses the Plotly geometry, colors,
+  legend structure, grid colors, and line widths where
+  `pgfplots` can support them without exceeding TeX memory.
+  The PDF figure deliberately does **not** include the
+  background curve or measured error bars, and it keeps every
+  measured point with the small pgfplots marker size from the
+  accepted design. The TeX engine (Tectonic / TeX Live /
+  MiKTeX) supplies `pgfplots` + `standalone` + TikZ deps from
+  CTAN or its default sets.
 - **`DisplayHandler` value object** (§1.5): new
   `@dataclass(frozen=True, slots=True)` at
   `src/easydiffraction/core/display_handler.py` carrying
@@ -153,12 +152,10 @@ plan does not re-litigate them:
   release tagged on jsdelivr at vendoring time.
 - **`reports/tex/data/fit_<expt_id>.csv` schema.** The CSV
   emitter writes one row per data point with columns
-  `x`, `meas`, optional `meas_su`, optional `bkg`, `calc`,
-  `diff`. When `meas_su` is present, the renderer also writes
-  `fit_<expt_id>_errors.csv` with capped `x`, `meas`,
-  `meas_su` columns for the PGFPlots error-bar overlay.
-  Confirm `figure.tex.j2`'s column references match these
-  schemas exactly during P1.
+  `x`, `meas`, optional `meas_su`, `calc`, `diff`.
+  Background is not emitted to the pgfplots CSV because the
+  PDF figure does not plot it. Confirm `figure.tex.j2`'s
+  column references match this schema exactly during P1.
 - **Style-bundle cleanup vs. wheel size.** The 10 REVTeX
   files dropped from the bundle reduce the wheel by
   ~350 KB. The Phase 2 verification step covers the actual
@@ -283,9 +280,6 @@ plan does not re-litigate them:
   `vendor/` subtree).
 
 **`fit_data` shape + pgfplots CSV emitter:**
-- `src/easydiffraction/report/downsample.py` (new —
-  `downsample_min_max(x, y, max_points)`; `MAX_FIGURE_POINTS
-  = 5000`; peak-preserving min/max-per-bin; see P1.16).
 - `src/easydiffraction/report/data_context.py` (existing
   — replace the previous `figures.fit_per_experiment`
   payload with the descriptor-driven
@@ -297,10 +291,12 @@ plan does not re-litigate them:
   the new `figure.tex.j2`; see §3.3 and P1.16).
 - `src/easydiffraction/report/templates/tex/figure.tex.j2`
   (new — `\documentclass{standalone}` pgfplots figure:
-  Plotly-derived measured/background/calculated intensity
-  styling, sampled measured uncertainty overlay, Bragg row,
-  residual panel, light inner grids, no outside tick marks.
-  No band. `\pgfplotsset{set layers}` +
+  Plotly-derived geometry, colors, line widths, legend
+  structure, Bragg row, residual panel, light inner grids,
+  no outside tick marks. Measured points are all plotted;
+  background and measured error bars are intentionally
+  omitted from the PDF figure. No band.
+  `\pgfplotsset{set layers}` +
   `mark layer=like plot` mandatory; see P1.16 and P1.23).
 - `src/easydiffraction/report/templates/tex/report.tex.j2`
   (renamed from `iucr.tex.j2`) — the **main** document:
@@ -805,11 +801,11 @@ exceptions.
     (standalone figure document).
   - Add `_write_fit_csv(expt_id, fit_data, out_dir)` writing
     `<out_dir>/data/fit_<expt_id>.csv` with columns
-    `x, meas, calc, diff` (+ `meas_su` and `bkg` when
-    present). When `meas_su` is present, also write
-    `fit_<expt_id>_errors.csv` with capped `x`, `meas`,
-    `meas_su` values for the PGFPlots uncertainty overlay.
-    Python stdlib `csv`, no new dependency.
+    `x, meas, calc, diff` (+ `meas_su` when present).
+    Write all rows; do not downsample the pgfplots data.
+    Background is omitted from this CSV because the PDF
+    figure does not plot it. Python stdlib `csv`, no new
+    dependency.
   - Add `figure.tex.j2`: a `\documentclass{standalone}`
     pgfplots document, one per experiment, rendered to
     `data/fit_<expt_id>.tex`. Mandatory preamble:
@@ -817,24 +813,16 @@ exceptions.
     `mark layer=like plot` (both required — `mark layer`
     is inert without `set layers`; together they let the
     calculated line draw over the measured markers).
-  - **Intensity panel: Plotly-derived series order.**
-    - Measured — full-resolution connecting line first
-      (`no markers`) so the calculated line can remain on
-      top.
-    - Measured uncertainty — sampled overlay from
-      `fit_<expt_id>_errors.csv`: circular markers use the
-      Plotly measured marker size converted from pixels to
-      points; error-bar line thickness and cap size come
-      from the same Plotly constants. The overlay is capped
-      at 300 peak-preserving points because drawing capped
-      error bars for every point exhausts Tectonic's fixed
-      memory pool on HRPT-sized data.
-    - Background — grey line when `fit_data.series.bkg`
-      exists.
-    - Calculated — red line, declared after measured /
-      background so it draws above the measured data.
-    - **No measured–calculated band.** Residual and Bragg
-      peaks stay in their own panels, but appear in the
+  - **Intensity panel: two plotted data series.**
+    - Measured — connecting line + markers for **all**
+      points: `mark=*`, small `mark size=0.75pt`, Plotly-
+      derived line width, `line join=bevel`, and marker
+      outline width `0pt`.
+    - Calculated — red line, declared after measured so it
+      draws above the measured data.
+    - **No measured–calculated band, no background curve,
+      and no measured error bars in the PDF.** Residual and
+      Bragg peaks stay in their own panels, but appear in the
       main legend like Plotly.
   - Bragg tick row + residual panel as before (residual in
     its own panel; difference is not overlaid on intensity).
@@ -855,18 +843,9 @@ exceptions.
     isolates the memory pool; the engine choice is unchanged.
     When only `tex` is configured (no `pdf`), the figure
     `.tex` + CSV are written but not compiled.
-  - **Data resolution — concrete contract.** Plot all points
-    up to **`MAX_FIGURE_POINTS = 5000`** per series; above
-    that, downsample with **min/max-per-bin** (peak-
-    preserving — keeps each bin's min and max so a sharp Bragg
-    apex survives; **never** naive every-Nth striding, which
-    can step over an apex and flatten it). Owned by a new
-    helper `src/easydiffraction/report/downsample.py`,
-    `downsample_min_max(x, y, max_points) -> (x2, y2)`, called
-    from `tex_renderer.py` when writing `fit_<expt>.csv`. HRPT
-    / typical CWL (~3k points) is under the cap and renders
-    every point; dense CWL / TOF banks downsample. Full-
-    fidelity data always stays in the CIF/CSV.
+  - **Data resolution — concrete contract.** Plot every row
+    from `fit_data` in the pgfplots CSV. Do not downsample
+    PDF plots or use a sampled marker/error-bar overlay.
   - Commit: `Emit standalone pgfplots figures included as PDF`.
 
 - [x] **P1.17 — HTML Plotly builder consumes `fit_data` directly**
@@ -1066,17 +1045,17 @@ exceptions.
   - The measured powder trace exposes reusable style
     constants: marker size 6 px, marker outline 0 px, line
     width 2 px, error-bar thickness 2 px, and error-bar cap
-    width 4 px. The PDF renderer converts px → pt with
-    `1 px = 0.75 pt`, using marker radius 2.25 pt,
-    error-bar line width 1.5 pt, and cap mark size 3 pt.
+    width 4 px for Plotly/HTML. The PDF deliberately keeps
+    the smaller accepted pgfplots measured marker size
+    (`0.75pt`) and does not draw measured error bars.
   - PDF figures use Plotly-like inner grids: vertical grid
     lines on major x ticks in all panels, horizontal grid
     lines in the intensity and residual panels, no outside
     tick marks, and light Plotly-derived axis/grid colors.
-  - PDF legends include measured, background, calculated,
-    residual, and Bragg-peak entries. Residual and Bragg
-    peaks remain in their own panels even though their legend
-    entries live with the main legend, matching Plotly.
+  - PDF legends include measured, calculated, residual, and
+    Bragg-peak entries. Residual and Bragg peaks remain in
+    their own panels even though their legend entries live
+    with the main legend, matching Plotly where practical.
   - Compile and visually inspect the standalone
     `fit_<expt_id>.pdf` plus the full report PDF on the
     representative `lbco_hrpt` project. The standalone figure
@@ -1184,14 +1163,13 @@ running the verification commands below, add or update:
   experiments emit `fit_data: None`. P1.15 surface.
 - [ ] **`tests/unit/easydiffraction/report/test_tex_renderer.py`**
   (extend) — `_write_fit_csv` writes the right schema
-  (`x, meas, calc, diff` + optional `meas_su` and `bkg`);
-  `_write_fit_errorbar_csv` writes the capped
-  `x, meas, meas_su` uncertainty schema only when `meas_su`
-  exists; each standalone `data/fit_<expt>.tex` contains
-  measured line, sampled measured error-bar overlay,
-  optional background line, calculated line, residual and
-  Bragg legend entries, light inner grid settings, and no
-  band/fill-between; the preamble contains both
+  (`x, meas, calc, diff` + optional `meas_su`) with every
+  row from `fit_data`; each standalone `data/fit_<expt>.tex`
+  contains measured line+markers for all points, calculated
+  line, residual and Bragg legend entries, light inner grid
+  settings, and no band/fill-between, no background plot, no
+  error-bar overlay, and no sampled marker path; the preamble
+  contains both
   `\pgfplotsset{set layers}` and `mark layer=like plot`;
   the main `report.tex` uses
   `\includegraphics{data/fit_<expt>.pdf}` and contains **no**
@@ -1224,14 +1202,6 @@ running the verification commands below, add or update:
     light axis-frame colors after applying `plotly_white`,
     preventing dark-theme colors from leaking into report
     HTML. P1.23 surface.
-- [ ] **`tests/unit/easydiffraction/report/test_downsample.py`**
-  (new) — `downsample_min_max(x, y, max_points)`: arrays at
-  or under `max_points` pass through unchanged; arrays above
-  it shrink to ≈`max_points`; **a synthetic single-bin-wide
-  spike at full height on a flat baseline is preserved** (the
-  spike's max y value appears in the output) — the
-  peak-preservation guarantee that naive striding would
-  violate. P1.16 surface.
 - [ ] **`tests/unit/easydiffraction/report/test_pdf_compiler.py`**
   (extend) — **N+1 build + engine fallback.** Each figure
   `data/fit_<expt>.tex` is compiled **before** the main

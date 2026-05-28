@@ -15,9 +15,6 @@
 {% set x_label = axes_labels[0] | tex_axis_label -%}
 {% set y_label = axes_labels[1] | tex_axis_label -%}
 {% set bragg_tick_sets = fit_data.bragg_tick_sets | default([], true) -%}
-{% set has_bkg = fit_data.series.bkg is not none -%}
-{% set has_meas_su = fit_data.series.meas.su is not none -%}
-{% set has_error_bars = has_meas_su and errorbar_csv_filename is not none -%}
 \begin{document}
 \begin{tikzpicture}
 \begin{groupplot}[
@@ -48,19 +45,8 @@ ylabel={ {{ y_label }} },
 legend pos=north east,
 legend style={draw=none, fill=white, fill opacity=0.5, text opacity=1, font=\footnotesize},
 ]
-{% if has_error_bars %}
-\addplot+[forget plot, color={{ styles.meas.color_name }}, line width={{ styles.meas.line_width_pt | tex_number }}pt, line join=bevel, no markers] table[x=x, y=meas, col sep=comma] { {{- csv_filename -}} };
-\addlegendimage{mark=*, mark size={{ styles.meas.marker_size_pt | tex_number }}pt, color={{ styles.meas.color_name }}, line width={{ styles.meas.line_width_pt | tex_number }}pt, mark options={line width={{ styles.meas.marker_line_width_pt | tex_number }}pt}}
-\addlegendentry{ {{- styles.meas.name | tex -}} }
-\addplot+[forget plot, only marks, mark=*, mark size={{ styles.meas.marker_size_pt | tex_number }}pt, color={{ styles.meas.color_name }}, mark options={line width={{ styles.meas.marker_line_width_pt | tex_number }}pt}, error bars/.cd, y dir=both, y explicit, error bar style={line width={{ styles.meas.error_bar_thickness_pt | tex_number }}pt}, error mark=|, error mark options={mark size={{ styles.meas.error_bar_cap_size_pt | tex_number }}pt}] table[x=x, y=meas, y error=meas_su, col sep=comma] { {{- errorbar_csv_filename -}} };
-{% else %}
 \addplot+[mark=*, mark size={{ styles.meas.marker_size_pt | tex_number }}pt, color={{ styles.meas.color_name }}, line width={{ styles.meas.line_width_pt | tex_number }}pt, line join=bevel, mark options={line width={{ styles.meas.marker_line_width_pt | tex_number }}pt}] table[x=x, y=meas, col sep=comma] { {{- csv_filename -}} };
 \addlegendentry{ {{- styles.meas.name | tex -}} }
-{% endif %}
-{% if has_bkg %}
-\addplot+[color={{ styles.bkg.color_name }}, line width={{ styles.bkg.line_width_pt | tex_number }}pt, line join=bevel, no markers] table[x=x, y=bkg, col sep=comma] { {{- csv_filename -}} };
-\addlegendentry{ {{- styles.bkg.name | tex -}} }
-{% endif %}
 \addplot+[color={{ styles.calc.color_name }}, line width={{ styles.calc.line_width_pt | tex_number }}pt, line join=bevel, no markers] table[x=x, y=calc, col sep=comma] { {{- csv_filename -}} };
 \addlegendentry{ {{- styles.calc.name | tex -}} }
 \addlegendimage{color={{ styles.diff.color_name }}, line width={{ styles.diff.line_width_pt | tex_number }}pt, line join=bevel, no markers}

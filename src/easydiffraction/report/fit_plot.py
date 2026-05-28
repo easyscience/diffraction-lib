@@ -22,11 +22,7 @@ from easydiffraction.display.plotters.plotly import COMPOSITE_MARGIN_TOP
 from easydiffraction.display.plotters.plotly import COMPOSITE_VERTICAL_SPACING
 from easydiffraction.display.plotters.plotly import DEFAULT_COLORS
 from easydiffraction.display.plotters.plotly import DISPLAY_TICK_FRACTIONS
-from easydiffraction.display.plotters.plotly import MEASURED_ERROR_BAR_THICKNESS
-from easydiffraction.display.plotters.plotly import MEASURED_ERROR_BAR_WIDTH
 from easydiffraction.display.plotters.plotly import MAIN_INTENSITY_RANGE_MARGIN_FRACTION
-from easydiffraction.display.plotters.plotly import MEASURED_MARKER_LINE_WIDTH
-from easydiffraction.display.plotters.plotly import MEASURED_MARKER_SIZE
 from easydiffraction.display.plotters.plotly import MEASURED_LINE_WIDTH
 from easydiffraction.display.plotters.plotly import PLOTLY_HEIGHT_PER_UNIT
 from easydiffraction.display.plotters.plotly import RESIDUAL_LINE_WIDTH
@@ -38,6 +34,8 @@ _FIGURE_AXIS_HEIGHT_TO_WIDTH = 0.70
 _PLOTLY_GRID_RGB = '235,240,248'
 _PLOTLY_AXIS_RGB = '217,223,228'
 _PIXEL_TO_POINT = 0.75
+_PGFPLOTS_MEASURED_MARKER_SIZE_PT = 0.75
+_PGFPLOTS_MEASURED_MARKER_LINE_WIDTH_PT = 0.0
 _STYLE_SOURCE_KEYS = {
     'meas': 'meas',
     'bkg': 'bkg',
@@ -161,14 +159,8 @@ def _fit_plot_style(key: str, source_key: str) -> dict[str, Any]:
     }
     if key == 'meas':
         style.update({
-            'marker_size': MEASURED_MARKER_SIZE,
-            'marker_size_pt': _plotly_marker_size_pt(MEASURED_MARKER_SIZE),
-            'marker_line_width': MEASURED_MARKER_LINE_WIDTH,
-            'marker_line_width_pt': _plotly_px_to_pt(MEASURED_MARKER_LINE_WIDTH),
-            'error_bar_thickness': MEASURED_ERROR_BAR_THICKNESS,
-            'error_bar_thickness_pt': _plotly_px_to_pt(MEASURED_ERROR_BAR_THICKNESS),
-            'error_bar_width': MEASURED_ERROR_BAR_WIDTH,
-            'error_bar_cap_size_pt': _plotly_px_to_pt(MEASURED_ERROR_BAR_WIDTH),
+            'marker_size_pt': _PGFPLOTS_MEASURED_MARKER_SIZE_PT,
+            'marker_line_width_pt': _PGFPLOTS_MEASURED_MARKER_LINE_WIDTH_PT,
         })
     return style
 
@@ -235,10 +227,6 @@ def _vertical_sep_cm(stack_height: float) -> float:
 
 def _plotly_px_to_pt(value: float) -> float:
     return value * _PIXEL_TO_POINT
-
-
-def _plotly_marker_size_pt(value: float) -> float:
-    return 0.5 * _plotly_px_to_pt(value)
 
 
 def _display_tick_limit(raw_limit: float) -> float:

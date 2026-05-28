@@ -12,8 +12,6 @@ from importlib.resources import files
 from jinja2 import Environment
 from jinja2 import PackageLoader
 
-from easydiffraction.report.downsample import MAX_FIGURE_POINTS
-from easydiffraction.report.downsample import downsample_min_max_indices
 from easydiffraction.report.fit_plot import fit_bragg_tick_styles
 from easydiffraction.report.fit_plot import fit_plot_axis_styles
 from easydiffraction.report.fit_plot import fit_plot_geometry
@@ -22,7 +20,6 @@ from easydiffraction.report.fit_plot import fit_plot_styles
 
 _TEMPLATE_NAME = 'tex/report.tex.j2'
 _FIGURE_TEMPLATE_NAME = 'tex/figure.tex.j2'
-_MAX_ERROR_BAR_POINTS = 300
 _TEX_SPECIAL_CHARS = {
     '\\': r'\textbackslash{}',
     '&': r'\&',
@@ -183,15 +180,9 @@ def _write_fit_assets(
             continue
         experiment_id = str(experiment.get('id') or 'experiment')
         csv_path = _write_fit_csv(experiment_id, fit_data, out_dir)
-        errorbar_csv_path = _write_fit_errorbar_csv(
-            experiment_id,
-            fit_data,
-            out_dir,
-        )
         figure_path = _write_fit_figure_tex(
             experiment=experiment,
             csv_path=csv_path,
-            errorbar_csv_path=errorbar_csv_path,
             out_dir=out_dir,
         )
         csv_paths[experiment_id] = f'data/{csv_path.name}'
@@ -249,7 +240,6 @@ def _write_fit_figure_tex(
     *,
     experiment: dict[str, object],
     csv_path: pathlib.Path,
-    errorbar_csv_path: pathlib.Path | None,
     out_dir: pathlib.Path,
 ) -> pathlib.Path:
     """Write one standalone pgfplots TeX figure."""
@@ -262,9 +252,6 @@ def _write_fit_figure_tex(
         'experiment': experiment,
         'fit_data': fit_data,
         'csv_filename': csv_path.name,
-        'errorbar_csv_filename': (
-            None if errorbar_csv_path is None else errorbar_csv_path.name
-        ),
         'geometry': fit_plot_geometry(fit_data),
         'ranges': fit_plot_ranges(fit_data),
         'axis_styles': fit_plot_axis_styles(),
@@ -278,26 +265,6 @@ def _write_fit_figure_tex(
         encoding='utf-8',
     )
     return figure_path
-
-
-def _write_fit_errorbar_csv(
-    expt_id: str,
-    fit_data: dict[str, object],
-    out_dir: pathlib.Path,
-) -> pathlib.Path | None:
-    """Write capped uncertainty data for one fit figure."""
-    columns = _fit_errorbar_csv_columns(expt_id, fit_data)
-    if columns is None:
-        return None
-
-    data_dir = out_dir / 'data'
-    data_dir.mkdir(parents=True, exist_ok=True)
-    csv_path = data_dir / _fit_errorbar_csv_filename(expt_id)
-    with csv_path.open('w', newline='', encoding='utf-8') as handle:
-        writer = csv.writer(handle)
-        writer.writerow([name for name, _values in columns])
-        writer.writerows(zip(*(values for _name, values in columns), strict=True))
-    return csv_path
 
 
 def _fit_csv_paths(context: dict[str, object]) -> dict[str, str]:
@@ -339,11 +306,6 @@ def _fit_csv_filename(expt_id: str) -> str:
     return f'{_fit_asset_stem(expt_id)}.csv'
 
 
-def _fit_errorbar_csv_filename(expt_id: str) -> str:
-    """Return a filesystem-safe error-bar CSV filename."""
-    return f'{_fit_asset_stem(expt_id)}_errors.csv'
-
-
 def _fit_asset_stem(expt_id: str) -> str:
     """Return a filesystem-safe fit-data asset stem."""
     safe_id = ''.join(
@@ -372,58 +334,14 @@ def _fit_csv_columns(
     ]
     if meas['su'] is not None:
         columns.append(('meas_su', list(meas['su'])))
-    bkg = series.get('bkg')
-    if bkg is not None:
-        columns.append(('bkg', list(bkg['values'])))
     columns.extend(
         [
             ('calc', list(calc['values'])),
             ('diff', list(diff['values'])),
         ]
     )
-    return _downsample_fit_csv_columns(expt_id, columns)
-
-
-def _fit_errorbar_csv_columns(
-    expt_id: str,
-    fit_data: dict[str, object],
-) -> list[tuple[str, list[object]]] | None:
-    """Return capped CSV columns for measured uncertainties."""
-    x_data = fit_data['x']
-    meas = fit_data['series']['meas']
-    if meas['su'] is None:
-        return None
-
-    columns = [
-        ('x', list(x_data['values'])),
-        ('meas', list(meas['values'])),
-        ('meas_su', list(meas['su'])),
-    ]
     _validate_fit_csv_columns(expt_id, columns)
-    indices = downsample_min_max_indices(meas['values'], _MAX_ERROR_BAR_POINTS)
-    return _select_fit_csv_rows(columns, indices)
-
-
-def _downsample_fit_csv_columns(
-    expt_id: str,
-    columns: list[tuple[str, list[object]]],
-) -> list[tuple[str, list[object]]]:
-    """Return columns selected by measured-intensity extrema."""
-    _validate_fit_csv_columns(expt_id, columns)
-    meas_values = dict(columns)['meas']
-    indices = downsample_min_max_indices(meas_values, MAX_FIGURE_POINTS)
-    return _select_fit_csv_rows(columns, indices)
-
-
-def _select_fit_csv_rows(
-    columns: list[tuple[str, list[object]]],
-    indices: list[int],
-) -> list[tuple[str, list[object]]]:
-    """Return fit CSV columns selected by row indices."""
-    return [
-        (name, [values[index] for index in indices])
-        for name, values in columns
-    ]
+    return columns
 
 
 def _validate_fit_csv_columns(
