@@ -70,11 +70,19 @@ plan does not re-litigate them:
   (`iucrjournals`). The vendored TeX bundle drops from 12
   files (previous design) to 2: `iucrjournals.cls` and
   `harvard.sty`, both CC0 1.0 from the IUCr upstream.
-- **No `kaleido`, no `chromium`** (§3.3): fit-quality
-  figures are emitted as `pgfplots` blocks reading external
-  CSV files at `reports/tex/data/<expt_id>.csv`. The TeX
-  engine (Tectonic / TeX Live / MiKTeX) supplies
-  `pgfplots` + its TikZ deps from CTAN or its default sets.
+- **No `kaleido`, no `chromium`** (§3.3): each fit-quality
+  figure is a **standalone `pgfplots` `.tex` document**
+  (`reports/tex/data/fit_<expt_id>.tex`, reading its sibling
+  `fit_<expt_id>.csv`), compiled independently to
+  `fit_<expt_id>.pdf` and pulled into the main report via
+  `\includegraphics` — no inline pgfplots in `<project>.tex`,
+  and per-figure compiles isolate the TeX memory pool. The
+  intensity panel carries exactly two plots (measured
+  line+markers, calculated line) with **no band, no
+  per-point error bars, no background** (error bars are the
+  fixed-memory-pool killer; see §3.3). The TeX engine
+  (Tectonic / TeX Live / MiKTeX) supplies `pgfplots` +
+  `standalone` + TikZ deps from CTAN or its default sets.
 - **`DisplayHandler` value object** (§1.5): new
   `@dataclass(frozen=True, slots=True)` at
   `src/easydiffraction/core/display_handler.py` carrying
@@ -139,11 +147,13 @@ plan does not re-litigate them:
   release for `tex-mml-chtml.js` and pin its source URL in
   `LICENSES.md` for traceability. Assume the latest 3.x
   release tagged on jsdelivr at vendoring time.
-- **`reports/tex/data/<expt_id>.csv` schema.** The CSV
+- **`reports/tex/data/fit_<expt_id>.csv` schema.** The CSV
   emitter writes one row per data point with columns
-  `x`, `meas`, optional `meas_su`, `calc`, `diff`, optional
-  `bkg`. Confirm the pgfplots template's column references
-  match this schema exactly during P1.
+  `x`, `meas`, optional `meas_su`, `calc`, `diff`.
+  Background is **not** plotted in the report figure (§3.3),
+  so no `bkg` column is required for the figure; emit it only
+  if another consumer needs it. Confirm `figure.tex.j2`'s
+  column references match this schema exactly during P1.
 - **Style-bundle cleanup vs. wheel size.** The 10 REVTeX
   files dropped from the bundle reduce the wheel by
   ~350 KB. The Phase 2 verification step covers the actual
@@ -268,22 +278,43 @@ plan does not re-litigate them:
   `vendor/` subtree).
 
 **`fit_data` shape + pgfplots CSV emitter:**
+- `src/easydiffraction/report/downsample.py` (new —
+  `downsample_min_max(x, y, max_points)`; `MAX_FIGURE_POINTS
+  = 5000`; peak-preserving min/max-per-bin; see P1.16).
 - `src/easydiffraction/report/data_context.py` (existing
   — replace the previous `figures.fit_per_experiment`
   payload with the descriptor-driven
   `experiments[i].fit_data` dict per ADR §6).
 - `src/easydiffraction/report/tex_renderer.py` (existing
-  — add a `_write_fit_csv(expt_id, fit_data, out_dir)`
-  helper writing `reports/tex/data/<expt_id>.csv` with
-  the schema from §3.3).
+  — add `_write_fit_csv(expt_id, fit_data, out_dir)`
+  writing `reports/tex/data/fit_<expt_id>.csv`, and render
+  a standalone `data/fit_<expt_id>.tex` per experiment from
+  the new `figure.tex.j2`; see §3.3 and P1.16).
+- `src/easydiffraction/report/templates/tex/figure.tex.j2`
+  (new — `\documentclass{standalone}` pgfplots figure: two
+  intensity plots (measured line+markers, calculated line),
+  Bragg row, residual panel. No band, no per-point error
+  bars, no background. `\pgfplotsset{set layers}` +
+  `mark layer=like plot` mandatory; see P1.16).
 - `src/easydiffraction/report/templates/tex/report.tex.j2`
-  (renamed from `iucr.tex.j2`) — replace
-  `\includegraphics{figures/fit_<expt>.pdf}` with a
-  `pgfplots` block reading the matching CSV. Single
-  template, no style branching.
+  (renamed from `iucr.tex.j2`) — the **main** document:
+  tables + `\includegraphics{data/fit_<expt>.pdf}` per
+  experiment. No inline pgfplots. Single template, no style
+  branching.
+- `src/easydiffraction/report/pdf_compiler.py` (existing —
+  compile each `data/fit_<expt>.tex` first, then the main
+  `<project>.tex`, **each using the same discovered-engine
+  fallback** `_ENGINE_ORDER` = `tectonic` → `latexmk` →
+  `pdflatex` (not tectonic only); per-figure separate
+  documents provide the memory isolation; see P1.16).
 - `src/easydiffraction/report/html_renderer.py` (existing
   — the Plotly builder now consumes `fit_data` directly
-  rather than expecting pre-rendered HTML).
+  rather than expecting pre-rendered HTML; serializes through
+  the shared `PlotlyPlotter` helper that applies
+  `_get_config()` **and** the legend-toggle `post_script` +
+  `_wrap_html_figure` wrapper, with a **report-only**
+  `force_template='plotly_white'` override (notebook stays
+  theme-adaptive); see ADR §2 and P1.18).
 - `src/easydiffraction/report/templates/html/report.html.j2`
   (existing — feed the dict to the Plotly builder at
   render time).
@@ -755,30 +786,77 @@ exceptions.
   - Commit:
     `Replace fit_data payload with descriptor-driven shape`.
 
-- [x] **P1.16 — pgfplots CSV emitter + TeX template**
+- [ ] **P1.16 — Standalone per-figure pgfplots `.tex` → PDF, included by the report**
+  (See ADR §3.3 — "standalone pgfplots figures, built
+  independently, included as PDF" — for the full decision
+  this step implements.)
   - Files: existing
-    `src/easydiffraction/report/tex_renderer.py`;
-    renamed
-    `src/easydiffraction/report/templates/tex/report.tex.j2`
-    (from P1.4).
-  - Add a `_write_fit_csv(expt_id, fit_data, out_dir)`
-    helper writing `<out_dir>/data/<expt_id>.csv` with
-    columns `x, meas, meas_su, calc, diff, bkg` (the
-    `meas_su` and `bkg` columns are present only when
-    `fit_data['series']['meas']['su']` /
-    `fit_data['series']['bkg']` are non-None). Use Python
-    `csv` from stdlib — no new dependency.
-  - Replace every `\includegraphics{figures/fit_<expt>.pdf}`
-    block in `report.tex.j2` with a `pgfplots` block
-    pointing at `data/<expt_id>.csv` — series labels read
-    from `fit_data['series'][...]['label']`, axis labels
-    from `fit_data['x']['latex_name']` and
-    `fit_data['x']['latex_units']`.
-  - `Report.save_tex()` now invokes `_write_fit_csv` for
-    each experiment and writes the rendered `.tex` to
-    `reports/<project>.tex`. The `figures/` directory and
-    every kaleido call site are gone.
-  - Commit: `Emit pgfplots CSV and replace includegraphics with pgfplots blocks`.
+    `src/easydiffraction/report/tex_renderer.py`,
+    `src/easydiffraction/report/pdf_compiler.py`;
+    renamed `src/easydiffraction/report/templates/tex/report.tex.j2`
+    (from P1.4); new
+    `src/easydiffraction/report/templates/tex/figure.tex.j2`
+    (standalone figure document).
+  - Add `_write_fit_csv(expt_id, fit_data, out_dir)` writing
+    `<out_dir>/data/fit_<expt_id>.csv` with columns
+    `x, meas, calc, diff` (+ `meas_su` when present). Python
+    stdlib `csv`, no new dependency.
+  - Add `figure.tex.j2`: a `\documentclass{standalone}`
+    pgfplots document, one per experiment, rendered to
+    `data/fit_<expt_id>.tex`. Mandatory preamble:
+    `\pgfplotsset{set layers}` **and** axis option
+    `mark layer=like plot` (both required — `mark layer`
+    is inert without `set layers`; together they let the
+    calculated line draw over the measured markers).
+  - **Intensity panel: exactly two plots.**
+    - Measured — connecting line + markers:
+      `\addplot+[mark=*, mark size=0.75pt, color=ed_meas,
+      line width=0.5pt, line join=bevel,
+      mark options={line width=0pt}]`. (Do **not** add
+      `mark options={fill=…, draw=…}` — a filled `mark=*`
+      already inherits both from `color`; only the
+      `line width=0pt` is load-bearing, keeping the dot at
+      its nominal size.)
+    - Calculated — line, declared **last** so it draws on
+      top: `\addplot+[color=ed_calc, line width=0.75pt,
+      line join=bevel, no markers]`.
+    - **No measured–calculated band, no per-point error
+      bars, no background curve** on the intensity panel.
+      Per-point error bars are the memory killer (ADR
+      §3.3); measured uncertainty is not shown as error
+      bars in the PDF.
+  - Bragg tick row + residual panel as before (residual in
+    its own panel; difference is not overlaid on intensity).
+  - `report.tex.j2` (main document) includes each figure as a
+    pre-built PDF: `\includegraphics[width=\linewidth]{data/fit_<expt_id>.pdf}`
+    — **no inline pgfplots in the main report**.
+  - `Report.save_tex()` writes, per experiment, the CSV +
+    the standalone `fit_<expt_id>.tex`, and writes the main
+    `<project>.tex`. `pdf_compiler.py` is extended so
+    `save_pdf()` compiles **each figure `.tex` first, then
+    the main `<project>.tex`** (which `\includegraphics` the
+    figure PDFs) — an N+1-document build. Each compile (figure
+    and main) uses the **same discovered-engine fallback the
+    compiler already implements** (`tectonic` → `latexmk` →
+    `pdflatex`, `_ENGINE_ORDER` in `pdf_compiler.py`) — not
+    `tectonic` only — so TeX Live / MiKTeX users keep PDF
+    output. Compiling each figure as its own document is what
+    isolates the memory pool; the engine choice is unchanged.
+    When only `tex` is configured (no `pdf`), the figure
+    `.tex` + CSV are written but not compiled.
+  - **Data resolution — concrete contract.** Plot all points
+    up to **`MAX_FIGURE_POINTS = 5000`** per series; above
+    that, downsample with **min/max-per-bin** (peak-
+    preserving — keeps each bin's min and max so a sharp Bragg
+    apex survives; **never** naive every-Nth striding, which
+    can step over an apex and flatten it). Owned by a new
+    helper `src/easydiffraction/report/downsample.py`,
+    `downsample_min_max(x, y, max_points) -> (x2, y2)`, called
+    from `tex_renderer.py` when writing `fit_<expt>.csv`. HRPT
+    / typical CWL (~3k points) is under the cap and renders
+    every point; dense CWL / TOF banks downsample. Full-
+    fidelity data always stays in the CIF/CSV.
+  - Commit: `Emit standalone pgfplots figures included as PDF`.
 
 - [x] **P1.17 — HTML Plotly builder consumes `fit_data` directly**
   - Files: existing
@@ -801,7 +879,61 @@ exceptions.
   - Commit:
     `Build Plotly fit figures from fit_data context`.
 
-- [x] **P1.18 — Clean up stale `figures/` references in code and docs**
+- [ ] **P1.18 — HTML serialization parity: forced light theme + notebook modebar (ADR §2)**
+  - Files:
+    `src/easydiffraction/report/html_renderer.py`;
+    `src/easydiffraction/display/plotters/plotly.py` (extract
+    a shared serialization helper — see below).
+  - **Problem this fixes.** The current report HTML path
+    serializes with only `full_html=False` +
+    `include_plotlyjs=...` (`html_renderer.py:283`); it does
+    **not** pass the notebook `config`, does **not** pass the
+    notebook `post_script`, and does **not** force the figure
+    template after `PlotlyPlotter()` has set the global
+    default from the ambient theme (`html_renderer.py:221`).
+    So the report can inherit a dark theme and shows Plotly's
+    default modebar. ADR §2 requires the report to match the
+    notebook.
+  - **Forced light theme — report only.** For the report, set
+    each figure's `template` to `plotly_white` **on the figure
+    object** (e.g. `fig.update_layout(template='plotly_white')`)
+    right before serialization — not via the global
+    `pio.templates.default`, which `PlotlyPlotter.__init__`
+    already set from the ambient theme. This makes the report
+    independent of notebook/system dark mode. **The notebook
+    path must NOT be forced** — it stays theme-adaptive per
+    `_default_template_name` (ADR §1 / §2). So forcing
+    `plotly_white` is a report-only override, not part of the
+    shared mechanics.
+  - **Notebook modebar — reuse the notebook serialization
+    mechanics (two pieces).** The curated buttons come from
+    `PlotlyPlotter._get_config()`
+    (`plotly.py:567` — `displaylogo=False`,
+    `modeBarButtonsToRemove`), **but the custom legend-toggle
+    button is NOT in `_get_config()`** — it is installed via
+    `post_script` plus the `_wrap_html_figure` wrapper in
+    `_show_figure` (`plotly.py:954`). To match the notebook,
+    the report must pass **both** `config=_get_config()` and
+    the same `post_script`, and apply the same wrapper.
+  - **Implementation: one shared low-level helper + a
+    report-only template override.** Extract the notebook's
+    `pio.to_html(..., config=_get_config(), post_script=...)`
+    + `_wrap_html_figure` sequence into a single classmethod
+    on `PlotlyPlotter` that takes the template as a parameter
+    — e.g. `serialize_html(fig, *, offline,
+    force_template: str | None = None)`: it applies
+    `_get_config()`, the legend-toggle `post_script`, and the
+    wrapper, and when `force_template` is given does
+    `fig.update_layout(template=force_template)` first. The
+    **notebook** path (`_show_figure`) calls it with
+    `force_template=None` (keeps its theme-adaptive template);
+    the **report** renderer calls it with
+    `force_template='plotly_white'`. One source of truth for
+    the modebar/post-script/wrapper; the light-theme override
+    lives only at the report call site.
+  - Commit: `Serialize report Plotly figures via shared notebook path`.
+
+- [x] **P1.19 — Clean up stale `figures/` references in code and docs**
   - Files:
     `src/easydiffraction/project/categories/report/default.py`,
     `src/easydiffraction/report/tex_renderer.py`,
@@ -821,7 +953,7 @@ exceptions.
   - Commit:
     `Replace stale figures/ references with data/`.
 
-- [x] **P1.19 — Update tutorials and user-guide for the new surface**
+- [x] **P1.20 — Update tutorials and user-guide for the new surface**
   - Files: `docs/docs/tutorials/ed-3.py`,
     `docs/docs/tutorials/ed-14.py`, any other tutorial
     `.py` referencing `style=` or `--style` (grep at step
@@ -843,7 +975,61 @@ exceptions.
   - Commit:
     `Update tutorials and docs for single-style report surface`.
 
-- [x] **P1.20 — Reach Phase 1 review gate**
+- [ ] **P1.21 — Visual parity check — PDF figure vs Plotly figure**
+  - Files: `src/easydiffraction/report/templates/tex/figure.tex.j2`
+    (geometry fixes); read-only reference to the Plotly
+    builder in `src/easydiffraction/display/plotters/plotly.py`.
+  - The pgfplots PDF figure and the Plotly HTML figure must
+    share the **same geometry** even though fonts and exact
+    line rendering differ. This is a build-and-eyeball check
+    on a real project (the `lbco_hrpt` tutorial), **not** an
+    automated pixel test — fonts differ, so pixel diffing
+    would false-fail. It is a Phase 1 step because it drives
+    geometry corrections to `figure.tex.j2`; it produces
+    template commits, not test files.
+  - Procedure (per representative experiment):
+    1. **Build the PDF figure.** Compile the standalone
+       `reports/tex/data/fit_<expt>.tex` to `fit_<expt>.pdf`
+       (and/or the full `reports/<project>.pdf`).
+    2. **Rasterize to PNG.** Any available rasteriser —
+       `pdftoppm -png -r 150 fit_<expt>.pdf out`,
+       `magick -density 150 fit_<expt>.pdf out.png`, or macOS
+       `sips -s format png fit_<expt>.pdf --out out.png`.
+    3. **Capture the Plotly reference.** Generate
+       `reports/<project>.html` (or the notebook figure) for
+       the same experiment and capture its chart as an image
+       — open the HTML in a browser and screenshot, or use a
+       browser-automation tool. Plotly→static image has **no**
+       headless path here (`kaleido` was dropped), so the
+       reference comes from the rendered HTML / notebook, not
+       a Python export.
+    4. **Compare geometry side by side.** The two images must
+       match on:
+       - overall figure aspect ratio / box dimensions;
+       - number of stacked panels and their **relative
+         heights** (intensity : Bragg : residual);
+       - **vertical spacing between panels** (no oversized or
+         uneven gaps);
+       - which panels carry x-axis ticks/labels (**only the
+         bottom panel**) and which carry a y-axis title
+         (**each panel its own, once** — no missing titles,
+         no stray/overlapping titles across panels);
+       - x-range (`xmin`/`xmax`) and per-panel y-range;
+       - legend position.
+       Fonts, line antialiasing, and marker rendering may
+       differ — out of scope.
+  - **Known defects to fix in `figure.tex.j2`:** uneven/wrong
+    inter-panel spacing (`vertical sep` / per-panel `height`),
+    and spurious or overlapping y-axis titles on the short
+    Bragg / residual panels (tune each panel's `ylabel`,
+    `ylabel style`, `yticklabel` placement so labels don't
+    collide — the demo symptom where "Bragg", "lbco", and
+    "Residual" overprinted). Re-run steps 1–4 until the
+    geometry matches the Plotly figure.
+  - Commit one geometry fix per logical change, e.g.
+    `Match pgfplots figure geometry to Plotly layout`.
+
+- [ ] **P1.22 — Reach Phase 1 review gate**
   - No-code step. Mark every `[ ]` above as `[x]`; commit
     the plan-file update alone.
   - Commit: `Reach Phase 1 review gate`.
@@ -945,17 +1131,57 @@ running the verification commands below, add or update:
   pre-rendered HTML keys are absent; single-crystal
   experiments emit `fit_data: None`. P1.15 surface.
 - [ ] **`tests/unit/easydiffraction/report/test_tex_renderer.py`**
-  (extend) — `_write_fit_csv` writes the right schema;
-  rendered `.tex` contains a `\begin{axis}` block per
-  experiment with `table[col sep=comma] {data/<expt>.csv}`
-  pointing at the matching CSV; `\includegraphics{figures/...}`
-  is absent. P1.16 surface.
+  (extend) — `_write_fit_csv` writes the right schema
+  (`x, meas, calc, diff` + optional `meas_su`); each
+  standalone `data/fit_<expt>.tex` contains exactly two
+  intensity-panel `\addplot` calls (measured `mark=*` line,
+  calculated `no markers` line) and **no** `error bars`,
+  **no** band/fill-between, **no** background plot; the
+  preamble contains both `\pgfplotsset{set layers}` and
+  `mark layer=like plot`; the main `report.tex` uses
+  `\includegraphics{data/fit_<expt>.pdf}` and contains **no**
+  inline `\begin{axis}`. P1.16 surface.
 - [ ] **`tests/unit/easydiffraction/report/test_html_renderer.py`**
   (further extend) — Plotly figures appear in the
   rendered HTML and are built from the `fit_data` payload
   rather than read from a context key; the resulting HTML
   body contains a `<div class="plotly-graph-div">` per
   experiment. P1.17 surface.
+- [ ] **`tests/unit/easydiffraction/report/test_html_renderer.py`**
+  (further extend) — **HTML serialization parity, with the
+  report-only light override.** With `pio.templates.default`
+  set to `plotly_dark` (simulating notebook/system dark
+  mode):
+  - **Report** serialization (`force_template='plotly_white'`)
+    carries `plotly_white`, not `plotly_dark`.
+  - **Notebook** serialization (`force_template=None`) keeps
+    the theme-adaptive template (here `plotly_dark`) — i.e.
+    the shared helper does **not** force light for the
+    notebook path. This guards the regression where forcing
+    light leaks into the interactive path.
+  - Both paths emit a `config` matching
+    `PlotlyPlotter._get_config()` (`displaylogo:false`, the
+    curated `modeBarButtonsToRemove` set) **and** the legend-
+    toggle behaviour from the shared `post_script` /
+    `_wrap_html_figure`, since both call the single
+    serialization helper. P1.18 surface.
+- [ ] **`tests/unit/easydiffraction/report/test_downsample.py`**
+  (new) — `downsample_min_max(x, y, max_points)`: arrays at
+  or under `max_points` pass through unchanged; arrays above
+  it shrink to ≈`max_points`; **a synthetic single-bin-wide
+  spike at full height on a flat baseline is preserved** (the
+  spike's max y value appears in the output) — the
+  peak-preservation guarantee that naive striding would
+  violate. P1.16 surface.
+- [ ] **`tests/unit/easydiffraction/report/test_pdf_compiler.py`**
+  (extend) — **N+1 build + engine fallback.** Each figure
+  `data/fit_<expt>.tex` is compiled **before** the main
+  `<project>.tex` (assert call ordering); figure and main
+  compiles use the **same discovered engine** (`_ENGINE_ORDER`
+  fallback `tectonic` → `latexmk` → `pdflatex`), not tectonic
+  only; the no-engine branch writes the `.tex` + CSV bundle
+  and returns with the install hint **without raising**; an
+  engine non-zero exit raises a clear error. P1.16 surface.
 - [ ] **Wheel-packaging verification** — run
   `pixi run dist-build` and then
   `unzip -l dist/*.whl | grep -E 'mathjax|iucrjournals.cls|harvard.sty'`
@@ -1018,12 +1244,13 @@ changes for users:
   support (REVTeX, Elsevier, …) is deferred to a follow-up
   ADR. The vendored TeX bundle shrinks from 12 files to 2
   (`iucrjournals.cls` + `harvard.sty`, both CC0 1.0).
-- **No `kaleido`, no Chrome bootstrap.** Fit-quality figures
-  in the PDF / TeX bundle are emitted as `pgfplots` blocks
-  reading external CSV files under `reports/tex/data/`. The
-  TeX engine (Tectonic / TeX Live / MiKTeX) handles the
-  plotting; users no longer need a system browser to
-  generate a PDF report.
+- **No `kaleido`, no Chrome bootstrap.** Each fit-quality
+  figure in the PDF / TeX bundle is a standalone `pgfplots`
+  document under `reports/tex/data/`, compiled to PDF and
+  included in the report — vector throughout, no inline
+  pgfplots in the main document. The TeX engine (Tectonic /
+  TeX Live / MiKTeX) handles the plotting; users no longer
+  need a system browser to generate a PDF report.
 - **Offline HTML is now actually offline.** When
   `project.report.html_offline = True`, both Plotly and
   MathJax are inline-bundled — the resulting `.html` opens
