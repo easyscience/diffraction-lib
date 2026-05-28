@@ -1029,7 +1029,7 @@ exceptions.
   - Commit one geometry fix per logical change, e.g.
     `Match pgfplots figure geometry to Plotly layout`.
 
-- [ ] **P1.22 — Reach Phase 1 review gate**
+- [x] **P1.22 — Reach Phase 1 review gate**
   - No-code step. Mark every `[ ]` above as `[x]`; commit
     the plan-file update alone.
   - Commit: `Reach Phase 1 review gate`.
