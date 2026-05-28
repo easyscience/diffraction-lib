@@ -1087,6 +1087,16 @@ exceptions.
   - Commit:
     `Align numeric report table columns`.
 
+- [x] **P1.25 — Restore accepted pgfplots line widths**
+  - Files:
+    `src/easydiffraction/report/fit_plot.py`.
+  - Keep Plotly/HTML line-width settings unchanged, but use
+    the earlier accepted pgfplots widths for PDF figures:
+    measured line `0.5pt`, calculated line `0.75pt`, and
+    residual line `0.5pt`.
+  - Commit:
+    `Restore pgfplots report line widths`.
+
 ## Test plan (Phase 2)
 
 Per AGENTS.md §Testing, every new module, class, and bug fix

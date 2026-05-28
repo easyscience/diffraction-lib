@@ -33,7 +33,6 @@ _FIGURE_AXIS_WIDTH_CM = 12.0
 _FIGURE_AXIS_HEIGHT_TO_WIDTH = 0.70
 _PLOTLY_GRID_RGB = '235,240,248'
 _PLOTLY_AXIS_RGB = '217,223,228'
-_PIXEL_TO_POINT = 0.75
 _PGFPLOTS_MEASURED_MARKER_SIZE_PT = 0.75
 _PGFPLOTS_MEASURED_MARKER_LINE_WIDTH_PT = 0.0
 _STYLE_SOURCE_KEYS = {
@@ -47,6 +46,12 @@ _LINE_WIDTHS = {
     'bkg': BACKGROUND_LINE_WIDTH,
     'calc': CALCULATED_LINE_WIDTH,
     'diff': RESIDUAL_LINE_WIDTH,
+}
+_PGFPLOTS_LINE_WIDTHS_PT = {
+    'meas': 0.5,
+    'bkg': 0.75,
+    'calc': 0.75,
+    'diff': 0.5,
 }
 _LEGEND_RANKS = {
     'meas': 10,
@@ -154,7 +159,7 @@ def _fit_plot_style(key: str, source_key: str) -> dict[str, Any]:
         'rgb': _rgb_channels(color),
         'color_name': f'ed_{key}',
         'line_width': _LINE_WIDTHS[key],
-        'line_width_pt': _plotly_px_to_pt(_LINE_WIDTHS[key]),
+        'line_width_pt': _PGFPLOTS_LINE_WIDTHS_PT[key],
         'legend_rank': _LEGEND_RANKS[key],
     }
     if key == 'meas':
@@ -223,10 +228,6 @@ def _bragg_row_height_pixels(tick_set_count: int) -> float:
 
 def _vertical_sep_cm(stack_height: float) -> float:
     return stack_height * COMPOSITE_VERTICAL_SPACING
-
-
-def _plotly_px_to_pt(value: float) -> float:
-    return value * _PIXEL_TO_POINT
 
 
 def _display_tick_limit(raw_limit: float) -> float:
