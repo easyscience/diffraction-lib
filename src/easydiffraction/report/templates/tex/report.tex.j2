@@ -2,7 +2,9 @@
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
 {% macro tex_field_header(field, fallback) -%}
-{{ field.label or fallback }}{% if field.units %} ({{ field.units }}){% endif %}
+{% set label = (field.label or fallback) | tex_markup -%}
+{% set units = field.units | tex_markup -%}
+{{ label }}{% if field.units %} ({{ units }}){% endif %}
 {%- endmacro %}
 
 \title{ {{- (publication.body.title or project.title or project.name or "EasyDiffraction report") | tex -}} }
@@ -106,10 +108,12 @@ Calculator & {{ experiment.calculator.type | tex }} \\
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}
+{% set x_label = experiment.fit_data.x.latex_name | tex_markup -%}
+{% set x_units = experiment.fit_data.x.latex_units | tex_markup -%}
 \begin{axis}[
 width=\linewidth,
 height=0.48\linewidth,
-xlabel={ {{ experiment.fit_data.x.latex_name }}{% if experiment.fit_data.x.latex_units %} ({{ experiment.fit_data.x.latex_units }}){% endif %} },
+xlabel={ {{ x_label }}{% if experiment.fit_data.x.latex_units %} ({{ x_units }}){% endif %} },
 ylabel={Intensity},
 legend pos=north east,
 ]

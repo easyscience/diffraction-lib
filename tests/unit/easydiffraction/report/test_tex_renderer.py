@@ -144,6 +144,51 @@ def test_render_tex_report_preserves_structure_uncertainty_text():
     ) in tex
 
 
+def test_render_tex_report_escapes_plain_latex_field_labels():
+    from easydiffraction.report.tex_renderer import render_tex_report
+
+    context = _minimal_context()
+    context['experiments'] = [
+        {
+            'id': 'hrpt',
+            'type': {
+                'sample_form': 'powder',
+                'radiation_probe': 'neutron',
+                'beam_mode': 'constant wavelength',
+                'scattering_type': 'bragg',
+            },
+            'calculator': {'type': 'cryspy'},
+            'diffrn': {
+                'ambient_temperature': '',
+                'ambient_pressure': '',
+            },
+            'diffrn_latex': {
+                'ambient_temperature': _latex_field('ambient_temperature', 'K'),
+                'ambient_pressure': _latex_field('ambient_pressure', 'kPa'),
+            },
+            'fit_data': {
+                'x': {
+                    'values': [1.0],
+                    'latex_name': 'time_of_flight',
+                    'latex_units': 'micro_seconds',
+                },
+                'series': {
+                    'meas': {'values': [1.0], 'su': None, 'label': 'Measured'},
+                    'calc': {'values': [1.0], 'label': 'Calculated'},
+                    'diff': {'values': [0.0], 'label': 'Difference'},
+                    'bkg': None,
+                },
+            },
+        }
+    ]
+
+    tex = render_tex_report(context)
+
+    assert r'ambient\_temperature (K)' in tex
+    assert r'ambient\_pressure (kPa)' in tex
+    assert r'xlabel={ time\_of\_flight (micro\_seconds) }' in tex
+
+
 def test_save_tex_report_removes_stale_managed_bundle_dirs(tmp_path):
     from easydiffraction.report.tex_renderer import save_tex_report
 

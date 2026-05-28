@@ -134,6 +134,7 @@ def _environment() -> Environment:
         lstrip_blocks=True,
     )
     environment.filters['tex'] = _tex_escape
+    environment.filters['tex_markup'] = _tex_markup
     environment.filters['tex_number'] = _tex_number
     return environment
 
@@ -277,6 +278,16 @@ def _tex_number(value: object, digits: int = 6) -> str:
     if isinstance(value, (float, int)):
         return f'{value:.{digits}g}'
     return _tex_escape(value)
+
+
+def _tex_markup(value: object) -> str:
+    """Escape plain text while preserving explicit TeX snippets."""
+    if value is None:
+        return ''
+    text = str(value)
+    if '\\' in text or '$' in text:
+        return text
+    return _tex_escape(text)
 
 
 def _tex_escape(value: object) -> str:
