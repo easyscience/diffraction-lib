@@ -975,7 +975,7 @@ exceptions.
   - Commit:
     `Update tutorials and docs for single-style report surface`.
 
-- [ ] **P1.21 — Visual parity check — PDF figure vs Plotly figure**
+- [x] **P1.21 — Visual parity check — PDF figure vs Plotly figure**
   - Files: `src/easydiffraction/report/templates/tex/figure.tex.j2`
     (geometry fixes); read-only reference to the Plotly
     builder in `src/easydiffraction/display/plotters/plotly.py`.

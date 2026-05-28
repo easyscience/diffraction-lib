@@ -18,7 +18,7 @@
 \begin{groupplot}[
 group style={
 group size=1 by {% if bragg_tick_sets %}3{% else %}2{% endif %},
-vertical sep=4pt,
+vertical sep=8pt,
 x descriptions at=edge bottom,
 },
 width=12cm,
@@ -26,6 +26,8 @@ xmin={{ ranges.x_min | tex_number }},
 xmax={{ ranges.x_max | tex_number }},
 mark layer=like plot,
 tick align=outside,
+label style={font=\footnotesize},
+tick label style={font=\footnotesize},
 ]
 \nextgroupplot[
 height=4.2cm,
@@ -34,7 +36,7 @@ ymax={{ ranges.y_max | tex_number }},
 xticklabels=\empty,
 ylabel={ {{ y_label }} },
 legend pos=north east,
-legend style={draw=none, fill=white, fill opacity=0.5, text opacity=1},
+legend style={draw=none, fill=white, fill opacity=0.5, text opacity=1, font=\footnotesize},
 ]
 \addplot+[mark=*, mark size=0.75pt, color={{ styles.meas.color_name }}, line width=0.5pt, line join=bevel, mark options={line width=0pt}] table[x=x, y=meas, col sep=comma] { {{- csv_filename -}} };
 \addlegendentry{ {{- styles.meas.name | tex -}} }
@@ -42,14 +44,14 @@ legend style={draw=none, fill=white, fill opacity=0.5, text opacity=1},
 \addlegendentry{ {{- styles.calc.name | tex -}} }
 {% if bragg_tick_sets %}
 \nextgroupplot[
-height=1.05cm,
+height=1.6cm,
 ymin=0.5,
 ymax={{ (bragg_tick_sets | length) + 0.5 }},
 y dir=reverse,
 ytick={{ "{" }}{% for tick_set in bragg_tick_sets %}{{ loop.index }}{% if not loop.last %},{% endif %}{% endfor %}{{ "}" }},
 yticklabels={{ "{" }}{% for tick_set in bragg_tick_sets %}{{ "{" }}{{ tick_set.phase_id | tex }}{{ "}" }}{% if not loop.last %},{% endif %}{% endfor %}{{ "}" }},
+yticklabel style={font=\footnotesize},
 xticklabels=\empty,
-ylabel={Bragg},
 ]
 {% for tick_set in bragg_tick_sets %}
 {% set bragg_row = loop.index -%}
@@ -62,11 +64,12 @@ ylabel={Bragg},
 {% endfor %}
 {% endif %}
 \nextgroupplot[
-height=1.45cm,
+height=1.8cm,
 ymin={{ ranges.residual_y_min | tex_number }},
 ymax={{ ranges.residual_y_max | tex_number }},
+ytick={-{{ ranges.residual_y_tick | tex_number }},0,{{ ranges.residual_y_tick | tex_number }}},
 xlabel={ {{ x_label }} },
-ylabel={Residual},
+yticklabel style={font=\footnotesize},
 ]
 \addplot+[color={{ styles.diff.color_name }}, line width=0.5pt, line join=bevel, no markers] table[x=x, y=diff, col sep=comma] { {{- csv_filename -}} };
 \end{groupplot}

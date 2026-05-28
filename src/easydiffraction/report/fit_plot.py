@@ -14,6 +14,7 @@ from easydiffraction.display.plotters.plotly import BACKGROUND_LINE_WIDTH
 from easydiffraction.display.plotters.plotly import BRAGG_TICK_COLORS
 from easydiffraction.display.plotters.plotly import CALCULATED_LINE_WIDTH
 from easydiffraction.display.plotters.plotly import DEFAULT_COLORS
+from easydiffraction.display.plotters.plotly import DISPLAY_TICK_FRACTIONS
 from easydiffraction.display.plotters.plotly import MAIN_INTENSITY_RANGE_MARGIN_FRACTION
 from easydiffraction.display.plotters.plotly import MEASURED_LINE_WIDTH
 from easydiffraction.display.plotters.plotly import RESIDUAL_LINE_WIDTH
@@ -72,6 +73,7 @@ def fit_plot_ranges(fit_data: dict[str, Any]) -> dict[str, float]:
         'y_max': main_y_max,
         'residual_y_min': -residual_limit,
         'residual_y_max': residual_limit,
+        'residual_y_tick': _display_tick_limit(residual_limit),
     }
 
 
@@ -105,6 +107,20 @@ def _residual_limit(*, main_y_min: float, main_y_max: float) -> float:
     if residual_limit > 0.0:
         return residual_limit
     return 1.0
+
+
+def _display_tick_limit(raw_limit: float) -> float:
+    if raw_limit <= 0:
+        return 1.0
+
+    exponent = float(np.floor(np.log10(raw_limit)))
+    base = 10.0**exponent
+    fraction = raw_limit / base
+
+    for nice_fraction in reversed(DISPLAY_TICK_FRACTIONS):
+        if fraction >= nice_fraction:
+            return nice_fraction * base
+    return DISPLAY_TICK_FRACTIONS[0] * base
 
 
 def _rgb_channels(color: str) -> str:
