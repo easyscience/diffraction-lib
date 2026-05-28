@@ -1394,6 +1394,26 @@ window.requestAnimationFrame(installLegendToggleButton);
         Bragg row is added only when tick data is available. The
         residual row is added only when residual data is requested.
         """
+        fig = self.build_powder_meas_vs_calc_figure(plot_spec=plot_spec)
+        self._show_figure(fig)
+
+    def build_powder_meas_vs_calc_figure(
+        self,
+        plot_spec: PowderMeasVsCalcSpec,
+    ) -> object:
+        """
+        Build a composite powder Plotly figure without displaying it.
+
+        Parameters
+        ----------
+        plot_spec : PowderMeasVsCalcSpec
+            Composite powder-plot inputs and layout settings.
+
+        Returns
+        -------
+        object
+            Configured :class:`plotly.graph_objects.Figure`.
+        """
         layout = self._get_powder_composite_rows(plot_spec)
         x_min, x_max = self._composite_x_range(np.asarray(plot_spec.x))
         main_y_min, main_y_max = self._get_main_intensity_range(plot_spec)
@@ -1432,7 +1452,7 @@ window.requestAnimationFrame(installLegendToggleButton);
             residual_limit=residual_limit,
         )
 
-        self._show_figure(fig)
+        return fig
 
     @staticmethod
     def _create_powder_composite_figure(layout: PowderCompositeRows) -> object:
@@ -1476,6 +1496,13 @@ window.requestAnimationFrame(installLegendToggleButton);
             customdata=hover_data,
             hovertemplate=hover_template,
         )
+        if plot_spec.y_meas_su is not None:
+            meas_trace.error_y = {
+                'type': 'data',
+                'array': plot_spec.y_meas_su,
+                'visible': True,
+                'color': DEFAULT_COLORS['meas'],
+            }
         fig.add_trace(meas_trace, row=1, col=1)
 
         if plot_spec.y_bkg is not None:
@@ -1797,6 +1824,45 @@ window.requestAnimationFrame(installLegendToggleButton);
         # Intentionally unused; accepted for API compatibility
         del height
 
+        fig = self.build_single_crystal_figure(
+            x_calc=x_calc,
+            y_meas=y_meas,
+            y_meas_su=y_meas_su,
+            axes_labels=axes_labels,
+            title=title,
+        )
+        self._show_figure(fig)
+
+    def build_single_crystal_figure(
+        self,
+        *,
+        x_calc: object,
+        y_meas: object,
+        y_meas_su: object,
+        axes_labels: object,
+        title: str,
+    ) -> object:
+        """
+        Build a single-crystal Plotly figure without displaying it.
+
+        Parameters
+        ----------
+        x_calc : object
+            1D array-like of calculated values (x-axis).
+        y_meas : object
+            1D array-like of measured values (y-axis).
+        y_meas_su : object
+            1D array-like of measurement uncertainties.
+        axes_labels : object
+            Pair of strings for the x and y titles.
+        title : str
+            Figure title.
+
+        Returns
+        -------
+        object
+            Configured :class:`plotly.graph_objects.Figure`.
+        """
         data = [
             self._get_single_crystal_trace(
                 x_calc,
@@ -1811,8 +1877,7 @@ window.requestAnimationFrame(installLegendToggleButton);
             shapes=[self._get_diagonal_shape()],
         )
 
-        fig = self._get_figure(data, layout)
-        self._show_figure(fig)
+        return self._get_figure(data, layout)
 
     def plot_scatter(
         self,

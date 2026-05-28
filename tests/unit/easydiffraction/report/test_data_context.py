@@ -14,6 +14,36 @@ class _Descriptor:
         self.value = value
 
 
+class _XDescriptor:
+    name = 'intensity_calc'
+    units = 'none'
+
+    @staticmethod
+    def resolve_display_name(context):
+        del context
+        return 'I²calc'
+
+    @staticmethod
+    def resolve_display_units(context):
+        del context
+        return ''
+
+
+class _TwoThetaDescriptor:
+    name = 'two_theta'
+    units = 'degrees'
+
+    @staticmethod
+    def resolve_display_name(context):
+        del context
+        return '2θ'
+
+    @staticmethod
+    def resolve_display_units(context):
+        del context
+        return 'degree'
+
+
 def _parameter(name, value, uncertainty):
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.variable import Parameter
@@ -83,6 +113,15 @@ def _experiment() -> SimpleNamespace:
         calculator=SimpleNamespace(type=_Descriptor('cryspy')),
         diffrn=SimpleNamespace(),
         measured_range=None,
+        x_descriptor=_XDescriptor(),
+        fit_data_arrays=lambda: {
+            'x': np.array([10.0, 20.0]),
+            'meas': np.array([11.0, 19.0]),
+            'meas_su': np.array([0.5, 0.7]),
+            'calc': np.array([10.0, 20.0]),
+            'diff': np.array([1.0, -1.0]),
+            'bkg': None,
+        },
         refln=SimpleNamespace(
             intensity_meas=np.array([11.0, 19.0]),
             intensity_calc=np.array([10.0, 20.0]),
@@ -106,16 +145,50 @@ def _project() -> SimpleNamespace:
     )
 
 
-def test_report_data_context_builds_fit_figure():
+def test_report_data_context_builds_fit_data():
     from easydiffraction.report.data_context import build_report_data_context
 
     context = build_report_data_context(_project())
 
-    figure = context['figures']['fit_per_experiment']['heidi']
-    assert figure.data[0].name == 'Measured'
-    assert list(figure.data[0].error_y.array) == [0.5, 0.7]
-    assert figure.data[1].name == 'I²meas = I²calc'
-    assert figure.layout.title.text == 'Measured vs calculated: heidi'
+    fit_data = context['experiments'][0]['fit_data']
+    assert fit_data['axes_labels'] == ['I²calc', 'I²meas']
+    assert list(fit_data['series']['meas']['su']) == [0.5, 0.7]
+    assert list(fit_data['series']['calc']['values']) == [10.0, 20.0]
+    assert list(fit_data['series']['diff']['values']) == [1.0, -1.0]
+    assert fit_data['bragg_tick_sets'] == ()
+
+
+def test_report_data_context_builds_powder_bragg_tick_sets():
+    from easydiffraction.report.data_context import build_report_data_context
+
+    experiment = _experiment()
+    experiment.type.sample_form = _Descriptor('powder')
+    experiment.x_descriptor = _TwoThetaDescriptor()
+    experiment.fit_data_arrays = lambda: {
+        'x': np.array([1.0, 2.0]),
+        'meas': np.array([11.0, 19.0]),
+        'meas_su': np.array([0.5, 0.7]),
+        'calc': np.array([10.0, 20.0]),
+        'diff': np.array([1.0, -1.0]),
+        'bkg': np.array([2.0, 2.5]),
+    }
+    experiment.refln = SimpleNamespace(
+        phase_id=np.array(['phase-a']),
+        two_theta=np.array([1.5]),
+        index_h=np.array([1]),
+        index_k=np.array([0]),
+        index_l=np.array([1]),
+        f_squared_calc=np.array([100.0]),
+        f_calc=np.array([10.0]),
+    )
+    project = _project()
+    project.experiments = {'hrpt': experiment}
+
+    context = build_report_data_context(project)
+
+    tick_sets = context['experiments'][0]['fit_data']['bragg_tick_sets']
+    assert [tick_set.phase_id for tick_set in tick_sets] == ['phase-a']
+    assert list(tick_sets[0].x) == [1.5]
 
 
 def test_report_data_context_preserves_structure_uncertainties():

@@ -12,6 +12,10 @@ from importlib.resources import files
 from jinja2 import Environment
 from jinja2 import PackageLoader
 
+from easydiffraction.report.fit_plot import fit_bragg_tick_styles
+from easydiffraction.report.fit_plot import fit_plot_ranges
+from easydiffraction.report.fit_plot import fit_plot_styles
+
 _TEMPLATE_NAME = 'tex/report.tex.j2'
 _TEX_SPECIAL_CHARS = {
     '\\': r'\textbackslash{}',
@@ -76,7 +80,10 @@ def render_tex_report(context: dict[str, object]) -> str:
         Complete LaTeX document.
     """
     template_context = dict(context)
-    template_context['tex'] = {'fit_csv_paths': _fit_csv_paths(context)}
+    template_context['tex'] = _tex_context(
+        context,
+        fit_csv_paths=_fit_csv_paths(context),
+    )
     return _environment().get_template(_TEMPLATE_NAME).render(**template_context)
 
 
@@ -111,7 +118,10 @@ def save_tex_report(
     styles_dir.mkdir(parents=True, exist_ok=True)
 
     template_context = dict(context)
-    template_context['tex'] = {'fit_csv_paths': _write_fit_csvs(context, tex_dir)}
+    template_context['tex'] = _tex_context(
+        context,
+        fit_csv_paths=_write_fit_csvs(context, tex_dir),
+    )
     output_path.write_text(
         _render_prepared_context(template_context),
         encoding='utf-8',
@@ -134,6 +144,7 @@ def _environment() -> Environment:
         lstrip_blocks=True,
     )
     environment.filters['tex'] = _tex_escape
+    environment.filters['tex_axis_label'] = _tex_axis_label
     environment.filters['tex_markup'] = _tex_markup
     environment.filters['tex_number'] = _tex_number
     return environment
@@ -162,6 +173,32 @@ def _write_fit_csvs(
         csv_path = _write_fit_csv(experiment_id, fit_data, out_dir)
         paths[experiment_id] = f'data/{csv_path.name}'
     return paths
+
+
+def _tex_context(
+    context: dict[str, object],
+    *,
+    fit_csv_paths: dict[str, str],
+) -> dict[str, object]:
+    """Return TeX-specific render context."""
+    return {
+        'fit_csv_paths': fit_csv_paths,
+        'fit_bragg_tick_styles': fit_bragg_tick_styles(),
+        'fit_plot_ranges': _fit_plot_ranges(context),
+        'fit_plot_styles': fit_plot_styles(),
+    }
+
+
+def _fit_plot_ranges(context: dict[str, object]) -> dict[str, dict[str, float]]:
+    """Return fit-figure axis ranges by experiment id."""
+    ranges = {}
+    for experiment in _experiment_contexts(context):
+        fit_data = experiment.get('fit_data')
+        if fit_data is None:
+            continue
+        experiment_id = str(experiment.get('id') or 'experiment')
+        ranges[experiment_id] = fit_plot_ranges(fit_data)
+    return ranges
 
 
 def _write_fit_csv(
@@ -288,6 +325,20 @@ def _tex_markup(value: object) -> str:
     if '\\' in text or '$' in text:
         return text
     return _tex_escape(text)
+
+
+def _tex_axis_label(value: object) -> str:
+    """Return a TeX-safe axis label from Plotly display text."""
+    if value is None:
+        return ''
+    text = str(value)
+    text = text.replace('⁻¹', '$^{-1}$')
+    text = text.replace('²', '$^2$')
+    text = text.replace('θ', r'$\theta$')
+    text = text.replace('λ', r'$\lambda$')
+    text = text.replace('μ', r'$\mu$')
+    text = text.replace('Å', r'\AA{}')
+    return _tex_markup(text)
 
 
 def _tex_escape(value: object) -> str:

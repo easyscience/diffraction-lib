@@ -1,100 +1,167 @@
-\documentclass{styles/iucrjournals}
+\documentclass[11pt,a4paper]{styles/iucrjournals}
 \usepackage{pgfplots}
+\usepgfplotslibrary{groupplots}
 \pgfplotsset{compat=1.18}
+{% for style in tex.fit_plot_styles.values() %}
+\definecolor{ {{- style.color_name -}} }{RGB}{ {{- style.rgb -}} }
+{% endfor %}
+{% for style in tex.fit_bragg_tick_styles %}
+\definecolor{ {{- style.color_name -}} }{RGB}{ {{- style.rgb -}} }
+{% endfor %}
 {% macro tex_field_header(field, fallback) -%}
 {% set label = (field.label or fallback) | tex_markup -%}
 {% set units = field.units | tex_markup -%}
 {{ label }}{% if field.units %} ({{ units }}){% endif %}
 {%- endmacro %}
 
-\title{ {{- (publication.body.title or project.title or project.name or "EasyDiffraction report") | tex -}} }
-{% if publication.authors %}
-{% for author in publication.authors %}
-\author{ {{- author.name | tex -}} }
-{% endfor %}
-{% else %}
-\author{EasyDiffraction user}
-{% endif %}
+%----------------------------------------------------------
+% Title
+%----------------------------------------------------------
+\title{ {{- (project.title or project.name or "EasyDiffraction report") | tex -}} }
+\author{}
 
+%----------------------------------------------------------
+% Begin document
+%----------------------------------------------------------
 \begin{document}
 \maketitle
 
-{% if publication.body.abstract or publication.body.synopsis %}
+{% if project.description %}
 \begin{abstract}
-{{ (publication.body.abstract or publication.body.synopsis) | tex }}
+{{ project.description | tex }}
 \end{abstract}
 {% endif %}
 
-\section{Project summary}
+%----------------------------------------------------------
+% Section
+%----------------------------------------------------------
+\section{Project Summary}
 
+\begin{table}[H]
 \begin{tabular}{ll}
-Project & {{ project.name | tex }} \\
+\toprule
+Short name & {{ project.name | tex }} \\
 Title & {{ project.title | tex }} \\
-Phases & {{ project.n_phases }} \\
+Structures & {{ project.n_phases }} \\
 Experiments & {{ project.n_experiments }} \\
 Generated & {{ metadata.generated_at | tex }} \\
-EasyDiffraction version & {{ metadata.easydiffraction_version | tex }} \\
+\bottomrule
 \end{tabular}
+\end{table}
 
+%----------------------------------------------------------
+% Section
+%----------------------------------------------------------
+\section{Software}
+
+\begin{table}[H]
+\begin{tabular}{lll}
+\toprule
+Role & Name & Version \\
+\midrule
+Framework & {{ software.framework.name | tex }} & {{ software.framework.version | tex }} \\
+Calculator & {{ software.calculator.name | tex }} & {{ software.calculator.version | tex }} \\
+Minimizer & {{ software.minimizer.name | tex }} & {{ software.minimizer.version | tex }} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%----------------------------------------------------------
+% Section
+%----------------------------------------------------------
 \section{Refinement}
 
+\begin{table}[H]
 \begin{tabular}{ll}
+\toprule
 Reduced chi-square & {{ refinement.fit_result.reduced_chi_square | tex_number }} \\
 Free parameters & {{ refinement.parameters.free | tex_number }} \\
 Total parameters & {{ refinement.parameters.total | tex_number }} \\
 Constraints & {{ refinement.constraints | tex_number }} \\
 R factor & {{ refinement.fit_result.r_factor_all | tex_number }} \\
 Weighted R factor & {{ refinement.fit_result.wr_factor_all | tex_number }} \\
+\bottomrule
 \end{tabular}
+\end{table}
 
-\section{Software}
-
-\begin{tabular}{lll}
-Role & Name & Version \\
-Framework & {{ software.framework.name | tex }} & {{ software.framework.version | tex }} \\
-Calculator & {{ software.calculator.name | tex }} & {{ software.calculator.version | tex }} \\
-Minimizer & {{ software.minimizer.name | tex }} & {{ software.minimizer.version | tex }} \\
-\end{tabular}
-
+%----------------------------------------------------------
+% Section
+%----------------------------------------------------------
 \section{Structures}
 
 {% for structure in structures %}
+%----------
+% Structure
+%----------
 \subsection{ {{- structure.id | tex -}} }
 
+%-------------
+\subsubsection{Space group and unit cell parameters}
+
+\begin{table}[H]
 \begin{tabular}{ll}
+\toprule
 Space group & {{ structure.space_group | tex }} \\
 Crystal system & {{ structure.crystal_system | tex }} \\
 {% for key, value in structure.cell.items() %}
 {{ tex_field_header(structure.cell_latex[key], key | replace("_", " ")) }} & {{ value | tex_number }} \\
 {% endfor %}
+\bottomrule
 \end{tabular}
+\end{table}
 
 {% if structure.atom_sites %}
-\begin{tabular}{lllllll}
+%-------------
+\subsubsection{Atom site parameters}
+
+\begin{table}[H]
+\begin{tabular}{llccccc}
+\toprule
 Label & Type & $x$ & $y$ & $z$ & Occ. & {{ tex_field_header(structure.atom_site_latex.adp_iso, "ADP") }} \\
+\midrule
 {% for atom in structure.atom_sites %}
 {{ atom.label | tex }} & {{ atom.type_symbol | tex }} & {{ atom.fract_x | tex_number }} & {{ atom.fract_y | tex_number }} & {{ atom.fract_z | tex_number }} & {{ atom.occupancy | tex_number }} & {{ atom.adp_iso | tex_number }} \\
 {% endfor %}
+\bottomrule
 \end{tabular}
-
+\end{table}
 {% endif %}
+
 {% if structure.atom_site_aniso %}
-\begin{tabular}{lllllll}
+%-------------
+\subsubsection{Anisotropic atomic displacement parameters}
+
+\begin{table}[H]
+\begin{tabular}{lcccccc}
+\toprule
 Label & {{ tex_field_header(structure.atom_site_aniso_latex.adp_11, "ADP 11") }} & {{ tex_field_header(structure.atom_site_aniso_latex.adp_22, "ADP 22") }} & {{ tex_field_header(structure.atom_site_aniso_latex.adp_33, "ADP 33") }} & {{ tex_field_header(structure.atom_site_aniso_latex.adp_12, "ADP 12") }} & {{ tex_field_header(structure.atom_site_aniso_latex.adp_13, "ADP 13") }} & {{ tex_field_header(structure.atom_site_aniso_latex.adp_23, "ADP 23") }} \\
+\midrule
 {% for aniso in structure.atom_site_aniso %}
 {{ aniso.label | tex }} & {{ aniso.adp_11 | tex_number }} & {{ aniso.adp_22 | tex_number }} & {{ aniso.adp_33 | tex_number }} & {{ aniso.adp_12 | tex_number }} & {{ aniso.adp_13 | tex_number }} & {{ aniso.adp_23 | tex_number }} \\
 {% endfor %}
+\bottomrule
 \end{tabular}
-
+\end{table}
 {% endif %}
 {% endfor %}
 
+%----------------------------------------------------------
+% Section
+%----------------------------------------------------------
 \section{Experiments}
 
 {% for experiment in experiments %}
+%-----------
+% Experiment
+%-----------
 \subsection{ {{- experiment.id | tex -}} }
 
+%-------------
+\subsubsection{Experiment details}
+
+\begin{table}[H]
 \begin{tabular}{ll}
+\toprule
 Sample form & {{ experiment.type.sample_form | tex }} \\
 Probe & {{ experiment.type.radiation_probe | tex }} \\
 Beam mode & {{ experiment.type.beam_mode | tex }} \\
@@ -102,47 +169,95 @@ Scattering type & {{ experiment.type.scattering_type | tex }} \\
 Calculator & {{ experiment.calculator.type | tex }} \\
 {{ tex_field_header(experiment.diffrn_latex.ambient_temperature, "Temperature") }} & {{ experiment.diffrn.ambient_temperature | tex_number }} \\
 {{ tex_field_header(experiment.diffrn_latex.ambient_pressure, "Pressure") }} & {{ experiment.diffrn.ambient_pressure | tex_number }} \\
+\bottomrule
 \end{tabular}
+\end{table}
 
 {% if experiment.fit_data and tex.fit_csv_paths[experiment.id] %}
+%-------------
+\subsubsection{Fit quality}
+
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}
-{% set x_label = experiment.fit_data.x.latex_name | tex_markup -%}
-{% set x_units = experiment.fit_data.x.latex_units | tex_markup -%}
-\begin{axis}[
+{% set ranges = tex.fit_plot_ranges[experiment.id] -%}
+{% set styles = tex.fit_plot_styles -%}
+{% set axes_labels = experiment.fit_data.axes_labels | default(["", "Intensity"], true) -%}
+{% set x_label = axes_labels[0] | tex_axis_label -%}
+{% set y_label = axes_labels[1] | tex_axis_label -%}
+{% set bragg_tick_sets = experiment.fit_data.bragg_tick_sets | default([], true) -%}
+{% set bragg_styles = tex.fit_bragg_tick_styles -%}
+\begin{groupplot}[
+group style={
+group size=1 by {% if bragg_tick_sets %}3{% else %}2{% endif %},
+vertical sep=0.04\linewidth,
+xlabels at=edge bottom,
+xticklabels at=edge bottom,
+},
 width=\linewidth,
-height=0.48\linewidth,
-xlabel={ {{ x_label }}{% if experiment.fit_data.x.latex_units %} ({{ x_units }}){% endif %} },
-ylabel={Intensity},
-legend pos=north east,
+xmin={{ ranges.x_min | tex_number }},
+xmax={{ ranges.x_max | tex_number }},
+mark layer=like plot,
+tick align=outside,
 ]
-\addplot+[only marks, mark size=0.5pt] table[x=x, y=meas, col sep=comma] { {{- tex.fit_csv_paths[experiment.id] -}} };
-\addlegendentry{ {{- experiment.fit_data.series.meas.label | tex -}} }
-\addplot+[no markers] table[x=x, y=calc, col sep=comma] { {{- tex.fit_csv_paths[experiment.id] -}} };
-\addlegendentry{ {{- experiment.fit_data.series.calc.label | tex -}} }
-\addplot+[no markers, dashed] table[x=x, y=diff, col sep=comma] { {{- tex.fit_csv_paths[experiment.id] -}} };
-\addlegendentry{ {{- experiment.fit_data.series.diff.label | tex -}} }
-{% if experiment.fit_data.series.bkg %}
-\addplot+[no markers, dotted] table[x=x, y=bkg, col sep=comma] { {{- tex.fit_csv_paths[experiment.id] -}} };
-\addlegendentry{ {{- experiment.fit_data.series.bkg.label | tex -}} }
+\nextgroupplot[
+height=0.34\linewidth,
+ymin={{ ranges.y_min | tex_number }},
+ymax={{ ranges.y_max | tex_number }},
+xticklabels=\empty,
+ylabel={ {{ y_label }} },
+legend pos=north east,
+legend style={draw=none, fill=white, fill opacity=0.5, text opacity=1},
+]
+{% if experiment.fit_data.series.meas.su is not none %}
+\addplot+[color={{ styles.meas.color_name }}, line width={{ styles.meas.line_width | tex_number }}pt, line join=bevel, mark=*, mark size=1pt, error bars/.cd, y dir=both, y explicit] table[x=x, y=meas, y error=meas_su, col sep=comma] { {{- tex.fit_csv_paths[experiment.id] -}} };
+{% else %}
+\addplot+[color={{ styles.meas.color_name }}, line width={{ styles.meas.line_width | tex_number }}pt, line join=bevel, mark=*, mark size=1pt] table[x=x, y=meas, col sep=comma] { {{- tex.fit_csv_paths[experiment.id] -}} };
 {% endif %}
-\end{axis}
+\addlegendentry{ {{- styles.meas.name | tex -}} }
+{% if experiment.fit_data.series.bkg %}
+\addplot+[color={{ styles.bkg.color_name }}, line width={{ styles.bkg.line_width | tex_number }}pt, line join=bevel, no markers] table[x=x, y=bkg, col sep=comma] { {{- tex.fit_csv_paths[experiment.id] -}} };
+\addlegendentry{ {{- styles.bkg.name | tex -}} }
+{% endif %}
+\addplot+[color={{ styles.calc.color_name }}, line width={{ styles.calc.line_width | tex_number }}pt, line join=bevel, no markers] table[x=x, y=calc, col sep=comma] { {{- tex.fit_csv_paths[experiment.id] -}} };
+\addlegendentry{ {{- styles.calc.name | tex -}} }
+{% if bragg_tick_sets %}
+\nextgroupplot[
+height=0.10\linewidth,
+ymin=0.5,
+ymax={{ (bragg_tick_sets | length) + 0.5 }},
+y dir=reverse,
+ytick={% for tick_set in bragg_tick_sets %}{{ loop.index }}{% if not loop.last %},{% endif %}{% endfor %},
+yticklabels={% for tick_set in bragg_tick_sets %}{{ tick_set.phase_id | tex }}{% if not loop.last %},{% endif %}{% endfor %},
+xticklabels=\empty,
+ylabel={Bragg},
+]
+{% for tick_set in bragg_tick_sets %}
+{% set bragg_row = loop.index -%}
+{% set tick_style = bragg_styles[loop.index0 % (bragg_styles | length)] -%}
+\addplot+[color={{ tick_style.color_name }}, only marks, mark=|, mark size=5pt] coordinates {
+{% for x_value in tick_set.x %}
+({{ x_value | tex_number }},{{ bragg_row }})
+{% endfor %}
+};
+{% endfor %}
+{% endif %}
+\nextgroupplot[
+height=0.12\linewidth,
+ymin={{ ranges.residual_y_min | tex_number }},
+ymax={{ ranges.residual_y_max | tex_number }},
+xlabel={ {{ x_label }} },
+ylabel={Residual},
+]
+\addplot+[color={{ styles.diff.color_name }}, line width={{ styles.diff.line_width | tex_number }}pt, line join=bevel, no markers] table[x=x, y=diff, col sep=comma] { {{- tex.fit_csv_paths[experiment.id] -}} };
+\end{groupplot}
 \end{tikzpicture}
-\caption{Observed and calculated fit for {{ experiment.id | tex }}.}
+\caption{Measured and calculated fit for {{ experiment.id | tex }}.}
 \end{figure}
 {% endif %}
 {% endfor %}
 
-\section{Publication metadata}
-
-\begin{tabular}{ll}
-Journal & {{ publication.journal.name_full | tex }} \\
-Year & {{ publication.journal.year | tex }} \\
-DOI & {{ publication.journal.paper_doi | tex }} \\
-Contact author & {{ publication.contact_author.name | tex }} \\
-Contact email & {{ publication.contact_author.email | tex }} \\
-Keywords & {{ publication.body.keywords | tex }} \\
-\end{tabular}
-
+%----------------------------------------------------------
+% End document
+%----------------------------------------------------------
 \end{document}

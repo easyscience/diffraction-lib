@@ -9,6 +9,9 @@ from datetime import UTC
 from datetime import datetime
 
 from easydiffraction.core.variable import Parameter
+from easydiffraction.display.plotters.base import DEFAULT_AXES_LABELS
+from easydiffraction.display.plotters.base import DEFAULT_X_AXIS
+from easydiffraction.display.plotting import Plotter
 from easydiffraction.io.cif.serialize import format_param_value
 from easydiffraction.utils.utils import package_version
 
@@ -447,6 +450,12 @@ def _fit_data_context(experiment: object) -> dict[str, object] | None:
         return None
 
     arrays = experiment.fit_data_arrays()
+    axes_labels = _fit_data_axes_labels(experiment, x_descriptor)
+    bragg_tick_sets = _fit_data_bragg_tick_sets(
+        experiment,
+        x_axis=x_descriptor.name,
+        x_values=arrays['x'],
+    )
     return {
         'x': {
             'values': arrays['x'],
@@ -457,6 +466,7 @@ def _fit_data_context(experiment: object) -> dict[str, object] | None:
             'display_units': x_descriptor.resolve_display_units('html'),
             'latex_units': x_descriptor.resolve_display_units('latex'),
         },
+        'axes_labels': axes_labels,
         'series': {
             'meas': {
                 'values': arrays['meas'],
@@ -467,7 +477,55 @@ def _fit_data_context(experiment: object) -> dict[str, object] | None:
             'diff': _series_context(arrays['diff'], 'Difference'),
             'bkg': _optional_series_context(arrays['bkg'], 'Background'),
         },
+        'bragg_tick_sets': bragg_tick_sets,
     }
+
+
+def _fit_data_axes_labels(experiment: object, x_descriptor: object) -> list[str]:
+    """Return Plotly display-axis labels for a report fit figure."""
+    experiment_type = _safe_attr(experiment, 'type')
+    try:
+        sample_form = experiment_type.sample_form.value
+        scattering_type = experiment_type.scattering_type.value
+        beam_mode = experiment_type.beam_mode.value
+        x_axis = DEFAULT_X_AXIS[sample_form, scattering_type, beam_mode]
+        return list(DEFAULT_AXES_LABELS[sample_form, scattering_type, x_axis])
+    except (AttributeError, KeyError):
+        units = x_descriptor.resolve_display_units('html')
+        display_name = x_descriptor.resolve_display_name('html')
+        x_label = f'{display_name} ({units})' if units else display_name
+        return [x_label, 'Intensity (arb. units)']
+
+
+def _fit_data_bragg_tick_sets(
+    experiment: object,
+    *,
+    x_axis: object,
+    x_values: object,
+) -> object:
+    """Return Bragg tick sets for powder Bragg report figures."""
+    if not _is_powder_bragg_experiment(experiment):
+        return ()
+
+    values = list(x_values)
+    if not values:
+        return ()
+
+    return Plotter._extract_bragg_tick_sets(
+        experiment=experiment,
+        expt_name=str(_safe_attr(experiment, 'name') or 'experiment'),
+        x_axis=x_axis,
+        x_min=float(min(values)),
+        x_max=float(max(values)),
+    )
+
+
+def _is_powder_bragg_experiment(experiment: object) -> bool:
+    """Return whether an experiment can use powder Bragg plot panels."""
+    experiment_type = _safe_attr(experiment, 'type')
+    sample_form = _value(_safe_attr(experiment_type, 'sample_form'))
+    scattering_type = _value(_safe_attr(experiment_type, 'scattering_type'))
+    return sample_form == 'powder' and scattering_type == 'bragg'
 
 
 def _series_context(values: object, label: str) -> dict[str, object]:

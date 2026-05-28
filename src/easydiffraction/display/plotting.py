@@ -194,6 +194,7 @@ class _PowderMeasVsCalcSeries:
 
     y_meas: np.ndarray
     y_calc: np.ndarray
+    y_meas_su: np.ndarray | None = None
     y_bkg: np.ndarray | None = None
 
 
@@ -5401,6 +5402,17 @@ class Plotter(RendererBase):
         y_calc = self._filtered_y_array(
             pattern.intensity_calc, ctx['x_array'], ctx['x_min'], ctx['x_max']
         )
+        y_meas_su_raw = getattr(pattern, 'intensity_meas_su', None)
+        y_meas_su = (
+            self._filtered_y_array(
+                y_meas_su_raw,
+                ctx['x_array'],
+                ctx['x_min'],
+                ctx['x_max'],
+            )
+            if y_meas_su_raw is not None
+            else None
+        )
         y_bkg_raw = getattr(pattern, 'intensity_bkg', None)
         y_bkg = (
             self._filtered_y_array(y_bkg_raw, ctx['x_array'], ctx['x_min'], ctx['x_max'])
@@ -5413,6 +5425,7 @@ class Plotter(RendererBase):
         powder_series = _PowderMeasVsCalcSeries(
             y_meas=y_meas,
             y_calc=y_calc,
+            y_meas_su=y_meas_su,
             y_bkg=y_bkg,
         )
         excluded_ranges = (
@@ -5515,6 +5528,7 @@ class Plotter(RendererBase):
             height=self._composite_plot_height(),
             y_bkg=series.y_bkg,
             excluded_ranges=excluded_ranges,
+            y_meas_su=series.y_meas_su,
         )
         self._backend.plot_powder_meas_vs_calc(plot_spec=plot_spec)
 

@@ -416,6 +416,7 @@ def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch)
         y_meas=np.array([10.0, 12.0, 11.0]),
         y_calc=np.array([9.0, 11.0, 10.5]),
         y_resid=np.array([1.0, 1.0, 0.5]),
+        y_meas_su=np.array([0.2, 0.3, 0.4]),
         bragg_tick_sets=(
             BraggTickSet(
                 phase_id='phase-a',
@@ -477,6 +478,7 @@ def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch)
     assert calc_trace.hovertemplate == expected_hovertemplate
     assert residual_trace.hovertemplate == expected_hovertemplate
     assert meas_trace.line.width == pp.MEASURED_LINE_WIDTH
+    assert list(meas_trace.error_y.array) == pytest.approx([0.2, 0.3, 0.4])
     assert calc_trace.line.width == pp.CALCULATED_LINE_WIDTH
     assert residual_trace.line.width == pp.RESIDUAL_LINE_WIDTH
     assert list(meas_trace.customdata[0]) == pytest.approx([10.0, 9.0, 1.0])

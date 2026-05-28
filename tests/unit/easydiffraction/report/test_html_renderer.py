@@ -4,12 +4,19 @@
 
 from __future__ import annotations
 
+import numpy as np
+
+
+def _field(label: str, units: str = '') -> dict[str, str]:
+    return {'label': label, 'units': units}
+
 
 def _context() -> dict[str, object]:
     return {
         'project': {
             'name': 'report_project',
             'title': 'Report Project',
+            'description': 'Project description.',
             'n_phases': 1,
             'n_experiments': 0,
         },
@@ -50,6 +57,14 @@ def _context() -> dict[str, object]:
                     'angle_beta': '90.()',
                     'angle_gamma': '90.()',
                 },
+                'cell_display': {
+                    'length_a': _field('a', 'A'),
+                    'length_b': _field('b', 'A'),
+                    'length_c': _field('c', 'A'),
+                    'angle_alpha': _field('alpha', 'degree'),
+                    'angle_beta': _field('beta', 'degree'),
+                    'angle_gamma': _field('gamma', 'degree'),
+                },
                 'atom_sites': [
                     {
                         'label': 'Si1',
@@ -61,6 +76,12 @@ def _context() -> dict[str, object]:
                         'adp_iso': '0.00658(14)',
                     }
                 ],
+                'atom_site_display': {
+                    'fract_x': _field('x'),
+                    'fract_y': _field('y'),
+                    'fract_z': _field('z'),
+                    'adp_iso': _field('Uiso', 'A^2'),
+                },
                 'atom_site_aniso': [
                     {
                         'label': 'Si1',
@@ -72,6 +93,14 @@ def _context() -> dict[str, object]:
                         'adp_23': '0.00189(13)',
                     }
                 ],
+                'atom_site_aniso_display': {
+                    'adp_11': _field('U11', 'A^2'),
+                    'adp_22': _field('U22', 'A^2'),
+                    'adp_33': _field('U33', 'A^2'),
+                    'adp_12': _field('U12', 'A^2'),
+                    'adp_13': _field('U13', 'A^2'),
+                    'adp_23': _field('U23', 'A^2'),
+                },
             }
         ],
         'experiments': [],
@@ -87,3 +116,67 @@ def test_render_html_report_preserves_structure_uncertainty_text():
     assert '11.985(31)' in html
     assert '0.00658(14)' in html
     assert '-0.00048(25)' in html
+    assert '<h2>Publication</h2>' not in html
+    assert '<h2>Abstract</h2>' in html
+    assert '<h2>Project Summary</h2>' in html
+
+
+def test_render_html_report_uses_plotly_fit_style_order():
+    from easydiffraction.display.plotters.base import BraggTickSet
+    from easydiffraction.report.html_renderer import render_html_report
+
+    context = _context()
+    context['project']['n_experiments'] = 1
+    context['experiments'] = [
+        {
+            'id': 'hrpt',
+            'type': {
+                'sample_form': 'powder',
+                'radiation_probe': 'neutron',
+                'beam_mode': 'constant wavelength',
+                'scattering_type': 'bragg',
+            },
+            'calculator': {'type': 'cryspy'},
+            'diffrn': {'ambient_temperature': '', 'ambient_pressure': ''},
+            'diffrn_display': {
+                'ambient_temperature': _field('Temperature', 'K'),
+                'ambient_pressure': _field('Pressure', 'kPa'),
+            },
+            'fit_data': {
+                'x': {'values': [1.0, 2.0], 'display_name': '2theta'},
+                'axes_labels': ['2θ (degree)', 'Intensity (arb. units)'],
+                'series': {
+                    'meas': {'values': [10.0, 11.0], 'su': [0.1, 0.2]},
+                    'calc': {'values': [10.0, 12.0]},
+                    'diff': {'values': [0.0, -1.0]},
+                    'bkg': {'values': [5.0, 5.5]},
+                },
+                'bragg_tick_sets': (
+                    BraggTickSet(
+                        phase_id='phase-a',
+                        x=np.array([1.5]),
+                        h=np.array([1]),
+                        k=np.array([0]),
+                        ell=np.array([1]),
+                        f_squared_calc=np.array([100.0]),
+                        f_calc=np.array([10.0]),
+                    ),
+                ),
+            },
+        }
+    ]
+
+    html = render_html_report(context)
+
+    measured = html.index('"name":"Measured (Imeas)"')
+    background = html.index('"name":"Background (Ibkg)"')
+    calculated = html.index('"name":"Total calculated (Icalc)"')
+    residual = html.index('"name":"Residual (Imeas - Icalc)"')
+    assert measured < background < calculated < residual
+    assert '"legendrank":10' in html
+    assert '"legendrank":20' in html
+    assert '"legendrank":30' in html
+    assert '"legendrank":40' in html
+    assert '"array":[0.1,0.2]' in html
+    assert '"name":"Bragg peaks: phase-a"' in html
+    assert '"yaxis3"' in html

@@ -9,8 +9,14 @@ import shutil
 from importlib.resources import as_file
 from importlib.resources import files
 
+import numpy as np
 from jinja2 import Environment
 from jinja2 import PackageLoader
+
+from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
+from easydiffraction.display.plotters.plotly import PlotlyPlotter
+from easydiffraction.display.plotting import DEFAULT_BRAGG_ROW
+from easydiffraction.display.plotting import DEFAULT_RESID_HEIGHT
 
 _TEMPLATE_NAME = 'html/report.html.j2'
 _MATHJAX_FILENAME = 'mathjax-tex-mml-chtml.js'
@@ -166,7 +172,7 @@ def _fit_figure_html_context(
         if fit_data is None:
             continue
         experiment_id = str(experiment.get('id') or 'experiment')
-        figure = _fit_data_figure(experiment_id, fit_data)
+        figure = _fit_data_figure(experiment_id, fit_data, experiment)
         rendered[experiment_id] = _figure_html(
             figure,
             include_plotlyjs=include_plotlyjs,
@@ -175,9 +181,12 @@ def _fit_figure_html_context(
     return rendered
 
 
-def _fit_data_figure(experiment_id: str, fit_data: dict[str, object]) -> object:
+def _fit_data_figure(
+    experiment_id: str,
+    fit_data: dict[str, object],
+    experiment: dict[str, object],
+) -> object:
     """Build a Plotly fit figure from one fit-data payload."""
-    go = _plotly_go()
     x_data = fit_data['x']
     series = fit_data['series']
     x_values = _value_list(x_data['values'])
@@ -188,59 +197,87 @@ def _fit_data_figure(experiment_id: str, fit_data: dict[str, object]) -> object:
     _validate_same_length(experiment_id, 'calc', x_values, y_calc)
     _validate_same_length(experiment_id, 'diff', x_values, y_diff)
 
-    measured_trace = {
-        'x': x_values,
-        'y': y_meas,
-        'mode': 'markers',
-        'name': series['meas']['label'],
-    }
-    y_meas_su = series['meas']['su']
-    if y_meas_su is not None:
-        su_values = _value_list(y_meas_su)
-        _validate_same_length(experiment_id, 'meas_su', x_values, su_values)
-        measured_trace['error_y'] = {
-            'type': 'data',
-            'array': su_values,
-            'visible': True,
-        }
+    y_meas_su = None
+    y_meas_su_data = series['meas']['su']
+    if y_meas_su_data is not None:
+        y_meas_su = _value_list(y_meas_su_data)
+        _validate_same_length(experiment_id, 'meas_su', x_values, y_meas_su)
 
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(**measured_trace))
-    fig.add_trace(
-        go.Scatter(
-            x=x_values,
-            y=y_calc,
-            mode='lines',
-            name=series['calc']['label'],
-        )
-    )
+    y_bkg = None
     bkg = series['bkg']
     if bkg is not None:
         y_bkg = _value_list(bkg['values'])
         _validate_same_length(experiment_id, 'bkg', x_values, y_bkg)
-        fig.add_trace(
-            go.Scatter(
-                x=x_values,
-                y=y_bkg,
-                mode='lines',
-                name=bkg['label'],
-            )
+
+    if x_data.get('name') == 'intensity_calc':
+        return _single_crystal_fit_data_figure(
+            experiment_id=experiment_id,
+            fit_data=fit_data,
+            x_values=x_values,
+            y_meas=y_meas,
+            y_meas_su=y_meas_su,
         )
-    fig.add_trace(
-        go.Scatter(
-            x=x_values,
-            y=y_diff,
-            mode='lines',
-            line={'dash': 'dash'},
-            name=series['diff']['label'],
+
+    return PlotlyPlotter().build_powder_meas_vs_calc_figure(
+        plot_spec=PowderMeasVsCalcSpec(
+            x=np.asarray(x_values, dtype=float),
+            y_meas=np.asarray(y_meas, dtype=float),
+            y_calc=np.asarray(y_calc, dtype=float),
+            y_resid=np.asarray(y_diff, dtype=float),
+            bragg_tick_sets=tuple(fit_data.get('bragg_tick_sets') or ()),
+            axes_labels=list(fit_data.get('axes_labels') or [_axis_title(x_data), 'Intensity']),
+            title=_fit_figure_title(experiment_id, experiment),
+            residual_height_fraction=DEFAULT_RESID_HEIGHT,
+            bragg_peaks_height_fraction=DEFAULT_BRAGG_ROW,
+            y_bkg=np.asarray(y_bkg, dtype=float) if y_bkg is not None else None,
+            y_meas_su=(
+                np.asarray(y_meas_su, dtype=float)
+                if y_meas_su is not None
+                else None
+            ),
         )
     )
-    _configure_fit_figure(
-        fig,
-        experiment_id=experiment_id,
-        x_title=_axis_title(x_data),
+
+
+def _single_crystal_fit_data_figure(
+    *,
+    experiment_id: str,
+    fit_data: dict[str, object],
+    x_values: list[object],
+    y_meas: list[object],
+    y_meas_su: list[object] | None,
+) -> object:
+    """Build a single-crystal Plotly report figure."""
+    y_meas_array = np.asarray(y_meas, dtype=float)
+    if y_meas_su is None:
+        y_meas_su_array = np.zeros_like(y_meas_array)
+    else:
+        y_meas_su_array = np.asarray(y_meas_su, dtype=float)
+
+    return PlotlyPlotter().build_single_crystal_figure(
+        x_calc=np.asarray(x_values, dtype=float),
+        y_meas=y_meas_array,
+        y_meas_su=y_meas_su_array,
+        axes_labels=list(fit_data.get('axes_labels') or ['I²calc', 'I²meas']),
+        title=f"Measured vs Calculated data for experiment 🔬 '{experiment_id}'",
     )
-    return fig
+
+
+def _fit_figure_title(experiment_id: str, experiment: dict[str, object]) -> str:
+    """Return a report title matching the direct plotting API."""
+    experiment_type = experiment.get('type')
+    if _is_powder_bragg_context(experiment_type):
+        return f"Measured vs Calculated data for experiment 🔬 '{experiment_id}'"
+    return f'Measured vs calculated: {experiment_id}'
+
+
+def _is_powder_bragg_context(experiment_type: object) -> bool:
+    if not isinstance(experiment_type, dict):
+        return False
+    return (
+        experiment_type.get('sample_form') == 'powder'
+        and experiment_type.get('scattering_type') == 'bragg'
+    )
 
 
 def _figure_html(figure: object, *, include_plotlyjs: bool | str) -> str:
@@ -251,30 +288,12 @@ def _figure_html(figure: object, *, include_plotlyjs: bool | str) -> str:
     return str(figure)
 
 
-def _configure_fit_figure(
-    fig: object,
-    *,
-    experiment_id: str,
-    x_title: str,
-) -> None:
-    """Apply shared report-figure layout."""
-    fig.update_layout(
-        template='plotly_white',
-        title=f'Measured vs calculated: {experiment_id}',
-        xaxis_title=x_title,
-        yaxis_title='Intensity',
-        height=440,
-        margin={'l': 64, 'r': 24, 't': 64, 'b': 56},
-        legend={'orientation': 'h', 'yanchor': 'bottom', 'y': 1.02},
-    )
-
-
 def _axis_title(x_data: dict[str, object]) -> str:
     """Return a display axis title for fit figures."""
-    units = x_data['display_units']
+    units = x_data.get('display_units')
     if units:
-        return f"{x_data['display_name']} ({units})"
-    return str(x_data['display_name'])
+        return f"{x_data.get('display_name')} ({units})"
+    return str(x_data.get('display_name') or '')
 
 
 def _validate_same_length(
@@ -309,10 +328,3 @@ def _experiment_contexts(context: dict[str, object]) -> list[dict[str, object]]:
         for experiment in experiments
         if isinstance(experiment, dict)
     ]
-
-
-def _plotly_go() -> object:
-    """Return Plotly graph objects for report figures."""
-    import plotly.graph_objects as go  # noqa: PLC0415
-
-    return go

@@ -33,7 +33,9 @@ class DefaultDiffrn(CategoryItem):
             description='Mean temperature during measurement',
             units='kelvins',
             display_handler=DisplayHandler(
+                display_name='Temperature',
                 display_units='K',
+                latex_name='Temperature',
                 latex_units='K',
             ),
             value_spec=AttributeSpec(
@@ -49,7 +51,9 @@ class DefaultDiffrn(CategoryItem):
             description='Mean hydrostatic pressure during measurement',
             units='kilopascals',
             display_handler=DisplayHandler(
+                display_name='Pressure',
                 display_units='kPa',
+                latex_name='Pressure',
                 latex_units='kPa',
             ),
             value_spec=AttributeSpec(

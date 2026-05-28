@@ -1644,6 +1644,7 @@ def test_plot_meas_vs_calc_routes_powder_bragg_to_composite_backend():
         two_theta = np.array([0.0, 1.0, 2.0, 3.0])
         d_spacing = two_theta
         intensity_meas = np.array([10.0, 20.0, 30.0, 40.0])
+        intensity_meas_su = np.array([0.1, 0.2, 0.3, 0.4])
         intensity_bkg = np.array([1.0, 2.0, 3.0, 4.0])
         intensity_calc = np.array([9.0, 18.0, 27.0, 39.0])
 
@@ -1679,6 +1680,7 @@ def test_plot_meas_vs_calc_routes_powder_bragg_to_composite_backend():
     call = captured['powder_meas_vs_calc']
     assert np.allclose(call.x, np.array([1.0, 2.0]))
     assert np.allclose(call.y_meas, np.array([20.0, 30.0]))
+    assert np.allclose(call.y_meas_su, np.array([0.2, 0.3]))
     assert np.allclose(call.y_bkg, np.array([2.0, 3.0]))
     assert np.allclose(call.y_calc, np.array([18.0, 27.0]))
     assert np.allclose(call.y_resid, np.array([2.0, 3.0]))
