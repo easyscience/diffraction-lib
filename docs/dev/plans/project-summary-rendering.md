@@ -821,7 +821,7 @@ exceptions.
   - Commit:
     `Replace stale figures/ references with data/`.
 
-- [ ] **P1.19 — Update tutorials and user-guide for the new surface**
+- [x] **P1.19 — Update tutorials and user-guide for the new surface**
   - Files: `docs/docs/tutorials/ed-3.py`,
     `docs/docs/tutorials/ed-14.py`, any other tutorial
     `.py` referencing `style=` or `--style` (grep at step

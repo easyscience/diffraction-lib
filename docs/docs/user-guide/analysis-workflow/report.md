@@ -47,7 +47,6 @@ report formats.
 | `project.report.html` | `bool` | Write an HTML report. |
 | `project.report.tex` | `bool` | Write a TeX report bundle. |
 | `project.report.pdf` | `bool` | Write a PDF report when a TeX engine is available. |
-| `project.report.style` | `str` | TeX/PDF template style: `'iucr'` or `'revtex'`. |
 | `project.report.html_offline` | `bool` | Embed HTML assets instead of using CDN links. |
 
 The `formats` property is a compact way to set the four format flags:
@@ -68,19 +67,24 @@ configuration:
 ```python
 project.report.save_html()
 project.report.save_cif()
-project.report.save_tex(style='iucr')
-project.report.save_pdf(style='iucr')
+project.report.save_tex()
+project.report.save_pdf()
 ```
 
 `save_pdf()` always writes the TeX bundle first. If no TeX engine is on
 `PATH`, EasyDiffraction leaves the `.tex`, `data/`, and `styles/` files
 under `reports/tex/`, prints a short install hint, and does not raise.
 
+HTML reports load Plotly and MathJax from CDNs by default. Set
+`project.report.html_offline = True` to make the HTML report usable
+without network access; this embeds Plotly in the HTML and copies the
+vendored MathJax bundle next to it, adding about 4.5 MB total.
+
 The command line mirrors the same split:
 
 ```bash
 ed save path/to/project
-ed save-report path/to/project --html --tex --pdf --style iucr
+ed save-report path/to/project --html --tex --pdf
 ```
 
 `ed save` uses the persisted `project.report` configuration.

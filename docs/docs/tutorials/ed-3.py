@@ -624,18 +624,15 @@ project.display.pattern(expt_name='hrpt', x_min=38, x_max=41)
 #
 # This final section shows how to review the results of the analysis.
 #
-# By default, no report files are generated. Here we enable all
-# supported report formats. The generated report files will be saved in
-# the `reports` folder of the project directory.
+# By default, no report files are generated. Here we enable HTML and
+# TeX reports for regular project saves, then request a one-off PDF.
+# The generated report files will be saved in the `reports` folder of
+# the project directory.
 
 # %%
-# project.report.formats = ['cif', 'html', 'tex', 'pdf'] # Need this?
-project.report.cif = True
-project.report.html = True
-project.report.tex = True
-project.report.pdf = True
-
+project.report.formats = ['html', 'tex']
 project.save()
+project.report.save_pdf()
 
 # %%
 # project.report.show_report() # Need this?

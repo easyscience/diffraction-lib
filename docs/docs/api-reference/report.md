@@ -7,7 +7,6 @@
         - html
         - tex
         - pdf
-        - style
         - html_offline
         - formats
         - data_context
@@ -23,5 +22,3 @@
 ## Enums
 
 ::: easydiffraction.report.enums.ReportFormatEnum
-
-::: easydiffraction.report.enums.ReportStyleEnum
