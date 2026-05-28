@@ -177,6 +177,7 @@ def test_render_html_report_uses_plotly_fit_style_order():
     assert '"legendrank":20' in html
     assert '"legendrank":30' in html
     assert '"legendrank":40' in html
-    assert '"array":[0.1,0.2]' in html
+    assert '"error_y"' in html
+    assert '"color":"rgb(31, 119, 180)"' in html
     assert '"name":"Bragg peaks: phase-a"' in html
     assert '"yaxis3"' in html

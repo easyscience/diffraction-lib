@@ -265,6 +265,8 @@ def test_render_tex_report_uses_composite_pgfplots_with_error_bars():
     assert 'mark layer=like plot' in tex
     assert 'y error=meas_su' in tex
     assert 'mark=|' in tex
+    assert 'ytick={1}' in tex
+    assert 'yticklabels={{phase-a}}' in tex
     assert 'ylabel={Residual}' in tex
     assert tex.index('color=ed_meas') < tex.index('color=ed_calc')
 
