@@ -30,6 +30,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ project.title or project.name or "EasyDiffraction report" }}</title>
   <style>{{ stylesheet | safe }}</style>
+  {% if html_offline %}
+  <script src="vendor/mathjax-tex-mml-chtml.js"></script>
+  {% else %}
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  {% endif %}
 </head>
 <body>
   <main class="report-shell">

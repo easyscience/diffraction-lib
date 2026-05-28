@@ -5,12 +5,15 @@
 from __future__ import annotations
 
 import pathlib
+import shutil
+from importlib.resources import as_file
 from importlib.resources import files
 
 from jinja2 import Environment
 from jinja2 import PackageLoader
 
 _TEMPLATE_NAME = 'html/report.html.j2'
+_MATHJAX_FILENAME = 'mathjax-tex-mml-chtml.js'
 
 
 def html_report_path(
@@ -70,12 +73,50 @@ def render_html_report(
         Complete HTML document.
     """
     template_context = dict(context)
+    template_context['html_offline'] = offline
     template_context['stylesheet'] = _stylesheet_text()
     template_context['figures'] = _figure_html_context(
         context.get('figures'),
         offline=offline,
     )
     return _environment().get_template(_TEMPLATE_NAME).render(**template_context)
+
+
+def save_html_report(
+    project: object,
+    context: dict[str, object],
+    *,
+    offline: bool = False,
+    path: str | pathlib.Path | None = None,
+) -> pathlib.Path:
+    """
+    Write an HTML report and any required local assets.
+
+    Parameters
+    ----------
+    project : object
+        Project instance.
+    context : dict[str, object]
+        Data returned by ``Report.data_context()``.
+    offline : bool, default=False
+        Whether local HTML assets should be copied next to the report.
+    path : str | pathlib.Path | None, default=None
+        Explicit report path.
+
+    Returns
+    -------
+    pathlib.Path
+        Path of the written HTML report.
+    """
+    output_path = html_report_path(project, path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(
+        render_html_report(context, offline=offline),
+        encoding='utf-8',
+    )
+    if offline:
+        _copy_mathjax(output_path.parent)
+    return output_path
 
 
 def _environment() -> Environment:
@@ -96,6 +137,20 @@ def _stylesheet_text() -> str:
         'style.css',
     )
     return stylesheet.read_text(encoding='utf-8')
+
+
+def _copy_mathjax(report_dir: pathlib.Path) -> None:
+    """Copy the vendored MathJax bundle next to an HTML report."""
+    vendor_dir = report_dir / 'vendor'
+    vendor_dir.mkdir(parents=True, exist_ok=True)
+    resource = files('easydiffraction.report').joinpath(
+        'templates',
+        'html',
+        'vendor',
+        _MATHJAX_FILENAME,
+    )
+    with as_file(resource) as source_path:
+        shutil.copy2(source_path, vendor_dir / _MATHJAX_FILENAME)
 
 
 def _figure_html_context(

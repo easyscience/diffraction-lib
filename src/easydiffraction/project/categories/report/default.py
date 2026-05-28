@@ -408,12 +408,9 @@ class Report(CategoryItem):
             Path of the written HTML report.
 
         """
-        from easydiffraction.report.html_renderer import html_report_path  # noqa: PLC0415
+        from easydiffraction.report.html_renderer import save_html_report  # noqa: PLC0415
 
-        output_path = html_report_path(self.project)
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_path.write_text(self.as_html(offline=offline), encoding='utf-8')
-        return output_path
+        return save_html_report(self.project, self.data_context(), offline=offline)
 
     def as_html(self, offline: bool = False) -> str:
         """
@@ -422,7 +419,7 @@ class Report(CategoryItem):
         Parameters
         ----------
         offline : bool, default=False
-            Whether to embed Plotly JavaScript assets.
+            Whether to embed HTML JavaScript assets.
 
         Returns
         -------

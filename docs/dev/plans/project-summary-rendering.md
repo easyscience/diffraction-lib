@@ -586,7 +586,7 @@ exceptions.
     below) per AGENTS.md §Workflow's two-phase split.
   - Commit: `Vendor MathJax tex-mml-chtml bundle`.
 
-- [ ] **P1.13 — Wire MathJax loader through `html_offline`**
+- [x] **P1.13 — Wire MathJax loader through `html_offline`**
   - Files: existing
     `src/easydiffraction/report/templates/html/report.html.j2`;
     existing
